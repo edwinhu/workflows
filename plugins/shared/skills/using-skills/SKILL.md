@@ -33,6 +33,8 @@ Invoke a skill **before responding** when the user's request involves:
 | Gemini batch processing | `gemini-batch` |
 | Writing/editing | `writing` |
 | Economics/finance writing | `writing-econ` |
+| Legal/law review writing | `writing-legal` |
+| Topic brainstorming | `writing-brainstorm` |
 | AI pattern detection | `ai-anti-patterns` |
 | Word documents | `docx` |
 | Spreadsheets | `xlsx` |
