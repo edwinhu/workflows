@@ -9,27 +9,52 @@ import sys
 from pathlib import Path
 
 
+def load_env_file(env_file: Path):
+    """Load environment variables from a file."""
+    if not env_file.exists():
+        return
+    try:
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, _, value = line.partition('=')
+                    key = key.strip()
+                    value = value.strip().strip('"').strip("'")
+                    if key and key not in os.environ:
+                        os.environ[key] = value
+    except Exception:
+        pass
+
+
 def load_dotenv_if_exists():
     """Load .env file from current directory if it exists."""
-    env_file = Path.cwd() / '.env'
-    if env_file.exists():
-        try:
-            with open(env_file) as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, _, value = line.partition('=')
-                        key = key.strip()
-                        value = value.strip().strip('"').strip("'")
-                        if key and key not in os.environ:
-                            os.environ[key] = value
-        except Exception:
-            pass
+    load_env_file(Path.cwd() / '.env')
+
+
+def load_central_secrets():
+    """Load user-global secrets from central location.
+
+    Expected location: ~/.secrets/claude-keys.env
+
+    This is for API keys that are user-global (not project-specific),
+    e.g., Gemini API key, Readwise key, etc.
+
+    Format: standard .env file (KEY=value, one per line)
+    """
+    # TODO: Implement when central secrets location is established
+    # Candidate locations:
+    #   ~/.secrets/claude-keys.env
+    #   ~/.config/claude/secrets.env
+    #   Use a secrets manager (1Password CLI, etc.)
+    central_secrets = Path.home() / '.secrets' / 'claude-keys.env'
+    load_env_file(central_secrets)
 
 
 def get_environment_context():
     """Gather environment context for Claude."""
-    load_dotenv_if_exists()
+    load_central_secrets()  # User-global keys first
+    load_dotenv_if_exists()  # Project-local keys override
 
     context = {}
 
@@ -146,12 +171,16 @@ def persist_env_vars_for_bash():
 
     This makes variables from .env files and direnv available to subsequent
     bash commands in the Claude session.
+
+    CLAUDE_ENV_FILE should be project-local (e.g., $CWD/.claude/env) for
+    security isolation between projects.
     """
     claude_env_file = os.environ.get('CLAUDE_ENV_FILE')
     if not claude_env_file:
         return []
 
-    # Load .env if present
+    # Load secrets: central first, then project-local (can override)
+    load_central_secrets()
     load_dotenv_if_exists()
 
     # List of variables to persist for bash commands
@@ -184,6 +213,41 @@ def persist_env_vars_for_bash():
         return []
 
 
+def build_env_section(env_context: dict, persisted_vars: list) -> str:
+    """Build environment context section - placed FIRST for visibility."""
+    session_type = env_context.get('session_type', 'local')
+    is_remote = session_type == 'remote (SSH)'
+
+    lines = ["# Session Environment"]
+    lines.append("")
+    lines.append("**CHECK THIS FIRST** when answering questions about the environment.")
+    lines.append("")
+
+    # Session type - prominent for remote sessions
+    if is_remote:
+        lines.append(f"- **Session**: {session_type} ← YOU ARE ON A REMOTE MACHINE")
+    else:
+        lines.append(f"- **Session**: {session_type}")
+
+    # API keys
+    if env_context.get('api_keys_available'):
+        keys = ", ".join(env_context['api_keys_available'].keys())
+        lines.append(f"- **API keys available**: {keys}")
+
+    # Environment tools
+    if env_context.get('direnv_active'):
+        lines.append("- **direnv**: active")
+    if env_context.get('pixi_project'):
+        lines.append("- **pixi**: detected")
+
+    # Persisted vars
+    if persisted_vars:
+        lines.append(f"- **Persisted for bash**: {', '.join(persisted_vars)}")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
 def main():
     # Persist env vars for bash commands first
     persisted_vars = persist_env_vars_for_bash()
@@ -191,28 +255,15 @@ def main():
     # Get environment context for Claude's awareness
     env_context = get_environment_context()
 
-    # Build the full context
+    # Build sections: environment FIRST, then skills
+    env_section = build_env_section(env_context, persisted_vars)
     skills_summary = get_skills_summary()
-
-    # Add environment section if we have context
-    env_section = ""
-    if env_context.get('api_keys_available') or env_context.get('session_type') == 'remote (SSH)':
-        env_section = "\n\n## Environment Context\n"
-        env_section += f"- Session: {env_context.get('session_type', 'local')}\n"
-        if env_context.get('api_keys_available'):
-            env_section += "- Available API keys: " + ", ".join(env_context['api_keys_available'].keys()) + "\n"
-        if env_context.get('direnv_active'):
-            env_section += "- direnv: active\n"
-        if env_context.get('pixi_project'):
-            env_section += "- pixi: detected\n"
-        if persisted_vars:
-            env_section += f"- Persisted for bash: {', '.join(persisted_vars)}\n"
 
     # Output the context injection
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "context": skills_summary + env_section
+            "context": env_section + "\n" + skills_summary
         }
     }))
 
