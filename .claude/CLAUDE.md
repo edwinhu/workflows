@@ -6,7 +6,7 @@
 
 - `/plugin-dev:create-plugin` - For plugin creation workflow
 - `/plugin-dev:skill-development` - For creating or updating skills
-- `/hookify:hookify` - For creating or working with hooks
+- `/plugin-dev:hook-development` - For creating or working with hooks
 
 ## Related Skills
 
