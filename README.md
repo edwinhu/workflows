@@ -7,7 +7,7 @@ A curated collection of development and data science plugins for Claude Code.
 To add this marketplace to your Claude Code installation:
 
 ```bash
-/plugin marketplace add edwinhu/claude-plugins
+/plugin marketplace add edwinhu/workflows
 ```
 
 Then install individual plugins:
@@ -106,7 +106,7 @@ A data science plugin focused on reproducibility and output verification, with s
 ## Repository Structure
 
 ```
-claude-plugins/
+workflows/
 ├── .claude-plugin/
 │   └── marketplace.json    # Marketplace configuration
 ├── plugins/
