@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "readwise": {
+      "command": "npx",
+      "args": ["-y", "@readwise/readwise-mcp"],
+      "env": {
+        "READWISE_TOKEN": "${READWISE_TOKEN}"
+      }
+    }
+  }
+}

@@ -78,20 +78,26 @@ A data science plugin focused on reproducibility and output verification, with s
 
 ---
 
-### writing (v0.1.0)
+### writing (v0.4.0)
 
-**Writing workflow with Elements of Style and AI anti-pattern detection**
+**Writing workflow with style guides, brainstorming, and AI anti-pattern detection**
 
-A writing plugin providing style guidance and automatic detection of AI writing patterns.
+A writing plugin providing style guidance, topic discovery from Readwise highlights, and automatic detection of AI writing patterns.
 
 **Skills:**
 - `/writing` - General writing guidance using Strunk & White's Elements of Style
+- `/writing-econ` - Economics and finance writing using McCloskey's Economical Writing
+- `/writing-legal` - Academic legal writing using Volokh's Academic Legal Writing
+- `/writing-brainstorm` - Discover topics and gather sources from Readwise highlights
 - `/ai-anti-patterns` - Detect and revise AI writing indicators (12 pattern categories)
+
+**MCP Servers:**
+- `readwise` - Readwise MCP for highlight search and source gathering
 
 **Hooks:**
 - PostToolUse hook on Write/Edit that warns on AI anti-patterns
 
-**Tags:** `writing`, `editing`, `style`, `ai-detection`
+**Tags:** `writing`, `editing`, `style`, `ai-detection`, `readwise`
 
 ---
 

@@ -1,12 +1,15 @@
 # Writing Plugin
 
-Writing workflow with Elements of Style and AI anti-pattern detection hooks.
+Writing workflow with style guides and AI anti-pattern detection hooks.
 
 ## Skills
 
 | Skill | Description |
 |-------|-------------|
 | `/writing` | General writing guidance using Strunk & White's Elements of Style |
+| `/writing-econ` | Economics and finance writing using McCloskey's Economical Writing |
+| `/writing-legal` | Academic legal writing using Volokh's Academic Legal Writing |
+| `/writing-brainstorm` | Discover topics and gather sources from Readwise highlights |
 | `/ai-anti-patterns` | Detect and revise AI writing indicators (12 pattern categories) |
 
 ## Hooks
@@ -22,12 +25,23 @@ The hook automatically checks all Write/Edit operations on non-code files and wa
 ```
 writing/
 ├── .claude-plugin/
-│   └── plugin.json           # Plugin manifest
+│   ├── plugin.json           # Plugin manifest
+│   └── .mcp.json             # MCP server config (Readwise)
 ├── skills/
 │   ├── writing/
 │   │   ├── SKILL.md          # Core writing skill
 │   │   └── references/
 │   │       └── elements-of-style.md  # Strunk & White
+│   ├── writing-econ/
+│   │   ├── SKILL.md          # Economics writing skill
+│   │   └── references/
+│   │       └── economical-writing-full.md  # McCloskey extended
+│   ├── writing-legal/
+│   │   ├── SKILL.md          # Legal writing skill
+│   │   └── references/
+│   │       └── volokh-distilled.md  # Volokh extended
+│   ├── writing-brainstorm/
+│   │   └── SKILL.md          # Topic discovery and source gathering
 │   └── ai-anti-patterns/
 │       ├── SKILL.md          # AI pattern detection skill
 │       └── references/
@@ -42,12 +56,39 @@ writing/
 
 ## Usage
 
-### Writing Assistance
+### General Writing
 
 Invoke `/writing` when drafting or editing prose:
 - Articles, blog posts, general writing
 - Grammar, usage, and style guidance
 - Clarity, conciseness, active voice
+
+### Economics and Finance Writing
+
+Invoke `/writing-econ` for economics and finance:
+- Journal articles and working papers
+- Finance analysis and market commentary
+- Policy briefs and economic reports
+- Discipline-specific vocabulary and style
+
+### Academic Legal Writing
+
+Invoke `/writing-legal` for law review articles:
+- Law review articles and student notes
+- Seminar papers and legal scholarship
+- Structure: introduction, background, proof, conclusion
+- Evidence handling and citation practices
+- Argument construction and rhetoric
+
+### Topic Brainstorming
+
+Invoke `/writing-brainstorm` to discover topics or gather sources:
+- **Discovery mode**: Find writing topics from your reading highlights
+- **Gathering mode**: Pull references for a known topic
+- Leverages Readwise MCP to search your highlights
+- Domain-aware: suggests appropriate writing skill (econ/legal/general)
+
+**Requires:** `READWISE_TOKEN` environment variable (get from https://readwise.io/access_token)
 
 ### AI Pattern Detection
 
@@ -76,8 +117,3 @@ The PostToolUse hook automatically checks Write/Edit output and warns on detecti
 | `/pdf` | PDF extraction, creation, form filling |
 | `/pptx` | Presentation creation and editing |
 | `/xlsx` | Spreadsheet creation and analysis |
-
-## Phase 2 (Planned)
-
-- `/writing-legal` - Volokh's Academic Legal Writing
-- `/writing-econ` - McCloskey's Economical Writing

@@ -16,8 +16,8 @@ Invoke this skill for:
 - Improving sentence structure and word choice
 
 **For specialized domains:**
-- Legal writing: Use `/writing-legal` skill (Phase 2)
-- Economics/Finance: Use `/writing-econ` skill (Phase 2)
+- Legal writing (law review articles): Use `/writing-legal` skill (Volokh)
+- Economics/Finance: Use `/writing-econ` skill (McCloskey)
 
 ## Core Principles
 
@@ -137,9 +137,9 @@ After completing any writing task, invoke `/ai-anti-patterns` to check for AI wr
 ## Related Skills
 
 - `/ai-anti-patterns` - Detect and revise AI writing patterns
+- `/writing-legal` - Academic legal writing (Volokh)
+- `/writing-econ` - Economics and finance writing (McCloskey)
 - `/docx` - Word document creation, editing, tracked changes
 - `/pdf` - PDF extraction, creation, form filling
 - `/pptx` - Presentation creation and editing
 - `/xlsx` - Spreadsheet creation and analysis
-- `/writing-legal` - Legal writing with Volokh (Phase 2)
-- `/writing-econ` - Economics writing with McCloskey (Phase 2)

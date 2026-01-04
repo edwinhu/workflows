@@ -32,6 +32,7 @@ Invoke a skill **before responding** when the user's request involves:
 | LSEG/Refinitiv data | `lseg-data` |
 | Gemini batch processing | `gemini-batch` |
 | Writing/editing | `writing` |
+| Economics/finance writing | `writing-econ` |
 | AI pattern detection | `ai-anti-patterns` |
 | Word documents | `docx` |
 | Spreadsheets | `xlsx` |
