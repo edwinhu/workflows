@@ -49,6 +49,26 @@ def _(df, pl):
 | `marimo check notebook.py` | Check for errors (no execution) |
 | `marimo convert notebook.ipynb` | Convert from Jupyter |
 
+## Export Commands
+
+```bash
+# Export to ipynb (code only, no outputs)
+marimo export ipynb notebook.py -o __marimo__/notebook.ipynb
+
+# Export to ipynb WITH outputs (runs notebook first)
+marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
+
+# Export to HTML (runs notebook by default)
+marimo export html notebook.py -o __marimo__/notebook.html
+
+# Export to HTML with auto-refresh on changes (great for live preview)
+marimo export html notebook.py -o __marimo__/notebook.html --watch
+```
+
+**Key difference:** HTML export runs the notebook by default. ipynb export does NOT - use `--include-outputs` to run and capture outputs.
+
+**Tip:** Use `__marimo__/` folder for all exports (ipynb, html). The editor can auto-save there.
+
 ## Data and Visualization
 
 - Prefer polars over pandas for performance
@@ -94,3 +114,7 @@ Use `scripts/get_cell_map.py` to inspect cell structure without running.
 
 - **`scripts/get_cell_map.py`** - Extract cell metadata from notebook
 - **`scripts/check_notebook.sh`** - Quick validation wrapper
+
+### Related Skills
+
+- **`notebook-debug`** - Debugging executed ipynb files (tracebacks, Read vs jq inspection)

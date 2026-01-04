@@ -53,6 +53,35 @@ jupytext --set-formats ipynb,py:percent notebook.ipynb
 jupytext --sync notebook.ipynb
 ```
 
+### Execution (Recommended Pattern)
+
+**Always pipe to papermill for execution** - no intermediate files:
+
+```bash
+# Convert and execute in one pipeline
+jupytext --to notebook --output - script.py | papermill - output.ipynb
+
+# With parameters
+jupytext --to notebook --output - script.py | papermill - output.ipynb -p start_date "2024-01-01" -p n_samples 1000
+
+# With logging to stderr
+jupytext --to notebook --output - script.py | papermill - output.ipynb --log-output
+
+# Execute without saving (dry run, outputs to stdout)
+jupytext --to notebook --output - script.py | papermill - -
+```
+
+Key flags:
+- `--output -` tells jupytext to write to stdout
+- `papermill - output.ipynb` reads from stdin, writes to file
+- `papermill - -` reads from stdin, writes to stdout (for inspection)
+
+**Why this pattern:**
+1. No intermediate `.ipynb` files cluttering the workspace
+2. Single atomic operation - convert and execute together
+3. Papermill handles parameters, logging, and error reporting
+4. Works in CI/CD pipelines without temp file cleanup
+
 ## Multi-Kernel Data Sharing
 
 Share data between Python/R/Stata/SAS via files:
@@ -166,6 +195,10 @@ Utility scripts in `scripts/`:
 
 - **`scripts/init_project.sh`** - Initialize jupytext project with standard structure
 - **`scripts/sync_all.sh`** - Sync all paired notebooks in project
+
+### Related Skills
+
+- **`notebook-debug`** - Debugging executed ipynb files (tracebacks, Read vs jq inspection)
 
 ## Best Practices
 
