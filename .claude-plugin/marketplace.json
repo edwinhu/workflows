@@ -4,7 +4,7 @@
     "name": "Edwin Hu"
   },
   "metadata": {
-    "description": "Development and data science plugins for Claude Code",
+    "description": "Development, data science, and writing plugins for Claude Code",
     "version": "1.0.0"
   },
   "plugins": [
@@ -12,7 +12,7 @@
       "name": "dev",
       "source": "./plugins/dev",
       "description": "Full feature development workflow with TDD enforcement",
-      "version": "0.3.0",
+      "version": "0.5.0",
       "category": "development",
       "tags": ["development", "tdd", "testing", "code-review"]
     },
@@ -20,9 +20,25 @@
       "name": "ds",
       "source": "./plugins/ds",
       "description": "Data science workflow with output-first verification",
-      "version": "0.3.0",
+      "version": "0.5.0",
       "category": "data-science",
       "tags": ["data-science", "wrds", "lseg", "jupyter", "analysis"]
+    },
+    {
+      "name": "writing",
+      "source": "./plugins/writing",
+      "description": "Writing workflow with style guides, brainstorming, and AI anti-pattern detection",
+      "version": "0.4.0",
+      "category": "writing",
+      "tags": ["writing", "editing", "style", "ai-detection", "readwise"]
+    },
+    {
+      "name": "shared",
+      "source": "./plugins/shared",
+      "description": "Shared skills and utilities across plugins (docx, pdf, pptx, xlsx)",
+      "version": "0.1.0",
+      "category": "utilities",
+      "tags": ["office", "documents", "spreadsheets", "presentations"]
     }
   ]
 }
