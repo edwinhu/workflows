@@ -151,10 +151,12 @@ git submodule update --remote external/anthropic-skills
 
 ## Acknowledgments
 
-This project was heavily inspired by [anthropics/superpowers](https://github.com/anthropics/superpowers), particularly:
+This project was heavily inspired by [obra/superpowers](https://github.com/obra/superpowers), particularly:
 - The SessionStart hook pattern for injecting meta-skills
 - The "using-skills" approach that teaches HOW to use skills rather than listing WHAT skills exist
 - The philosophy that skills should be invoked on-demand, not dumped into every session
+
+Office format skills (docx, pdf, pptx, xlsx) are from [anthropics/skills](https://github.com/anthropics/skills).
 
 ## License
 
