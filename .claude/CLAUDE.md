@@ -1,14 +1,15 @@
 # Claude Plugins Development
 
-## Required Skill
+## Required Skills
 
-**Always use `/plugin-dev:create-plugin` when working on this project.**
+**Always use these skills when working on this project:**
 
-This skill provides guided end-to-end plugin creation workflow with component design, implementation, and validation.
+- `/plugin-dev:create-plugin` - For plugin creation workflow
+- `/plugin-dev:skill-development` - For creating or updating skills
+- `/hookify:hookify` - For creating or working with hooks
 
 ## Related Skills
 
-- `/plugin-dev:create-plugin` - Full plugin creation workflow
 - `plugin-dev:agent-creator` - Create autonomous agents for plugins
 - `plugin-dev:plugin-validator` - Validate plugin structure and files
 - `plugin-dev:skill-reviewer` - Review skill quality and best practices
