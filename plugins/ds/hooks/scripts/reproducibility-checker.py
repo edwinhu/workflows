@@ -38,12 +38,13 @@ def check_reproducibility_patterns(content: str) -> list[str]:
     ]
 
     # Random operation patterns (without seed)
+    # Use negative lookahead to exclude seed-setting calls
     random_patterns = [
-        r'np\.random\.\w+\s*\(',
-        r'random\.\w+\s*\(',
+        r'np\.random\.(?!seed)\w+\s*\(',
+        r'random\.(?!seed)\w+\s*\(',
         r'torch\.rand',
         r'torch\.randn',
-        r'tf\.random\.',
+        r'tf\.random\.(?!set_seed)\w+',
     ]
 
     # ML model patterns that should have random_state

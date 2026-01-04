@@ -10,7 +10,6 @@ Checks for patterns like:
 """
 
 import json
-import os
 import re
 import sys
 
@@ -51,8 +50,6 @@ def check_completion_claims(command: str) -> list[str]:
         r'len\s*\(',
         r'\.sample\(',
     ]
-
-    command_lower = command.lower()
 
     # Check for completion claims
     has_completion_claim = any(

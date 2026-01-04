@@ -13,7 +13,7 @@ from session import activate_dev_mode, get_session_id
 def main():
     try:
         hook_input = json.load(sys.stdin)
-    except:
+    except Exception:
         sys.exit(0)
 
     tool_name = hook_input.get('tool_name', '')

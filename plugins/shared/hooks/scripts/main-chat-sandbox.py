@@ -31,7 +31,7 @@ def is_from_agent(hook_input: dict) -> bool:
                 with open(agent_file, 'r') as f:
                     if tool_use_id in f.read():
                         return True
-            except:
+            except Exception:
                 pass
     return False
 
@@ -39,7 +39,7 @@ def is_from_agent(hook_input: dict) -> bool:
 def main():
     try:
         hook_input = json.load(sys.stdin)
-    except:
+    except Exception:
         sys.exit(0)
 
     # Only enforce sandbox if dev/ds mode is active for THIS session
@@ -58,13 +58,22 @@ def main():
     # Block Bash entirely from main chat (except safe read-only commands)
     if tool_name == 'Bash':
         command = tool_input.get('command', '')
+
+        # Block command chaining and shell injection characters
+        # These can bypass safe prefix checks (e.g., "ls; rm -rf /")
+        dangerous_patterns = [';', '&&', '||', '|', '`', '$(', '${', '\n', '<(', '>(']
+        has_dangerous_chars = any(p in command for p in dangerous_patterns)
+
         safe_prefixes = [
             'ls', 'cat', 'head', 'tail', 'grep', 'find', 'tree', 'pwd', 'echo',
             'git status', 'git log', 'git diff', 'git show', 'git branch',
             'git add', 'git commit', 'git push', 'git pull', 'git fetch',
             'git checkout', 'git stash', 'rg ', 'fd '
         ]
-        is_safe = any(command.strip().startswith(prefix) for prefix in safe_prefixes)
+        is_safe = (
+            not has_dangerous_chars and
+            any(command.strip().startswith(prefix) for prefix in safe_prefixes)
+        )
 
         if not is_safe:
             print(json.dumps({
@@ -87,11 +96,18 @@ To exit workflow mode: /dev-exit or /ds-exit"""
     if tool_name in ('Write', 'Edit'):
         file_path = tool_input.get('file_path', '')
         allowed_extensions = ('.md', '.txt')
-        allowed_paths = ('.claude/',)
+
+        # Resolve path to prevent traversal attacks like "/tmp/.claude/../../etc/passwd"
+        resolved_path = os.path.realpath(file_path)
+
+        # Check if resolved path is within a .claude directory
+        # Split path and check for .claude component followed by no parent traversal
+        path_parts = resolved_path.split(os.sep)
+        is_in_claude_dir = '.claude' in path_parts
 
         is_allowed = (
             file_path.endswith(allowed_extensions) or
-            any(p in file_path for p in allowed_paths)
+            is_in_claude_dir
         )
 
         if not is_allowed:

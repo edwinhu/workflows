@@ -47,12 +47,16 @@ def detect_grep_test_patterns(content: str) -> list:
 
         if re.search(r'if\s+grep', content) and is_source_file_grep(grep_cmd):
             if re.search(r'(PASS|FAIL|CHECK|SUCCESS)', content, re.IGNORECASE):
-                patterns.append(f"Grepping source file as test: {grep_cmd.strip()[:60]}...")
+                stripped = grep_cmd.strip()
+                truncated = stripped[:60] + "..." if len(stripped) > 60 else stripped
+                patterns.append(f"Grepping source file as test: {truncated}")
                 break
 
         if re.search(r'grep.*&&.*echo.*(PASS|FAIL|CHECK)', content, re.IGNORECASE):
             if is_source_file_grep(grep_cmd):
-                patterns.append(f"Grepping source file as test: {grep_cmd.strip()[:60]}...")
+                stripped = grep_cmd.strip()
+                truncated = stripped[:60] + "..." if len(stripped) > 60 else stripped
+                patterns.append(f"Grepping source file as test: {truncated}")
                 break
 
     if re.search(r'#!/bin/bash', content):
@@ -98,7 +102,7 @@ def detect_skip_as_pass(content: str) -> list:
 def main():
     try:
         hook_input = json.load(sys.stdin)
-    except:
+    except Exception:
         sys.exit(0)
 
     tool_name = hook_input.get('tool_name', '')

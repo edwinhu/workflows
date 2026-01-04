@@ -31,7 +31,7 @@ def validate_ralph_args(args: str) -> list:
 def main():
     try:
         hook_input = json.load(sys.stdin)
-    except:
+    except Exception:
         sys.exit(0)
 
     tool_name = hook_input.get('tool_name', '')

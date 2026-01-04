@@ -23,8 +23,8 @@ def load_env_file(env_file: Path):
                     value = value.strip().strip('"').strip("'")
                     if key and key not in os.environ:
                         os.environ[key] = value
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Warning: Failed to load {env_file}: {e}", file=sys.stderr)
 
 
 def load_dotenv_if_exists():
@@ -52,10 +52,11 @@ def load_central_secrets():
 
 
 def get_environment_context():
-    """Gather environment context for Claude."""
-    load_central_secrets()  # User-global keys first
-    load_dotenv_if_exists()  # Project-local keys override
+    """Gather environment context for Claude.
 
+    NOTE: Assumes load_central_secrets() and load_dotenv_if_exists()
+    have already been called to populate os.environ.
+    """
     context = {}
 
     # SSH/Remote detection
@@ -117,8 +118,9 @@ def load_using_skills_content() -> str:
     skill_file = get_plugin_root() / 'skills' / 'using-skills' / 'SKILL.md'
     try:
         return skill_file.read_text()
-    except Exception:
+    except Exception as e:
         # Fallback if file not found
+        print(f"Warning: Failed to load using-skills content: {e}", file=sys.stderr)
         return "Skills available. Use Skill(skill=\"name\") to invoke."
 
 
@@ -130,14 +132,13 @@ def persist_env_vars_for_bash():
 
     CLAUDE_ENV_FILE should be project-local (e.g., $CWD/.claude/env) for
     security isolation between projects.
+
+    NOTE: Assumes load_central_secrets() and load_dotenv_if_exists()
+    have already been called to populate os.environ.
     """
     claude_env_file = os.environ.get('CLAUDE_ENV_FILE')
     if not claude_env_file:
         return []
-
-    # Load secrets: central first, then project-local (can override)
-    load_central_secrets()
-    load_dotenv_if_exists()
 
     # List of variables to persist for bash commands
     vars_to_persist = [
@@ -165,7 +166,8 @@ def persist_env_vars_for_bash():
                     f.write(f"export {var}='{escaped_val}'\n")
                     persisted.append(var)
         return persisted
-    except Exception:
+    except Exception as e:
+        print(f"Warning: Failed to persist env vars to {claude_env_file}: {e}", file=sys.stderr)
         return []
 
 
@@ -214,7 +216,14 @@ def build_env_section(env_context: dict, persisted_vars: list) -> str:
 
 
 def main():
-    # Persist env vars for bash commands first
+    # Read and discard stdin for consistency with hook best practices
+    sys.stdin.read()
+
+    # Load environment variables once: central secrets first, project-local override
+    load_central_secrets()
+    load_dotenv_if_exists()
+
+    # Persist env vars for bash commands
     persisted_vars = persist_env_vars_for_bash()
 
     # Get environment context for Claude's awareness
