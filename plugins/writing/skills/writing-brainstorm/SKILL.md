@@ -92,11 +92,44 @@ When user wants to find topics ("what should I write about?"):
      - Relevant tags
      - Potential angle or thesis
 
-### Gathering Mode
+### Gathering Mode (Progressive Workflow)
 
-When user has a topic ("gather sources on X"):
+When user has a topic ("gather sources on X"), follow this **human-in-the-loop** workflow:
 
-1. **Decompose into themes**
+#### Phase 1: Clarify Intent
+
+**BEFORE any search**, use `AskUserQuestion` to understand:
+
+```
+AskUserQuestion(questions=[
+  {
+    "question": "What's your primary angle or thesis for this piece?",
+    "header": "Angle",
+    "options": [
+      {"label": "Critique existing framework", "description": "Argue current approach is flawed"},
+      {"label": "Propose reform", "description": "Offer specific policy changes"},
+      {"label": "Comparative analysis", "description": "Compare approaches across jurisdictions"},
+      {"label": "Empirical analysis", "description": "Present data-driven findings"}
+    ],
+    "multiSelect": false
+  },
+  {
+    "question": "Who is your target audience?",
+    "header": "Audience",
+    "options": [
+      {"label": "Law review", "description": "Academic legal audience"},
+      {"label": "Practitioners", "description": "Lawyers, regulators, compliance"},
+      {"label": "Policy makers", "description": "Legislators, agency staff"},
+      {"label": "General educated", "description": "Informed non-specialists"}
+    ],
+    "multiSelect": false
+  }
+])
+```
+
+#### Phase 2: Search Sources
+
+1. **Decompose into themes** based on clarified intent
    - Break the topic into 3-6 distinct search themes
    - Each theme becomes a parallel sub-agent search
 
@@ -110,9 +143,63 @@ When user has a topic ("gather sources on X"):
    - Identify the strongest quotes from each theme
    - Note gaps (themes with few/no highlights)
 
-4. **Build outline**
-   - Organize sources by subtopic
-   - Suggest structure based on source clustering
+#### Phase 3: Draft Outline → `OUTLINE.md`
+
+Save the outline to a file for iteration:
+
+```markdown
+# OUTLINE.md
+
+## Working Title
+[Title]
+
+## Thesis
+[One-sentence claim]
+
+## Target Audience
+[From Phase 1]
+
+## Structure
+### I. Introduction
+### II. [Section]
+### III. [Section]
+...
+
+## Key Sources
+[Deduplicated from Phase 2]
+
+## Open Questions
+[Gaps to address]
+```
+
+**Ask for feedback** on the outline before proceeding.
+
+#### Phase 4: Section Deep-Dive
+
+For each major section, use `AskUserQuestion` to refine:
+
+```
+AskUserQuestion(questions=[
+  {
+    "question": "For Section II (Background), what level of detail do you need?",
+    "header": "Depth",
+    "options": [
+      {"label": "Brief context", "description": "1-2 paragraphs, assume reader familiarity"},
+      {"label": "Full background", "description": "Comprehensive treatment for general reader"},
+      {"label": "Synthesis only", "description": "Synthesize precedents without detailed summaries"}
+    ],
+    "multiSelect": false
+  }
+])
+```
+
+Create `SECTION-II-OUTLINE.md` with:
+- Section thesis/purpose
+- Key arguments in order
+- Supporting sources mapped to arguments
+- Anticipated counterarguments
+
+Repeat for each section, getting human feedback before moving to prose.
 
 ## Output Format
 
@@ -168,7 +255,25 @@ Primary tools for brainstorming:
 
 **Why sub-agents for search?** A single search can return 50-100 highlights (~5000+ tokens). Multiple searches compound this. Sub-agents filter to essentials before returning to main context.
 
-## Workflow Example
+## File Output Convention
+
+Save brainstorming artifacts to the project's `docs/` or `scratch/` directory:
+
+```
+project/
+├── docs/
+│   └── writing/
+│       ├── OUTLINE.md              # Main article outline
+│       ├── SECTION-I-OUTLINE.md    # Introduction details
+│       ├── SECTION-II-OUTLINE.md   # Background details
+│       └── ...
+└── scratch/
+    └── brainstorm-notes.md         # Working notes (gitignored)
+```
+
+## Workflow Examples
+
+### Discovery Mode Example
 
 **User:** "I want to write something but don't know what"
 
@@ -178,6 +283,22 @@ Primary tools for brainstorming:
 3. Analyze → tension between "consumer welfare" and "market structure" keeps appearing
 4. Present → "Potential topic: The consumer welfare standard debate. You have 12 highlights across 4 sources discussing this tension. Angle: Why market structure matters beyond prices."
 5. Domain detection → Economics sources detected → "Use `/writing-econ` for drafting"
+
+### Gathering Mode Example (Progressive)
+
+**User:** "Let's brainstorm a law review article about retail access to private equity"
+
+**Process:**
+1. **Clarify** → AskUserQuestion: angle (critique/reform/comparative), audience (law review/practitioners)
+2. **User responds** → "Critique existing framework, law review audience"
+3. **Decompose** → 5 themes: PE retail access, accredited investor, 401(k) access, fund structures, investor protection
+4. **Search** → Launch 5 parallel Haiku sub-agents
+5. **Synthesize** → Dedupe sources, extract best quotes, note gaps
+6. **Save** → Write `docs/writing/OUTLINE.md`
+7. **Feedback** → "Here's the outline. Any sections to add/remove/reorder?"
+8. **User responds** → "Add comparative section on EU ELTIF"
+9. **Deep-dive** → AskUserQuestion per section, create `SECTION-II-OUTLINE.md`
+10. **Handoff** → "Outline complete. Use `/writing-legal` to draft."
 
 ## Integration
 
