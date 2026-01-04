@@ -1,6 +1,6 @@
-# Claude Code Plugins Marketplace
+# Claude Code Workflows
 
-A curated collection of development and data science plugins for Claude Code.
+A curated collection of development, data science, and writing plugins for Claude Code.
 
 ## Installation
 
@@ -15,11 +15,12 @@ Then install individual plugins:
 ```bash
 /plugin install dev
 /plugin install ds
+/plugin install writing
 ```
 
 ## Available Plugins
 
-### dev (v0.3.0)
+### dev (v0.5.0)
 
 **Full feature development workflow with TDD enforcement**
 
@@ -37,14 +38,14 @@ A comprehensive development plugin that enforces test-driven development practic
 
 **Hooks:**
 - Main chat sandbox enforcement
-- Test detector for TDD validation
+- Grep test detector (prevents grepping source as tests)
 - Ralph Wiggum validation
 
 **Tags:** `development`, `tdd`, `testing`, `code-review`
 
 ---
 
-### ds (v0.3.0)
+### ds (v0.5.0)
 
 **Data science workflow with output-first verification**
 
@@ -75,57 +76,82 @@ A data science plugin focused on reproducibility and output verification, with s
 
 **Tags:** `data-science`, `wrds`, `lseg`, `jupyter`, `analysis`
 
-## Usage Examples
+---
 
-### Development Workflow
+### writing (v0.1.0)
 
-```
-# Start a new feature with full TDD workflow
-/dev add user authentication
+**Writing workflow with Elements of Style and AI anti-pattern detection**
 
-# Just brainstorm a design
-/dev-brainstorm how should we structure the auth module?
+A writing plugin providing style guidance and automatic detection of AI writing patterns.
 
-# Debug an issue systematically
-/dev-debug tests are failing in the auth module
-```
+**Skills:**
+- `/writing` - General writing guidance using Strunk & White's Elements of Style
+- `/ai-anti-patterns` - Detect and revise AI writing indicators (12 pattern categories)
 
-### Data Science Workflow
+**Hooks:**
+- PostToolUse hook on Write/Edit that warns on AI anti-patterns
 
-```
-# Run a full analysis workflow
-/ds analyze quarterly earnings surprises
+**Tags:** `writing`, `editing`, `style`, `ai-detection`
 
-# Access WRDS data
-/wrds query Compustat for tech sector fundamentals
+---
 
-# Work with reactive notebooks
-/marimo create analysis notebook
-```
+### shared
+
+**Shared skills and utilities across plugins**
+
+Contains common skills used by multiple plugins, including office document format skills.
+
+**Skills:**
+- `/docx` - Word document creation, editing, tracked changes
+- `/pdf` - PDF extraction, creation, form filling
+- `/pptx` - Presentation creation and editing
+- `/xlsx` - Spreadsheet creation and analysis
+- `/using-skills` - Meta-skill teaching how to use skills
+
+**Note:** Office format skills are sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule.
 
 ## Repository Structure
 
 ```
 workflows/
-├── .claude-plugin/
-│   └── marketplace.json    # Marketplace configuration
+├── external/
+│   └── anthropic-skills/       # git submodule → github.com/anthropics/skills
 ├── plugins/
-│   ├── dev/                # Development plugin
+│   ├── dev/                    # Development plugin
 │   │   ├── .claude-plugin/
 │   │   ├── commands/
 │   │   ├── hooks/
 │   │   └── skills/
-│   └── ds/                 # Data science plugin
-│       ├── .claude-plugin/
-│       ├── commands/
+│   ├── ds/                     # Data science plugin
+│   │   ├── .claude-plugin/
+│   │   ├── commands/
+│   │   ├── hooks/
+│   │   └── skills/
+│   ├── writing/                # Writing plugin
+│   │   ├── .claude-plugin/
+│   │   ├── hooks/
+│   │   └── skills/
+│   └── shared/                 # Shared skills
 │       ├── hooks/
 │       └── skills/
+│           ├── docx → external/anthropic-skills/skills/docx
+│           ├── pdf  → external/anthropic-skills/skills/pdf
+│           ├── pptx → external/anthropic-skills/skills/pptx
+│           └── xlsx → external/anthropic-skills/skills/xlsx
 └── README.md
+```
+
+## Updating External Skills
+
+The office format skills come from Anthropic's official skills repo. To update:
+
+```bash
+git submodule update --remote external/anthropic-skills
 ```
 
 ## Acknowledgments
 
-This project was heavily inspired by [obra/superpowers](https://github.com/obra/superpowers), particularly:
+This project was heavily inspired by [anthropics/superpowers](https://github.com/anthropics/superpowers), particularly:
 - The SessionStart hook pattern for injecting meta-skills
 - The "using-skills" approach that teaches HOW to use skills rather than listing WHAT skills exist
 - The philosophy that skills should be invoked on-demand, not dumped into every session
