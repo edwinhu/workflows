@@ -45,9 +45,9 @@ These are skills, not plugins - already available via `/ds`:
 | `/jupytext` | Jupyter notebooks as text files |
 | `/marimo` | Marimo reactive Python notebooks |
 
-## File Format Skills (Anthropic Official)
+## File Format Skills (Bundled)
 
-For office documents and PDFs, use official Anthropic skills from https://github.com/anthropics/skills:
+Office document and PDF skills from Anthropic's official skills repo (bundled via submodule):
 
 | Skill | Use For |
 |-------|---------|
@@ -56,13 +56,7 @@ For office documents and PDFs, use official Anthropic skills from https://github
 | `/pptx` | Presentation creation and editing |
 | `/docx` | Word docs, tracked changes, reports |
 
-**Install** (add to `~/.claude/settings.json` `skills` array):
-```
-https://github.com/anthropics/skills/tree/main/skills/xlsx
-https://github.com/anthropics/skills/tree/main/skills/pdf
-https://github.com/anthropics/skills/tree/main/skills/pptx
-https://github.com/anthropics/skills/tree/main/skills/docx
-```
+These skills are available via the `shared` plugin - no separate installation needed.
 
 ## When to Enable
 

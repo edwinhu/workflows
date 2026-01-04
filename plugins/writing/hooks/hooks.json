@@ -1,0 +1,17 @@
+{
+  "description": "AI writing anti-pattern detection hooks",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/ai-antipattern-check.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

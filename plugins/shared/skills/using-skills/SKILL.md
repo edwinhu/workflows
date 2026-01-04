@@ -31,6 +31,12 @@ Invoke a skill **before responding** when the user's request involves:
 | WRDS data access | `wrds` |
 | LSEG/Refinitiv data | `lseg-data` |
 | Gemini batch processing | `gemini-batch` |
+| Writing/editing | `writing` |
+| AI pattern detection | `ai-anti-patterns` |
+| Word documents | `docx` |
+| Spreadsheets | `xlsx` |
+| PDFs | `pdf` |
+| Presentations | `pptx` |
 
 ## Red Flags
 
