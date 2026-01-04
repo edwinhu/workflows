@@ -76,15 +76,18 @@ marimo export html notebook.py -o __marimo__/notebook.html --watch
 - SQL cells: `mo.sql(df, "SELECT * FROM df")`
 - Display markdown: `mo.md("# Heading")`
 
-## Debugging Quick Reference
+## Debugging Workflow
 
-Run `marimo check notebook.py` first to catch:
-- Variable redefinition errors
-- Circular dependencies
-- Missing returns
-- Syntax errors
+**1. Pre-execution validation:**
+```bash
+scripts/check_notebook.sh notebook.py
+```
+Runs syntax check + `marimo check` + cell structure overview in one command.
 
-Use `scripts/get_cell_map.py` to inspect cell structure without running.
+**2. Runtime errors:** Export with outputs, then use `notebook-debug` skill:
+```bash
+marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
+```
 
 ## Common Issues
 
@@ -112,8 +115,8 @@ Use `scripts/get_cell_map.py` to inspect cell structure without running.
 
 ### Scripts
 
-- **`scripts/get_cell_map.py`** - Extract cell metadata from notebook
-- **`scripts/check_notebook.sh`** - Quick validation wrapper
+- **`scripts/check_notebook.sh`** - Primary validation: syntax + marimo check + cell structure
+- **`scripts/get_cell_map.py`** - Extract cell metadata (called by check_notebook.sh)
 
 ### Related Skills
 
