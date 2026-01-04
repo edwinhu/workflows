@@ -4,6 +4,8 @@ Ralph Validate: PreToolUse hook for workflow enforcement.
 - Blocks ralph-loop calls missing --completion-promise
 - Blocks dev-* skill invocations unless gate marker exists (main chat only)
 - Blocks nested ralph-loop invocations
+
+Session-aware: Uses session-specific state files.
 """
 
 import json
@@ -11,7 +13,10 @@ import sys
 import os
 import re
 
-SKILL_GATE_FILE = '.claude/skill-gate.lock'
+# Add shared scripts to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'shared'))
+from session import is_skill_gate_open, close_skill_gate, is_ralph_loop_active
+
 
 def validate_ralph_args(args: str) -> list:
     """Check ralph-loop arguments for required flags."""
@@ -22,21 +27,6 @@ def validate_ralph_args(args: str) -> list:
         errors.append('Missing --max-iterations (recommended: 15-30)')
     return errors
 
-def is_ralph_loop_active() -> bool:
-    """Check if a ralph loop is currently active."""
-    state_file = '.claude/ralph-loop.local.md'
-    if not os.path.exists(state_file):
-        return False
-    try:
-        with open(state_file, 'r') as f:
-            content = f.read()
-            return 'active: true' in content
-    except:
-        return False
-
-def is_skill_gate_open() -> bool:
-    """Check if the skill gate marker exists (main chat context)."""
-    return os.path.exists(SKILL_GATE_FILE)
 
 def main():
     try:
@@ -64,19 +54,14 @@ def main():
 Orchestration skills (dev-*) can only be invoked from main chat.
 Task agents must NOT invoke these skills.
 
-If you ARE main chat and see this error:
-1. Run: mkdir -p .claude && touch .claude/skill-gate.lock
-2. Then invoke the skill
+If you ARE main chat and see this error, open the skill gate first.
 
 Task agents should do work directly, not invoke orchestration skills."""
                     }
                 }))
                 sys.exit(0)
-            # Gate is open - delete it immediately so sub-agents can't use it
-            try:
-                os.remove(SKILL_GATE_FILE)
-            except:
-                pass
+            # Gate is open - close it immediately so sub-agents can't use it
+            close_skill_gate()
 
         # Block nested ralph-loop invocations
         if 'ralph-loop' in skill:
@@ -144,13 +129,14 @@ Errors:
 {chr(10).join('• ' + e for e in errors)}
 
 REQUIRED FORMAT:
-/ralph-loop "task description" --max-iterations 30 --completion-promise "DONE""""
+/ralph-loop "task description" --max-iterations 30 --completion-promise 'DONE'"""
                     }
                 }))
                 sys.exit(0)
 
     # No issues found
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main()

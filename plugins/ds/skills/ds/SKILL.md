@@ -64,11 +64,19 @@ flowchart TD
 
 ## How to Invoke Sub-Skills
 
+**Note:** Sandbox activates automatically when you invoke `/ds`. To exit: `/ds-exit`
+
 **CRITICAL:** You MUST open the skill gate before invoking sub-skills.
 
 ```bash
 # Step 1: Open the gate (REQUIRED before any ds-* skill)
-mkdir -p .claude && touch .claude/skill-gate.lock
+python3 -c "
+import os, hashlib
+tty = os.environ.get('TTY', '')
+cwd = os.getcwd()
+sid = hashlib.md5(f'{tty}:{cwd}'.encode()).hexdigest()[:12]
+open(f'/tmp/.claude-skill-gate-{sid}', 'w').close()
+"
 
 # Step 2: Invoke the skill
 Skill(skill="ds-implement")
@@ -105,10 +113,11 @@ project/
 ├── .claude/                       # gitignored
 │   ├── SPEC.md                    # analysis objectives (from brainstorm)
 │   ├── PLAN.md                    # data profile + task breakdown (from plan)
-│   ├── LEARNINGS.md               # chronological attempt log
-│   └── skill-gate.lock            # transient gate marker
+│   └── LEARNINGS.md               # chronological attempt log
 └── ...
 ```
+
+Session markers are stored in `/tmp/` (session-specific, auto-cleaned on exit).
 
 ## Related Skills
 
