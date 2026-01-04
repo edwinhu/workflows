@@ -100,70 +100,26 @@ def get_environment_context():
     return context
 
 
-def get_skills_summary():
-    """Return a summary of available skills."""
-    return """# Available Workflow Skills
+def get_plugin_root() -> Path:
+    """Get the shared plugin root directory."""
+    # Script is at: plugins/shared/hooks/scripts/session-start.py
+    # Plugin root is: plugins/shared/
+    script_dir = Path(__file__).resolve().parent
+    return script_dir.parent.parent
 
-You have access to structured development and data science workflows.
 
-## Development Workflows (/dev plugin)
-- **dev** - Full development workflow (brainstorm → plan → implement → review → verify)
-- **dev-brainstorm** - Socratic design exploration before implementation
-- **dev-plan** - Codebase exploration and task breakdown
-- **dev-implement** - TDD implementation with RED-GREEN-REFACTOR
-- **dev-debug** - Systematic debugging with root cause investigation
-- **dev-review** - Code review combining spec compliance and quality
-- **dev-verify** - Verification gate requiring fresh runtime evidence
-- **/dev:exit** - Exit dev mode and disable sandbox
+def load_using_skills_content() -> str:
+    """Load the using-skills meta-skill content.
 
-## Data Science Workflows (/ds plugin)
-- **ds** - Full data science workflow with output-first verification
-- **ds-brainstorm** - Clarify analysis objectives through questioning
-- **ds-plan** - Data profiling and analysis task breakdown
-- **ds-implement** - Output-first implementation with verification
-- **ds-review** - Methodology and statistical validity review
-- **ds-verify** - Reproducibility verification before completion
-- **/ds:exit** - Exit DS mode and disable sandbox
-
-## Specialized Data Skills
-- **marimo** - Marimo reactive Python notebooks
-- **jupytext** - Jupyter notebooks as text files
-- **gemini-batch** - Google Gemini Batch API for document processing
-- **wrds** - WRDS PostgreSQL access (Compustat, CRSP, etc.)
-- **lseg-data** - LSEG/Refinitiv market data
-
-## How to Use
-- Invoke skills with: Skill(skill="skill-name")
-- Or use commands: /dev:start, /ds:start, /ds:marimo, etc.
-- When invoking dev/ds workflow, sandbox mode activates (blocks main chat writes)
-- Use /dev:exit or /ds:exit to deactivate sandbox
-
-## When to Use Skills
-- **Implementation tasks** → dev workflow
-- **Bug fixes** → dev-debug
-- **Data analysis** → ds workflow
-- **Marimo notebooks** → marimo skill
-- **WRDS data** → wrds skill
-
-If the user's request matches a skill domain, invoke that skill.
-
-## MANDATORY: Skill Check Before Responding
-
-**STOP. Before answering ANY user question, ask yourself: "Does a skill apply?"**
-
-If the user mentions marimo, jupyter, WRDS, LSEG, debugging, implementation, or data analysis:
-1. IMMEDIATELY invoke the relevant skill using Skill(skill="skill-name")
-2. THEN answer based on the skill's knowledge
-
-This is NOT optional. Do NOT answer from training data when a skill exists.
-
-Examples of WRONG behavior:
-- User asks about marimo → You answer from memory ❌
-- User asks about WRDS → You explain without invoking skill ❌
-
-Examples of CORRECT behavior:
-- User asks about marimo → Skill(skill="marimo") FIRST, then answer ✓
-- User asks about debugging → Skill(skill="dev-debug") FIRST, then investigate ✓"""
+    This teaches Claude HOW to use skills, not WHAT skills exist.
+    The skill catalog is already in the Skill tool description.
+    """
+    skill_file = get_plugin_root() / 'skills' / 'using-skills' / 'SKILL.md'
+    try:
+        return skill_file.read_text()
+    except Exception:
+        # Fallback if file not found
+        return "Skills available. Use Skill(skill=\"name\") to invoke."
 
 
 def persist_env_vars_for_bash():
@@ -255,15 +211,16 @@ def main():
     # Get environment context for Claude's awareness
     env_context = get_environment_context()
 
-    # Build sections: environment FIRST, then skills
+    # Build sections: environment context + meta-skill about using skills
     env_section = build_env_section(env_context, persisted_vars)
-    skills_summary = get_skills_summary()
+    using_skills = load_using_skills_content()
 
     # Output the context injection
+    # Pattern inspired by obra/superpowers - inject HOW to use skills, not the full catalog
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "context": env_section + "\n" + skills_summary
+            "context": env_section + "\n" + using_skills
         }
     }))
 
