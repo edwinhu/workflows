@@ -82,6 +82,10 @@ Key flags:
 3. Papermill handles parameters, logging, and error reporting
 4. Works in CI/CD pipelines without temp file cleanup
 
+### Debugging Runtime Errors
+
+After execution, use `notebook-debug` skill to inspect tracebacks in the output ipynb.
+
 ## Multi-Kernel Data Sharing
 
 Share data between Python/R/Stata/SAS via files:
@@ -195,10 +199,6 @@ Utility scripts in `scripts/`:
 
 - **`scripts/init_project.sh`** - Initialize jupytext project with standard structure
 - **`scripts/sync_all.sh`** - Sync all paired notebooks in project
-
-### Related Skills
-
-- **`notebook-debug`** - Debugging executed ipynb files (tracebacks, Read vs jq inspection)
 
 ## Best Practices
 
