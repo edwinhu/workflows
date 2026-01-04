@@ -1,5 +1,16 @@
 # SEC EDGAR Access via WRDS
 
+## Contents
+
+- [Key Tables](#key-tables) - `edgar.filings`, `edgar.company_info`
+- [Common Form Types](#common-form-types) - 10-K, 10-Q, 8-K, DEF 14A, Form 4
+- [Query Patterns](#query-patterns) - Find filings, filter by type/date
+- [Accessing Filing Documents](#accessing-filing-documents) - URL construction, Form 4 URLs
+- [CRITICAL: DCN vs Accession Number](#critical-dcn-vs-accession-number) - WRDS gotcha
+- [Linking CIK to Other Identifiers](#linking-cik-to-other-identifiers) - CIK↔GVKEY
+- [Working with Filing Content](#working-with-filing-content) - Download, parse sections
+- [Rate Limiting](#rate-limiting-for-sec-access) - SEC API limits
+
 ## Overview
 
 WRDS provides SEC EDGAR filing data through the `edgar` schema. This includes filing metadata, company information, and filing content access.
@@ -216,6 +227,85 @@ def get_filing_document_url(cik: str, accession_number: str,
     """Construct URL for specific document within filing."""
     base_url = get_filing_url(cik, accession_number)
     return f"{base_url}{document_name}"
+```
+
+### Form 4 URLs
+
+Form 4 filings have a special XML viewer format:
+
+```python
+def get_form4_viewer_url(cik: str, accession_number: str) -> str:
+    """Construct SEC Form 4 viewer URL.
+
+    The xslF345X03 stylesheet renders Form 4 in a readable format.
+    """
+    cik_clean = str(int(cik))
+    accession_clean = accession_number.replace('-', '')
+
+    return (f"https://www.sec.gov/Archives/edgar/data/"
+            f"{cik_clean}/{accession_clean}/xslF345X03/primarydocument.xml")
+
+def get_form4_index_url(cik: str, accession_number: str) -> str:
+    """Construct Form 4 filing index URL."""
+    cik_clean = str(int(cik))
+    accession_clean = accession_number.replace('-', '')
+
+    return (f"https://www.sec.gov/Archives/edgar/data/"
+            f"{cik_clean}/{accession_clean}/{accession_number}-index.htm")
+```
+
+### CRITICAL: DCN vs Accession Number
+
+**WRDS `tr_insiders` uses DCN (Document Control Number), NOT SEC accession numbers.**
+
+The DCN in `tr_insiders.header` is an internal Thomson Reuters identifier that
+does NOT work for constructing SEC EDGAR URLs. To get the actual SEC accession
+number, query the SEC filings tables:
+
+```python
+def get_accession_from_dcn(pool, cik: str, filing_date: str) -> str | None:
+    """Get SEC accession number for a Form 4 filing.
+
+    WRDS tr_insiders uses DCN, not accession numbers. Use this to find
+    the actual SEC accession number for URL construction.
+    """
+    cik_normalized = str(cik).zfill(10)
+
+    with pool.cursor() as cursor:
+        cursor.execute("""
+            SELECT accession_number
+            FROM edgar.filings
+            WHERE cik = %s
+              AND form_type = '4'
+              AND file_date = %s
+            ORDER BY accepted DESC
+            LIMIT 1
+        """, (cik_normalized, filing_date))
+
+        row = cursor.fetchone()
+        return row[0] if row else None
+```
+
+Alternative: Query SEC EDGAR API directly:
+
+```python
+import requests
+
+def get_filings_from_sec_api(cik: str) -> dict:
+    """Get all filings for a company from SEC EDGAR API.
+
+    Returns JSON with filings.recent.accessionNumber for all filings.
+    """
+    cik_padded = str(cik).zfill(10)
+    url = f"https://data.sec.gov/submissions/CIK{cik_padded}.json"
+
+    response = requests.get(
+        url,
+        headers={'User-Agent': 'Academic Research your@email.edu'},
+        timeout=30
+    )
+    response.raise_for_status()
+    return response.json()
 ```
 
 ### Download Filing via WRDS

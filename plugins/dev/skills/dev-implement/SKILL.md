@@ -3,6 +3,20 @@ name: dev-implement
 description: This skill should be used when the user asks to "implement with TDD", "write tests first", "do test-driven development", or as Phase 3 of the /dev workflow. Enforces RED-GREEN-REFACTOR cycle with mandatory test-first approach.
 ---
 
+## Contents
+
+- [Start Ralph Loop in Main Chat](#start-ralph-loop-in-main-chat)
+- [Reference: TDD Protocol](#reference-tdd-protocol-for-the-task-agent)
+- [STOP - Read This First](#stop---read-this-first)
+- [The Iron Law of TDD](#the-iron-law-of-tdd)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [The TDD Cycle](#the-tdd-cycle-follow-this-exactly)
+- [CRITICAL: Automated Testing First](#critical-automated-testing-first)
+- [Test Location: Project Directory, NOT /tmp/](#test-location-project-directory-not-tmp)
+- [Testing Anti-Patterns - NEVER DO THESE](#testing-anti-patterns---never-do-these)
+- [Logging](#logging)
+- [If Max Iterations Reached](#if-max-iterations-reached)
+
 # Implementation
 
 ## Start Ralph Loop in Main Chat
@@ -40,19 +54,7 @@ TDD Protocol:
 7. Run full test suite
 8. Refactor while staying GREEN
 
-LOGGING-FIRST RULE:
-You cannot test what you cannot observe. Before writing ANY test:
-1. Add debug logging to the code path (print, console.log, logger.debug, etc.)
-2. Rebuild/restart
-3. Write test that runs the program and checks the LOG/output for that debug message
-
-⚠️ GREP TESTS ARE BANNED ⚠️
-NEVER use 'grep -q' or 'if grep' to check SOURCE FILES as a test.
-- ❌ WRONG: grep -q 'function_name' src/module.py && echo PASS
-- ✅ RIGHT: ./program --action > /tmp/test.log 2>&1; grep -q 'success' /tmp/test.log
-
-⚠️ SKIP ≠ PASS ⚠️
-If a test is skipped, it has NOT passed. Run it and see actual PASS output.
+See [Testing Rules](../dev/_shared/testing-rules.md) for LOGGING-FIRST, GREP TESTS BANNED, and SKIP != PASS rules.
 
 Report back: what was done, test results, any blockers.
 """)
@@ -87,20 +89,7 @@ If not complete, iterate: spawn another Task agent to address gaps.
 2. Run it and **paste the failure output** into LEARNINGS.md
 3. Only then implement
 
-**Your LEARNINGS.md entry MUST look like this:**
-```markdown
-## Attempt N: [feature]
-
-**RED:** Wrote test. Ran it:
-$ ./test_foo.sh
-FAIL: expected X, got undefined
-
-**Implementation:** [what you did]
-
-**GREEN:** Ran test again:
-$ ./test_foo.sh
-PASS: all checks passed
-```
+See [LEARNINGS.md Template](../dev/_shared/learnings-template.md) for the required entry format with explicit RED/GREEN phases.
 
 **If your entry doesn't have actual command output, you skipped TDD.**
 
@@ -188,27 +177,7 @@ find . -name "*test*.py" -o -name "*_test.go" | head -5
 
 ## Logging
 
-Append each attempt to `.claude/LEARNINGS.md` with explicit RED/GREEN:
-
-```markdown
-## Attempt N: [feature/task] - [STATUS]
-
-**RED:** Wrote test `test_foo()`. Ran it. Output:
-```
-FAIL: test_foo - expected X but got undefined
-```
-
-**Implementation:** [describe what you implemented]
-
-**GREEN:** Ran test again. Output:
-```
-PASS: test_foo
-```
-
-**Learned:** ...
-```
-
-**The RED section is mandatory.** If you can't show failure output, you skipped RED.
+Append each attempt to `.claude/LEARNINGS.md`. See [LEARNINGS.md Template](../dev/_shared/learnings-template.md) for the required format with explicit RED/GREEN phases.
 
 ## If Max Iterations Reached
 

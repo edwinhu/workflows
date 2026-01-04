@@ -1,5 +1,16 @@
 # LSEG Screener
 
+## Contents
+
+- [Overview](#overview)
+- [Basic Usage](#basic-usage)
+- [Screener Expression Syntax](#screener-expression-syntax)
+- [Building Screener Expressions](#building-screener-expressions)
+- [Common Screener Patterns](#common-screener-patterns)
+- [Using Screener Results](#using-screener-results)
+- [Refinitiv Workspace Integration](#refinitiv-workspace-integration)
+- [Rate Limits](#rate-limits)
+
 ## Overview
 
 The `Screener` object allows dynamic stock screening with complex criteria. Use it to filter instruments by market cap, exchange, sector, returns, and other metrics.

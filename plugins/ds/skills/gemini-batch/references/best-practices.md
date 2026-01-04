@@ -1,5 +1,13 @@
 # Best Practices
 
+## Contents
+
+- [1. Implement Idempotent Request IDs](#1-implement-idempotent-request-ids)
+- [2. Track Processing State](#2-track-processing-state)
+- [3. Validate Before Submission](#3-validate-before-submission)
+- [4. Handle Partial Failures Gracefully](#4-handle-partial-failures-gracefully)
+- [5. Use Appropriate Batch Sizes](#5-use-appropriate-batch-sizes)
+
 Production-tested patterns for reliable Gemini Batch API usage.
 
 ---

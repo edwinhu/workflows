@@ -3,6 +3,18 @@ name: dev-debug
 description: This skill should be used when the user asks to "debug this", "fix this bug", "investigate this error", "find the root cause", or reports a bug that needs systematic investigation. Uses 4-phase methodology for root cause analysis.
 ---
 
+## Contents
+
+- [Start Ralph Loop in Main Chat](#start-ralph-loop-in-main-chat)
+- [Reference: Debug Protocol](#reference-debug-protocol-for-the-task-agent)
+- [The Iron Law of Debugging](#the-iron-law-of-debugging)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [CRITICAL: Automated Verification First](#critical-automated-verification-first)
+- [Regression Tests: Project Directory, NOT /tmp/](#regression-tests-project-directory-not-tmp)
+- [The Four Phases](#the-four-phases-per-iteration)
+- [Logging](#logging)
+- [If Max Iterations Reached](#if-max-iterations-reached)
+
 # Systematic Debugging
 
 ## Start Ralph Loop in Main Chat
@@ -41,19 +53,7 @@ Debugging Protocol:
 9. Run full test suite
 10. Document root cause in LEARNINGS.md
 
-LOGGING-FIRST RULE:
-You cannot debug what you cannot observe. Before writing ANY test:
-1. Add debug logging to suspected code (print, console.log, logger.debug, etc.)
-2. Rebuild/restart
-3. Write test that runs the program and checks the LOG/output
-
-⚠️ GREP TESTS ARE BANNED ⚠️
-NEVER use 'grep -q' or 'if grep' to check SOURCE FILES as a test.
-- ❌ WRONG: grep -q 'fixed_function' src/module.py && echo PASS
-- ✅ RIGHT: ./program --action 2>&1 | tee /tmp/test.log; ! grep -q 'ERROR' /tmp/test.log
-
-⚠️ SKIP ≠ PASS ⚠️
-If a test is skipped, it has NOT passed. Run it and see actual PASS output.
+See [Testing Rules](../dev/_shared/testing-rules.md) for LOGGING-FIRST, GREP TESTS BANNED, and SKIP != PASS rules.
 
 Report back: hypothesis tested, results, root cause if found, any blockers.
 """)
@@ -140,30 +140,7 @@ The bug fix isn't complete until there's a regression test that:
 
 ## Logging
 
-Append each hypothesis to `.claude/LEARNINGS.md` with explicit RED/GREEN:
-
-```markdown
-## Hypothesis N: [theory] - [CONFIRMED/RULED OUT]
-
-**Evidence:** [what pointed to this hypothesis]
-
-**RED:** Wrote test `test_bug_repro()`. Ran it. Output:
-```
-FAIL: test_bug_repro - got wrong value / crashed / etc
-```
-This confirms the bug exists and test catches it.
-
-**Fix:** [describe the fix applied]
-
-**GREEN:** Ran test again. Output:
-```
-PASS: test_bug_repro
-```
-
-**Learned:** ...
-```
-
-**The RED section is mandatory.** You must see the bug fail in a test before fixing it.
+Append each hypothesis to `.claude/LEARNINGS.md`. See [LEARNINGS.md Template](../dev/_shared/learnings-template.md) for the required format with explicit RED/GREEN phases.
 
 ## If Max Iterations Reached
 

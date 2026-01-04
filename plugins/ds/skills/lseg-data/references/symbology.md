@@ -2,6 +2,16 @@
 
 Identifier conversion and mapping between RIC, ISIN, CUSIP, SEDOL, and other symbol types.
 
+## Contents
+
+- [Overview](#overview)
+- [Key Fields](#key-fields)
+- [Parameters](#parameters)
+- [RIC Exchange Suffixes](#ric-exchange-suffixes)
+- [Code Examples](#code-examples)
+- [Notes and Gotchas](#notes-and-gotchas)
+- [See Also](#see-also)
+
 ## Overview
 
 Convert between different financial identifier systems. Essential for linking datasets, building cross-platform analytics, and mapping between LSEG and other data sources.

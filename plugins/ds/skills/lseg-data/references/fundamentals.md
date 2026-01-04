@@ -2,6 +2,15 @@
 
 Company financial data including income statement, balance sheet, cash flow, and financial ratios.
 
+## Contents
+
+- [Overview](#overview)
+- [Key Fields](#key-fields)
+- [Parameters](#parameters)
+- [Code Examples](#code-examples)
+- [Notes and Gotchas](#notes-and-gotchas)
+- [See Also](#see-also)
+
 ## Overview
 
 Access fundamental financial data for public companies worldwide. Data sourced from company filings, with standardized and as-reported values available.

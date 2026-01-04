@@ -3,6 +3,13 @@ name: dev-plan
 description: This skill should be used when the user asks to "plan the implementation", "break down the tasks", "explore the codebase", or as Phase 2 of the /dev workflow after brainstorming. Creates task breakdown from codebase exploration.
 ---
 
+## Contents
+
+- [The Iron Law of Planning](#the-iron-law-of-planning)
+- [What Plan Does](#what-plan-does)
+- [Process](#process)
+- [Output](#output)
+
 # Planning (Exploration + Task Breakdown)
 
 Explore the codebase and create an implementation plan based on the spec.

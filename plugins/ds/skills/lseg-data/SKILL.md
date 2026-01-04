@@ -3,6 +3,16 @@ name: lseg-data
 description: This skill should be used when the user asks to "access LSEG data", "query Refinitiv", "get market data from Refinitiv", "download fundamentals from LSEG", "access ESG scores", "convert RIC to ISIN", or needs the LSEG Data Library Python API.
 ---
 
+## Contents
+
+- [Quick Start](#quick-start)
+- [Authentication](#authentication)
+- [Core APIs](#core-apis)
+- [Key Field Prefixes](#key-field-prefixes)
+- [RIC Symbology](#ric-symbology)
+- [Rate Limits](#rate-limits)
+- [Additional Resources](#additional-resources)
+
 # LSEG Data Library
 
 Access financial data from LSEG (London Stock Exchange Group), formerly Refinitiv, via the `lseg.data` Python library.

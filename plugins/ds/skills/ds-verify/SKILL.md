@@ -3,6 +3,18 @@ name: ds-verify
 description: This skill should be used when the user asks to "verify reproducibility", "confirm the results", "prove it's reproducible", or as Phase 5 of the /ds workflow before claiming completion. Checks reproducibility and requires user acceptance.
 ---
 
+## Contents
+
+- [The Iron Law of DS Verification](#the-iron-law-of-ds-verification)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [The Verification Gate](#the-verification-gate)
+- [Verification Checklist](#verification-checklist)
+- [Reproducibility Demonstration](#reproducibility-demonstration)
+- [Claims Requiring Evidence](#claims-requiring-evidence)
+- [Insufficient Evidence](#insufficient-evidence)
+- [Required Output Structure](#required-output-structure)
+- [Completion Criteria](#completion-criteria)
+
 # Verification Gate
 
 Final verification with reproducibility checks and user acceptance interview.

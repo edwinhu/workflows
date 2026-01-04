@@ -3,6 +3,18 @@ name: marimo
 description: This skill should be used when the user asks to "use marimo", "create a marimo notebook", "debug a marimo notebook", "inspect cells", "understand reactive execution", "fix marimo errors", "convert from jupyter to marimo", or works with marimo reactive Python notebooks.
 ---
 
+## Contents
+
+- [Key Concepts](#key-concepts)
+- [Cell Structure](#cell-structure)
+- [Editing Rules](#editing-rules)
+- [Core CLI Commands](#core-cli-commands)
+- [Export Commands](#export-commands)
+- [Data and Visualization](#data-and-visualization)
+- [Debugging Workflow](#debugging-workflow)
+- [Common Issues](#common-issues)
+- [Additional Resources](#additional-resources)
+
 # Marimo Reactive Notebooks
 
 Marimo is a reactive Python notebook where cells form a DAG and auto-execute on dependency changes. Notebooks are stored as pure `.py` files.

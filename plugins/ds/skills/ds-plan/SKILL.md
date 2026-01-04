@@ -3,6 +3,14 @@ name: ds-plan
 description: This skill should be used when the user asks to "profile the data", "explore the dataset", "plan the analysis", or as Phase 2 of the /ds workflow after brainstorming. Profiles data and creates analysis task breakdown.
 ---
 
+## Contents
+
+- [The Iron Law of DS Planning](#the-iron-law-of-ds-planning)
+- [What Plan Does](#what-plan-does)
+- [Process](#process)
+- [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
+- [Output](#output)
+
 # Planning (Data Profiling + Task Breakdown)
 
 Profile the data and create an analysis plan based on the spec.

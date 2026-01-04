@@ -3,6 +3,15 @@ name: ds-brainstorm
 description: This skill should be used when the user asks to "define the analysis", "clarify objectives", "understand the data question", or as Phase 1 of the /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints.
 ---
 
+## Contents
+
+- [The Iron Law of DS Brainstorming](#the-iron-law-of-ds-brainstorming)
+- [What Brainstorm Does](#what-brainstorm-does)
+- [Critical Questions to Ask](#critical-questions-to-ask)
+- [Process](#process)
+- [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
+- [Output](#output)
+
 # Brainstorming (Questions Only)
 
 Refine vague analysis requests into clear objectives through Socratic questioning.

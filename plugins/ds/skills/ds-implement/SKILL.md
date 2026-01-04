@@ -3,6 +3,15 @@ name: ds-implement
 description: This skill should be used when the user asks to "implement the analysis", "run the code", "execute the pipeline", or as Phase 3 of the /ds workflow. Enforces output-first verification at each step.
 ---
 
+## Contents
+
+- [The Iron Law](#the-iron-law-of-ds-implementation) - EVERY step MUST produce visible output
+- [Output-First Protocol](#output-first-protocol) - Required outputs by operation type
+- [Implementation Process](#implementation-process) - Step-by-step workflow
+- [Task Agent Invocation](#task-agent-invocation) - Spawning sub-agents
+- [Verification Patterns](#verification-patterns) - See `references/verification-patterns.md`
+- [Common Failures](#common-failures-to-avoid) - Silent data loss, hidden nulls
+
 # Implementation (Output-First Verification)
 
 Implement analysis with mandatory visible output at every step.
@@ -178,49 +187,10 @@ Report back: what was done, output observed, any issues.
 
 ## Verification Patterns
 
-### Data Loading
-```python
-df = pd.read_csv(path)
-print(f"Loaded: {df.shape}")
-print(f"Columns: {df.columns.tolist()}")
-print(f"Dtypes:\n{df.dtypes}")
-df.head()
-```
-
-### Filtering
-```python
-before = len(df)
-df = df[df['col'] > threshold]
-after = len(df)
-print(f"Filtered: {before} -> {after} ({100*(before-after)/before:.1f}% removed)")
-```
-
-### Merging
-```python
-left_size = len(df1)
-right_size = len(df2)
-merged = df1.merge(df2, on='key', how='left')
-print(f"Merge: {left_size} x {right_size} -> {len(merged)}")
-print(f"New nulls: {merged[df2.columns].isnull().sum().sum()}")
-```
-
-### Aggregation
-```python
-result = df.groupby('category').agg({'value': 'mean'})
-print(f"Groups: {len(result)}")
-print(f"Stats:\n{result.describe()}")
-result.head(10)
-```
-
-### Model Training
-```python
-model.fit(X_train, y_train)
-train_score = model.score(X_train, y_train)
-val_score = model.score(X_val, y_val)
-print(f"Train score: {train_score:.4f}")
-print(f"Val score: {val_score:.4f}")
-print(f"Gap: {train_score - val_score:.4f}")
-```
+See [references/verification-patterns.md](references/verification-patterns.md) for detailed code patterns for:
+- Data loading, filtering, merging
+- Aggregation and model training
+- Quick reference table by operation type
 
 ## Common Failures to Avoid
 

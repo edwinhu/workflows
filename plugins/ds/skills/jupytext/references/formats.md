@@ -1,5 +1,19 @@
 # Jupytext Formats
 
+## Contents
+
+- [Format Comparison](#format-comparison)
+- [Percent Format (Recommended)](#percent-format-recommended)
+- [Light Format](#light-format)
+- [Markdown Format](#markdown-format)
+- [MyST Markdown Format](#myst-markdown-format)
+- [R Markdown Format](#r-markdown-format)
+- [Quarto Format](#quarto-format)
+- [Format Specification Syntax](#format-specification-syntax)
+- [Cell Metadata](#cell-metadata)
+- [Configuration Options](#configuration-options)
+- [Format Selection Guide](#format-selection-guide)
+
 Jupytext supports multiple text representations of Jupyter notebooks. Choose based on your workflow needs.
 
 ## Format Comparison

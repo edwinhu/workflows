@@ -3,6 +3,17 @@ name: dev
 description: This skill should be used when the user asks to "implement a feature", "add functionality", "build a new feature", "fix a non-trivial bug", or needs a structured development workflow. Orchestrates brainstorm, plan, implement, review, and verify phases with TDD enforcement.
 ---
 
+## Contents
+
+- [The Iron Law of Feature Development](#the-iron-law-of-feature-development)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Workflow](#workflow)
+- [How to Invoke Sub-Skills](#how-to-invoke-sub-skills)
+- [Core Rules](#core-rules)
+- [CRITICAL: Bug Fix Protocol](#critical-bug-fix-protocol)
+- [Project Structure](#project-structure)
+- [Related Skills](#related-skills)
+
 # Development Workflow
 
 Structured workflow for features and non-trivial bug fixes using Task agents and modular skills.

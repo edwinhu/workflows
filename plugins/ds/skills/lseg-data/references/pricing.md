@@ -1,5 +1,15 @@
 # LSEG Pricing Data
 
+## Contents
+
+- [Historical Prices](#historical-prices)
+- [Real-Time Prices](#real-time-prices)
+- [Streaming Prices](#streaming-prices)
+- [Adjusted Prices](#adjusted-prices)
+- [Multiple Instruments](#multiple-instruments)
+- [Date Chunking for Large Requests](#date-chunking-for-large-requests)
+- [Common Issues](#common-issues)
+
 ## Historical Prices
 
 ### get_history() API

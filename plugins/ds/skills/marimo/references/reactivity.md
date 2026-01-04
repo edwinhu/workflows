@@ -1,5 +1,16 @@
 # Marimo Reactivity Model
 
+## Contents
+
+- [DAG Execution](#dag-execution)
+- [Variable Rules](#variable-rules)
+- [Dependency Detection](#dependency-detection)
+- [Circular Dependencies](#circular-dependencies)
+- [Stale Cells](#stale-cells)
+- [Pure Functions Pattern](#pure-functions-pattern)
+- [Global State Warning](#global-state-warning)
+- [Debugging DAG Issues](#debugging-dag-issues)
+
 ## DAG Execution
 
 Marimo builds a directed acyclic graph (DAG) from cell dependencies:

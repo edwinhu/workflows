@@ -1,5 +1,16 @@
 # Cross-Kernel Data Sharing
 
+## Contents
+
+- [Format Comparison](#format-comparison)
+- [Recommended: Parquet](#recommended-parquet)
+- [Python <-> R Patterns](#python---r-patterns)
+- [Python <-> Stata Patterns](#python---stata-patterns)
+- [Python <-> SAS Patterns](#python---sas-patterns)
+- [DuckDB for Cross-Kernel SQL](#duckdb-for-cross-kernel-sql)
+- [Full Pipeline Example](#full-pipeline-example)
+- [Best Practices](#best-practices)
+
 Patterns for sharing data between Python, R, Stata, and SAS in multi-kernel jupytext projects.
 
 ## Format Comparison

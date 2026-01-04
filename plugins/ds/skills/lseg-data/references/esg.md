@@ -2,6 +2,15 @@
 
 Environmental, Social, and Governance scores and metrics from LSEG's ESG database.
 
+## Contents
+
+- [Overview](#overview)
+- [Key Fields](#key-fields)
+- [Parameters](#parameters)
+- [Code Examples](#code-examples)
+- [Notes and Gotchas](#notes-and-gotchas)
+- [See Also](#see-also)
+
 ## Overview
 
 LSEG ESG scores provide comprehensive sustainability data covering 12,500+ companies globally. Scores are calculated from 630+ data points across 10 categories, updated weekly.

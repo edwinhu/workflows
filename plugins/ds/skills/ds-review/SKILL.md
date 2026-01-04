@@ -3,6 +3,17 @@ name: ds-review
 description: This skill should be used when the user asks to "review the analysis", "check methodology", "validate results", or as Phase 4 of the /ds workflow. Reviews methodology, data quality, and statistical validity.
 ---
 
+## Contents
+
+- [The Iron Law of DS Review](#the-iron-law-of-ds-review)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Review Focus Areas](#review-focus-areas)
+- [Confidence Scoring](#confidence-scoring)
+- [Common DS Issues to Check](#common-ds-issues-to-check)
+- [Required Output Structure](#required-output-structure)
+- [Agent Invocation](#agent-invocation)
+- [Quality Standards](#quality-standards)
+
 # Analysis Review
 
 Single-pass review combining methodology correctness, data quality handling, and reproducibility checks. Uses confidence-based filtering.

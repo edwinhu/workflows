@@ -1,5 +1,17 @@
 # Critical Gotchas from Production
 
+## Contents
+
+- [Gotcha 1: GCS Bucket Must Be in us-central1](#gotcha-1-gcs-bucket-must-be-in-us-central1)
+- [Gotcha 2: File URIs Must Use gs:// Protocol](#gotcha-2-file-uris-must-use-gs-protocol)
+- [Gotcha 3: JSONL Format is Strict](#gotcha-3-jsonl-format-is-strict)
+- [Gotcha 4: Request ID Must Be Unique Per Job](#gotcha-4-request-id-must-be-unique-per-job)
+- [Gotcha 5: Large PDFs May Timeout or Fail](#gotcha-5-large-pdfs-may-timeout-or-fail)
+- [Gotcha 6: API Key vs Service Account Authentication](#gotcha-6-api-key-vs-service-account-authentication)
+- [Gotcha 7: Output URI Must Be a Prefix, Not a File](#gotcha-7-output-uri-must-be-a-prefix-not-a-file)
+- [Gotcha 8: Rate Limits and Quotas](#gotcha-8-rate-limits-and-quotas)
+- [Gotcha 9: JSON Response Parsing Requires Careful Handling](#gotcha-9-json-response-parsing-requires-careful-handling)
+
 Production lessons learned from real-world Gemini Batch API deployments.
 
 ---

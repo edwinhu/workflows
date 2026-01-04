@@ -2,6 +2,17 @@
 
 A guide for researchers familiar with WRDS who need to work with LSEG data, and vice versa.
 
+## Contents
+
+- [Overview](#overview)
+- [Identifier Mapping](#identifier-mapping)
+- [Data Coverage Comparison](#data-coverage-comparison)
+- [Code Examples: Same Task, Both Platforms](#code-examples-same-task-both-platforms)
+- [Key Differences to Note](#key-differences-to-note)
+- [Strengths by Platform](#strengths-by-platform)
+- [Migration Tips](#migration-tips)
+- [See Also](#see-also)
+
 ## Overview
 
 | Aspect | WRDS | LSEG Data Library |

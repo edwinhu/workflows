@@ -1,5 +1,15 @@
 # Troubleshooting
 
+## Contents
+
+- [Job Stuck in PENDING State](#job-stuck-in-pending-state)
+- ["Permission Denied" Errors](#permission-denied-errors)
+- [Empty or Truncated Responses](#empty-or-truncated-responses)
+- [JSON Parsing Failures](#json-parsing-failures)
+- [Rate Limit Errors](#rate-limit-errors)
+- [Debugging Request Format](#debugging-request-format)
+- [Cost Monitoring](#cost-monitoring)
+
 Common issues and solutions for Gemini Batch API.
 
 ---

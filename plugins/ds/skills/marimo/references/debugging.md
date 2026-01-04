@@ -1,5 +1,15 @@
 # Marimo Debugging Workflows
 
+## Contents
+
+- [Quick Diagnostics](#quick-diagnostics)
+- [Common Error Patterns](#common-error-patterns)
+- [Runtime Debugging](#runtime-debugging)
+- [Environment Issues](#environment-issues)
+- [Performance Debugging](#performance-debugging)
+- [Notebook Recovery](#notebook-recovery)
+- [Debugging Checklist](#debugging-checklist)
+
 ## Quick Diagnostics
 
 ### Check for Errors (No Execution)

@@ -3,6 +3,17 @@ name: dev-verify
 description: This skill should be used when the user asks to "verify this works", "prove it's done", "show me evidence", or as Phase 5 of the /dev workflow before claiming completion. Requires fresh runtime evidence.
 ---
 
+## Contents
+
+- [The Iron Law of Verification](#the-iron-law-of-verification)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [The Gate Function](#the-gate-function)
+- [Claims Requiring Evidence](#claims-requiring-evidence)
+- [Insufficient Evidence](#insufficient-evidence)
+- [Verification Patterns](#verification-patterns)
+- [User Acceptance (Final Step)](#user-acceptance-final-step)
+- [Bottom Line](#bottom-line)
+
 # Verification Gate
 
 <EXTREMELY-IMPORTANT>

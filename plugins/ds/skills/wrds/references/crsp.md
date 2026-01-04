@@ -1,5 +1,15 @@
 # CRSP Stock Data
 
+## Contents
+
+- [Tables](#tables)
+- [Key Fields](#key-fields)
+- [CRSP v2 Filters](#crsp-v2-filters)
+- [CRSP-Compustat Merge (CCM)](#crsp-compustat-merge-ccm)
+- [Market Equity](#market-equity)
+- [Fama-French Breakpoints](#fama-french-breakpoints)
+- [Common Gotchas](#common-gotchas)
+
 ## Tables
 
 ### Legacy Format

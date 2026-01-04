@@ -3,6 +3,17 @@ name: jupytext
 description: This skill should be used when the user asks to "convert notebook to text", "use jupytext", "version control notebooks", "share data between kernels", "set up multi-kernel project", "pair notebooks with Python files", "sync ipynb and py files", or needs multi-kernel projects (Python/R/Stata/SAS) with version-control-friendly notebooks.
 ---
 
+## Contents
+
+- [Core Concepts](#core-concepts)
+- [Multi-Kernel Data Sharing](#multi-kernel-data-sharing)
+- [Workflow Integration](#workflow-integration)
+- [Project Structure](#project-structure)
+- [Kernel Specification](#kernel-specification)
+- [Quick Troubleshooting](#quick-troubleshooting)
+- [Additional Resources](#additional-resources)
+- [Best Practices](#best-practices)
+
 # Jupytext Skill
 
 Jupytext converts Jupyter notebooks to/from text formats (.py, .R, .md), enabling version control and multi-kernel workflows.

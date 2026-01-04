@@ -1,5 +1,17 @@
 # Multi-Kernel Setup
 
+## Contents
+
+- [Available Kernels](#available-kernels)
+- [Python Kernel](#python-kernel)
+- [R Kernel](#r-kernel)
+- [Stata Kernel](#stata-kernel)
+- [SAS Kernel](#sas-kernel)
+- [Multi-Kernel Project Setup](#multi-kernel-project-setup)
+- [Kernel Management](#kernel-management)
+- [Troubleshooting](#troubleshooting)
+- [Best Practices](#best-practices)
+
 Configure Jupyter kernels for Python, R, Stata, and SAS to enable cross-language data science workflows.
 
 ## Available Kernels

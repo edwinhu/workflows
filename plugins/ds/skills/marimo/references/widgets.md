@@ -1,5 +1,16 @@
 # Marimo Interactive Widgets
 
+## Contents
+
+- [mo.ui Overview](#moui-overview)
+- [Input Widgets](#input-widgets)
+- [Buttons and Actions](#buttons-and-actions)
+- [Layout Components](#layout-components)
+- [Data Display](#data-display)
+- [Visualization](#visualization)
+- [State Management](#state-management)
+- [Common Patterns](#common-patterns)
+
 ## mo.ui Overview
 
 Marimo provides interactive UI components through `mo.ui`. Widgets automatically trigger cell re-execution when values change.

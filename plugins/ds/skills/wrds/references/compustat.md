@@ -1,5 +1,14 @@
 # Compustat Data Access
 
+## Contents
+
+- [Overview](#overview)
+- [Key Tables](#key-tables)
+- [Common Query Patterns](#common-query-patterns)
+- [Bank-Specific Data](#bank-specific-data)
+- [Data Quality Notes](#data-quality-notes)
+- [Linking Tables](#linking-tables)
+
 ## Overview
 
 Compustat provides fundamental financial data for public companies. Accessed via the `comp` schema in WRDS PostgreSQL.

@@ -1,5 +1,14 @@
 # Thomson Reuters Form 4 Insider Data
 
+## Contents
+
+- [Tables](#tables)
+- [Key Fields](#key-fields)
+- [Rolecode Reference](#rolecode-reference)
+- [Transaction Codes](#transaction-codes)
+- [Query Patterns](#query-patterns)
+- [Common Gotchas](#common-gotchas)
+
 ## Tables
 
 | Table | Description |

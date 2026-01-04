@@ -1,5 +1,19 @@
 # WRDS Connection Pooling
 
+## Contents
+
+- [Overview](#overview)
+- [Basic Pool Setup](#basic-pool-setup)
+- [Thread-Safe Pool (for concurrent access)](#thread-safe-pool-for-concurrent-access)
+- [Connection Parameters](#connection-parameters)
+- [Pool Sizing Guidelines](#pool-sizing-guidelines)
+- [Connection Health Checks](#connection-health-checks)
+- [Named Cursors for Large Result Sets](#named-cursors-for-large-result-sets)
+- [Error Handling Patterns](#error-handling-patterns)
+- [Integration with pandas](#integration-with-pandas)
+- [Environment-Based Configuration](#environment-based-configuration)
+- [Troubleshooting](#troubleshooting)
+
 ## Overview
 
 WRDS PostgreSQL connections benefit from pooling due to SSL handshake overhead. This module details connection pool configuration, lifecycle management, and troubleshooting.

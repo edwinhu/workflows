@@ -45,6 +45,25 @@ These are skills, not plugins - already available via `/ds`:
 | `/jupytext` | Jupyter notebooks as text files |
 | `/marimo` | Marimo reactive Python notebooks |
 
+## File Format Skills (Anthropic Official)
+
+For office documents and PDFs, use official Anthropic skills from https://github.com/anthropics/skills:
+
+| Skill | Use For |
+|-------|---------|
+| `/xlsx` | Spreadsheets, formulas, CSV→Excel conversion |
+| `/pdf` | PDF extraction, creation, form filling |
+| `/pptx` | Presentation creation and editing |
+| `/docx` | Word docs, tracked changes, reports |
+
+**Install** (add to `~/.claude/settings.json` `skills` array):
+```
+https://github.com/anthropics/skills/tree/main/skills/xlsx
+https://github.com/anthropics/skills/tree/main/skills/pdf
+https://github.com/anthropics/skills/tree/main/skills/pptx
+https://github.com/anthropics/skills/tree/main/skills/docx
+```
+
 ## When to Enable
 
 - **serena**: Understanding complex analysis codebases, refactoring pipelines

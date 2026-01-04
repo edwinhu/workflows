@@ -3,6 +3,17 @@ name: ds
 description: This skill should be used when the user asks to "analyze data", "build a model", "explore this dataset", "run analysis", or needs a structured data science workflow. Orchestrates brainstorm, plan, implement, review, and verify phases with output-first verification.
 ---
 
+## Contents
+
+- [The Iron Law of Data Science](#the-iron-law-of-data-science)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Workflow](#workflow)
+- [How to Invoke Sub-Skills](#how-to-invoke-sub-skills)
+- [Core Principles](#core-principles)
+- [Key Differences from /dev Workflow](#key-differences-from-dev-workflow)
+- [Project Structure](#project-structure)
+- [Related Skills](#related-skills)
+
 # Data Science Workflow
 
 Structured workflow for data analysis and modeling using Task agents and modular skills.

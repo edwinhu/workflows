@@ -1,5 +1,17 @@
 # Marimo SQL Integration
 
+## Contents
+
+- [SQL Cells](#sql-cells)
+- [Basic SQL on DataFrames](#basic-sql-on-dataframes)
+- [SQL Cell Syntax](#sql-cell-syntax)
+- [Database Connections](#database-connections)
+- [Parameterized Queries](#parameterized-queries)
+- [Common Query Patterns](#common-query-patterns)
+- [Interactive SQL](#interactive-sql)
+- [Performance Tips](#performance-tips)
+- [Troubleshooting](#troubleshooting)
+
 ## SQL Cells
 
 Marimo provides native SQL support through `mo.sql()` for querying DataFrames and databases.

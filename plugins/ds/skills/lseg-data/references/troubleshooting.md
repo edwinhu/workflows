@@ -2,6 +2,18 @@
 
 Common issues and solutions when working with the LSEG Data Library.
 
+## Contents
+
+- [Authentication Issues](#authentication-issues)
+- [Missing/Empty Data](#missingempty-data)
+- [Rate Limiting](#rate-limiting)
+- [Symbol Conversion Issues](#symbol-conversion-issues)
+- [Performance Issues](#performance-issues)
+- [Common Code Errors](#common-code-errors)
+- [Debugging Strategies](#debugging-strategies)
+- [Getting Help](#getting-help)
+- [See Also](#see-also)
+
 ## Authentication Issues
 
 ### "Session not opened" Error

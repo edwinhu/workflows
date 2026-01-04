@@ -3,6 +3,14 @@ name: dev-brainstorm
 description: This skill should be used when the user asks to "brainstorm a feature", "discuss requirements", "clarify the design", "refine the idea", or as Phase 1 of the /dev workflow. Uses Socratic questioning to explore design before implementation.
 ---
 
+## Contents
+
+- [The Iron Law of Brainstorming](#the-iron-law-of-brainstorming)
+- [What Brainstorm Does](#what-brainstorm-does)
+- [Process](#process)
+- [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
+- [Output](#output)
+
 # Brainstorming (Questions Only)
 
 Refine vague ideas into clear requirements through Socratic questioning.

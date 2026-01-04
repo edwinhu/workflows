@@ -3,6 +3,14 @@ name: wrds
 description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", or needs WRDS PostgreSQL query patterns.
 ---
 
+## Contents
+
+- [Quick Reference: Table Names](#quick-reference-table-names)
+- [Connection](#connection)
+- [Critical Filters](#critical-filters)
+- [Parameterized Queries](#parameterized-queries)
+- [Additional Resources](#additional-resources)
+
 # WRDS Data Access
 
 WRDS (Wharton Research Data Services) provides academic research data via PostgreSQL at `wrds-pgdata.wharton.upenn.edu:9737`.
@@ -101,7 +109,7 @@ Detailed query patterns and table documentation:
 - **`references/crsp.md`** - CRSP stock data, CCM linking, v2 format
 - **`references/insider-form4.md`** - Thomson Reuters Form 4, rolecodes, insider types
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
-- **`references/sec-edgar.md`** - SEC filings, full-text search, CIK linking
+- **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
 
 ### Example Files
