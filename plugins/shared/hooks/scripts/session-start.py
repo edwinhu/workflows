@@ -174,16 +174,25 @@ def build_env_section(env_context: dict, persisted_vars: list) -> str:
     session_type = env_context.get('session_type', 'local')
     is_remote = session_type == 'remote (SSH)'
 
-    lines = ["# Session Environment"]
-    lines.append("")
-    lines.append("**CHECK THIS FIRST** when answering questions about the environment.")
+    lines = ["# Session Environment (USE THIS - DO NOT RUN COMMANDS TO CHECK)"]
     lines.append("")
 
-    # Session type - prominent for remote sessions
+    # Session type - make it extremely prominent
     if is_remote:
-        lines.append(f"- **Session**: {session_type} ← YOU ARE ON A REMOTE MACHINE")
+        lines.append("## ⚠️ REMOTE SESSION (SSH)")
+        lines.append("")
+        lines.append("You are connected to a **remote machine** via SSH.")
+        lines.append("- GUI apps (VSCode, browsers, etc.) run on the REMOTE machine")
+        lines.append("- File paths refer to the REMOTE filesystem")
+        lines.append("- Do NOT suggest local machine solutions for remote problems")
     else:
-        lines.append(f"- **Session**: {session_type}")
+        lines.append("## LOCAL SESSION")
+        lines.append("")
+        lines.append("You are running on the **local machine**.")
+        lines.append("- Full GUI/Hyprland access available")
+        lines.append("- File paths refer to local filesystem")
+
+    lines.append("")
 
     # API keys
     if env_context.get('api_keys_available'):
@@ -220,7 +229,7 @@ def main():
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "context": env_section + "\n" + using_skills
+            "additionalContext": env_section + "\n" + using_skills
         }
     }))
 
