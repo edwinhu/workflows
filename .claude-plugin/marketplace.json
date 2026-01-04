@@ -1,0 +1,28 @@
+{
+  "name": "edwinhu-plugins",
+  "owner": {
+    "name": "Edwin Hu"
+  },
+  "metadata": {
+    "description": "Development and data science plugins for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "dev",
+      "source": "./plugins/dev",
+      "description": "Full feature development workflow with TDD enforcement",
+      "version": "0.3.0",
+      "category": "development",
+      "tags": ["development", "tdd", "testing", "code-review"]
+    },
+    {
+      "name": "ds",
+      "source": "./plugins/ds",
+      "description": "Data science workflow with output-first verification",
+      "version": "0.3.0",
+      "category": "data-science",
+      "tags": ["data-science", "wrds", "lseg", "jupyter", "analysis"]
+    }
+  ]
+}

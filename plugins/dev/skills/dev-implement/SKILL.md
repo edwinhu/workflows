@@ -1,0 +1,218 @@
+---
+name: dev-implement
+description: This skill should be used when the user asks to "implement with TDD", "write tests first", "do test-driven development", or as Phase 3 of the /dev workflow. Enforces RED-GREEN-REFACTOR cycle with mandatory test-first approach.
+---
+
+# Implementation
+
+## Start Ralph Loop in Main Chat
+
+**Main chat starts the loop, then spawns Task agents for code work.**
+
+Task agents cannot reliably invoke ralph-loop (argument parsing breaks with complex prompts).
+Instead: main chat runs the loop and delegates code edits to Task agents.
+
+### Step 1: Start the Ralph Loop
+
+```
+/ralph-wiggum:ralph-loop "Implement [FEATURE]" --max-iterations 30 --completion-promise "DONE"
+```
+
+### Step 2: Inside Each Iteration
+
+Spawn a Task agent for the actual implementation work:
+
+```
+Task(subagent_type="general-purpose", prompt="""
+Implement [FEATURE] following TDD protocol.
+
+Context:
+- Read .claude/LEARNINGS.md for prior attempts
+- Read .claude/SPEC.md for requirements
+
+TDD Protocol:
+1. BEFORE writing test: Add debug logging to code path you'll test
+2. Rebuild the project
+3. Write failing test that RUNS the program and checks LOGS/output
+4. Run test, see it FAIL, document RED in LEARNINGS.md (paste log output)
+5. Implement minimal code to pass
+6. Run test, see it PASS, document GREEN in LEARNINGS.md (paste log output)
+7. Run full test suite
+8. Refactor while staying GREEN
+
+LOGGING-FIRST RULE:
+You cannot test what you cannot observe. Before writing ANY test:
+1. Add debug logging to the code path (print, console.log, logger.debug, etc.)
+2. Rebuild/restart
+3. Write test that runs the program and checks the LOG/output for that debug message
+
+⚠️ GREP TESTS ARE BANNED ⚠️
+NEVER use 'grep -q' or 'if grep' to check SOURCE FILES as a test.
+- ❌ WRONG: grep -q 'function_name' src/module.py && echo PASS
+- ✅ RIGHT: ./program --action > /tmp/test.log 2>&1; grep -q 'success' /tmp/test.log
+
+⚠️ SKIP ≠ PASS ⚠️
+If a test is skipped, it has NOT passed. Run it and see actual PASS output.
+
+Report back: what was done, test results, any blockers.
+""")
+```
+
+### Step 3: Verify and Complete
+
+After Task agent returns, main chat verifies:
+- [ ] Tests RUN the compiled binary or execute code paths
+- [ ] Tests check LOGS or output for expected behavior
+- [ ] NO grepping source files as tests
+- [ ] All tests PASS (SKIP ≠ PASS)
+- [ ] LEARNINGS.md contains ACTUAL LOG OUTPUT
+- [ ] Build succeeds
+
+**Only when ALL criteria verified, output:**
+```
+<promise>DONE</promise>
+```
+
+If not complete, iterate: spawn another Task agent to address gaps.
+
+---
+
+## Reference: TDD Protocol (for the Task agent)
+
+## STOP - Read This First
+
+**Before writing ANY code, you must:**
+
+1. Write a test that **runs the actual code** (not grep)
+2. Run it and **paste the failure output** into LEARNINGS.md
+3. Only then implement
+
+**Your LEARNINGS.md entry MUST look like this:**
+```markdown
+## Attempt N: [feature]
+
+**RED:** Wrote test. Ran it:
+$ ./test_foo.sh
+FAIL: expected X, got undefined
+
+**Implementation:** [what you did]
+
+**GREEN:** Ran test again:
+$ ./test_foo.sh
+PASS: all checks passed
+```
+
+**If your entry doesn't have actual command output, you skipped TDD.**
+
+**Wrote code before the test? DELETE IT. Start over.**
+- Don't keep it as "reference"
+- Don't "adapt" it while writing tests
+- Delete means delete
+- Implement fresh from tests
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of TDD
+
+**Write the failing test FIRST. See it FAIL. This is not negotiable.**
+
+Before writing ANY implementation code, you MUST:
+1. Write a test that will fail (because the feature doesn't exist yet)
+2. Run the test and **SEE THE FAILURE OUTPUT** (RED)
+3. Document in LEARNINGS.md: "RED: [test name] fails with [error message]"
+4. Only THEN write implementation code
+5. Run test again, **SEE IT PASS** (GREEN)
+6. Document: "GREEN: [test name] now passes"
+
+**The RED step is not optional.** If you haven't seen the test fail, you haven't done TDD.
+
+**If you catch yourself about to write implementation code without seeing RED first, STOP.**
+</EXTREMELY-IMPORTANT>
+
+## Red Flags - STOP Immediately If You Think:
+
+| Thought | Why It's Wrong | Do Instead |
+|---------|----------------|------------|
+| "I'll write the test after" | You're doing implementation-first, not TDD | Write failing test NOW |
+| "This is too simple for TDD" | Simple code benefits most from TDD | Write failing test anyway |
+| "Let me just fix this quickly" | Speed is not the goal, correctness is | Write failing test first |
+| "I know the test will fail" | Knowing isn't seeing; you must RUN it | Run test, see RED output |
+| "Grep test is good enough" | Grep checks strings, not behavior | Write tests that RUN the code |
+
+## The TDD Cycle (Follow This Exactly)
+
+```
+RED → Run test, see failure, log to LEARNINGS.md
+GREEN → Minimal code only, run test, see pass, log to LEARNINGS.md
+REFACTOR → Clean up while staying green
+```
+
+**Every cycle requires:**
+1. **RED** - Test that runs code (not grep!), see it fail, paste output to LEARNINGS.md
+2. **GREEN** - Minimal implementation, see it pass, paste output to LEARNINGS.md
+3. **REFACTOR** - Clean up while tests still pass
+
+## CRITICAL: Automated Testing First
+
+**NEVER ask user to test manually if automated testing is possible.**
+
+Testing hierarchy (try in order):
+1. **Unit tests** - `ninja test`, `pytest`, `npm test`, etc.
+2. **Integration tests** - API calls, CLI commands
+3. **UI automation** - Computer control + screenshots
+4. **Manual testing** - LAST RESORT ONLY
+
+## Test Location: Project Directory, NOT /tmp/
+
+**Write tests in the project's test directory, not /tmp/.**
+
+| Bad | Good |
+|-----|------|
+| `/tmp/test_feature.sh` | `tests/test_feature.sh` |
+| `/tmp/test_api.py` | `tests/test_api.py` |
+
+**Find the test directory first:**
+```bash
+ls -d tests/ test/ spec/ __tests__/ 2>/dev/null
+find . -name "*test*.py" -o -name "*_test.go" | head -5
+```
+
+## Testing Anti-Patterns - NEVER DO THESE
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|--------------|----------------|-----|
+| **Grep tests** | Verify strings exist, not behavior | Test runtime behavior |
+| **Test passes immediately** | Proves nothing - didn't see RED | Delete code, start over |
+| **No failure output in logs** | No evidence of RED phase | Document: "RED: [error]" |
+
+**The Iron Rule:** If your test doesn't execute the code path, it's not a test.
+
+## Logging
+
+Append each attempt to `.claude/LEARNINGS.md` with explicit RED/GREEN:
+
+```markdown
+## Attempt N: [feature/task] - [STATUS]
+
+**RED:** Wrote test `test_foo()`. Ran it. Output:
+```
+FAIL: test_foo - expected X but got undefined
+```
+
+**Implementation:** [describe what you implemented]
+
+**GREEN:** Ran test again. Output:
+```
+PASS: test_foo
+```
+
+**Learned:** ...
+```
+
+**The RED section is mandatory.** If you can't show failure output, you skipped RED.
+
+## If Max Iterations Reached
+
+Ralph exits after max iterations. Main chat can:
+1. Check LEARNINGS.md for progress
+2. Start a new ralph-loop with refined approach (main chat, not Task agent)
+3. Address specific blocker then retry

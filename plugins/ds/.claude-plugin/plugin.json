@@ -1,0 +1,8 @@
+{
+  "name": "ds",
+  "version": "0.3.0",
+  "description": "Data science workflow plugin with output-first verification, data quality checks, and data access skills (WRDS, LSEG, Gemini Batch).",
+  "author": {
+    "name": "edwinhu"
+  }
+}
