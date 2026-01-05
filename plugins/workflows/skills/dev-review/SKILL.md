@@ -5,6 +5,7 @@ description: This skill should be used when the user asks to "review this code",
 
 ## Contents
 
+- [Prerequisites - Test Output Gate](#prerequisites---test-output-gate)
 - [The Iron Law of Review](#the-iron-law-of-review)
 - [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
 - [Review Focus Areas](#review-focus-areas)
@@ -16,6 +17,38 @@ description: This skill should be used when the user asks to "review this code",
 # Code Review
 
 Single-pass code review combining spec compliance and quality checks. Uses confidence-based filtering to report only high-priority issues.
+
+<EXTREMELY-IMPORTANT>
+## Prerequisites - Test Output Gate
+
+**Do NOT start review without test evidence.**
+
+Before reviewing, verify:
+1. `.claude/LEARNINGS.md` contains **actual test output**
+2. Tests were **run** (not just written)
+3. Test output shows **PASS** (not SKIP, not assumed)
+
+### What Counts as Test Evidence
+
+| Valid Evidence | NOT Valid |
+|----------------|-----------|
+| `meson test` output with results | "Tests should pass" |
+| `pytest` output showing PASS | "I wrote tests" |
+| Screenshot of working UI | "It looks correct" |
+| Playwright snapshot showing expected state | "User can verify" |
+| D-Bus command output | "The feature works" |
+
+### Gate Check
+
+```bash
+# Check LEARNINGS.md for test output
+grep -E "(PASS|OK|SUCCESS|\d+ passed)" .claude/LEARNINGS.md
+```
+
+**If no test output found, STOP and return to /dev-implement.**
+
+"It should work" is NOT evidence. Test output IS evidence.
+</EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Review
@@ -41,12 +74,20 @@ This applies even when:
 
 | Thought | Why It's Wrong | Do Instead |
 |---------|----------------|------------|
+| "Tests probably pass" | No evidence | Check LEARNINGS.md for output |
 | "This looks wrong" | Vague suspicion isn't evidence | Find concrete proof or discard |
 | "I would do it differently" | Style preference isn't a bug | Check if it violates guidelines |
 | "This might cause problems" | "Might" means < 80% confidence | Find proof or discard |
 | "Pre-existing but should be fixed" | Not your scope | Score it 0 and discard |
+| "User can test it" | Automation likely possible | Return to implement phase |
 
 ## Review Focus Areas
+
+### Test Evidence (Check First!)
+- [ ] LEARNINGS.md contains actual test command output
+- [ ] Tests show PASS/OK (not SKIP, FAIL, or missing)
+- [ ] UI changes have screenshot/snapshot evidence
+- [ ] All test types run (unit, integration, UI as applicable)
 
 ### Spec Compliance
 - [ ] All requirements from .claude/SPEC.md are implemented
@@ -81,6 +122,11 @@ Rate each potential issue from 0-100:
 ## Code Review: [Feature/Change Name]
 Reviewing: [files/scope being reviewed]
 
+### Test Evidence Verified
+- Unit tests: [PASS/FAIL/MISSING] - [paste key output line]
+- Integration: [PASS/FAIL/N/A]
+- UI/Visual: [Screenshot taken / Snapshot verified / N/A]
+
 ### Critical Issues (Confidence >= 90)
 
 #### [Issue Title] (Confidence: XX)
@@ -100,13 +146,16 @@ Reviewing: [files/scope being reviewed]
 
 ### Summary
 
-**Verdict:** APPROVED | CHANGES REQUIRED
+**Verdict:** APPROVED | CHANGES REQUIRED | BLOCKED (no test evidence)
 
 [If APPROVED]
-The reviewed code meets project standards. No issues with confidence >= 80 detected.
+The reviewed code meets project standards. Tests pass. No issues with confidence >= 80 detected.
 
 [If CHANGES REQUIRED]
 X critical issues and Y important issues must be addressed before proceeding.
+
+[If BLOCKED]
+Cannot approve without test evidence. Return to /dev-implement and run tests.
 ```
 
 ## Agent Invocation
@@ -117,9 +166,13 @@ Main chat spawns Task agent:
 Task(subagent_type="general-purpose"):
 "Review implementation against .claude/SPEC.md.
 
+FIRST: Check .claude/LEARNINGS.md for test output.
+If no test output found, return BLOCKED immediately.
+
 Single-pass review covering:
-1. Spec compliance - all requirements met?
-2. Code quality - simple, correct, follows conventions?
+1. Test evidence - tests actually run and pass?
+2. Spec compliance - all requirements met?
+3. Code quality - simple, correct, follows conventions?
 
 Confidence score each issue (0-100).
 Only report issues >= 80 confidence.
@@ -128,6 +181,7 @@ Return structured output per /dev-review format."
 
 ## Quality Standards
 
+- **Test evidence is mandatory** - no approval without test output
 - Never report style preferences not backed by project guidelines
 - Pre-existing issues are NOT your concern (confidence = 0)
 - Each reported issue must be immediately actionable
