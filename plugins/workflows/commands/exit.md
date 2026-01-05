@@ -1,8 +1,12 @@
 ---
 description: Deactivate the sandbox and restore full tool access
-allowed-tools: ["Skill"]
+allowed-tools: ["Bash"]
 ---
 
-Invoke the `workflows:exit` skill to deactivate the sandbox.
+Deactivate the sandbox by removing the dev mode marker:
 
-Use the Skill tool with `skill: "workflows:exit"` to restore full tool access.
+```bash
+rm -f /tmp/claude-workflow-*/dev_mode 2>/dev/null && echo "✓ Sandbox deactivated" || echo "✓ Sandbox was not active"
+```
+
+Run this command immediately. No confirmation needed.
