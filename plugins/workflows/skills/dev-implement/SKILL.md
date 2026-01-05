@@ -91,7 +91,37 @@ After Task agent returns, main chat verifies:
 <promise>DONE</promise>
 ```
 
-If not complete, iterate: spawn another Task agent to address gaps.
+### Step 4: If Tests Fail → Keep Iterating
+
+<EXTREMELY-IMPORTANT>
+**KEEP LOOPING UNTIL TESTS PASS. Do NOT ask user to test manually.**
+
+If tests fail or criteria not met:
+1. **Do NOT** output `<promise>DONE</promise>`
+2. **Do NOT** ask user to manually verify
+3. **DO** spawn another Task agent to fix the failing tests
+4. **DO** keep iterating until automated tests pass
+
+The ralph loop continues until:
+- All automated tests pass, OR
+- Max iterations reached (then escalate, don't ask for manual testing)
+
+**Manual testing is LAST RESORT and requires explicit user request.**
+</EXTREMELY-IMPORTANT>
+
+### Automated Testing Hierarchy
+
+Before asking user to test, exhaust these options:
+
+| Priority | Test Type | Tools |
+|----------|-----------|-------|
+| 1 | Unit tests | meson test, pytest, jest |
+| 2 | Integration | CLI, API calls, D-Bus |
+| 3 | UI automation | Playwright (web), ydotool (desktop) |
+| 4 | Visual | Screenshots via grim, snapshots |
+| 5 | Manual | **ONLY if user explicitly requests** |
+
+See `/dev-test` skill for platform-specific automation.
 
 ---
 
@@ -198,9 +228,18 @@ Append each attempt to `.claude/LEARNINGS.md`. See [LEARNINGS.md Template](../de
 
 ## If Max Iterations Reached
 
-Ralph exits after max iterations. Main chat can:
-1. Check LEARNINGS.md for progress
-2. Start a new ralph-loop with refined approach (main chat, not Task agent)
-3. Address specific blocker then retry
+Ralph exits after max iterations. **Still do NOT ask user to manually test.**
 
-**Next step:** `/dev-review` for code review
+Main chat should:
+1. **Summarize** what's failing (from LEARNINGS.md)
+2. **Report** which automated tests fail and why
+3. **Ask user** for direction:
+   - "Tests X, Y, Z are failing. Options:"
+   - A) Start new loop with different approach
+   - B) Add more logging to debug
+   - C) User provides guidance on the failure
+   - D) User explicitly requests manual testing
+
+**Never default to "please test manually".** Always exhaust automation first.
+
+**Next step:** `/dev-review` for code review (only after tests pass)
