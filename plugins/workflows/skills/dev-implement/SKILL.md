@@ -1,10 +1,11 @@
 ---
 name: dev-implement
-description: This skill should be used when the user asks to "implement with TDD", "write tests first", "do test-driven development", or as Phase 3 of the /dev workflow. Enforces RED-GREEN-REFACTOR cycle with mandatory test-first approach.
+description: This skill should be used when the user asks to "implement with TDD", "write tests first", "do test-driven development", or as Phase 5 of the /dev workflow. Enforces RED-GREEN-REFACTOR cycle with mandatory test-first approach.
 ---
 
 ## Contents
 
+- [Prerequisites](#prerequisites)
 - [Start Ralph Loop in Main Chat](#start-ralph-loop-in-main-chat)
 - [Reference: TDD Protocol](#reference-tdd-protocol-for-the-task-agent)
 - [STOP - Read This First](#stop---read-this-first)
@@ -18,6 +19,20 @@ description: This skill should be used when the user asks to "implement with TDD
 - [If Max Iterations Reached](#if-max-iterations-reached)
 
 # Implementation
+
+<EXTREMELY-IMPORTANT>
+## Prerequisites
+
+**Do NOT start implementation without these:**
+
+1. `.claude/SPEC.md` exists with final requirements
+2. `.claude/PLAN.md` exists with chosen approach
+3. **User explicitly approved** in /dev-design phase
+
+If any prerequisite is missing, STOP and complete the earlier phases.
+
+**Check PLAN.md for:** files to modify, implementation order, testing strategy.
+</EXTREMELY-IMPORTANT>
 
 ## Start Ralph Loop in Main Chat
 
@@ -43,6 +58,7 @@ Implement [FEATURE] following TDD protocol.
 Context:
 - Read .claude/LEARNINGS.md for prior attempts
 - Read .claude/SPEC.md for requirements
+- Read .claude/PLAN.md for chosen approach and implementation order
 
 TDD Protocol:
 1. BEFORE writing test: Add debug logging to code path you'll test
@@ -126,6 +142,7 @@ Before writing ANY implementation code, you MUST:
 | "Let me just fix this quickly" | Speed is not the goal, correctness is | Write failing test first |
 | "I know the test will fail" | Knowing isn't seeing; you must RUN it | Run test, see RED output |
 | "Grep test is good enough" | Grep checks strings, not behavior | Write tests that RUN the code |
+| "User didn't approve yet" | Implementation requires approval | Complete /dev-design first |
 
 ## The TDD Cycle (Follow This Exactly)
 
@@ -185,3 +202,5 @@ Ralph exits after max iterations. Main chat can:
 1. Check LEARNINGS.md for progress
 2. Start a new ralph-loop with refined approach (main chat, not Task agent)
 3. Address specific blocker then retry
+
+**Next step:** `/dev-review` for code review

@@ -1,6 +1,6 @@
 ---
 name: dev
-description: This skill should be used when the user asks to "implement a feature", "add functionality", "build a new feature", "fix a non-trivial bug", or needs a structured development workflow. Orchestrates brainstorm, plan, implement, review, and verify phases with TDD enforcement.
+description: This skill should be used when the user asks to "implement a feature", "add functionality", "build a new feature", "fix a non-trivial bug", or needs a structured development workflow. Orchestrates 7-phase workflow with user approval gates and TDD enforcement.
 ---
 
 ## Activation
@@ -8,14 +8,7 @@ description: This skill should be used when the user asks to "implement a featur
 First, activate the dev workflow and sandbox:
 
 ```bash
-python3 -c "
-import sys
-sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
-from session import activate_workflow, activate_dev_mode
-activate_workflow('dev')
-activate_dev_mode()
-print('✓ Dev workflow activated')
-"
+mkdir -p /tmp/claude-workflow-$PPID && touch /tmp/claude-workflow-$PPID/dev_mode && echo "✓ Dev workflow activated"
 ```
 
 ## Contents
@@ -23,7 +16,6 @@ print('✓ Dev workflow activated')
 - [The Iron Law of Feature Development](#the-iron-law-of-feature-development)
 - [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
 - [Workflow](#workflow)
-- [How to Invoke Sub-Skills](#how-to-invoke-sub-skills)
 - [Core Rules](#core-rules)
 - [CRITICAL: Bug Fix Protocol](#critical-bug-fix-protocol)
 - [Project Structure](#project-structure)
@@ -31,104 +23,86 @@ print('✓ Dev workflow activated')
 
 # Development Workflow
 
-Structured workflow for features and non-trivial bug fixes using Task agents and modular skills.
+Structured 7-phase workflow for features and non-trivial bug fixes using Task agents and modular skills.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Feature Development
 
 **You MUST use the sub-skills. This is not negotiable.**
 
-When implementing: invoke `/dev-implement` (enforces TDD)
-When debugging: invoke `/dev-debug` (enforces root cause investigation)
-When reviewing: invoke `/dev-review` (enforces quality checks)
-When verifying: invoke `/dev-verify` (enforces fresh evidence)
+Each phase has a dedicated skill:
+- `/dev-brainstorm` - Initial questions
+- `/dev-explore` - Codebase exploration
+- `/dev-clarify` - Post-exploration questions
+- `/dev-design` - Architecture with **user approval gate**
+- `/dev-implement` - TDD implementation
+- `/dev-review` - Confidence-scored review
+- `/dev-verify` - Runtime verification
 
 This applies even when:
 - "I can just implement this directly"
 - "The feature is simple"
 - "I already know what to do"
-- "Using the skill seems like overkill"
 
-**If you catch yourself about to write code without using the appropriate skill, STOP.**
+**If you catch yourself about to skip a phase, STOP.**
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
 |---------|----------------|------------|
-| "I'll just implement this quickly" | Skipping TDD leads to bugs | Use `/dev-implement` |
-| "I know the fix already" | Skipping investigation leads to wrong fixes | Use `/dev-debug` |
+| "I'll just implement this quickly" | Skipping phases leads to bugs | Follow all 7 phases |
+| "I know the architecture" | Must explore first | Use `/dev-explore` |
+| "User will approve anything" | Approval is a gate | Ask explicitly in `/dev-design` |
 | "Code looks fine to me" | Self-review misses issues | Use `/dev-review` |
 | "It should work" | "Should" isn't verification | Use `/dev-verify` |
-| "This is too simple for the workflow" | Simple things break too | Follow the workflow |
-| "This doc should be versioned" | User decides what gets versioned | Write to `.claude/`, user copies to `docs/` |
-| "I'll put specs in docs/plans/" | Specs go in `.claude/SPEC.md` | Use the correct location |
 
 ## Workflow
 
 ```mermaid
 flowchart TD
-    Start(["/dev"]) --> Brainstorm["Phase 1: /dev-brainstorm<br/>Questions → SPEC.md"]
-    Brainstorm --> Plan["Phase 2: /dev-plan<br/>Explore → PLAN.md"]
-    Plan --> Worktree[Create worktree]
-    Worktree --> Implement["Phase 3: /dev-implement<br/>TDD via ralph-loop"]
-    Implement --> Review["Phase 4: /dev-review"]
+    Start(["/dev"]) --> Brainstorm["Phase 1: /dev-brainstorm<br/>Questions → draft SPEC.md"]
+    Brainstorm --> Explore["Phase 2: /dev-explore<br/>Codebase → key files"]
+    Explore --> Clarify["Phase 3: /dev-clarify<br/>Questions → final SPEC.md"]
+    Clarify --> Design["Phase 4: /dev-design<br/>Approaches → PLAN.md"]
+    Design --> Gate{User approves?}
+    Gate -->|No| Design
+    Gate -->|Yes| Implement["Phase 5: /dev-implement<br/>TDD via ralph-loop"]
+    Implement --> Review["Phase 6: /dev-review<br/>Confidence ≥80"]
     Review -->|Issues| Implement
-    Review -->|Approved| Verify["Phase 5: /dev-verify"]
+    Review -->|Approved| Verify["Phase 7: /dev-verify"]
     Verify -->|Fail| Implement
-    Verify -->|Pass| Complete([Completion])
+    Verify -->|Pass| Complete([Done])
 ```
 
 **Phase responsibilities:**
+
 | Phase | Skill | Does | Outputs |
 |-------|-------|------|---------|
-| 1 | `/dev-brainstorm` | Questions, requirements | `.claude/SPEC.md` |
-| 2 | `/dev-plan` | Explore codebase, tasks | `.claude/PLAN.md` |
-| 3 | `/dev-implement` | TDD implementation | Working code + tests |
-| 4 | `/dev-review` | Code review | Approval or issues |
-| 5 | `/dev-verify` | Runtime verification | Fresh evidence |
+| 1 | `/dev-brainstorm` | Initial questions | Draft `.claude/SPEC.md` |
+| 2 | `/dev-explore` | Explore codebase, spawn agents | Key files list (10-15) |
+| 3 | `/dev-clarify` | Questions based on exploration | Final `.claude/SPEC.md` |
+| 4 | `/dev-design` | 2-3 approaches, **user picks** | `.claude/PLAN.md` |
+| 5 | `/dev-implement` | TDD implementation | Working code + tests |
+| 6 | `/dev-review` | Confidence-scored review | Approval or issues |
+| 7 | `/dev-verify` | Runtime verification | Fresh evidence |
 
 **THIS SEQUENCE IS MANDATORY.** Do not skip any phase.
-
-## How to Invoke Sub-Skills
-
-**Note:** Sandbox activates automatically when you invoke `/workflows:dev`. To exit: `/workflows:exit`
-
-**CRITICAL:** You MUST open the skill gate before invoking sub-skills.
-
-```bash
-# Step 1: Open the gate (REQUIRED before any dev-* skill)
-python3 -c "
-import os, hashlib
-tty = os.environ.get('TTY', '')
-cwd = os.getcwd()
-sid = hashlib.md5(f'{tty}:{cwd}'.encode()).hexdigest()[:12]
-open(f'/tmp/.claude-skill-gate-{sid}', 'w').close()
-"
-
-# Step 2: Invoke the skill
-Skill(skill="dev-implement")
-
-# The hook automatically closes the gate after skill starts
-```
-
-**Why:** Task agents run in isolated context and DON'T inherit skill instructions.
-The Skill tool loads the protocol into main chat so you can pass it to Task agents.
 
 ## Core Rules
 
 1. **Main chat orchestrates, Task agents execute** - Never write code directly
-2. **Sequential implementation** - Task agents run one at a time
-3. **Single-pass review** - `/dev-review` combines spec and quality checks
-4. **Verify before claiming** - Run commands, see output, then claim success
-5. **Document findings** - LEARNINGS.md for attempts, SPEC.md for requirements
-6. **Use Ralph for iteration** - Main chat starts ralph-loop, spawns Task agents inside loop
+2. **Read key files after exploration** - Don't skip this step
+3. **User approval before implementation** - Phase 4 has explicit gate
+4. **Confidence scoring in review** - Only report issues ≥80%
+5. **Verify before claiming** - Run commands, see output, then claim
+6. **Document findings** - LEARNINGS.md for attempts, SPEC.md for requirements
 
 ## CRITICAL: Bug Fix Protocol
 
 **When user reports a bug, main chat MUST NOT fix it directly.**
 
-Even if you know exactly what the fix is. Even if it's one line. Even after investigating.
+Even if you know exactly what the fix is. Even if it's one line.
 
 ### Mandatory Bug Response Pattern
 
@@ -138,9 +112,7 @@ User: "bug: [description]"
 Main chat response:
 "Using `/dev-debug` workflow."
 
-Then IMMEDIATELY:
-1. Open skill gate
-2. Invoke /dev-debug
+Then IMMEDIATELY invoke /dev-debug.
 ```
 
 ## Project Structure
@@ -150,19 +122,21 @@ All Claude docs go in `.claude/` folder (add to `.gitignore`):
 ```
 project/
 ├── .claude/                       # gitignored
-│   ├── SPEC.md                    # requirements (from brainstorm)
-│   ├── PLAN.md                    # task breakdown (from plan)
-│   └── LEARNINGS.md               # chronological attempt log
+│   ├── SPEC.md                    # requirements (phases 1, 3)
+│   ├── PLAN.md                    # chosen approach (phase 4)
+│   └── LEARNINGS.md               # attempt log (phase 5)
 └── ...
 ```
 
-Session markers are stored in `/tmp/` (session-specific, auto-cleaned on exit).
+Session markers are stored in `/tmp/claude-workflow-$PPID/` (auto-cleaned on exit).
 
 ## Related Skills
 
-- `/dev-brainstorm` - Interactive design refinement
-- `/dev-plan` - Codebase exploration and task breakdown
+- `/dev-brainstorm` - Initial questions and requirements
+- `/dev-explore` - Codebase exploration with key files
+- `/dev-clarify` - Post-exploration clarification
+- `/dev-design` - Architecture approaches with user gate
 - `/dev-implement` - TDD implementation
-- `/dev-review` - Single-pass code review
+- `/dev-review` - Confidence-scored code review
+- `/dev-verify` - Runtime verification gate
 - `/dev-debug` - Systematic debugging methodology
-- `/dev-verify` - Verification gate

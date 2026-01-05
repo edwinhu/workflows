@@ -1,6 +1,6 @@
 ---
 name: dev-review
-description: This skill should be used when the user asks to "review this code", "check the implementation", "verify spec compliance", or as Phase 4 of the /dev workflow. Combines spec compliance and code quality checks.
+description: This skill should be used when the user asks to "review this code", "check the implementation", "verify spec compliance", or as Phase 6 of the /dev workflow. Combines spec compliance and code quality checks with confidence scoring.
 ---
 
 ## Contents

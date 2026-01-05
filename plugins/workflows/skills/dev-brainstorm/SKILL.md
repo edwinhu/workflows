@@ -1,6 +1,6 @@
 ---
 name: dev-brainstorm
-description: This skill should be used when the user asks to "brainstorm a feature", "discuss requirements", "clarify the design", "refine the idea", or as Phase 1 of the /dev workflow. Uses Socratic questioning to explore design before implementation.
+description: This skill should be used when the user asks to "brainstorm a feature", "discuss requirements", "what should we build", or as Phase 1 of the /dev workflow. Uses Socratic questioning to understand requirements before exploration.
 ---
 
 ## Contents
@@ -14,7 +14,7 @@ description: This skill should be used when the user asks to "brainstorm a featu
 # Brainstorming (Questions Only)
 
 Refine vague ideas into clear requirements through Socratic questioning.
-**NO exploration, NO planning** - just questions and design.
+**NO exploration, NO approaches** - just questions and requirements.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Brainstorming
@@ -25,7 +25,8 @@ Before exploring codebase, before proposing approaches, you MUST:
 1. Ask clarifying questions using AskUserQuestion
 2. Understand what the user actually wants
 3. Define success criteria
-4. Only THEN propose approaches
+
+Approaches come later (in /dev-design) after exploring the codebase.
 
 **If you catch yourself about to explore the codebase before asking questions, STOP.**
 </EXTREMELY-IMPORTANT>
@@ -33,15 +34,16 @@ Before exploring codebase, before proposing approaches, you MUST:
 ## What Brainstorm Does
 
 | DO | DON'T |
-|-------|----------|
+|----|-------|
 | Ask clarifying questions | Explore codebase |
 | Understand requirements | Spawn explore agents |
 | Define success criteria | Look at existing code |
-| Propose 2-3 approaches | Create implementation tasks |
-| Write design doc | Plan file changes |
+| Write draft SPEC.md | Propose approaches (that's design) |
+| Identify unknowns | Create implementation tasks |
 
-**Brainstorm answers: WHAT and WHY**
-**Plan answers: HOW and WHERE** (separate skill)
+**Brainstorm answers: WHAT do we need and WHY**
+**Explore answers: WHERE is the code** (next phase)
+**Design answers: HOW to build it** (after exploration)
 
 ## Process
 
@@ -52,19 +54,22 @@ Use `AskUserQuestion` immediately:
 - **Multiple-choice preferred** - easier to answer
 - Focus on: purpose, constraints, success criteria
 
-### 2. Propose Approaches
+Example questions:
+- "What problem does this solve?"
+- "Who will use this feature?"
+- "What's the most important requirement?"
+- "Any constraints (performance, compatibility)?"
 
-Once requirements are clear:
-- Propose **2-3 different approaches** with trade-offs
-- **Lead with recommendation** (mark as "Recommended")
-- Use `AskUserQuestion` for user to pick
+### 2. Define Success Criteria
 
-### 3. Write Spec Doc
+After understanding requirements:
+- Turn requirements into measurable criteria
+- Use checkboxes for clear pass/fail
+- Confirm with user
 
-After approach is chosen:
-- Write to `.claude/SPEC.md`
-- Include: problem, requirements, success criteria, chosen approach
-- **NO implementation details** - that's for /dev-plan
+### 3. Write Draft SPEC.md
+
+Write initial spec to `.claude/SPEC.md`:
 
 ```markdown
 # Spec: [Feature Name]
@@ -80,13 +85,14 @@ After approach is chosen:
 - [ ] Criterion 1
 - [ ] Criterion 2
 
-## Chosen Approach
-[Description of selected approach]
+## Constraints
+- [Any limitations or boundaries]
 
-## Rejected Alternatives
-- Option B: [why rejected]
-- Option C: [why rejected]
+## Open Questions
+- [Questions to resolve during exploration]
 ```
+
+**Note:** No "Chosen Approach" yet - that comes after exploration and design phases.
 
 ## Red Flags - STOP If You're About To:
 
@@ -94,8 +100,8 @@ After approach is chosen:
 |--------|----------------|------------|
 | Spawn explore agent | Exploring before understanding | Ask questions first |
 | Read source files | Looking at code before requirements | Ask what user wants |
-| Propose implementation | Jumping to HOW before WHAT | Define requirements first |
-| Create task list | Planning before design | Finish brainstorm first |
+| Propose approaches | Too early - need to explore first | Save for /dev-design |
+| Create task list | Planning before understanding | Finish brainstorm first |
 
 ## Output
 
@@ -103,8 +109,7 @@ Brainstorm complete when:
 - Problem is clearly understood
 - Requirements defined
 - Success criteria defined
-- Approach chosen from alternatives
-- `.claude/SPEC.md` written
-- User confirms ready for planning
+- `.claude/SPEC.md` written (draft)
+- Open questions identified for exploration
 
-**Next step:** `/dev-plan` for codebase exploration and task breakdown
+**Next step:** `/dev-explore` for codebase exploration

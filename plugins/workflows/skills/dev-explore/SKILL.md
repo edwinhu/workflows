@@ -1,0 +1,143 @@
+---
+name: dev-explore
+description: This skill should be used when the user asks to "explore the codebase", "understand the architecture", "find similar features", or as Phase 2 of the /dev workflow. Launches explore agents to map codebase and returns key files list.
+---
+
+## Contents
+
+- [The Iron Law of Exploration](#the-iron-law-of-exploration)
+- [What Explore Does](#what-explore-does)
+- [Process](#process)
+- [Key Files List Format](#key-files-list-format)
+- [Red Flags](#red-flags---stop-if-youre-about-to)
+- [Output](#output)
+
+# Codebase Exploration
+
+Map relevant code, trace execution paths, and return prioritized files for reading.
+**Prerequisite:** `.claude/SPEC.md` must exist with draft requirements.
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Exploration
+
+**RETURN KEY FILES LIST. This is not negotiable.**
+
+Every exploration MUST return:
+1. Summary of findings
+2. **5-10 key files** with line numbers and purpose
+3. Patterns discovered
+
+After agents return, **main chat MUST read all key files** before proceeding.
+
+**If you catch yourself about to move on without reading the key files, STOP.**
+</EXTREMELY-IMPORTANT>
+
+## What Explore Does
+
+| DO | DON'T |
+|----|-------|
+| Trace execution paths | Ask user questions (that's clarify) |
+| Map architecture layers | Design approaches (that's design) |
+| Find similar features | Write implementation tasks |
+| Identify patterns and conventions | Make architecture decisions |
+| Return key files list | Skip reading key files |
+
+**Explore answers: WHERE is the code and HOW does it work**
+**Design answers: WHAT approach to take** (separate skill)
+
+## Process
+
+### 1. Launch 2-3 Explore Agents in Parallel
+
+Based on `.claude/SPEC.md`, spawn agents with different focuses:
+
+```
+# Launch in parallel (single message, multiple Task calls)
+
+Task(subagent_type="Explore", prompt="""
+Explore the codebase for [FEATURE AREA].
+
+Focus: Find similar features to [SPEC REQUIREMENT]
+- Trace execution paths from entry point to data storage
+- Identify patterns used
+- Return 5-10 key files with line numbers
+
+Context from SPEC.md:
+[paste relevant requirements]
+""")
+
+Task(subagent_type="Explore", prompt="""
+Explore the codebase for [FEATURE AREA].
+
+Focus: Map architecture and abstractions for [AREA]
+- Identify abstraction layers
+- Find cross-cutting concerns
+- Return 5-10 key files with line numbers
+
+Context from SPEC.md:
+[paste relevant requirements]
+""")
+```
+
+### 2. Consolidate Key Files
+
+After all agents return, consolidate their key files lists:
+- Remove duplicates
+- Prioritize by relevance to requirements
+- Create master list of 10-15 files
+
+### 3. Read All Key Files
+
+**CRITICAL: Main chat must read every file on the key files list.**
+
+```
+Read(file_path="src/auth/login.ts")
+Read(file_path="src/services/session.ts")
+...
+```
+
+This builds deep understanding before asking clarifying questions.
+
+### 4. Document Findings
+
+Write exploration summary (can be verbal or in `.claude/EXPLORATION.md`):
+- Patterns discovered
+- Architecture insights
+- Dependencies identified
+- Questions raised for clarify phase
+
+## Key Files List Format
+
+Each agent MUST return files in this format:
+
+```markdown
+## Key Files to Read
+
+| Priority | File:Line | Purpose |
+|----------|-----------|---------|
+| 1 | `src/auth/login.ts:45` | Entry point for auth flow |
+| 2 | `src/services/session.ts:12` | Session management |
+| 3 | `src/middleware/auth.ts:78` | Auth middleware |
+| 4 | `src/types/user.ts:1` | User type definitions |
+| 5 | `tests/auth/login.test.ts:1` | Existing test patterns |
+```
+
+## Red Flags - STOP If You're About To:
+
+| Action | Why It's Wrong | Do Instead |
+|--------|----------------|------------|
+| Skip reading key files | You'll miss crucial context | Read every file on the list |
+| Ask design questions | Exploration is about understanding | Save for clarify/design phases |
+| Propose approaches | Too early for decisions | Just document what exists |
+| Start implementing | Must understand first | Complete exploration fully |
+
+## Output
+
+Exploration complete when:
+- 2-3 explore agents returned findings
+- Key files list consolidated (10-15 files)
+- **All key files read by main chat**
+- Patterns and architecture documented
+- Questions for clarification identified
+
+**Next step:** `/dev-clarify` for questions based on exploration findings
