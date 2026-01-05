@@ -1,12 +1,11 @@
 ---
 description: Writing guidance using Strunk & White's Elements of Style
-allowed-tools: ["Bash"]
 ---
 
-Activate the writing workflow:
+# Writing Workflow Activated
 
-```bash
-mkdir -p /tmp/claude-workflow-$PPID && touch /tmp/claude-workflow-$PPID/workflow_writing && echo "✓ Writing workflow activated (Strunk & White)"
-```
+Strunk & White style guide is now active. Ask the user:
 
-Run immediately, then ask: "What would you like to write or edit?"
+"What would you like to write or edit?"
+
+When they respond, load the `workflows:writing` skill for detailed guidance if needed.
