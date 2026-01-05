@@ -212,6 +212,23 @@ Testing hierarchy (try in order):
 3. **UI automation** - Computer control + screenshots
 4. **Manual testing** - LAST RESORT ONLY
 
+## Code Search for Implementation
+
+**Use ast-grep to find similar patterns to follow:**
+
+```bash
+# Find similar function implementations
+sg -p 'def handle_$EVENT($$$):' --lang python
+
+# Find existing test patterns
+sg -p 'def test_$NAME($$$):' --lang python
+
+# Find class patterns to follow
+sg -p 'class $NAME(BaseHandler):' --lang python
+```
+
+See `/dev-explore` for full ast-grep and ripgrep-all (rga) reference.
+
 ## Test Location: Project Directory, NOT /tmp/
 
 **Write tests in the project's test directory, not /tmp/.**

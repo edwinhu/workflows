@@ -92,6 +92,24 @@ Try in order. Only fall back when higher options unavailable:
 | 5 | **Accessibility** | AT-SPI, axe-core | Verify a11y compliance |
 | 6 | **Manual testing** | User verification | **LAST RESORT ONLY** |
 
+## Code Search for Tests
+
+**Use ast-grep to find existing test patterns:**
+
+```bash
+# Find test functions
+sg -p 'def test_$NAME($$$):' --lang python
+sg -p 'it($DESC, $$$)' --lang javascript
+
+# Find test fixtures
+sg -p '@pytest.fixture' --lang python
+
+# Find assertions
+sg -p 'assert $EXPR' --lang python
+```
+
+See `/dev-explore` for full ast-grep and ripgrep-all (rga) reference.
+
 ## Test Discovery
 
 Before running tests, discover what's available:

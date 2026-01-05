@@ -177,6 +177,23 @@ The bug fix isn't complete until there's a regression test that:
 | `/tmp/test_bug_123.sh` | `tests/test_bug_123.sh` |
 | Verified manually | Regression test added |
 
+## Code Search for Debugging
+
+**Use ast-grep for tracing code paths:**
+
+```bash
+# Find all calls to a function
+sg -p 'suspicious_function($$$)' --lang python
+
+# Find where a variable is assigned
+sg -p '$VAR = $EXPR' --lang python
+
+# Trace method chains
+sg -p '$OBJ.method1($$$).method2($$$)' --lang python
+```
+
+See `/dev-explore` for full ast-grep and ripgrep-all (rga) reference.
+
 ## The Four Phases (per iteration)
 
 1. **Investigate** - Reproduce, trace data flow, gather evidence
