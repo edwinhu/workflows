@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Development workflow plugin with TDD enforcement, skills for brainstorm/plan/implement/debug/review/verify, and hooks for workflow validation.",
   "author": {
     "name": "edwinhu"
