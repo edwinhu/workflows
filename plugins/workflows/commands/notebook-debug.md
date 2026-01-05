@@ -1,6 +1,8 @@
 ---
-name: notebook-debug
 description: Debug executed Jupyter notebooks from any source
+allowed-tools: ["Skill"]
 ---
 
-Use the `workflows:notebook-debug` skill to find notebook errors.
+Invoke the `workflows:notebook-debug` skill to debug notebook errors.
+
+Use the Skill tool with `skill: "workflows:notebook-debug"` to load the full instructions.

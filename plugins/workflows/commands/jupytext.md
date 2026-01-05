@@ -1,6 +1,8 @@
 ---
-name: jupytext
 description: Version-control friendly notebooks with jupytext
+allowed-tools: ["Skill"]
 ---
 
-Use the `workflows:jupytext` skill for multi-kernel notebook projects.
+Invoke the `workflows:jupytext` skill for jupytext guidance.
+
+Use the Skill tool with `skill: "workflows:jupytext"` to load the full instructions.

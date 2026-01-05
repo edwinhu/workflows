@@ -1,6 +1,8 @@
 ---
-name: ds
 description: Start the data science workflow with output-first verification
+allowed-tools: ["Skill"]
 ---
 
-Use the `workflows:ds` skill to begin the data science workflow.
+Invoke the `workflows:ds` skill to begin the data science workflow.
+
+Use the Skill tool with `skill: "workflows:ds"` to load the full workflow instructions.

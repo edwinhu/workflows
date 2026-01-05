@@ -1,6 +1,8 @@
 ---
-name: ds-implement
 description: Execute data science pipeline with output-first verification
+allowed-tools: ["Skill"]
 ---
 
-Use the `workflows:ds-implement` skill to implement the analysis.
+Invoke the `workflows:ds-implement` skill to execute the data science pipeline.
+
+Use the Skill tool with `skill: "workflows:ds-implement"` to load the full workflow instructions.

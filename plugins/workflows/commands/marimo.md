@@ -1,6 +1,8 @@
 ---
-name: marimo
 description: Work with marimo reactive Python notebooks
+allowed-tools: ["Skill"]
 ---
 
-Use the `workflows:marimo` skill for marimo notebook guidance.
+Invoke the `workflows:marimo` skill for marimo notebook guidance.
+
+Use the Skill tool with `skill: "workflows:marimo"` to load the full instructions.
