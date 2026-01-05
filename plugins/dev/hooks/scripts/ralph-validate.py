@@ -14,7 +14,7 @@ import os
 import re
 
 # Add shared scripts to path
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'shared'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'common'))
 from session import is_skill_gate_open, close_skill_gate, is_ralph_loop_active
 
 

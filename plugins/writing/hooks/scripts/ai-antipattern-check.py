@@ -20,7 +20,7 @@ import os
 from typing import NamedTuple
 
 # Add shared scripts dir to path for session module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared', 'hooks', 'scripts'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'common', 'hooks', 'scripts'))
 from session import is_workflow_active
 
 # Early exit if writing workflow is not active (session-aware like Ralph loops)
