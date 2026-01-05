@@ -1,0 +1,8 @@
+{
+  "name": "shared",
+  "version": "0.1.0",
+  "description": "Shared resources for development workflows: sandbox controls, session management, and unified hook dispatcher.",
+  "author": {
+    "name": "edwinhu"
+  }
+}
