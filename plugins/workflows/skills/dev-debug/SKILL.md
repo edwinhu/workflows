@@ -75,7 +75,37 @@ After Task agent returns, main chat verifies:
 <promise>FIXED</promise>
 ```
 
-If not complete, iterate: spawn another Task agent to continue investigation.
+### Step 4: If Bug Not Fixed → Keep Iterating
+
+<EXTREMELY-IMPORTANT>
+**KEEP LOOPING UNTIL REGRESSION TEST PASSES. Do NOT ask user to verify manually.**
+
+If bug not fixed or criteria not met:
+1. **Do NOT** output `<promise>FIXED</promise>`
+2. **Do NOT** ask user to manually verify the fix
+3. **DO** spawn another Task agent to continue investigation
+4. **DO** keep iterating until automated regression test passes
+
+The ralph loop continues until:
+- Regression test passes (bug confirmed fixed), OR
+- Max iterations reached (then escalate with specifics, don't ask for manual testing)
+
+**Manual verification is LAST RESORT and requires explicit user request.**
+</EXTREMELY-IMPORTANT>
+
+### Automated Verification Hierarchy
+
+Before asking user to verify, exhaust these options:
+
+| Priority | Test Type | Tools |
+|----------|-----------|-------|
+| 1 | Regression test | meson test, pytest, jest |
+| 2 | Integration | CLI reproduction, API calls, D-Bus |
+| 3 | UI automation | Playwright (web), ydotool (desktop) |
+| 4 | Visual | Screenshots via grim, snapshots |
+| 5 | Manual | **ONLY if user explicitly requests** |
+
+See `/dev-test` skill for platform-specific automation.
 
 ---
 
@@ -144,7 +174,16 @@ Append each hypothesis to `.claude/LEARNINGS.md`. See [LEARNINGS.md Template](..
 
 ## If Max Iterations Reached
 
-Ralph exits after max iterations. Main chat can:
-1. Check LEARNINGS.md for hypotheses tested
-2. Start a new ralph-loop with narrowed focus (main chat, not Task agent)
-3. Escalate to user with specific question (not "please test")
+Ralph exits after max iterations. **Still do NOT ask user to manually verify.**
+
+Main chat should:
+1. **Summarize** hypotheses tested (from LEARNINGS.md)
+2. **Report** what was ruled out and what remains unclear
+3. **Ask user** for direction:
+   - "Tested hypotheses A, B, C - all ruled out. Options:"
+   - A) Start new loop with different investigation angle
+   - B) Add more logging to specific code path
+   - C) User provides additional context about the bug
+   - D) User explicitly requests manual verification
+
+**Never default to "please verify the fix manually".** Always exhaust automation first.
