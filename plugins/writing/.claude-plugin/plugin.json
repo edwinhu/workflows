@@ -1,6 +1,6 @@
 {
   "name": "writing",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Writing workflow with style guides and AI anti-pattern detection hooks",
   "author": {
     "name": "edwinhu"
