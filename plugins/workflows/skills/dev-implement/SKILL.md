@@ -123,6 +123,21 @@ Before asking user to test, exhaust these options:
 
 See `/dev-test` skill for platform-specific automation.
 
+<EXTREMELY-IMPORTANT>
+### Tool Availability Gate
+
+**Before attempting UI/desktop automation, verify tools are installed.**
+
+If ydotool, grim, wtype, or other required tools are missing:
+1. **STOP** - Do not proceed
+2. **TELL USER** - What tool is needed + install command
+3. **WAIT** - For user to confirm installation
+
+See `/dev-test` skill for full tool check protocol.
+
+**Do NOT skip tests because tools are missing. Do NOT silently fail.**
+</EXTREMELY-IMPORTANT>
+
 ---
 
 ## Reference: TDD Protocol (for the Task agent)

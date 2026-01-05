@@ -32,6 +32,53 @@ Before claiming anything works:
 **If you catch yourself about to ask user to test manually, STOP and find automated alternative.**
 </EXTREMELY-IMPORTANT>
 
+<EXTREMELY-IMPORTANT>
+## CRITICAL: Tool Availability Gate
+
+**If a required testing tool is not installed, STOP and tell the user to install it.**
+
+Before attempting automation, verify tools exist:
+
+```bash
+# Check availability
+which ydotool || echo "MISSING: ydotool"
+which grim || echo "MISSING: grim"
+which wtype || echo "MISSING: wtype"
+# For Playwright, check MCP tools are available
+```
+
+**If ANY required tool is missing:**
+
+1. **STOP** - Do not proceed with testing
+2. **TELL USER** - Exactly what tool is needed and why
+3. **PROVIDE INSTALL COMMAND** - Give them the exact command
+4. **WAIT** - Do not continue until user confirms installation
+
+Example response when tool missing:
+```
+STOP: Cannot proceed with UI automation.
+
+Missing tool: ydotool (required for Wayland input simulation)
+
+Install with:
+  sudo pacman -S ydotool    # Arch
+  sudo apt install ydotool  # Debian/Ubuntu
+
+After installing, start the daemon:
+  sudo systemctl enable --now ydotool
+
+Reply when installed and I'll continue testing.
+```
+
+**DO NOT:**
+- Skip the test because tool is missing
+- Fall back to manual testing silently
+- Continue and let the test fail
+- Assume the tool will be available
+
+**This gate is non-negotiable. Missing tools = full stop.**
+</EXTREMELY-IMPORTANT>
+
 ## Testing Hierarchy
 
 Try in order. Only fall back when higher options unavailable:

@@ -39,6 +39,7 @@ Task(subagent_type="general-purpose", prompt="""
 Debug [SYMPTOM] following systematic protocol.
 
 Context:
+- Read .claude/SPEC.md for test command and requirements
 - Read .claude/LEARNINGS.md for prior attempts and ruled-out hypotheses
 
 Debugging Protocol:
@@ -106,6 +107,21 @@ Before asking user to verify, exhaust these options:
 | 5 | Manual | **ONLY if user explicitly requests** |
 
 See `/dev-test` skill for platform-specific automation.
+
+<EXTREMELY-IMPORTANT>
+### Tool Availability Gate
+
+**Before attempting UI/desktop automation, verify tools are installed.**
+
+If ydotool, grim, wtype, or other required tools are missing:
+1. **STOP** - Do not proceed
+2. **TELL USER** - What tool is needed + install command
+3. **WAIT** - For user to confirm installation
+
+See `/dev-test` skill for full tool check protocol.
+
+**Do NOT skip tests because tools are missing. Do NOT silently fail.**
+</EXTREMELY-IMPORTANT>
 
 ---
 

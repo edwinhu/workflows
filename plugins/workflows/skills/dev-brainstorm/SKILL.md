@@ -88,6 +88,11 @@ Write initial spec to `.claude/SPEC.md`:
 ## Constraints
 - [Any limitations or boundaries]
 
+## Testing
+- **Framework:** [pytest / meson test / npm test / etc.]
+- **Command:** [e.g., `pytest tests/ -v`]
+- **Directory:** [e.g., tests/]
+
 ## Open Questions
 - [Questions to resolve during exploration]
 ```
