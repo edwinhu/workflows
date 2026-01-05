@@ -8,6 +8,7 @@ description: This skill should be used when the user asks to "explore the codeba
 - [The Iron Law of Exploration](#the-iron-law-of-exploration)
 - [What Explore Does](#what-explore-does)
 - [Process](#process)
+- [Test Infrastructure Discovery](#test-infrastructure-discovery)
 - [Key Files List Format](#key-files-list-format)
 - [Red Flags](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
@@ -106,6 +107,51 @@ Write exploration summary (can be verbal or in `.claude/EXPLORATION.md`):
 - Dependencies identified
 - Questions raised for clarify phase
 
+## Test Infrastructure Discovery
+
+**CRITICAL: Always discover testing infrastructure during exploration.**
+
+### Project Test Framework
+
+```bash
+# Find test directory and framework
+ls -d tests/ test/ spec/ __tests__/ 2>/dev/null
+cat meson.build 2>/dev/null | grep -i test
+cat package.json 2>/dev/null | grep -E "(test|jest|mocha|vitest)"
+cat pyproject.toml 2>/dev/null | grep -i pytest
+cat Cargo.toml 2>/dev/null | grep -i "\[dev-dependencies\]"
+
+# Find existing tests
+find . -name "*test*" -type f | head -20
+```
+
+### Available Testing Tools
+
+| Platform | Check | Tool |
+|----------|-------|------|
+| Unit tests | Build system | meson test, pytest, jest, cargo test |
+| Web | MCP | Playwright (browser_snapshot, browser_click) |
+| Desktop | System | ydotool, grim, dbus-send |
+| Accessibility | System | pyatspi, accerciser |
+
+```bash
+# Desktop automation (Wayland)
+which ydotool grim dbus-send 2>/dev/null
+
+# Check for D-Bus interfaces (desktop apps)
+dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+  /org/freedesktop/DBus org.freedesktop.DBus.ListNames 2>/dev/null | grep -i appname
+```
+
+### Document in Exploration Output
+
+Include in your findings:
+- **Test framework:** meson test / pytest / jest / etc.
+- **Test directory:** tests/ or test/ or __tests__/
+- **Existing test patterns:** How tests are structured
+- **Available automation:** Playwright MCP, ydotool, D-Bus interfaces
+- **Visual testing:** Screenshots, accessibility tree
+
 ## Key Files List Format
 
 Each agent MUST return files in this format:
@@ -138,6 +184,14 @@ Exploration complete when:
 - Key files list consolidated (10-15 files)
 - **All key files read by main chat**
 - Patterns and architecture documented
+- **Test infrastructure documented**
 - Questions for clarification identified
+
+### Required Output Sections
+
+1. **Key Files** - 10-15 files with line numbers
+2. **Architecture** - Layers, patterns, conventions
+3. **Test Infrastructure** - Framework, tools, patterns
+4. **Questions** - For clarify phase
 
 **Next step:** `/dev-clarify` for questions based on exploration findings
