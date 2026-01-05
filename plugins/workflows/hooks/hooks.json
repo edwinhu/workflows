@@ -13,22 +13,11 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Skill|Bash|Edit|Write",
+        "matcher": "Bash|Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common/dispatcher.py"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common/post-dispatcher.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common/sandbox-check.py"
           }
         ]
       }

@@ -1,11 +1,16 @@
 ---
 description: Start the development workflow with TDD enforcement and sandbox mode
+allowed-tools: ["Bash"]
 ---
 
-# Dev Workflow Activated
+# Dev Workflow
 
-TDD and sandbox mode are now active. Ask the user:
+Enable sandbox mode and start the development workflow:
 
-"What would you like to implement?"
+```bash
+touch /tmp/claude-workflow-$PPID/dev_mode && echo "✓ Dev workflow activated (TDD + sandbox)"
+```
 
-When they respond, load the `workflows:dev` skill for full methodology if needed.
+After running, ask: "What would you like to implement?"
+
+Load the `workflows:dev` skill for full TDD methodology when needed.

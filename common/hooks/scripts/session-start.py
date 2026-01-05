@@ -215,9 +215,19 @@ def build_env_section(env_context: dict, persisted_vars: list) -> str:
     return "\n".join(lines)
 
 
+def create_session_marker_dir():
+    """Create the session marker directory for workflow state tracking."""
+    session_dir = Path(f"/tmp/claude-workflow-{os.getppid()}")
+    session_dir.mkdir(parents=True, exist_ok=True)
+    return session_dir
+
+
 def main():
     # Read and discard stdin for consistency with hook best practices
     sys.stdin.read()
+
+    # Create session marker directory (used by sandbox-check.py)
+    create_session_marker_dir()
 
     # Load environment variables once: central secrets first, project-local override
     load_central_secrets()
