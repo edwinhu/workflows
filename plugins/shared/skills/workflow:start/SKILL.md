@@ -1,9 +1,9 @@
 ---
-name: sandbox:start
+name: workflow:start
 description: Activate the main chat sandbox. When active, main chat can only run read-only commands and write .md/.txt files. All code changes must go through Task agents.
 ---
 
-# Sandbox Start
+# Workflow Start
 
 Activates the main chat sandbox for this session.
 
@@ -32,4 +32,4 @@ print('✓ Sandbox activated')
 
 ## Deactivation
 
-Use `/sandbox:exit` to deactivate the sandbox.
+Use `/workflow:exit` to deactivate the sandbox.

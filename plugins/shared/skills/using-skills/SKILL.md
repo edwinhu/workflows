@@ -40,8 +40,8 @@ Invoke a skill **before responding** when the user's request involves:
 | Spreadsheets | `xlsx` |
 | PDFs | `pdf` |
 | Presentations | `pptx` |
-| Activate sandbox only | `sandbox:start` |
-| Deactivate sandbox | `sandbox:exit` |
+| Activate sandbox only | `workflow:start` |
+| Deactivate sandbox | `workflow:exit` |
 
 ## Red Flags
 

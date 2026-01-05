@@ -1,9 +1,9 @@
 ---
-name: sandbox:exit
+name: workflow:exit
 description: Deactivate the main chat sandbox. Restores full access to Bash and Write/Edit tools from main chat.
 ---
 
-# Sandbox Exit
+# Workflow Exit
 
 Deactivates the main chat sandbox for this session.
 
