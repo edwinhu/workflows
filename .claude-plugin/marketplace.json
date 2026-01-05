@@ -4,41 +4,17 @@
     "name": "Edwin Hu"
   },
   "metadata": {
-    "description": "Development, data science, and writing plugins for Claude Code",
-    "version": "1.0.0"
+    "description": "Development, data science, and writing workflows for Claude Code",
+    "version": "2.0.0"
   },
   "plugins": [
     {
-      "name": "dev",
-      "source": "./plugins/dev",
-      "description": "Full feature development workflow with TDD enforcement",
-      "version": "0.5.0",
+      "name": "workflows",
+      "source": "./plugins/workflows",
+      "description": "Unified development, data science, and writing workflows with sandbox mode, TDD enforcement, and output-first verification",
+      "version": "1.0.0",
       "category": "development",
-      "tags": ["development", "tdd", "testing", "code-review"]
-    },
-    {
-      "name": "ds",
-      "source": "./plugins/ds",
-      "description": "Data science workflow with output-first verification",
-      "version": "0.5.0",
-      "category": "data-science",
-      "tags": ["data-science", "wrds", "lseg", "jupyter", "analysis"]
-    },
-    {
-      "name": "writing",
-      "source": "./plugins/writing",
-      "description": "Writing workflow with style guides, brainstorming, and AI anti-pattern detection",
-      "version": "0.4.0",
-      "category": "writing",
-      "tags": ["writing", "editing", "style", "ai-detection", "readwise"]
-    },
-    {
-      "name": "shared",
-      "source": "./plugins/shared",
-      "description": "Shared skills and utilities across plugins (docx, pdf, pptx, xlsx)",
-      "version": "0.1.0",
-      "category": "utilities",
-      "tags": ["office", "documents", "spreadsheets", "presentations"]
+      "tags": ["development", "data-science", "writing", "tdd", "workflows", "sandbox"]
     }
   ]
 }
