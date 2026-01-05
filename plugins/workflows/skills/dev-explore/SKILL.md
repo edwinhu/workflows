@@ -48,18 +48,31 @@ After agents return, **main chat MUST read all key files** before proceeding.
 
 ## Process
 
-### 1. Launch 2-3 Explore Agents in Parallel
+### 1. Launch 3 Explore Agents in Parallel
+
+<EXTREMELY-IMPORTANT>
+**Launch ALL agents in a SINGLE message with multiple Task calls.**
+
+This is parallel execution - do NOT wait for one agent before launching another.
+</EXTREMELY-IMPORTANT>
 
 Based on `.claude/SPEC.md`, spawn agents with different focuses:
 
 ```
-# Launch in parallel (single message, multiple Task calls)
+# PARALLEL: All three Task calls in ONE message
 
 Task(subagent_type="Explore", prompt="""
 Explore the codebase for [FEATURE AREA].
 
 Focus: Find similar features to [SPEC REQUIREMENT]
+
+Use ast-grep for semantic search:
+- sg -p 'function_name($$$)' --lang [language]
+- sg -p 'class $NAME { $$$ }' --lang [language]
+
+Tasks:
 - Trace execution paths from entry point to data storage
+- Find similar implementations to follow
 - Identify patterns used
 - Return 5-10 key files with line numbers
 
@@ -71,9 +84,36 @@ Task(subagent_type="Explore", prompt="""
 Explore the codebase for [FEATURE AREA].
 
 Focus: Map architecture and abstractions for [AREA]
+
+Use ast-grep for semantic search:
+- sg -p 'class $NAME($BASE):' --lang [language]
+- sg -p 'interface $NAME { $$$ }' --lang [language]
+
+Tasks:
 - Identify abstraction layers
-- Find cross-cutting concerns
+- Find cross-cutting concerns (logging, auth, errors)
+- Map module dependencies
 - Return 5-10 key files with line numbers
+
+Context from SPEC.md:
+[paste relevant requirements]
+""")
+
+Task(subagent_type="Explore", prompt="""
+Explore the codebase for [FEATURE AREA].
+
+Focus: Test infrastructure and patterns
+
+Use ast-grep for test discovery:
+- sg -p 'def test_$NAME($$$):' --lang python
+- sg -p 'it($DESC, $$$)' --lang javascript
+- sg -p '@pytest.fixture' --lang python
+
+Tasks:
+- Find test directory and framework
+- Identify existing test patterns
+- Check for fixtures, mocks, helpers
+- Return 5-10 key test files with line numbers
 
 Context from SPEC.md:
 [paste relevant requirements]
