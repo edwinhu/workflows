@@ -14,7 +14,7 @@ Run this command to deactivate the sandbox:
 ```bash
 python3 -c "
 import sys
-sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts')
+sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts/shared')
 from session import deactivate_dev_mode
 deactivate_dev_mode()
 print('✓ Sandbox deactivated')

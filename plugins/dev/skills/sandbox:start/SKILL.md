@@ -23,7 +23,7 @@ Run this command to activate the sandbox:
 ```bash
 python3 -c "
 import sys
-sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts')
+sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts/shared')
 from session import activate_dev_mode
 activate_dev_mode()
 print('✓ Sandbox activated')
