@@ -1,8 +1,0 @@
-{
-  "name": "writing",
-  "version": "0.5.1",
-  "description": "Writing workflow with style guides and AI anti-pattern detection hooks",
-  "author": {
-    "name": "edwinhu"
-  }
-}

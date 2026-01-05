@@ -1,8 +1,0 @@
-{
-  "name": "workflow",
-  "version": "0.1.0",
-  "description": "Workflow orchestration: start dev/ds workflows and control the main chat sandbox.",
-  "author": {
-    "name": "edwinhu"
-  }
-}

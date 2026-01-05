@@ -3,6 +3,21 @@ name: dev
 description: This skill should be used when the user asks to "implement a feature", "add functionality", "build a new feature", "fix a non-trivial bug", or needs a structured development workflow. Orchestrates brainstorm, plan, implement, review, and verify phases with TDD enforcement.
 ---
 
+## Activation
+
+First, activate the dev workflow and sandbox:
+
+```bash
+python3 -c "
+import sys
+sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
+from session import activate_workflow, activate_dev_mode
+activate_workflow('dev')
+activate_dev_mode()
+print('✓ Dev workflow activated')
+"
+```
+
 ## Contents
 
 - [The Iron Law of Feature Development](#the-iron-law-of-feature-development)
@@ -77,7 +92,7 @@ flowchart TD
 
 ## How to Invoke Sub-Skills
 
-**Note:** Sandbox activates automatically when you invoke `/dev`. To exit: `/dev-exit`
+**Note:** Sandbox activates automatically when you invoke `/workflows:dev`. To exit: `/workflows:exit`
 
 **CRITICAL:** You MUST open the skill gate before invoking sub-skills.
 

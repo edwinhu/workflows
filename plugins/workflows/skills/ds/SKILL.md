@@ -3,6 +3,21 @@ name: ds
 description: This skill should be used when the user asks to "analyze data", "build a model", "explore this dataset", "run analysis", or needs a structured data science workflow. Orchestrates brainstorm, plan, implement, review, and verify phases with output-first verification.
 ---
 
+## Activation
+
+First, activate the ds workflow and sandbox:
+
+```bash
+python3 -c "
+import sys
+sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
+from session import activate_workflow, activate_dev_mode
+activate_workflow('ds')
+activate_dev_mode()
+print('✓ DS workflow activated')
+"
+```
+
 ## Contents
 
 - [The Iron Law of Data Science](#the-iron-law-of-data-science)
