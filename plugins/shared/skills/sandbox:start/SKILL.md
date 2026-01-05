@@ -1,5 +1,5 @@
 ---
-name: sandbox-start
+name: sandbox:start
 description: Activate the main chat sandbox. When active, main chat can only run read-only commands and write .md/.txt files. All code changes must go through Task agents.
 ---
 
@@ -32,4 +32,4 @@ print('✓ Sandbox activated')
 
 ## Deactivation
 
-Use `/sandbox-exit` to deactivate the sandbox.
+Use `/sandbox:exit` to deactivate the sandbox.

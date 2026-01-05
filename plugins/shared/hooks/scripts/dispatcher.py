@@ -35,7 +35,7 @@ def get_workflow_for_skill(skill: str) -> str | None:
     if 'exit' in skill:
         return None
     # Sandbox skills don't activate workflows (they're manual control)
-    if skill.startswith('sandbox'):
+    if 'sandbox' in skill:
         return None
 
     if skill in ('dev', 'ds', 'writing'):

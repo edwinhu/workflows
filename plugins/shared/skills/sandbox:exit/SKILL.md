@@ -1,5 +1,5 @@
 ---
-name: sandbox-exit
+name: sandbox:exit
 description: Deactivate the main chat sandbox. Restores full access to Bash and Write/Edit tools from main chat.
 ---
 
