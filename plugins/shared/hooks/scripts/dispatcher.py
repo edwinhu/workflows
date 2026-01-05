@@ -31,6 +31,13 @@ from session import (
 
 def get_workflow_for_skill(skill: str) -> str | None:
     """Determine which workflow a skill belongs to."""
+    # Exit skills don't activate workflows
+    if 'exit' in skill:
+        return None
+    # Sandbox skills don't activate workflows (they're manual control)
+    if skill.startswith('sandbox'):
+        return None
+
     if skill in ('dev', 'ds', 'writing'):
         return skill
     if skill.startswith('dev:') or skill.startswith('dev-'):

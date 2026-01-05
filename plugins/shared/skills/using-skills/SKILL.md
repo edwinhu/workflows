@@ -23,9 +23,11 @@ Invoke a skill **before responding** when the user's request involves:
 
 | Domain | Skill |
 |--------|-------|
-| Feature implementation | `dev` or `dev:start` |
-| Bug fixing/debugging | `dev:dev-debug` |
-| Data analysis | `ds` or `ds:start` |
+| Feature implementation | `dev` |
+| Bug fixing/debugging | `dev-debug` |
+| Exit dev workflow | `dev-exit` |
+| Data analysis | `ds` |
+| Exit ds workflow | `ds-exit` |
 | Marimo notebooks | `marimo` |
 | Jupyter/jupytext | `jupytext` |
 | WRDS data access | `wrds` |
@@ -40,6 +42,8 @@ Invoke a skill **before responding** when the user's request involves:
 | Spreadsheets | `xlsx` |
 | PDFs | `pdf` |
 | Presentations | `pptx` |
+| Activate sandbox only | `sandbox-start` |
+| Deactivate sandbox | `sandbox-exit` |
 
 ## Red Flags
 
