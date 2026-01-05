@@ -1,6 +1,6 @@
 {
   "name": "workflows",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Development and data science workflows with TDD enforcement, sandbox mode, and output-first verification.",
   "author": {
     "name": "edwinhu"
