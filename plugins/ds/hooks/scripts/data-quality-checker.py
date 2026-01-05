@@ -7,11 +7,22 @@ Warns on common data quality anti-patterns:
 - No null check (df.isnull().sum())
 - No duplicate check (df.duplicated())
 - Missing .describe() for numeric data
+
+Session-aware: Only runs when ds workflow is active.
 """
 
 import json
 import re
 import sys
+import os
+
+# Add shared scripts dir to path for session module
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared', 'hooks', 'scripts'))
+from session import is_workflow_active
+
+# Early exit if ds workflow is not active (session-aware like Ralph loops)
+if not is_workflow_active('ds'):
+    sys.exit(0)
 
 
 def get_hook_input():

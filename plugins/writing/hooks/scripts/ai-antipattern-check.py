@@ -9,12 +9,23 @@ Severity levels:
 - CRITICAL: ChatGPT artifacts, prompt refusals (always warn)
 - HIGH: Puffery, promotional language (always warn)
 - MEDIUM: Structural patterns (warn if multiple found)
+
+Session-aware: Only runs when writing workflow is active.
 """
 
 import json
 import re
 import sys
+import os
 from typing import NamedTuple
+
+# Add shared scripts dir to path for session module
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared', 'hooks', 'scripts'))
+from session import is_workflow_active
+
+# Early exit if writing workflow is not active (session-aware like Ralph loops)
+if not is_workflow_active('writing'):
+    sys.exit(0)
 
 
 class Pattern(NamedTuple):

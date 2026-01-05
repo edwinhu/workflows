@@ -114,3 +114,49 @@ def cleanup_session():
             os.remove(path)
         except FileNotFoundError:
             pass
+    # Clean all workflow markers
+    for workflow in ['dev', 'ds', 'writing']:
+        deactivate_workflow(workflow)
+
+
+# =============================================================================
+# Workflow-specific tracking (session-aware hooks)
+# =============================================================================
+
+def get_workflow_marker(workflow: str) -> str:
+    """Get path to session-specific workflow marker (dev, ds, writing)."""
+    return str(_get_cache_dir() / f".claude-workflow-{workflow}-{get_session_id()}")
+
+
+def is_workflow_active(workflow: str) -> bool:
+    """Check if specific workflow is active for this session.
+
+    Hooks should call this early and exit(0) if their workflow isn't active.
+    This makes hooks session-aware like Ralph Wiggum loops.
+    """
+    return os.path.exists(get_workflow_marker(workflow))
+
+
+def activate_workflow(workflow: str):
+    """Activate a specific workflow for this session.
+
+    Called by skill-activator when /dev:start, /ds:start, or /writing is invoked.
+    """
+    Path(get_workflow_marker(workflow)).touch()
+
+
+def deactivate_workflow(workflow: str):
+    """Deactivate a specific workflow for this session."""
+    try:
+        os.remove(get_workflow_marker(workflow))
+    except FileNotFoundError:
+        pass
+
+
+def get_active_workflows() -> list:
+    """Get list of active workflows for this session."""
+    active = []
+    for workflow in ['dev', 'ds', 'writing']:
+        if is_workflow_active(workflow):
+            active.append(workflow)
+    return active

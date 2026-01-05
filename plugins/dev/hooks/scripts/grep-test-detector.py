@@ -3,11 +3,22 @@
 Grep Test Detector: Warn when agents grep SOURCE FILES as a test mechanism.
 Grepping source checks if strings exist - it doesn't test behavior.
 Grepping LOG files after running code IS valid testing.
+
+Session-aware: Only runs when dev workflow is active.
 """
 
 import json
 import sys
 import re
+import os
+
+# Add shared scripts dir to path for session module
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared', 'hooks', 'scripts'))
+from session import is_workflow_active
+
+# Early exit if dev workflow is not active (session-aware like Ralph loops)
+if not is_workflow_active('dev'):
+    sys.exit(0)
 
 # Source file extensions - grepping these as tests is WRONG
 SOURCE_EXTENSIONS = r'\.(c|h|cpp|hpp|py|js|ts|go|rs|java|rb|sh|bash)$'

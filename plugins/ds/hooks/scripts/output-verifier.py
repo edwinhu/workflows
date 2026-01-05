@@ -7,11 +7,22 @@ Checks for patterns like:
 - "analysis complete" without showing results
 - "data loaded" without showing shape/head
 - Claims of completion without evidence
+
+Session-aware: Only runs when ds workflow is active.
 """
 
 import json
 import re
 import sys
+import os
+
+# Add shared scripts dir to path for session module
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared', 'hooks', 'scripts'))
+from session import is_workflow_active
+
+# Early exit if ds workflow is not active (session-aware like Ralph loops)
+if not is_workflow_active('ds'):
+    sys.exit(0)
 
 
 def get_hook_input():
