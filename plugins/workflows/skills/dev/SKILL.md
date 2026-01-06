@@ -145,11 +145,18 @@ Session markers are stored in `/tmp/claude-workflow-$PPID/` (auto-cleaned on exi
 
 ## Related Skills
 
+### Workflow Phases
 - `/dev-brainstorm` - Initial questions and requirements
 - `/dev-explore` - Codebase exploration with key files
 - `/dev-clarify` - Post-exploration clarification
 - `/dev-design` - Architecture approaches with user gate
-- `/dev-implement` - TDD implementation
+- `/dev-implement` - Orchestrates implementation (main chat)
 - `/dev-review` - Confidence-scored code review
 - `/dev-verify` - Runtime verification gate
 - `/dev-debug` - Systematic debugging methodology
+
+### Implementation Sub-Skills
+- `/dev-ralph-loop` - Per-task loop pattern (main chat)
+- `/dev-delegate` - Task agent templates (main chat)
+- `/dev-tdd` - TDD protocol (Task agents)
+- `/dev-test` - Testing tools reference (Task agents)

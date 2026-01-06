@@ -5,18 +5,33 @@ description: "Subagent delegation for implementation. Dispatches fresh Task agen
 
 **Announce:** "I'm using dev-delegate to dispatch implementation subagents."
 
+## Where This Fits
+
+```
+Main Chat                          Task Agent
+─────────────────────────────────────────────────────
+dev-implement (orchestrates)
+  → dev-ralph-loop (per-task loops)
+    → dev-delegate (this skill)
+      → spawns Task agent ──────→ follows dev-tdd
+                                  uses dev-test tools
+```
+
+**Main chat** uses this skill to spawn Task agents.
+**Task agents** follow `dev-tdd` (TDD protocol) and use `dev-test` (testing tools).
+
 ## Core Principle
 
 **Fresh subagent per task + two-stage review = high quality, fast iteration**
 
-- Implementer subagent does the work
+- Implementer subagent does the work (following dev-tdd)
 - Spec reviewer confirms it matches requirements
 - Quality reviewer checks code quality
 - Loop until both approve
 
 ## When to Use
 
-Called by `dev-implement` for each task in PLAN.md. Don't invoke directly.
+Called by `dev-implement` inside each ralph loop iteration. Don't invoke directly.
 
 ## The Process
 
@@ -48,17 +63,38 @@ You are implementing: [TASK NAME]
 - Related files: [list from exploration]
 - Test command: [from SPEC.md]
 
-## Requirements
-1. Follow TDD: write failing test first, then implement
-2. Run tests after each change
-3. Commit when tests pass
-4. Self-review before finishing
+## TDD Protocol (MANDATORY)
+
+Follow the dev-tdd skill - RED-GREEN-REFACTOR:
+
+1. **RED**: Write a failing test FIRST
+   - Run it, SEE IT FAIL
+   - Document: "RED: [test] fails with [error]"
+
+2. **GREEN**: Write MINIMAL code to pass
+   - Run test, SEE IT PASS
+   - Document: "GREEN: [test] passes"
+
+3. **REFACTOR**: Clean up while staying green
+
+**If you write code before seeing RED, you're not doing TDD. Stop and restart.**
+
+## Testing Tools
+
+For test options (pytest, Playwright, ydotool), see dev-test skill.
+
+Tests must EXECUTE code and VERIFY behavior. Grepping is NOT testing.
 
 ## If Unclear
 Ask questions BEFORE implementing. Don't guess.
 
 ## Output
-Report: what you implemented, test results, commit SHA, any concerns.
+Report:
+- RED: What test failed and how
+- GREEN: What made it pass
+- Test command and output
+- Commit SHA
+- Any concerns
 """)
 ```
 
@@ -212,5 +248,11 @@ Quality Reviewer: APPROVED
 
 ## Integration
 
-This skill is invoked by `dev-implement` during the TDD phase.
-After all tasks complete, `dev-implement` proceeds to `dev-review`.
+**Main chat invokes:**
+- `dev-implement` → `dev-ralph-loop` → `dev-delegate` (this skill)
+
+**Task agents follow:**
+- `dev-tdd` - TDD protocol (RED-GREEN-REFACTOR)
+- `dev-test` - Testing tools (pytest, Playwright, ydotool)
+
+After all tasks complete with passing tests, `dev-implement` proceeds to `dev-review`.
