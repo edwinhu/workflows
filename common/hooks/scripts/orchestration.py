@@ -110,8 +110,8 @@ Task agents should do work directly, not invoke orchestration skills."""
                 }
             close_skill_gate()
 
-        # Block nested ralph-loop
-        if 'ralph-loop' in skill:
+        # Block nested ralph-loop (but not dev-ralph-loop documentation skill)
+        if 'ralph-loop' in skill and 'dev-ralph-loop' not in skill:
             if is_ralph_loop_active():
                 return {
                     "hookSpecificOutput": {
