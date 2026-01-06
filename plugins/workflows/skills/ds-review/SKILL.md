@@ -1,7 +1,9 @@
 ---
 name: ds-review
-description: This skill should be used when the user asks to "review the analysis", "check methodology", "validate results", or as Phase 4 of the /ds workflow. Reviews methodology, data quality, and statistical validity.
+description: "REQUIRED Phase 4 of /ds workflow. Reviews methodology, data quality, and statistical validity."
 ---
+
+**Announce:** "I'm using ds-review (Phase 4) to check methodology and quality."
 
 ## Contents
 
@@ -207,3 +209,12 @@ Return structured output per /ds-review format."
 - Each reported issue must be immediately actionable
 - If unsure whether approach is valid, the issue is below 80 confidence
 - Focus on what affects conclusions, not style
+
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After review is APPROVED, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-verify")
+```
+
+If CHANGES REQUIRED, return to `/ds-implement` to fix issues first.

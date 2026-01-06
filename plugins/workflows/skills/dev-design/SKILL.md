@@ -1,7 +1,9 @@
 ---
 name: dev-design
-description: This skill should be used when the user asks to "design the architecture", "propose approaches", "plan implementation", or as Phase 4 of the /dev workflow. Proposes architecture approaches with trade-offs and gets user approval.
+description: "REQUIRED Phase 4 of /dev workflow. Proposes architecture approaches with trade-offs and gets user approval."
 ---
+
+**Announce:** "I'm using dev-design (Phase 4) to propose implementation approaches."
 
 ## Contents
 
@@ -111,6 +113,8 @@ After user chooses, write `.claude/PLAN.md`:
 ```markdown
 # Implementation Plan: [Feature]
 
+> **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:dev-implement")` to implement this plan with TDD.
+
 ## Chosen Approach
 [Name]: [Brief description]
 
@@ -193,4 +197,11 @@ Design complete when:
 - `.claude/PLAN.md` written with chosen approach
 - **User explicitly approved** ("Yes, proceed")
 
-**Next step:** `/dev-implement` for TDD implementation
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After user approves ("Yes, proceed"), IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-implement")
+```
+
+Do NOT proceed without explicit user approval.

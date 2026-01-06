@@ -1,7 +1,9 @@
 ---
 name: dev-clarify
-description: This skill should be used when the user needs to "clarify requirements", "resolve ambiguities", or as Phase 3 of the /dev workflow. Asks targeted questions based on codebase exploration findings.
+description: "REQUIRED Phase 3 of /dev workflow. Asks targeted questions based on codebase exploration findings."
 ---
+
+**Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."
 
 ## Contents
 
@@ -151,4 +153,9 @@ Clarification complete when:
 - `.claude/SPEC.md` updated with final requirements
 - No remaining ambiguities
 
-**Next step:** `/dev-design` for architecture approaches
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After completing clarification, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-design")
+```

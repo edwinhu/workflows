@@ -1,7 +1,9 @@
 ---
 name: dev-review
-description: This skill should be used when the user asks to "review this code", "check the implementation", "verify spec compliance", or as Phase 6 of the /dev workflow. Combines spec compliance and code quality checks with confidence scoring.
+description: "REQUIRED Phase 6 of /dev workflow. Combines spec compliance and code quality checks with confidence scoring."
 ---
+
+**Announce:** "I'm using dev-review (Phase 6) to check code quality."
 
 ## Contents
 
@@ -187,3 +189,12 @@ Return structured output per /dev-review format."
 - Each reported issue must be immediately actionable
 - File paths must be absolute and include line numbers
 - If unsure, the issue is below 80 confidence
+
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After review is APPROVED, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-verify")
+```
+
+If CHANGES REQUIRED, return to `/dev-implement` to fix issues first.

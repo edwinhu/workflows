@@ -1,6 +1,6 @@
 ---
 name: ds
-description: This skill should be used when the user asks to "analyze data", "build a model", "explore this dataset", "run analysis", or needs a structured data science workflow. Orchestrates brainstorm, plan, implement, review, and verify phases with output-first verification.
+description: "REQUIRED for data analysis. Orchestrates 5-phase workflow with output-first verification."
 ---
 
 ## Activation
@@ -17,6 +17,19 @@ activate_dev_mode()
 print('✓ DS workflow activated')
 "
 ```
+
+**Announce:** "I'm using the ds workflow. Starting with Phase 1: brainstorming."
+
+**REQUIRED NEXT STEP:** After activation, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-brainstorm")
+```
+
+Do NOT ask "What data would you like to analyze?" - the brainstorm phase handles requirements gathering.
+
+---
+
+## Reference: Workflow Overview
 
 ## Contents
 

@@ -1,7 +1,9 @@
 ---
 name: dev-brainstorm
-description: This skill should be used when the user asks to "brainstorm a feature", "discuss requirements", "what should we build", or as Phase 1 of the /dev workflow. Uses Socratic questioning to understand requirements before exploration.
+description: "REQUIRED Phase 1 of /dev workflow. Uses Socratic questioning to understand requirements before exploration."
 ---
+
+**Announce:** "I'm using dev-brainstorm (Phase 1) to gather requirements."
 
 ## Contents
 
@@ -74,6 +76,8 @@ Write initial spec to `.claude/SPEC.md`:
 ```markdown
 # Spec: [Feature Name]
 
+> **For Claude:** After writing this spec, use `Skill(skill="workflows:dev-explore")` for Phase 2.
+
 ## Problem
 [What problem this solves]
 
@@ -117,4 +121,9 @@ Brainstorm complete when:
 - `.claude/SPEC.md` written (draft)
 - Open questions identified for exploration
 
-**Next step:** `/dev-explore` for codebase exploration
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After completing brainstorm, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-explore")
+```

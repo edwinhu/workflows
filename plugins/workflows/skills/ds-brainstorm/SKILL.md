@@ -1,7 +1,9 @@
 ---
 name: ds-brainstorm
-description: This skill should be used when the user asks to "define the analysis", "clarify objectives", "understand the data question", or as Phase 1 of the /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints.
+description: "REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints."
 ---
+
+**Announce:** "I'm using ds-brainstorm (Phase 1) to gather analysis requirements."
 
 ## Contents
 
@@ -118,6 +120,8 @@ After approach is chosen:
 ```markdown
 # Spec: [Analysis Name]
 
+> **For Claude:** After writing this spec, use `Skill(skill="workflows:ds-plan")` for Phase 2.
+
 ## Objective
 [What question this analysis answers]
 
@@ -163,4 +167,9 @@ Brainstorm complete when:
 - `.claude/SPEC.md` written
 - User confirms ready for data exploration
 
-**Next step:** `/ds-plan` for data profiling and task breakdown
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After completing brainstorm, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-plan")
+```

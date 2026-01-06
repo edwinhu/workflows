@@ -1,7 +1,9 @@
 ---
 name: ds-implement
-description: This skill should be used when the user asks to "implement the analysis", "run the code", "execute the pipeline", or as Phase 3 of the /ds workflow. Enforces output-first verification at each step.
+description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verification at each step."
 ---
+
+**Announce:** "I'm using ds-implement (Phase 3) to build with output-first verification."
 
 ## Contents
 
@@ -232,3 +234,10 @@ Append each step to `.claude/LEARNINGS.md`:
 5. **Fix** - only proceed after output verified
 
 **Never hide failures.** Bad output documented is better than silent failure.
+
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After all analysis steps complete with verified output, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-review")
+```

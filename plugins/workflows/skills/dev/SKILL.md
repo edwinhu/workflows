@@ -1,6 +1,6 @@
 ---
 name: dev
-description: This skill should be used when the user asks to "implement a feature", "add functionality", "build a new feature", "fix a non-trivial bug", or needs a structured development workflow. Orchestrates 7-phase workflow with user approval gates and TDD enforcement.
+description: REQUIRED for feature implementation. Orchestrates 7-phase workflow with user approval gates and TDD enforcement.
 ---
 
 ## Activation
@@ -10,6 +10,19 @@ First, activate the dev workflow and sandbox:
 ```bash
 mkdir -p /tmp/claude-workflow-$PPID && touch /tmp/claude-workflow-$PPID/dev_mode && echo "✓ Dev workflow activated"
 ```
+
+**Announce:** "I'm using the dev workflow. Starting with Phase 1: brainstorming."
+
+**REQUIRED NEXT STEP:** After activation, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-brainstorm")
+```
+
+Do NOT ask "What would you like to implement?" - the brainstorm phase handles requirements gathering.
+
+---
+
+## Reference: Workflow Overview
 
 ## Contents
 

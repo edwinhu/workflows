@@ -1,7 +1,9 @@
 ---
 name: dev-implement
-description: This skill should be used when the user asks to "implement with TDD", "write tests first", "do test-driven development", or as Phase 5 of the /dev workflow. Enforces RED-GREEN-REFACTOR cycle with mandatory test-first approach.
+description: "REQUIRED Phase 5 of /dev workflow. Enforces RED-GREEN-REFACTOR cycle with mandatory test-first approach."
 ---
+
+**Announce:** "I'm using dev-implement (Phase 5) to build with TDD."
 
 ## Contents
 
@@ -274,4 +276,11 @@ Main chat should:
 
 **Never default to "please test manually".** Always exhaust automation first.
 
-**Next step:** `/dev-review` for code review (only after tests pass)
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After all tests pass, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-review")
+```
+
+Do NOT proceed until automated tests pass.

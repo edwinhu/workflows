@@ -1,7 +1,9 @@
 ---
 name: ds-verify
-description: This skill should be used when the user asks to "verify reproducibility", "confirm the results", "prove it's reproducible", or as Phase 5 of the /ds workflow before claiming completion. Checks reproducibility and requires user acceptance.
+description: "REQUIRED Phase 5 of /ds workflow (final). Checks reproducibility and requires user acceptance."
 ---
+
+**Announce:** "I'm using ds-verify (Phase 5) to confirm reproducibility and completion."
 
 ## Contents
 
@@ -258,3 +260,14 @@ These do NOT count as verification:
 - [ ] If replicating: results match reference
 
 **Both technical and user acceptance must pass. No shortcuts.**
+
+## Workflow Complete
+
+When user confirms all criteria are met:
+
+**Announce:** "DS workflow complete. All 5 phases passed."
+
+The `/ds` workflow is now finished. Offer to:
+- Export results to final format
+- Clean up `.claude/` files
+- Start a new analysis with `/ds`

@@ -1,7 +1,9 @@
 ---
 name: ds-plan
-description: This skill should be used when the user asks to "profile the data", "explore the dataset", "plan the analysis", or as Phase 2 of the /ds workflow after brainstorming. Profiles data and creates analysis task breakdown.
+description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
 ---
+
+**Announce:** "I'm using ds-plan (Phase 2) to profile data and create task breakdown."
 
 ## Contents
 
@@ -107,6 +109,8 @@ Write to `.claude/PLAN.md`:
 ```markdown
 # Analysis Plan: [Analysis Name]
 
+> **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:ds-implement")` to implement this plan with output-first verification.
+
 ## Spec Reference
 See: .claude/SPEC.md
 
@@ -182,4 +186,9 @@ Plan complete when:
 - `.claude/PLAN.md` written
 - User confirms ready for implementation
 
-**Next step:** `/ds-implement` for output-first implementation
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After completing plan, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-implement")
+```

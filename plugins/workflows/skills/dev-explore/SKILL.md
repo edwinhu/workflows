@@ -1,7 +1,9 @@
 ---
 name: dev-explore
-description: This skill should be used when the user asks to "explore the codebase", "understand the architecture", "find similar features", or as Phase 2 of the /dev workflow. Launches explore agents to map codebase and returns key files list.
+description: "REQUIRED Phase 2 of /dev workflow. Launches explore agents to map codebase and returns key files list."
 ---
+
+**Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
 
 ## Contents
 
@@ -287,4 +289,9 @@ Exploration complete when:
 3. **Test Infrastructure** - Framework, tools, patterns
 4. **Questions** - For clarify phase
 
-**Next step:** `/dev-clarify` for questions based on exploration findings
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-clarify")
+```

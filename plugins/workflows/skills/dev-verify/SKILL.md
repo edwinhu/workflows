@@ -1,7 +1,9 @@
 ---
 name: dev-verify
-description: This skill should be used when the user asks to "verify this works", "prove it's done", "show me evidence", or as Phase 5 of the /dev workflow before claiming completion. Requires fresh runtime evidence.
+description: "REQUIRED Phase 7 of /dev workflow (final). Requires fresh runtime evidence before claiming completion."
 ---
+
+**Announce:** "I'm using dev-verify (Phase 7) to confirm completion with fresh evidence."
 
 ## Contents
 
@@ -160,3 +162,14 @@ If user says "Partially" or "No":
 2. **Requirements** - Ask user if it does what they wanted
 
 Both must pass. No shortcuts exist.
+
+## Workflow Complete
+
+When user confirms "Yes, requirements met":
+
+**Announce:** "Dev workflow complete. All 7 phases passed."
+
+The `/dev` workflow is now finished. Offer to:
+- Commit the changes
+- Clean up `.claude/` files
+- Start a new feature with `/dev`
