@@ -179,7 +179,8 @@ def is_from_agent(hook_input: dict) -> bool:
     tool_use_id = hook_input.get('tool_use_id', '')
     if not tool_use_id:
         return False
-    transcript_dirs = glob.glob(os.path.expanduser('~/.claude/projects/-home-*'))
+    # Look in all project directories, not just -home-*
+    transcript_dirs = glob.glob(os.path.expanduser('~/.claude/projects/-*'))
     for dir_path in transcript_dirs:
         agent_files = glob.glob(os.path.join(dir_path, 'agent-*.jsonl'))
         for agent_file in agent_files:
