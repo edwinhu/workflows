@@ -146,10 +146,11 @@ After Task agent returns, main chat verifies:
 - [ ] LEARNINGS.md contains ACTUAL LOG OUTPUT
 - [ ] Build succeeds
 
-**Only when ALL criteria verified, output:**
+**Only output the promise when the statement is COMPLETELY AND UNEQUIVOCALLY TRUE:**
 ```
 <promise>DONE</promise>
 ```
+You may NOT output this tag to "move on" or "try something else". The promise means: "All tests pass. Build succeeds. Implementation is complete." If that's not true, don't output it.
 
 ### Step 4: If Tests Fail → Keep Iterating
 

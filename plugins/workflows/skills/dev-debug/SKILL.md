@@ -95,10 +95,11 @@ After Task agent returns, main chat verifies:
 - [ ] All existing tests PASS (SKIP ≠ PASS)
 - [ ] Root cause documented in LEARNINGS.md
 
-**Only when ALL criteria verified, output:**
+**Only output the promise when the statement is COMPLETELY AND UNEQUIVOCALLY TRUE:**
 ```
 <promise>FIXED</promise>
 ```
+You may NOT output this tag to "move on" or "try something else". The promise means: "Root cause identified. Regression test passes. Bug is fixed." If that's not true, don't output it.
 
 ### Step 4: If Bug Not Fixed → Keep Iterating
 
