@@ -174,8 +174,13 @@ These thoughts mean STOP—you're about to skip enforcement:
 | "The ceremony isn't worth it" | The ceremony IS the value. It prevents shortcuts. |
 | "I'll cherry-pick the parts I need" | Skills are protocols, not menus. Follow all of it. |
 | "Tests passed on first try, skip loop" | Still need the loop structure. Lucky ≠ verified. |
+| "Task done, let me check in" | NO. Start next task's loop immediately. |
+| "User might want to review" | User wants ALL tasks done. Keep going. |
+| "Natural pause point" | Only pause when ALL tasks complete. |
 
 **Each task needs its own ralph loop. One feature loop provides ZERO per-task enforcement.**
+
+**After outputting a promise, IMMEDIATELY start the next task's loop. Do NOT pause for user review.**
 
 ## When NOT to Use Ralph Loops
 
