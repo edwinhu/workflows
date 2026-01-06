@@ -174,30 +174,40 @@ def check_ralph_validation(tool_name: str, tool_input: dict) -> Optional[dict]:
 # Sandbox Enforcement
 # =============================================================================
 
-def is_from_agent(hook_input: dict) -> bool:
-    """Check if this is from a sub-agent."""
+def is_from_main_chat(hook_input: dict) -> bool:
+    """Check if this tool call is from main chat (not a sub-agent).
+
+    Inverted logic: instead of trying to prove it's from an agent (hard),
+    we prove it's from main chat (easy - one predictable file).
+    If not in main transcript, assume it's from an agent and allow.
+    """
     tool_use_id = hook_input.get('tool_use_id', '')
     if not tool_use_id:
-        return False
-    # Look in all project directories, not just -home-*
-    transcript_dirs = glob.glob(os.path.expanduser('~/.claude/projects/-*'))
-    for dir_path in transcript_dirs:
-        agent_files = glob.glob(os.path.join(dir_path, 'agent-*.jsonl'))
-        for agent_file in agent_files:
-            try:
-                with open(agent_file, 'r') as f:
-                    if tool_use_id in f.read():
-                        return True
-            except Exception:
-                pass
-    return False
+        return True  # No ID = assume main chat, be safe
+
+    # Find the main transcript for the current project
+    cwd = os.getcwd()
+    # Convert /Users/foo/projects/bar to -Users-foo-projects-bar
+    project_dir = cwd.replace('/', '-').lstrip('-')
+    main_transcript = os.path.expanduser(f'~/.claude/projects/-{project_dir}/transcript.jsonl')
+
+    if os.path.exists(main_transcript):
+        try:
+            with open(main_transcript, 'r') as f:
+                if tool_use_id in f.read():
+                    return True  # Found in main transcript = main chat
+        except Exception:
+            pass
+
+    return False  # Not in main transcript = probably agent, allow
 
 
 def check_sandbox(tool_name: str, tool_input: dict, hook_input: dict) -> Optional[dict]:
     """Enforce sandbox when active."""
     if not is_dev_mode_active():
         return None
-    if is_from_agent(hook_input):
+    # Only enforce sandbox for main chat, not agents
+    if not is_from_main_chat(hook_input):
         return None
 
     if tool_name == 'Bash':
