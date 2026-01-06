@@ -1,5 +1,9 @@
 # Claude Plugins Development
 
+## Reference
+
+- **obra/superpowers**: https://github.com/obra/superpowers - Behavioral enforcement patterns, skill-based workflows
+
 ## Required Skills
 
 **Always use these skills when working on this project:**
