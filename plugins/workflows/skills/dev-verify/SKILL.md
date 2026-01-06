@@ -98,6 +98,36 @@ These do NOT count as verification:
 - Agent reports without independent confirmation
 - "I think..." / "It seems..." / "Probably..."
 
+## Honesty Requirement
+
+<EXTREMELY-IMPORTANT>
+**Claiming completion without fresh evidence is LYING.**
+
+When you say "Feature complete", you are asserting:
+- You ran the verification commands yourself (fresh)
+- You saw the output with your own tokens
+- The output confirms the claim
+
+Saying "complete" based on stale data or agent reports is not "summarizing" - it is LYING about project state.
+
+**"Still verifying" is honest. "Complete" without evidence is fraud.**
+</EXTREMELY-IMPORTANT>
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to claim falsely:
+
+| Thought | Reality |
+|---------|---------|
+| "I just ran it" | "Just" = stale. Run it AGAIN. |
+| "The agent said it passed" | Agent reports need YOUR confirmation. Run it. |
+| "It should work" | "Should" is hope. Run and see output. |
+| "I'm confident" | Confidence ≠ verification. Run the command. |
+| "We already verified earlier" | Earlier ≠ now. Fresh evidence only. |
+| "User will verify it" | NO. Verify before claiming. User trusts your claim. |
+| "Close enough" | Close ≠ complete. Verify fully. |
+| "Time to move on" | Only move on after FRESH verification. |
+
 **STRUCTURAL VERIFICATION IS NOT RUNTIME VERIFICATION:**
 
 | ❌ NOT Verification | ✅ IS Verification |

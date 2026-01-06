@@ -292,6 +292,21 @@ Append each step to `.claude/LEARNINGS.md`:
 
 **Never hide failures.** Bad output documented is better than silent failure.
 
+## No Pause Between Tasks
+
+<EXTREMELY-IMPORTANT>
+**After completing task N, IMMEDIATELY start task N+1. Do NOT pause.**
+
+| Thought | Reality |
+|---------|---------|
+| "Task done, let me check in with user" | NO. User wants ALL tasks done. Keep going. |
+| "User might want to see intermediate results" | User will see results at the END. Continue. |
+| "Natural pause point" | Only pause when ALL tasks complete or blocked. |
+| "Let me summarize this step" | Summarize AFTER all tasks. Keep moving. |
+
+**Pausing between tasks is procrastination disguised as courtesy.**
+</EXTREMELY-IMPORTANT>
+
 ## Phase Complete
 
 **REQUIRED SUB-SKILL:** After all analysis steps complete with verified output, IMMEDIATELY invoke:

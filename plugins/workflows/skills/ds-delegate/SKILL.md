@@ -5,6 +5,28 @@ description: "Subagent delegation for data analysis. Dispatches fresh Task agent
 
 **Announce:** "I'm using ds-delegate to dispatch analysis subagents."
 
+## Contents
+
+- [The Iron Law of Delegation](#the-iron-law-of-delegation)
+- [Core Principle](#core-principle)
+- [The Process](#the-process)
+- [Honesty Requirement](#honesty-requirement)
+- [Rationalization Prevention](#rationalization-prevention)
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Delegation
+
+**EVERY ANALYSIS STEP MUST GO THROUGH A TASK AGENT. This is not negotiable.**
+
+Main chat MUST NOT:
+- Write analysis code directly
+- Run "quick" data checks
+- Edit notebooks or scripts
+- Make "just this one plot"
+
+**If you're about to write analysis code in main chat, STOP. Spawn a Task agent instead.**
+</EXTREMELY-IMPORTANT>
+
 ## Core Principle
 
 **Fresh subagent per task + output-first verification = reliable analysis**
@@ -157,6 +179,36 @@ After each task, append to `.claude/LEARNINGS.md`:
 
 **Next:** [what comes next]
 ```
+
+## Honesty Requirement
+
+<EXTREMELY-IMPORTANT>
+**Claiming "analysis done" without output verification is LYING.**
+
+When you say "Step complete", you are asserting:
+- A Task agent ran the analysis
+- Output was visible and verified
+- Methodology reviewer approved (for statistical tasks)
+
+If ANY of these didn't happen, you are not "summarizing" - you are LYING about the state of the analysis.
+
+**Dishonest claims corrupt research. Honest "investigating" maintains integrity.**
+</EXTREMELY-IMPORTANT>
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to skip delegation:
+
+| Thought | Reality |
+|---------|---------|
+| "I'll just check the shape quickly" | Shape checks need output-first protocol. Delegate. |
+| "It's just a simple merge" | Merges fail silently. Delegate with verification. |
+| "I already know this data" | Knowing ≠ verified. Delegate. |
+| "The subagent will be slower" | Wrong results are slower than slow results. Delegate. |
+| "Just this one plot" | One plot hides data issues. Delegate. |
+| "User wants results fast" | User wants CORRECT results. Delegate. |
+| "Skip methodology review, it's standard" | "Standard" assumptions often fail. Review. |
+| "Output looked reasonable" | "Looked reasonable" ≠ verified. Check numbers. |
 
 ## Red Flags
 

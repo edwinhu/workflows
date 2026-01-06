@@ -5,6 +5,28 @@ description: "Subagent delegation for implementation. Dispatches fresh Task agen
 
 **Announce:** "I'm using dev-delegate to dispatch implementation subagents."
 
+## Contents
+
+- [The Iron Law of Delegation](#the-iron-law-of-delegation)
+- [Where This Fits](#where-this-fits)
+- [The Process](#the-process)
+- [Honesty Requirement](#honesty-requirement)
+- [Rationalization Prevention](#rationalization-prevention)
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Delegation
+
+**EVERY IMPLEMENTATION MUST GO THROUGH A TASK AGENT. This is not negotiable.**
+
+Main chat MUST NOT:
+- Write code directly
+- Make "quick fixes"
+- Edit implementation files
+- "Just do this one thing"
+
+**If you're about to write code in main chat, STOP. Spawn a Task agent instead.**
+</EXTREMELY-IMPORTANT>
+
 ## Where This Fits
 
 ```
@@ -188,6 +210,37 @@ APPROVED or CHANGES REQUIRED
 **If APPROVED:** Mark task complete, move to next task.
 
 **If CHANGES REQUIRED:** Have implementer fix, then re-run quality review.
+
+## Honesty Requirement
+
+<EXTREMELY-IMPORTANT>
+**Claiming "done" without subagent verification is LYING.**
+
+When you say "Task complete", you are asserting:
+- A Task agent implemented the change
+- Spec reviewer confirmed compliance
+- Quality reviewer approved
+
+If ANY of these didn't happen, you are not "summarizing" or "moving on" - you are LYING about the state of the work.
+
+**Dishonest claims destroy trust. Honest "still working" builds trust.**
+</EXTREMELY-IMPORTANT>
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to skip delegation:
+
+| Thought | Reality |
+|---------|---------|
+| "I'll just fix this quickly" | Quick = sloppy = bugs. Delegate. |
+| "The subagent will be slower" | Subagent time is cheap. Your context is expensive. |
+| "I already know what to do" | Knowing ≠ doing correctly. Delegate. |
+| "It's just one line" | One line can break everything. Delegate. |
+| "I'm already looking at the code" | Looking ≠ editing. Delegate. |
+| "User is waiting" | User wants CORRECT, not fast. Delegate. |
+| "Skip review, it's obviously right" | "Obviously" is how bugs ship. Review. |
+| "Spec review passed, skip quality" | Both reviews exist for a reason. Do both. |
+| "Quality review found nothing, done" | Did spec review pass first? Check. |
 
 ## Red Flags
 

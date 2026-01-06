@@ -181,6 +181,35 @@ Only report issues >= 80 confidence.
 Return structured output per /dev-review format."
 ```
 
+## Honesty Requirement
+
+<EXTREMELY-IMPORTANT>
+**Approving without test evidence is LYING.**
+
+When you say "APPROVED", you are asserting:
+- Tests actually ran (not "should work")
+- Test output shows PASS (not SKIP, not assumed)
+- You saw the evidence (not trusting reports)
+
+Saying "APPROVED" without test evidence is not "being efficient" - it is LYING about code quality.
+
+**BLOCKED is honest. Fake APPROVED is fraud.**
+</EXTREMELY-IMPORTANT>
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to approve dishonestly:
+
+| Thought | Reality |
+|---------|---------|
+| "Tests probably pass" | Probably ≠ evidence. Check LEARNINGS.md. |
+| "I saw the code, it looks right" | Looking ≠ running. Where's test output? |
+| "User is waiting for approval" | User wants HONEST approval. Say BLOCKED if needed. |
+| "It's a small change" | Small changes break things. Require evidence. |
+| "I trust the implementer" | Trust doesn't replace verification. Check evidence. |
+| "I'll approve and they can fix later" | NO. BLOCKED now or bugs ship. |
+| "Review is just a formality" | Review is the LAST GATE before bugs ship. Take it seriously. |
+
 ## Quality Standards
 
 - **Test evidence is mandatory** - no approval without test output

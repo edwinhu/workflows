@@ -196,6 +196,36 @@ Required sections:
 - **Implementation Order** - Ordered task list with dependencies
 - **Testing Strategy** - How to verify
 
+## The Gate Function
+
+Before starting implementation, you MUST have completed:
+
+```
+1. REVIEW → Read SPEC.md and exploration findings
+2. PROPOSE → Present 2-3 approaches with trade-offs
+3. ASK → Use AskUserQuestion with clear options
+4. WAIT → Do NOT proceed until user responds
+5. DOCUMENT → Write chosen approach to PLAN.md
+6. CONFIRM → Ask "Ready to proceed?"
+7. GATE → Only start /dev-implement after explicit "Yes"
+```
+
+**Skipping any step, especially WAIT and GATE, is insubordination.**
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to bypass the user gate:
+
+| Thought | Reality |
+|---------|---------|
+| "User will approve this" | Assumption ≠ approval. Ask and wait. |
+| "It's the obvious choice" | User decides what's obvious. Present options. |
+| "Let me just start" | NO. Gate exists for a reason. Wait. |
+| "User said they trust me" | Trust doesn't mean skip approval. Ask. |
+| "Time pressure" | Wrong approach wastes more time. Wait for approval. |
+| "Only one viable option" | Present it anyway. User may see alternatives. |
+| "I'll ask forgiveness later" | No. Ask permission now. |
+
 ## Red Flags - STOP If You're About To:
 
 | Action | Why It's Wrong | Do Instead |

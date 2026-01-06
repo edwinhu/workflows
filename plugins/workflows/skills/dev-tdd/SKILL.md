@@ -178,6 +178,22 @@ These thoughts mean STOP—you're about to skip TDD:
 
 **If your test doesn't fail first, you're not doing TDD.**
 
+## Delete & Restart
+
+<EXTREMELY-IMPORTANT>
+**Wrote code before test? DELETE IT. No exceptions.**
+
+If you find yourself with implementation code that wasn't driven by a test:
+1. **DELETE** the implementation code
+2. **WRITE** the test first
+3. **RUN** it, **SEE RED**
+4. **REWRITE** the implementation
+
+"But it works" is not an excuse. "But I'll waste time" is not an excuse.
+
+**Code written without TDD is UNTRUSTED code. Delete it and do it right.**
+</EXTREMELY-IMPORTANT>
+
 ## Red Flags - STOP If You're About To:
 
 | Action | Why It's Wrong | Do Instead |

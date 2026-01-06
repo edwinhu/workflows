@@ -160,6 +160,36 @@ After Task agent returns, verify:
 | **Hypothesize** | ONE specific hypothesis | Hypothesis tested |
 | **Fix** | Regression test → fix | Tests pass |
 
+## The Gate Function
+
+Before claiming ANY bug is fixed:
+
+```
+1. REPRODUCE → Run test, see bug manifest
+2. INVESTIGATE → Trace data flow, form hypothesis
+3. TEST → Verify hypothesis with minimal change
+4. FIX → Write regression test FIRST (see it FAIL)
+5. VERIFY → Run fix, see regression test PASS
+6. CONFIRM → Run full test suite, no regressions
+7. CLAIM → Only after steps 1-6
+```
+
+**Skipping any step is guessing, not debugging.**
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to skip the protocol:
+
+| Thought | Reality |
+|---------|---------|
+| "I know exactly what this is" | Knowing ≠ verified. Investigate anyway. |
+| "Let me just try this fix" | Guessing. Form hypothesis first. |
+| "The fix is obvious" | Obvious fixes often mask deeper issues. |
+| "I've seen this before" | This instance may be different. Verify. |
+| "No need for regression test" | Every fix needs a regression test. Period. |
+| "It works now" | "Works now" ≠ "fixed correctly". Run full suite. |
+| "I'll add the test later" | You won't. Write it BEFORE the fix. |
+
 ### Red Flags - STOP If You Think:
 
 | Thought | Why It's Wrong | Do Instead |

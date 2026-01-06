@@ -164,6 +164,24 @@ Main chat should:
 
 **Never default to "please test manually".** Always exhaust automation first.
 
+## No Pause Between Tasks
+
+<EXTREMELY-IMPORTANT>
+**After completing task N, IMMEDIATELY start task N+1. Do NOT pause.**
+
+| Thought | Reality |
+|---------|---------|
+| "Task done, let me check in with user" | NO. User wants ALL tasks done. Keep going. |
+| "User might want to review" | User will review at the END. Continue. |
+| "Natural pause point" | Only pause when ALL tasks complete or blocked. |
+| "Let me summarize progress" | Summarize AFTER all tasks. Keep moving. |
+| "User has been waiting" | User is waiting for COMPLETION, not updates. |
+
+The promise signals task completion. After outputting promise, IMMEDIATELY start next task's loop.
+
+**Pausing between tasks is procrastination disguised as courtesy.**
+</EXTREMELY-IMPORTANT>
+
 ## Phase Complete
 
 **REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests:
