@@ -222,6 +222,69 @@ def create_session_marker_dir():
     return session_dir
 
 
+def get_active_workflow() -> str | None:
+    """Check if a workflow is currently active."""
+    session_dir = Path(f"/tmp/claude-workflow-{os.getppid()}")
+    if not session_dir.exists():
+        return None
+
+    # Check for dev workflow
+    if (session_dir / 'dev_mode').exists():
+        return 'dev'
+
+    # Check for workflow markers
+    for marker in session_dir.glob('workflow_*'):
+        workflow_name = marker.name.replace('workflow_', '')
+        return workflow_name
+
+    return None
+
+
+def get_delegation_rules() -> str:
+    """Get the delegation rules to inject when a workflow is active."""
+    return """
+# Delegation Rules (ACTIVE WORKFLOW)
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Delegation
+
+**MAIN CHAT MUST NOT WRITE CODE. This is not negotiable.**
+
+You DO NOT HAVE A CHOICE. You MUST delegate to Task agents.
+This is not optional. You cannot rationalize your way out of this.
+
+### Allowed in Main Chat
+- Spawn Task agents (REQUIRED for all code work)
+- Review Task agent output
+- Write to .claude/*.md files
+- Run git commands
+- Invoke skills
+
+### NOT Allowed in Main Chat
+- Write/Edit code files (.py, .ts, .js, .R, etc.)
+- Direct implementation
+- "Quick fixes"
+- "Just this one thing"
+
+### Red Flags - STOP If You Think:
+| Thought | Reality |
+|---------|---------|
+| "This is just a quick fix" | Quick fixes corrupt context. Delegate. |
+| "I'll just add this one line" | One line = code = delegate. |
+| "It's faster if I do it directly" | Speed doesn't justify breaking discipline. |
+| "The Task overhead isn't worth it" | Context isolation IS worth it. |
+| "I know exactly what to do" | Knowing doesn't exempt you. Delegate. |
+
+### What To Do Instead
+```
+Task(subagent_type="general-purpose", prompt="[task description]")
+```
+
+For templates: `Skill(skill="workflows:dev-delegate")` or `Skill(skill="workflows:ds-delegate")`
+</EXTREMELY-IMPORTANT>
+"""
+
+
 def main():
     # Read and discard stdin for consistency with hook best practices
     sys.stdin.read()
@@ -243,12 +306,16 @@ def main():
     env_section = build_env_section(env_context, persisted_vars)
     using_skills = load_using_skills_content()
 
+    # Check for active workflow and add delegation rules
+    active_workflow = get_active_workflow()
+    delegation_section = get_delegation_rules() if active_workflow else ""
+
     # Output the context injection
     # Pattern inspired by obra/superpowers - inject HOW to use skills, not the full catalog
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": env_section + "\n" + using_skills
+            "additionalContext": env_section + "\n" + delegation_section + "\n" + using_skills
         }
     }))
 

@@ -37,9 +37,28 @@ If any prerequisite is missing, STOP and complete the earlier phases.
 **Check PLAN.md for:** files to modify, implementation order, testing strategy.
 </EXTREMELY-IMPORTANT>
 
-## Delegation Pattern
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Delegation
 
-**Main chat orchestrates. Subagents implement.**
+**MAIN CHAT MUST NOT WRITE CODE. This is not negotiable.**
+
+Main chat orchestrates. Subagents implement. If you catch yourself about to use Write or Edit on a code file, STOP.
+
+Allowed in main chat:
+- Spawn Task agents
+- Review Task agent output
+- Write to .claude/*.md files
+- Run git commands
+
+NOT allowed in main chat:
+- Write/Edit code files (.py, .ts, .js, etc.)
+- Direct implementation
+- "Quick fixes"
+
+**If you're about to edit code directly, STOP and spawn a Task agent instead.**
+</EXTREMELY-IMPORTANT>
+
+## Delegation Pattern
 
 For each task in PLAN.md:
 1. Dispatch implementer subagent (does the work)

@@ -17,9 +17,28 @@ description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verificati
 
 # Implementation (Output-First Verification)
 
-## Delegation Pattern
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Delegation
 
-**Main chat orchestrates. Subagents analyze.**
+**MAIN CHAT MUST NOT WRITE ANALYSIS CODE. This is not negotiable.**
+
+Main chat orchestrates. Subagents analyze. If you catch yourself about to write Python/R code, STOP.
+
+Allowed in main chat:
+- Spawn Task agents
+- Review Task agent output
+- Verify outputs exist and are reasonable
+- Write to .claude/*.md files
+
+NOT allowed in main chat:
+- Write/Edit code files (.py, .R, .ipynb, etc.)
+- Direct data manipulation
+- "Quick analysis"
+
+**If you're about to write analysis code directly, STOP and spawn a Task agent instead.**
+</EXTREMELY-IMPORTANT>
+
+## Delegation Pattern
 
 For each task in PLAN.md:
 1. Dispatch analyst subagent (does the work with output-first)
