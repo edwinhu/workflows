@@ -8,6 +8,7 @@ description: "REQUIRED Phase 5 of /dev workflow. Enforces RED-GREEN-REFACTOR cyc
 ## Contents
 
 - [Prerequisites](#prerequisites)
+- [Delegation Pattern](#delegation-pattern)
 - [Start Ralph Loop in Main Chat](#start-ralph-loop-in-main-chat)
 - [Reference: TDD Protocol](#reference-tdd-protocol-for-the-task-agent)
 - [STOP - Read This First](#stop---read-this-first)
@@ -35,6 +36,26 @@ If any prerequisite is missing, STOP and complete the earlier phases.
 
 **Check PLAN.md for:** files to modify, implementation order, testing strategy.
 </EXTREMELY-IMPORTANT>
+
+## Delegation Pattern
+
+**Main chat orchestrates. Subagents implement.**
+
+For each task in PLAN.md:
+1. Dispatch implementer subagent (does the work)
+2. Dispatch spec reviewer subagent (confirms requirements met)
+3. Dispatch quality reviewer subagent (checks code quality)
+4. Loop until both reviewers approve
+
+**Why delegate?**
+- Fresh context per task (no pollution from previous work)
+- Built-in review gates (can't skip)
+- Error isolation (subagent failure doesn't corrupt main context)
+
+**REQUIRED SUB-SKILL:** For Task templates and detailed flow:
+```
+Skill(skill="workflows:dev-delegate")
+```
 
 ## Start Ralph Loop in Main Chat
 

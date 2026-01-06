@@ -171,82 +171,25 @@ def check_ralph_validation(tool_name: str, tool_input: dict) -> Optional[dict]:
 
 
 # =============================================================================
-# Sandbox Enforcement
+# Sandbox (REMOVED - now guidance-based via skills)
 # =============================================================================
-
-def is_from_main_chat(hook_input: dict) -> bool:
-    """Check if this tool call is from main chat (not a sub-agent).
-
-    Inverted logic: instead of trying to prove it's from an agent (hard),
-    we prove it's from main chat (easy - one predictable file).
-    If not in main transcript, assume it's from an agent and allow.
-    """
-    tool_use_id = hook_input.get('tool_use_id', '')
-    if not tool_use_id:
-        return True  # No ID = assume main chat, be safe
-
-    # Find the main transcript for the current project
-    cwd = os.getcwd()
-    # Convert /Users/foo/projects/bar to -Users-foo-projects-bar
-    project_dir = cwd.replace('/', '-').lstrip('-')
-    main_transcript = os.path.expanduser(f'~/.claude/projects/-{project_dir}/transcript.jsonl')
-
-    if os.path.exists(main_transcript):
-        try:
-            with open(main_transcript, 'r') as f:
-                if tool_use_id in f.read():
-                    return True  # Found in main transcript = main chat
-        except Exception:
-            pass
-
-    return False  # Not in main transcript = probably agent, allow
+#
+# The sandbox blocking approach was removed because:
+# 1. Agent detection was unreliable and caused bugs
+# 2. Users bypassed it by exiting workflow mode
+# 3. It treated the symptom (main chat writing) not the cause (skipping phases)
+#
+# The new approach uses:
+# - dev-delegate / ds-delegate skills for subagent templates
+# - REQUIRED SUB-SKILL handoffs to enforce workflow phases
+# - Making delegation the obvious/easy path, not blocking the alternative
+#
+# See: skills/dev-delegate/SKILL.md, skills/ds-delegate/SKILL.md
 
 
 def check_sandbox(tool_name: str, tool_input: dict, hook_input: dict) -> Optional[dict]:
-    """Enforce sandbox when active."""
-    if not is_dev_mode_active():
-        return None
-    # Only enforce sandbox for main chat, not agents
-    if not is_from_main_chat(hook_input):
-        return None
-
-    if tool_name == 'Bash':
-        command = tool_input.get('command', '')
-        dangerous = [';', '&&', '||', '|', '`', '$(', '${', '\n', '<(', '>(']
-        safe_prefixes = [
-            'ls', 'cat', 'head', 'tail', 'grep', 'find', 'tree', 'pwd', 'echo',
-            'git status', 'git log', 'git diff', 'git show', 'git branch',
-            'git add', 'git commit', 'git push', 'git pull', 'git fetch',
-            'git checkout', 'git stash', 'rg ', 'fd '
-        ]
-        is_safe = (
-            not any(p in command for p in dangerous) and
-            any(command.strip().startswith(p) for p in safe_prefixes)
-        )
-        if not is_safe:
-            return {
-                "hookSpecificOutput": {
-                    "hookEventName": "PreToolUse",
-                    "permissionDecision": "deny",
-                    "permissionDecisionReason": "Main Chat Sandbox: Bash blocked.\n\nUse Task tool to delegate to sub-agents."
-                }
-            }
-
-    if tool_name in ('Write', 'Edit'):
-        file_path = tool_input.get('file_path', '')
-        resolved = os.path.realpath(file_path)
-        is_allowed = (
-            file_path.endswith(('.md', '.txt')) or
-            '.claude' in resolved.split(os.sep)
-        )
-        if not is_allowed:
-            return {
-                "hookSpecificOutput": {
-                    "hookEventName": "PreToolUse",
-                    "permissionDecision": "deny",
-                    "permissionDecisionReason": f"Main Chat Sandbox: Cannot write to {file_path}\n\nUse Task tool to delegate."
-                }
-            }
+    """Sandbox enforcement removed - now guidance-based via delegation skills."""
+    # No blocking - workflow skills guide delegation instead
     return None
 
 

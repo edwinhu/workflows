@@ -7,6 +7,7 @@ description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verificati
 
 ## Contents
 
+- [Delegation Pattern](#delegation-pattern) - Main chat orchestrates, subagents analyze
 - [The Iron Law](#the-iron-law-of-ds-implementation) - EVERY step MUST produce visible output
 - [Output-First Protocol](#output-first-protocol) - Required outputs by operation type
 - [Implementation Process](#implementation-process) - Step-by-step workflow
@@ -15,6 +16,28 @@ description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verificati
 - [Common Failures](#common-failures-to-avoid) - Silent data loss, hidden nulls
 
 # Implementation (Output-First Verification)
+
+## Delegation Pattern
+
+**Main chat orchestrates. Subagents analyze.**
+
+For each task in PLAN.md:
+1. Dispatch analyst subagent (does the work with output-first)
+2. Verify outputs are present and reasonable
+3. Dispatch methodology reviewer (for statistical tasks)
+4. Log findings to LEARNINGS.md
+
+**Why delegate?**
+- Fresh context per task (no pollution from previous analysis)
+- Enforced output verification (can't skip)
+- Error isolation (bad analysis doesn't corrupt main context)
+
+**REQUIRED SUB-SKILL:** For Task templates and detailed flow:
+```
+Skill(skill="workflows:ds-delegate")
+```
+
+---
 
 Implement analysis with mandatory visible output at every step.
 **NO TDD** - instead, every code step MUST produce and verify output.
