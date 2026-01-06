@@ -113,7 +113,9 @@ After user chooses, write `.claude/PLAN.md`:
 ```markdown
 # Implementation Plan: [Feature]
 
-> **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:dev-implement")` to implement this plan with TDD.
+> **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:dev-implement")` to implement this plan.
+>
+> **Per-Task Ralph Loops:** Each task below gets its OWN ralph loop. Do NOT use one loop for all tasks.
 >
 > **Delegation:** Main chat orchestrates, Task agents implement. Use `Skill(skill="workflows:dev-delegate")` for subagent templates.
 
@@ -135,15 +137,17 @@ After user chooses, write `.claude/PLAN.md`:
 |------|---------|
 | `src/auth/types.ts` | Session type definitions |
 
-## Implementation Order (with REAL Tests)
+## Implementation Order (with Per-Task Ralph Loops)
 
-> **For Claude:** Use `Skill(skill="workflows:dev-test")` for automation options.
+> **For Claude:** Each task = one ralph loop. Complete task N before starting task N+1.
+>
+> Pattern: `/ralph-wiggum:ralph-loop "Task N: [name]" --max-iterations 10 --completion-promise "TASKN_DONE"`
 
-| Task | Core Test (MUST EXECUTE CODE) | Verify Command |
-|------|-------------------------------|----------------|
-| 1. Add types | N/A (types only) | `tsc --noEmit` |
-| 2. Service method | `test_validate_session()` calls method, checks return | `pytest tests/test_auth.py -v` |
-| 3. Route handler | Integration test hits endpoint, checks response | `pytest tests/test_api.py -v` |
+| Task | Ralph Loop | Core Test (MUST EXECUTE CODE) | Verify Command |
+|------|------------|-------------------------------|----------------|
+| 1. Add types | `"Task 1: Add types" → TASK1_DONE` | N/A (types only) | `tsc --noEmit` |
+| 2. Service method | `"Task 2: Service method" → TASK2_DONE` | `test_validate_session()` calls method, checks return | `pytest tests/test_auth.py -v` |
+| 3. Route handler | `"Task 3: Route handler" → TASK3_DONE` | Integration test hits endpoint, checks response | `pytest tests/test_api.py -v` |
 
 ### What Counts as a REAL Test
 

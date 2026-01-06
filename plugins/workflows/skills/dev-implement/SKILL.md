@@ -140,54 +140,50 @@ The ralph loop is for ALL implementation, not just "hard problems." If you catch
 | "I'll cherry-pick the relevant parts" | Skills are protocols, not menus. Follow all of it. |
 | "The ceremony isn't worth it" | The ceremony IS the value. It prevents shortcuts. |
 | "I'll iterate without the loop" | Without ralph, you'll declare done prematurely. |
+| "One loop for the whole feature" | NO. One loop PER TASK. Feature loops don't enforce task completion. |
+| "I'll just move to the next task" | Did the current task's loop complete? If no loop, no gate. |
+| "Per-task loops are too much overhead" | Per-task loops are the ONLY enforcement. One loop = no enforcement. |
 
-**Ralph loop ensures you don't claim completion until tests actually pass.**
+**Each task needs its own ralph loop. One feature loop provides ZERO per-task enforcement.**
 </EXTREMELY-IMPORTANT>
 
-### Step 1: Start the Ralph Loop
-
-**IMPORTANT:** Avoid parentheses `()` in the prompt - they break zsh argument parsing.
-Use dashes or brackets instead: `suite - sketchybar, raycast -` or `suite [sketchybar, raycast]`
-
-```
-/ralph-wiggum:ralph-loop "Implement [FEATURE]" --max-iterations 30 --completion-promise "DONE"
-```
-
-### Step 2: The Per-Task Loop Pattern
+### The Per-Task Ralph Loop Pattern
 
 <EXTREMELY-IMPORTANT>
-**ONE ralph loop for the feature, but STRICT per-task gates inside.**
+**ONE ralph loop PER TASK in PLAN.md. Sequential, not nested.**
+
+This is the ONLY pattern that provides enforcement:
 
 ```
-For each task in PLAN.md:
-    Loop until THIS TASK's tests pass:
-        Spawn Task agent for THIS TASK
-        Verify THIS TASK's tests pass
-        If tests fail → iterate on THIS TASK (don't move on)
-    Mark task complete in LEARNINGS.md
-
-When ALL tasks complete with passing tests:
-    Output <promise>DONE</promise>
+For task N in PLAN.md (1, 2, 3, ...):
+    1. Start ralph loop for task N
+    2. Inside loop: spawn Task agents, iterate until tests pass
+    3. Output promise → loop ends
+    4. Move to task N+1, start NEW ralph loop
 ```
 
-**You MUST NOT move to task N+1 until task N has passing tests.**
-
-This prevents:
-- Declaring partial work "done enough"
-- Moving on with broken code
-- Accumulating tech debt across tasks
+**Why per-task loops?**
+- One feature loop doesn't enforce per-task completion
+- Without a loop per task, you can just... move on
+- Each task needs its own completion gate
 </EXTREMELY-IMPORTANT>
 
-### Step 3: Inside Each Task Iteration
+### Step 1: Start Ralph Loop for Task 1
 
-Spawn a Task agent for ONE task at a time:
+**IMPORTANT:** Avoid parentheses `()` in the prompt - they break zsh argument parsing.
+
+```
+/ralph-wiggum:ralph-loop "Task 1: [TASK NAME]" --max-iterations 10 --completion-promise "TASK1_DONE"
+```
+
+### Step 2: Inside the Loop - Spawn Task Agent
 
 ```
 Task(subagent_type="general-purpose", prompt="""
-Implement [TASK NAME FROM PLAN.md] following TDD protocol.
+Implement Task 1: [TASK NAME] following TDD protocol.
 
 ## This Task
-[PASTE THE SPECIFIC TASK FROM PLAN.md - not the whole feature]
+[PASTE THE SPECIFIC TASK FROM PLAN.md]
 
 ## Context
 - Read .claude/LEARNINGS.md for prior attempts
@@ -204,15 +200,13 @@ Implement [TASK NAME FROM PLAN.md] following TDD protocol.
 7. Run full test suite
 8. Refactor while staying GREEN
 
-See [Testing Rules](../dev/_shared/testing-rules.md) for LOGGING-FIRST, GREP TESTS BANNED, and SKIP != PASS rules.
-
 Report back: what was done, test results, any blockers.
 """)
 ```
 
-### Step 4: Verify THIS Task Before Moving On
+### Step 3: Verify and Complete Task
 
-After Task agent returns, main chat verifies FOR THIS TASK:
+After Task agent returns, verify:
 - [ ] Tests RUN the compiled binary or execute code paths
 - [ ] Tests check LOGS or output for expected behavior
 - [ ] NO grepping source files as tests
@@ -220,17 +214,55 @@ After Task agent returns, main chat verifies FOR THIS TASK:
 - [ ] LEARNINGS.md contains ACTUAL LOG OUTPUT
 - [ ] Build succeeds
 
-**If ANY checkbox fails → iterate on THIS task. Do NOT move to next task.**
-
-### Step 5: Output Promise Only When ALL Tasks Complete
-
-**Only output the promise when ALL tasks from PLAN.md are complete:**
+**If ALL pass → output the promise:**
 ```
-<promise>DONE</promise>
+<promise>TASK1_DONE</promise>
 ```
-The promise means: "Every task in PLAN.md has passing tests. Build succeeds. Full implementation is complete." If ANY task is incomplete or has failing tests, don't output it.
 
-### Step 6: If Tests Fail → Keep Iterating on Current Task
+**If ANY fail → iterate (don't output promise yet).**
+
+### Step 4: Move to Next Task - Start NEW Ralph Loop
+
+After task 1's loop completes, start task 2's loop:
+
+```
+/ralph-wiggum:ralph-loop "Task 2: [TASK NAME]" --max-iterations 10 --completion-promise "TASK2_DONE"
+```
+
+Repeat for each task in PLAN.md.
+
+### Example: 4-Task Feature
+
+```
+## Task 1: Create types
+/ralph-wiggum:ralph-loop "Task 1: Create types" --max-iterations 5 --completion-promise "TASK1_DONE"
+  → Task agent implements
+  → Tests pass
+<promise>TASK1_DONE</promise>
+
+## Task 2: Add service method
+/ralph-wiggum:ralph-loop "Task 2: Add service method" --max-iterations 10 --completion-promise "TASK2_DONE"
+  → Task agent implements
+  → Tests fail → iterate
+  → Tests pass
+<promise>TASK2_DONE</promise>
+
+## Task 3: Add route handler
+/ralph-wiggum:ralph-loop "Task 3: Add route handler" --max-iterations 10 --completion-promise "TASK3_DONE"
+  → Task agent implements
+  → Tests pass
+<promise>TASK3_DONE</promise>
+
+## Task 4: Integration
+/ralph-wiggum:ralph-loop "Task 4: Integration" --max-iterations 10 --completion-promise "TASK4_DONE"
+  → Task agent implements
+  → Tests pass
+<promise>TASK4_DONE</promise>
+
+## All tasks complete
+```
+
+### Step 5: If Tests Fail → Keep Iterating
 
 <EXTREMELY-IMPORTANT>
 **KEEP LOOPING UNTIL TESTS PASS. Do NOT ask user to test manually.**

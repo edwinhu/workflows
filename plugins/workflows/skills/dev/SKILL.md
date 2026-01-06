@@ -80,7 +80,7 @@ flowchart TD
     Clarify --> Design["Phase 4: /dev-design<br/>Approaches → PLAN.md"]
     Design --> Gate{User approves?}
     Gate -->|No| Design
-    Gate -->|Yes| Implement["Phase 5: /dev-implement<br/>TDD via ralph-loop"]
+    Gate -->|Yes| Implement["Phase 5: /dev-implement<br/>Per-task ralph loops + TDD"]
     Implement --> Review["Phase 6: /dev-review<br/>Confidence ≥80"]
     Review -->|Issues| Implement
     Review -->|Approved| Verify["Phase 7: /dev-verify"]
@@ -96,7 +96,7 @@ flowchart TD
 | 2 | `/dev-explore` | Explore codebase, spawn agents | Key files list (10-15) |
 | 3 | `/dev-clarify` | Questions based on exploration | Final `.claude/SPEC.md` |
 | 4 | `/dev-design` | 2-3 approaches, **user picks** | `.claude/PLAN.md` |
-| 5 | `/dev-implement` | TDD implementation | Working code + tests |
+| 5 | `/dev-implement` | Per-task ralph loops + TDD | Working code + tests |
 | 6 | `/dev-review` | Confidence-scored review | Approval or issues |
 | 7 | `/dev-verify` | Runtime verification | Fresh evidence |
 
