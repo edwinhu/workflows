@@ -56,6 +56,21 @@ NOT allowed in main chat:
 - "Quick fixes"
 
 **If you're about to edit code directly, STOP and spawn a Task agent instead.**
+
+### Rationalization Prevention
+
+These thoughts mean STOP—you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
+| "It's just a small fix" | Small fixes become big mistakes. Delegate. |
+| "I'll be quick" | Quick means sloppy. Delegate. |
+| "The subagent will take too long" | Subagent time is cheap. Your context is expensive. |
+| "I already know what to do" | Knowing ≠ doing it well. Delegate. |
+| "Let me just do this one thing" | One thing leads to another. Delegate. |
+| "This is too simple for a subagent" | Simple is exactly when delegation works best. |
+| "I'm already here in the code" | Being there ≠ writing there. Delegate. |
+| "The user is waiting" | Wrong fast is worse than right slow. Delegate. |
 </EXTREMELY-IMPORTANT>
 
 ## Delegation Pattern

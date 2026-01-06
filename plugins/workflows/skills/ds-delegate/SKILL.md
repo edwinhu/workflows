@@ -107,6 +107,20 @@ Review methodology for: [TASK NAME]
 ## Original Requirements
 [FROM SPEC.md - especially any replication requirements]
 
+## CRITICAL: Do Not Trust the Report
+
+The analyst may have:
+- Reported success without actually running the code
+- Cherry-picked output that looks correct
+- Glossed over data quality issues
+- Made methodology choices without justification
+
+**DO:**
+- Read the actual code or notebook cells
+- Verify outputs exist and match claims
+- Check for silent failures (empty DataFrames, all nulls)
+- Confirm statistical assumptions were checked
+
 ## Review Checklist
 1. Is the statistical method appropriate for the data type?
 2. Are assumptions documented and checked?
@@ -118,8 +132,8 @@ Review methodology for: [TASK NAME]
 Rate each issue 0-100. Only report issues >= 80 confidence.
 
 ## Output Format
-- APPROVED: Methodology sound
-- ISSUES: List concerns with confidence scores
+- APPROVED: Methodology sound (after verifying code/outputs yourself)
+- ISSUES: List concerns with confidence scores and file:line references
 """)
 ```
 
@@ -153,10 +167,15 @@ After each task, append to `.claude/LEARNINGS.md`:
 - Skip methodology review for statistical tasks
 - Assume merge/join worked without checking
 - Let analyst skip output-first protocol
+- Make analyst read PLAN.md (provide full text)
 
 **If analyst produces no visible output:**
 - Re-dispatch with explicit output requirements
 - This is a hard failure, not optional
+
+**If analyst fails task:**
+- Dispatch fix subagent with specific instructions
+- Don't fix manually in main chat (context pollution)
 
 ## Example Flow
 

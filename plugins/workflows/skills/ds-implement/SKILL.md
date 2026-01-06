@@ -36,6 +36,21 @@ NOT allowed in main chat:
 - "Quick analysis"
 
 **If you're about to write analysis code directly, STOP and spawn a Task agent instead.**
+
+### Rationalization Prevention
+
+These thoughts mean STOP—you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
+| "It's just a quick plot" | Quick plots hide data issues. Delegate. |
+| "I'll just check the shape" | Shape checks need output-first protocol. Delegate. |
+| "The subagent will take too long" | Subagent time is cheap. Your context is expensive. |
+| "I already know this data" | Knowing ≠ verified. Delegate. |
+| "Let me just run this merge" | Merges silently fail. Delegate with verification. |
+| "This is too simple for a subagent" | Simple is exactly when errors hide. Delegate. |
+| "I'm already looking at the data" | Looking ≠ analyzing. Delegate. |
+| "The user wants results fast" | Wrong results are worse than slow results. Delegate. |
 </EXTREMELY-IMPORTANT>
 
 ## Delegation Pattern

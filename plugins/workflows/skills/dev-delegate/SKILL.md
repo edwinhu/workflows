@@ -80,16 +80,32 @@ Review spec compliance for: [TASK NAME]
 ## Success Criteria (from SPEC.md)
 [PASTE RELEVANT CRITERIA]
 
+## CRITICAL: Do Not Trust the Report
+
+The implementer finished suspiciously quickly. Their report may be incomplete,
+inaccurate, or optimistic. You MUST verify everything independently.
+
+**DO NOT:**
+- Take their word for what they implemented
+- Trust their claims about completeness
+- Accept their interpretation of requirements
+
+**DO:**
+- Read the actual code they wrote
+- Compare actual implementation to requirements line by line
+- Check for missing pieces they claimed to implement
+- Look for extra features they didn't mention
+
 ## Review Checklist
 1. Does implementation meet ALL requirements?
 2. Is anything MISSING from the spec?
 3. Is anything EXTRA not in the spec?
 
 ## Output Format
-- COMPLIANT: All requirements met, nothing extra
-- ISSUES: List what's missing or extra
+- COMPLIANT: All requirements met, nothing extra (after verifying code yourself)
+- ISSUES: List what's missing or extra with file:line references
 
-Be strict. "Close enough" is not compliant.
+Be strict. "Close enough" is not compliant. Verify by reading code.
 """)
 ```
 
