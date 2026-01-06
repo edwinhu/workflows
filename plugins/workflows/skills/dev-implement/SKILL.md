@@ -84,7 +84,21 @@ These thoughts mean STOP—you're rationalizing:
 | "Let me just do this one thing" | One thing leads to another. Delegate. |
 | "This is too simple for a subagent" | Simple is exactly when delegation works best. |
 | "I'm already here in the code" | Being there ≠ writing there. Delegate. |
-| "The user is waiting" | Wrong fast is worse than right slow. Delegate. |
+| "The user is waiting" | User wants DONE, not fast. They're patient but lazy—won't debug your shortcuts. |
+| "This is just porting/adapting code" | Porting = writing = code. Delegate. |
+| "I already have context loaded" | Fresh context per task is the point. Delegate. |
+| "It's config, not real code" | JSON/YAML/TOML = code. Delegate. |
+| "I need to set things up first" | Setup IS implementation. Delegate. |
+| "This is boilerplate" | Boilerplate = code = delegate. |
+| "PLAN.md is detailed, just executing" | Execution IS implementation. Delegate. |
+
+### The Meta-Rationalization
+
+**If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've already failed.**
+
+The skill says "not negotiable" because your brain WILL find negotiation room. These rationalizations feel reasonable in the moment. They are not.
+
+Simple work is EXACTLY when discipline matters most—because that's when you're most tempted to skip it.
 </EXTREMELY-IMPORTANT>
 
 ## Delegation Pattern
@@ -111,6 +125,24 @@ Skill(skill="workflows:dev-delegate")
 
 Task agents cannot reliably invoke ralph-loop (argument parsing breaks with complex prompts).
 Instead: main chat runs the loop and delegates code edits to Task agents.
+
+<EXTREMELY-IMPORTANT>
+### Ralph Loop is NOT Optional
+
+The ralph loop is for ALL implementation, not just "hard problems." If you catch yourself thinking any of these, STOP:
+
+| Thought | Reality |
+|---------|---------|
+| "No test framework exists" | Create one. pytest/jest take 2 minutes. |
+| "PLAN.md says manual testing" | Override it. Automate first. |
+| "Ralph is for hard problems" | Ralph is for ALL implementation. |
+| "This is straight-line work" | Straight lines still need verification loops. |
+| "I'll cherry-pick the relevant parts" | Skills are protocols, not menus. Follow all of it. |
+| "The ceremony isn't worth it" | The ceremony IS the value. It prevents shortcuts. |
+| "I'll iterate without the loop" | Without ralph, you'll declare done prematurely. |
+
+**Ralph loop ensures you don't claim completion until tests actually pass.**
+</EXTREMELY-IMPORTANT>
 
 ### Step 1: Start the Ralph Loop
 

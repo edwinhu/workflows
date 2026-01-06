@@ -381,9 +381,15 @@ These thoughts mean STOP—you're about to fake test:
 | "The code looks correct" | Looking ≠ testing | Execute and verify |
 | "I'll add real tests later" | Later = never | Test now |
 | "This is hard to test" | Playwright/ydotool exist | Use automation tools |
-| "User can verify quickly" | Your job, not theirs | Automate it |
+| "User can verify quickly" | User is lazy. They WON'T test. They WON'T debug. Automate it. |
 | "No test framework exists" | pytest/jest take 2 min | Create one |
 | "Just this once" | Slippery slope to always | No exceptions |
+| "The build passes" | Building ≠ testing | Run actual tests |
+| "Type checker passed" | Types ≠ behavior | Execute and verify output |
+| "I reviewed the diff" | Review ≠ execution | Run the code |
+| "Existing tests still pass" | Do they cover THIS change? | Add test for new code |
+| "I'll batch the tests" | Test each change NOW | Run tests after each edit |
+| "It works in development" | Manual ≠ automated | Capture that test in code |
 
 **If you're rationalizing, you're about to lie. STOP and write a REAL test.**
 
