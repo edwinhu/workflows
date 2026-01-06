@@ -153,20 +153,48 @@ Use dashes or brackets instead: `suite - sketchybar, raycast -` or `suite [sketc
 /ralph-wiggum:ralph-loop "Implement [FEATURE]" --max-iterations 30 --completion-promise "DONE"
 ```
 
-### Step 2: Inside Each Iteration
+### Step 2: The Per-Task Loop Pattern
 
-Spawn a Task agent for the actual implementation work:
+<EXTREMELY-IMPORTANT>
+**ONE ralph loop for the feature, but STRICT per-task gates inside.**
+
+```
+For each task in PLAN.md:
+    Loop until THIS TASK's tests pass:
+        Spawn Task agent for THIS TASK
+        Verify THIS TASK's tests pass
+        If tests fail → iterate on THIS TASK (don't move on)
+    Mark task complete in LEARNINGS.md
+
+When ALL tasks complete with passing tests:
+    Output <promise>DONE</promise>
+```
+
+**You MUST NOT move to task N+1 until task N has passing tests.**
+
+This prevents:
+- Declaring partial work "done enough"
+- Moving on with broken code
+- Accumulating tech debt across tasks
+</EXTREMELY-IMPORTANT>
+
+### Step 3: Inside Each Task Iteration
+
+Spawn a Task agent for ONE task at a time:
 
 ```
 Task(subagent_type="general-purpose", prompt="""
-Implement [FEATURE] following TDD protocol.
+Implement [TASK NAME FROM PLAN.md] following TDD protocol.
 
-Context:
+## This Task
+[PASTE THE SPECIFIC TASK FROM PLAN.md - not the whole feature]
+
+## Context
 - Read .claude/LEARNINGS.md for prior attempts
 - Read .claude/SPEC.md for requirements
-- Read .claude/PLAN.md for chosen approach and implementation order
+- Read .claude/PLAN.md for chosen approach
 
-TDD Protocol:
+## TDD Protocol
 1. BEFORE writing test: Add debug logging to code path you'll test
 2. Rebuild the project
 3. Write failing test that RUNS the program and checks LOGS/output
@@ -182,9 +210,9 @@ Report back: what was done, test results, any blockers.
 """)
 ```
 
-### Step 3: Verify and Complete
+### Step 4: Verify THIS Task Before Moving On
 
-After Task agent returns, main chat verifies:
+After Task agent returns, main chat verifies FOR THIS TASK:
 - [ ] Tests RUN the compiled binary or execute code paths
 - [ ] Tests check LOGS or output for expected behavior
 - [ ] NO grepping source files as tests
@@ -192,13 +220,17 @@ After Task agent returns, main chat verifies:
 - [ ] LEARNINGS.md contains ACTUAL LOG OUTPUT
 - [ ] Build succeeds
 
-**Only output the promise when the statement is COMPLETELY AND UNEQUIVOCALLY TRUE:**
+**If ANY checkbox fails → iterate on THIS task. Do NOT move to next task.**
+
+### Step 5: Output Promise Only When ALL Tasks Complete
+
+**Only output the promise when ALL tasks from PLAN.md are complete:**
 ```
 <promise>DONE</promise>
 ```
-You may NOT output this tag to "move on" or "try something else". The promise means: "All tests pass. Build succeeds. Implementation is complete." If that's not true, don't output it.
+The promise means: "Every task in PLAN.md has passing tests. Build succeeds. Full implementation is complete." If ANY task is incomplete or has failing tests, don't output it.
 
-### Step 4: If Tests Fail → Keep Iterating
+### Step 6: If Tests Fail → Keep Iterating on Current Task
 
 <EXTREMELY-IMPORTANT>
 **KEEP LOOPING UNTIL TESTS PASS. Do NOT ask user to test manually.**
