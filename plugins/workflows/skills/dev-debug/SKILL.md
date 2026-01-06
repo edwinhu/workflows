@@ -1,7 +1,9 @@
 ---
 name: dev-debug
-description: This skill should be used when the user asks to "debug this", "fix this bug", "investigate this error", "find the root cause", or reports a bug that needs systematic investigation. Uses 4-phase methodology for root cause analysis.
+description: "Systematic debugging with 4-phase methodology. Use for bug investigation and root cause analysis."
 ---
+
+**Announce:** "I'm using dev-debug for systematic bug investigation."
 
 ## Contents
 
@@ -223,3 +225,13 @@ Main chat should:
    - D) User explicitly requests manual verification
 
 **Never default to "please verify the fix manually".** Always exhaust automation first.
+
+## When Fix Requires Substantial Changes
+
+If the root cause reveals a need for significant refactoring or new implementation:
+
+1. Document root cause in LEARNINGS.md
+2. Complete the debug loop with `<promise>FIXED</promise>` for the investigation
+3. Use `Skill(skill="workflows:dev-delegate")` for the implementation work
+
+Debug finds the problem. Delegate implements the solution.
