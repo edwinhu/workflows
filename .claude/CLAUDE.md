@@ -4,6 +4,26 @@
 
 - **obra/superpowers**: https://github.com/obra/superpowers - Behavioral enforcement patterns, skill-based workflows
 
+## Enforcement Patterns Checklist
+
+**When creating or updating skills, check against these patterns from superpowers:**
+
+| Pattern | Description | Check |
+|---------|-------------|-------|
+| **Iron Laws** | "NO X WITHOUT Y FIRST" - absolute constraints, not guidelines | ☐ |
+| **Rationalization Tables** | Excuse → Reality tables that preempt Claude's defensive thinking | ☐ |
+| **Red Flags + STOP** | "If you catch yourself thinking X, STOP" - mental pattern interrupts | ☐ |
+| **Gate Functions** | IDENTIFY → RUN → READ → VERIFY → CLAIM (5-step verification) | ☐ |
+| **Flowcharts as Spec** | Process diagrams as authoritative definition, not just documentation | ☐ |
+| **Staged Review Loops** | Multiple review stages with re-review on issues | ☐ |
+| **Delete & Restart** | "Write code before test? Delete it. No exceptions." | ☐ |
+| **Skill Dependencies** | Cross-references that enforce workflow order | ☐ |
+| **Honesty Framing** | "Claiming without verification is LYING" - stronger than "rationalizing" | ☐ |
+| **Trigger-Only Descriptions** | Brief triggers in description, process details in body only | ☐ |
+| **No Pause Between Tasks** | After completing task N, immediately start task N+1 | ☐ |
+
+**Key insight from superpowers:** If the skill description contains process summary, Claude follows the short description instead of reading the detailed flowchart. Keep descriptions trigger-only.
+
 ## Required Skills
 
 **Always use these skills when working on this project:**
