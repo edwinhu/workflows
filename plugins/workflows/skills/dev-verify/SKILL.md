@@ -19,6 +19,20 @@ description: "REQUIRED Phase 7 of /dev workflow (final). Requires fresh runtime 
 # Verification Gate
 
 <EXTREMELY-IMPORTANT>
+## Your Job is to Write Automated Tests
+
+**The automated test IS your deliverable. The implementation just makes the test pass.**
+
+Reframe your task:
+- ❌ "Implement feature X, and test it"
+- ✅ "Write an automated test that proves feature X works. Then make it pass."
+
+The test proves value. The implementation is a means to an end.
+
+Without a REAL automated test (executes code, verifies behavior), you have delivered NOTHING.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## The Iron Law of Verification
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. This is not negotiable.**

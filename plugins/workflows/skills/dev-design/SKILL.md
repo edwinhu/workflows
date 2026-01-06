@@ -135,16 +135,26 @@ After user chooses, write `.claude/PLAN.md`:
 |------|---------|
 | `src/auth/types.ts` | Session type definitions |
 
-## Implementation Order
-1. [ ] Add types (no dependencies)
-2. [ ] Implement service method
-3. [ ] Add route handler
-4. [ ] Write tests
+## Implementation Order (with REAL Tests)
 
-## Testing Strategy
-- Unit tests for service method
-- Integration test for endpoint
-- Match patterns from `tests/auth/*.test.ts`
+> **For Claude:** Use `Skill(skill="workflows:dev-test")` for automation options.
+
+| Task | Core Test (MUST EXECUTE CODE) | Verify Command |
+|------|-------------------------------|----------------|
+| 1. Add types | N/A (types only) | `tsc --noEmit` |
+| 2. Service method | `test_validate_session()` calls method, checks return | `pytest tests/test_auth.py -v` |
+| 3. Route handler | Integration test hits endpoint, checks response | `pytest tests/test_api.py -v` |
+
+### What Counts as a REAL Test
+
+| ✅ REAL (execute + verify) | ❌ NOT A TEST (never do this) |
+|----------------------------|-------------------------------|
+| pytest calls function | grep for function exists |
+| Playwright clicks button | ast-grep finds pattern |
+| API request checks response | Log says "success" |
+| Screenshot comparison | "Code looks correct" |
+
+**Every task MUST have a test that EXECUTES the code and VERIFIES behavior.**
 ```
 
 ### 5. User Gate - Final Approval

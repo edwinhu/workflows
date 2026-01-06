@@ -24,6 +24,20 @@ description: "REQUIRED Phase 5 of /dev workflow. Enforces RED-GREEN-REFACTOR cyc
 # Implementation
 
 <EXTREMELY-IMPORTANT>
+## Your Job is to Write Automated Tests
+
+**The automated test IS your deliverable. The implementation just makes the test pass.**
+
+Reframe your task:
+- ❌ "Implement feature X, and test it"
+- ✅ "Write an automated test that proves feature X works. Then make it pass."
+
+The test proves value. The implementation is a means to an end.
+
+Without a REAL automated test (executes code, verifies behavior), you have delivered NOTHING.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## Prerequisites
 
 **Do NOT start implementation without these:**
@@ -265,13 +279,54 @@ REFACTOR → Clean up while staying green
 
 ## CRITICAL: Automated Testing First
 
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Automated Testing
+
+**TESTING IS THE TASK. Implementation without REAL automated tests is incomplete.**
+
+**REQUIRED SUB-SKILL:** Use `Skill(skill="workflows:dev-test")` for automation options.
+
+You may NOT claim a task is done until:
+1. A REAL automated test exists (executes code, verifies behavior)
+2. You ran the test and pasted ACTUAL OUTPUT to LEARNINGS.md
+3. Test output shows PASS (not "should work", not "looks correct")
+
+### What Is a REAL Test vs FAKE Test
+
+| ✅ REAL TEST (execute + verify) | ❌ FAKE "TEST" (NEVER ACCEPTABLE) |
+|---------------------------------|-----------------------------------|
+| pytest calls function, asserts return | grep/ast-grep finds function exists |
+| Playwright clicks button, checks DOM | Read logs for "success" message |
+| ydotool types input, screenshot verifies | Code review says "looks right" |
+| CLI invocation checks stdout | Structural pattern matching |
+| API request verifies response body | "I'm confident it works" |
+
+**THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.**
+
+Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
+
+### Rationalization Prevention
+
+| Excuse | Reality |
+|--------|---------|
+| "I'll add tests later" | No. Test now or task not done. |
+| "This is hard to test" | Use playwright/ydotool/screenshots. See dev-test skill. |
+| "User can verify quickly" | Your job to automate. User time > your test time. |
+| "It obviously works" | "Obviously" is not evidence. Run the test. |
+| "No test framework exists" | Create one. pytest/jest take 2 minutes. |
+| "Grep confirms it exists" | Existence ≠ working. Execute the code. |
+| "The logs show success" | Logs can lie. Test the behavior. |
+
+**If you catch yourself rationalizing, STOP. Write a REAL test.**
+</EXTREMELY-IMPORTANT>
+
 **NEVER ask user to test manually if automated testing is possible.**
 
 Testing hierarchy (try in order):
 1. **Unit tests** - `ninja test`, `pytest`, `npm test`, etc.
 2. **Integration tests** - API calls, CLI commands
-3. **UI automation** - Computer control + screenshots
-4. **Manual testing** - LAST RESORT ONLY
+3. **UI automation** - Playwright, ydotool + screenshots
+4. **Manual testing** - LAST RESORT ONLY (requires user explicit request)
 
 ## Code Search for Implementation
 

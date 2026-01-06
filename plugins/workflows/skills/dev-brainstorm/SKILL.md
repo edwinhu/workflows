@@ -92,10 +92,27 @@ Write initial spec to `.claude/SPEC.md`:
 ## Constraints
 - [Any limitations or boundaries]
 
-## Testing
-- **Framework:** [pytest / meson test / npm test / etc.]
+## Automated Testing (MANDATORY)
+
+> **For Claude:** Use `Skill(skill="workflows:dev-test")` for automation options.
+
+- **Framework:** [pytest / playwright / jest / etc.]
 - **Command:** [e.g., `pytest tests/ -v`]
-- **Directory:** [e.g., tests/]
+- **Core functionality to verify:** [what MUST be tested automatically]
+
+### What Counts as a Real Automated Test
+
+| ✅ REAL TEST (execute + verify) | ❌ NOT A TEST (never acceptable) |
+|---------------------------------|----------------------------------|
+| pytest calls function, checks return value | grep/ast-grep finds function exists |
+| Playwright clicks button, verifies result | Check logs say "success" |
+| ydotool simulates user, screenshot verifies | Read source code structure |
+| API call returns expected response | "Code looks correct" |
+| CLI invocation produces expected output | Structural pattern matching |
+
+**THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.**
+
+Grepping is not testing. Log checking is not testing. Code review is not testing.
 
 ## Open Questions
 - [Questions to resolve during exploration]

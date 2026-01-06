@@ -204,7 +204,21 @@ rga --type pdf "methodology" papers/
 
 ## Test Infrastructure Discovery
 
-**CRITICAL: Always discover testing infrastructure during exploration.**
+<EXTREMELY-IMPORTANT>
+**CRITICAL: You MUST discover how to run REAL automated tests.**
+
+REAL automated tests EXECUTE code and verify RUNTIME behavior.
+Grepping source files is NOT testing. Log checking is NOT testing.
+
+| ✅ REAL TEST INFRASTRUCTURE | ❌ NOT TESTING (never acceptable) |
+|-----------------------------|-----------------------------------|
+| pytest that calls functions | grep/ast-grep to find code |
+| Playwright that clicks buttons | Reading logs for "success" |
+| ydotool that simulates user input | Code review / structure check |
+| API calls that verify responses | "It looks correct" |
+
+**If you can't find a way to EXECUTE and VERIFY, flag this as a blocker.**
+</EXTREMELY-IMPORTANT>
 
 ### Project Test Framework
 
@@ -216,18 +230,20 @@ cat package.json 2>/dev/null | grep -E "(test|jest|mocha|vitest)"
 cat pyproject.toml 2>/dev/null | grep -i pytest
 cat Cargo.toml 2>/dev/null | grep -i "\[dev-dependencies\]"
 
-# Find existing tests
+# Find existing tests that EXECUTE code
 find . -name "*test*" -type f | head -20
 ```
 
-### Available Testing Tools
+### Available Tools for REAL Testing
 
-| Platform | Check | Tool |
-|----------|-------|------|
-| Unit tests | Build system | meson test, pytest, jest, cargo test |
-| Web | MCP | Playwright (browser_snapshot, browser_click) |
-| Desktop | System | ydotool, grim, dbus-send |
-| Accessibility | System | pyatspi, accerciser |
+| What to Test | Tool | How It's a REAL Test |
+|--------------|------|----------------------|
+| Functions | pytest, jest, cargo test | Calls function, checks return value |
+| CLI | subprocess, execa | Runs binary, checks output |
+| Web UI | Playwright MCP | Clicks button, verifies DOM |
+| Desktop UI | ydotool + grim | Simulates input, screenshots result |
+| API | requests, fetch | Sends request, checks response |
+| D-Bus apps | dbus-send | Invokes method, checks return |
 
 ```bash
 # Desktop automation (Wayland)
@@ -240,12 +256,12 @@ dbus-send --session --print-reply --dest=org.freedesktop.DBus \
 
 ### Document in Exploration Output
 
-Include in your findings:
+**REQUIRED findings for SPEC.md:**
 - **Test framework:** meson test / pytest / jest / etc.
-- **Test directory:** tests/ or test/ or __tests__/
-- **Existing test patterns:** How tests are structured
+- **Test command:** Exact command to run tests
+- **How to verify core functionality:** What EXECUTES the code
 - **Available automation:** Playwright MCP, ydotool, D-Bus interfaces
-- **Visual testing:** Screenshots, accessibility tree
+- **Blocker:** If no way to run REAL tests, flag immediately
 
 ## Key Files List Format
 
