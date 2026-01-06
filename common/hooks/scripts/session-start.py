@@ -7,6 +7,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 def load_env_file(env_file: Path):
@@ -222,7 +223,7 @@ def create_session_marker_dir():
     return session_dir
 
 
-def get_active_workflow() -> str | None:
+def get_active_workflow() -> Optional[str]:
     """Check if a workflow is currently active."""
     session_dir = Path(f"/tmp/claude-workflow-{os.getppid()}")
     if not session_dir.exists():
