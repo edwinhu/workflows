@@ -148,7 +148,8 @@ def check_ralph_validation(tool_name: str, tool_input: dict) -> Optional[dict]:
 
     elif tool_name == 'Bash':
         command = tool_input.get('command', '')
-        if 'ralph-loop' in command:
+        # Only match actual ralph-loop script invocations, not mentions in file content
+        if 'setup-ralph-loop.sh' in command:
             if is_ralph_loop_active():
                 return {
                     "hookSpecificOutput": {

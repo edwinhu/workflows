@@ -45,6 +45,9 @@ Instead: main chat runs the loop and delegates code edits to Task agents.
 
 ### Step 1: Start the Ralph Loop
 
+**IMPORTANT:** Avoid parentheses `()` in the prompt - they break zsh argument parsing.
+Use dashes or brackets instead: `suite - sketchybar, raycast -` or `suite [sketchybar, raycast]`
+
 ```
 /ralph-wiggum:ralph-loop "Implement [FEATURE]" --max-iterations 30 --completion-promise "DONE"
 ```

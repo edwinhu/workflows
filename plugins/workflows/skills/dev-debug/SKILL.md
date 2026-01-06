@@ -26,6 +26,9 @@ Instead: main chat runs the loop and delegates code investigation to Task agents
 
 ### Step 1: Start the Ralph Loop
 
+**IMPORTANT:** Avoid parentheses `()` in the prompt - they break zsh argument parsing.
+Use dashes or brackets instead: `error - TypeError -` or `error [TypeError]`
+
 ```
 /ralph-wiggum:ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
 ```
