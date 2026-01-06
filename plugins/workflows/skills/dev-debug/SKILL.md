@@ -26,6 +26,25 @@ description: "Systematic debugging with 4-phase methodology. Use for bug investi
 Task agents cannot reliably invoke ralph-loop (argument parsing breaks with complex prompts).
 Instead: main chat runs the loop and delegates code investigation to Task agents.
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Debug Delegation
+
+**MAIN CHAT MUST NOT WRITE CODE. This is not negotiable.**
+
+Main chat orchestrates the ralph-loop. Task agents do the work:
+- **Investigation**: Task agents read code, run tests, gather evidence
+- **Fixes**: Use `Skill(skill="workflows:dev-delegate")` for actual code changes
+
+| Main Chat Does | Task Agents Do |
+|----------------|----------------|
+| Start ralph-loop | Investigate root cause |
+| Spawn Task agents | Run tests, read code |
+| Review findings | Write fixes (via dev-delegate) |
+| Update LEARNINGS.md | Commit changes |
+
+**If you're about to edit code directly, STOP and delegate instead.**
+</EXTREMELY-IMPORTANT>
+
 ### Step 1: Start the Ralph Loop
 
 **IMPORTANT:** Avoid parentheses `()` in the prompt - they break zsh argument parsing.
