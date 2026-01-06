@@ -5,9 +5,12 @@ Skill Activator: Auto-activate workflow when /dev, /ds, or /writing skills are i
 This makes hooks session-aware - they only run when their workflow is active,
 similar to how Ralph Wiggum loops work with is_ralph_loop_active().
 """
+from __future__ import annotations
+
 import json
 import sys
 import os
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from session import activate_dev_mode, activate_workflow, get_session_id
@@ -37,7 +40,7 @@ SKILL_TO_WORKFLOW = {
 }
 
 
-def get_workflow_for_skill(skill: str) -> str | None:
+def get_workflow_for_skill(skill: str) -> Optional[str]:
     """Determine which workflow a skill belongs to."""
     # Exact match first
     if skill in SKILL_TO_WORKFLOW:

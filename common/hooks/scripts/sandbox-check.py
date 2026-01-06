@@ -4,11 +4,14 @@ Minimal PreToolUse hook: Only enforces sandbox when dev_mode is active.
 Exits immediately if dev_mode marker doesn't exist (zero overhead).
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import os
 import re
 from pathlib import Path
+from typing import Optional
 
 # Find session directory
 def get_session_dir():
@@ -50,14 +53,14 @@ PROTECTED_PATHS = [
     os.path.expanduser("~/.gnupg/"),
 ]
 
-def check_bash(command: str) -> str | None:
+def check_bash(command: str) -> Optional[str]:
     """Check bash command for dangerous patterns."""
     for pattern in BLOCKED_PATTERNS:
         if re.search(pattern, command, re.IGNORECASE):
             return f"Blocked: dangerous command pattern"
     return None
 
-def check_file_write(file_path: str) -> str | None:
+def check_file_write(file_path: str) -> Optional[str]:
     """Check if file write is to a protected path."""
     abs_path = os.path.abspath(os.path.expanduser(file_path))
     for protected in PROTECTED_PATHS:

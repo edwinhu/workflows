@@ -17,6 +17,8 @@ Example:
     )
 """
 
+from __future__ import annotations
+
 import os
 import json
 import time
@@ -24,7 +26,7 @@ import hashlib
 import re
 from pathlib import Path
 from datetime import datetime
-from typing import Iterator
+from typing import Iterator, Optional
 
 import google.generativeai as genai
 from google.cloud import storage
@@ -343,7 +345,7 @@ class GeminiBatchProcessor:
                         "parsed_data": None
                     }
 
-    def _extract_json(self, text: str) -> dict | None:
+    def _extract_json(self, text: str) -> Optional[dict]:
         """Extract JSON from response text."""
         if not text:
             return None

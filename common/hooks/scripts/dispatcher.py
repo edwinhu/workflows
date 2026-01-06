@@ -12,11 +12,14 @@ Consolidates:
 Design: When no workflow is active, exits immediately with minimal overhead.
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import os
 import re
 import glob
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from session import (
@@ -29,7 +32,7 @@ from session import (
 # Skill Activation
 # =============================================================================
 
-def get_workflow_for_skill(skill: str) -> str | None:
+def get_workflow_for_skill(skill: str) -> Optional[str]:
     """Determine which workflow a skill belongs to."""
     # Exit skills don't activate workflows
     if 'exit' in skill:
@@ -49,7 +52,7 @@ def get_workflow_for_skill(skill: str) -> str | None:
     return None
 
 
-def handle_skill_activation(skill: str) -> dict | None:
+def handle_skill_activation(skill: str) -> Optional[dict]:
     """Activate workflow when skill is invoked. Returns notification or None."""
     workflow = get_workflow_for_skill(skill)
     if workflow:
@@ -105,7 +108,7 @@ def validate_ralph_args(args: str) -> list:
     return errors
 
 
-def check_ralph_validation(tool_name: str, tool_input: dict) -> dict | None:
+def check_ralph_validation(tool_name: str, tool_input: dict) -> Optional[dict]:
     """Validate ralph-loop invocations and skill gates."""
     if tool_name == 'Skill':
         skill = tool_input.get('skill', '')
@@ -188,7 +191,7 @@ def is_from_agent(hook_input: dict) -> bool:
     return False
 
 
-def check_sandbox(tool_name: str, tool_input: dict, hook_input: dict) -> dict | None:
+def check_sandbox(tool_name: str, tool_input: dict, hook_input: dict) -> Optional[dict]:
     """Enforce sandbox when active."""
     if not is_dev_mode_active():
         return None
@@ -252,7 +255,7 @@ def is_source_file_grep(grep_match: str) -> bool:
     return bool(re.search(SOURCE_EXTENSIONS, grep_match, re.IGNORECASE))
 
 
-def check_dev_patterns(tool_name: str, tool_input: dict) -> dict | None:
+def check_dev_patterns(tool_name: str, tool_input: dict) -> Optional[dict]:
     """Check for dev anti-patterns (grep tests, skip=pass)."""
     if not is_workflow_active('dev'):
         return None
@@ -297,7 +300,7 @@ def check_dev_patterns(tool_name: str, tool_input: dict) -> dict | None:
 # DS Checks (data quality, reproducibility, output verification)
 # =============================================================================
 
-def check_ds_patterns(tool_name: str, tool_input: dict) -> dict | None:
+def check_ds_patterns(tool_name: str, tool_input: dict) -> Optional[dict]:
     """Check for DS anti-patterns."""
     if not is_workflow_active('ds'):
         return None

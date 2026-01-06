@@ -10,11 +10,14 @@ Combines:
 This hook ALWAYS runs (not workflow-gated) because it controls workflow activation.
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import os
 import re
 import glob
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from session import (
@@ -39,7 +42,7 @@ SKILL_TO_WORKFLOW = {
 }
 
 
-def get_workflow_for_skill(skill: str) -> str | None:
+def get_workflow_for_skill(skill: str) -> Optional[str]:
     """Determine which workflow a skill belongs to."""
     if skill in SKILL_TO_WORKFLOW:
         return SKILL_TO_WORKFLOW[skill]
@@ -52,7 +55,7 @@ def get_workflow_for_skill(skill: str) -> str | None:
     return None
 
 
-def handle_skill_activation(skill: str) -> dict | None:
+def handle_skill_activation(skill: str) -> Optional[dict]:
     """Activate workflow if skill triggers it. Returns notification or None."""
     workflow = get_workflow_for_skill(skill)
     if workflow:
@@ -82,7 +85,7 @@ def validate_ralph_args(args: str) -> list:
     return errors
 
 
-def check_ralph_validation(tool_name: str, tool_input: dict) -> dict | None:
+def check_ralph_validation(tool_name: str, tool_input: dict) -> Optional[dict]:
     """Validate ralph-loop invocations. Returns denial or None."""
     if tool_name == 'Skill':
         skill = tool_input.get('skill', '')
@@ -195,7 +198,7 @@ def is_from_agent(hook_input: dict) -> bool:
     return False
 
 
-def check_main_chat_sandbox(tool_name: str, tool_input: dict, hook_input: dict) -> dict | None:
+def check_main_chat_sandbox(tool_name: str, tool_input: dict, hook_input: dict) -> Optional[dict]:
     """Enforce main chat sandbox when dev/ds mode active. Returns denial or None."""
     # Only enforce if dev/ds mode is active
     if not is_dev_mode_active():

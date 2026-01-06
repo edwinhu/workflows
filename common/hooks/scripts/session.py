@@ -3,9 +3,12 @@
 Shared session utilities for dev/ds plugin hooks.
 Uses /tmp/claude-workflow-{ppid}/ for session state - matches bash commands.
 """
+from __future__ import annotations
+
 import os
 import glob
 from pathlib import Path
+from typing import Optional
 
 
 def get_session_dir() -> Path:
@@ -17,7 +20,7 @@ def get_session_dir() -> Path:
     return Path(f"/tmp/claude-workflow-{os.getppid()}")
 
 
-def get_session_dir_any() -> Path | None:
+def get_session_dir_any() -> Optional[Path]:
     """Find any session directory (for cleanup or when PPID is uncertain)."""
     dirs = glob.glob("/tmp/claude-workflow-*")
     return Path(dirs[0]) if dirs else None
