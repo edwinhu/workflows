@@ -114,6 +114,8 @@ After user chooses, write `.claude/PLAN.md`:
 # Implementation Plan: [Feature]
 
 > **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:dev-implement")` to implement this plan with TDD.
+>
+> **Delegation:** Main chat orchestrates, Task agents implement. Use `Skill(skill="workflows:dev-delegate")` for subagent templates.
 
 ## Chosen Approach
 [Name]: [Brief description]

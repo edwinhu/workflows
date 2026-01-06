@@ -110,6 +110,8 @@ Write to `.claude/PLAN.md`:
 # Analysis Plan: [Analysis Name]
 
 > **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:ds-implement")` to implement this plan with output-first verification.
+>
+> **Delegation:** Main chat orchestrates, Task agents implement. Use `Skill(skill="workflows:ds-delegate")` for subagent templates.
 
 ## Spec Reference
 See: .claude/SPEC.md
