@@ -1,0 +1,310 @@
+---
+name: dev-explore
+description: Launches explore agents to map codebase and returns key files list.
+---
+## Contents
+
+- [The Iron Law of Exploration](#the-iron-law-of-exploration)
+- [What Explore Does](#what-explore-does)
+- [Process](#process)
+- [Test Infrastructure Discovery](#test-infrastructure-discovery)
+- [Key Files List Format](#key-files-list-format)
+- [Red Flags](#red-flags---stop-if-youre-about-to)
+- [Output](#output)
+
+# Codebase Exploration
+
+Map relevant code, trace execution paths, and return prioritized files for reading.
+**Prerequisite:** `.claude/SPEC.md` must exist with draft requirements.
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Exploration
+
+**RETURN KEY FILES LIST. This is not negotiable.**
+
+Every exploration MUST return:
+1. Summary of findings
+2. **5-10 key files** with line numbers and purpose
+3. Patterns discovered
+
+After agents return, **main chat MUST read all key files** before proceeding.
+
+**If you catch yourself about to move on without reading the key files, STOP.**
+</EXTREMELY-IMPORTANT>
+
+## What Explore Does
+
+| DO | DON'T |
+|----|-------|
+| Trace execution paths | Ask user questions (that's clarify) |
+| Map architecture layers | Design approaches (that's design) |
+| Find similar features | Write implementation tasks |
+| Identify patterns and conventions | Make architecture decisions |
+| Return key files list | Skip reading key files |
+
+**Explore answers: WHERE is the code and HOW does it work**
+**Design answers: WHAT approach to take** (separate skill)
+
+## Process
+
+### 1. Launch 3 Explore Agents in Parallel
+
+<EXTREMELY-IMPORTANT>
+**Launch ALL agents in a SINGLE message with multiple Task calls.**
+
+This is parallel execution - do NOT wait for one agent before launching another.
+</EXTREMELY-IMPORTANT>
+
+Based on `.claude/SPEC.md`, spawn agents with different focuses:
+
+```
+# PARALLEL: All three Task calls in ONE message
+
+Task(subagent_type="Explore", prompt="""
+Explore the codebase for [FEATURE AREA].
+
+Focus: Find similar features to [SPEC REQUIREMENT]
+
+Use ast-grep for semantic search:
+- sg -p 'function_name($$$)' --lang [language]
+- sg -p 'class $NAME { $$$ }' --lang [language]
+
+Tasks:
+- Trace execution paths from entry point to data storage
+- Find similar implementations to follow
+- Identify patterns used
+- Return 5-10 key files with line numbers
+
+Context from SPEC.md:
+[paste relevant requirements]
+""")
+
+Task(subagent_type="Explore", prompt="""
+Explore the codebase for [FEATURE AREA].
+
+Focus: Map architecture and abstractions for [AREA]
+
+Use ast-grep for semantic search:
+- sg -p 'class $NAME($BASE):' --lang [language]
+- sg -p 'interface $NAME { $$$ }' --lang [language]
+
+Tasks:
+- Identify abstraction layers
+- Find cross-cutting concerns (logging, auth, errors)
+- Map module dependencies
+- Return 5-10 key files with line numbers
+
+Context from SPEC.md:
+[paste relevant requirements]
+""")
+
+Task(subagent_type="Explore", prompt="""
+Explore the codebase for [FEATURE AREA].
+
+Focus: Test infrastructure and patterns
+
+Use ast-grep for test discovery:
+- sg -p 'def test_$NAME($$$):' --lang python
+- sg -p 'it($DESC, $$$)' --lang javascript
+- sg -p '@pytest.fixture' --lang python
+
+Tasks:
+- Find test directory and framework
+- Identify existing test patterns
+- Check for fixtures, mocks, helpers
+- Return 5-10 key test files with line numbers
+
+Context from SPEC.md:
+[paste relevant requirements]
+""")
+```
+
+### 2. Consolidate Key Files
+
+After all agents return, consolidate their key files lists:
+- Remove duplicates
+- Prioritize by relevance to requirements
+- Create master list of 10-15 files
+
+### 3. Read All Key Files
+
+**CRITICAL: Main chat must read every file on the key files list.**
+
+```
+Read(file_path="src/auth/login.ts")
+Read(file_path="src/services/session.ts")
+...
+```
+
+This builds deep understanding before asking clarifying questions.
+
+### 4. Document Findings
+
+Write exploration summary (can be verbal or in `.claude/EXPLORATION.md`):
+- Patterns discovered
+- Architecture insights
+- Dependencies identified
+- Questions raised for clarify phase
+
+## Code Search Tools
+
+**Prefer semantic search over text search when exploring code.**
+
+### ast-grep (sg) - Semantic Code Search
+
+Use `sg` for precise code pattern matching using AST:
+
+```bash
+# Find function calls
+sg -p 'foo($$$)' --lang python
+
+# Find function definitions
+sg -p 'def $FUNC($$$):' --lang python
+
+# Find class definitions
+sg -p 'class $NAME { $$$ }' --lang typescript
+
+# Find struct usage (Go/Rust/C)
+sg -p 'zathura_page_t' --lang c
+
+# Find method calls on specific types
+sg -p '$OBJ.render($$$)' --lang python
+```
+
+**When to use ast-grep vs grep:**
+
+| Use ast-grep | Use grep |
+|--------------|----------|
+| Find function calls/definitions | Find text in comments/strings |
+| Find class/struct usage | Find config values |
+| Trace method invocations | Search non-code files |
+| Refactor patterns | Quick keyword search |
+
+### ripgrep-all (rga) - Search Everything
+
+Use `rga` when you need to search inside:
+- PDFs, Word docs, Excel, PowerPoint
+- Zip/tar archives
+- SQLite databases
+- Images (OCR)
+
+```bash
+# Search inside PDFs
+rga "pattern" docs/
+
+# Search with context
+rga -C 3 "error handling" .
+
+# Limit to specific types
+rga --type pdf "methodology" papers/
+```
+
+## Test Infrastructure Discovery
+
+<EXTREMELY-IMPORTANT>
+**CRITICAL: You MUST discover how to run REAL automated tests.**
+
+REAL automated tests EXECUTE code and verify RUNTIME behavior.
+Grepping source files is NOT testing. Log checking is NOT testing.
+
+| ✅ REAL TEST INFRASTRUCTURE | ❌ NOT TESTING (never acceptable) |
+|-----------------------------|-----------------------------------|
+| pytest that calls functions | grep/ast-grep to find code |
+| Playwright that clicks buttons | Reading logs for "success" |
+| ydotool that simulates user input | Code review / structure check |
+| API calls that verify responses | "It looks correct" |
+
+**If you can't find a way to EXECUTE and VERIFY, flag this as a blocker.**
+</EXTREMELY-IMPORTANT>
+
+### Project Test Framework
+
+```bash
+# Find test directory and framework
+ls -d tests/ test/ spec/ __tests__/ 2>/dev/null
+cat meson.build 2>/dev/null | grep -i test
+cat package.json 2>/dev/null | grep -E "(test|jest|mocha|vitest)"
+cat pyproject.toml 2>/dev/null | grep -i pytest
+cat Cargo.toml 2>/dev/null | grep -i "\[dev-dependencies\]"
+
+# Find existing tests that EXECUTE code
+find . -name "*test*" -type f | head -20
+```
+
+### Available Tools for REAL Testing
+
+| What to Test | Tool | How It's a REAL Test |
+|--------------|------|----------------------|
+| Functions | pytest, jest, cargo test | Calls function, checks return value |
+| CLI | subprocess, execa | Runs binary, checks output |
+| Web UI | Playwright MCP | Clicks button, verifies DOM |
+| Desktop UI | ydotool + grim | Simulates input, screenshots result |
+| API | requests, fetch | Sends request, checks response |
+| D-Bus apps | dbus-send | Invokes method, checks return |
+
+```bash
+# Desktop automation (Wayland)
+which ydotool grim dbus-send 2>/dev/null
+
+# Check for D-Bus interfaces (desktop apps)
+dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+  /org/freedesktop/DBus org.freedesktop.DBus.ListNames 2>/dev/null | grep -i appname
+```
+
+### Document in Exploration Output
+
+**REQUIRED findings for SPEC.md:**
+- **Test framework:** meson test / pytest / jest / etc.
+- **Test command:** Exact command to run tests
+- **How to verify core functionality:** What EXECUTES the code
+- **Available automation:** Playwright MCP, ydotool, D-Bus interfaces
+- **Blocker:** If no way to run REAL tests, flag immediately
+
+## Key Files List Format
+
+Each agent MUST return files in this format:
+
+```markdown
+## Key Files to Read
+
+| Priority | File:Line | Purpose |
+|----------|-----------|---------|
+| 1 | `src/auth/login.ts:45` | Entry point for auth flow |
+| 2 | `src/services/session.ts:12` | Session management |
+| 3 | `src/middleware/auth.ts:78` | Auth middleware |
+| 4 | `src/types/user.ts:1` | User type definitions |
+| 5 | `tests/auth/login.test.ts:1` | Existing test patterns |
+```
+
+## Red Flags - STOP If You're About To:
+
+| Action | Why It's Wrong | Do Instead |
+|--------|----------------|------------|
+| Skip reading key files | You'll miss crucial context | Read every file on the list |
+| Ask design questions | Exploration is about understanding | Save for clarify/design phases |
+| Propose approaches | Too early for decisions | Just document what exists |
+| Start implementing | Must understand first | Complete exploration fully |
+
+## Output
+
+Exploration complete when:
+- 2-3 explore agents returned findings
+- Key files list consolidated (10-15 files)
+- **All key files read by main chat**
+- Patterns and architecture documented
+- **Test infrastructure documented**
+- Questions for clarification identified
+
+### Required Output Sections
+
+1. **Key Files** - 10-15 files with line numbers
+2. **Architecture** - Layers, patterns, conventions
+3. **Test Infrastructure** - Framework, tools, patterns
+4. **Questions** - For clarify phase
+
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-clarify")
+```

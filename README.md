@@ -1,22 +1,28 @@
-# Claude Code Workflows
+# Workflows
 
-A curated collection of development, data science, and writing plugins for Claude Code.
+A curated collection of development, data science, and writing workflows—available for both **Claude Code** and **OpenCode** from a single source.
 
-## Installation
+## Quick Start
 
-To add this marketplace to your Claude Code installation:
-
+### Claude Code
 ```bash
 /plugin marketplace add edwinhu/workflows
-```
-
-Then install individual plugins:
-
-```bash
 /plugin install dev
-/plugin install ds
-/plugin install writing
 ```
+
+### OpenCode
+```bash
+# Clone the opencode-compatibility branch
+git clone -b opencode-compatibility https://github.com/edwinhu/workflows.git ~/.config/opencode/workflows
+
+# Install plugin (optional, recommended)
+mkdir -p ~/.config/opencode/plugin
+cp ~/.config/opencode/workflows/.opencode/plugin/workflows.js ~/.config/opencode/plugin/
+
+# In OpenCode: find_skills
+```
+
+See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternatives.
 
 ## Available Plugins
 
@@ -118,34 +124,49 @@ Contains common skills used by multiple plugins, including office document forma
 
 ## Repository Structure
 
+The repository uses a unified skill architecture: **one `/skills/` directory for all 39 skills**, served to both Claude Code and OpenCode platforms via appropriate plugins/integrations.
+
 ```
 workflows/
-├── external/
-│   └── anthropic-skills/       # git submodule → github.com/anthropics/skills
-├── plugins/
-│   ├── dev/                    # Development plugin
-│   │   ├── .claude-plugin/
-│   │   ├── commands/
-│   │   ├── hooks/
-│   │   └── skills/
-│   ├── ds/                     # Data science plugin
-│   │   ├── .claude-plugin/
-│   │   ├── commands/
-│   │   ├── hooks/
-│   │   └── skills/
-│   ├── writing/                # Writing plugin
-│   │   ├── .claude-plugin/
-│   │   ├── hooks/
-│   │   └── skills/
-│   └── shared/                 # Shared skills
-│       ├── hooks/
-│       └── skills/
-│           ├── docx → external/anthropic-skills/skills/docx
-│           ├── pdf  → external/anthropic-skills/skills/pdf
-│           ├── pptx → external/anthropic-skills/skills/pptx
-│           └── xlsx → external/anthropic-skills/skills/xlsx
+├── skills/                     # UNIFIED: All 39 skills (single source of truth)
+│   ├── dev/SKILL.md
+│   ├── dev-implement/SKILL.md
+│   ├── dev-debug/SKILL.md
+│   ├── ds/SKILL.md
+│   ├── writing/SKILL.md
+│   └── [33 more skills...]
+│
+├── lib/
+│   └── skills-core.js          # Skill discovery utilities
+│
+├── plugins/                    # Claude Code integration
+│   └── workflows/
+│       ├── .claude-plugin/     # Claude Code plugin manifest
+│       ├── commands/           # Slash commands
+│       ├── hooks/              # Plugin hooks
+│       └── [Claude-specific code]
+│
+├── .opencode/                  # OpenCode integration
+│   ├── INSTALL.md              # Installation guide (3 options)
+│   ├── README.md               # OpenCode overview
+│   ├── COMPATIBILITY.md        # Architecture comparison
+│   └── plugin/
+│       ├── workflows.js        # OpenCode plugin bridge
+│       └── package.json
+│
 └── README.md
 ```
+
+**Key Points:**
+- `/skills/` is the single source of truth for all skill content
+- Platform-agnostic skill content (works for both Claude Code and OpenCode)
+- Claude Code uses the `plugins/workflows/` plugin
+- OpenCode uses `.opencode/plugin/workflows.js` bridge
+- Any skill update works for both platforms automatically
+
+**Branches:**
+- `main` - Claude Code version (complete, stable)
+- `opencode-compatibility` - OpenCode version with unified architecture
 
 ## Updating External Skills
 

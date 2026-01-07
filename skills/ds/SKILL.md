@@ -1,0 +1,164 @@
+---
+name: ds
+description: REQUIRED for data analysis. Orchestrates 5-phase workflow with output-first verification.
+---
+## Activation
+
+First, activate the ds workflow and sandbox:
+
+```bash
+python3 -c "
+import sys
+sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
+from session import activate_workflow, activate_dev_mode
+activate_workflow('ds')
+activate_dev_mode()
+print('✓ DS workflow activated')
+"
+```
+
+**REQUIRED NEXT STEP:** After activation, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-brainstorm")
+```
+
+Do NOT ask "What data would you like to analyze?" - the brainstorm phase handles requirements gathering.
+
+---
+
+## Reference: Workflow Overview
+
+## Contents
+
+- [The Iron Law of Data Science](#the-iron-law-of-data-science)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Workflow](#workflow)
+- [How to Invoke Sub-Skills](#how-to-invoke-sub-skills)
+- [Core Principles](#core-principles)
+- [Key Differences from /dev Workflow](#key-differences-from-dev-workflow)
+- [Project Structure](#project-structure)
+- [Related Skills](#related-skills)
+
+# Data Science Workflow
+
+Structured workflow for data analysis and modeling using Task agents and modular skills.
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Data Science
+
+**You MUST use the sub-skills. This is not negotiable.**
+
+When planning analysis: invoke `/ds-brainstorm` (clarifies objectives)
+When exploring data: invoke `/ds-plan` (profiles data first)
+When implementing: invoke `/ds-implement` (output-first verification)
+When reviewing: invoke `/ds-review` (methodology checks)
+When verifying: invoke `/ds-verify` (reproducibility checks)
+
+This applies even when:
+- "I can just run this analysis directly"
+- "The data is simple"
+- "I already know what to do"
+- "Using the skill seems like overkill"
+
+**If you catch yourself about to write analysis code without using the appropriate skill, STOP.**
+</EXTREMELY-IMPORTANT>
+
+## Red Flags - STOP Immediately If You Think:
+
+| Thought | Why It's Wrong | Do Instead |
+|---------|----------------|------------|
+| "I'll just run this query" | Skipping profiling leads to bad data | Use `/ds-plan` |
+| "I know the analysis already" | Skipping exploration leads to wrong conclusions | Use `/ds-brainstorm` |
+| "Results look fine to me" | Self-review misses methodology issues | Use `/ds-review` |
+| "It should be reproducible" | "Should" isn't verification | Use `/ds-verify` |
+| "This is too simple for the workflow" | Simple analyses can still be wrong | Follow the workflow |
+
+## Workflow
+
+```mermaid
+flowchart TD
+    Start(["/ds"]) --> Brainstorm["Phase 1: /ds-brainstorm<br/>Questions → SPEC.md"]
+    Brainstorm --> Plan["Phase 2: /ds-plan<br/>Data profiling → PLAN.md"]
+    Plan --> Implement["Phase 3: /ds-implement<br/>Output-first coding"]
+    Implement --> Review["Phase 4: /ds-review"]
+    Review -->|Issues| Implement
+    Review -->|Approved| Verify["Phase 5: /ds-verify"]
+    Verify -->|Fail| Implement
+    Verify -->|Pass| Complete([Completion])
+```
+
+**Phase responsibilities:**
+| Phase | Skill | Does | Outputs |
+|-------|-------|------|---------|
+| 1 | `/ds-brainstorm` | Questions, objectives | `.claude/SPEC.md` |
+| 2 | `/ds-plan` | Data profiling, exploration | `.claude/PLAN.md` |
+| 3 | `/ds-implement` | Output-first implementation | Working code + results |
+| 4 | `/ds-review` | Methodology review | Approval or issues |
+| 5 | `/ds-verify` | Reproducibility verification | Fresh evidence |
+
+**THIS SEQUENCE IS MANDATORY.** Do not skip any phase.
+
+## How to Invoke Sub-Skills
+
+**Note:** Sandbox activates automatically when you invoke `/ds`. To exit: `/ds-exit`
+
+**CRITICAL:** You MUST open the skill gate before invoking sub-skills.
+
+```bash
+# Step 1: Open the gate (REQUIRED before any ds-* skill)
+python3 -c "
+import os, hashlib
+tty = os.environ.get('TTY', '')
+cwd = os.getcwd()
+sid = hashlib.md5(f'{tty}:{cwd}'.encode()).hexdigest()[:12]
+open(f'/tmp/.claude-skill-gate-{sid}', 'w').close()
+"
+
+# Step 2: Invoke the skill
+Skill(skill="ds-implement")
+
+# The hook automatically closes the gate after skill starts
+```
+
+**Why:** Task agents run in isolated context and DON'T inherit skill instructions.
+The Skill tool loads the protocol into main chat so you can pass it to Task agents.
+
+## Core Principles
+
+1. **Output-first verification** - Every code step must produce visible output
+2. **Main chat orchestrates, Task agents execute** - Never write analysis directly
+3. **Data profiling before analysis** - Know your data before analyzing
+4. **Verify reproducibility** - Seeds, versions, environment must be documented
+5. **Document findings** - LEARNINGS.md for attempts, SPEC.md for objectives
+
+## Key Differences from /dev Workflow
+
+| /dev | /ds |
+|------|-----|
+| TDD (test-first) | Output-first verification |
+| Uses ralph-loop | Direct Task agent spawning |
+| Tests verify correctness | Output quality verification |
+| Code review focus | Methodology review focus |
+
+## Project Structure
+
+All Claude docs go in `.claude/` folder (add to `.gitignore`):
+
+```
+project/
+├── .claude/                       # gitignored
+│   ├── SPEC.md                    # analysis objectives (from brainstorm)
+│   ├── PLAN.md                    # data profile + task breakdown (from plan)
+│   └── LEARNINGS.md               # chronological attempt log
+└── ...
+```
+
+Session markers are stored in `/tmp/` (session-specific, auto-cleaned on exit).
+
+## Related Skills
+
+- `/ds-brainstorm` - Clarify analysis objectives
+- `/ds-plan` - Data profiling and exploration
+- `/ds-implement` - Output-first implementation
+- `/ds-review` - Methodology and quality review
+- `/ds-verify` - Reproducibility verification
