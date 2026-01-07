@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "workflows",
-      "source": ".",
+      "source": "./",
       "description": "Unified development, data science, and writing workflows with sandbox mode, TDD enforcement, and output-first verification",
       "version": "1.8.0",
       "category": "development",
