@@ -37,8 +37,8 @@ Try in order. Only fall back when higher options unavailable:
 | Priority | Type | Tools | When to use |
 |----------|------|-------|-------------|
 | 1 | **Unit tests** | meson test, pytest, jest, cargo test | Always first |
-| 2 | **Integration tests** | CLI invocation, API calls, D-Bus | Test component interaction |
-| 3 | **UI automation** | Playwright (web), ydotool (desktop), D-Bus | Test user-facing behavior |
+| 2 | **Integration tests** | CLI invocation, API calls | Test component interaction |
+| 3 | **UI automation** | Playwright (web), Hammerspoon (macOS), ydotool (Linux) | Test user-facing behavior |
 | 4 | **Visual regression** | Screenshots + comparison | Verify visual output |
 | 5 | **Accessibility** | AT-SPI, axe-core | Verify a11y compliance |
 | 6 | **Manual testing** | User verification | **LAST RESORT ONLY** |
@@ -51,11 +51,16 @@ Try in order. Only fall back when higher options unavailable:
 Before attempting automation, verify tools exist:
 
 ```bash
-# Check availability
+# macOS - Check Hammerspoon
+which hs || echo "MISSING: hs CLI (run: hs.ipc.cliInstall() in Hammerspoon console)"
+ls /Applications/Hammerspoon.app || echo "MISSING: Hammerspoon (brew install --cask hammerspoon)"
+
+# Linux/Wayland - Check ydotool
 which ydotool || echo "MISSING: ydotool"
 which grim || echo "MISSING: grim"
-which wtype || echo "MISSING: wtype"
-# For Playwright, check MCP tools are available
+
+# Cross-platform - Playwright MCP
+# Check MCP tools are available
 ```
 
 **If ANY required tool is missing:**
@@ -69,6 +74,17 @@ Example response when tool missing:
 ```
 STOP: Cannot proceed with UI automation.
 
+# macOS example:
+Missing tool: Hammerspoon hs CLI (required for macOS automation)
+
+Install with:
+  brew install --cask hammerspoon
+  # Then in Hammerspoon console: hs.ipc.cliInstall()
+  # Add to ~/.hammerspoon/init.lua: require("hs.ipc")
+
+Reply when installed and I'll continue testing.
+
+# Linux example:
 Missing tool: ydotool (required for Wayland input simulation)
 
 Install with:
@@ -110,17 +126,21 @@ cat Cargo.toml 2>/dev/null | grep -i "\[dev-dependencies\]"
 ### Available System Tools
 
 ```bash
-# Desktop automation (Wayland)
+# macOS - Hammerspoon
+which hs                    # CLI for automation scripts
+ls /Applications/Hammerspoon.app  # Main app
+
+# Linux/Wayland
 which ydotool  # Input simulation
 which grim     # Screenshots
 which slurp    # Region selection
 
-# D-Bus (app control)
+# D-Bus (Linux app control)
 which dbus-send
 which gdbus
 
 # Accessibility
-which accerciser  # AT-SPI browser
+which accerciser  # AT-SPI browser (Linux)
 python3 -c "import pyatspi" 2>/dev/null && echo "pyatspi available"
 ```
 
@@ -152,6 +172,149 @@ mcp__playwright__browser_snapshot()
 4. Wait for expected result
 5. Take final snapshot
 6. Verify expected elements present
+
+### Desktop Applications (macOS - Hammerspoon)
+
+Hammerspoon provides powerful macOS automation via Lua scripting.
+
+**Setup (one-time):**
+```lua
+-- Add to ~/.hammerspoon/init.lua
+require("hs.ipc")  -- Enables CLI
+```
+
+#### Running Automation Scripts
+
+```bash
+# Execute Lua code directly
+hs -c 'hs.alert.show("Test started")'
+
+# Execute a script file
+hs /path/to/test_script.lua
+
+# Pipe script via stdin
+echo 'hs.alert.show("Hello")' | hs -s
+```
+
+#### Input Simulation (hs.eventtap)
+
+```lua
+-- Type text
+hs.eventtap.keyStrokes("hello world")
+
+-- Key press (with modifiers)
+hs.eventtap.keyStroke({"cmd"}, "c")  -- Cmd+C
+hs.eventtap.keyStroke({"cmd", "shift"}, "s")  -- Cmd+Shift+S
+
+-- Mouse click at position
+hs.eventtap.leftClick({x=100, y=200})
+hs.eventtap.rightClick({x=100, y=200})
+
+-- Mouse move
+hs.mouse.absolutePosition({x=500, y=300})
+```
+
+#### Application Control (hs.application)
+
+```lua
+-- Launch or focus app
+local app = hs.application.launchOrFocus("Safari")
+
+-- Get running app
+local app = hs.application.get("Safari")
+if app then
+    app:activate()  -- Bring to front
+    app:kill()      -- Terminate
+end
+
+-- Wait for app to launch
+hs.timer.waitUntil(
+    function() return hs.application.get("MyApp") ~= nil end,
+    function() print("App launched") end
+)
+
+-- Get frontmost app
+local front = hs.application.frontmostApplication()
+print(front:name())
+```
+
+#### Window Management
+
+```lua
+-- Get app's windows
+local app = hs.application.get("Safari")
+local wins = app:allWindows()
+for _, win in ipairs(wins) do
+    print(win:title())
+    win:focus()  -- Focus this window
+end
+
+-- Get window by title
+local win = hs.window.get("My Document")
+if win then
+    win:focus()
+    win:maximize()
+end
+```
+
+#### Screenshots (Visual Verification)
+
+```bash
+# Full screen
+screencapture /tmp/screenshot.png
+
+# Specific window (interactive)
+screencapture -w /tmp/window.png
+
+# Specific region
+screencapture -R 100,200,800,600 /tmp/region.png
+
+# No shadow, no sound
+screencapture -o -x /tmp/clean.png
+```
+
+```lua
+-- From Hammerspoon: capture focused window
+local win = hs.window.focusedWindow()
+if win then
+    local img = win:snapshot()
+    img:saveToFile("/tmp/window.png")
+end
+```
+
+#### Complete E2E Test Example (macOS)
+
+```lua
+-- test_app_workflow.lua
+-- Run with: hs /path/to/test_app_workflow.lua
+
+-- 1. Launch app
+local app = hs.application.launchOrFocus("MyApp")
+hs.timer.usleep(2000000)  -- Wait 2 seconds
+
+-- 2. Verify app launched
+assert(hs.application.get("MyApp"), "FAIL: App did not launch")
+
+-- 3. Simulate user input
+hs.eventtap.keyStroke({"cmd"}, "n")  -- New document
+hs.timer.usleep(500000)
+hs.eventtap.keyStrokes("Test content")
+
+-- 4. Save
+hs.eventtap.keyStroke({"cmd"}, "s")
+hs.timer.usleep(1000000)
+
+-- 5. Take screenshot for verification
+local win = hs.window.focusedWindow()
+local img = win:snapshot()
+img:saveToFile("/tmp/test_result.png")
+
+-- 6. Verify expected state
+local title = win:title()
+assert(title:find("Test"), "FAIL: Document not saved correctly")
+
+print("PASS: Workflow completed successfully")
+```
 
 ### Desktop Applications (Linux/Wayland)
 
