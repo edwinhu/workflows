@@ -30,6 +30,46 @@ For TDD philosophy (RED-GREEN-REFACTOR), see `dev-tdd`.
 
 # Testing Tools Reference
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of E2E Testing
+
+**USER-FACING FEATURES REQUIRE E2E TESTS. This is not negotiable.**
+
+If your change affects what users see or interact with, you MUST:
+1. Write an E2E test that simulates user behavior
+2. Run it and SEE IT PASS (not just unit tests)
+3. Document: "E2E: [test name] passes with [evidence]"
+4. Include screenshot/snapshot for visual changes
+
+**Unit tests prove components work. E2E tests prove the feature works for users.**
+
+### Rationalization Prevention
+
+These thoughts mean STOP—you're about to skip E2E:
+
+| Thought | Reality |
+|---------|---------|
+| "Unit tests are enough" | Unit tests don't test user flows. Write E2E. |
+| "E2E is too slow" | Slow tests > shipped bugs. Write E2E. |
+| "I'll add E2E later" | You won't. Write it NOW. |
+| "This is just backend" | Does it affect user output? Then E2E. |
+| "Playwright is overkill" | Playwright catches what unit tests miss. |
+| "The UI is unchanged" | Prove it with a visual snapshot. |
+| "Manual testing is faster" | Manual testing is LYING about coverage. |
+| "It's just a small change" | Small changes break UIs. E2E proves they don't. |
+| "Setup is too complex" | Complex setup = complex failure modes. E2E finds them. |
+| "User can verify" | NO. Automated verification or it didn't happen. |
+
+### Red Flags - STOP If You Think:
+
+| Thought | Why It's Wrong | Do Instead |
+|---------|----------------|------------|
+| "Tests pass" (only unit) | Unit ≠ E2E | Write E2E test |
+| "Code looks correct" | Looking ≠ running user flow | Run E2E |
+| "It worked when I tried it" | Manual ≠ automated | Capture as E2E |
+| "Screenshot shows it works" | Static screenshot ≠ interaction test | Add Playwright/automation |
+</EXTREMELY-IMPORTANT>
+
 ## Testing Hierarchy
 
 Try in order. Only fall back when higher options unavailable:
@@ -38,7 +78,7 @@ Try in order. Only fall back when higher options unavailable:
 |----------|------|-------|-------------|
 | 1 | **Unit tests** | pytest, jest, cargo test, meson test | Always first |
 | 2 | **Integration tests** | CLI invocation, API calls | Test component interaction |
-| 3 | **UI automation** | Playwright (web), Hammerspoon (macOS), ydotool (Linux) | Test user-facing behavior |
+| 3 | **E2E/UI automation** | Playwright (web), Hammerspoon (macOS), ydotool (Linux) | **REQUIRED for user-facing changes** |
 | 4 | **Visual regression** | Screenshots + comparison | Verify visual output |
 | 5 | **Accessibility** | AT-SPI, axe-core | Verify a11y compliance |
 | 6 | **Manual testing** | User verification | **LAST RESORT ONLY** |

@@ -87,6 +87,44 @@ Before making ANY status claim:
 | "Linter clean" | Linter output showing 0 errors |
 | "Bug fixed" | Test that failed now passes |
 | "Feature complete" | All acceptance criteria verified |
+| **"User-facing feature works"** | **E2E test output showing PASS** |
+
+<EXTREMELY-IMPORTANT>
+## The E2E Evidence Gate
+
+**USER-FACING CLAIMS REQUIRE E2E EVIDENCE. Unit tests are insufficient.**
+
+| Claim | Unit Test Evidence | E2E Evidence Required |
+|-------|--------------------|-----------------------|
+| "API works" | ❌ Insufficient | ✅ Full request/response test |
+| "UI renders" | ❌ Insufficient | ✅ Playwright snapshot/interaction |
+| "Feature complete" | ❌ Insufficient | ✅ User flow simulation |
+| "No regressions" | ❌ Insufficient | ✅ E2E suite passes |
+
+### Rationalization Prevention (E2E)
+
+| Thought | Reality |
+|---------|---------|
+| "Unit tests cover it" | Unit tests don't simulate users. Where's E2E? |
+| "E2E would be redundant" | Redundancy catches bugs. Write E2E. |
+| "No time for E2E" | No time to fix production bugs? Write E2E. |
+| "Feature is internal" | Does it affect user output? Then E2E. |
+| "I manually tested" | Manual = no evidence. Automate it. |
+
+### The E2E Gate Function
+
+For user-facing changes, add to verification:
+
+```
+1. IDENTIFY → Which E2E test proves user-facing behavior?
+2. RUN     → Execute E2E test fresh
+3. READ    → Review full output (screenshots if visual)
+4. VERIFY  → User flow works as specified
+5. CLAIM   → Only after E2E evidence exists
+```
+
+**"Unit tests pass" is not "feature complete" for user-facing changes.**
+</EXTREMELY-IMPORTANT>
 
 ## Insufficient Evidence
 

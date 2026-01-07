@@ -1,6 +1,6 @@
 {
   "name": "workflows-plugin",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "description": "OpenCode plugin for workflows library - provides skill loading and discovery",
   "exports": {

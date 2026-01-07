@@ -39,6 +39,29 @@ Before reviewing, verify:
 | Screenshot of working UI | "It looks correct" |
 | Playwright snapshot showing expected state | "User can verify" |
 | D-Bus command output | "The feature works" |
+| **E2E test output with user flow verified** | **"Unit tests pass" (for UI changes)** |
+
+<EXTREMELY-IMPORTANT>
+### The E2E Evidence Requirement
+
+**FOR USER-FACING CHANGES: Unit test evidence is INSUFFICIENT.**
+
+Before approving user-facing changes, verify:
+1. Unit tests pass (necessary but not sufficient)
+2. **E2E tests pass** (required for approval)
+3. Visual evidence exists (screenshots/snapshots for UI)
+
+| Change Type | Unit Evidence | E2E Evidence | Approval? |
+|-------------|---------------|--------------|------------|
+| Internal refactor | ✅ | N/A | ✅ APPROVE |
+| API change | ✅ | ❌ Missing | ❌ BLOCKED |
+| UI change | ✅ | ❌ Missing | ❌ BLOCKED |
+| User workflow | ✅ | ❌ Missing | ❌ BLOCKED |
+
+**If E2E evidence is missing for user-facing changes, return BLOCKED.**
+
+"Unit tests pass" without E2E for UI changes is NOT approvable.
+</EXTREMELY-IMPORTANT>
 
 ### Gate Check
 
@@ -90,6 +113,8 @@ This applies even when:
 - [ ] Tests show PASS/OK (not SKIP, FAIL, or missing)
 - [ ] UI changes have screenshot/snapshot evidence
 - [ ] All test types run (unit, integration, UI as applicable)
+- [ ] **E2E tests exist and pass for user-facing changes**
+- [ ] **E2E test simulates actual user flow, not just component render**
 
 ### Spec Compliance
 - [ ] All requirements from .claude/SPEC.md are implemented

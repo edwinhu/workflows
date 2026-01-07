@@ -204,6 +204,53 @@ If you find yourself with implementation code that wasn't driven by a test:
 | Use grep as verification | Doesn't test behavior | Execute the code |
 | Write test that passes immediately | Proves nothing | Test must fail first |
 
+## E2E Test Requirement
+
+<EXTREMELY-IMPORTANT>
+### The Iron Law of E2E in TDD
+
+**USER-FACING FEATURES REQUIRE E2E TESTS IN ADDITION TO UNIT TESTS.**
+
+TDD cycle for user-facing changes:
+
+```
+Unit TDD:     RED → GREEN → REFACTOR
+                    ↓
+E2E TDD:      RED → GREEN → REFACTOR
+```
+
+**Both cycles must complete. Unit GREEN does not mean DONE.**
+
+### When E2E is Required
+
+| Change Type | Unit Tests | E2E Required? |
+|-------------|------------|---------------|
+| Internal logic | Yes | No |
+| API endpoint | Yes | Yes (test full request/response) |
+| UI component | Yes | **Yes** (Playwright/automation) |
+| CLI command | Yes | Yes (test actual invocation) |
+| User workflow | Yes | **Yes** (simulate user actions) |
+| Visual change | Yes | **Yes** (screenshot comparison) |
+
+### E2E TDD Cycle
+
+1. **RED**: Write E2E test simulating user action
+   - Run it, SEE IT FAIL (feature doesn't exist)
+   - Document: "E2E RED: [test] fails with [error]"
+
+2. **GREEN**: Make E2E pass (unit tests already green)
+   - Run E2E, SEE IT PASS
+   - Document: "E2E GREEN: [test] passes"
+
+3. **REFACTOR**: Ensure both unit and E2E stay green
+
+### Delete & Restart (E2E)
+
+**Shipped user-facing code without E2E test? WRITE ONE NOW.**
+
+Retroactive E2E is better than no E2E. But next time: E2E FIRST.
+</EXTREMELY-IMPORTANT>
+
 ## Integration
 
 This skill is invoked by:
