@@ -10,6 +10,30 @@ A curated collection of development, data science, and writing workflows—avail
 /plugin install dev
 ```
 
+### VS Code / GitHub Copilot
+
+**One-line install:**
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/edwinhu/workflows/main/.copilot/install.sh)
+```
+
+Or if you have the repo cloned locally:
+```bash
+bash ~/projects/workflows/.copilot/install.sh
+```
+
+Then **restart VS Code**.
+
+> **⚠️ Note:** Requires enabling experimental settings (`chat.useClaudeSkills`, `chat.customAgentInSubagent.enabled`) which are subject to change. See installation guide for details.
+
+**Verify it works:**
+In VS Code, chat with Copilot:
+```
+What workflows skills are available?
+```
+
+See [.copilot/INSTALL.md](.copilot/INSTALL.md) for manual installation and troubleshooting.
+
 ### OpenCode
 ```bash
 # Clone the opencode-compatibility branch
