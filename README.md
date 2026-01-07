@@ -34,6 +34,90 @@ What workflows skills are available?
 
 See [.copilot/INSTALL.md](.copilot/INSTALL.md) for manual installation and troubleshooting.
 
+#### ⚠️ IMPORTANT: Skill Chaining in Copilot
+
+Skills in Copilot work in phases. **Each phase requires manual invocation of the next phase** (unlike Claude Code, where skills auto-chain).
+
+When a skill completes, it tells you what's next. **You must invoke it explicitly** using `runSubagent()`.
+
+Example workflow:
+```
+/dev-brainstorm completes
+  → You invoke: runSubagent(..., prompt="Continue with /dev-explore...")
+  → /dev-explore completes
+  → You invoke: runSubagent(..., prompt="Continue with /dev-clarify...")
+  [and so on through all 7 phases]
+```
+
+**See [.copilot/QUICK_START.md](.copilot/QUICK_START.md) for the full skill chaining protocol.**
+
+**Multi-Agent Coordination:** If you run multiple agents before invoking a skill (e.g., Plan agent → then /dev skill), read the "MULTI-AGENT COORDINATION" section in `~/.config/Code/User/prompts/workflows.instructions.md` for how to pass context between them. This is a known gap in Copilot that requires manual workaround.
+
+### OpenCode
+```bash
+# Clone the opencode-compatibility branch
+git clone -b opencode-compatibility https://github.com/edwinhu/workflows.git ~/.config/opencode/workflows
+
+# Install plugin (optional, recommended)
+mkdir -p ~/.config/opencode/plugin
+cp ~/.config/opencode/workflows/.opencode/plugin/workflows.js ~/.config/opencode/plugin/
+
+# In OpenCode: find_skills
+```
+
+See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternatives.
+
+## Available Plugins
+
+### dev (v0.5.0)
+
+**Full feature development workflow with TDD enforcement**
+
+A comprehensive development plugin that enforces test-driven development practices through structured phases: brainstorm, plan, implement, review, and verify.
+
+**Commands:**
+- `/dev` - Full feature development workflow with TDD enforcement
+- `/dev-brainstorm` - Socratic design exploration before implementation
+- `/dev-plan` - Codebase exploration and task breakdown
+- `/dev-implement` - TDD implementation with RED-GREEN-REFACTOR cycle
+- `/dev-debug` - Systematic debugging with root cause investigation
+- `/dev-review` - Code review combining spec compliance and quality checks
+- `/dev-verify` - Verification gate requiring fresh runtime evidence
+- `/dev-tools` - List available development plugins and MCP servers
+
+**Hooks:**
+- Main chat sandbox enforcement
+- Grep test detector (prevents grepping source as tests)
+- Ralph Wiggum validation
+
+**Tags:** `development`, `tdd`, `testing`, `code-review`
+
+---
+
+### ds (v0.5.0)
+
+**Data science workflow with output-first verification**
+
+A data science plugin focused on reproducibility and output verification, with specialized skills for academic and financial data access.
+
+**Commands:**
+- `/ds` - Data science workflow with output-first verification
+- `/ds-brainstorm` - Clarify analysis objectives through Socratic questioning
+- `/ds-plan` - Data profiling and analysis task breakdown
+- `/ds-implement` - Output-first implementation with verification at each step
+- `/ds-review` - Methodology and statistical validity review
+- `/ds-verify` - Reproducibility verification before completion
+- `/ds-tools` - List available data science plugins and MCP servers
+
+**Data Access Skills:**
+- `/wrds` - WRDS PostgreSQL access for Compustat, CRSP, EDGAR data
+- `/lseg-data` - LSEG Data Library (Refinitiv) for market data and fundamentals
+- `/gemini-batch` - Gemini Batch API for large-scale LLM document processing
+
+**Notebook Skills:**
+- `/marimo` - Marimo reactive Python notebooks
+- `/jupytext` - Jupyter notebooks as text files for version control
+
 ### OpenCode
 ```bash
 # Clone the opencode-compatibility branch

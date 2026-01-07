@@ -266,3 +266,169 @@ applyTo: '**'
 # Local Workflows Skills
 
 This project uses the workflows skill system. See: ~/.config/Code/User/prompts/workflows.instructions.md
+
+---
+
+## Troubleshooting
+
+### Problem: Skills aren't discovered or don't appear in Copilot
+
+**Checklist:**
+1. ✓ Is `chat.useClaudeSkills` enabled?
+2. ✓ Did you restart VS Code after enabling settings?
+3. ✓ Is the file at `~/.config/Code/User/prompts/workflows.instructions.md`?
+4. ✓ Run: `ls ~/.config/Code/User/prompts/` to verify the file exists
+
+**Fix:**
+- Re-run installer: `bash ~/projects/workflows/.copilot/install.sh`
+- Restart VS Code
+- Try asking: "List the workflows skills"
+
+### Problem: I started a skill but it didn't chain to the next phase
+
+**This is expected.** Skills in Copilot don't auto-chain like they do in Claude Code. You must manually invoke the next skill.
+
+When a skill completes, it tells you what comes next. Example:
+
+> "✓ SPEC.md written to `.claude/SPEC.md`
+> 
+> **NEXT:** Continue with /dev-explore"
+
+**You must then respond with:**
+```
+runSubagent(
+  description="Explore codebase",
+  prompt="Continue with /dev-explore phase using the SPEC.md from .claude/"
+)
+```
+
+See **"SKILL CHAINING IN COPILOT - IRON LAW"** in `workflows.instructions.md` for the complete protocol and all phase transitions.
+
+### Problem: "Skills not available" or "Skill not found"
+
+**This means the instructions file isn't being recognized.**
+
+1. Check if the file exists:
+   ```bash
+   cat ~/.config/Code/User/prompts/workflows.instructions.md | head -5
+   ```
+
+2. Verify the YAML frontmatter:
+   ```bash
+   head -10 ~/.config/Code/User/prompts/workflows.instructions.md
+   ```
+   Should show:
+   ```yaml
+   ---
+   applyTo: '**'
+   ---
+   ```
+
+3. If missing or malformed, re-run installer:
+   ```bash
+   bash ~/projects/workflows/.copilot/install.sh
+   ```
+
+### Problem: Settings don't stick after restart
+
+**Possible causes:**
+- You edited the wrong `settings.json`
+- VS Code hasn't fully reloaded
+
+**Fix:**
+1. Verify you're editing the user settings, not workspace settings:
+   - User: `~/Library/Application Support/Code/User/settings.json` (Mac)
+   - Workspace: `.vscode/settings.json` (inside project)
+
+2. Make sure all three settings are present and set to `true`
+
+3. Restart VS Code completely (Cmd+Q on Mac, not just closing the window)
+
+4. Verify settings are applied:
+   - Settings → Search `chat.useClaudeSkills`
+   - Should show blue dot or checkmark if enabled
+
+### Problem: "runSubagent is not recognized"
+
+This error means the skill infrastructure isn't set up. **Reinstall:**
+
+```bash
+bash ~/projects/workflows/.copilot/install.sh
+```
+
+Then verify:
+1. All three settings are enabled
+2. `workflows.instructions.md` exists at `~/.config/Code/User/prompts/`
+3. Restart VS Code
+
+### Problem: Workflows repo isn't at `~/projects/workflows`
+
+If you cloned to a different location, update the install:
+
+```bash
+# If cloned elsewhere, e.g. ~/Documents/workflows
+bash ~/Documents/workflows/.copilot/install.sh
+
+# Or manually create the symlink:
+ln -sf ~/YOUR/PATH/workflows ~/projects/workflows
+```
+
+### Reporting Issues
+
+If you encounter a problem not listed above:
+
+1. Check the [GitHub issues](https://github.com/edwinhu/workflows/issues)
+2. Check [.copilot/COMPATIBILITY.md](.copilot/COMPATIBILITY.md) for known platform-specific issues
+3. Verify your VS Code version: `Help → About` (requires 1.107+)
+
+---
+
+## Next Steps
+
+Once installed and verified:
+
+1. **Read:** [QUICK_START.md](./QUICK_START.md) for first use
+2. **Learn:** Read the "SKILL CHAINING IN COPILOT" section in `workflows.instructions.md`
+3. **Try it:** Ask Copilot: "Use the /dev-debug skill to help me diagnose a bug"
+4. **Chain:** When the skill completes, follow its instructions and invoke the next phase
+
+**Key takeaway:** Workflows skills work in phases. Each phase invokes the next via `runSubagent()`. Read your instructions carefully and chain them.
+
+---
+
+## Installation Method: Symlink
+
+The install script creates a **symlink** from `~/.config/Code/User/prompts/workflows.instructions.md` to the source file in the workflows repo:
+
+```
+~/.config/Code/User/prompts/workflows.instructions.md → ~/projects/workflows/.copilot/workflows.instructions.md
+```
+
+**Benefits:**
+- Instructions stay in version control (`~/projects/workflows/`)
+- Updates to instructions automatically reflect in Copilot
+- No duplication between install script and instructions file
+- Easy to track changes: `git diff .copilot/workflows.instructions.md`
+
+**Fallback:** On systems that don't support symlinks (e.g., some Windows), the script automatically copies the file instead.
+
+To verify your setup:
+```bash
+# Check if symlink exists
+ls -l ~/.config/Code/User/prompts/workflows.instructions.md
+
+# If symlink:
+# lrwxr-xr-x  workflows.instructions.md -> /path/to/workflows/.copilot/workflows.instructions.md
+
+# If copy:
+# -rw-r--r--  workflows.instructions.md
+```
+
+**To update instructions after pulling new changes:**
+```bash
+cd ~/projects/workflows
+git pull
+# Symlink automatically uses latest version
+# (if you have a copy instead of symlink, re-run: bash .copilot/install.sh)
+```
+
