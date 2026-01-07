@@ -1,13 +1,37 @@
 ---
 name: dev-debug
-description: Systematic debugging with 4-phase methodology. Uncover root cause before writing fixes.
+description: "Systematic debugging with 4-phase methodology. Uses ralph loop for verification-driven bug fixing."
 ---
+
+**Announce:** "I'm using dev-debug for systematic bug investigation."
+
+## Where This Fits
+
+```
+Main Chat (you)                    Task Agent
+─────────────────────────────────────────────────────
+dev-debug (this skill)
+  → ralph loop (one per bug)
+    → dev-delegate (spawn agents)
+      → Task agent ──────────────→ investigates
+                                   writes regression test
+                                   implements fix
+```
+
+**Main chat orchestrates.** Task agents investigate and fix.
+
+## Contents
+
+- [The Iron Law of Debugging](#the-iron-law-of-debugging)
+- [The Iron Law of Delegation](#the-iron-law-of-delegation)
+- [The Process](#the-process)
+- [The Four Phases](#the-four-phases)
+- [If Max Iterations Reached](#if-max-iterations-reached)
 
 # Systematic Debugging
 
-## Overview
-
-A bug doesn't get fixed—it gets investigated, understood, then fixed.
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Debugging
 
 **NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST. This is not negotiable.**
 
@@ -18,47 +42,73 @@ Before writing ANY fix, you MUST:
 4. Test that hypothesis
 5. Only THEN write a fix (with a regression test first!)
 
+**If you catch yourself about to write a fix without investigation, STOP.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
 
-**YOU MUST NOT WRITE CODE. This is not negotiable.**
+**MAIN CHAT MUST NOT WRITE CODE. This is not negotiable.**
 
-Main chat orchestrates. Subagents investigate and fix.
+Main chat orchestrates the ralph loop. Task agents do the work:
+- **Investigation**: Task agents read code, run tests, gather evidence
+- **Fixes**: Task agents write regression tests and fixes
 
-| Main Chat Does | Subagents Do |
+| Main Chat Does | Task Agents Do |
 |----------------|----------------|
-| Set up loop for the bug | Investigate root cause |
-| Spawn subagents | Run tests, read code |
+| Start ralph loop | Investigate root cause |
+| Spawn Task agents | Run tests, read code |
 | Review findings | Write regression tests |
 | Verify fix | Implement fixes |
 
+**If you're about to edit code directly, STOP and delegate instead.**
+</EXTREMELY-IMPORTANT>
+
 ## The Process
 
-### Step 1: Create Loop Context
-
-Set up a loop for debugging the bug:
-- Describe the symptom clearly
-- Document expected vs actual behavior
-- Set max iterations (typically 10-15)
-
-### Step 2: Spawn Subagent for Investigation
-
-Use OpenCode's subagent system with debug-specific instructions:
-
-**Instructions:**
+Unlike implementation (per-task loops), debugging uses **ONE loop per bug**:
 
 ```
-Investigate and fix: [SYMPTOM]
+1. Start ralph loop for the bug
+   /ralph-wiggum:ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
+
+2. Inside loop: spawn Task agent for investigation/fix
+   → Skill(skill="workflows:dev-delegate")
+
+3. Task agent follows 4-phase debug protocol
+
+4. When regression test passes → output promise
+   <promise>FIXED</promise>
+
+5. Bug fixed, loop ends
+```
+
+### Step 1: Start Ralph Loop
+
+**IMPORTANT:** Avoid parentheses `()` in the prompt.
+
+```
+/ralph-wiggum:ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
+```
+
+### Step 2: Spawn Task Agent
+
+Use dev-delegate, but with debug-specific instructions:
+
+```
+Task(subagent_type="general-purpose", prompt="""
+Debug [SYMPTOM] following systematic protocol.
 
 ## Context
-- Read .opencode/LEARNINGS.md for prior hypotheses
-- Read code carefully before claiming anything
+- Read .claude/LEARNINGS.md for prior hypotheses
+- Read .claude/SPEC.md for expected behavior
 
 ## Debug Protocol (4 Phases)
 
 ### Phase 1: Investigate
-- Reproduce the bug with a failing test
+- Add debug logging to suspected code path
+- Reproduce the bug with a test
 - Document: "Reproduced with [test], output: [error]"
-- Add logging to suspected code paths
 
 ### Phase 2: Analyze
 - Trace data flow through the code
@@ -66,34 +116,49 @@ Investigate and fix: [SYMPTOM]
 - Document findings in LEARNINGS.md
 
 ### Phase 3: Hypothesize
-- Form ONE specific hypothesis about root cause
-- Test it with minimal, targeted change
+- Form ONE specific hypothesis
+- Test it with minimal change
 - If wrong: document what was ruled out
-- If right: proceed to Phase 4
+- If right: proceed to fix
 
 ### Phase 4: Fix
 - Write regression test FIRST (must fail before fix)
 - Implement minimal fix
-- Run test, verify it PASSES
-- Run full test suite, verify no regressions
+- Run test, see it PASS
+- Run full test suite
 
-## Verification Checklist
-- [ ] Regression test FAILS before fix
-- [ ] Regression test PASSES after fix
-- [ ] Root cause documented in LEARNINGS.md
-- [ ] All existing tests still pass
+## Output
+Report:
+- Hypothesis tested
+- Root cause (if found)
+- Regression test written
+- Fix applied (or blockers)
+""")
 ```
 
 ### Step 3: Verify and Complete
 
-After subagent returns, verify the checklist:
-- [ ] Regression test written and passes
-- [ ] Root cause documented
+After Task agent returns, verify:
+- [ ] Regression test FAILS before fix
+- [ ] Regression test PASSES after fix
+- [ ] Root cause documented in LEARNINGS.md
 - [ ] All existing tests still pass
-- [ ] Minimal, targeted change (not shotgun debugging)
 
-**If ALL pass:** Mark bug as fixed and move on.
-**If ANY fail:** Ask subagent to investigate further or ask user for guidance.
+**If ALL pass → output the promise:**
+```
+<promise>FIXED</promise>
+```
+
+**If ANY fail → iterate (don't output promise yet).**
+
+## The Four Phases
+
+| Phase | Purpose | Output |
+|-------|---------|--------|
+| **Investigate** | Reproduce, trace data flow | Bug reproduction |
+| **Analyze** | Compare working vs broken | Findings documented |
+| **Hypothesize** | ONE specific hypothesis | Hypothesis tested |
+| **Fix** | Regression test → fix | Tests pass |
 
 ## The Gate Function
 
@@ -110,15 +175,6 @@ Before claiming ANY bug is fixed:
 ```
 
 **Skipping any step is guessing, not debugging.**
-
-## The Four Phases
-
-| Phase | Purpose | Output |
-|-------|---------|--------|
-| **Investigate** | Reproduce, trace data flow | Bug reproduction + test |
-| **Analyze** | Compare working vs broken | Findings documented |
-| **Hypothesize** | ONE specific hypothesis | Hypothesis tested |
-| **Fix** | Regression test → fix | Tests pass + root cause |
 
 ## Rationalization Prevention
 
@@ -143,39 +199,27 @@ These thoughts mean STOP—you're about to skip the protocol:
 | "This should work" | Hope is not debugging | Test your hypothesis |
 | "Let me change a few things" | Multiple changes = can't learn | ONE hypothesis at a time |
 
-## If a Hypothesis Fails
-
-Don't give up. Instead:
-
-1. Document what was ruled out
-2. Form a NEW hypothesis
-3. Test the new hypothesis
-4. Repeat until root cause is found
-
-Every failed hypothesis teaches you something. That's progress.
-
 ## If Max Iterations Reached
 
-You've iterated many times without finding root cause. This is still progress:
+Ralph exits after max iterations. **Still do NOT ask user to manually verify.**
 
 Main chat should:
 1. **Summarize** hypotheses tested (from LEARNINGS.md)
 2. **Report** what was ruled out and what remains unclear
 3. **Ask user** for direction:
    - A) Start new loop with different investigation angle
-   - B) Add more instrumentation to specific code path
+   - B) Add more logging to specific code path
    - C) User provides additional context
-   - D) User explicitly requests other actions
+   - D) User explicitly requests manual verification
 
 **Never default to "please verify manually".** Always exhaust automation first.
 
-## When Fix Requires Substantial Refactoring
+## When Fix Requires Substantial Changes
 
-If root cause reveals a need for significant refactoring:
+If root cause reveals need for significant refactoring:
 
-1. Document root cause thoroughly in LEARNINGS.md
-2. Mark debug loop as complete (investigation done)
-3. Use the `dev-implement` skill for the refactoring work
+1. Document root cause in LEARNINGS.md
+2. Complete debug loop with `<promise>FIXED</promise>` for the investigation
+3. Use `Skill(skill="workflows:dev")` for the implementation work
 
-Debugging finds the problem. Implementation solves the problem.
-
+Debug finds the problem. The dev workflow implements the solution.

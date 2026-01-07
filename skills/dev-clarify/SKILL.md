@@ -1,7 +1,10 @@
 ---
 name: dev-clarify
-description: Asks targeted questions based on codebase exploration findings.
+description: "REQUIRED Phase 3 of /dev workflow. Asks targeted questions based on codebase exploration findings."
 ---
+
+**Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."
+
 ## Contents
 
 - [The Iron Law of Clarification](#the-iron-law-of-clarification)

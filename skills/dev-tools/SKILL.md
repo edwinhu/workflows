@@ -1,7 +1,8 @@
 ---
 name: dev-tools
-description: This skill should be used when the user asks "what plugins are available", "list dev tools", "what MCP servers can I ...
+description: This skill should be used when the user asks "what plugins are available", "list dev tools", "what MCP servers can I use", "enable code intelligence", or needs to discover available development plugins like serena, context7, or playwright.
 ---
+
 # Available Development Plugins
 
 These plugins extend Claude Code capabilities for development workflows. Enable when needed.

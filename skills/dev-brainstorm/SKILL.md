@@ -1,7 +1,10 @@
 ---
 name: dev-brainstorm
-description: Uses Socratic questioning to understand requirements before exploration.
+description: "REQUIRED Phase 1 of /dev workflow. Uses Socratic questioning to understand requirements before exploration."
 ---
+
+**Announce:** "I'm using dev-brainstorm (Phase 1) to gather requirements."
+
 ## Contents
 
 - [The Iron Law of Brainstorming](#the-iron-law-of-brainstorming)

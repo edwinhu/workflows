@@ -1,7 +1,10 @@
 ---
 name: ds-review
-description: Reviews methodology, data quality, and statistical validity.
+description: "REQUIRED Phase 4 of /ds workflow. Reviews methodology, data quality, and statistical validity."
 ---
+
+**Announce:** "I'm using ds-review (Phase 4) to check methodology and quality."
+
 ## Contents
 
 - [The Iron Law of DS Review](#the-iron-law-of-ds-review)

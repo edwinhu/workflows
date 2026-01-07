@@ -1,7 +1,10 @@
 ---
 name: ds-implement
-description: Enforces output-first verification at each step.
+description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verification at each step."
 ---
+
+**Announce:** "I'm using ds-implement (Phase 3) to build with output-first verification."
+
 ## Contents
 
 - [Delegation Pattern](#delegation-pattern) - Main chat orchestrates, subagents analyze

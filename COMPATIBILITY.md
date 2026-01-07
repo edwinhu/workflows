@@ -1,6 +1,6 @@
 # OpenCode Compatibility Guide
 
-This branch (`opencode-compatibility`) adds full support for [OpenCode](https://opencode.ai), the open source AI coding agent. The original Claude Code workflows remain in `plugins/workflows/` and are unchanged.
+This branch (`opencode-compatibility`) adds full support for [OpenCode](https://opencode.ai), the open source AI coding agent. Both Claude Code and OpenCode now use a unified `/skills/` directory, eliminating duplication while maintaining backward compatibility.
 
 ## Quick Start
 
@@ -39,42 +39,61 @@ The `opencode-compatibility` branch doesn't affect the main branch or Claude Cod
 
 ## Architecture
 
-### Directory Structure
+### Directory Structure (Unified Model)
 
 ```
 workflows/
-├── plugins/workflows/          # Claude Code version (unchanged)
-│   ├── .claude-plugin/
-│   ├── commands/
-│   ├── hooks/
-│   └── skills/
-│       ├── dev-implement/
-│       ├── dev-debug/
-│       └── [40+ other skills]
+├── .claude-plugin/             # Claude Code plugin config
+│   ├── plugin.json
+│   └── marketplace.json
 │
-└── .opencode/                  # OpenCode version (this branch)
-    ├── INSTALL.md
-    ├── COMPATIBILITY.md (this file)
-    └── skill/
-        ├── dev-implement/
-        ├── dev-debug/
-        ├── dev-tdd/
-        ├── dev-verify/
-        ├── dev-review/
-        └── using-workflows/
+├── .opencode/                  # OpenCode integration
+│   ├── plugin/
+│   │   └── workflows.js        # OpenCode plugin
+│   ├── INSTALL.md
+│   ├── README.md
+│   └── COMPATIBILITY.md (this file)
+│
+├── skills/                     # UNIFIED - Single source of truth
+│   ├── dev-implement/SKILL.md
+│   ├── dev-debug/SKILL.md
+│   ├── dev-tdd/SKILL.md
+│   ├── dev-verify/SKILL.md
+│   ├── dev-review/SKILL.md
+│   ├── ds-implement/SKILL.md
+│   ├── writing/SKILL.md
+│   └── [34+ other skills]
+│
+├── commands/                   # Claude Code command definitions
+│   ├── dev.md
+│   ├── ds.md
+│   ├── writing.md
+│   └── exit.md
+│
+├── hooks/                      # Claude Code hooks
+│   └── hooks.json
+│
+├── lib/
+│   └── skills-core.js          # Shared skill discovery utilities
+│
+└── [other directories: common, external, etc]
 ```
 
-### Parallel Maintenance Strategy
+### Single Source of Truth
 
-Both versions live in the same repository:
-- **Claude Code skills** in `plugins/workflows/skills/` (original, complete)
-- **OpenCode skills** in `.opencode/skill/` (adapted, growing)
+**All 39 skills live in `/skills/`** and are used by both platforms:
+- **Claude Code** references `/skills/` via `.claude-plugin/`
+- **OpenCode** references `/skills/` via `.opencode/plugin/workflows.js`
 
-This allows:
-- OpenCode users to get started immediately with key skills
-- Claude Code users to remain unaffected
-- Shared improvements to be backported between versions
-- Independent evolution based on each platform's capabilities
+This eliminates duplication and ensures both platforms stay in sync.
+
+### Benefits of Unified Model
+
+- **No duplication:** One SKILL.md file, works on both platforms
+- **Single maintenance:** Update once, works everywhere
+- **Consistent behavior:** Both platforms use identical skill content
+- **Easier evolution:** New platforms can reference same `/skills/` directory
+- **Follows superpowers pattern:** Matches obra/superpowers architecture
 
 ## Key Differences: OpenCode vs Claude Code
 
@@ -136,28 +155,19 @@ OpenCode requires simpler description (no special phrases like "REQUIRED Phase 5
 
 ## Skill Coverage
 
-### Fully Converted
+### All 39 Skills - Unified and Available
 
-- ✅ **dev-implement** - Task orchestration with TDD
-- ✅ **dev-debug** - Systematic debugging
-- ✅ **dev-tdd** - Test-Driven Development protocol
-- ✅ **dev-verify** - Verification checklist
-- ✅ **dev-review** - Code review guidelines
-- ✅ **using-workflows** - Introduction and patterns
+All skills are now unified in `/skills/` and available to both Claude Code and OpenCode:
 
-### Partially Converted (placeholder)
+**Development (18):** dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review, dev-brainstorm, dev-design, dev-explore, dev-clarify, dev-delegate, dev-test, dev-test-linux, dev-test-macos, dev-test-playwright, dev-ralph-loop, dev-tools, using-workflows
 
-- 🟡 **dev-brainstorm** - Socratic design refinement
-- 🟡 **dev-design** - Design validation
-- 🟡 **dev-plan** - Implementation planning
-- 🟡 **dev-explore** - Codebase exploration
+**Data Science (8):** ds, ds-implement, ds-brainstorm, ds-delegate, ds-plan, ds-review, ds-verify, ds-tools
 
-### Not Yet Converted
+**Writing (4):** writing, writing-brainstorm, writing-econ, writing-legal
 
-- ❌ Data science skills (ds-*)
-- ❌ Writing skills (writing-*)
-- ❌ Specialized test skills (dev-test-linux, dev-test-macos, etc.)
-- ❌ Utility skills (marimo, jupytext, wrds, lseg-data)
+**Specialized (9):** ai-anti-patterns, notebook-debug, jupytext, marimo, wrds, lseg-data, gemini-batch, using-skills, exit
+
+Each skill works identically on both platforms.
 
 ## How Skills Differ
 

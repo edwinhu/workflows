@@ -1,7 +1,10 @@
 ---
 name: dev-test-macos
-description: macOS E2E testing with Hammerspoon, screencapture, and cliclick.
+description: "macOS E2E testing with Hammerspoon, screencapture, and cliclick."
 ---
+
+**Announce:** "I'm using dev-test-macos for macOS desktop automation."
+
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)

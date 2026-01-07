@@ -1,7 +1,8 @@
 ---
 name: writing-brainstorm
-description: This skill should be used when the user asks to "find something to write about", "brainstorm topics", "what should I ...
+description: This skill should be used when the user asks to "find something to write about", "brainstorm topics", "what should I write about", "find writing ideas", "gather sources for", "pull references on", or needs help discovering topics from their reading highlights. Leverages Readwise MCP to surface patterns and gather references.
 ---
+
 # Writing Brainstorm
 
 Generate writing topics and gather references from Readwise highlights.

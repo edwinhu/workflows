@@ -1,7 +1,8 @@
 ---
 name: writing-econ
-description: This skill should be used when the user asks to "write an economics paper", "draft a working paper", "edit finance wr...
+description: This skill should be used when the user asks to "write an economics paper", "draft a working paper", "edit finance writing", "review my econ paper", "write for a journal", or needs guidance on economics and finance writing. Based on McCloskey's "Economical Writing" with discipline-specific word lists and examples.
 ---
+
 # Economics and Finance Writing
 
 Style guide for economics journal articles, working papers, and finance analysis based on Deirdre McCloskey's *Economical Writing*.

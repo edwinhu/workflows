@@ -2,6 +2,7 @@
 name: dev
 description: REQUIRED for feature implementation. Orchestrates 7-phase workflow with user approval gates and TDD enforcement.
 ---
+
 ## Activation
 
 First, activate the dev workflow and sandbox:
@@ -9,6 +10,8 @@ First, activate the dev workflow and sandbox:
 ```bash
 mkdir -p /tmp/claude-workflow-$PPID && touch /tmp/claude-workflow-$PPID/dev_mode && echo "✓ Dev workflow activated"
 ```
+
+**Announce:** "I'm using the dev workflow. Starting with Phase 1: brainstorming."
 
 **REQUIRED NEXT STEP:** After activation, IMMEDIATELY invoke:
 ```

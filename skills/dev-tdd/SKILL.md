@@ -1,35 +1,45 @@
 ---
 name: dev-tdd
-description: Test-Driven Development protocol. Write failing test first, then minimal implementation.
+description: "Test-Driven Development protocol. RED-GREEN-REFACTOR cycle with mandatory test-first approach."
 ---
 
-# Test-Driven Development (TDD)
+**Announce:** "I'm using dev-tdd for test-driven development."
 
-## The Iron Law
+## Contents
+
+- [The Iron Law](#the-iron-law-of-tdd)
+- [The TDD Cycle](#the-tdd-cycle)
+- [What Counts as a Test](#what-counts-as-a-test)
+- [Logging TDD Progress](#logging-tdd-progress)
+- [Rationalizations](#rationalization-prevention)
+
+# Test-Driven Development
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of TDD
 
 **WRITE THE FAILING TEST FIRST. SEE IT FAIL. This is not negotiable.**
 
-Before writing ANY implementation code:
-1. Write a test that will fail (feature doesn't exist yet)
+Before writing ANY implementation code, you MUST:
+1. Write a test that will fail (because the feature doesn't exist yet)
 2. Run the test and **SEE THE FAILURE OUTPUT** (RED)
-3. Only THEN write implementation code
-4. Run test again, **SEE IT PASS** (GREEN)
-5. Clean up code while keeping tests passing (REFACTOR)
+3. Document in LEARNINGS.md: "RED: [test name] fails with [error message]"
+4. Only THEN write implementation code
+5. Run test again, **SEE IT PASS** (GREEN)
+6. Document: "GREEN: [test name] now passes"
 
 **The RED step is not optional.** If you haven't seen the test fail, you haven't done TDD.
+</EXTREMELY-IMPORTANT>
 
 ## The TDD Cycle
 
 ```
-RED       → Write test, run it, see failure
-GREEN     → Write minimal code, run test, see pass
-REFACTOR  → Clean up while staying green
-REPEAT    → For next feature
+RED → Run test, see failure, log to LEARNINGS.md
+GREEN → Minimal code only, run test, see pass, log to LEARNINGS.md
+REFACTOR → Clean up while staying green
 ```
 
-## RED - Write Failing Test
-
-Write one minimal test that shows what should happen:
+### Step 1: RED - Write Failing Test
 
 ```python
 # Write the test FIRST
@@ -45,21 +55,21 @@ $ pytest tests/test_auth.py::test_user_can_login -v
 FAILED - NameError: name 'login' is not defined
 ```
 
-**Document the failure:**
-```
-RED: test_user_can_login
+**Log to LEARNINGS.md:**
+```markdown
+## RED: test_user_can_login
 - Test written
 - Fails with: NameError: name 'login' is not defined
 - Expected: function doesn't exist yet
 ```
 
-## GREEN - Minimal Implementation
+### Step 2: GREEN - Minimal Implementation
 
-Write the **minimum code** to make the test pass. Don't over-engineer. Don't anticipate future features.
+Write the **minimum code** to make the test pass:
 
 ```python
 def login(email: str, password: str) -> LoginResult:
-    # Minimal implementation to pass test
+    # Minimal implementation
     return LoginResult(success=True, token="dummy-token")
 ```
 
@@ -69,17 +79,17 @@ $ pytest tests/test_auth.py::test_user_can_login -v
 PASSED
 ```
 
-**Document the pass:**
-```
-GREEN: test_user_can_login
+**Log to LEARNINGS.md:**
+```markdown
+## GREEN: test_user_can_login
 - Minimal login() implemented
 - Test passes
 - Ready for refactor
 ```
 
-## REFACTOR - Improve While Green
+### Step 3: REFACTOR - Improve While Green
 
-Now that the test passes, improve the code while keeping tests green:
+Clean up the code while keeping tests passing:
 
 ```python
 def login(email: str, password: str) -> LoginResult:
@@ -97,93 +107,110 @@ All tests PASSED
 
 ## What Counts as a Test
 
-A real test EXECUTES THE CODE and VERIFIES RUNTIME BEHAVIOR.
+<EXTREMELY-IMPORTANT>
+### REAL Tests vs FAKE "Tests"
 
-| REAL TEST (✓) | FAKE "TEST" (✗) |
-|---------------|-----------------|
+| REAL TEST (execute + verify) | FAKE "TEST" (NEVER ACCEPTABLE) |
+|------------------------------|--------------------------------|
 | pytest calls function, asserts return | grep for function exists |
 | Playwright clicks button, checks DOM | ast-grep finds pattern |
+| ydotool types input, screenshot verifies | Log says "success" |
 | CLI invocation checks stdout | "Code looks correct" |
-| API request verifies response | Log says "success" |
-| Runs code, inspects actual output | Code review passes |
+| API request verifies response body | "I'm confident it works" |
 
-**Grepping is NOT testing. Code review is NOT testing. Log reading is NOT testing.**
+**THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.**
 
-### Why Grepping Fails
+Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
+</EXTREMELY-IMPORTANT>
 
-| Fake Approach | Why It Fails | Reality |
-|---------------|-------------|---------|
-| `grep "function_name"` | Proves function exists | Doesn't prove it works |
-| `ast-grep pattern` | Proves structure matches | Doesn't prove behavior |
-| "Log says success" | Log was written | Code might not execute |
-| "Code review passed" | Opinion only | Runtime behavior unknown |
+### Why Grepping is Not Testing
+
+| Fake Approach | Why It's Worthless | What Happens |
+|---------------|-------------------|--------------|
+| `grep "function_name"` | Proves function exists, not that it works | Bug ships |
+| `ast-grep pattern` | Proves structure matches, not behavior | Runtime crash |
+| "Log says success" | Log was written, code might not run | Silent failure |
+| "Code review passed" | Human opinion, not execution | Edge cases missed |
+
+## Logging TDD Progress
+
+Every TDD cycle MUST be documented in `.claude/LEARNINGS.md`:
+
+```markdown
+## TDD Cycle: [Feature/Test Name]
+
+### RED
+- **Test:** `test_feature_works()`
+- **Run:** `pytest tests/test_feature.py::test_feature_works -v`
+- **Output:**
+```
+FAILED - AssertionError: expected True, got None
+```
+- **Expected failure:** Feature not implemented yet
+
+### GREEN
+- **Implementation:** Added `feature_works()` function
+- **Run:** `pytest tests/test_feature.py::test_feature_works -v`
+- **Output:**
+```
+PASSED
+```
+
+### REFACTOR
+- Extracted helper function
+- Added type hints
+- Tests still pass
+```
 
 ## Rationalization Prevention
 
-These thoughts mean STOP—you're about to skip RED:
+These thoughts mean STOP—you're about to skip TDD:
 
 | Thought | Reality |
 |---------|---------|
-| "I know what the test will do" | Knowing ≠ running. Run it. |
-| "The test is obvious" | Obvious tests catch dumb bugs. Write it. |
-| "I've written the code already" | Then DELETE it. Start from test. |
-| "I'll run the test later" | You won't. Run it now. |
-| "Let me just write a quick test" | Quick = skipped RED. Not TDD. |
-| "Grepping proves it exists" | Existence ≠ functionality. Run test. |
-| "This is just configuration" | Config code gets bugs too. Test it. |
+| "I'll write the test after" | That's verification, not TDD. Test FIRST. |
+| "This is too simple for TDD" | Simple code benefits most from TDD. |
+| "Let me just fix this quickly" | Speed isn't the goal. Correctness is. |
+| "I know the test will fail" | Knowing isn't seeing. RUN it, see RED. |
+| "Grep confirms it exists" | Existence ≠ working. Execute the code. |
+| "I already have the code" | DELETE IT. Write test first, then reimplement. |
+| "Test passed on first run" | Suspicious. Did you see RED first? |
 
-## Logging Every Cycle
+**If your test doesn't fail first, you're not doing TDD.**
 
-For each test you write, document:
+## Delete & Restart
 
+<EXTREMELY-IMPORTANT>
+**Wrote code before test? DELETE IT. No exceptions.**
+
+If you find yourself with implementation code that wasn't driven by a test:
+1. **DELETE** the implementation code
+2. **WRITE** the test first
+3. **RUN** it, **SEE RED**
+4. **REWRITE** the implementation
+
+"But it works" is not an excuse. "But I'll waste time" is not an excuse.
+
+**Code written without TDD is UNTRUSTED code. Delete it and do it right.**
+</EXTREMELY-IMPORTANT>
+
+## Red Flags - STOP If You're About To:
+
+| Action | Why It's Wrong | Do Instead |
+|--------|----------------|------------|
+| Write implementation first | Not TDD | Write failing test first |
+| Skip running the test | No evidence of RED | Run test, see failure |
+| Claim "tested" without output | No proof | Paste actual output |
+| Use grep as verification | Doesn't test behavior | Execute the code |
+| Write test that passes immediately | Proves nothing | Test must fail first |
+
+## Integration
+
+This skill is invoked by:
+- `dev-implement` - for TDD during implementation
+- `dev-debug` - for regression tests during debugging
+
+For testing tool options (Playwright, ydotool, etc.), see:
 ```
-## TDD Cycle: [Feature Name]
-
-### RED
-- Test: test_user_can_login()
-- Run: pytest tests/test_auth.py::test_user_can_login -v
-- Output: FAILED - NameError: name 'login' is not defined
-- Expected failure: Feature not implemented yet
-
-### GREEN
-- Code written: login() function in auth.py
-- Run: pytest tests/test_auth.py::test_user_can_login -v
-- Output: PASSED
-- All tests still passing: yes
-
-### REFACTOR
-- Improvements: Added user lookup, password check
-- Run full test suite: pytest tests/ -v
-- All tests passing: yes
+Skill(skill="workflows:dev-test")
 ```
-
-## Multiple Tests Per Feature
-
-Most features need multiple tests:
-
-```python
-def test_login_with_valid_credentials():
-    result = login("user@example.com", "correct-password")
-    assert result.success == True
-
-def test_login_with_invalid_password():
-    result = login("user@example.com", "wrong-password")
-    assert result.success == False
-
-def test_login_with_nonexistent_email():
-    result = login("nosuchuser@example.com", "anything")
-    assert result.success == False
-```
-
-Each test gets its own RED-GREEN-REFACTOR cycle.
-
-## Full Test Suite After Each Cycle
-
-After GREEN on your new test, always run the full test suite:
-
-```bash
-pytest tests/
-```
-
-All tests must pass. If existing tests break, you've broken something. Fix it before moving on.
-

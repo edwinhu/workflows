@@ -1,7 +1,10 @@
 ---
 name: dev-test-linux
-description: Linux E2E testing with ydotool (Wayland), xdotool (X11), grim, and D-Bus.
+description: "Linux E2E testing with ydotool (Wayland), xdotool (X11), grim, and D-Bus."
 ---
+
+**Announce:** "I'm using dev-test-linux for Linux desktop automation."
+
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)

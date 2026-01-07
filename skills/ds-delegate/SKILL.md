@@ -1,7 +1,10 @@
 ---
 name: ds-delegate
-description: Subagent delegation for data analysis. Dispatches fresh Task agents with output-first verification.
+description: "Subagent delegation for data analysis. Dispatches fresh Task agents with output-first verification."
 ---
+
+**Announce:** "I'm using ds-delegate to dispatch analysis subagents."
+
 ## Contents
 
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)

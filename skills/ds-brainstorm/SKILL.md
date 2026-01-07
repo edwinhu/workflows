@@ -1,7 +1,10 @@
 ---
 name: ds-brainstorm
-description: Uses Socratic questioning to clarify goals, data sources, and constraints.
+description: "REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints."
 ---
+
+**Announce:** "I'm using ds-brainstorm (Phase 1) to gather analysis requirements."
+
 ## Contents
 
 - [The Iron Law of DS Brainstorming](#the-iron-law-of-ds-brainstorming)

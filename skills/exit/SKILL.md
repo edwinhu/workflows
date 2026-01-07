@@ -2,6 +2,7 @@
 name: exit
 description: Deactivate the sandbox and restore full access to Bash and Write/Edit tools.
 ---
+
 # Exit Workflow
 
 Deactivates the sandbox for this session.

@@ -1,39 +1,65 @@
 ---
 name: dev-implement
-description: Orchestrate implementation with per-task loops and delegated TDD. Use after design approval and plan creation.
+description: "REQUIRED Phase 5 of /dev workflow. Orchestrates per-task ralph loops with delegated TDD implementation."
 ---
+
+**Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
+
+## Where This Fits
+
+```
+Main Chat (you)                    Task Agent
+─────────────────────────────────────────────────────
+dev-implement (this skill)
+  → dev-ralph-loop (per-task loops)
+    → dev-delegate (spawn agents)
+      → Task agent ──────────────→ follows dev-tdd
+                                   uses dev-test tools
+```
+
+**Main chat orchestrates.** Task agents implement.
+
+## Contents
+
+- [Prerequisites](#prerequisites)
+- [The Iron Law of Delegation](#the-iron-law-of-delegation)
+- [The Process](#the-process)
+- [Sub-Skills Reference](#sub-skills-reference)
+- [If Max Iterations Reached](#if-max-iterations-reached)
+- [Phase Complete](#phase-complete)
 
 # Implementation (Orchestration)
 
-## Overview
-
-You've approved a design and have a detailed plan. Now orchestrate the implementation by delegating each task to a subagent following TDD.
-
-**Main chat orchestrates. Subagents implement.**
-
+<EXTREMELY-IMPORTANT>
 ## Prerequisites
 
-Before starting, verify these exist:
+**Do NOT start implementation without these:**
 
-1. `.opencode/SPEC.md` or `.claude/SPEC.md` with final requirements
-2. `.opencode/PLAN.md` or `.claude/PLAN.md` with chosen approach and task breakdown
-3. User has explicitly approved the design
+1. `.claude/SPEC.md` exists with final requirements
+2. `.claude/PLAN.md` exists with chosen approach
+3. **User explicitly approved** in /dev-design phase
 
-If any prerequisite is missing, stop and complete the earlier phases first.
+If any prerequisite is missing, STOP and complete the earlier phases.
 
+**Check PLAN.md for:** files to modify, implementation order, testing strategy.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
 
-**YOU MUST NOT WRITE CODE. This is not negotiable.**
+**MAIN CHAT MUST NOT WRITE CODE. This is not negotiable.**
 
 Main chat orchestrates. Subagents implement. If you catch yourself about to use Write or Edit on a code file, STOP.
 
 | Allowed in Main Chat | NOT Allowed in Main Chat |
 |---------------------|--------------------------|
-| Spawn subagents | Write/Edit code files |
-| Review subagent output | Direct implementation |
-| Write to .opencode/*.md files | "Quick fixes" |
+| Spawn Task agents | Write/Edit code files |
+| Review Task agent output | Direct implementation |
+| Write to .claude/*.md files | "Quick fixes" |
 | Run git commands | Any code editing |
-| Coordinate tasks | Bypassing delegation |
+| Start ralph loops | Bypassing delegation |
+
+**If you're about to edit code directly, STOP and spawn a Task agent instead.**
 
 ### Rationalization Prevention
 
@@ -56,71 +82,91 @@ These thoughts mean STOP—you're rationalizing:
 | "This is boilerplate" | Boilerplate = code = delegate. |
 | "PLAN.md is detailed, just executing" | Execution IS implementation. Delegate. |
 
-**If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've failed.**
+### The Meta-Rationalization
+
+**If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've already failed.**
 
 Simple work is EXACTLY when discipline matters most—because that's when you're most tempted to skip it.
+</EXTREMELY-IMPORTANT>
 
 ## The Process
 
+```
 For each task N in PLAN.md:
+    1. Start ralph loop for task N
+       → Skill(skill="workflows:dev-ralph-loop")
 
+    2. Inside loop: spawn Task agent
+       → Skill(skill="workflows:dev-delegate")
+
+    3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
+
+    4. Verify tests pass, output promise
+
+    5. Move to task N+1, start NEW ralph loop
 ```
-1. Create a loop context for task N
-2. Spawn subagent with task-specific instructions
-3. Subagent follows TDD protocol (dev-tdd skill)
-4. Verify tests pass, document completion
-5. Move to task N+1, repeat
+
+### Step 1: Start Ralph Loop for Each Task
+
+**REQUIRED SUB-SKILL:**
+```
+Skill(skill="workflows:dev-ralph-loop")
 ```
 
-### Step 1: Set Up Loop Context
+Key points from dev-ralph-loop:
+- ONE loop PER TASK (not one loop for feature)
+- Each task gets its own completion promise
+- Don't move to task N+1 until task N's loop completes
 
-Use update_plan or equivalent to track:
-- Current task (N of M)
-- What's being implemented
-- Testing strategy from PLAN.md
+### Step 2: Inside Loop - Spawn Task Agent
 
-### Step 2: Spawn Subagent for Implementation
-
-Use OpenCode's subagent system to spawn a fresh subagent with:
-
-**Instructions:**
-
+**REQUIRED SUB-SKILL:**
 ```
-Implement task: [TASK_NAME] from PLAN.md
-
-## Context
-- Read .opencode/SPEC.md for requirements
-- Read .opencode/PLAN.md for this task's details
-- Check .opencode/LEARNINGS.md for prior iterations
-
-## Protocol
-1. Follow test-driven development (TDD)
-2. Write failing test FIRST
-3. Implement minimal code to pass
-4. Run full test suite
-5. Report success or blockers
-
-## Verification Checklist
-- [ ] Tests EXECUTE code (not grep)
-- [ ] Tests PASS (SKIP ≠ PASS)
-- [ ] No new regressions
-- [ ] Code follows project patterns
+Skill(skill="workflows:dev-delegate")
 ```
+
+Key points from dev-delegate:
+- Implementer → Spec reviewer → Quality reviewer
+- Task agent follows dev-tdd protocol
+- Task agent uses dev-test tools
 
 ### Step 3: Verify and Complete
 
-After subagent returns, verify:
-- [ ] Tests written before code
-- [ ] All tests PASS (SKIP doesn't count)
+After Task agent returns, verify:
+- [ ] Tests EXECUTE code (not grep)
+- [ ] Tests PASS (SKIP ≠ PASS)
 - [ ] LEARNINGS.md has actual output
 - [ ] Build succeeds
-- [ ] No regressions in full test suite
 
-**If ALL pass:** Document task as complete and move to task N+1.
-**If ANY fail:** Ask subagent to iterate or diagnose blocker.
+**If ALL pass → output the promise.** If ANY fail → iterate.
 
-### Step 4: No Pause Between Tasks
+## Sub-Skills Reference
 
+| Skill | Purpose | Used By |
+|-------|---------|---------|
+| `dev-ralph-loop` | Per-task loop pattern | Main chat |
+| `dev-delegate` | Task agent templates | Main chat |
+| `dev-tdd` | TDD protocol (RED-GREEN-REFACTOR) | Task agent |
+| `dev-test` | Testing tools (pytest, Playwright, etc.) | Task agent |
+
+## If Max Iterations Reached
+
+Ralph exits after max iterations. **Still do NOT ask user to manually test.**
+
+Main chat should:
+1. **Summarize** what's failing (from LEARNINGS.md)
+2. **Report** which automated tests fail and why
+3. **Ask user** for direction:
+   - A) Start new loop with different approach
+   - B) Add more logging to debug
+   - C) User provides guidance
+   - D) User explicitly requests manual testing
+
+**Never default to "please test manually".** Always exhaust automation first.
+
+## No Pause Between Tasks
+
+<EXTREMELY-IMPORTANT>
 **After completing task N, IMMEDIATELY start task N+1. Do NOT pause.**
 
 | Thought | Reality |
@@ -131,36 +177,16 @@ After subagent returns, verify:
 | "Let me summarize progress" | Summarize AFTER all tasks. Keep moving. |
 | "User has been waiting" | User is waiting for COMPLETION, not updates. |
 
+The promise signals task completion. After outputting promise, IMMEDIATELY start next task's loop.
+
 **Pausing between tasks is procrastination disguised as courtesy.**
+</EXTREMELY-IMPORTANT>
 
-## Sub-Skills Reference
+## Phase Complete
 
-| Skill | Purpose | Used By |
-|-------|---------|---------|
-| `dev-tdd` | TDD protocol (RED-GREEN-REFACTOR) | Subagents |
-| `dev-verify` | Verification checklist | Main chat |
-| `dev-review` | Code review (use after ALL tasks) | Main chat |
+**REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests:
+```
+Skill(skill="workflows:dev-review")
+```
 
-## If a Task Gets Blocked
-
-Don't manually try to fix it. Instead:
-
-1. **Summarize** what's failing (from LEARNINGS.md)
-2. **Report** which automated tests fail and why
-3. **Ask user** for direction:
-   - A) Start new attempt with different approach
-   - B) Add more logging to debug
-   - C) User provides guidance
-   - D) Skip this task (user decision only)
-
-**Never default to manual work.** Always exhaust automation first.
-
-## All Tasks Complete
-
-After ALL tasks pass their tests:
-
-1. Use the `dev-review` skill for final code review
-2. Verify no regressions across full test suite
-3. Document final status
-4. User can decide: merge, iterate, or adjust
-
+Do NOT proceed until automated tests pass for every task.

@@ -1,7 +1,8 @@
 ---
 name: ai-anti-patterns
-description: This skill should be used when reviewing AI-generated text, checking for AI writing patterns, detecting undisclosed A...
+description: This skill should be used when reviewing AI-generated text, checking for AI writing patterns, detecting undisclosed AI content, or before finalizing any written content. Covers 12 categories of AI writing indicators from Wikipedia's comprehensive guide.
 ---
+
 # AI Writing Anti-Patterns
 
 Field guide for detecting and revising AI-generated content indicators based on Wikipedia's "Signs of AI writing" guide.

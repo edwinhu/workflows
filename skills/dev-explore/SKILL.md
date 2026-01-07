@@ -1,7 +1,10 @@
 ---
 name: dev-explore
-description: Launches explore agents to map codebase and returns key files list.
+description: "REQUIRED Phase 2 of /dev workflow. Launches explore agents to map codebase and returns key files list."
 ---
+
+**Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
+
 ## Contents
 
 - [The Iron Law of Exploration](#the-iron-law-of-exploration)

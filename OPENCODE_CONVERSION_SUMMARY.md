@@ -2,48 +2,50 @@
 
 ## What Changed
 
-The workflows repository now uses a **unified skill architecture** following the Superpowers model. This means:
+The workflows repository now uses a **truly unified skill architecture** following the Superpowers model, with NO duplication:
 
-### Before (Duplication Model)
+### Before (Hybrid Model with Duplication)
 ```
 plugins/workflows/skills/          # Claude Code version (38 skills)
-.opencode/skill/                   # OpenCode version (33 converted)
-                                   # DUPLICATED - must maintain both!
+.opencode/skill/                   # OpenCode version (39 converted)
+                                   # DUPLICATED - had to maintain both!
 ```
 
-### After (Unified Model) ✅
+### After (Pure Unified Model) ✅
 ```
 skills/                            # SINGLE SOURCE OF TRUTH (39 skills)
 ├── dev-implement/SKILL.md
 ├── dev-debug/SKILL.md
 └── [37 more]
 
-lib/
-└── skills-core.js                 # Shared discovery utilities
-
 .opencode/plugin/
-├── workflows.js                   # OpenCode bridge plugin
+├── workflows.js                   # OpenCode plugin → uses /skills/
 └── package.json
 
-plugins/                           # Claude Code integration (unchanged)
-└── workflows/
-    └── [Plugin remains as-is]
+.claude-plugin/                    # Claude Code plugin → uses /skills/
+├── plugin.json
+└── marketplace.json
+
+commands/                          # Claude Code commands
+hooks/                             # Claude Code hooks
+lib/
+└── skills-core.js                 # Shared discovery utilities
 ```
 
 ## Key Improvements
 
 | Aspect | Before | After |
 |--------|--------|-------|
-| **Source of Truth** | Duplicated (2 directories) | Unified (1 directory) |
-| **Maintenance** | Update both places | Update once, works everywhere |
-| **File Count** | 71 skill files (38+33) | 39 skill files (unified) |
+| **Source of Truth** | Duplicated (plugins/workflows + .opencode) | Unified (1 /skills/ directory) |
+| **Maintenance** | Update 2 copies | Update once, works everywhere |
+| **File Count** | 71 skill files (38+33 duplicates) | 39 skill files (unified) |
 | **Consistency** | Risk of divergence | Guaranteed consistency |
-| **OpenCode Setup** | Clone branch, symlink | Clone branch + install plugin |
-| **Plugin** | No plugin needed | Recommended (better UX) |
+| **Code Organization** | Marketplace plugin structure (legacy) | Clean root-level organization (modern) |
+| **Architecture** | Hybrid with duplication | Pure unified (superpowers pattern) |
 
 ## What's in `/skills/` Directory
 
-All 39 skills now live here:
+All 39 skills now live in a single unified directory:
 
 **Development (18):**
 - dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review
@@ -168,19 +170,50 @@ The `.opencode/plugin/workflows.js` provides:
 - `use_skill(skill_name="workflows:dev-implement")` - Force workflows version
 - `use_skill(skill_name="project:my-skill")` - Force project version
 
+## What's in Each Directory
+
+### `/skills/` - Unified Skills (39 total)
+Single source of truth used by both Claude Code and OpenCode
+- All development, data science, writing, and specialized skills
+- Platform-agnostic SKILL.md format
+- Works identically on both platforms
+
+### `/commands/` - Claude Code Commands
+- `dev.md` - Development workflow entry command
+- `ds.md` - Data science workflow entry command
+- `writing.md` - Writing workflow entry command
+- `exit.md` - Session exit handling
+
+### `/hooks/` - Claude Code Hooks
+- `hooks.json` - Plugin hook configuration
+- Enables automatic skill loading in Claude Code
+
+### `/.claude-plugin/` - Claude Code Plugin Config
+- `plugin.json` - Plugin metadata and marketplace info
+- `marketplace.json` - Marketplace registration
+
+### `/.opencode/` - OpenCode Integration
+- `plugin/workflows.js` - OpenCode plugin for skill discovery
+- `plugin/package.json` - OpenCode plugin metadata
+- `INSTALL.md` - Installation guide
+- `README.md` - OpenCode-specific documentation
+
+### `/lib/` - Shared Utilities
+- `skills-core.js` - Skill discovery and loading utilities
+
 ## What Stays the Same
 
 ### Claude Code
-- `plugins/workflows/` remains unchanged
 - All Claude Code functionality preserved
 - Plugin marketplace installation still works
 - Commands like `/dev`, `/ds`, `/writing` still available
+- Same commands, hooks, and features as before
 
 ### Main Branch
 - No changes to main branch
 - Claude Code users unaffected
-- Complete 40+ skill library in `plugins/`
-- Branch continues as current stable version
+- Complete skill library in unified `/skills/`
+- Branch continues as stable version
 
 ## Verification
 

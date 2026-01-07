@@ -1,7 +1,10 @@
 ---
 name: ds-verify
-description: Checks reproducibility and requires user acceptance.
+description: "REQUIRED Phase 5 of /ds workflow (final). Checks reproducibility and requires user acceptance."
 ---
+
+**Announce:** "I'm using ds-verify (Phase 5) to confirm reproducibility and completion."
+
 ## Contents
 
 - [The Iron Law of DS Verification](#the-iron-law-of-ds-verification)
@@ -261,6 +264,8 @@ These do NOT count as verification:
 ## Workflow Complete
 
 When user confirms all criteria are met:
+
+**Announce:** "DS workflow complete. All 5 phases passed."
 
 The `/ds` workflow is now finished. Offer to:
 - Export results to final format

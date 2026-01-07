@@ -1,7 +1,10 @@
 ---
 name: dev-design
-description: Proposes architecture approaches with trade-offs and gets user approval.
+description: "REQUIRED Phase 4 of /dev workflow. Proposes architecture approaches with trade-offs and gets user approval."
 ---
+
+**Announce:** "I'm using dev-design (Phase 4) to propose implementation approaches."
+
 ## Contents
 
 - [The Iron Law of Design](#the-iron-law-of-design)

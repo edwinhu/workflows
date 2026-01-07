@@ -1,7 +1,8 @@
 ---
 name: marimo
-description: This skill should be used when the user asks to "use marimo", "create a marimo notebook", "debug a marimo notebook", ...
+description: This skill should be used when the user asks to "use marimo", "create a marimo notebook", "debug a marimo notebook", "inspect cells", "understand reactive execution", "fix marimo errors", "convert from jupyter to marimo", or works with marimo reactive Python notebooks.
 ---
+
 ## Contents
 
 - [Key Concepts](#key-concepts)

@@ -1,7 +1,10 @@
 ---
 name: dev-test
-description: Testing tools reference. Covers unit tests, integration tests, Playwright (web), Hammerspoon (macOS), ydotool (Linux).
+description: "Testing tools reference. Covers unit tests, integration tests, Playwright (web), Hammerspoon (macOS), ydotool (Linux)."
 ---
+
+**Announce:** "I'm using dev-test to select testing tools."
+
 ## Where This Fits
 
 ```

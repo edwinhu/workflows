@@ -1,7 +1,8 @@
 ---
 name: writing-legal
-description: This skill should be used when the user asks to "write a law review article", "draft a legal paper", "edit legal writ...
+description: This skill should be used when the user asks to "write a law review article", "draft a legal paper", "edit legal writing", "review my legal article", "write for a journal", "format footnotes", or needs guidance on academic legal writing. Based on Volokh's "Academic Legal Writing" with law-review-specific structure and evidence handling.
 ---
+
 # Academic Legal Writing
 
 Style guide for law review articles, seminar papers, and legal scholarship based on Eugene Volokh's *Academic Legal Writing*.

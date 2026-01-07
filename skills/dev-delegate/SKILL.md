@@ -1,7 +1,10 @@
 ---
 name: dev-delegate
-description: Subagent delegation for implementation. Dispatches fresh Task agents with two-stage review.
+description: "Subagent delegation for implementation. Dispatches fresh Task agents with two-stage review."
 ---
+
+**Announce:** "I'm using dev-delegate to dispatch implementation subagents."
+
 ## Contents
 
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)

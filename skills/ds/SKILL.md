@@ -1,7 +1,8 @@
 ---
 name: ds
-description: REQUIRED for data analysis. Orchestrates 5-phase workflow with output-first verification.
+description: "REQUIRED for data analysis. Orchestrates 5-phase workflow with output-first verification."
 ---
+
 ## Activation
 
 First, activate the ds workflow and sandbox:
@@ -16,6 +17,8 @@ activate_dev_mode()
 print('✓ DS workflow activated')
 "
 ```
+
+**Announce:** "I'm using the ds workflow. Starting with Phase 1: brainstorming."
 
 **REQUIRED NEXT STEP:** After activation, IMMEDIATELY invoke:
 ```

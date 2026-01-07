@@ -1,7 +1,10 @@
 ---
 name: ds-plan
-description: Profiles data and creates analysis task breakdown.
+description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
 ---
+
+**Announce:** "I'm using ds-plan (Phase 2) to profile data and create task breakdown."
+
 ## Contents
 
 - [The Iron Law of DS Planning](#the-iron-law-of-ds-planning)

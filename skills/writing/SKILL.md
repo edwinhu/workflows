@@ -1,7 +1,8 @@
 ---
 name: writing
-description: This skill should be used when the user asks to "write an article", "draft a blog post", "edit prose", "review my wri...
+description: This skill should be used when the user asks to "write an article", "draft a blog post", "edit prose", "review my writing", "check style", "improve clarity", or needs general writing guidance. Provides Strunk & White's Elements of Style for foundational grammar, usage, and composition principles.
 ---
+
 # Writing and Editing
 
 Foundational style guide for clear, concise prose based on Strunk & White's Elements of Style.

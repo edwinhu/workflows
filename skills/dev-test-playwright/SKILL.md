@@ -1,7 +1,10 @@
 ---
 name: dev-test-playwright
-description: Web E2E testing with Playwright MCP for browser automation.
+description: "Web E2E testing with Playwright MCP for browser automation."
 ---
+
+**Announce:** "I'm using dev-test-playwright for web browser automation."
+
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)

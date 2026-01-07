@@ -1,125 +1,229 @@
 ---
 name: dev-review
-description: Code review guidelines combining spec compliance, quality checks, and testing requirements.
+description: "REQUIRED Phase 6 of /dev workflow. Combines spec compliance and code quality checks with confidence scoring."
 ---
+
+**Announce:** "I'm using dev-review (Phase 6) to check code quality."
+
+## Contents
+
+- [Prerequisites - Test Output Gate](#prerequisites---test-output-gate)
+- [The Iron Law of Review](#the-iron-law-of-review)
+- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Review Focus Areas](#review-focus-areas)
+- [Confidence Scoring](#confidence-scoring)
+- [Required Output Structure](#required-output-structure)
+- [Agent Invocation](#agent-invocation)
+- [Quality Standards](#quality-standards)
 
 # Code Review
 
-Review completed work against requirements and best practices.
+Single-pass code review combining spec compliance and quality checks. Uses confidence-based filtering to report only high-priority issues.
 
-## When to Review
+<EXTREMELY-IMPORTANT>
+## Prerequisites - Test Output Gate
 
-After all implementation tasks complete and tests pass:
-1. Tests PASS (full suite)
-2. No regressions
-3. LEARNINGS.md documents the work
+**Do NOT start review without test evidence.**
 
-## Spec Compliance
+Before reviewing, verify:
+1. `.claude/LEARNINGS.md` contains **actual test output**
+2. Tests were **run** (not just written)
+3. Test output shows **PASS** (not SKIP, not assumed)
 
-Does the code do what was asked for?
+### What Counts as Test Evidence
 
-- [ ] All requirements met
-- [ ] No scope creep ("nice to have" features that weren't required)
-- [ ] Edge cases from spec are handled
-- [ ] Error cases work as specified
+| Valid Evidence | NOT Valid |
+|----------------|-----------|
+| `meson test` output with results | "Tests should pass" |
+| `pytest` output showing PASS | "I wrote tests" |
+| Screenshot of working UI | "It looks correct" |
+| Playwright snapshot showing expected state | "User can verify" |
+| D-Bus command output | "The feature works" |
 
-If ANY requirement is missing, mark as "needs work" and don't proceed.
+### Gate Check
 
-## Testing Quality
+```bash
+# Check LEARNINGS.md for test output
+grep -E "(PASS|OK|SUCCESS|\d+ passed)" .claude/LEARNINGS.md
+```
 
-Are tests thorough and meaningful?
+**If no test output found, STOP and return to /dev-implement.**
 
-- [ ] Tests EXECUTE code (not grep/pattern matching)
-- [ ] Happy path tested
-- [ ] Error cases tested
-- [ ] Edge cases tested
-- [ ] Tests are readable and maintainable
-- [ ] No test skips or pending tests
-- [ ] Full test suite passes
+"It should work" is NOT evidence. Test output IS evidence.
+</EXTREMELY-IMPORTANT>
 
-**Tests that don't execute code aren't tests.** Code review should catch this.
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Review
 
-## Code Quality
+**Only report issues with >= 80% confidence. This is not negotiable.**
 
-Is the code clean and maintainable?
+Before reporting ANY issue, you MUST:
+1. Verify it's not a false positive
+2. Verify it's not a pre-existing issue
+3. Assign a confidence score
+4. Only report if score >= 80
 
-- [ ] Code is readable (clear variable names, functions)
-- [ ] Functions are small and focused
-- [ ] Duplication is eliminated
-- [ ] Comments explain WHY (not WHAT)
-- [ ] Follows project patterns
-- [ ] No dead code or TODOs left behind
-- [ ] Proper error handling
+This applies even when:
+- "This looks suspicious"
+- "I think this might be wrong"
+- "The style seems inconsistent"
+- "I would have done it differently"
 
-## Documentation
+**If you catch yourself about to report a low-confidence issue, DISCARD IT.**
+</EXTREMELY-IMPORTANT>
 
-Is the work documented for future maintainers?
+## Red Flags - STOP Immediately If You Think:
 
-- [ ] LEARNINGS.md explains decisions made
-- [ ] Complex logic has comments
-- [ ] Commit messages are clear
-- [ ] API changes are documented (if applicable)
+| Thought | Why It's Wrong | Do Instead |
+|---------|----------------|------------|
+| "Tests probably pass" | No evidence | Check LEARNINGS.md for output |
+| "This looks wrong" | Vague suspicion isn't evidence | Find concrete proof or discard |
+| "I would do it differently" | Style preference isn't a bug | Check if it violates guidelines |
+| "This might cause problems" | "Might" means < 80% confidence | Find proof or discard |
+| "Pre-existing but should be fixed" | Not your scope | Score it 0 and discard |
+| "User can test it" | Automation likely possible | Return to implement phase |
 
-## Integration
+## Review Focus Areas
 
-Does the code work with the rest of the system?
+### Test Evidence (Check First!)
+- [ ] LEARNINGS.md contains actual test command output
+- [ ] Tests show PASS/OK (not SKIP, FAIL, or missing)
+- [ ] UI changes have screenshot/snapshot evidence
+- [ ] All test types run (unit, integration, UI as applicable)
 
-- [ ] Builds successfully
-- [ ] No breaking changes to existing code
-- [ ] Integration tests pass (if applicable)
-- [ ] Performance impact considered (for critical paths)
-
-## Common Issues to Check
-
-### Over-Engineering
-- Does code do more than required? (Scope creep)
-- Are there unused abstractions or generality?
-- **Fix:** Remove features not in spec
-
-### Under-Testing
-- Does code have test coverage?
-- Are edge cases tested?
-- Can tests actually catch bugs?
-- **Fix:** Write more targeted tests
+### Spec Compliance
+- [ ] All requirements from .claude/SPEC.md are implemented
+- [ ] Acceptance criteria are met
+- [ ] No requirements were skipped or partially implemented
+- [ ] Edge cases mentioned in spec are handled
 
 ### Code Quality
-- Is the code clean and understandable?
-- Are there obvious smells (long functions, duplication)?
-- **Fix:** Refactor while tests pass
+- [ ] Code is simple and DRY (no unnecessary duplication)
+- [ ] Logic is correct (no bugs, handles edge cases)
+- [ ] Follows codebase conventions (naming, patterns, structure)
+- [ ] Error handling is complete
+- [ ] No security vulnerabilities
 
-### Documentation Gaps
-- Would someone understand this 6 months from now?
-- Are complex decisions documented?
-- **Fix:** Add comments and update LEARNINGS.md
+## Confidence Scoring
 
-## Approval Criteria
+Rate each potential issue from 0-100:
 
-Approve when:
-- ✓ All requirements met
-- ✓ Tests pass and are thorough
-- ✓ Code is clean and maintainable
-- ✓ Documentation is complete
-- ✓ No regressions in existing code
+| Score | Meaning |
+|-------|---------|
+| 0 | False positive or pre-existing issue |
+| 25 | Might be real, might not. Stylistic without guideline backing |
+| 50 | Real issue but nitpick or rare in practice |
+| 75 | Verified real issue, impacts functionality |
+| 100 | Absolutely certain, confirmed with direct evidence |
 
-Block approval if:
-- ✗ Requirements missing
-- ✗ Tests don't execute code
-- ✗ Test suite fails
-- ✗ Code quality issues
-- ✗ Regressions detected
+**CRITICAL: Only report issues with confidence >= 80.**
 
-## After Approval
+## Required Output Structure
 
-Once work passes review:
-1. Code is ready to merge
-2. Final verification can happen
-3. Document completion
+```markdown
+## Code Review: [Feature/Change Name]
+Reviewing: [files/scope being reviewed]
 
-## Tips
+### Test Evidence Verified
+- Unit tests: [PASS/FAIL/MISSING] - [paste key output line]
+- Integration: [PASS/FAIL/N/A]
+- UI/Visual: [Screenshot taken / Snapshot verified / N/A]
 
-- **Review early and often** - Don't wait until everything is "done"
-- **Be specific** - "Needs work" is less helpful than "This function is too long, split it"
-- **Test the tests** - Remove test assertions. Tests should fail. Put them back.
-- **Check the spec** - Did work actually meet requirements or just look good?
-- **Look at git history** - Do commits tell a clear story?
+### Critical Issues (Confidence >= 90)
 
+#### [Issue Title] (Confidence: XX)
+
+**Location:** `file/path.ext:line_number`
+
+**Problem:** Clear description of the issue
+
+**Fix:**
+```[language]
+// Specific code fix
+```
+
+### Important Issues (Confidence 80-89)
+
+[Same format as Critical Issues]
+
+### Summary
+
+**Verdict:** APPROVED | CHANGES REQUIRED | BLOCKED (no test evidence)
+
+[If APPROVED]
+The reviewed code meets project standards. Tests pass. No issues with confidence >= 80 detected.
+
+[If CHANGES REQUIRED]
+X critical issues and Y important issues must be addressed before proceeding.
+
+[If BLOCKED]
+Cannot approve without test evidence. Return to /dev-implement and run tests.
+```
+
+## Agent Invocation
+
+Main chat spawns Task agent:
+
+```
+Task(subagent_type="general-purpose"):
+"Review implementation against .claude/SPEC.md.
+
+FIRST: Check .claude/LEARNINGS.md for test output.
+If no test output found, return BLOCKED immediately.
+
+Single-pass review covering:
+1. Test evidence - tests actually run and pass?
+2. Spec compliance - all requirements met?
+3. Code quality - simple, correct, follows conventions?
+
+Confidence score each issue (0-100).
+Only report issues >= 80 confidence.
+Return structured output per /dev-review format."
+```
+
+## Honesty Requirement
+
+<EXTREMELY-IMPORTANT>
+**Approving without test evidence is LYING.**
+
+When you say "APPROVED", you are asserting:
+- Tests actually ran (not "should work")
+- Test output shows PASS (not SKIP, not assumed)
+- You saw the evidence (not trusting reports)
+
+Saying "APPROVED" without test evidence is not "being efficient" - it is LYING about code quality.
+
+**BLOCKED is honest. Fake APPROVED is fraud.**
+</EXTREMELY-IMPORTANT>
+
+## Rationalization Prevention
+
+These thoughts mean STOP—you're about to approve dishonestly:
+
+| Thought | Reality |
+|---------|---------|
+| "Tests probably pass" | Probably ≠ evidence. Check LEARNINGS.md. |
+| "I saw the code, it looks right" | Looking ≠ running. Where's test output? |
+| "User is waiting for approval" | User wants HONEST approval. Say BLOCKED if needed. |
+| "It's a small change" | Small changes break things. Require evidence. |
+| "I trust the implementer" | Trust doesn't replace verification. Check evidence. |
+| "I'll approve and they can fix later" | NO. BLOCKED now or bugs ship. |
+| "Review is just a formality" | Review is the LAST GATE before bugs ship. Take it seriously. |
+
+## Quality Standards
+
+- **Test evidence is mandatory** - no approval without test output
+- Never report style preferences not backed by project guidelines
+- Pre-existing issues are NOT your concern (confidence = 0)
+- Each reported issue must be immediately actionable
+- File paths must be absolute and include line numbers
+- If unsure, the issue is below 80 confidence
+
+## Phase Complete
+
+**REQUIRED SUB-SKILL:** After review is APPROVED, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-verify")
+```
+
+If CHANGES REQUIRED, return to `/dev-implement` to fix issues first.

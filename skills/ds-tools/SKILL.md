@@ -1,7 +1,8 @@
 ---
 name: ds-tools
-description: This skill should be used when the user asks "what plugins are available", "list data science tools", "what MCP serve...
+description: This skill should be used when the user asks "what plugins are available", "list data science tools", "what MCP servers can I use", "enable code intelligence", or needs to discover available plugins like serena, context7, or data access skills like wrds and lseg-data.
 ---
+
 # Available Data Science Plugins
 
 These plugins extend Claude Code capabilities for data science workflows. Enable when needed.
