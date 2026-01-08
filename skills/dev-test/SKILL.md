@@ -1,9 +1,9 @@
 ---
 name: dev-test
-description: "Testing tools reference. Covers unit tests, integration tests, Playwright (web), Hammerspoon (macOS), ydotool (Linux)."
+description: "Testing tool router. Routes to platform-specific skills: Chrome MCP, Playwright, Hammerspoon, Linux."
 ---
 
-**Announce:** "I'm using dev-test to select testing tools."
+**Announce:** "I'm using dev-test to select the right testing tool."
 
 ## Where This Fits
 
@@ -15,23 +15,21 @@ dev-implement
     → dev-delegate
       → Task agent ──────────────→ follows dev-tdd (TDD protocol)
                                    uses dev-test (this skill)
+                                     → routes to specific tool
 ```
 
-**This skill is for Task agents** selecting testing tools.
-For TDD philosophy (RED-GREEN-REFACTOR), see `dev-tdd`.
+**This skill routes to the right testing tool.** For TDD philosophy (RED-GREEN-REFACTOR), see `dev-tdd`.
 
 ## Contents
 
-- [Testing Hierarchy](#testing-hierarchy)
+- [The Iron Law](#the-iron-law-of-testing)
+- [Browser Testing Decision Tree](#browser-testing-decision-tree)
 - [Platform Detection](#platform-detection)
-- [Platform-Specific Skills](#platform-specific-skills)
+- [Sub-Skills Reference](#sub-skills-reference)
 - [Unit & Integration Tests](#unit--integration-tests)
-- [Output Requirements](#output-requirements)
-
-# Testing Tools Reference
 
 <EXTREMELY-IMPORTANT>
-## The Iron Law of E2E Testing
+## The Iron Law of Testing
 
 **USER-FACING FEATURES REQUIRE E2E TESTS. This is not negotiable.**
 
@@ -53,11 +51,10 @@ These thoughts mean STOP—you're about to skip E2E:
 | "E2E is too slow" | Slow tests > shipped bugs. Write E2E. |
 | "I'll add E2E later" | You won't. Write it NOW. |
 | "This is just backend" | Does it affect user output? Then E2E. |
-| "Playwright is overkill" | Playwright catches what unit tests miss. |
+| "The tool setup is complex" | Complex setup = complex failure modes. E2E finds them. |
 | "The UI is unchanged" | Prove it with a visual snapshot. |
 | "Manual testing is faster" | Manual testing is LYING about coverage. |
 | "It's just a small change" | Small changes break UIs. E2E proves they don't. |
-| "Setup is too complex" | Complex setup = complex failure modes. E2E finds them. |
 | "User can verify" | NO. Automated verification or it didn't happen. |
 
 ### Red Flags - STOP If You Think:
@@ -67,47 +64,100 @@ These thoughts mean STOP—you're about to skip E2E:
 | "Tests pass" (only unit) | Unit ≠ E2E | Write E2E test |
 | "Code looks correct" | Looking ≠ running user flow | Run E2E |
 | "It worked when I tried it" | Manual ≠ automated | Capture as E2E |
-| "Screenshot shows it works" | Static screenshot ≠ interaction test | Add Playwright/automation |
+| "Screenshot shows it works" | Static screenshot ≠ interaction test | Add automation |
 </EXTREMELY-IMPORTANT>
 
-## Testing Hierarchy
+## Browser Testing Decision Tree
 
-Try in order. Only fall back when higher options unavailable:
-
-| Priority | Type | Tools | When to use |
-|----------|------|-------|-------------|
-| 1 | **Unit tests** | pytest, jest, cargo test, meson test | Always first |
-| 2 | **Integration tests** | CLI invocation, API calls | Test component interaction |
-| 3 | **E2E/UI automation** | Playwright (web), Hammerspoon (macOS), ydotool (Linux) | **REQUIRED for user-facing changes** |
-| 4 | **Visual regression** | Screenshots + comparison | Verify visual output |
-| 5 | **Accessibility** | AT-SPI, axe-core | Verify a11y compliance |
-| 6 | **Manual testing** | User verification | **LAST RESORT ONLY** |
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    BROWSER TESTING REQUIRED?                     │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  Need to debug JS errors or API calls?       │
+        │  (console.log, network requests, XHR)        │
+        └─────────────────────────────────────────────┘
+                    │                    │
+                   YES                   NO
+                    │                    │
+                    ▼                    ▼
+        ┌───────────────────┐  ┌──────────────────────────┐
+        │   CHROME MCP      │  │  Running in CI/CD?        │
+        │   (debugging)     │  │  (headless, automated)    │
+        └───────────────────┘  └──────────────────────────┘
+                                      │           │
+                                     YES          NO
+                                      │           │
+                                      ▼           ▼
+                        ┌──────────────┐  ┌───────────────────┐
+                        │ PLAYWRIGHT   │  │ Cross-browser     │
+                        │ MCP          │  │ needed?           │
+                        └──────────────┘  └───────────────────┘
+                                                │          │
+                                               YES         NO
+                                                │          │
+                                                ▼          ▼
+                                    ┌──────────────┐ ┌────────────┐
+                                    │ PLAYWRIGHT   │ │ Either OK  │
+                                    │ MCP          │ │ (prefer    │
+                                    └──────────────┘ │ Playwright)│
+                                                     └────────────┘
+```
 
 <EXTREMELY-IMPORTANT>
-## Tool Availability Gate
+### Iron Laws: Browser MCP Selection
 
-**If a required testing tool is not installed, STOP and tell the user to install it.**
+**NO API/CONSOLE DEBUGGING WITHOUT CHROME MCP.**
+**NO CI/CD TESTING WITHOUT PLAYWRIGHT MCP.**
 
-See platform-specific skills for installation commands:
-- **macOS**: `dev-test-macos` - Hammerspoon, screencapture
-- **Linux**: `dev-test-linux` - ydotool (Wayland), xdotool (X11), grim
-- **Web**: `dev-test-playwright` - Playwright MCP, /chrome
+### Quick Decision Table
 
-**DO NOT:**
-- Skip the test because tool is missing
-- Fall back to manual testing silently
-- Continue and let the test fail
-- Assume the tool will be available
+| Need | Tool | Why |
+|------|------|-----|
+| Debug console errors | **Chrome MCP** | `read_console_messages` |
+| Inspect API calls/responses | **Chrome MCP** | `read_network_requests` |
+| Execute custom JS in page | **Chrome MCP** | `javascript_tool` |
+| Record interaction as GIF | **Chrome MCP** | `gif_creator` |
+| Headless/CI automation | **Playwright MCP** | Headless mode |
+| Cross-browser testing | **Playwright MCP** | Firefox/WebKit support |
+| Standard E2E suite | **Playwright MCP** | Test isolation, maturity |
+| Interactive debugging | **Chrome MCP** | Real browser, console access |
 
-**This gate is non-negotiable. Missing tools = full stop.**
+### Capability Comparison
+
+| Capability | Playwright MCP | Chrome MCP |
+|------------|---------------|------------|
+| Navigate/click/type | ✅ | ✅ |
+| Accessibility tree | ✅ `browser_snapshot` | ✅ `read_page` |
+| Screenshots | ✅ | ✅ |
+| **Console messages** | ❌ | ✅ `read_console_messages` |
+| **Network requests** | ❌ | ✅ `read_network_requests` |
+| **JavaScript execution** | ❌ | ✅ `javascript_tool` |
+| **GIF recording** | ❌ | ✅ `gif_creator` |
+| **Headless mode** | ✅ | ❌ (requires visible browser) |
+| **Cross-browser** | ✅ (Chromium/Firefox/WebKit) | ❌ (Chrome only) |
+| Natural language find | ❌ | ✅ `find` |
+
+### Rationalization Prevention (Browser MCP)
+
+| Thought | Reality |
+|---------|---------|
+| "I'll check the console manually" | NO. Use Chrome MCP `read_console_messages` |
+| "I can infer the API response" | NO. Use Chrome MCP `read_network_requests` |
+| "Playwright can do everything" | NO. It cannot read console or network |
+| "Chrome MCP is enough for CI" | NO. It requires visible browser |
+| "I'll just look at DevTools" | AUTOMATE IT. Chrome MCP captures the same data |
+| "Headless doesn't matter" | YES IT DOES. CI/CD requires headless. |
 </EXTREMELY-IMPORTANT>
 
 ## Platform Detection
 
 ```bash
-# Detect platform
+# Detect platform for desktop automation
 case "$(uname -s)" in
-    Darwin) echo "macOS - use dev-test-macos" ;;
+    Darwin) echo "macOS - use dev-test-hammerspoon" ;;
     Linux)
         if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
             echo "Linux/Wayland - use dev-test-linux (ydotool)"
@@ -118,45 +168,63 @@ case "$(uname -s)" in
 esac
 ```
 
-## Platform-Specific Skills
+### Desktop Automation Decision Tree
 
-**Load the appropriate skill for E2E desktop automation:**
-
-| Platform | Skill | Primary Tool |
-|----------|-------|--------------|
-| **macOS** | `Skill(skill="workflows:dev-test-macos")` | Hammerspoon |
-| **Linux** | `Skill(skill="workflows:dev-test-linux")` | ydotool / xdotool |
-| **Web** | `Skill(skill="workflows:dev-test-playwright")` | Playwright MCP |
-
-### Quick Reference
-
-**macOS (Hammerspoon):**
-```bash
-hs -c 'hs.eventtap.keyStroke({"cmd"}, "c")'  # Cmd+C
-hs -c 'hs.application.launchOrFocus("Safari")'
-screencapture /tmp/screenshot.png
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   DESKTOP AUTOMATION REQUIRED?                   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────┐
+                    │   Platform?      │
+                    └─────────────────┘
+                    /        |         \
+                 macOS    Linux      Windows
+                   │         │           │
+                   ▼         ▼           ▼
+        ┌──────────────┐ ┌─────────┐ ┌─────────┐
+        │ HAMMERSPOON  │ │ LINUX   │ │ NOT     │
+        │ (dev-test-   │ │ (dev-   │ │ SUPPORTED│
+        │ hammerspoon) │ │ test-   │ └─────────┘
+        └──────────────┘ │ linux)  │
+                         └─────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    │   Display Server?  │
+                    └───────────────────┘
+                         /         \
+                    Wayland        X11
+                       │            │
+                       ▼            ▼
+                 ┌──────────┐ ┌──────────┐
+                 │ ydotool  │ │ xdotool  │
+                 └──────────┘ └──────────┘
 ```
 
-**Linux/Wayland (ydotool):**
-```bash
-ydotool type "hello world"
-ydotool key 29:1 46:1 46:0 29:0  # Ctrl+C
-grim /tmp/screenshot.png
-```
+## Sub-Skills Reference
 
-**Linux/X11 (xdotool):**
-```bash
-xdotool type "hello world"
-xdotool key ctrl+c
-scrot /tmp/screenshot.png
-```
+<EXTREMELY-IMPORTANT>
+### Tool Availability Gate
 
-**Web (Playwright):**
-```
-mcp__playwright__browser_navigate(url="https://example.com")
-mcp__playwright__browser_click(element="Submit")
-mcp__playwright__browser_snapshot()
-```
+**Verify tools are available BEFORE proceeding. Missing tools = FULL STOP.**
+
+Each sub-skill has its own availability gate. Load the appropriate skill and follow its gate.
+</EXTREMELY-IMPORTANT>
+
+### Browser Testing
+
+| Skill | Use Case | Key Capabilities |
+|-------|----------|------------------|
+| `Skill(skill="workflows:dev-test-chrome")` | Debugging, console/network inspection | `read_console_messages`, `read_network_requests`, `javascript_tool` |
+| `Skill(skill="workflows:dev-test-playwright")` | CI/CD, headless, cross-browser E2E | Headless mode, Firefox/WebKit, test isolation |
+
+### Desktop Automation
+
+| Skill | Platform | Primary Tool |
+|-------|----------|--------------|
+| `Skill(skill="workflows:dev-test-hammerspoon")` | macOS | Hammerspoon (`hs`) |
+| `Skill(skill="workflows:dev-test-linux")` | Linux | ydotool (Wayland) / xdotool (X11) |
 
 ## Unit & Integration Tests
 
@@ -204,6 +272,8 @@ diff expected.txt output.txt
 ```markdown
 ## Test Run: [Description]
 
+**Tool:** [Chrome MCP / Playwright / Hammerspoon / ydotool / pytest / etc.]
+
 **Command:**
 ```bash
 pytest tests/ -v
@@ -223,35 +293,11 @@ tests/test_feature.py::test_error FAILED
 **Next:** Fix test_error failure
 ```
 
-## Code Search for Tests
-
-**Use ast-grep to find existing test patterns:**
-
-```bash
-# Python
-sg -p 'def test_$NAME($$$):' --lang python
-sg -p '@pytest.fixture' --lang python
-
-# JavaScript
-sg -p 'it($DESC, $$$)' --lang javascript
-sg -p 'describe($DESC, $$$)' --lang javascript
-
-# Find assertions
-sg -p 'assert $EXPR' --lang python
-sg -p 'expect($EXPR)' --lang javascript
-```
-
 ## Integration
-
-For platform-specific E2E automation, invoke the appropriate sub-skill:
-
-```
-Skill(skill="workflows:dev-test-macos")      # macOS
-Skill(skill="workflows:dev-test-linux")      # Linux
-Skill(skill="workflows:dev-test-playwright") # Web
-```
 
 For TDD protocol (RED-GREEN-REFACTOR), see:
 ```
 Skill(skill="workflows:dev-tdd")
 ```
+
+This skill is invoked by Task agents during `dev-implement` phase.

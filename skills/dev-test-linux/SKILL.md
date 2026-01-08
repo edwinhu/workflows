@@ -1,6 +1,6 @@
 ---
 name: dev-test-linux
-description: "Linux E2E testing with ydotool (Wayland), xdotool (X11), grim, and D-Bus."
+description: "Linux desktop E2E testing with ydotool (Wayland), xdotool (X11), grim, and D-Bus."
 ---
 
 **Announce:** "I'm using dev-test-linux for Linux desktop automation."
@@ -8,6 +8,7 @@ description: "Linux E2E testing with ydotool (Wayland), xdotool (X11), grim, and
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)
+- [When to Use Linux Automation](#when-to-use-linux-automation)
 - [Detect Display Server](#detect-display-server)
 - [Wayland: ydotool](#wayland-ydotool)
 - [X11: xdotool](#x11-xdotool)
@@ -67,6 +68,49 @@ Reply when installed and I'll continue testing.
 ```
 
 **This gate is non-negotiable. Missing tools = full stop.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## When to Use Linux Automation
+
+**USE Linux automation (ydotool/xdotool) when you need:**
+- Linux native application automation
+- GTK/Qt application testing
+- System-wide keyboard/mouse control
+- Window management testing
+- D-Bus service interaction
+- Accessibility testing (AT-SPI)
+
+**DO NOT use Linux automation when:**
+- Testing web applications (use Chrome MCP or Playwright)
+- macOS desktop automation (use dev-test-hammerspoon)
+- Cross-platform testing needed
+
+**For web testing, use:**
+- `Skill(skill="workflows:dev-test-chrome")` - debugging
+- `Skill(skill="workflows:dev-test-playwright")` - CI/CD
+
+### Rationalization Prevention
+
+| Thought | Reality |
+|---------|---------|
+| "I can test the app manually" | AUTOMATE IT with ydotool/xdotool |
+| "Web testing tools work for desktop apps" | NO. Use native Linux tools |
+| "ydotool daemon is hard to set up" | One-time setup. Do it. |
+| "X11 is deprecated, skip xdotool" | Many systems still use X11. Support both. |
+| "D-Bus is too complex" | D-Bus gives precise control. Learn it. |
+
+### Display Server Detection
+
+```bash
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+    # Use ydotool, wtype, grim
+else
+    # Use xdotool, xclip, scrot
+fi
+```
+
+**Always detect display server before choosing tools.**
 </EXTREMELY-IMPORTANT>
 
 ## Detect Display Server
@@ -223,6 +267,14 @@ xdotool search --name "Firefox" windowactivate --sync
 
 ## Screenshots
 
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Visual Verification
+
+**Every E2E test MUST include screenshot evidence.**
+
+After completing a workflow, capture a screenshot to prove success.
+</EXTREMELY-IMPORTANT>
+
 ### Wayland: grim + slurp
 
 ```bash
@@ -346,6 +398,19 @@ if button:
 
 ## Complete E2E Examples
 
+<EXTREMELY-IMPORTANT>
+### E2E Test Structure
+
+Every Linux E2E test MUST:
+1. **Detect** - Check display server (Wayland vs X11)
+2. **Launch** - Start the application
+3. **Wait** - Allow app to fully initialize
+4. **Interact** - Perform user actions
+5. **Verify** - Check expected state
+6. **Screenshot** - Capture visual evidence
+7. **Cleanup** - Close app, restore state
+</EXTREMELY-IMPORTANT>
+
 ### Wayland E2E Test
 
 ```bash
@@ -437,8 +502,36 @@ xdotool key Tab key Return  # Don't save
 echo "Test complete"
 ```
 
+## Output Requirements
+
+**Every test run MUST be documented in LEARNINGS.md:**
+
+```markdown
+## Linux E2E Test: [Description]
+
+**Display Server:** Wayland / X11
+
+**Tool:** ydotool / xdotool
+
+**Script:**
+```bash
+./test_workflow.sh
+```
+
+**Output:**
+```
+Starting E2E test...
+PASS: Screenshots differ (interaction worked)
+Test complete
+```
+
+**Result:** PASS
+
+**Screenshot:** /tmp/test_result.png
+```
+
 ## Integration
 
-This skill is referenced by `dev-test` for Linux-specific automation.
+This skill is referenced by `dev-test` for Linux desktop automation.
 
 For TDD protocol, see: `Skill(skill="workflows:dev-tdd")`

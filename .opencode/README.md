@@ -22,9 +22,9 @@ bash ~/.config/opencode/workflows/.opencode/install.sh
 
 ## What You Get
 
-All 39 workflows skills immediately available:
+All 40 workflows skills immediately available:
 
-- **Development** (18 skills): dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review, dev-brainstorm, dev-design, dev-explore, dev-clarify, dev-delegate, dev-test, dev-test-linux, dev-test-macos, dev-test-playwright, dev-ralph-loop, dev-tools, using-workflows
+- **Development** (19 skills): dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review, dev-brainstorm, dev-design, dev-explore, dev-clarify, dev-delegate, dev-test, dev-test-chrome, dev-test-linux, dev-test-hammerspoon, dev-test-playwright, dev-ralph-loop, dev-tools, using-workflows
 
 - **Data Science** (8 skills): ds, ds-implement, ds-brainstorm, ds-delegate, ds-plan, ds-review, ds-verify, ds-tools
 
@@ -95,7 +95,7 @@ bash ~/.config/opencode/workflows/.opencode/install.sh
 
 **What it does:**
 - Clones the workflows repository
-- Creates symlinks to all 39 skills in `~/.config/opencode/skill/`
+- Creates symlinks to all 40 skills in `~/.config/opencode/skill/`
 - Installs the plugin to `~/.config/opencode/plugin/`
 
 **Benefits:**
@@ -296,7 +296,7 @@ workflows/
 
 ```
 workflows/
-├── skills/                         # Unified source (39 skills)
+├── skills/                         # Unified source (40 skills)
 ├── lib/skills-core.js              # Shared utilities
 ├── .opencode/plugin/               # OpenCode plugin
 └── plugins/workflows/              # Claude Code unchanged
@@ -312,7 +312,7 @@ workflows/
 
 ### ✅ Fully OpenCode-Compatible
 
-All 39 skills in `/skills/` are production-ready for OpenCode.
+All 40 skills in `/skills/` are production-ready for OpenCode.
 
 - Core development workflows
 - Data science workflows

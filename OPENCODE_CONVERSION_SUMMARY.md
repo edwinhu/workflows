@@ -13,7 +13,7 @@ plugins/workflows/skills/          # Claude Code version (38 skills)
 
 ### After (Pure Unified Model) ✅
 ```
-skills/                            # SINGLE SOURCE OF TRUTH (39 skills)
+skills/                            # SINGLE SOURCE OF TRUTH (40 skills)
 ├── dev-implement/SKILL.md
 ├── dev-debug/SKILL.md
 └── [37 more]
@@ -45,12 +45,12 @@ lib/
 
 ## What's in `/skills/` Directory
 
-All 39 skills now live in a single unified directory:
+All 40 skills now live in a single unified directory:
 
-**Development (18):**
+**Development (19):**
 - dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review
 - dev-brainstorm, dev-design, dev-explore, dev-clarify
-- dev-delegate, dev-test, dev-test-linux, dev-test-macos, dev-test-playwright
+- dev-delegate, dev-test, dev-test-chrome, dev-test-linux, dev-test-hammerspoon, dev-test-playwright
 - dev-ralph-loop, dev-tools, using-workflows
 
 **Data Science (8):**

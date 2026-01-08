@@ -232,11 +232,11 @@ Contains common skills used by multiple plugins, including office document forma
 
 ## Repository Structure
 
-The repository uses a unified skill architecture: **one `/skills/` directory for all 39 skills**, served to both Claude Code and OpenCode platforms via appropriate plugins/integrations.
+The repository uses a unified skill architecture: **one `/skills/` directory for all 40 skills**, served to both Claude Code and OpenCode platforms via appropriate plugins/integrations.
 
 ```
 workflows/
-├── skills/                     # UNIFIED: All 39 skills (single source of truth)
+├── skills/                     # UNIFIED: All 40 skills (single source of truth)
 │   ├── dev/SKILL.md
 │   ├── dev-implement/SKILL.md
 │   ├── dev-debug/SKILL.md

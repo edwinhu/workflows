@@ -1,13 +1,14 @@
 ---
-name: dev-test-macos
-description: "macOS E2E testing with Hammerspoon, screencapture, and cliclick."
+name: dev-test-hammerspoon
+description: "macOS desktop E2E testing with Hammerspoon, screencapture, and cliclick."
 ---
 
-**Announce:** "I'm using dev-test-macos for macOS desktop automation."
+**Announce:** "I'm using dev-test-hammerspoon for macOS desktop automation."
 
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)
+- [When to Use Hammerspoon](#when-to-use-hammerspoon)
 - [Hammerspoon Setup](#hammerspoon-setup)
 - [Input Simulation](#input-simulation)
 - [Application Control](#application-control)
@@ -48,6 +49,37 @@ Reply when installed and I'll continue testing.
 ```
 
 **This gate is non-negotiable. Missing tools = full stop.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## When to Use Hammerspoon
+
+**USE Hammerspoon when you need:**
+- macOS native application automation
+- System-wide keyboard shortcuts
+- Window management and positioning
+- Menu item automation
+- Clipboard verification
+- Multi-app workflows on macOS
+
+**DO NOT use Hammerspoon when:**
+- Testing web applications (use Chrome MCP or Playwright)
+- Cross-platform testing needed
+- Linux desktop automation (use dev-test-linux)
+
+**For web testing, use:**
+- `Skill(skill="workflows:dev-test-chrome")` - debugging
+- `Skill(skill="workflows:dev-test-playwright")` - CI/CD
+
+### Rationalization Prevention
+
+| Thought | Reality |
+|---------|---------|
+| "I can use AppleScript instead" | Hammerspoon is more reliable for automation |
+| "I'll test the app manually" | AUTOMATE IT with Hammerspoon |
+| "Web testing tools work for desktop apps" | NO. Use Hammerspoon for native apps |
+| "Accessibility permissions are too hard" | One-time setup. Do it. |
+| "The app is too complex to automate" | Break it into testable steps |
 </EXTREMELY-IMPORTANT>
 
 ## Hammerspoon Setup
@@ -202,6 +234,14 @@ print("Size:", frame.w, frame.h)
 
 ## Screenshots
 
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Visual Verification
+
+**Every E2E test MUST include screenshot evidence.**
+
+After completing a workflow, capture a screenshot to prove success.
+</EXTREMELY-IMPORTANT>
+
 ### screencapture (CLI)
 
 ```bash
@@ -251,6 +291,18 @@ img:saveToFile("/tmp/region.png")
 ```
 
 ## Complete E2E Example
+
+<EXTREMELY-IMPORTANT>
+### E2E Test Structure
+
+Every Hammerspoon E2E test MUST:
+1. **Launch** - Start the application
+2. **Verify launch** - Assert app is running
+3. **Interact** - Perform user actions
+4. **Verify state** - Check expected state (clipboard, window, etc.)
+5. **Screenshot** - Capture visual evidence
+6. **Cleanup** - Close app, restore state
+</EXTREMELY-IMPORTANT>
 
 ```lua
 -- test_workflow.lua
@@ -343,8 +395,36 @@ cliclick w:500
 
 **cliclick is useful for simple scripts but lacks app control - prefer Hammerspoon for complex E2E tests.**
 
+## Output Requirements
+
+**Every test run MUST be documented in LEARNINGS.md:**
+
+```markdown
+## macOS E2E Test: [Description]
+
+**Tool:** Hammerspoon
+
+**Script:**
+```bash
+hs /path/to/test_script.lua
+```
+
+**Output:**
+```
+Launching app...
+App launched: TextEdit
+Clipboard verified: Hello, this is an automated test!
+Screenshot saved to /tmp/test_result.png
+PASS: Workflow completed successfully
+```
+
+**Result:** PASS
+
+**Screenshot:** /tmp/test_result.png
+```
+
 ## Integration
 
-This skill is referenced by `dev-test` for macOS-specific automation.
+This skill is referenced by `dev-test` for macOS desktop automation.
 
 For TDD protocol, see: `Skill(skill="workflows:dev-tdd")`

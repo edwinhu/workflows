@@ -81,7 +81,7 @@ workflows/
 
 ### Single Source of Truth
 
-**All 39 skills live in `/skills/`** and are used by both platforms:
+**All 40 skills live in `/skills/`** and are used by both platforms:
 - **Claude Code** references `/skills/` via `.claude-plugin/`
 - **OpenCode** references `/skills/` via `.opencode/plugin/workflows.js`
 
@@ -155,11 +155,11 @@ OpenCode requires simpler description (no special phrases like "REQUIRED Phase 5
 
 ## Skill Coverage
 
-### All 39 Skills - Unified and Available
+### All 40 Skills - Unified and Available
 
 All skills are now unified in `/skills/` and available to both Claude Code and OpenCode:
 
-**Development (18):** dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review, dev-brainstorm, dev-design, dev-explore, dev-clarify, dev-delegate, dev-test, dev-test-linux, dev-test-macos, dev-test-playwright, dev-ralph-loop, dev-tools, using-workflows
+**Development (19):** dev, dev-implement, dev-debug, dev-tdd, dev-verify, dev-review, dev-brainstorm, dev-design, dev-explore, dev-clarify, dev-delegate, dev-test, dev-test-chrome, dev-test-linux, dev-test-hammerspoon, dev-test-playwright, dev-ralph-loop, dev-tools, using-workflows
 
 **Data Science (8):** ds, ds-implement, ds-brainstorm, ds-delegate, ds-plan, ds-review, ds-verify, ds-tools
 

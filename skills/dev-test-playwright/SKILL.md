@@ -1,13 +1,14 @@
 ---
 name: dev-test-playwright
-description: "Web E2E testing with Playwright MCP for browser automation."
+description: "Playwright MCP browser testing. Headless E2E, cross-browser, CI/CD automation."
 ---
 
-**Announce:** "I'm using dev-test-playwright for web browser automation."
+**Announce:** "I'm using dev-test-playwright for headless browser automation."
 
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)
+- [When to Use Playwright MCP](#when-to-use-playwright-mcp)
 - [MCP Tools Overview](#mcp-tools-overview)
 - [Navigation](#navigation)
 - [Element Interaction](#element-interaction)
@@ -16,7 +17,7 @@ description: "Web E2E testing with Playwright MCP for browser automation."
 - [Advanced Patterns](#advanced-patterns)
 - [Complete E2E Examples](#complete-e2e-examples)
 
-# Web Browser Automation (Playwright MCP)
+# Playwright MCP Browser Automation
 
 <EXTREMELY-IMPORTANT>
 ## Tool Availability Gate
@@ -30,7 +31,7 @@ Check for these MCP functions:
 
 **If MCP tools are not available:**
 ```
-STOP: Cannot proceed with web automation.
+STOP: Cannot proceed with Playwright automation.
 
 Missing: Playwright MCP server
 
@@ -41,6 +42,51 @@ Reply when configured and I'll continue testing.
 ```
 
 **This gate is non-negotiable. Missing tools = full stop.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## When to Use Playwright MCP
+
+**USE Playwright MCP when you need:**
+- Headless browser automation (CI/CD)
+- Cross-browser testing (Chromium, Firefox, WebKit)
+- Test isolation (fresh browser state per test)
+- Standard E2E test suite automation
+- Network mocking/interception
+- Parallel test execution
+
+**DO NOT use Playwright MCP when:**
+- Debugging console messages (use Chrome MCP)
+- Inspecting network requests/responses (use Chrome MCP)
+- Executing custom JavaScript in page (use Chrome MCP)
+- Recording GIFs of interactions (use Chrome MCP)
+- Interactive debugging with real browser (use Chrome MCP)
+
+**For debugging, use:** `Skill(skill="workflows:dev-test-chrome")`
+
+### Rationalization Prevention
+
+| Thought | Reality |
+|---------|---------|
+| "Playwright can do everything" | NO. It cannot read console or network requests. |
+| "I don't need console debugging" | You will. Start with Chrome MCP if unsure. |
+| "I'll add console checks later" | You can't with Playwright. Choose the right tool now. |
+| "Headless mode doesn't matter" | YES IT DOES for CI/CD. |
+| "Chrome MCP works for CI" | NO. It requires visible browser. |
+
+### Capability Comparison
+
+| Capability | Playwright MCP | Chrome MCP |
+|------------|---------------|------------|
+| Navigate/click/type | ✅ | ✅ |
+| Accessibility tree | ✅ `browser_snapshot` | ✅ `read_page` |
+| Screenshots | ✅ | ✅ |
+| **Headless mode** | ✅ | ❌ |
+| **Cross-browser** | ✅ | ❌ |
+| Console messages | ❌ | ✅ |
+| Network requests | ❌ | ✅ |
+| JavaScript execution | ❌ | ✅ |
+| GIF recording | ❌ | ✅ |
 </EXTREMELY-IMPORTANT>
 
 ## MCP Tools Overview
@@ -55,6 +101,7 @@ Reply when configured and I'll continue testing.
 | `browser_hover` | Hover over elements |
 | `browser_wait_for` | Wait for conditions |
 | `browser_take_screenshot` | Visual capture |
+| `browser_press` | Press keys |
 
 ## Navigation
 
@@ -121,6 +168,26 @@ mcp__playwright__browser_press(key="Control+c")
 ```
 
 ## Verification
+
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Verification
+
+**EVERY action must be VERIFIED. Taking action is not enough.**
+
+After clicking, typing, or navigating, you MUST:
+1. Wait for the expected result
+2. Take a snapshot to verify state
+3. Document the verification in LEARNINGS.md
+
+| Action | Verification |
+|--------|--------------|
+| Click submit | `wait_for(text="Success")` + snapshot |
+| Navigate | `wait_for(state="networkidle")` + snapshot |
+| Fill form | Snapshot shows filled values |
+| Login | Snapshot shows dashboard/logged-in state |
+
+**"I clicked it" is not verification. Prove the click worked.**
+</EXTREMELY-IMPORTANT>
 
 ### Snapshot Verification
 
@@ -404,12 +471,25 @@ mcp__playwright__browser_wait_for(
 )
 ```
 
-## Alternative: /chrome Skill
+## Limitations
 
-For direct Chrome browser control without Playwright MCP, use the `/chrome` skill which provides Chrome DevTools Protocol access.
+<EXTREMELY-IMPORTANT>
+### What Playwright MCP Cannot Do
+
+| Need | Why Playwright Fails | Use Instead |
+|------|---------------------|-------------|
+| Read console.log | No console access | Chrome MCP `read_console_messages` |
+| Inspect API responses | No network access | Chrome MCP `read_network_requests` |
+| Execute page JavaScript | No JS execution | Chrome MCP `javascript_tool` |
+| Record GIF | No recording capability | Chrome MCP `gif_creator` |
+
+**If you need debugging capabilities, switch to Chrome MCP.**
+</EXTREMELY-IMPORTANT>
 
 ## Integration
 
-This skill is referenced by `dev-test` for web browser automation.
+This skill is referenced by `dev-test` for Playwright browser automation.
+
+**For debugging (console/network), use:** `Skill(skill="workflows:dev-test-chrome")`
 
 For TDD protocol, see: `Skill(skill="workflows:dev-tdd")`
