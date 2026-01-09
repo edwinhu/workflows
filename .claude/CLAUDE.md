@@ -37,3 +37,52 @@
 - `plugin-dev:agent-creator` - Create autonomous agents for plugins
 - `plugin-dev:plugin-validator` - Validate plugin structure and files
 - `plugin-dev:skill-reviewer` - Review skill quality and best practices
+
+## Version Bump Procedure
+
+When bumping the version (format: `x.y.z` where z is patch, y is minor, x is major):
+
+**Required files to update (3 locations):**
+
+1. **`.claude-plugin/plugin.json`** - Main plugin version
+   ```json
+   {
+     "version": "2.1.3"
+   }
+   ```
+
+2. **`.claude-plugin/marketplace.json`** - Marketplace metadata version
+   ```json
+   {
+     "metadata": {
+       "version": "2.1.3"
+     }
+   }
+   ```
+
+3. **`.claude-plugin/marketplace.json`** - Plugin entry version
+   ```json
+   {
+     "plugins": [
+       {
+         "name": "workflows",
+         "version": "2.1.3"
+       }
+     ]
+   }
+   ```
+
+**Workflow:**
+
+```bash
+# 1. Update all 3 version locations (x.y.z → x.y.z+1)
+# 2. Commit with descriptive message including version
+git commit -m "feat: description of changes (vX.Y.Z)"
+# 3. Push to remote
+git push origin main
+```
+
+**Version increment guidelines:**
+- **Patch (z)**: Bug fixes, documentation, minor improvements
+- **Minor (y)**: New features, new skills/commands/hooks, backward-compatible changes
+- **Major (x)**: Breaking changes, major restructuring
