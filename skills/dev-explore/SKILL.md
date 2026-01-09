@@ -1,6 +1,7 @@
 ---
 name: dev-explore
-description: "REQUIRED Phase 2 of /dev workflow. Launches explore agents to map codebase and returns key files list."
+version: 1.0
+description: "REQUIRED Phase 2 of /dev workflow after dev-brainstorm. This skill should be used when you need to 'explore the codebase', 'map architecture', 'find similar features', 'discover test infrastructure', 'trace execution paths', 'identify code patterns', or understand WHERE code lives and HOW it works before implementation. Launches parallel explore agents and returns prioritized key files list."
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
@@ -199,54 +200,9 @@ Write exploration summary (can be verbal or in `.claude/EXPLORATION.md`):
 
 **Prefer semantic search over text search when exploring code.**
 
-### ast-grep (sg) - Semantic Code Search
+Use ast-grep (`sg`) for precise AST-based pattern matching and ripgrep-all (`rga`) for searching non-code files.
 
-Use `sg` for precise code pattern matching using AST:
-
-```bash
-# Find function calls
-sg -p 'foo($$$)' --lang python
-
-# Find function definitions
-sg -p 'def $FUNC($$$):' --lang python
-
-# Find class definitions
-sg -p 'class $NAME { $$$ }' --lang typescript
-
-# Find struct usage (Go/Rust/C)
-sg -p 'zathura_page_t' --lang c
-
-# Find method calls on specific types
-sg -p '$OBJ.render($$$)' --lang python
-```
-
-**When to use ast-grep vs grep:**
-
-| Use ast-grep | Use grep |
-|--------------|----------|
-| Find function calls/definitions | Find text in comments/strings |
-| Find class/struct usage | Find config values |
-| Trace method invocations | Search non-code files |
-| Refactor patterns | Quick keyword search |
-
-### ripgrep-all (rga) - Search Everything
-
-Use `rga` when you need to search inside:
-- PDFs, Word docs, Excel, PowerPoint
-- Zip/tar archives
-- SQLite databases
-- Images (OCR)
-
-```bash
-# Search inside PDFs
-rga "pattern" docs/
-
-# Search with context
-rga -C 3 "error handling" .
-
-# Limit to specific types
-rga --type pdf "methodology" papers/
-```
+**For detailed patterns and usage, see:** `references/ast-grep-patterns.md`
 
 ## Test Infrastructure Discovery
 

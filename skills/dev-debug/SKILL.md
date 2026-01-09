@@ -1,6 +1,7 @@
 ---
 name: dev-debug
-description: "Systematic debugging with 4-phase methodology. Uses ralph loop for verification-driven bug fixing."
+version: 1.0
+description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic bug investigation and fixing with verification-driven methodology using ralph loops."
 ---
 
 **Announce:** "I'm using dev-debug for systematic bug investigation."

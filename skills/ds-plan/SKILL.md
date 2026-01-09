@@ -1,5 +1,6 @@
 ---
 name: ds-plan
+version: 1.0
 description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
 ---
 

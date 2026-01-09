@@ -1,5 +1,6 @@
 ---
 name: wrds
+version: 1.0
 description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", or needs WRDS PostgreSQL query patterns.
 ---
 

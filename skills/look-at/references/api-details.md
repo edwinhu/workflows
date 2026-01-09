@@ -13,7 +13,7 @@ api_key = os.environ.get("GOOGLE_API_KEY")
 client = genai.Client(api_key=api_key)
 ```
 
-**Get your API key:** https://makersuite.google.com/app/apikey
+**Get your API key:** https://aistudio.google.com/app/apikey
 
 ### File Upload
 

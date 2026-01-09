@@ -13,18 +13,18 @@ The `look-at` skill provides a tool for analyzing files that require interpretat
 ### 1. Install Dependencies
 
 ```bash
-pip install google-generativeai
+pip install google-genai
 ```
 
 Or add to your `pixi.toml`:
 ```toml
 [dependencies]
-google-generativeai = ">=0.3.0"
+google-genai = ">=1.0.0"
 ```
 
 ### 2. Set API Key
 
-Get your API key from https://makersuite.google.com/app/apikey
+Get your API key from https://aistudio.google.com/app/apikey
 
 ```bash
 export GOOGLE_API_KEY="your-api-key-here"
@@ -136,7 +136,7 @@ Error: GOOGLE_API_KEY environment variable not set
 ```bash
 ModuleNotFoundError: No module named 'google'
 ```
-**Solution:** Install with `pip install google-generativeai`
+**Solution:** Install with `pip install google-genai`
 
 ### File Not Found
 ```bash

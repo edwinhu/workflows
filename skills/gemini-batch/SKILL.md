@@ -1,5 +1,6 @@
 ---
 name: gemini-batch
+version: 1.0
 description: This skill should be used when the user asks to "use Gemini Batch API", "process documents at scale", "submit a batch job", "upload files to Gemini", or needs large-scale LLM processing. Includes production gotchas and best practices.
 ---
 

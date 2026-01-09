@@ -1,6 +1,7 @@
 ---
 name: dev-delegate
-description: "Subagent delegation for implementation. Dispatches fresh Task agents with two-stage review."
+version: 1.0
+description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - should only be invoked by dev-ralph-loop inside each implementation iteration. Handles Task agent spawning with TDD enforcement and two-stage review (spec compliance + code quality)."
 ---
 
 **Announce:** "I'm using dev-delegate to dispatch implementation subagents."

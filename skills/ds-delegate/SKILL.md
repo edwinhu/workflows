@@ -1,5 +1,6 @@
 ---
 name: ds-delegate
+version: 1.0
 description: "Subagent delegation for data analysis. Dispatches fresh Task agents with output-first verification."
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: dev-implement
+version: 1.0
 description: "REQUIRED Phase 5 of /dev workflow. Orchestrates per-task ralph loops with delegated TDD implementation."
 ---
 

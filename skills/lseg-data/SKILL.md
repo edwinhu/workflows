@@ -1,5 +1,6 @@
 ---
 name: lseg-data
+version: 1.0
 description: This skill should be used when the user asks to "access LSEG data", "query Refinitiv", "get market data from Refinitiv", "download fundamentals from LSEG", "access ESG scores", "convert RIC to ISIN", or needs the LSEG Data Library Python API.
 ---
 

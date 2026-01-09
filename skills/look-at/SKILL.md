@@ -1,6 +1,7 @@
 ---
 name: look-at
-description: Analyze media files (PDFs, images, diagrams) using Gemini 2.5 Flash Lite for fast, cost-effective interpretation. Extracts specific information beyond raw text. Use when you need analyzed/extracted data rather than literal file contents.
+version: 1.0
+description: "This skill should be used when the user asks to 'look at', 'analyze', 'describe', 'extract from', or 'what's in' media files like PDFs, images, diagrams, screenshots, or charts. Triggers include: 'what does this image show', 'extract the table from this PDF', 'describe this diagram', 'what's in this screenshot', 'analyze this chart', 'read this image', 'get text from this PDF', 'summarize this document', or requests for specific data extraction from visual or document files. Use when analyzed/interpreted content is needed rather than literal file reading (which uses Read tool)."
 ---
 
 # Look At - Multimodal File Analysis
