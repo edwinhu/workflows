@@ -54,16 +54,70 @@ For each task:
 
 ## Step 1: Dispatch Analyst
 
+**Pattern:** Use structured delegation template from `common/templates/delegation-template.md`
+
+Every delegation MUST include:
+1. TASK - What to analyze
+2. EXPECTED OUTCOME - Success criteria
+3. REQUIRED SKILLS - Statistical/ML methods needed
+4. REQUIRED TOOLS - Data access and analysis tools
+5. MUST DO - Output-first verification
+6. MUST NOT DO - Methodology violations
+7. CONTEXT - Data sources and previous work
+8. VERIFICATION - Output requirements
+
 Use this Task invocation (fill in brackets):
 
 ```
 Task(subagent_type="general-purpose", prompt="""
-You are implementing: [TASK NAME]
+# TASK
 
-## Task Description
+Analyze: [TASK NAME]
+
+## EXPECTED OUTCOME
+
+You will have successfully completed this task when:
+- [ ] [Specific analysis output 1]
+- [ ] [Specific analysis output 2]
+- [ ] Output-first verification at each step
+- [ ] Results documented with evidence
+
+## REQUIRED SKILLS
+
+This task requires:
+- [Statistical method]: [Why needed]
+- [Programming language]: Data manipulation
+- Output-first verification (mandatory)
+
+## REQUIRED TOOLS
+
+You will need:
+- Read: Load datasets and existing code
+- Write: Create analysis scripts/notebooks
+- Bash: Run analysis and verify outputs
+
+**Tools denied:** None (full analysis access)
+
+## MUST DO
+
+- [ ] Print state BEFORE each operation (shape, head)
+- [ ] Print state AFTER each operation (nulls, sample)
+- [ ] Verify outputs are reasonable at each step
+- [ ] Document methodology decisions
+
+## MUST NOT DO
+
+- ❌ Skip verification outputs
+- ❌ Proceed with questionable data without flagging
+- ❌ Guess on methodology (ask if unclear)
+- ❌ Claim completion without visible outputs
+
+## CONTEXT
+
+### Task Description
 [PASTE FULL TASK TEXT FROM PLAN.md]
 
-## Context
+### Analysis Context
 - Analysis objective: [from SPEC.md]
 - Data sources: [list with paths]
 - Previous steps: [summary from LEARNINGS.md]

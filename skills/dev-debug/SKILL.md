@@ -223,3 +223,97 @@ If root cause reveals need for significant refactoring:
 3. Use `Skill(skill="workflows:dev")` for the implementation work
 
 Debug finds the problem. The dev workflow implements the solution.
+
+## Failure Recovery Protocol
+
+**Pattern from oh-my-opencode: After 3 consecutive failures, escalate.**
+
+### 3-Failure Trigger
+
+If you attempt 3 hypotheses and ALL fail:
+
+```
+Failure 1: Hypothesis A tested → still broken
+Failure 2: Hypothesis B tested → still broken
+Failure 3: Hypothesis C tested → still broken
+→ TRIGGER RECOVERY PROTOCOL
+```
+
+### Recovery Steps
+
+1. **STOP** all further debugging attempts
+   - No more "let me try one more thing"
+   - No guessing or throwing fixes at the wall
+
+2. **REVERT** to last known working state
+   - `git checkout <last-working-commit>`
+   - Or revert specific files: `git checkout HEAD~N -- file.ts`
+   - Document what was attempted in `.claude/RECOVERY.md`
+
+3. **DOCUMENT** what was attempted
+   - All 3 hypotheses tested
+   - Evidence gathered
+   - Why each failed
+   - What this rules out
+
+4. **CONSULT** with user
+   - "I've tested 3 hypotheses. All failed. Here's what I've ruled out..."
+   - Present evidence from investigation
+   - Request: additional context, different investigation angle, or pair debugging
+
+5. **ASK USER** before proceeding
+   - Option A: Start new ralph loop with different approach
+   - Option B: User provides domain knowledge/context
+   - Option C: Escalate to more experienced reviewer
+   - Option D: Accept this as a blocker and document
+
+**NO EVIDENCE = NOT FIXED** (hard rule)
+
+### Recovery Checklist
+
+Before claiming a bug is fixed after multiple failures:
+
+- [ ] At least 1 hypothesis succeeded (not just "stopped failing")
+- [ ] Regression test exists and PASSES
+- [ ] Full test suite passes (no new failures)
+- [ ] Changes are minimal and targeted
+- [ ] Root cause is understood (not just symptom suppressed)
+
+### Anti-Patterns After Failures
+
+**DON'T:**
+- Keep trying random fixes ("maybe if I change this...")
+- Expand scope to "related" issues
+- Make multiple changes at once
+- Skip the regression test "this time"
+- Claim fix without evidence
+
+**DO:**
+- Stop and document what failed
+- Revert to clean state
+- Consult before continuing
+- Follow recovery protocol exactly
+- Require evidence for completion
+
+### Example Recovery Flow
+
+```
+Attempt 1: "Bug is in parser" → Added logging → Still broken
+Attempt 2: "Bug is in validator" → Fixed validation → Still broken
+Attempt 3: "Bug is in transformer" → Rewrote transform → Still broken
+
+→ RECOVERY PROTOCOL:
+1. STOP (no attempt 4)
+2. REVERT all changes: git checkout HEAD -- src/
+3. DOCUMENT in .claude/RECOVERY.md:
+   - Ruled out: parser, validator, transformer
+   - Evidence: logs show data correct at each stage
+   - Hypothesis: Bug might be in consumer, not producer
+4. ASK USER:
+   "I've ruled out the parser/validator/transformer chain.
+    Logs show data is correct when it leaves our system.
+    Next investigation angle: check the consumer.
+    Should I:
+    A) Start new loop investigating consumer
+    B) Pause for your input on where else to look"
+```

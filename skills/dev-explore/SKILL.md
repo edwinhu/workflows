@@ -50,20 +50,31 @@ After agents return, **main chat MUST read all key files** before proceeding.
 
 ## Process
 
-### 1. Launch 3 Explore Agents in Parallel
+### 1. Launch 3-5 Explore Agents in Parallel + Background
 
 <EXTREMELY-IMPORTANT>
 **Launch ALL agents in a SINGLE message with multiple Task calls.**
 
-This is parallel execution - do NOT wait for one agent before launching another.
+**Use `run_in_background: true` for ALL explore agents.**
+
+This enables true parallel execution:
+- All agents start immediately
+- Main conversation continues without blocking
+- Results collected asynchronously with TaskOutput
+
+Pattern from oh-my-opencode: Default to background + parallel for exploratory work.
 </EXTREMELY-IMPORTANT>
 
-Based on `.claude/SPEC.md`, spawn agents with different focuses:
+Based on `.claude/SPEC.md`, spawn 3-5 agents with different focuses:
 
 ```
-# PARALLEL: All three Task calls in ONE message
+# PARALLEL + BACKGROUND: All Task calls in ONE message
 
-Task(subagent_type="Explore", prompt="""
+Task(
+    subagent_type="Explore",
+    description="Find similar features",
+    run_in_background=true,
+    prompt="""
 Explore the codebase for [FEATURE AREA].
 
 Focus: Find similar features to [SPEC REQUIREMENT]
@@ -82,7 +93,11 @@ Context from SPEC.md:
 [paste relevant requirements]
 """)
 
-Task(subagent_type="Explore", prompt="""
+Task(
+    subagent_type="Explore",
+    description="Map architecture layers",
+    run_in_background=true,
+    prompt="""
 Explore the codebase for [FEATURE AREA].
 
 Focus: Map architecture and abstractions for [AREA]
@@ -101,7 +116,11 @@ Context from SPEC.md:
 [paste relevant requirements]
 """)
 
-Task(subagent_type="Explore", prompt="""
+Task(
+    subagent_type="Explore",
+    description="Find test infrastructure",
+    run_in_background=true,
+    prompt="""
 Explore the codebase for [FEATURE AREA].
 
 Focus: Test infrastructure and patterns
@@ -121,6 +140,33 @@ Context from SPEC.md:
 [paste relevant requirements]
 """)
 ```
+
+**After launching all agents in parallel:**
+- Continue immediately to other work (don't wait)
+- Check agent status with `/tasks` command
+- Collect results when ready with TaskOutput tool
+
+### 1b. Collect Background Results
+
+Once agents complete, collect their findings:
+
+```
+# Check running tasks
+/tasks
+
+# Get results from completed agents
+TaskOutput(task_id="task-abc123", block=true, timeout=30000)
+TaskOutput(task_id="task-def456", block=true, timeout=30000)
+TaskOutput(task_id="task-ghi789", block=true, timeout=30000)
+```
+
+**Stop Conditions** (from oh-my-opencode):
+- Enough context to proceed confidently
+- Same info appearing across multiple agents
+- 2 search iterations yielded nothing new
+- Direct answer found
+
+**DO NOT over-explore. Time is precious.**
 
 ### 2. Consolidate Key Files
 

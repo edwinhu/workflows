@@ -129,3 +129,29 @@ WRDS-provided samples at `~/resources/wrds-code-samples/`:
 - `ResearchApps/CCM2025.ipynb` - Modern CRSP-Compustat merge
 - `ResearchApps/ff3_crspCIZ.ipynb` - Fama-French factor construction
 - `comp/sas/execcomp_ceo_screen.sas` - ExecuComp patterns
+
+## Date Awareness
+
+**Pattern from oh-my-opencode:** When querying historical data, be aware of current date context.
+
+Current date is automatically available via `datetime.now()`. Use this for:
+- Data range validation ("get data for last 5 years")
+- Fiscal year calculations
+- Event study windows
+
+Example:
+```python
+from datetime import datetime, timedelta
+
+# Query last 5 years of data
+end_date = datetime.now()
+start_date = end_date - timedelta(days=5*365)
+
+query = """
+SELECT * FROM comp.funda
+WHERE datadate BETWEEN %s AND %s
+"""
+df = pd.read_sql(query, conn, params=(start_date, end_date))
+```
+
+Force current year awareness in date-dependent queries.

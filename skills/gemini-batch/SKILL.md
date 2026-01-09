@@ -92,3 +92,14 @@ See `references/gotchas.md` for detailed solutions.
 - [Gemini Batch API Guide](https://ai.google.dev/gemini-api/docs/batch)
 - [Google Cloud Storage](https://cloud.google.com/python/docs/reference/storage/latest)
 - [Vertex AI Batch Prediction](https://cloud.google.com/vertex-ai/docs/predictions/batch-predictions)
+
+## Date Awareness
+
+**Pattern from oh-my-opencode:** Gemini API and documentation evolve rapidly.
+
+Current date: Use `datetime.now()` for:
+- API version checking
+- Model availability ("gemini-2.5-flash-lite available as of Dec 2024")
+- Documentation freshness validation
+
+When in doubt about API features or model names, verify against current date and check latest Gemini API docs.

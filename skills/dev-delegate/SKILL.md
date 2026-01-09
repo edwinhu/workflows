@@ -71,16 +71,71 @@ For each task:
 
 ## Step 1: Dispatch Implementer
 
+**Pattern:** Use structured delegation template from `common/templates/delegation-template.md`
+
+Every delegation MUST include:
+1. TASK - What to do
+2. EXPECTED OUTCOME - Success criteria
+3. REQUIRED SKILLS - Why this agent
+4. REQUIRED TOOLS - What they'll need
+5. MUST DO - Non-negotiable constraints
+6. MUST NOT DO - Hard blocks
+7. CONTEXT - Parent session state
+8. VERIFICATION - How to confirm completion
+
 Use this Task invocation (fill in brackets):
 
 ```
 Task(subagent_type="general-purpose", prompt="""
-You are implementing: [TASK NAME]
+# TASK
 
-## Task Description
+Implement: [TASK NAME]
+
+## EXPECTED OUTCOME
+
+You will have successfully completed this task when:
+- [ ] [Success criterion 1]
+- [ ] [Success criterion 2]
+- [ ] Tests pass (TDD enforced)
+- [ ] No regressions in existing tests
+
+## REQUIRED SKILLS
+
+This task requires:
+- [Language/framework]: [Why]
+- Testing: TDD (test-first mandatory)
+- [Other skills as needed]
+
+## REQUIRED TOOLS
+
+You will need:
+- Read: Examine existing code
+- Write: Create new files
+- Edit: Modify existing files
+- Bash: Run tests and verify
+
+**Tools denied:** None (full implementation access)
+
+## MUST DO
+
+- [ ] Write test FIRST (TDD RED-GREEN-REFACTOR)
+- [ ] Run test suite after each change
+- [ ] Follow existing code patterns in [file]
+- [ ] [Other non-negotiable requirements]
+
+## MUST NOT DO
+
+- ❌ Write code before test
+- ❌ Skip test execution
+- ❌ Use `any` / `@ts-ignore` / type suppression
+- ❌ Commit broken code
+
+## CONTEXT
+
+### Task Description
 [PASTE FULL TASK TEXT FROM PLAN.md - don't make subagent read file]
 
-## Context
+### Project Context
 - Project: [brief description]
 - Related files: [list from exploration]
 - Test command: [from SPEC.md]

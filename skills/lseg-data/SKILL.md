@@ -121,3 +121,28 @@ LSEG API samples at `~/resources/lseg-samples/`:
 - `Example.RDPLibrary.Python/` - Core API examples
 - `Examples.DataLibrary.Python.AdvancedUsecases/` - Advanced patterns
 - `Article.DataLibrary.Python.Screener/` - Stock screening
+
+## Date Awareness
+
+**Pattern from oh-my-opencode:** When querying market data, use current date context.
+
+Example for time series:
+```python
+from datetime import datetime, timedelta
+
+# Get recent market data
+end_date = datetime.now()
+start_date = end_date - timedelta(days=365)
+
+# Adjust to exclude recent data (T-1 for market data availability)
+end_date = end_date - timedelta(days=1)
+
+df = ek.get_timeseries(
+    "AAPL.O",
+    fields=['CLOSE'],
+    start_date=start_date.strftime('%Y-%m-%d'),
+    end_date=end_date.strftime('%Y-%m-%d')
+)
+```
+
+Remember: Market data typically has T-1 availability.

@@ -56,7 +56,11 @@ If missing, stop and run `/ds-brainstorm` first.
 
 ### 2. Data Profiling
 
-**MANDATORY profiling steps for each data source:**
+**For multiple data sources:** Profile in parallel using background Task agents.
+
+#### Single Data Source (Direct Profiling)
+
+**MANDATORY profiling steps:**
 
 ```python
 import pandas as pd
@@ -81,6 +85,80 @@ df[col].value_counts()      # Distribution of categories
 df[date_col].min(), df[date_col].max()  # Date range
 df.groupby(date_col).size()              # Records per period
 ```
+
+#### Multiple Data Sources (Parallel Profiling)
+
+<EXTREMELY-IMPORTANT>
+**Pattern from oh-my-opencode: Launch ALL profiling agents in a SINGLE message.**
+
+**Use `run_in_background: true` for parallel execution.**
+
+When profiling 2+ data sources, launch agents in parallel:
+</EXTREMELY-IMPORTANT>
+
+```
+# PARALLEL + BACKGROUND: All Task calls in ONE message
+
+Task(
+    subagent_type="general-purpose",
+    description="Profile dataset 1",
+    run_in_background=true,
+    prompt="""
+Profile this dataset and return a data quality report.
+
+Dataset: /path/to/dataset1.csv
+
+Required checks:
+1. Shape: rows x columns
+2. Data types: df.dtypes
+3. Missing values: df.isnull().sum()
+4. Duplicates: df.duplicated().sum()
+5. Summary statistics: df.describe()
+6. Unique value counts for categorical columns
+7. Date range if time series
+8. Memory usage: df.info()
+
+Output format:
+- Markdown table with column summary
+- List of data quality issues found
+- Recommendations for cleaning
+
+Tools denied: Write, Edit, NotebookEdit (read-only profiling)
+""")
+
+Task(
+    subagent_type="general-purpose",
+    description="Profile dataset 2",
+    run_in_background=true,
+    prompt="""
+[Same template for dataset 2]
+""")
+
+Task(
+    subagent_type="general-purpose",
+    description="Profile dataset 3",
+    run_in_background=true,
+    prompt="""
+[Same template for dataset 3]
+""")
+```
+
+**After launching agents:**
+- Continue to other work (don't wait)
+- Check status with `/tasks`
+- Collect results with TaskOutput when ready
+
+```
+# Collect profiling results
+TaskOutput(task_id="task-abc123", block=true, timeout=30000)
+TaskOutput(task_id="task-def456", block=true, timeout=30000)
+TaskOutput(task_id="task-ghi789", block=true, timeout=30000)
+```
+
+**Benefits:**
+- 3x faster profiling for 3 datasets
+- Each agent focused on single source
+- Results consolidated in main chat
 
 ### 3. Identify Data Quality Issues
 
