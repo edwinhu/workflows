@@ -141,7 +141,7 @@ After user chooses, write `.claude/PLAN.md`:
 
 > **For Claude:** Each task = one ralph loop. Complete task N before starting task N+1.
 >
-> Pattern: `/ralph-wiggum:ralph-loop "Task N: [name]" --max-iterations 10 --completion-promise "TASKN_DONE"`
+> Pattern: `/ralph-loop "Task N: [name]" --max-iterations 10 --completion-promise "TASKN_DONE"`
 
 | Task | Ralph Loop | Core Test (MUST EXECUTE CODE) | Verify Command |
 |------|------------|-------------------------------|----------------|

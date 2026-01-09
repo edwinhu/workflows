@@ -71,7 +71,7 @@ Unlike implementation (per-task loops), debugging uses **ONE loop per bug**:
 
 ```
 1. Start ralph loop for the bug
-   /ralph-wiggum:ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
+   /ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
 
 2. Inside loop: spawn Task agent for investigation/fix
    → Skill(skill="workflows:dev-delegate")
@@ -89,7 +89,7 @@ Unlike implementation (per-task loops), debugging uses **ONE loop per bug**:
 **IMPORTANT:** Avoid parentheses `()` in the prompt.
 
 ```
-/ralph-wiggum:ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
+/ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
 ```
 
 ### Step 2: Spawn Task Agent

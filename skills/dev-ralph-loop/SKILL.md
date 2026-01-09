@@ -51,13 +51,13 @@ Use dashes or brackets instead.
 ### For Implementation Tasks
 
 ```
-/ralph-wiggum:ralph-loop "Task N: [TASK NAME]" --max-iterations 10 --completion-promise "TASKN_DONE"
+/ralph-loop "Task N: [TASK NAME]" --max-iterations 10 --completion-promise "TASKN_DONE"
 ```
 
 ### For Debug Tasks
 
 ```
-/ralph-wiggum:ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
+/ralph-loop "Debug: [SYMPTOM]" --max-iterations 15 --completion-promise "FIXED"
 ```
 
 ### Parameters
@@ -132,7 +132,7 @@ When you output the promise, the ralph loop ends. Then:
 
 ```
 ## Task 1: Create types
-/ralph-wiggum:ralph-loop "Task 1: Create types" --max-iterations 5 --completion-promise "TASK1_DONE"
+/ralph-loop "Task 1: Create types" --max-iterations 5 --completion-promise "TASK1_DONE"
 
 [Spawn Task agent → implements types]
 [Verify: tsc --noEmit passes]
@@ -140,7 +140,7 @@ When you output the promise, the ralph loop ends. Then:
 <promise>TASK1_DONE</promise>
 
 ## Task 2: Add service method
-/ralph-wiggum:ralph-loop "Task 2: Add service method" --max-iterations 10 --completion-promise "TASK2_DONE"
+/ralph-loop "Task 2: Add service method" --max-iterations 10 --completion-promise "TASK2_DONE"
 
 [Spawn Task agent → implements method]
 [Verify: tests fail → iterate]
@@ -150,7 +150,7 @@ When you output the promise, the ralph loop ends. Then:
 <promise>TASK2_DONE</promise>
 
 ## Task 3: Add route handler
-/ralph-wiggum:ralph-loop "Task 3: Add route handler" --max-iterations 10 --completion-promise "TASK3_DONE"
+/ralph-loop "Task 3: Add route handler" --max-iterations 10 --completion-promise "TASK3_DONE"
 
 [Spawn Task agent → implements route]
 [Verify: integration test passes]
