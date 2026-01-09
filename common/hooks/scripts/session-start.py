@@ -286,9 +286,146 @@ For templates: `Skill(skill="workflows:dev-delegate")` or `Skill(skill="workflow
 """
 
 
+def inject_project_context() -> str:
+    """
+    Inject project context (README.md, AGENTS.md).
+
+    Returns context message or empty string if no files found.
+    """
+    # Add context_collector to path
+    plugin_root = get_plugin_root()
+    context_path = plugin_root.parent / 'common' / 'hooks' / 'scripts'
+    sys.path.insert(0, str(context_path))
+
+    try:
+        from context_collector import collect_context_files, format_context_message
+    except ImportError:
+        # Module not available yet
+        return ""
+
+    # Find project root
+    cwd = Path.cwd()
+    project_root = cwd
+    while project_root != project_root.parent:
+        if (project_root / '.git').exists() or (project_root / '.claude').exists():
+            break
+        project_root = project_root.parent
+
+    # Collect context files
+    files = collect_context_files(project_root)
+
+    if not files:
+        return ""
+
+    # Format message
+    return format_context_message(files)
+
+
+def check_boulder_state(session_id: str) -> str:
+    """
+    Check for active boulder state and return continuation message.
+
+    Returns empty string if no boulder or if plan complete.
+    """
+    # Add boulder module to path
+    plugin_root = get_plugin_root()
+    boulder_path = plugin_root.parent / 'common' / 'hooks' / 'scripts'
+    sys.path.insert(0, str(boulder_path))
+
+    try:
+        from boulder import (
+            read_boulder_state,
+            append_session_id,
+            update_boulder_progress,
+            is_plan_complete,
+            clear_boulder_state,
+            find_project_plan,
+            auto_create_boulder_for_plan
+        )
+    except ImportError:
+        # Boulder module not available yet (during development)
+        return ""
+
+    # Check for active boulder
+    boulder = read_boulder_state()
+
+    # If no boulder exists, check if PLAN.md exists and auto-create
+    if not boulder:
+        plan_path = find_project_plan(str(Path.cwd()))
+        if plan_path:
+            # Auto-create boulder for existing plan
+            boulder = auto_create_boulder_for_plan(plan_path)
+            if boulder:
+                append_session_id(session_id)
+                return f"""
+[BOULDER STATE CREATED]
+
+Auto-tracking plan: {boulder['plan_name']}
+Progress: {boulder['progress']['completed']}/{boulder['progress']['total']} tasks complete
+
+This plan will automatically continue in future sessions.
+"""
+
+        return ""
+
+    active_plan = boulder.get('active_plan', '')
+    if not active_plan or not Path(active_plan).exists():
+        # Plan file deleted - warn user
+        return f"""
+[BOULDER STATE WARNING]
+
+Boulder state references missing plan: {active_plan}
+
+The plan file has been deleted or moved. Clear boulder state with:
+- Delete ~/.claude/.boulder.json manually, or
+- Complete the plan tasks to auto-clear
+"""
+
+    # Update session ID
+    append_session_id(session_id)
+
+    # Update progress from current plan file
+    update_boulder_progress(active_plan)
+
+    # Reload state to get updated progress
+    boulder = read_boulder_state()
+    if not boulder:
+        return ""
+
+    # Check if complete
+    if is_plan_complete(active_plan):
+        clear_boulder_state()
+        return f"""
+[BOULDER COMPLETE]
+
+Plan '{boulder['plan_name']}' is complete! All tasks checked off.
+Boulder state has been cleared.
+"""
+
+    # Inject continuation message
+    progress = boulder.get('progress', {})
+    total = progress.get('total', 0)
+    completed = progress.get('completed', 0)
+    plan_rel_path = Path(active_plan).relative_to(boulder['project_root'])
+
+    return f"""
+[BOULDER STATE DETECTED]
+
+Active plan: {boulder['plan_name']}
+Progress: {completed}/{total} tasks complete
+Plan location: {plan_rel_path}
+
+Continuing from where you left off.
+"""
+
+
 def main():
-    # Read and discard stdin for consistency with hook best practices
-    sys.stdin.read()
+    # Read hook input
+    try:
+        hook_input = json.loads(sys.stdin.read())
+        session_id = hook_input.get('sessionId', 'unknown')
+    except (json.JSONDecodeError, KeyError):
+        session_id = 'unknown'
 
     # Create session marker directory (used by sandbox-check.py)
     create_session_marker_dir()
@@ -311,12 +448,20 @@ def main():
     active_workflow = get_active_workflow()
     delegation_section = get_delegation_rules() if active_workflow else ""
 
+    # Check boulder state for plan continuation
+    boulder_section = check_boulder_state(session_id)
+
+    # Inject project context (README.md, AGENTS.md)
+    context_section = inject_project_context()
+
     # Output the context injection
     # Pattern inspired by obra/superpowers - inject HOW to use skills, not the full catalog
+    combined_context = env_section + "\n" + boulder_section + "\n" + context_section + "\n" + delegation_section + "\n" + using_skills
+
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": env_section + "\n" + delegation_section + "\n" + using_skills
+            "additionalContext": combined_context
         }
     }))
 

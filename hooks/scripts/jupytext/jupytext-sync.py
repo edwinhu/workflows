@@ -25,6 +25,10 @@ import re
 from pathlib import Path
 from typing import Optional, Tuple
 
+# Add common utilities to path
+sys.path.insert(0, str(Path(__file__).parent.parent / 'common'))
+from markdown_validators import check_unescaped_dollars, format_dollar_issues
+
 
 def is_jupytext_file(file_path: str) -> bool:
     """Check if file is jupytext-managed by looking for markers."""
@@ -264,7 +268,60 @@ def run_linters(file_path: str, kernel: str) -> list[str]:
     return []
 
 
-def format_message(file_path: str, synced: bool, modified: bool, lint_issues: list[str]) -> str:
+def check_markdown_cells(file_path: str) -> list[tuple[int, str]]:
+    """Check markdown cells in jupytext file for unescaped dollar signs.
+
+    Jupytext percent format uses # %% [markdown] for markdown cells.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except Exception:
+        return []
+
+    issues = []
+    in_markdown_cell = False
+    markdown_content = []
+    markdown_start_line = 0
+
+    for i, line in enumerate(lines, 1):
+        # Check for markdown cell marker
+        if re.match(r'^\s*#\s*%%\s*\[markdown\]', line):
+            in_markdown_cell = True
+            markdown_start_line = i
+            markdown_content = []
+            continue
+
+        # Check for next cell marker (end of current markdown cell)
+        if re.match(r'^\s*#\s*%%', line) and in_markdown_cell:
+            # Process accumulated markdown content
+            if markdown_content:
+                full_md = '\n'.join(markdown_content)
+                md_issues = check_unescaped_dollars(full_md, "markdown cell")
+                if md_issues:
+                    # Report first line of the markdown cell
+                    issues.append((markdown_start_line, f"# %% [markdown] (contains unescaped $)"))
+            in_markdown_cell = False
+            markdown_content = []
+            continue
+
+        # Accumulate markdown cell content
+        if in_markdown_cell:
+            # Remove leading # from markdown lines
+            stripped = re.sub(r'^\s*#\s?', '', line)
+            markdown_content.append(stripped)
+
+    # Check last cell if file ends with markdown
+    if in_markdown_cell and markdown_content:
+        full_md = '\n'.join(markdown_content)
+        md_issues = check_unescaped_dollars(full_md, "markdown cell")
+        if md_issues:
+            issues.append((markdown_start_line, f"# %% [markdown] (contains unescaped $)"))
+
+    return issues
+
+
+def format_message(file_path: str, synced: bool, modified: bool, lint_issues: list[str], md_issues: list[tuple[int, str]]) -> str:
     """Format hook output message."""
     filename = os.path.basename(file_path)
     lines = []
@@ -282,6 +339,10 @@ def format_message(file_path: str, synced: bool, modified: bool, lint_issues: li
             lines.append(f"  • {issue}")
         if len(lint_issues) > 5:
             lines.append(f"  ... and {len(lint_issues) - 5} more")
+
+    if md_issues:
+        md_message = format_dollar_issues(md_issues, filename, max_display=3)
+        lines.append(f"\n{md_message}")
 
     return '\n'.join(lines) if lines else None
 
@@ -314,8 +375,11 @@ def main():
     kernel = detect_kernel(file_path)
     lint_issues = run_linters(file_path, kernel) if sync_success else []
 
+    # Check markdown cells for unescaped dollar signs
+    md_issues = check_markdown_cells(file_path)
+
     # Format and output message
-    message = format_message(file_path, sync_success, files_modified, lint_issues)
+    message = format_message(file_path, sync_success, files_modified, lint_issues, md_issues)
 
     if message:
         result = {

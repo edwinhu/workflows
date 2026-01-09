@@ -15,6 +15,11 @@ import sys
 import os
 import subprocess
 import re
+from pathlib import Path
+
+# Add common utilities to path
+sys.path.insert(0, str(Path(__file__).parent.parent / 'common'))
+from markdown_validators import check_unescaped_dollars, format_dollar_issues
 
 
 def is_marimo_notebook(file_path: str) -> bool:
@@ -58,6 +63,40 @@ def run_marimo_check(file_path: str) -> tuple[bool, str]:
         return False, "uvx command not found. Is uv installed? See: https://docs.astral.sh/uv/"
     except Exception as e:
         return False, f"Error running marimo check: {type(e).__name__}: {e}"
+
+
+def check_markdown_cells(file_path: str) -> list[tuple[int, str]]:
+    """Check markdown cells in marimo notebook for unescaped dollar signs.
+
+    Marimo uses mo.md("...") or mo.md(f"...") for markdown cells.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception:
+        return []
+
+    issues = []
+
+    # Find mo.md(...) calls using regex
+    # Pattern matches: mo.md("..."), mo.md('...'), mo.md(f"..."), mo.md(f'...'), mo.md("""..."""), etc.
+    # This is simplified - handles common cases
+    md_pattern = r'mo\.md\s*\(\s*[rf]?["\']([^"\']*?)["\']'
+
+    lines = content.split('\n')
+    for i, line in enumerate(lines, 1):
+        # Find mo.md calls in this line
+        matches = re.finditer(md_pattern, line)
+        for match in matches:
+            md_content = match.group(1)
+            # Check this markdown content for unescaped dollars
+            md_issues = check_unescaped_dollars(md_content, "markdown cell")
+            if md_issues:
+                # Report the line in the source file, not the markdown content line
+                issues.append((i, line.rstrip()))
+                break  # Only report once per line
+
+    return issues
 
 
 def format_marimo_errors(output: str) -> str:
@@ -106,27 +145,31 @@ def main():
     # Run marimo check
     success, output = run_marimo_check(file_path)
 
-    if success:
-        # Optional: Could show success message, but staying quiet is less intrusive
-        # result = {
-        #     "hookSpecificOutput": {
-        #         "hookEventName": "PostToolUse",
-        #         "message": f"✓ marimo check passed: {os.path.basename(file_path)}"
-        #     }
-        # }
-        # print(json.dumps(result))
-        sys.exit(0)
-    else:
-        # Report issues as warning (non-blocking)
+    # Check markdown cells for unescaped dollar signs
+    md_issues = check_markdown_cells(file_path)
+
+    # Collect all issues
+    messages = []
+
+    if not success:
         errors = format_marimo_errors(output)
+        messages.append(f"⚠️ marimo check found issues in {os.path.basename(file_path)}:\n\n{errors}\n\nFix these before running the notebook.")
+
+    if md_issues:
+        md_message = format_dollar_issues(md_issues, os.path.basename(file_path), max_display=3)
+        messages.append(md_message)
+
+    # Report all issues if any found
+    if messages:
         result = {
             "hookSpecificOutput": {
                 "hookEventName": "PostToolUse",
-                "message": f"⚠️ marimo check found issues in {os.path.basename(file_path)}:\n\n{errors}\n\nFix these before running the notebook."
+                "message": "\n\n".join(messages)
             }
         }
         print(json.dumps(result))
-        sys.exit(0)
+
+    sys.exit(0)
 
 
 if __name__ == '__main__':

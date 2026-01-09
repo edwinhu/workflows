@@ -51,6 +51,7 @@ def _(df, pl):
 - Never modify cell decorators or function signatures
 - Variables cannot be redefined across cells
 - All used variables must be returned from their defining cell
+- **Markdown cells: Always wrap `$` in backticks** - `mo.md("Cost: `$50`")` not `mo.md("Cost: $50")`
 
 ## Core CLI Commands
 

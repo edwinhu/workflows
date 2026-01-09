@@ -38,6 +38,8 @@ input_file = "data.csv"
 
 Cell markers: `# %%` for code, `# %% [markdown]` for markdown.
 
+**Markdown dollar signs:** Always wrap `$` in backticks to prevent LaTeX rendering - `# Cost: `$50`` not `# Cost: $50`
+
 ### Project Configuration
 
 Create `jupytext.toml` in project root:
