@@ -70,11 +70,11 @@ def find_last_skill_invocation(
 
     Matches patterns like:
     - /skill-name:sub-skill "prompt" --arg value
-    - /ralph-wiggum:ralph-loop "Task 1" --max-iterations 5 --completion-promise "TASK1_DONE"
+    - /ralph-loop "Task 1" --max-iterations 5 --completion-promise "TASK1_DONE"
 
     Args:
         transcript: Transcript content
-        skill_pattern: Regex pattern for skill name (e.g., r'ralph-wiggum:ralph-loop')
+        skill_pattern: Regex pattern for skill name (e.g., r'ralph-loop')
 
     Returns:
         Last matching skill invocation line, None if not found

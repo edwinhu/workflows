@@ -31,7 +31,7 @@ These plugins extend Claude Code capabilities for development workflows. Enable 
 
 | Plugin | Description | Enable Command |
 |--------|-------------|----------------|
-| `ralph-wiggum` | Self-referential iteration loops | Already enabled |
+| `ralph-loop` | Self-referential iteration loops | Already enabled |
 | `hookify` | Create custom hooks from conversation patterns | Already enabled |
 
 ## When to Enable

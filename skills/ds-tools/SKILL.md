@@ -30,7 +30,7 @@ These plugins extend Claude Code capabilities for data science workflows. Enable
 
 | Plugin | Description | Enable Command |
 |--------|-------------|----------------|
-| `ralph-wiggum` | Self-referential iteration loops | Already enabled |
+| `ralph-loop` | Self-referential iteration loops | Already enabled |
 | `hookify` | Create custom hooks from conversation patterns | Already enabled |
 
 ## Data Access Skills (Built-in)

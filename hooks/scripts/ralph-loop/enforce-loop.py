@@ -52,7 +52,7 @@ def main():
     # Check if we're in a ralph loop
     ralph_invocation = find_last_skill_invocation(
         transcript,
-        r'ralph-wiggum:ralph-loop'
+        r'ralph-loop'
     )
 
     if not ralph_invocation:
