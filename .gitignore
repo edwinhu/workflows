@@ -24,3 +24,4 @@ Thumbs.db
 
 # Local config
 *.local.md
+.claude/settings.json
