@@ -34,6 +34,36 @@ def find_project_root() -> Path:
     return Path.cwd()
 
 
+def read_learnings_truncated(project_root: Path, max_lines: int = 500) -> str:
+    """
+    Read LEARNINGS.md, truncating to last N lines if too large.
+
+    Returns empty string if file doesn't exist or is unreadable.
+    """
+    learnings_path = project_root / '.claude' / 'LEARNINGS.md'
+
+    if not learnings_path.exists():
+        return ""
+
+    try:
+        content = learnings_path.read_text(encoding='utf-8')
+        lines = content.split('\n')
+
+        if len(lines) <= max_lines:
+            return content
+
+        # Take last N lines (most recent attempts)
+        truncated_lines = lines[-max_lines:]
+        truncated = '\n'.join(truncated_lines)
+
+        # Add header noting truncation
+        header = f"[Showing last {max_lines} lines of {len(lines)} total]\n\n"
+        return header + truncated
+
+    except Exception:
+        return ""
+
+
 def main():
     try:
         hook_input = json.load(sys.stdin)
@@ -102,10 +132,11 @@ Boulder state has been cleared.
         # If can't make relative, use absolute
         plan_path_relative = active_plan
 
-    result = {
-        "hookSpecificOutput": {
-            "hookEventName": "SessionStart",
-            "message": f"""
+    # Read LEARNINGS.md if it exists
+    learnings_content = read_learnings_truncated(project_root)
+
+    # Build continuation message
+    continuation_msg = f"""
 [BOULDER STATE DETECTED]
 
 Active plan: {boulder['plan_name']}
@@ -114,6 +145,22 @@ Plan location: {plan_path_relative}
 
 Continuing from where you left off.
 """
+
+    # Add learnings if available
+    if learnings_content:
+        continuation_msg += f"""
+
+---
+
+## Previous Attempts (LEARNINGS.md)
+
+{learnings_content}
+"""
+
+    result = {
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "message": continuation_msg
         }
     }
 
