@@ -56,6 +56,43 @@ These thoughts mean STOP—you're about to skip E2E:
 | "Manual testing is faster" | Manual testing is LYING about coverage. |
 | "It's just a small change" | Small changes break UIs. E2E proves they don't. |
 | "User can verify" | NO. Automated verification or it didn't happen. |
+| **"Log checking is my E2E test"** | **Log checking is observability, not E2E. Verify actual outputs.** |
+| **"Screenshots are too hard to capture"** | **Hard to verify = hard to debug in production. Automate it.** |
+
+### Fake E2E Detection - STOP
+
+**If your "E2E test" does any of these, it's NOT E2E:**
+
+| Pattern | Why It's Fake | Real E2E Alternative |
+|---------|---------------|----------------------|
+| `grep "success" logs.txt` | Only proves code ran | Verify actual output file/UI/API response |
+| `assert mock.called` | Tests mock, not real system | Use real integration, verify real data |
+| `cat output.txt \| wc -l` | File exists ≠ correct content | Read file, assert exact expected content |
+| "I ran it manually" | No automation = no evidence | Capture manual test as automated test |
+| Check log for icon name | Observability, not verification | Screenshot + visual diff of rendered icon |
+| Exit code 0 | Process succeeded ≠ output correct | Verify the actual output data |
+
+**The test:** If removing the actual implementation still passes your "E2E test", it's fake.
+
+**Example of fake E2E that caught nothing:**
+```python
+# FAKE E2E - only checks logs
+def test_icon_theme_change():
+    run_command("set-theme papirus")
+    logs = read_logs()
+    assert "papirus" in logs  # ❌ FAKE - only proves code ran
+    # BUG: 89% of icons weren't changed, test still passed!
+```
+
+**Real E2E that would have caught the bug:**
+```python
+# REAL E2E - verifies actual output
+def test_icon_theme_change():
+    run_command("set-theme papirus")
+    screenshot = capture_desktop()
+    assert visual_diff(screenshot, "expected_papirus.png") < threshold  # ✅ REAL
+    # This would have shown 89% of icons were wrong
+```
 
 ### Red Flags - STOP If You Think:
 

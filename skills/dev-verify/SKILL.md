@@ -101,6 +101,21 @@ Before making ANY status claim:
 | "Feature complete" | ❌ Insufficient | ✅ User flow simulation |
 | "No regressions" | ❌ Insufficient | ✅ E2E suite passes |
 
+### Fake E2E Patterns - STOP
+
+**These are NOT E2E tests. They are observability, not verification.**
+
+| ❌ Fake E2E | ✅ Real E2E |
+|-------------|-------------|
+| "Log shows function was called" | "Screenshot shows correct UI rendered" |
+| "grep papirus in logs" | "grim screenshot + visual diff confirms icon changed" |
+| "Console output contains 'success'" | "Playwright assertion: element.textContent === 'Success'" |
+| "File was created" | "E2E test opens file and verifies contents" |
+| "Process exited 0" | "Functional test verifies actual output matches spec" |
+| "Mock returned expected value" | "Real integration returns expected value" |
+
+**Red Flag:** If you catch yourself thinking "logs prove it works" - STOP. Logs prove code executed, not that it produced correct results. E2E means verifying the actual output users see.
+
 ### Rationalization Prevention (E2E)
 
 | Thought | Reality |
@@ -110,6 +125,9 @@ Before making ANY status claim:
 | "No time for E2E" | No time to fix production bugs? Write E2E. |
 | "Feature is internal" | Does it affect user output? Then E2E. |
 | "I manually tested" | Manual = no evidence. Automate it. |
+| **"Log checking verifies it works"** | **Log checking only verifies code executed, not results. Not E2E.** |
+| **"E2E with screenshots is too complex"** | **If too complex to verify, feature isn't done. Complexity = bugs hiding.** |
+| **"Implementation is done, testing is just verification"** | **Testing IS implementation. Untested code is unfinished code.** |
 
 ### The E2E Gate Function
 

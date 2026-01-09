@@ -190,6 +190,25 @@ These thoughts mean STOP—you're about to skip the protocol:
 | "No need for regression test" | Every fix needs a regression test. Period. |
 | "It works now" | "Works now" ≠ "fixed correctly". Run full suite. |
 | "I'll add the test later" | You won't. Write it BEFORE the fix. |
+| **"Log checking proves fix works"** | **Logs prove code ran, not that output is correct. Verify actual results.** |
+| **"It stopped failing"** | **Stopped failing ≠ fixed. Could be hiding the symptom. Need E2E.** |
+| **"The error is gone"** | **No error ≠ correct behavior. Verify expected output.** |
+| **"Regression test is too complex"** | **If too complex to test, too complex to know it's fixed.** |
+
+### Fake Fix Verification - STOP
+
+**These do NOT prove a bug is fixed:**
+
+| ❌ Fake Verification | ✅ Real Verification |
+|----------------------|----------------------|
+| "Error message is gone" | "Regression test passes + output matches spec" |
+| "Logs show correct path taken" | "E2E test verifies user-visible behavior" |
+| "No exception thrown" | "Test asserts expected data returned" |
+| "Process exits 0" | "Functional test confirms correct side effects" |
+| "Changed one line, seems fine" | "Regression test failed before, passes after" |
+| "Can't reproduce anymore" | "Regression test reproduces it, fix makes it pass" |
+
+**Red Flag:** If you're claiming "fixed" based on absence of errors rather than presence of correct behavior - STOP. That's symptom suppression, not bug fixing.
 
 ### Red Flags - STOP If You Think:
 
