@@ -14,8 +14,8 @@ try:
 
     cleanup_session()
 
-    # Output success confirmation with required event name
-    print(json.dumps({"hookSpecificOutput": {"hookEventName": "Stop", "status": "cleaned"}}))
+    # Stop hooks don't need hookSpecificOutput, just signal success
+    print(json.dumps({}))
 except Exception as e:
     print(f"Error cleaning up session: {e}", file=sys.stderr)
     sys.exit(1)

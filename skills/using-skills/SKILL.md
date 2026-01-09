@@ -22,12 +22,13 @@ NO  → Proceed normally
 
 ## Skill Triggers
 
-| User Intent | Skill | Trigger Words |
-|-------------|-------|---------------|
+| User Intent | Skill/Tool | Trigger Words |
+|-------------|------------|---------------|
 | Bug/fix | `/dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
 | Feature/implement | `/dev` | add, implement, create, build, feature |
 | Data analysis | `/ds` | analyze, data, model, dataset, statistics |
 | Writing | `/writing` | write, draft, document, essay, paper |
+| **Media analysis** | **look-at** | describe image, analyze PDF, what's in this, screenshot, diagram |
 
 ## Red Flags - You're Skipping the Skill Check
 
@@ -40,6 +41,7 @@ If you think any of these, STOP:
 | "I know exactly what to do" | The skill provides structure you'll miss |
 | "It's just one file" | Scope doesn't exempt you from process |
 | "Let me quickly check..." | "Quickly" means skipping the workflow |
+| **"I can read this image directly"** | **Use look-at to save context tokens** |
 
 ## Bug Reports - Mandatory Response
 
@@ -75,3 +77,95 @@ Skill(skill="ds")
 ```
 
 Or start ralph loop first for implementation/debug phases.
+
+## IRON LAW: Multimodal File Analysis
+
+**NO READING IMAGES/PDFS WITH Read TOOL. USE look-at INSTEAD.**
+
+### The Rule
+
+```
+User asks about image/PDF/media content
+    ↓
+Is it a media file requiring interpretation?
+    ↓
+YES → Use look-at skill (bash call to look_at.py)
+NO  → Use Read tool for source code/text
+```
+
+### When to Use look-at
+
+**ALWAYS use look-at for:**
+- `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic` - Images
+- `.pdf` - PDFs requiring content extraction
+- `.mp4`, `.mov`, `.avi`, `.webm` - Videos
+- `.mp3`, `.wav`, `.aac`, `.ogg` - Audio
+- Any file where you need to UNDERSTAND content, not just see raw bytes
+
+**Pattern:**
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "/absolute/path/to/file" \
+    --goal "What specific information to extract"
+```
+
+### When NOT to Use look-at
+
+**Use Read tool instead for:**
+- Source code (`.py`, `.js`, `.rs`, etc.)
+- Plain text files (`.txt`, `.md`, `.json`, etc.)
+- Config files that need exact formatting preserved
+- Any file you might need to edit afterward
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I can read images directly" | Read tool shows you the image, but wastes context tokens | Use look-at to extract ONLY what's needed |
+| "It's just one small image" | Still uses 1000+ tokens in conversation context | look-at returns 50-200 tokens of extracted info |
+| "I need to see the whole thing" | You can see it, user can't see what you see | Use look-at with specific goal |
+| "look-at might miss details" | You can always fall back to Read if needed | Start with look-at, escalate if insufficient |
+| "The user didn't ask for look-at" | look-at is FOR YOU, not the user | Use the right tool for the job |
+
+### Red Flags - STOP If You Catch Yourself:
+
+- **"Let me read this image..."** → NO. Use look-at.
+- **"I'll use Read to see what's in the PDF..."** → NO. Use look-at.
+- **"Just quickly checking this screenshot..."** → NO. Use look-at.
+- **Passing image path to Read tool** → STOP. Use look-at instead.
+
+### Cost & Context Benefits
+
+- **Read tool on image:** ~1,000-5,000 context tokens
+- **look-at extraction:** ~50-200 output tokens
+- **Savings:** 95%+ token reduction
+- **Speed:** Faster responses, less context bloat
+
+### Example Usage
+
+```bash
+# Extract specific information
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "$HOME/Downloads/screenshot.png" \
+    --goal "List all buttons and their labels"
+
+# Analyze diagram
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "$HOME/Documents/architecture.png" \
+    --goal "Explain the data flow between components"
+
+# Extract from PDF
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "$HOME/Downloads/report.pdf" \
+    --goal "Extract the executive summary section"
+```
+
+### Enforcement
+
+**If you use Read on an image/PDF when look-at should be used, you are:**
+1. Wasting context tokens unnecessarily
+2. Making the conversation slower
+3. Ignoring available optimization tools
+4. Violating the tool selection protocol
+
+**Check yourself:** Before calling Read, ask "Is this a media file?" If yes, use look-at.

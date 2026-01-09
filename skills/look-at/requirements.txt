@@ -1,0 +1,4 @@
+# Python dependencies for look-at skill
+
+# Google Generative AI SDK for Gemini API (new unified API)
+google-genai>=1.0.0
