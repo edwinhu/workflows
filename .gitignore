@@ -25,3 +25,8 @@ Thumbs.db
 # Local config
 *.local.md
 .claude/settings.json
+
+# Development workspace files (for developing workflows itself)
+.claude/PLAN.md
+.claude/SPEC.md
+.claude/LEARNINGS.md
