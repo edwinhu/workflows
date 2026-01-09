@@ -32,6 +32,45 @@ Before exploring data or creating tasks, you MUST have:
 **If `.claude/SPEC.md` doesn't exist, run /ds-brainstorm first.**
 </EXTREMELY-IMPORTANT>
 
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "Data looks clean, profiling unnecessary" | Data is never clean | PROFILE to discover issues |
+| "I can profile as I go" | You'll miss systemic issues | PROFILE comprehensively NOW |
+| "Quick .head() is enough" | Head hides tail problems | RUN full profiling checklist |
+| "Missing values won't affect analysis" | They always do | DOCUMENT and plan handling |
+| "I'll handle data issues during analysis" | Issues will derail analysis | FIX data issues FIRST |
+| "User didn't mention data quality" | They assume you'll check | QUALITY check is YOUR job |
+| "Profiling takes too long" | Skipping it costs days later | INVEST time now |
+
+### Honesty Framing
+
+**Creating an analysis plan without profiling the data is LYING about understanding the data.**
+
+You cannot plan analysis steps without knowing:
+- Data shape and types
+- Missing value patterns
+- Data quality issues
+- Cleaning requirements
+
+Profiling costs minutes. Wrong plan costs hours of rework and incorrect results.
+
+### No Pause After Completion
+
+After writing `.claude/PLAN.md`, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:ds-implement")
+```
+
+DO NOT:
+- Ask "should I proceed with implementation?"
+- Summarize the plan
+- Wait for user confirmation (they approved SPEC already)
+- Write status updates
+
+The workflow phases are SEQUENTIAL. Complete plan → immediately start implement.
+
 ## What Plan Does
 
 | DO | DON'T |

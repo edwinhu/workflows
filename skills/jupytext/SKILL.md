@@ -5,6 +5,7 @@ description: This skill should be used when the user asks to "convert notebook t
 
 ## Contents
 
+- [Execution Enforcement](#execution-enforcement)
 - [Core Concepts](#core-concepts)
 - [Multi-Kernel Data Sharing](#multi-kernel-data-sharing)
 - [Workflow Integration](#workflow-integration)
@@ -17,6 +18,90 @@ description: This skill should be used when the user asks to "convert notebook t
 # Jupytext Skill
 
 Jupytext converts Jupyter notebooks to/from text formats (.py, .R, .md), enabling version control and multi-kernel workflows.
+
+## Execution Enforcement
+
+### IRON LAW: NO EXECUTION CLAIM WITHOUT OUTPUT VERIFICATION
+
+Before claiming ANY jupytext script executed successfully, you MUST:
+1. **EXECUTE** using the papermill pipeline: `jupytext --to notebook --output - script.py | papermill - output.ipynb`
+2. **CHECK** for execution errors (papermill exit code and stderr)
+3. **VERIFY** output.ipynb exists and is non-empty
+4. **INSPECT** outputs using notebook-debug skill verification
+5. **CLAIM** success only after verification passes
+
+This is not negotiable. Claiming "script works" without executing through papermill is LYING to the user.
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I converted to ipynb, so it works" | Conversion ≠ execution | EXECUTE with papermill, not just convert |
+| "The .py file looks correct" | Syntax correctness ≠ runtime correctness | RUN and CHECK outputs |
+| "I'll let the user execute it" | You're passing broken code | VERIFY before claiming completion |
+| "Just a conversion task, no execution needed" | User expects working notebook | EXECUTE to confirm it works |
+| "I can use `jupyter nbconvert --execute`" | Papermill has better error handling | USE the recommended papermill pipeline |
+| "I'll save the intermediate ipynb first" | Creates clutter | USE the recommended pipeline (no intermediate files) |
+| "Exit code 0 means success" | Papermill can succeed with errors in cells | CHECK output.ipynb for tracebacks |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me just convert and return the ipynb" → NO. EXECUTE with papermill first.
+- "The .py file is simple, can't have errors" → NO. Simple code fails too.
+- "I'll execute without papermill" → NO. Use the recommended pipeline.
+- "Conversion completed, so job done" → NO. Execution verification required.
+
+### Execution Verification Checklist
+
+Before EVERY "notebook works" claim:
+
+**Conversion:**
+- [ ] Correct format specified (py:percent recommended)
+- [ ] Conversion command succeeded
+- [ ] No syntax errors in conversion
+
+**Execution (MANDATORY):**
+- [ ] Used recommended papermill pipeline: `jupytext --to notebook --output - script.py | papermill - output.ipynb`
+- [ ] Papermill exit code is 0
+- [ ] No errors in stderr
+- [ ] output.ipynb file created
+- [ ] output.ipynb is non-empty (>100 bytes)
+
+**Output Verification:**
+- [ ] Used notebook-debug skill's verification checklist
+- [ ] No tracebacks in any cell
+- [ ] All cells have execution_count (not null)
+- [ ] Expected outputs present (plots, dataframes, metrics)
+- [ ] No unexpected warnings or errors
+
+**Multi-Kernel Projects (if applicable):**
+- [ ] Correct kernel specified in header
+- [ ] Interchange files created (parquet/DTA)
+- [ ] Downstream notebooks can read interchange files
+
+**Only after ALL checks pass:**
+- [ ] Claim "notebook executed successfully"
+
+### Gate Function: Jupytext Execution
+
+Follow this sequence for EVERY jupytext task involving execution:
+
+```
+1. CONVERT  → jupytext --to notebook --output -
+2. EXECUTE  → papermill - output.ipynb (with params if needed)
+3. CHECK    → Verify exit code and stderr
+4. INSPECT  → Use notebook-debug verification
+5. VERIFY   → Outputs match expectations
+6. CLAIM    → "Notebook works" only after all gates passed
+```
+
+**NEVER skip execution gate.** Converting without executing proves nothing about correctness.
+
+### Honesty Framing
+
+**Claiming a jupytext script works without executing it through papermill is LYING.**
+
+You are not just converting formats - you are verifying that the notebook executes correctly. The user expects a working notebook, not just syntactically valid code.
 
 ## Core Concepts
 

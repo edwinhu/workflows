@@ -18,6 +18,56 @@ Invoke this skill for:
 **For general writing**: Use `/writing` skill (Strunk & White)
 **For economics/finance**: Use `/writing-econ` skill (McCloskey)
 
+## Enforcement
+
+### IRON LAW #1: NO CLAIM WITHOUT CONFRONTING COUNTERARGUMENTS
+
+If your draft makes a prescriptive claim but doesn't address obvious objections, DELETE the section and START OVER. Legal scholarship requires anticipating and answering counterarguments, not ignoring them.
+
+### IRON LAW #2: NO SECONDARY SOURCE CITATIONS FOR PRIMARY SOURCES
+
+If you cite a case/statute/historical fact via an intermediate source (law review, treatise), DELETE the citation and READ THE ORIGINAL. Even Supreme Court opinions misstate precedents.
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "This article discusses..." | Bores reader instantly | START with concrete problem or controversy |
+| "Table-of-contents paragraph helps" | Readers skip it | INTEGRATE roadmap into intro |
+| "Background section comes first" | Not before establishing relevance | SHOW problem first, background second |
+| "Case-by-case summary is thorough" | Tedious and unhelpful | SYNTHESIZE: "Courts hold X except Y" |
+| "Counterargument would hurt my claim" | Ignoring it hurts worse | CONFRONT and refine claim |
+| "Treatise summary is good enough" | Treatises have errors | READ original cases |
+| "Arguably" makes my point | Acknowledges controversy without arguing | MAKE the argument explicitly |
+| "This metaphor is clear" | Metaphors hide incomplete logic | UNPACK: what's the actual argument? |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me write standard intro" → NO. Find concrete problem first.
+- "I'll address objections later" → NO. Confront counterarguments NOW.
+- "This treatise explains the case" → NO. Read the original case.
+- "Background section needs more" → NO. Only include what proves claim.
+
+### Delete & Restart Pattern
+
+**When to delete and restart:**
+
+1. **Intro starts with "This article discusses"** → Delete, start with concrete problem
+2. **Background exceeds proof section** → Delete excessive background
+3. **Claim made without addressing objections** → Delete section, add counterargument confrontation
+4. **Citation chain to primary source** → Delete citation, read and cite original
+5. **Unpacked metaphor used as argument** → Delete, write actual logical argument
+
+**How to restart:**
+
+```
+Old: "This article discusses privacy concerns in Fourth Amendment doctrine..."
+New: "When police drones photograph backyards, does the Fourth Amendment require a warrant?
+      Courts disagree, but three features of aerial surveillance suggest yes."
+```
+
+Start with CONCRETE QUESTION that matters, not abstract topic description.
+
 ## Law Review Article Structure
 
 ### Introduction

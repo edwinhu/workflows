@@ -37,6 +37,41 @@ Use this knowledge to ask **informed questions** about:
 **If you catch yourself about to design without resolving ambiguities, STOP.**
 </EXTREMELY-IMPORTANT>
 
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The pattern choice is obvious" | Multiple patterns exist for a reason | ASK which to follow |
+| "I can decide edge cases myself" | Your assumptions don't match user expectations | ASK for clarification |
+| "This is a small detail" | Small details cause big bugs | ASK about edge cases now |
+| "I'll handle integration points during implementation" | Wrong integration breaks everything | CLARIFY integration NOW |
+| "The exploration gave me enough info" | Code tells you HOW, not WHAT SHOULD happen | ASK for requirements, not just patterns |
+| "I can make a reasonable assumption" | Reasonable != correct | ASK, don't assume |
+| "Asking too many questions annoys users" | Building wrong thing annoys users more | ASK clarifying questions |
+
+### Honesty Framing
+
+**Assuming user requirements without asking is LYING about what they want.**
+
+You explored the codebase and found patterns. But patterns show HOW things work, not WHAT the user wants. Clarification bridges this gap.
+
+Asking costs minutes. Wrong assumptions cost hours of rework.
+
+### No Pause After Completion
+
+After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-design")
+```
+
+DO NOT:
+- Summarize what you learned
+- Ask "should I proceed to design?"
+- Wait for user confirmation
+- Write status updates
+
+The workflow phases are SEQUENTIAL. Complete clarify → immediately start design.
+
 ## What Clarify Does
 
 | DO | DON'T |

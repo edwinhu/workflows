@@ -36,6 +36,41 @@ After agents return, **main chat MUST read all key files** before proceeding.
 **If you catch yourself about to move on without reading the key files, STOP.**
 </EXTREMELY-IMPORTANT>
 
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I can design without reading all key files" | You'll miss critical patterns | READ every file on the list |
+| "The file names tell me enough" | File names hide implementation details | READ the actual code |
+| "I'll read them if I need more info" | You won't know what you're missing | READ all key files NOW |
+| "Exploration summary is enough" | Summaries miss crucial nuances | READ original files |
+| "Reading files will take too long" | Skipping them wastes days later | READ now, save time later |
+| "I already understand the architecture" | Your assumptions are incomplete | READ to confirm understanding |
+| "I can grep for specific details later" | You'll miss context and relationships | READ to understand connections |
+
+### Honesty Framing
+
+**Returning key files without reading them is LYING about understanding the codebase.**
+
+Exploration agents find the files. Main chat MUST read them to understand the codebase. Skipping reads means proceeding with incomplete knowledge, which guarantees wrong implementation choices.
+
+Reading costs minutes. Wrong architecture costs days of rework.
+
+### No Pause After Completion
+
+After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-clarify")
+```
+
+DO NOT:
+- Summarize what you learned
+- Ask "should I proceed to clarify?"
+- Wait for user confirmation
+- Write status updates
+
+The workflow phases are SEQUENTIAL. Complete explore → immediately start clarify.
+
 ## What Explore Does
 
 | DO | DON'T |

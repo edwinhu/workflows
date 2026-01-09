@@ -8,6 +8,38 @@ description: "This skill should be used when the user asks to 'look at', 'analyz
 
 Fast, cost-effective file analysis using Google's Gemini 2.5 Flash Lite model for PDFs, images, diagrams, and other media files.
 
+## Tool Selection Enforcement
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I can read images directly with Read" | Read shows you the image but wastes thousands of context tokens | USE look_at for analysis |
+| "I'll use Read for this PDF" | Read extracts raw text, loses structure and visual information | USE look_at for PDFs with tables/charts/diagrams |
+| "Just a quick glance at the file" | Quick glances still consume full context tokens | USE look_at for targeted extraction |
+| "I need exact text, so Read is required" | Gemini's extraction is accurate for most use cases | USE look_at first, Read only if extraction insufficient |
+| "look_at adds complexity" | It saves context and is faster | USE look_at for media files |
+| "The file is small" | Small files still waste context if uninterpreted | SIZE doesn't determine tool choice, CONTENT TYPE does |
+| "I'll process it myself" | Wastes your reasoning on trivial extraction | DELEGATE to look_at |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me Read this image/PDF/screenshot" → NO. Use look_at for media files.
+- "I can see the image directly" → YES, but you're wasting context. Use look_at.
+- "Just need to glance at this diagram" → NO. Glancing still costs context. Use look_at.
+- "The PDF is text-based, so Read is fine" → NO. If it has structure/tables/charts, use look_at.
+
+### Cost & Context Benefits
+
+| Scenario | Read Tool | look_at Tool |
+|----------|-----------|--------------|
+| **PDF with table** | Extracts raw text (~1000 tokens), loses table structure | Extracts table as structured data (~100 tokens) |
+| **Screenshot** | Loads entire image (~500 tokens), you interpret | Describes content (~50 tokens) |
+| **Diagram** | Shows image (~800 tokens), you analyze | Explains architecture (~100 tokens) |
+| **Multi-page PDF** | All pages loaded (~5000 tokens) | Extracts specific sections (~200 tokens) |
+
+**look_at saves 80-95% of context tokens by extracting only relevant information.**
+
 ## When to Use
 
 **Use look_at when you need:**

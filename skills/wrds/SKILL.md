@@ -6,6 +6,7 @@ description: This skill should be used when the user asks to "query WRDS", "acce
 
 ## Contents
 
+- [Query Enforcement](#query-enforcement)
 - [Quick Reference: Table Names](#quick-reference-table-names)
 - [Connection](#connection)
 - [Critical Filters](#critical-filters)
@@ -15,6 +16,69 @@ description: This skill should be used when the user asks to "query WRDS", "acce
 # WRDS Data Access
 
 WRDS (Wharton Research Data Services) provides academic research data via PostgreSQL at `wrds-pgdata.wharton.upenn.edu:9737`.
+
+## Query Enforcement
+
+### IRON LAW: NO QUERY WITHOUT FILTER VALIDATION FIRST
+
+Before executing ANY WRDS query, you MUST:
+1. **IDENTIFY** what filters are required for this dataset
+2. **VALIDATE** the query includes those filters
+3. **VERIFY** parameterized queries (never string formatting)
+4. **EXECUTE** the query
+5. **INSPECT** a sample of results before claiming success
+
+This is not negotiable. Claiming query success without sample inspection is LYING to the user about data quality.
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I'll add filters later" | You'll forget and pull bad data | Add filters NOW, before execution |
+| "User didn't specify filters" | Standard filters are ALWAYS required | Apply Critical Filters section defaults |
+| "Just a quick test query" | Test queries with bad filters teach bad patterns | Use production filters even for tests |
+| "I'll let the user filter in pandas" | Pulling millions of unnecessary rows wastes time/memory | Filter at database level FIRST |
+| "The query worked, so it's correct" | Query success ≠ data quality | INSPECT sample for invalid records |
+| "I can use f-strings for simple queries" | SQL injection risk + wrong type handling | ALWAYS use parameterized queries |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me run this query quickly to see what's there" → NO. Check Critical Filters section first.
+- "I'll just pull everything and filter later" → NO. Database-level filtering is mandatory.
+- "The table name is obvious from the request" → NO. Check Quick Reference section for exact names.
+- "I can inspect the data after the user sees it" → NO. Sample inspection BEFORE claiming success.
+
+### Query Validation Checklist
+
+Before EVERY query execution:
+
+**For Compustat queries (comp.funda, comp.fundq):**
+- [ ] Includes `indfmt = 'INDL'`
+- [ ] Includes `datafmt = 'STD'`
+- [ ] Includes `popsrc = 'D'`
+- [ ] Includes `consol = 'C'`
+- [ ] Uses parameterized queries for variables
+- [ ] Date range is explicitly specified
+
+**For CRSP v2 queries (crsp.dsf_v2, crsp.msf_v2):**
+- [ ] Post-query filter: `sharetype == 'NS'`
+- [ ] Post-query filter: `securitytype == 'EQTY'`
+- [ ] Post-query filter: `securitysubtype == 'COM'`
+- [ ] Post-query filter: `usincflg == 'Y'`
+- [ ] Post-query filter: `issuertype.isin(['ACOR', 'CORP'])`
+- [ ] Uses parameterized queries
+
+**For Form 4 queries (tr_insiders.table1):**
+- [ ] Transaction type filter specified (acqdisp)
+- [ ] Transaction codes specified (trancode)
+- [ ] Date range is explicitly specified
+- [ ] Uses parameterized queries
+
+**For ALL queries:**
+- [ ] Sample inspection with `.head()` or `.sample()` BEFORE claiming success
+- [ ] Row count verification (is result size reasonable?)
+- [ ] NULL value check on critical columns
+- [ ] Date range validation (does min/max match expectations?)
 
 ## Quick Reference: Table Names
 

@@ -33,6 +33,39 @@ Approaches come later (in /dev-design) after exploring the codebase.
 **If you catch yourself about to explore the codebase before asking questions, STOP.**
 </EXTREMELY-IMPORTANT>
 
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The requirements seem obvious" | Your assumptions are often wrong | ASK questions to confirm |
+| "Let me just look at the code to understand" | Code tells you HOW, not WHY | ASK what user wants first |
+| "I can gather requirements while exploring" | You'll get distracted and miss key questions | QUESTIONS FIRST, exploration later |
+| "User already explained everything" | Users always leave out critical details | ASK clarifying questions anyway |
+| "I'll ask if I need more info" | You won't know what you don't know | ASK questions NOW, not later |
+| "Quick peek at the code won't hurt" | Codebases bias your thinking | STAY IGNORANT until requirements clear |
+| "I can propose approaches based on description" | You haven't seen the codebase yet | WAIT for dev-design phase |
+
+### Honesty Framing
+
+**Guessing user requirements is LYING about what they want.**
+
+Asking questions is cheap. Building the wrong thing is expensive. Every minute spent clarifying requirements saves hours of wasted implementation.
+
+### No Pause After Completion
+
+After writing `.claude/SPEC.md` and completing brainstorm, IMMEDIATELY invoke:
+```
+Skill(skill="workflows:dev-explore")
+```
+
+DO NOT:
+- Summarize what you learned
+- Ask "should I proceed?"
+- Wait for user confirmation
+- Write status updates
+
+The workflow phases are SEQUENTIAL. Complete brainstorm → immediately start explore.
+
 ## What Brainstorm Does
 
 | DO | DON'T |

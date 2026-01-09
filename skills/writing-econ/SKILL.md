@@ -18,6 +18,60 @@ Invoke this skill for:
 **For general writing**: Use `/writing` skill (Strunk & White)
 **For legal writing**: Use `/writing-legal` skill (Volokh)
 
+## Enforcement
+
+### IRON LAW #1: NO BOILERPLATE WITHOUT DELETE & RESTART
+
+If you write ANY of these, DELETE the draft and START OVER:
+- "This paper discusses..."
+- Table-of-contents paragraph
+- "As we shall see"
+- "It is interesting to note that..."
+- "The rest of this paper is organized as follows..."
+
+These signal you haven't found your hook. Start fresh with a compelling finding.
+
+### IRON LAW #2: NO ELEGANT VARIATION
+
+One concept = One word. If you catch yourself varying terms ("industrialization" / "development" / "growth") for the same concept, you are confusing the reader. Pick ONE term and use it consistently.
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "But journals use boilerplate" | Bad journals do | HOOK reader with finding |
+| "Elegant variation shows vocabulary" | Shows you don't know what you mean | USE same word for same thing |
+| "Readers need roadmap paragraph" | They skip it | DELETE table-of-contents para |
+| "This terminology is standard in field" | Doesn't make it good | USE concrete Anglo-Saxon words |
+| "Need to sound academic" | Sounds pompous instead | WRITE like human being |
+| "Passive voice sounds objective" | Sounds evasive | USE active voice |
+| "Technical writing must be formal" | Technical ≠ turgid | BE clear AND technical |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me write a standard introduction" → NO. Find your hook first.
+- "I'll improve this later" → NO. Fix boilerplate NOW or restart.
+- "This varies the language nicely" → NO. Consistency > variation.
+- "Readers expect this phrase" → NO. Expectations can be wrong.
+
+### Delete & Restart Pattern
+
+**When to delete and restart:**
+
+1. **Boilerplate detected in first paragraph** → Delete entire intro, write finding-first
+2. **Three different terms for same concept** → Delete section, pick ONE term
+3. **Table-of-contents paragraph exists** → Delete it, no replacement needed
+4. **Metric conversions every time** → Delete all but first, trust reader
+
+**How to restart:**
+
+```
+Old: "This paper discusses the relationship between X and Y..."
+New: "Trade liberalization increased wages by 15% for skilled workers."
+```
+
+Restart with THE FINDING, not with throat-clearing.
+
 ## Core Principles
 
 ### Speak to One Reader

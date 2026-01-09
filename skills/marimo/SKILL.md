@@ -5,6 +5,7 @@ description: This skill should be used when the user asks to "use marimo", "crea
 
 ## Contents
 
+- [Editing and Verification Enforcement](#editing-and-verification-enforcement)
 - [Key Concepts](#key-concepts)
 - [Cell Structure](#cell-structure)
 - [Editing Rules](#editing-rules)
@@ -18,6 +19,102 @@ description: This skill should be used when the user asks to "use marimo", "crea
 # Marimo Reactive Notebooks
 
 Marimo is a reactive Python notebook where cells form a DAG and auto-execute on dependency changes. Notebooks are stored as pure `.py` files.
+
+## Editing and Verification Enforcement
+
+### IRON LAW #1: NEVER MODIFY CELL DECORATORS OR SIGNATURES
+
+You MUST only edit code INSIDE `@app.cell` function bodies. This is not negotiable.
+
+**NEVER modify:**
+- Cell decorators (`@app.cell`)
+- Function signatures (`def _(deps):`)
+- Return statements structure (trailing commas required)
+
+**ALWAYS verify:**
+- All used variables are in function parameters
+- All created variables are in return statement
+- Trailing comma for single returns: `return var,`
+
+### IRON LAW #2: NO EXECUTION CLAIM WITHOUT OUTPUT VERIFICATION
+
+Before claiming ANY marimo notebook works, you MUST:
+1. **VALIDATE** syntax and structure: `marimo check notebook.py`
+2. **EXECUTE** with outputs: `marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs`
+3. **VERIFY** using notebook-debug skill's verification checklist
+4. **CLAIM** success only after verification passes
+
+This is not negotiable. Claiming "notebook works" without executing and inspecting outputs is LYING to the user.
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "marimo check passed, so it works" | Syntax check ≠ runtime correctness | EXECUTE with --include-outputs and inspect |
+| "Just a small change, can't break anything" | Reactivity means small changes propagate everywhere | VERIFY with full execution |
+| "I'll let marimo handle the dependency tracking" | You still need to verify correct behavior | CHECK outputs match expectations |
+| "The function signature looks right" | Wrong deps/returns break reactivity silently | VALIDATE all vars are in params AND returns |
+| "I can modify the function signature" | Breaks marimo's dependency detection | ONLY edit inside function bodies |
+| "Variables can be used without returning them" | Will cause NameError in dependent cells | RETURN all created variables |
+| "I can skip the trailing comma for single returns" | Python treats `return var` as returning the value, breaks unpacking | USE `return var,` for single returns |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me add this variable to the function signature" → NO. Marimo manages signatures.
+- "I'll just run marimo check and call it done" → NO. Execute with outputs required.
+- "The code looks correct" → NO. Marimo's reactivity must be verified at runtime.
+- "I can redefine this variable in another cell" → NO. One variable = one cell.
+
+### Editing Checklist
+
+Before EVERY marimo edit:
+
+**Structure Validation:**
+- [ ] Only editing code INSIDE `@app.cell` function bodies
+- [ ] NOT modifying decorators or signatures
+- [ ] All used variables are in function parameters
+- [ ] All created variables are in return statement
+- [ ] Trailing comma used for single returns
+- [ ] No variable redefinitions across cells
+
+**Syntax Validation:**
+- [ ] `marimo check notebook.py` executed
+- [ ] No syntax errors reported
+- [ ] No undefined variable warnings
+- [ ] No redefinition warnings
+
+**Runtime Verification:**
+- [ ] Executed with `marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs`
+- [ ] Export succeeded (exit code 0)
+- [ ] Output ipynb exists and is non-empty
+- [ ] Used notebook-debug verification checklist
+- [ ] No tracebacks in any cell
+- [ ] All cells executed (execution_count not null)
+- [ ] Outputs match expectations
+
+**Only after ALL checks pass:**
+- [ ] Claim "notebook works"
+
+### Gate Function: Marimo Verification
+
+Follow this sequence for EVERY marimo task:
+
+```
+1. EDIT     → Modify code inside @app.cell function bodies only
+2. CHECK    → marimo check notebook.py
+3. EXECUTE  → marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
+4. INSPECT  → Use notebook-debug verification
+5. VERIFY   → Outputs match expectations
+6. CLAIM    → "Notebook works" only after all gates passed
+```
+
+**NEVER skip verification gates.** Marimo's reactivity means changes propagate unpredictably.
+
+### Honesty Framing
+
+**Claiming a marimo notebook works without executing it with --include-outputs and inspecting the results is LYING.**
+
+Syntax checks and code inspection prove nothing about reactive execution correctness. The user expects a working notebook where all cells execute correctly with proper dependency tracking.
 
 ## Key Concepts
 

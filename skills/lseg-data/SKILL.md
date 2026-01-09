@@ -6,6 +6,7 @@ description: This skill should be used when the user asks to "access LSEG data",
 
 ## Contents
 
+- [Query Enforcement](#query-enforcement)
 - [Quick Start](#quick-start)
 - [Authentication](#authentication)
 - [Core APIs](#core-apis)
@@ -17,6 +18,71 @@ description: This skill should be used when the user asks to "access LSEG data",
 # LSEG Data Library
 
 Access financial data from LSEG (London Stock Exchange Group), formerly Refinitiv, via the `lseg.data` Python library.
+
+## Query Enforcement
+
+### IRON LAW: NO DATA CLAIM WITHOUT SAMPLE INSPECTION
+
+Before claiming ANY LSEG query succeeded, you MUST:
+1. **VALIDATE** field names exist (check prefixes: TR., CF_)
+2. **VALIDATE** RIC symbology is correct (.O, .N, .L, .T)
+3. **EXECUTE** the query
+4. **INSPECT** sample rows with `.head()` or `.sample()`
+5. **VERIFY** critical columns are not NULL
+6. **VERIFY** date range matches expectations
+7. **CLAIM** success only after all checks pass
+
+This is not negotiable. Claiming data retrieval without inspecting results is LYING to the user about data quality.
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The query returned data, so it worked" | Returned data ≠ correct data | INSPECT for NULLs, wrong dates, invalid values |
+| "User gave me the RIC" | Users often use wrong suffixes | VERIFY symbology against RIC Symbology section |
+| "I'll let pandas handle missing data" | You'll propagate bad data downstream | CHECK for NULLs BEFORE returning |
+| "Field names look right" | Typos are common (TR.EPS vs TR.Eps) | VALIDATE field names in documentation first |
+| "Just a quick test" | Test queries teach bad habits | Full validation even for tests |
+| "I can check the data later" | You won't | Inspection is MANDATORY before claiming success |
+| "Rate limits don't matter for small queries" | Small queries add up | CHECK rate limits section, use batching |
+
+### Red Flags - STOP Immediately If You Think:
+
+- "Let me run this and see what happens" → NO. Validate field names and RICs FIRST.
+- "The API will error if something is wrong" → NO. API returns empty results, not errors.
+- "I'll just return the dataframe to the user" → NO. Inspect sample BEFORE returning.
+- "Market data is always up-to-date" → NO. Check Date Awareness section (T-1 lag).
+
+### Data Validation Checklist
+
+Before EVERY data retrieval claim:
+
+**For `ld.get_data()` (fundamentals/ESG):**
+- [ ] Field names use correct prefix (TR. for Refinitiv)
+- [ ] RIC symbology verified (correct exchange suffix)
+- [ ] Result inspection: `.head()` or `.sample()` executed
+- [ ] NULL check on critical fields (e.g., revenue, EPS)
+- [ ] Row count verification (is result size reasonable?)
+- [ ] Date context verified (fiscal periods, as-of dates)
+
+**For `ld.get_history()` (time series):**
+- [ ] Field names are valid (OPEN, HIGH, LOW, CLOSE, VOLUME, or CF_ prefixes)
+- [ ] Start/end dates specified explicitly
+- [ ] Date range adjusted for T-1 availability (market data lag)
+- [ ] Result inspection: check first and last rows
+- [ ] NULL check on OHLCV fields
+- [ ] Date continuity check (gaps in trading days expected, but not in date sequence)
+
+**For `symbol_conversion.Definition()` (mapping):**
+- [ ] Input identifier type specified correctly
+- [ ] Result inspection: verify mapped values exist
+- [ ] NULL check (some securities may not have all identifiers)
+
+**For ALL queries:**
+- [ ] Rate limits considered (batch if >10k data points)
+- [ ] Session management: `open_session()` at start, `close_session()` at end
+- [ ] Error handling: try/except for network failures
+- [ ] Sample inspection BEFORE claiming data is ready
 
 ## Quick Start
 
