@@ -15,11 +15,16 @@ This is non-negotiable. Even a 1% chance a skill applies requires checking.
 ```
 User message arrives
     ↓
-Check: Does this match any skill trigger?
+Is user explicitly invoking a skill (e.g., "use /dev")?
+    ↓
+YES → Skill loads automatically, follow its instructions
+NO  → Check: Does this match any skill trigger?
     ↓
 YES → Invoke skill FIRST, then follow its protocol
 NO  → Proceed normally
 ```
+
+**IMPORTANT:** If a skill is explicitly invoked (user says "use /dev" or "/dev"), DO NOT re-invoke it. The skill is already loaded - just follow its instructions.
 
 ## Skill Triggers
 

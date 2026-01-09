@@ -1,12 +1,13 @@
 ---
 name: ds
-description: "REQUIRED for data analysis. Orchestrates 5-phase workflow with output-first verification."
+description: "Orchestrates 5-phase data analysis workflow with output-first verification."
 ---
 
-## Activation
+## Start Here
 
-First, activate the ds workflow and sandbox:
+The /ds skill is now loaded. Follow this 2-step process:
 
+**Step 1:** Activate the ds workflow:
 ```bash
 python3 -c "
 import sys
@@ -18,14 +19,12 @@ print('✓ DS workflow activated')
 "
 ```
 
-**Announce:** "I'm using the ds workflow. Starting with Phase 1: brainstorming."
-
-**REQUIRED NEXT STEP:** After activation, IMMEDIATELY invoke:
+**Step 2:** Chain immediately to Phase 1:
 ```
 Skill(skill="workflows:ds-brainstorm")
 ```
 
-Do NOT ask "What data would you like to analyze?" - the brainstorm phase handles requirements gathering.
+**Do NOT** re-invoke this skill or ask "What data would you like to analyze?" - just proceed to brainstorm.
 
 ---
 
