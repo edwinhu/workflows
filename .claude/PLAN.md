@@ -62,14 +62,14 @@
 
 **Functions**:
 ```python
-def get_boulder_path() -> Path:
-    """Return ~/.claude/.boulder.json path"""
+def get_boulder_path(project_root: Path) -> Path:
+    """Return $PROJECT/.claude/.boulder.json path"""
 
-def read_boulder_state() -> dict | None:
-    """Read boulder.json, return None if missing/invalid"""
+def read_boulder_state(project_root: Path) -> dict | None:
+    """Read project's boulder.json, return None if missing/invalid"""
 
-def write_boulder_state(state: dict) -> bool:
-    """Write boulder.json atomically"""
+def write_boulder_state(project_root: Path, state: dict) -> bool:
+    """Write project's boulder.json atomically"""
 
 def create_boulder_state(
     plan_path: str,
@@ -78,17 +78,17 @@ def create_boulder_state(
 ) -> dict:
     """Create new boulder state dictionary"""
 
-def append_session_id(session_id: str) -> bool:
-    """Add session ID to boulder.session_ids"""
+def append_session_id(project_root: Path, session_id: str) -> bool:
+    """Add session ID to project's boulder.session_ids"""
 
 def count_plan_checkboxes(plan_path: str) -> tuple[int, int]:
     """Return (total, completed) checkbox counts"""
 
-def update_boulder_progress(plan_path: str) -> bool:
-    """Recount checkboxes, update boulder progress"""
+def update_boulder_progress(project_root: Path, plan_path: str) -> bool:
+    """Recount checkboxes, update project's boulder progress"""
 
-def clear_boulder_state() -> bool:
-    """Delete boulder.json"""
+def clear_boulder_state(project_root: Path) -> bool:
+    """Delete project's boulder.json"""
 
 def is_plan_complete(plan_path: str) -> bool:
     """Check if all checkboxes are checked"""
@@ -99,6 +99,8 @@ def is_plan_complete(plan_path: str) -> bool:
 - Atomic writes: write to temp file, then rename
 - Graceful error handling: log but don't crash
 - Type hints for all functions
+- **Per-project design**: Boulder lives at `$PROJECT/.claude/.boulder.json`, not global
+- Each project can have its own active plan without conflicts
 
 #### 1.2 Modify `hooks/scripts/common/session-start.py`
 
@@ -130,8 +132,15 @@ def main():
     hook_input = json.load(sys.stdin)
     session_id = hook_input.get('sessionId', 'unknown')
 
-    # Check for active boulder
-    boulder = read_boulder_state()
+    # Detect project root
+    project_root = Path.cwd()
+    while project_root != project_root.parent:
+        if (project_root / '.git').exists() or (project_root / '.claude').exists():
+            break
+        project_root = project_root.parent
+
+    # Check for active boulder in this project
+    boulder = read_boulder_state(project_root)
     if not boulder:
         sys.exit(0)  # No active plan
 
@@ -154,14 +163,14 @@ Clear boulder state with: /boulder-clear
         sys.exit(0)
 
     # Update session ID
-    append_session_id(session_id)
+    append_session_id(project_root, session_id)
 
     # Update progress
-    update_boulder_progress(active_plan)
+    update_boulder_progress(project_root, active_plan)
 
     # Check if complete
     if is_plan_complete(active_plan):
-        clear_boulder_state()
+        clear_boulder_state(project_root)
         result = {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
@@ -234,7 +243,7 @@ state = create_boulder_state(
     plan_name=plan_name
 )
 
-write_boulder_state(state)
+write_boulder_state(project_root, state)
 ```
 
 This enables automatic continuation on next session.
@@ -262,7 +271,7 @@ cat > .claude/PLAN.md << 'EOF'
 - [x] Task 3
 EOF
 
-# Start Claude session → Should create boulder.json
+# Start Claude session → Should create .claude/.boulder.json
 
 # Test 2: Continuation message
 # Exit Claude, restart → Should show "1/3 tasks complete"
@@ -1070,7 +1079,6 @@ skills/dev-design/
 **User files** (created by system):
 ```
 ~/.claude/
-├── .boulder.json                # Phase 1
 ├── .sisyphus/
 │   └── rules-injector/
 │       └── session-*.json       # Phase 3
@@ -1078,6 +1086,7 @@ skills/dev-design/
     └── *.md
 
 project/.claude/
+├── .boulder.json                # Phase 1 (per-project)
 └── rules/                       # User creates
     └── *.md
 ```
