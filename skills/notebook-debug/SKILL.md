@@ -53,36 +53,36 @@ This is not negotiable. Claiming "notebook works" without checking for traceback
 
 ### Verification Checklist
 
-Before EVERY "notebook works" claim:
+Before claiming "notebook works":
 
 **Execution:**
-- [ ] Notebook executed to ipynb format
-- [ ] `--include-outputs` flag used (for marimo)
-- [ ] Output file created successfully
-- [ ] Output file is non-empty
+- [ ] Execute notebook to ipynb format
+- [ ] Use `--include-outputs` flag (for marimo)
+- [ ] Verify output file created successfully
+- [ ] Verify output file is non-empty
 
 **Traceback Check:**
-- [ ] Quick failure check executed: `jq -r '.cells[].outputs[]?.text[]?' | grep "Traceback"`
-- [ ] Error count checked: `jq '[.cells[].outputs[]? | select(.output_type == "error")] | length'`
-- [ ] If errors found: Read tool used to inspect full context
+- [ ] Run quick failure check: `jq -r '.cells[].outputs[]?.text[]?' | grep "Traceback"`
+- [ ] Check error count: `jq '[.cells[].outputs[]? | select(.output_type == "error")] | length'`
+- [ ] Use Read tool to inspect full context if errors found
 
 **Cell Execution:**
-- [ ] All cells have execution_count (no null values)
-- [ ] Execution order is sequential (no out-of-order cells)
-- [ ] No cells skipped due to prior failures
+- [ ] Verify all cells have execution_count (no null values)
+- [ ] Check execution order is sequential (no out-of-order cells)
+- [ ] Verify no cells skipped due to prior failures
 
 **Output Inspection:**
-- [ ] Critical outputs verified (not just no errors)
-- [ ] Expected results present (dataframes, plots, metrics)
-- [ ] No warnings that indicate problems
-- [ ] No unexpected NaN/None/empty results
+- [ ] Verify critical outputs (not just absence of errors)
+- [ ] Check expected results present (dataframes, plots, metrics)
+- [ ] Verify no warnings that indicate problems
+- [ ] Check no unexpected NaN/None/empty results
 
-**Only after ALL checks pass:**
-- [ ] Claim "notebook executed successfully" with confidence
+**Claim success only after:**
+- [ ] All checks pass: declare "notebook executed successfully"
 
 ### Gate Function: Notebook Verification
 
-Follow this sequence for EVERY notebook debugging task:
+Apply this verification sequence for every notebook debugging task:
 
 ```
 1. EXECUTE → Run to ipynb with outputs
@@ -92,7 +92,7 @@ Follow this sequence for EVERY notebook debugging task:
 5. CLAIM   → "Notebook works" only after all gates passed
 ```
 
-**NEVER skip any gate.** Each gate catches different failure modes.
+**Never skip any gate.** Each gate catches different failure modes.
 
 ## Why Execute to ipynb?
 
@@ -106,13 +106,13 @@ This makes debugging much easier than reading raw `.py` source.
 ## Execution Commands
 
 ```bash
-# From marimo .py
+# Export marimo notebook to ipynb with outputs
 marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
 
-# From jupytext .py (percent format)
+# Convert jupytext to ipynb and execute with outputs
 jupytext --to notebook --output - script.py | papermill - output.ipynb
 
-# Execute existing ipynb
+# Execute existing ipynb notebook to capture outputs
 papermill input.ipynb output.ipynb
 ```
 
@@ -130,10 +130,10 @@ papermill input.ipynb output.ipynb
 ## Quick Failure Check
 
 ```bash
-# Check if any cell has a traceback
+# Check for tracebacks in notebook outputs
 jq -r '.cells[].outputs[]?.text[]?' notebook.ipynb | grep "Traceback"
 
-# Count errors
+# Count error outputs in notebook
 jq '[.cells[].outputs[]? | select(.output_type == "error")] | length' notebook.ipynb
 ```
 
@@ -162,40 +162,46 @@ Benefits:
 
 ### Find the Failing Cell
 
+Use the Read tool to inspect the notebook and locate tracebacks:
 ```bash
-# Use Read tool
+# Read notebook to find traceback location inline after failing cell
 Read __marimo__/notebook.ipynb
-# Look for "Traceback" in output
 ```
 
 ### Check Cell Execution Count
 
+Identify cells that did not execute:
 ```bash
-# Cells with execution_count: null were not run
+# Find cells with null execution_count (not executed)
 jq '.cells[] | select(.execution_count == null) | .source[:50]' notebook.ipynb
 ```
 
 ### Extract All Errors
 
+Gather all error outputs from executed cells:
 ```bash
+# Extract error tracebacks from all cells
 jq -r '.cells[].outputs[]? | select(.output_type == "error") | .traceback[]' notebook.ipynb
 ```
 
 ## Debugging Workflow
 
-1. **Execute with outputs captured:**
+1. **Execute notebook with outputs captured:**
    ```bash
+   # Export marimo notebook to ipynb format with all outputs
    marimo export ipynb nb.py -o __marimo__/nb.ipynb --include-outputs
    ```
 
-2. **Quick check for failures:**
+2. **Run quick failure check:**
    ```bash
+   # Check if execution produced tracebacks
    jq -r '.cells[].outputs[]?.text[]?' __marimo__/nb.ipynb | grep -q "Traceback" && echo "FAILED"
    ```
 
-3. **Inspect with Read tool:**
+3. **Inspect notebook using Read tool:**
    ```bash
+   # Read the full notebook to identify failing cells and their errors
    Read __marimo__/nb.ipynb
    ```
 
-4. **Fix source and re-run**
+4. **Fix source code and re-run to verify**
