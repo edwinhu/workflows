@@ -106,9 +106,91 @@ AskUserQuestion(questions=[{
 - Clear trade-offs for each
 - Reference specific files from exploration
 
-### 4. Write PLAN.md
+### 4. Feature Decomposition Check
 
-After user chooses, write `.claude/PLAN.md`:
+**CRITICAL:** Before writing PLAN.md, check if this is actually multiple features.
+
+Review the scope and ask:
+
+```
+AskUserQuestion(questions=[{
+  "question": "Is this one cohesive feature or multiple independent features?",
+  "header": "Scope",
+  "options": [
+    {
+      "label": "One feature",
+      "description": "Implement everything together in one branch/worktree"
+    },
+    {
+      "label": "Multiple features",
+      "description": "Break into separate features, each with own branch/worktree/PR"
+    }
+  ],
+  "multiSelect": false
+}])
+```
+
+**If "Multiple features":**
+
+1. **List the independent features** you identified from SPEC.md:
+   ```
+   Based on the requirements, this breaks into:
+   1. Theme infrastructure (color system, theme provider)
+   2. Settings UI (theme selector component)
+   3. Component updates (update 20+ components to use theme)
+   4. Persistence layer (save user preference)
+
+   Each can be implemented and PR'd independently.
+   ```
+
+2. **Ask which to tackle first:**
+   ```
+   AskUserQuestion(questions=[{
+     "question": "Which feature should we implement first?",
+     "header": "Priority",
+     "options": [
+       {"label": "Theme infrastructure (Recommended)", "description": "Foundation that others depend on"},
+       {"label": "Settings UI", "description": "UI for theme selection"},
+       {"label": "Component updates", "description": "Apply themes to components"},
+       {"label": "Persistence layer", "description": "Save user preference"}
+     ],
+     "multiSelect": false
+   }])
+   ```
+
+3. **Write PLAN.md for ONLY the chosen feature**
+
+4. **Document remaining features** in `.claude/BACKLOG.md`:
+   ```markdown
+   # Feature Backlog
+
+   ## Dark Mode Implementation
+
+   ### Completed
+   - [ ] None yet
+
+   ### Next Up
+   - [ ] Theme infrastructure
+   - [ ] Settings UI
+   - [ ] Component updates
+   - [ ] Persistence layer
+
+   **Current Focus:** Theme infrastructure
+   ```
+
+**If "One feature":**
+
+Proceed to write PLAN.md for the entire scope (step 5 below).
+
+**Why this matters:**
+
+- Multiple features in one branch = massive PR, review hell, merge conflicts
+- Separate features = clean PRs, incremental progress, easier reviews
+- After first feature PR merges, come back and tackle next feature
+
+### 5. Write PLAN.md
+
+After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 
 ```markdown
 # Implementation Plan: [Feature]
@@ -161,7 +243,7 @@ After user chooses, write `.claude/PLAN.md`:
 **Every task MUST have a test that EXECUTES the code and VERIFIES behavior.**
 ```
 
-### 5. User Gate - Final Approval
+### 6. User Gate - Final Approval
 
 After writing PLAN.md, get explicit approval:
 
@@ -181,7 +263,7 @@ AskUserQuestion(questions=[{
 
 **If "Yes":** Proceed to workspace setup question.
 
-### 6. Workspace Setup Question
+### 7. Workspace Setup Question
 
 After user approves implementation, ask about worktree isolation:
 
@@ -231,15 +313,17 @@ Before starting implementation, you MUST have completed:
 1. REVIEW → Read SPEC.md and exploration findings
 2. PROPOSE → Present 2-3 approaches with trade-offs
 3. ASK → Use AskUserQuestion with clear options
-4. WAIT → Do NOT proceed until user responds
-5. DOCUMENT → Write chosen approach to PLAN.md
-6. CONFIRM → Ask "Ready to proceed?"
-7. WORKSPACE → Ask "Create worktree?" (Yes recommended / No)
-8. SETUP → If worktree Yes, invoke dev-worktree
-9. GATE → Only start /dev-implement after all approvals
+4. DECOMPOSE → Ask "One feature or multiple?" (CRITICAL)
+   └─ If multiple → List features, ask which first, write BACKLOG.md
+5. WAIT → Do NOT proceed until user responds
+6. DOCUMENT → Write chosen approach to PLAN.md (for chosen feature only if decomposed)
+7. CONFIRM → Ask "Ready to proceed?"
+8. WORKSPACE → Ask "Create worktree?" (Yes recommended / No)
+9. SETUP → If worktree Yes, invoke dev-worktree
+10. GATE → Only start /dev-implement after all approvals
 ```
 
-**Skipping any step, especially WAIT, WORKSPACE, and GATE, is insubordination.**
+**Skipping any step, especially DECOMPOSE, WAIT, WORKSPACE, and GATE, is insubordination.**
 
 ## Rationalization Prevention
 
@@ -276,7 +360,7 @@ Design complete when:
 
 **After user approves ("Yes, proceed"):**
 
-1. **Ask about worktree** (Step 6 above)
+1. **Ask about worktree** (Step 7 above)
 2. **If worktree chosen:**
    - Invoke `Skill(skill="workflows:dev-worktree")`
    - After worktree created, invoke `Skill(skill="workflows:dev-implement")`
@@ -285,4 +369,14 @@ Design complete when:
 
 **Do NOT proceed without:**
 - Explicit user approval for implementation
+- Feature scope decision (one feature vs multiple)
 - User choice on worktree (Yes/No)
+
+**After this feature is implemented and PR'd:**
+
+If you decomposed into multiple features (step 4), the user can come back and:
+1. Check `.claude/BACKLOG.md` for remaining features
+2. Run `/dev` again to tackle the next feature
+3. Repeat until all features are complete
+
+This allows incremental development: one feature → PR → merge → next feature.
