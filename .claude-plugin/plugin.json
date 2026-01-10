@@ -1,6 +1,6 @@
 {
   "name": "workflows",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Development and data science workflows with TDD enforcement, sandbox mode, and output-first verification.",
   "author": {
     "name": "edwinhu"
