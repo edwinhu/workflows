@@ -46,14 +46,21 @@ YES → Invoke skill FIRST, then follow its protocol
 NO  → Proceed normally
 ```
 
-## Skill Triggers
+## Workflow Commands (User Must Invoke Explicitly)
 
-| User Intent | Skill/Tool | Trigger Words |
-|-------------|------------|---------------|
-| Bug/fix | `/dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
-| Feature/implement | `/dev` | add, implement, create, build, feature |
-| Data analysis | `/ds` | analyze, data, model, dataset, statistics |
-| Writing | `/writing` | write, draft, document, essay, paper |
+These are commands, not auto-triggered skills. User must explicitly type the command:
+
+| Command | Purpose | User Types |
+|---------|---------|------------|
+| `/dev` | Feature development workflow (7 phases) | `/dev` |
+| `/ds` | Data analysis workflow (5 phases) | `/ds` |
+
+## Skill Triggers (Can Auto-Invoke)
+
+| User Intent | Skill | Trigger Words |
+|-------------|-------|---------------|
+| Bug/fix | `dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
+| Writing | `writing` | write, draft, document, essay, paper |
 | **Media analysis** | **look-at** | describe image, analyze PDF, what's in this, screenshot, diagram |
 
 ## Red Flags - You're Skipping the Skill Check

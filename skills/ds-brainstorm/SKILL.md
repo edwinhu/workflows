@@ -5,6 +5,23 @@ description: "REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to cla
 
 **Announce:** "I'm using ds-brainstorm (Phase 1) to gather analysis requirements."
 
+## First: Activate Workflow
+
+Before anything else, activate the ds workflow:
+
+```bash
+python3 -c "
+import sys
+sys.path.insert(0, '\${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
+from session import activate_workflow, activate_dev_mode
+activate_workflow('ds')
+activate_dev_mode()
+print('✓ DS workflow activated')
+"
+```
+
+This enables workflow-specific hooks (data quality checks, output verification, etc.).
+
 ## Contents
 
 - [The Iron Law of DS Brainstorming](#the-iron-law-of-ds-brainstorming)
