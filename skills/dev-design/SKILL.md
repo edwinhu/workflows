@@ -163,21 +163,48 @@ After user chooses, write `.claude/PLAN.md`:
 
 ### 5. User Gate - Final Approval
 
-After writing PLAN.md, explicit approval:
+After writing PLAN.md, get explicit approval:
 
 ```
 AskUserQuestion(questions=[{
   "question": "Ready to start implementation?",
   "header": "Approval",
   "options": [
-    {"label": "Yes, proceed", "description": "Start /dev-implement with TDD"},
+    {"label": "Yes, proceed", "description": "Start implementation with TDD"},
     {"label": "No, discuss changes", "description": "Modify the plan first"}
   ],
   "multiSelect": false
 }])
 ```
 
-**Only proceed to /dev-implement after "Yes, proceed".**
+**If "No":** Wait for user feedback, modify plan, ask again.
+
+**If "Yes":** Proceed to workspace setup question.
+
+### 6. Workspace Setup Question
+
+After user approves implementation, ask about worktree isolation:
+
+```
+AskUserQuestion(questions=[{
+  "question": "Create isolated worktree for this feature?",
+  "header": "Workspace",
+  "options": [
+    {"label": "Yes (Recommended)", "description": "Work in isolated .worktrees/ directory - keeps main workspace clean"},
+    {"label": "No", "description": "Work in current directory"}
+  ],
+  "multiSelect": false
+}])
+```
+
+**If "Yes (Recommended)":**
+```
+Skill(skill="workflows:dev-worktree")
+```
+Then after worktree is created, invoke dev-implement.
+
+**If "No":**
+Directly invoke dev-implement in current directory.
 
 ## Approach Categories
 
@@ -207,10 +234,12 @@ Before starting implementation, you MUST have completed:
 4. WAIT → Do NOT proceed until user responds
 5. DOCUMENT → Write chosen approach to PLAN.md
 6. CONFIRM → Ask "Ready to proceed?"
-7. GATE → Only start /dev-implement after explicit "Yes"
+7. WORKSPACE → Ask "Create worktree?" (Yes recommended / No)
+8. SETUP → If worktree Yes, invoke dev-worktree
+9. GATE → Only start /dev-implement after all approvals
 ```
 
-**Skipping any step, especially WAIT and GATE, is insubordination.**
+**Skipping any step, especially WAIT, WORKSPACE, and GATE, is insubordination.**
 
 ## Rationalization Prevention
 
@@ -245,9 +274,15 @@ Design complete when:
 
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After user approves ("Yes, proceed"), IMMEDIATELY invoke:
-```
-Skill(skill="workflows:dev-implement")
-```
+**After user approves ("Yes, proceed"):**
 
-Do NOT proceed without explicit user approval.
+1. **Ask about worktree** (Step 6 above)
+2. **If worktree chosen:**
+   - Invoke `Skill(skill="workflows:dev-worktree")`
+   - After worktree created, invoke `Skill(skill="workflows:dev-implement")`
+3. **If no worktree:**
+   - Directly invoke `Skill(skill="workflows:dev-implement")`
+
+**Do NOT proceed without:**
+- Explicit user approval for implementation
+- User choice on worktree (Yes/No)
