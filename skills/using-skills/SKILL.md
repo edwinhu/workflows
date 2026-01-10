@@ -60,7 +60,7 @@ When user mentions a bug:
 
 INSTEAD:
 1. Start ralph loop:
-   /ralph-loop "Debug: [symptom]" --max-iterations 15 --completion-promise "FIXED"
+   Skill(skill="ralph-loop:ralph-loop", args="Debug: [symptom] --max-iterations 15 --completion-promise FIXED")
 2. Inside loop, follow /dev-debug protocol
 ```
 
