@@ -4,7 +4,6 @@ version: 1.0
 description: "Subagent delegation for data analysis. Dispatches fresh Task agents with output-first verification."
 ---
 
-**Announce:** "I'm using ds-delegate to dispatch analysis subagents."
 
 ## Contents
 
@@ -17,9 +16,9 @@ description: "Subagent delegation for data analysis. Dispatches fresh Task agent
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
 
-**EVERY ANALYSIS STEP MUST GO THROUGH A TASK AGENT. This is not negotiable.**
+**YOU MUST route EVERY ANALYSIS STEP THROUGH A TASK AGENT. This is not negotiable.**
 
-Main chat MUST NOT:
+You MUST NOT:
 - Write analysis code directly
 - Run "quick" data checks
 - Edit notebooks or scripts
@@ -158,21 +157,21 @@ Report: what you did, key outputs observed, any data quality issues found.
 
 **If analyst asks questions:** Answer clearly, especially about methodology choices.
 
-**If analyst finishes:** Verify outputs, then proceed or review.
+**If analyst completes task:** Verify outputs, then proceed or review.
 
 ## Step 2: Verify Outputs
 
-Before moving on, confirm:
+Confirm before proceeding:
 - [ ] Output files/variables exist
 - [ ] Shapes are reasonable (no unexpected row loss)
 - [ ] No silent null introduction
 - [ ] Sample output matches expectations
 
-If verification fails, re-dispatch analyst with specific fix instructions.
+Upon verification failure, re-dispatch analyst with specific fix instructions.
 
 ## Step 3: Dispatch Methodology Reviewer (Complex Tasks)
 
-For statistical analysis, modeling, or methodology-sensitive tasks:
+For statistical analysis, modeling, or methodology-sensitive tasks, dispatch a methodology reviewer:
 
 ```
 Task(subagent_type="general-purpose", prompt="""
@@ -216,7 +215,7 @@ Rate each issue 0-100. Only report issues >= 80 confidence.
 
 ## Step 4: Log to LEARNINGS.md
 
-After each task, append to `.claude/LEARNINGS.md`:
+Append to `.claude/LEARNINGS.md` after each task:
 
 ```markdown
 ## Task N: [Name] - COMPLETE
@@ -242,47 +241,49 @@ After each task, append to `.claude/LEARNINGS.md`:
 
 When you say "Step complete", you are asserting:
 - A Task agent ran the analysis
-- Output was visible and verified
+- Output was visible and verified by you
+- You personally checked it (not just trusting the agent's word)
 - Methodology reviewer approved (for statistical tasks)
 
 If ANY of these didn't happen, you are not "summarizing" - you are LYING about the state of the analysis.
 
-**Dishonest claims corrupt research. Honest "investigating" maintains integrity.**
+**Your dishonest claims corrupt research. Your honest "investigating" maintains integrity.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Prevention
 
-These thoughts mean STOP—you're about to skip delegation:
+Recognize these thoughts as signals to stop and delegate instead:
 
 | Thought | Reality |
 |---------|---------|
-| "I'll just check the shape quickly" | Shape checks need output-first protocol. Delegate. |
-| "It's just a simple merge" | Merges fail silently. Delegate with verification. |
-| "I already know this data" | Knowing ≠ verified. Delegate. |
-| "The subagent will be slower" | Wrong results are slower than slow results. Delegate. |
-| "Just this one plot" | One plot hides data issues. Delegate. |
-| "User wants results fast" | User wants CORRECT results. Delegate. |
-| "Skip methodology review, it's standard" | "Standard" assumptions often fail. Review. |
-| "Output looked reasonable" | "Looked reasonable" ≠ verified. Check numbers. |
+| "I'll just check the shape quickly" | You'll skip the output-first protocol. Delegate instead. |
+| "It's just a simple merge" | Your merges fail silently. Delegate with verification. |
+| "I already know this data" | Your knowing ≠ verified. Delegate anyway. |
+| "The subagent will be slower" | You're wrong—wrong results are slower than slow results. Delegate. |
+| "Just this one plot" | You're hiding data issues with one plot. Delegate. |
+| "User wants results fast" | They want CORRECT results. You're optimizing for wrong metric. Delegate. |
+| "Skip methodology review, it's standard" | Your "standard" assumptions often fail. Review anyway. |
+| "Output looked reasonable" | You didn't verify—"looked reasonable" ≠ verified. Check numbers. |
 
 ## Red Flags
 
-**Never:**
-- Skip output verification
-- Chain operations without intermediate checks
-- Proceed with unexpected nulls or row counts
-- Skip methodology review for statistical tasks
-- Assume merge/join worked without checking
-- Let analyst skip output-first protocol
-- Make analyst read PLAN.md (provide full text)
+**If you catch yourself thinking these, STOP immediately:**
 
-**If analyst produces no visible output:**
-- Re-dispatch with explicit output requirements
-- This is a hard failure, not optional
+- "I can skip output verification this time"
+- "I'll chain operations together, it's fine"
+- "Unexpected nulls are probably okay"
+- "Methodology review takes too long, skip it"
+- "The merge probably worked"
+- "Output-first protocol is overkill here"
+- "I'll just summarize PLAN.md for the analyst" (STOP—provide full text)
 
-**If analyst fails task:**
-- Dispatch fix subagent with specific instructions
-- Don't fix manually in main chat (context pollution)
+**When analyst produces no visible output:**
+- You must re-dispatch with explicit output requirements
+- Treat this as a hard failure, not something to work around
+
+**When analyst fails a task:**
+- You must dispatch a fix subagent with specific instructions
+- Don't fix it yourself in main chat—you'll pollute context and hide the real issue
 
 ## Example Flow
 

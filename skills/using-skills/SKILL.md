@@ -84,12 +84,14 @@ If you think any of these, STOP:
 When user mentions a bug:
 
 ```
-1. DO NOT read code files
-2. DO NOT investigate
-3. DO NOT "take a look"
+DO NOT:
+1. Read code files
+2. Investigate independently
+3. "Take a look" without structure
 
 INSTEAD:
 1. Start ralph loop:
+   ralph-loop: Start Ralph Loop in current session with bug debugging
    Skill(skill="ralph-loop:ralph-loop", args="Debug: [symptom] --max-iterations 15 --completion-promise FIXED")
 2. Inside loop, follow /dev-debug protocol
 ```
@@ -105,14 +107,25 @@ When multiple skills could apply:
 
 ## How to Invoke
 
-Use the Skill tool:
-```
+Use the Skill tool to invoke skills:
+
+```bash
+# dev-debug: Systematic bug investigation and fixing with verification-driven methodology
 Skill(skill="dev-debug")
+
+# dev: Feature development workflow with 7 phases and TDD enforcement
 Skill(skill="dev")
+
+# ds: Data analysis workflow with 5 phases and output-first verification
 Skill(skill="ds")
 ```
 
-Or start ralph loop first for implementation/debug phases.
+Or start ralph loop first for implementation/debug phases:
+
+```bash
+# ralph-loop: Per-task ralph loop pattern for implementation and debugging
+Skill(skill="ralph-loop:ralph-loop", args="Task description --max-iterations 15")
+```
 
 ## IRON LAW: Multimodal File Analysis
 
@@ -140,6 +153,7 @@ NO  → Use Read tool for source code/text
 
 **Pattern:**
 ```bash
+# look-at: Extract information from media file with specific goal
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "/absolute/path/to/file" \
     --goal "What specific information to extract"
@@ -148,10 +162,10 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ### When NOT to Use look-at
 
 **Use Read tool instead for:**
-- Source code (`.py`, `.js`, `.rs`, etc.)
-- Plain text files (`.txt`, `.md`, `.json`, etc.)
-- Config files that need exact formatting preserved
-- Any file you might need to edit afterward
+- Source code files (`.py`, `.js`, `.rs`, etc.) - need exact formatting for editing
+- Plain text files (`.txt`, `.md`, `.json`, etc.) - preserve exact content
+- Config files requiring exact formatting preservation
+- Any file that needs editing after reading
 
 ### Rationalization Table - STOP If You Think:
 
@@ -180,17 +194,17 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ### Example Usage
 
 ```bash
-# Extract specific information
+# look-at: Extract specific information from image file
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "$HOME/Downloads/screenshot.png" \
     --goal "List all buttons and their labels"
 
-# Analyze diagram
+# look-at: Analyze diagram to understand data flow
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "$HOME/Documents/architecture.png" \
     --goal "Explain the data flow between components"
 
-# Extract from PDF
+# look-at: Extract information from PDF document
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "$HOME/Downloads/report.pdf" \
     --goal "Extract the executive summary section"
@@ -198,13 +212,13 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 
 ### Enforcement
 
-**If you use Read on an image/PDF when look-at should be used, you are:**
+**Using Read on images/PDFs when look-at should be used results in:**
 1. Wasting context tokens unnecessarily
-2. Making the conversation slower
+2. Making conversations slower
 3. Ignoring available optimization tools
 4. Violating the tool selection protocol
 
-**Check yourself:** Before calling Read, ask "Is this a media file?" If yes, use look-at.
+**Validate before calling Read:** Ask "Is this a media file?" If yes, invoke look-at instead.
 
 ## Advanced Agent Harnessing Patterns
 

@@ -1,7 +1,7 @@
 ---
 name: dev-explore
 version: 1.0
-description: "REQUIRED Phase 2 of /dev workflow after dev-brainstorm. This skill should be used when you need to 'explore the codebase', 'map architecture', 'find similar features', 'discover test infrastructure', 'trace execution paths', 'identify code patterns', or understand WHERE code lives and HOW it works before implementation. Launches parallel explore agents and returns prioritized key files list."
+description: "REQUIRED Phase 2 of /dev workflow after dev-brainstorm. This skill should be used when the user asks to 'explore the codebase', 'map architecture', 'find similar features', 'discover test infrastructure', 'trace execution paths', 'identify code patterns', or needs to understand WHERE code lives and HOW it works before implementation. Launches parallel explore agents and returns prioritized key files list."
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
@@ -26,26 +26,26 @@ Map relevant code, trace execution paths, and return prioritized files for readi
 
 **RETURN KEY FILES LIST. This is not negotiable.**
 
-Every exploration MUST return:
+Every exploration, you MUST return:
 1. Summary of findings
 2. **5-10 key files** with line numbers and purpose
 3. Patterns discovered
 
-After agents return, **main chat MUST read all key files** before proceeding.
+After agents return, **you MUST read all key files** before proceeding.
 
-**If you catch yourself about to move on without reading the key files, STOP.**
+**STOP if you're about to move on without reading all key files.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Rationalization Table - STOP If Thinking:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
 | "I can design without reading all key files" | You'll miss critical patterns | READ every file on the list |
 | "The file names tell me enough" | File names hide implementation details | READ the actual code |
-| "I'll read them if I need more info" | You won't know what you're missing | READ all key files NOW |
+| "I'll read them if I need more info" | You cannot know what is missing | READ all key files NOW |
 | "Exploration summary is enough" | Summaries miss crucial nuances | READ original files |
-| "Reading files will take too long" | Skipping them wastes days later | READ now, save time later |
-| "I already understand the architecture" | Your assumptions are incomplete | READ to confirm understanding |
+| "Reading files will take too long" | You'll waste days later by skipping them | READ now, save time later |
+| "I already understand the architecture" | Your assumptions remain incomplete | READ to confirm understanding |
 | "I can grep for specific details later" | You'll miss context and relationships | READ to understand connections |
 
 ### Honesty Framing
@@ -64,7 +64,7 @@ Skill(skill="workflows:dev-clarify")
 ```
 
 DO NOT:
-- Summarize what you learned
+- Summarize findings (proceed directly)
 - Ask "should I proceed to clarify?"
 - Wait for user confirmation
 - Write status updates
@@ -254,20 +254,28 @@ Grepping source files is NOT testing. Log checking is NOT testing.
 | ydotool that simulates user input | Code review / structure check |
 | API calls that verify responses | "It looks correct" |
 
-**If you can't find a way to EXECUTE and VERIFY, flag this as a blocker.**
+**If no way to EXECUTE and VERIFY exists, flag this as a blocker.**
 </EXTREMELY-IMPORTANT>
 
 ### Project Test Framework
 
 ```bash
-# Find test directory and framework
+# Find test directories across common locations
 ls -d tests/ test/ spec/ __tests__/ 2>/dev/null
+
+# Find test frameworks in build configuration
 cat meson.build 2>/dev/null | grep -i test
+
+# Find test frameworks in Node package manifest
 cat package.json 2>/dev/null | grep -E "(test|jest|mocha|vitest)"
+
+# Find pytest configuration in Python projects
 cat pyproject.toml 2>/dev/null | grep -i pytest
+
+# Find dev dependencies in Rust projects
 cat Cargo.toml 2>/dev/null | grep -i "\[dev-dependencies\]"
 
-# Find existing tests that EXECUTE code
+# Find and list existing test files
 find . -name "*test*" -type f | head -20
 ```
 
@@ -283,10 +291,10 @@ find . -name "*test*" -type f | head -20
 | D-Bus apps | dbus-send | Invokes method, checks return |
 
 ```bash
-# Desktop automation (Wayland)
+# Check for desktop automation tools
 which ydotool grim dbus-send 2>/dev/null
 
-# Check for D-Bus interfaces (desktop apps)
+# List available D-Bus services for desktop app automation
 dbus-send --session --print-reply --dest=org.freedesktop.DBus \
   /org/freedesktop/DBus org.freedesktop.DBus.ListNames 2>/dev/null | grep -i appname
 ```
@@ -321,9 +329,9 @@ Each agent MUST return files in this format:
 | Action | Why It's Wrong | Do Instead |
 |--------|----------------|------------|
 | Skip reading key files | You'll miss crucial context | Read every file on the list |
-| Ask design questions | Exploration is about understanding | Save for clarify/design phases |
-| Propose approaches | Too early for decisions | Just document what exists |
-| Start implementing | Must understand first | Complete exploration fully |
+| Ask design questions | You're conflating exploration with design | Save for clarify/design phases |
+| Propose approaches | You're jumping to decisions too early | Just document what exists |
+| Start implementing | You must understand first | Complete exploration fully |
 
 ## Output
 

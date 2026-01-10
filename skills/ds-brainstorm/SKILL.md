@@ -1,15 +1,14 @@
 ---
 name: ds-brainstorm
-description: "REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints."
+description: "This skill should be used when the user asks to \"start a data science project\", \"brainstorm analysis\", \"plan a data analysis\", or wants to clarify analysis requirements. REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints."
 ---
-
-**Announce:** "I'm using ds-brainstorm (Phase 1) to gather analysis requirements."
 
 ## First: Activate Workflow
 
-Before anything else, activate the ds workflow:
+Activate the ds workflow to enable workflow-specific hooks (data quality checks, output verification):
 
 ```bash
+# Activate ds workflow and enable development mode for hook verification
 python3 -c "
 import sys
 sys.path.insert(0, '\${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
@@ -19,8 +18,6 @@ activate_dev_mode()
 print('✓ DS workflow activated')
 "
 ```
-
-This enables workflow-specific hooks (data quality checks, output verification, etc.).
 
 ## Contents
 
@@ -48,7 +45,7 @@ Before loading data, before exploring, before proposing approaches, you MUST:
 4. Define success criteria
 5. Only THEN propose analysis approaches
 
-**If you catch yourself about to load data or explore before asking questions, STOP.**
+**STOP - You're about to load data or explore before asking questions. Don't do this.**
 </EXTREMELY-IMPORTANT>
 
 ## What Brainstorm Does
@@ -94,7 +91,7 @@ Before loading data, before exploring, before proposing approaches, you MUST:
 
 ### 1. Ask Questions First
 
-Use `AskUserQuestion` immediately:
+Employ `AskUserQuestion` immediately:
 - **One question at a time** - never batch
 - **Multiple-choice preferred** - easier to answer
 - Focus on: objectives, data sources, constraints, replication requirements
@@ -115,24 +112,24 @@ AskUserQuestion:
       description: "Fresh analysis, methodology flexible"
 ```
 
-If replicating:
-- Get reference to original (paper, code, report)
+When replicating:
+- Obtain reference to original (paper, code, report)
 - Document exact methodology requirements
 - Define acceptable deviation from original results
 
 ### 3. Propose Approaches
 
-Once objectives are clear:
+After objectives are clear:
 - Propose **2-3 different approaches** with trade-offs
 - **Lead with recommendation** (mark as "Recommended")
-- Use `AskUserQuestion` for user to pick
+- Use `AskUserQuestion` for the user to select the preferred approach
 
 ### 4. Write Spec Doc
 
-After approach is chosen:
+After selecting an approach:
 - Write to `.claude/SPEC.md`
 - Include: objectives, data sources, success criteria, constraints
-- **NO implementation details** - that's for /ds-plan
+- **NO implementation details** - reserve those for /ds-plan
 
 ```markdown
 # Spec: [Analysis Name]
@@ -163,19 +160,19 @@ After approach is chosen:
 - Option C: [why rejected]
 ```
 
-## Red Flags - STOP If You're About To:
+## Red Flags - STOP If You Catch Yourself Doing This:
 
 | Action | Why It's Wrong | Do Instead |
 |--------|----------------|------------|
-| Load data | Exploring before understanding goals | Ask what user wants to learn |
-| Run describe() | Data profiling is for /ds-plan | Finish objectives first |
-| Propose specific model | Jumping to HOW before WHAT | Define success criteria first |
-| Create task list | Planning before objectives clear | Complete brainstorm first |
-| Skip replication question | Methodology may be constrained | Always ask about replication |
+| Loading data | You're exploring before understanding goals | Ask what the user wants to learn |
+| Running describe() | You're profiling data when that's for /ds-plan | Finish defining objectives first |
+| Proposing specific models | You're jumping to HOW before clarifying WHAT | Define success criteria first |
+| Creating task lists | You're planning before objectives are clear | Complete brainstorm first |
+| Skipping replication question | You might miss critical methodology constraints | Always ask about replication upfront |
 
 ## Output
 
-Brainstorm complete when:
+Declare brainstorm complete when:
 - Analysis objectives clearly understood
 - Data sources identified
 - Success criteria defined
@@ -184,9 +181,29 @@ Brainstorm complete when:
 - `.claude/SPEC.md` written
 - User confirms ready for data exploration
 
+## Workflow Context
+
+This skill is Phase 1 of the 5-phase `/ds` workflow:
+
+1. **Phase 1: ds-brainstorm** (current) - Clarify objectives through Socratic questioning
+2. **Phase 2: ds-plan** - Profile data and break analysis into tasks
+3. **Phase 3: ds-implement** - Execute analysis tasks with output-first verification
+4. **Phase 4: ds-review** - Review methodology, data quality, and statistical validity
+5. **Phase 5: ds-verify** - Check reproducibility and obtain user acceptance
+
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After completing brainstorm, IMMEDIATELY invoke:
+After completing brainstorm, IMMEDIATELY invoke the next phase:
+
+```bash
+# Invoke Phase 2: Data profiling and task breakdown
+/ds-plan
+```
+
+Or use the Skill tool directly:
+
 ```
 Skill(skill="workflows:ds-plan")
 ```
+
+**CRITICAL:** Do not skip to analysis implementation. Phase 2 profiles data and breaks down the analysis into discrete, manageable tasks.

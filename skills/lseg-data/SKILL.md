@@ -23,7 +23,7 @@ Access financial data from LSEG (London Stock Exchange Group), formerly Refiniti
 
 ### IRON LAW: NO DATA CLAIM WITHOUT SAMPLE INSPECTION
 
-Before claiming ANY LSEG query succeeded, you MUST:
+Before claiming ANY LSEG query succeeded, follow these steps:
 1. **VALIDATE** field names exist (check prefixes: TR., CF_)
 2. **VALIDATE** RIC symbology is correct (.O, .N, .L, .T)
 3. **EXECUTE** the query
@@ -55,7 +55,7 @@ This is not negotiable. Claiming data retrieval without inspecting results is LY
 
 ### Data Validation Checklist
 
-Before EVERY data retrieval claim:
+Before EVERY data retrieval claim, verify the following:
 
 **For `ld.get_data()` (fundamentals/ESG):**
 - [ ] Field names use correct prefix (TR. for Refinitiv)
@@ -86,9 +86,12 @@ Before EVERY data retrieval claim:
 
 ## Quick Start
 
+To get started with LSEG Data Library, initialize a session and execute queries:
+
 ```python
 import lseg.data as ld
 
+# Initialize session
 ld.open_session()
 
 # Get fundamentals
@@ -96,6 +99,7 @@ df = ld.get_data(
     universe=['AAPL.O', 'MSFT.O'],
     fields=['TR.CompanyName', 'TR.Revenue', 'TR.EPS']
 )
+print(df.head())  # Inspect sample data
 
 # Get historical prices
 prices = ld.get_history(
@@ -104,13 +108,19 @@ prices = ld.get_history(
     start='2023-01-01',
     end='2023-12-31'
 )
+print(prices.head())  # Inspect sample data
 
+# Close session
 ld.close_session()
 ```
 
 ## Authentication
 
-Config file `lseg-data.config.json`:
+Configure LSEG authentication using either a config file or environment variables.
+
+### Config File Method
+
+Create `lseg-data.config.json`:
 ```json
 {
   "sessions": {
@@ -126,7 +136,16 @@ Config file `lseg-data.config.json`:
 }
 ```
 
-Or environment variables: `RDP_USERNAME`, `RDP_PASSWORD`, `RDP_APP_KEY`
+### Environment Variables Method
+
+Set the following environment variables for LSEG authentication:
+
+```bash
+# Configure LSEG credentials via environment variables
+export RDP_USERNAME="YOUR_MACHINE_ID"
+export RDP_PASSWORD="YOUR_PASSWORD"
+export RDP_APP_KEY="YOUR_APP_KEY"
+```
 
 ## Core APIs
 
@@ -191,9 +210,16 @@ LSEG API samples at `~/resources/lseg-samples/`:
 
 ## Date Awareness
 
-**Pattern from oh-my-opencode:** When querying market data, use current date context.
+When querying market data, account for current date context and market data lag.
 
-Example for time series:
+### Market Data Lag
+
+Market data typically has T-1 availability, meaning today's data becomes available tomorrow. Adjust date ranges accordingly.
+
+### Date Range Example
+
+Use current date context when querying historical prices:
+
 ```python
 from datetime import datetime, timedelta
 
@@ -204,12 +230,12 @@ start_date = end_date - timedelta(days=365)
 # Adjust to exclude recent data (T-1 for market data availability)
 end_date = end_date - timedelta(days=1)
 
-df = ek.get_timeseries(
-    "AAPL.O",
+df = ld.get_history(
+    universe="AAPL.O",
     fields=['CLOSE'],
-    start_date=start_date.strftime('%Y-%m-%d'),
-    end_date=end_date.strftime('%Y-%m-%d')
+    start=start_date.strftime('%Y-%m-%d'),
+    end=end_date.strftime('%Y-%m-%d')
 )
 ```
 
-Remember: Market data typically has T-1 availability.
+Remember: Always account for the T-1 lag in market data availability.

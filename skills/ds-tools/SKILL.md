@@ -61,18 +61,18 @@ These skills are available via the `shared` plugin - no separate installation ne
 ## When to Enable
 
 - **serena**: Understanding complex analysis codebases, refactoring pipelines
-- **context7**: Need current docs for pandas, scikit-learn, statsmodels, etc.
-- **playwright**: Scraping web data sources, automating data collection
-- **pyright-lsp**: Type checking data pipelines
+- **context7**: Access current docs for pandas, scikit-learn, statsmodels, and other libraries
+- **playwright**: Scrape web data sources, automate data collection
+- **pyright-lsp**: Type check data pipelines
 
 ## Usage
 
-To enable a plugin for the current session:
+Enable a plugin for the current session:
 ```bash
-claude --enable-plugin <plugin-name>
+claude --enable-plugin <plugin-name>  # Enable a plugin by name and source
 ```
 
-To enable for a project, add to `.claude/settings.json`:
+Enable a plugin for a project by adding to `.claude/settings.json`:
 ```json
 {
   "enabledPlugins": {

@@ -1,9 +1,9 @@
 ---
 name: ds-verify
-description: "REQUIRED Phase 5 of /ds workflow (final). Checks reproducibility and requires user acceptance."
+description: "This skill should be used when the user asks to 'verify analysis results', 'check reproducibility', 'validate data science output', 'confirm completion', or as Phase 5 of the /ds workflow (final). Enforces reproducibility demonstration and user acceptance before completion claims."
 ---
 
-**Announce:** "I'm using ds-verify (Phase 5) to confirm reproducibility and completion."
+Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."
 
 ## Contents
 
@@ -39,18 +39,18 @@ This applies even when:
 - "It should reproduce"
 - "User seemed happy earlier"
 
-**If you catch yourself about to claim completion without fresh evidence, STOP.**
+**If you catch yourself thinking "I can skip verification," STOP - you're about to lie.**
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
 |---------|----------------|------------|
-| "Results should be the same" | "Should" isn't verification | Re-run and compare |
-| "I ran it earlier" | Earlier isn't fresh | Run it again now |
-| "It's reproducible" | Claim requires evidence | Demonstrate reproducibility |
-| "User will be happy" | Assumption isn't acceptance | Ask explicitly |
-| "Outputs look right" | "Look right" isn't verified | Check against criteria |
+| "Results should be the same" | Your "should" isn't verification | Re-run and compare |
+| "I ran it earlier" | Your earlier run isn't fresh | Run it again now |
+| "It's reproducible" | Your claim requires evidence | Demonstrate reproducibility |
+| "User will be happy" | Your assumption isn't their acceptance | Ask explicitly |
+| "Outputs look right" | Your visual inspection isn't verified | Check against criteria |
 
 ## The Verification Gate
 
@@ -175,9 +175,10 @@ print(f"Reproducibility confirmed: {hash1} == {hash2}")
 
 For notebooks:
 ```bash
-# Clear and re-run all cells
+# notebook-reproduce: Clear and re-run all cells from scratch
 jupyter nbconvert --execute --inplace notebook.ipynb
-# or
+
+# notebook-reproduce-with-seed: Execute notebook with fixed random seed for reproducibility
 papermill notebook.ipynb output.ipynb -p seed 42
 ```
 

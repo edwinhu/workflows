@@ -3,7 +3,9 @@ name: ds-implement
 description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verification at each step."
 ---
 
-**Announce:** "I'm using ds-implement (Phase 3) to build with output-first verification."
+## Overview
+
+Apply output-first verification at every step of analysis implementation. This is Phase 3 of the `/ds` workflow.
 
 ## Contents
 
@@ -20,9 +22,9 @@ description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verificati
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
 
-**MAIN CHAT MUST NOT WRITE ANALYSIS CODE. This is not negotiable.**
+**YOU MUST NOT WRITE ANALYSIS CODE. This is not negotiable.**
 
-Main chat orchestrates. Subagents analyze. If you catch yourself about to write Python/R code, STOP.
+You orchestrate. Subagents analyze. STOP if you're about to write Python/R code.
 
 Allowed in main chat:
 - Spawn Task agents
@@ -39,18 +41,18 @@ NOT allowed in main chat:
 
 ### Rationalization Prevention
 
-These thoughts mean STOP—you're rationalizing:
+Stop immediately when you encounter these rationalizations:
 
-| Thought | Reality |
+| Rationalization | Reality |
 |---------|---------|
-| "It's just a quick plot" | Quick plots hide data issues. Delegate. |
-| "I'll just check the shape" | Shape checks need output-first protocol. Delegate. |
-| "The subagent will take too long" | Subagent time is cheap. Your context is expensive. |
-| "I already know this data" | Knowing ≠ verified. Delegate. |
-| "Let me just run this merge" | Merges silently fail. Delegate with verification. |
-| "This is too simple for a subagent" | Simple is exactly when errors hide. Delegate. |
-| "I'm already looking at the data" | Looking ≠ analyzing. Delegate. |
-| "The user wants results fast" | Wrong results are worse than slow results. Delegate. |
+| "It's just a quick plot" | You'll hide data issues. Delegate instead. |
+| "I'll just check the shape" | Your shape checks need output-first protocol. Delegate. |
+| "The subagent will take too long" | Your impatience costs more in context than subagent time. Delegate. |
+| "I already know this data" | Your knowledge ≠ verified output. Delegate and see. |
+| "Let me just run this merge" | Your merges will silently fail. Delegate with verification. |
+| "This is too simple for a subagent" | Your simple code hides errors. Delegate. |
+| "I'm already looking at the data" | Your looking ≠ analyzing. Delegate. |
+| "Results are needed fast" | Your wrong results are worse than slow right results. Delegate. |
 </EXTREMELY-IMPORTANT>
 
 ## Delegation Pattern
@@ -79,22 +81,22 @@ Implement analysis with mandatory visible output at every step.
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Implementation
 
-**EVERY CODE STEP MUST PRODUCE VISIBLE OUTPUT. This is not negotiable.**
+**EVERY CODE STEP YOU WRITE MUST PRODUCE VISIBLE OUTPUT. This is not negotiable.**
 
-Before moving to the next step, you MUST:
+Before moving to the next step, you MUST execute the following:
 1. Run the code
 2. See the output (print, display, plot)
 3. Verify output is correct/reasonable
 4. Document in LEARNINGS.md
 5. Only THEN proceed to next step
 
-This applies even when:
+This applies even when YOU think:
 - "I know this works"
 - "It's just a simple transformation"
 - "I'll check results at the end"
 - "The code is straightforward"
 
-**If you catch yourself about to write code without outputting results, STOP.**
+**If you're about to write code without outputting results, STOP.**
 </EXTREMELY-IMPORTANT>
 
 ## What Output-First Means
@@ -108,17 +110,17 @@ This applies even when:
 | Check for unexpected nulls | Skip intermediate checks |
 | Plot distributions | Move on without looking |
 
-**The Mantra:** If you can't see it, you can't trust it.
+**The Mantra:** If not visible, it cannot be trusted.
 
-## Red Flags - STOP Immediately If You Think:
+## Red Flags - STOP Immediately
 
 | Thought | Why It's Wrong | Do Instead |
 |---------|----------------|------------|
-| "I'll check at the end" | Errors compound silently | Check after every step |
-| "This transform is simple" | Simple code can still be wrong | Output and verify |
-| "I know merge worked" | Merges often fail silently | Check row counts |
-| "Data looks fine" | "Looks" isn't verification | Print stats, show samples |
-| "I'll batch the outputs" | Loses ability to isolate issues | Output per operation |
+| "I'll check at the end" | STOP - you're letting errors compound silently | Check after every step |
+| "This transform is simple" | STOP - simple code can still be wrong | Output and verify |
+| "I know merge worked" | STOP - you've assumed this before and been wrong | Check row counts |
+| "Data looks fine" | STOP - you're confusing "looks" with verification | Print stats, show samples |
+| "I'll batch the outputs" | STOP - you're about to lose your ability to isolate issues | Output per operation |
 
 ## Output-First Protocol
 
@@ -153,8 +155,10 @@ df.head()
 
 ### Step 1: Read Plan
 
+Read the plan to understand task order:
+
 ```bash
-cat .claude/PLAN.md
+cat .claude/PLAN.md  # View analysis plan and task sequence
 ```
 
 Follow the task order defined in the plan.
@@ -295,16 +299,16 @@ Append each step to `.claude/LEARNINGS.md`:
 ## No Pause Between Tasks
 
 <EXTREMELY-IMPORTANT>
-**After completing task N, IMMEDIATELY start task N+1. Do NOT pause.**
+**After completing task N, IMMEDIATELY start task N+1. You MUST NOT pause.**
 
 | Thought | Reality |
 |---------|---------|
-| "Task done, let me check in with user" | NO. User wants ALL tasks done. Keep going. |
-| "User might want to see intermediate results" | User will see results at the END. Continue. |
-| "Natural pause point" | Only pause when ALL tasks complete or blocked. |
-| "Let me summarize this step" | Summarize AFTER all tasks. Keep moving. |
+| "Task done, should check in with user" | You're wasting context. User wants ALL tasks done. Keep going. |
+| "User might want to see intermediate results" | You're assuming wrong. User will see results at the END. Continue. |
+| "Natural pause point" | You're making excuses. Only pause when ALL tasks complete or you're blocked. |
+| "Should summarize this step" | You're procrastinating. Summarize AFTER all tasks. Keep moving. |
 
-**Pausing between tasks is procrastination disguised as courtesy.**
+**Your pausing between tasks is procrastination disguised as courtesy.**
 </EXTREMELY-IMPORTANT>
 
 ## Phase Complete

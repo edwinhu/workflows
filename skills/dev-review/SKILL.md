@@ -1,9 +1,7 @@
 ---
 name: dev-review
-description: "REQUIRED Phase 6 of /dev workflow. Combines spec compliance and code quality checks with confidence scoring."
+description: "This skill should be used as REQUIRED Phase 6 of /dev workflow when the implementation is complete and needs code review. Combines spec compliance and code quality checks with confidence-based filtering."
 ---
-
-**Announce:** "I'm using dev-review (Phase 6) to check code quality."
 
 ## Contents
 
@@ -25,7 +23,7 @@ Single-pass code review combining spec compliance and quality checks. Uses confi
 
 **Do NOT start review without test evidence.**
 
-Before reviewing, verify:
+Before reviewing, verify these preconditions:
 1. `.claude/LEARNINGS.md` contains **actual test output**
 2. Tests were **run** (not just written)
 3. Test output shows **PASS** (not SKIP, not assumed)
@@ -58,19 +56,20 @@ Before approving user-facing changes, verify:
 | UI change | ✅ | ❌ Missing | ❌ BLOCKED |
 | User workflow | ✅ | ❌ Missing | ❌ BLOCKED |
 
-**If E2E evidence is missing for user-facing changes, return BLOCKED.**
+Return BLOCKED if E2E evidence is missing for user-facing changes.
 
 "Unit tests pass" without E2E for UI changes is NOT approvable.
 </EXTREMELY-IMPORTANT>
 
 ### Gate Check
 
+Check LEARNINGS.md for test output:
+
 ```bash
-# Check LEARNINGS.md for test output
-grep -E "(PASS|OK|SUCCESS|\d+ passed)" .claude/LEARNINGS.md
+rg -E "(PASS|OK|SUCCESS|\d+ passed)" .claude/LEARNINGS.md
 ```
 
-**If no test output found, STOP and return to /dev-implement.**
+If no test output is found, STOP and return to /dev-implement.
 
 "It should work" is NOT evidence. Test output IS evidence.
 </EXTREMELY-IMPORTANT>
@@ -78,33 +77,33 @@ grep -E "(PASS|OK|SUCCESS|\d+ passed)" .claude/LEARNINGS.md
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Review
 
-**Only report issues with >= 80% confidence. This is not negotiable.**
+**You MUST report only issues with >= 80% confidence. This is not negotiable.**
 
-Before reporting ANY issue, you MUST:
+Before reporting ANY issue, complete these verification steps:
 1. Verify it's not a false positive
 2. Verify it's not a pre-existing issue
 3. Assign a confidence score
-4. Only report if score >= 80
+4. Report only if score >= 80
 
-This applies even when:
+You MUST apply this rule even when encountering:
 - "This looks suspicious"
 - "I think this might be wrong"
 - "The style seems inconsistent"
 - "I would have done it differently"
 
-**If you catch yourself about to report a low-confidence issue, DISCARD IT.**
+You MUST discard any low-confidence issue found during review.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
 |---------|----------------|------------|
-| "Tests probably pass" | No evidence | Check LEARNINGS.md for output |
-| "This looks wrong" | Vague suspicion isn't evidence | Find concrete proof or discard |
-| "I would do it differently" | Style preference isn't a bug | Check if it violates guidelines |
-| "This might cause problems" | "Might" means < 80% confidence | Find proof or discard |
-| "Pre-existing but should be fixed" | Not your scope | Score it 0 and discard |
-| "User can test it" | Automation likely possible | Return to implement phase |
+| "Tests probably pass" | You don't have evidence - absence of evidence is not evidence | Check LEARNINGS.md for actual output |
+| "This looks wrong" | Your vague suspicion ≠ evidence | Find concrete proof or discard |
+| "I would do it differently" | Your style preference ≠ bug | Check if it violates project guidelines |
+| "This might cause problems" | Your "might" = < 80% confidence | Find proof or discard |
+| "Pre-existing but should be fixed" | You're out of scope | Score it 0 and discard |
+| "User can test it" | Your manual testing is less reliable than automation | Return to implement phase |
 
 ## Review Focus Areas
 
@@ -113,8 +112,8 @@ This applies even when:
 - [ ] Tests show PASS/OK (not SKIP, FAIL, or missing)
 - [ ] UI changes have screenshot/snapshot evidence
 - [ ] All test types run (unit, integration, UI as applicable)
-- [ ] **E2E tests exist and pass for user-facing changes**
-- [ ] **E2E test simulates actual user flow, not just component render**
+- [ ] E2E tests exist and pass for user-facing changes
+- [ ] E2E test simulates actual user flow, not just component render
 
 ### Spec Compliance
 - [ ] All requirements from .claude/SPEC.md are implemented
@@ -125,9 +124,9 @@ This applies even when:
 ### Code Quality
 - [ ] Code is simple and DRY (no unnecessary duplication)
 - [ ] Logic is correct (no bugs, handles edge cases)
-- [ ] Follows codebase conventions (naming, patterns, structure)
+- [ ] Codebase conventions followed (naming, patterns, structure)
 - [ ] Error handling is complete
-- [ ] No security vulnerabilities
+- [ ] No security vulnerabilities detected
 
 ## Confidence Scoring
 
@@ -187,68 +186,72 @@ Cannot approve without test evidence. Return to /dev-implement and run tests.
 
 ## Agent Invocation
 
-Main chat spawns Task agent:
+Spawn Task agent for review execution:
 
 ```
 Task(subagent_type="general-purpose"):
 "Review implementation against .claude/SPEC.md.
 
 FIRST: Check .claude/LEARNINGS.md for test output.
-If no test output found, return BLOCKED immediately.
+Return BLOCKED immediately if no test output is found.
 
-Single-pass review covering:
+Complete single-pass review covering:
 1. Test evidence - tests actually run and pass?
 2. Spec compliance - all requirements met?
 3. Code quality - simple, correct, follows conventions?
 
 Confidence score each issue (0-100).
-Only report issues >= 80 confidence.
+Report only issues with >= 80 confidence.
 Return structured output per /dev-review format."
 ```
 
 ## Honesty Requirement
 
 <EXTREMELY-IMPORTANT>
-**Approving without test evidence is LYING.**
+**You approving without test evidence is LYING.**
 
-When you say "APPROVED", you are asserting:
+An "APPROVED" verdict means YOU assert:
 - Tests actually ran (not "should work")
 - Test output shows PASS (not SKIP, not assumed)
-- You saw the evidence (not trusting reports)
+- Evidence exists and YOU verified it (not trusted reports)
 
-Saying "APPROVED" without test evidence is not "being efficient" - it is LYING about code quality.
+You approving without test evidence is not "efficiency" - it is LYING about code quality.
 
-**BLOCKED is honest. Fake APPROVED is fraud.**
+**BLOCKED is honest. Your fake APPROVED is fraud.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Prevention
 
-These thoughts mean STOP—you're about to approve dishonestly:
+STOP - you're about to rationalize if these thoughts arise—they indicate dishonest approval:
 
 | Thought | Reality |
 |---------|---------|
-| "Tests probably pass" | Probably ≠ evidence. Check LEARNINGS.md. |
-| "I saw the code, it looks right" | Looking ≠ running. Where's test output? |
-| "User is waiting for approval" | User wants HONEST approval. Say BLOCKED if needed. |
-| "It's a small change" | Small changes break things. Require evidence. |
-| "I trust the implementer" | Trust doesn't replace verification. Check evidence. |
-| "I'll approve and they can fix later" | NO. BLOCKED now or bugs ship. |
-| "Review is just a formality" | Review is the LAST GATE before bugs ship. Take it seriously. |
+| "Tests probably pass" | Your probably ≠ evidence. Check LEARNINGS.md. |
+| "I saw the code, it looks right" | Your looking ≠ running. Find test output. |
+| "User is waiting for approval" | They want honest approval. You return BLOCKED if needed. |
+| "It's a small change" | Your size estimate doesn't matter. Small changes break things. Require evidence. |
+| "I trust the implementer" | Your trust doesn't replace verification. You verify evidence. |
+| "I'll approve and they can fix later" | You block now or bugs ship to users. |
+| "Review is just a formality" | Review is the LAST GATE before bugs ship. You execute seriously. |
 
 ## Quality Standards
 
-- **Test evidence is mandatory** - no approval without test output
-- Never report style preferences not backed by project guidelines
-- Pre-existing issues are NOT your concern (confidence = 0)
-- Each reported issue must be immediately actionable
-- File paths must be absolute and include line numbers
-- If unsure, the issue is below 80 confidence
+- **Test evidence is mandatory** - do not approve without test output
+- Do not report style preferences lacking project guideline backing
+- Do not report pre-existing issues (confidence = 0)
+- Make each reported issue immediately actionable
+- Use absolute file paths with line numbers in reports
+- Treat uncertainty as below 80 confidence
 
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After review is APPROVED, IMMEDIATELY invoke:
+After review completes:
+
+**If APPROVED:** Immediately invoke the dev-verify skill:
 ```
 Skill(skill="workflows:dev-verify")
 ```
 
-If CHANGES REQUIRED, return to `/dev-implement` to fix issues first.
+**If CHANGES REQUIRED:** Return to `/dev-implement` to fix reported issues.
+
+**If BLOCKED:** Return to `/dev-implement` to collect test evidence.

@@ -4,7 +4,7 @@ version: 1.0
 description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
 ---
 
-**Announce:** "I'm using ds-plan (Phase 2) to profile data and create task breakdown."
+Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
 
 ## Contents
 
@@ -36,25 +36,25 @@ Before exploring data or creating tasks, you MUST have:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "Data looks clean, profiling unnecessary" | Data is never clean | PROFILE to discover issues |
+| "Data looks clean, profiling unnecessary" | Your data is never clean | PROFILE to discover issues |
 | "I can profile as I go" | You'll miss systemic issues | PROFILE comprehensively NOW |
-| "Quick .head() is enough" | Head hides tail problems | RUN full profiling checklist |
-| "Missing values won't affect analysis" | They always do | DOCUMENT and plan handling |
-| "I'll handle data issues during analysis" | Issues will derail analysis | FIX data issues FIRST |
-| "User didn't mention data quality" | They assume you'll check | QUALITY check is YOUR job |
-| "Profiling takes too long" | Skipping it costs days later | INVEST time now |
+| "Quick .head() is enough" | Your head hides tail problems | RUN full profiling checklist |
+| "Missing values won't affect my analysis" | They always do | DOCUMENT and plan handling |
+| "I'll handle data issues during analysis" | Your issues will derail your analysis | FIX data issues FIRST |
+| "User didn't mention data quality" | They assume YOU'LL check | QUALITY check is YOUR job |
+| "Profiling takes too long" | Your skipping it costs days later | INVEST time now |
 
 ### Honesty Framing
 
 **Creating an analysis plan without profiling the data is LYING about understanding the data.**
 
 You cannot plan analysis steps without knowing:
-- Data shape and types
-- Missing value patterns
-- Data quality issues
-- Cleaning requirements
+- Your data's shape and types
+- Your missing value patterns
+- Your data quality issues
+- Your cleaning requirements
 
-Profiling costs minutes. Wrong plan costs hours of rework and incorrect results.
+Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect results.
 
 ### No Pause After Completion
 
@@ -89,7 +89,7 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 ### 1. Verify Spec Exists
 
 ```bash
-cat .claude/SPEC.md
+cat .claude/SPEC.md  # verify-spec: read SPEC file to confirm it exists
 ```
 
 If missing, stop and run `/ds-brainstorm` first.
@@ -185,7 +185,7 @@ Task(
 
 **After launching agents:**
 - Continue to other work (don't wait)
-- Check status with `/tasks`
+- Check status with `/tasks` command
 - Collect results with TaskOutput when ready
 
 ```
@@ -289,22 +289,22 @@ For each task, define what output proves completion:
 
 | Action | Why It's Wrong | Do Instead |
 |--------|----------------|------------|
-| Skip data profiling | Data issues will break analysis | Always profile first |
-| Ignore missing values | Will corrupt results | Document and plan handling |
-| Start analysis immediately | Haven't characterized data | Complete profiling |
-| Assume data is clean | Never assume, always verify | Run quality checks |
+| Skip data profiling | Your data issues will break your analysis | Always profile first |
+| Ignore missing values | You'll corrupt your results | Document and plan handling |
+| Start analysis immediately | You haven't characterized your data | Complete profiling |
+| Assume your data is clean | Never assume, you must verify | Run quality checks |
 
 ## Output
 
-Plan complete when:
-- `.claude/SPEC.md` was read and understood
-- All data sources profiled (shape, types, stats)
-- Data quality issues documented
-- Cleaning strategy defined for each issue
-- Tasks ordered by dependency
-- Output verification criteria defined
-- `.claude/PLAN.md` written
-- User confirms ready for implementation
+Complete the plan when:
+- Read and understand `.claude/SPEC.md`
+- Profile all data sources (shape, types, stats)
+- Document data quality issues
+- Define cleaning strategy for each issue
+- Order tasks by dependency
+- Define output verification criteria
+- Write `.claude/PLAN.md`
+- Confirm ready for implementation
 
 ## Phase Complete
 

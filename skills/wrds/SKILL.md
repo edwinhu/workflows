@@ -100,6 +100,8 @@ Before EVERY query execution:
 
 ## Connection
 
+Initialize PostgreSQL connection to WRDS:
+
 ```python
 import psycopg2
 
@@ -112,12 +114,17 @@ conn = psycopg2.connect(
 )
 ```
 
-Auth: `~/.pgpass` with `chmod 600`:
+Configure authentication via `~/.pgpass` with `chmod 600`:
 ```
 wrds-pgdata.wharton.upenn.edu:9737:wrds:USERNAME:PASSWORD
 ```
 
-SSH: `ssh wrds` (uses `~/.ssh/wrds_rsa`)
+Connect via SSH tunnel:
+```bash
+ssh wrds
+```
+
+This uses `~/.ssh/wrds_rsa` for authentication.
 
 ## Critical Filters
 
@@ -152,13 +159,15 @@ WHERE acqdisp = 'D'  -- Dispositions
 
 Always use parameterized queries (never string formatting):
 
+Use scalar parameter binding for single values:
 ```python
-# Correct
 cursor.execute("""
     SELECT gvkey, conm FROM comp.company WHERE gvkey = %s
 """, (gvkey,))
+```
 
-# For lists, use ANY()
+Use ANY() for list parameters:
+```python
 cursor.execute("""
     SELECT * FROM comp.funda WHERE gvkey = ANY(%s)
 """, (gvkey_list,))
@@ -197,14 +206,14 @@ WRDS-provided samples at `~/resources/wrds-code-samples/`:
 
 ## Date Awareness
 
-**Pattern from oh-my-opencode:** When querying historical data, be aware of current date context.
+When querying historical data, leverage current date context for dynamic range calculations.
 
-Current date is automatically available via `datetime.now()`. Use this for:
-- Data range validation ("get data for last 5 years")
+Current date is automatically available via `datetime.now()`. Apply this to:
+- Data range validation (e.g., "get data for last 5 years")
 - Fiscal year calculations
 - Event study windows
 
-Example:
+Implement dynamic date ranges in queries:
 ```python
 from datetime import datetime, timedelta
 
@@ -219,4 +228,4 @@ WHERE datadate BETWEEN %s AND %s
 df = pd.read_sql(query, conn, params=(start_date, end_date))
 ```
 
-Force current year awareness in date-dependent queries.
+Always incorporate current date awareness in date-dependent queries to ensure results remain fresh across time.

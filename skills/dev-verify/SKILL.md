@@ -1,9 +1,10 @@
 ---
 name: dev-verify
-description: "REQUIRED Phase 7 of /dev workflow (final). Requires fresh runtime evidence before claiming completion."
+description: "This skill should be used when the user asks to 'verify completion', 'check that tests pass', 'confirm feature works', or REQUIRED Phase 7 of /dev workflow (final). Enforces fresh runtime evidence before claiming completion."
+version: 1.0.0
 ---
 
-**Announce:** "I'm using dev-verify (Phase 7) to confirm completion with fresh evidence."
+Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
 
 ## Contents
 
@@ -53,7 +54,7 @@ This applies even when:
 **If you catch yourself about to claim completion without fresh evidence, STOP.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Red Flags - STOP Immediately If You Catch Yourself Thinking:
 
 | Thought | Why It's Wrong | Do Instead |
 |---------|----------------|------------|
@@ -114,20 +115,20 @@ Before making ANY status claim:
 | "Process exited 0" | "Functional test verifies actual output matches spec" |
 | "Mock returned expected value" | "Real integration returns expected value" |
 
-**Red Flag:** If you catch yourself thinking "logs prove it works" - STOP. Logs prove code executed, not that it produced correct results. E2E means verifying the actual output users see.
+**Red Flag:** If you catch yourself thinking "logs prove it works" - STOP, you're about to claim false verification. Logs prove code executed, not that it produced correct results. E2E means verifying the actual output users see.
 
 ### Rationalization Prevention (E2E)
 
 | Thought | Reality |
 |---------|---------|
-| "Unit tests cover it" | Unit tests don't simulate users. Where's E2E? |
-| "E2E would be redundant" | Redundancy catches bugs. Write E2E. |
-| "No time for E2E" | No time to fix production bugs? Write E2E. |
-| "Feature is internal" | Does it affect user output? Then E2E. |
-| "I manually tested" | Manual = no evidence. Automate it. |
-| **"Log checking verifies it works"** | **Log checking only verifies code executed, not results. Not E2E.** |
-| **"E2E with screenshots is too complex"** | **If too complex to verify, feature isn't done. Complexity = bugs hiding.** |
-| **"Implementation is done, testing is just verification"** | **Testing IS implementation. Untested code is unfinished code.** |
+| "Unit tests cover it" | Unit tests don't simulate users. Where's YOUR E2E? |
+| "E2E would be redundant" | YOU'LL catch bugs with redundancy. Write E2E. |
+| "No time for E2E" | YOU don't have time to fix production bugs? Write E2E. |
+| "Feature is internal" | Does it affect user output? Then YOU need E2E. |
+| "I manually tested" | YOU provided no evidence. Automate it. |
+| **"Log checking verifies it works"** | **YOUR log checking only verifies code executed, not results. Not E2E.** |
+| **"E2E with screenshots is too complex"** | **If YOU can't verify it simply, your feature isn't done. Complexity = bugs hiding.** |
+| **"Implementation is done, testing is just verification"** | **Testing IS YOUR implementation. Untested code is unfinished code.** |
 
 ### The E2E Gate Function
 
@@ -175,14 +176,14 @@ These thoughts mean STOP—you're about to claim falsely:
 
 | Thought | Reality |
 |---------|---------|
-| "I just ran it" | "Just" = stale. Run it AGAIN. |
-| "The agent said it passed" | Agent reports need YOUR confirmation. Run it. |
-| "It should work" | "Should" is hope. Run and see output. |
-| "I'm confident" | Confidence ≠ verification. Run the command. |
-| "We already verified earlier" | Earlier ≠ now. Fresh evidence only. |
-| "User will verify it" | NO. Verify before claiming. User trusts your claim. |
-| "Close enough" | Close ≠ complete. Verify fully. |
-| "Time to move on" | Only move on after FRESH verification. |
+| "I just ran it" | "Just" = stale. YOU must run it AGAIN. |
+| "The agent said it passed" | Agent reports need YOUR confirmation. YOU run it. |
+| "It should work" | "Should" is hope. YOU run and see output. |
+| "I'm confident" | YOUR confidence ≠ verification. YOU run the command. |
+| "We already verified earlier" | Earlier ≠ now. YOU need fresh evidence only. |
+| "User will verify it" | NO. YOU verify before claiming. User trusts YOUR claim. |
+| "Close enough" | Close ≠ complete. YOU verify fully. |
+| "Time to move on" | YOU only move on after FRESH verification. |
 
 **STRUCTURAL VERIFICATION IS NOT RUNTIME VERIFICATION:**
 
@@ -199,27 +200,30 @@ These thoughts mean STOP—you're about to claim falsely:
 - Structural: "The code IS THERE" (useless)
 - Runtime: "The code WORKS" (valid)
 
-If you find yourself saying "the code exists" or "I verified the implementation" without running it, **STOP** - that's not verification.
+If you find yourself saying "the code exists" or "I verified the implementation" without running it, **STOP** - you're doing structural analysis, not verification.
 
 ## Verification Patterns
 
 ### Tests
 ```bash
-# Run the command
-npm test  # or pytest, cargo test, etc.
+# Run tests (e.g., npm test, pytest, cargo test)
+npm test
 
-# See numerical results
-# "34/34 pass" → Can claim "tests pass"
-# "33/34 pass" → CANNOT claim success
+# Check results: "34/34 pass" = can claim tests pass
+# "33/34 pass" = cannot claim success (partial fail)
 ```
+
+**Tool description:** Run automated test suite to verify all tests pass
 
 ### Regression Test
 ```bash
-# 1. Write test → run (should pass)
-# 2. Revert fix → run (MUST fail)
-# 3. Restore fix → run (should pass)
-# Only then claim "bug is fixed"
+# 1. Write test → run (should fail initially)
+# 2. Apply fix → run (should pass)
+# 3. Revert fix → run (must fail again to confirm fix)
+# 4. Restore fix → run (must pass to confirm success)
 ```
+
+**Tool description:** Execute regression test cycle to validate bug fix reproducibility
 
 ### Build
 ```bash
@@ -227,25 +231,28 @@ npm run build && echo "Exit code: $?"
 # Must see "Exit code: 0" to claim success
 ```
 
+**Tool description:** Build application and verify exit code is 0
+
 ## User Acceptance (Final Step)
 
-After technical verification passes, confirm with user:
+After technical verification passes, confirm with user. Use the AskUserQuestion pattern:
 
+**Tool description:** Request user confirmation that implementation meets specified requirements
+
+```yaml
+question: "Does this implementation meet your requirements?"
+options:
+  - label: "Yes, requirements met"
+    description: "Feature works as designed, ready to merge"
+  - label: "Partially"
+    description: "Core works but missing some requirements"
+  - label: "No"
+    description: "Does not meet requirements, needs more work"
 ```
-AskUserQuestion:
-  question: "Does this implementation meet your requirements?"
-  options:
-    - label: "Yes, requirements met"
-      description: "Feature works as designed, ready to merge"
-    - label: "Partially"
-      description: "Core works but missing some requirements"
-    - label: "No"
-      description: "Does not meet requirements, needs more work"
-```
 
-**Reference `.claude/SPEC.md`** when asking - remind user of the success criteria they defined.
+Reference `.claude/SPEC.md` when asking—remind user of the success criteria they defined.
 
-If user says "Partially" or "No":
+If user responds "Partially" or "No":
 1. Ask which specific requirement is not met
 2. Return to `/dev-implement` to address gaps
 3. Re-run verification
@@ -267,9 +274,21 @@ Both must pass. No shortcuts exist.
 
 When user confirms "Yes, requirements met":
 
-**Announce:** "Dev workflow complete. All 7 phases passed."
+Announce: "Dev workflow complete. All 7 phases passed."
 
 The `/dev` workflow is now finished. Offer to:
 - Commit the changes
 - Clean up `.claude/` files
 - Start a new feature with `/dev`
+
+---
+
+## Key Principles
+
+**Fresh Evidence Always:** Every claim requires proof from a fresh command execution, not cached results or agent reports.
+
+**Runtime Over Structural:** Verify code works by running it, not by checking if code exists. Structural analysis cannot prove behavior.
+
+**E2E for User-Facing:** User-visible features require end-to-end evidence (screenshots, user flow tests), not unit tests alone.
+
+**Honesty Requirement:** Claiming completion without fresh evidence is misrepresenting project state. Only advance when fully verified.

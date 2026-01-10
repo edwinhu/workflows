@@ -24,7 +24,7 @@ Marimo is a reactive Python notebook where cells form a DAG and auto-execute on 
 
 ### IRON LAW #1: NEVER MODIFY CELL DECORATORS OR SIGNATURES
 
-You MUST only edit code INSIDE `@app.cell` function bodies. This is not negotiable.
+Only edit code INSIDE `@app.cell` function bodies. This is not negotiable.
 
 **NEVER modify:**
 - Cell decorators (`@app.cell`)
@@ -38,7 +38,7 @@ You MUST only edit code INSIDE `@app.cell` function bodies. This is not negotiab
 
 ### IRON LAW #2: NO EXECUTION CLAIM WITHOUT OUTPUT VERIFICATION
 
-Before claiming ANY marimo notebook works, you MUST:
+Before claiming ANY marimo notebook works:
 1. **VALIDATE** syntax and structure: `marimo check notebook.py`
 2. **EXECUTE** with outputs: `marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs`
 3. **VERIFY** using notebook-debug skill's verification checklist
@@ -52,7 +52,7 @@ This is not negotiable. Claiming "notebook works" without executing and inspecti
 |--------|---------|------------|
 | "marimo check passed, so it works" | Syntax check ≠ runtime correctness | EXECUTE with --include-outputs and inspect |
 | "Just a small change, can't break anything" | Reactivity means small changes propagate everywhere | VERIFY with full execution |
-| "I'll let marimo handle the dependency tracking" | You still need to verify correct behavior | CHECK outputs match expectations |
+| "I'll let marimo handle the dependency tracking" | Verification of correct behavior is still required | CHECK outputs match expectations |
 | "The function signature looks right" | Wrong deps/returns break reactivity silently | VALIDATE all vars are in params AND returns |
 | "I can modify the function signature" | Breaks marimo's dependency detection | ONLY edit inside function bodies |
 | "Variables can be used without returning them" | Will cause NameError in dependent cells | RETURN all created variables |
@@ -67,30 +67,30 @@ This is not negotiable. Claiming "notebook works" without executing and inspecti
 
 ### Editing Checklist
 
-Before EVERY marimo edit:
+Before every marimo edit:
 
 **Structure Validation:**
-- [ ] Only editing code INSIDE `@app.cell` function bodies
-- [ ] NOT modifying decorators or signatures
-- [ ] All used variables are in function parameters
-- [ ] All created variables are in return statement
-- [ ] Trailing comma used for single returns
-- [ ] No variable redefinitions across cells
+- [ ] Only edit code INSIDE `@app.cell` function bodies
+- [ ] Do NOT modify decorators or signatures
+- [ ] Verify all used variables are in function parameters
+- [ ] Verify all created variables are in return statement
+- [ ] Ensure trailing comma used for single returns
+- [ ] Ensure no variable redefinitions across cells
 
 **Syntax Validation:**
-- [ ] `marimo check notebook.py` executed
-- [ ] No syntax errors reported
-- [ ] No undefined variable warnings
-- [ ] No redefinition warnings
+- [ ] Execute `marimo check notebook.py`
+- [ ] Verify no syntax errors reported
+- [ ] Verify no undefined variable warnings
+- [ ] Verify no redefinition warnings
 
 **Runtime Verification:**
-- [ ] Executed with `marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs`
-- [ ] Export succeeded (exit code 0)
-- [ ] Output ipynb exists and is non-empty
-- [ ] Used notebook-debug verification checklist
-- [ ] No tracebacks in any cell
-- [ ] All cells executed (execution_count not null)
-- [ ] Outputs match expectations
+- [ ] Execute with `marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs`
+- [ ] Verify export succeeded (exit code 0)
+- [ ] Verify output ipynb exists and is non-empty
+- [ ] Apply notebook-debug verification checklist
+- [ ] Verify no tracebacks in any cell
+- [ ] Verify all cells executed (execution_count not null)
+- [ ] Verify outputs match expectations
 
 **Only after ALL checks pass:**
 - [ ] Claim "notebook works"
@@ -154,24 +154,24 @@ def _(df, pl):
 
 | Command | Purpose |
 |---------|---------|
-| `marimo edit notebook.py` | Open in browser editor |
-| `marimo run notebook.py` | Run as app |
-| `marimo check notebook.py` | Check for errors (no execution) |
-| `marimo convert notebook.ipynb` | Convert from Jupyter |
+| `marimo edit notebook.py` | marimo: Open notebook in browser editor for interactive development |
+| `marimo run notebook.py` | marimo: Run notebook as executable app |
+| `marimo check notebook.py` | marimo: Validate notebook structure and syntax without execution |
+| `marimo convert notebook.ipynb` | marimo: Convert Jupyter notebook to marimo format |
 
 ## Export Commands
 
 ```bash
-# Export to ipynb (code only, no outputs)
+# marimo: Export to ipynb with code only
 marimo export ipynb notebook.py -o __marimo__/notebook.ipynb
 
-# Export to ipynb WITH outputs (runs notebook first)
+# marimo: Export to ipynb with outputs (runs notebook first)
 marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
 
-# Export to HTML (runs notebook by default)
+# marimo: Export to HTML (runs notebook by default)
 marimo export html notebook.py -o __marimo__/notebook.html
 
-# Export to HTML with auto-refresh on changes (great for live preview)
+# marimo: Export to HTML with auto-refresh on changes (live preview)
 marimo export html notebook.py -o __marimo__/notebook.html --watch
 ```
 
@@ -190,12 +190,14 @@ marimo export html notebook.py -o __marimo__/notebook.html --watch
 
 **1. Pre-execution validation:**
 ```bash
+# scripts: Validate notebook syntax and cell structure
 scripts/check_notebook.sh notebook.py
 ```
-Runs syntax check + `marimo check` + cell structure overview in one command.
+Runs syntax check, marimo validation, and cell structure overview in one command.
 
 **2. Runtime errors:** Export with outputs, then use `notebook-debug` skill:
 ```bash
+# marimo: Export to ipynb with outputs for inspection
 marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
 ```
 
@@ -212,22 +214,25 @@ marimo export ipynb notebook.py -o __marimo__/notebook.ipynb --include-outputs
 
 ### Reference Files
 
-- **`references/reactivity.md`** - DAG execution, variable rules, dependency detection
-- **`references/debugging.md`** - Error patterns, runtime debugging, environment issues
+For detailed patterns and advanced techniques, consult:
+- **`references/reactivity.md`** - DAG execution, variable rules, dependency detection patterns
+- **`references/debugging.md`** - Error patterns, runtime debugging, environment-specific issues
 - **`references/widgets.md`** - Interactive UI components and mo.ui patterns
-- **`references/sql.md`** - SQL cells and database integration
+- **`references/sql.md`** - SQL cells and database integration techniques
 
-### Example Files
+### Examples
 
+Working examples available in `examples/`:
 - **`examples/basic_notebook.py`** - Minimal marimo notebook structure
-- **`examples/data_analysis.py`** - Data loading, filtering, visualization pattern
-- **`examples/interactive_widgets.py`** - Using mo.ui for interactivity
+- **`examples/data_analysis.py`** - Data loading, filtering, and visualization patterns
+- **`examples/interactive_widgets.py`** - Interactive UI component usage
 
 ### Scripts
 
-- **`scripts/check_notebook.sh`** - Primary validation: syntax + marimo check + cell structure
-- **`scripts/get_cell_map.py`** - Extract cell metadata (called by check_notebook.sh)
+Validation utilities in `scripts/`:
+- **`scripts/check_notebook.sh`** - Primary validation: syntax check, marimo validation, cell structure overview
+- **`scripts/get_cell_map.py`** - Extract cell metadata (invoked by check_notebook.sh)
 
 ### Related Skills
 
-- **`notebook-debug`** - Debugging executed ipynb files (tracebacks, Read vs jq inspection)
+- **`notebook-debug`** - Debugging executed ipynb files with tracebacks and output inspection

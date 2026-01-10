@@ -1,6 +1,6 @@
 ---
 name: dev-test-hammerspoon
-description: "macOS desktop E2E testing with Hammerspoon, screencapture, and cliclick."
+description: This skill should be used when the user asks to "debug macOS app", "test native app", "automate macOS workflow", "test native macOS application", or needs desktop automation for testing macOS applications with Hammerspoon. Use for application launch/control, window management, keyboard/mouse simulation, and visual verification.
 ---
 
 **Announce:** "I'm using dev-test-hammerspoon for macOS desktop automation."
@@ -25,7 +25,7 @@ description: "macOS desktop E2E testing with Hammerspoon, screencapture, and cli
 **Verify Hammerspoon is installed before proceeding.**
 
 ```bash
-# Check Hammerspoon
+# Check Hammerspoon installation (both CLI and app)
 which hs || echo "MISSING: hs CLI"
 ls /Applications/Hammerspoon.app 2>/dev/null || echo "MISSING: Hammerspoon.app"
 ```
@@ -54,7 +54,7 @@ Reply when installed and I'll continue testing.
 <EXTREMELY-IMPORTANT>
 ## When to Use Hammerspoon
 
-**USE Hammerspoon when you need:**
+**Use Hammerspoon for:**
 - macOS native application automation
 - System-wide keyboard shortcuts
 - Window management and positioning
@@ -62,7 +62,7 @@ Reply when installed and I'll continue testing.
 - Clipboard verification
 - Multi-app workflows on macOS
 
-**DO NOT use Hammerspoon when:**
+**Do not use Hammerspoon for:**
 - Testing web applications (use Chrome MCP or Playwright)
 - Cross-platform testing needed
 - Linux desktop automation (use dev-test-linux)
@@ -91,7 +91,7 @@ require("hs.ipc")  -- Enables CLI
 
 **Reload config after changes:**
 ```bash
-hs -c 'hs.reload()'
+hs -c 'hs.reload()'  # Reload Hammerspoon configuration
 ```
 
 ## Input Simulation
@@ -131,13 +131,13 @@ hs.eventtap.scrollWheel({0, 5}, {})   -- Scroll up
 
 ```bash
 # Execute Lua code directly
-hs -c 'hs.eventtap.keyStroke({"cmd"}, "c")'
+hs -c 'hs.eventtap.keyStroke({"cmd"}, "c")'  # Run inline Lua code via CLI
 
 # Execute a script file
-hs /path/to/test_script.lua
+hs /path/to/test_script.lua  # Run Hammerspoon script from file
 
 # Pipe script via stdin
-echo 'hs.eventtap.keyStrokes("test")' | hs -s
+echo 'hs.eventtap.keyStrokes("test")' | hs -s  # Run script piped through stdin
 ```
 
 ## Application Control
@@ -246,28 +246,28 @@ After completing a workflow, capture a screenshot to prove success.
 
 ```bash
 # Full screen (all displays)
-screencapture /tmp/screenshot.png
+screencapture /tmp/screenshot.png  # Capture entire screen to file
 
 # Main screen only
-screencapture -m /tmp/main_screen.png
+screencapture -m /tmp/main_screen.png  # Capture primary screen only
 
 # Specific window (interactive - click to select)
-screencapture -w /tmp/window.png
+screencapture -w /tmp/window.png  # Interactively select window to capture
 
 # Specific region
-screencapture -R 100,200,800,600 /tmp/region.png
+screencapture -R 100,200,800,600 /tmp/region.png  # Capture rectangular region (x,y,w,h)
 
 # Without window shadow
-screencapture -o /tmp/no_shadow.png
+screencapture -o /tmp/no_shadow.png  # Capture without window shadows
 
 # Silent (no camera sound)
-screencapture -x /tmp/silent.png
+screencapture -x /tmp/silent.png  # Capture silently without shutter sound
 
 # To clipboard instead of file
-screencapture -c
+screencapture -c  # Capture to clipboard
 
 # Combined: silent, no shadow, specific region
-screencapture -x -o -R 0,0,1920,1080 /tmp/clean.png
+screencapture -x -o -R 0,0,1920,1080 /tmp/clean.png  # Capture region silently without shadows
 ```
 
 ### hs.screen (Hammerspoon)
@@ -362,7 +362,7 @@ os.exit(0)
 
 **Run from CLI:**
 ```bash
-hs /path/to/test_workflow.lua && echo "TEST PASSED" || echo "TEST FAILED"
+hs /path/to/test_workflow.lua && echo "TEST PASSED" || echo "TEST FAILED"  # Execute test script and report result
 ```
 
 ## Alternative: cliclick
@@ -370,27 +370,27 @@ hs /path/to/test_workflow.lua && echo "TEST PASSED" || echo "TEST FAILED"
 For simpler needs, `cliclick` provides CLI-based mouse/keyboard control:
 
 ```bash
-# Install
+# Install cliclick tool
 brew install cliclick
 
 # Mouse click at coordinates
-cliclick c:100,200       # Left click
-cliclick rc:100,200      # Right click
-cliclick dc:100,200      # Double click
+cliclick c:100,200       # Left-click at coordinates
+cliclick rc:100,200      # Right-click at coordinates
+cliclick dc:100,200      # Double-click at coordinates
 
 # Move mouse
-cliclick m:500,300
+cliclick m:500,300  # Move mouse to coordinates
 
 # Type text
-cliclick t:"Hello world"
+cliclick t:"Hello world"  # Type text at current cursor position
 
 # Key press
-cliclick kp:return
-cliclick kp:escape
-cliclick kd:cmd kp:c ku:cmd  # Cmd+C
+cliclick kp:return  # Press return key
+cliclick kp:escape  # Press escape key
+cliclick kd:cmd kp:c ku:cmd  # Press Cmd+C (key down, press, key up)
 
 # Wait (milliseconds)
-cliclick w:500
+cliclick w:500  # Wait for 500 milliseconds
 ```
 
 **cliclick is useful for simple scripts but lacks app control - prefer Hammerspoon for complex E2E tests.**

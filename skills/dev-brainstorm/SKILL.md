@@ -7,13 +7,13 @@ description: "REQUIRED Phase 1 of /dev workflow. Uses Socratic questioning to un
 
 ## First: Activate Workflow
 
-Before anything else, activate the dev workflow:
+Before anything else, activate the dev workflow. This enables workflow-specific hooks (sandbox enforcement, TDD checks, etc.).
+
+**Activate dev workflow by creating timestamp file:**
 
 ```bash
 mkdir -p /tmp/claude-workflow-$PPID && touch /tmp/claude-workflow-$PPID/dev_mode && echo "✓ Dev workflow activated"
 ```
-
-This enables workflow-specific hooks (sandbox enforcement, TDD checks, etc.).
 
 ## Contents
 
@@ -33,14 +33,14 @@ Refine vague ideas into clear requirements through Socratic questioning.
 
 **ASK QUESTIONS BEFORE ANYTHING ELSE. This is not negotiable.**
 
-Before exploring codebase, before proposing approaches, you MUST:
+Before exploring codebase, before proposing approaches, follow these requirements:
 1. Ask clarifying questions using AskUserQuestion
 2. Understand what the user actually wants
 3. Define success criteria
 
 Approaches come later (in /dev-design) after exploring the codebase.
 
-**If you catch yourself about to explore the codebase before asking questions, STOP.**
+**If YOU catch YOURSELF about to explore the codebase before asking questions, STOP.**
 </EXTREMELY-IMPORTANT>
 
 ### Rationalization Table - STOP If You Think:
@@ -48,12 +48,12 @@ Approaches come later (in /dev-design) after exploring the codebase.
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
 | "The requirements seem obvious" | Your assumptions are often wrong | ASK questions to confirm |
-| "Let me just look at the code to understand" | Code tells you HOW, not WHY | ASK what user wants first |
-| "I can gather requirements while exploring" | You'll get distracted and miss key questions | QUESTIONS FIRST, exploration later |
-| "User already explained everything" | Users always leave out critical details | ASK clarifying questions anyway |
-| "I'll ask if I need more info" | You won't know what you don't know | ASK questions NOW, not later |
-| "Quick peek at the code won't hurt" | Codebases bias your thinking | STAY IGNORANT until requirements clear |
-| "I can propose approaches based on description" | You haven't seen the codebase yet | WAIT for dev-design phase |
+| "Let me just look at the code to understand" | Code tells HOW, not WHY | ASK what user wants first |
+| "I can gather requirements while exploring" | You'll waste time on distraction and miss critical questions | QUESTIONS FIRST, exploration later |
+| "User already explained everything" | You'll find users always leave out critical details | ASK clarifying questions anyway |
+| "I'll ask if I need more info" | You cannot know unknown unknowns without asking | ASK questions NOW, not later |
+| "Quick peek at the code won't hurt" | You'll let codebases bias your thinking | STAY IGNORANT until requirements clear |
+| "I can propose approaches based on description" | You need exploration to precede design | WAIT for dev-design phase |
 
 ### Honesty Framing
 
@@ -63,13 +63,16 @@ Asking questions is cheap. Building the wrong thing is expensive. Every minute s
 
 ### No Pause After Completion
 
-After writing `.claude/SPEC.md` and completing brainstorm, IMMEDIATELY invoke:
-```
+After writing `.claude/SPEC.md` and completing brainstorm, immediately invoke the next phase:
+
+**Invoke the explore phase:**
+
+```bash
 Skill(skill="workflows:dev-explore")
 ```
 
 DO NOT:
-- Summarize what you learned
+- Summarize what was learned
 - Ask "should I proceed?"
 - Wait for user confirmation
 - Write status updates
@@ -94,12 +97,12 @@ The workflow phases are SEQUENTIAL. Complete brainstorm → immediately start ex
 
 ### 1. Ask Questions First
 
-Use `AskUserQuestion` immediately:
+Use `AskUserQuestion` immediately with these principles:
 - **One question at a time** - never batch
 - **Multiple-choice preferred** - easier to answer
 - Focus on: purpose, constraints, success criteria
 
-Example questions:
+Example questions to ask:
 - "What problem does this solve?"
 - "Who will use this feature?"
 - "What's the most important requirement?"
@@ -107,14 +110,14 @@ Example questions:
 
 ### 2. Define Success Criteria
 
-After understanding requirements:
+After understanding requirements, define measurable success criteria:
 - Turn requirements into measurable criteria
 - Use checkboxes for clear pass/fail
-- Confirm with user
+- Confirm criteria with user
 
 ### 3. Write Draft SPEC.md
 
-Write initial spec to `.claude/SPEC.md`:
+Write the initial spec to `.claude/SPEC.md`:
 
 ```markdown
 # Spec: [Feature Name]
@@ -167,10 +170,10 @@ Grepping is not testing. Log checking is not testing. Code review is not testing
 
 | Action | Why It's Wrong | Do Instead |
 |--------|----------------|------------|
-| Spawn explore agent | Exploring before understanding | Ask questions first |
-| Read source files | Looking at code before requirements | Ask what user wants |
-| Propose approaches | Too early - need to explore first | Save for /dev-design |
-| Create task list | Planning before understanding | Finish brainstorm first |
+| Spawn explore agent | You're exploring before understanding | Ask questions first |
+| Read source files | You're looking at code before requirements are clear | Ask what user wants |
+| Propose approaches | You're jumping ahead - you need exploration first | Save for /dev-design |
+| Create task list | You're planning before you understand the requirements | Finish brainstorm first |
 
 ## Output
 
@@ -183,7 +186,10 @@ Brainstorm complete when:
 
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After completing brainstorm, IMMEDIATELY invoke:
-```
+**REQUIRED SUB-SKILL:** After completing brainstorm, immediately invoke the explore phase:
+
+**Start explore phase - Phase 2:**
+
+```bash
 Skill(skill="workflows:dev-explore")
 ```

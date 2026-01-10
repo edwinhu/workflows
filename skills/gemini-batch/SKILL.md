@@ -16,7 +16,7 @@ Large-scale asynchronous document processing using Google's Gemini models.
 
 ## IRON LAW: Use Examples First, Never Guess API
 
-**YOU MUST READ EXAMPLES BEFORE WRITING ANY CODE. NO EXCEPTIONS.**
+**READ EXAMPLES BEFORE WRITING ANY CODE. NO EXCEPTIONS.**
 
 ### The Rule
 
@@ -42,58 +42,58 @@ The Batch API has non-obvious requirements that will fail silently:
 
 **Rationale:** Previous agents wasted hours debugging API errors that the examples would have prevented. The patterns in `examples/` are battle-tested production code.
 
-### Rationalization Table - STOP If You Think:
+### Rationalization Table - STOP If You Catch Yourself Thinking:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "I know how APIs work" | This API has non-obvious gotchas | Read examples first |
+| "I know how APIs work" | You're overconfident about non-obvious gotchas | Read examples first |
 | "I can figure it out" | You'll waste 30+ minutes on trial-and-error | Copy working patterns |
 | "The examples might be outdated" | They're maintained and tested | Trust the examples |
-| "I need to customize anyway" | Customization comes AFTER copying base pattern | Start with examples, then adapt |
-| "Reading examples takes too long" | 2 minutes to read saves 30 minutes debugging | Read examples first |
-| "My approach is simpler" | Simpler approaches already failed | Use proven patterns |
+| "I need to customize anyway" | Your customization comes AFTER copying base pattern | Start with examples, then adapt |
+| "Reading examples takes too long" | You'll save 30 minutes debugging with 2 minutes of reading | Read examples first |
+| "My approach is simpler" | Your simpler approach already failed | Use proven patterns |
 
-### Red Flags - STOP If You Catch Yourself:
+### Red Flags - STOP If You Catch Yourself Thinking:
 
-- **"Let me try `destination=` instead of `dest=`"** → WRONG. Read examples.
-- **"I'll create a `CreateBatchJobConfig` object"** → WRONG. Plain dict only.
-- **"I'll nest metadata like a normal API"** → WRONG. Flat primitives only.
-- **"This should work like other Google APIs"** → WRONG. Batch API is different.
-- **"I'll figure out the JSONL format"** → WRONG. Copy from examples.
+- **"Let me try `destination=` instead of `dest=`"** → You're about to cause a TypeError. Read examples.
+- **"I'll create a `CreateBatchJobConfig` object"** → You're instantiating a type instead of using a plain dict. Stop.
+- **"I'll nest metadata like a normal API"** → You'll trigger BigQuery type errors. Flatten your data.
+- **"This should work like other Google APIs"** → Your assumption is wrong; this API is different.
+- **"I'll figure out the JSONL format"** → You'll waste time. Copy from examples instead.
 
 ### MANDATORY Checklist Before ANY Batch API Code
 
 - [ ] Read `examples/batch_processor.py` OR `examples/icon_batch_vision.py`
-- [ ] Identify which example matches your use case (Standard API vs Vertex AI)
+- [ ] Identify which example matches the use case (Standard API vs Vertex AI)
 - [ ] Copy the example's API call pattern **exactly**
 - [ ] Copy the example's JSONL structure **exactly**
 - [ ] Copy the example's metadata structure **exactly**
-- [ ] Only THEN adapt for your specific needs
+- [ ] Adapt for specific needs only after copying base pattern
 
-**Enforcement:** If you write batch API code without reading examples first, you are violating this IRON LAW and WILL encounter preventable errors.
+**Enforcement:** Writing batch API code without reading examples first violates this IRON LAW and will result in preventable errors.
 
 ## Prerequisites
 
 ### Install gcloud SDK
 
 ```bash
-# macOS
+# macOS: Install Google Cloud SDK via Homebrew
 brew install google-cloud-sdk
 
-# Linux
+# Linux: Install Google Cloud SDK from official sources
 curl https://sdk.cloud.google.com | bash
 ```
 
 ### Authentication Setup
 
 ```bash
-# Step 1: User authentication (for gcloud commands)
+# Authenticate with Google Cloud Platform
 gcloud auth login
 
-# Step 2: Application Default Credentials (for Python libraries)
+# Set up Application Default Credentials for Python libraries
 gcloud auth application-default login
 
-# Step 3: Enable Vertex AI API
+# Enable Vertex AI API in your project
 gcloud services enable aiplatform.googleapis.com
 ```
 
@@ -108,7 +108,7 @@ gcloud services enable aiplatform.googleapis.com
 # Create bucket in us-central1 (required region)
 gsutil mb -l us-central1 gs://your-batch-bucket
 
-# Verify location
+# Verify bucket location is us-central1
 gsutil ls -L -b gs://your-batch-bucket | grep "Location"
 ```
 
@@ -164,7 +164,7 @@ job = client.batches.create(
 
 ## IRON LAW: Metadata and API Call Structure
 
-**METADATA MUST BE FLAT PRIMITIVES. API PARAMETERS ARE SIMPLE STRINGS.**
+**YOU MUST USE FLAT PRIMITIVES FOR METADATA. YOU MUST USE SIMPLE STRINGS FOR API PARAMETERS.**
 
 ### Rule 1: Metadata Structure
 
@@ -224,15 +224,15 @@ job = client.batches.create(
 
 **Why:** The SDK uses simple types. Parameter is `dest=` (not destination). Config is a plain dict (not a type instance). The SDK converts internally.
 
-### Rationalization Table - STOP If You Think:
+### Rationalization Table - STOP If You Catch Yourself Thinking:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "Nested metadata is cleaner" | It fails silently with cryptic errors | Flatten or use `json.dumps()` |
-| "I'll try `destination=` parameter" | Parameter doesn't exist, causes TypeError | Use `dest=` |
-| "I should use `CreateBatchJobConfig`" | That's internal typing, not for you | Pass plain dict to `config=` |
-| "Other APIs accept nested objects" | This one doesn't, it's BigQuery-backed | Follow the examples |
-| "I'll fix it if it breaks" | Job fails 5 minutes after submission | Get it right the first time |
+| "Nested metadata is cleaner" | Your code will fail silently with cryptic errors | Flatten or use `json.dumps()` |
+| "I'll try `destination=` parameter" | You'll get a TypeError; parameter doesn't exist | Use `dest=` |
+| "I should use `CreateBatchJobConfig`" | You're confusing internal typing with API calls | Pass plain dict to `config=` |
+| "Other APIs accept nested objects" | Your assumption breaks here; it's BigQuery-backed | Follow the examples |
+| "I'll fix it if it breaks" | Your job fails 5 minutes after submission | Get it right the first time |
 
 ### Pre-Submission Validation
 
@@ -250,12 +250,12 @@ def validate_metadata(metadata: dict):
         if not isinstance(value, (str, int, float, bool, type(None))):
             raise ValueError(f"Unsupported type for '{key}': {type(value)}")
 
-# Use it:
+# Validate all requests before submission:
 for request in batch_requests:
     validate_metadata(request["metadata"])
 ```
 
-**Enforcement:** Jobs WILL fail if metadata contains nested objects. There is no way around this requirement.
+**Enforcement:** Jobs will fail if metadata contains nested objects. There is no workaround for this requirement.
 
 ## Key Gotchas
 
@@ -332,4 +332,4 @@ Current date: Use `datetime.now()` for:
 - Model availability ("gemini-2.5-flash-lite available as of Dec 2024")
 - Documentation freshness validation
 
-When in doubt about API features or model names, verify against current date and check latest Gemini API docs.
+For API features or model names with uncertainty, verify against current date and check latest Gemini API documentation.

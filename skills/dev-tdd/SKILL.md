@@ -1,9 +1,8 @@
 ---
 name: dev-tdd
-description: "Test-Driven Development protocol. RED-GREEN-REFACTOR cycle with mandatory test-first approach."
+description: This skill should be used when the user asks to "implement using TDD", "test-driven development", "RED-GREEN-REFACTOR", or "write failing test first". Enforces test-first approach with RED-GREEN-REFACTOR cycle and execution-based verification.
+version: 0.1.0
 ---
-
-**Announce:** "I'm using dev-tdd for test-driven development."
 
 ## Contents
 
@@ -11,24 +10,26 @@ description: "Test-Driven Development protocol. RED-GREEN-REFACTOR cycle with ma
 - [The TDD Cycle](#the-tdd-cycle)
 - [What Counts as a Test](#what-counts-as-a-test)
 - [Logging TDD Progress](#logging-tdd-progress)
-- [Rationalizations](#rationalization-prevention)
+- [Red Flags - Thoughts That Mean STOP](#red-flags---thoughts-that-mean-stop)
+- [Delete & Restart](#delete--restart)
+- [E2E Test Requirement](#e2e-test-requirement)
 
 # Test-Driven Development
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of TDD
 
-**WRITE THE FAILING TEST FIRST. SEE IT FAIL. This is not negotiable.**
+**YOU MUST WRITE THE FAILING TEST FIRST. YOU MUST SEE IT FAIL. This is not negotiable.**
 
-Before writing ANY implementation code, you MUST:
-1. Write a test that will fail (because the feature doesn't exist yet)
-2. Run the test and **SEE THE FAILURE OUTPUT** (RED)
-3. Document in LEARNINGS.md: "RED: [test name] fails with [error message]"
-4. Only THEN write implementation code
-5. Run test again, **SEE IT PASS** (GREEN)
-6. Document: "GREEN: [test name] now passes"
+Before writing ANY implementation code:
+1. You write a test that will fail (because the feature doesn't exist yet)
+2. You run the test and **SEE THE FAILURE OUTPUT** (RED)
+3. You document in LEARNINGS.md: "RED: [test name] fails with [error message]"
+4. Only THEN you write implementation code
+5. You run the test again, **SEE IT PASS** (GREEN)
+6. You document: "GREEN: [test name] now passes"
 
-**The RED step is not optional.** If you haven't seen the test fail, you haven't done TDD.
+**The RED step is not optional. If the test hasn't failed, you haven't practiced TDD.**
 </EXTREMELY-IMPORTANT>
 
 ## The TDD Cycle
@@ -49,9 +50,15 @@ def test_user_can_login():
     assert result.token is not None
 ```
 
-**Run it and SEE IT FAIL:**
+Run the test and observe the failure:
+
+```bash
+pytest tests/test_auth.py::test_user_can_login -v
+# pytest: run specific test and see RED failure
 ```
-$ pytest tests/test_auth.py::test_user_can_login -v
+
+Output will show:
+```
 FAILED - NameError: name 'login' is not defined
 ```
 
@@ -73,9 +80,15 @@ def login(email: str, password: str) -> LoginResult:
     return LoginResult(success=True, token="dummy-token")
 ```
 
-**Run and SEE IT PASS:**
+Run the test and verify the pass:
+
+```bash
+pytest tests/test_auth.py::test_user_can_login -v
+# pytest: run test again and see GREEN success
 ```
-$ pytest tests/test_auth.py::test_user_can_login -v
+
+Output will show:
+```
 PASSED
 ```
 
@@ -99,9 +112,15 @@ def login(email: str, password: str) -> LoginResult:
     return LoginResult(success=False, token=None)
 ```
 
-**Verify still GREEN:**
+Verify tests remain green after refactoring:
+
+```bash
+pytest tests/test_auth.py -v
+# pytest: run all tests and verify GREEN after refactor
 ```
-$ pytest tests/test_auth.py -v
+
+Output will show:
+```
 All tests PASSED
 ```
 
@@ -134,23 +153,35 @@ Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
 
 ## Logging TDD Progress
 
-Every TDD cycle MUST be documented in `.claude/LEARNINGS.md`:
+Document every TDD cycle in `.claude/LEARNINGS.md`:
 
 ```markdown
 ## TDD Cycle: [Feature/Test Name]
 
 ### RED
 - **Test:** `test_feature_works()`
-- **Run:** `pytest tests/test_feature.py::test_feature_works -v`
+- **Command:**
+
+```bash
+pytest tests/test_feature.py::test_feature_works -v
+# pytest: run test and observe RED failure
+```
+
 - **Output:**
 ```
 FAILED - AssertionError: expected True, got None
 ```
-- **Expected failure:** Feature not implemented yet
+- **Expected:** Feature not implemented yet
 
 ### GREEN
 - **Implementation:** Added `feature_works()` function
-- **Run:** `pytest tests/test_feature.py::test_feature_works -v`
+- **Command:**
+
+```bash
+pytest tests/test_feature.py::test_feature_works -v
+# pytest: run test and verify GREEN success
+```
+
 - **Output:**
 ```
 PASSED
@@ -159,50 +190,45 @@ PASSED
 ### REFACTOR
 - Extracted helper function
 - Added type hints
-- Tests still pass
+- Verify tests still pass:
+
+```bash
+pytest tests/test_feature.py -v
+# pytest: run all tests and confirm GREEN after refactor
+```
 ```
 
-## Rationalization Prevention
+## Red Flags - Thoughts That Mean STOP
 
-These thoughts mean STOP—you're about to skip TDD:
+If you catch yourself thinking these thoughts—STOP. They're indicators you're about to skip TDD:
 
 | Thought | Reality |
 |---------|---------|
-| "I'll write the test after" | That's verification, not TDD. Test FIRST. |
-| "This is too simple for TDD" | Simple code benefits most from TDD. |
-| "Let me just fix this quickly" | Speed isn't the goal. Correctness is. |
-| "I know the test will fail" | Knowing isn't seeing. RUN it, see RED. |
-| "Grep confirms it exists" | Existence ≠ working. Execute the code. |
-| "I already have the code" | DELETE IT. Write test first, then reimplement. |
-| "Test passed on first run" | Suspicious. Did you see RED first? |
+| "Write the test after" | You're about to do verification, not TDD. You MUST test FIRST. |
+| "This is too simple for TDD" | Your simple code benefits MOST from TDD. |
+| "Just fix this quickly" | Your speed isn't the goal. Your correctness is. |
+| "Know the test will fail" | You knowing isn't the same as you seeing it fail. You MUST RUN it, see RED. |
+| "Grep confirms it exists" | Your existence check ≠ working code. You MUST execute the code. |
+| "Already have the code" | You MUST DELETE IT. You write test first, then reimplement. |
+| "Test passed on first run" | Suspicious. Did you actually see RED first? |
 
-**If your test doesn't fail first, you're not doing TDD.**
+**If your test doesn't fail first, you haven't practiced TDD.**
 
 ## Delete & Restart
 
 <EXTREMELY-IMPORTANT>
-**Wrote code before test? DELETE IT. No exceptions.**
+**Wrote implementation code before test? You MUST DELETE IT. No exceptions.**
 
-If you find yourself with implementation code that wasn't driven by a test:
-1. **DELETE** the implementation code
+When you discover implementation code that wasn't driven by a test:
+1. **DELETE** your implementation code
 2. **WRITE** the test first
 3. **RUN** it, **SEE RED**
 4. **REWRITE** the implementation
 
-"But it works" is not an excuse. "But I'll waste time" is not an excuse.
+"But it works" is not an excuse. "But it would waste your time" is not an excuse.
 
-**Code written without TDD is UNTRUSTED code. Delete it and do it right.**
+**Code you wrote without TDD is UNTRUSTED code. You delete it and do it right.**
 </EXTREMELY-IMPORTANT>
-
-## Red Flags - STOP If You're About To:
-
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Write implementation first | Not TDD | Write failing test first |
-| Skip running the test | No evidence of RED | Run test, see failure |
-| Claim "tested" without output | No proof | Paste actual output |
-| Use grep as verification | Doesn't test behavior | Execute the code |
-| Write test that passes immediately | Proves nothing | Test must fail first |
 
 ## E2E Test Requirement
 
@@ -235,20 +261,20 @@ E2E TDD:      RED → GREEN → REFACTOR
 ### E2E TDD Cycle
 
 1. **RED**: Write E2E test simulating user action
-   - Run it, SEE IT FAIL (feature doesn't exist)
+   - Run the E2E test and observe the failure (feature doesn't exist)
    - Document: "E2E RED: [test] fails with [error]"
 
-2. **GREEN**: Make E2E pass (unit tests already green)
-   - Run E2E, SEE IT PASS
+2. **GREEN**: Implement to make E2E pass (unit tests already green)
+   - Run the E2E test and verify the pass
    - Document: "E2E GREEN: [test] passes"
 
 3. **REFACTOR**: Ensure both unit and E2E stay green
 
 ### Delete & Restart (E2E)
 
-**Shipped user-facing code without E2E test? WRITE ONE NOW.**
+**You shipped user-facing code without E2E test? You MUST WRITE ONE NOW.**
 
-Retroactive E2E is better than no E2E. But next time: E2E FIRST.
+Retroactive E2E is better than no E2E. But next time: You write E2E FIRST.
 </EXTREMELY-IMPORTANT>
 
 ## Integration

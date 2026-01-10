@@ -23,14 +23,14 @@ Jupytext converts Jupyter notebooks to/from text formats (.py, .R, .md), enablin
 
 ### IRON LAW: NO EXECUTION CLAIM WITHOUT OUTPUT VERIFICATION
 
-Before claiming ANY jupytext script executed successfully, you MUST:
+Before claiming ANY jupytext script executed successfully, follow this sequence:
 1. **EXECUTE** using the papermill pipeline: `jupytext --to notebook --output - script.py | papermill - output.ipynb`
 2. **CHECK** for execution errors (papermill exit code and stderr)
 3. **VERIFY** output.ipynb exists and is non-empty
 4. **INSPECT** outputs using notebook-debug skill verification
 5. **CLAIM** success only after verification passes
 
-This is not negotiable. Claiming "script works" without executing through papermill is LYING to the user.
+This is non-negotiable. Claiming "script works" without executing through papermill is LYING to the user.
 
 ### Rationalization Table - STOP If You Think:
 
@@ -101,7 +101,7 @@ Follow this sequence for EVERY jupytext task involving execution:
 
 **Claiming a jupytext script works without executing it through papermill is LYING.**
 
-You are not just converting formats - you are verifying that the notebook executes correctly. The user expects a working notebook, not just syntactically valid code.
+This is not just format conversion - verify that the notebook executes correctly. The user expects a working notebook, not just syntactically valid code.
 
 ## Core Concepts
 
@@ -138,16 +138,16 @@ cell_metadata_filter = "-all"
 ### Essential Commands
 
 ```bash
-# Convert notebook to percent-format Python
+# Convert notebook to percent-format Python file
 jupytext --to py:percent notebook.ipynb
 
-# Convert Python script to notebook
+# Convert Python script to Jupyter notebook format
 jupytext --to notebook script.py
 
-# Set up pairing (keeps both in sync)
+# Enable bidirectional pairing to keep formats synchronized
 jupytext --set-formats ipynb,py:percent notebook.ipynb
 
-# Sync paired files
+# Synchronize paired notebook and text file
 jupytext --sync notebook.ipynb
 ```
 
@@ -156,16 +156,16 @@ jupytext --sync notebook.ipynb
 **Always pipe to papermill for execution** - no intermediate files:
 
 ```bash
-# Convert and execute in one pipeline
+# Convert script to notebook and execute in atomic operation
 jupytext --to notebook --output - script.py | papermill - output.ipynb
 
-# With parameters
+# Convert and execute with parameter injection
 jupytext --to notebook --output - script.py | papermill - output.ipynb -p start_date "2024-01-01" -p n_samples 1000
 
-# With logging to stderr
+# Convert and execute with detailed logging output
 jupytext --to notebook --output - script.py | papermill - output.ipynb --log-output
 
-# Execute without saving (dry run, outputs to stdout)
+# Convert and execute in memory without saving intermediate files
 jupytext --to notebook --output - script.py | papermill - -
 ```
 
@@ -208,7 +208,7 @@ Python (prep) -> Parquet -> R (stats) -> Parquet -> Python (report)
 
 ### Git Pre-commit Hook
 
-Add to `.pre-commit-config.yaml`:
+Add the following to `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
@@ -216,18 +216,22 @@ repos:
     rev: v1.16.0
     hooks:
       - id: jupytext
-        args: [--sync]
+        args: [--sync]  # Synchronize paired formats before commit
 ```
 
 ### Version Control Strategy
 
-Option A: Commit only .py files (add `*.ipynb` to `.gitignore`)
-Option B: Commit both formats (reviewers choose preference)
+Choose one approach:
+
+- **Option A**: Commit only .py files (add `*.ipynb` to `.gitignore`) for minimal repository size
+- **Option B**: Commit both formats to give reviewers format choice
 
 ### Editor Integration
 
-- **VS Code**: Install Jupytext extension for automatic sync
-- **JupyterLab**: Right-click notebook -> "Pair Notebook"
+Configure editors for automatic synchronization:
+
+- **VS Code**: Install Jupytext extension for automatic bidirectional sync
+- **JupyterLab**: Right-click notebook and select "Pair Notebook" for synchronization
 
 ## Project Structure
 
@@ -300,8 +304,8 @@ Utility scripts in `scripts/`:
 
 ## Best Practices
 
-1. **Always use percent format** - Best balance of readability and cell preservation
-2. **Strip metadata for git** - Cleaner diffs with metadata filters
-3. **Use parquet for interchange** - Type-safe, cross-language compatible
+1. **Use percent format** - Best balance of readability and cell preservation
+2. **Strip metadata for git** - Use metadata filters for cleaner diffs
+3. **Use parquet for interchange** - Type-safe, cross-language compatible format
 4. **Document kernel requirements** - Include in README or environment.yml
-5. **Pre-commit hooks** - Ensure sync before commits
+5. **Enable pre-commit hooks** - Ensure synchronization before commits

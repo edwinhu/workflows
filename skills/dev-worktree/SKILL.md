@@ -1,13 +1,11 @@
 ---
 name: dev-worktree
-description: Create isolated git worktree for feature development with automatic setup and safety verification
+description: This skill should be used when the user asks to "create an isolated worktree", "set up worktree for feature", "create a feature branch worktree", or needs workspace isolation with automatic dependency setup and test verification.
 ---
 
 # Create Development Worktree
 
 Create an isolated git worktree for feature work, ensuring workspace isolation and clean baseline.
-
-**Announce:** "Setting up isolated worktree for feature development."
 
 ## The Process
 
@@ -15,8 +13,8 @@ Create an isolated git worktree for feature work, ensuring workspace isolation a
 
 **CRITICAL:** Verify worktree directory is gitignored to prevent accidental commits.
 
+**Run:**
 ```bash
-# Check if .worktrees is already ignored
 if ! git check-ignore -q .worktrees 2>/dev/null; then
   echo "Adding .worktrees/ to .gitignore"
   echo ".worktrees/" >> .gitignore
@@ -27,10 +25,13 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 fi
 ```
 
+**Description:** dev-worktree: check if .worktrees is gitignored and add if missing
+
 ### Step 2: Determine Branch Name
 
-From `.claude/PLAN.md` first line or infer from feature name:
+Extract from `.claude/PLAN.md` first line or infer from feature name:
 
+**Run:**
 ```bash
 # Extract from PLAN.md if exists
 feature_name=$(grep -m1 '^# ' .claude/PLAN.md 2>/dev/null | sed 's/^# //' | tr '[:upper:] ' '[:lower:]-' | sed 's/[^a-z0-9-]//g')
@@ -38,10 +39,13 @@ feature_name=$(grep -m1 '^# ' .claude/PLAN.md 2>/dev/null | sed 's/^# //' | tr '
 # Or ask user if needed
 ```
 
+**Description:** dev-worktree: extract or prompt for feature name
+
 Branch name format: `feature/${feature_name}`
 
 ### Step 3: Create Worktree
 
+**Run:**
 ```bash
 # Create worktree with new branch
 git worktree add .worktrees/${feature_name} -b feature/${feature_name}
@@ -50,10 +54,13 @@ git worktree add .worktrees/${feature_name} -b feature/${feature_name}
 cd .worktrees/${feature_name}
 ```
 
+**Description:** dev-worktree: create isolated git worktree with feature branch
+
 ### Step 4: Run Project Setup
 
 Auto-detect and run setup based on project files:
 
+**Run:**
 ```bash
 # Node.js
 if [ -f package.json ]; then
@@ -82,10 +89,13 @@ if [ -f go.mod ]; then
 fi
 ```
 
+**Description:** dev-worktree: auto-detect project type and install dependencies
+
 ### Step 5: Verify Clean Baseline (Optional)
 
-If project has tests, verify they pass:
+Run tests to verify baseline if project has test suite:
 
+**Run:**
 ```bash
 # Examples - auto-detect test command
 if [ -f package.json ] && grep -q '"test"' package.json; then
@@ -99,10 +109,14 @@ elif [ -f go.mod ]; then
 fi
 ```
 
+**Description:** dev-worktree: auto-detect and run project test suite
+
 **If tests fail:** Report failures and note that baseline has issues.
 **If tests pass:** Report clean baseline.
 
 ### Step 6: Report Ready
+
+Report completion status:
 
 ```
 ✓ Worktree created: .worktrees/${feature_name}
@@ -115,24 +129,24 @@ Ready for implementation.
 
 ## Safety Checks
 
-**Before creating worktree:**
-- ✅ Verify .worktrees/ is gitignored
-- ✅ Add to .gitignore if missing
-- ✅ Commit gitignore change
+**Execute before creating worktree:**
+- Verify .worktrees/ is gitignored
+- Add to .gitignore if missing
+- Commit gitignore change
 
-**After creating worktree:**
-- ✅ Run project setup (npm install, etc.)
-- ✅ Verify clean baseline with tests
-- ✅ Report status
+**Execute after creating worktree:**
+- Run project setup (npm install, etc.)
+- Verify clean baseline with tests
+- Report status
 
 ## Red Flags
 
-**NEVER:**
-- Create worktree without verifying gitignore
-- Skip project setup commands
-- Proceed without reporting test status
+**Critical - Never deviate from these rules:**
+- Do not create worktree without verifying gitignore
+- Do not skip project setup commands
+- Do not proceed without reporting test status
 
-**ALWAYS:**
+**Critical - Always follow these rules:**
 - Verify .worktrees/ is ignored before creating
 - Auto-detect project type and run appropriate setup
 - Report test baseline status
@@ -154,10 +168,10 @@ Ready for implementation.
 # .worktrees/ gitignored → create worktree → cargo build → cargo test
 ```
 
-## After Worktree Creation
+## Workflow Transition
 
-The worktree is ready. Proceed to dev-implement to start implementing tasks.
+After worktree creation, the workspace is ready. Proceed to dev-implement to start implementing tasks.
 
-Current working directory is now: `.worktrees/${feature_name}`
+Current working directory: `.worktrees/${feature_name}`
 
 All implementation work happens here, keeping main workspace clean.

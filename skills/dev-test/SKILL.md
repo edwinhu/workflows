@@ -1,14 +1,13 @@
 ---
 name: dev-test
-description: "Testing tool router. Routes to platform-specific skills: Chrome MCP, Playwright, Hammerspoon, Linux."
+description: "This skill should be used when the user needs to 'debug web applications', 'test UI interactions', 'capture screenshots or network requests', 'test desktop automation', or needs to select between testing tools. Routes to platform-specific E2E testing skills: Chrome MCP for debugging, Playwright for CI/CD, Hammerspoon for macOS, Linux for X11/Wayland."
 ---
 
-**Announce:** "I'm using dev-test to select the right testing tool."
 
 ## Where This Fits
 
 ```
-Main Chat                          Task Agent (you)
+Main Chat                          Task Agent
 ─────────────────────────────────────────────────────
 dev-implement
   → dev-ralph-loop
@@ -31,33 +30,33 @@ dev-implement
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Testing
 
-**USER-FACING FEATURES REQUIRE E2E TESTS. This is not negotiable.**
+**YOU MUST WRITE E2E TESTS FOR USER-FACING FEATURES. This is not negotiable.**
 
-If your change affects what users see or interact with, you MUST:
+When your changes affect what users see or interact with, you MUST:
 1. Write an E2E test that simulates user behavior
-2. Run it and SEE IT PASS (not just unit tests)
+2. Run it and verify it PASSES (not just unit tests)
 3. Document: "E2E: [test name] passes with [evidence]"
 4. Include screenshot/snapshot for visual changes
 
-**Unit tests prove components work. E2E tests prove the feature works for users.**
+**Unit tests prove components work. E2E tests prove YOUR feature works for users.**
 
 ### Rationalization Prevention
 
-These thoughts mean STOP—you're about to skip E2E:
+When you catch yourself thinking these rationalizations, STOP—you're about to skip E2E tests:
 
-| Thought | Reality |
-|---------|---------|
-| "Unit tests are enough" | Unit tests don't test user flows. Write E2E. |
-| "E2E is too slow" | Slow tests > shipped bugs. Write E2E. |
-| "I'll add E2E later" | You won't. Write it NOW. |
-| "This is just backend" | Does it affect user output? Then E2E. |
-| "The tool setup is complex" | Complex setup = complex failure modes. E2E finds them. |
-| "The UI is unchanged" | Prove it with a visual snapshot. |
-| "Manual testing is faster" | Manual testing is LYING about coverage. |
-| "It's just a small change" | Small changes break UIs. E2E proves they don't. |
-| "User can verify" | NO. Automated verification or it didn't happen. |
-| **"Log checking is my E2E test"** | **Log checking is observability, not E2E. Verify actual outputs.** |
-| **"Screenshots are too hard to capture"** | **Hard to verify = hard to debug in production. Automate it.** |
+| Thought | Why You're Wrong | Do Instead |
+|---------|-----------------|-----------|
+| "Unit tests are enough" | Your unit tests don't test user flows. | Write E2E. |
+| "E2E is too slow" | You're choosing slow tests < shipped bugs. | Write E2E. |
+| "I'll add E2E later" | You won't. Your future self won't either. | Write it NOW. |
+| "This is just backend" | Does it affect user output? Then YOU need E2E. | Write E2E. |
+| "The tool setup is complex" | Your complexity = complex failure modes. E2E finds them. | Write E2E. |
+| "The UI is unchanged" | Your assumption isn't proven. | Prove it with a visual snapshot. |
+| "Manual testing is faster" | You're LYING about coverage to yourself. | Write E2E. |
+| "It's just a small change" | Your small change breaks UIs. E2E proves it doesn't. | Write E2E. |
+| "User can verify" | NO. You don't trust users with QA. | Automated verification or it didn't happen. |
+| **"Log checking is my E2E test"** | **You're confusing observability with verification.** | **Verify your actual outputs.** |
+| **"Screenshots are too hard to capture"** | **Your avoidance = hard to debug in production later.** | **Automate it.** |
 
 ### Fake E2E Detection - STOP
 
@@ -94,14 +93,16 @@ def test_icon_theme_change():
     # This would have shown 89% of icons were wrong
 ```
 
-### Red Flags - STOP If You Think:
+### Red Flags - STOP If Thinking:
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "Tests pass" (only unit) | Unit ≠ E2E | Write E2E test |
-| "Code looks correct" | Looking ≠ running user flow | Run E2E |
-| "It worked when I tried it" | Manual ≠ automated | Capture as E2E |
-| "Screenshot shows it works" | Static screenshot ≠ interaction test | Add automation |
+If you catch yourself thinking these patterns, STOP—you're about to skip E2E:
+
+| Thought | Why You're Wrong | Do Instead |
+|---------|-----------------|-----------|
+| "Tests pass" (only unit) | Your unit tests ≠ E2E | Write E2E test |
+| "Code looks correct" | You're only looking ≠ running user flow | Run E2E |
+| "It worked when I tried it" | Your manual testing ≠ automated | Capture as E2E |
+| "Screenshot shows it works" | Your static screenshot ≠ interaction test | Add automation |
 </EXTREMELY-IMPORTANT>
 
 ## Browser Testing Decision Tree
@@ -146,8 +147,8 @@ def test_icon_theme_change():
 <EXTREMELY-IMPORTANT>
 ### Iron Laws: Browser MCP Selection
 
-**NO API/CONSOLE DEBUGGING WITHOUT CHROME MCP.**
-**NO CI/CD TESTING WITHOUT PLAYWRIGHT MCP.**
+**YOU MUST USE CHROME MCP FOR API/CONSOLE DEBUGGING. NO EXCEPTIONS.**
+**YOU MUST USE PLAYWRIGHT MCP FOR CI/CD TESTING. NO EXCEPTIONS.**
 
 ### Quick Decision Table
 
@@ -179,17 +180,19 @@ def test_icon_theme_change():
 
 ### Rationalization Prevention (Browser MCP)
 
-| Thought | Reality |
-|---------|---------|
-| "I'll check the console manually" | NO. Use Chrome MCP `read_console_messages` |
-| "I can infer the API response" | NO. Use Chrome MCP `read_network_requests` |
-| "Playwright can do everything" | NO. It cannot read console or network |
-| "Chrome MCP is enough for CI" | NO. It requires visible browser |
-| "I'll just look at DevTools" | AUTOMATE IT. Chrome MCP captures the same data |
-| "Headless doesn't matter" | YES IT DOES. CI/CD requires headless. |
+| Thought | Why You're Wrong | Do Instead |
+|---------|-----------------|-----------|
+| "I'll check the console manually" | You can't capture all edge cases manually. | Use Chrome MCP `read_console_messages` |
+| "I can infer the API response" | Your inference is wrong. Real data differs. | Use Chrome MCP `read_network_requests` |
+| "Playwright can do everything" | You're wrong. It cannot read console or network. | Use Chrome MCP for debugging |
+| "Chrome MCP is enough for CI" | You're ignoring constraints—it requires visible browser. | Use Playwright MCP for CI/CD |
+| "I'll just look at DevTools" | Your manual inspection is not automated. | Automate with Chrome MCP |
+| "Headless doesn't matter" | You're wrong. Your CI/CD requires headless. | Use Playwright MCP |
 </EXTREMELY-IMPORTANT>
 
 ## Platform Detection
+
+Detect the operating system and display server to select the appropriate testing tool:
 
 ```bash
 # Detect platform for desktop automation
@@ -267,6 +270,8 @@ Each sub-skill has its own availability gate. Load the appropriate skill and fol
 
 ### Test Discovery
 
+Locate test directories and identify the test framework used in the project:
+
 ```bash
 # Find test directory
 ls -d tests/ test/ spec/ __tests__/ 2>/dev/null
@@ -290,6 +295,8 @@ cat meson.build 2>/dev/null | grep -i test
 | Go | go test | `go test ./...` |
 
 ### CLI Application Testing
+
+Execute CLI applications with test inputs and verify outputs against expected results:
 
 ```bash
 # Run with test inputs

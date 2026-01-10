@@ -1,9 +1,10 @@
 ---
 name: dev-design
-description: "REQUIRED Phase 4 of /dev workflow. Proposes architecture approaches with trade-offs and gets user approval."
+description: This skill should be used when the user asks to "propose architecture", "design implementation approach", "choose between approaches", or in Phase 4 of /dev workflow after exploration is complete. Proposes 2-3 architecture approaches with clear trade-offs, decomposes features into independent tasks, and obtains explicit user approval before implementation begins.
+version: 0.1.0
 ---
 
-**Announce:** "I'm using dev-design (Phase 4) to propose implementation approaches."
+**Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
 
 ## Contents
 
@@ -23,7 +24,7 @@ Propose implementation approaches, explain trade-offs, get user approval.
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Design
 
-**USER MUST APPROVE BEFORE IMPLEMENTATION. This is not negotiable.**
+**YOU MUST GET USER APPROVAL BEFORE IMPLEMENTATION. This is not negotiable.**
 
 After presenting approaches:
 1. Show 2-3 options with trade-offs
@@ -33,7 +34,7 @@ After presenting approaches:
 
 Implementation CANNOT start without user saying "Yes" or choosing an approach.
 
-**If you catch yourself about to implement without user approval, STOP.**
+**STOP - you're about to implement without user approval.**
 </EXTREMELY-IMPORTANT>
 
 ## What Design Does
@@ -53,7 +54,7 @@ Implementation CANNOT start without user saying "Yes" or choosing an approach.
 
 ### 1. Review Inputs
 
-Before designing, ensure you have:
+Before designing, ensure the following exist:
 - `.claude/SPEC.md` - final requirements
 - Exploration findings - key files, patterns
 - Clarified decisions - edge cases, integrations
@@ -76,9 +77,10 @@ Each approach should address the same requirements differently:
 
 ### 3. Present with Trade-offs
 
-Use AskUserQuestion to present approaches:
+Use the AskUserQuestion tool to present approaches:
 
-```
+```python
+# AskUserQuestion: Present 2-3 architecture approaches with trade-offs for user selection
 AskUserQuestion(questions=[{
   "question": "Which architecture approach should we use?",
   "header": "Architecture",
@@ -112,7 +114,8 @@ AskUserQuestion(questions=[{
 
 Review the scope and ask:
 
-```
+```python
+# AskUserQuestion: Determine if feature should be split into independent tasks
 AskUserQuestion(questions=[{
   "question": "Is this one cohesive feature or multiple independent features?",
   "header": "Scope",
@@ -132,7 +135,7 @@ AskUserQuestion(questions=[{
 
 **If "Multiple features":**
 
-1. **List the independent features** you identified from SPEC.md:
+1. **List the independent features** identified from SPEC.md:
    ```
    Based on the requirements, this breaks into:
    1. Theme infrastructure (color system, theme provider)
@@ -144,7 +147,8 @@ AskUserQuestion(questions=[{
    ```
 
 2. **Ask which to tackle first:**
-   ```
+   ```python
+   # AskUserQuestion: Prioritize which feature to implement first
    AskUserQuestion(questions=[{
      "question": "Which feature should we implement first?",
      "header": "Priority",
@@ -195,9 +199,9 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 ```markdown
 # Implementation Plan: [Feature]
 
-> **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:dev-implement")` to implement this plan.
+> **For Claude:** REQUIRED SUB-SKILL: Invoke `Skill(skill="workflows:dev-implement")` to implement this plan.
 >
-> **Per-Task Ralph Loops:** Each task below gets its OWN ralph loop. Do NOT use one loop for all tasks.
+> **Per-Task Ralph Loops:** Assign each task its OWN ralph loop. Do NOT combine multiple tasks into one loop.
 >
 > **Delegation:** Main chat orchestrates, Task agents implement. Use `Skill(skill="workflows:dev-delegate")` for subagent templates.
 
@@ -261,7 +265,7 @@ AskUserQuestion(questions=[{
 
 **If "No":** Wait for user feedback, modify plan, ask again.
 
-**If "Yes":** Proceed to workspace setup question.
+**If "Yes":** Proceed to workspace setup question in Step 7 below.
 
 ### 7. Workspace Setup Question
 
@@ -280,13 +284,18 @@ AskUserQuestion(questions=[{
 ```
 
 **If "Yes (Recommended)":**
-```
+
+Invoke the dev-worktree skill:
+```bash
+# dev-worktree: Create isolated git worktree for feature development
 Skill(skill="workflows:dev-worktree")
 ```
+
 Then after worktree is created, invoke dev-implement.
 
 **If "No":**
-Directly invoke dev-implement in current directory.
+
+Directly invoke dev-implement in current directory without worktree isolation.
 
 ## Approach Categories
 
@@ -307,7 +316,7 @@ Required sections:
 
 ## The Gate Function
 
-Before starting implementation, you MUST have completed:
+Complete all steps before starting implementation:
 
 ```
 1. REVIEW → Read SPEC.md and exploration findings
@@ -323,30 +332,30 @@ Before starting implementation, you MUST have completed:
 10. GATE → Only start /dev-implement after all approvals
 ```
 
-**Skipping any step, especially DECOMPOSE, WAIT, WORKSPACE, and GATE, is insubordination.**
+**Mandatory steps (NEVER skip):** DECOMPOSE, WAIT, WORKSPACE, and GATE.
 
 ## Rationalization Prevention
 
-These thoughts mean STOP—you're about to bypass the user gate:
+Recognize these thoughts as red flags—they signal attempts to bypass the user gate:
 
 | Thought | Reality |
 |---------|---------|
-| "User will approve this" | Assumption ≠ approval. Ask and wait. |
+| "User will approve this" | Your assumption ≠ approval. Ask and wait. |
 | "It's the obvious choice" | User decides what's obvious. Present options. |
 | "Let me just start" | NO. Gate exists for a reason. Wait. |
 | "User said they trust me" | Trust doesn't mean skip approval. Ask. |
-| "Time pressure" | Wrong approach wastes more time. Wait for approval. |
+| "Time pressure" | You'll waste more time with the wrong approach. Wait for approval. |
 | "Only one viable option" | Present it anyway. User may see alternatives. |
-| "I'll ask forgiveness later" | No. Ask permission now. |
+| "Ask forgiveness later" | No. Ask permission now. |
 
 ## Red Flags - STOP If You're About To:
 
 | Action | Why It's Wrong | Do Instead |
 |--------|----------------|------------|
-| Present only one approach | User has no choice | Always show 2-3 options |
-| Skip trade-offs | User can't make informed decision | Explain pros/cons clearly |
-| Start implementing | No approval yet | Wait for explicit "Yes" |
-| Assume recommendation accepted | User might prefer different | Ask and wait for answer |
+| Present only one approach | You're removing user choice | Always show 2-3 options |
+| Skip trade-offs | You're making decision for user | Explain pros/cons clearly |
+| Start implementing | You don't have approval yet | Wait for explicit "Yes" |
+| Assume recommendation accepted | You're guessing at user preference | Ask and wait for answer |
 
 ## Output
 
@@ -367,16 +376,16 @@ Design complete when:
 3. **If no worktree:**
    - Directly invoke `Skill(skill="workflows:dev-implement")`
 
-**Do NOT proceed without:**
+**Required before proceeding:**
 - Explicit user approval for implementation
 - Feature scope decision (one feature vs multiple)
 - User choice on worktree (Yes/No)
 
 **After this feature is implemented and PR'd:**
 
-If you decomposed into multiple features (step 4), the user can come back and:
-1. Check `.claude/BACKLOG.md` for remaining features
-2. Run `/dev` again to tackle the next feature
+If multiple features were identified in step 4, check `.claude/BACKLOG.md` for remaining features:
+1. View remaining features in BACKLOG.md
+2. Invoke `/dev` again to tackle the next feature
 3. Repeat until all features are complete
 
-This allows incremental development: one feature → PR → merge → next feature.
+This enables incremental development: one feature → PR → merge → next feature.

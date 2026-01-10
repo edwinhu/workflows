@@ -1,11 +1,11 @@
 ---
 name: dev-tools
-description: This skill should be used when the user asks "what plugins are available", "list dev tools", "what MCP servers can I use", "enable code intelligence", or needs to discover available development plugins like serena, context7, or playwright.
+description: This skill should be used when the user asks to "what plugins are available", "list dev tools", "what MCP servers can I use", "enable code intelligence", or needs to discover available development plugins like serena, context7, or playwright.
 ---
 
 # Available Development Plugins
 
-These plugins extend Claude Code capabilities for development workflows. Enable when needed.
+These plugins extend Claude Code capabilities for development workflows. Enable when needed for specific tasks.
 
 ## Code Intelligence
 
@@ -43,12 +43,13 @@ These plugins extend Claude Code capabilities for development workflows. Enable 
 
 ## Usage
 
-To enable a plugin for the current session:
+Enable a plugin for the current session by running:
 ```bash
+# Enable a plugin: claude --enable-plugin <plugin-name>
 claude --enable-plugin <plugin-name>
 ```
 
-To enable for a project, add to `.claude/settings.json`:
+Enable a plugin for a project by adding to `.claude/settings.json`:
 ```json
 {
   "enabledPlugins": {
