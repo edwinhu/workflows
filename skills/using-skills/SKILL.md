@@ -220,6 +220,81 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 
 **Validate before calling Read:** Ask "Is this a media file?" If yes, invoke look-at instead.
 
+## IRON LAW: Following Skill Instructions
+
+**WHEN A SKILL LOADS, YOU MUST FOLLOW ITS EXACT INSTRUCTIONS.**
+
+Skills contain specific patterns, required parameters, and enforcement rules. Skipping these requirements defeats the purpose of loading the skill.
+
+### The Rule
+
+```
+Skill loads successfully
+    ↓
+Read the skill's requirements carefully
+    ↓
+Follow ALL instructions, including:
+    - Required tool parameters (descriptions, timeouts, etc.)
+    - Specific command patterns
+    - Enforcement patterns (Iron Laws, Red Flags)
+    - Step sequences
+    ↓
+Execute using the skill's exact patterns
+```
+
+### Common Violations
+
+**Bash Description Parameter:**
+
+When a skill requires `description` parameter on Bash calls (like look-at), you MUST include it:
+
+```bash
+# ❌ WRONG: No description parameter
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "/path/to/file.pdf" \
+    --goal "Extract title"
+
+# ✅ CORRECT: With description parameter as skill requires
+Bash(
+    command='python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py --file "/path/to/file.pdf" --goal "Extract title"',
+    description="look-at: Extract title"
+)
+```
+
+### Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The skill is just guidance" | Skills contain tested, required patterns | Follow the skill's exact instructions |
+| "I know a better way" | Your way skips enforcement or optimization | Use the skill's pattern - it exists for a reason |
+| "Description parameter is optional" | When skill says REQUIRED, it's required | Add the description parameter as instructed |
+| "I'll add it if it fails" | You'll clutter the conversation with messy output first | Follow the pattern from the start |
+| "It's just cosmetic" | Clean descriptions improve UX and debugging | Professional output requires following the pattern |
+
+### Red Flags - STOP If You Catch Yourself:
+
+- **About to call Bash without description when skill requires it** → STOP. Add the description parameter.
+- **Thinking "I'll skip this requirement"** → STOP. Skills don't have optional requirements.
+- **"The skill says to do X but I'll do Y"** → STOP. Follow the skill or don't load it.
+- **Modifying the skill's pattern "to be simpler"** → STOP. The pattern exists for a reason.
+
+### Why This Matters
+
+**Skills encode:**
+1. **Tested patterns** - Proven to work in production
+2. **Optimization** - Context/token savings, clean output
+3. **Enforcement** - Prevent common mistakes
+4. **UX standards** - Consistent, professional output
+
+**When you skip skill instructions:**
+- ❌ You waste the effort of loading the skill
+- ❌ You create messy, unprofessional output
+- ❌ You miss optimizations (context savings, speed)
+- ❌ You violate user expectations
+- ❌ You make debugging harder
+
+**The skill loaded for a reason - follow it completely.**
+
 ## Advanced Agent Harnessing Patterns
 
 **For detailed oh-my-opencode production patterns including:**
