@@ -10,6 +10,24 @@ description: "Auto-loaded at session start via SessionStart hook. Teaches skill 
 
 This is non-negotiable. Even a 1% chance a skill applies requires checking.
 
+## CRITICAL: Skill Already Loaded - DO NOT RE-INVOKE
+
+<EXTREMELY-IMPORTANT>
+**If you see a skill name in the current conversation turn (e.g., `<command-name>/dev</command-name>`), the skill is ALREADY LOADED.**
+
+**DO NOT:**
+- ❌ Use the Skill tool to invoke it again
+- ❌ Say "I need to invoke the skill"
+- ❌ Call `Skill(skill="dev")` or similar
+
+**DO INSTEAD:**
+- ✅ The skill instructions follow immediately in the next message
+- ✅ Just proceed to the next step
+- ✅ Follow the loaded skill's instructions directly
+
+**If you catch yourself about to invoke a skill that's already loaded, STOP. Just go to the next step.**
+</EXTREMELY-IMPORTANT>
+
 ## The Rule
 
 ```
@@ -17,14 +35,16 @@ User message arrives
     ↓
 Is user explicitly invoking a skill (e.g., "use /dev")?
     ↓
-YES → Skill loads automatically, follow its instructions
+YES → SKILL IS ALREADY LOADED
+      ↓
+      DO NOT invoke again with Skill tool
+      ↓
+      Proceed to next step (follow skill instructions)
 NO  → Check: Does this match any skill trigger?
     ↓
 YES → Invoke skill FIRST, then follow its protocol
 NO  → Proceed normally
 ```
-
-**IMPORTANT:** If a skill is explicitly invoked (user says "use /dev" or "/dev"), DO NOT re-invoke it. The skill is already loaded - just follow its instructions.
 
 ## Skill Triggers
 
@@ -42,6 +62,9 @@ If you think any of these, STOP:
 
 | Thought | Reality |
 |---------|---------|
+| **"I need to invoke the skill properly"** | **If user said "use /dev", it's ALREADY LOADED. Just proceed.** |
+| **"Let me invoke the skill first"** | **Check for `<command-name>` tag - it's already loaded if present** |
+| **"I should use Skill tool for /dev"** | **NO. User invocation = already loaded = proceed to next step** |
 | "This is just a simple question" | Simple questions don't involve reading code |
 | "I'll gather information first" | That IS investigation - use the skill |
 | "I know exactly what to do" | The skill provides structure you'll miss |
