@@ -1,5 +1,10 @@
 ---
-description: Start the data science workflow with output-first verification
+description: Start the 5-phase data science workflow with output-first verification
+allowed-tools: Skill
 ---
 
-Invoke the workflows:ds skill and follow it exactly as presented to you.
+Start the ds workflow by invoking Phase 1 (brainstorming):
+
+Skill(skill="workflows:ds-brainstorm")
+
+The brainstorm phase will handle workflow activation and guide you through requirements gathering.
