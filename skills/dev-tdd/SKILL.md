@@ -32,6 +32,85 @@ Reframe every task:
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
+## The Iron Law of Logging
+
+**ALL CODE MUST USE FILE-BASED LOGGING. This is absolute.**
+
+Every application, service, script, or test runner you write MUST write logs to a file:
+
+- ✅ CLI apps: `./app > /tmp/app.log 2>&1 &`
+- ✅ GUI apps: `./app --log-file=/tmp/app.log 2>&1 &`
+- ✅ Web servers: `npm start > /tmp/server.log 2>&1 &`
+- ✅ Test runners: `pytest -v > /tmp/test.log 2>&1`
+- ✅ Build scripts: `./build.sh 2>&1 | tee /tmp/build.log`
+
+**Why file-based logging is mandatory:**
+
+| Without File Logs | With File Logs |
+|-------------------|----------------|
+| stdout disappears → can't verify | Permanent record → can read anytime |
+| stderr lost → can't debug | Errors captured → can diagnose |
+| "It worked" = no proof | Log file = proof of execution |
+| Can't review after the fact | Can read logs later |
+| No GATE 5 possible | GATE 5 enforces reading them |
+
+### Rationalization Prevention (Logging)
+
+| Excuse | Reality |
+|--------|---------|
+| "Stdout is enough" | Stdout disappears. You need a file to READ. |
+| "I can see the output" | You can't see it after it scrolls by. FILE LOGS. |
+| "App doesn't support --log-file" | Use `2>&1 \| tee /tmp/app.log` instead. |
+| "Logs aren't necessary for simple scripts" | Simple scripts still need verification. ALWAYS log to file. |
+| "I'll just look at the terminal" | Terminal output is ephemeral. FILE-BASED ONLY. |
+| "stderr is good enough" | stderr isn't a file you can `cat`. Use file logs. |
+| "Too much output to log" | That's why you READ the logs (GATE 5), not print them. |
+
+### Log File Verification Pattern
+
+After launching any code, verify the log file was created:
+
+```bash
+# Launch with logging
+./app > /tmp/app.log 2>&1 &
+APP_PID=$!
+sleep 2
+
+# VERIFY LOG FILE EXISTS AND HAS CONTENT
+if [ ! -f /tmp/app.log ]; then
+    echo "FAIL: Log file not created"
+    echo "Did you redirect stdout/stderr to a file?"
+    exit 1
+fi
+
+if [ ! -s /tmp/app.log ]; then
+    echo "FAIL: Log file empty (no output written)"
+    exit 1
+fi
+
+echo "✓ Log file exists and has content"
+```
+
+**Tool description:** Verify log file exists and has content after launch
+
+### The Honesty Requirement (Logging)
+
+<EXTREMELY-IMPORTANT>
+**Running code without file-based logging is LYING about verification.**
+
+When you claim "code executed" or "tests ran", you are asserting:
+- You created a log file
+- You verified the log file exists
+- You READ the full log file
+- You confirmed what happened from the logs
+
+Running without file logs means you have NO EVIDENCE of what happened.
+
+**"I saw it in terminal" is not verification. File-based logs are mandatory.**
+</EXTREMELY-IMPORTANT>
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## The Execution Gate (MANDATORY)
 
 **NO E2E TESTS WITHOUT PASSING THE EXECUTION GATE FIRST. This is absolute.**
@@ -159,11 +238,139 @@ echo "✓ GATE 6 PASSED"
 
 # NOW AND ONLY NOW: E2E testing
 echo "All gates passed. Proceeding to E2E tests..."
-grim /tmp/screenshot.png
-echo "Screenshot captured"
+
+# CRITICAL: Screenshot WINDOW ONLY, not whole screen
+# Whole screen = other apps visible = false conclusions
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+    # Wayland: Get focused window geometry and screenshot it
+    GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
+    grim -g "$GEOMETRY" /tmp/screenshot.png
+else
+    # X11: Screenshot active window only
+    scrot -u /tmp/screenshot.png
+fi
+echo "Screenshot captured (window only)"
 ```
 
-**Tool description:** Execute all 6 mandatory gates before E2E testing
+**Tool description:** Execute all 6 mandatory gates, then screenshot active window only
+
+### The Iron Law of GUI E2E Testing
+
+<EXTREMELY-IMPORTANT>
+**GUI APPLICATIONS REQUIRE E2E TESTS WITH WINDOW-SPECIFIC SCREENSHOTS. This is absolute.**
+
+Every GUI application you implement MUST have:
+1. E2E test that verifies the UI
+2. Screenshot of **THE APPLICATION WINDOW ONLY** (not whole screen)
+3. Visual verification or comparison
+
+**Why window-only screenshots are mandatory:**
+
+| Whole Screen Screenshots | Window-Only Screenshots |
+|--------------------------|-------------------------|
+| Shows other apps → false conclusions | Shows your app only → accurate |
+| "Success" message from wrong app | Only your app's messages |
+| Icons from desktop/panel confuse analysis | Only your app's icons |
+| Can't isolate your app's behavior | Isolated verification |
+
+### Rationalization Prevention (Screenshots)
+
+| Excuse | Reality |
+|--------|---------|
+| "Whole screen is easier" | Easier = wrong conclusions. Window only. |
+| "I can tell which app it is" | You make mistakes. Isolate the window. |
+| "Other apps don't matter" | They confuse verification. Window only. |
+| "grim /tmp/screenshot.png works" | That's whole screen. Use `-g` with geometry. |
+| "scrot is enough" | That's whole screen. Use `scrot -u` for active window. |
+
+### Platform-Specific Window Screenshots
+
+**Wayland (Hyprland):**
+```bash
+# Get active window geometry and screenshot it
+GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
+grim -g "$GEOMETRY" /tmp/window.png
+```
+
+**Wayland (Sway):**
+```bash
+# Get focused window geometry
+GEOMETRY=$(swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"')
+grim -g "$GEOMETRY" /tmp/window.png
+```
+
+**X11:**
+```bash
+# Screenshot active window only (-u flag)
+scrot -u /tmp/window.png
+```
+
+**macOS:**
+```bash
+# Screenshot specific window by window ID
+screencapture -l <window_id> /tmp/window.png
+```
+
+**Tool description:** Capture screenshot of application window only, not whole screen
+
+### Feature-Specific Screenshot Cropping
+
+<EXTREMELY-IMPORTANT>
+**When testing a SPECIFIC feature (toolbar, dialog, icon set), crop to THAT REGION ONLY.**
+
+**Why feature-specific cropping is mandatory:**
+
+| Whole Window | Feature-Specific Crop |
+|--------------|----------------------|
+| Irrelevant UI elements visible | Only the feature being tested |
+| False positives from other parts | Isolated verification |
+| "Success" from unrelated element | Only the target element |
+| Harder to spot actual bug | Bug is obvious in focused view |
+
+**Example: Testing toolbar icons**
+
+❌ **WRONG:** Screenshot whole window
+```bash
+# Shows entire app - toolbar is tiny, hard to verify
+grim -g "$GEOMETRY" /tmp/screenshot.png
+```
+
+✅ **CORRECT:** Crop to toolbar only
+```bash
+# Get window geometry
+GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
+
+# Extract coordinates and crop to toolbar (top 50px of window)
+X=$(echo $GEOMETRY | cut -d, -f1)
+Y=$(echo $GEOMETRY | cut -d' ' -f1 | cut -d, -f2)
+W=$(echo $GEOMETRY | cut -d' ' -f2 | cut -dx -f1)
+
+# Screenshot toolbar only (top 50 pixels)
+grim -g "$X,$Y ${W}x50" /tmp/toolbar.png
+```
+
+**Example: Testing specific dialog**
+
+✅ **CORRECT:** Get dialog window geometry, screenshot that window only
+```bash
+# Get dialog window ID and geometry specifically
+DIALOG_GEOMETRY=$(hyprctl clients -j | jq -r '.[] | select(.title | contains("Settings")) | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
+grim -g "$DIALOG_GEOMETRY" /tmp/dialog.png
+```
+
+### Rationalization Prevention (Feature Cropping)
+
+| Excuse | Reality |
+|--------|---------|
+| "Whole window shows context" | Context confuses verification. Crop to feature. |
+| "I can see the feature in the full screenshot" | You read wrong elements. Isolate the feature. |
+| "Cropping is too much work" | 5 extra seconds prevents false conclusions. |
+| "The whole window is relevant" | Only test what you changed. Crop to feature. |
+| "I'll just focus on the right area" | You make mistakes. Force isolation via crop. |
+
+**Tool description:** Crop screenshot to specific feature region being tested
+</EXTREMELY-IMPORTANT>
+</EXTREMELY-IMPORTANT>
 
 ### The Honesty Requirement
 
