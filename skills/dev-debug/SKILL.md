@@ -6,6 +6,34 @@ description: "This skill should be used when the user asks to 'debug', 'fix bug'
 
 **Announce:** "I'm using dev-debug for systematic bug investigation."
 
+<EXTREMELY-IMPORTANT>
+## GUI Application Debugging Gate
+
+When debugging GUI applications, you MUST complete the execution gates from dev-tdd during REPRODUCE and VERIFY phases:
+
+```
+GATE 1: BUILD
+GATE 2: LAUNCH (with file-based logging)
+GATE 3: WAIT
+GATE 4: CHECK PROCESS
+GATE 5: READ LOGS ← MANDATORY, CANNOT SKIP
+GATE 6: VERIFY LOGS
+THEN: Test reproduction or verification
+```
+
+**Critical phases requiring gates:**
+
+**REPRODUCE phase:**
+- Build → Launch with logs → Wait → Check running → **READ LOGS** → Verify bug appears in logs
+- Only after reading logs can you claim "bug reproduced"
+
+**VERIFY phase:**
+- Build → Launch with logs → Wait → Check running → **READ LOGS** → Verify bug is gone from logs
+- Only after reading logs can you claim "bug fixed"
+
+**You loaded dev-tdd via ralph-loop. Follow the gates for GUI debugging.**
+</EXTREMELY-IMPORTANT>
+
 ## Where This Fits
 
 ```
