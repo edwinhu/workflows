@@ -5,6 +5,24 @@ description: "Per-task ralph loop pattern for implementation and debugging. One 
 
 **Announce:** "I'm using dev-ralph-loop to set up verification loops."
 
+<EXTREMELY-IMPORTANT>
+## Load TDD Enforcement (REQUIRED)
+
+Before starting ANY ralph loop, you MUST load the TDD skill to remember the testing gates and task reframing:
+
+```
+Skill(skill="workflows:dev-tdd")
+```
+
+This loads:
+- Task reframing (your job is writing tests, not features)
+- The Execution Gate (6 mandatory gates before E2E testing)
+- GATE 5: READ LOGS (mandatory - cannot skip)
+- The Iron Law of TDD (test-first approach)
+
+**Read dev-tdd skill content now before proceeding with ralph loops.**
+</EXTREMELY-IMPORTANT>
+
 ## Contents
 
 - [The Iron Law](#the-iron-law-of-ralph-loops)

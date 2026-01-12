@@ -10,14 +10,33 @@ description: "This skill should be used when the user needs to 'debug web applic
 Main Chat                          Task Agent
 ─────────────────────────────────────────────────────
 dev-implement
-  → dev-ralph-loop
+  → dev-ralph-loop (loads dev-tdd)
     → dev-delegate
-      → Task agent ──────────────→ follows dev-tdd (TDD protocol)
-                                   uses dev-test (this skill)
+      → Task agent ──────────────→ uses dev-test (this skill)
+                                     ↓ loads dev-tdd again
+                                   has TDD protocol + gates
                                      → routes to specific tool
 ```
 
-**This skill routes to the right testing tool.** For TDD philosophy (RED-GREEN-REFACTOR), see `dev-tdd`.
+<EXTREMELY-IMPORTANT>
+## Load TDD Enforcement (REQUIRED)
+
+Before choosing testing tools, you MUST load the TDD skill to ensure gate compliance:
+
+```
+Skill(skill="workflows:dev-tdd")
+```
+
+This loads:
+- Task reframing (your job is writing tests, not features)
+- **The Execution Gate** (6 mandatory gates before E2E testing)
+- **GATE 5: READ LOGS** (mandatory - cannot skip)
+- The Iron Law of TDD (test-first approach)
+
+**Read dev-tdd skill content now before selecting testing tools.**
+</EXTREMELY-IMPORTANT>
+
+**This skill routes to the right testing tool.** The loaded `dev-tdd` skill provides TDD protocol details.
 
 ## Contents
 

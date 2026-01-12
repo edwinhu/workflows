@@ -143,7 +143,25 @@ You will need:
 
 ## TDD Protocol (MANDATORY)
 
-Follow the dev-tdd skill - RED-GREEN-REFACTOR:
+<EXTREMELY-IMPORTANT>
+**LOAD THIS SKILL FIRST:**
+
+Before writing any code, you MUST load the TDD skill:
+
+```
+Skill(skill="workflows:dev-tdd")
+```
+
+This loads:
+- Task reframing (your job is writing tests, not features)
+- The Execution Gate (6 mandatory gates before E2E testing)
+- GATE 5: READ LOGS (mandatory - cannot skip)
+- The Iron Law of TDD (test-first approach)
+
+**Load dev-tdd now before proceeding.**
+</EXTREMELY-IMPORTANT>
+
+Follow the RED-GREEN-REFACTOR cycle from dev-tdd:
 
 1. **RED**: Write a failing test FIRST
    - Run it, SEE IT FAIL
@@ -159,7 +177,7 @@ Follow the dev-tdd skill - RED-GREEN-REFACTOR:
 
 ## Testing Tools
 
-For test options (pytest, Playwright, ydotool), see dev-test skill.
+For test options (pytest, Playwright, ydotool), load dev-test skill after dev-tdd.
 
 Tests must EXECUTE code and VERIFY behavior. Grepping is NOT testing.
 

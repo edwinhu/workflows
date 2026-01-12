@@ -17,6 +17,175 @@ version: 0.1.0
 # Test-Driven Development
 
 <EXTREMELY-IMPORTANT>
+## Task Reframing: What Your Job Actually Is
+
+**Your job is NOT to implement features. Your job is to write tests that prove features work.**
+
+Reframe every task:
+- ❌ "Implement user login"
+- ✅ "Write a test that proves user login works. Then make it pass."
+
+- ❌ "Fix the icon rendering bug"
+- ✅ "Write a test that fails when icons render wrong. Then fix it."
+
+**The test IS your deliverable. The implementation just makes the test pass.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## The Execution Gate (MANDATORY)
+
+**NO E2E TESTS WITHOUT PASSING THE EXECUTION GATE FIRST. This is absolute.**
+
+### The Gate Sequence
+
+Before ANY E2E testing, screenshots, or verification:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ GATE 1: BUILD                                                │
+│   → Compile/build the application                            │
+│   → Exit code 0? → Proceed                                   │
+│   → Exit code ≠ 0? → STOP, fix build, restart               │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ GATE 2: LAUNCH                                               │
+│   → Start application with FILE-BASED logging                │
+│   → ./app --log-file=/tmp/app.log 2>&1 &                    │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ GATE 3: WAIT                                                 │
+│   → sleep 2-3 seconds for initialization                     │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ GATE 4: CHECK PROCESS                                        │
+│   → ps -p $PID or pgrep appname                             │
+│   → Running? → Proceed                                       │
+│   → Crashed? → STOP, READ LOGS, fix, restart at GATE 1      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ GATE 5: READ LOGS (MANDATORY - CANNOT SKIP)                 │
+│   → cat /tmp/app.log                                         │
+│   → Read ENTIRE log file                                     │
+│   → Document what you see                                    │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ GATE 6: VERIFY LOGS                                          │
+│   → Check for ERROR, FATAL, Segmentation, core dumped       │
+│   → Check for missing resources, failed loads                │
+│   → Errors found? → STOP, fix, restart at GATE 1            │
+│   → Clean logs? → Proceed                                    │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ NOW YOU MAY: E2E tests, screenshots, UI verification         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**YOU CANNOT SKIP GATES. YOU CANNOT REORDER GATES.**
+
+### Red Flags - STOP Immediately
+
+If you catch yourself thinking ANY of these, STOP—you're about to skip a gate:
+
+| Thought | Why It's Wrong | Action |
+|---------|----------------|--------|
+| "Build succeeded, let me screenshot" | You skipped GATES 2-6 | Go to GATE 2 |
+| "Let me take a screenshot" | You skipped GATES 1-6 | Start at GATE 1 |
+| "Process is running, let me test" | You skipped GATES 5-6 (READ LOGS) | Go to GATE 5 |
+| "I'll check logs if test fails" | Backward—logs come BEFORE tests | Go to GATE 5 |
+| "Sleep is enough" | Sleep ≠ verification | Do GATES 4-6 |
+
+### Rationalization Prevention
+
+| Excuse | Reality |
+|--------|---------|
+| "Build passed, app must work" | NO. GATES 2-6 required. Do them now. |
+| "I can see the window" | NO. You haven't READ LOGS (GATE 5). Do it now. |
+| "I'll check logs later" | NO. GATE 5 comes BEFORE E2E. Do it now. |
+| "Logs are optional" | NO. GATE 5 is MANDATORY. Cannot skip. |
+| "Screenshots will show issues" | NO. Screenshots can't show log errors. GATE 5 first. |
+
+### For GUI Applications (Mandatory Pattern)
+
+```bash
+#!/bin/bash
+set -e  # Exit on any error
+
+# GATE 1: BUILD
+echo "GATE 1: Building..."
+cd build && ninja
+echo "✓ GATE 1 PASSED"
+
+# GATE 2: LAUNCH with file-based logging
+echo "GATE 2: Launching with logging..."
+./myapp --log-file=/tmp/myapp.log 2>&1 &
+APP_PID=$!
+echo "✓ GATE 2 PASSED (PID: $APP_PID)"
+
+# GATE 3: WAIT
+echo "GATE 3: Waiting for initialization..."
+sleep 3
+echo "✓ GATE 3 PASSED"
+
+# GATE 4: CHECK PROCESS
+echo "GATE 4: Checking process..."
+if ! ps -p $APP_PID > /dev/null; then
+    echo "✗ GATE 4 FAILED: Process crashed"
+    echo "Reading logs from GATE 5..."
+    cat /tmp/myapp.log
+    exit 1
+fi
+echo "✓ GATE 4 PASSED"
+
+# GATE 5: READ LOGS (MANDATORY)
+echo "GATE 5: Reading full runtime logs..."
+echo "=== RUNTIME LOGS ==="
+cat /tmp/myapp.log
+echo "=== END LOGS ==="
+echo "✓ GATE 5 PASSED (logs read)"
+
+# GATE 6: VERIFY LOGS
+echo "GATE 6: Verifying no errors in logs..."
+if grep -qE "(ERROR|FATAL|CRITICAL|Segmentation|core dumped)" /tmp/myapp.log; then
+    echo "✗ GATE 6 FAILED: Errors found in logs"
+    exit 1
+fi
+echo "✓ GATE 6 PASSED"
+
+# NOW AND ONLY NOW: E2E testing
+echo "All gates passed. Proceeding to E2E tests..."
+grim /tmp/screenshot.png
+echo "Screenshot captured"
+```
+
+**Tool description:** Execute all 6 mandatory gates before E2E testing
+
+### The Honesty Requirement
+
+<EXTREMELY-IMPORTANT>
+**Skipping gates is LYING about verification.**
+
+When you say "E2E test passed", you are asserting:
+- You passed GATE 1 (built successfully)
+- You passed GATE 2 (launched with logging)
+- You passed GATE 3 (waited for init)
+- You passed GATE 4 (process is running)
+- **You passed GATE 5 (READ the full log file)**
+- **You passed GATE 6 (VERIFIED no errors in logs)**
+- You ran E2E tests with clean logs
+
+Saying "E2E passed" without completing GATES 5-6 is not "testing"—it is LYING about application state.
+
+**"Checking logs now" is honest. "E2E verified" without GATE 5 is fraud.**
+</EXTREMELY-IMPORTANT>
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## The Iron Law of TDD
 
 **YOU MUST WRITE THE FAILING TEST FIRST. YOU MUST SEE IT FAIL. This is not negotiable.**
@@ -35,8 +204,8 @@ Before writing ANY implementation code:
 ## The TDD Cycle
 
 ```
-RED → Run test, see failure, log to LEARNINGS.md
-GREEN → Minimal code only, run test, see pass, log to LEARNINGS.md
+RED → Write test → Run through GATES → See failure → Read logs → Document
+GREEN → Minimal code → Run through GATES → See pass → Read logs → Document
 REFACTOR → Clean up while staying green
 ```
 
@@ -50,11 +219,15 @@ def test_user_can_login():
     assert result.token is not None
 ```
 
-Run the test and observe the failure:
+Run the test through the execution gates:
 
 ```bash
-pytest tests/test_auth.py::test_user_can_login -v
+# For unit tests, minimum gates are: EXECUTE + READ OUTPUT
+pytest tests/test_auth.py::test_user_can_login -v 2>&1 | tee /tmp/test.log
 # pytest: run specific test and see RED failure
+
+# READ the output (MANDATORY)
+cat /tmp/test.log
 ```
 
 Output will show:
@@ -66,6 +239,7 @@ FAILED - NameError: name 'login' is not defined
 ```markdown
 ## RED: test_user_can_login
 - Test written
+- Ran through gates (pytest executed, output read)
 - Fails with: NameError: name 'login' is not defined
 - Expected: function doesn't exist yet
 ```
@@ -80,11 +254,14 @@ def login(email: str, password: str) -> LoginResult:
     return LoginResult(success=True, token="dummy-token")
 ```
 
-Run the test and verify the pass:
+Run the test through gates again:
 
 ```bash
-pytest tests/test_auth.py::test_user_can_login -v
+pytest tests/test_auth.py::test_user_can_login -v 2>&1 | tee /tmp/test.log
 # pytest: run test again and see GREEN success
+
+# READ the output (MANDATORY)
+cat /tmp/test.log
 ```
 
 Output will show:
@@ -96,7 +273,9 @@ PASSED
 ```markdown
 ## GREEN: test_user_can_login
 - Minimal login() implemented
+- Ran through gates (pytest executed, output read)
 - Test passes
+- No errors in output
 - Ready for refactor
 ```
 
@@ -261,14 +440,19 @@ E2E TDD:      RED → GREEN → REFACTOR
 ### E2E TDD Cycle
 
 1. **RED**: Write E2E test simulating user action
-   - Run the E2E test and observe the failure (feature doesn't exist)
-   - Document: "E2E RED: [test] fails with [error]"
+   - Run through ALL 6 GATES (BUILD → LAUNCH → WAIT → CHECK → READ LOGS → VERIFY LOGS)
+   - Only after GATE 6: Run the E2E test
+   - Observe the failure (feature doesn't exist)
+   - Document: "E2E RED: [test] fails with [error]. All gates passed, logs clean."
 
 2. **GREEN**: Implement to make E2E pass (unit tests already green)
-   - Run the E2E test and verify the pass
-   - Document: "E2E GREEN: [test] passes"
+   - Run through ALL 6 GATES again
+   - Only after GATE 6: Run the E2E test
+   - Verify the pass
+   - Document: "E2E GREEN: [test] passes. All gates passed, logs clean."
 
 3. **REFACTOR**: Ensure both unit and E2E stay green
+   - Continue running through gates for each test run
 
 ### Delete & Restart (E2E)
 

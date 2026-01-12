@@ -4,6 +4,24 @@ description: This skill should be used when the user asks to "test Linux desktop
 version: 0.1.0
 ---
 
+<EXTREMELY-IMPORTANT>
+## Gate Reminder
+
+Before taking screenshots or running E2E tests, you MUST complete all 6 gates from dev-tdd:
+
+```
+GATE 1: BUILD
+GATE 2: LAUNCH (with file-based logging)
+GATE 3: WAIT
+GATE 4: CHECK PROCESS
+GATE 5: READ LOGS ← MANDATORY, CANNOT SKIP
+GATE 6: VERIFY LOGS
+THEN: E2E tests/screenshots
+```
+
+**You loaded dev-tdd earlier. Follow the gates now.**
+</EXTREMELY-IMPORTANT>
+
 ## Contents
 
 - [Tool Availability Gate](#tool-availability-gate)

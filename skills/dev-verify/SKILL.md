@@ -143,6 +143,26 @@ For user-facing changes, add to verification:
 ```
 
 **"Unit tests pass" is not "feature complete" for user-facing changes.**
+
+### GUI Application Gate (CRITICAL)
+
+<EXTREMELY-IMPORTANT>
+**For GUI applications, you MUST complete the 6-gate sequence from dev-tdd BEFORE E2E testing:**
+
+```
+GATE 1: BUILD
+GATE 2: LAUNCH (with file-based logging)
+GATE 3: WAIT
+GATE 4: CHECK PROCESS
+GATE 5: READ LOGS ← MANDATORY, CANNOT SKIP
+GATE 6: VERIFY LOGS
+THEN AND ONLY THEN: E2E tests/screenshots
+```
+
+**You cannot skip GATE 5 (READ LOGS).** If you catch yourself about to take screenshots without reading logs first, STOP.
+
+See `Skill(skill="workflows:dev-tdd")` for the full gate sequence with examples.
+</EXTREMELY-IMPORTANT>
 </EXTREMELY-IMPORTANT>
 
 ## Insufficient Evidence
