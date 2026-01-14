@@ -142,9 +142,34 @@ You may NOT output the promise to:
 
 When you output the promise, the ralph loop ends. Then:
 
-1. Document completion in LEARNINGS.md
-2. Move to the next task
-3. Start a NEW ralph loop for that task
+1. **Update PLAN.md** - Mark task complete:
+   ```
+   - [ ] Task N: Description  →  - [x] Task N: Description
+   ```
+2. **Log to LEARNINGS.md** - What was done, any discoveries
+3. **Immediately start next task's loop** - Same response, no pause
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Progression
+
+**After outputting a promise, you MUST start the next task within the SAME RESPONSE.**
+
+Not "should". Not "recommended". MUST.
+
+| If you're about to... | Instead... |
+|----------------------|------------|
+| End your response after a promise | Continue with next task's loop invocation |
+| Ask "should I continue?" | Just continue |
+| Summarize progress so far | Save it for when ALL tasks are done |
+| Wait for user acknowledgment | User doesn't need to acknowledge each task |
+
+**The only valid stopping points:**
+1. ALL tasks in PLAN.md are marked `[x]` complete
+2. You hit a blocker that requires user input (be specific about what you need)
+3. User explicitly interrupted
+
+Finishing one task is NOT a stopping point. The user is waiting for the FEATURE, not status updates.
+</EXTREMELY-IMPORTANT>
 
 ## Example: Multi-Task Feature
 
@@ -157,6 +182,10 @@ Skill(skill="ralph-loop:ralph-loop", args="Task 1: Create types --max-iterations
 
 <promise>TASK1_DONE</promise>
 
+[Update PLAN.md: - [ ] Task 1 → - [x] Task 1]
+[Log to LEARNINGS.md]
+[IMMEDIATELY continue to Task 2 - same response]
+
 ## Task 2: Add service method
 Skill(skill="ralph-loop:ralph-loop", args="Task 2: Add service method --max-iterations 10 --completion-promise TASK2_DONE")
 
@@ -167,6 +196,10 @@ Skill(skill="ralph-loop:ralph-loop", args="Task 2: Add service method --max-iter
 
 <promise>TASK2_DONE</promise>
 
+[Update PLAN.md: - [ ] Task 2 → - [x] Task 2]
+[Log to LEARNINGS.md]
+[IMMEDIATELY continue to Task 3 - same response]
+
 ## Task 3: Add route handler
 Skill(skill="ralph-loop:ralph-loop", args="Task 3: Add route handler --max-iterations 10 --completion-promise TASK3_DONE")
 
@@ -175,7 +208,10 @@ Skill(skill="ralph-loop:ralph-loop", args="Task 3: Add route handler --max-itera
 
 <promise>TASK3_DONE</promise>
 
-## All tasks complete
+[Update PLAN.md: - [ ] Task 3 → - [x] Task 3]
+[Log to LEARNINGS.md]
+
+## All tasks complete - NOW you can stop
 ```
 
 ## Rationalization Prevention
@@ -192,13 +228,16 @@ These thoughts mean STOP—you're about to skip enforcement:
 | "The ceremony isn't worth it" | The ceremony IS the value. It prevents shortcuts. |
 | "I'll cherry-pick the parts I need" | Skills are protocols, not menus. Follow all of it. |
 | "Tests passed on first try, skip loop" | Still need the loop structure. Lucky ≠ verified. |
-| "Task done, let me check in" | NO. Start next task's loop immediately. |
+| "Task done, let me check in" | NO. Update PLAN.md, then start next task immediately. |
 | "User might want to review" | User wants ALL tasks done. Keep going. |
 | "Natural pause point" | Only pause when ALL tasks complete. |
+| "I'll update PLAN.md later" | NO. Update it NOW, right after the promise. |
+| "PLAN.md is just documentation" | PLAN.md is the source of truth. Keep it current. |
+| "Should I continue?" | YES. Don't ask. Just continue to the next task. |
 
 **Each task needs its own ralph loop. One feature loop provides ZERO per-task enforcement.**
 
-**After outputting a promise, IMMEDIATELY start the next task's loop. Do NOT pause for user review.**
+**After outputting a promise: (1) Update PLAN.md, (2) Log to LEARNINGS.md, (3) Start next task's loop. All in the same response.**
 
 ## When NOT to Use Ralph Loops
 

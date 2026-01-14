@@ -274,7 +274,13 @@ Main chat should:
 ## No Pause Between Tasks
 
 <EXTREMELY-IMPORTANT>
-**After completing task N, IMMEDIATELY start task N+1. Do NOT pause.**
+**After completing task N, IMMEDIATELY start task N+1 in the SAME RESPONSE. Do NOT pause.**
+
+### Post-Promise Checklist (mandatory, same response)
+
+1. **Update PLAN.md** - Mark task `[x]` complete
+2. **Log to LEARNINGS.md** - What was done
+3. **Start next task's ralph loop** - No waiting
 
 | Thought | Reality |
 |---------|---------|
@@ -283,8 +289,16 @@ Main chat should:
 | "Natural pause point" | Only pause when ALL tasks complete or blocked. |
 | "Let me summarize progress" | Summarize AFTER all tasks. Keep moving. |
 | "User has been waiting" | User is waiting for COMPLETION, not updates. |
+| "Should I continue?" | YES. Never ask. Just continue. |
+| "I'll update PLAN.md later" | NO. Update it NOW before next task. |
 
-The promise signals task completion. After outputting promise, IMMEDIATELY start next task's loop.
+### Valid Stopping Points (only these three)
+
+1. ALL tasks in PLAN.md are marked `[x]` complete
+2. You hit a blocker requiring user input (state exactly what you need)
+3. User explicitly interrupted
+
+The promise signals task completion. After outputting promise, update PLAN.md, then IMMEDIATELY start next task's loop.
 
 **Pausing between tasks is procrastination disguised as courtesy.**
 </EXTREMELY-IMPORTANT>
