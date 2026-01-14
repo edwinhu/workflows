@@ -70,7 +70,7 @@ For each task in PLAN.md:
 
 **REQUIRED SUB-SKILL:** For Task templates and detailed flow:
 ```
-Skill(skill="workflows:ds-delegate")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
 ```
 
 ---
@@ -315,5 +315,5 @@ Append each step to `.claude/LEARNINGS.md`:
 
 **REQUIRED SUB-SKILL:** After all analysis steps complete with verified output, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:ds-review")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-review/SKILL.md")
 ```

@@ -83,7 +83,7 @@ Reply when configured and I'll continue testing.
 - Cross-browser testing needed (Chrome only)
 - Headless automation required
 
-**For CI/CD and headless, use:** `Skill(skill="workflows:dev-test-playwright")`
+**For CI/CD and headless, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")`
 
 ### Rationalization Prevention
 
@@ -565,6 +565,6 @@ mcp__claude-in-chrome__gif_creator(
 
 This skill is referenced by `dev-test` for Chrome MCP browser automation.
 
-**For headless/CI testing, use:** `Skill(skill="workflows:dev-test-playwright")`
+**For headless/CI testing, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")`
 
 For TDD protocol, see: `Skill(skill="workflows:dev-tdd")`

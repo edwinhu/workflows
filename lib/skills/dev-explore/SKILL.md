@@ -60,7 +60,7 @@ Reading costs minutes. Wrong architecture costs days of rework.
 
 After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:dev-clarify")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-clarify/SKILL.md")
 ```
 
 DO NOT:
@@ -354,5 +354,5 @@ Exploration complete when:
 
 **REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:dev-clarify")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-clarify/SKILL.md")
 ```

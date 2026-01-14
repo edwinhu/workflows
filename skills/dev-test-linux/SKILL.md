@@ -104,8 +104,8 @@ Do NOT use Linux automation for:
 - Cross-platform testing
 
 For web testing, use:
-- `Skill(skill="workflows:dev-test-chrome")` - debugging
-- `Skill(skill="workflows:dev-test-playwright")` - CI/CD
+- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")` - debugging
+- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")` - CI/CD
 
 ### Rationalization Prevention
 

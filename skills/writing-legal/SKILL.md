@@ -18,15 +18,44 @@ Invoke this skill for:
 **For general writing**: Use `/writing` skill (Strunk & White)
 **For economics/finance**: Use `/writing-econ` skill (McCloskey)
 
+## Required Skills
+
+When generating Word documents (`.docx`), you MUST load the `/docx` skill first. The docx skill provides proper document manipulation capabilities.
+
+## Template Requirement
+
+**Template location:** `${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx`
+
+This template contains proper law review formatting: margins, fonts, footnote styles, and section formatting compliant with standard journal requirements.
+
 ## Enforcement
 
-### IRON LAW #1: NO CLAIM WITHOUT CONFRONTING COUNTERARGUMENTS
+### IRON LAW #1: NO DOCX WITHOUT TEMPLATE FIRST
+
+Before creating ANY Word document for legal writing:
+1. Load the `/docx` skill
+2. Copy `${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx` as the base
+3. THEN add content to the template copy
+
+If you created a blank docx without the template, DELETE IT and START OVER with the template.
+
+### IRON LAW #2: NO CLAIM WITHOUT CONFRONTING COUNTERARGUMENTS
 
 If your draft makes a prescriptive claim but doesn't address obvious objections, DELETE the section and START OVER. Legal scholarship requires anticipating and answering counterarguments, not ignoring them.
 
-### IRON LAW #2: NO SECONDARY SOURCE CITATIONS FOR PRIMARY SOURCES
+### IRON LAW #3: NO SECONDARY SOURCE CITATIONS FOR PRIMARY SOURCES
 
 If you cite a case/statute/historical fact via an intermediate source (law review, treatise), DELETE the citation and READ THE ORIGINAL. Even Supreme Court opinions misstate precedents.
+
+### Rationalization Table - Template Usage
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I'll format it properly later" | Formatting is structural, not cosmetic | START with template |
+| "The content matters more" | Wrong format = rejection by journals | Template provides correct format |
+| "I can apply styles after" | Retroactive styling breaks footnotes | Use template from the start |
+| "A blank doc is simpler" | Blank doc means redoing all formatting | Copy template, it's one step |
+| "User didn't ask for template" | Professional output is implicit | Always use template for docx |
 
 ### Rationalization Table - STOP If You Think:
 
@@ -43,6 +72,12 @@ If you cite a case/statute/historical fact via an intermediate source (law revie
 
 ### Red Flags - STOP Immediately If You Think:
 
+**Template Red Flags:**
+- "Let me create a new Word document" → NO. Copy the template first.
+- "I'll add the template formatting later" → NO. Start with template.
+- "The docx skill will handle formatting" → NO. docx skill needs template base.
+
+**Content Red Flags:**
 - "Let me write standard intro" → NO. Find concrete problem first.
 - "I'll address objections later" → NO. Confront counterarguments NOW.
 - "This treatise explains the case" → NO. Read the original case.
@@ -52,11 +87,12 @@ If you cite a case/statute/historical fact via an intermediate source (law revie
 
 **When to delete and restart:**
 
-1. **Intro starts with "This article discusses"** → Delete, start with concrete problem
-2. **Background exceeds proof section** → Delete excessive background
-3. **Claim made without addressing objections** → Delete section, add counterargument confrontation
-4. **Citation chain to primary source** → Delete citation, read and cite original
-5. **Unpacked metaphor used as argument** → Delete, write actual logical argument
+1. **Created docx without template** → Delete file, copy template, start over
+2. **Intro starts with "This article discusses"** → Delete, start with concrete problem
+3. **Background exceeds proof section** → Delete excessive background
+4. **Claim made without addressing objections** → Delete section, add counterargument confrontation
+5. **Citation chain to primary source** → Delete citation, read and cite original
+6. **Unpacked metaphor used as argument** → Delete, write actual logical argument
 
 **How to restart:**
 
@@ -67,6 +103,21 @@ New: "When police drones photograph backyards, does the Fourth Amendment require
 ```
 
 Start with CONCRETE QUESTION that matters, not abstract topic description.
+
+### Gate Function: Document Creation
+
+When user requests a Word document (docx), follow this 5-step gate:
+
+```
+STEP 1: LOAD    → Load /docx skill
+STEP 2: COPY    → Copy ${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx
+                  to target location (e.g., user's specified path)
+STEP 3: EDIT    → Add content to the COPIED template
+STEP 4: VERIFY  → Check template formatting preserved (styles, footnotes)
+STEP 5: DELIVER → Return the document to user
+```
+
+**GATE VIOLATION = RESTART**: If any step is skipped, delete the output and restart from Step 1.
 
 ## Law Review Article Structure
 
@@ -198,6 +249,14 @@ See `references/volokh-distilled.md` for extended discussion of rhetorical probl
 
 For comprehensive guidance, consult:
 
+### Template
+
+- **`templates/law_review_template.docx`** - Law review document template:
+  - Proper margins and page setup for journal submission
+  - Footnote styles compliant with Bluebook formatting
+  - Section heading styles
+  - Font and spacing requirements
+
 ### Reference File
 
 - **`references/volokh-distilled.md`** - Extended Volokh guidance covering:
@@ -216,5 +275,9 @@ Load the full reference when:
 - Checking specific word choice or usage questions
 
 ## Integration
+
+**Required skills for document generation:**
+- `/docx` - Load BEFORE creating any Word document
+- `/bluebook` - Load when formatting legal citations
 
 After completing any legal writing task, invoke `/ai-anti-patterns` to check for AI writing indicators. The `/writing` skill covers general prose principles (active voice, omit needless words) that complement this skill.

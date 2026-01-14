@@ -1,10 +1,10 @@
 ---
 description: Start the 7-phase feature development workflow with TDD enforcement
-allowed-tools: Skill
+allowed-tools: Read
 ---
 
-Start the dev workflow by invoking Phase 1 (brainstorming):
+Start the dev workflow by reading and following Phase 1 (brainstorming):
 
-Skill(skill="workflows:dev-brainstorm")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-brainstorm/SKILL.md")
 
 The brainstorm phase will handle workflow activation and guide you through requirements gathering.

@@ -95,10 +95,10 @@ Simple work is EXACTLY when discipline matters most—because that's when you're
 ```
 For each task N in PLAN.md:
     1. Start ralph loop for task N
-       → Skill(skill="workflows:dev-ralph-loop")
+       → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md")
 
     2. Inside loop: spawn Task agent
-       → Skill(skill="workflows:dev-delegate")
+       → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")
 
     3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
 
@@ -111,7 +111,7 @@ For each task N in PLAN.md:
 
 **REQUIRED SUB-SKILL:**
 ```
-Skill(skill="workflows:dev-ralph-loop")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md")
 ```
 
 Key points from dev-ralph-loop:
@@ -123,7 +123,7 @@ Key points from dev-ralph-loop:
 
 **REQUIRED SUB-SKILL:**
 ```
-Skill(skill="workflows:dev-delegate")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")
 ```
 
 Key points from dev-delegate:
@@ -307,7 +307,7 @@ The promise signals task completion. After outputting promise, update PLAN.md, t
 
 **REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests:
 ```
-Skill(skill="workflows:dev-review")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-review/SKILL.md")
 ```
 
 Do NOT proceed until automated tests pass for every task.

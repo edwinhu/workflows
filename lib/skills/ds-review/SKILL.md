@@ -224,7 +224,7 @@ After review is APPROVED, immediately invoke:
 ds-verify: Verify analysis reproducibility and user acceptance
 
 ```
-Skill(skill="workflows:ds-verify")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-verify/SKILL.md")
 ```
 
 If CHANGES REQUIRED, return to `/ds-implement` to fix issues first.

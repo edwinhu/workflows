@@ -199,11 +199,11 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 ```markdown
 # Implementation Plan: [Feature]
 
-> **For Claude:** REQUIRED SUB-SKILL: Invoke `Skill(skill="workflows:dev-implement")` to implement this plan.
+> **For Claude:** REQUIRED SUB-SKILL: Invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")` to implement this plan.
 >
 > **Per-Task Ralph Loops:** Assign each task its OWN ralph loop. Do NOT combine multiple tasks into one loop.
 >
-> **Delegation:** Main chat orchestrates, Task agents implement. Use `Skill(skill="workflows:dev-delegate")` for subagent templates.
+> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")` for subagent templates.
 
 ## Chosen Approach
 [Name]: [Brief description]
@@ -372,9 +372,9 @@ Design complete when:
 1. **Ask about worktree** (Step 7 above)
 2. **If worktree chosen:**
    - Invoke `Skill(skill="workflows:dev-worktree")`
-   - After worktree created, invoke `Skill(skill="workflows:dev-implement")`
+   - After worktree created, invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")`
 3. **If no worktree:**
-   - Directly invoke `Skill(skill="workflows:dev-implement")`
+   - Directly invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")`
 
 **Required before proceeding:**
 - Explicit user approval for implementation

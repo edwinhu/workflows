@@ -134,7 +134,7 @@ After selecting an approach:
 ```markdown
 # Spec: [Analysis Name]
 
-> **For Claude:** After writing this spec, use `Skill(skill="workflows:ds-plan")` for Phase 2.
+> **For Claude:** After writing this spec, use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")` for Phase 2.
 
 ## Objective
 [What question this analysis answers]
@@ -203,7 +203,7 @@ After completing brainstorm, IMMEDIATELY invoke the next phase:
 Or use the Skill tool directly:
 
 ```
-Skill(skill="workflows:ds-plan")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")
 ```
 
 **CRITICAL:** Do not skip to analysis implementation. Phase 2 profiles data and breaks down the analysis into discrete, manageable tasks.

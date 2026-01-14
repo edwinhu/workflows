@@ -1,10 +1,10 @@
 ---
 description: Start the 5-phase data science workflow with output-first verification
-allowed-tools: Skill
+allowed-tools: Read
 ---
 
-Start the ds workflow by invoking Phase 1 (brainstorming):
+Start the ds workflow by reading and following Phase 1 (brainstorming):
 
-Skill(skill="workflows:ds-brainstorm")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-brainstorm/SKILL.md")
 
 The brainstorm phase will handle workflow activation and guide you through requirements gathering.

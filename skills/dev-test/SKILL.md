@@ -275,8 +275,8 @@ Each sub-skill has its own availability gate. Load the appropriate skill and fol
 
 | Skill | Use Case | Key Capabilities |
 |-------|----------|------------------|
-| `Skill(skill="workflows:dev-test-chrome")` | Debugging, console/network inspection | `read_console_messages`, `read_network_requests`, `javascript_tool` |
-| `Skill(skill="workflows:dev-test-playwright")` | CI/CD, headless, cross-browser E2E | Headless mode, Firefox/WebKit, test isolation |
+| `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")` | Debugging, console/network inspection | `read_console_messages`, `read_network_requests`, `javascript_tool` |
+| `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")` | CI/CD, headless, cross-browser E2E | Headless mode, Firefox/WebKit, test isolation |
 
 ### Desktop Automation
 

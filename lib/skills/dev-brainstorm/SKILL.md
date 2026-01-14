@@ -68,7 +68,7 @@ After writing `.claude/SPEC.md` and completing brainstorm, immediately invoke th
 **Invoke the explore phase:**
 
 ```bash
-Skill(skill="workflows:dev-explore")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")
 ```
 
 DO NOT:
@@ -122,7 +122,7 @@ Write the initial spec to `.claude/SPEC.md`:
 ```markdown
 # Spec: [Feature Name]
 
-> **For Claude:** After writing this spec, use `Skill(skill="workflows:dev-explore")` for Phase 2.
+> **For Claude:** After writing this spec, use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")` for Phase 2.
 
 ## Problem
 [What problem this solves]
@@ -191,5 +191,5 @@ Brainstorm complete when:
 **Start explore phase - Phase 2:**
 
 ```bash
-Skill(skill="workflows:dev-explore")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")
 ```

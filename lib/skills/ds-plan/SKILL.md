@@ -60,7 +60,7 @@ Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect
 
 After writing `.claude/PLAN.md`, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:ds-implement")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
 ```
 
 DO NOT:
@@ -227,9 +227,9 @@ Write to `.claude/PLAN.md`:
 ```markdown
 # Analysis Plan: [Analysis Name]
 
-> **For Claude:** REQUIRED SUB-SKILL: Use `Skill(skill="workflows:ds-implement")` to implement this plan with output-first verification.
+> **For Claude:** REQUIRED SUB-SKILL: Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")` to implement this plan with output-first verification.
 >
-> **Delegation:** Main chat orchestrates, Task agents implement. Use `Skill(skill="workflows:ds-delegate")` for subagent templates.
+> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")` for subagent templates.
 
 ## Spec Reference
 See: .claude/SPEC.md
@@ -310,5 +310,5 @@ Complete the plan when:
 
 **REQUIRED SUB-SKILL:** After completing plan, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:ds-implement")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
 ```

@@ -134,6 +134,19 @@ After completing any writing task, invoke `/ai-anti-patterns` to check for AI wr
 **Strong revision:**
 > The team wrote the report, management reviewed it, and stakeholders received it.
 
+## Typography Tools
+
+### Smart Quotes
+
+Convert straight quotes (`"`) to typographic curly quotes (`""`):
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/smartquotes.py file.md
+python ${CLAUDE_PLUGIN_ROOT}/scripts/smartquotes.py file.md --check  # dry-run
+```
+
+Converts quotes and apostrophes while preserving em dashes and other formatting. Requires `pip install smartypants`.
+
 ## Related Skills
 
 - `/ai-anti-patterns` - Detect and revise AI writing patterns

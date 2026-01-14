@@ -102,7 +102,7 @@ Unlike implementation (per-task loops), debugging uses **ONE loop per bug**:
    Skill(skill="ralph-loop:ralph-loop", args="Debug: [SYMPTOM] --max-iterations 15 --completion-promise FIXED")
 
 2. Inside loop: spawn Task agent for investigation/fix
-   → Skill(skill="workflows:dev-delegate")
+   → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")
 
 3. Task agent follows 4-phase debug protocol
 

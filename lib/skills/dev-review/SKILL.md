@@ -249,7 +249,7 @@ After review completes:
 
 **If APPROVED:** Immediately invoke the dev-verify skill:
 ```
-Skill(skill="workflows:dev-verify")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-verify/SKILL.md")
 ```
 
 **If CHANGES REQUIRED:** Return to `/dev-implement` to fix reported issues.
