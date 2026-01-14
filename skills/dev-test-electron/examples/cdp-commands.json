@@ -1,0 +1,515 @@
+{
+  "comment": "Common CDP commands for Electron automation",
+  "domains": {
+    "Runtime": {
+      "enable": {
+        "id": 1,
+        "method": "Runtime.enable"
+      },
+      "evaluate": {
+        "simple": {
+          "id": 2,
+          "method": "Runtime.evaluate",
+          "params": {
+            "expression": "document.title"
+          }
+        },
+        "with_return_value": {
+          "id": 3,
+          "method": "Runtime.evaluate",
+          "params": {
+            "expression": "2 + 2",
+            "returnByValue": true
+          }
+        },
+        "async_with_await": {
+          "id": 4,
+          "method": "Runtime.evaluate",
+          "params": {
+            "expression": "await fetch('/api/data').then(r => r.json())",
+            "awaitPromise": true,
+            "returnByValue": true
+          }
+        }
+      }
+    },
+    "Page": {
+      "enable": {
+        "id": 10,
+        "method": "Page.enable"
+      },
+      "navigate": {
+        "file_url": {
+          "id": 11,
+          "method": "Page.navigate",
+          "params": {
+            "url": "file:///app/index.html"
+          }
+        },
+        "http_url": {
+          "id": 12,
+          "method": "Page.navigate",
+          "params": {
+            "url": "https://example.com"
+          }
+        }
+      },
+      "reload": {
+        "simple": {
+          "id": 13,
+          "method": "Page.reload"
+        },
+        "ignore_cache": {
+          "id": 14,
+          "method": "Page.reload",
+          "params": {
+            "ignoreCache": true
+          }
+        }
+      },
+      "screenshot": {
+        "png": {
+          "id": 15,
+          "method": "Page.captureScreenshot",
+          "params": {
+            "format": "png"
+          }
+        },
+        "jpeg": {
+          "id": 16,
+          "method": "Page.captureScreenshot",
+          "params": {
+            "format": "jpeg",
+            "quality": 80
+          }
+        },
+        "with_clip": {
+          "id": 17,
+          "method": "Page.captureScreenshot",
+          "params": {
+            "format": "png",
+            "clip": {
+              "x": 0,
+              "y": 0,
+              "width": 800,
+              "height": 600,
+              "scale": 1
+            }
+          }
+        }
+      }
+    },
+    "DOM": {
+      "enable": {
+        "id": 20,
+        "method": "DOM.enable"
+      },
+      "getDocument": {
+        "id": 21,
+        "method": "DOM.getDocument"
+      },
+      "querySelector": {
+        "id": 22,
+        "method": "DOM.querySelector",
+        "params": {
+          "nodeId": 1,
+          "selector": "#submit-btn"
+        }
+      },
+      "querySelectorAll": {
+        "id": 23,
+        "method": "DOM.querySelectorAll",
+        "params": {
+          "nodeId": 1,
+          "selector": ".error-message"
+        }
+      },
+      "getOuterHTML": {
+        "id": 24,
+        "method": "DOM.getOuterHTML",
+        "params": {
+          "nodeId": 42
+        }
+      }
+    },
+    "Network": {
+      "enable": {
+        "id": 30,
+        "method": "Network.enable"
+      },
+      "getResponseBody": {
+        "id": 31,
+        "method": "Network.getResponseBody",
+        "params": {
+          "requestId": "req-123"
+        }
+      },
+      "setBlockedURLs": {
+        "block": {
+          "id": 32,
+          "method": "Network.setBlockedURLs",
+          "params": {
+            "urls": ["*api.example.com*"]
+          }
+        },
+        "unblock": {
+          "id": 33,
+          "method": "Network.setBlockedURLs",
+          "params": {
+            "urls": []
+          }
+        }
+      },
+      "emulateNetworkConditions": {
+        "offline": {
+          "id": 34,
+          "method": "Network.emulateNetworkConditions",
+          "params": {
+            "offline": true,
+            "latency": 0,
+            "downloadThroughput": 0,
+            "uploadThroughput": 0
+          }
+        },
+        "slow_3g": {
+          "id": 35,
+          "method": "Network.emulateNetworkConditions",
+          "params": {
+            "offline": false,
+            "latency": 100,
+            "downloadThroughput": 750000,
+            "uploadThroughput": 250000
+          }
+        },
+        "online": {
+          "id": 36,
+          "method": "Network.emulateNetworkConditions",
+          "params": {
+            "offline": false,
+            "latency": 0,
+            "downloadThroughput": -1,
+            "uploadThroughput": -1
+          }
+        }
+      }
+    },
+    "Input": {
+      "dispatchKeyEvent": {
+        "enter": {
+          "id": 40,
+          "method": "Input.dispatchKeyEvent",
+          "params": {
+            "type": "keyDown",
+            "key": "Enter",
+            "code": "Enter",
+            "text": "\r",
+            "windowsVirtualKeyCode": 13
+          }
+        },
+        "ctrl_s": {
+          "keydown": {
+            "id": 41,
+            "method": "Input.dispatchKeyEvent",
+            "params": {
+              "type": "keyDown",
+              "key": "s",
+              "code": "KeyS",
+              "modifiers": 2,
+              "windowsVirtualKeyCode": 83
+            }
+          },
+          "keyup": {
+            "id": 42,
+            "method": "Input.dispatchKeyEvent",
+            "params": {
+              "type": "keyUp",
+              "key": "s",
+              "code": "KeyS",
+              "modifiers": 2,
+              "windowsVirtualKeyCode": 83
+            }
+          }
+        },
+        "cmd_s_mac": {
+          "keydown": {
+            "id": 43,
+            "method": "Input.dispatchKeyEvent",
+            "params": {
+              "type": "keyDown",
+              "key": "s",
+              "code": "KeyS",
+              "modifiers": 4,
+              "windowsVirtualKeyCode": 83
+            }
+          },
+          "keyup": {
+            "id": 44,
+            "method": "Input.dispatchKeyEvent",
+            "params": {
+              "type": "keyUp",
+              "key": "s",
+              "code": "KeyS",
+              "modifiers": 4,
+              "windowsVirtualKeyCode": 83
+            }
+          }
+        }
+      },
+      "dispatchMouseEvent": {
+        "click": {
+          "mousePressed": {
+            "id": 50,
+            "method": "Input.dispatchMouseEvent",
+            "params": {
+              "type": "mousePressed",
+              "x": 100,
+              "y": 200,
+              "button": "left",
+              "clickCount": 1
+            }
+          },
+          "mouseReleased": {
+            "id": 51,
+            "method": "Input.dispatchMouseEvent",
+            "params": {
+              "type": "mouseReleased",
+              "x": 100,
+              "y": 200,
+              "button": "left",
+              "clickCount": 1
+            }
+          }
+        },
+        "double_click": {
+          "mousePressed": {
+            "id": 52,
+            "method": "Input.dispatchMouseEvent",
+            "params": {
+              "type": "mousePressed",
+              "x": 100,
+              "y": 200,
+              "button": "left",
+              "clickCount": 2
+            }
+          },
+          "mouseReleased": {
+            "id": 53,
+            "method": "Input.dispatchMouseEvent",
+            "params": {
+              "type": "mouseReleased",
+              "x": 100,
+              "y": 200,
+              "button": "left",
+              "clickCount": 2
+            }
+          }
+        },
+        "move": {
+          "id": 54,
+          "method": "Input.dispatchMouseEvent",
+          "params": {
+            "type": "mouseMoved",
+            "x": 300,
+            "y": 400
+          }
+        }
+      }
+    },
+    "Debugger": {
+      "enable": {
+        "id": 60,
+        "method": "Debugger.enable"
+      },
+      "setBreakpointByUrl": {
+        "id": 61,
+        "method": "Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 10,
+          "url": "file:///app/renderer.js"
+        }
+      },
+      "resume": {
+        "id": 62,
+        "method": "Debugger.resume"
+      }
+    },
+    "Performance": {
+      "enable": {
+        "id": 70,
+        "method": "Performance.enable"
+      },
+      "getMetrics": {
+        "id": 71,
+        "method": "Performance.getMetrics"
+      }
+    },
+    "Profiler": {
+      "enable": {
+        "id": 80,
+        "method": "Profiler.enable"
+      },
+      "start": {
+        "id": 81,
+        "method": "Profiler.start"
+      },
+      "stop": {
+        "id": 82,
+        "method": "Profiler.stop"
+      },
+      "startPreciseCoverage": {
+        "id": 83,
+        "method": "Profiler.startPreciseCoverage",
+        "params": {
+          "callCount": true,
+          "detailed": true
+        }
+      },
+      "takePreciseCoverage": {
+        "id": 84,
+        "method": "Profiler.takePreciseCoverage"
+      },
+      "stopPreciseCoverage": {
+        "id": 85,
+        "method": "Profiler.stopPreciseCoverage"
+      }
+    },
+    "HeapProfiler": {
+      "enable": {
+        "id": 90,
+        "method": "HeapProfiler.enable"
+      },
+      "takeHeapSnapshot": {
+        "id": 91,
+        "method": "HeapProfiler.takeHeapSnapshot"
+      }
+    }
+  },
+  "electron_specific": {
+    "main_process": {
+      "get_version": {
+        "id": 100,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "process.version",
+          "returnByValue": true
+        }
+      },
+      "get_app_version": {
+        "id": 101,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "require('electron').app.getVersion()",
+          "returnByValue": true
+        }
+      },
+      "get_all_windows": {
+        "id": 102,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "const { BrowserWindow } = require('electron'); BrowserWindow.getAllWindows().map(w => ({ id: w.id, title: w.getTitle(), url: w.webContents.getURL() }))",
+          "returnByValue": true
+        }
+      },
+      "read_file": {
+        "id": 103,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "require('fs').readFileSync('/app/config.json', 'utf8')",
+          "returnByValue": true
+        }
+      }
+    },
+    "renderer_ipc": {
+      "send": {
+        "id": 110,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "require('electron').ipcRenderer.send('test-channel', {data: 'test'})"
+        }
+      },
+      "invoke": {
+        "id": 111,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "await require('electron').ipcRenderer.invoke('get-user-data')",
+          "awaitPromise": true,
+          "returnByValue": true
+        }
+      }
+    },
+    "webcontents": {
+      "execute_javascript": {
+        "id": 120,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "const { BrowserWindow } = require('electron'); const win = BrowserWindow.fromId(1); win.webContents.executeJavaScript('document.title')",
+          "awaitPromise": true,
+          "returnByValue": true
+        }
+      },
+      "open_devtools": {
+        "id": 121,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "const { BrowserWindow } = require('electron'); BrowserWindow.getFocusedWindow().webContents.openDevTools()"
+        }
+      }
+    }
+  },
+  "common_patterns": {
+    "fill_form": [
+      {
+        "id": 200,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "document.querySelector('#username').value = 'testuser'"
+        }
+      },
+      {
+        "id": 201,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "document.querySelector('#password').value = 'testpass'"
+        }
+      },
+      {
+        "id": 202,
+        "method": "Runtime.evaluate",
+        "params": {
+          "expression": "document.querySelector('#submit-btn').click()"
+        }
+      }
+    ],
+    "verify_element_exists": {
+      "id": 210,
+      "method": "Runtime.evaluate",
+      "params": {
+        "expression": "document.querySelector('#app') !== null",
+        "returnByValue": true
+      }
+    },
+    "get_element_text": {
+      "id": 211,
+      "method": "Runtime.evaluate",
+      "params": {
+        "expression": "document.querySelector('#message').textContent",
+        "returnByValue": true
+      }
+    },
+    "wait_for_element": {
+      "id": 212,
+      "method": "Runtime.evaluate",
+      "params": {
+        "expression": "await new Promise(resolve => { const check = () => { if (document.querySelector('#loaded')) resolve(true); else setTimeout(check, 100); }; check(); })",
+        "awaitPromise": true,
+        "returnByValue": true
+      }
+    }
+  },
+  "usage_examples": {
+    "bash_simple": "echo '{\"id\":1,\"method\":\"Runtime.enable\"}' | websocat --one-message $WS_URL",
+    "bash_with_response": "RESPONSE=$(echo '{\"id\":2,\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"2+2\",\"returnByValue\":true}}' | websocat --one-message $WS_URL); echo $RESPONSE | jq '.result.result.value'",
+    "bash_check_error": "if echo \"$RESPONSE\" | jq -e '.error' > /dev/null; then echo \"ERROR\"; fi",
+    "bash_streaming": "{ echo '{\"id\":1,\"method\":\"Network.enable\"}'; sleep 30; } | websocat $WS_URL | grep 'Network.requestWillBeSent'"
+  }
+}
