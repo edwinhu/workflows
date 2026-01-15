@@ -223,6 +223,47 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 | **Test Command** | [e.g., `pytest tests/ -v`] | [ ] Filled |
 | **First Failing Test** | [Description of what test will fail first] | [ ] Filled |
 | **Test File Location** | [e.g., `tests/test_feature.py`] | [ ] Filled |
+| **Testing Skill** | [dev-test-electron / dev-test-playwright / etc.] | [ ] Filled |
+
+## REAL Test Criteria (MANDATORY - PREVENTS FAKE TESTS)
+
+> **⚠️ A test that doesn't replicate user workflow is a FAKE test.**
+> **If this section is empty or incorrect, you WILL write fake tests.**
+
+| Criteria | Value | Verified |
+|----------|-------|----------|
+| **User workflow to replicate** | [e.g., "highlight → click panel → see status"] | [ ] |
+| **Protocol/transport** | [e.g., "WebSocket" - must match production] | [ ] |
+| **UI elements to interact with** | [e.g., "Claude terminal panel"] | [ ] |
+| **What user sees/verifies** | [e.g., "'⧉ X lines selected' in status"] | [ ] |
+| **Code path exercised** | [e.g., "selection → WebSocket → panel update"] | [ ] |
+
+### Fake Test Prevention Checklist
+
+Before implementation, verify:
+
+```
+[ ] Test uses SAME protocol as production (not a different one)
+[ ] Test follows user's EXACT workflow (not a shortcut)
+[ ] Test interacts with ACTUAL UI elements (not direct function calls)
+[ ] Test verifies what USER sees (not internal state)
+[ ] Test uses the SPECIFIED testing skill (not your own approach)
+```
+
+**If ANY box is unchecked → You WILL write fake tests. Fix now.**
+
+### Examples of REAL vs FAKE Tests
+
+| Feature Type | FAKE Test (DON'T) | REAL Test (DO) |
+|--------------|-------------------|----------------|
+| WebSocket feature | HTTP endpoint test | WebSocket connection test |
+| GraphQL mutation | REST mock | GraphQL client call |
+| UI button click | `button.onClick()` direct call | Playwright/ydotool click |
+| CLI command | Call internal function | Invoke actual binary |
+| API endpoint | Unit test handler | HTTP request to server |
+| Async operation | Sync function call | Await actual promise |
+| Database query | Mock repository | Test against real/test DB |
+| Electron app | Mock IPC layer | CDP automation |
 
 ### The Iron Law of This Plan
 
@@ -247,7 +288,7 @@ For each task below:
 
 **Every task MUST have a test that EXECUTES the code and VERIFIES behavior.**
 
-### Rationalization Prevention
+### Rationalization Prevention (No Tests)
 
 If you catch yourself thinking these thoughts, STOP:
 
@@ -259,6 +300,21 @@ If you catch yourself thinking these thoughts, STOP:
 | "Just this one task without tests" | No exceptions. Ever. |
 | "Manual testing is in SPEC.md" | That's wrong. Fix it or ask user. |
 | "User approved manual testing" | Push back. TDD is the workflow. |
+
+### Rationalization Prevention (Fake Tests)
+
+If you catch yourself thinking these thoughts, STOP - you're about to write a FAKE test:
+
+| Thought | Reality | REAL Action |
+|---------|---------|-------------|
+| "Testing HTTP is easier" | But app uses WebSocket | Test WebSocket |
+| "I can call the function directly" | That skips user workflow | Simulate user action |
+| "I know a better way to test this" | User specified a skill | Use the specified skill |
+| "Internal state check is more direct" | User doesn't see internal state | Verify user-visible output |
+| "Mocking is simpler" | Mocks hide real bugs | Test actual integration |
+| "The test fails, let me fix the assertion" | Maybe the test is wrong | Question if test is valid |
+| "User workflow is too complex" | That's what user actually does | Replicate it anyway |
+| "This shortcut tests the same thing" | No it doesn't | Follow exact workflow |
 
 ## Files to Modify
 | File | Change |
@@ -349,10 +405,11 @@ Directly invoke dev-implement in current directory without worktree isolation.
 
 Required sections:
 - **Chosen Approach** - What was selected and why
+- **Testing Strategy** - Framework, command, first test, location, skill
+- **REAL Test Criteria** - User workflow, protocol, UI elements, what user sees
 - **Files to Modify** - Specific paths with change descriptions
 - **New Files** - If any, with purposes
 - **Implementation Order** - Ordered task list with dependencies
-- **Testing Strategy** - How to verify
 
 ## The Gate Function
 
@@ -385,6 +442,7 @@ Before proceeding past step 2, verify SPEC.md contains:
 [ ] Testing approach (unit/integration/E2E)
 [ ] Test framework (pytest/jest/playwright)
 [ ] Test command (how to run)
+[ ] Testing skill specified (dev-test-electron/playwright/etc.)
 ```
 
 Before proceeding past step 8, verify PLAN.md Testing Strategy table:
@@ -393,9 +451,34 @@ Before proceeding past step 8, verify PLAN.md Testing Strategy table:
 [ ] Test Command filled
 [ ] First Failing Test described
 [ ] Test File Location specified
+[ ] Testing Skill specified
 ```
 
 **If any box is unchecked → STOP. Do not proceed.**
+
+### REAL Test Verification (Step 8 - CRITICAL)
+
+Before proceeding past step 8, verify PLAN.md REAL Test Criteria table:
+
+```
+[ ] User workflow documented (exact steps user takes)
+[ ] Protocol matches production (WebSocket/HTTP/IPC/etc.)
+[ ] UI elements identified (what user interacts with)
+[ ] User-visible output documented (what user sees)
+[ ] Code path specified (same path as production)
+```
+
+**If any box is unchecked → You WILL write fake tests. Fix now.**
+
+### Fake Test Prevention Check (Step 8)
+
+Ask yourself before proceeding:
+1. Will the test use the SAME protocol as production? (Not a substitute)
+2. Will the test follow the EXACT user workflow? (Not shortcuts)
+3. Will the test use the SPECIFIED testing skill? (Not your own approach)
+4. Will the test verify what the USER sees? (Not internal state)
+
+If ANY answer is "no" → STOP. Fix the REAL Test Criteria section.
 
 ## Rationalization Prevention
 

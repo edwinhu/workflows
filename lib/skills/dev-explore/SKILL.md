@@ -333,6 +333,80 @@ dbus-send --session --print-reply --dest=org.freedesktop.DBus \
 - **Available automation:** Playwright MCP, ydotool, D-Bus interfaces
 - **Blocker:** If no way to run REAL tests, flag immediately
 
+## Code Path Discovery (CRITICAL FOR REAL TESTS)
+
+<EXTREMELY-IMPORTANT>
+**You MUST discover the actual code paths that need testing.**
+
+A test that exercises the wrong code path is a FAKE test. For example:
+- Testing HTTP when the app uses WebSocket
+- Testing sync calls when the app uses async
+- Testing direct function calls when users click UI
+
+### What to Discover
+
+| Question | Why It Matters |
+|----------|----------------|
+| What protocol/transport does the feature use? | Tests must use SAME protocol |
+| How does user input reach the code? | Tests must follow SAME path |
+| What does the user actually see? | Tests must verify SAME output |
+| What UI elements are involved? | Tests must interact with SAME elements |
+
+### Discovery Checklist
+
+```
+[ ] Protocol identified (HTTP / WebSocket / IPC / D-Bus / etc.)
+[ ] Entry point traced (UI click / API call / CLI command / etc.)
+[ ] Data flow mapped (user action → ... → visible result)
+[ ] UI components identified (panels, buttons, status bars, etc.)
+```
+
+### Example Discoveries
+
+**Example 1: Web app with GraphQL**
+```markdown
+- **Protocol:** GraphQL over HTTP POST (NOT REST)
+- **Entry point:** User clicks "Save" button
+- **Data flow:** click → mutation → server response → UI update
+- **UI component:** Toast notification shows "Saved successfully"
+
+A REAL test must use GraphQL mutations, not REST endpoints.
+```
+
+**Example 2: CLI tool**
+```markdown
+- **Protocol:** Command-line invocation with arguments
+- **Entry point:** User runs `mytool --format json input.txt`
+- **Data flow:** argv → parser → processing → stdout
+- **UI component:** Terminal output
+
+A REAL test must invoke the CLI binary, not call internal functions.
+```
+
+**Example 3: Electron app with WebSocket**
+```markdown
+- **Protocol:** WebSocket (NOT HTTP)
+- **Entry point:** User highlights text in editor
+- **Data flow:** selection → WebSocket message → panel update
+- **UI component:** Panel shows status
+
+A REAL test must use WebSocket, not HTTP endpoint.
+```
+
+### Fake Test Prevention
+
+**If you skip code path discovery, you WILL write fake tests.**
+
+| What You'll Do Wrong | Why | Result |
+|---------------------|-----|--------|
+| Test HTTP endpoint | "Easier to test" | Wrong code path exercised |
+| Call function directly | "Faster" | Skips user workflow |
+| Mock the protocol | "Simpler" | Doesn't test real behavior |
+| Check internal state | "More direct" | Misses what user sees |
+
+**Update SPEC.md with code path findings before proceeding.**
+</EXTREMELY-IMPORTANT>
+
 ## Key Files List Format
 
 Each agent MUST return files in this format:
@@ -373,7 +447,8 @@ Exploration complete when:
 1. **Key Files** - 10-15 files with line numbers
 2. **Architecture** - Layers, patterns, conventions
 3. **Test Infrastructure** - Framework, tools, patterns
-4. **Questions** - For clarify phase
+4. **Code Paths** - Protocol, entry points, data flow, UI components
+5. **Questions** - For clarify phase
 
 ### Test Infrastructure Gate Check (MANDATORY)
 
@@ -387,6 +462,22 @@ Before proceeding to clarify, verify:
 ```
 
 **If ALL boxes are unchecked → STOP. Ask user how to proceed.**
+
+### Code Path Gate Check (MANDATORY FOR REAL TESTS)
+
+Before proceeding to clarify, verify code paths documented:
+
+```
+[ ] Protocol/transport identified (WebSocket/HTTP/IPC/etc.)
+[ ] User entry point traced (what action triggers the feature)
+[ ] Data flow mapped (input → ... → output)
+[ ] UI components identified (what user sees)
+[ ] Testing skill determined (dev-test-electron/playwright/etc.)
+```
+
+**If any box is unchecked → You WILL write fake tests. Complete discovery first.**
+
+This is not optional. Fake tests are worse than no tests because they create false confidence.
 
 ## Phase Complete
 

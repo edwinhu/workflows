@@ -212,6 +212,62 @@ All tests PASSED
 Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
 </EXTREMELY-IMPORTANT>
 
+### Fake Tests That Look Like Tests (THE INSIDIOUS FAILURE)
+
+<EXTREMELY-IMPORTANT>
+**A test can EXECUTE code and still be FAKE if it tests the wrong thing.**
+
+This is MORE dangerous than no tests because it creates FALSE CONFIDENCE.
+
+| LOOKS LIKE A TEST | WHY IT'S FAKE | REAL TEST MUST DO |
+|-------------------|---------------|-------------------|
+| Tests different protocol | Wrong code path | Use same protocol as production |
+| Calls function directly | Skips user workflow | Simulate actual user action |
+| Checks internal state | User doesn't see that | Verify user-visible output |
+| Uses mock/stub for SUT | Defeats the purpose | Test actual behavior |
+| Ignores specified skill | "I know better" | Use the specified testing skill |
+| Changes assertion to pass | Hides bugs | Question if test is valid |
+| Skips async when prod is async | Race conditions hidden | Match async behavior |
+
+### The Iron Law of REAL Tests
+
+**If the test doesn't replicate what the user does, it's a FAKE test.**
+
+Before running any test, verify:
+1. Does test use SAME protocol as production?
+2. Does test follow EXACT user workflow?
+3. Does test verify what USER sees?
+4. Does test use the SPECIFIED testing skill?
+
+If ANY answer is "no" → DELETE THE TEST. Write a REAL one.
+
+### Fake Test Detection (Red Flags)
+
+If you catch yourself doing these, STOP - you're writing a FAKE test:
+
+| What You're Doing | Why It's Fake | Do Instead |
+|-------------------|---------------|------------|
+| Testing different protocol | Wrong code path | Use production protocol |
+| Calling function instead of user action | Skipping user workflow | Simulate actual user action |
+| Changing assertion to make test pass | Hiding bugs, not finding them | Question if test is valid |
+| Ignoring the testing skill user specified | Arrogance: "I know better" | Use the specified skill |
+| Testing internal state | User doesn't see that | Test user-visible output |
+| Mocking the System Under Test | Defeats the purpose | Test actual behavior |
+| Using sync when production is async | Race conditions hidden | Match async behavior |
+| Testing unit when integration needed | Boundary bugs hidden | Test across boundaries |
+
+### When Tests Fail, Question the Test First
+
+**If a test fails, don't immediately fix the assertion. Ask:**
+
+1. Is this test testing the right thing?
+2. Is this test using the right protocol?
+3. Is this test replicating the user's workflow?
+4. Did I use the specified testing skill?
+
+If any answer is "no" → The test is wrong, not the assertion.
+</EXTREMELY-IMPORTANT>
+
 ### Why Grepping is Not Testing
 
 | Fake Approach | Why It's Worthless | What Happens |
@@ -281,6 +337,25 @@ If you catch yourself thinking these thoughts—STOP. They're indicators you're 
 | "Grep confirms it exists" | Your existence check ≠ working code. You MUST execute the code. |
 | "Already have the code" | You MUST DELETE IT. You write test first, then reimplement. |
 | "Test passed on first run" | Suspicious. Did you actually see RED first? |
+
+### Red Flags - Fake Test Indicators
+
+If you catch yourself thinking these thoughts—STOP. They're indicators you're writing a FAKE test:
+
+| Thought | Reality |
+|---------|---------|
+| "This protocol is easier to test" | But production uses different protocol. Test that. |
+| "I can call the function directly" | User doesn't do that. Simulate user action. |
+| "I'll mock this dependency" | Then you're not testing real behavior. |
+| "Internal state is more direct" | User doesn't see internal state. Test what user sees. |
+| "I know a better way" | User specified a skill. Use it. |
+| "Let me fix this assertion" | Maybe the test is wrong. Question it first. |
+| "User workflow is complex" | That's what user does. Replicate it. |
+| "This shortcut tests the same thing" | No it doesn't. Follow exact workflow. |
+| "Async is hard to test" | Production is async. Test it async. |
+| "Integration tests are slow" | Unit tests hide boundary bugs. Test integration. |
+
+**If your test doesn't replicate what the user does, it's a FAKE test.**
 
 **If your test doesn't fail first, you haven't practiced TDD.**
 

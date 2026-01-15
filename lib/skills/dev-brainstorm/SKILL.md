@@ -141,6 +141,80 @@ AskUserQuestion(questions=[{
 **Why this matters:** If you don't ask about testing NOW, you'll rationalize skipping it later.
 </EXTREMELY-IMPORTANT>
 
+### 2b. Define What a REAL Test Looks Like (MANDATORY)
+
+<EXTREMELY-IMPORTANT>
+**A REAL test is feature-specific. You must define it NOW, not during implementation.**
+
+After user chooses testing approach, ask:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "Describe the user workflow this test must replicate:",
+  "header": "User Workflow",
+  "options": [
+    {"label": "UI interaction sequence", "description": "e.g., 'click button → see modal → submit form'"},
+    {"label": "API call sequence", "description": "e.g., 'POST /login → receive token → GET /profile'"},
+    {"label": "CLI command sequence", "description": "e.g., 'run command → see output → verify file created'"},
+    {"label": "Other (describe in chat)", "description": "Custom workflow"}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Then ask for specifics:**
+
+```python
+AskUserQuestion(questions=[{
+  "question": "What specific skill/tool should we use for testing?",
+  "header": "Test Tool",
+  "options": [
+    {"label": "dev-test-electron", "description": "Electron apps with Chrome DevTools Protocol"},
+    {"label": "dev-test-playwright", "description": "Web apps with Playwright MCP"},
+    {"label": "dev-test-hammerspoon", "description": "macOS native apps"},
+    {"label": "dev-test-linux", "description": "Linux desktop apps (ydotool/xdotool)"},
+    {"label": "Standard unit tests", "description": "pytest/jest/etc. for pure functions"}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Why this matters:** If you don't define what a REAL test looks like NOW, you'll write FAKE tests later that:
+- Test wrong code paths (HTTP when app uses WebSocket)
+- Use programmatic shortcuts instead of actual UI
+- Pass but don't verify real behavior
+
+### The Iron Law of REAL Tests
+
+**A test that doesn't replicate the user's actual workflow is a FAKE test.**
+
+| REAL Test | FAKE Test (looks like a test, isn't) |
+|-----------|--------------------------------------|
+| Simulates actual user action | Calls function programmatically |
+| Uses same protocol as production | Uses different protocol |
+| Verifies what user sees | Verifies internal state only |
+| Follows user's exact sequence | Takes shortcuts |
+| Uses skill user specified | Ignores skill, writes own thing |
+
+### Protocol Mismatch Examples (Common Fake Test Trap)
+
+| Production Uses | FAKE Test Uses | Result |
+|-----------------|----------------|--------|
+| WebSocket | HTTP | Wrong code path |
+| GraphQL | REST mock | Wrong serialization |
+| Async/await | Sync calls | Race conditions hidden |
+| IPC (Electron) | Direct import | Process boundary skipped |
+| CLI invocation | Function call | Argument parsing skipped |
+
+**The test must use the SAME protocol/transport as production.**
+
+**Document in SPEC.md:**
+- User workflow to replicate
+- Testing skill to use
+- Code paths that must be exercised
+- What the user actually sees/verifies
+</EXTREMELY-IMPORTANT>
+
 ### 3. Define Success Criteria
 
 After understanding requirements AND testing strategy, define measurable success criteria:
@@ -181,28 +255,52 @@ Write the initial spec to `.claude/SPEC.md`:
 - **User's chosen approach:** [From AskUserQuestion in Phase 1: unit/integration/E2E/API]
 - **Framework:** [pytest / playwright / jest / etc.]
 - **Command:** [e.g., `pytest tests/ -v`]
-- **First failing test (describe it):** [What test will you write FIRST?]
-- **Core functionality to verify:** [what MUST be tested automatically]
+- **Testing skill to use:** [dev-test-electron / dev-test-playwright / etc.]
 
-### The Iron Law of Testing
+### REAL Test Definition (MANDATORY)
 
-**If no automated test strategy exists, implementation CANNOT proceed.**
+> **⚠️ A test that doesn't replicate user workflow is a FAKE test. Define REAL tests NOW.**
 
-This is NOT a suggestion. This is a gate. If you find yourself thinking "let me implement first, then add tests" - STOP. You're violating TDD.
+| Field | Value |
+|-------|-------|
+| **User workflow to replicate** | [e.g., "highlight text → click Claude panel → see '⧉ X lines selected'"] |
+| **Code paths that must be exercised** | [e.g., "WebSocket connection, not HTTP"] |
+| **What user actually sees/verifies** | [e.g., "Status bar shows selection count"] |
+| **Protocol/transport** | [e.g., "WebSocket" or "HTTP" or "IPC"] |
 
-### What Counts as a Real Automated Test
+### First Failing Test
 
-| ✅ REAL TEST (execute + verify) | ❌ NOT A TEST (never acceptable) |
-|---------------------------------|----------------------------------|
-| pytest calls function, checks return value | grep/ast-grep finds function exists |
-| Playwright clicks button, verifies result | Check logs say "success" |
-| ydotool simulates user, screenshot verifies | Read source code structure |
-| API call returns expected response | "Code looks correct" |
-| CLI invocation produces expected output | Structural pattern matching |
+- **Test name:** [e.g., `test_selection_shows_in_claude_panel`]
+- **What it tests:** [Specific behavior]
+- **How it replicates user workflow:** [Step by step]
+- **Expected failure message:** [What RED looks like]
 
-**THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.**
+### The Iron Law of REAL Tests
 
-Grepping is not testing. Log checking is not testing. Code review is not testing.
+**If the test doesn't do what the user does, it's a FAKE test.**
+
+| ✅ REAL TEST | ❌ FAKE TEST (looks like test, isn't) |
+|--------------|---------------------------------------|
+| Uses same protocol as production | Tests different protocol |
+| Clicks actual UI elements | Calls functions programmatically |
+| Verifies what user sees | Verifies internal state only |
+| Follows user's exact sequence | Takes shortcuts |
+| Uses skill user specified | Ignores skill, writes own thing |
+| Fails when feature is broken | Passes even when feature is broken |
+
+### Fake Test Detection (Red Flags)
+
+**If you catch yourself doing these, STOP - you're writing a FAKE test:**
+
+| What You're Doing | Why It's Fake | Do Instead |
+|-------------------|---------------|------------|
+| Using different protocol than production | Wrong code path | Use same protocol |
+| Calling function directly instead of user action | Skipping user workflow | Simulate actual user action |
+| Changing assertions to make tests pass | Hiding bugs | Question if test is valid |
+| Ignoring the testing skill user specified | "I know better" arrogance | Use the specified skill |
+| Testing internal state, not user-visible output | Missing the point | Test what user sees |
+| Mocking the thing you're supposed to test | Defeats the purpose | Test actual behavior |
+| Skipping async/await when production uses it | Race conditions hidden | Match async behavior |
 
 ### No Test Infrastructure? That's a BLOCKER.
 

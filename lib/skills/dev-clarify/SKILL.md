@@ -211,6 +211,68 @@ AskUserQuestion(questions=[{
 
 **Why this matters:** Defining the first test BEFORE implementation is the essence of TDD.
 
+### User Workflow Replication (MANDATORY FOR REAL TESTS)
+
+<EXTREMELY-IMPORTANT>
+**If the test doesn't replicate the user's workflow, it's a FAKE test.**
+
+Based on code path discovery from exploration, clarify the exact workflow:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "Let me confirm the user workflow the test must replicate:",
+  "header": "Workflow",
+  "options": [
+    {"label": "Confirm workflow", "description": "[State the discovered workflow, e.g., 'highlight → click panel → see status']"},
+    {"label": "Modify workflow", "description": "The workflow is different - let me describe it"},
+    {"label": "Add steps", "description": "The workflow has additional steps I should know"}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Then verify the test approach matches:**
+
+```python
+AskUserQuestion(questions=[{
+  "question": "The test must use [discovered protocol, e.g., WebSocket]. Is this correct?",
+  "header": "Protocol",
+  "options": [
+    {"label": "Yes, use [protocol]", "description": "Test must use the same protocol as production"},
+    {"label": "No, different protocol", "description": "Explain the correct protocol"}
+  ],
+  "multiSelect": false
+}])
+```
+
+### Verify Test Will Be REAL
+
+After clarifying workflow and protocol, verify:
+
+```
+[ ] Test workflow matches user workflow exactly
+[ ] Test uses same protocol as production
+[ ] Test interacts with same UI elements user sees
+[ ] Test verifies same output user verifies
+[ ] Testing skill is appropriate for this workflow
+```
+
+If any of these don't match, the test will be FAKE. Clarify now.
+
+### Common Fake Test Patterns to Catch
+
+| What You Discovered | Common Fake Test | REAL Test Must Do |
+|---------------------|------------------|-------------------|
+| App uses Protocol X | Test with Protocol Y | Test with Protocol X |
+| User clicks UI element | Call function directly | Simulate actual click |
+| User sees output | Check internal state | Verify user-visible output |
+| Data flows through boundary | Mock the boundary | Test actual boundary |
+| Operation is async | Test synchronously | Test async behavior |
+| CLI is the interface | Call internal function | Invoke actual CLI |
+
+**If the test approach doesn't match what you discovered, STOP and clarify.**
+</EXTREMELY-IMPORTANT>
+
 ### Optional (if unclear)
 - Performance requirements
 - Error handling preferences
@@ -253,7 +315,30 @@ Before proceeding to design, verify in SPEC.md:
 
 **If any box is unchecked → STOP. Do not proceed to design.**
 
-This is the last checkpoint before implementation planning. If testing strategy isn't clear now, it never will be.
+### REAL Test Gate Check (MANDATORY)
+
+Before proceeding to design, verify REAL test criteria:
+
+```
+[ ] User workflow confirmed and documented
+[ ] Protocol/transport verified (same as production)
+[ ] UI elements to test identified
+[ ] Testing skill specified (dev-test-electron/playwright/etc.)
+[ ] Test approach matches discovered code paths
+```
+
+**If any box is unchecked → You WILL write fake tests. Clarify now.**
+
+### Fake Test Prevention Gate
+
+Ask yourself:
+1. Does the test do what the user does? (Not a shortcut)
+2. Does the test use the same protocol? (Not a mock)
+3. Does the test verify what the user sees? (Not internal state)
+
+If ANY answer is "no" or "not sure" → STOP. Clarify before design.
+
+This is the last checkpoint before implementation planning. Fake tests caught here save hours of wasted implementation.
 
 ## Phase Complete
 

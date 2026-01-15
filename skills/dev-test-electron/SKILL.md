@@ -6,6 +6,53 @@ description: This skill should be used when the user asks to "test Electron app"
 **Announce:** "I'm using dev-test-electron for Electron app automation via Chrome DevTools Protocol."
 
 <EXTREMELY-IMPORTANT>
+## REAL Test Requirements for Electron Apps
+
+**A REAL Electron test must replicate what the user does. FAKE tests test something else.**
+
+Before writing ANY test, verify from SPEC.md/PLAN.md:
+
+| REAL Test Criteria | Your Test Must |
+|-------------------|----------------|
+| **User workflow** | Replicate exact steps (click → type → see result) |
+| **Protocol** | Use SAME protocol as production (WebSocket, IPC, etc.) |
+| **UI interaction** | Interact with ACTUAL UI elements user sees |
+| **Verification** | Check what USER sees, not internal state |
+
+### The Electron-Specific Fake Test Trap
+
+**Electron apps often use WebSocket/IPC internally. Testing HTTP is a FAKE test.**
+
+| FAKE Electron Test | Why It's Fake | REAL Test |
+|--------------------|---------------|-----------|
+| HTTP endpoint test | App uses WebSocket | Test WebSocket connection |
+| Direct function call | User clicks button | CDP `Input.dispatchMouseEvent` or `Runtime.evaluate` click |
+| Check internal state | User sees panel/status | CDP screenshot or DOM query |
+| Mock IPC layer | Production uses real IPC | Test actual IPC messages |
+| Skip main process | Main process has logic | Test BOTH renderer AND main |
+
+### Before You Write a Test, Ask:
+
+1. What protocol does this feature use? (WebSocket? IPC? HTTP?)
+2. What does the user actually click/type?
+3. What does the user actually SEE?
+4. Am I testing the SAME code path as production?
+
+**If any answer is "I don't know" → Go back to SPEC.md. Don't guess.**
+
+### Rationalization Prevention (Electron-Specific)
+
+| Thought | Reality |
+|---------|---------|
+| "HTTP is easier to test" | But app uses WebSocket. Test WebSocket. |
+| "I can call the function directly" | User clicks a button. Use CDP Input events. |
+| "CDP is complex, let me mock" | Mocking hides bugs. Use real CDP. |
+| "Main process is hard to test" | Main process crashes break app. Test it. |
+| "Panel state is internal" | User SEES the panel. Test what user sees. |
+| "IPC is just plumbing" | IPC bugs cause silent failures. Test it. |
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## Gate Reminder
 
 Before taking screenshots or running E2E tests, you MUST complete all 6 gates from dev-tdd:
@@ -606,6 +653,87 @@ Utility scripts in `scripts/`:
 - **`connect-electron-cdp.sh`** - Automated CDP connection discovery
 - **`launch-electron-with-logging.sh`** - Launch template with proper logging
 - **`verify-electron-process.sh`** - Health check for main + renderer
+
+## VS Code Extension Testing (Common Case)
+
+<EXTREMELY-IMPORTANT>
+**VS Code extensions are a common Electron test case. Here's how to test them REAL.**
+
+### What Makes VS Code Extension Tests REAL
+
+| User Action | FAKE Test | REAL Test |
+|-------------|-----------|-----------|
+| Highlight text in editor | `editor.setSelection()` programmatically | CDP simulate actual text selection |
+| Click Claude panel | Call panel function directly | CDP click on actual panel element |
+| See status in panel | Check internal state variable | CDP query panel DOM for displayed text |
+| Extension uses WebSocket | Test HTTP endpoint | Test WebSocket connection |
+
+### VS Code Extension Protocol Discovery
+
+Before testing, discover what protocol the extension uses:
+
+```bash
+# Search for WebSocket usage
+rg "WebSocket|ws://" --type ts
+
+# Search for HTTP usage
+rg "fetch|axios|http" --type ts
+
+# Search for IPC usage
+rg "ipcRenderer|ipcMain" --type ts
+```
+
+**If extension uses WebSocket → Your test MUST use WebSocket, not HTTP.**
+
+### Example: Testing Selection → Panel Status
+
+**FAKE test (DON'T DO THIS):**
+```javascript
+// FAKE: Calls function directly, checks internal state
+const selection = await vscode.window.activeTextEditor.selection;
+await extensionApi.updateSelection(selection);  // Direct call!
+expect(internalState.selectionCount).toBe(5);   // Internal state!
+```
+
+**REAL test (DO THIS):**
+```bash
+# REAL: Simulates user, checks what user sees
+
+# 1. Use CDP to simulate text selection in editor
+SCRIPT='
+  const editor = document.querySelector(".monaco-editor");
+  // Simulate actual selection via CDP Input events
+'
+echo "{\"id\":1,\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"$SCRIPT\"}}" | websocat "$WS_URL"
+
+# 2. Use CDP to query Claude panel for displayed status
+VERIFY='document.querySelector(".claude-panel .status-text").textContent'
+RESULT=$(echo "{\"id\":2,\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"$VERIFY\",\"returnByValue\":true}}" | websocat --one-message "$WS_URL")
+
+# 3. Verify user-visible output
+STATUS=$(echo "$RESULT" | jq -r '.result.result.value')
+if [[ "$STATUS" != *"5 lines selected"* ]]; then
+    echo "✗ FAKE TEST: Panel doesn't show expected status"
+    exit 1
+fi
+echo "✓ REAL TEST: Panel shows '$STATUS'"
+```
+
+### VS Code Extension Test Checklist
+
+Before writing VS Code extension test, verify:
+
+```
+[ ] Protocol discovered (WebSocket/HTTP/IPC)
+[ ] User workflow documented (what user clicks/sees)
+[ ] Test uses SAME protocol as extension
+[ ] Test simulates ACTUAL user actions (not API calls)
+[ ] Test verifies PANEL DISPLAY (not internal state)
+[ ] Test covers BOTH main and renderer processes
+```
+
+**If any box is unchecked → Your test is probably FAKE.**
+</EXTREMELY-IMPORTANT>
 
 ## Integration
 
