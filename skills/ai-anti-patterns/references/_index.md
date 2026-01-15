@@ -16,7 +16,7 @@ This directory contains sections from Wikipedia's "Signs of AI writing" guide, s
 - [@04-stylistic-quirks.md](04-stylistic-quirks.md) - Elegant variation, false ranges, title case in headings
 
 ### Formatting Issues (Rules 5-7)
-- [@05-formatting-and-typography.md](05-formatting-and-typography.md) - Excessive boldface, inline-header lists, emojis, em dashes, curly quotes
+- [@05-formatting-and-typography.md](05-formatting-and-typography.md) - Excessive boldface, inline-header lists, emojis, em dashes
 - [@06-communication-patterns.md](06-communication-patterns.md) - Subject lines, collaborative phrases ("I hope this helps"), knowledge cutoff disclaimers, prompt refusal
 - [@07-template-artifacts.md](07-template-artifacts.md) - Phrasal templates (Mad Libs style), placeholder text with brackets
 

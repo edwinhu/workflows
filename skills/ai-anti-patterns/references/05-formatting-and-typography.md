@@ -78,12 +78,3 @@ This sign is most useful when taken in combination with other indicators, not by
 
 — From [this revision](https://en.wikipedia.org/w/index.php?title=&diff=1286082047&oldid=) to [Talk:Dutch Caribbean](https://en.wikipedia.org/wiki/Talk:Dutch_Caribbean "Talk:Dutch Caribbean")
 
-## Curly quotation marks and apostrophes
-
-AI chatbots typically use curly quotation marks ("..." or '...') instead of straight quotation marks ("..." or '...'). In some cases, AI chatbots inconsistently use pairs of curly and straight quotation marks in the same response. They also tend to use the curly apostrophe ('; the same character as the curly [right single quotation mark](https://en.wikipedia.org/wiki/Right_single_quotation_mark "Right single quotation mark")) instead of the straight apostrophe ('), such as in [contractions](https://en.wikipedia.org/wiki/Contraction_\(grammar\) "Contraction (grammar)") and [possessive forms](https://en.wikipedia.org/wiki/English_possessive "English possessive"). They may also do this inconsistently.
-
-Curly quotes alone do not prove LLM use. [Microsoft Word](https://en.wikipedia.org/wiki/Microsoft_Word "Microsoft Word") as well as [macOS](https://en.wikipedia.org/wiki/MacOS "MacOS") and [iOS](https://en.wikipedia.org/wiki/IOS "IOS") devices have a " [smart quotes](https://en.wikipedia.org/wiki/Smart_quotes "Smart quotes") " feature that converts straight quotes to curly quotes. Grammar correcting tools such as [LanguageTool](https://en.wikipedia.org/wiki/LanguageTool "LanguageTool") may also have such a feature. Curly quotation marks and apostrophes are common in professionally typeset works such as major newspapers. Citation tools like [Citer](https://citer.toolforge.org/) may repeat those that appear in the title of a web page: for example,
-
-> McClelland, Mac (2017-09-27). ["When 'Not Guilty' Is a Life Sentence"](https://www.nytimes.com/2017/09/27/magazine/when-not-guilty-is-a-life-sentence.html). *The New York Times*. Retrieved 2025-08-03.
-
-Note that Wikipedia allows users to [customize](https://en.wikipedia.org/wiki/Wikipedia:CUSTOM "Wikipedia:CUSTOM") the fonts used to display text. Some fonts display matched curly apostrophes as straight, in which case the distinction is invisible to the user.

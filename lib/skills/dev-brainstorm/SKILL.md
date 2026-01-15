@@ -108,14 +108,48 @@ Example questions to ask:
 - "What's the most important requirement?"
 - "Any constraints (performance, compatibility)?"
 
-### 2. Define Success Criteria
+### 2. Ask About Testing Strategy (MANDATORY)
 
-After understanding requirements, define measurable success criteria:
+<EXTREMELY-IMPORTANT>
+**THE TESTING QUESTION IS NOT OPTIONAL. This is the moment to prevent "no tests" rationalization.**
+
+After understanding what to build, immediately ask:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "How will we verify this works automatically?",
+  "header": "Testing",
+  "options": [
+    {"label": "Unit tests (pytest/jest/etc.)", "description": "Test functions/methods in isolation"},
+    {"label": "Integration tests", "description": "Test component interactions"},
+    {"label": "E2E automation (Playwright/ydotool)", "description": "Simulate real user interactions"},
+    {"label": "API tests", "description": "Test HTTP endpoints directly"}
+  ],
+  "multiSelect": true
+}])
+```
+
+**If user says "manual testing only" → This is a BLOCKER, not a workaround.**
+
+| User Says | Your Response |
+|-----------|---------------|
+| "Manual testing" | "That's not acceptable for /dev workflow. What's blocking automated tests?" |
+| "No test infrastructure" | "Let's add one. What framework fits this codebase?" |
+| "Too hard to test" | "What specifically is hard? Let's solve that first." |
+| "Just this once" | "No exceptions. TDD is the workflow, not optional." |
+
+**Why this matters:** If you don't ask about testing NOW, you'll rationalize skipping it later.
+</EXTREMELY-IMPORTANT>
+
+### 3. Define Success Criteria
+
+After understanding requirements AND testing strategy, define measurable success criteria:
 - Turn requirements into measurable criteria
 - Use checkboxes for clear pass/fail
 - Confirm criteria with user
+- **Include at least one testable criterion per requirement**
 
-### 3. Write Draft SPEC.md
+### 4. Write Draft SPEC.md
 
 Write the initial spec to `.claude/SPEC.md`:
 
@@ -138,13 +172,23 @@ Write the initial spec to `.claude/SPEC.md`:
 ## Constraints
 - [Any limitations or boundaries]
 
-## Automated Testing (MANDATORY)
+## Testing Strategy (MANDATORY - USER APPROVED)
 
 > **For Claude:** Use `Skill(skill="workflows:dev-test")` for automation options.
+>
+> **⚠️ NO IMPLEMENTATION WITHOUT TESTS. If this section is empty, STOP.**
 
+- **User's chosen approach:** [From AskUserQuestion in Phase 1: unit/integration/E2E/API]
 - **Framework:** [pytest / playwright / jest / etc.]
 - **Command:** [e.g., `pytest tests/ -v`]
+- **First failing test (describe it):** [What test will you write FIRST?]
 - **Core functionality to verify:** [what MUST be tested automatically]
+
+### The Iron Law of Testing
+
+**If no automated test strategy exists, implementation CANNOT proceed.**
+
+This is NOT a suggestion. This is a gate. If you find yourself thinking "let me implement first, then add tests" - STOP. You're violating TDD.
 
 ### What Counts as a Real Automated Test
 
@@ -159,6 +203,17 @@ Write the initial spec to `.claude/SPEC.md`:
 **THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.**
 
 Grepping is not testing. Log checking is not testing. Code review is not testing.
+
+### No Test Infrastructure? That's a BLOCKER.
+
+If the project has no tests, your first task is to ADD test infrastructure, not skip testing.
+
+| Situation | Response |
+|-----------|----------|
+| "Project has no tests" | Add test framework as Task 0 |
+| "Hard to test (DOM/UI/etc)" | Use E2E tools: Playwright, ydotool, screenshot comparison |
+| "No time for tests" | TDD saves time. No shortcuts. |
+| "User said manual testing" | Push back. Ask what's blocking automation. |
 
 ## Open Questions
 - [Questions to resolve during exploration]

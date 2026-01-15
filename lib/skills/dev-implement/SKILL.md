@@ -39,10 +39,58 @@ dev-implement (this skill)
 1. `.claude/SPEC.md` exists with final requirements
 2. `.claude/PLAN.md` exists with chosen approach
 3. **User explicitly approved** in /dev-design phase
+4. **PLAN.md Testing Strategy section is COMPLETE** (all boxes checked)
 
 If any prerequisite is missing, STOP and complete the earlier phases.
 
 **Check PLAN.md for:** files to modify, implementation order, testing strategy.
+
+### Pre-Flight Testing Check (MANDATORY)
+
+Before starting ANY task, verify PLAN.md Testing Strategy:
+
+```
+[ ] Framework specified (not empty, not "TBD")
+[ ] Test Command specified (runnable command)
+[ ] First Failing Test described (specific test name)
+[ ] Test File Location specified (actual path)
+```
+
+**If ANY box is unchecked → STOP. Go back to design phase.**
+
+This is your LAST CHANCE to catch missing test strategy before writing code.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of TDD (Final Enforcement)
+
+**YOU CANNOT WRITE IMPLEMENTATION CODE WITHOUT A FAILING TEST FIRST.**
+
+This is not a suggestion. This is the workflow. Every task follows:
+
+```
+1. READ the test description from PLAN.md
+2. WRITE the test file
+3. RUN the test → SEE RED (failure)
+4. ONLY THEN write implementation
+5. RUN the test → SEE GREEN (pass)
+```
+
+### Rationalization Prevention (Implementation Phase)
+
+If you catch yourself thinking these, STOP IMMEDIATELY:
+
+| Thought | Reality | Action |
+|---------|---------|--------|
+| "No test infra, I'll just implement" | You should have caught this in explore/clarify | STOP. Go back. Add Task 0. |
+| "SPEC.md says manual testing" | SPEC.md is wrong | STOP. Fix SPEC.md. Ask user. |
+| "This task is too simple for tests" | Simple tasks benefit MOST from tests | Write the test anyway. |
+| "I'll add tests after this works" | That's not TDD. That's lying. | DELETE your code. Write test first. |
+| "User is waiting, I'll be quick" | User wants WORKING code, not fast code | Take time. Write test first. |
+| "The subagent skipped tests" | Your job is to catch that | REJECT the work. Redo with tests. |
+| "Just this one exception" | No exceptions. Ever. | Write the test. |
+
+**If you wrote code without a failing test first, DELETE IT and start over.**
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>

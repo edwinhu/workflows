@@ -159,6 +159,57 @@ After each answer, update `.claude/SPEC.md`:
 - Integration points with existing systems
 - Patterns to follow (when multiple exist)
 - Edge cases revealed by code reading
+- **Testing strategy (if not resolved in brainstorm/explore)**
+
+### Testing Strategy Clarification (MANDATORY IF MISSING)
+
+<EXTREMELY-IMPORTANT>
+**If exploration found no test infrastructure, this MUST be resolved now.**
+
+Before proceeding to design, ensure testing strategy is clear:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "No test infrastructure was found. How should we verify this feature works?",
+  "header": "Testing",
+  "options": [
+    {"label": "Add pytest/jest as Task 0 (Recommended)", "description": "Set up test framework before implementing feature"},
+    {"label": "Add E2E tests with Playwright", "description": "Browser automation to test user interactions"},
+    {"label": "Add E2E tests with ydotool", "description": "Desktop automation for native apps"},
+    {"label": "Other (describe in chat)", "description": "Propose alternative testing approach"}
+  ],
+  "multiSelect": false
+}])
+```
+
+**"Manual testing" is NOT an acceptable answer.** If user insists on manual testing:
+
+1. Explain: "TDD requires automated tests. Manual testing means we can't do TDD."
+2. Ask: "What's blocking automated tests? Let's solve that."
+3. If truly impossible: "Then we need to exit /dev workflow and use a different approach."
+
+**Do NOT proceed to design without a clear automated testing strategy.**
+</EXTREMELY-IMPORTANT>
+
+### Follow-up Testing Questions
+
+After user chooses testing approach, clarify specifics:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "What's the FIRST test you want to see fail?",
+  "header": "First Test",
+  "options": [
+    {"label": "Happy path - feature works correctly", "description": "Test the main success scenario"},
+    {"label": "Error case - feature handles bad input", "description": "Test error handling"},
+    {"label": "Edge case - specific boundary condition", "description": "Test a known edge case"},
+    {"label": "Integration - feature works with existing code", "description": "Test system integration"}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Why this matters:** Defining the first test BEFORE implementation is the essence of TDD.
 
 ### Optional (if unclear)
 - Performance requirements
@@ -187,6 +238,22 @@ Clarification complete when:
 - Pattern choices made
 - `.claude/SPEC.md` updated with final requirements
 - No remaining ambiguities
+- **Automated testing strategy confirmed (MANDATORY)**
+
+### Testing Strategy Gate Check
+
+Before proceeding to design, verify in SPEC.md:
+
+```
+[ ] Testing approach documented (unit/integration/E2E)
+[ ] Test framework specified (pytest/jest/playwright/etc.)
+[ ] First test described (what will fail first)
+[ ] Test command documented (how to run tests)
+```
+
+**If any box is unchecked → STOP. Do not proceed to design.**
+
+This is the last checkpoint before implementation planning. If testing strategy isn't clear now, it never will be.
 
 ## Phase Complete
 

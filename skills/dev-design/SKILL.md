@@ -212,6 +212,54 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 - [Why this approach fits]
 - [Trade-offs accepted]
 
+## Testing Strategy (MANDATORY - GATE)
+
+> **⚠️ THIS SECTION MUST BE COMPLETE BEFORE IMPLEMENTATION.**
+> **If any field is empty, implementation CANNOT proceed.**
+
+| Field | Value | Status |
+|-------|-------|--------|
+| **Framework** | [pytest / jest / playwright / etc.] | [ ] Filled |
+| **Test Command** | [e.g., `pytest tests/ -v`] | [ ] Filled |
+| **First Failing Test** | [Description of what test will fail first] | [ ] Filled |
+| **Test File Location** | [e.g., `tests/test_feature.py`] | [ ] Filled |
+
+### The Iron Law of This Plan
+
+**NO TASK STARTS UNTIL ITS TEST IS WRITTEN.**
+
+For each task below:
+1. Write the test FIRST (RED)
+2. Run the test, see it FAIL
+3. Implement the code (GREEN)
+4. Refactor if needed
+
+**If you skip the test, DELETE your implementation and start over.**
+
+### What Counts as a REAL Test
+
+| ✅ REAL (execute + verify) | ❌ NOT A TEST (never do this) |
+|----------------------------|-------------------------------|
+| pytest calls function | grep for function exists |
+| Playwright clicks button | ast-grep finds pattern |
+| API request checks response | Log says "success" |
+| Screenshot comparison | "Code looks correct" |
+
+**Every task MUST have a test that EXECUTES the code and VERIFIES behavior.**
+
+### Rationalization Prevention
+
+If you catch yourself thinking these thoughts, STOP:
+
+| Thought | Reality |
+|---------|---------|
+| "No test infrastructure exists" | Add it as Task 0. That's the plan now. |
+| "This is hard to test" | Use E2E tools (Playwright, ydotool). Ask user. |
+| "I'll add tests later" | No. TDD means tests FIRST. |
+| "Just this one task without tests" | No exceptions. Ever. |
+| "Manual testing is in SPEC.md" | That's wrong. Fix it or ask user. |
+| "User approved manual testing" | Push back. TDD is the workflow. |
+
 ## Files to Modify
 | File | Change |
 |------|--------|
@@ -227,24 +275,16 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 
 > **For Claude:** Each task = one ralph loop. Complete task N before starting task N+1.
 >
+> **TDD ENFORCEMENT:** Every task with code MUST have a failing test written BEFORE implementation.
+>
 > Pattern: `Skill(skill="ralph-loop:ralph-loop", args="Task N: [name] --max-iterations 10 --completion-promise TASKN_DONE")`
 
-| Task | Ralph Loop | Core Test (MUST EXECUTE CODE) | Verify Command |
-|------|------------|-------------------------------|----------------|
+| Task | Ralph Loop | Failing Test (write FIRST) | Verify Command |
+|------|------------|----------------------------|----------------|
+| 0. Test infrastructure (if needed) | `"Task 0: Test setup" → TASK0_DONE` | N/A (meta-task) | `pytest --version` or `npm test -- --version` |
 | 1. Add types | `"Task 1: Add types" → TASK1_DONE` | N/A (types only) | `tsc --noEmit` |
-| 2. Service method | `"Task 2: Service method" → TASK2_DONE` | `test_validate_session()` calls method, checks return | `pytest tests/test_auth.py -v` |
-| 3. Route handler | `"Task 3: Route handler" → TASK3_DONE` | Integration test hits endpoint, checks response | `pytest tests/test_api.py -v` |
-
-### What Counts as a REAL Test
-
-| ✅ REAL (execute + verify) | ❌ NOT A TEST (never do this) |
-|----------------------------|-------------------------------|
-| pytest calls function | grep for function exists |
-| Playwright clicks button | ast-grep finds pattern |
-| API request checks response | Log says "success" |
-| Screenshot comparison | "Code looks correct" |
-
-**Every task MUST have a test that EXECUTES the code and VERIFIES behavior.**
+| 2. Service method | `"Task 2: Service method" → TASK2_DONE` | `test_validate_session()` - write test, see RED, then implement | `pytest tests/test_auth.py -v` |
+| 3. Route handler | `"Task 3: Route handler" → TASK3_DONE` | `test_api_endpoint()` - write test, see RED, then implement | `pytest tests/test_api.py -v` |
 ```
 
 ### 6. User Gate - Final Approval
@@ -320,19 +360,42 @@ Complete all steps before starting implementation:
 
 ```
 1. REVIEW → Read SPEC.md and exploration findings
-2. PROPOSE → Present 2-3 approaches with trade-offs
-3. ASK → Use AskUserQuestion with clear options
-4. DECOMPOSE → Ask "One feature or multiple?" (CRITICAL)
+2. VERIFY TESTING → Check SPEC.md has automated testing strategy
+   └─ If missing → STOP. Go back to clarify phase.
+3. PROPOSE → Present 2-3 approaches with trade-offs
+4. ASK → Use AskUserQuestion with clear options
+5. DECOMPOSE → Ask "One feature or multiple?" (CRITICAL)
    └─ If multiple → List features, ask which first, write BACKLOG.md
-5. WAIT → Do NOT proceed until user responds
-6. DOCUMENT → Write chosen approach to PLAN.md (for chosen feature only if decomposed)
-7. CONFIRM → Ask "Ready to proceed?"
-8. WORKSPACE → Ask "Create worktree?" (Yes recommended / No)
-9. SETUP → If worktree Yes, invoke dev-worktree
-10. GATE → Only start /dev-implement after all approvals
+6. WAIT → Do NOT proceed until user responds
+7. DOCUMENT → Write PLAN.md with Testing Strategy section FILLED
+8. VERIFY PLAN → Check PLAN.md Testing Strategy table has all boxes checked
+   └─ If any unchecked → STOP. Fill them before proceeding.
+9. CONFIRM → Ask "Ready to proceed?"
+10. WORKSPACE → Ask "Create worktree?" (Yes recommended / No)
+11. SETUP → If worktree Yes, invoke dev-worktree
+12. GATE → Only start /dev-implement after all approvals
 ```
 
-**Mandatory steps (NEVER skip):** DECOMPOSE, WAIT, WORKSPACE, and GATE.
+**Mandatory steps (NEVER skip):** VERIFY TESTING, DECOMPOSE, VERIFY PLAN, WAIT, WORKSPACE, and GATE.
+
+### Testing Strategy Verification (Step 2 & 8)
+
+Before proceeding past step 2, verify SPEC.md contains:
+```
+[ ] Testing approach (unit/integration/E2E)
+[ ] Test framework (pytest/jest/playwright)
+[ ] Test command (how to run)
+```
+
+Before proceeding past step 8, verify PLAN.md Testing Strategy table:
+```
+[ ] Framework filled
+[ ] Test Command filled
+[ ] First Failing Test described
+[ ] Test File Location specified
+```
+
+**If any box is unchecked → STOP. Do not proceed.**
 
 ## Rationalization Prevention
 

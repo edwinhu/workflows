@@ -239,10 +239,12 @@ Use ast-grep (`sg`) for precise AST-based pattern matching and ripgrep-all (`rga
 
 **For detailed patterns and usage, see:** `references/ast-grep-patterns.md`
 
-## Test Infrastructure Discovery
+## Test Infrastructure Discovery (GATE - NOT OPTIONAL)
 
 <EXTREMELY-IMPORTANT>
 **CRITICAL: You MUST discover how to run REAL automated tests.**
+
+**NO TEST INFRASTRUCTURE = NO IMPLEMENTATION. This is a gate, not a finding.**
 
 REAL automated tests EXECUTE code and verify RUNTIME behavior.
 Grepping source files is NOT testing. Log checking is NOT testing.
@@ -254,7 +256,30 @@ Grepping source files is NOT testing. Log checking is NOT testing.
 | ydotool that simulates user input | Code review / structure check |
 | API calls that verify responses | "It looks correct" |
 
-**If no way to EXECUTE and VERIFY exists, flag this as a blocker.**
+### The Gate Function
+
+```
+DISCOVER test framework → FOUND?
+├─ YES → Document in SPEC.md, continue to clarify
+└─ NO → STOP. This is a BLOCKER. Cannot proceed without test strategy.
+```
+
+**If no way to EXECUTE and VERIFY exists:**
+1. **STOP exploration** - do not proceed to clarify
+2. **Report to user** - "No test infrastructure found. This blocks TDD."
+3. **Propose solution** - "Should I add test infrastructure as Task 0?"
+4. **Wait for resolution** - Do not rationalize around this
+
+### Rationalization Prevention
+
+| Thought | Reality |
+|---------|---------|
+| "This project doesn't have tests" | Then add tests. That's Task 0. |
+| "It's a UI/DOM project, hard to test" | Use Playwright, ydotool, screenshot comparison |
+| "SPEC.md says manual testing" | That's wrong. Fix SPEC.md or ask user. |
+| "I can add tests later" | No. TDD means tests FIRST. |
+| "User won't want to set up tests" | Ask them. Don't assume. |
+| "Just this one feature without tests" | No exceptions. Ever. |
 </EXTREMELY-IMPORTANT>
 
 ### Project Test Framework
@@ -340,7 +365,7 @@ Exploration complete when:
 - Key files list consolidated (10-15 files)
 - **All key files read by main chat**
 - Patterns and architecture documented
-- **Test infrastructure documented**
+- **Test infrastructure documented OR blocker raised**
 - Questions for clarification identified
 
 ### Required Output Sections
@@ -349,6 +374,19 @@ Exploration complete when:
 2. **Architecture** - Layers, patterns, conventions
 3. **Test Infrastructure** - Framework, tools, patterns
 4. **Questions** - For clarify phase
+
+### Test Infrastructure Gate Check (MANDATORY)
+
+Before proceeding to clarify, verify:
+
+```
+[ ] Test framework identified (pytest/jest/playwright/etc.)
+[ ] Test command documented (how to run tests)
+[ ] At least one existing test file found OR
+[ ] User approved adding test infrastructure as Task 0
+```
+
+**If ALL boxes are unchecked → STOP. Ask user how to proceed.**
 
 ## Phase Complete
 
