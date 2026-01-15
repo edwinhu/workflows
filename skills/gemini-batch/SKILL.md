@@ -118,48 +118,68 @@ See `references/gcs-setup.md` for complete setup guide.
 
 ### Standard Gemini API (API Key)
 
+Uses the Gemini File API for input. Results returned via `batch_job.dest.file_name`.
+
 ```python
-from examples.batch_processor import GeminiBatchProcessor
+from google import genai
 
-processor = GeminiBatchProcessor(
-    bucket_name="my-batch-bucket",  # Must be in us-central1
-    model="gemini-2.0-flash-lite"
+client = genai.Client()  # Uses GOOGLE_API_KEY env var
+
+# Upload JSONL to File API
+uploaded = client.files.upload(
+    file="requests.jsonl",
+    config={"mime_type": "application/jsonl"}
 )
 
-results = processor.run_pipeline(
-    input_dir="./documents",
-    prompt="Extract as JSON: {title, date, summary}",
-    output_dir="./results"
+# Submit batch job
+job = client.batches.create(
+    model="gemini-2.5-flash-lite",
+    src=uploaded.name,  # "files/..." URI
+    config={"display_name": "my-batch-job"}
 )
+
+# Results available at job.dest.file_name after completion
 ```
 
-### Vertex AI (Recommended)
+### Vertex AI (Recommended for GCS workflows)
+
+Uses GCS URIs directly. Supports `dest=` parameter for output location.
 
 ```python
-import google.generativeai as genai
+from google import genai
 
-# Use Vertex AI with ADC
+# Use Vertex AI with ADC (not API key)
 client = genai.Client(
     vertexai=True,
     project="your-project-id",
     location="us-central1"
 )
 
-# Submit batch job
+# Submit batch job with GCS paths
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
-    src="gs://bucket/requests.jsonl",
-    dest="gs://bucket/outputs/"
+    src="gs://bucket/requests.jsonl",   # GCS input
+    dest="gs://bucket/outputs/"          # GCS output (Vertex AI only!)
 )
 ```
 
+**Key difference:** Standard API uses File API (`files/...`), Vertex AI uses GCS (`gs://...`) with explicit `dest=` parameter.
+
 ## Core Workflow
 
+**Standard API:**
+1. **Create JSONL** request file with prompts
+2. **Upload JSONL** to File API via `client.files.upload()`
+3. **Submit batch job** via `client.batches.create(src=uploaded.name)`
+4. **Poll for completion** (jobs expire after 24 hours)
+5. **Download results** from `job.dest.file_name`
+
+**Vertex AI:**
 1. **Upload files** to GCS bucket (us-central1 region required)
 2. **Create JSONL** request file with document URIs and prompts
-3. **Submit batch job** via `genai.batches.create()`
+3. **Submit batch job** via `client.batches.create(src=..., dest=...)`
 4. **Poll for completion** (jobs expire after 24 hours)
-5. **Download and parse** results from output URI
+5. **Download and parse** results from GCS output URI
 6. **Handle failures** gracefully (partial failures are common)
 
 ## IRON LAW: Metadata and API Call Structure
@@ -196,20 +216,32 @@ WORKAROUND (if complex data needed)
 
 ### Rule 2: API Call Structure
 
+**Standard API (File API):**
 ```python
 CORRECT ✓
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
-    src="gs://bucket/input.jsonl",        # Just a string
-    dest="gs://bucket/output/",           # Just a string
+    src=uploaded_file.name,               # "files/..." URI from File API
     config={"display_name": "my-job"}     # Just a dict
+)
+# Results at: job.dest.file_name (after completion)
+```
+
+**Vertex AI (GCS):**
+```python
+CORRECT ✓
+job = client.batches.create(
+    model="gemini-2.5-flash-lite",
+    src="gs://bucket/input.jsonl",        # GCS URI
+    dest="gs://bucket/output/",           # GCS output (VERTEX AI ONLY!)
+    config={"display_name": "my-job"}
 )
 
 WRONG ✗
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
     src="gs://bucket/input.jsonl",
-    destination="gs://bucket/output/",    # ← PARAMETER DOESN'T EXIST!
+    destination="gs://bucket/output/",    # ← WRONG PARAM NAME! Use dest=
 )
 
 WRONG ✗
@@ -222,14 +254,18 @@ job = client.batches.create(
 )
 ```
 
-**Why:** The SDK uses simple types. Parameter is `dest=` (not destination). Config is a plain dict (not a type instance). The SDK converts internally.
+**Why:**
+- Standard API: Uses File API for input, outputs to managed file location
+- Vertex AI: Uses GCS URIs, supports `dest=` for output location
+- Parameter is `dest=` (not destination). Config is a plain dict (not a type instance).
 
 ### Rationalization Table - STOP If You Catch Yourself Thinking:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
 | "Nested metadata is cleaner" | Your code will fail silently with cryptic errors | Flatten or use `json.dumps()` |
-| "I'll try `destination=` parameter" | You'll get a TypeError; parameter doesn't exist | Use `dest=` |
+| "I'll use `dest=` with Standard API" | Standard API doesn't support `dest=`; it's Vertex AI only | Use File API pattern for Standard API |
+| "I'll try `destination=` parameter" | You'll get a TypeError; parameter doesn't exist | Use `dest=` (Vertex AI only) |
 | "I should use `CreateBatchJobConfig`" | You're confusing internal typing with API calls | Pass plain dict to `config=` |
 | "Other APIs accept nested objects" | Your assumption breaks here; it's BigQuery-backed | Follow the examples |
 | "I'll fix it if it breaks" | Your job fails 5 minutes after submission | Get it right the first time |
@@ -262,22 +298,24 @@ for request in batch_requests:
 | Issue | Solution |
 |-------|----------|
 | **Nested metadata fails** | **Use flat primitives or `json.dumps()` for complex data** |
-| **TypeError: unexpected keyword** | **Use `dest=` not `destination=`, pass plain dict** |
+| **TypeError: unexpected keyword** | **Use `dest=` not `destination=` (Vertex AI only)** |
+| **Mixing API patterns** | **Standard API: File API + no dest. Vertex AI: GCS + dest** |
 | Auth errors with Vertex AI | Run `gcloud auth application-default login` |
 | vertexai=True requires ADC | API key is ignored with vertexai=True |
 | Missing aiplatform API | Run `gcloud services enable aiplatform.googleapis.com` |
-| Region mismatch | Use `us-central1` bucket only |
-| Wrong URI format | Use `gs://` not `https://` |
+| Region mismatch (Vertex) | Use `us-central1` bucket only |
+| Wrong URI format (Vertex) | Use `gs://` not `https://` |
 | Invalid JSONL | Use `scripts/validate_jsonl.py` |
 | Image batch: inline data | Use `fileData.fileUri` for batch, not inline |
 | Duplicate IDs | Hash file content + prompt for unique IDs |
 | Large PDFs fail | Split at 50 pages / 50MB max |
 | JSON parsing fails | Use robust extraction (see gotchas.md) |
-| Output not found | Output URI is prefix, not file path |
+| Output not found (Vertex) | Output URI is prefix, not file path |
 
-**Top 2 mistakes** (bolded above):
+**Top 3 mistakes** (bolded above):
 1. Using nested objects in metadata instead of flat primitives
-2. Guessing parameter names instead of using `dest=`
+2. Mixing Standard API and Vertex AI patterns
+3. Using `destination=` instead of `dest=` (Vertex AI)
 
 See `references/gotchas.md` for detailed solutions (now with Gotchas 10 & 11).
 
@@ -294,9 +332,9 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10 & 11).
 
 | Model | Use Case | Cost |
 |-------|----------|------|
-| `gemini-2.0-flash-lite` | Most batch jobs | Lowest |
-| `gemini-2.0-flash` | Complex extraction | Medium |
-| `gemini-1.5-pro` | Highest accuracy | Highest |
+| `gemini-2.5-flash-lite` | Most batch jobs | Lowest |
+| `gemini-2.5-flash` | Complex extraction | Medium |
+| `gemini-2.5-pro` | Highest accuracy | Highest |
 
 ## Additional Resources
 
