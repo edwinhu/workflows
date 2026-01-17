@@ -75,10 +75,8 @@ def main():
     if not file_path:
         sys.exit(0)
 
-    # Add modules to path
-    script_dir = Path(__file__).parent.parent.parent.parent
-    modules_path = script_dir / 'common' / 'hooks' / 'scripts'
-    sys.path.insert(0, str(modules_path))
+    # Add lib/hooks to path for modules
+    sys.path.insert(0, str(Path(__file__).parent.parent / 'lib' / 'hooks'))
 
     try:
         from rules_parser import parse_frontmatter, validate_rule_metadata, get_priority

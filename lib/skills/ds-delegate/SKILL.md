@@ -54,7 +54,7 @@ For each task:
 
 ## Step 1: Dispatch Analyst
 
-**Pattern:** Use structured delegation template from `common/templates/delegation-template.md`
+**Pattern:** Use structured delegation template from `lib/references/delegation-template.md`
 
 Every delegation MUST include:
 1. TASK - What to analyze

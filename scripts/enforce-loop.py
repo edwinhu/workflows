@@ -27,10 +27,8 @@ def main():
         # No session ID, allow stop
         sys.exit(0)
 
-    # Add transcript module to path
-    script_dir = Path(__file__).parent.parent.parent.parent
-    transcript_path = script_dir / 'common' / 'hooks' / 'scripts'
-    sys.path.insert(0, str(transcript_path))
+    # Add lib/hooks to path for transcript module
+    sys.path.insert(0, str(Path(__file__).parent.parent / 'lib' / 'hooks'))
 
     try:
         from transcript import (

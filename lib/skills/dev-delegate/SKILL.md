@@ -72,7 +72,7 @@ For each task:
 
 ## Step 1: Dispatch Implementer
 
-**Pattern:** Use structured delegation template from `common/templates/delegation-template.md`
+**Pattern:** Use structured delegation template from `lib/references/delegation-template.md`
 
 Every delegation MUST include:
 1. TASK - What to do

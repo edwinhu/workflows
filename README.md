@@ -118,71 +118,6 @@ A data science plugin focused on reproducibility and output verification, with s
 - `/marimo` - Marimo reactive Python notebooks
 - `/jupytext` - Jupyter notebooks as text files for version control
 
-### OpenCode
-```bash
-# Clone the opencode-compatibility branch
-git clone -b opencode-compatibility https://github.com/edwinhu/workflows.git ~/.config/opencode/workflows
-
-# Install plugin (optional, recommended)
-mkdir -p ~/.config/opencode/plugin
-cp ~/.config/opencode/workflows/.opencode/plugin/workflows.js ~/.config/opencode/plugin/
-
-# In OpenCode: find_skills
-```
-
-See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternatives.
-
-## Available Plugins
-
-### dev (v0.5.0)
-
-**Full feature development workflow with TDD enforcement**
-
-A comprehensive development plugin that enforces test-driven development practices through structured phases: brainstorm, plan, implement, review, and verify.
-
-**Commands:**
-- `/dev` - Full feature development workflow with TDD enforcement
-- `/dev-brainstorm` - Socratic design exploration before implementation
-- `/dev-plan` - Codebase exploration and task breakdown
-- `/dev-implement` - TDD implementation with RED-GREEN-REFACTOR cycle
-- `/dev-debug` - Systematic debugging with root cause investigation
-- `/dev-review` - Code review combining spec compliance and quality checks
-- `/dev-verify` - Verification gate requiring fresh runtime evidence
-- `/dev-tools` - List available development plugins and MCP servers
-
-**Hooks:**
-- Main chat sandbox enforcement
-- Grep test detector (prevents grepping source as tests)
-- Ralph Wiggum validation
-
-**Tags:** `development`, `tdd`, `testing`, `code-review`
-
----
-
-### ds (v0.5.0)
-
-**Data science workflow with output-first verification**
-
-A data science plugin focused on reproducibility and output verification, with specialized skills for academic and financial data access.
-
-**Commands:**
-- `/ds` - Data science workflow with output-first verification
-- `/ds-brainstorm` - Clarify analysis objectives through Socratic questioning
-- `/ds-plan` - Data profiling and analysis task breakdown
-- `/ds-implement` - Output-first implementation with verification at each step
-- `/ds-review` - Methodology and statistical validity review
-- `/ds-verify` - Reproducibility verification before completion
-- `/ds-tools` - List available data science plugins and MCP servers
-
-**Data Access Skills:**
-- `/wrds` - WRDS PostgreSQL access for Compustat, CRSP, EDGAR data
-- `/lseg-data` - LSEG Data Library (Refinitiv) for market data and fundamentals
-- `/gemini-batch` - Gemini Batch API for large-scale LLM document processing
-
-**Notebook Skills:**
-- `/marimo` - Marimo reactive Python notebooks
-- `/jupytext` - Jupyter notebooks as text files for version control
-
 **Hooks:**
 - Data quality checker
 - Output verifier
@@ -232,49 +167,55 @@ Contains common skills used by multiple plugins, including office document forma
 
 ## Repository Structure
 
-The repository uses a unified skill architecture: **one `/skills/` directory for all 40 skills**, served to both Claude Code and OpenCode platforms via appropriate plugins/integrations.
-
 ```
 workflows/
-├── skills/                     # UNIFIED: All 40 skills (single source of truth)
+├── .claude-plugin/             # Claude Code plugin manifest
+│   ├── plugin.json
+│   └── marketplace.json
+├── commands/                   # Slash commands (/dev, /ds, /writing, /exit)
+├── skills/                     # User-facing skills (28 skills)
 │   ├── dev/SKILL.md
-│   ├── dev-implement/SKILL.md
-│   ├── dev-debug/SKILL.md
 │   ├── ds/SKILL.md
 │   ├── writing/SKILL.md
-│   └── [33 more skills...]
-│
+│   ├── docx -> external/...    # Document skills (symlinked)
+│   ├── pdf -> external/...
+│   ├── pptx -> external/...
+│   ├── xlsx -> external/...
+│   └── [more skills...]
 ├── lib/
-│   └── skills-core.js          # Skill discovery utilities
-│
-├── plugins/                    # Claude Code integration
-│   └── workflows/
-│       ├── .claude-plugin/     # Claude Code plugin manifest
-│       ├── commands/           # Slash commands
-│       ├── hooks/              # Plugin hooks
-│       └── [Claude-specific code]
-│
+│   ├── skills-core.js          # Skill discovery utilities
+│   ├── skills/                 # Internal phase skills (17 skills)
+│   ├── hooks/                  # Shared Python libraries
+│   │   ├── session.py
+│   │   ├── boulder.py
+│   │   └── [more modules...]
+│   └── references/             # Reference documentation
+│       ├── delegation-template.md
+│       └── tool-restrictions.md
+├── hooks/                      # Hook entry points
+│   ├── hooks.json              # Hook configuration
+│   ├── session-start.py        # SessionStart hook
+│   ├── dispatcher.py           # PreToolUse hook
+│   └── cleanup-session.py      # Stop hook
+├── scripts/                    # Utility scripts (PostToolUse hooks, standalone)
+│   ├── marimo-check.py
+│   ├── jupytext-sync.py
+│   ├── markdown-check.py
+│   ├── rules-injector.py
+│   └── enforce-loop.py
+├── external/
+│   └── anthropic-skills/       # Git submodule for document skills
 ├── .opencode/                  # OpenCode integration
-│   ├── INSTALL.md              # Installation guide (3 options)
-│   ├── README.md               # OpenCode overview
-│   ├── COMPATIBILITY.md        # Architecture comparison
-│   └── plugin/
-│       ├── workflows.js        # OpenCode plugin bridge
-│       └── package.json
-│
+├── .copilot/                   # VS Code Copilot integration
 └── README.md
 ```
 
 **Key Points:**
-- `/skills/` is the single source of truth for all skill content
-- Platform-agnostic skill content (works for both Claude Code and OpenCode)
-- Claude Code uses the `plugins/workflows/` plugin
-- OpenCode uses `.opencode/plugin/workflows.js` bridge
-- Any skill update works for both platforms automatically
-
-**Branches:**
-- `main` - Claude Code version (complete, stable)
-- `opencode-compatibility` - OpenCode version with unified architecture
+- `skills/` contains user-facing skills
+- `lib/skills/` contains internal phase skills (dev-implement, ds-verify, etc.)
+- `lib/hooks/` contains shared Python modules used by hooks
+- `hooks/` contains hook entry points called directly by hooks.json
+- `scripts/` contains utility scripts called by PostToolUse hooks
 
 ## Updating External Skills
 

@@ -309,9 +309,8 @@ Bash(
 **See:** `references/agent-harnessing.md`
 
 Quick reference:
-- Tool restrictions: `common/helpers/tool-restrictions.md`
-- Delegation template: `common/templates/delegation-template.md`
-- Metadata infrastructure: `common/metadata/skill-metadata.py`
-- Full oh-my-opencode guide: `common/OH-MY-OPENCODE-PATTERNS.md`
+- Tool restrictions: `lib/references/tool-restrictions.md`
+- Delegation template: `lib/references/delegation-template.md`
+- Metadata infrastructure: `lib/references/skill-metadata.py`
 
 Based on: [obra/superpowers](https://github.com/obra/superpowers) and oh-my-opencode production patterns.

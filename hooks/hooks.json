@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common/session-start.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common/dispatcher.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.py"
           }
         ]
       }
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/rules/rules-injector.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/rules-injector.py"
           }
         ]
       },
@@ -37,15 +37,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/marimo/marimo-check.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/marimo-check.py"
           },
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/jupytext/jupytext-sync.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/jupytext-sync.py"
           },
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown/markdown-check.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/markdown-check.py"
           }
         ]
       }
@@ -56,11 +56,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/ralph-loop/enforce-loop.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/enforce-loop.py"
           },
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common/cleanup-session.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/cleanup-session.py"
           }
         ]
       }

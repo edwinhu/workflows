@@ -41,7 +41,7 @@ Every delegated Task agent should have explicit tool restrictions:
 
 **Pattern:** Default to most restrictive, grant only when needed.
 
-See: `common/helpers/tool-restrictions.md`
+See: `lib/references/tool-restrictions.md`
 
 ## Structured Delegation Template
 
@@ -55,7 +55,7 @@ Every Task agent delegation MUST include:
 7. CONTEXT - Parent session state
 8. VERIFICATION - How to confirm
 
-See: `common/templates/delegation-template.md`
+See: `lib/references/delegation-template.md`
 
 Used by: `/dev-delegate`, `/ds-delegate`
 
@@ -81,7 +81,7 @@ Research-heavy skills use current date/time context for:
 - API version checking
 - Documentation freshness
 
-See: `common/metadata/skill-metadata.py` - `get_env_context()`
+See: `lib/references/skill-metadata.py` - `get_env_context()`
 
 Applied to: `/wrds`, `/lseg-data`, `/gemini-batch`
 
@@ -92,7 +92,7 @@ Skills are classified by cost:
 - **CHEAP**: Fast models, simple tasks (profiling, review)
 - **EXPENSIVE**: Complex reasoning, architecture decisions (design, debug after 3 failures)
 
-See: `common/metadata/skill-metadata.py` - `CostLevel`
+See: `lib/references/skill-metadata.py` - `CostLevel`
 
 ## Metadata-Driven Prompts
 
@@ -115,18 +115,15 @@ avoid_when:
 
 Parent skills consume metadata to build decision tables dynamically.
 
-See: `common/metadata/skill-metadata.py`
+See: `lib/references/skill-metadata.py`
 
 ## Pattern References
 
 All patterns documented in:
-- `common/metadata/` - Metadata infrastructure and cost classification
-- `common/templates/` - Delegation and agent templates
-- `common/helpers/` - Tool restrictions and utilities
-- `common/OH-MY-OPENCODE-PATTERNS.md` - Complete oh-my-opencode implementation guide
+- `lib/references/` - Metadata infrastructure, delegation templates, tool restrictions
 
 ## Additional Resources
 
-For implementation details of all 10 oh-my-opencode patterns, see:
-- `common/OH-MY-OPENCODE-PATTERNS.md` - Comprehensive guide
+For implementation details of oh-my-opencode patterns, see:
 - Plugin-dev skills (hook-development, agent-development, skill-development) - Best practices
+- [obra/superpowers](https://github.com/obra/superpowers) - Behavioral enforcement patterns

@@ -19,9 +19,10 @@ import sys
 import os
 import re
 import glob
+from pathlib import Path
 from typing import Optional
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, str(Path(__file__).parent.parent / 'lib' / 'hooks'))
 from session import (
     is_dev_mode_active, is_workflow_active, activate_workflow, activate_dev_mode,
     is_skill_gate_open, close_skill_gate, is_ralph_loop_active

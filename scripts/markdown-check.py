@@ -16,8 +16,8 @@ import os
 import sys
 from pathlib import Path
 
-# Add common utilities to path
-sys.path.insert(0, str(Path(__file__).parent.parent / 'common'))
+# Add lib/hooks to path for shared utilities
+sys.path.insert(0, str(Path(__file__).parent.parent / 'lib' / 'hooks'))
 from markdown_validators import check_unescaped_dollars, format_dollar_issues
 
 

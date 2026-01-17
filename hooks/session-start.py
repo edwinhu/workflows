@@ -103,11 +103,11 @@ def get_environment_context():
 
 
 def get_plugin_root() -> Path:
-    """Get the shared plugin root directory."""
-    # Script is at: plugins/shared/hooks/scripts/session-start.py
-    # Plugin root is: plugins/shared/
+    """Get the plugin root directory."""
+    # Script is at: hooks/session-start.py
+    # Plugin root is: ./
     script_dir = Path(__file__).resolve().parent
-    return script_dir.parent.parent
+    return script_dir.parent
 
 
 def load_using_skills_content() -> str:
