@@ -1,11 +1,10 @@
 {
   "name": "workflows",
-  "version": "2.20.1",
+  "version": "2.20.2",
   "description": "Development and data science workflows with TDD enforcement, sandbox mode, and output-first verification.",
   "author": {
     "name": "edwinhu"
   },
   "commands": "./commands/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }
