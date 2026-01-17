@@ -3,22 +3,6 @@ name: ds-brainstorm
 description: "This skill should be used when the user asks to \"start a data science project\", \"brainstorm analysis\", \"plan a data analysis\", or wants to clarify analysis requirements. REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints."
 ---
 
-## First: Activate Workflow
-
-Activate the ds workflow to enable workflow-specific hooks (data quality checks, output verification):
-
-```bash
-# Activate ds workflow and enable development mode for hook verification
-python3 -c "
-import sys
-sys.path.insert(0, '\${CLAUDE_PLUGIN_ROOT}/hooks/scripts/common')
-from session import activate_workflow, activate_dev_mode
-activate_workflow('ds')
-activate_dev_mode()
-print('✓ DS workflow activated')
-"
-```
-
 ## Contents
 
 - [The Iron Law of DS Brainstorming](#the-iron-law-of-ds-brainstorming)

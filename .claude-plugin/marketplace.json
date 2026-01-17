@@ -5,16 +5,16 @@
   },
   "metadata": {
     "description": "Development, data science, and writing workflows for Claude Code",
-    "version": "2.20.2"
+    "version": "2.21.0"
   },
   "plugins": [
     {
       "name": "workflows",
       "source": "./",
-      "description": "Unified development, data science, and writing workflows with sandbox mode, TDD enforcement, and output-first verification",
-      "version": "2.20.2",
+      "description": "Unified development, data science, and writing workflows with TDD enforcement and output-first verification",
+      "version": "2.21.0",
       "category": "development",
-      "tags": ["development", "data-science", "writing", "tdd", "workflows", "sandbox"]
+      "tags": ["development", "data-science", "writing", "tdd", "workflows"]
     }
   ]
 }

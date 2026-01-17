@@ -8,10 +8,9 @@ Provides shared validation logic for markdown content across different file type
 from __future__ import annotations
 
 import re
-from typing import List, Tuple
 
 
-def check_unescaped_dollars(content: str, context: str = "file") -> List[Tuple[int, str]]:
+def check_unescaped_dollars(content: str, context: str = "file") -> list[tuple[int, str]]:
     """
     Check for unescaped dollar signs in markdown content.
 
@@ -95,7 +94,7 @@ def check_unescaped_dollars(content: str, context: str = "file") -> List[Tuple[i
     return issues
 
 
-def format_dollar_issues(issues: List[Tuple[int, str]], filename: str, max_display: int = 5) -> str:
+def format_dollar_issues(issues: list[tuple[int, str]], filename: str, max_display: int = 5) -> str:
     """
     Format unescaped dollar sign issues for display.
 

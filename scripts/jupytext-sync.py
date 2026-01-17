@@ -23,7 +23,7 @@ import os
 import subprocess
 import re
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 # Add lib/hooks to path for shared utilities
 sys.path.insert(0, str(Path(__file__).parent.parent / 'lib' / 'hooks'))
@@ -74,7 +74,7 @@ def detect_kernel(file_path: str) -> str:
     return 'unknown'
 
 
-def run_jupytext_sync(file_path: str) -> Tuple[bool, str, bool]:
+def run_jupytext_sync(file_path: str) -> tuple[bool, str, bool]:
     """Run jupytext --sync. Returns (success, output, files_modified)."""
     try:
         # Get modification times before sync

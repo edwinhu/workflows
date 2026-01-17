@@ -11,7 +11,6 @@ Non-blocking: Reports issues as warnings.
 from __future__ import annotations
 
 import json
-import sys
 import os
 import sys
 from pathlib import Path

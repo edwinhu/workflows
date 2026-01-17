@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-SessionStart hook: Inject awareness of dev/ds workflows at session start.
-Also loads environment context (API keys, SSH status, etc.)
+SessionStart hook: Inject environment context and skill guidance at session start.
+Loads API keys, SSH status, and injects how-to-use-skills documentation.
 """
 import json
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 
 def load_env_file(env_file: Path):
@@ -216,111 +215,6 @@ def build_env_section(env_context: dict, persisted_vars: list) -> str:
     return "\n".join(lines)
 
 
-def create_session_marker_dir():
-    """Create the session marker directory for workflow state tracking."""
-    session_dir = Path(f"/tmp/claude-workflow-{os.getppid()}")
-    session_dir.mkdir(parents=True, exist_ok=True)
-    return session_dir
-
-
-def get_active_workflow() -> Optional[str]:
-    """Check if a workflow is currently active."""
-    session_dir = Path(f"/tmp/claude-workflow-{os.getppid()}")
-    if not session_dir.exists():
-        return None
-
-    # Check for dev workflow
-    if (session_dir / 'dev_mode').exists():
-        return 'dev'
-
-    # Check for workflow markers
-    for marker in session_dir.glob('workflow_*'):
-        workflow_name = marker.name.replace('workflow_', '')
-        return workflow_name
-
-    return None
-
-
-def get_delegation_rules() -> str:
-    """Get the delegation rules to inject when a workflow is active."""
-    return """
-# Delegation Rules (ACTIVE WORKFLOW)
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Delegation
-
-**MAIN CHAT MUST NOT WRITE CODE. This is not negotiable.**
-
-You DO NOT HAVE A CHOICE. You MUST delegate to Task agents.
-This is not optional. You cannot rationalize your way out of this.
-
-### Allowed in Main Chat
-- Spawn Task agents (REQUIRED for all code work)
-- Review Task agent output
-- Write to .claude/*.md files
-- Run git commands
-- Invoke skills
-
-### NOT Allowed in Main Chat
-- Write/Edit code files (.py, .ts, .js, .R, etc.)
-- Direct implementation
-- "Quick fixes"
-- "Just this one thing"
-
-### Red Flags - STOP If You Think:
-| Thought | Reality |
-|---------|---------|
-| "This is just a quick fix" | Quick fixes corrupt context. Delegate. |
-| "I'll just add this one line" | One line = code = delegate. |
-| "It's faster if I do it directly" | Speed doesn't justify breaking discipline. |
-| "The Task overhead isn't worth it" | Context isolation IS worth it. |
-| "I know exactly what to do" | Knowing doesn't exempt you. Delegate. |
-
-### What To Do Instead
-```
-Task(subagent_type="general-purpose", prompt="[task description]")
-```
-
-For templates: `Skill(skill="workflows:dev-delegate")` or `Skill(skill="workflows:ds-delegate")`
-</EXTREMELY-IMPORTANT>
-"""
-
-
-def inject_project_context() -> str:
-    """
-    Inject project context (README.md, AGENTS.md).
-
-    Returns context message or empty string if no files found.
-    """
-    # Add context_collector to path
-    plugin_root = get_plugin_root()
-    context_path = plugin_root.parent / 'common' / 'hooks' / 'scripts'
-    sys.path.insert(0, str(context_path))
-
-    try:
-        from context_collector import collect_context_files, format_context_message
-    except ImportError:
-        # Module not available yet
-        return ""
-
-    # Find project root
-    cwd = Path.cwd()
-    project_root = cwd
-    while project_root != project_root.parent:
-        if (project_root / '.git').exists() or (project_root / '.claude').exists():
-            break
-        project_root = project_root.parent
-
-    # Collect context files
-    files = collect_context_files(project_root)
-
-    if not files:
-        return ""
-
-    # Format message
-    return format_context_message(files)
-
-
 def check_boulder_state(session_id: str) -> str:
     """
     Check for active boulder state and return continuation message.
@@ -329,7 +223,7 @@ def check_boulder_state(session_id: str) -> str:
     """
     # Add boulder module to path
     plugin_root = get_plugin_root()
-    boulder_path = plugin_root.parent / 'common' / 'hooks' / 'scripts'
+    boulder_path = plugin_root / 'lib' / 'hooks'
     sys.path.insert(0, str(boulder_path))
 
     try:
@@ -427,9 +321,6 @@ def main():
     except (json.JSONDecodeError, KeyError):
         session_id = 'unknown'
 
-    # Create session marker directory (used by sandbox-check.py)
-    create_session_marker_dir()
-
     # Load environment variables once: central secrets first, project-local override
     load_central_secrets()
     load_dotenv_if_exists()
@@ -444,19 +335,12 @@ def main():
     env_section = build_env_section(env_context, persisted_vars)
     using_skills = load_using_skills_content()
 
-    # Check for active workflow and add delegation rules
-    active_workflow = get_active_workflow()
-    delegation_section = get_delegation_rules() if active_workflow else ""
-
     # Check boulder state for plan continuation
     boulder_section = check_boulder_state(session_id)
 
-    # Inject project context (README.md, AGENTS.md)
-    context_section = inject_project_context()
-
     # Output the context injection
     # Pattern inspired by obra/superpowers - inject HOW to use skills, not the full catalog
-    combined_context = env_section + "\n" + boulder_section + "\n" + context_section + "\n" + delegation_section + "\n" + using_skills
+    combined_context = env_section + "\n" + boulder_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {

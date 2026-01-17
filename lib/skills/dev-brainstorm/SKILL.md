@@ -5,16 +5,6 @@ description: "REQUIRED Phase 1 of /dev workflow. Uses Socratic questioning to un
 
 **Announce:** "I'm using dev-brainstorm (Phase 1) to gather requirements."
 
-## First: Activate Workflow
-
-Before anything else, activate the dev workflow. This enables workflow-specific hooks (sandbox enforcement, TDD checks, etc.).
-
-**Activate dev workflow by creating timestamp file:**
-
-```bash
-mkdir -p /tmp/claude-workflow-$PPID && touch /tmp/claude-workflow-$PPID/dev_mode && echo "✓ Dev workflow activated"
-```
-
 ## Contents
 
 - [The Iron Law of Brainstorming](#the-iron-law-of-brainstorming)

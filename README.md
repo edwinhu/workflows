@@ -85,11 +85,6 @@ A comprehensive development plugin that enforces test-driven development practic
 - `/dev-verify` - Verification gate requiring fresh runtime evidence
 - `/dev-tools` - List available development plugins and MCP servers
 
-**Hooks:**
-- Main chat sandbox enforcement
-- Grep test detector (prevents grepping source as tests)
-- Ralph Wiggum validation
-
 **Tags:** `development`, `tdd`, `testing`, `code-review`
 
 ---

@@ -11,27 +11,7 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "matcher": "Skill|Bash|Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.py"
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
-      {
-        "matcher": "Read|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/rules-injector.py"
-          }
-        ]
-      },
       {
         "matcher": "Edit|Write",
         "hooks": [
@@ -46,21 +26,6 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/markdown-check.py"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/enforce-loop.py"
-          },
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/cleanup-session.py"
           }
         ]
       }
