@@ -14,10 +14,13 @@ Non-blocking: reports linter output as messages.
 Silently skips if linter not installed.
 """
 
+from __future__ import annotations
+
 import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Callable
 
 PLUGIN_ROOT = Path(__file__).parent.parent
 
@@ -120,7 +123,7 @@ def check_markdown(file_path: str) -> str | None:
     return None
 
 
-def get_linter_for_file(file_path: str) -> callable | None:
+def get_linter_for_file(file_path: str) -> Callable | None:
     """Get appropriate linter function for file type."""
     path = Path(file_path)
     suffix = path.suffix.lower()
