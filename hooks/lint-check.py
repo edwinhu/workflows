@@ -168,11 +168,11 @@ def main():
     if not output:
         sys.exit(0)
 
-    # Report issues (non-blocking)
+    # Report issues (non-blocking, adds context for Claude)
     result = {
         "hookSpecificOutput": {
             "hookEventName": "PostToolUse",
-            "message": output
+            "additionalContext": f"Linter output:\n{output}"
         }
     }
     print(json.dumps(result))
