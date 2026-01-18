@@ -5,16 +5,33 @@
   },
   "metadata": {
     "description": "Development, data science, and writing workflows for Claude Code",
-    "version": "2.24.0"
+    "version": "2.25.0"
   },
   "plugins": [
     {
       "name": "workflows",
       "source": "./",
       "description": "Unified development, data science, and writing workflows with TDD enforcement and output-first verification",
-      "version": "2.24.0",
+      "version": "2.25.0",
       "category": "development",
       "tags": ["development", "data-science", "writing", "tdd", "workflows"]
+    },
+    {
+      "name": "tinymist-lsp",
+      "source": "./plugins/tinymist-lsp",
+      "description": "Typst language server integration with tinymist for code intelligence, compilation, and preview",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["typst", "lsp", "tinymist", "typesetting"],
+      "lspServers": {
+        "tinymist": {
+          "command": "tinymist",
+          "args": ["lsp"],
+          "extensionToLanguage": {
+            ".typ": "typst"
+          }
+        }
+      }
     }
   ]
 }

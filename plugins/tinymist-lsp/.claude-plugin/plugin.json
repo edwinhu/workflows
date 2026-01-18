@@ -1,0 +1,19 @@
+{
+  "name": "tinymist-lsp",
+  "version": "1.0.0",
+  "description": "Typst language server integration with tinymist for code intelligence, compilation, and preview",
+  "author": {
+    "name": "edwinhu"
+  },
+  "license": "MIT",
+  "keywords": ["typst", "lsp", "tinymist", "typesetting"],
+  "lspServers": {
+    "tinymist": {
+      "command": "tinymist",
+      "args": ["lsp"],
+      "extensionToLanguage": {
+        ".typ": "typst"
+      }
+    }
+  }
+}

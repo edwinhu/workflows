@@ -8,6 +8,7 @@ Supports:
 - R: lintr
 - Stata: stata-linter
 - SAS: sasjs lint
+- Markdown: smartquotes --check
 
 Non-blocking: reports linter output as messages.
 Silently skips if linter not installed.
@@ -17,6 +18,8 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+
+PLUGIN_ROOT = Path(__file__).parent.parent
 
 
 def run_command(cmd: list[str], timeout: int = 30) -> tuple[int, str, str]:
@@ -102,6 +105,21 @@ def check_sas(file_path: str) -> str | None:
     return None
 
 
+def check_markdown(file_path: str) -> str | None:
+    """Run smartquotes --check on markdown file."""
+    script = PLUGIN_ROOT / 'scripts' / 'smartquotes.py'
+    if not script.exists():
+        return None
+    code, stdout, stderr = run_command(['python3', str(script), file_path, '--check'])
+    if code == -1:
+        return None  # python3 not available
+    # smartquotes exits 0 even when changes needed, check output
+    output = stdout.strip()
+    if output and 'No changes needed' not in output:
+        return f"smartquotes:\n{output}\n\nRun: python3 scripts/smartquotes.py {file_path}"
+    return None
+
+
 def get_linter_for_file(file_path: str) -> callable | None:
     """Get appropriate linter function for file type."""
     path = Path(file_path)
@@ -114,6 +132,8 @@ def get_linter_for_file(file_path: str) -> callable | None:
         '.do': check_stata,
         '.ado': check_stata,
         '.sas': check_sas,
+        '.md': check_markdown,
+        '.markdown': check_markdown,
     }
 
     return linters.get(suffix)
