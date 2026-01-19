@@ -1,0 +1,10 @@
+{
+  "name": "tinymist",
+  "version": "2.0.0",
+  "description": "Typst language support with tinymist for compilation, preview, and error checking",
+  "author": {
+    "name": "edwinhu"
+  },
+  "license": "MIT",
+  "keywords": ["typst", "tinymist", "typesetting"]
+}

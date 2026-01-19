@@ -1,6 +1,6 @@
 ---
 name: typst
-description: This skill should be used when the user asks about "typst syntax", "typst formatting", "typst templates", "typst functions", "typst packages", "typst tables", "typst math", "typst bibliography", or mentions writing documents in Typst. Provides syntax guidance and best practices for the Typst typesetting language.
+description: This skill should be used when the user asks about “typst syntax”, “typst formatting”, “typst templates”, “typst functions”, “typst packages”, “typst tables”, “typst math”, “typst bibliography”, or mentions writing documents in Typst. Provides syntax guidance and best practices for the Typst typesetting language.
 version: 1.0.0
 ---
 
@@ -41,7 +41,7 @@ _italic text_
 ### Links and References
 
 ```typst
-#link("https://typst.app")[Typst Website]
+#link(“https://typst.app”)[Typst Website]
 @label-name          // Reference a labeled element
 #ref(<label-name>)   // Alternative reference syntax
 ```
@@ -51,14 +51,14 @@ _italic text_
 Typst uses `#` to call functions:
 
 ```typst
-#image("photo.png", width: 50%)
+#image(“photo.png”, width: 50%)
 #table(
   columns: 3,
   [Header 1], [Header 2], [Header 3],
   [Cell 1], [Cell 2], [Cell 3],
 )
 #figure(
-  image("diagram.svg"),
+  image(“diagram.svg”),
   caption: [A diagram showing the architecture],
 )
 ```
@@ -88,7 +88,7 @@ Common math notation:
 
 ```typst
 #set page(
-  paper: "a4",
+  paper: “a4”,
   margin: (x: 2cm, y: 2.5cm),
   header: [Document Header],
   footer: context [Page #counter(page).display()],
@@ -99,9 +99,9 @@ Common math notation:
 
 ```typst
 #set text(
-  font: "New Computer Modern",
+  font: “New Computer Modern”,
   size: 11pt,
-  lang: "en",
+  lang: “en”,
 )
 
 #set par(
@@ -114,11 +114,11 @@ Common math notation:
 ### Heading Styling
 
 ```typst
-#set heading(numbering: "1.1")
+#set heading(numbering: “1.1”)
 
 #show heading.where(level: 1): it => {
   pagebreak(weak: true)
-  text(size: 16pt, weight: "bold", it)
+  text(size: 16pt, weight: “bold”, it)
 }
 ```
 
@@ -139,7 +139,7 @@ Transform elements using show rules:
 )
 
 // Replace text patterns
-#show "TODO": text(fill: red, weight: "bold")[TODO]
+#show “TODO”: text(fill: red, weight: “bold”)[TODO]
 ```
 
 ## Tables
@@ -162,7 +162,7 @@ Transform elements using show rules:
 
 ```typst
 #figure(
-  image("chart.png", width: 80%),
+  image(“chart.png”, width: 80%),
   caption: [Sales data for Q1 2024],
 ) <fig:sales>
 
@@ -173,19 +173,19 @@ As shown in @fig:sales, sales increased.
 
 ```typst
 // In document
-#bibliography("refs.bib", style: "ieee")
+#bibliography(“refs.bib”, style: “ieee”)
 
 // Citation
 @smith2024 shows that...
-#cite(<smith2024>, form: "prose")
+#cite(<smith2024>, form: “prose”)
 ```
 
 ## Variables and Functions
 
 ```typst
 // Variables
-#let title = "My Document"
-#let primary-color = rgb("#1a73e8")
+#let title = “My Document”
+#let primary-color = rgb(“#1a73e8”)
 
 // Functions
 #let highlight(body) = box(
@@ -202,10 +202,10 @@ Use like: #highlight[important text]
 
 ```typst
 // Import from local file
-#import "template.typ": conf, author
+#import “template.typ”: conf, author
 
 // Import from Typst Universe package
-#import "@preview/cetz:0.3.4": canvas, draw
+#import “@preview/cetz:0.3.4”: canvas, draw
 
 #canvas({
   draw.circle((0, 0), radius: 1)
@@ -220,21 +220,21 @@ Packages are available at [Typst Universe](https://typst.app/universe).
 
 ```typst
 #set document(
-  title: "Paper Title",
-  author: "Author Name",
+  title: “Paper Title”,
+  author: “Author Name”,
 )
 
-#set page(paper: "us-letter", margin: 1in)
-#set text(font: "Times New Roman", size: 12pt)
+#set page(paper: “us-letter”, margin: 1in)
+#set text(font: “Times New Roman”, size: 12pt)
 #set par(justify: true, first-line-indent: 0.5in)
-#set heading(numbering: "1.1")
+#set heading(numbering: “1.1”)
 
 #align(center)[
-  #text(size: 14pt, weight: "bold")[Paper Title]
+  #text(size: 14pt, weight: “bold”)[Paper Title]
 
   Author Name \
   Institution \
-  #link("mailto:email@example.com")
+  #link(“mailto:email@example.com”)
 ]
 
 #outline()
@@ -246,7 +246,7 @@ Packages are available at [Typst Universe](https://typst.app/universe).
 ### Letter
 
 ```typst
-#set page(paper: "us-letter", margin: 1in)
+#set page(paper: “us-letter”, margin: 1in)
 #set text(size: 11pt)
 
 #align(right)[
@@ -374,7 +374,7 @@ Your Name
 
 // Custom format
 #set heading(numbering: (..nums) => {
-  nums.pos().map(str).join(".") + " "
+  nums.pos().map(str).join(“.”) + ” ”
 })
 ```
 
@@ -382,19 +382,25 @@ Your Name
 
 ```typst
 // Include another Typst file (content)
-#include "chapter1.typ"
+#include “chapter1.typ”
 
 // Import functions/variables from file
-#import "utils.typ": format-date, highlight
+#import “utils.typ”: format-date, highlight
 ```
 
 ## Debugging Tips
 
-Check diagnostics from tinymist LSP for:
-- Undefined variables or functions
-- Type mismatches in function arguments
-- Missing closing brackets or parentheses
-- Import resolution errors
+### Getting Diagnostics
+
+Claude will automatically use the `check` skill when debugging errors. It will:
+1. Try VS Code diagnostics first (if running in VS Code with tinymist extension)
+2. Fall back to running `tinymist compile --check` directly
+
+### Visual Inspection
+
+Claude will automatically use the `screenshot` skill to view rendered output when debugging layout issues.
+
+### Inspecting Values
 
 Use `#repr(value)` to inspect values during debugging:
 ```typst
@@ -402,16 +408,25 @@ Use `#repr(value)` to inspect values during debugging:
 #type(value)          // Shows just the type
 ```
 
-Common errors and fixes:
-- "Unknown variable" → Check spelling, ensure `#let` before use
-- "Expected content" → Wrap value in brackets: `[#value]`
-- "Cannot apply" → Check function signature and argument types
-- "Unexpected end" → Check for unclosed brackets `{`, `[`, `(`
+### Common Errors and Fixes
+
+- “Unknown variable” → Check spelling, ensure `#let` before use
+- “Expected content” → Wrap value in brackets: `[#value]`
+- “Cannot apply” → Check function signature and argument types
+- “Unexpected end” → Check for unclosed brackets `{`, `[`, `(`
+
+## Skills and Commands
+
+**Skills** (Claude uses automatically):
+- `check` - Get errors and warnings from Typst files
+- `screenshot` - Export page as PNG and view it
+
+**Commands** (invoke explicitly):
+- `/tinymist:compile` - Compile Typst file to PDF
+- `/tinymist:preview` - Start live preview server
 
 ## Additional Resources
 
 - [Typst Documentation](https://typst.app/docs)
 - [Typst Universe (Packages)](https://typst.app/universe)
-- [tinymist LSP](https://github.com/Myriad-Dreamin/tinymist)
-
-For compilation and preview, use the `/typst:compile` and `/typst:preview` commands.
+- [tinymist GitHub](https://github.com/Myriad-Dreamin/tinymist)

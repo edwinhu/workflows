@@ -24,4 +24,4 @@ tinymist compile <input.typ> <output.pdf>
 After compilation:
 - Report success with the output file path
 - If errors occur, display the error messages and suggest fixes based on tinymist diagnostics
-- Mention that `/typst:preview` can be used for live preview while editing
+- Mention that `/tinymist:preview` can be used for live preview while editing
