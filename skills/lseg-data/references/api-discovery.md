@@ -90,7 +90,7 @@ Method: POST
 Body: [{“select”: {
     “cache”: “Off”,
     “formula”: “TR.PPIssuerName, TR.PPPillAdoptionDate”,
-    “identifiers”: “SCREEN(U(IN(DEALS)) AND IN(TR.PPIssuerNation, "US"),CURN=USD)”,
+    “identifiers”: “SCREEN(U(IN(DEALS)) AND IN(TR.PPIssuerNation, “US”),CURN=USD)”,
     “lang”: “en-US”,
     “output”: “col, in, t, sorta, TR.PPIssuerName, sorta, TR.PPPillAdoptionDate”,
     “productId”: “SDC_PLATINUM:UNITY”,
@@ -178,6 +178,69 @@ activism = ld.get_data(
 
 ld.close_session()
 ```
+
+## Programmatic Field Discovery
+
+### What Works
+
+The LSEG Data Library has a **Search API** that can list properties for finding instruments:
+
+```python
+from lseg.data import discovery
+
+# Get search properties for a view
+result = discovery.SearchPropertyExplorer.get_properties_for(
+    view=discovery.Views.MUNICIPAL_INSTRUMENTS
+)
+print(f”Found {len(result.properties)} search properties”)
+```
+
+### What Doesn’t Work
+
+**There is no API to discover `TR.*` data field names.** The TR.* fields used with `ld.get_data()` are not exposed in any programmatic catalog.
+
+The Search API properties (AccrualDate, AssetCategory, etc.) are for **finding instruments**, not for **retrieving data** - they’re different APIs:
+
+| API | Purpose | Field Style |
+|-----|---------|-------------|
+| `discovery.search` | Find instruments | AccrualDate, AssetCategory |
+| `ld.get_data()` | Retrieve data | TR.MuniSaleDate, TR.Revenue |
+
+### Field Discovery Options
+
+Since there’s no programmatic API for TR.* fields, use these approaches:
+
+1. **CDP Network Monitoring** (recommended)
+   - Monitor SDC Platinum while running queries
+   - Capture TR.* field names from request bodies
+   - Most reliable for SDC-specific fields
+
+2. **Data Item Browser (DIB)**
+   - Built into Refinitiv Workspace
+   - Search “DIB” in Workspace to open
+   - Lists TR.* fields with descriptions
+
+3. **Column Picker UI**
+   - In SDC Platinum, customize columns to see all available fields
+   - Monitor network traffic while opening the picker
+
+4. **Pattern Enumeration**
+   - Once you know a prefix (TR.Muni*), try variations
+   - Common patterns: *Name, *Date, *Amount, *Status, *Code
+
+5. **LSEG Documentation**
+   - Check developer portal docs (often incomplete)
+   - API Playground sometimes has field lists
+
+### Capturing All Fields from Column Picker
+
+To get a complete field list for an SDC dataset:
+
+1. Start network monitoring
+2. Open SDC Platinum to your dataset
+3. Click “Customize Columns” or equivalent
+4. The field picker loads all available fields
+5. Capture the TR.* field names from network traffic
 
 ## Tools Used
 
