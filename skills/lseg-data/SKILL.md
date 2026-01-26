@@ -165,6 +165,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 | `TR.LN` | Syndicated Loans | `TR.LNTotalFacilityAmount` |
 | `TR.PJF` | Infrastructure/Project Finance | `TR.PJFProjectName` |
 | `TR.PEInvest` | Private Equity/Venture Capital | `TR.PEInvestRoundDate` |
+| `TR.Muni` | Municipal Bonds | `TR.MuniIssuerName` |
 | `CF_` | Composite (real-time) | `CF_LAST`, `CF_BID` |
 
 ## RIC Symbology
@@ -197,6 +198,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/syndicated-loans.md`** - Syndicated loan deals (SDC Platinum)
 - **`references/infrastructure.md`** - Infrastructure/project finance deals (SDC Platinum)
 - **`references/private-equity.md`** - Private equity/venture capital investments (SDC Platinum)
+- **`references/municipal-bonds.md`** - Municipal bond issuances (SDC Platinum)
 - **`references/api-discovery.md`** - Reverse-engineering APIs via CDP network monitoring
 - **`references/troubleshooting.md`** - Common issues and solutions
 - **`references/wrds-comparison.md`** - LSEG vs WRDS data mapping
