@@ -1,7 +1,7 @@
 ---
 name: lseg-data
 version: 1.0
-description: This skill should be used when the user asks to “access LSEG data”, “query Refinitiv”, “get market data from Refinitiv”, “download fundamentals from LSEG”, “access ESG scores”, “convert RIC to ISIN”, “get shareholder activism data”, “query poison pills”, “access corporate governance data”, “find activist campaigns”, or needs the LSEG Data Library Python API.
+description: This skill should be used when the user asks to “access LSEG data”, “query Refinitiv”, “get market data from Refinitiv”, “download fundamentals from LSEG”, “access ESG scores”, “convert RIC to ISIN”, “get shareholder activism data”, “query poison pills”, “access corporate governance data”, “find activist campaigns”, “get syndicated loans data”, “query loan deals”, or needs the LSEG Data Library Python API.
 ---
 
 ## Contents
@@ -162,6 +162,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 | `TR.` | Refinitiv fields | `TR.Revenue`, `TR.EPS` |
 | `TR.SACT` | Shareholder Activism | `TR.SACTLeadDissident` |
 | `TR.PP` | Poison Pills | `TR.PPPillAdoptionDate` |
+| `TR.LN` | Syndicated Loans | `TR.LNTotalFacilityAmount` |
 | `CF_` | Composite (real-time) | `CF_LAST`, `CF_BID` |
 
 ## RIC Symbology
@@ -191,6 +192,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/pricing.md`** - Historical prices, real-time data
 - **`references/screening.md`** - Stock screening with Screener object
 - **`references/corporate-governance.md`** - Shareholder activism, poison pills (SDC Platinum)
+- **`references/syndicated-loans.md`** - Syndicated loan deals (SDC Platinum)
 - **`references/api-discovery.md`** - Reverse-engineering APIs via CDP network monitoring
 - **`references/troubleshooting.md`** - Common issues and solutions
 - **`references/wrds-comparison.md`** - LSEG vs WRDS data mapping
