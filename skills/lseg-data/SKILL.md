@@ -1,7 +1,7 @@
 ---
 name: lseg-data
 version: 1.0
-description: This skill should be used when the user asks to "access LSEG data", "query Refinitiv", "get market data from Refinitiv", "download fundamentals from LSEG", "access ESG scores", "convert RIC to ISIN", or needs the LSEG Data Library Python API.
+description: This skill should be used when the user asks to “access LSEG data”, “query Refinitiv”, “get market data from Refinitiv”, “download fundamentals from LSEG”, “access ESG scores”, “convert RIC to ISIN”, “get shareholder activism data”, “query poison pills”, “access corporate governance data”, “find activist campaigns”, or needs the LSEG Data Library Python API.
 ---
 
 ## Contents
@@ -38,20 +38,20 @@ This is not negotiable. Claiming data retrieval without inspecting results is LY
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "The query returned data, so it worked" | Returned data ≠ correct data | INSPECT for NULLs, wrong dates, invalid values |
-| "User gave me the RIC" | Users often use wrong suffixes | VERIFY symbology against RIC Symbology section |
-| "I'll let pandas handle missing data" | You'll propagate bad data downstream | CHECK for NULLs BEFORE returning |
-| "Field names look right" | Typos are common (TR.EPS vs TR.Eps) | VALIDATE field names in documentation first |
-| "Just a quick test" | Test queries teach bad habits | Full validation even for tests |
-| "I can check the data later" | You won't | Inspection is MANDATORY before claiming success |
-| "Rate limits don't matter for small queries" | Small queries add up | CHECK rate limits section, use batching |
+| “The query returned data, so it worked” | Returned data ≠ correct data | INSPECT for NULLs, wrong dates, invalid values |
+| “User gave me the RIC” | Users often use wrong suffixes | VERIFY symbology against RIC Symbology section |
+| “I’ll let pandas handle missing data” | You’ll propagate bad data downstream | CHECK for NULLs BEFORE returning |
+| “Field names look right” | Typos are common (TR.EPS vs TR.Eps) | VALIDATE field names in documentation first |
+| “Just a quick test” | Test queries teach bad habits | Full validation even for tests |
+| “I can check the data later” | You won’t | Inspection is MANDATORY before claiming success |
+| “Rate limits don’t matter for small queries” | Small queries add up | CHECK rate limits section, use batching |
 
 ### Red Flags - STOP Immediately If You Think:
 
-- "Let me run this and see what happens" → NO. Validate field names and RICs FIRST.
-- "The API will error if something is wrong" → NO. API returns empty results, not errors.
-- "I'll just return the dataframe to the user" → NO. Inspect sample BEFORE returning.
-- "Market data is always up-to-date" → NO. Check Date Awareness section (T-1 lag).
+- “Let me run this and see what happens” → NO. Validate field names and RICs FIRST.
+- “The API will error if something is wrong” → NO. API returns empty results, not errors.
+- “I’ll just return the dataframe to the user” → NO. Inspect sample BEFORE returning.
+- “Market data is always up-to-date” → NO. Check Date Awareness section (T-1 lag).
 
 ### Data Validation Checklist
 
@@ -96,17 +96,17 @@ ld.open_session()
 
 # Get fundamentals
 df = ld.get_data(
-    universe=['AAPL.O', 'MSFT.O'],
-    fields=['TR.CompanyName', 'TR.Revenue', 'TR.EPS']
+    universe=[‘AAPL.O’, ‘MSFT.O’],
+    fields=[‘TR.CompanyName’, ‘TR.Revenue’, ‘TR.EPS’]
 )
 print(df.head())  # Inspect sample data
 
 # Get historical prices
 prices = ld.get_history(
-    universe='AAPL.O',
-    fields=['OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOLUME'],
-    start='2023-01-01',
-    end='2023-12-31'
+    universe=’AAPL.O’,
+    fields=[‘OPEN’, ‘HIGH’, ‘LOW’, ‘CLOSE’, ‘VOLUME’],
+    start=‘2023-01-01’,
+    end=‘2023-12-31’
 )
 print(prices.head())  # Inspect sample data
 
@@ -123,13 +123,13 @@ Configure LSEG authentication using either a config file or environment variable
 Create `lseg-data.config.json`:
 ```json
 {
-  "sessions": {
-    "default": "platform.ldp",
-    "platform": {
-      "ldp": {
-        "app-key": "YOUR_APP_KEY",
-        "username": "YOUR_MACHINE_ID",
-        "password": "YOUR_PASSWORD"
+  “sessions”: {
+    “default”: “platform.ldp”,
+    “platform”: {
+      “ldp”: {
+        “app-key”: “YOUR_APP_KEY”,
+        “username”: “YOUR_MACHINE_ID”,
+        “password”: “YOUR_PASSWORD”
       }
     }
   }
@@ -142,9 +142,9 @@ Set the following environment variables for LSEG authentication:
 
 ```bash
 # Configure LSEG credentials via environment variables
-export RDP_USERNAME="YOUR_MACHINE_ID"
-export RDP_PASSWORD="YOUR_PASSWORD"
-export RDP_APP_KEY="YOUR_APP_KEY"
+export RDP_USERNAME=”YOUR_MACHINE_ID”
+export RDP_PASSWORD=”YOUR_PASSWORD”
+export RDP_APP_KEY=”YOUR_APP_KEY”
 ```
 
 ## Core APIs
@@ -160,6 +160,8 @@ export RDP_APP_KEY="YOUR_APP_KEY"
 | Prefix | Type | Example |
 |--------|------|---------|
 | `TR.` | Refinitiv fields | `TR.Revenue`, `TR.EPS` |
+| `TR.SACT` | Shareholder Activism | `TR.SACTLeadDissident` |
+| `TR.PP` | Poison Pills | `TR.PPPillAdoptionDate` |
 | `CF_` | Composite (real-time) | `CF_LAST`, `CF_BID` |
 
 ## RIC Symbology
@@ -188,6 +190,8 @@ export RDP_APP_KEY="YOUR_APP_KEY"
 - **`references/symbology.md`** - RIC/ISIN/CUSIP conversion
 - **`references/pricing.md`** - Historical prices, real-time data
 - **`references/screening.md`** - Stock screening with Screener object
+- **`references/corporate-governance.md`** - Shareholder activism, poison pills (SDC Platinum)
+- **`references/api-discovery.md`** - Reverse-engineering APIs via CDP network monitoring
 - **`references/troubleshooting.md`** - Common issues and solutions
 - **`references/wrds-comparison.md`** - LSEG vs WRDS data mapping
 
@@ -214,7 +218,7 @@ When querying market data, account for current date context and market data lag.
 
 ### Market Data Lag
 
-Market data typically has T-1 availability, meaning today's data becomes available tomorrow. Adjust date ranges accordingly.
+Market data typically has T-1 availability, meaning today’s data becomes available tomorrow. Adjust date ranges accordingly.
 
 ### Date Range Example
 
@@ -231,10 +235,10 @@ start_date = end_date - timedelta(days=365)
 end_date = end_date - timedelta(days=1)
 
 df = ld.get_history(
-    universe="AAPL.O",
-    fields=['CLOSE'],
-    start=start_date.strftime('%Y-%m-%d'),
-    end=end_date.strftime('%Y-%m-%d')
+    universe=”AAPL.O”,
+    fields=[‘CLOSE’],
+    start=start_date.strftime(‘%Y-%m-%d’),
+    end=end_date.strftime(‘%Y-%m-%d’)
 )
 ```
 
