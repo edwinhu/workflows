@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 SessionStart hook: Inject environment context and skill guidance at session start.
-Loads API keys, SSH status, and injects how-to-use-skills documentation.
+Loads API keys, SSH status, sets CLAUDE_CODE_TASK_LIST_ID for project-scoped tasks.
 """
 import json
 import os
@@ -42,11 +42,6 @@ def load_central_secrets():
 
     Format: standard .env file (KEY=value, one per line)
     """
-    # TODO: Implement when central secrets location is established
-    # Candidate locations:
-    #   ~/.secrets/claude-keys.env
-    #   ~/.config/claude/secrets.env
-    #   Use a secrets manager (1Password CLI, etc.)
     central_secrets = Path.home() / '.secrets' / 'claude-keys.env'
     load_env_file(central_secrets)
 
@@ -215,101 +210,30 @@ def build_env_section(env_context: dict, persisted_vars: list) -> str:
     return "\n".join(lines)
 
 
-def check_boulder_state(session_id: str) -> str:
+def get_project_task_list_id() -> str:
+    """Generate a task list ID based on project directory.
+
+    Uses the project directory name as the task list ID, enabling
+    cross-session task persistence via CLAUDE_CODE_TASK_LIST_ID.
+
+    See: https://code.claude.com/docs/en/interactive-mode
     """
-    Check for active boulder state and return continuation message.
+    # Use current directory name as task list ID
+    cwd = Path.cwd()
+    return cwd.name
 
-    Returns empty string if no boulder or if plan complete.
-    """
-    # Add boulder module to path
-    plugin_root = get_plugin_root()
-    boulder_path = plugin_root / 'lib' / 'hooks'
-    sys.path.insert(0, str(boulder_path))
 
-    try:
-        from boulder import (
-            read_boulder_state,
-            append_session_id,
-            update_boulder_progress,
-            is_plan_complete,
-            clear_boulder_state,
-            find_project_plan,
-            auto_create_boulder_for_plan
-        )
-    except ImportError:
-        # Boulder module not available yet (during development)
+def check_plan_exists() -> str:
+    """Check if PLAN.md exists and return continuation message."""
+    plan_path = Path.cwd() / '.claude' / 'PLAN.md'
+    if not plan_path.exists():
         return ""
 
-    # Check for active boulder
-    boulder = read_boulder_state()
+    return """
+[PLAN.md DETECTED]
 
-    # If no boulder exists, check if PLAN.md exists and auto-create
-    if not boulder:
-        plan_path = find_project_plan(str(Path.cwd()))
-        if plan_path:
-            # Auto-create boulder for existing plan
-            boulder = auto_create_boulder_for_plan(plan_path)
-            if boulder:
-                append_session_id(session_id)
-                return f"""
-[BOULDER STATE CREATED]
-
-Auto-tracking plan: {boulder['plan_name']}
-Progress: {boulder['progress']['completed']}/{boulder['progress']['total']} tasks complete
-
-This plan will automatically continue in future sessions.
-"""
-
-        return ""
-
-    active_plan = boulder.get('active_plan', '')
-    if not active_plan or not Path(active_plan).exists():
-        # Plan file deleted - warn user
-        return f"""
-[BOULDER STATE WARNING]
-
-Boulder state references missing plan: {active_plan}
-
-The plan file has been deleted or moved. Clear boulder state with:
-- Delete ~/.claude/.boulder.json manually, or
-- Complete the plan tasks to auto-clear
-"""
-
-    # Update session ID
-    append_session_id(session_id)
-
-    # Update progress from current plan file
-    update_boulder_progress(active_plan)
-
-    # Reload state to get updated progress
-    boulder = read_boulder_state()
-    if not boulder:
-        return ""
-
-    # Check if complete
-    if is_plan_complete(active_plan):
-        clear_boulder_state()
-        return f"""
-[BOULDER COMPLETE]
-
-Plan '{boulder['plan_name']}' is complete! All tasks checked off.
-Boulder state has been cleared.
-"""
-
-    # Inject continuation message
-    progress = boulder.get('progress', {})
-    total = progress.get('total', 0)
-    completed = progress.get('completed', 0)
-    plan_rel_path = Path(active_plan).relative_to(boulder['project_root'])
-
-    return f"""
-[BOULDER STATE DETECTED]
-
-Active plan: {boulder['plan_name']}
-Progress: {completed}/{total} tasks complete
-Plan location: {plan_rel_path}
-
-Continuing from where you left off.
+An implementation plan exists at `.claude/PLAN.md`.
+Read it to understand the current task state before continuing.
 """
 
 
@@ -335,12 +259,11 @@ def main():
     env_section = build_env_section(env_context, persisted_vars)
     using_skills = load_using_skills_content()
 
-    # Check boulder state for plan continuation
-    boulder_section = check_boulder_state(session_id)
+    # Check for existing PLAN.md
+    plan_section = check_plan_exists()
 
-    # Output the context injection
-    # Pattern inspired by obra/superpowers - inject HOW to use skills, not the full catalog
-    combined_context = env_section + "\n" + boulder_section + "\n" + using_skills
+    # Combine context
+    combined_context = env_section + "\n" + plan_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {
