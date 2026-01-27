@@ -47,7 +47,26 @@ News queries use a specific syntax for filtering:
 | Instrument | `R:<RIC>` | `R:IBM.N` |
 | Language | `Language:<code>` | `Language:LEN` (English) |
 | Topic | `Topic:<code>` | `Topic:AMERS` |
+| Source group | `SUGGAC` | Suggested academic sources |
 | Multiple conditions | `AND` | `R:AAPL.O AND Language:LEN` |
+
+### Source Filtering
+
+By default, news queries return results from many sources which can be noisy. Use `SUGGAC` (Suggested Academic) to filter to curated, higher-quality sources:
+
+```python
+# Recommended: filter to suggested academic sources
+df = ld.news.get_headlines(
+    query='R:MSFT.O AND SUGGAC',
+    count=100
+)
+
+# Combine with language filter
+df = ld.news.get_headlines(
+    query='R:AAPL.O AND SUGGAC AND Language:LEN',
+    count=100
+)
+```
 
 ### Language Codes
 
