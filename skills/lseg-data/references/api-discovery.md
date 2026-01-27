@@ -242,9 +242,124 @@ To get a complete field list for an SDC dataset:
 4. The field picker loads all available fields
 5. Capture the TR.* field names from network traffic
 
+## IndexedDB Field Extraction (Recommended)
+
+SDC Platinum caches complete field definitions in the browser’s IndexedDB. This is the **most reliable method** for extracting all available fields for a dataset.
+
+### How It Works
+
+1. SDC Platinum stores field metadata in IndexedDB database `SDCPlatinum`
+2. The `APIResponse` object store contains cached field definitions
+3. Each dataset (M&A, Equity, Loans, etc.) has a cached entry with all TR.* fields
+
+### Extraction Process
+
+#### Step 1: Open SDC Platinum in Chrome
+
+Navigate to SDC Platinum in a browser (not the Electron app):
+- URL: `https://amers1-apps.platform.refinitiv.com/Apps/SDCPlatinum/`
+- Log in with your Refinitiv credentials
+
+#### Step 2: Open Each Dataset Type
+
+The field definitions are cached when you first open each session type:
+- Open “Mergers & Acquisitions” session to cache TR.MnA* fields
+- Open “Poison Pills” session to cache TR.PP* and TR.SACT* fields
+- Open “Loans” session to cache TR.LN* fields
+- etc.
+
+#### Step 3: Extract from IndexedDB via DevTools
+
+Open Chrome DevTools (F12) and run in Console:
+
+```javascript
+// Open the SDCPlatinum IndexedDB
+const request = indexedDB.open(‘SDCPlatinum’);
+
+request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction(‘APIResponse’, ‘readonly’);
+    const store = tx.objectStore(‘APIResponse’);
+
+    // Get all cached entries
+    const getAllRequest = store.getAll();
+
+    getAllRequest.onsuccess = function() {
+        const entries = getAllRequest.result;
+
+        // Find entries with field definitions (large entries)
+        entries.forEach((entry, idx) => {
+            const size = JSON.stringify(entry).length;
+            if (size > 100000) {  // Large entries contain field defs
+                console.log(`Entry ${idx}: ${(size/1024/1024).toFixed(2)} MB`);
+
+                // Extract field definitions
+                if (entry.value && entry.value.universe) {
+                    const fields = entry.value.universe.map(f => ({
+                        TR_Path: f.TR_Path,
+                        Name: f.Name,
+                        DataType: f.DataType,
+                        Description: f.Description
+                    }));
+                    console.log(`Fields: ${fields.length}`);
+                    console.log(JSON.stringify(fields, null, 2));
+                }
+            }
+        });
+    };
+};
+```
+
+### Dataset to IndexedDB Key Mapping
+
+| Dataset | Universe Key | Field Count | TR Prefix |
+|---------|--------------|-------------|-----------|
+| M&A | DEALSMNA | 2,683 | TR.MnA* |
+| Equity/IPO | DEALSEQ | 1,708 | TR.NI* |
+| Loans | DEALSLN | 1,290 | TR.LN* |
+| Project Finance | DEALSPF | 2,674 | TR.PJF* |
+| Private Equity | DEALSPE | 557 | TR.PEInvest* |
+| Poison Pills (PP) | DEALSPP | 418 | TR.PP* |
+| Poison Pills (PF) | DEALSPOISONPILLSPF | 416 | TR.SACT* |
+| Joint Ventures | DEALSJV | 301 | TR.JV* |
+| Municipal Bonds | DEALSMUNI | 443 | TR.Muni* |
+| Repurchases | DEALSREP | 728 | TR.REP* |
+
+### Field Definition Structure
+
+Each cached field has this structure:
+
+```json
+{
+  “TR_Path”: “TR.MnAAcquirorName”,
+  “Name”: “Acquiror Name”,
+  “DataType”: “String”,
+  “SDC_Codes”: “ANAMES”,
+  “Description”: “Name of the acquiring company...”
+}
+```
+
+### Advantages Over Network Monitoring
+
+| Method | Pros | Cons |
+|--------|------|------|
+| IndexedDB | Complete field list, offline access, structured data | Must open each session type first |
+| CDP Monitoring | Real-time, sees actual queries | Incomplete, only sees used fields |
+| DIB/Column Picker | Visual interface | Manual, can’t export easily |
+
+### Extracted Field Data Location
+
+Complete field extractions are stored at:
+`/Users/vwh7mb/projects/lseg-exploration/data/sdc_fields/`
+
+Files include:
+- `sdc_platinum_complete_fields.json` (5.0 MB) - All datasets
+- `*_fields.csv` - Individual dataset CSV files
+
 ## Tools Used
 
 - **Chrome DevTools Protocol (CDP)**: Network monitoring via WebSocket
+- **IndexedDB**: Browser storage containing cached field definitions
 - **websockets**: Python library for WebSocket connections
 - **jq**: JSON parsing for session files and API responses
 - **Refinitiv Workspace**: Electron app with `--remote-debugging-port` flag
