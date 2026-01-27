@@ -228,6 +228,25 @@ LSEG API samples at `~/resources/lseg-samples/`:
 - `Examples.DataLibrary.Python.AdvancedUsecases/` - Advanced patterns
 - `Article.DataLibrary.Python.Screener/` - Stock screening
 
+### Refinitiv Codebook
+
+Interactive JupyterLab environment with pre-configured LSEG access:
+
+- **URL**: `https://workspace.refinitiv.com/codebook/`
+- **Environment**: JupyterHub with Python 3.8, pre-installed `refinitiv.data` library
+- **Session**: Auto-authenticated via Workspace credentials (`{name=’codebook’}`)
+
+```python
+# In Codebook, session opens automatically with Workspace auth
+import refinitiv.data as rd
+rd.open_session()  # Returns session with name=’codebook’
+
+# Query data immediately
+df = rd.news.get_headlines(‘R:AAPL.O AND SUGGAC’, count=10)
+```
+
+**Note**: Codebook uses `refinitiv.data` (older name) rather than `lseg.data`. Both APIs are equivalent.
+
 ## Date Awareness
 
 When querying market data, account for current date context and market data lag.
