@@ -1,7 +1,7 @@
 ---
 name: lseg-data
 version: 1.0
-description: This skill should be used when the user asks to “access LSEG data”, “query Refinitiv”, “get market data from Refinitiv”, “download fundamentals from LSEG”, “access ESG scores”, “convert RIC to ISIN”, “get shareholder activism data”, “query poison pills”, “access corporate governance data”, “find activist campaigns”, “get syndicated loans data”, “query loan deals”, “get infrastructure projects”, “query project finance data”, “get private equity data”, “query VC investments”, “find PE-backed companies”, or needs the LSEG Data Library Python API.
+description: This skill should be used when the user asks to “access LSEG data”, “query Refinitiv”, “get market data from Refinitiv”, “download fundamentals from LSEG”, “access ESG scores”, “convert RIC to ISIN”, “get shareholder activism data”, “query poison pills”, “access corporate governance data”, “find activist campaigns”, “get syndicated loans data”, “query loan deals”, “get infrastructure projects”, “query project finance data”, “get private equity data”, “query VC investments”, “find PE-backed companies”, “get M&A data”, “query mergers and acquisitions”, “find acquisition deals”, “get IPO data”, “query equity offerings”, “find new issues”, “get joint venture data”, “query strategic alliances”, or needs the LSEG Data Library Python API.
 ---
 
 ## Contents
@@ -160,6 +160,9 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 | Prefix | Type | Example |
 |--------|------|---------|
 | `TR.` | Refinitiv fields | `TR.Revenue`, `TR.EPS` |
+| `TR.MnA` | Mergers & Acquisitions | `TR.MnAAcquirorName`, `TR.MnADealValue` |
+| `TR.NI` | Equity/New Issues (IPOs) | `TR.NIIssuer`, `TR.NIOfferPrice` |
+| `TR.JV` | Joint Ventures/Alliances | `TR.JVDealName`, `TR.JVStatus` |
 | `TR.SACT` | Shareholder Activism | `TR.SACTLeadDissident` |
 | `TR.PP` | Poison Pills | `TR.PPPillAdoptionDate` |
 | `TR.LN` | Syndicated Loans | `TR.LNTotalFacilityAmount` |
@@ -194,6 +197,9 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/symbology.md`** - RIC/ISIN/CUSIP conversion
 - **`references/pricing.md`** - Historical prices, real-time data
 - **`references/screening.md`** - Stock screening with Screener object
+- **`references/mna.md`** - Mergers & acquisitions deals (SDC Platinum, 2,683 fields)
+- **`references/equity-new-issues.md`** - IPOs, follow-ons, equity offerings (SDC Platinum, 1,708 fields)
+- **`references/joint-ventures.md`** - Joint ventures, strategic alliances (SDC Platinum, 301 fields)
 - **`references/corporate-governance.md`** - Shareholder activism, poison pills (SDC Platinum)
 - **`references/syndicated-loans.md`** - Syndicated loan deals (SDC Platinum)
 - **`references/infrastructure.md`** - Infrastructure/project finance deals (SDC Platinum)
