@@ -1,6 +1,6 @@
 ---
-name: writing
-description: Entry point for all writing tasks. Use when the user asks to "write", "draft", "edit", "review writing", or start a writing project. Routes to quick editing mode or full project workflow based on intent.
+description: Entry point for all writing tasks - quick edits or full project workflow
+allowed-tools: Read, Write, AskUserQuestion
 ---
 
 # Writing
@@ -9,9 +9,7 @@ description: Entry point for all writing tasks. Use when the user asks to "write
 - **Quick mode**: Edit/review text with Strunk & White rules
 - **Project mode**: Full workflow with PRECIS, OUTLINE, drafts
 
-## On Skill Load
-
-### Step 1: Check for Active Workflow
+## Step 1: Check for Active Workflow
 
 ```
 if .claude/ACTIVE_WORKFLOW.md exists and workflow == "writing":
@@ -20,7 +18,7 @@ else:
     → Detect intent (Step 3)
 ```
 
-### Step 2: Resume Existing Project
+## Step 2: Resume Existing Project
 
 Read workflow state and load appropriate domain skill:
 
@@ -37,7 +35,7 @@ Based on `style` field:
 
 Announce current phase and continue.
 
-### Step 3: Detect Intent
+## Step 3: Detect Intent
 
 Analyze the user's request to determine mode:
 
@@ -58,9 +56,9 @@ Analyze the user's request to determine mode:
 - "Help me write about..."
 - Mentions thesis, argument, research
 
-### Step 4: Route Based on Intent
+## Step 4: Route Based on Intent
 
-#### Quick Mode
+### Quick Mode
 
 Load the general writing skill for immediate editing:
 
@@ -70,7 +68,7 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")
 
 Apply Strunk & White rules to the provided text. No workflow state needed.
 
-#### Project Mode
+### Project Mode
 
 Start the brainstorm workflow to set up the project:
 
@@ -88,7 +86,7 @@ This will:
 ## Workflow Overview
 
 ```
-/writing (this skill - entry point)
+/writing (this command - entry point)
     │
     ├── Quick mode → lib/skills/writing-general/
     │
@@ -111,6 +109,10 @@ This will:
                     /writing-edit (verify + polish + complete)
 ```
 
+## Available Commands
+
+- `/writing-edit` - Run edit cycle (verify → polish → complete)
+
 ## Domain Detection
 
 During brainstorm, detect domain from topic and sources:
@@ -120,22 +122,3 @@ During brainstorm, detect domain from topic and sources:
 | Legal cases, statutes, law reviews, constitutional | writing-legal | legal |
 | Economics, markets, policy, data, empirical | writing-econ | econ |
 | General/other | writing-general | general |
-
-## Available Commands
-
-After a project is started:
-- `/writing-edit` - Run edit cycle (verify → polish → complete)
-
-## Integration
-
-Internal skills loaded by this entry point:
-- `lib/skills/writing-general/` - Strunk & White base rules
-- `lib/skills/writing-legal/` - Volokh overlay for legal writing
-- `lib/skills/writing-econ/` - McCloskey overlay for economics
-- `lib/skills/writing-brainstorm/` - Project setup workflow
-- `lib/skills/writing-outline/` - Detailed section outlines
-
-Related:
-- `/ai-anti-patterns` - Detect AI writing patterns
-- `/docx` - Export to Word
-- `/pdf` - Export to PDF
