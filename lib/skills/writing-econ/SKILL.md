@@ -1,11 +1,30 @@
 ---
 name: writing-econ
-description: This skill should be used when the user asks to "write an economics paper", "draft a working paper", "edit finance writing", "review my econ paper", "write for a journal", or needs guidance on economics and finance writing. Based on McCloskey's "Economical Writing" with discipline-specific word lists and examples.
+description: Internal skill for economics and finance writing. Loaded by /writing when style=econ. Based on McCloskey's "Economical Writing".
+includes:
+  - writing-general   # Base writing rules (Strunk & White)
+  - ai-anti-patterns  # Quality check on /writing-edit
 ---
 
 # Economics and Finance Writing
 
 Style guide for economics journal articles, working papers, and finance analysis based on Deirdre McCloskey's *Economical Writing*.
+
+## On Skill Load
+
+**Step 1: Load base writing rules**
+```
+Read("${CLAUDE_PLUGIN_ROOT}/skills/writing/SKILL.md")
+```
+
+**Step 2: Check for active workflow**
+
+If `.claude/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: econ`.
+
+If no `.claude/PRECIS.md` exists in the project:
+- Suggest: "No PRECIS.md found. Consider `/writing-brainstorm` to set up thesis, audience, and claims first."
+
+**Step 3: Apply econ-specific rules below**
 
 ## When to Use
 

@@ -1,11 +1,30 @@
 ---
 name: writing-legal
-description: This skill should be used when the user asks to "write a law review article", "draft a legal paper", "edit legal writing", "review my legal article", "write for a journal", "format footnotes", or needs guidance on academic legal writing. Based on Volokh's "Academic Legal Writing" with law-review-specific structure and evidence handling.
+description: Internal skill for academic legal writing. Loaded by /writing when style=legal. Based on Volokh's "Academic Legal Writing".
+includes:
+  - writing-general   # Base writing rules (Strunk & White)
+  - ai-anti-patterns  # Quality check on /writing-edit
 ---
 
 # Academic Legal Writing
 
 Style guide for law review articles, seminar papers, and legal scholarship based on Eugene Volokh's *Academic Legal Writing*.
+
+## On Skill Load
+
+**Step 1: Load base writing rules**
+```
+Read("${CLAUDE_PLUGIN_ROOT}/skills/writing/SKILL.md")
+```
+
+**Step 2: Check for active workflow**
+
+If `.claude/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: legal`.
+
+If no `.claude/PRECIS.md` exists in the project:
+- Suggest: "No PRECIS.md found. Consider `/writing-brainstorm` to set up thesis, audience, and claims first."
+
+**Step 3: Apply legal-specific rules below**
 
 ## When to Use
 

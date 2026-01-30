@@ -237,6 +237,137 @@ Read it to understand the current task state before continuing.
 """
 
 
+def parse_yaml_simple(content: str) -> dict:
+    """Simple YAML-like parser for ACTIVE_WORKFLOW.md frontmatter.
+
+    Handles basic key: value pairs and simple lists.
+    """
+    result = {}
+    lines = content.split('\n')
+    in_frontmatter = False
+    current_list_key = None
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Handle frontmatter delimiters
+        if stripped == '---':
+            if not in_frontmatter:
+                in_frontmatter = True
+                continue
+            else:
+                break  # End of frontmatter
+
+        if not in_frontmatter:
+            continue
+
+        # Skip empty lines and comments
+        if not stripped or stripped.startswith('#'):
+            current_list_key = None
+            continue
+
+        # Handle list items
+        if stripped.startswith('- ') and current_list_key:
+            if current_list_key not in result:
+                result[current_list_key] = []
+            result[current_list_key].append(stripped[2:].strip().strip('"').strip("'"))
+            continue
+
+        # Handle key: value pairs
+        if ':' in stripped:
+            key, _, value = stripped.partition(':')
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+
+            # Check if this starts a list (empty value or next line is -)
+            if not value:
+                current_list_key = key
+                result[key] = []
+            else:
+                current_list_key = None
+                result[key] = value
+
+    return result
+
+
+def check_active_workflow() -> str:
+    """Check for active workflow and return context/instructions.
+
+    Reads .claude/ACTIVE_WORKFLOW.md and returns appropriate context
+    based on workflow type (dev, ds, or writing).
+    """
+    workflow_path = Path.cwd() / '.claude' / 'ACTIVE_WORKFLOW.md'
+    if not workflow_path.exists():
+        return ""
+
+    try:
+        content = workflow_path.read_text()
+        workflow = parse_yaml_simple(content)
+    except Exception as e:
+        print(f"Warning: Failed to parse ACTIVE_WORKFLOW.md: {e}", file=sys.stderr)
+        return ""
+
+    workflow_type = workflow.get('workflow', '')
+    if not workflow_type:
+        return ""
+
+    plugin_root = os.environ.get('CLAUDE_PLUGIN_ROOT', '')
+
+    if workflow_type == 'writing':
+        style = workflow.get('style', 'general')
+        phase = workflow.get('phase', 'draft')
+        current_part = workflow.get('current_part', '')
+        skill_stack = workflow.get('skill_stack', ['writing'])
+
+        # Build skill read instructions (skills are now in lib/)
+        skill_reads = []
+        for skill in skill_stack:
+            if plugin_root:
+                skill_reads.append(f'Read("{plugin_root}/lib/skills/{skill}/SKILL.md")')
+            else:
+                skill_reads.append(f'Read the {skill} skill')
+
+        part_info = f"\n   Current part: {current_part}" if current_part else ""
+
+        return f"""
+[ACTIVE WRITING WORKFLOW]
+
+Style: {style}
+Phase: {phase}{part_info}
+
+Re-read the writing rules to stay on track:
+{chr(10).join('- ' + r for r in skill_reads)}
+
+Commands:
+- /writing-edit - Verify structure, check anti-patterns, complete workflow
+"""
+
+    elif workflow_type in ('dev', 'ds'):
+        phase_name = workflow.get('phase_name', 'unknown')
+        active_skill = workflow.get('active_skill', '')
+
+        # Build read instruction
+        if active_skill:
+            if '${CLAUDE_PLUGIN_ROOT}' in active_skill and plugin_root:
+                active_skill = active_skill.replace('${CLAUDE_PLUGIN_ROOT}', plugin_root)
+            read_instruction = f'Read("{active_skill}")'
+        else:
+            read_instruction = f'Read the {phase_name} phase skill'
+
+        return f"""
+[ACTIVE {workflow_type.upper()} WORKFLOW]
+
+Phase: {phase_name}
+
+Re-read the phase constraints:
+- {read_instruction}
+
+The workflow state is tracked in .claude/ACTIVE_WORKFLOW.md.
+"""
+
+    return ""
+
+
 def main():
     # Read hook input
     try:
@@ -262,8 +393,11 @@ def main():
     # Check for existing PLAN.md
     plan_section = check_plan_exists()
 
+    # Check for active workflow (dev, ds, or writing)
+    workflow_section = check_active_workflow()
+
     # Combine context
-    combined_context = env_section + "\n" + plan_section + "\n" + using_skills
+    combined_context = env_section + "\n" + workflow_section + "\n" + plan_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {

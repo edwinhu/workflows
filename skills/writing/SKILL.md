@@ -1,158 +1,141 @@
 ---
 name: writing
-description: This skill should be used when the user asks to "write an article", "draft a blog post", "edit prose", "review my writing", "check style", "improve clarity", or needs general writing guidance. Provides Strunk & White's Elements of Style for foundational grammar, usage, and composition principles.
+description: Entry point for all writing tasks. Use when the user asks to "write", "draft", "edit", "review writing", or start a writing project. Routes to quick editing mode or full project workflow based on intent.
 ---
 
-# Writing and Editing
+# Writing
 
-Foundational style guide for clear, concise prose based on Strunk & White's Elements of Style.
+**Entry point for all writing tasks.** Routes based on intent:
+- **Quick mode**: Edit/review text with Strunk & White rules
+- **Project mode**: Full workflow with PRECIS, OUTLINE, drafts
 
-## When to Use
+## On Skill Load
 
-Invoke this skill for:
-- Writing articles, blog posts, or general prose
-- Editing text for clarity, conciseness, or style
-- Reviewing grammar and usage
-- Improving sentence structure and word choice
+### Step 1: Check for Active Workflow
 
-**For specialized domains:**
-- Legal writing (law review articles): Use `/writing-legal` skill (Volokh)
-- Economics/Finance: Use `/writing-econ` skill (McCloskey)
-
-## Core Principles
-
-### The Iron Law of Good Writing
-
-**Omit needless words.**
-
-Every word must earn its place. Vigorous writing is concise. A sentence should contain no unnecessary words, a paragraph no unnecessary sentences.
-
-### Critical Rules
-
-| Rule | Explanation |
-|------|-------------|
-| Write in prose | Avoid bullet points and lists unless explicitly requested |
-| Use active voice | "The committee approved the plan" not "The plan was approved" |
-| Be concrete | Specific details over vague abstractions |
-| Put statements in positive form | Say what something is, not what it isn't |
-| Use definite language | Avoid hedging, qualifiers, and weasel words |
-
-### Red Flags - Stop If You Think
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "I'll add some qualifiers to be safe" | Weakens the writing | Make definite assertions |
-| "Let me list these points" | Bullet points are lazy | Write in prose paragraphs |
-| "I should sound more formal" | Formality often means wordiness | Write naturally, then edit |
-| "This needs more emphasis" | Overemphasis dilutes meaning | Let strong words speak |
-
-## How to Use This Skill
-
-### Before Writing
-
-1. Identify the main point or thesis
-2. Plan the structure: introduction, development, conclusion
-3. Gather concrete examples to support claims
-
-### During Drafting
-
-1. Write complete sentences in paragraphs
-2. Use active voice and strong verbs
-3. Be specific: "three hours" not "a long time"
-4. Avoid starting with "There is" or "It is"
-
-### During Editing
-
-Apply these checks in order:
-
-**Sentence Level:**
-- Remove unnecessary words ("in order to" → "to")
-- Replace weak verbs ("is able to" → "can")
-- Convert passive to active voice
-- Eliminate redundancies ("past history" → "history")
-
-**Paragraph Level:**
-- Ensure each paragraph has one main idea
-- Check topic sentences lead clearly
-- Verify logical flow between paragraphs
-
-**Word Level:**
-- Replace abstract nouns with concrete ones
-- Use specific verbs over vague ones + adverbs
-- Cut filler words ("very", "really", "quite", "rather")
-
-## Quick Reference: Common Fixes
-
-| Weak | Strong |
-|------|--------|
-| utilize | use |
-| in order to | to |
-| due to the fact that | because |
-| at this point in time | now |
-| in the event that | if |
-| prior to | before |
-| subsequent to | after |
-| with regard to | about |
-| a large number of | many |
-| is able to | can |
-
-## Progressive Disclosure
-
-For comprehensive guidance, consult:
-
-### Reference Files
-
-- **`references/elements-of-style.md`** - Complete Strunk & White guide covering:
-  - Elementary Rules of Usage (commas, colons, participles)
-  - Elementary Principles of Composition (paragraph unity, active voice)
-  - Words and Expressions Commonly Misused
-  - Style guidance and literary reminders
-
-### When to Load References
-
-Load the full reference when:
-- Encountering specific grammar questions (comma usage, possessives)
-- Needing detailed guidance on composition principles
-- Checking whether specific words/expressions are commonly misused
-- Working on substantial editing tasks
-
-## Integration with AI Anti-Patterns
-
-After completing any writing task, invoke `/ai-anti-patterns` to check for AI writing indicators. This plugin includes PostToolUse hooks that automatically warn on common anti-patterns in Write/Edit output.
-
-## Examples
-
-**Weak original:**
-> It is important to note that there are a variety of different factors that contribute to the overall success of the project in question.
-
-**Strong revision:**
-> Several factors determine project success.
-
-**Weak original:**
-> The report was written by the team and was subsequently reviewed by management prior to being distributed to stakeholders.
-
-**Strong revision:**
-> The team wrote the report, management reviewed it, and stakeholders received it.
-
-## Typography Tools
-
-### Smart Quotes
-
-Convert straight quotes (`"`) to typographic curly quotes (`""`):
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/smartquotes.py file.md
-python ${CLAUDE_PLUGIN_ROOT}/scripts/smartquotes.py file.md --check  # dry-run
+```
+if .claude/ACTIVE_WORKFLOW.md exists and workflow == "writing":
+    → Resume existing project (Step 2)
+else:
+    → Detect intent (Step 3)
 ```
 
-Converts quotes and apostrophes while preserving em dashes and other formatting. Requires `pip install smartypants`.
+### Step 2: Resume Existing Project
 
-## Related Skills
+Read workflow state and load appropriate domain skill:
 
-- `/ai-anti-patterns` - Detect and revise AI writing patterns
-- `/writing-legal` - Academic legal writing (Volokh)
-- `/writing-econ` - Economics and finance writing (McCloskey)
-- `/docx` - Word document creation, editing, tracked changes
-- `/pdf` - PDF extraction, creation, form filling
-- `/pptx` - Presentation creation and editing
-- `/xlsx` - Spreadsheet creation and analysis
+```
+Read(".claude/ACTIVE_WORKFLOW.md")
+Read(".claude/PRECIS.md")
+Read(".claude/OUTLINE.md")
+```
+
+Based on `style` field:
+- `legal` → Load `${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md`
+- `econ` → Load `${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md`
+- `general` → Load `${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md`
+
+Announce current phase and continue.
+
+### Step 3: Detect Intent
+
+Analyze the user's request to determine mode:
+
+**Quick Mode Indicators:**
+- "Check this paragraph"
+- "Edit this text"
+- "Review my writing"
+- "Make this clearer"
+- "Fix the style"
+- Short text provided inline
+- No mention of "project", "paper", "article", "draft"
+
+**Project Mode Indicators:**
+- "Write a paper on..."
+- "Start a law review article"
+- "Draft an economics paper"
+- "I'm working on an article about..."
+- "Help me write about..."
+- Mentions thesis, argument, research
+
+### Step 4: Route Based on Intent
+
+#### Quick Mode
+
+Load the general writing skill for immediate editing:
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")
+```
+
+Apply Strunk & White rules to the provided text. No workflow state needed.
+
+#### Project Mode
+
+Start the brainstorm workflow to set up the project:
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-brainstorm/SKILL.md")
+```
+
+This will:
+1. Interview for thesis, audience, claims
+2. Create `.claude/PRECIS.md`
+3. Create `.claude/OUTLINE.md`
+4. Create `.claude/ACTIVE_WORKFLOW.md`
+5. Load appropriate domain skill based on detected domain
+
+## Workflow Overview
+
+```
+/writing (this skill - entry point)
+    │
+    ├── Quick mode → lib/skills/writing-general/
+    │
+    └── Project mode → lib/skills/writing-brainstorm/
+            │
+            ├── .claude/PRECIS.md
+            ├── .claude/OUTLINE.md
+            └── .claude/ACTIVE_WORKFLOW.md
+                    │
+                    ▼
+            lib/skills/writing-outline/ (per section)
+                    │
+                    ▼
+            lib/skills/writing-[domain]/
+            (legal | econ | general)
+                    │
+                    └── Draft/Edit loop
+                            │
+                            ▼
+                    /writing-edit (verify + polish + complete)
+```
+
+## Domain Detection
+
+During brainstorm, detect domain from topic and sources:
+
+| Domain Indicators | Internal Skill | Style Value |
+|-------------------|----------------|-------------|
+| Legal cases, statutes, law reviews, constitutional | writing-legal | legal |
+| Economics, markets, policy, data, empirical | writing-econ | econ |
+| General/other | writing-general | general |
+
+## Available Commands
+
+After a project is started:
+- `/writing-edit` - Run edit cycle (verify → polish → complete)
+
+## Integration
+
+Internal skills loaded by this entry point:
+- `lib/skills/writing-general/` - Strunk & White base rules
+- `lib/skills/writing-legal/` - Volokh overlay for legal writing
+- `lib/skills/writing-econ/` - McCloskey overlay for economics
+- `lib/skills/writing-brainstorm/` - Project setup workflow
+- `lib/skills/writing-outline/` - Detailed section outlines
+
+Related:
+- `/ai-anti-patterns` - Detect AI writing patterns
+- `/docx` - Export to Word
+- `/pdf` - Export to PDF
