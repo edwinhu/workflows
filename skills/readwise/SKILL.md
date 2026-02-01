@@ -1,19 +1,33 @@
 ---
 name: readwise
 description: This skill should be used when the user asks to “search Readwise”, “find highlights”, “get quotes from my reading”, “add highlights to notebook”, “search my annotations”, “get full document text”, “fetch article content”, “add tagged documents to notebook”, or needs to query their Readwise library.
-version: 0.6.0
+version: 0.7.0
 ---
 
 # Readwise
 
 Access Readwise highlights (via MCP) and full document content (via Reader API).
 
+<EXTREMELY-IMPORTANT>
 ## IRON LAW: Main Chat NEVER Calls Readwise Tools
 
-### The Rule
+**EVERY READWISE OPERATION MUST GO THROUGH LIBRARIAN. This is not negotiable.**
 
-**If you are in MAIN CHAT:** You do NOT have permission to call `mcp__readwise__*` tools.
-**If you are a LIBRARIAN SUB-AGENT:** You MAY call these tools.
+Main chat MUST NOT:
+- Call `mcp__readwise__search_readwise_highlights` directly
+- Call any `mcp__readwise__*` tool
+- “Just quickly check” highlights
+- “Look up one thing” in Readwise
+
+**If you’re about to call a Readwise tool in main chat, STOP. Spawn a librarian sub-agent instead.**
+</EXTREMELY-IMPORTANT>
+
+### Permission Model
+
+| Context | Readwise MCP Tools | Reader API Script |
+|---------|-------------------|-------------------|
+| Main chat | **FORBIDDEN** | **FORBIDDEN** |
+| Librarian sub-agent | ALLOWED | ALLOWED |
 
 ### Red Flag Detection
 
@@ -26,23 +40,16 @@ STOP if you catch yourself thinking:
 These thoughts in MAIN CHAT = VIOLATION. Delegate instead.
 ```
 
-### Gate Check (Main Chat Only)
+### Rationalization Prevention
 
-Before ANY Readwise operation, verify:
-
-1. **Am I in main chat?** If YES → STOP. Spawn librarian.
-2. **Am I a librarian sub-agent?** If YES → Proceed with tools.
-
-### Rationalization Table
-
-| Your Excuse | Reality | Verdict |
-|-------------|---------|---------|
-| “Just one quick search” | Results clutter context | DELEGATE |
-| “MCP tool is available” | Available != permitted | DELEGATE |
-| “I’ll summarize results” | Still receive full payload | DELEGATE |
-| “User wants speed” | Sub-agents ARE fast | DELEGATE |
-| “I know the exact tag” | Use Python script via librarian | DELEGATE |
-| “It’s a simple query” | Simple queries still pollute | DELEGATE |
+| Thought | Reality |
+|---------|---------|
+| “Just one quick search” | Quick = context pollution. Delegate. |
+| “MCP tool is available” | Available != permitted in main chat. Delegate. |
+| “I’ll summarize results” | You still receive full payload. Delegate. |
+| “User wants speed” | Sub-agents ARE fast. Delegate. |
+| “I know the exact tag” | Use Python script via librarian. Delegate. |
+| “It’s a simple query” | Simple still pollutes. Delegate. |
 
 ### Correct Pattern
 
@@ -56,14 +63,18 @@ NEVER IN MAIN CHAT:
 mcp__readwise__search_readwise_highlights(...)
 ```
 
-### Honesty Frame
+### Honesty Requirement
 
-Calling Readwise MCP directly in main chat is not “being helpful” - it’s:
-- Wasting the user’s context window
+<EXTREMELY-IMPORTANT>
+**Calling Readwise tools directly in main chat is not “being helpful” - it’s violating the workflow.**
+
+When you call Readwise directly, you are:
+- Wasting the user’s context window with verbose results
 - Using the wrong tool (MCP = semantic only, no full docs)
-- Skipping the proper workflow
+- Skipping the proper workflow (librarian knows search -> format -> NotebookLM)
 
-The librarian exists for this purpose. Use it.
+**”I’ll just check quickly” is the rationalization. The librarian exists for this purpose. Use it.**
+</EXTREMELY-IMPORTANT>
 
 ---
 
