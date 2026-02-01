@@ -152,6 +152,18 @@ NotebookLM will auto-generate a title from content. Optionally rename:
 - Include search terms in output for provenance tracking
 - User notes (`highlight_note`) often contain valuable context
 
+## Anti-Pattern: Never Fetch from Source URL
+
+**WRONG:**
+1. Search Readwise, find document
+2. Try to fetch from original URL (fails - paywalled)
+
+**RIGHT:**
+1. Search Readwise, find document
+2. Get full text FROM READWISE using Reader API with `withHtmlContent=true`
+
+If a document is in Readwise, the full text is already there. Never go back to the source URL.
+
 ---
 
 # Reader API (Full Documents)

@@ -193,22 +193,28 @@ See `skills/readwise/SKILL.md` for full documentation.
 
 ## Operational Rules
 
-1. **Authentication Errors**
+1. **Never Fetch from Source URLs**
+   - If a document is in Readwise, get full text FROM READWISE
+   - Use Reader API with `withHtmlContent=true` parameter
+   - NEVER try to fetch from original URL (paywalled, 404, etc.)
+   - Readwise already has the full archived content
+
+2. **Authentication Errors**
    - If `nlm` fails with auth errors, instruct user to run: `/Users/vwh7mb/projects/nlm/nlm auth`
    - If Google Workspace MCP fails, use `mcp__google-workspace__auth_refreshToken` or `auth_clear`
 
-2. **Gemini Browser Automation**
+3. **Gemini Browser Automation**
    - Ensure Chrome is running: `${CLAUDE_PLUGIN_ROOT}/skills/gemini-web/scripts/chrome_launcher.sh status`
    - Check connection: `python ${CLAUDE_PLUGIN_ROOT}/skills/gemini-web/scripts/gemini_client.py status`
    - Deep research can take 1-5 minutes; use `--timeout 600` for longer topics
    - Browser data persists in `~/.browser-automation/`
 
-3. **Privacy**
+4. **Privacy**
    - Do not upload sensitive personal data to public notebooks
    - Confirm before sharing or making content public
    - Keep user credentials secure
 
-4. **Progress Reporting**
+5. **Progress Reporting**
    - Report progress at each major step
    - Show notebook IDs and source counts
    - Confirm successful additions
