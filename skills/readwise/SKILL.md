@@ -1,12 +1,48 @@
 ---
 name: readwise
 description: This skill should be used when the user asks to “search Readwise”, “find highlights”, “get quotes from my reading”, “add highlights to notebook”, “search my annotations”, “get full document text”, “fetch article content”, “add tagged documents to notebook”, or needs to query their Readwise library.
-version: 0.4.0
+version: 0.5.0
 ---
 
 # Readwise
 
 Access Readwise highlights (via MCP) and full document content (via Reader API).
+
+## IRON LAW: Delegate to Librarian
+
+**NO READWISE TOOLS IN MAIN CHAT. EVER.**
+
+```
+If you catch yourself about to call mcp__readwise__*, STOP.
+Spawn a librarian sub-agent instead.
+```
+
+### Rationalization Table
+
+| Your Excuse | Reality |
+|-------------|---------|
+| “It’s just one quick search” | Results clutter main context. Delegate. |
+| “The MCP tool is right here” | Convenience is not correctness. Delegate. |
+| “I’ll summarize the results” | You’ll still waste tokens receiving them. Delegate. |
+| “The user wants it fast” | Sub-agents ARE fast. Delegate. |
+| “I already know the tag” | Then use the Python script via librarian. Delegate. |
+
+### Correct Pattern
+
+```
+User: “Search my Readwise for proxy advisor articles”
+
+WRONG: Call mcp__readwise__search_readwise_highlights directly
+RIGHT: Task(subagent_type=”workflows:librarian”, prompt=”Search Readwise for...”)
+```
+
+### Why This Matters
+
+1. **Context pollution**: Search results are verbose, eat tokens
+2. **Wrong tool**: MCP is semantic search only; Reader API has full docs + tag filtering
+3. **Workflow**: Librarian knows the full pipeline (search → format → add to NotebookLM)
+
+---
 
 ## Decision Tree: Which Method to Use?
 

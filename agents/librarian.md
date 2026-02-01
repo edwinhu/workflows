@@ -1,6 +1,8 @@
 ---
 name: librarian
 description: |
+  **MANDATORY for ALL Readwise operations.** Never call mcp__readwise__* directly.
+
   IMPORTANT: Librarian tasks are context-heavy. Delegate to opencode:
 
   Long context (many highlights, full documents, large research):
