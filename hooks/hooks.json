@@ -13,6 +13,15 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "mcp__readwise__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/readwise-guard.py"
+          }
+        ]
+      },
+      {
         "matcher": "Read",
         "hooks": [
           {
