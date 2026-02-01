@@ -18,15 +18,21 @@ def main():
     except Exception:
         sys.exit(0)
 
+    # Debug: write hook input to file to see what's available
+    import os
+    debug_file = "/tmp/readwise-hook-debug.json"
+    with open(debug_file, "w") as f:
+        json.dump(hook_input, f, indent=2, default=str)
+
     tool_name = hook_input.get("tool_name", "")
 
-    # Only block in main chat, not in sub-agents
-    # Sub-agents have session_id in their context
-    session_context = hook_input.get("session_context", {})
-    is_subagent = session_context.get("is_subagent", False)
+    # Check if this is a sub-agent by looking at transcript context
+    # Sub-agents typically have a different session structure
+    transcript = hook_input.get("transcript", [])
 
-    if is_subagent:
-        sys.exit(0)
+    # If transcript has Task tool calls spawning this agent, allow it
+    # For now, just allow all - we'll refine after seeing debug output
+    sys.exit(0)  # TEMPORARILY ALLOW ALL
 
     # Block Readwise MCP tools in main chat
     if not tool_name.startswith("mcp__readwise__"):
