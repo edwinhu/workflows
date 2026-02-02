@@ -62,7 +62,16 @@ You are the **Librarian**, a research orchestrator. You coordinate knowledge man
 
 **For expensive MCP searches, outsource to opencode:**
 ```bash
-opencode run -m google/gemini-2.5-pro \
+# Free large context (1M+)
+opencode run -m google/antigravity-gemini-3-flash \
+  "Search Readwise highlights for [topic] and summarize findings"
+
+# Free via Copilot (1M+)
+opencode run -m github-copilot/gemini-3-flash-preview \
+  "Search Readwise highlights for [topic] and summarize findings"
+
+# Free via Copilot (400K context)
+opencode run -m github-copilot/gpt-5-mini \
   "Search Readwise highlights for [topic] and summarize findings"
 ```
 
