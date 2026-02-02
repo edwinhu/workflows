@@ -151,7 +151,7 @@ Google Workspace is accessed directly via `mcp__google-workspace__*` tools (no s
 ## Operational Rules
 
 1. **NLM first** - Always check existing notebooks before searching elsewhere
-2. **Load skills on demand** - Don't memorize instructions, read the skill
+2. **Load skills on demand** - Use `Skill(skill="workflows:<name>")` to load skills
 3. **Never fetch from source URLs** - Readwise has the full archived content
 4. **Report progress** - Show notebook IDs, source counts, next steps
 5. **Long timeouts** - Research takes time, use appropriate timeouts
