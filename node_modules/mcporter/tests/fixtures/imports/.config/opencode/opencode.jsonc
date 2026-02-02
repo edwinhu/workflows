@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "opencode-user-only": {
+      "description": "User-level OpenCode server",
+      "command": "opencode-user-cli",
+      "args": ["--json"]
+    }
+  }
+}

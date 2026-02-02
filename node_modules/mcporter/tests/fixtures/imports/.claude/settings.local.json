@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "claude-local": {
+      "command": "claude-local-cli"
+    },
+    "claude-overridden": {
+      "command": "claude-local-cli"
+    }
+  }
+}

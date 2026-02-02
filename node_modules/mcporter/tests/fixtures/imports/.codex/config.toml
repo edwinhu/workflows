@@ -1,0 +1,7 @@
+[mcp_servers]
+[mcp_servers.shared]
+url = "https://codex.local/mcp"
+
+[mcp_servers."codex-only"]
+command = "codex-cli"
+args = ["--run"]

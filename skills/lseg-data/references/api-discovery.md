@@ -356,6 +356,146 @@ Files include:
 - `sdc_platinum_complete_fields.json` (5.0 MB) - All datasets
 - `*_fields.csv` - Individual dataset CSV files
 
+## FSCREEN (Fund Reporting) API
+
+FSCREEN uses a different API pattern than SDC Platinum. It’s accessible at:
+
+**Endpoint:** `https://workspace.refinitiv.com/Apps/FundReporting/{version}/l3`
+
+### Request Structure
+
+```json
+{
+  “request”: {
+    “dataPoints”: [“TRANAGNT_NAME”, “EXPENSE_RATIO”],
+    “universe”: {
+      “symbols”: [40229535, 40229536, 40229537]
+    }
+  },
+  “options”: {
+    “viewId”: 7
+  }
+}
+```
+
+### Key Differences from SDC Platinum
+
+| Aspect | SDC Platinum | FSCREEN |
+|--------|--------------|---------|
+| Endpoint | `/datacloud-nonviews/snapshot/rest/async` | `/Apps/FundReporting/{ver}/l3` |
+| Identifiers | SCREEN() syntax with RICs | Numeric fund IDs |
+| Field Naming | TR.* prefix | Internal codes (TRANAGNT_NAME) |
+| Universe | `identifiers` string | `symbols` array |
+
+### Field Code Mapping
+
+FSCREEN uses internal field codes that differ from display names. Codes fall into two patterns:
+1. **SNAKE_CASE** - Most company/contact fields (e.g., `ADMINISTRATOR_NAME`)
+2. **Display-style** - Some calculated fields use spaces/symbols (e.g., `Total Exp (Calc) %`)
+
+#### Identifiers
+
+| Display Name | Internal Code |
+|--------------|---------------|
+| Lipper ID | `LIPPERID` |
+| Asset Name | `NAME` |
+
+#### Company Information (SNAKE_CASE pattern)
+
+| Entity | Name | Email | Phone | Website |
+|--------|------|-------|-------|---------|
+| Administrator | `ADMINISTRATOR_NAME` | `ADMINISTRATOR_EMAIL` | `ADMINISTRATOR_PHONENUMBER` | `ADMINISTRATOR_WEBSITE` |
+| Custodian | `CUSTODIAN_NAME` | `CUSTODIAN_EMAIL` | `CUSTODIAN_PHONENUMBER` | `CUSTODIAN_WEBSITE` |
+| Fund Mgmt Company | `FUNDMGMTCMPY_NAME` | `FUNDMGMTCMPY_EMAIL` | `FUNDMGMTCMPY_PHONENUMBER` | `FUNDMGMTCMPY_WEBSITE` |
+| Investment Advisor | `INVSTADV_NAME` | `INVSTADV_EMAIL` | `INVSTADV_PHONENUMBER` | `INVSTADV_WEBSITE` |
+| Promoter | `PROMOTER_NAME` | `PROMOTER_EMAIL` | `PROMOTER_PHONENUMBER` | `PROMOTER_WEBSITE` |
+| Sub-Administrator | `SUBADMIN_NAME` | `SUBADMIN_EMAIL` | `SUBADMIN_PHONENUMBER` | `SUBADMIN_WEBSITE` |
+| Transfer Agent | `TRANAGNT_NAME` | - | - | - |
+
+#### Expenses
+
+| Display Name | Internal Code |
+|--------------|---------------|
+| Total Expense (Calculated %) | `Total Exp (Calc) %` |
+| Sub-Advisor Expenses (%) | `EXP_ADV_SUB` |
+
+**Note:** Expense field codes use inconsistent naming - some use SNAKE_CASE (`EXP_ADV_SUB`), others use display-style strings (`Total Exp (Calc) %`). Always verify via network monitoring.
+
+#### Returns (Parameterized)
+
+Return fields use a parameterized format with `[universe=ID]`:
+
+| Display Name | Internal Code |
+|--------------|---------------|
+| Total Return 3 years | `LL3YTR[universe=35381]` |
+
+**Pattern:** Return fields likely follow `LL{N}YTR[universe=35381]` where N = years. The `universe=35381` appears to be a fixed parameter.
+
+#### Holdings
+
+| Display Name | Internal Code |
+|--------------|---------------|
+| Top Holdings | `CTOPHOLDCAL` |
+
+#### Fund Information (Parameterized)
+
+Some fields use parameterized format with `[currency=XXX]`:
+
+| Display Name | Internal Code |
+|--------------|---------------|
+| Fund TNA (Mil) | `FUNDTNA[currency=USD]` |
+
+### Discovering Field Codes
+
+To discover internal field codes:
+
+1. Open Chrome DevTools Network tab
+2. Navigate to FSCREEN: `https://workspace.refinitiv.com/web/Apps/FundReporting/`
+3. Use “Add Column” search to trigger API calls
+4. Look for `/l3` POST requests
+5. Inspect the `dataPoints` array in the request body
+
+### Converting Numeric IDs to Lipper RICs
+
+The numeric symbols in FSCREEN are simply Lipper RICs without the “LP” prefix:
+
+| FSCREEN ID | Lipper RIC |
+|------------|------------|
+| `40229535` | `LP40229535` |
+| `68714767` | `LP68714767` |
+
+**Conversion:** Just prepend “LP” to the numeric ID.
+
+### Example: Fetch Fund Data
+
+```javascript
+fetch(“https://workspace.refinitiv.com/Apps/FundReporting/1.2.188/l3”, {
+  method: “POST”,
+  headers: {
+    “content-type”: “application/json; charset=UTF-8”
+  },
+  body: JSON.stringify({
+    “request”: {
+      “dataPoints”: [
+        “LIPPERID”,
+        “NAME”,
+        “Total Exp (Calc) %”,
+        “LL3YTR[universe=35381]”,
+        “FUNDTNA[currency=USD]”,
+        “CTOPHOLDCAL”
+      ],
+      “universe”: {
+        “symbols”: [40229535, 40229536, 40229537]
+      }
+    },
+    “options”: {“viewId”: 7}
+  }),
+  credentials: “include”
+});
+```
+
+**Note:** Authentication is handled via Workspace session cookies. You must be logged into Refinitiv Workspace for API calls to work.
+
 ## Tools Used
 
 - **Chrome DevTools Protocol (CDP)**: Network monitoring via WebSocket
@@ -363,3 +503,4 @@ Files include:
 - **websockets**: Python library for WebSocket connections
 - **jq**: JSON parsing for session files and API responses
 - **Refinitiv Workspace**: Electron app with `--remote-debugging-port` flag
+- **Chrome DevTools Network tab**: For FSCREEN and browser-based Workspace apps

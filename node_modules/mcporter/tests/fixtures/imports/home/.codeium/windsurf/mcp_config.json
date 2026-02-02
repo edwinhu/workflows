@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "shared": {
+      "baseUrl": "https://windsurf.local/mcp"
+    },
+    "windsurf-only": {
+      "command": "windsurf-cli",
+      "args": ["--list"],
+      "env": {
+        "WINDSURF": "1"
+      }
+    }
+  }
+}

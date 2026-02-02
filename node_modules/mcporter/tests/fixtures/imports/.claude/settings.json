@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "claude-shared": {
+      "command": "claude-shared-cli"
+    },
+    "claude-overridden": {
+      "command": "claude-shared-cli"
+    }
+  }
+}

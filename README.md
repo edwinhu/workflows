@@ -160,6 +160,37 @@ Contains common skills used by multiple plugins, including office document forma
 
 **Note:** Office format skills are sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule.
 
+---
+
+### librarian (v0.1.0)
+
+**Knowledge management across NotebookLM, Google Workspace, Readwise, and Gemini**
+
+A knowledge orchestration plugin that coordinates research workflows across multiple services.
+
+**Agent:**
+- `librarian` - Autonomous knowledge management agent for research workflows
+
+**Skills:**
+- `/nlm` - NotebookLM CLI for notebooks, sources, notes, and audio overviews
+- `/gog` - Google Workspace CLI for Gmail, Calendar, Drive, Tasks, Keep, Sheets, Docs
+- `/gemini-web` - Browser automation for Gemini deep research and Paperpile integration
+
+**Workflows:**
+- **Research [Topic]** - Search Readwise, create notebook, gather sources, generate synthesis
+- **Task-ify [Topic]** - Extract action items and create Google Tasks
+- **Archive Paper** - Add papers to NotebookLM notebooks
+
+**Prerequisites:**
+- `nlm` CLI (install: `go install github.com/tmc/nlm/cmd/nlm@latest`)
+- `gog` CLI (Google Workspace CLI with OAuth setup)
+- Readwise MCP (optional, for highlight search)
+- Chrome with Paperpile extension (for Gemini web automation)
+
+**Tags:** `notebooklm`, `google-workspace`, `readwise`, `research`, `knowledge-management`
+
+---
+
 ## Session Continuity Commands
 
 The plugin includes commands for session state management:
@@ -184,7 +215,7 @@ workflows/
 ├── .claude-plugin/             # Claude Code plugin manifest
 │   ├── plugin.json
 │   └── marketplace.json
-├── agents/                     # Specialized subagents (10 agents)
+├── agents/                     # Specialized subagents (11 agents)
 │   ├── planner.md              # Implementation planning
 │   ├── architect.md            # System design decisions
 │   ├── tdd-guide.md            # TDD workflow enforcement
@@ -194,7 +225,8 @@ workflows/
 │   ├── e2e-runner.md           # Playwright E2E testing
 │   ├── refactor-cleaner.md     # Dead code cleanup
 │   ├── doc-updater.md          # Documentation sync
-│   └── data-explorer.md        # EDA and data profiling
+│   ├── data-explorer.md        # EDA and data profiling
+│   └── librarian.md            # Knowledge management orchestration
 ├── commands/                   # Slash commands
 │   ├── dev.md, ds.md, writing.md  # Workflow entry points
 │   ├── learn.md                # Pattern extraction
@@ -210,7 +242,10 @@ workflows/
 │   └── performance.md, patterns.md
 ├── skills/                     # User-facing skills
 │   ├── continuous-learning/    # Cross-project pattern extraction
-│   └── [28+ skills...]
+│   ├── nlm/                    # NotebookLM CLI skill
+│   ├── gog/                    # Google Workspace CLI skill
+│   ├── gemini-web/             # Gemini web automation skill
+│   └── [28+ other skills...]
 ├── hooks/                      # Hook entry points
 │   ├── hooks.json              # Hook configuration
 │   ├── session-start.py        # SessionStart hook

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "shared": {
+      "baseUrl": "https://vscode.local/mcp"
+    },
+    "vscode-only": {
+      "command": "code-mcp",
+      "args": ["--serve"]
+    }
+  }
+}

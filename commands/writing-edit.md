@@ -7,6 +7,25 @@ allowed-tools: Read, Edit, Write, Bash, Skill
 
 The edit loop for writing projects. Verifies structure, checks for AI anti-patterns, applies domain-specific rules, and completes the workflow when all checks pass.
 
+## IRON LAW: Critique Over Comfort
+
+**If the writing has problems, SAY SO. Being nice is LYING to the user.**
+
+### Red Flag Detection
+
+If you catch yourself thinking:
+- “This is pretty good overall” - STOP. Find the weakness.
+- “I don’t want to be too harsh” - STOP. Harsh is kind.
+- “The author probably knows what they’re doing” - STOP. Check anyway.
+
+### Rationalization Table
+
+| Excuse | Reality |
+|--------|---------|
+| “It’s a draft, I’ll be gentle” | Drafts need MORE critique, not less |
+| “The main point is clear enough” | “Clear enough” means unclear |
+| “I’ll focus on positives first” | Positives don’t help improve writing |
+
 ## When to Use
 
 - After drafting prose, to verify and polish
@@ -18,9 +37,9 @@ The edit loop for writing projects. Verifies structure, checks for AI anti-patte
 ### Step 1: Load Context
 
 ```
-Read(".claude/ACTIVE_WORKFLOW.md")
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(“.claude/ACTIVE_WORKFLOW.md”)
+Read(“.claude/PRECIS.md”)
+Read(“.claude/OUTLINE.md”)
 Read([current draft files in drafts/])
 ```
 
@@ -56,44 +75,44 @@ Check the document against PRECIS.md and OUTLINE.md:
 Load and apply the AI anti-patterns skill:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/ai-anti-patterns/SKILL.md")
+Read(“${CLAUDE_PLUGIN_ROOT}/skills/ai-anti-patterns/SKILL.md”)
 ```
 
 Scan for:
 
 #### Sycophantic Patterns
-- [ ] No "Great question!" or similar
+- [ ] No “Great question!” or similar
 - [ ] No excessive hedging
 - [ ] No unnecessary validation
 
 #### Hollow Emphasis
-- [ ] No overuse of "crucial", "vital", "essential", "Moreover"
-- [ ] No "It is important to note that..."
-- [ ] No "This is particularly significant because..."
+- [ ] No overuse of “crucial”, “vital”, “essential”, “Moreover”
+- [ ] No “It is important to note that...”
+- [ ] No “This is particularly significant because...”
 
 #### Structure Issues
 - [ ] Prose paragraphs, not bullet lists (unless data)
-- [ ] No generic conclusions ("In conclusion, we have seen...")
-- [ ] No filler transitions ("Moving on to the next point...")
+- [ ] No generic conclusions (“In conclusion, we have seen...”)
+- [ ] No filler transitions (“Moving on to the next point...”)
 
 #### Voice and Style
 - [ ] Active voice predominant
 - [ ] Concrete nouns and strong verbs
-- [ ] No weasel words ("some argue", "it could be said")
+- [ ] No weasel words (“some argue”, “it could be said”)
 
 ### Step 4: Domain-Specific Check
 
 Based on `style` in ACTIVE_WORKFLOW.md:
 
 #### If Legal (Volokh)
-- [ ] Hook is concrete problem, not "This article discusses..."
+- [ ] Hook is concrete problem, not “This article discusses...”
 - [ ] All claims confront counterarguments
 - [ ] No secondary source citations for primary sources
 - [ ] Background section does not exceed proof section
 - [ ] Precedents synthesized, not summarized case-by-case
 
 #### If Economics (McCloskey)
-- [ ] No boilerplate opening ("This paper discusses...")
+- [ ] No boilerplate opening (“This paper discusses...”)
 - [ ] No table-of-contents paragraph
 - [ ] One word per concept (no elegant variation)
 - [ ] Tables/figures before prose description
@@ -102,7 +121,7 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 - [ ] Omit needless words achieved
 - [ ] Active voice throughout
 - [ ] Concrete and specific language
-- [ ] Positive form (say what is, not what isn't)
+- [ ] Positive form (say what is, not what isn’t)
 
 ### Step 5: Formatting Check
 
@@ -129,7 +148,7 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 ### AI Anti-Patterns
 - [x] No sycophantic patterns
 - [x] No hollow emphasis
-- [ ] Found 2 instances of "crucial" - revise
+- [ ] Found 2 instances of “crucial” - revise
 
 ### Domain Check
 - [x] Concrete hook
@@ -154,8 +173,8 @@ edits_since_verify: 0
 ```
 
 Report issues with suggested fixes:
-- **Minor issues**: "Address issues above, then re-run `/writing-edit`."
-- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-edit`."
+- **Minor issues**: “Address issues above, then re-run `/writing-edit`.”
+- **Major issues**: “Significant revisions needed. Fix and re-run `/writing-edit`.”
 
 #### If All Checks Pass → Complete Workflow
 
@@ -163,7 +182,7 @@ Archive workflow state:
 
 ```bash
 mkdir -p .claude/completed-workflows
-mv .claude/ACTIVE_WORKFLOW.md ".claude/completed-workflows/$(date +%Y-%m-%d)-writing.md"
+mv .claude/ACTIVE_WORKFLOW.md “.claude/completed-workflows/$(date +%Y-%m-%d)-writing.md”
 ```
 
 Generate completion summary:

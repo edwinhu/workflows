@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "claude-home": {
+      "command": "claude-home-cli"
+    }
+  }
+}

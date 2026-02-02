@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@context7/mcp-server"
+      ],
+      "description": "Live documentation lookup"
+    },
+        "readwise": {
+      "command": "/Users/vwh7mb/.local/bin/readwise-mcp-wrapper.sh",
+      "args": [],
+      "env": {
+        "PATH": "/Users/vwh7mb/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      },
+      "description": "Readwise highlights and documents"
+    }
+  },
+  "_comments": {
+    "usage": "Copy the servers you need to your ~/.claude.json mcpServers section",
+    "env_vars": "Replace YOUR_*_HERE placeholders with actual values",
+    "disabling": "Use disabledMcpServers array in project config to disable per-project",
+    "context_warning": "Keep under 10 MCPs enabled to preserve context window"
+  }
+}

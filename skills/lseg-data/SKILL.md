@@ -198,6 +198,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/symbology.md`** - RIC/ISIN/CUSIP conversion
 - **`references/pricing.md`** - Historical prices, real-time data
 - **`references/screening.md`** - Stock screening with Screener object
+- **`references/fscreen.md`** - Fund screening (ETFs, mutual funds) with FSCREEN app
 - **`references/news.md`** - News headlines, pagination, query syntax
 - **`references/mna.md`** - Mergers & acquisitions deals (SDC Platinum, 2,683 fields)
 - **`references/equity-new-issues.md`** - IPOs, follow-ons, equity offerings (SDC Platinum, 1,708 fields)

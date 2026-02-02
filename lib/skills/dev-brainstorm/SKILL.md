@@ -5,6 +5,25 @@ description: "REQUIRED Phase 1 of /dev workflow. Uses Socratic questioning to un
 
 **Announce:** "I'm using dev-brainstorm (Phase 1) to gather requirements."
 
+## Workflow Initialization
+
+Create `.claude/ACTIVE_WORKFLOW.md` to track workflow state:
+
+```yaml
+---
+workflow: dev
+phase: 1
+phase_name: brainstorm
+started: [current timestamp]
+project_root: [current directory]
+active_skill: ${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-brainstorm/SKILL.md
+spec: .claude/SPEC.md
+plan: .claude/PLAN.md
+---
+```
+
+This enables session persistence - returning to the project will reload the current phase.
+
 ## Contents
 
 - [The Iron Law of Brainstorming](#the-iron-law-of-brainstorming)
