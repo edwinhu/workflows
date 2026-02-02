@@ -1,7 +1,7 @@
 ---
 name: nlm
-description: This skill should be used when the user asks to “create a notebook”, “add source to notebook”, “generate audio overview”, “create podcast”, “manage NotebookLM”, “nlm”, “add PDF to notebook”, “list notebooks”, or needs to interact with Google NotebookLM via the nlm CLI tool.
-version: 0.1.0
+description: This skill should be used when the user asks to "create a notebook", "add source to notebook", "generate audio overview", "create podcast", "manage NotebookLM", "nlm", "add PDF to notebook", "list notebooks", "summarize sources", "generate study guide", "create FAQ", "briefing document", "chat with notebook", "generate outline", or needs to interact with Google NotebookLM via the nlm CLI tool.
+version: 0.2.0
 ---
 
 # NotebookLM CLI (nlm)
@@ -135,17 +135,71 @@ Generate AI podcast-style audio summaries:
 ### Generation Commands
 
 ```bash
-# Generate notebook guide
+# Generate notebook guide (short summary)
 /Users/vwh7mb/projects/nlm/nlm generate-guide <notebook-id>
 
-# Generate content outline
+# Generate comprehensive content outline
 /Users/vwh7mb/projects/nlm/nlm generate-outline <notebook-id>
 
-# Generate new section
+# Generate new content section
 /Users/vwh7mb/projects/nlm/nlm generate-section <notebook-id>
 
 # Free-form chat generation
-/Users/vwh7mb/projects/nlm/nlm generate-chat <notebook-id> “What are the main themes?”
+/Users/vwh7mb/projects/nlm/nlm generate-chat <notebook-id> "What are the main themes?"
+
+# Interactive chat session
+/Users/vwh7mb/projects/nlm/nlm chat <notebook-id>
+
+# Generate magic view synthesis from specific sources
+/Users/vwh7mb/projects/nlm/nlm generate-magic <notebook-id> <source-id-1> <source-id-2>
+```
+
+### Content Transformation Commands
+
+Transform your sources into different formats. All commands take `<notebook-id> <source-id> [source-id...]`:
+
+```bash
+# Summarize content from sources
+/Users/vwh7mb/projects/nlm/nlm summarize <notebook-id> <source-id>
+
+# Generate study guide with key concepts and review questions
+/Users/vwh7mb/projects/nlm/nlm study-guide <notebook-id> <source-id>
+
+# Generate FAQ from sources
+/Users/vwh7mb/projects/nlm/nlm faq <notebook-id> <source-id>
+
+# Create professional briefing document
+/Users/vwh7mb/projects/nlm/nlm briefing-doc <notebook-id> <source-id>
+
+# Rephrase content in different words
+/Users/vwh7mb/projects/nlm/nlm rephrase <notebook-id> <source-id>
+
+# Expand on content with more detail
+/Users/vwh7mb/projects/nlm/nlm expand <notebook-id> <source-id>
+
+# Get a critique of the content
+/Users/vwh7mb/projects/nlm/nlm critique <notebook-id> <source-id>
+
+# Brainstorm ideas from sources
+/Users/vwh7mb/projects/nlm/nlm brainstorm <notebook-id> <source-id>
+
+# Verify facts in sources
+/Users/vwh7mb/projects/nlm/nlm verify <notebook-id> <source-id>
+
+# Explain concepts in accessible language
+/Users/vwh7mb/projects/nlm/nlm explain <notebook-id> <source-id>
+
+# Create a structured outline from sources
+/Users/vwh7mb/projects/nlm/nlm outline <notebook-id> <source-id>
+
+# Generate text-based mindmap
+/Users/vwh7mb/projects/nlm/nlm mindmap <notebook-id> <source-id>
+
+# Create a timeline of events
+/Users/vwh7mb/projects/nlm/nlm timeline <notebook-id> <source-id>
+
+# Generate table of contents
+/Users/vwh7mb/projects/nlm/nlm toc <notebook-id> <source-id>
 ```
 
 ### Batch Operations
@@ -167,14 +221,62 @@ Execute multiple commands in a single request for better performance:
 
 ```bash
 # Create notebook
-id=$(/Users/vwh7mb/projects/nlm/nlm create “AI Research” | grep -o ‘notebook [^ ]*’ | cut -d’ ‘ -f2)
+id=$(/Users/vwh7mb/projects/nlm/nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
 
 # Add sources
 /Users/vwh7mb/projects/nlm/nlm add $id https://arxiv.org/paper.pdf
 /Users/vwh7mb/projects/nlm/nlm add $id research-notes.txt
 
 # Generate audio
-/Users/vwh7mb/projects/nlm/nlm audio-create $id “Summarize the key findings professionally”
+/Users/vwh7mb/projects/nlm/nlm audio-create $id "Summarize the key findings professionally"
+```
+
+### Study Materials Workflow
+
+Generate comprehensive study materials from sources:
+
+```bash
+# Get notebook and source IDs
+/Users/vwh7mb/projects/nlm/nlm list
+/Users/vwh7mb/projects/nlm/nlm sources <notebook-id>
+
+# Generate study materials from a source
+/Users/vwh7mb/projects/nlm/nlm study-guide <notebook-id> <source-id>  # Key concepts + review questions
+/Users/vwh7mb/projects/nlm/nlm faq <notebook-id> <source-id>          # Common questions answered
+/Users/vwh7mb/projects/nlm/nlm outline <notebook-id> <source-id>      # Structured overview
+/Users/vwh7mb/projects/nlm/nlm explain <notebook-id> <source-id>      # Accessible explanations
+```
+
+### Content Analysis Workflow
+
+Deeply analyze and transform content:
+
+```bash
+# Summarize and synthesize
+/Users/vwh7mb/projects/nlm/nlm summarize <notebook-id> <source-id>
+/Users/vwh7mb/projects/nlm/nlm generate-magic <notebook-id> <src1> <src2>  # Cross-source synthesis
+
+# Critical analysis
+/Users/vwh7mb/projects/nlm/nlm critique <notebook-id> <source-id>
+/Users/vwh7mb/projects/nlm/nlm verify <notebook-id> <source-id>
+
+# Creative exploration
+/Users/vwh7mb/projects/nlm/nlm brainstorm <notebook-id> <source-id>
+/Users/vwh7mb/projects/nlm/nlm expand <notebook-id> <source-id>
+
+# Interactive Q&A
+/Users/vwh7mb/projects/nlm/nlm chat <notebook-id>
+```
+
+### Executive Briefing Workflow
+
+Create professional documents from sources:
+
+```bash
+# Generate briefing materials
+/Users/vwh7mb/projects/nlm/nlm briefing-doc <notebook-id> <source-id>  # Executive summary + recommendations
+/Users/vwh7mb/projects/nlm/nlm timeline <notebook-id> <source-id>      # Chronological overview
+/Users/vwh7mb/projects/nlm/nlm toc <notebook-id> <source-id>           # Structure overview
 ```
 
 ## Troubleshooting
