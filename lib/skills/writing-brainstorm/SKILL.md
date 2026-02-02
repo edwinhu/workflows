@@ -5,7 +5,44 @@ description: Internal skill for project setup. Called by /writing for new projec
 
 # Writing Brainstorm
 
-**Entry point for all writing projects.** Creates PRECIS.md (thesis, audience, claims) and OUTLINE.md (structure), then hands off to domain-specific writing skill.
+**Entry point for all writing tasks.** Routes to quick mode or project workflow.
+
+## Step 1: Detect Mode
+
+**Quick Mode Indicators** (edit text directly, no workflow):
+- “Check this paragraph”
+- “Edit this text”
+- “Review my writing”
+- Short text provided inline
+- No mention of “project”, “paper”, “article”
+
+→ If quick mode: `Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md”)` and apply rules to text.
+
+**Project Mode Indicators** (full workflow):
+- “Write a paper on...”
+- “Start a law review article”
+- “Draft an economics paper”
+- Mentions thesis, argument, research
+
+→ If project mode: Continue to Phase 2 below.
+
+## Step 2: Check for Active Workflow
+
+```
+if .claude/ACTIVE_WORKFLOW.md exists:
+    Read(“.claude/ACTIVE_WORKFLOW.md”)
+    Read(“.claude/PRECIS.md”)
+    Read(“.claude/OUTLINE.md”)
+    → Resume at current phase with appropriate domain skill
+else:
+    → Continue to Phase 3 (new project setup)
+```
+
+---
+
+## Project Mode Workflow
+
+Creates PRECIS.md (thesis, audience, claims) and OUTLINE.md (structure), then hands off to domain-specific writing skill.
 
 ## Project Structure
 
@@ -56,7 +93,7 @@ outlines/Part I.md         # Level 3: Detailed section outline (bullets, sources
 drafts/Part I.md           # Level 4: Prose expansion
 ```
 
-**Each level expands the previous.** Don't skip levels:
+**Each level expands the previous.** Don’t skip levels:
 - PRECIS before OUTLINE
 - Master OUTLINE before section outlines
 - Section outline before drafting prose
@@ -77,7 +114,7 @@ When starting a new writing project, create the directories:
 
 ```bash
 mkdir -p outlines drafts references scratch .claude
-echo "scratch/" >> .gitignore
+echo “scratch/” >> .gitignore
 ```
 
 ## Writing Workflow Overview
@@ -139,29 +176,29 @@ For a topic with N distinct themes, launch N parallel sub-agents using the Task 
 
 ```
 Task(
-  subagent_type="general-purpose",
-  model="haiku",  # Fast and cheap for filtering
-  prompt="""Search Readwise for highlights about **[THEME]**.
+  subagent_type=”general-purpose”,
+  model=”haiku”,  # Fast and cheap for filtering
+  prompt=”“”Search Readwise for highlights about **[THEME]**.
 
 Use `mcp__readwise__search_readwise_highlights` with:
-- vector_search_term: "[semantic search terms]"
-- full_text_queries: [{"field_name": "highlight_plaintext", "search_term": "[keyword]"}]
+- vector_search_term: “[semantic search terms]”
+- full_text_queries: [{“field_name”: “highlight_plaintext”, “search_term”: “[keyword]”}]
 
 Return ONLY:
 - Top 3 most relevant sources (title, author)
 - Top 3 quotes worth citing (with source attribution)
-- 1-2 sentence theme summary"""
+- 1-2 sentence theme summary”“”
 )
 ```
 
 ### Example: Law Review on Private Equity Access
 
 Launch 5 parallel agents:
-1. "private equity retail investors democratization"
-2. "accredited investor definition regulation"
-3. "401k retirement private markets"
-4. "interval fund tender offer evergreen"
-5. "investor protection paternalism securities"
+1. “private equity retail investors democratization”
+2. “accredited investor definition regulation”
+3. “401k retirement private markets”
+4. “interval fund tender offer evergreen”
+5. “investor protection paternalism securities”
 
 Each returns ~100 words instead of ~5000 words of raw highlights.
 
@@ -171,7 +208,7 @@ Each returns ~100 words instead of ~5000 words of raw highlights.
 
 ### Discovery Mode
 
-When user wants to find topics ("what should I write about?"):
+When user wants to find topics (“what should I write about?”):
 
 1. **Fetch tag landscape**
    - Use `get_tags` to see all topic clusters
@@ -194,7 +231,7 @@ When user wants to find topics ("what should I write about?"):
 
 ### Gathering Mode (Progressive Workflow)
 
-When user has a topic ("gather sources on X"), follow this **human-in-the-loop** workflow:
+When user has a topic (“gather sources on X”), follow this **human-in-the-loop** workflow:
 
 #### Phase 1: Clarify Intent
 
@@ -203,26 +240,26 @@ When user has a topic ("gather sources on X"), follow this **human-in-the-loop**
 ```
 AskUserQuestion(questions=[
   {
-    "question": "What's your primary angle or thesis for this piece?",
-    "header": "Angle",
-    "options": [
-      {"label": "Critique existing framework", "description": "Argue current approach is flawed"},
-      {"label": "Propose reform", "description": "Offer specific policy changes"},
-      {"label": "Comparative analysis", "description": "Compare approaches across jurisdictions"},
-      {"label": "Empirical analysis", "description": "Present data-driven findings"}
+    “question”: “What’s your primary angle or thesis for this piece?”,
+    “header”: “Angle”,
+    “options”: [
+      {“label”: “Critique existing framework”, “description”: “Argue current approach is flawed”},
+      {“label”: “Propose reform”, “description”: “Offer specific policy changes”},
+      {“label”: “Comparative analysis”, “description”: “Compare approaches across jurisdictions”},
+      {“label”: “Empirical analysis”, “description”: “Present data-driven findings”}
     ],
-    "multiSelect": false
+    “multiSelect”: false
   },
   {
-    "question": "Who is your target audience?",
-    "header": "Audience",
-    "options": [
-      {"label": "Law review", "description": "Academic legal audience"},
-      {"label": "Practitioners", "description": "Lawyers, regulators, compliance"},
-      {"label": "Policy makers", "description": "Legislators, agency staff"},
-      {"label": "General educated", "description": "Informed non-specialists"}
+    “question”: “Who is your target audience?”,
+    “header”: “Audience”,
+    “options”: [
+      {“label”: “Law review”, “description”: “Academic legal audience”},
+      {“label”: “Practitioners”, “description”: “Lawyers, regulators, compliance”},
+      {“label”: “Policy makers”, “description”: “Legislators, agency staff”},
+      {“label”: “General educated”, “description”: “Informed non-specialists”}
     ],
-    "multiSelect": false
+    “multiSelect”: false
   }
 ])
 ```
@@ -234,9 +271,9 @@ AskUserQuestion(questions=[
    - Each theme becomes a parallel sub-agent search
 
 2. **Launch parallel sub-agents**
-   - Use the Task tool with `model="haiku"` for each theme
+   - Use the Task tool with `model=”haiku”` for each theme
    - Run all searches in a single message (parallel execution)
-   - See "Sub-Agent Pattern" section above
+   - See “Sub-Agent Pattern” section above
 
 3. **Synthesize results**
    - Deduplicate sources across agent responses
@@ -281,14 +318,14 @@ For each major section, use `AskUserQuestion` to refine:
 ```
 AskUserQuestion(questions=[
   {
-    "question": "For Section II (Background), what level of detail do you need?",
-    "header": "Depth",
-    "options": [
-      {"label": "Brief context", "description": "1-2 paragraphs, assume reader familiarity"},
-      {"label": "Full background", "description": "Comprehensive treatment for general reader"},
-      {"label": "Synthesis only", "description": "Synthesize precedents without detailed summaries"}
+    “question”: “For Section II (Background), what level of detail do you need?”,
+    “header”: “Depth”,
+    “options”: [
+      {“label”: “Brief context”, “description”: “1-2 paragraphs, assume reader familiarity”},
+      {“label”: “Full background”, “description”: “Comprehensive treatment for general reader”},
+      {“label”: “Synthesis only”, “description”: “Synthesize precedents without detailed summaries”}
     ],
-    "multiSelect": false
+    “multiSelect”: false
   }
 ])
 ```
@@ -313,7 +350,7 @@ Produce a markdown outline:
 
 ## Key Sources
 - **[Source 1]** by [Author]
-  - "[Highlight quote]"
+  - “[Highlight quote]”
   - Relevant to: [subtopic]
 
 ## Outline
@@ -325,7 +362,7 @@ Produce a markdown outline:
 ...
 
 ## Open Questions
-- [Questions highlights don't answer]
+- [Questions highlights don’t answer]
 
 ## Next Steps
 - Suggested writing skill: /writing-[domain]
@@ -333,13 +370,59 @@ Produce a markdown outline:
 
 ## Domain Detection
 
-After gathering sources, detect the topic domain and suggest the appropriate writing skill:
+After gathering sources, detect the topic domain and load the appropriate skill:
 
-| Domain Indicators | Suggested Skill |
-|-------------------|-----------------|
-| Legal cases, statutes, law reviews, constitutional | `/writing-legal` (Volokh) |
-| Economics, markets, policy, data, empirical | `/writing-econ` (McCloskey) |
-| General/other | `/writing` (Strunk & White) |
+| Domain Indicators | Style | Skill to Load |
+|-------------------|-------|---------------|
+| Legal cases, statutes, law reviews, constitutional | legal | `lib/skills/writing-legal/SKILL.md` |
+| Economics, markets, policy, data, empirical | econ | `lib/skills/writing-econ/SKILL.md` |
+| General/other | general | `lib/skills/writing-general/SKILL.md` |
+
+<EXTREMELY-IMPORTANT>
+### Legal Domain: MUST Load Full Skill
+
+When `style: legal` is detected:
+
+1. **MUST Read the full skill file:**
+   ```
+   Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md”)
+   ```
+
+2. **MUST use template for .docx export:**
+   ```
+   ${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/templates/law_review_template.docx
+   ```
+
+3. **Iron Laws from writing-legal:**
+   - NO DOCX WITHOUT TEMPLATE - Copy template first, then add content
+   - NO CLAIM WITHOUT COUNTERARGUMENTS - Confront objections
+   - NO SECONDARY CITATIONS - Read original sources
+
+**If you create a legal docx without reading the skill and using the template, DELETE IT and START OVER.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+### Econ Domain: MUST Load Full Skill
+
+When `style: econ` is detected:
+
+1. **MUST Read the full skill file:**
+   ```
+   Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md”)
+   ```
+
+2. **Iron Laws from writing-econ:**
+   - NO BOILERPLATE - Delete “This paper discusses...”, roadmap paragraphs
+   - NO ELEGANT VARIATION - One concept = one word, always
+   - HOOK WITH FINDING - Start with compelling result, not background
+
+3. **Delete & Restart triggers:**
+   - “This paper discusses...” → DELETE, start with finding
+   - Table-of-contents paragraph → DELETE
+   - “As we shall see...” → DELETE
+
+**If you write boilerplate in an econ paper, DELETE THE SECTION and START OVER with a hook.**
+</EXTREMELY-IMPORTANT>
 
 ## Readwise MCP Tools
 
@@ -376,30 +459,30 @@ project/
 
 ### Discovery Mode Example
 
-**User:** "I want to write something but don't know what"
+**User:** “I want to write something but don’t know what”
 
 **Process:**
-1. Fetch tags → find clusters like "antitrust", "market-power", "regulation"
+1. Fetch tags → find clusters like “antitrust”, “market-power”, “regulation”
 2. Get recent highlights → notice many from economics sources
-3. Analyze → tension between "consumer welfare" and "market structure" keeps appearing
-4. Present → "Potential topic: The consumer welfare standard debate. You have 12 highlights across 4 sources discussing this tension. Angle: Why market structure matters beyond prices."
-5. Domain detection → Economics sources detected → "Use `/writing-econ` for drafting"
+3. Analyze → tension between “consumer welfare” and “market structure” keeps appearing
+4. Present → “Potential topic: The consumer welfare standard debate. You have 12 highlights across 4 sources discussing this tension. Angle: Why market structure matters beyond prices.”
+5. Domain detection → Economics sources detected → “Use `/writing-econ` for drafting”
 
 ### Gathering Mode Example (Progressive)
 
-**User:** "Let's brainstorm a law review article about retail access to private equity"
+**User:** “Let’s brainstorm a law review article about retail access to private equity”
 
 **Process:**
 1. **Clarify** → AskUserQuestion: angle (critique/reform/comparative), audience (law review/practitioners)
-2. **User responds** → "Critique existing framework, law review audience"
+2. **User responds** → “Critique existing framework, law review audience”
 3. **Decompose** → 5 themes: PE retail access, accredited investor, 401(k) access, fund structures, investor protection
 4. **Search** → Launch 5 parallel Haiku sub-agents
 5. **Synthesize** → Dedupe sources, extract best quotes, note gaps
 6. **Save** → Write `docs/writing/OUTLINE.md`
-7. **Feedback** → "Here's the outline. Any sections to add/remove/reorder?"
-8. **User responds** → "Add comparative section on EU ELTIF"
+7. **Feedback** → “Here’s the outline. Any sections to add/remove/reorder?”
+8. **User responds** → “Add comparative section on EU ELTIF”
 9. **Deep-dive** → AskUserQuestion per section, create `SECTION-II-OUTLINE.md`
-10. **Handoff** → "Outline complete. Use `/writing-legal` to draft."
+10. **Handoff** → “Outline complete. Use `/writing-legal` to draft.”
 
 ---
 
@@ -414,25 +497,25 @@ Use `AskUserQuestion` to gather remaining details:
 ```
 AskUserQuestion(questions=[
   {
-    "question": "What is your thesis in one sentence?",
-    "header": "Thesis",
-    "options": [
-      {"label": "I have a thesis", "description": "I will type it"},
-      {"label": "Help me find it", "description": "Synthesize from sources"},
-      {"label": "Critique: X is wrong", "description": "Argue against existing view"},
-      {"label": "Propose: X should change", "description": "Recommend reform"}
+    “question”: “What is your thesis in one sentence?”,
+    “header”: “Thesis”,
+    “options”: [
+      {“label”: “I have a thesis”, “description”: “I will type it”},
+      {“label”: “Help me find it”, “description”: “Synthesize from sources”},
+      {“label”: “Critique: X is wrong”, “description”: “Argue against existing view”},
+      {“label”: “Propose: X should change”, “description”: “Recommend reform”}
     ],
-    "multiSelect": false
+    “multiSelect”: false
   },
   {
-    "question": "What is the strongest objection to your thesis?",
-    "header": "Counter",
-    "options": [
-      {"label": "I know it", "description": "I will describe the objection"},
-      {"label": "Find from sources", "description": "What do critics say?"},
-      {"label": "Steel-man for me", "description": "Generate the best counter"}
+    “question”: “What is the strongest objection to your thesis?”,
+    “header”: “Counter”,
+    “options”: [
+      {“label”: “I know it”, “description”: “I will describe the objection”},
+      {“label”: “Find from sources”, “description”: “What do critics say?”},
+      {“label”: “Steel-man for me”, “description”: “Generate the best counter”}
     ],
-    "multiSelect": false
+    “multiSelect”: false
   }
 ])
 ```
@@ -571,7 +654,7 @@ Files created:
 - .claude/ACTIVE_WORKFLOW.md (workflow state)
 
 Next: Load the domain skill to begin drafting.
-Read("${CLAUDE_PLUGIN_ROOT}/skills/writing-[domain]/SKILL.md")
+Read(“${CLAUDE_PLUGIN_ROOT}/skills/writing-[domain]/SKILL.md”)
 
 Commands available:
 - /writing-verify - Check structure against PRECIS and OUTLINE
