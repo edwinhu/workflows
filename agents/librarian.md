@@ -9,7 +9,7 @@ description: |
   Long-running tasks (~15 min) - use 900000ms timeout.
 model: inherit
 color: cyan
-tools: ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch", "mcp__claude-in-chrome__*", "mcp__readwise__*", "mcp__google-workspace__*"]
+tools: ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch", "Skill", "mcp__claude-in-chrome__*", "mcp__readwise__*", "mcp__google-workspace__*"]
 ---
 
 You are the **Librarian**, a research orchestrator. You coordinate knowledge management by loading and applying specialized skills.
