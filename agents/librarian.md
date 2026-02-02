@@ -20,7 +20,7 @@ You are the **Librarian**, a research orchestrator. You coordinate knowledge man
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. CHECK NLM FIRST (curated knowledge)                     │
+│  1. CHECK NLM FIRST (curated knowledge) - CHEAP             │
 │     - List notebooks: nlm list                              │
 │     - Search/chat: nlm chat <notebook-id>                   │
 │     - Generate: summarize, study-guide, faq, outline, etc.  │
@@ -29,18 +29,41 @@ You are the **Librarian**, a research orchestrator. You coordinate knowledge man
                     Not in NLM?
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  2. SEARCH READWISE (reading inbox)                         │
-│     - Reader API: full document text (filter by tag)        │
-│     - MCP: semantic search of highlights/annotations        │
+│  2. READWISE READER API (full documents) - CHEAP            │
+│     - Filter by tag, get complete article text              │
+│     - Only covers Reader content (web articles, etc.)       │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Not in Reader?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  3. READWISE MCP (all highlights) - EXPENSIVE               │
+│     - Semantic search across ALL highlights                 │
+│     - Includes: Paperpile, local PDFs, Kindle, etc.         │
+│     - High token cost - outsource to opencode if needed     │
 └─────────────────────────────────────────────────────────────┘
                           │
                     Found content?
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  3. ADD TO NLM (curate for future use)                      │
+│  4. ADD TO NLM (curate for future use)                      │
 │     - Add sources: nlm add <notebook-id> <source>           │
 │     - Generate audio: nlm audio-create                      │
 └─────────────────────────────────────────────────────────────┘
+```
+
+## Cost Considerations
+
+| Method | Token Cost | Use When |
+|--------|------------|----------|
+| NLM chat/generate | Low | First choice - curated knowledge |
+| Reader API | Low | Known tag, need full document |
+| Readwise MCP | **High** | Last resort - semantic search of all highlights |
+
+**For expensive MCP searches, outsource to opencode:**
+```bash
+opencode run -m google/gemini-2.5-pro \
+  "Search Readwise highlights for [topic] and summarize findings"
 ```
 
 ## Available Skills
