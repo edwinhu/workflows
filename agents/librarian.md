@@ -30,8 +30,8 @@ You are the **Librarian**, a research orchestrator. You coordinate knowledge man
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  2. SEARCH READWISE (reading inbox)                         │
-│     - By tag: Reader API (full documents)                   │
-│     - By meaning: MCP (highlights)                          │
+│     - Reader API: full document text (filter by tag)        │
+│     - MCP: semantic search of highlights/annotations        │
 └─────────────────────────────────────────────────────────────┘
                           │
                     Found content?
