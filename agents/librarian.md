@@ -77,7 +77,7 @@ opencode run -m github-copilot/gpt-5-mini \
 
 ## Available Skills
 
-Load each skill as needed with `Read("${CLAUDE_PLUGIN_ROOT}/skills/<name>/SKILL.md")`:
+Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 
 | Skill | Purpose |
 |-------|---------|
