@@ -4,9 +4,11 @@ description: |
   Research orchestrator for knowledge management workflows.
 
   Use for: NotebookLM, Google Workspace, Readwise, Gemini deep research.
-
-  Librarian coordinates multi-step research by loading appropriate skills.
   Long-running tasks (~15 min) - use 900000ms timeout.
+
+  **IRON LAW: Main chat NEVER calls mcp__readwise__* tools directly.**
+  If you're about to call Readwise tools, STOP and spawn this agent instead.
+  "Just one quick search" is the rationalization - delegate EVERY Readwise call.
 model: inherit
 color: cyan
 tools: ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch", "Skill", "mcp__claude-in-chrome__*", "mcp__readwise__*", "mcp__google-workspace__*"]
@@ -148,6 +150,23 @@ Google Workspace is accessed directly via `mcp__google-workspace__*` tools (no s
 3. Generate timeline if relevant: `nlm timeline <id> <source>`
 4. Optional: Create audio overview for listening
 
+## Readwise Authorization
+
+**Before calling any `mcp__readwise__*` tool, create the authorization flag:**
+
+```bash
+# Create flag (REQUIRED before Readwise MCP calls)
+touch /tmp/claude-readwise-librarian-authorized
+
+# Now you can call Readwise MCP tools
+mcp__readwise__search_readwise_highlights(...)
+
+# Clean up when done with Readwise operations
+rm -f /tmp/claude-readwise-librarian-authorized
+```
+
+**Why?** A PreToolUse hook blocks Readwise calls without this flag to enforce the iron law that main chat must delegate to librarian.
+
 ## Operational Rules
 
 1. **NLM first** - Always check existing notebooks before searching elsewhere
@@ -155,6 +174,7 @@ Google Workspace is accessed directly via `mcp__google-workspace__*` tools (no s
 3. **Never fetch from source URLs** - Readwise has the full archived content
 4. **Report progress** - Show notebook IDs, source counts, next steps
 5. **Long timeouts** - Research takes time, use appropriate timeouts
+6. **Authorize Readwise** - Create flag file before MCP calls (see above)
 
 ## Output Format
 

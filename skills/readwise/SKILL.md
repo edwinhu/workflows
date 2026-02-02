@@ -1,7 +1,7 @@
 ---
 name: readwise
-description: This skill should be used when the user asks to “search Readwise”, “find highlights”, “get quotes from my reading”, “add highlights to notebook”, “search my annotations”, “get full document text”, “fetch article content”, “add tagged documents to notebook”, or needs to query their Readwise library.
-version: 0.7.0
+description: This skill should be used when the user asks to "search Readwise", "find highlights", "get quotes from my reading", "add highlights to notebook", "search my annotations", "get full document text", "fetch article content", "add tagged documents to notebook", or needs to query their Readwise library.
+version: 0.8.0
 ---
 
 # Readwise
@@ -73,7 +73,79 @@ When you call Readwise directly, you are:
 - Using the wrong tool (MCP = semantic only, no full docs)
 - Skipping the proper workflow (librarian knows search -> format -> NotebookLM)
 
-**”I’ll just check quickly” is the rationalization. The librarian exists for this purpose. Use it.**
+**"I'll just check quickly" is the rationalization. The librarian exists for this purpose. Use it.**
+</EXTREMELY-IMPORTANT>
+
+---
+
+## Tag-Based Workflow (CRITICAL)
+
+<EXTREMELY-IMPORTANT>
+**When user mentions items were added by tag, NEVER use MCP semantic search.**
+
+### Trigger Phrases
+- "we added items tagged X"
+- "I thought we added X to NLM"
+- "are they not in notebooklm?"
+- "items tagged [tag]"
+- "documents with tag [tag]"
+
+### Required Workflow
+
+```
+User mentions tagged items or NLM content
+              │
+              ▼
+    ┌─────────────────────┐
+    │ 1. CHECK NLM FIRST  │ ← MANDATORY
+    │    nlm list         │
+    │    nlm chat <id>    │
+    └─────────────────────┘
+              │
+       Not in NLM?
+              ▼
+    ┌─────────────────────┐
+    │ 2. USE READER API   │ ← For tagged items
+    │    --tag "X"        │
+    │    NOT MCP search!  │
+    └─────────────────────┘
+```
+
+### Red Flags for Tag-Based Queries
+
+```
+STOP if user mentions tagged items AND you're about to:
+- Call mcp__readwise__search_readwise_highlights
+- Do "semantic search" for tagged content
+- Skip checking NLM first
+
+These are WORKFLOW VIOLATIONS. The content is already curated by tag.
+```
+
+### Correct Response Pattern
+
+```
+User: "I thought we added the Egan-Jones letters to NLM? They were tagged proxy advisors."
+
+CORRECT:
+1. Task(librarian) → Check NLM for proxy advisors notebook
+2. If not found: Use Reader API with --tag "proxy advisors"
+3. NEVER: mcp__readwise__search_readwise_highlights("Egan-Jones...")
+
+WRONG:
+- Immediately calling MCP search
+- Skipping NLM check
+- Using semantic search for tagged content
+```
+
+### Rationalization Prevention for Tags
+
+| Thought | Reality |
+|---------|---------|
+| "MCP will find it faster" | Tags are exact. Reader API is correct tool. |
+| "Semantic search is more flexible" | User already organized by tag. Respect that. |
+| "I'll check NLM after" | NLM FIRST. This is the knowledge hierarchy. |
+| "Let me verify it's there" | Check NLM, don't re-search everything. |
 </EXTREMELY-IMPORTANT>
 
 ---
@@ -81,14 +153,26 @@ When you call Readwise directly, you are:
 ## Decision Tree: Which Method to Use?
 
 ```
-Do you know the exact tag(s)?
-├── YES → Use Reader API (tag-based fetch)
-│         Fast, gets full documents, no semantic search needed
-│         → python3 skills/readwise/scripts/readwise_to_nlm.py --tag “tag” --notebook <id>
-│
-└── NO → Use MCP (semantic search)
-          Find highlights by meaning/keywords
-          → mcp__readwise__search_readwise_highlights
+┌─────────────────────────────────────────────────────────────┐
+│ 1. CHECK NLM FIRST (always)                                  │
+│    Is the content already in a NotebookLM notebook?          │
+│    → nlm list && nlm chat <id> "query"                       │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Not in NLM?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 2. Do you know the exact tag(s)?                             │
+│                                                              │
+│ YES → Reader API (tag-based fetch)                           │
+│       Fast, gets full documents, no semantic search needed   │
+│       → python3 skills/readwise/scripts/readwise_to_nlm.py \ │
+│           --tag "tag" --notebook <id>                        │
+│                                                              │
+│ NO → MCP (semantic search) - LAST RESORT                     │
+│      Find highlights by meaning/keywords                     │
+│      → mcp__readwise__search_readwise_highlights             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Quick Reference
