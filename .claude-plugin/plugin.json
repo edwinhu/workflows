@@ -1,6 +1,6 @@
 {
   "name": "workflows",
-  "version": "2.35.10",
+  "version": "2.35.11",
   "description": "Development and data science workflows with TDD enforcement and output-first verification.",
   "author": {
     "name": "edwinhu"
