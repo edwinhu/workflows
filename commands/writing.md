@@ -145,3 +145,27 @@ When `style: legal` is detected or set:
 
 **If you create a legal docx without reading the skill and using the template, DELETE IT and START OVER.**
 </EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## Econ Domain: MUST Load Full Skill
+
+When `style: econ` is detected or set:
+
+1. **MUST Read the full skill file:**
+   ```
+   Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md”)
+   ```
+
+2. **Iron Laws from writing-econ:**
+   - NO BOILERPLATE - Delete “This paper discusses...”, roadmap paragraphs
+   - NO ELEGANT VARIATION - One concept = one word, always
+   - HOOK WITH FINDING - Start with compelling result, not background
+
+3. **Delete & Restart triggers:**
+   - “This paper discusses...” → DELETE, start with finding
+   - Table-of-contents paragraph → DELETE
+   - “As we shall see...” → DELETE
+   - Varying terms for same concept → FIX immediately
+
+**If you write boilerplate in an econ paper, DELETE THE SECTION and START OVER with a hook.**
+</EXTREMELY-IMPORTANT>
