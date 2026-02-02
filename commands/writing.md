@@ -12,7 +12,7 @@ allowed-tools: Read, Write, AskUserQuestion
 ## Step 1: Check for Active Workflow
 
 ```
-if .claude/ACTIVE_WORKFLOW.md exists and workflow == "writing":
+if .claude/ACTIVE_WORKFLOW.md exists and workflow == “writing”:
     → Resume existing project (Step 2)
 else:
     → Detect intent (Step 3)
@@ -23,9 +23,9 @@ else:
 Read workflow state and load appropriate domain skill:
 
 ```
-Read(".claude/ACTIVE_WORKFLOW.md")
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(“.claude/ACTIVE_WORKFLOW.md”)
+Read(“.claude/PRECIS.md”)
+Read(“.claude/OUTLINE.md”)
 ```
 
 Based on `style` field:
@@ -37,23 +37,23 @@ Announce current phase and continue.
 
 ## Step 3: Detect Intent
 
-Analyze the user's request to determine mode:
+Analyze the user’s request to determine mode:
 
 **Quick Mode Indicators:**
-- "Check this paragraph"
-- "Edit this text"
-- "Review my writing"
-- "Make this clearer"
-- "Fix the style"
+- “Check this paragraph”
+- “Edit this text”
+- “Review my writing”
+- “Make this clearer”
+- “Fix the style”
 - Short text provided inline
-- No mention of "project", "paper", "article", "draft"
+- No mention of “project”, “paper”, “article”, “draft”
 
 **Project Mode Indicators:**
-- "Write a paper on..."
-- "Start a law review article"
-- "Draft an economics paper"
-- "I'm working on an article about..."
-- "Help me write about..."
+- “Write a paper on...”
+- “Start a law review article”
+- “Draft an economics paper”
+- “I’m working on an article about...”
+- “Help me write about...”
 - Mentions thesis, argument, research
 
 ## Step 4: Route Based on Intent
@@ -63,7 +63,7 @@ Analyze the user's request to determine mode:
 Load the general writing skill for immediate editing:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")
+Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md”)
 ```
 
 Apply Strunk & White rules to the provided text. No workflow state needed.
@@ -73,7 +73,7 @@ Apply Strunk & White rules to the provided text. No workflow state needed.
 Start the brainstorm workflow to set up the project:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-brainstorm/SKILL.md")
+Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-brainstorm/SKILL.md”)
 ```
 
 This will:
@@ -122,3 +122,26 @@ During brainstorm, detect domain from topic and sources:
 | Legal cases, statutes, law reviews, constitutional | writing-legal | legal |
 | Economics, markets, policy, data, empirical | writing-econ | econ |
 | General/other | writing-general | general |
+
+<EXTREMELY-IMPORTANT>
+## Legal Domain: MUST Load Full Skill
+
+When `style: legal` is detected or set:
+
+1. **MUST Read the full skill file:**
+   ```
+   Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md”)
+   ```
+
+2. **MUST use template for .docx export:**
+   ```
+   ${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/templates/law_review_template.docx
+   ```
+
+3. **Iron Laws from writing-legal:**
+   - NO DOCX WITHOUT TEMPLATE - Copy template first, then add content
+   - NO CLAIM WITHOUT COUNTERARGUMENTS - Confront objections
+   - NO SECONDARY CITATIONS - Read original sources
+
+**If you create a legal docx without reading the skill and using the template, DELETE IT and START OVER.**
+</EXTREMELY-IMPORTANT>
