@@ -1,6 +1,6 @@
 ---
 name: nlm
-description: This skill should be used when the user asks to "create a notebook", "add source to notebook", "generate audio overview", "create podcast", "manage NotebookLM", "nlm", "add PDF to notebook", "list notebooks", "summarize sources", "generate study guide", "create FAQ", "briefing document", "chat with notebook", "generate outline", or needs to interact with Google NotebookLM via the nlm CLI tool.
+description: This skill should be used when the user asks to "create a notebook", "add source to notebook", "generate audio overview", "create podcast", "manage NotebookLM", "nlm", "add PDF to notebook", "list notebooks", "summarize sources", "generate study guide", "create FAQ", "briefing document", "chat with notebook", "generate outline", "research a topic", "deep research", or needs to interact with Google NotebookLM via the nlm CLI tool.
 version: 0.2.0
 ---
 
@@ -202,20 +202,58 @@ Transform your sources into different formats. All commands take `<notebook-id> 
 /Users/vwh7mb/projects/nlm/nlm toc <notebook-id> <source-id>
 ```
 
+### Research Commands
+
+Research topics and automatically import sources into a notebook:
+
+```bash
+# Research a topic and import sources to a notebook
+/Users/vwh7mb/projects/nlm/nlm research "quantum computing advances" --notebook <notebook-id>
+
+# Deep research mode for comprehensive investigation
+/Users/vwh7mb/projects/nlm/nlm research "climate policy impacts" --notebook <notebook-id> --deep
+```
+
+The research command:
+- Searches for relevant sources on the topic
+- Automatically imports found sources into the specified notebook
+- `--deep` mode performs more comprehensive research
+
 ### Batch Operations
 
 Execute multiple commands in a single request for better performance:
 
 ```bash
-/Users/vwh7mb/projects/nlm/nlm batch “create ‘Research Notebook’” “add NOTEBOOK_ID https://example.com” “add NOTEBOOK_ID paper.pdf”
+/Users/vwh7mb/projects/nlm/nlm batch "create 'Research Notebook'" "add NOTEBOOK_ID https://example.com" "add NOTEBOOK_ID paper.pdf"
 ```
 
 ## Common Workflows
 
 ### Research Workflow
 
+**Option A: Automated Research (recommended)**
+
+Use the `research` command to automatically find and import sources:
+
+```bash
+# Create notebook
+id=$(/Users/vwh7mb/projects/nlm/nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
+
+# Research and auto-import sources
+/Users/vwh7mb/projects/nlm/nlm research "transformer architecture advances 2024" --notebook $id
+
+# For comprehensive investigation
+/Users/vwh7mb/projects/nlm/nlm research "transformer architecture advances 2024" --notebook $id --deep
+
+# Generate synthesis
+/Users/vwh7mb/projects/nlm/nlm generate-chat $id "What are the key findings?"
+/Users/vwh7mb/projects/nlm/nlm audio-create $id "Summarize the key findings professionally"
+```
+
+**Option B: Manual Source Addition**
+
 1. Create a notebook for the topic
-2. Add sources (URLs, PDFs, text)
+2. Add sources manually (URLs, PDFs, text)
 3. Create notes with key findings
 4. Generate an audio overview for synthesis
 
@@ -223,7 +261,7 @@ Execute multiple commands in a single request for better performance:
 # Create notebook
 id=$(/Users/vwh7mb/projects/nlm/nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
 
-# Add sources
+# Add sources manually
 /Users/vwh7mb/projects/nlm/nlm add $id https://arxiv.org/paper.pdf
 /Users/vwh7mb/projects/nlm/nlm add $id research-notes.txt
 

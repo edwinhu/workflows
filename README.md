@@ -172,9 +172,8 @@ A knowledge orchestration plugin that coordinates research workflows across mult
 - `librarian` - Autonomous knowledge management agent for research workflows
 
 **Skills:**
-- `/nlm` - NotebookLM CLI for notebooks, sources, notes, and audio overviews
+- `/nlm` - NotebookLM CLI for notebooks, sources, notes, audio overviews, and research
 - `/gog` - Google Workspace CLI for Gmail, Calendar, Drive, Tasks, Keep, Sheets, Docs
-- `/gemini-web` - Browser automation for Gemini deep research and Paperpile integration
 
 **Workflows:**
 - **Research [Topic]** - Search Readwise, create notebook, gather sources, generate synthesis
@@ -244,8 +243,7 @@ workflows/
 │   ├── continuous-learning/    # Cross-project pattern extraction
 │   ├── nlm/                    # NotebookLM CLI skill
 │   ├── gog/                    # Google Workspace CLI skill
-│   ├── gemini-web/             # Gemini web automation skill
-│   └── [28+ other skills...]
+│   └── [27+ other skills...]
 ├── hooks/                      # Hook entry points
 │   ├── hooks.json              # Hook configuration
 │   ├── session-start.py        # SessionStart hook
