@@ -91,17 +91,6 @@ For comprehensive guidance, consult:
 **Strong revision:**
 > The team wrote the report, management reviewed it, and stakeholders received it.
 
-## Typography Tools
-
-### Smart Quotes
-
-Convert straight quotes (`"`) to typographic curly quotes (`""`):
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/smartquotes.py file.md
-python ${CLAUDE_PLUGIN_ROOT}/scripts/smartquotes.py file.md --check  # dry-run
-```
-
 ## Integration
 
 After completing any writing task, invoke `/ai-anti-patterns` to check for AI writing indicators.
