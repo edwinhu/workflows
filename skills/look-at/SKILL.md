@@ -113,9 +113,34 @@ Use this extracted information directly in continued work without loading the fu
 |-------|----------|-------|------|
 | `gemini-2.5-flash-lite` | Default - fast, cheap analysis | Fastest | Lowest |
 | `gemini-3-flash` | More complex extraction needs | Fast | Low |
+| `gemini-3-flash-preview` | Agentic vision with code execution | Fast | Low |
 | `gemini-3-pro-preview` | Highest accuracy required | Medium | Medium |
 
 **Default is gemini-2.5-flash-lite** for optimal speed/cost ratio.
+
+## Agentic Vision Mode
+
+For complex visual reasoning tasks, use the `--agentic` flag to enable code execution. This allows Gemini to:
+- **Zoom into specific regions** of an image for detailed analysis
+- **Count objects** precisely using programmatic analysis
+- **Perform calculations** on visual data (measurements, statistics)
+- **Process structured data** in images (charts, tables) with higher accuracy
+
+**When to use `--agentic`:**
+- Counting objects in an image ("How many items are in this photo?")
+- Reading fine details ("What does the small text in the corner say?")
+- Analyzing charts with specific data points ("What's the exact value for Q3?")
+- Complex spatial reasoning ("Which element is closest to the center?")
+
+**Usage:**
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "photo.jpg" \
+    --goal "Count the number of people in this image" \
+    --agentic
+```
+
+**Note:** Agentic mode automatically uses `gemini-3-flash-preview` regardless of the `--model` setting.
 
 ## Common Patterns
 
@@ -155,6 +180,26 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "table.pdf" \
     --goal "Extract the table data as JSON with columns: name, value, date"
+```
+
+### Count Objects (Agentic)
+```bash
+# Bash tool call with:
+# description: "look-at: Count the number of people in the photo"
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "crowd.jpg" \
+    --goal "Count the number of people visible in this image" \
+    --agentic
+```
+
+### Analyze Chart Details (Agentic)
+```bash
+# Bash tool call with:
+# description: "look-at: Extract specific data points from the chart"
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+    --file "quarterly_chart.png" \
+    --goal "Extract the exact values for each quarter and calculate the year-over-year change" \
+    --agentic
 ```
 
 ## Environment Setup

@@ -31,6 +31,7 @@ from pathlib import Path
 
 try:
     from google import genai
+    from google.genai import types
 except ImportError:
     print("Error: google-genai package not installed", file=sys.stderr)
     print("Install with: pip install google-genai", file=sys.stderr)
@@ -96,6 +97,7 @@ def analyze_file(
     file_path: str,
     goal: str,
     model: str = "gemini-2.5-flash-lite",
+    agentic: bool = False,
     verbose: bool = False
 ) -> str:
     """Analyze a file using Gemini API and extract specific information.
@@ -104,6 +106,7 @@ def analyze_file(
         file_path: Path to the local file to analyze
         goal: Specific information to extract from the file
         model: Gemini model to use (default: gemini-2.5-flash-lite)
+        agentic: Enable code execution for better visual reasoning (requires gemini-3-flash-preview)
         verbose: Whether to print debug information
 
     Returns:
@@ -121,6 +124,10 @@ def analyze_file(
     file_path = os.path.abspath(file_path)
     if not os.path.exists(file_path):
         raise ValueError(f"File not found: {file_path}")
+
+    # Agentic mode requires gemini-3-flash-preview
+    if agentic and model != "gemini-3-flash-preview":
+        model = "gemini-3-flash-preview"
 
     # Configure client
     client = genai.Client(api_key=api_key)
@@ -156,11 +163,21 @@ If the requested information is not found, clearly state what is missing."""
 
     if verbose:
         print("Generating response...", file=sys.stderr)
+        if agentic:
+            print("Agentic mode enabled (code execution)", file=sys.stderr)
 
     try:
+        # Build config with optional code execution for agentic vision
+        config = None
+        if agentic:
+            config = types.GenerateContentConfig(
+                tools=[types.Tool(code_execution=types.ToolCodeExecution())]
+            )
+
         response = client.models.generate_content(
             model=model,
-            contents=[uploaded_file, prompt]
+            contents=[uploaded_file, prompt],
+            config=config
         )
 
         # Clean up uploaded file
@@ -216,6 +233,12 @@ Environment:
     )
 
     parser.add_argument(
+        "--agentic", "-a",
+        action="store_true",
+        help="Enable agentic vision with code execution for complex reasoning (uses gemini-3-flash-preview)"
+    )
+
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Print debug information to stderr"
@@ -228,6 +251,7 @@ Environment:
             file_path=args.file,
             goal=args.goal,
             model=args.model,
+            agentic=args.agentic,
             verbose=args.verbose
         )
         print(result)
