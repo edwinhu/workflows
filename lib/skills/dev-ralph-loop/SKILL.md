@@ -251,10 +251,19 @@ Ralph loops are NOT for:
 - Data science (ds uses output-first verification instead)
 - Review phases (dev-review, ds-review)
 
+### Visual Tasks
+
+For tasks that produce rendered visual output (slides, charts, UI), use **visual-verify** instead of a plain ralph loop. Visual-verify wraps the ralph-loop pattern with render → look-at → fix steps:
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+```
+
 ## Integration
 
 This skill is invoked by:
-- `dev-implement` - for implementation tasks
+- `dev-implement` - for standard implementation tasks
 - `dev-debug` - for bug investigation and fixes
+- `visual-verify` - wraps ralph-loop for visual output tasks
 
 After all tasks complete, proceed to the next phase of the parent workflow.

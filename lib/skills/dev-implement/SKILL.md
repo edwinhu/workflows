@@ -142,17 +142,29 @@ Simple work is EXACTLY when discipline matters most—because that’s when you�
 
 ```
 For each task N in PLAN.md:
-    1. Start ralph loop for task N
-       → Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md”)
+    1. Determine loop type:
+       - Visual task? → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+       - Standard task? → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md")
 
     2. Inside loop: spawn Task agent
-       → Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md”)
+       → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")
 
     3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
+       Visual tasks: also render output and vision-check with look-at
 
-    4. Verify tests pass, output promise
+    4. Verify tests pass (+ visual check passes for visual tasks), output promise
 
-    5. Move to task N+1, start NEW ralph loop
+    5. Move to task N+1, start NEW loop
+```
+
+### Visual Task Detection
+
+If a PLAN.md task involves rendered visual output, use **visual-verify** instead of plain ralph-loop. Visual-verify adds render → look-at → fix steps inside each iteration.
+
+**Signals a task is visual:** task mentions "render", "slide", "chart", "figure", "layout", "UI", "screenshot", "visual", "diagram", or produces any file meant to be seen by humans (PNG, PDF, SVG).
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
 ```
 
 ### Step 1: Start Ralph Loop for Each Task
