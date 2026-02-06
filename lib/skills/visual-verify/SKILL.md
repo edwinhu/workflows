@@ -120,13 +120,10 @@ This is the key step. Gemini is not just describing what it sees -- it is review
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
     --goal "[ASSEMBLED CONTEXT-ENRICHED GOAL]" \
-    --model "gemini-3-flash"
+    --agentic
 ```
 
-**Model selection:**
-- Default: `gemini-3-flash` (visual review needs stronger reasoning than flash-lite)
-- Complex layouts: `gemini-3-pro-preview` (highest accuracy for detailed comparison)
-- Tasks requiring measurement or counting: add `--agentic`
+**ALWAYS use `--agentic` for visual-verify.** Agentic vision enables code execution, allowing Gemini to zoom into regions, measure spacing, count elements, and perform precise analysis. This is not optional -- visual verification demands the strongest reasoning available. The `--agentic` flag automatically uses `gemini-3-flash-preview`.
 
 ### Step 4: Decide
 
@@ -309,6 +306,7 @@ For any ad-hoc visual task outside a workflow:
 | "The previous render looked fine, this small change won't break it" | Small changes cause clipping, overflow, and alignment shifts | Render and look. Every time. |
 | "A generic look-at goal is sufficient" | Generic goals give generic descriptions | Assemble full context |
 | "I can describe the expected output in words" | Words are not pixels. "Centered" means different things in code vs. reality. | Render to see reality |
+| "Agentic mode is overkill for this check" | Visual verification ALWAYS uses agentic. Gemini needs code execution to zoom, measure, and count. | Use `--agentic`. Always. |
 
 ### Red Flags -- STOP Immediately
 
@@ -369,7 +367,7 @@ First iteration - no prior issues.
 
 ## Your Review
 Rate PASS or FAIL with specific issues and fix suggestions." \
-    --model "gemini-3-flash"
+    --agentic
 
 # Gemini responds: PASS
 <promise>VTASK1_DONE</promise>
@@ -408,7 +406,7 @@ tinymist compile document.typ /tmp/quick-check.png --pages 3 --ppi 144
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
     --file "/tmp/quick-check.png" \
     --goal "Check this Typst document page: table should have 4 columns with alternating row shading. Headers should be bold. Check alignment and readability." \
-    --model "gemini-3-flash"
+    --agentic
 ```
 
 ## When NOT to Use Visual-Verify
