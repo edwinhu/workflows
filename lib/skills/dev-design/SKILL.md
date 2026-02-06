@@ -334,13 +334,15 @@ If you catch yourself thinking these thoughts, STOP - you're about to write a FA
 > **TDD ENFORCEMENT:** Every task with code MUST have a failing test written BEFORE implementation.
 >
 > Pattern: `Skill(skill="ralph-loop:ralph-loop", args="Task N: [name] --max-iterations 10 --completion-promise TASKN_DONE")`
+>
+> **Task Dependencies:** Mark each task's `Deps` column: `—` = no dependencies (parallelizable), `after N` = must follow task N. Tasks with `—` or the same dependency can run in parallel when using agent team mode in dev-implement.
 
-| Task | Ralph Loop | Failing Test (write FIRST) | Verify Command |
-|------|------------|----------------------------|----------------|
-| 0. Test infrastructure (if needed) | `"Task 0: Test setup" → TASK0_DONE` | N/A (meta-task) | `pytest --version` or `npm test -- --version` |
-| 1. Add types | `"Task 1: Add types" → TASK1_DONE` | N/A (types only) | `tsc --noEmit` |
-| 2. Service method | `"Task 2: Service method" → TASK2_DONE` | `test_validate_session()` - write test, see RED, then implement | `pytest tests/test_auth.py -v` |
-| 3. Route handler | `"Task 3: Route handler" → TASK3_DONE` | `test_api_endpoint()` - write test, see RED, then implement | `pytest tests/test_api.py -v` |
+| Task | Deps | Ralph Loop | Failing Test (write FIRST) | Verify Command |
+|------|------|------------|----------------------------|----------------|
+| 0. Test infrastructure (if needed) | — | `"Task 0: Test setup" → TASK0_DONE` | N/A (meta-task) | `pytest --version` or `npm test -- --version` |
+| 1. Add types | after 0 | `"Task 1: Add types" → TASK1_DONE` | N/A (types only) | `tsc --noEmit` |
+| 2. Service method | after 1 | `"Task 2: Service method" → TASK2_DONE` | `test_validate_session()` - write test, see RED, then implement | `pytest tests/test_auth.py -v` |
+| 3. Route handler | after 1 | `"Task 3: Route handler" → TASK3_DONE` | `test_api_endpoint()` - write test, see RED, then implement | `pytest tests/test_api.py -v` |
 ```
 
 ### 6. User Gate - Final Approval
