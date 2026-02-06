@@ -161,7 +161,7 @@ THEN AND ONLY THEN: E2E tests/screenshots
 
 **You cannot skip GATE 5 (READ LOGS).** If you catch yourself about to take screenshots without reading logs first, STOP.
 
-See `Skill(skill="workflows:dev-tdd")` for the full gate sequence with examples.
+See `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")` for the full gate sequence with examples.
 </EXTREMELY-IMPORTANT>
 </EXTREMELY-IMPORTANT>
 

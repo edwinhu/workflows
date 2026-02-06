@@ -6,7 +6,7 @@ This document clarifies the different description patterns for workflow phase sk
 
 ### 1. Standalone Skills (User-Triggered)
 
-**Examples:** marimo, jupytext, wrds, lseg-data, gemini-batch, look-at, writing, dev-debug
+**Examples:** marimo, jupytext, wrds, lseg-data, gemini-batch, look-at, writing
 
 **Invocation:** Users directly ask questions or make requests that trigger these skills.
 

@@ -61,7 +61,7 @@ Asking costs minutes. Wrong assumptions cost hours of rework.
 
 After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:dev-design")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-design/SKILL.md")
 ```
 
 DO NOT:
@@ -344,5 +344,5 @@ This is the last checkpoint before implementation planning. Fake tests caught he
 
 **REQUIRED SUB-SKILL:** After completing clarification, IMMEDIATELY invoke:
 ```
-Skill(skill="workflows:dev-design")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-design/SKILL.md")
 ```

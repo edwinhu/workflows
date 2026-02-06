@@ -102,7 +102,42 @@ A workflow succeeds when the human receives a deliverable that requires minimal 
 
 Good workflows produce deliverables where the human says "this is basically done" not "I'll take it from here."
 
-## 7. Workflows Improve Through Use
+## 7. Two Entry Points
+
+Each workflow exposes exactly **two** user-facing commands. Everything else is internal.
+
+| Workflow | Entry (start fresh) | Edit (mid-workflow) | Internal phases |
+|----------|--------------------|--------------------|-----------------|
+| **Dev** | `/dev` | `/dev-edit` | brainstorm, explore, clarify, design, implement, review, verify, tdd, test, debug |
+| **DS** | `/ds` | `/ds-edit` | brainstorm, plan, implement, review, verify |
+| **Writing** | `/writing` | `/writing-edit` | brainstorm, setup, outline, draft, general, econ, legal |
+
+### Why Two
+
+**Entry** starts a fresh episode. It runs the brainstorm phase, which gates everything downstream. Use when beginning a new feature, analysis, or document.
+
+**Edit** re-enters a running episode. It diagnoses what's wrong and routes to the right internal phase. Use when mid-workflow and something needs fixing — a bug, wrong results, reviewer feedback, a rough draft.
+
+The user never needs to know which internal phase to invoke. The two entry points handle routing:
+
+```
+/dev         → brainstorm → explore → clarify → design → implement → review → verify
+/dev-edit    → diagnose → route to {debug, re-test, re-design, ...}
+
+/ds          → brainstorm → plan → implement → review → verify
+/ds-edit     → diagnose → route to {debug notebook, re-analyze, revise, re-profile, ...}
+
+/writing     → brainstorm → setup → outline → draft
+/writing-edit → verify structure → check anti-patterns → domain rules → polish
+```
+
+### What Stays User-Facing
+
+Standalone tools that aren't workflow phases stay as auto-triggered skills: `readwise`, `wrds`, `lseg-data`, `bluebook`, `look-at`, `marimo`, `notebook-debug`, etc. These are domain knowledge, not workflow steps — a user invokes them directly without entering a workflow.
+
+The test: if the skill makes sense outside of `/dev`, `/ds`, or `/writing`, it's a standalone tool. If it only makes sense as a phase within a workflow, it's internal.
+
+## 8. Workflows Improve Through Use
 
 Enforcement patterns are discovered through iteration, not designed in advance. Dev is the most mature workflow because it has been used the most - each session reveals new rationalization patterns, new failure modes, new gates needed. Writing and DS are less mature not because they're less important, but because they've had fewer gradient updates.
 

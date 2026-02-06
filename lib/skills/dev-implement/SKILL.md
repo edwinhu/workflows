@@ -333,7 +333,7 @@ Iteration 3: Implement approach C → tests fail
 5. **ASK USER** for direction
    - Option A: Re-examine requirements (may need /dev-clarify)
    - Option B: Try completely different design (may need /dev-design)
-   - Option C: Investigate why tests fail (may need /dev-debug)
+   - Option C: Investigate why tests fail (may need /dev-edit)
    - Option D: User provides domain knowledge
 
 **NO PASSING TESTS = NOT COMPLETE** (hard rule)

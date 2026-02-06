@@ -149,7 +149,7 @@ You will need:
 Before writing any code, you MUST load the TDD skill:
 
 ```
-Skill(skill="workflows:dev-tdd")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")
 ```
 
 This loads:

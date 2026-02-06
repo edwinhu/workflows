@@ -71,7 +71,7 @@ Used by: `/dev-delegate`, `/ds-delegate`
 
 **NO EVIDENCE = NOT COMPLETE**
 
-Implemented in: `/dev-debug`, `/dev-implement`
+Implemented in: `/dev-edit`, `/dev-implement`
 
 ## Environment Context Injection
 

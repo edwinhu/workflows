@@ -1,5 +1,5 @@
 ---
-description: Writing edit loop - verify structure, check anti-patterns, polish, and complete workflow
+description: "Midpoint entry for writing workflow - verify structure, check anti-patterns, polish, and complete workflow"
 allowed-tools: Read, Edit, Write, Bash, Skill
 ---
 

@@ -11,7 +11,7 @@ description: "Per-task ralph loop pattern for implementation and debugging. One 
 Before starting ANY ralph loop, you MUST load the TDD skill to remember the testing gates and task reframing:
 
 ```
-Skill(skill="workflows:dev-tdd")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")
 ```
 
 This loads:

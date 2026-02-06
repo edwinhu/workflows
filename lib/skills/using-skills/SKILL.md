@@ -46,21 +46,23 @@ YES → Invoke skill FIRST, then follow its protocol
 NO  → Proceed normally
 ```
 
-## Workflow Commands (User Must Invoke Explicitly)
+## Workflow Commands
 
-These are commands, not auto-triggered skills. User must explicitly type the command:
+Each workflow has two entry points — start fresh or re-enter mid-workflow:
 
-| Command | Purpose | User Types |
-|---------|---------|------------|
-| `/dev` | Feature development workflow (7 phases) | `/dev` |
-| `/ds` | Data analysis workflow (5 phases) | `/ds` |
+| Start Fresh | Mid-Workflow | Purpose |
+|-------------|-------------|---------|
+| `/dev` | `/dev-edit` | Feature development (7 phases) / debug, fix, re-test |
+| `/ds` | `/ds-edit` | Data analysis (5 phases) / wrong results, notebook errors, revisions |
+| `/writing` | `/writing-edit` | Writing projects / verify structure, anti-patterns, polish |
 
 ## Skill Triggers (Can Auto-Invoke)
 
-| User Intent | Skill | Trigger Words |
-|-------------|-------|---------------|
-| Bug/fix | `dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
-| Writing | `writing` | write, draft, document, essay, paper |
+| User Intent | Command | Trigger Words |
+|-------------|---------|---------------|
+| Bug/fix | `/dev-edit` | bug, broken, fix, doesn't work, crash, error, fails |
+| Wrong results | `/ds-edit` | results wrong, notebook error, reviewer feedback, data changed |
+| Writing | `/writing` | write, draft, document, essay, paper |
 | **Media analysis** | **look-at** | describe image, analyze PDF, what's in this, screenshot, diagram |
 
 ## Red Flags - You're Skipping the Skill Check
@@ -93,7 +95,7 @@ INSTEAD:
 1. Start ralph loop:
    ralph-loop: Start Ralph Loop in current session with bug debugging
    Skill(skill="ralph-loop:ralph-loop", args="Debug: [symptom] --max-iterations 15 --completion-promise FIXED")
-2. Inside loop, follow /dev-debug protocol
+2. Inside loop, follow /dev-edit protocol
 ```
 
 **Any code reading before starting the workflow is a violation.**
@@ -110,8 +112,8 @@ When multiple skills could apply:
 Use the Skill tool to invoke skills:
 
 ```bash
-# dev-debug: Systematic bug investigation and fixing with verification-driven methodology
-Skill(skill="dev-debug")
+# dev-edit: Midpoint entry for dev workflow - debug, fix, re-test
+Skill(skill="dev-edit")
 
 # dev: Feature development workflow with 7 phases and TDD enforcement
 Skill(skill="dev")

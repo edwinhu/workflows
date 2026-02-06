@@ -24,7 +24,7 @@ dev-implement
 Before choosing testing tools, you MUST load the TDD skill to ensure gate compliance:
 
 ```
-Skill(skill="workflows:dev-tdd")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")
 ```
 
 This loads:
@@ -282,8 +282,8 @@ Each sub-skill has its own availability gate. Load the appropriate skill and fol
 
 | Skill | Platform | Primary Tool |
 |-------|----------|--------------|
-| `Skill(skill="workflows:dev-test-hammerspoon")` | macOS | Hammerspoon (`hs`) |
-| `Skill(skill="workflows:dev-test-linux")` | Linux | ydotool (Wayland) / xdotool (X11) |
+| `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-hammerspoon/SKILL.md")` | macOS | Hammerspoon (`hs`) |
+| `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-linux/SKILL.md")` | Linux | ydotool (Wayland) / xdotool (X11) |
 
 ## Unit & Integration Tests
 
@@ -360,7 +360,7 @@ tests/test_feature.py::test_error FAILED
 
 For TDD protocol (RED-GREEN-REFACTOR), see:
 ```
-Skill(skill="workflows:dev-tdd")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")
 ```
 
 This skill is invoked by Task agents during `dev-implement` phase.

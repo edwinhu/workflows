@@ -257,7 +257,7 @@ Write the initial spec to `.claude/SPEC.md`:
 
 ## Testing Strategy (MANDATORY - USER APPROVED)
 
-> **For Claude:** Use `Skill(skill="workflows:dev-test")` for automation options.
+> **For Claude:** Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test/SKILL.md")` for automation options.
 >
 > **⚠️ NO IMPLEMENTATION WITHOUT TESTS. If this section is empty, STOP.**
 

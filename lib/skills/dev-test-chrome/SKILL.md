@@ -567,4 +567,4 @@ This skill is referenced by `dev-test` for Chrome MCP browser automation.
 
 **For headless/CI testing, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")`
 
-For TDD protocol, see: `Skill(skill="workflows:dev-tdd")`
+For TDD protocol, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`

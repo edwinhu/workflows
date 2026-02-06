@@ -435,5 +435,5 @@ This skill is invoked by:
 
 For testing tool options (Playwright, ydotool, etc.), see:
 ```
-Skill(skill="workflows:dev-test")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test/SKILL.md")
 ```

@@ -510,4 +510,4 @@ This skill is referenced by `dev-test` for Playwright browser automation.
 
 **For debugging (console/network), use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")`
 
-For TDD protocol, see: `Skill(skill="workflows:dev-tdd")`
+For TDD protocol, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`

@@ -140,8 +140,8 @@ Reply when installed and I'll continue testing.
 - `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")` - headless CI/CD
 
 **For native desktop apps, use:**
-- `Skill(skill="workflows:dev-test-hammerspoon")` - macOS
-- `Skill(skill="workflows:dev-test-linux")` - Linux
+- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-hammerspoon/SKILL.md")` - macOS
+- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-linux/SKILL.md")` - Linux
 
 ### Rationalization Prevention
 
@@ -741,6 +741,6 @@ This skill is referenced by `dev-test` for Electron desktop application testing.
 
 **For web debugging, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")`
 **For headless web CI/CD, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")`
-**For macOS native apps, use:** `Skill(skill="workflows:dev-test-hammerspoon")`
+**For macOS native apps, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-hammerspoon/SKILL.md")`
 
-For TDD protocol and gate enforcement, see: `Skill(skill="workflows:dev-tdd")`
+For TDD protocol and gate enforcement, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`
