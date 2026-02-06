@@ -87,7 +87,7 @@ Every delegation MUST include:
 Use this Task invocation (fill in brackets):
 
 ```
-Task(subagent_type="general-purpose", prompt="""
+Task(subagent_type="workflows:dev-implementer", prompt="""
 # TASK
 
 Implement: [TASK NAME]

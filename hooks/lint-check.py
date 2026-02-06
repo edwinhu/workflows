@@ -5,6 +5,7 @@ PostToolUse hook: Run appropriate linter after file edits.
 Supports:
 - Python (marimo): marimo check
 - Python (regular): ruff check
+- TypeScript/JavaScript: eslint (project-local or npx)
 - R: lintr
 - Stata: stata-linter
 - SAS: sasjs lint
@@ -107,6 +108,40 @@ def check_sas(file_path: str) -> str | None:
     return None
 
 
+def check_js_ts(file_path: str) -> str | None:
+    """Run eslint on JavaScript/TypeScript file."""
+    path = Path(file_path)
+
+    # Try project-local eslint first (fast), then npx (slower)
+    local_eslint = _find_local_eslint(path)
+    if local_eslint:
+        cmd = [str(local_eslint), '--no-fix', file_path]
+    else:
+        cmd = ['npx', '--no-install', 'eslint', '--no-fix', file_path]
+
+    code, stdout, stderr = run_command(cmd)
+    if code == -1:
+        return None  # eslint not available
+    if code != 0:
+        output = stdout.strip()
+        return f"eslint:\n{output}" if output else None
+    return None
+
+
+def _find_local_eslint(file_path: Path) -> Path | None:
+    """Walk up from file to find node_modules/.bin/eslint."""
+    current = file_path.parent
+    for _ in range(10):  # max 10 levels up
+        candidate = current / 'node_modules' / '.bin' / 'eslint'
+        if candidate.exists():
+            return candidate
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+    return None
+
+
 def get_linter_for_file(file_path: str) -> Callable | None:
     """Get appropriate linter function for file type."""
     path = Path(file_path)
@@ -119,6 +154,12 @@ def get_linter_for_file(file_path: str) -> Callable | None:
         '.do': check_stata,
         '.ado': check_stata,
         '.sas': check_sas,
+        '.ts': check_js_ts,
+        '.tsx': check_js_ts,
+        '.js': check_js_ts,
+        '.jsx': check_js_ts,
+        '.mjs': check_js_ts,
+        '.mts': check_js_ts,
     }
 
     return linters.get(suffix)

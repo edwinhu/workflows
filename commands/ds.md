@@ -3,8 +3,19 @@ description: Start the 5-phase data science workflow with output-first verificat
 allowed-tools: Read
 ---
 
-Start the ds workflow by reading and following Phase 1 (brainstorming):
+**Announce:** "Starting 5-phase DS workflow."
+
+```
+┌──────────────┐    ┌──────────┐    ┌──────────────┐    ┌───────────┐    ┌───────────┐
+│ ds-brainstorm│───→│ ds-plan  │───→│ ds-implement │───→│ ds-review │───→│ ds-verify │
+│  SPEC.md     │    │ PLAN.md  │    │ LEARNINGS.md │    │ APPROVED? │    │ COMPLETE? │
+└──────────────┘    └──────────┘    └──────────────┘    └─────┬─────┘    └─────┬─────┘
+                                         ↑                    │                │
+                                         └── CHANGES REQ'D ───┘                │
+                                         ↑                                     │
+                                         └──── NEEDS WORK ────────────────────┘
+```
+
+Start Phase 1 (brainstorming):
 
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-brainstorm/SKILL.md")
-
-The brainstorm phase will handle workflow activation and guide you through requirements gathering.

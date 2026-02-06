@@ -65,6 +65,52 @@ This applies even when:
 - [ ] Verify data types correct (dates parsed, numerics not strings)
 - [ ] Confirm filtering logic documented with counts
 
+#### Independent Verification (MANDATORY)
+
+<EXTREMELY-IMPORTANT>
+**Do NOT trust the analyst's claims about data quality. Run these checks yourself.**
+
+The analyst may have reported "no duplicates" without actually checking, or "handled missing values" by silently dropping rows. You MUST run independent verification.
+</EXTREMELY-IMPORTANT>
+
+Dispatch a Task agent to run these checks on the final analysis data:
+
+```python
+# 1. Empty/constant columns (useless data kept in analysis)
+for col in df.columns:
+    if df[col].nunique() <= 1:
+        print(f"WARNING: {col} is constant or empty ({df[col].nunique()} unique values)")
+
+# 2. High-null columns still in analysis
+null_pct = df.isnull().mean()
+high_null = null_pct[null_pct > 0.5]
+if len(high_null) > 0:
+    print(f"WARNING: Columns >50% null still in data:\n{high_null}")
+
+# 3. Duplicate rows on key columns
+key_cols = [...]  # from PLAN.md
+dupes = df.duplicated(subset=key_cols, keep=False)
+if dupes.sum() > 0:
+    print(f"WARNING: {dupes.sum()} duplicate rows on {key_cols}")
+    print(df[dupes].head())
+
+# 4. Row count traceability
+# Compare: raw input rows → after cleaning → after joins → final
+# Each step should be documented in LEARNINGS.md
+print(f"Final row count: {len(df)}")
+# Verify this matches the chain documented in LEARNINGS.md
+
+# 5. Cardinality check on categorical columns
+for col in df.select_dtypes(include='object').columns:
+    n_unique = df[col].nunique()
+    if n_unique > 0.9 * len(df):
+        print(f"WARNING: {col} has near-unique cardinality ({n_unique}/{len(df)}) — likely an ID, not a category")
+    if n_unique == len(df):
+        print(f"INFO: {col} is fully unique — confirm this is a key, not a category used in groupby")
+```
+
+**If ANY check produces a WARNING, this is a high-confidence issue (>=80). Report it.**
+
 ### Methodology Appropriateness
 - [ ] Verify statistical methods appropriate for data type
 - [ ] Check assumptions documented and verified (normality, independence, etc.)
@@ -227,19 +273,42 @@ task-agent-spawn: Spawn Task agent for structured analysis review
 Spawn a Task agent to review the analysis:
 
 ```
-Task(subagent_type="general-purpose"):
-"Review analysis against .claude/SPEC.md.
+Task(subagent_type="general-purpose", prompt="""
+Review analysis against .claude/SPEC.md.
 
-Execute single-pass review covering:
-1. Spec compliance - verify objectives met
-2. Data quality - confirm nulls, dupes, outliers handled
-3. Methodology - verify appropriate, assumptions checked
+Execute TWO-PASS review:
+
+PASS 1 - Independent Data Quality Verification (RUN CODE):
+1. Load the final analysis data
+2. Check for empty/constant columns (nunique <= 1)
+3. Check for high-null columns (>50% null)
+4. Check for duplicate rows on key columns
+5. Verify row count matches LEARNINGS.md chain
+6. Check cardinality of categorical columns
+Report any WARNING as confidence >= 80.
+
+PASS 2 - Methodology and Compliance Review (READ CODE):
+1. Spec compliance - verify all SPEC.md objectives addressed
+2. Data quality handling - confirm issues from PLAN.md were resolved
+3. Methodology - verify appropriate methods, assumptions checked
 4. Reproducibility - confirm seeds, versions, documentation
 
 Confidence score each issue (0-100).
 Report only issues with >= 80 confidence.
-Return structured output per /ds-review format."
+Return structured output per /ds-review format.
+""")
 ```
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "Analyst said data was clean" | Their claim is not evidence. They may have skipped checks. | Run independent verification yourself |
+| "I already read LEARNINGS.md, quality looks fine" | Reading a report is not verification | Execute the verification code patterns on actual data |
+| "Running checks would take too long" | Your unverified approval costs days of rework downstream | Run the checks. They take seconds. |
+| "The output-first protocol already caught issues" | Output-first catches per-step issues, not cumulative ones | Check final state independently |
+| "No point re-checking, I trust the methodology" | Trust is not verification. Your job is adversarial review. | Verify, then trust |
+| "Minor data issues won't affect conclusions" | You don't know that without checking the magnitude | Quantify the impact, then decide |
 
 ## Quality Standards
 
@@ -262,3 +331,5 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-verify/SKILL.md")
 ```
 
 If CHANGES REQUIRED, return to `/ds-implement` to fix issues first.
+
+**Maximum 3 review cycles.** If issues persist after 3 rounds of review → implement → re-review, escalate to the user with a summary of unresolved issues. Do not loop indefinitely.

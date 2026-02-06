@@ -1,6 +1,6 @@
 ---
 name: ds-brainstorm
-description: "This skill should be used when the user asks to \"start a data science project\", \"brainstorm analysis\", \"plan a data analysis\", or wants to clarify analysis requirements. REQUIRED Phase 1 of /ds workflow. Uses Socratic questioning to clarify goals, data sources, and constraints."
+description: "This skill should be used when the user asks to 'start data analysis', 'brainstorm analysis approach', 'plan a data project', 'clarify analysis requirements', or as Phase 1 of the /ds workflow."
 ---
 
 ## Contents
@@ -144,6 +144,16 @@ After selecting an approach:
 - Option C: [why rejected]
 ```
 
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I already know what analysis is needed" | You're pattern-matching from similar-sounding requests, not understanding THIS one | Ask questions first |
+| "The data will tell me what to do" | Data exploration without objectives is aimless — you'll profile everything and answer nothing | Define objectives first |
+| "User seems impatient, skip to analysis" | Wrong results from skipped brainstorm waste more time than 3 questions | Ask the questions |
+| "The request is clear enough" | Clear to YOU is not clear to the user — your assumptions ≠ their intent | Confirm with AskUserQuestion |
+| "I'll refine objectives as I go" | You'll commit to an approach and rationalize the objective to fit | Lock objectives before exploring |
+
 ## Red Flags - STOP If You Catch Yourself Doing This:
 
 | Action | Why It's Wrong | Do Instead |
@@ -169,10 +179,21 @@ Declare brainstorm complete when:
 
 This skill is Phase 1 of the 5-phase `/ds` workflow:
 
+```
+┌──────────────┐    ┌──────────┐    ┌──────────────┐    ┌───────────┐    ┌───────────┐
+│ ds-brainstorm│───→│ ds-plan  │───→│ ds-implement │───→│ ds-review │───→│ ds-verify │
+│  SPEC.md     │    │ PLAN.md  │    │ LEARNINGS.md │    │ APPROVED? │    │ COMPLETE? │
+└──────────────┘    └──────────┘    └──────────────┘    └─────┬─────┘    └─────┬─────┘
+                                         ↑                    │                │
+                                         └── CHANGES REQ'D ───┘                │
+                                         ↑                                     │
+                                         └──── NEEDS WORK ────────────────────┘
+```
+
 1. **Phase 1: ds-brainstorm** (current) - Clarify objectives through Socratic questioning
 2. **Phase 2: ds-plan** - Profile data and break analysis into tasks
 3. **Phase 3: ds-implement** - Execute analysis tasks with output-first verification
-4. **Phase 4: ds-review** - Review methodology, data quality, and statistical validity
+4. **Phase 4: ds-review** - Review methodology, data quality, and statistical validity (max 3 cycles)
 5. **Phase 5: ds-verify** - Check reproducibility and obtain user acceptance
 
 ## Phase Complete

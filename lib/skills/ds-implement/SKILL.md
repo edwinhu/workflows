@@ -9,71 +9,16 @@ Apply output-first verification at every step of analysis implementation. This i
 
 ## Contents
 
-- [Delegation Pattern](#delegation-pattern) - Main chat orchestrates, subagents analyze
-- [The Iron Law](#the-iron-law-of-ds-implementation) - EVERY step MUST produce visible output
-- [Output-First Protocol](#output-first-protocol) - Required outputs by operation type
-- [Implementation Process](#implementation-process) - Step-by-step workflow
-- [Task Agent Invocation](#task-agent-invocation) - Spawning sub-agents
+- [The Iron Law of DS Implementation](#the-iron-law-of-ds-implementation) - EVERY step MUST produce visible output
+- [Delegation](#delegation) - Main chat orchestrates, subagents analyze
+- [What Output-First Means](#what-output-first-means)
+- [Red Flags](#red-flags---stop-immediately)
+- [Implementation Process](#implementation-process)
 - [Verification Patterns](#verification-patterns) - See `references/verification-patterns.md`
-- [Common Failures](#common-failures-to-avoid) - Silent data loss, hidden nulls
+- [Common Failures](#common-failures-to-avoid)
+- [Gate: Exit Implementation](#gate-exit-implementation)
 
 # Implementation (Output-First Verification)
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Delegation
-
-**YOU MUST NOT WRITE ANALYSIS CODE. This is not negotiable.**
-
-You orchestrate. Subagents analyze. STOP if you're about to write Python/R code.
-
-Allowed in main chat:
-- Spawn Task agents
-- Review Task agent output
-- Verify outputs exist and are reasonable
-- Write to .claude/*.md files
-
-NOT allowed in main chat:
-- Write/Edit code files (.py, .R, .ipynb, etc.)
-- Direct data manipulation
-- "Quick analysis"
-
-**If you're about to write analysis code directly, STOP and spawn a Task agent instead.**
-
-### Rationalization Prevention
-
-Stop immediately when you encounter these rationalizations:
-
-| Rationalization | Reality |
-|---------|---------|
-| "It's just a quick plot" | You'll hide data issues. Delegate instead. |
-| "I'll just check the shape" | Your shape checks need output-first protocol. Delegate. |
-| "The subagent will take too long" | Your impatience costs more in context than subagent time. Delegate. |
-| "I already know this data" | Your knowledge ≠ verified output. Delegate and see. |
-| "Let me just run this merge" | Your merges will silently fail. Delegate with verification. |
-| "This is too simple for a subagent" | Your simple code hides errors. Delegate. |
-| "I'm already looking at the data" | Your looking ≠ analyzing. Delegate. |
-| "Results are needed fast" | Your wrong results are worse than slow right results. Delegate. |
-</EXTREMELY-IMPORTANT>
-
-## Delegation Pattern
-
-For each task in PLAN.md:
-1. Dispatch analyst subagent (does the work with output-first)
-2. Verify outputs are present and reasonable
-3. Dispatch methodology reviewer (for statistical tasks)
-4. Log findings to LEARNINGS.md
-
-**Why delegate?**
-- Fresh context per task (no pollution from previous analysis)
-- Enforced output verification (can't skip)
-- Error isolation (bad analysis doesn't corrupt main context)
-
-**REQUIRED SUB-SKILL:** For Task templates and detailed flow:
-```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
-```
-
----
 
 Implement analysis with mandatory visible output at every step.
 **NO TDD** - instead, every code step MUST produce and verify output.
@@ -81,9 +26,9 @@ Implement analysis with mandatory visible output at every step.
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Implementation
 
-**EVERY CODE STEP YOU WRITE MUST PRODUCE VISIBLE OUTPUT. This is not negotiable.**
+**EVERY CODE STEP MUST PRODUCE VISIBLE OUTPUT. This is not negotiable.**
 
-Before moving to the next step, you MUST execute the following:
+Before moving to the next step, you MUST:
 1. Run the code
 2. See the output (print, display, plot)
 3. Verify output is correct/reasonable
@@ -97,6 +42,24 @@ This applies even when YOU think:
 - "The code is straightforward"
 
 **If you're about to write code without outputting results, STOP.**
+</EXTREMELY-IMPORTANT>
+
+## Delegation
+
+<EXTREMELY-IMPORTANT>
+**YOU MUST NOT WRITE ANALYSIS CODE IN MAIN CHAT. This is not negotiable.**
+
+You orchestrate. Subagents analyze. For every task in PLAN.md, use the delegation skill:
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
+```
+
+This is MANDATORY. ds-delegate contains the Task agent templates, output-first protocol details, methodology review patterns, and rationalization prevention. Do not attempt to summarize or shortcut it.
+
+**If you're about to write analysis code directly, STOP and read ds-delegate.**
+
+If you wrote analysis code in main chat, DELETE it immediately and dispatch a Task agent instead. Code written in main chat is contaminated by orchestrator context and must not be kept.
 </EXTREMELY-IMPORTANT>
 
 ## What Output-First Means
@@ -121,131 +84,45 @@ This applies even when YOU think:
 | "I know merge worked" | STOP - you've assumed this before and been wrong | Check row counts |
 | "Data looks fine" | STOP - you're confusing "looks" with verification | Print stats, show samples |
 | "I'll batch the outputs" | STOP - you're about to lose your ability to isolate issues | Output per operation |
-
-## Output-First Protocol
-
-### For Every Data Operation:
-
-```python
-# BEFORE
-print(f"Before: {df.shape}")
-
-# OPERATION
-df = df.merge(other, on='key')
-
-# AFTER - MANDATORY
-print(f"After: {df.shape}")
-print(f"Nulls introduced: {df.isnull().sum().sum()}")
-df.head()
-```
-
-### Required Outputs by Operation Type
-
-| Operation | Required Output |
-|-----------|-----------------|
-| Load data | shape, dtypes, head() |
-| Filter | shape before/after, % removed |
-| Merge/Join | shape, null check, sample |
-| Groupby | result shape, sample groups |
-| Transform | before/after comparison, sample |
-| Model fit | metrics, convergence info |
-| Prediction | distribution, sample predictions |
+| "Just a quick plot in main chat" | STOP - you're about to violate delegation | Spawn a Task agent |
 
 ## Implementation Process
 
-### Step 1: Read Plan
+### Step 1: Read Plan and Delegation Skill
 
-Read the plan to understand task order:
-
-```bash
-cat .claude/PLAN.md  # View analysis plan and task sequence
+```
+Read(".claude/PLAN.md")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
 ```
 
-Follow the task order defined in the plan.
+Follow the task order defined in the plan. Use ds-delegate's templates for every task.
 
-### Step 2: Implement with Output
+### Step 2: Execute Each Task via Delegation
 
-For each task:
-
-```python
-# Task N: [Description]
-print("=" * 50)
-print("Task N: [Description]")
-print("=" * 50)
-
-# Before state
-print(f"Input shape: {df.shape}")
-
-# Operation
-result = do_operation(df)
-
-# After state - MANDATORY
-print(f"Output shape: {result.shape}")
-print(f"Sample output:")
-display(result.head())
-
-# Verification
-assert result.shape[0] > 0, "No rows returned!"
-print("Task N complete")
-```
+For each task in PLAN.md:
+1. Dispatch analyst subagent (per ds-delegate pattern)
+2. Verify outputs are present and reasonable
+3. Dispatch methodology reviewer (for statistical tasks)
+4. Log findings to LEARNINGS.md
 
 ### Step 3: Log to LEARNINGS.md
 
 Document every significant step:
 
 ```markdown
-## Step N: [Task Description]
+## Task N: [Description] - COMPLETE
 
-**Input:** DataFrame with shape (10000, 15)
+**Input:** [Describe input state]
 
-**Operation:** Merged with reference table on 'id'
+**Operation:** [What was done]
 
 **Output:**
-- Shape: (9500, 20)
-- 500 rows dropped (no match)
-- 5 new columns added
-- No new nulls introduced
+- Shape: [final shape]
+- Key findings: [observations]
 
-**Verification:**
-- Row count reasonable (5% drop expected due to filtering)
-- Sample output matches expected format
-- Key columns preserved
+**Verification:** [How you confirmed it worked]
 
-**Notes:** [Any observations, issues, or decisions]
-```
-
-## Task Agent Invocation
-
-Main chat spawns Task agent:
-
-```
-Task(subagent_type="general-purpose", prompt="""
-Implement [TASK] following output-first protocol.
-
-Context:
-- Read .claude/LEARNINGS.md for prior steps
-- Read .claude/PLAN.md for task details
-- Read .claude/SPEC.md for objectives
-
-Output-First Protocol:
-1. Print state BEFORE each operation
-2. Execute the operation
-3. Print state AFTER with verification
-4. Display sample output
-5. Document in LEARNINGS.md
-
-Required outputs per operation:
-- Shape before/after
-- Null counts
-- Sample rows (head)
-- Sanity checks (row counts, value ranges)
-
-DO NOT proceed to next task without:
-- Visible output showing operation worked
-- LEARNINGS.md entry documenting the step
-
-Report back: what was done, output observed, any issues.
-""")
+**Next:** [What comes next]
 ```
 
 ## Verification Patterns
@@ -264,27 +141,6 @@ See [references/verification-patterns.md](references/verification-patterns.md) f
 | Wrong aggregation | Groupby logic error | Display sample groups |
 | Type coercion | Pandas silent conversion | Verify dtypes after load |
 | Off-by-one | Date filtering edge cases | Print min/max dates |
-
-## Logging
-
-Append each step to `.claude/LEARNINGS.md`:
-
-```markdown
-## Step N: [Description] - [STATUS]
-
-**Input:** [Describe input state]
-
-**Operation:** [What was done]
-
-**Output:** [Shape, stats, sample]
-```
-[Paste actual output here]
-```
-
-**Verification:** [How you confirmed it worked]
-
-**Next:** [What comes next]
-```
 
 ## If Output Looks Wrong
 
@@ -311,9 +167,30 @@ Append each step to `.claude/LEARNINGS.md`:
 **Your pausing between tasks is procrastination disguised as courtesy.**
 </EXTREMELY-IMPORTANT>
 
+## Gate: Exit Implementation
+
+<EXTREMELY-IMPORTANT>
+**You MUST NOT proceed to review without verifying ALL tasks are complete. This is not negotiable.**
+
+Before invoking ds-review, execute this gate:
+
+1. **IDENTIFY**: Read `.claude/PLAN.md` — list every task by number and name
+2. **RUN**: Read `.claude/LEARNINGS.md` — find entries for each task
+3. **READ**: For each task, confirm LEARNINGS.md contains:
+   - A "Task N: [Name] - COMPLETE" entry
+   - Verified output (shape, stats, or sample)
+   - No unresolved issues flagged
+4. **VERIFY**: Count tasks in PLAN.md vs completed entries in LEARNINGS.md. They MUST match.
+5. **CLAIM**: Only if all tasks accounted for, proceed to review
+
+**If ANY task is missing from LEARNINGS.md, implement it before proceeding.**
+
+**Claiming all tasks are done without checking LEARNINGS.md against PLAN.md is LYING.**
+</EXTREMELY-IMPORTANT>
+
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After all analysis steps complete with verified output, IMMEDIATELY invoke:
+After passing the exit gate, IMMEDIATELY invoke:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-review/SKILL.md")
 ```

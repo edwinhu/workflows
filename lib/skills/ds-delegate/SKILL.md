@@ -69,7 +69,7 @@ Every delegation MUST include:
 Use this Task invocation (fill in brackets):
 
 ```
-Task(subagent_type="general-purpose", prompt="""
+Task(subagent_type="workflows:ds-analyst", prompt="""
 # TASK
 
 Analyze: [TASK NAME]
