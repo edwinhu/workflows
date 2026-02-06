@@ -1,13 +1,13 @@
 ---
 name: bluebook
-description: This skill should be used when the user asks to "cite a case", "format a citation", "check Bluebook format", "cite a statute", "use id. or supra", "format footnotes", "cite a law review article", or needs Bluebook 21st Edition citation guidance. Covers cases, statutes, secondary sources, signals, and short forms.
+description: This skill should be used when the user asks to “cite a case”, “format a citation”, “check Bluebook format”, “cite a statute”, “use id. or supra”, “format footnotes”, “cite a law review article”, or needs Bluebook 21st Edition citation guidance. Covers cases, statutes, secondary sources, signals, and short forms.
 ---
 
 # Bluebook 21st Edition Citation
 
 Citation formatting for law reviews and legal scholarship per *The Bluebook: A Uniform System of Citation* (21st ed. 2020).
 
-**Announce:** "I'm using the bluebook skill for citation formatting."
+**Announce:** “I’m using the bluebook skill for citation formatting.”
 
 ## When to Use
 
@@ -25,7 +25,7 @@ Invoke this skill for:
 <EXTREMELY-IMPORTANT>
 ## IRON LAW #1: NO CITATION WITHOUT VERIFICATION
 
-**If you haven't verified EVERY element of a citation, DO NOT write it.**
+**If you haven’t verified EVERY element of a citation, DO NOT write it.**
 
 Before writing ANY citation:
 1. Verify case name spelling and procedural posture
@@ -84,21 +84,21 @@ Before writing ANY citation:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "I'm pretty sure that's the volume" | Pretty sure = wrong | VERIFY with actual source |
-| "Id. is close enough" | Intervening cite breaks id. | Use full short form |
-| "This signal seems right" | Wrong signals mislead readers | CHECK rule 1.2 examples |
-| "The parenthetical isn't needed" | Parentheticals explain relevance | ADD what the source says |
-| "I'll fix the pinpoint later" | Pinpoints prove claims | ADD pinpoint NOW |
-| "Small caps isn't that important" | Typeface is mandatory | APPLY correct typeface |
-| "This abbreviation is obvious" | Wrong abbreviations fail | CHECK tables T6, T10, T12 |
+| “I’m pretty sure that’s the volume” | Pretty sure = wrong | VERIFY with actual source |
+| “Id. is close enough” | Intervening cite breaks id. | Use full short form |
+| “This signal seems right” | Wrong signals mislead readers | CHECK rule 1.2 examples |
+| “The parenthetical isn’t needed” | Parentheticals explain relevance | ADD what the source says |
+| “I’ll fix the pinpoint later” | Pinpoints prove claims | ADD pinpoint NOW |
+| “Small caps isn’t that important” | Typeface is mandatory | APPLY correct typeface |
+| “This abbreviation is obvious” | Wrong abbreviations fail | CHECK tables T6, T10, T12 |
 
 ## Red Flags - STOP Immediately If:
 
-- "Let me guess the reporter volume" → NO. Verify the actual cite.
-- "Id. probably works here" → NO. Check for intervening citations.
-- "Supra will point them back" → NO. Verify the full citation exists.
-- "I'll use the common abbreviation" → NO. Use Bluebook tables.
-- "Close enough on the page number" → NO. Exact pinpoints required.
+- “Let me guess the reporter volume” → NO. Verify the actual cite.
+- “Id. probably works here” → NO. Check for intervening citations.
+- “Supra will point them back” → NO. Verify the full citation exists.
+- “I’ll use the common abbreviation” → NO. Use Bluebook tables.
+- “Close enough on the page number” → NO. Exact pinpoints required.
 
 ## Quick Reference: Common Citation Forms
 
@@ -167,7 +167,7 @@ Posner, supra note 5, at 52.
 | Signal | Meaning | Use When |
 |--------|---------|----------|
 | [no signal] | Direct support | Source directly states proposition |
-| *See* | Implicit support | Source supports but doesn't directly state |
+| *See* | Implicit support | Source supports but doesn’t directly state |
 | *See, e.g.,* | One of several | Multiple sources support; citing representative |
 | *Cf.* | Analogous support | Source supports by analogy |
 | *Compare* ... *with* | Comparison | Sources illustrate through contrast |
@@ -194,8 +194,8 @@ Within a single citation sentence, signals appear in this order:
 
 ### Case Citations
 
-- [ ] Party names shortened properly (omit "Inc.", "Ltd." unless only identifier)
-- [ ] "United States" abbreviated to "U.S." (as party, not "United States of America")
+- [ ] Party names shortened properly (omit “Inc.”, “Ltd.” unless only identifier)
+- [ ] “United States” abbreviated to “U.S.” (as party, not “United States of America”)
 - [ ] Reporter abbreviation matches T1
 - [ ] Court identifier included unless obvious from reporter
 - [ ] Year is decision year, not argument year
@@ -204,7 +204,7 @@ Within a single citation sentence, signals appear in this order:
 ### Statutory Citations
 
 - [ ] Current official code used (not session laws for current statutes)
-- [ ] Section symbol (§) used, not "Section"
+- [ ] Section symbol (§) used, not “Section”
 - [ ] Space between § and number
 - [ ] Year is code edition year, not enactment year
 - [ ] Supplements cited when applicable
@@ -227,6 +227,30 @@ For detailed rules, consult:
 - **`references/secondary-sources.md`** - Books, articles, treatises (R. 15-17)
 - **`references/short-forms.md`** - Id., supra, hereinafter rules (R. 4)
 - **`references/signals-parentheticals.md`** - Signals, parentheticals, order (R. 1)
+
+### NotebookLM Integration
+
+For edge cases, ambiguous rules, or additional context beyond the reference files, query the Bluebook 21e (2020) notebook:
+
+```bash
+# Notebook ID: f70a9976-b443-43d5-b5fd-43ff86b2b700
+
+# Query specific Bluebook rules
+/Users/vwh7mb/projects/nlm/nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 “How do I cite an unpublished opinion under Rule 10.8.1?”
+
+# Get rule clarification
+/Users/vwh7mb/projects/nlm/nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 “What are the typeface conventions for treaty citations?”
+
+# Verify abbreviation tables
+/Users/vwh7mb/projects/nlm/nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 “What is the correct abbreviation for ‘Environmental’ in journal names per Table T13?”
+```
+
+**When to query the notebook:**
+- Rule wording is ambiguous in reference files
+- Formatting international or specialized materials
+- Checking obscure abbreviations not in quick reference
+- Resolving conflicts between rules
+- Understanding historical changes from previous editions
 
 ### When to Load References
 
@@ -252,7 +276,7 @@ Use with `/writing-legal` for complete legal scholarship workflow:
 2. **Id. follows intervening citation** → Delete id., use full short form
 3. **Wrong signal used** → Delete, reread Rule 1.2, apply correct signal
 4. **Typeface incorrect** → Delete, apply Rule 2 typeface
-5. **Abbreviation doesn't match Bluebook tables** → Delete, use table abbreviation
+5. **Abbreviation doesn’t match Bluebook tables** → Delete, use table abbreviation
 
 **How to restart:**
 
