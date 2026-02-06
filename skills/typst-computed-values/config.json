@@ -1,0 +1,13 @@
+{
+  "name": "typst-computed-values",
+  "version": "1.0.0",
+  "file_patterns": ["*.typ"],
+  "auto_activate": true,
+  "triggers": [
+    "typst",
+    "slides",
+    "notes",
+    "lecture",
+    ".typ file"
+  ]
+}
