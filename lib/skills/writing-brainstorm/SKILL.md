@@ -152,51 +152,47 @@ Invoke this skill for:
 
 ## Prerequisites
 
-This skill requires the Readwise MCP server. The plugin auto-configures it, but the `READWISE_TOKEN` environment variable must be set.
+Source searching is handled by the **librarian agent** (`workflows:librarian`), which routes through NLM first, then Readwise via opencode. You do NOT need direct Readwise MCP access.
 
-**Setup (if MCP not working):**
-1. Get API token from https://readwise.io/access_token
-2. Set environment variable: `export READWISE_TOKEN=your_token`
-3. Verify: `claude mcp list` should show `readwise`
+## Critical: ALL Source Searches Go Through Librarian
 
-## Critical: Sub-Agent Pattern for Readwise Searches
+<EXTREMELY-IMPORTANT>
+**NEVER call Readwise MCP tools directly. NEVER spawn general-purpose agents for searches.**
 
-**NEVER call `search_readwise_highlights` directly from the main chat.** Raw search results return 50-100+ highlights, polluting context and degrading conversation quality.
+ALL source gathering MUST go through the librarian agent, which enforces:
+1. Check NLM first (curated knowledge)
+2. Readwise via opencode (context-safe, 1M window)
+3. Structured output (sources, quotes, synthesis)
 
-**ALWAYS use parallel sub-agents** (one per search theme) to:
-1. Execute the search
-2. Filter and deduplicate results
-3. Return a condensed summary
+**If you're about to call `mcp__readwise__*` or spawn a `general-purpose` agent for search, STOP.**
+</EXTREMELY-IMPORTANT>
 
-### Sub-Agent Pattern
+### Librarian Search Pattern
 
-For a topic with N distinct themes, launch N parallel sub-agents using the Task tool:
+For a topic with N distinct themes, launch N parallel librarian agents:
 
 ```
 Task(
-  subagent_type=”general-purpose”,
-  model=”haiku”,  # Fast and cheap for filtering
-  prompt=”“”Search Readwise for highlights about **[THEME]**.
+  subagent_type="workflows:librarian",
+  prompt="""Search for highlights and sources about **[THEME]**.
 
-Use `mcp__readwise__search_readwise_highlights` with:
-- vector_search_term: “[semantic search terms]”
-- full_text_queries: [{“field_name”: “highlight_plaintext”, “search_term”: “[keyword]”}]
+Check NLM notebooks first, then search Readwise.
 
 Return ONLY:
 - Top 3 most relevant sources (title, author)
 - Top 3 quotes worth citing (with source attribution)
-- 1-2 sentence theme summary”“”
+- 1-2 sentence theme summary"""
 )
 ```
 
 ### Example: Law Review on Private Equity Access
 
-Launch 5 parallel agents:
-1. “private equity retail investors democratization”
-2. “accredited investor definition regulation”
-3. “401k retirement private markets”
-4. “interval fund tender offer evergreen”
-5. “investor protection paternalism securities”
+Launch 5 parallel librarian agents:
+1. "private equity retail investors democratization"
+2. "accredited investor definition regulation"
+3. "401k retirement private markets"
+4. "interval fund tender offer evergreen"
+5. "investor protection paternalism securities"
 
 Each returns ~100 words instead of ~5000 words of raw highlights.
 
@@ -206,21 +202,17 @@ Each returns ~100 words instead of ~5000 words of raw highlights.
 
 ### Discovery Mode
 
-When user wants to find topics (“what should I write about?”):
+When user wants to find topics ("what should I write about?"):
 
-1. **Fetch tag landscape**
-   - Use `get_tags` to see all topic clusters
-   - Present tags grouped by frequency/recency
+1. **Survey knowledge base**
+   - Dispatch librarian: "List NLM notebooks and summarize what topics are covered"
+   - Dispatch librarian: "What are the most common tags and recent reading themes in Readwise?"
 
-2. **Analyze recent reading**
-   - Use `get_recent_content` to fetch recent highlights
-   - Identify recurring themes, authors, or concepts
-
-3. **Semantic pattern detection**
-   - Examine highlights for cross-cutting themes
+2. **Analyze patterns**
+   - From librarian results, identify recurring themes, authors, or concepts
    - Look for: tensions, debates, unanswered questions, surprising connections
 
-4. **Present topic candidates**
+3. **Present topic candidates**
    - For each potential topic, show:
      - Theme description
      - Supporting highlights (2-3 examples)
@@ -268,10 +260,10 @@ AskUserQuestion(questions=[
    - Break the topic into 3-6 distinct search themes
    - Each theme becomes a parallel sub-agent search
 
-2. **Launch parallel sub-agents**
-   - Use the Task tool with `model=”haiku”` for each theme
+2. **Launch parallel librarian agents**
+   - Use the Task tool with `subagent_type="workflows:librarian"` for each theme
    - Run all searches in a single message (parallel execution)
-   - See “Sub-Agent Pattern” section above
+   - See "Librarian Search Pattern" section above
 
 3. **Synthesize results**
    - Deduplicate sources across agent responses
@@ -332,19 +324,21 @@ After gathering sources, detect the topic domain and load the appropriate skill:
 
 Domain-specific enforcement rules are applied during the **draft phase** (writing-draft skill), not during brainstorm. Brainstorm only detects the domain; enforcement happens later.
 
-## Readwise MCP Tools
+## Source Access
 
-Primary tools for brainstorming:
+<EXTREMELY-IMPORTANT>
+**ALL source access goes through the librarian agent. No exceptions.**
 
-| Tool | Use Case | Direct Call OK? |
-|------|----------|-----------------|
-| `get_tags` | Survey topic landscape | ✅ Yes |
-| `get_recent_content` | See current reading themes | ✅ Yes |
-| `search_readwise_highlights` | Find highlights by keyword | ❌ **Sub-agent only** |
-| `get_highlights` | Retrieve with filters | ⚠️ Use caution (can be large) |
-| `get_books` | Browse source library | ✅ Yes |
+| Need | Action |
+|------|--------|
+| Survey topic landscape | Dispatch librarian: "What topics are in my NLM notebooks and Readwise tags?" |
+| See recent reading themes | Dispatch librarian: "What have I been reading recently? Summarize themes." |
+| Find highlights by keyword | Dispatch librarian: "Search for highlights about [topic]" |
+| Get book/article highlights | Dispatch librarian: "Get highlights from [title] and summarize" |
+| Full document text | Dispatch librarian: "Fetch full text of articles tagged [tag]" |
 
-**Why sub-agents for search?** A single search can return 50-100 highlights (~5000+ tokens). Multiple searches compound this. Sub-agents filter to essentials before returning to main context.
+**Do NOT call `mcp__readwise__*` tools directly from main chat or general-purpose agents.** The librarian enforces NLM-first routing and protects context from large responses.
+</EXTREMELY-IMPORTANT>
 
 ## File Output Convention
 
@@ -394,17 +388,16 @@ project/
 
 ## Agent Team Pattern: Parallel Source Gathering
 
-For topics with many research themes, agent teams can parallelize the librarian role. Instead of sequential sub-agent searches (which already work well), spawn teammates that each own a research domain and can challenge each other's findings:
+For topics with many research themes, launch parallel librarian agents that each own a research angle:
 
 ```
-Create a team with 3 researcher teammates:
-- Teammate 1: Search for sources supporting the thesis
-- Teammate 2: Search for sources opposing the thesis (steel-man)
-- Teammate 3: Search for empirical evidence and data
-Have them share findings and identify where sources conflict.
+# Launch 3 librarian agents in a SINGLE message (parallel)
+Task(subagent_type="workflows:librarian", prompt="Search for sources SUPPORTING the thesis: [thesis]. Return top quotes and sources.")
+Task(subagent_type="workflows:librarian", prompt="Search for sources OPPOSING the thesis: [thesis]. Steel-man the counterarguments.")
+Task(subagent_type="workflows:librarian", prompt="Search for empirical evidence and data related to: [thesis]. Focus on numbers and findings.")
 ```
 
-This produces better-grounded brainstorming than sequential searches because teammates find contradictions the agent would otherwise miss.
+This produces better-grounded brainstorming than sequential searches because parallel agents find contradictions you'd otherwise miss.
 
 ---
 
@@ -427,7 +420,8 @@ Before proceeding to project setup:
 |---|---|---|
 | Jumping to PRECIS creation without source gathering | PRECIS without sources = thin argument | Gather sources first |
 | Skipping the user interview about angle/audience | You'll brainstorm for the wrong audience | Ask the clarifying questions |
-| Running a single search instead of parallel sub-agents | Single search misses themes | Decompose into 3-6 parallel searches |
+| Running a single search instead of parallel librarian agents | Single search misses themes | Decompose into 3-6 parallel librarian searches |
+| Calling Readwise MCP tools directly | Violates librarian Iron Law, pollutes context | Always dispatch workflows:librarian |
 | Detecting domain without checking source indicators | Wrong domain = wrong style enforcement later | Check the domain detection table |
 | Moving to setup before user confirms the topic | User approval is the gate | Present findings, get confirmation |
 
