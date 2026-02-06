@@ -131,6 +131,37 @@ The user never needs to know which internal phase to invoke. The two entry point
 /writing-edit → verify structure → check anti-patterns → domain rules → polish
 ```
 
+### Midpoint Constraint Loading
+
+The entry point runs sequentially — each phase loads its constraints and passes context forward. The midpoint can't rely on that. It may run in a new session, after context compression, or hours after the last edit. Prior constraints are gone.
+
+**The midpoint must be self-contained.** It loads every constraint layer it needs before touching the work:
+
+```
+/writing-edit loads:
+  1. ACTIVE_WORKFLOW.md    → workflow state (what phase, what style)
+  2. PRECIS.md, OUTLINE.md → structural intent (what we're building)
+  3. ai-anti-patterns      → universal constraints (no AI-smell)
+  4. domain skill           → domain constraints (Volokh, McCloskey, or Strunk & White)
+  THEN: check the draft against all four layers
+
+/dev-edit loads:
+  1. SPEC.md, PLAN.md      → what was promised
+  2. LEARNINGS.md           → what's been tried
+  3. dev-tdd gates          → execution enforcement
+  THEN: debug protocol (reproduce → analyze → hypothesize → fix)
+
+/ds-edit loads:
+  1. SPEC.md, PLAN.md       → objectives and task breakdown
+  2. LEARNINGS.md            → pipeline state and observations
+  3. output-first protocol   → verification enforcement
+  THEN: diagnose and route to fix path
+```
+
+The failure mode is subtle: an inline checklist *looks like* it captures the constraint, but a 4-item summary is a shadow of the full skill. The agent checks against the summary, finds no issues, and reports "all checks pass" — when the full rules would have caught problems. **Summaries enable reward hacking.** The fix is simple: `Read()` the actual skill before checking.
+
+The general principle: **any phase that evaluates quality must load the full constraint set, not a summary of it.** This applies to edit phases, review phases, and verification phases. If a skill contains a checklist, the checklist is a reminder — the loaded skill is the authority.
+
 ### What Stays User-Facing
 
 Standalone tools that aren't workflow phases stay as auto-triggered skills: `readwise`, `wrds`, `lseg-data`, `bluebook`, `look-at`, `marimo`, `notebook-debug`, etc. These are domain knowledge, not workflow steps — a user invokes them directly without entering a workflow.
