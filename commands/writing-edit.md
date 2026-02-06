@@ -126,17 +126,25 @@ Scan for:
 
 ### Step 4: Domain-Specific Check
 
-Based on `style` in ACTIVE_WORKFLOW.md:
+Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md, then check the draft against it:
+
+| Style | Load |
+|-------|------|
+| legal | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md")` |
+| econ | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md")` |
+| general | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")` |
+
+**You MUST Read() the domain skill before checking.** The checklists below are summaries — the skill contains the full rules, reference material, and enforcement patterns. Checking against the summary alone is checking against a shadow.
 
 #### If Legal (Volokh)
-- [ ] Hook is concrete problem, not “This article discusses...”
+- [ ] Hook is concrete problem, not "This article discusses..."
 - [ ] All claims confront counterarguments
 - [ ] No secondary source citations for primary sources
 - [ ] Background section does not exceed proof section
 - [ ] Precedents synthesized, not summarized case-by-case
 
 #### If Economics (McCloskey)
-- [ ] No boilerplate opening (“This paper discusses...”)
+- [ ] No boilerplate opening ("This paper discusses...")
 - [ ] No table-of-contents paragraph
 - [ ] One word per concept (no elegant variation)
 - [ ] Tables/figures before prose description
@@ -145,7 +153,7 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 - [ ] Omit needless words achieved
 - [ ] Active voice throughout
 - [ ] Concrete and specific language
-- [ ] Positive form (say what is, not what isn’t)
+- [ ] Positive form (say what is, not what isn't)
 
 ### Step 5: Formatting Check
 
