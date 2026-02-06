@@ -13,7 +13,7 @@ This skill analyzes the session transcript to identify extractable patterns:
 
 1. **Session Evaluation**: Checks if session has enough messages (default: 10+)
 2. **Pattern Detection**: Identifies error resolutions, workarounds, debugging techniques
-3. **Skill Extraction**: Saves useful patterns to `~/.claude/skills/learned/`
+3. **Skill Extraction**: Saves useful patterns to `~/.claude/skills/`
 
 ## When to Use
 
@@ -37,7 +37,7 @@ Edit `config.json` to customize:
   “min_session_length”: 10,
   “extraction_threshold”: “medium”,
   “auto_approve”: false,
-  “learned_skills_path”: “~/.claude/skills/learned/”,
+  "learned_skills_path": "~/.claude/skills/",
   “patterns_to_detect”: [
     “error_resolution”,
     “user_corrections”,
@@ -63,7 +63,7 @@ Edit `config.json` to customize:
 Extracted skills are saved as markdown files:
 
 ```
-~/.claude/skills/learned/
+~/.claude/skills/
 ├── fix-marimo-import-error.md
 ├── debug-pixi-environment.md
 └── wrds-connection-pattern.md
