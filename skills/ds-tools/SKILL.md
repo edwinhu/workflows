@@ -44,6 +44,7 @@ These are skills, not plugins - already available via `/ds`:
 | `/gemini-batch` | Gemini Batch API for large-scale LLM processing |
 | `/jupytext` | Jupyter notebooks as text files |
 | `/marimo` | Marimo reactive Python notebooks |
+| `/data-context` | Extract tribal knowledge about datasets, generate data context skills |
 
 ## File Format Skills (Bundled)
 

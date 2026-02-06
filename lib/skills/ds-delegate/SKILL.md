@@ -88,6 +88,7 @@ This task requires:
 - [Statistical method]: [Why needed]
 - [Programming language]: Data manipulation
 - Output-first verification (mandatory)
+- SQL reference: Read `${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/references/sql-patterns.md` for dialect-specific patterns
 
 ## REQUIRED TOOLS
 

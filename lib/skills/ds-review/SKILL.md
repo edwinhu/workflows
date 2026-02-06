@@ -108,8 +108,42 @@ Rate each potential issue from 0-100:
 
 ### Selection Bias
 - Filtering introduced systematic bias
-- Survivorship bias in longitudinal data
+- Survivorship bias in longitudinal data (analyzing only surviving entities — e.g., only companies that didn't delist)
 - Non-random sampling not addressed
+
+### Join Explosion
+- Many-to-many joins silently multiplying rows
+- Detection: compare `COUNT(*)` before and after join — any increase signals duplication
+```sql
+SELECT 'before' AS stage, COUNT(*) FROM a
+UNION ALL
+SELECT 'after', COUNT(*) FROM a JOIN b ON a.key = b.key;
+```
+- Always check join key uniqueness: `SELECT key, COUNT(*) FROM b GROUP BY key HAVING COUNT(*) > 1`
+
+### Incomplete Period Comparison
+- Comparing a partial current period (e.g., this month so far) to a full prior period
+- Metrics will always look lower for the incomplete period — normalize by days elapsed or filter to complete periods only
+
+### Denominator Shifting
+- Rate or ratio denominators change between periods, making rates incomparable
+- Example: "conversion rate dropped" but actually the denominator (total visitors) grew while numerator stayed flat
+- Always report both numerator and denominator, not just the ratio
+
+### Average of Averages
+- Averaging pre-computed group averages produces incorrect results when group sizes differ
+- Must compute weighted average or aggregate from raw data
+- Example: avg(store_avg_price) ≠ avg(price) across all items
+
+### Timezone Mismatches
+- Different data sources using different timezones (UTC vs local vs server time)
+- Symptoms: off-by-one day counts, missing hours around DST transitions, events appearing at impossible times
+- Always document timezone assumptions per source and convert to a single timezone early in the pipeline
+
+### Simpson's Paradox
+- Aggregate trend reverses when data is segmented by a confounding variable
+- Example: treatment appears better overall but worse in every subgroup because of unequal group sizes
+- When reporting aggregate results, always check if the trend holds within key segments
 
 ### Statistical Errors
 - Multiple testing without correction
