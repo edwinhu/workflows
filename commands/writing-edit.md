@@ -20,11 +20,20 @@ If you catch yourself thinking:
 
 ### Rationalization Table
 
-| Excuse | Reality |
-|--------|---------|
-| “It’s a draft, I’ll be gentle” | Drafts need MORE critique, not less |
-| “The main point is clear enough” | “Clear enough” means unclear |
-| “I’ll focus on positives first” | Positives don’t help improve writing |
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "It's a draft, I'll be gentle" | Drafts need MORE critique, not less | Critique hardest on drafts |
+| "The main point is clear enough" | "Clear enough" means unclear | Find the ambiguity and fix it |
+| "I'll focus on positives first" | Positives don't help improve writing | Lead with problems |
+| "This is good enough for a first pass" | "Good enough" is reward hacking | Find specific problems to fix |
+| "The user will polish it themselves" | Relying on human editing defeats the workflow | Fix it now |
+| "I don't want to discourage the writer" | False kindness produces bad writing | Honest critique is the kindest act |
+| "The argument flows well overall" | "Overall" hides section-level problems | Check each section against PRECIS claims |
+| "Minor style issues aren't worth flagging" | Minor issues compound into unprofessional prose | Flag every issue you find |
+| "The structure matches the outline" | Structural match doesn't mean quality match | Check content quality, not just structure |
+| "This section is creative, rules don't apply" | Creative writing still needs clarity and precision | Apply rules, note creative exceptions explicitly |
+
+**Reporting "all checks pass" without actually running every check is LYING.** You must have evidence for every checkmark. An unchecked box with "assumed OK" is fraud.
 
 ## When to Use
 
@@ -32,14 +41,29 @@ If you catch yourself thinking:
 - When hook suggests it (after ~10 edits)
 - Before finishing a writing project
 
+## Prerequisites Gate
+
+Before running edit checks, verify the workflow is ready:
+
+1. **IDENTIFY**: `.claude/ACTIVE_WORKFLOW.md`, `.claude/PRECIS.md`, `.claude/OUTLINE.md`, and at least one file in `drafts/` must exist
+2. **RUN**: Check file existence
+3. **READ**: Confirm ACTIVE_WORKFLOW shows `workflow: writing`
+4. **VERIFY**: All required files present and draft content exists
+5. **CLAIM**: Only if prerequisites pass, proceed to edit checks
+
+If any file is missing, report and suggest the appropriate phase:
+- No PRECIS.md → `/writing` (start from brainstorm)
+- No OUTLINE.md → writing-setup needed
+- No drafts → writing-draft needed
+
 ## Process
 
 ### Step 1: Load Context
 
 ```
-Read(“.claude/ACTIVE_WORKFLOW.md”)
-Read(“.claude/PRECIS.md”)
-Read(“.claude/OUTLINE.md”)
+Read(".claude/ACTIVE_WORKFLOW.md")
+Read(".claude/PRECIS.md")
+Read(".claude/OUTLINE.md")
 Read([current draft files in drafts/])
 ```
 
@@ -170,11 +194,48 @@ Update `.claude/ACTIVE_WORKFLOW.md`:
 ```yaml
 phase: edit
 edits_since_verify: 0
+edit_iteration: [current iteration + 1]
+```
+
+**Iteration limit: maximum 3 edit cycles.** If issues persist after 3 rounds of `/writing-edit`, escalate to the user:
+
+```
+Edit cycle [N]/3: Issues remain after [N] review passes.
+
+Persistent issues:
+- [list unresolved issues]
+
+These may require human judgment. Please review and advise.
 ```
 
 Report issues with suggested fixes:
-- **Minor issues**: “Address issues above, then re-run `/writing-edit`.”
-- **Major issues**: “Significant revisions needed. Fix and re-run `/writing-edit`.”
+- **Minor issues**: "Address issues above, then re-run `/writing-edit`."
+- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-edit`."
+
+#### Optional: Agent Team Swarm Review
+
+For important documents, suggest a swarm review before completing:
+
+```
+AskUserQuestion(questions=[
+  {
+    "question": "Run a swarm review with multiple adversarial reviewers?",
+    "header": "Review",
+    "options": [
+      {"label": "Skip (Recommended for short docs)", "description": "Single-agent review is sufficient"},
+      {"label": "Swarm review", "description": "Spawn 3 reviewers: structure, style, argument strength. Higher quality but more tokens."}
+    ],
+    "multiSelect": false
+  }
+])
+```
+
+If swarm review selected, create a team:
+- **Reviewer 1 (Structure)**: Check document against PRECIS and OUTLINE
+- **Reviewer 2 (Style)**: Apply domain rules and AI anti-patterns check
+- **Reviewer 3 (Argument)**: Steel-man counterarguments, find logical gaps
+
+Each reviewer reports independently. Synthesize findings before deciding pass/fail.
 
 #### If All Checks Pass → Complete Workflow
 

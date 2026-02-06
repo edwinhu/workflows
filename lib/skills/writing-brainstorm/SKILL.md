@@ -1,6 +1,6 @@
 ---
 name: writing-brainstorm
-description: Internal skill for project setup. Called by /writing for new projects. Creates PRECIS.md and OUTLINE.md, then loads appropriate domain skill.
+description: Internal skill for brainstorming writing projects. Called by /writing for mode detection, source gathering, and topic exploration.
 ---
 
 # Writing Brainstorm
@@ -123,25 +123,23 @@ echo “scratch/” >> .gitignore
 /writing (entry point)
     │
     └── lib/skills/writing-brainstorm/ (this skill)
+            │ Mode detect, source gathering, topic exploration
+            │ GATE: Sources gathered, domain detected
             │
-            ├── Interview → .claude/PRECIS.md
-            ├── Structure → .claude/OUTLINE.md
-            └── Handoff → .claude/ACTIVE_WORKFLOW.md
+            └── lib/skills/writing-setup/ (project foundation)
+                    │ PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md
+                    │ GATE: All three files exist with required content
                     │
-                    ▼
-            lib/skills/writing-outline/ (per section)
-                    │
-                    └── outlines/[Section] (Outline).md
+                    └── lib/skills/writing-outline/ (per section)
+                            │ outlines/[Section] (Outline).md
+                            │ GATE: Outline cross-references PRECIS claims
                             │
-                            ▼
-            lib/skills/writing-[domain]/
-            (legal | econ | general)
-                    │
-                    └── drafts/[Section] (Draft).md
-                    └── Edit loop (hook suggests /writing-edit)
-                            │
-                            ▼
-                    /writing-edit (verify + polish + complete)
+                            └── lib/skills/writing-draft/ (per section)
+                                    │ Domain skill loaded (legal/econ/general)
+                                    │ drafts/[Section] (Draft).md
+                                    │ GATE: All sections drafted with depth
+                                    │
+                                    └── /writing-edit (verify + polish + complete)
 ```
 
 ## When to Use
@@ -280,67 +278,21 @@ AskUserQuestion(questions=[
    - Identify the strongest quotes from each theme
    - Note gaps (themes with few/no highlights)
 
-#### Phase 3: Draft Outline → `OUTLINE.md`
+#### Phase 3: Synthesize and Present
 
-Save the outline to a file for iteration:
+Present a summary of findings to the user for confirmation:
+- **Topic and angle** confirmed
+- **Key themes** identified (3-6)
+- **Source coverage** - strong/weak areas noted
+- **Domain detected** (legal/econ/general)
 
-```markdown
-# OUTLINE.md
+**Ask for feedback** before proceeding to project setup.
 
-## Working Title
-[Title]
-
-## Thesis
-[One-sentence claim]
-
-## Target Audience
-[From Phase 1]
-
-## Structure
-### I. Introduction
-### II. [Section]
-### III. [Section]
-...
-
-## Key Sources
-[Deduplicated from Phase 2]
-
-## Open Questions
-[Gaps to address]
-```
-
-**Ask for feedback** on the outline before proceeding.
-
-#### Phase 4: Section Deep-Dive
-
-For each major section, use `AskUserQuestion` to refine:
-
-```
-AskUserQuestion(questions=[
-  {
-    “question”: “For Section II (Background), what level of detail do you need?”,
-    “header”: “Depth”,
-    “options”: [
-      {“label”: “Brief context”, “description”: “1-2 paragraphs, assume reader familiarity”},
-      {“label”: “Full background”, “description”: “Comprehensive treatment for general reader”},
-      {“label”: “Synthesis only”, “description”: “Synthesize precedents without detailed summaries”}
-    ],
-    “multiSelect”: false
-  }
-])
-```
-
-Create `SECTION-II-OUTLINE.md` with:
-- Section thesis/purpose
-- Key arguments in order
-- Supporting sources mapped to arguments
-- Anticipated counterarguments
-
-Repeat for each section, getting human feedback before moving to prose.
+The actual OUTLINE.md and PRECIS.md creation happens in the next phase (writing-setup), not here. Brainstorm's job is to gather and synthesize, not to create project artifacts.
 
 ## Output Format
 
-Produce a markdown outline:
+Present brainstorm results as a summary:
 
 ```markdown
 # [Topic Title]
@@ -378,51 +330,7 @@ After gathering sources, detect the topic domain and load the appropriate skill:
 | Economics, markets, policy, data, empirical | econ | `lib/skills/writing-econ/SKILL.md` |
 | General/other | general | `lib/skills/writing-general/SKILL.md` |
 
-<EXTREMELY-IMPORTANT>
-### Legal Domain: MUST Load Full Skill
-
-When `style: legal` is detected:
-
-1. **MUST Read the full skill file:**
-   ```
-   Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md”)
-   ```
-
-2. **MUST use template for .docx export:**
-   ```
-   ${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/templates/law_review_template.docx
-   ```
-
-3. **Iron Laws from writing-legal:**
-   - NO DOCX WITHOUT TEMPLATE - Copy template first, then add content
-   - NO CLAIM WITHOUT COUNTERARGUMENTS - Confront objections
-   - NO SECONDARY CITATIONS - Read original sources
-
-**If you create a legal docx without reading the skill and using the template, DELETE IT and START OVER.**
-</EXTREMELY-IMPORTANT>
-
-<EXTREMELY-IMPORTANT>
-### Econ Domain: MUST Load Full Skill
-
-When `style: econ` is detected:
-
-1. **MUST Read the full skill file:**
-   ```
-   Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md”)
-   ```
-
-2. **Iron Laws from writing-econ:**
-   - NO BOILERPLATE - Delete “This paper discusses...”, roadmap paragraphs
-   - NO ELEGANT VARIATION - One concept = one word, always
-   - HOOK WITH FINDING - Start with compelling result, not background
-
-3. **Delete & Restart triggers:**
-   - “This paper discusses...” → DELETE, start with finding
-   - Table-of-contents paragraph → DELETE
-   - “As we shall see...” → DELETE
-
-**If you write boilerplate in an econ paper, DELETE THE SECTION and START OVER with a hook.**
-</EXTREMELY-IMPORTANT>
+Domain-specific enforcement rules are applied during the **draft phase** (writing-draft skill), not during brainstorm. Brainstorm only detects the domain; enforcement happens later.
 
 ## Readwise MCP Tools
 
@@ -466,7 +374,7 @@ project/
 2. Get recent highlights → notice many from economics sources
 3. Analyze → tension between “consumer welfare” and “market structure” keeps appearing
 4. Present → “Potential topic: The consumer welfare standard debate. You have 12 highlights across 4 sources discussing this tension. Angle: Why market structure matters beyond prices.”
-5. Domain detection → Economics sources detected → “Use `/writing-econ` for drafting”
+5. Domain detection → Economics sources detected → econ style will apply during drafting
 
 ### Gathering Mode Example (Progressive)
 
@@ -478,211 +386,57 @@ project/
 3. **Decompose** → 5 themes: PE retail access, accredited investor, 401(k) access, fund structures, investor protection
 4. **Search** → Launch 5 parallel Haiku sub-agents
 5. **Synthesize** → Dedupe sources, extract best quotes, note gaps
-6. **Save** → Write `docs/writing/OUTLINE.md`
-7. **Feedback** → “Here’s the outline. Any sections to add/remove/reorder?”
-8. **User responds** → “Add comparative section on EU ELTIF”
-9. **Deep-dive** → AskUserQuestion per section, create `SECTION-II-OUTLINE.md`
-10. **Handoff** → “Outline complete. Use `/writing-legal` to draft.”
+6. **Present** → "Here are the themes and sources. Confirm topic and angle?"
+7. **User confirms** → "Yes, critique framework. Add comparative section on EU ELTIF."
+8. **Handoff** → Proceed to writing-setup for PRECIS.md and OUTLINE.md creation
 
 ---
 
-## Phase 5: Create PRECIS.md
+## Agent Team Pattern: Parallel Source Gathering
 
-After clarifying intent and gathering sources, create the foundational PRECIS document.
-
-### Interview for PRECIS
-
-Use `AskUserQuestion` to gather remaining details:
+For topics with many research themes, agent teams can parallelize the librarian role. Instead of sequential sub-agent searches (which already work well), spawn teammates that each own a research domain and can challenge each other's findings:
 
 ```
-AskUserQuestion(questions=[
-  {
-    “question”: “What is your thesis in one sentence?”,
-    “header”: “Thesis”,
-    “options”: [
-      {“label”: “I have a thesis”, “description”: “I will type it”},
-      {“label”: “Help me find it”, “description”: “Synthesize from sources”},
-      {“label”: “Critique: X is wrong”, “description”: “Argue against existing view”},
-      {“label”: “Propose: X should change”, “description”: “Recommend reform”}
-    ],
-    “multiSelect”: false
-  },
-  {
-    “question”: “What is the strongest objection to your thesis?”,
-    “header”: “Counter”,
-    “options”: [
-      {“label”: “I know it”, “description”: “I will describe the objection”},
-      {“label”: “Find from sources”, “description”: “What do critics say?”},
-      {“label”: “Steel-man for me”, “description”: “Generate the best counter”}
-    ],
-    “multiSelect”: false
-  }
-])
+Create a team with 3 researcher teammates:
+- Teammate 1: Search for sources supporting the thesis
+- Teammate 2: Search for sources opposing the thesis (steel-man)
+- Teammate 3: Search for empirical evidence and data
+Have them share findings and identify where sources conflict.
 ```
 
-### PRECIS.md Template
-
-Write to `.claude/PRECIS.md`:
-
-```markdown
-# Precis: [Working Title]
-
-## Thesis
-[One sentence - the core argument]
-
-## Audience
-[From earlier interview - who is reading, what they know/believe]
-
-## Purpose
-[What reader should think/do/believe after reading]
-
-## Hook
-[Concrete problem, controversy, or question that opens the piece - draft or TBD]
-
-## Key Claims
-1. [Claim 1] → supports thesis by...
-2. [Claim 2] → supports thesis by...
-3. [Claim 3] → supports thesis by...
-
-## Counterarguments to Address
-1. **[Objection]**: [description]
-   - Response: [how we will address it]
-   - Section: [where it appears]
-
-## Scope
-### In
-- [What we cover]
-
-### Out
-- [What we explicitly exclude and why]
-
-## Domain
-[legal | econ | general] → determines which writing skill to use
-```
+This produces better-grounded brainstorming than sequential searches because teammates find contradictions the agent would otherwise miss.
 
 ---
 
-## Phase 6: Create OUTLINE.md
+## Gate: Exit Brainstorm
 
-Structure the argument with sections mapped to claims from PRECIS.md.
+Before proceeding to project setup:
 
-### OUTLINE.md Template
+1. **IDENTIFY**: What proves brainstorm is complete?
+   - Topic confirmed by user
+   - Domain detected (legal/econ/general)
+   - Key sources identified (discovery or gathering mode complete)
+2. **RUN**: Review the conversation - has the user confirmed a topic and angle?
+3. **READ**: Check that sources were gathered (sub-agent results returned) or topic was selected (discovery mode)
+4. **VERIFY**: User has confirmed topic, angle, and audience. Domain indicators are clear.
+5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-setup
 
-```markdown
-# Outline: [Title from PRECIS]
+## Red Flags - STOP If You Catch Yourself:
 
-## Structure
+| Action | Why Wrong | Do Instead |
+|---|---|---|
+| Jumping to PRECIS creation without source gathering | PRECIS without sources = thin argument | Gather sources first |
+| Skipping the user interview about angle/audience | You'll brainstorm for the wrong audience | Ask the clarifying questions |
+| Running a single search instead of parallel sub-agents | Single search misses themes | Decompose into 3-6 parallel searches |
+| Detecting domain without checking source indicators | Wrong domain = wrong style enforcement later | Check the domain detection table |
+| Moving to setup before user confirms the topic | User approval is the gate | Present findings, get confirmation |
 
-### I. Introduction
-- **Goal**: Hook reader, state thesis, roadmap
-- **Hook**: [from PRECIS or TBD]
-- **Thesis**: [from PRECIS]
-- **Claims preview**: [list from PRECIS]
+## Next Phase
 
-### II. [Section Name]
-- **Goal**: [what this section accomplishes]
-- **Claim supported**: [which claim from PRECIS]
-- **Key points**:
-  - Point A (sources: ...)
-  - Point B (sources: ...)
-- **Transition to next**: [how it leads to Section III]
-
-### III. [Section Name]
-- **Goal**: [what this section accomplishes]
-- **Claim supported**: [which claim from PRECIS]
-- **Key points**:
-  - [points with sources]
-
-### IV. Counterarguments
-- **Goal**: Address objections from PRECIS
-- **Objection 1**: [from PRECIS] → Response
-- **Objection 2**: [from PRECIS] → Response
-
-### V. Conclusion
-- **Goal**: Restate thesis with earned authority
-- **Implications**: What follows from this argument
-- **Future questions**: What remains unresolved
-
-## Key Sources
-[Deduplicated from search phase]
-
-## Open Questions
-[Gaps to address before drafting]
-```
-
----
-
-## Phase 7: Handoff to Domain Skill
-
-After PRECIS.md and OUTLINE.md are complete, set up the writing workflow.
-
-### Create ACTIVE_WORKFLOW.md
-
-Create `.claude/ACTIVE_WORKFLOW.md` to track workflow state:
-
-```yaml
----
-workflow: writing
-style: [legal|econ|general]  # From PRECIS domain field
-phase: draft
-project_root: [current directory]
-precis: .claude/PRECIS.md
-outline: .claude/OUTLINE.md
-current_part: [if multi-part document]
-edits_since_verify: 0
-verify_threshold: 10
-skill_stack:
-  - writing
-  - writing-[domain]
----
-```
-
-### Announce Handoff
-
-After creating workflow state:
+After brainstorm is complete, proceed to project setup:
 
 ```
-Writing workflow initialized.
-
-Project: [directory name]
-Style: [legal/econ/general]
-Phase: draft
-
-Files created:
-- .claude/PRECIS.md (thesis, audience, claims)
-- .claude/OUTLINE.md (structure)
-- .claude/ACTIVE_WORKFLOW.md (workflow state)
-
-Next: Load the domain skill to begin drafting.
-Read(“${CLAUDE_PLUGIN_ROOT}/skills/writing-[domain]/SKILL.md”)
-
-Commands available:
-- /writing-verify - Check structure against PRECIS and OUTLINE
-- /writing-polish - Final pass with anti-patterns check
-- /writing-done - Complete workflow
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-setup/SKILL.md")
 ```
 
----
-
-## Domain Detection
-
-Detect domain from sources and topic to determine skill:
-
-| Domain Indicators | Internal Skill | Style Value |
-|-------------------|----------------|-------------|
-| Legal cases, statutes, law reviews, constitutional | writing-legal | legal |
-| Economics, markets, policy, data, empirical | writing-econ | econ |
-| General/other | writing-general | general |
-
----
-
-## Integration
-
-After brainstorming completes, load internal skills:
-- `lib/skills/writing-outline/` - Create detailed section outlines (Level 3)
-- `lib/skills/writing-general/` - General prose (Strunk & White)
-- `lib/skills/writing-econ/` - Economics/finance (McCloskey)
-- `lib/skills/writing-legal/` - Law review articles (Volokh)
-
-User command:
-- `/writing-edit` - Verify structure, check anti-patterns, complete workflow
+Then follow its instructions immediately to create PRECIS.md, OUTLINE.md, and ACTIVE_WORKFLOW.md.

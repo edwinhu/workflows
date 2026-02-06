@@ -183,22 +183,38 @@ outlines_complete:
   - [list of completed outlines]
 ```
 
-### Step 7: Next Steps
+### Step 7: Continue or Proceed
 
-```
-Detailed outline created: outlines/[Section Name] (Outline).md
+After completing a section outline, IMMEDIATELY start the next section. Do NOT:
+- Ask "should I continue?"
+- Summarize what you just outlined
+- Wait for confirmation
 
-This section advances Claim [N] from PRECIS.md.
-Structure: [chosen structure]
-Subsections: [count]
+**Pausing between section outlines is procrastination disguised as courtesy.**
 
-Next: Create another section outline or begin prose drafting.
-When ready to finish, use /writing-edit.
-```
+When ALL sections from OUTLINE.md have detailed outlines in `outlines/`, proceed to the draft phase.
+
+---
+
+## Gate: Exit Outline Phase
+
+Before proceeding to draft phase:
+
+1. **IDENTIFY**: What proves outlining is complete?
+   - Every section in OUTLINE.md has a corresponding file in `outlines/`
+   - Each outline cross-references PRECIS.md claims
+2. **RUN**: List files in `outlines/`, compare against sections in OUTLINE.md
+3. **READ**: Check each outline has POINT, EVIDENCE, LOGIC for subsections
+4. **VERIFY**: All sections have outlines, all outlines reference PRECIS claims
+5. **CLAIM**: Only if steps 1-4 pass, proceed to draft phase
+
+**Claiming "outlines complete" without checking each file is LYING.** You must verify every outline exists and has real structure.
+
+---
 
 ## Outline Quality Checklist
 
-Before finalizing, verify:
+Before finalizing each outline, verify:
 
 - [ ] Every subsection has a clear POINT
 - [ ] Evidence is specific (quotes, data), not vague ("sources say")
@@ -207,6 +223,16 @@ Before finalizing, verify:
 - [ ] Section contributes to thesis (not tangential)
 - [ ] Anticipated objections are noted where relevant
 - [ ] Length estimate is realistic
+
+## Red Flags - STOP If You Catch Yourself:
+
+| Action | Why Wrong | Do Instead |
+|---|---|---|
+| Creating an outline without reading PRECIS first | Outline won't align with thesis | Read PRECIS.md before every outline |
+| Writing a topic list instead of structured outline | Topics ≠ arguments | Add POINT, EVIDENCE, LOGIC for each subsection |
+| Skipping the cross-reference with PRECIS | Section may not advance any claim | Check which claim this section serves |
+| Stopping after one outline to ask permission | Breaks momentum | Continue to next section immediately |
+| Making an outline without sources | Evidence-free outlines produce evidence-free prose | Go back to brainstorm for sources |
 
 ## Common Problems
 
@@ -217,3 +243,13 @@ Before finalizing, verify:
 | Section doesn't advance a claim | Rethink why it exists |
 | Too long for one section | Split into multiple sections |
 | Transitions missing | Add explicit bridges |
+
+## Next Phase
+
+After all section outlines are complete:
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-draft/SKILL.md")
+```
+
+Then follow its instructions immediately to expand outlines into prose.
