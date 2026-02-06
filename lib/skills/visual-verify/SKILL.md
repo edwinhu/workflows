@@ -396,21 +396,9 @@ Skill(skill="ralph-loop:ralph-loop", args="Visual Task 2: Revenue Chart --max-it
 <promise>VTASK2_DONE</promise>
 ```
 
-### Example 3: Quick One-Off Check (No Loop)
-
-For a single visual check outside a loop:
-
-```
-tinymist compile document.typ /tmp/quick-check.png --pages 3 --ppi 144
-
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
-    --file "/tmp/quick-check.png" \
-    --goal "Check this Typst document page: table should have 4 columns with alternating row shading. Headers should be bold. Check alignment and readability." \
-    --agentic
-```
-
 ## When NOT to Use Visual-Verify
 
+- **One-off visual checks**: If you just need to look at an image once without iterating, use `look-at` directly. Visual-verify exists for the loop, not the look.
 - **Text-only verification**: If the output is purely textual (test output, CLI output), use standard dev-verify.
 - **Compilation checks**: If you only need "does it compile?", just run the compile command.
 - **Exact pixel matching**: This is not a pixel-diff tool. It checks semantic visual correctness.
