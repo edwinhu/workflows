@@ -139,7 +139,12 @@ echo “scratch/” >> .gitignore
                                     │ drafts/[Section] (Draft).md
                                     │ GATE: All sections drafted with depth
                                     │
-                                    └── /writing-edit (verify + polish + complete)
+                                    └── /writing-review (diagnose → REVIEW.md)
+                                            │ Hierarchical review: section → transition → document
+                                            │ .claude/REVIEW.md
+                                            │ GATE: All sections reviewed, all levels complete
+                                            │
+                                            └── /writing-edit (fix from REVIEW.md + complete)
 ```
 
 ## When to Use

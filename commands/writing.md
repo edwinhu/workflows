@@ -10,4 +10,4 @@ Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-brainstorm/SKILL.md”)
 The brainstorm phase will:
 1. Detect quick mode vs project mode
 2. Gather sources and detect domain (legal/econ/general)
-3. Hand off to writing-setup → writing-outline → writing-draft → writing-edit
+3. Hand off to writing-setup → writing-outline → writing-draft → writing-review → writing-edit

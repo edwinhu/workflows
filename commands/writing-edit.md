@@ -1,11 +1,11 @@
 ---
-description: "Midpoint entry for writing workflow - verify structure, check anti-patterns, polish, and complete workflow"
-allowed-tools: Read, Edit, Write, Bash, Skill
+description: "Midpoint entry for writing workflow - fix issues from REVIEW.md, polish, and complete workflow"
+allowed-tools: Read, Edit, Write, Bash, Grep, Glob, Skill
 ---
 
 # Writing Edit
 
-The edit loop for writing projects. Verifies structure, checks for AI anti-patterns, applies domain-specific rules, and completes the workflow when all checks pass.
+The fix loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
 
 ## IRON LAW: Critique Over Comfort
 
@@ -14,9 +14,9 @@ The edit loop for writing projects. Verifies structure, checks for AI anti-patte
 ### Red Flag Detection
 
 If you catch yourself thinking:
-- “This is pretty good overall” - STOP. Find the weakness.
-- “I don’t want to be too harsh” - STOP. Harsh is kind.
-- “The author probably knows what they’re doing” - STOP. Check anyway.
+- "This is pretty good overall" - STOP. Find the weakness.
+- "I don't want to be too harsh" - STOP. Harsh is kind.
+- "The author probably knows what they're doing" - STOP. Check anyway.
 
 ### Rationalization Table
 
@@ -37,24 +37,25 @@ If you catch yourself thinking:
 
 ## When to Use
 
-- After drafting prose, to verify and polish
+- After `/writing-review` produces `.claude/REVIEW.md`
 - When hook suggests it (after ~10 edits)
 - Before finishing a writing project
 
 ## Prerequisites Gate
 
-Before running edit checks, verify the workflow is ready:
+Before running edits, verify the workflow is ready:
 
 1. **IDENTIFY**: `.claude/ACTIVE_WORKFLOW.md`, `.claude/PRECIS.md`, `.claude/OUTLINE.md`, and at least one file in `drafts/` must exist
 2. **RUN**: Check file existence
 3. **READ**: Confirm ACTIVE_WORKFLOW shows `workflow: writing`
 4. **VERIFY**: All required files present and draft content exists
-5. **CLAIM**: Only if prerequisites pass, proceed to edit checks
+5. **CHECK FOR REVIEW.MD**: Look for `.claude/REVIEW.md`
 
 If any file is missing, report and suggest the appropriate phase:
 - No PRECIS.md → `/writing` (start from brainstorm)
 - No OUTLINE.md → writing-setup needed
 - No drafts → writing-draft needed
+- **No REVIEW.md** → suggest `/writing-review` first (see backward-compatibility below)
 
 ## Process
 
@@ -69,64 +70,41 @@ Read([current draft files in drafts/])
 
 If any file is missing, report and suggest starting with `/writing`.
 
-### Step 2: Structure Verification
+### Step 2: Load REVIEW.md or Fall Back
 
-Check the document against PRECIS.md and OUTLINE.md:
-
-#### Document Level
-- [ ] All sections present from OUTLINE.md
-- [ ] Thesis thread consistent throughout
-- [ ] All claims from PRECIS.md addressed
-- [ ] All counterarguments from PRECIS.md confronted
-- [ ] No contradictions between sections
-- [ ] Scope matches PRECIS.md (IN/OUT honored)
-- [ ] Hook delivered as specified
-- [ ] Conclusion follows from argument
-
-#### Section Level
-- [ ] Each section delivers what heading promises
-- [ ] Sections advance claims from PRECIS.md
-- [ ] Logical flow between paragraphs
-- [ ] Transitions connect sections
-
-#### Paragraph Level
-- [ ] Topic sentences state main points
-- [ ] Paragraphs develop single ideas
-- [ ] Bridge sentences connect paragraphs
-
-### Step 3: AI Anti-Patterns Check
-
-Load and apply the AI anti-patterns skill:
+**Primary path (REVIEW.md exists):**
 
 ```
-Read(“${CLAUDE_PLUGIN_ROOT}/skills/ai-anti-patterns/SKILL.md”)
+Read(".claude/REVIEW.md")
 ```
 
-Scan for:
+Parse the review into:
+- **Critical issues** — fix first, these break the argument
+- **Major issues** — fix second, these weaken the document
+- **Minor issues** — fix last, these polish the prose
 
-#### Sycophantic Patterns
-- [ ] No “Great question!” or similar
-- [ ] No excessive hedging
-- [ ] No unnecessary validation
+**Backward-compatibility path (no REVIEW.md):**
 
-#### Hollow Emphasis
-- [ ] No overuse of “crucial”, “vital”, “essential”, “Moreover”
-- [ ] No “It is important to note that...”
-- [ ] No “This is particularly significant because...”
+If `.claude/REVIEW.md` does not exist, inform the user:
 
-#### Structure Issues
-- [ ] Prose paragraphs, not bullet lists (unless data)
-- [ ] No generic conclusions (“In conclusion, we have seen...”)
-- [ ] No filler transitions (“Moving on to the next point...”)
+```
+No REVIEW.md found. For best results, run /writing-review first to produce
+a structured diagnosis, then re-run /writing-edit.
 
-#### Voice and Style
-- [ ] Active voice predominant
-- [ ] Concrete nouns and strong verbs
-- [ ] No weasel words (“some argue”, “it could be said”)
+Proceeding with inline review (less thorough than /writing-review).
+```
 
-### Step 4: Domain-Specific Check
+If user chooses to proceed without REVIEW.md, perform a lightweight inline check:
+1. Load domain skill (Step 3)
+2. Do a single-pass review: structure verification, AI anti-patterns, domain check, formatting
+3. Fix issues found in-line
+4. Skip to Step 6 (Generate Report)
 
-Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md, then check the draft against it:
+This path exists for quick edits and backward compatibility. The `/writing-review` → `/writing-edit` pipeline is the recommended workflow.
+
+### Step 3: Load Domain Skill
+
+Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Load |
 |-------|------|
@@ -134,26 +112,46 @@ Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md, then check th
 | econ | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md")` |
 | general | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")` |
 
-**You MUST Read() the domain skill before checking.** The checklists below are summaries — the skill contains the full rules, reference material, and enforcement patterns. Checking against the summary alone is checking against a shadow.
+**You MUST Read() the domain skill before editing.** The domain skill contains the full rules, reference material, and enforcement patterns. Editing without it produces generic fixes.
 
-#### If Legal (Volokh)
-- [ ] Hook is concrete problem, not "This article discusses..."
-- [ ] All claims confront counterarguments
-- [ ] No secondary source citations for primary sources
-- [ ] Background section does not exceed proof section
-- [ ] Precedents synthesized, not summarized case-by-case
+### Step 4: Fix Issues from REVIEW.md
 
-#### If Economics (McCloskey)
-- [ ] No boilerplate opening ("This paper discusses...")
-- [ ] No table-of-contents paragraph
-- [ ] One word per concept (no elegant variation)
-- [ ] Tables/figures before prose description
+Work through REVIEW.md issues in priority order:
 
-#### If General (Strunk & White)
-- [ ] Omit needless words achieved
-- [ ] Active voice throughout
-- [ ] Concrete and specific language
-- [ ] Positive form (say what is, not what isn't)
+#### 4a: Critical Issues First
+
+For each critical issue in REVIEW.md:
+1. Read the cited location in the draft
+2. Understand the diagnosis
+3. Apply the suggested fix (or a better one if you see it)
+4. Verify the fix resolves the issue without creating new problems
+
+#### 4b: Major Issues
+
+For each major issue:
+1. Read the cited location
+2. Apply fix
+3. Verify
+
+**Transition fixes** (from REVIEW.md "Transition Issues" section):
+- Read the boundary summaries for context
+- Write bridge text that connects Section N's closing to Section N+1's opening
+- Ensure the bridge advances the argument, not just changes the topic
+
+**Repetition fixes** (from REVIEW.md "Cross-Section Repetition"):
+- Decide which section should own the point
+- Remove or differentiate the duplicate
+- Ensure removing the duplicate doesn't leave a gap
+
+**Late introduction fixes** (from REVIEW.md "Concept Introduction Order"):
+- Add foreshadowing in the Introduction or earlier section
+- Or restructure to move the concept's first substantive use earlier
+
+#### 4c: Minor Issues
+
+For each minor issue:
+1. Apply fix
+2. Quick verify
 
 ### Step 5: Formatting Check
 
@@ -170,32 +168,26 @@ Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md, then check th
 **Document**: [title from PRECIS]
 **Style**: [legal | econ | general]
 **Word count**: [approximate]
+**Source**: [REVIEW.md | inline review]
 
-### Structure Verification
-- [x] All sections present
-- [x] Thesis consistent
-- [x] Claims addressed: 3/3
-- [x] Counterarguments: 2/2
+### Issues Fixed
+- Critical: [N] fixed / [N] total
+- Major: [N] fixed / [N] total
+- Minor: [N] fixed / [N] total
 
-### AI Anti-Patterns
-- [x] No sycophantic patterns
-- [x] No hollow emphasis
-- [ ] Found 2 instances of “crucial” - revise
-
-### Domain Check
-- [x] Concrete hook
-- [x] Counterarguments confronted
+### Remaining Issues
+[List any issues that could not be fixed automatically]
 
 ### Formatting
 - [x] Citations formatted
 - [x] Headings consistent
 
-### Status: [PASS | ISSUES FOUND]
+### Status: [PASS | ISSUES REMAIN]
 ```
 
 ### Step 7: Branch Based on Results
 
-#### If Issues Found
+#### If Issues Remain
 
 Update `.claude/ACTIVE_WORKFLOW.md`:
 
@@ -205,10 +197,10 @@ edits_since_verify: 0
 edit_iteration: [current iteration + 1]
 ```
 
-**Iteration limit: maximum 3 edit cycles.** If issues persist after 3 rounds of `/writing-edit`, escalate to the user:
+**Iteration limit: maximum 3 edit cycles.** Each cycle is: fix issues → re-run `/writing-review` → re-run `/writing-edit`. If issues persist after 3 rounds, escalate to the user:
 
 ```
-Edit cycle [N]/3: Issues remain after [N] review passes.
+Edit cycle [N]/3: Issues remain after [N] review-edit passes.
 
 Persistent issues:
 - [list unresolved issues]
@@ -217,41 +209,16 @@ These may require human judgment. Please review and advise.
 ```
 
 Report issues with suggested fixes:
-- **Minor issues**: "Address issues above, then re-run `/writing-edit`."
-- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-edit`."
+- **Minor issues**: "Address remaining issues, then re-run `/writing-review` → `/writing-edit`."
+- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` → `/writing-edit`."
 
-#### Optional: Agent Team Swarm Review
-
-For important documents, suggest a swarm review before completing:
-
-```
-AskUserQuestion(questions=[
-  {
-    "question": "Run a swarm review with multiple adversarial reviewers?",
-    "header": "Review",
-    "options": [
-      {"label": "Skip (Recommended for short docs)", "description": "Single-agent review is sufficient"},
-      {"label": "Swarm review", "description": "Spawn 3 reviewers: structure, style, argument strength. Higher quality but more tokens."}
-    ],
-    "multiSelect": false
-  }
-])
-```
-
-If swarm review selected, create a team:
-- **Reviewer 1 (Structure)**: Check document against PRECIS and OUTLINE
-- **Reviewer 2 (Style)**: Apply domain rules and AI anti-patterns check
-- **Reviewer 3 (Argument)**: Steel-man counterarguments, find logical gaps
-
-Each reviewer reports independently. Synthesize findings before deciding pass/fail.
-
-#### If All Checks Pass → Complete Workflow
+#### If All Issues Fixed → Complete Workflow
 
 Archive workflow state:
 
 ```bash
 mkdir -p .claude/completed-workflows
-mv .claude/ACTIVE_WORKFLOW.md “.claude/completed-workflows/$(date +%Y-%m-%d)-writing.md”
+mv .claude/ACTIVE_WORKFLOW.md ".claude/completed-workflows/$(date +%Y-%m-%d)-writing.md"
 ```
 
 Generate completion summary:
@@ -266,6 +233,7 @@ Generate completion summary:
 ### Artifacts
 - `.claude/PRECIS.md` - Thesis, audience, claims
 - `.claude/OUTLINE.md` - Document structure
+- `.claude/REVIEW.md` - Final review diagnosis
 - `outlines/` - Detailed section outlines
 - `drafts/` - Final prose
 
@@ -282,10 +250,10 @@ Generate completion summary:
 Announce:
 
 ```
-Writing workflow complete. All checks passed.
+Writing workflow complete. All issues resolved.
 
 The workflow has been archived to .claude/completed-workflows/.
-PRECIS.md and OUTLINE.md remain for reference.
+PRECIS.md, OUTLINE.md, and REVIEW.md remain for reference.
 
 To start a new writing project, use /writing.
 ```
