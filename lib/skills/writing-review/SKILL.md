@@ -129,15 +129,43 @@ After completing each section, IMMEDIATELY start the next. Do NOT pause to ask.
 
 > **Prerequisite:** Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` enabled. If unavailable, fall back to Sequential.
 
-##### 1. Prerequisites Check
+##### 1. Prerequisites Check and Section Mapping
 
-Verify all outlines and drafts exist. If any are missing, STOP.
+Verify outlines exist. Then identify draft files:
+
+**Case A: Multiple draft files** (one per section, e.g., `drafts/Part I (Draft).md`)
+- Verify each section in OUTLINE.md has a corresponding draft file. If any are missing, STOP.
+- Each agent gets its own file path. No splitting needed.
+
+**Case B: Single combined draft file** (e.g., `drafts/Combined Draft.md` or `drafts/Article.md`)
+- Read the file and identify all top-level section headings (typically `#` or `##`).
+- Build a **Section Map**: for each section, record heading text, start line, end line.
+- Each agent gets the same file path but with specific line ranges.
+
+```
+## Section Map Example
+
+| Section | Heading | Start Line | End Line | Outline File |
+|---------|---------|------------|----------|--------------|
+| Part I  | # Part I: The Rise... | 1 | 287 | outlines/Part I (Outline).md |
+| Part II | # Part II: The Law... | 288 | 542 | outlines/Part II (Outline).md |
+| Part III | # Part III: Re-evaluating... | 543 | 789 | outlines/Part III (Outline).md |
+| Part IV | # Part IV: Policy... | 790 | 1104 | outlines/Part IV (Outline).md |
+```
+
+To build the section map:
+1. `Grep` for top-level headings: `^#{1,2}\s` in the draft file, with line numbers
+2. Each section starts at its heading line and ends at the line before the next heading (or EOF)
+3. Match each heading to the corresponding outline file
+4. If a heading has no matching outline, flag it as an issue (scope creep) but still assign it to the nearest section's agent
+
+**This step is non-negotiable.** If you skip it and hand agents a full document without line ranges, they will skim. Line ranges are action masking — they constrain the agent's attention to a tractable scope.
 
 ##### 2. Create Tasks and Enter Delegate Mode
 
 Create one task per section using `TaskCreate`:
 - Subject: `Review: [Section Name]`
-- Description: section outline path, draft path, PRECIS claim to check
+- Description: section outline path, draft path (with line range if Case B), PRECIS claim to check
 
 Press **Shift+Tab** to enter delegate mode. The lead coordinates, does NOT review.
 
@@ -147,8 +175,9 @@ Each teammate receives this self-contained prompt. **Teammates start with a blan
 
 **Before spawning, substitute these variables:**
 - `SECTION_NAME` → actual section name
+- `DRAFT_PATH` → path to draft file
+- `DRAFT_READ_INSTRUCTION` → either `Read("{DRAFT_PATH}")` (Case A: dedicated file) or `Read("{DRAFT_PATH}", offset={START_LINE}, limit={END_LINE - START_LINE})` (Case B: line range in combined file)
 - `SECTION_OUTLINE_PATH` → path to outline file
-- `SECTION_DRAFT_PATH` → path to draft file
 - `PREV_SECTION` → previous section name, or "none"
 - `NEXT_SECTION` → next section name, or "none"
 - `STYLE` → style value from ACTIVE_WORKFLOW.md
@@ -168,22 +197,82 @@ PRECIS claim this section advances: {PRECIS_CLAIM}
 ## Iron Laws (Non-Negotiable)
 
 1. **NO REVIEW WITHOUT READING.** Every issue you report must cite specific
-   text from the draft. A review comment without a quote is useless.
+   text from the draft with line numbers. A review comment without a quote
+   is useless. A fabricated quote is worse than useless — it poisons the
+   review.
 
 2. **NO PASSES WITHOUT EVIDENCE.** If you say something is OK, quote the
    text that proves it. "Transitions are fine" without evidence is lying.
 
-## Step 1: Read Context
+3. **NO SKIPPING PARAGRAPHS.** You must produce a Topic Sentence Inventory
+   (Step 2) covering every paragraph in your section. If you cannot quote
+   every paragraph's topic sentence, you did not read the section.
+
+## Step 1: Read Context and Constraints
+
+Read ALL of the following before reviewing. Do not skip any.
 
 ```
 Read(".claude/PRECIS.md")
 Read(".claude/OUTLINE.md")
 Read("{SECTION_OUTLINE_PATH}")
-Read("{SECTION_DRAFT_PATH}")
+{DRAFT_READ_INSTRUCTION}
+Read("{PLUGIN_ROOT}/lib/skills/writing-review/SKILL.md")
 Read("{PLUGIN_ROOT}/lib/skills/writing-{STYLE}/SKILL.md")
 ```
 
-## Step 2: Section Review Checklist
+The writing-review SKILL.md contains Rationalization Tables and Red Flags
+that apply to your review. The domain skill contains style rules. You must
+read both IN FULL before proceeding. A compressed summary is not sufficient.
+
+## Step 2: Topic Sentence Inventory (Paragraph-Level Gate)
+
+<EXTREMELY-IMPORTANT>
+This step is ACTION MASKING. You cannot skip it.
+It forces you to read every paragraph. Without it, you will skim.
+</EXTREMELY-IMPORTANT>
+
+For EVERY paragraph in your section (excluding footnotes), produce:
+
+```markdown
+## Topic Sentence Inventory: {SECTION_NAME}
+
+| ¶ # | Line | Topic Sentence (quoted) | Single Idea? | Bridge to Next? |
+|-----|------|------------------------|--------------|-----------------|
+| 1   | 3    | "Share ownership in U.S. public companies is overwhelmingly intermediated." | Yes | Yes — "Every spring" picks up "intermediated" |
+| 2   | 9    | "Every spring, these institutional investors must vote on thousands of proxy ballots..." | Yes | Yes — "Two firms" specifies "proxy advisors" |
+| ... | ...  | ... | ... | ... |
+```
+
+Rules:
+- A paragraph without a clear topic sentence is an issue (record it in Step 6)
+- A paragraph developing more than one idea is an issue
+- "Bridge to Next?" checks whether the paragraph ending connects to the
+  next paragraph's opening. If NO, note what's missing.
+- If a paragraph is too long (>250 words), flag it — it likely develops
+  multiple ideas
+
+This inventory IS your paragraph-level review. Do not produce a separate
+"paragraph coherence" section — the inventory covers it.
+
+## Step 3: Subsection Boundary Checks
+
+For each pair of adjacent subsections within your section, produce:
+
+```markdown
+## Subsection Boundaries: {SECTION_NAME}
+
+### [Subsection A] → [Subsection B]
+- **A closes with**: "[last sentence of subsection A]" (line N)
+- **B opens with**: "[first sentence of subsection B]" (line M)
+- **Verdict**: SMOOTH | ABRUPT | DISCONNECTED
+- **Problem** (if any): [what bridge is missing]
+```
+
+This catches within-section transition problems that the lead's Level 2
+(which only checks section-to-section boundaries) would miss.
+
+## Step 4: Section Review Checklist
 
 For each item, either cite the text that passes OR record an issue:
 
@@ -192,12 +281,7 @@ For each item, either cite the text that passes OR record an issue:
 - [ ] Every piece of evidence from outline appears in draft
 - [ ] Word count is in the range the outline implies
 - [ ] Section advances its assigned PRECIS claim
-
-### Internal Coherence
-- [ ] Topic sentences state paragraph main points
-- [ ] Each paragraph develops a single idea
-- [ ] Logical flow between paragraphs (no jumps)
-- [ ] Bridge sentences connect paragraphs
+- [ ] No content beyond outline scope (if found, flag as scope creep with severity)
 
 ### Domain Style ({STYLE})
 - [ ] Follows domain-specific rules from skill file
@@ -212,9 +296,12 @@ For each item, either cite the text that passes OR record an issue:
 - [ ] Active voice predominant
 - [ ] Concrete nouns and strong verbs
 
-## Step 3: Produce Boundary Summary
+Note: Internal Coherence is covered by the Topic Sentence Inventory (Step 2).
+Do NOT duplicate that work here.
 
-This is CRITICAL — the lead uses these to check transitions.
+## Step 5: Produce Boundary Summary
+
+This is CRITICAL — the lead uses these to check section-to-section transitions.
 
 ```markdown
 ## Boundary Summary: {SECTION_NAME}
@@ -235,31 +322,53 @@ This is CRITICAL — the lead uses these to check transitions.
 - Core terms: [domain terms used, for consistency checking]
 ```
 
-## Step 4: Record Issues
+## Step 6: Record Issues
 
 For each issue found, record:
 
 ```markdown
 ### Issue: [short title]
 - **Severity**: critical | major | minor
-- **Location**: [section name, paragraph number or quote]
+- **Location**: [section name, line number(s)]
 - **Problem**: [what's wrong, with quoted evidence]
 - **Suggestion**: [specific actionable fix]
 ```
 
 Severity guide:
 - **critical**: Breaks argument logic, contradicts PRECIS, missing key evidence
-- **major**: Weak transitions, unclear topic sentences, style violations
+- **major**: Weak transitions, unclear topic sentences, style violations, duplicated content
 - **minor**: Wording, minor style issues, small structural improvements
 
-## Step 5: Report to Lead
+## Step 7: Report to Lead
 
-Send your complete review to the lead:
-1. Section review checklist (with evidence for each item)
-2. Boundary summary
-3. Issues list (sorted by severity)
+Send your complete review to the lead. ALL of the following are required:
 
-Mark your task complete only after all three are sent.
+1. Topic Sentence Inventory (Step 2)
+2. Subsection Boundary Checks (Step 3)
+3. Section Review Checklist with evidence (Step 4)
+4. Boundary Summary (Step 5)
+5. Issues list sorted by severity (Step 6)
+
+Mark your task complete only after all five are sent.
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|---|---|---|
+| "The topic sentence inventory is busywork" | It forces you to read every paragraph; without it you skim | Complete it — it IS the review |
+| "I read the section, I don't need the full SKILL.md" | The full skill has Rationalization Tables you're rationalizing past right now | Read it |
+| "This subsection boundary is obviously fine" | Quote both sides or it's rubber-stamping | Quote and evaluate |
+| "250 words per paragraph is arbitrary" | It's a heuristic that catches multi-idea paragraphs | Flag it, let the lead decide |
+| "I found the major issues, the minor ones don't matter" | Minor issues compound; the lead decides priority | Record everything |
+
+## Red Flags — STOP If You Catch Yourself:
+
+| Action | Why Wrong | Do Instead |
+|---|---|---|
+| Skipping the Topic Sentence Inventory | You're about to produce a section-level review that misses paragraph problems | Go back to Step 2 |
+| Quoting text you don't see in your Read output | You're fabricating evidence — this is the #1 failure mode | Re-read the actual text and quote only what you see |
+| Writing "paragraphs flow well" without the inventory | Vague pass without evidence | The inventory IS the evidence |
+| Reporting fewer than 3 issues for a section > 1000 words | Statistically implausible | Review more carefully |
 ```
 
 ##### 4. Lead Monitoring
@@ -269,9 +378,73 @@ While teammates review:
 - If a teammate stalls, message for status
 - Do NOT review any sections yourself — coordinate and aggregate only
 
-##### 5. Proceed to Level 2
+##### 5. Verification Gate (Before Level 2)
 
-After ALL teammates complete, the lead collects all boundary summaries and issues, then proceeds to Level 2 (Transition Review).
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Verification
+
+**DO NOT COMPILE SUBAGENT OUTPUT WITHOUT SPOT-CHECKING. Subagents confabulate
+quotes. Unverified quotes in REVIEW.md are worse than no review at all.**
+
+If you skip this step, you are laundering fabricated evidence into a review
+document that will drive editing decisions. This has happened before.
+</EXTREMELY-IMPORTANT>
+
+After ALL teammates complete, before proceeding to Level 2:
+
+**A. Completeness Check**
+
+For each subagent report, verify it contains ALL required components:
+1. Topic Sentence Inventory (with every paragraph covered)
+2. Subsection Boundary Checks
+3. Section Review Checklist (with quoted evidence)
+4. Boundary Summary
+5. Issues list
+
+If any component is missing: message the teammate requesting the missing
+component. If the teammate has already shut down, note the gap in REVIEW.md
+and flag it as a review limitation.
+
+**B. Quote Verification**
+
+For each subagent, spot-check at least **3 quoted passages** against the
+actual source text:
+- Pick 1 quote from the Topic Sentence Inventory
+- Pick 1 quote from the Boundary Summary (opening or closing sentence)
+- Pick 1 quote from the highest-severity issue
+
+For each quote: `Read()` the draft at the cited line number and verify the
+quote matches. Record the result:
+
+```markdown
+## Quote Verification Log
+
+| Agent | Quote Source | Cited Line | Matches? | Notes |
+|-------|-------------|------------|----------|-------|
+| reviewer-1 | Topic ¶3 | 24 | Yes | |
+| reviewer-1 | Boundary closing | 287 | Yes | |
+| reviewer-1 | Issue #1 | 156 | NO — text says "..." not "..." | Fabricated |
+```
+
+**If ANY quote fails verification:**
+1. STOP compilation for that section
+2. If the teammate is still running: message them with the discrepancy
+   and request re-review of the flagged passage
+3. If the teammate has shut down: the lead must re-read the relevant
+   passage and correct the issue in REVIEW.md, flagging it as
+   "corrected by lead — original subagent quote was inaccurate"
+
+**C. Minimum Issue Threshold**
+
+For any section longer than 1000 words where the subagent reported fewer
+than 3 issues: flag this as suspicious in REVIEW.md. Either the section
+is exceptionally clean (possible but rare) or the reviewer skimmed.
+The lead should scan that section for obvious issues before accepting.
+
+##### 6. Proceed to Level 2
+
+After the verification gate passes, the lead collects all verified boundary
+summaries and issues, then proceeds to Level 2 (Transition Review).
 
 ---
 
@@ -285,11 +458,24 @@ For each section, check ALL of the following. Every checkmark needs quoted evide
 - [ ] Word count is in the range the outline implies
 - [ ] Section advances its assigned PRECIS claim
 
-#### Internal Coherence
-- [ ] Topic sentences state paragraph main points
-- [ ] Each paragraph develops a single idea
-- [ ] Logical flow between paragraphs (no jumps)
-- [ ] Bridge sentences connect paragraphs
+#### Paragraph-Level Gate
+
+Produce a Topic Sentence Inventory for this section:
+
+| ¶ # | Line | Topic Sentence (quoted) | Single Idea? | Bridge to Next? |
+|-----|------|------------------------|--------------|-----------------|
+
+Every paragraph must appear. This inventory replaces the Internal Coherence
+checklist — it provides the same information with verifiable evidence.
+
+#### Subsection Boundaries
+
+For each pair of adjacent subsections, quote the closing sentence of
+subsection N and the opening sentence of subsection N+1. Evaluate each
+as SMOOTH, ABRUPT, or DISCONNECTED.
+
+These are checked here (within-section) because Level 2 only checks
+section-to-section transitions.
 
 #### Domain Style
 - [ ] Follows domain-specific rules from loaded skill
@@ -570,6 +756,9 @@ No issues found. Run /writing-edit to complete the workflow.
 | "REVIEW.md is getting long" | Long review = thorough review. Short review = lazy review. | Keep going |
 | "I'll note this mentally instead of writing it down" | If it's not in REVIEW.md, it doesn't exist for writing-edit | Write it down |
 | "This section was written by a good agent, probably fine" | Review the text, not the author | Read and quote |
+| "The subagent quotes look right" | Subagents confabulate verbatim quotes — Round 1 proved this | Spot-check 3+ quotes per agent against source |
+| "Paragraph-level review is too detailed" | If you don't check paragraphs, you're reviewing headings not prose | The Topic Sentence Inventory is the review |
+| "The single-file document is too long to split" | Long documents need MORE structure, not less | Build the Section Map, assign line ranges |
 
 ## Red Flags — STOP If You Catch Yourself:
 
@@ -580,6 +769,9 @@ No issues found. Run /writing-edit to complete the workflow.
 | Recording fewer than 3 issues on a multi-section document | Statistically implausible; you're not looking hard enough | Review more carefully |
 | Using vague language ("could be improved") | Unactionable for writing-edit | Quote text, diagnose specifically, suggest specifically |
 | Finishing in one pass without re-reading | Reviews need multiple passes to catch different issue types | Run each level as a separate pass |
+| Compiling subagent output without spot-checking quotes | Laundering potentially fabricated evidence | Run the Verification Gate first |
+| Assigning agents a full document without line ranges | Agents will skim — scope must be constrained | Build Section Map, assign start/end lines |
+| Accepting a subagent review missing the Topic Sentence Inventory | The inventory IS the paragraph-level review | Reject and request completion |
 
 ---
 
