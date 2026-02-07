@@ -45,7 +45,7 @@ When generating Word documents (`.docx`), you MUST load the `/docx` skill first.
 
 **Template location:** `${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx`
 
-This template contains proper law review formatting: margins, fonts, footnote styles, and section formatting compliant with standard journal requirements.
+When creating or converting a docx, load `references/formatting.md` for heading styles, body text styles, pandoc `--reference-doc` usage, and the document creation gate function.
 
 ## Enforcement
 
@@ -66,16 +66,6 @@ If your draft makes a prescriptive claim but doesn't address obvious objections,
 
 If you cite a case/statute/historical fact via an intermediate source (law review, treatise), DELETE the citation and READ THE ORIGINAL. Even Supreme Court opinions misstate precedents.
 
-### Rationalization Table - Template Usage
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll format it properly later" | Formatting is structural, not cosmetic | START with template |
-| "The content matters more" | Wrong format = rejection by journals | Template provides correct format |
-| "I can apply styles after" | Retroactive styling breaks footnotes | Use template from the start |
-| "A blank doc is simpler" | Blank doc means redoing all formatting | Copy template, it's one step |
-| "User didn't ask for template" | Professional output is implicit | Always use template for docx |
-
 ### Rationalization Table - STOP If You Think:
 
 | Excuse | Reality | Do Instead |
@@ -91,11 +81,6 @@ If you cite a case/statute/historical fact via an intermediate source (law revie
 
 ### Red Flags - STOP Immediately If You Think:
 
-**Template Red Flags:**
-- "Let me create a new Word document" → NO. Copy the template first.
-- "I'll add the template formatting later" → NO. Start with template.
-- "The docx skill will handle formatting" → NO. docx skill needs template base.
-
 **Content Red Flags:**
 - "Let me write standard intro" → NO. Find concrete problem first.
 - "I'll address objections later" → NO. Confront counterarguments NOW.
@@ -106,8 +91,7 @@ If you cite a case/statute/historical fact via an intermediate source (law revie
 
 **When to delete and restart:**
 
-1. **Created docx without template** → Delete file, copy template, start over
-2. **Intro starts with "This article discusses"** → Delete, start with concrete problem
+1. **Intro starts with "This article discusses"** → Delete, start with concrete problem
 3. **Background exceeds proof section** → Delete excessive background
 4. **Claim made without addressing objections** → Delete section, add counterargument confrontation
 5. **Citation chain to primary source** → Delete citation, read and cite original
@@ -122,21 +106,6 @@ New: "When police drones photograph backyards, does the Fourth Amendment require
 ```
 
 Start with CONCRETE QUESTION that matters, not abstract topic description.
-
-### Gate Function: Document Creation
-
-When user requests a Word document (docx), follow this 5-step gate:
-
-```
-STEP 1: LOAD    → Load /docx skill
-STEP 2: COPY    → Copy ${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx
-                  to target location (e.g., user's specified path)
-STEP 3: EDIT    → Add content to the COPIED template
-STEP 4: VERIFY  → Check template formatting preserved (styles, footnotes)
-STEP 5: DELIVER → Return the document to user
-```
-
-**GATE VIOLATION = RESTART**: If any step is skipped, delete the output and restart from Step 1.
 
 ## Law Review Article Structure
 
@@ -268,15 +237,14 @@ See `references/volokh-distilled.md` for extended discussion of rhetorical probl
 
 For comprehensive guidance, consult:
 
-### Template
+### Reference Files
 
-- **`templates/law_review_template.docx`** - Law review document template:
-  - Proper margins and page setup for journal submission
-  - Footnote styles compliant with Bluebook formatting
-  - Section heading styles
-  - Font and spacing requirements
-
-### Reference File
+- **`references/formatting.md`** - Template formatting reference:
+  - Heading hierarchy and Title Case rules
+  - Body text styles
+  - Document creation gate function (5-step)
+  - Pandoc `--reference-doc` usage
+  - Template rationalization table and red flags
 
 - **`references/volokh-distilled.md`** - Extended Volokh guidance covering:
   - Full logical problems taxonomy
@@ -285,9 +253,13 @@ For comprehensive guidance, consult:
   - Survey analysis methodology
   - Editing principles and exercises
 
-### When to Load Reference
+### When to Load References
 
-Load the full reference when:
+Load `references/formatting.md` when:
+- Creating or converting a Word document
+- Applying template styles or pandoc conversion
+
+Load `references/volokh-distilled.md` when:
 - Encountering specific evidence evaluation questions
 - Needing detailed survey methodology guidance
 - Working on substantial manuscript revision
