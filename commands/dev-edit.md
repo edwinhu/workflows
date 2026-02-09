@@ -5,6 +5,6 @@ allowed-tools: Read
 
 Re-enter the dev workflow mid-flight by reading the debug protocol:
 
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-debug/SKILL.md")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-edit/SKILL.md")
 
 The debug skill will handle systematic investigation, ralph loops, and verification.

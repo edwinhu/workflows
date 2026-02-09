@@ -431,7 +431,7 @@ Retroactive E2E is better than no E2E. But next time: You write E2E FIRST.
 
 This skill is invoked by:
 - `dev-implement` - for TDD during implementation
-- `dev-debug` - for regression tests during debugging
+- `dev-edit` - for regression tests during debugging
 
 For testing tool options (Playwright, ydotool, etc.), see:
 ```

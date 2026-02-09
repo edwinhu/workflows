@@ -80,7 +80,7 @@ A comprehensive development plugin that enforces test-driven development practic
 - `/dev-brainstorm` - Socratic design exploration before implementation
 - `/dev-plan` - Codebase exploration and task breakdown
 - `/dev-implement` - TDD implementation with RED-GREEN-REFACTOR cycle
-- `/dev-debug` - Systematic debugging with root cause investigation
+- `/dev-edit` - Systematic debugging with root cause investigation
 - `/dev-review` - Code review combining spec compliance and quality checks
 - `/dev-verify` - Verification gate requiring fresh runtime evidence
 - `/dev-tools` - List available development plugins and MCP servers

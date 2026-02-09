@@ -243,7 +243,7 @@ These thoughts mean STOP—you're about to skip enforcement:
 
 Ralph loops are for:
 - Implementation tasks (dev-implement)
-- Bug fixes (dev-debug)
+- Bug fixes (dev-edit)
 
 Ralph loops are NOT for:
 - Exploration (dev-explore)
@@ -263,7 +263,7 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
 
 This skill is invoked by:
 - `dev-implement` - for standard implementation tasks
-- `dev-debug` - for bug investigation and fixes
+- `dev-edit` - for bug investigation and fixes
 - `visual-verify` - wraps ralph-loop for visual output tasks
 
 After all tasks complete, proceed to the next phase of the parent workflow.

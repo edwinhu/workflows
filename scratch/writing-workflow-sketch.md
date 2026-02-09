@@ -770,7 +770,7 @@ if os.path.exists(".claude/ACTIVE_WORKFLOW.md"):
 | SPEC.md | PRECIS.md |
 | PLAN.md | OUTLINE.md |
 | dev-implement | draft/edit loop |
-| dev-debug (ralph loop) | /writing-verify (recursive) |
+| dev-edit (ralph loop) | /writing-verify (recursive) |
 | dev-review | /writing-polish |
 | dev-verify | /writing-done |
 | TDD: test first | Outline first: structure before prose |
