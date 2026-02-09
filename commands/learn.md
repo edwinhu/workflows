@@ -38,9 +38,14 @@ Look for:
 
 ## Output Format
 
-Create a skill file at `~/.claude/skills/learned/[pattern-name].md`:
+Create a skill directory at `~/.claude/skills/learned/[pattern-name]/SKILL.md`:
 
 ```markdown
+---
+name: [pattern-name]
+description: [One-line description of what this pattern solves]
+---
+
 # [Descriptive Pattern Name]
 
 **Extracted:** [Date]
@@ -63,9 +68,10 @@ Create a skill file at `~/.claude/skills/learned/[pattern-name].md`:
 
 1. Review the session for extractable patterns
 2. Identify the most valuable/reusable insight
-3. Draft the skill file
+3. Draft the skill file with proper frontmatter
 4. Ask user to confirm before saving
-5. Save to `~/.claude/skills/learned/`
+5. Create directory `~/.claude/skills/learned/[pattern-name]/`
+6. Save to `~/.claude/skills/learned/[pattern-name]/SKILL.md`
 
 ## Notes
 

@@ -37,7 +37,7 @@ Edit `config.json` to customize:
   “min_session_length”: 10,
   “extraction_threshold”: “medium”,
   “auto_approve”: false,
-  "learned_skills_path": "~/.claude/skills/",
+  "learned_skills_path": "~/.claude/skills/learned/",
   “patterns_to_detect”: [
     “error_resolution”,
     “user_corrections”,
@@ -60,17 +60,20 @@ Edit `config.json` to customize:
 
 ## Learned Skills Format
 
-Extracted skills are saved as markdown files:
+Extracted skills are saved following the standard skill directory structure:
 
 ```
-~/.claude/skills/
-├── fix-marimo-import-error.md
-├── debug-pixi-environment.md
-└── wrds-connection-pattern.md
+~/.claude/skills/learned/
+├── fix-marimo-import-error/
+│   └── SKILL.md
+├── debug-pixi-environment/
+│   └── SKILL.md
+└── wrds-connection-pattern/
+    └── SKILL.md
 ```
 
 Each learned skill follows standard SKILL.md format with:
-- Name and description
+- Frontmatter (name and description)
 - Problem context
 - Solution pattern
 - Example usage
