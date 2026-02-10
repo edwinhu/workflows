@@ -110,7 +110,7 @@ def load_using_skills_content() -> str:
     This teaches Claude HOW to use skills, not WHAT skills exist.
     The skill catalog is already in the Skill tool description.
     """
-    skill_file = get_plugin_root() / 'skills' / 'using-skills' / 'SKILL.md'
+    skill_file = get_plugin_root() / 'lib' / 'skills' / 'using-skills' / 'SKILL.md'
     try:
         return skill_file.read_text()
     except Exception as e:
