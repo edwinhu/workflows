@@ -172,7 +172,7 @@ Simple work is EXACTLY when discipline matters most—because that’s when you�
 ```
 For each task N in PLAN.md:
     1. Determine loop type:
-       - Visual task? → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+       - Visual task? → Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
        - Standard task? → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md")
 
     2. Inside loop: spawn Task agent
@@ -193,7 +193,7 @@ If a PLAN.md task involves rendered visual output, use **visual-verify** instead
 **Signals a task is visual:** task mentions "render", "slide", "chart", "figure", "layout", "UI", "screenshot", "visual", "diagram", or produces any file meant to be seen by humans (PNG, PDF, SVG).
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
 ```
 
 ### Step 1: Start Ralph Loop for Each Task

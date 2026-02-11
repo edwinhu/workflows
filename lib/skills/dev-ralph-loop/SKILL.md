@@ -256,7 +256,7 @@ Ralph loops are NOT for:
 For tasks that produce rendered visual output (slides, charts, UI), use **visual-verify** instead of a plain ralph loop. Visual-verify wraps the ralph-loop pattern with render → look-at → fix steps:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
 ```
 
 ## Integration

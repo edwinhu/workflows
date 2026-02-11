@@ -1,7 +1,7 @@
 ---
 name: visual-verify
 version: 1.0
-description: "Internal skill for visual output verification loops. NOT user-facing - invoked by dev-implement, ds-implement, or writing-draft when tasks involve rendered visual output. Uses context-enriched Gemini vision calls inside a ralph-loop structure."
+description: "This skill should be used when the user asks to 'verify visual output', 'check how it looks', 'render and review', 'visual verify', 'check the slide', 'does this look right', or when any task produces rendered visual output (slides, charts, documents, UI). Starts a render-vision-fix loop using Gemini vision."
 ---
 
 **Announce:** "I'm using visual-verify to set up a render-vision-fix loop."
@@ -61,7 +61,7 @@ You CANNOT claim a visual task is done by:
 Load this skill, then start a ralph loop:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
 
 Skill(skill="ralph-loop:ralph-loop", args="Visual Task N: [TASK NAME] --max-iterations 5 --completion-promise VTASKN_DONE")
 ```
@@ -250,7 +250,7 @@ When a task in PLAN.md involves visual output, use visual-verify instead of plai
 
 ```
 For task N (visual):
-    1. Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+    1. Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
     2. Start visual-verify loop
     3. Inside loop: delegate -> render -> vision check -> decide
     4. Promise when PASS -> move to task N+1
@@ -264,7 +264,7 @@ When generating charts or visualizations in a data science pipeline:
 
 ```
 For visualization task:
-    1. Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+    1. Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
     2. After chart code runs: render to PNG
     3. Vision check with context (expected data, trends, axis labels)
     4. Fix or confirm
@@ -276,7 +276,7 @@ When working with Typst documents:
 
 ```
 After drafting a section with Typst rendering:
-    1. Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+    1. Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
     2. Render the Typst document
     3. Vision check against outline/precis requirements
     4. Fix layout/formatting issues
@@ -287,7 +287,7 @@ After drafting a section with Typst rendering:
 For any ad-hoc visual task outside a workflow:
 
 ```
-1. Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/visual-verify/SKILL.md")
+1. Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
 2. Implement the visual artifact
 3. Run the visual-verify loop
 ```
