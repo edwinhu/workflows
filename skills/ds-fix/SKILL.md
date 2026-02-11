@@ -1,17 +1,17 @@
 ---
-name: ds-edit
+name: ds-fix
 version: 1.0
-description: "Midpoint entry for data science workflow. Use when analysis needs course-correction: wrong results, notebook errors, reviewer feedback, data changes."
+description: "This skill should be used when the user asks to 'fix analysis', 'wrong results', 'notebook error', 'reviewer feedback', 'data changed', 'debug notebook', or needs mid-analysis course-correction for wrong results, notebook errors, or data changes."
 ---
 
-**Announce:** "Using ds-edit for mid-analysis course correction."
+**Announce:** "Using ds-fix for mid-analysis course correction."
 
 ## Where This Fits
 
 ```
 /ds (entry) → brainstorm → plan → implement → review → verify
                                     ↑
-/ds-edit (midpoint) ────────────────┘
+/ds-fix (midpoint) ─────────────────┘
 ```
 
 This is the re-entry point. Jump back into a DS workflow that needs fixing.
@@ -482,7 +482,7 @@ Route to ds-delegate: "Fix merge to preserve 1:1 mapping, add merge validation"
 
 ---
 
-**Integration Note:** This section should be inserted in ds-edit.SKILL.md after the existing "Step 3: Fix by Category" sections and before "Step 4: Verify Fix". It provides an alternative investigation path when the standard backward-tracing diagnostic reveals multiple plausible root causes.
+**Integration Note:** This section should be inserted in ds-fix.SKILL.md after the existing "Step 3: Fix by Category" sections and before "Step 4: Verify Fix". It provides an alternative investigation path when the standard backward-tracing diagnostic reveals multiple plausible root causes.
 
 ## Step 4: Verify Fix
 

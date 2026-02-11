@@ -344,7 +344,7 @@ Re-read the writing rules to stay on track:
 {chr(10).join('- ' + r for r in skill_reads)}
 
 Commands:
-- /writing-edit - Verify structure, check anti-patterns, complete workflow
+- /writing-revise - Apply review fixes, polish, and complete workflow
 """
 
     elif workflow_type in ('dev', 'ds'):

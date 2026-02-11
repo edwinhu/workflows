@@ -370,7 +370,7 @@ Before proceeding to edit/verify:
 2. **RUN**: List files in `drafts/`, compare against OUTLINE.md sections
 3. **READ**: Check each draft exists and has substantial content (not cursory stubs)
 4. **VERIFY**: All sections have drafts, each draft covers all outline points
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-edit
+5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-revise
 
 **Reporting "all sections drafted" without checking each file is LYING.** You must verify every draft exists and has real content.
 
@@ -409,4 +409,4 @@ Before proceeding to edit/verify:
 
 After all sections are drafted:
 
-Invoke `/writing-review` to diagnose structural issues (transitions, repetition, late-introduced concepts), then `/writing-edit` to fix them.
+Invoke `/writing-review` to diagnose structural issues (transitions, repetition, late-introduced concepts), then `/writing-revise` to fix them.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PostToolUse hook: Suggest /writing-edit after N edits in writing workflow.
+PostToolUse hook: Suggest /writing-revise after N edits in writing workflow.
 
 Only fires for Edit/Write on .md files when an active writing workflow exists.
 Tracks edit count in ACTIVE_WORKFLOW.md and suggests edit loop at threshold.
@@ -89,7 +89,7 @@ def main():
 
         print(json.dumps({
             "result": "continue",
-            "message": f"📝 {edits} edits since last verify (style: {style}, phase: {phase}). Consider `/writing-edit` to verify and polish."
+            "message": f"📝 {edits} edits since last verify (style: {style}, phase: {phase}). Consider `/writing-revise` to apply fixes and polish."
         }))
     else:
         # Just increment counter

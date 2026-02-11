@@ -42,7 +42,7 @@ When a skill completes, it tells you what’s next. **You must invoke it explici
 
 Example workflow:
 ```
-/dev-brainstorm completes
+/dev completes brainstorm phase
   → You invoke: runSubagent(..., prompt=”Continue with /dev-explore...”)
   → /dev-explore completes
   → You invoke: runSubagent(..., prompt=”Continue with /dev-clarify...”)
@@ -76,13 +76,8 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 A comprehensive development plugin that enforces test-driven development practices through structured phases: brainstorm, plan, implement, review, and verify.
 
 **Commands:**
-- `/dev` - Full feature development workflow with TDD enforcement
-- `/dev-brainstorm` - Socratic design exploration before implementation
-- `/dev-plan` - Codebase exploration and task breakdown
-- `/dev-implement` - TDD implementation with RED-GREEN-REFACTOR cycle
-- `/dev-edit` - Systematic debugging with root cause investigation
-- `/dev-review` - Code review combining spec compliance and quality checks
-- `/dev-verify` - Verification gate requiring fresh runtime evidence
+- `/dev` - Full feature development workflow with TDD enforcement (7 phases)
+- `/dev-debug` - Midpoint re-entry: systematic debugging with root cause investigation
 - `/dev-tools` - List available development plugins and MCP servers
 
 **Tags:** `development`, `tdd`, `testing`, `code-review`
@@ -96,12 +91,8 @@ A comprehensive development plugin that enforces test-driven development practic
 A data science plugin focused on reproducibility and output verification, with specialized skills for academic and financial data access.
 
 **Commands:**
-- `/ds` - Data science workflow with output-first verification
-- `/ds-brainstorm` - Clarify analysis objectives through Socratic questioning
-- `/ds-plan` - Data profiling and analysis task breakdown
-- `/ds-implement` - Output-first implementation with verification at each step
-- `/ds-review` - Methodology and statistical validity review
-- `/ds-verify` - Reproducibility verification before completion
+- `/ds` - Data science workflow with output-first verification (5 phases)
+- `/ds-fix` - Midpoint re-entry: fix wrong results, notebook errors, reviewer feedback
 - `/ds-tools` - List available data science plugins and MCP servers
 
 **Data Access Skills:**
@@ -129,10 +120,9 @@ A data science plugin focused on reproducibility and output verification, with s
 A writing plugin providing style guidance, topic discovery from Readwise highlights, and automatic detection of AI writing patterns.
 
 **Skills:**
-- `/writing` - General writing guidance using Strunk & White’s Elements of Style
-- `/writing-econ` - Economics and finance writing using McCloskey’s Economical Writing
-- `/writing-legal` - Academic legal writing using Volokh’s Academic Legal Writing
-- `/writing-brainstorm` - Discover topics and gather sources from Readwise highlights
+- `/writing` - Full writing workflow: brainstorm, outline, draft, review, revise
+- `/writing-review` - Diagnose structural issues, produce REVIEW.md
+- `/writing-revise` - Midpoint re-entry: apply review fixes, polish, complete workflow
 - `/ai-anti-patterns` - Detect and revise AI writing indicators (12 pattern categories)
 
 **MCP Servers:**

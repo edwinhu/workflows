@@ -1,12 +1,12 @@
 ---
-name: writing-edit
+name: writing-revise
 version: 1.0
-description: "Midpoint entry for writing workflow - fix issues from REVIEW.md, polish, and complete workflow"
+description: "This skill should be used when the user asks to 'revise writing', 'fix review issues', 'polish draft', 'apply review feedback', 'complete writing workflow', or after /writing-review produces REVIEW.md with issues to fix."
 ---
 
-# Writing Edit
+# Writing Revise
 
-The fix loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
+The revision loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
 
 ## IRON LAW: Critique Over Comfort
 
@@ -90,7 +90,7 @@ If `.claude/REVIEW.md` does not exist, inform the user:
 
 ```
 No REVIEW.md found. For best results, run /writing-review first to produce
-a structured diagnosis, then re-run /writing-edit.
+a structured diagnosis, then re-run /writing-revise.
 
 Proceeding with inline review (less thorough than /writing-review).
 ```
@@ -101,7 +101,7 @@ If user chooses to proceed without REVIEW.md, perform a lightweight inline check
 3. Fix issues found in-line
 4. Skip to Step 6 (Generate Report)
 
-This path exists for quick edits and backward compatibility. The `/writing-review` -> `/writing-edit` pipeline is the recommended workflow.
+This path exists for quick edits and backward compatibility. The `/writing-review` -> `/writing-revise` pipeline is the recommended workflow.
 
 ### Step 3: Load Domain Skill
 
@@ -198,7 +198,7 @@ edits_since_verify: 0
 edit_iteration: [current iteration + 1]
 ```
 
-**Iteration limit: maximum 3 edit cycles.** Each cycle is: fix issues -> re-run `/writing-review` -> re-run `/writing-edit`. If issues persist after 3 rounds, escalate to the user:
+**Iteration limit: maximum 3 edit cycles.** Each cycle is: fix issues -> re-run `/writing-review` -> re-run `/writing-revise`. If issues persist after 3 rounds, escalate to the user:
 
 ```
 Edit cycle [N]/3: Issues remain after [N] review-edit passes.
@@ -210,8 +210,8 @@ These may require human judgment. Please review and advise.
 ```
 
 Report issues with suggested fixes:
-- **Minor issues**: "Address remaining issues, then re-run `/writing-review` -> `/writing-edit`."
-- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` -> `/writing-edit`."
+- **Minor issues**: "Address remaining issues, then re-run `/writing-review` -> `/writing-revise`."
+- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` -> `/writing-revise`."
 
 #### If All Issues Fixed -> Complete Workflow
 

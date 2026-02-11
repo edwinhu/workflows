@@ -1,10 +1,10 @@
 ---
-name: dev-edit
+name: dev-debug
 version: 1.0
 description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic debugging and course-correction with verification-driven methodology using ralph loops."
 ---
 
-**Announce:** "I'm using dev-edit for systematic debugging and course-correction."
+**Announce:** "I'm using dev-debug for systematic debugging and course-correction."
 
 <EXTREMELY-IMPORTANT>
 ## GUI Application Debugging Gate

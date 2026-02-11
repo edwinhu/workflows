@@ -3,7 +3,7 @@ name: writing-legal
 description: Internal skill for academic legal writing. Loaded by /writing when style=legal. Based on Volokh's "Academic Legal Writing".
 includes:
   - writing-general   # Base writing rules (Strunk & White)
-  - ai-anti-patterns  # Quality check on /writing-edit
+  - ai-anti-patterns  # Quality check on /writing-revise
 ---
 
 # Academic Legal Writing
@@ -22,7 +22,7 @@ Read("${CLAUDE_PLUGIN_ROOT}/skills/writing/SKILL.md")
 If `.claude/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: legal`.
 
 If no `.claude/PRECIS.md` exists in the project:
-- Suggest: "No PRECIS.md found. Consider `/writing-brainstorm` to set up thesis, audience, and claims first."
+- Suggest: "No PRECIS.md found. Consider `/writing` to set up thesis, audience, and claims first."
 
 **Step 3: Apply legal-specific rules below**
 

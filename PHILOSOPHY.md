@@ -106,29 +106,29 @@ Good workflows produce deliverables where the human says "this is basically done
 
 Each workflow exposes exactly **two** user-facing commands. Everything else is internal.
 
-| Workflow | Entry (start fresh) | Edit (mid-workflow) | Internal phases |
+| Workflow | Entry (start fresh) | Midpoint (re-enter) | Internal phases |
 |----------|--------------------|--------------------|-----------------|
-| **Dev** | `/dev` | `/dev-edit` | brainstorm, explore, clarify, design, implement, review, verify, tdd, test, debug |
-| **DS** | `/ds` | `/ds-edit` | brainstorm, plan, implement, review, verify |
-| **Writing** | `/writing` | `/writing-edit` | brainstorm, setup, outline, draft, general, econ, legal |
+| **Dev** | `/dev` | `/dev-debug` | brainstorm, explore, clarify, design, implement, review, verify, tdd, test, debug |
+| **DS** | `/ds` | `/ds-fix` | brainstorm, plan, implement, review, verify |
+| **Writing** | `/writing` | `/writing-revise` | brainstorm, setup, outline, draft, general, econ, legal |
 
 ### Why Two
 
 **Entry** starts a fresh episode. It runs the brainstorm phase, which gates everything downstream. Use when beginning a new feature, analysis, or document.
 
-**Edit** re-enters a running episode. It diagnoses what's wrong and routes to the right internal phase. Use when mid-workflow and something needs fixing — a bug, wrong results, reviewer feedback, a rough draft.
+**Midpoint** re-enters a running episode. It diagnoses what's wrong and routes to the right internal phase. Use when mid-workflow and something needs fixing — a bug, wrong results, reviewer feedback, a rough draft.
 
 The user never needs to know which internal phase to invoke. The two entry points handle routing:
 
 ```
 /dev         → brainstorm → explore → clarify → design → implement → review → verify
-/dev-edit    → diagnose → route to {debug, re-test, re-design, ...}
+/dev-debug   → diagnose → route to {debug, re-test, re-design, ...}
 
 /ds          → brainstorm → plan → implement → review → verify
-/ds-edit     → diagnose → route to {debug notebook, re-analyze, revise, re-profile, ...}
+/ds-fix      → diagnose → route to {debug notebook, re-analyze, revise, re-profile, ...}
 
 /writing     → brainstorm → setup → outline → draft
-/writing-edit → verify structure → check anti-patterns → domain rules → polish
+/writing-revise → apply review fixes → check anti-patterns → domain rules → polish
 ```
 
 ### Midpoint Constraint Loading
@@ -138,20 +138,20 @@ The entry point runs sequentially — each phase loads its constraints and passe
 **The midpoint must be self-contained.** It loads every constraint layer it needs before touching the work:
 
 ```
-/writing-edit loads:
+/writing-revise loads:
   1. ACTIVE_WORKFLOW.md    → workflow state (what phase, what style)
   2. PRECIS.md, OUTLINE.md → structural intent (what we're building)
   3. ai-anti-patterns      → universal constraints (no AI-smell)
   4. domain skill           → domain constraints (Volokh, McCloskey, or Strunk & White)
   THEN: check the draft against all four layers
 
-/dev-edit loads:
+/dev-debug loads:
   1. SPEC.md, PLAN.md      → what was promised
   2. LEARNINGS.md           → what's been tried
   3. dev-tdd gates          → execution enforcement
   THEN: debug protocol (reproduce → analyze → hypothesize → fix)
 
-/ds-edit loads:
+/ds-fix loads:
   1. SPEC.md, PLAN.md       → objectives and task breakdown
   2. LEARNINGS.md            → pipeline state and observations
   3. output-first protocol   → verification enforcement

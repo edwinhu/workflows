@@ -17,7 +17,7 @@ Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
 # Planning (Data Profiling + Task Breakdown)
 
 Profile the data and create an analysis plan based on the spec.
-**Requires `.claude/SPEC.md` from /ds-brainstorm first.**
+**Requires `.claude/SPEC.md` from /ds first.**
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning
@@ -29,7 +29,7 @@ Before exploring data or creating tasks, you MUST have:
 2. Clear success criteria
 3. User-approved spec
 
-**If `.claude/SPEC.md` doesn't exist, run /ds-brainstorm first.**
+**If `.claude/SPEC.md` doesn't exist, run /ds first.**
 </EXTREMELY-IMPORTANT>
 
 ### Rationalization Table - STOP If You Think:
@@ -92,7 +92,7 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 cat .claude/SPEC.md  # verify-spec: read SPEC file to confirm it exists
 ```
 
-If missing, stop and run `/ds-brainstorm` first.
+If missing, stop and run `/ds` first.
 
 ### 2. Data Profiling
 
