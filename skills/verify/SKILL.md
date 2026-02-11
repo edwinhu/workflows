@@ -1,9 +1,9 @@
 ---
-description: Run verification checklist (build, types, lint, tests)
-allowed-tools: Bash, Read, Grep
+name: verify
+description: "This skill should be used when the user asks to 'run checks', 'verify the build', 'check for errors', 'run tests', 'pre-commit check', 'is it ready to commit', or wants a comprehensive verification checklist (build, types, lint, tests, secrets, debug prints)."
 ---
 
-# /verify - Verification Checklist
+# Verification Checklist
 
 Run comprehensive verification on current codebase state.
 
@@ -57,7 +57,7 @@ If any critical issues, list them with fix suggestions.
 
 ## Arguments
 
-$ARGUMENTS can be:
+Arguments can be:
 - `quick` - Only build + types
 - `full` - All checks (default)
 - `pre-commit` - Checks relevant for commits

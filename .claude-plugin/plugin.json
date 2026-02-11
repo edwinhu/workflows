@@ -1,10 +1,9 @@
 {
   "name": "workflows",
-  "version": "2.46.1",
+  "version": "3.0.0",
   "description": "Development, data science, and writing workflows with TDD enforcement, output-first verification, and agent team parallelization.",
   "author": {
     "name": "edwinhu"
   },
-  "commands": "./commands/",
   "skills": "./skills/"
 }

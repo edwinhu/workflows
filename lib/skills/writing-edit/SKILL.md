@@ -1,6 +1,7 @@
 ---
+name: writing-edit
+version: 1.0
 description: "Midpoint entry for writing workflow - fix issues from REVIEW.md, polish, and complete workflow"
-allowed-tools: Read, Edit, Write, Bash, Grep, Glob, Skill
 ---
 
 # Writing Edit
@@ -52,10 +53,10 @@ Before running edits, verify the workflow is ready:
 5. **CHECK FOR REVIEW.MD**: Look for `.claude/REVIEW.md`
 
 If any file is missing, report and suggest the appropriate phase:
-- No PRECIS.md → `/writing` (start from brainstorm)
-- No OUTLINE.md → writing-setup needed
-- No drafts → writing-draft needed
-- **No REVIEW.md** → suggest `/writing-review` first (see backward-compatibility below)
+- No PRECIS.md -> `/writing` (start from brainstorm)
+- No OUTLINE.md -> writing-setup needed
+- No drafts -> writing-draft needed
+- **No REVIEW.md** -> suggest `/writing-review` first (see backward-compatibility below)
 
 ## Process
 
@@ -79,9 +80,9 @@ Read(".claude/REVIEW.md")
 ```
 
 Parse the review into:
-- **Critical issues** — fix first, these break the argument
-- **Major issues** — fix second, these weaken the document
-- **Minor issues** — fix last, these polish the prose
+- **Critical issues** -- fix first, these break the argument
+- **Major issues** -- fix second, these weaken the document
+- **Minor issues** -- fix last, these polish the prose
 
 **Backward-compatibility path (no REVIEW.md):**
 
@@ -100,7 +101,7 @@ If user chooses to proceed without REVIEW.md, perform a lightweight inline check
 3. Fix issues found in-line
 4. Skip to Step 6 (Generate Report)
 
-This path exists for quick edits and backward compatibility. The `/writing-review` → `/writing-edit` pipeline is the recommended workflow.
+This path exists for quick edits and backward compatibility. The `/writing-review` -> `/writing-edit` pipeline is the recommended workflow.
 
 ### Step 3: Load Domain Skill
 
@@ -197,7 +198,7 @@ edits_since_verify: 0
 edit_iteration: [current iteration + 1]
 ```
 
-**Iteration limit: maximum 3 edit cycles.** Each cycle is: fix issues → re-run `/writing-review` → re-run `/writing-edit`. If issues persist after 3 rounds, escalate to the user:
+**Iteration limit: maximum 3 edit cycles.** Each cycle is: fix issues -> re-run `/writing-review` -> re-run `/writing-edit`. If issues persist after 3 rounds, escalate to the user:
 
 ```
 Edit cycle [N]/3: Issues remain after [N] review-edit passes.
@@ -209,10 +210,10 @@ These may require human judgment. Please review and advise.
 ```
 
 Report issues with suggested fixes:
-- **Minor issues**: "Address remaining issues, then re-run `/writing-review` → `/writing-edit`."
-- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` → `/writing-edit`."
+- **Minor issues**: "Address remaining issues, then re-run `/writing-review` -> `/writing-edit`."
+- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` -> `/writing-edit`."
 
-#### If All Issues Fixed → Complete Workflow
+#### If All Issues Fixed -> Complete Workflow
 
 Archive workflow state:
 
@@ -245,15 +246,4 @@ Generate completion summary:
 - Export to Word: `/docx`
 - Export to PDF: `/pdf`
 - Start new project: `/writing`
-```
-
-Announce:
-
-```
-Writing workflow complete. All issues resolved.
-
-The workflow has been archived to .claude/completed-workflows/.
-PRECIS.md, OUTLINE.md, and REVIEW.md remain for reference.
-
-To start a new writing project, use /writing.
 ```

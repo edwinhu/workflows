@@ -1,16 +1,11 @@
 ---
-description: Save session state to LEARNINGS.md
-allowed-tools: Read, Write, Bash
+name: checkpoint
+description: "This skill should be used when the user asks to 'save progress', 'checkpoint', 'save session state', 'create a checkpoint', or before context compaction, breaks, or task switches. Appends session state to LEARNINGS.md."
 ---
 
-# /checkpoint - Save Session State
+# Checkpoint - Save Session State
 
 Save current session state for continuity tracking.
-
-## What It Does
-
-1. **Update LEARNINGS.md** with timestamp and current context
-2. **Log session context** for resumption
 
 ## When to Use
 
@@ -56,10 +51,3 @@ CHECKPOINT SAVED
 LEARNINGS.md updated: .claude/LEARNINGS.md
 Session: [session-id]
 ```
-
-## Arguments
-
-$ARGUMENTS can be:
-- (no args) - Create checkpoint with auto-generated context
-- `note “...”` - Add specific note to checkpoint
-- `status` - Show current checkpoint status without creating new one
