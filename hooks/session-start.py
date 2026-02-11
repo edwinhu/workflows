@@ -112,7 +112,12 @@ def load_using_skills_content() -> str:
     """
     skill_file = get_plugin_root() / 'lib' / 'skills' / 'using-skills' / 'SKILL.md'
     try:
-        return skill_file.read_text()
+        content = skill_file.read_text()
+        # Substitute ${CLAUDE_PLUGIN_ROOT} since hook injects as raw text,
+        # bypassing Claude Code's normal skill variable substitution
+        plugin_root = str(get_plugin_root())
+        content = content.replace('${CLAUDE_PLUGIN_ROOT}', plugin_root)
+        return content
     except Exception as e:
         # Fallback if file not found
         print(f"Warning: Failed to load using-skills content: {e}", file=sys.stderr)
