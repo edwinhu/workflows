@@ -152,31 +152,36 @@ Contains common skills used by multiple plugins, including office document forma
 
 ---
 
-### librarian (v0.1.0)
+### librarian (v0.2.0)
 
-**Knowledge management across NotebookLM, Google Workspace, Readwise, and Gemini**
+**Knowledge management across NotebookLM, Readwise, Google Scholar, and Google Workspace**
 
-A knowledge orchestration plugin that coordinates research workflows across multiple services.
+A knowledge orchestration plugin that coordinates research workflows across multiple services with a strict search hierarchy: NLM → Readwise → Google Scholar.
 
 **Agent:**
 - `librarian` - Autonomous knowledge management agent for research workflows
 
 **Skills:**
 - `/nlm` - NotebookLM CLI for notebooks, sources, notes, audio overviews, and research
+- `/google-scholar` - Google Scholar CLI for academic paper discovery with domain knowledge integration
 - `/gog` - Google Workspace CLI for Gmail, Calendar, Drive, Tasks, Keep, Sheets, Docs
 
 **Workflows:**
-- **Research [Topic]** - Search Readwise, create notebook, gather sources, generate synthesis
+- **Research [Topic]** - Search NLM, Readwise, Google Scholar; gather sources, generate synthesis
 - **Task-ify [Topic]** - Extract action items and create Google Tasks
 - **Archive Paper** - Add papers to NotebookLM notebooks
 
+**Domain Knowledge:**
+- `domain-knowledge.local.md` - User-curated trusted journals and authors (gitignored)
+- Used to prioritize Google Scholar results from known-good venues
+
 **Prerequisites:**
 - `nlm` CLI (install: `go install github.com/tmc/nlm/cmd/nlm@latest`)
+- `scholar` CLI (build: `cd google-scholar-cli && bun build src/main.ts --compile --outfile scholar`)
 - `gog` CLI (Google Workspace CLI with OAuth setup)
 - Readwise MCP (optional, for highlight search)
-- Chrome with Paperpile extension (for Gemini web automation)
 
-**Tags:** `notebooklm`, `google-workspace`, `readwise`, `research`, `knowledge-management`
+**Tags:** `notebooklm`, `google-scholar`, `google-workspace`, `readwise`, `research`, `knowledge-management`
 
 ---
 
@@ -233,6 +238,7 @@ workflows/
 │   ├── continuous-learning/    # Cross-project pattern extraction
 │   ├── nlm/                    # NotebookLM CLI skill
 │   ├── gog/                    # Google Workspace CLI skill
+│   ├── google-scholar/         # Google Scholar CLI skill
 │   └── [27+ other skills...]
 ├── hooks/                      # Hook entry points
 │   ├── hooks.json              # Hook configuration
