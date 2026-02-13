@@ -8,21 +8,23 @@ version: 0.2.0
 
 Manage Google NotebookLM notebooks, sources, notes, and audio overviews via the `nlm` command-line tool.
 
-**Binary Path:** `/Users/vwh7mb/projects/nlm/nlm`
+**Requires:** `nlm` on PATH (`~/.local/bin/nlm` → `~/projects/nlm/nlm`)
+
+**Check:** `command -v nlm || echo "MISSING: nlm CLI not installed"`
 
 ## Authentication
 
 Before first use, authenticate with Google:
 
 ```bash
-/Users/vwh7mb/projects/nlm/nlm auth
+nlm auth
 ```
 
 This launches a browser for OAuth. Credentials are stored in `~/.nlm/env`.
 
 To check available browser profiles:
 ```bash
-/Users/vwh7mb/projects/nlm/nlm auth --all --notebooks
+nlm auth --all --notebooks
 ```
 
 ## Core Commands
@@ -31,16 +33,16 @@ To check available browser profiles:
 
 ```bash
 # List all notebooks
-/Users/vwh7mb/projects/nlm/nlm list
+nlm list
 
 # Create a new notebook
-/Users/vwh7mb/projects/nlm/nlm create “Research Notes”
+nlm create “Research Notes”
 
 # Delete a notebook
-/Users/vwh7mb/projects/nlm/nlm rm <notebook-id>
+nlm rm <notebook-id>
 
 # Get notebook analytics
-/Users/vwh7mb/projects/nlm/nlm analytics <notebook-id>
+nlm analytics <notebook-id>
 ```
 
 ### Source Management
@@ -49,47 +51,47 @@ Add sources from URLs, files, or stdin:
 
 ```bash
 # Add URL source
-/Users/vwh7mb/projects/nlm/nlm add <notebook-id> https://example.com/article
+nlm add <notebook-id> https://example.com/article
 
 # Add PDF file
-/Users/vwh7mb/projects/nlm/nlm add <notebook-id> document.pdf
+nlm add <notebook-id> document.pdf
 
 # Add from stdin
-echo “Some text content” | /Users/vwh7mb/projects/nlm/nlm add <notebook-id> -
+echo “Some text content” | nlm add <notebook-id> -
 
 # Add with specific MIME type
-cat data.json | /Users/vwh7mb/projects/nlm/nlm add <notebook-id> - -mime=”application/json”
+cat data.json | nlm add <notebook-id> - -mime=”application/json”
 
 # Add YouTube video
-/Users/vwh7mb/projects/nlm/nlm add <notebook-id> https://www.youtube.com/watch?v=VIDEO_ID
+nlm add <notebook-id> https://www.youtube.com/watch?v=VIDEO_ID
 
 # List sources in notebook
-/Users/vwh7mb/projects/nlm/nlm sources <notebook-id>
+nlm sources <notebook-id>
 
 # Rename a source
-/Users/vwh7mb/projects/nlm/nlm rename-source <source-id> “New Title”
+nlm rename-source <source-id> “New Title”
 
 # Remove a source
-/Users/vwh7mb/projects/nlm/nlm rm-source <notebook-id> <source-id>
+nlm rm-source <notebook-id> <source-id>
 
 # Refresh source content
-/Users/vwh7mb/projects/nlm/nlm refresh-source <source-id>
+nlm refresh-source <source-id>
 ```
 
 ### Note Management
 
 ```bash
 # List notes in notebook
-/Users/vwh7mb/projects/nlm/nlm notes <notebook-id>
+nlm notes <notebook-id>
 
 # Create new note
-/Users/vwh7mb/projects/nlm/nlm new-note <notebook-id> “Note Title”
+nlm new-note <notebook-id> “Note Title”
 
 # Update note content
-/Users/vwh7mb/projects/nlm/nlm update-note <notebook-id> <note-id> “New content” “New Title”
+nlm update-note <notebook-id> <note-id> “New content” “New Title”
 
 # Remove note
-/Users/vwh7mb/projects/nlm/nlm rm-note <note-id>
+nlm rm-note <note-id>
 ```
 
 ### Audio Overviews
@@ -98,60 +100,60 @@ Generate AI podcast-style audio summaries:
 
 ```bash
 # Create audio overview with instructions
-/Users/vwh7mb/projects/nlm/nlm audio-create <notebook-id> “Focus on key themes and provide a professional summary”
+nlm audio-create <notebook-id> “Focus on key themes and provide a professional summary”
 
 # List audio overviews
-/Users/vwh7mb/projects/nlm/nlm audio-list <notebook-id>
+nlm audio-list <notebook-id>
 
 # Get audio overview status/content
-/Users/vwh7mb/projects/nlm/nlm audio-get <notebook-id>
+nlm audio-get <notebook-id>
 
 # Download audio file (requires --direct-rpc)
-/Users/vwh7mb/projects/nlm/nlm audio-download <notebook-id> output.mp3 --direct-rpc
+nlm audio-download <notebook-id> output.mp3 --direct-rpc
 
 # Share audio (private)
-/Users/vwh7mb/projects/nlm/nlm audio-share <notebook-id>
+nlm audio-share <notebook-id>
 
 # Share audio (public)
-/Users/vwh7mb/projects/nlm/nlm audio-share <notebook-id> --public
+nlm audio-share <notebook-id> --public
 
 # Delete audio
-/Users/vwh7mb/projects/nlm/nlm audio-rm <notebook-id>
+nlm audio-rm <notebook-id>
 ```
 
 ### Video Overviews
 
 ```bash
 # Create video overview
-/Users/vwh7mb/projects/nlm/nlm video-create <notebook-id> “Instructions for video”
+nlm video-create <notebook-id> “Instructions for video”
 
 # List video overviews
-/Users/vwh7mb/projects/nlm/nlm video-list <notebook-id>
+nlm video-list <notebook-id>
 
 # Download video (requires --direct-rpc)
-/Users/vwh7mb/projects/nlm/nlm video-download <notebook-id> output.mp4 --direct-rpc
+nlm video-download <notebook-id> output.mp4 --direct-rpc
 ```
 
 ### Generation Commands
 
 ```bash
 # Generate notebook guide (short summary)
-/Users/vwh7mb/projects/nlm/nlm generate-guide <notebook-id>
+nlm generate-guide <notebook-id>
 
 # Generate comprehensive content outline
-/Users/vwh7mb/projects/nlm/nlm generate-outline <notebook-id>
+nlm generate-outline <notebook-id>
 
 # Generate new content section
-/Users/vwh7mb/projects/nlm/nlm generate-section <notebook-id>
+nlm generate-section <notebook-id>
 
 # Free-form chat generation
-/Users/vwh7mb/projects/nlm/nlm generate-chat <notebook-id> "What are the main themes?"
+nlm generate-chat <notebook-id> "What are the main themes?"
 
 # Interactive chat session
-/Users/vwh7mb/projects/nlm/nlm chat <notebook-id>
+nlm chat <notebook-id>
 
 # Generate magic view synthesis from specific sources
-/Users/vwh7mb/projects/nlm/nlm generate-magic <notebook-id> <source-id-1> <source-id-2>
+nlm generate-magic <notebook-id> <source-id-1> <source-id-2>
 ```
 
 ### Content Transformation Commands
@@ -160,46 +162,46 @@ Transform your sources into different formats. All commands take `<notebook-id> 
 
 ```bash
 # Summarize content from sources
-/Users/vwh7mb/projects/nlm/nlm summarize <notebook-id> <source-id>
+nlm summarize <notebook-id> <source-id>
 
 # Generate study guide with key concepts and review questions
-/Users/vwh7mb/projects/nlm/nlm study-guide <notebook-id> <source-id>
+nlm study-guide <notebook-id> <source-id>
 
 # Generate FAQ from sources
-/Users/vwh7mb/projects/nlm/nlm faq <notebook-id> <source-id>
+nlm faq <notebook-id> <source-id>
 
 # Create professional briefing document
-/Users/vwh7mb/projects/nlm/nlm briefing-doc <notebook-id> <source-id>
+nlm briefing-doc <notebook-id> <source-id>
 
 # Rephrase content in different words
-/Users/vwh7mb/projects/nlm/nlm rephrase <notebook-id> <source-id>
+nlm rephrase <notebook-id> <source-id>
 
 # Expand on content with more detail
-/Users/vwh7mb/projects/nlm/nlm expand <notebook-id> <source-id>
+nlm expand <notebook-id> <source-id>
 
 # Get a critique of the content
-/Users/vwh7mb/projects/nlm/nlm critique <notebook-id> <source-id>
+nlm critique <notebook-id> <source-id>
 
 # Brainstorm ideas from sources
-/Users/vwh7mb/projects/nlm/nlm brainstorm <notebook-id> <source-id>
+nlm brainstorm <notebook-id> <source-id>
 
 # Verify facts in sources
-/Users/vwh7mb/projects/nlm/nlm verify <notebook-id> <source-id>
+nlm verify <notebook-id> <source-id>
 
 # Explain concepts in accessible language
-/Users/vwh7mb/projects/nlm/nlm explain <notebook-id> <source-id>
+nlm explain <notebook-id> <source-id>
 
 # Create a structured outline from sources
-/Users/vwh7mb/projects/nlm/nlm outline <notebook-id> <source-id>
+nlm outline <notebook-id> <source-id>
 
 # Generate text-based mindmap
-/Users/vwh7mb/projects/nlm/nlm mindmap <notebook-id> <source-id>
+nlm mindmap <notebook-id> <source-id>
 
 # Create a timeline of events
-/Users/vwh7mb/projects/nlm/nlm timeline <notebook-id> <source-id>
+nlm timeline <notebook-id> <source-id>
 
 # Generate table of contents
-/Users/vwh7mb/projects/nlm/nlm toc <notebook-id> <source-id>
+nlm toc <notebook-id> <source-id>
 ```
 
 ### Research Commands
@@ -208,10 +210,10 @@ Research topics and automatically import sources into a notebook:
 
 ```bash
 # Research a topic and import sources to a notebook
-/Users/vwh7mb/projects/nlm/nlm research "quantum computing advances" --notebook <notebook-id>
+nlm research "quantum computing advances" --notebook <notebook-id>
 
 # Deep research mode for comprehensive investigation
-/Users/vwh7mb/projects/nlm/nlm research "climate policy impacts" --notebook <notebook-id> --deep
+nlm research "climate policy impacts" --notebook <notebook-id> --deep
 ```
 
 The research command:
@@ -224,7 +226,7 @@ The research command:
 Execute multiple commands in a single request for better performance:
 
 ```bash
-/Users/vwh7mb/projects/nlm/nlm batch "create 'Research Notebook'" "add NOTEBOOK_ID https://example.com" "add NOTEBOOK_ID paper.pdf"
+nlm batch "create 'Research Notebook'" "add NOTEBOOK_ID https://example.com" "add NOTEBOOK_ID paper.pdf"
 ```
 
 ## Common Workflows
@@ -237,17 +239,17 @@ Use the `research` command to automatically find and import sources:
 
 ```bash
 # Create notebook
-id=$(/Users/vwh7mb/projects/nlm/nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
+id=$(nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
 
 # Research and auto-import sources
-/Users/vwh7mb/projects/nlm/nlm research "transformer architecture advances 2024" --notebook $id
+nlm research "transformer architecture advances 2024" --notebook $id
 
 # For comprehensive investigation
-/Users/vwh7mb/projects/nlm/nlm research "transformer architecture advances 2024" --notebook $id --deep
+nlm research "transformer architecture advances 2024" --notebook $id --deep
 
 # Generate synthesis
-/Users/vwh7mb/projects/nlm/nlm generate-chat $id "What are the key findings?"
-/Users/vwh7mb/projects/nlm/nlm audio-create $id "Summarize the key findings professionally"
+nlm generate-chat $id "What are the key findings?"
+nlm audio-create $id "Summarize the key findings professionally"
 ```
 
 **Option B: Manual Source Addition**
@@ -259,14 +261,14 @@ id=$(/Users/vwh7mb/projects/nlm/nlm create "AI Research" | grep -o 'notebook [^ 
 
 ```bash
 # Create notebook
-id=$(/Users/vwh7mb/projects/nlm/nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
+id=$(nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
 
 # Add sources manually
-/Users/vwh7mb/projects/nlm/nlm add $id https://arxiv.org/paper.pdf
-/Users/vwh7mb/projects/nlm/nlm add $id research-notes.txt
+nlm add $id https://arxiv.org/paper.pdf
+nlm add $id research-notes.txt
 
 # Generate audio
-/Users/vwh7mb/projects/nlm/nlm audio-create $id "Summarize the key findings professionally"
+nlm audio-create $id "Summarize the key findings professionally"
 ```
 
 ### Study Materials Workflow
@@ -275,14 +277,14 @@ Generate comprehensive study materials from sources:
 
 ```bash
 # Get notebook and source IDs
-/Users/vwh7mb/projects/nlm/nlm list
-/Users/vwh7mb/projects/nlm/nlm sources <notebook-id>
+nlm list
+nlm sources <notebook-id>
 
 # Generate study materials from a source
-/Users/vwh7mb/projects/nlm/nlm study-guide <notebook-id> <source-id>  # Key concepts + review questions
-/Users/vwh7mb/projects/nlm/nlm faq <notebook-id> <source-id>          # Common questions answered
-/Users/vwh7mb/projects/nlm/nlm outline <notebook-id> <source-id>      # Structured overview
-/Users/vwh7mb/projects/nlm/nlm explain <notebook-id> <source-id>      # Accessible explanations
+nlm study-guide <notebook-id> <source-id>  # Key concepts + review questions
+nlm faq <notebook-id> <source-id>          # Common questions answered
+nlm outline <notebook-id> <source-id>      # Structured overview
+nlm explain <notebook-id> <source-id>      # Accessible explanations
 ```
 
 ### Content Analysis Workflow
@@ -291,19 +293,19 @@ Deeply analyze and transform content:
 
 ```bash
 # Summarize and synthesize
-/Users/vwh7mb/projects/nlm/nlm summarize <notebook-id> <source-id>
-/Users/vwh7mb/projects/nlm/nlm generate-magic <notebook-id> <src1> <src2>  # Cross-source synthesis
+nlm summarize <notebook-id> <source-id>
+nlm generate-magic <notebook-id> <src1> <src2>  # Cross-source synthesis
 
 # Critical analysis
-/Users/vwh7mb/projects/nlm/nlm critique <notebook-id> <source-id>
-/Users/vwh7mb/projects/nlm/nlm verify <notebook-id> <source-id>
+nlm critique <notebook-id> <source-id>
+nlm verify <notebook-id> <source-id>
 
 # Creative exploration
-/Users/vwh7mb/projects/nlm/nlm brainstorm <notebook-id> <source-id>
-/Users/vwh7mb/projects/nlm/nlm expand <notebook-id> <source-id>
+nlm brainstorm <notebook-id> <source-id>
+nlm expand <notebook-id> <source-id>
 
 # Interactive Q&A
-/Users/vwh7mb/projects/nlm/nlm chat <notebook-id>
+nlm chat <notebook-id>
 ```
 
 ### Executive Briefing Workflow
@@ -312,14 +314,14 @@ Create professional documents from sources:
 
 ```bash
 # Generate briefing materials
-/Users/vwh7mb/projects/nlm/nlm briefing-doc <notebook-id> <source-id>  # Executive summary + recommendations
-/Users/vwh7mb/projects/nlm/nlm timeline <notebook-id> <source-id>      # Chronological overview
-/Users/vwh7mb/projects/nlm/nlm toc <notebook-id> <source-id>           # Structure overview
+nlm briefing-doc <notebook-id> <source-id>  # Executive summary + recommendations
+nlm timeline <notebook-id> <source-id>      # Chronological overview
+nlm toc <notebook-id> <source-id>           # Structure overview
 ```
 
 ## Troubleshooting
 
-- **Auth errors**: Run `/Users/vwh7mb/projects/nlm/nlm auth` to re-authenticate
+- **Auth errors**: Run `nlm auth` to re-authenticate
 - **Debug mode**: Add `-debug` flag for detailed API interactions
 - **Browser profile**: Use `--profile “Profile Name”` to specify browser profile
 

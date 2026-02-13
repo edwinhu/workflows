@@ -8,7 +8,9 @@ version: 0.1.0
 
 Search Google Scholar for academic papers via the `scholar` command-line tool.
 
-**Binary Path:** `/Users/vwh7mb/projects/google-scholar-cli/scholar`
+**Requires:** `scholar` on PATH (`~/.local/bin/scholar` → `~/projects/google-scholar-cli/scholar`)
+
+**Check:** `command -v scholar || echo "MISSING: scholar CLI not installed"`
 
 ## Authentication
 
@@ -16,7 +18,7 @@ Before first use, authenticate by extracting cookies from an active Chrome sessi
 
 ```bash
 # Chrome must be running with remote debugging enabled
-/Users/vwh7mb/projects/google-scholar-cli/scholar auth --port 9222
+scholar auth --port 9222
 ```
 
 Cookies are stored in `~/.google-scholar/cookies` (mode 0600).
@@ -29,13 +31,13 @@ Natural language search using Google Scholar Labs API:
 
 ```bash
 # One-shot search
-/Users/vwh7mb/projects/google-scholar-cli/scholar search "what are the key papers on attention mechanisms"
+scholar search "what are the key papers on attention mechanisms"
 
 # JSON output for parsing
-/Users/vwh7mb/projects/google-scholar-cli/scholar search "corporate disclosure and information asymmetry" --json
+scholar search "corporate disclosure and information asymmetry" --json
 
 # Interactive multi-turn mode (follow-up questions)
-/Users/vwh7mb/projects/google-scholar-cli/scholar search --interactive
+scholar search --interactive
 ```
 
 ### Traditional Keyword Search
@@ -44,13 +46,13 @@ Standard Google Scholar full-text search:
 
 ```bash
 # Keyword search
-/Users/vwh7mb/projects/google-scholar-cli/scholar lookup "machine learning transformers"
+scholar lookup "machine learning transformers"
 
 # Author search
-/Users/vwh7mb/projects/google-scholar-cli/scholar lookup "author:shleifer disclosure" --json
+scholar lookup "author:shleifer disclosure" --json
 
 # JSON output
-/Users/vwh7mb/projects/google-scholar-cli/scholar lookup "materiality accounting" --json
+scholar lookup "materiality accounting" --json
 ```
 
 ## Quick Reference
@@ -101,7 +103,7 @@ Do you want follow-up refinement?
 
 When searching Google Scholar, ALWAYS consult the domain knowledge file first:
 
-**File:** `/Users/vwh7mb/projects/workflows/skills/google-scholar/domain-knowledge.local.md`
+**File:** `${CLAUDE_PLUGIN_ROOT}/skills/google-scholar/domain-knowledge.local.md`
 
 This file contains the user's curated list of trusted journals, authors, and research groups. Use it to:
 
