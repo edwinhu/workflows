@@ -135,6 +135,39 @@ A writing plugin providing style guidance, topic discovery from Readwise highlig
 
 ---
 
+### bluebook (v0.1.0)
+
+**Bluebook citation formatting and audit workflow for law review footnotes**
+
+A legal citation plugin with two components: a reference skill for formatting individual citations, and a standalone audit workflow for checking entire documents.
+
+**Skills:**
+- `/bluebook` - Bluebook 21st edition citation formatting (cases, statutes, secondary sources)
+- `/bluebook-audit` - Full document audit workflow: extract, check, report, correct, verify, archive
+
+**Audit Workflow Phases:**
+1. **Extract** - Parse DOCX footnotes with formatting annotations
+2. **Check** - Mechanical checks (small caps, signals, id. chains) + Gemini AI audit
+3. **Report** - Generate findings report for user review (gate)
+4. **Correct** - Apply formatting corrections via lxml run-splitting
+5. **Verify** - Re-scan corrected DOCX to confirm fixes
+6. **Archive** - Archive URLs via Perma.cc API
+
+**Scripts** (stdlib + lxml only, no heavy SDK dependencies):
+- `extract_footnotes.py` - DOCX parsing, citation registry, cross-ref resolution
+- `scan_formatting.py` - Detect formatting issues (journal small caps, etc.)
+- `apply_corrections.py` - Fix formatting via XML run-splitting
+- `gemini_audit.py` - Per-footnote AI audit via Gemini REST API
+- `permacc_archive.py` - URL archiving via Perma.cc
+
+**References:**
+- Cornell abbreviation tables (T6 words, T13 journals)
+- Audit patterns and lessons learned
+
+**Tags:** `legal`, `bluebook`, `citations`, `law-review`, `docx`
+
+---
+
 ### shared
 
 **Shared skills and utilities across plugins**
