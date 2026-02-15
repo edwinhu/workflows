@@ -213,14 +213,41 @@ TaskOutput(task_id="task-ghi789", block=true, timeout=30000)
 | Cardinality | Unexpected unique values |
 | Distribution | Skewness, unexpected patterns |
 
-### 4. Create Task Breakdown
+### 4. Identify Implementation Language
+
+Before creating tasks, determine the implementation language for ETL and analysis:
+
+```
+AskUserQuestion(questions=[{
+  "question": "What language will be used for data processing / ETL?",
+  "header": "Language",
+  "options": [
+    {"label": "Python (Recommended)", "description": "pandas/polars in notebooks or scripts. Default for most analysis."},
+    {"label": "SAS", "description": "SAS on WRDS grid (qsas/qsub). For large-scale WRDS ETL with hash merges and SGE parallelism."},
+    {"label": "R", "description": "R scripts or notebooks. For statistical modeling."},
+    {"label": "Mixed", "description": "SAS for ETL, Python/R for analysis. Common for WRDS pipelines."}
+  ],
+  "multiSelect": false
+}])
+```
+
+**If SAS or Mixed is selected:**
+1. Record `Implementation Language: SAS` (or `Mixed: SAS ETL + Python analysis`) in PLAN.md header
+2. Load WRDS SAS enforcement: `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")`
+3. All SAS tasks in the plan MUST include performance annotations:
+   - **Merge strategy:** hash or sort-merge (with justification if sort-merge)
+   - **WHERE pattern:** range-based date literals (document that no function-wrapped filters are used)
+   - **Parallelism:** SGE array or sequential (with justification if sequential)
+4. Add `## SAS Performance Constraints` section to PLAN.md (see template below)
+
+### 5. Create Task Breakdown
 
 Break analysis into ordered tasks:
 - Each task should produce **visible output**
 - Order by data dependencies
 - Include data cleaning tasks FIRST
 
-### 5. Write Plan Doc
+### 6. Write Plan Doc
 
 Write to `.claude/PLAN.md`:
 
@@ -278,6 +305,20 @@ For each task, define what output proves completion:
 - Task 1: "X rows cleaned, Y rows dropped"
 - Task 2: "Visualization showing [pattern]"
 - Task 3: "Model accuracy >= 0.8"
+
+## Implementation Language
+[Python / SAS / R / Mixed]
+
+<!-- If SAS or Mixed, include this section: -->
+## SAS Performance Constraints
+> **For Claude:** REQUIRED: Load `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")` before writing ANY SAS code.
+> Validate ALL SAS code against the SAS Code Validation Checklist in the WRDS skill.
+
+### Per-Task SAS Annotations
+| Task | Merge Strategy | WHERE Pattern | Parallelism |
+|------|---------------|---------------|-------------|
+| Task 1 | Hash (lookup < 500K rows) | BETWEEN date literals | SGE array by year |
+| Task 2 | Sort-merge (both tables > 50M) | No date filter | Sequential (single output) |
 
 ## Reproducibility Requirements
 - Random seed: [value if needed]

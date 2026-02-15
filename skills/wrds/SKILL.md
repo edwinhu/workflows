@@ -1,12 +1,13 @@
 ---
 name: wrds
 version: 1.0
-description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", or needs WRDS PostgreSQL query patterns.
+description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
 ---
 
 ## Contents
 
 - [Query Enforcement](#query-enforcement)
+- [SAS ETL Enforcement](#sas-etl-enforcement)
 - [Quick Reference: Table Names](#quick-reference-table-names)
 - [Connection](#connection)
 - [Critical Filters](#critical-filters)
@@ -79,6 +80,86 @@ Before EVERY query execution:
 - [ ] Row count verification (is result size reasonable?)
 - [ ] NULL value check on critical columns
 - [ ] Date range validation (does min/max match expectations?)
+
+## SAS ETL Enforcement
+
+### IRON LAW: NO SAS CODE WITHOUT PERFORMANCE VALIDATION FIRST
+
+<EXTREMELY-IMPORTANT>
+Before writing or executing ANY SAS code on WRDS, you MUST validate performance patterns. This is not negotiable.
+
+1. **MERGE STRATEGY** — Is hash or sort-merge appropriate? Justify the choice.
+2. **WHERE CLAUSES** — Are all date/string filters index-friendly? No functions on indexed columns.
+3. **PARALLELISM** — Can this job run as an SGE array? Year-by-year is always parallelizable.
+4. **SQL OPTIMIZATION** — For PROC SQL: pass-through opportunity? Indexed join columns?
+
+Writing SAS code that forces full table scans when indexes exist is LYING about understanding the data infrastructure.
+</EXTREMELY-IMPORTANT>
+
+### SAS Code Validation Checklist
+
+Before EVERY SAS program execution:
+
+**For merges/joins:**
+- [ ] Small lookup + large fact table → hash object (not `PROC SORT` + `DATA` merge)
+- [ ] Hash uses `defineKey`/`defineData`/`defineDone` pattern correctly
+- [ ] `h.output()` uses double quotes for macro resolution (not single quotes)
+- [ ] `call missing()` initializes hash data variables for non-matches
+- [ ] Both tables >50M rows → sort-merge is justified (document why)
+
+**For WHERE clauses (CRITICAL):**
+- [ ] **NO** `year(date)`, `month(date)`, `datepart(dt)` wrapping indexed columns
+- [ ] Date filters use `BETWEEN "01jan&year."d AND "31dec&year."d` range pattern
+- [ ] String filters avoid `upcase()`, `substr()` on indexed columns
+- [ ] Compound date filters collapsed to single range (not `year() = X AND quarter() = Y`)
+
+**For batch processing:**
+- [ ] Multi-year jobs use SGE array (`#$ -t start-end`) not sequential loop
+- [ ] Year passed via `-sysparm` (not `-set` or `%sysget`)
+- [ ] Per-year log files (not single shared log)
+- [ ] Memory allocation appropriate for workload (`#$ -l m_mem_free=4G` minimum)
+- [ ] Single-year benchmark run completed before full array submission
+
+**For PROC SQL:**
+- [ ] Join columns are not wrapped in functions
+- [ ] `calculated` keyword used for computed column references in HAVING
+- [ ] Pass-through SQL considered for direct WRDS PostgreSQL queries
+- [ ] No redundant subqueries that could be hash lookups
+
+**For macros:**
+- [ ] Macro variables terminated with period (`&year.` not `&year`)
+- [ ] Double quotes used where macro resolution is needed
+- [ ] `options mprint mlogic symbolgen` used during development
+
+### SAS Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "Sort-merge is simpler to write" | Hash is 10x faster for lookup joins and requires no sorting | Write the hash — it's 5 extra lines |
+| "year(date) is readable" | Readable but prevents index usage — full table scan on millions of rows | Use BETWEEN with date literals |
+| "I'll parallelize later" | Later never comes and the job runs 18x slower sequentially | Write the SGE array job NOW |
+| "Single quotes work fine in hash" | Single quotes block macro resolution — your output dataset name is wrong | ALWAYS double quotes in h.output() |
+| "PROC SQL is easier than hash" | PROC SQL still sorts for joins — hash avoids all sorting | Hash for lookups, SQL only for complex aggregations |
+| "The job only takes a few minutes per year" | 18 years × 3 minutes = 54 minutes sequential vs 3 minutes parallel | SGE array for ANY multi-year job |
+| "%sysget works for getting the year" | Unreliable in SGE context — may return blank silently | Use -sysparm + &sysparm. |
+
+### SAS Red Flags - STOP Immediately If You're About To:
+
+- Write `where year(date) = ` anything → STOP. Use `BETWEEN` with date literals.
+- Write `proc sort; data; merge` for a lookup join → STOP. Use hash object.
+- Write a `%do year = start %to end` loop → STOP. Use SGE array job.
+- Use single quotes in `h.output(dataset: '...')` → STOP. Use double quotes.
+- Submit a full array job without testing one year first → STOP. Benchmark first.
+- Use `-set` or `%sysget` for SGE task parameters → STOP. Use `-sysparm`.
+
+### SAS Reference
+
+See **`references/sas-etl.md`** for complete patterns:
+- Hash object merge (basic, multidata, accumulator)
+- Index-friendly WHERE clause quick reference table
+- SGE array job templates with memory and logging
+- PROC SQL pass-through and optimization
+- Macro quoting and debugging
 
 ## Quick Reference: Table Names
 
@@ -185,6 +266,7 @@ Detailed query patterns and table documentation:
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
+- **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
 
 ### Example Files
 
