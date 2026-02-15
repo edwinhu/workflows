@@ -213,7 +213,93 @@ TaskOutput(task_id="task-ghi789", block=true, timeout=30000)
 | Cardinality | Unexpected unique values |
 | Distribution | Skewness, unexpected patterns |
 
-### 4. Identify Implementation Language
+### 4. ETL Strategy Assessment (Conditional)
+
+**Triggers when profiling reveals ANY of:**
+- Total rows > 1M across all sources
+- Multiple data sources requiring joins/merges
+- Data sourced from remote databases (WRDS, SQL servers, APIs)
+
+**If triggered, assess these three dimensions before creating the task breakdown:**
+
+#### A. Filter Push-Down Strategy
+
+**The anti-pattern:** Pull entire tables into memory, then filter in pandas/R/SAS.
+
+```
+AskUserQuestion(questions=[{
+  "question": "Where should filtering happen for this data?",
+  "header": "Filtering",
+  "options": [
+    {"label": "Database-level (Recommended)", "description": "SQL WHERE clauses filter at source. Only matching rows transfer. Required for >1M row tables."},
+    {"label": "Application-level", "description": "Pull full dataset, filter in code. Only acceptable for small tables (<100K rows) or when database access is read-once."},
+    {"label": "Hybrid", "description": "Coarse filter at database (date range, key columns), fine filter in code (complex logic, cross-table conditions)."}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Document in PLAN.md:** For each data source, specify WHERE the filtering happens and WHY.
+
+#### B. Parallelism Assessment
+
+**The anti-pattern:** Process years/groups sequentially when they're embarrassingly parallel.
+
+Identify parallelizable dimensions from profiling:
+- **Time:** year-by-year, month-by-month processing
+- **Groups:** firm-by-firm, sector-by-sector processing
+- **Sources:** independent data sources profiled/cleaned in parallel
+
+**Document in PLAN.md:** For each task, note if it can be parallelized and on what dimension.
+
+#### C. Intermediate Result Caching
+
+**The anti-pattern:** Re-read and re-process the same large source file in every task.
+
+If multiple tasks read from the same large source:
+1. **Task 1** reads and cleans the source → saves intermediate result
+2. **Tasks 2-N** read from the intermediate result, not the raw source
+
+**Document in PLAN.md:** Data flow diagram showing which tasks produce intermediates and which consume them.
+
+#### ETL Strategy Section for PLAN.md
+
+```markdown
+## ETL Strategy
+<!-- Include this section when data > 1M rows or multiple sources -->
+
+### Filter Strategy
+| Source | Rows | Filter Location | Filter Columns | Justification |
+|--------|------|-----------------|----------------|---------------|
+| source1 | 5M | Database (SQL WHERE) | date, type | Too large for full pull |
+| source2 | 50K | Application (pandas) | — | Small enough for full load |
+
+### Parallelism Plan
+| Task | Parallelizable? | Dimension | Method |
+|------|----------------|-----------|--------|
+| Task 1 | Yes | By year (2003-2023) | Background Task agents / SGE array |
+| Task 2 | No | — | Sequential (depends on Task 1 output) |
+
+### Data Flow
+source1.csv → [Task 1: Clean] → clean_source1.parquet → [Task 2: Merge]
+source2.csv → [Task 1: Clean] → clean_source2.parquet ↗
+                                                        → [Task 3: Analyze] → results
+```
+
+<EXTREMELY-IMPORTANT>
+### ETL Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I'll just read the whole table, it's easier" | 50M rows × 200 columns = OOM crash or 30-minute wait | Filter at source with SQL WHERE |
+| "Sequential processing is simpler to write" | 20 years × 5 minutes = 100 minutes vs 5 minutes parallel | Use background agents or SGE arrays |
+| "I'll re-read the source in each task" | Re-parsing 5GB CSV five times wastes hours | Save intermediate parquet after first read |
+| "Filtering in pandas is more flexible" | Pandas loads ALL rows before filtering — you've already paid the cost | Push coarse filters to database, fine filters to pandas |
+| "The data isn't that big" | You just profiled it. Check the row count. If >1M, it IS that big. | Follow the ETL strategy, don't guess |
+| "I'll optimize later if it's slow" | Later never comes. The pipeline runs once and everyone moves on. | Design efficient ETL NOW |
+</EXTREMELY-IMPORTANT>
+
+### 5. Identify Implementation Language
 
 Before creating tasks, determine the implementation language for ETL and analysis:
 
@@ -240,14 +326,14 @@ AskUserQuestion(questions=[{
    - **Parallelism:** SGE array or sequential (with justification if sequential)
 4. Add `## SAS Performance Constraints` section to PLAN.md (see template below)
 
-### 5. Create Task Breakdown
+### 6. Create Task Breakdown
 
 Break analysis into ordered tasks:
 - Each task should produce **visible output**
 - Order by data dependencies
 - Include data cleaning tasks FIRST
 
-### 6. Write Plan Doc
+### 7. Write Plan Doc
 
 Write to `.claude/PLAN.md`:
 
@@ -306,6 +392,20 @@ For each task, define what output proves completion:
 - Task 2: "Visualization showing [pattern]"
 - Task 3: "Model accuracy >= 0.8"
 
+## ETL Strategy
+<!-- Include when any source > 1M rows or multiple sources require joins -->
+
+### Filter Strategy
+| Source | Rows | Filter Location | Filter Columns | Justification |
+|--------|------|-----------------|----------------|---------------|
+
+### Parallelism Plan
+| Task | Parallelizable? | Dimension | Method |
+|------|----------------|-----------|--------|
+
+### Data Flow
+[source] → [task] → [intermediate] → [task] → [output]
+
 ## Implementation Language
 [Python / SAS / R / Mixed]
 
@@ -334,6 +434,9 @@ For each task, define what output proves completion:
 | Ignore missing values | You'll corrupt your results | Document and plan handling |
 | Start analysis immediately | You haven't characterized your data | Complete profiling |
 | Assume your data is clean | Never assume, you must verify | Run quality checks |
+| Pull entire tables without WHERE clauses | OOM on large data, wastes time/memory | Filter at database level for >1M row sources |
+| Process years sequentially | Embarrassingly parallel = free speedup | Use background agents or SGE arrays |
+| Re-read same source in multiple tasks | Redundant I/O multiplies runtime | Save intermediate results after first read |
 
 ## Output
 
@@ -342,6 +445,7 @@ Complete the plan when:
 - Profile all data sources (shape, types, stats)
 - Document data quality issues
 - Define cleaning strategy for each issue
+- Assess ETL strategy (if data > 1M rows or multiple sources)
 - Order tasks by dependency
 - Define output verification criteria
 - Write `.claude/PLAN.md`
