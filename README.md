@@ -1,6 +1,6 @@
 # Workflows
 
-A curated collection of development, data science, and writing workflows—available for both **Claude Code** and **OpenCode** from a single source.
+A curated collection of development, data science, writing, legal, and research workflows -- available for both **Claude Code** and **OpenCode** from a single source.
 
 ## Quick Start
 
@@ -9,49 +9,6 @@ A curated collection of development, data science, and writing workflows—avail
 /plugin marketplace add edwinhu/workflows
 /plugin install dev
 ```
-
-### VS Code / GitHub Copilot
-
-**One-line install:**
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/edwinhu/workflows/main/.copilot/install.sh)
-```
-
-Or if you have the repo cloned locally:
-```bash
-bash ~/projects/workflows/.copilot/install.sh
-```
-
-Then **restart VS Code**.
-
-> **⚠️ Note:** Requires enabling experimental settings (`chat.useClaudeSkills`, `chat.customAgentInSubagent.enabled`) which are subject to change. See installation guide for details.
-
-**Verify it works:**
-In VS Code, chat with Copilot:
-```
-What workflows skills are available?
-```
-
-See [.copilot/INSTALL.md](.copilot/INSTALL.md) for manual installation and troubleshooting.
-
-#### ⚠️ IMPORTANT: Skill Chaining in Copilot
-
-Skills in Copilot work in phases. **Each phase requires manual invocation of the next phase** (unlike Claude Code, where skills auto-chain).
-
-When a skill completes, it tells you what’s next. **You must invoke it explicitly** using `runSubagent()`.
-
-Example workflow:
-```
-/dev completes brainstorm phase
-  → You invoke: runSubagent(..., prompt=”Continue with /dev-explore...”)
-  → /dev-explore completes
-  → You invoke: runSubagent(..., prompt=”Continue with /dev-clarify...”)
-  [and so on through all 7 phases]
-```
-
-**See [.copilot/QUICK_START.md](.copilot/QUICK_START.md) for the full skill chaining protocol.**
-
-**Multi-Agent Coordination:** If you run multiple agents before invoking a skill (e.g., Plan agent → then /dev skill), read the “MULTI-AGENT COORDINATION” section in `~/.config/Code/User/prompts/workflows.instructions.md` for how to pass context between them. This is a known gap in Copilot that requires manual workaround.
 
 ### OpenCode
 ```bash
@@ -67,170 +24,133 @@ cp ~/.config/opencode/workflows/.opencode/plugin/workflows.js ~/.config/opencode
 
 See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternatives.
 
-## Available Plugins
+---
 
-### dev (v0.5.0)
+## Skills (36)
 
-**Full feature development workflow with TDD enforcement**
+### Core Workflows
 
-A comprehensive development plugin that enforces test-driven development practices through structured phases: brainstorm, plan, implement, review, and verify.
+Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 
-**Commands:**
-- `/dev` - Full feature development workflow with TDD enforcement (7 phases)
-- `/dev-debug` - Midpoint re-entry: systematic debugging with root cause investigation
-- `/dev-tools` - List available development plugins and MCP servers
+| Start Fresh | Midpoint Re-entry | Domain |
+|-------------|-------------------|--------|
+| `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
+| `/ds` | `/ds-fix` | 5-phase data science with output-first verification |
+| `/writing` | `/writing-review` + `/writing-revise` | Writing: brainstorm, outline, draft, review, revise |
 
-**Tags:** `development`, `tdd`, `testing`, `code-review`
+### Legal & Citation
+
+| Skill | Purpose |
+|-------|---------|
+| `/bluebook` | Bluebook 21st edition citation formatting (cases, statutes, secondary sources) |
+| `/bluebook-audit` | 7-phase document audit: extract, check, report, correct, verify, crossrefs, archive |
+| `/docx-footnotes` | Repair DOCX footnote damage from cloud editors (Google Docs, Word Online) |
+
+### Data Access
+
+| Skill | Purpose |
+|-------|---------|
+| `/wrds` | WRDS PostgreSQL + SAS ETL patterns (Compustat, CRSP, EDGAR, ISS, ExecuComp) |
+| `/lseg-data` | LSEG Data Library (Refinitiv) for market data, ESG, M&A, PE/VC |
+| `/gemini-batch` | Gemini Batch API for large-scale LLM document processing |
+
+### Knowledge Management
+
+| Skill | Purpose |
+|-------|---------|
+| `/nlm` | NotebookLM CLI: notebooks, sources, audio overviews, research |
+| `/google-scholar` | Google Scholar CLI: search, BibTeX export, cite, download |
+| `/readwise` | Readwise highlight search and source gathering |
+| `/readwise-chat` | RAG over Readwise highlights via GPT-5.1 |
+| `/readwise-search` | Search highlights, quotes, annotations by keyword |
+| `/readwise-docs` | Readwise Reader document management (list, save, update, delete) |
+| `/readwise-prune` | Clean up stale Readwise Reader documents |
+
+### Document Formats
+
+| Skill | Purpose |
+|-------|---------|
+| `/docx` | Word document creation, editing, tracked changes |
+| `/pdf` | PDF extraction, creation, form filling |
+| `/pptx` | Presentation creation and editing |
+| `/xlsx` | Spreadsheet creation and analysis |
+
+> Office format skills sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule.
+
+### Notebook Tools
+
+| Skill | Purpose |
+|-------|---------|
+| `/marimo` | Marimo reactive Python notebooks |
+| `/jupytext` | Jupyter notebooks as text files for version control |
+| `/notebook-debug` | Debug runtime errors in Jupyter/marimo notebooks |
+
+### Utility & Meta
+
+| Skill | Purpose |
+|-------|---------|
+| `/look-at` | Multimodal file analysis (PDFs, images, diagrams, charts) via Gemini |
+| `/visual-verify` | Render-vision-fix loops via Gemini vision |
+| `/workflow-creator` | Design structured multi-phase LLM workflows |
+| `/data-context` | Extract dataset knowledge into reusable skills |
+| `/continuous-learning` | Cross-project pattern extraction |
+| `/ai-anti-patterns` | Detect 12 categories of AI writing indicators |
+| `/dev-tools` | Discover available dev plugins and MCP servers |
+| `/ds-tools` | Discover available DS plugins and MCP servers |
+| `/dev-worktree` | Git worktree isolation with automatic dependency setup |
 
 ---
 
-### ds (v0.5.0)
+## Agents (13)
 
-**Data science workflow with output-first verification**
+Specialized subagents auto-discovered by Claude Code from `agents/`:
 
-A data science plugin focused on reproducibility and output verification, with specialized skills for academic and financial data access.
-
-**Commands:**
-- `/ds` - Data science workflow with output-first verification (5 phases)
-- `/ds-fix` - Midpoint re-entry: fix wrong results, notebook errors, reviewer feedback
-- `/ds-tools` - List available data science plugins and MCP servers
-
-**Data Access Skills:**
-- `/wrds` - WRDS PostgreSQL access for Compustat, CRSP, EDGAR data
-- `/lseg-data` - LSEG Data Library (Refinitiv) for market data and fundamentals
-- `/gemini-batch` - Gemini Batch API for large-scale LLM document processing
-
-**Notebook Skills:**
-- `/marimo` - Marimo reactive Python notebooks
-- `/jupytext` - Jupyter notebooks as text files for version control
-
-**Hooks:**
-- Data quality checker
-- Output verifier
-- Reproducibility checker
-
-**Tags:** `data-science`, `wrds`, `lseg`, `jupyter`, `analysis`
+| Agent | Role |
+|-------|------|
+| `planner` | Implementation planning for complex features |
+| `architect` | System design and technical decisions |
+| `tdd-guide` | TDD workflow enforcement |
+| `dev-implementer` | Feature implementation with automatic linting |
+| `ds-analyst` | Data analysis with output-first verification |
+| `code-reviewer` | Code quality, security, and maintainability review |
+| `security-reviewer` | Security vulnerability detection |
+| `build-error-resolver` | Fix build/type errors with minimal diffs |
+| `e2e-runner` | Playwright E2E testing |
+| `refactor-cleaner` | Dead code cleanup and consolidation |
+| `doc-updater` | Documentation sync and codemap updates |
+| `data-explorer` | EDA and data profiling |
+| `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar) |
 
 ---
 
-### writing (v0.4.0)
+## Hooks (9)
 
-**Writing workflow with style guides, brainstorming, and AI anti-pattern detection**
+Hooks auto-run at specific lifecycle events:
 
-A writing plugin providing style guidance, topic discovery from Readwise highlights, and automatic detection of AI writing patterns.
-
-**Skills:**
-- `/writing` - Full writing workflow: brainstorm, outline, draft, review, revise
-- `/writing-review` - Diagnose structural issues, produce REVIEW.md
-- `/writing-revise` - Midpoint re-entry: apply review fixes, polish, complete workflow
-- `/ai-anti-patterns` - Detect and revise AI writing indicators (12 pattern categories)
-
-**MCP Servers:**
-- `readwise` - Readwise MCP for highlight search and source gathering
-
-**Hooks:**
-- PostToolUse hook on Write/Edit that warns on AI anti-patterns
-
-**Tags:** `writing`, `editing`, `style`, `ai-detection`, `readwise`
+| Script | Event | Trigger | Purpose |
+|--------|-------|---------|---------|
+| `session-start.py` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill |
+| `session-end.py` | Stop | * | Update LEARNINGS.md timestamp |
+| `pre-compact.py` | PreCompact | * | Preserve state before compaction |
+| `suggest-compact.py` | PreToolUse | Edit/Write | Suggest compaction when context is large |
+| `readwise-guard.py` | PreToolUse | Readwise MCP calls | Enforce librarian delegation |
+| `image-read-guard.py` | PreToolUse | Read | Redirect to look-at for media files |
+| `lint-check.py` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
+| `writing-suggest-verify.py` | PostToolUse | Edit/Write | Suggest visual verification for writing |
+| `pr-url-logger.py` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
 
 ---
 
-### bluebook (v0.1.0)
+## Session Continuity
 
-**Bluebook citation formatting and audit workflow for law review footnotes**
+The plugin uses a PLAN.md + LEARNINGS.md system for cross-session persistence.
+The `/continuous-learning` skill extracts reusable patterns, and hooks
+automatically save session state.
 
-A legal citation plugin with two components: a reference skill for formatting individual citations, and a standalone audit workflow for checking entire documents.
-
-**Skills:**
-- `/bluebook` - Bluebook 21st edition citation formatting (cases, statutes, secondary sources)
-- `/bluebook-audit` - Full document audit workflow: extract, check, report, correct, verify, archive
-
-**Audit Workflow Phases:**
-1. **Extract** - Parse DOCX footnotes with formatting annotations
-2. **Check** - Mechanical checks (small caps, signals, id. chains) + Gemini AI audit
-3. **Report** - Generate findings report for user review (gate)
-4. **Correct** - Apply formatting corrections via lxml run-splitting
-5. **Verify** - Re-scan corrected DOCX to confirm fixes
-6. **Archive** - Archive URLs via Perma.cc API
-
-**Scripts** (stdlib + lxml only, no heavy SDK dependencies):
-- `extract_footnotes.py` - DOCX parsing, citation registry, cross-ref resolution
-- `scan_formatting.py` - Detect formatting issues (journal small caps, etc.)
-- `apply_corrections.py` - Fix formatting via XML run-splitting
-- `gemini_audit.py` - Per-footnote AI audit via Gemini REST API
-- `permacc_archive.py` - URL archiving via Perma.cc
-
-**References:**
-- Cornell abbreviation tables (T6 words, T13 journals)
-- Audit patterns and lessons learned
-
-**Tags:** `legal`, `bluebook`, `citations`, `law-review`, `docx`
-
----
-
-### shared
-
-**Shared skills and utilities across plugins**
-
-Contains common skills used by multiple plugins, including office document format skills.
-
-**Skills:**
-- `/docx` - Word document creation, editing, tracked changes
-- `/pdf` - PDF extraction, creation, form filling
-- `/pptx` - Presentation creation and editing
-- `/xlsx` - Spreadsheet creation and analysis
-- `/using-skills` - Meta-skill teaching how to use skills
-
-**Note:** Office format skills are sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule.
-
----
-
-### librarian (v0.2.0)
-
-**Knowledge management across NotebookLM, Readwise, Google Scholar, and Google Workspace**
-
-A knowledge orchestration plugin that coordinates research workflows across multiple services with a strict search hierarchy: NLM → Readwise → Google Scholar.
-
-**Agent:**
-- `librarian` - Autonomous knowledge management agent for research workflows
-
-**Skills:**
-- `/nlm` - NotebookLM CLI for notebooks, sources, notes, audio overviews, and research
-- `/google-scholar` - Google Scholar CLI for academic paper discovery with domain knowledge integration
-- `/gog` - Google Workspace CLI for Gmail, Calendar, Drive, Tasks, Keep, Sheets, Docs
-
-**Workflows:**
-- **Research [Topic]** - Search NLM, Readwise, Google Scholar; gather sources, generate synthesis
-- **Task-ify [Topic]** - Extract action items and create Google Tasks
-- **Archive Paper** - Add papers to NotebookLM notebooks
-
-**Domain Knowledge:**
-- `domain-knowledge.local.md` - User-curated trusted journals and authors (gitignored)
-- Used to prioritize Google Scholar results from known-good venues
-
-**Prerequisites:**
-- `nlm` CLI (install: `go install github.com/tmc/nlm/cmd/nlm@latest`)
-- `scholar` CLI (build: `cd google-scholar-cli && bun build src/main.ts --compile --outfile scholar`)
-- `gog` CLI (Google Workspace CLI with OAuth setup)
-- Readwise MCP (optional, for highlight search)
-
-**Tags:** `notebooklm`, `google-scholar`, `google-workspace`, `readwise`, `research`, `knowledge-management`
-
----
-
-## Session Continuity Commands
-
-The plugin includes commands for session state management:
-
-- `/checkpoint` - Save session state to LEARNINGS.md
-- `/learn` - Extract reusable patterns from the current session
-- `/verify` - Run verification checklist (build, types, lint, tests)
-
-These commands integrate with the PLAN.md + LEARNINGS.md system. For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in your `.envrc`:
+For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 
 ```bash
-# .envrc
-export CLAUDE_CODE_TASK_LIST_ID=”my-project”
+export CLAUDE_CODE_TASK_LIST_ID="my-project"
 ```
 
 ---
@@ -239,69 +159,43 @@ export CLAUDE_CODE_TASK_LIST_ID=”my-project”
 
 ```
 workflows/
-├── .claude-plugin/             # Claude Code plugin manifest
-│   ├── plugin.json
-│   └── marketplace.json
-├── agents/                     # Specialized subagents (11 agents)
-│   ├── planner.md              # Implementation planning
-│   ├── architect.md            # System design decisions
-│   ├── tdd-guide.md            # TDD workflow enforcement
-│   ├── code-reviewer.md        # Code quality review
-│   ├── security-reviewer.md    # Security vulnerability analysis
-│   ├── build-error-resolver.md # Fix build errors
-│   ├── e2e-runner.md           # Playwright E2E testing
-│   ├── refactor-cleaner.md     # Dead code cleanup
-│   ├── doc-updater.md          # Documentation sync
-│   ├── data-explorer.md        # EDA and data profiling
-│   └── librarian.md            # Knowledge management orchestration
-├── commands/                   # Slash commands
-│   ├── dev.md, ds.md, writing.md  # Workflow entry points
-│   ├── learn.md                # Pattern extraction
-│   ├── verify.md               # Verification checklist
-│   └── checkpoint.md           # Session state save
-├── contexts/                   # Example context modes (see note below)
-│   ├── dev.md                  # Development mode
-│   ├── data-science.md         # Data science mode
-│   └── writing.md              # Writing mode
-├── rules/                      # Example rules (see note below)
-│   ├── security.md, coding-style.md, testing.md
-│   ├── git-workflow.md, hooks.md, agents.md
-│   └── performance.md, patterns.md
-├── skills/                     # User-facing skills
-│   ├── continuous-learning/    # Cross-project pattern extraction
-│   ├── nlm/                    # NotebookLM CLI skill
-│   ├── gog/                    # Google Workspace CLI skill
-│   ├── google-scholar/         # Google Scholar CLI skill
-│   └── [27+ other skills...]
-├── hooks/                      # Hook entry points
+├── .claude-plugin/             # Plugin manifest
+│   ├── plugin.json             # Version and metadata
+│   └── marketplace.json        # Marketplace listing
+├── agents/                     # Specialized subagents (13)
+│   ├── planner.md, architect.md, tdd-guide.md
+│   ├── dev-implementer.md, ds-analyst.md
+│   ├── code-reviewer.md, security-reviewer.md
+│   ├── build-error-resolver.md, e2e-runner.md
+│   ├── refactor-cleaner.md, doc-updater.md
+│   ├── data-explorer.md, librarian.md
+├── skills/                     # User-facing skills (36)
+│   ├── dev/, ds/, writing*/    # Core workflow entry points
+│   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal
+│   ├── wrds/, lseg-data/, gemini-batch/  # Data access
+│   ├── nlm/, google-scholar/, readwise*/  # Knowledge management
+│   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
+│   ├── marimo/, jupytext/, notebook-debug/  # Notebooks
+│   └── look-at/, visual-verify/, ...  # Utilities
+├── hooks/                      # Hook scripts (9)
 │   ├── hooks.json              # Hook configuration
-│   ├── session-start.py        # SessionStart hook
-│   ├── session-end.py          # Stop hook (LEARNINGS.md timestamp)
-│   ├── pre-compact.py          # PreCompact hook (state preservation)
-│   ├── suggest-compact.py      # PreToolUse hook (compaction suggestions)
-│   ├── pr-url-logger.py        # PostToolUse hook (log PR URLs)
-│   ├── lint-check.py           # PostToolUse hook (linting)
-│   └── image-read-guard.py     # PreToolUse hook
-├── .mcp.json                   # MCP server configurations
+│   └── *.py                    # Hook implementations
 ├── lib/
-│   ├── skills/                 # Internal phase skills
-│   ├── hooks/                  # Shared Python libraries
-│   └── references/             # Reference documentation
-├── scripts/                    # Utility scripts
+│   ├── skills/                 # Internal phase skills (27)
+│   └── references/             # Reference docs and templates
+├── contexts/                   # Example context modes (see below)
+├── rules/                      # Example rules (see below)
 ├── external/
 │   └── anthropic-skills/       # Git submodule for document skills
 ├── .opencode/                  # OpenCode integration
-├── .copilot/                   # VS Code Copilot integration
-└── README.md
+└── PHILOSOPHY.md               # Workflow design philosophy
 ```
 
 **Key Points:**
 - `agents/` contains specialized subagents (auto-discovered by Claude Code)
 - `skills/` contains user-facing skills (auto-discovered)
-- `commands/` contains slash commands (auto-discovered)
 - `hooks/` contains hook entry points called directly by hooks.json
 - `lib/skills/` contains internal phase skills (dev-implement, ds-verify, etc.)
-- `lib/hooks/` contains shared Python libraries for hooks
 
 **Example Content (not auto-loaded):**
 
@@ -329,7 +223,7 @@ See [everything-claude-code examples](https://github.com/anthropics/everything-c
 
 ## Updating External Skills
 
-The office format skills come from Anthropic’s official skills repo. To update:
+The office format skills come from Anthropic's official skills repo. To update:
 
 ```bash
 git submodule update --remote external/anthropic-skills
@@ -339,7 +233,7 @@ git submodule update --remote external/anthropic-skills
 
 This project was heavily inspired by [obra/superpowers](https://github.com/obra/superpowers), particularly:
 - The SessionStart hook pattern for injecting meta-skills
-- The “using-skills” approach that teaches HOW to use skills rather than listing WHAT skills exist
+- The "using-skills" approach that teaches HOW to use skills rather than listing WHAT skills exist
 - The philosophy that skills should be invoked on-demand, not dumped into every session
 
 Office format skills (docx, pdf, pptx, xlsx) are from [anthropics/skills](https://github.com/anthropics/skills).
