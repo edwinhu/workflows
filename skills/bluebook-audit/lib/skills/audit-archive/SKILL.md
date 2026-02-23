@@ -46,9 +46,8 @@ requests.post("https://api.perma.cc/v1/archives/", json={
 - [ ] perma.cc links written to DOCX
 - [ ] `scratch/permacc_archives.json` contains all mappings
 
-## Workflow Complete
+## Next Phase
 
-Present final summary to user:
-- Total corrections applied
-- Total URLs archived
-- Final DOCX file path
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-crossrefs/SKILL.md")
+```

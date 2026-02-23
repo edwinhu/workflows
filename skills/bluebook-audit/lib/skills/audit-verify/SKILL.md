@@ -21,6 +21,11 @@ Re-scan the corrected DOCX to confirm all fixes were applied and no new issues w
 3. **Signal formatting**: All signals should be italic
 4. **Terminal periods**: All footnotes should end with periods
 5. **Id. chains**: All id. references should have single-source predecessors
+6. **Gemini re-audit on fixed footnotes**: Re-run `gemini_audit.py --subset [all previously flagged FNs]` to catch issues introduced by fixes or missed in the initial pass
+
+### Re-Scan Catches Real Issues
+
+In the "Other People's Votes" audit, the Gemini re-scan on fixed footnotes caught a Wells Fargo press release title (FN206) that wasn't in the original "judgment call" list — it was in the same footnote as other fixes but wasn't flagged initially. The verify phase is not ceremonial; it finds real issues.
 
 <EXTREMELY-IMPORTANT>
 ## Iron Law: Re-Scan Is Not Optional

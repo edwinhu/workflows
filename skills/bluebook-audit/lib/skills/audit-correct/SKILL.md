@@ -53,6 +53,25 @@ The run after `<w:footnoteRef/>` often contains the full footnote text, not just
 ### Cross-Run Text
 `supra note 10` spans italic + roman runs. Target the specific run containing the text you need to change (e.g., just "note 10" in the roman run).
 
+### Multi-Split Footnotes
+Some footnotes need multiple formatting changes in the same run (e.g., FN91: italic the letter title AND small-caps the annual report title, both in one roman run). Process splits **sequentially left-to-right**:
+1. First split creates 3 new runs from the original
+2. Second split finds target text in one of the NEW runs and splits again
+3. The `find_run()` search re-scans the footnote element each time, so it finds the new runs
+
+Example: `Jamie Dimon, Chairman & CEO Letter to Shareholders, in JPMorgan Chase & Co., 2023 Annual Report 1 (2024)`
+- Split 1: "Chairman & CEO Letter to Shareholders" → italic (creates 3 runs)
+- Split 2: "JPMorgan Chase & Co., 2023 Annual Report" → small caps (splits the third run from Split 1)
+
+### Italic Spillover Cleanup
+After all substantive fixes, clean up trailing/leading spaces in italic runs. Word displays these fine, but they cause Gemini annotation issues on re-audit:
+```python
+# Find italic runs with trailing spaces
+if text.endswith(' ') and is_italic:
+    t.text = text.rstrip(' ')
+    # Insert a new roman space run after
+```
+
 <EXTREMELY-IMPORTANT>
 ## Iron Law: Verify Every Fix
 

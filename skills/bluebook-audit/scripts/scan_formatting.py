@@ -3,7 +3,8 @@
 
 Checks:
 - Journal/periodical names missing small caps
-- (Extensible: signal italic, book title small caps, etc.)
+- Italic spillover (trailing/leading spaces in italic/small caps runs)
+- Author names incorrectly italicized before supra
 
 Usage:
     python3 scripts/scan_formatting.py --docx path/to/file.docx
@@ -185,6 +186,96 @@ def find_missing_smallcaps(footnotes):
     return findings
 
 
+def find_italic_spillover(footnotes):
+    """Find italic or small caps runs with trailing/leading spaces.
+
+    These don't affect Word display but cause Gemini annotation misparses
+    (e.g., ``*supra *`` instead of ``*supra* ``).
+    """
+    findings = []
+    for fid, runs in sorted(footnotes.items()):
+        for i, r in enumerate(runs):
+            if not (r["italic"] or r["smallcaps"]):
+                continue
+            text = r["text"]
+            if not text:
+                continue
+            fmt = "italic" if r["italic"] else "smallcaps"
+            if text != text.strip() and text.strip():
+                findings.append({
+                    "fn_id": fid,
+                    "issue": "italic_spillover",
+                    "element": text.strip(),
+                    "context": f"{fmt} run has extra space: {repr(text)}",
+                })
+    return findings
+
+
+def find_italic_author_before_supra(footnotes):
+    """Find author names incorrectly italicized before *supra*.
+
+    Correct: ``Levine, *supra* note 13`` (author roman, supra italic)
+    Wrong:   ``*Levine*, supra note 13`` (author italic)
+    Wrong:   ``*Levine, supra* note 13`` (both in one italic run)
+
+    Does NOT flag:
+    - Case name short forms (contain "v.") which should be italic
+    - Signals (See, But see, etc.) which are correctly italic before supra
+    """
+    # Signals that are correctly italic and may precede supra
+    SIGNALS = {
+        "see", "see also", "see generally", "but see", "but cf", "cf",
+        "e.g.", "accord", "compare", "contra",
+    }
+
+    findings = []
+    for fid, runs in sorted(footnotes.items()):
+        for i, r in enumerate(runs):
+            if not r["italic"]:
+                continue
+            text = r["text"]
+            # Pattern 1: italic run contains "Author, supra" together
+            if re.search(r"[A-Z][a-z]+,?\s+supra\b", text):
+                # Check it's not a case name (contains "v.")
+                if " v. " in text or " v " in text:
+                    continue
+                # Extract the author part
+                m = re.match(r"([A-Z][a-z]+(?:\s+(?:&|et al\.))?),?\s+supra", text)
+                if m:
+                    author = m.group(1)
+                    # Skip if the "author" is actually a signal
+                    if author.lower().rstrip(".,") in SIGNALS:
+                        continue
+                    # Skip "See supra", "But see supra", etc.
+                    prefix = text[:m.start(0) + len(m.group(0))].strip().lower()
+                    if any(prefix.startswith(s) for s in SIGNALS):
+                        continue
+                    findings.append({
+                        "fn_id": fid,
+                        "issue": "italic_author_before_supra",
+                        "element": author,
+                        "context": f"Author name '{author}' is italic in same run as supra: {repr(text)}",
+                    })
+            # Pattern 2: italic run is just an author name, next run is roman "supra"
+            elif (
+                re.match(r"^[A-Z][a-z]+$", text.strip())
+                and " v." not in text
+                and i + 1 < len(runs)
+            ):
+                # Skip if this is a signal word
+                if text.strip().lower().rstrip(".,") in SIGNALS:
+                    continue
+                next_text = runs[i + 1]["text"].lstrip(", ")
+                if next_text.startswith("supra") and not runs[i + 1]["italic"]:
+                    findings.append({
+                        "fn_id": fid,
+                        "issue": "italic_author_before_supra",
+                        "element": text.strip(),
+                        "context": f"Author name '{text.strip()}' is italic, followed by roman 'supra' (both wrong)",
+                    })
+    return findings
+
+
 def main():
     parser = argparse.ArgumentParser(description="Scan DOCX footnotes for Bluebook formatting issues")
     parser.add_argument("--docx", required=True, help="Path to DOCX file")
@@ -209,6 +300,16 @@ def main():
     print("\nScanning for missing small caps...")
     sc_findings = find_missing_smallcaps(footnotes)
     all_findings.extend(sc_findings)
+
+    # 2. Italic spillover (trailing/leading spaces)
+    print("Scanning for italic spillover...")
+    spill_findings = find_italic_spillover(footnotes)
+    all_findings.extend(spill_findings)
+
+    # 3. Author name italic before supra
+    print("Scanning for italic author names before supra...")
+    author_findings = find_italic_author_before_supra(footnotes)
+    all_findings.extend(author_findings)
 
     # Deduplicate
     seen = set()

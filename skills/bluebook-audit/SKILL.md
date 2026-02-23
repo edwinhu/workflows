@@ -11,10 +11,10 @@ Systematic Bluebook 21st edition compliance audit for law review manuscripts in 
 
 ## Overview
 
-Six-phase linear workflow: Extract -> Check -> Report -> Correct -> Verify -> Archive
+Seven-phase linear workflow: Extract -> Check -> Report -> Correct -> Verify -> Archive -> Cross-Refs
 
 ```
-/bluebook-audit  -> extract -> check -> report -> [USER REVIEWS] -> correct -> verify -> archive
+/bluebook-audit  -> extract -> check -> report -> [USER REVIEWS] -> correct -> verify -> archive -> crossrefs
 /bluebook-audit-fix -> diagnose -> route to {re-check, re-correct, re-verify}
 ```
 
@@ -28,6 +28,7 @@ Six-phase linear workflow: Extract -> Check -> Report -> Correct -> Verify -> Ar
 | Correct | Apply fixes to DOCX via lxml | Corrected DOCX exists, fix counts match |
 | Verify | Re-scan to confirm fixes applied | Zero remaining issues in re-scan |
 | Archive | perma.cc URL archiving | All URLs archived, links written to DOCX |
+| Cross-Refs | Convert supra/infra notes to NOTEREF fields | All cross-refs are auto-updating fields |
 
 ## How to Start
 
@@ -67,4 +68,30 @@ Plain text produces 10-20x false positives because Gemini cannot see what is alr
 **After applying corrections, ALWAYS re-run the scanner to verify fixes were applied.**
 
 NBSP characters, run boundaries, and cross-run text cause silent failures. A fix that "applied" in code may not have actually changed the DOCX. Re-scanning is mandatory.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## Iron Law: Mechanical Findings Override Gemini
+
+**Never drop a mechanical finding because Gemini didn't flag it.**
+
+Deterministic checks (signal italic, terminal periods, Id. chains) are 100% reliable. Gemini misses ~30% of signal formatting issues because it focuses on citation-level analysis and lacks a dedicated signal-checking output field. During merge/dedup, mechanical findings are authoritative for their rule categories. Gemini adds value only for judgment calls (source type classification, abbreviation tables).
+
+Previous failure: Gemini reported FN103 as having only typeface issues on article titles, completely missing that "See also" was not italicized — which the mechanical checker caught.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## Iron Law: Source Type Classification Requires Human Review
+
+**Gemini consistently misclassifies non-standard source types. Never auto-fix Gemini's typeface suggestions for SEC releases, executive orders, working papers, or regulatory materials.**
+
+The hardest part of a Bluebook audit is determining the correct typeface for non-standard sources. Gemini defaults to "everything should be italic or small caps" but many source types are correctly roman:
+- SEC releases/rules/concept releases → roman (regulatory material, Rule 14.6)
+- Executive order titles → roman (Rule 14.7)
+- Working paper series designations → roman (parenthetical)
+- Company names in no-action letters → roman
+
+The audit report MUST separate "verified fixes" (clear violations) from "judgment calls" (source type dependent) and include a "correct as-is" section documenting why Gemini's suggestions were rejected. See `references/audit-patterns.md` for the full source type reference table.
+
+Previous failure: Gemini flagged 10+ items as needing italic/small caps that were actually correct as roman (SEC releases, exec orders, working paper designations). Without the source type reference table, these would have been incorrectly "fixed."
 </EXTREMELY-IMPORTANT>

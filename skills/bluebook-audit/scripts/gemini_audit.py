@@ -33,14 +33,34 @@ Analyze this footnote. The text includes FORMATTING ANNOTATIONS:
 - Plain text = roman (no formatting)
 
 IMPORTANT RULES FOR LAW REVIEW FOOTNOTES (Rule 2.1):
-- Case names: ITALIC (e.g., *Smith v. Jones*)
-- Book titles: SMALL CAPS (e.g., [SC]Economic Analysis of Law[/SC])
-- Journal/periodical names: SMALL CAPS (e.g., [SC]U. Pa. L. Rev.[/SC])
-- Article/note/comment titles: ITALIC (e.g., *On the Expressive Function*)
-- Signals (see, see also, cf., e.g.,): ITALIC
-- Id., supra, infra: ITALIC
-- Short form hereinafter names: roman (e.g., GAO Report, CRS Report)
-- Statute/regulation text: roman
+
+ITALIC:
+- Case names: *Smith v. Jones* (Rule 10.2.1)
+- Article/note/comment titles: *On the Expressive Function* (Rule 16.1)
+- Newspaper article titles: *White House Explores Rules...* (Rule 16.6)
+- Blog post / client alert titles: *What's Going On with...* (Rule 18.2)
+- Speech / remarks titles: *Remarks at the 2025 Conference* (Rule 17.1.5)
+- Press release titles: *Deutsche Börse to Acquire ISS* (Rule 17.1.3)
+- Signals (see, see also, cf., e.g.,): ITALIC (Rule 1.2)
+- Id., supra, infra: ITALIC (Rule 4)
+
+SMALL CAPS:
+- Book titles: [SC]Economic Analysis of Law[/SC] (Rule 15.1)
+- Journal/periodical names: [SC]U. Pa. L. Rev.[/SC] (Rule 16.1)
+- Newspaper names: [SC]Wall St. J.[/SC] (Rule 16.6)
+- Institutional report titles (GAO, CRS): [SC]Proxy Advisor Regulation...[/SC] (Rule 15)
+- Annual report titles: [SC]2023 Annual Report[/SC] (Rule 15)
+
+ROMAN (common false positives — do NOT flag these as errors):
+- Executive order titles (Rule 14.7)
+- SEC release / rule / concept release titles (Rule 14.6 — regulatory material)
+- Federal Register entry titles
+- Working paper series designations (e.g., "Eur. Corp. Governance Inst., Fin. Working Paper No. 975/2024")
+- Statute / bill titles (Rule 12.4)
+- Company names in SEC no-action letters
+- Author names before *supra* (e.g., "Levine, *supra* note 13" — "Levine" is roman)
+- Hereinafter short forms (e.g., GAO Report, CRS Report)
+- Comment letter titles
 
 Only flag ACTUAL formatting errors based on the annotations shown.
 Do NOT flag issues with missing footnote numbers — those have been resolved.
@@ -95,12 +115,28 @@ def extract_formatted_footnotes(docx_path, subset=None):
             has_sc = rpr is not None and rpr.find(f"{{{W}}}smallCaps") is not None
 
             text = t.text
-            if is_italic and has_sc:
-                parts.append(f"*[SC]{text}[/SC]*")
-            elif is_italic:
-                parts.append(f"*{text}*")
-            elif has_sc:
-                parts.append(f"[SC]{text}[/SC]")
+            if is_italic or has_sc:
+                # Strip leading/trailing spaces outside markers to avoid
+                # malformed annotations like "*text *" which LLMs don't
+                # parse as italic. Spaces are re-added outside the markers.
+                leading = ""
+                trailing = ""
+                inner = text
+                if inner.startswith(" "):
+                    leading = " "
+                    inner = inner.lstrip(" ")
+                if inner.endswith(" "):
+                    trailing = " "
+                    inner = inner.rstrip(" ")
+                if not inner:
+                    # Run is only whitespace — emit as plain
+                    parts.append(text)
+                elif is_italic and has_sc:
+                    parts.append(f"{leading}*[SC]{inner}[/SC]*{trailing}")
+                elif is_italic:
+                    parts.append(f"{leading}*{inner}*{trailing}")
+                else:
+                    parts.append(f"{leading}[SC]{inner}[/SC]{trailing}")
             else:
                 parts.append(text)
 

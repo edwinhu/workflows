@@ -38,6 +38,89 @@ Stage 5: Perma.cc Archiving
   └── Insert perma.cc links into footnotes
 ```
 
+## Source Type Typeface Reference (Rule 2.1 for Law Review Footnotes)
+
+The hardest part of the Gemini audit is source type classification. Gemini consistently misclassifies non-standard sources. This reference table is authoritative.
+
+### ITALIC (titles of articles, named documents, speeches)
+
+| Source Type | Example | Rule |
+|-------------|---------|------|
+| Law review article title | *The Power of Proxy Advisors* | 16.1 |
+| Newspaper article title | *Exclusive: White House Explores Rules...* | 16.6 |
+| Blog post / client alert title | *What's Going On with the SEC's Proxy Advisor Rules?* | 18.2 |
+| Speech / remarks title | *Remarks at the 2025 Institute for Corporate Counsel* | 17.1.5 |
+| Press release title | *Deutsche Börse to Acquire ISS* | 17.1.3 |
+| Letter / testimony title (within larger work) | *Chairman & CEO Letter to Shareholders* | 15.5.1 |
+| Case names | *Smith v. Jones* | 10.2.1 |
+| Signals (see, cf., e.g.) | *See also* | 1.2 |
+| Short form signals (id., supra, infra) | *supra* note 42 | 4.1, 4.2 |
+
+### SMALL CAPS (titles of books, reports, periodicals)
+
+| Source Type | Example | Rule |
+|-------------|---------|------|
+| Book title | [SC]The Modern Corporation and Private Property[/SC] | 15.1 |
+| Law journal name | [SC]U. Pa. L. Rev.[/SC] | 16.1 |
+| Newspaper name | [SC]Wall St. J.[/SC] | 16.6 |
+| Institutional report title (GAO, CRS) | [SC]Proxy Advisor Regulation...[/SC] | 15 |
+| Annual report title | [SC]JPMorgan Chase & Co., 2023 Annual Report[/SC] | 15 |
+| Named blog / podcast (as periodical) | [SC]Shareholder Primacy[/SC] | 16 (by analogy) |
+
+### ROMAN (regulatory materials, designations, series names)
+
+| Source Type | Example | Why Roman |
+|-------------|---------|-----------|
+| Executive order title | Protecting American Investors... | Rule 14.7 |
+| SEC release / rule title | Commission Guidance Regarding... | Rule 14.6 (regulatory material) |
+| SEC concept release title | Concept Release on the U.S. Proxy System | Rule 14.6 |
+| Federal Register entry title | Proxy Voting Advice, 87 Fed. Reg. | Rule 14.6 |
+| Working paper series designation | Eur. Corp. Governance Inst., Fin. Working Paper No. 975/2024 | Rule 17 (parenthetical) |
+| ECGI / NBER paper number | ECGI Law Working Paper No. 875/2025 | Series designation |
+| Company name in no-action letter | Exxon Mobil Corp., SEC No-Action Letter | Rule 14.6 |
+| Statute / bill title | Protecting Americans' Retirement Savings Act | Rule 12.4 |
+| Comment letter title | Comments on Proposed Amendments | Rule 17 (letter) |
+| Webpage description (untitled) | Issuer Data Verification (IDR) | Rule 18.2 |
+| Author name before *supra* | Levine, *supra* note 13 | Rule 4.2 |
+| Hereinafter short forms | GAO Report, CRS Report | Rule 4.2(b) |
+
+### Common Gemini Misclassifications
+
+Gemini consistently gets these wrong. When reviewing Gemini suggestions for these source types, default to the table above:
+
+1. **SEC releases/rules** — Gemini says italic; actually roman (regulatory material)
+2. **Executive orders** — Gemini says italic; actually roman (Rule 14.7)
+3. **Working paper series names** — Gemini says small caps; actually roman (parenthetical designation)
+4. **Company names in no-action letters** — Gemini says italic; actually roman
+5. **Author names before supra** — Gemini doesn't flag italic author names; they should be roman
+
+## Annotation Extraction: Space-in-Marker Bug
+
+When extracting formatted text from DOCX runs for Gemini, trailing/leading spaces inside italic or small caps runs produce malformed annotations:
+
+```
+BAD:  *supra * (space inside marker — LLMs don't parse this as italic)
+GOOD: *supra*  (space outside marker)
+```
+
+**Fix:** Strip leading/trailing spaces from the text before wrapping in markers, then re-add the spaces outside:
+
+```python
+text = t.text
+if is_italic or has_sc:
+    leading = " " if text.startswith(" ") else ""
+    trailing = " " if text.endswith(" ") else ""
+    inner = text.strip()
+    if not inner:
+        parts.append(text)  # whitespace-only run: emit as plain
+    elif is_italic:
+        parts.append(f"{leading}*{inner}*{trailing}")
+    else:
+        parts.append(f"{leading}[SC]{inner}[/SC]{trailing}")
+```
+
+In the "Other People's Votes" audit, 14% of italic runs had this bug, inflating false positives from 61 to 80.
+
 ## Stage 2: Formatted Text Is Essential for Gemini Audit
 
 ### The Problem
@@ -266,3 +349,43 @@ def archive_url(url):
    ```
    https://www.example.com/report.pdf [https://perma.cc/ABCD-1234].
    ```
+
+---
+
+## Stage 6: Cross-Reference Field Codes
+
+Converts hardcoded supra/infra note numbers to NOTEREF fields that auto-update when footnotes are renumbered.
+
+### Script: `create_crossrefs.py`
+
+```
+python3 scripts/create_crossrefs.py --docx file.docx --dry-run   # preview
+python3 scripts/create_crossrefs.py --docx file.docx              # apply (creates .bak)
+python3 scripts/create_crossrefs.py --docx file.docx --output out.docx
+```
+
+### What It Does
+
+1. **Parses** all `supra note N` and `infra note N` patterns in footnotes.xml
+2. **Adds bookmarks** (`_Ref_fnN`) to target footnoteReferences in document.xml
+3. **Replaces** hardcoded numbers with 5-run NOTEREF field codes:
+   ```xml
+   <w:r><w:fldChar w:fldCharType="begin"/></w:r>
+   <w:r><w:instrText> NOTEREF _Ref_fn42 \h </w:instrText></w:r>
+   <w:r><w:fldChar w:fldCharType="separate"/></w:r>
+   <w:r><w:t>42</w:t></w:r>
+   <w:r><w:fldChar w:fldCharType="end"/></w:r>
+   ```
+
+### Key Design Decisions
+
+- **Bookmark naming**: `_Ref_fn{display_num}` for new bookmarks; reuses existing `_Ref*` bookmarks
+- **Bookmark IDs**: Start at `max_existing + 1` to avoid collisions
+- **Field skipping**: The while-loop re-scans with field-aware text extraction, so already-converted numbers are invisible to regex (prevents infinite loops)
+- **Run splitting**: Clones original rPr to preserve font size, color, highlight
+- **Range handling**: `infra notes 209-210` creates two NOTEREFs with separator text between them
+- **Skip detection**: Footnotes already containing NOTEREF instrText are skipped entirely
+
+### After Running
+
+Open in Word → **Ctrl+A, F9** to update all fields. The display numbers should match the originals. To test: manually renumber a footnote and confirm supra references update.

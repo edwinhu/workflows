@@ -18,6 +18,8 @@ Checks performed on ALL footnotes:
 4. **Signal italic consistency** - All signals (see, cf., e.g.) must be italic
 5. **Terminal period** - Every footnote must end with a period
 6. **Hereinafter consistency** - Defined at first citation, used consistently after
+7. **Author name supra format** - Text before `*supra*` should be roman, not italic (unless it's a case name short form). Catches `*Manne, supra*` → should be `Manne, *supra*`
+8. **Italic spillover** - Trailing/leading spaces inside italic or small caps runs (e.g., `*supra *` should be `*supra* `). These don't affect Word display but cause Gemini misparses
 
 ### NBSP Handling
 
@@ -59,13 +61,29 @@ Previous failure: Auditing 45 of 239 footnotes missed 41 journal names needing s
 | Skipping NBSP variants in mechanical checks | Silent search failures | Always try both space types |
 | Trusting Gemini results without cross-checking | Gemini hallucinates rules | Cross-reference findings with Bluebook rules |
 
+## Merging Mechanical + Gemini Findings
+
+When deduplicating findings, **mechanical checks are authoritative for deterministic rules**:
+- Signal italic formatting → trust mechanical checker (regex on run-level XML), not Gemini
+- Terminal periods → trust mechanical checker
+- Id. chain validation → trust mechanical checker
+- Journal/book small caps patterns → trust mechanical checker
+
+Gemini is authoritative only for **judgment calls** that require citation classification:
+- Source type classification (is this a book or a report?)
+- Typeface rules that depend on source type (italic title vs small caps title)
+- Abbreviation correctness (T6/T13 tables)
+- Short form validity
+
+**Never drop a mechanical finding because Gemini didn't flag it.** Gemini misses ~30% of signal formatting issues because its attention focuses on citation-level analysis. The mechanical checker catches 100% of signal issues by design.
+
 ## Gate: Exit Check
 
 Before proceeding to Report phase:
 - [ ] `scratch/audit_findings.json` exists
 - [ ] Mechanical check results cover ALL footnotes
 - [ ] Gemini audit results cover ALL footnotes (verify count matches extract)
-- [ ] Findings deduplicated (no mechanical + Gemini duplicates)
+- [ ] Findings deduplicated (mechanical findings preserved; only Gemini-unique judgment calls added)
 
 ## Next Phase
 
