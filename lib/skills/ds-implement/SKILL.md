@@ -234,22 +234,22 @@ For each task with a scale-up plan in PLAN.md:
 1. Submit a batch of ~10 representative items
 2. Wait for completion
 3. Parse ALL responses — verify non-empty, correct schema, expected structure
-4. Spot-check: read 3+ individual outputs for quality/correctness
-5. **Gate:** Success rate ≥ 90% AND outputs parse correctly AND spot-check passes
+4. **Quality review: read EVERY output** (it's only 10 — no sampling needed)
+5. **Gate:** Success rate ≥ 90% AND outputs parse correctly AND quality review passes
 
 **Stage 2 — Intermediate Batch (~100 items). Required if total > 500.**
 1. Submit ~100 items (include edge cases: large files, unusual formats, boundary conditions)
 2. Check error rate distribution — are failures random or systematic?
-3. Verify output quality distribution — any degradation vs. Stage 1?
+3. **Random sample quality review:** select 10 outputs at random, score each for correctness/completeness. Log scores.
 4. Extrapolate cost and time for full batch
-5. **Gate:** Success rate ≥ 95% AND cost/time extrapolation acceptable AND no systematic failures
+5. **Gate:** Success rate ≥ 95% AND sample quality acceptable AND cost/time extrapolation acceptable AND no systematic failures
 
 **Stage 3 — Large Test Batch (~1,000 items). Required if total > 5,000.**
 1. Submit ~1,000 items
 2. Verify rate limits are not hit
-3. Confirm cost tracking matches extrapolation
-4. Check for performance degradation at scale
-5. **Gate:** Success rate ≥ 95% AND no rate limit issues AND cost confirmed
+3. **Random sample quality review:** select 10-20 outputs at random, score each. Compare quality distribution to Stage 2 — any degradation?
+4. Confirm cost tracking matches extrapolation
+5. **Gate:** Success rate ≥ 95% AND sample quality consistent with Stage 2 AND no rate limit issues AND cost confirmed
 
 **Full Batch — Submit with confidence.**
 - Only after all required stages pass their gates
@@ -264,6 +264,7 @@ For each task with a scale-up plan in PLAN.md:
 | "I'll check the results after the full batch" | By then you've wasted hours/dollars. Errors compound silently at scale. | Verify at each stage before scaling up. |
 | "The API returned 200 OK, so it worked" | HTTP 200 means the *request* succeeded, not the *output*. Empty responses, malformed JSON, and hallucinated content all return 200. | Parse and inspect actual response content. |
 | "Running test batches slows down the pipeline" | A 10-item test takes minutes. Resubmitting 21K items after a schema error takes hours. | Test batches are the fastest path to production. |
+| "The outputs parsed correctly, so quality is fine" | Parsing checks structure, not content. LLM outputs can be structurally valid but factually wrong, incomplete, or hallucinated. | Randomly sample and actually read outputs at every stage. |
 
 ### Red Flags - STOP If You Catch Yourself:
 

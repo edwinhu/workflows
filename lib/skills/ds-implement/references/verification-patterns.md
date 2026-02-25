@@ -89,16 +89,28 @@ print(f"Parse errors: {parse_errors}/{total}")
 assert success / total >= 0.9, f"Success rate {success/total:.0%} below 90% threshold"
 ```
 
-### Spot-Check
+### Random Sample Quality Review
 
 ```python
-# Inspect individual outputs for quality
+# Select random sample and score each output for quality
 import random
-sample = random.sample(test_results, min(3, len(test_results)))
+
+n_sample = min(10, len(test_results))
+sample = random.sample(test_results, n_sample)
+scores = []
 for i, r in enumerate(sample):
-    print(f"\n--- Sample {i+1} ---")
+    print(f"\n--- Sample {i+1}/{n_sample} ---")
     print(f"Input: {r['request_id']}")
     print(f"Output: {json.dumps(r['parsed'], indent=2)[:500]}")
+    # Score: 1 = correct & complete, 0.5 = partially correct, 0 = wrong/empty
+    # In practice: read output, assess against expected structure and content
+    score = 1.0  # replace with actual assessment
+    scores.append(score)
+
+avg_quality = sum(scores) / len(scores)
+print(f"\nQuality: {avg_quality:.0%} avg across {n_sample} samples")
+print(f"Scores: {scores}")
+assert avg_quality >= 0.8, f"Quality {avg_quality:.0%} below 80% threshold"
 ```
 
 ### Cost Extrapolation
@@ -125,4 +137,4 @@ print(f"Estimated full run: {total_items} items in {est_duration_min:.0f} min ($
 | Transform | before/after comparison, sample |
 | Model fit | metrics, convergence info |
 | Prediction | distribution, sample predictions |
-| Batch/ETL submit | test batch success rate, spot-check outputs, cost extrapolation |
+| Batch/ETL submit | test batch success rate, random sample quality scores, cost extrapolation |
