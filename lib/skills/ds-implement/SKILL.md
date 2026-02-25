@@ -167,7 +167,7 @@ Before writing ANY SAS code, validate against these rules:
 
 ## Implementation Process
 
-### Step 1: Read Plan and Delegation Skill
+### Step 1: Read Plan, Load ETL Enforcement, and Delegation Skill
 
 ```
 Read(".claude/PLAN.md")
@@ -176,7 +176,19 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
 
 Follow the task order defined in the plan. Use ds-delegate's templates for every task.
 
-**If PLAN.md specifies SAS or Mixed language:** Also load `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")` and inject the SAS Performance Enforcement block into every SAS subagent prompt.
+**ETL Strategy Enforcement — load domain-specific references based on PLAN.md:**
+
+If PLAN.md contains an `## ETL Strategy` section, the user made decisions during planning that MUST be enforced during implementation. Check each subsection and load the corresponding enforcement:
+
+| PLAN.md Section | Enforcement Reference | Inject Into |
+|-----------------|----------------------|-------------|
+| `Implementation Language: SAS` or `Mixed` | `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")` | Every SAS subagent prompt |
+| `Filter Strategy` table present | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Filter Push-Down | Subagent prompts for data loading tasks |
+| `Parallelism Plan` table present | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Parallelism | Implementation strategy choice |
+| `Data Flow` with intermediates | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Caching | Subagent prompts for tasks producing/consuming intermediates |
+| `Scale-Up Testing Plan` table present | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Scale-Up + domain reference (e.g., `gemini-batch/references/scale-up-testing.md`) | Before any batch submission task |
+
+**If PLAN.md has NO ETL Strategy section:** Skip this — proceed directly to Step 2.
 
 ### Step 2: Execute Each Task via Delegation
 
@@ -211,8 +223,14 @@ Document every significant step:
 See [references/verification-patterns.md](references/verification-patterns.md) for detailed code patterns for:
 - Data loading, filtering, merging
 - Aggregation and model training
-- Batch pipeline scale-up testing (submission, validation, spot-check, cost extrapolation)
+- Batch pipeline scale-up testing (submission, validation, cost extrapolation)
 - Quick reference table by operation type
+
+See [references/etl-enforcement.md](references/etl-enforcement.md) for ETL strategy enforcement:
+- Filter push-down (database vs application vs hybrid)
+- Parallelism (Task agents vs SGE vs sequential)
+- Intermediate caching (parquet vs CSV vs SQLite)
+- Scale-up testing domain routing
 
 ## Scale-Up Testing Protocol (Batch/ETL Operations)
 
