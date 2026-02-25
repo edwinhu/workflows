@@ -234,22 +234,22 @@ For each task with a scale-up plan in PLAN.md:
 1. Submit a batch of ~10 representative items
 2. Wait for completion
 3. Parse ALL responses — verify non-empty, correct schema, expected structure
-4. **Quality review: read EVERY output** (it's only 10 — no sampling needed)
+4. **Quality review: read EVERY output yourself** (it's only 10 — no sampling needed, no judge needed)
 5. **Gate:** Success rate ≥ 90% AND outputs parse correctly AND quality review passes
 
 **Stage 2 — Intermediate Batch (~100 items). Required if total > 500.**
 1. Submit ~100 items (include edge cases: large files, unusual formats, boundary conditions)
 2. Check error rate distribution — are failures random or systematic?
-3. **Random sample quality review:** select 10 outputs at random, score each for correctness/completeness. Log scores.
+3. **LLM-as-judge quality review:** randomly sample 10 outputs, send each to a stronger model (e.g., Gemini 3 Pro) with scoring rubric. Score: 1 = correct & complete, 0.5 = partially correct, 0 = wrong/empty. Log all scores.
 4. Extrapolate cost and time for full batch
-5. **Gate:** Success rate ≥ 95% AND sample quality acceptable AND cost/time extrapolation acceptable AND no systematic failures
+5. **Gate:** Success rate ≥ 95% AND judge avg quality ≥ 80% AND cost/time extrapolation acceptable AND no systematic failures
 
 **Stage 3 — Large Test Batch (~1,000 items). Required if total > 5,000.**
 1. Submit ~1,000 items
 2. Verify rate limits are not hit
-3. **Random sample quality review:** select 10-20 outputs at random, score each. Compare quality distribution to Stage 2 — any degradation?
+3. **LLM-as-judge quality review:** randomly sample 20 outputs, judge with same rubric as Stage 2. Compare quality distribution to Stage 2 — any degradation at scale?
 4. Confirm cost tracking matches extrapolation
-5. **Gate:** Success rate ≥ 95% AND sample quality consistent with Stage 2 AND no rate limit issues AND cost confirmed
+5. **Gate:** Success rate ≥ 95% AND judge quality consistent with Stage 2 AND no rate limit issues AND cost confirmed
 
 **Full Batch — Submit with confidence.**
 - Only after all required stages pass their gates

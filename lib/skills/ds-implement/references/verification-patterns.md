@@ -89,28 +89,52 @@ print(f"Parse errors: {parse_errors}/{total}")
 assert success / total >= 0.9, f"Success rate {success/total:.0%} below 90% threshold"
 ```
 
-### Random Sample Quality Review
+### LLM-as-Judge Quality Review
+
+Use a stronger model to evaluate output quality on a random sample.
+Stage 1 (10 items): read every output yourself — no judge needed.
+Stage 2+ (100+ items): send random sample to judge model with scoring rubric.
 
 ```python
-# Select random sample and score each output for quality
 import random
+from google import genai
+
+# Configure judge model — use a stronger model than the one that produced the outputs
+client = genai.Client()
+JUDGE_MODEL = "gemini-3-pro"
+
+RUBRIC = """Score this LLM output on a 0-1 scale:
+- 1.0 = correct, complete, well-structured
+- 0.5 = partially correct or incomplete
+- 0.0 = wrong, empty, or hallucinated
+
+Task description: {task_description}
+Expected output format: {expected_format}
+
+Input: {input_text}
+Output to evaluate: {output_text}
+
+Respond with ONLY a JSON object: {{"score": <float>, "reason": "<one sentence>"}}"""
 
 n_sample = min(10, len(test_results))
 sample = random.sample(test_results, n_sample)
 scores = []
 for i, r in enumerate(sample):
-    print(f"\n--- Sample {i+1}/{n_sample} ---")
-    print(f"Input: {r['request_id']}")
-    print(f"Output: {json.dumps(r['parsed'], indent=2)[:500]}")
-    # Score: 1 = correct & complete, 0.5 = partially correct, 0 = wrong/empty
-    # In practice: read output, assess against expected structure and content
-    score = 1.0  # replace with actual assessment
-    scores.append(score)
+    prompt = RUBRIC.format(
+        task_description="...",  # describe what the batch operation does
+        expected_format="...",   # describe expected output structure
+        input_text=str(r["request_id"]),
+        output_text=json.dumps(r["parsed"], indent=2)[:2000],
+    )
+    response = client.models.generate_content(model=JUDGE_MODEL, contents=prompt)
+    judgment = json.loads(response.text)
+    scores.append(judgment["score"])
+    print(f"Sample {i+1}/{n_sample}: {judgment['score']} — {judgment['reason']}")
 
 avg_quality = sum(scores) / len(scores)
-print(f"\nQuality: {avg_quality:.0%} avg across {n_sample} samples")
+print(f"\nJudge quality: {avg_quality:.0%} avg across {n_sample} samples")
 print(f"Scores: {scores}")
-assert avg_quality >= 0.8, f"Quality {avg_quality:.0%} below 80% threshold"
+assert avg_quality >= 0.8, f"Judge quality {avg_quality:.0%} below 80% threshold"
 ```
 
 ### Cost Extrapolation
