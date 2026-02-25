@@ -51,6 +51,69 @@ print(f"Val score: {val_score:.4f}")
 print(f"Gap: {train_score - val_score:.4f}")
 ```
 
+## Batch Pipeline (Scale-Up Testing)
+
+### Test Batch Submission
+
+```python
+# Submit small test batch
+test_items = items[:10]
+test_results = submit_batch(test_items)
+print(f"Test batch: {len(test_items)} submitted, {len(test_results)} returned")
+```
+
+### Response Validation
+
+```python
+# Verify responses are non-empty and structurally correct
+success = 0
+empty = 0
+parse_errors = 0
+for r in test_results:
+    if not r.get("response"):
+        empty += 1
+    else:
+        try:
+            parsed = parse_response(r["response"])
+            if parsed and len(parsed) > 0:
+                success += 1
+            else:
+                empty += 1
+        except Exception as e:
+            parse_errors += 1
+
+total = len(test_results)
+print(f"Success: {success}/{total} ({100*success/total:.0f}%)")
+print(f"Empty: {empty}/{total}")
+print(f"Parse errors: {parse_errors}/{total}")
+assert success / total >= 0.9, f"Success rate {success/total:.0%} below 90% threshold"
+```
+
+### Spot-Check
+
+```python
+# Inspect individual outputs for quality
+import random
+sample = random.sample(test_results, min(3, len(test_results)))
+for i, r in enumerate(sample):
+    print(f"\n--- Sample {i+1} ---")
+    print(f"Input: {r['request_id']}")
+    print(f"Output: {json.dumps(r['parsed'], indent=2)[:500]}")
+```
+
+### Cost Extrapolation
+
+```python
+# Estimate full batch cost/time from test batch
+test_duration_sec = (end_time - start_time).total_seconds()
+per_item_sec = test_duration_sec / len(test_items)
+total_items = len(items)
+est_duration_min = (per_item_sec * total_items) / 60
+est_cost = cost_per_item * total_items
+print(f"Test: {len(test_items)} items in {test_duration_sec:.0f}s")
+print(f"Estimated full run: {total_items} items in {est_duration_min:.0f} min (${est_cost:.2f})")
+```
+
 ## Quick Reference Table
 
 | Operation | Required Output |
@@ -62,3 +125,4 @@ print(f"Gap: {train_score - val_score:.4f}")
 | Transform | before/after comparison, sample |
 | Model fit | metrics, convergence info |
 | Prediction | distribution, sample predictions |
+| Batch/ETL submit | test batch success rate, spot-check outputs, cost extrapolation |

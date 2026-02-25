@@ -250,7 +250,20 @@ Identify parallelizable dimensions from profiling:
 - **Groups:** firm-by-firm, sector-by-sector processing
 - **Sources:** independent data sources profiled/cleaned in parallel
 
-**Document in PLAN.md:** For each task, note if it can be parallelized and on what dimension.
+```
+AskUserQuestion(questions=[{
+  "question": "How should parallelizable tasks be executed?",
+  "header": "Parallelism",
+  "options": [
+    {"label": "Background Task agents (Recommended)", "description": "Spawn parallel Task agents for independent groups/years. Best for in-session work with Claude."},
+    {"label": "SGE array jobs", "description": "Submit as array jobs to grid scheduler. Best for WRDS/HPC cluster workloads."},
+    {"label": "Sequential", "description": "Process one at a time. Only when tasks have dependencies or parallelism isn't worth the overhead."}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Document in PLAN.md:** For each task, note if it can be parallelized, on what dimension, and the chosen execution method.
 
 #### C. Intermediate Result Caching
 
@@ -260,7 +273,59 @@ If multiple tasks read from the same large source:
 1. **Task 1** reads and cleans the source → saves intermediate result
 2. **Tasks 2-N** read from the intermediate result, not the raw source
 
-**Document in PLAN.md:** Data flow diagram showing which tasks produce intermediates and which consume them.
+```
+AskUserQuestion(questions=[{
+  "question": "What format should be used for intermediate results?",
+  "header": "Cache format",
+  "options": [
+    {"label": "Parquet (Recommended)", "description": "Columnar, compressed, preserves dtypes. Best for tabular data. ~10x smaller than CSV."},
+    {"label": "CSV", "description": "Universal, human-readable. Use when downstream tools require CSV or data is small."},
+    {"label": "SQLite", "description": "Queryable intermediate storage. Best when downstream tasks need filtered reads from the same intermediate."},
+    {"label": "No caching needed", "description": "Each task reads from a different source, or sources are small enough to re-read."}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Document in PLAN.md:** Data flow diagram showing which tasks produce intermediates, which consume them, and the storage format.
+
+#### D. Incremental Scale-Up Strategy
+
+**The anti-pattern:** Submit the full batch (21K documents, 50M rows, $500 API call) without testing at small scale first. One bad schema, wrong prompt, or misconfigured parameter = entire batch wasted.
+
+**This is TDD for ETL:** fail at 10 items in minutes, not at 21,000 items in hours.
+
+**Triggers when ANY task involves:**
+- External API batch processing (Gemini, OpenAI, Bedrock, etc.)
+- Irreversible operations (database writes, file transformations)
+- Operations costing > $10 or > 30 minutes at full scale
+- Processing > 500 items through any external service
+
+**For each expensive task, ask the user how to scale up:**
+
+```
+AskUserQuestion(questions=[{
+  "question": "How should we scale up testing for this batch/ETL operation?",
+  "header": "Scale-up",
+  "options": [
+    {"label": "Full scale-up (Recommended)", "description": "4 stages: 10 → 100 → 1,000 → full. Maximum safety for large batches (>5,000 items)."},
+    {"label": "Standard scale-up", "description": "3 stages: 10 → 100 → full. Good for medium batches (500-5,000 items)."},
+    {"label": "Minimal scale-up", "description": "2 stages: 10 → full. Quick validation for small batches (<500 items) or low-cost operations."},
+    {"label": "Custom stages", "description": "Define custom batch sizes and gate criteria for this specific pipeline."}
+  ],
+  "multiSelect": false
+}])
+```
+
+**Then define the plan:**
+
+1. **Set stage sizes** based on user choice and total items
+2. **Define gate criteria per stage** — what must be true before scaling up:
+   - Output schema/format matches expectations (non-empty, correct structure)
+   - Success rate above threshold (≥90% for test, ≥95% for intermediate)
+   - Spot-check: manually inspect N outputs for quality/correctness
+   - Cost/time extrapolation is acceptable for next stage
+3. **Document in PLAN.md:** Scale-up testing plan table for each expensive task.
 
 #### ETL Strategy Section for PLAN.md
 
@@ -297,6 +362,9 @@ source2.csv → [Task 1: Clean] → clean_source2.parquet ↗
 | "Filtering in pandas is more flexible" | Pandas loads ALL rows before filtering — you've already paid the cost | Push coarse filters to database, fine filters to pandas |
 | "The data isn't that big" | You just profiled it. Check the row count. If >1M, it IS that big. | Follow the ETL strategy, don't guess |
 | "I'll optimize later if it's slow" | Later never comes. The pipeline runs once and everyone moves on. | Design efficient ETL NOW |
+| "I'll just run the full batch, it's faster" | One bad schema = 21K wasted requests. One wrong prompt = hours of queue time for garbage. | Test at 10 first. Always. |
+| "The API validates my input anyway" | APIs validate *format*, not *correctness*. Empty responses are "successful." | Verify output content, not just HTTP 200 |
+| "Testing a small batch takes too long to set up" | Setting up a 10-item test takes 5 minutes. Resubmitting 21K items takes hours. | Build the test batch into the pipeline |
 </EXTREMELY-IMPORTANT>
 
 ### 5. Identify Implementation Language
@@ -406,6 +474,14 @@ For each task, define what output proves completion:
 ### Data Flow
 [source] → [task] → [intermediate] → [task] → [output]
 
+### Scale-Up Testing Plan
+<!-- Include when any task involves batch APIs, irreversible operations, or >500 items through external services -->
+
+| Task | Total Items | Stage 1 (test) | Stage 2 | Stage 3 | Gate Criteria |
+|------|-------------|-----------------|---------|---------|---------------|
+| Batch extraction | 21,000 | 10 | 100 | 1,000 | ≥95% success, schema valid, non-empty responses |
+| DB write | 5M rows | 100 | 1,000 | — | No constraint violations, row counts match |
+
 ## Implementation Language
 [Python / SAS / R / Mixed]
 
@@ -437,6 +513,7 @@ For each task, define what output proves completion:
 | Pull entire tables without WHERE clauses | OOM on large data, wastes time/memory | Filter at database level for >1M row sources |
 | Process years sequentially | Embarrassingly parallel = free speedup | Use background agents or SGE arrays |
 | Re-read same source in multiple tasks | Redundant I/O multiplies runtime | Save intermediate results after first read |
+| Submit full batch without test batch | One bad schema/prompt = entire batch wasted | Plan scale-up testing stages for expensive operations |
 
 ## Output
 

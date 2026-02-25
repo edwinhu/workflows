@@ -211,7 +211,68 @@ Document every significant step:
 See [references/verification-patterns.md](references/verification-patterns.md) for detailed code patterns for:
 - Data loading, filtering, merging
 - Aggregation and model training
+- Batch pipeline scale-up testing (submission, validation, spot-check, cost extrapolation)
 - Quick reference table by operation type
+
+## Scale-Up Testing Protocol (Batch/ETL Operations)
+
+**Triggers when PLAN.md includes a Scale-Up Testing Plan table** (created by ds-plan when tasks involve batch APIs, irreversible operations, or >500 items through external services).
+
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Scale-Up Testing
+
+**NO FULL BATCH WITHOUT A SUCCESSFUL TEST BATCH. This is not negotiable.**
+
+This is TDD for ETL: fail at 10 items in minutes, not at 21,000 items in hours. Before submitting production workloads, you MUST validate at small scale and verify outputs are correct — not just "successful."
+</EXTREMELY-IMPORTANT>
+
+### The Protocol
+
+For each task with a scale-up plan in PLAN.md:
+
+**Stage 1 — Test Batch (~10 items). ALWAYS required.**
+1. Submit a batch of ~10 representative items
+2. Wait for completion
+3. Parse ALL responses — verify non-empty, correct schema, expected structure
+4. Spot-check: read 3+ individual outputs for quality/correctness
+5. **Gate:** Success rate ≥ 90% AND outputs parse correctly AND spot-check passes
+
+**Stage 2 — Intermediate Batch (~100 items). Required if total > 500.**
+1. Submit ~100 items (include edge cases: large files, unusual formats, boundary conditions)
+2. Check error rate distribution — are failures random or systematic?
+3. Verify output quality distribution — any degradation vs. Stage 1?
+4. Extrapolate cost and time for full batch
+5. **Gate:** Success rate ≥ 95% AND cost/time extrapolation acceptable AND no systematic failures
+
+**Stage 3 — Large Test Batch (~1,000 items). Required if total > 5,000.**
+1. Submit ~1,000 items
+2. Verify rate limits are not hit
+3. Confirm cost tracking matches extrapolation
+4. Check for performance degradation at scale
+5. **Gate:** Success rate ≥ 95% AND no rate limit issues AND cost confirmed
+
+**Full Batch — Submit with confidence.**
+- Only after all required stages pass their gates
+- Document final batch parameters in LEARNINGS.md
+
+### Scale-Up Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I already tested the prompt interactively" | Interactive ≠ batch. Schema, format, and parameters differ. Batch-specific bugs only appear in batch. | Run a 10-item batch test. It takes 5 minutes. |
+| "The first 10 worked, 21K will be fine" | Stage 1 catches format errors. Stage 2 catches edge cases and error rate patterns. Skipping stages hides systematic failures. | Follow ALL required stages for your batch size. |
+| "I'll check the results after the full batch" | By then you've wasted hours/dollars. Errors compound silently at scale. | Verify at each stage before scaling up. |
+| "The API returned 200 OK, so it worked" | HTTP 200 means the *request* succeeded, not the *output*. Empty responses, malformed JSON, and hallucinated content all return 200. | Parse and inspect actual response content. |
+| "Running test batches slows down the pipeline" | A 10-item test takes minutes. Resubmitting 21K items after a schema error takes hours. | Test batches are the fastest path to production. |
+
+### Red Flags - STOP If You Catch Yourself:
+
+| Action | Why Wrong | Do Instead |
+|--------|-----------|------------|
+| About to submit full batch without a test batch | You will discover errors at maximum cost | Submit 10 items first |
+| Checking only that the API returned success | "Success" means the request was processed, not that output is correct | Parse and read actual response content |
+| Skipping Stage 2 because Stage 1 passed | Edge cases and error rate patterns only emerge at ~100 items | Follow the scale-up plan from PLAN.md |
+| Not extrapolating cost before scaling up | Full batch could cost 10x what you expected | Calculate: (stage cost / stage items) × total items |
 
 ## Common Failures to Avoid
 
