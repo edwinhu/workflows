@@ -342,6 +342,7 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10 & 11).
 - `references/gcs-setup.md` - **NEW:** Complete GCS and Vertex AI setup guide
 - `references/gotchas.md` - 9 critical production gotchas (updated auth section)
 - `references/best-practices.md` - Idempotent IDs, state tracking, validation
+- `references/scale-up-testing.md` - Incremental scale-up testing (LangExtract prototyping, LLM-as-judge, Vertex AI batch)
 - `references/troubleshooting.md` - Common errors and debugging
 - `references/vertex-ai.md` - Enterprise alternative with comparison
 - `references/cli-reference.md` - gsutil and gcloud commands
