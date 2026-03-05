@@ -6,8 +6,8 @@ Complete guide to setting up Google Cloud Storage for batch processing.
 
 Install gcloud SDK:
 ```bash
-# macOS (via Homebrew)
-brew install google-cloud-sdk
+# macOS: Install via nix-darwin (see ~/nix/) or download from https://cloud.google.com/sdk/docs/install
+# Do NOT use brew install
 
 # Linux (via package manager)
 curl https://sdk.cloud.google.com | bash

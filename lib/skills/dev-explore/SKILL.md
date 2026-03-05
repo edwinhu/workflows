@@ -249,12 +249,7 @@ Use ast-grep (`sg`) for precise AST-based pattern matching and ripgrep-all (`rga
 REAL automated tests EXECUTE code and verify RUNTIME behavior.
 Grepping source files is NOT testing. Log checking is NOT testing.
 
-| ✅ REAL TEST INFRASTRUCTURE | ❌ NOT TESTING (never acceptable) |
-|-----------------------------|-----------------------------------|
-| pytest that calls functions | grep/ast-grep to find code |
-| Playwright that clicks buttons | Reading logs for "success" |
-| ydotool that simulates user input | Code review / structure check |
-| API calls that verify responses | "It looks correct" |
+See `lib/references/real-test-enforcement.md` for the canonical REAL vs FAKE test tables.
 
 ### The Gate Function
 
@@ -395,14 +390,7 @@ A REAL test must use WebSocket, not HTTP endpoint.
 
 ### Fake Test Prevention
 
-**If you skip code path discovery, you WILL write fake tests.**
-
-| What You'll Do Wrong | Why | Result |
-|---------------------|-----|--------|
-| Test HTTP endpoint | "Easier to test" | Wrong code path exercised |
-| Call function directly | "Faster" | Skips user workflow |
-| Mock the protocol | "Simpler" | Doesn't test real behavior |
-| Check internal state | "More direct" | Misses what user sees |
+**If you skip code path discovery, you WILL write fake tests.** See `lib/references/real-test-enforcement.md` for the full fake test detection tables and the Iron Law of REAL Tests.
 
 **Update SPEC.md with code path findings before proceeding.**
 </EXTREMELY-IMPORTANT>

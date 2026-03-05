@@ -259,16 +259,9 @@ After clarifying workflow and protocol, verify:
 
 If any of these don't match, the test will be FAKE. Clarify now.
 
-### Common Fake Test Patterns to Catch
+### Test Strategy Validation
 
-| What You Discovered | Common Fake Test | REAL Test Must Do |
-|---------------------|------------------|-------------------|
-| App uses Protocol X | Test with Protocol Y | Test with Protocol X |
-| User clicks UI element | Call function directly | Simulate actual click |
-| User sees output | Check internal state | Verify user-visible output |
-| Data flows through boundary | Mock the boundary | Test actual boundary |
-| Operation is async | Test synchronously | Test async behavior |
-| CLI is the interface | Call internal function | Invoke actual CLI |
+Before proceeding to design, verify the testing strategy passes real-test enforcement. See `lib/references/real-test-enforcement.md` for what constitutes a REAL vs FAKE test.
 
 **If the test approach doesn't match what you discovered, STOP and clarify.**
 </EXTREMELY-IMPORTANT>
@@ -330,6 +323,8 @@ Before proceeding to design, verify REAL test criteria:
 **If any box is unchecked → You WILL write fake tests. Clarify now.**
 
 ### Fake Test Prevention Gate
+
+See `lib/references/real-test-enforcement.md` for detection tables and the Iron Law of REAL Tests.
 
 Ask yourself:
 1. Does the test do what the user does? (Not a shortcut)

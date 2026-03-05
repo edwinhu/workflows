@@ -1,6 +1,6 @@
 # Law Review Template Formatting
 
-Reference for the law review document template at `${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx`.
+Reference for the law review document template at `${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx`.
 
 Load this file when creating or converting Word documents.
 
@@ -34,7 +34,7 @@ When user requests a Word document (docx), follow this 5-step gate:
 
 ```
 STEP 1: LOAD    → Load /docx skill
-STEP 2: COPY    → Copy ${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx
+STEP 2: COPY    → Copy ${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx
                   to target location (e.g., user's specified path)
 STEP 3: EDIT    → Add content to the COPIED template
 STEP 4: VERIFY  → Check template formatting preserved (styles, footnotes)
@@ -48,7 +48,7 @@ STEP 5: DELIVER → Return the document to user
 When converting markdown or other formats to docx, ALWAYS use the template as `--reference-doc`:
 
 ```bash
-pandoc input.md -o output.docx --reference-doc="${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx"
+pandoc input.md -o output.docx --reference-doc="${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx"
 ```
 
 This applies all template styles (fonts, spacing, heading formatting, footnote styles) to the output. Pandoc maps its internal heading levels to the template's Heading 1–4 styles, and body text to the Body Text style.

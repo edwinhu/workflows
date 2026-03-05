@@ -77,8 +77,8 @@ The Batch API has non-obvious requirements that will fail silently:
 ### Install gcloud SDK
 
 ```bash
-# macOS: Install Google Cloud SDK via Homebrew
-brew install google-cloud-sdk
+# macOS: Install via nix-darwin (add to ~/nix/ configuration)
+# Or if already available: gcloud --version
 
 # Linux: Install Google Cloud SDK from official sources
 curl https://sdk.cloud.google.com | bash
@@ -182,116 +182,11 @@ job = client.batches.create(
 5. **Download and parse** results from GCS output URI
 6. **Handle failures** gracefully (partial failures are common)
 
-## IRON LAW: Metadata and API Call Structure
+## Key Gotchas (API Structure)
 
-**YOU MUST USE FLAT PRIMITIVES FOR METADATA. YOU MUST USE SIMPLE STRINGS FOR API PARAMETERS.**
+**Metadata must be flat primitives** (no nested objects — BigQuery-backed storage). **Parameter is `dest=` not `destination=`** (Vertex AI only). **Config is a plain dict** (not a wrapper type).
 
-### Rule 1: Metadata Structure
-
-```
-CORRECT ✓
-"metadata": {
-    "request_id": "icon_123",        # String
-    "file_name": "copy.svg",         # String
-    "file_size": 1024                # Integer
-}
-
-WRONG ✗
-"metadata": {
-    "request_id": "icon_123",
-    "file_info": {                   # ← NESTED OBJECT FAILS!
-        "name": "copy.svg",
-        "size": 1024
-    }
-}
-
-WORKAROUND (if complex data needed)
-"metadata": {
-    "request_id": "icon_123",
-    "file_info": json.dumps({"name": "copy.svg", "size": 1024})  # JSON string OK
-}
-```
-
-**Why:** Vertex AI stores metadata in BigQuery-compatible format. BigQuery doesn't support nested types. Violation causes: `"metadata" in the specified input data is of unsupported type.`
-
-### Rule 2: API Call Structure
-
-**Standard API (File API):**
-```python
-CORRECT ✓
-job = client.batches.create(
-    model="gemini-2.5-flash-lite",
-    src=uploaded_file.name,               # "files/..." URI from File API
-    config={"display_name": "my-job"}     # Just a dict
-)
-# Results at: job.dest.file_name (after completion)
-```
-
-**Vertex AI (GCS):**
-```python
-CORRECT ✓
-job = client.batches.create(
-    model="gemini-2.5-flash-lite",
-    src="gs://bucket/input.jsonl",        # GCS URI
-    dest="gs://bucket/output/",           # GCS output (VERTEX AI ONLY!)
-    config={"display_name": "my-job"}
-)
-
-WRONG ✗
-job = client.batches.create(
-    model="gemini-2.5-flash-lite",
-    src="gs://bucket/input.jsonl",
-    destination="gs://bucket/output/",    # ← WRONG PARAM NAME! Use dest=
-)
-
-WRONG ✗
-job = client.batches.create(
-    model="gemini-2.5-flash-lite",
-    src="gs://bucket/input.jsonl",
-    config=types.CreateBatchJobConfig(    # ← DON'T INSTANTIATE TYPES!
-        dest="gs://bucket/output/"
-    )
-)
-```
-
-**Why:**
-- Standard API: Uses File API for input, outputs to managed file location
-- Vertex AI: Uses GCS URIs, supports `dest=` for output location
-- Parameter is `dest=` (not destination). Config is a plain dict (not a type instance).
-
-### Rationalization Table - STOP If You Catch Yourself Thinking:
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Nested metadata is cleaner" | Your code will fail silently with cryptic errors | Flatten or use `json.dumps()` |
-| "I'll use `dest=` with Standard API" | Standard API doesn't support `dest=`; it's Vertex AI only | Use File API pattern for Standard API |
-| "I'll try `destination=` parameter" | You'll get a TypeError; parameter doesn't exist | Use `dest=` (Vertex AI only) |
-| "I should use `CreateBatchJobConfig`" | You're confusing internal typing with API calls | Pass plain dict to `config=` |
-| "Other APIs accept nested objects" | Your assumption breaks here; it's BigQuery-backed | Follow the examples |
-| "I'll fix it if it breaks" | Your job fails 5 minutes after submission | Get it right the first time |
-
-### Pre-Submission Validation
-
-```python
-# Add this check BEFORE submitting batch job
-def validate_metadata(metadata: dict):
-    """Ensure metadata contains only primitive types."""
-    for key, value in metadata.items():
-        if isinstance(value, (dict, list)):
-            raise ValueError(
-                f"Metadata '{key}' is {type(value).__name__}. "
-                f"Only primitives (str, int, float, bool) allowed. "
-                f"Use json.dumps() for complex data."
-            )
-        if not isinstance(value, (str, int, float, bool, type(None))):
-            raise ValueError(f"Unsupported type for '{key}': {type(value)}")
-
-# Validate all requests before submission:
-for request in batch_requests:
-    validate_metadata(request["metadata"])
-```
-
-**Enforcement:** Jobs will fail if metadata contains nested objects. There is no workaround for this requirement.
+See the Rationalization Table in the first Iron Law section above — the same gotchas apply here. The Key Gotchas table below summarizes all critical issues.
 
 ## Key Gotchas
 
@@ -364,11 +259,4 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10 & 11).
 
 ## Date Awareness
 
-**Pattern from oh-my-opencode:** Gemini API and documentation evolve rapidly.
-
-Current date: Use `datetime.now()` for:
-- API version checking
-- Model availability ("gemini-2.5-flash-lite available as of Dec 2024")
-- Documentation freshness validation
-
-For API features or model names with uncertainty, verify against current date and check latest Gemini API documentation.
+Gemini API evolves rapidly. For API features or model names with uncertainty, verify against current documentation.

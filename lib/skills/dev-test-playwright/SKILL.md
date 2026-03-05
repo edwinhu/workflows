@@ -1,6 +1,6 @@
 ---
 name: dev-test-playwright
-description: "Playwright MCP browser testing. Headless E2E, cross-browser, CI/CD automation."
+description: "This skill should be used when testing web applications with Playwright MCP, running headless E2E tests, cross-browser testing, CI/CD test automation, or when dev-test routes to Playwright-based browser testing."
 ---
 
 **Announce:** "I'm using dev-test-playwright for headless browser automation."

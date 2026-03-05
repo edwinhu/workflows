@@ -21,7 +21,7 @@ if ! git check-ignore -q .worktrees 2>/dev/null; then
   git add .gitignore
   git commit -m "chore: add .worktrees/ to gitignore
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude <noreply@anthropic.com>"
 fi
 ```
 

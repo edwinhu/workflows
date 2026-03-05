@@ -227,6 +227,8 @@ For detailed rules, consult:
 - **`references/secondary-sources.md`** - Books, articles, treatises (R. 15-17)
 - **`references/short-forms.md`** - Id., supra, hereinafter rules (R. 4)
 - **`references/signals-parentheticals.md`** - Signals, parentheticals, order (R. 1)
+- **`references/audit-patterns.md`** - Citation audit patterns and validation
+- **`references/abbreviations.md`** - Bluebook abbreviation tables
 
 ### NotebookLM Integration
 

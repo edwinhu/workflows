@@ -43,7 +43,7 @@ When generating Word documents (`.docx`), you MUST load the `/docx` skill first.
 
 ## Template Requirement
 
-**Template location:** `${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx`
+**Template location:** `${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx`
 
 When creating or converting a docx, load `references/formatting.md` for heading styles, body text styles, pandoc `--reference-doc` usage, and the document creation gate function.
 
@@ -53,7 +53,7 @@ When creating or converting a docx, load `references/formatting.md` for heading 
 
 Before creating ANY Word document for legal writing:
 1. Load the `/docx` skill
-2. Copy `${CLAUDE_SKILL_ROOT}/templates/law_review_template.docx` as the base
+2. Copy `${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx` as the base
 3. THEN add content to the template copy
 
 If you created a blank docx without the template, DELETE IT and START OVER with the template.
@@ -92,10 +92,10 @@ If you cite a case/statute/historical fact via an intermediate source (law revie
 **When to delete and restart:**
 
 1. **Intro starts with "This article discusses"** → Delete, start with concrete problem
-3. **Background exceeds proof section** → Delete excessive background
-4. **Claim made without addressing objections** → Delete section, add counterargument confrontation
-5. **Citation chain to primary source** → Delete citation, read and cite original
-6. **Unpacked metaphor used as argument** → Delete, write actual logical argument
+2. **Background exceeds proof section** → Delete excessive background
+3. **Claim made without addressing objections** → Delete section, add counterargument confrontation
+4. **Citation chain to primary source** → Delete citation, read and cite original
+5. **Unpacked metaphor used as argument** → Delete, write actual logical argument
 
 **How to restart:**
 

@@ -1,59 +1,41 @@
 ---
 name: dev-tools
-description: This skill should be used when the user asks to "what plugins are available", "list dev tools", "what MCP servers can I use", "enable code intelligence", or needs to discover available development plugins like serena, context7, or playwright.
+description: "This skill should be used when the user asks 'what development tools are available', 'list dev plugins', 'what MCP servers can I use', 'enable code intelligence', 'what testing tools exist', or needs to discover development plugins like serena, playwright, or context7. Use this for general development tool discovery; use ds-tools for data science-specific tools."
 ---
 
-# Available Development Plugins
+# Available Development Tools
 
-These plugins extend Claude Code capabilities for development workflows. Enable when needed for specific tasks.
+Plugins and skills for development workflows. For data science tools (WRDS, LSEG, notebooks), see `/ds-tools`.
 
-## Code Intelligence
+## Code Intelligence Plugins
 
 | Plugin | Description | Enable Command |
 |--------|-------------|----------------|
 | `serena` | Semantic code analysis, refactoring, symbol navigation | `claude --enable-plugin serena@claude-plugins-official` |
 | `pyright-lsp` | Python type checking and diagnostics | `claude --enable-plugin pyright-lsp@claude-plugins-official` |
-| `clangd-lsp` | C/C++ code intelligence | Already enabled |
-
-## Documentation
-
-| Plugin | Description | Enable Command |
-|--------|-------------|----------------|
 | `context7` | Up-to-date library/framework docs lookup | `claude --enable-plugin context7@claude-plugins-official` |
 
-## Testing & Automation
+## Testing & Automation Plugins
 
 | Plugin | Description | Enable Command |
 |--------|-------------|----------------|
 | `playwright` | Browser automation, E2E testing, screenshots | `claude --enable-plugin playwright@claude-plugins-official` |
 
-## Workflow
+## Workflow Plugins (Already Enabled)
 
-| Plugin | Description | Enable Command |
-|--------|-------------|----------------|
-| `ralph-loop` | Self-referential iteration loops | Already enabled |
-| `hookify` | Create custom hooks from conversation patterns | Already enabled |
+| Plugin | Description |
+|--------|-------------|
+| `ralph-loop` | Self-referential iteration loops |
 
 ## When to Enable
 
 - **serena**: Complex refactoring, finding symbol references, understanding large codebases
-- **context7**: Need current docs for React, pandas, FastAPI, etc.
+- **context7**: Need current docs for React, FastAPI, Next.js, etc.
 - **playwright**: Testing web UIs, scraping, taking screenshots
 - **pyright-lsp**: Python projects needing strict type checking
 
 ## Usage
 
-Enable a plugin for the current session by running:
 ```bash
-# Enable a plugin: claude --enable-plugin <plugin-name>
-claude --enable-plugin <plugin-name>
-```
-
-Enable a plugin for a project by adding to `.claude/settings.json`:
-```json
-{
-  "enabledPlugins": {
-    "serena@claude-plugins-official": true
-  }
-}
+claude --enable-plugin <plugin-name>  # Enable for current session
 ```

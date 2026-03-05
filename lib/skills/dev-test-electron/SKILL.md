@@ -110,8 +110,8 @@ Missing tools needed for CDP:
 - websocat or wscat (for WebSocket communication)
 
 Install with:
-  brew install curl jq websocat   # macOS
-  sudo apt install curl jq websocat   # Linux
+  # macOS: Install via nix-darwin (see ~/nix/). Do NOT use brew.
+  # Linux: sudo apt install curl jq websocat
 
 Reply when installed and I'll continue testing.
 ```

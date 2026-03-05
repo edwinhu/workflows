@@ -55,7 +55,7 @@ STOP: Cannot proceed with macOS automation.
 Missing tool: Hammerspoon (required for macOS E2E testing)
 
 Install with:
-  brew install --cask hammerspoon
+  # Install via nix-darwin, or verify: hammerspoon -c "print('ok')"
 
 After installing:
   1. Open Hammerspoon.app
@@ -389,7 +389,7 @@ For simpler needs, `cliclick` provides CLI-based mouse/keyboard control:
 
 ```bash
 # Install cliclick tool
-brew install cliclick
+# Install cliclick via nix-darwin, or verify: cliclick -V
 
 # Mouse click at coordinates
 cliclick c:100,200       # Left-click at coordinates

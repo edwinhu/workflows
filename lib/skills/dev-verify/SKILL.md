@@ -163,7 +163,6 @@ THEN AND ONLY THEN: E2E tests/screenshots
 
 See `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")` for the full gate sequence with examples.
 </EXTREMELY-IMPORTANT>
-</EXTREMELY-IMPORTANT>
 
 ## Insufficient Evidence
 

@@ -123,16 +123,13 @@ nlm audio-rm <notebook-id>
 
 ### Video Overviews
 
-```bash
-# Create video overview
-nlm video-create <notebook-id> “Instructions for video”
+| Command | Purpose |
+|---------|---------|
+| `video-create` | Create video overview |
+| `video-list` | List video overviews |
+| `video-download` | Download video (requires `--direct-rpc`) |
 
-# List video overviews
-nlm video-list <notebook-id>
-
-# Download video (requires --direct-rpc)
-nlm video-download <notebook-id> output.mp4 --direct-rpc
-```
+See `references/commands.md` for full syntax.
 
 ### Generation Commands
 
@@ -158,51 +155,21 @@ nlm generate-magic <notebook-id> <source-id-1> <source-id-2>
 
 ### Content Transformation Commands
 
-Transform your sources into different formats. All commands take `<notebook-id> <source-id> [source-id...]`:
+Transform sources into different formats. All commands take `<notebook-id> <source-id> [source-id...]`:
 
-```bash
-# Summarize content from sources
-nlm summarize <notebook-id> <source-id>
+| Command | Purpose |
+|---------|---------|
+| `summarize` | Summarize content |
+| `study-guide` | Key concepts + review questions |
+| `faq` | Generate FAQ |
+| `briefing-doc` | Professional briefing |
+| `rephrase` / `expand` | Reword or elaborate |
+| `critique` / `verify` | Critique or fact-check |
+| `brainstorm` / `explain` | Ideate or simplify |
+| `outline` / `toc` | Structured outline or TOC |
+| `mindmap` / `timeline` | Visual mindmap or timeline |
 
-# Generate study guide with key concepts and review questions
-nlm study-guide <notebook-id> <source-id>
-
-# Generate FAQ from sources
-nlm faq <notebook-id> <source-id>
-
-# Create professional briefing document
-nlm briefing-doc <notebook-id> <source-id>
-
-# Rephrase content in different words
-nlm rephrase <notebook-id> <source-id>
-
-# Expand on content with more detail
-nlm expand <notebook-id> <source-id>
-
-# Get a critique of the content
-nlm critique <notebook-id> <source-id>
-
-# Brainstorm ideas from sources
-nlm brainstorm <notebook-id> <source-id>
-
-# Verify facts in sources
-nlm verify <notebook-id> <source-id>
-
-# Explain concepts in accessible language
-nlm explain <notebook-id> <source-id>
-
-# Create a structured outline from sources
-nlm outline <notebook-id> <source-id>
-
-# Generate text-based mindmap
-nlm mindmap <notebook-id> <source-id>
-
-# Create a timeline of events
-nlm timeline <notebook-id> <source-id>
-
-# Generate table of contents
-nlm toc <notebook-id> <source-id>
-```
+See `references/commands.md` for full syntax and examples.
 
 ### Research Commands
 
@@ -223,11 +190,9 @@ The research command:
 
 ### Batch Operations
 
-Execute multiple commands in a single request for better performance:
+Execute multiple commands in a single request: `nlm batch "cmd1" "cmd2" "cmd3"`
 
-```bash
-nlm batch "create 'Research Notebook'" "add NOTEBOOK_ID https://example.com" "add NOTEBOOK_ID paper.pdf"
-```
+See `references/commands.md` for full syntax.
 
 ## Workflows
 

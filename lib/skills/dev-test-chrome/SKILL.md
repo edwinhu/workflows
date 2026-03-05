@@ -1,6 +1,6 @@
 ---
 name: dev-test-chrome
-description: "Chrome MCP browser testing. Console/network debugging, JS execution, GIF recording."
+description: "This skill should be used when testing web applications with Chrome MCP tools, debugging console errors, monitoring network requests, executing JavaScript in browser, recording GIF test evidence, or when dev-test routes to Chrome-based browser testing."
 ---
 
 **Announce:** "I'm using dev-test-chrome for Chrome browser automation with debugging."

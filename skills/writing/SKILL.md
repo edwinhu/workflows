@@ -1,6 +1,6 @@
 ---
 name: writing
-description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', or needs the full writing workflow with brainstorming, outlining, drafting, review, and revision."
+description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', 'brainstorm writing topics', 'gather sources for a paper', 'what should I write about', or needs the writing workflow entry point for source gathering, topic discovery, and project setup before outlining and drafting."
 ---
 
 # Writing
@@ -329,38 +329,14 @@ After gathering sources, detect the topic domain and load the appropriate skill:
 
 Domain-specific enforcement rules are applied during the **draft phase** (writing-draft skill), not during brainstorm. Brainstorm only detects the domain; enforcement happens later.
 
-## Source Access
-
-<EXTREMELY-IMPORTANT>
-**ALL source access goes through the librarian agent. No exceptions.**
+## Source Access Quick Reference
 
 | Need | Action |
 |------|--------|
 | Survey topic landscape | Dispatch librarian: "What topics are in my NLM notebooks and Readwise tags?" |
-| See recent reading themes | Dispatch librarian: "What have I been reading recently? Summarize themes." |
 | Find highlights by keyword | Dispatch librarian: "Search for highlights about [topic]" |
 | Get book/article highlights | Dispatch librarian: "Get highlights from [title] and summarize" |
 | Full document text | Dispatch librarian: "Fetch full text of articles tagged [tag]" |
-
-**Do NOT call `mcp__readwise__*` tools directly from main chat or general-purpose agents.** The librarian enforces NLM-first routing and protects context from large responses.
-</EXTREMELY-IMPORTANT>
-
-## File Output Convention
-
-Save brainstorming artifacts following the project structure defined above:
-
-```
-project/
-├── .claude/
-│   ├── PRECIS.md                   # Thesis, audience, claims
-│   ├── OUTLINE.md                  # Master document structure
-│   └── ACTIVE_WORKFLOW.md          # Workflow state
-├── outlines/                        # Detailed section outlines
-│   ├── Part I (Outline).md
-│   └── ...
-└── scratch/
-    └── brainstorm-notes.md         # Working notes (gitignored)
-```
 
 ## Workflow Examples
 
@@ -383,7 +359,7 @@ project/
 1. **Clarify** → AskUserQuestion: angle (critique/reform/comparative), audience (law review/practitioners)
 2. **User responds** → “Critique existing framework, law review audience”
 3. **Decompose** → 5 themes: PE retail access, accredited investor, 401(k) access, fund structures, investor protection
-4. **Search** → Launch 5 parallel Haiku sub-agents
+4. **Search** → Launch 5 parallel librarian agents
 5. **Synthesize** → Dedupe sources, extract best quotes, note gaps
 6. **Present** → "Here are the themes and sources. Confirm topic and angle?"
 7. **User confirms** → "Yes, critique framework. Add comparative section on EU ELTIF."
