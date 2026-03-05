@@ -218,3 +218,65 @@ if 'w:type="separator"' not in fn_xml:
 ### Python Version
 
 pack.py uses `match` (3.10+). Always use: `pixi exec --spec python=3.13 --spec defusedxml --spec lxml`
+
+## 4. Footnote Numbering Offset (customMarkFollows)
+
+### Problem
+
+Author bio footnotes use `customMarkFollows="1"` to display custom marks (*, †, ‡) instead of auto-numbers. However, they still **consume** auto-numbers 1–3, causing body footnotes to start at 4 instead of 1.
+
+```xml
+<!-- In document.xml: these consume auto-numbers 1, 2, 3 -->
+<w:footnoteReference w:customMarkFollows="1" w:id="1"/>
+<w:sym w:font="Symbol" w:char="F02A"/>  <!-- displays * -->
+<w:footnoteReference w:customMarkFollows="1" w:id="2"/>
+<w:t>†</w:t>
+<w:footnoteReference w:customMarkFollows="1" w:id="3"/>
+<w:t>‡</w:t>
+```
+
+### Fix: numRestart in settings.xml
+
+Add `<w:numRestart w:val="eachSect"/>` inside `<w:footnotePr>` in `word/settings.xml`. This restarts footnote numbering at each section break, so body footnotes (in section 2) start at 1.
+
+```python
+settings_xml = settings_xml.replace(
+    '<w:footnotePr>',
+    '<w:footnotePr><w:numRestart w:val="eachSect"/>'
+)
+```
+
+**CRITICAL**: Place numRestart ONLY in `settings.xml`. Do NOT also add it to the inline `<w:sectPr>` in `document.xml` — having it in both places causes Word to render all footnote numbers as **0**.
+
+### NOTEREF Cached Value Updates
+
+When footnote numbering changes, NOTEREF cross-reference fields have stale cached display values. These must be updated to match the new numbering (subtract the bio footnote count):
+
+```python
+import re
+
+def update_noteref_cached_values(xml, bio_count=3):
+    """Update cached display values in NOTEREF fields."""
+    pattern = (
+        r'(NOTEREF _Ref_fn(\d+)[^<]*</w:instrText>'
+        r'.*?fldCharType="separate"/>.*?<w:t[^>]*>)(\d+)(</w:t>)'
+    )
+    def replacer(m):
+        ref_id = int(m.group(2))
+        old_val = int(m.group(3))
+        if ref_id > bio_count:
+            return m.group(1) + str(old_val - bio_count) + m.group(4)
+        return m.group(0)
+    return re.sub(pattern, replacer, xml, flags=re.DOTALL)
+```
+
+Also search for plain-text "supra note N" references (not yet converted to NOTEREF fields) and subtract the offset.
+
+### PDF Conversion
+
+- **LibreOffice** does NOT support `numRestart=eachSect` — renders all footnote numbers as 0. Must use **Microsoft Word** for PDF conversion.
+- Word AppleScript `save as` frequently times out (-1712). The `docx2pdf` Python package or manual File > Export works more reliably.
+
+### Requirements
+
+The document must have a section break between the title page (with author bio footnotes) and the body text. Without a section break, `numRestart=eachSect` has no effect.

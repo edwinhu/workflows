@@ -468,9 +468,11 @@ def main():
     output_path = Path(args.output).expanduser().resolve() if args.output else docx_path
 
     # ── Read DOCX ───────────────────────────────────────────────────
-    z = zipfile.ZipFile(docx_path, "r")
-    doc_xml = z.read("word/document.xml")
-    fn_xml = z.read("word/footnotes.xml")
+    with zipfile.ZipFile(docx_path, "r") as z:
+        doc_xml = z.read("word/document.xml")
+        fn_xml = z.read("word/footnotes.xml")
+        all_items = z.infolist()
+        all_data = {item.filename: z.read(item.filename) for item in all_items}
     doc_root = etree.fromstring(doc_xml)
     fn_root = etree.fromstring(fn_xml)
 
@@ -521,7 +523,6 @@ def main():
             else:
                 print(f"  FN{dn}: NEW (_Ref_fn{dn})")
 
-        z.close()
         print(f"\nDry run complete. No files modified.")
         return
 
@@ -557,15 +558,13 @@ def main():
 
     temp_path = output_path.with_suffix(".tmp.docx")
     with zipfile.ZipFile(temp_path, "w", zipfile.ZIP_DEFLATED) as z_out:
-        for item in z.infolist():
+        for item in all_items:
             if item.filename == "word/document.xml":
                 z_out.writestr(item, doc_out)
             elif item.filename == "word/footnotes.xml":
                 z_out.writestr(item, fn_out)
             else:
-                z_out.writestr(item, z.read(item.filename))
-
-    z.close()
+                z_out.writestr(item, all_data[item.filename])
     os.replace(temp_path, output_path)
     print(f"  Written to: {output_path}")
     print(f"\nDone. Open in Word -> Ctrl+A, F9 to update all fields.")

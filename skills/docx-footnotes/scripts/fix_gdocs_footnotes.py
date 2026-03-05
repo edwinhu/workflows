@@ -20,6 +20,7 @@ Usage:
 
 import argparse
 import os
+import random
 import re
 import shutil
 import subprocess
@@ -83,16 +84,18 @@ def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
         changes.append("Shifted footnote IDs by +1")
 
         # 2. Add separator/continuation footnotes
-        sep = """
+        para_id1 = f"{random.randint(0, 0xFFFFFFFF):08X}"
+        para_id2 = f"{random.randint(0, 0xFFFFFFFF):08X}"
+        sep = f"""
   <w:footnote w:type="separator" w:id="-1">
-    <w:p w14:paraId="279C7741" w14:textId="77777777" w:rsidR="003D4C1D" w:rsidRDefault="003D4C1D">
+    <w:p w14:paraId="{para_id1}" w14:textId="77777777" w:rsidR="003D4C1D" w:rsidRDefault="003D4C1D">
       <w:r>
         <w:separator/>
       </w:r>
     </w:p>
   </w:footnote>
   <w:footnote w:type="continuationSeparator" w:id="0">
-    <w:p w14:paraId="331581F4" w14:textId="77777777" w:rsidR="003D4C1D" w:rsidRDefault="003D4C1D">
+    <w:p w14:paraId="{para_id2}" w14:textId="77777777" w:rsidR="003D4C1D" w:rsidRDefault="003D4C1D">
       <w:r>
         <w:continuationSeparator/>
       </w:r>
@@ -206,6 +209,92 @@ def fix_toc_separator(doc_xml):
     return doc_xml, changes
 
 
+
+def fix_numbering_offset(settings_xml, fn_xml, doc_xml, bio_count=3):
+    """Fix footnote numbering offset caused by customMarkFollows bio footnotes.
+
+    Adds numRestart=eachSect to settings.xml so body footnotes restart at 1.
+    Updates NOTEREF cached display values to subtract bio_count.
+    CRITICAL: numRestart goes in settings.xml ONLY, NOT in sectPr (causes all-zeros).
+    """
+    changes = []
+
+    # Check if already fixed
+    if 'numRestart' in settings_xml:
+        return settings_xml, fn_xml, doc_xml, changes
+
+    # Check if document has customMarkFollows bio footnotes
+    cmf_count = doc_xml.count('customMarkFollows="1"')
+    if cmf_count < bio_count:
+        return settings_xml, fn_xml, doc_xml, changes
+
+    # 1. Add numRestart to settings.xml footnotePr
+    if '<w:footnotePr>' in settings_xml:
+        settings_xml = settings_xml.replace(
+            '<w:footnotePr>',
+            '<w:footnotePr><w:numRestart w:val="eachSect"/>'
+        )
+        changes.append("Added numRestart=eachSect to settings.xml")
+    else:
+        changes.append("WARNING: No footnotePr in settings.xml — cannot add numRestart")
+        return settings_xml, fn_xml, doc_xml, changes
+
+    # 2. Update NOTEREF cached values in footnotes.xml
+    noteref_pattern = (
+        r'(NOTEREF _Ref_fn(\d+)[^<]*</w:instrText>'
+        r'.*?fldCharType="separate"/>.*?<w:t[^>]*>)(\d+)(</w:t>)'
+    )
+    noteref_count = 0
+
+    def noteref_replacer(m):
+        nonlocal noteref_count
+        ref_id = int(m.group(2))
+        old_val = int(m.group(3))
+        if ref_id > bio_count and old_val > bio_count:
+            noteref_count += 1
+            return m.group(1) + str(old_val - bio_count) + m.group(4)
+        return m.group(0)
+
+    fn_xml = re.sub(noteref_pattern, noteref_replacer, fn_xml, flags=re.DOTALL)
+    if noteref_count:
+        changes.append(f"Updated {noteref_count} NOTEREF cached values (subtracted {bio_count})")
+
+    # 3. Also update NOTEREF in document.xml (cross-refs in body text)
+    noteref_doc_count = 0
+
+    def noteref_doc_replacer(m):
+        nonlocal noteref_doc_count
+        ref_id = int(m.group(2))
+        old_val = int(m.group(3))
+        if ref_id > bio_count and old_val > bio_count:
+            noteref_doc_count += 1
+            return m.group(1) + str(old_val - bio_count) + m.group(4)
+        return m.group(0)
+
+    doc_xml = re.sub(noteref_pattern, noteref_doc_replacer, doc_xml, flags=re.DOTALL)
+    if noteref_doc_count:
+        changes.append(f"Updated {noteref_doc_count} NOTEREF cached values in document body")
+
+    # 4. Update plain text "supra note N" references
+    supra_pattern = r'(supra\s+note\s+)(\d+)'
+    supra_count = 0
+
+    def supra_replacer(m):
+        nonlocal supra_count
+        old_num = int(m.group(2))
+        if old_num > bio_count:
+            supra_count += 1
+            return m.group(1) + str(old_num - bio_count)
+        return m.group(0)
+
+    fn_xml = re.sub(supra_pattern, supra_replacer, fn_xml)
+    doc_xml = re.sub(supra_pattern, supra_replacer, doc_xml)
+    if supra_count:
+        changes.append(f"Updated {supra_count} plain-text supra note references")
+
+    return settings_xml, fn_xml, doc_xml, changes
+
+
 def main():
     parser = argparse.ArgumentParser(description="Fix Google Docs footnote formatting damage")
     parser.add_argument("docx", help="Path to the .docx file")
@@ -215,6 +304,8 @@ def main():
                         help="Number of author bio footnotes (default: 3)")
     parser.add_argument("--crossrefs", action="store_true",
                         help="Also run create_crossrefs.py after fixing")
+    parser.add_argument("--fix-numbering", action="store_true",
+                        help="Fix numbering offset from customMarkFollows bio footnotes")
     args = parser.parse_args()
 
     docx_path = Path(args.docx).resolve()
@@ -227,9 +318,10 @@ def main():
     with zipfile.ZipFile(docx_path, 'r') as zf:
         fn_xml = read_zip_member(zf, 'word/footnotes.xml')
         doc_xml = read_zip_member(zf, 'word/document.xml')
+        settings_xml = read_zip_member(zf, 'word/settings.xml') if args.fix_numbering else None
 
     issues = detect_issues(fn_xml, doc_xml)
-    if not issues:
+    if not issues and not args.fix_numbering:
         print("No Google Docs formatting damage detected.")
         return
 
@@ -246,6 +338,12 @@ def main():
 
     doc_xml_fixed, toc_changes = fix_toc_separator(doc_xml_fixed)
     all_changes.extend(toc_changes)
+
+    settings_xml_fixed = settings_xml
+    if args.fix_numbering:
+        settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, num_changes = fix_numbering_offset(
+            settings_xml, fn_xml_fixed, doc_xml_fixed, args.bio_footnotes)
+        all_changes.extend(num_changes)
 
     print(f"Changes ({len(all_changes)}):")
     for c in all_changes:
@@ -266,6 +364,8 @@ def main():
                         zout.writestr(item, fn_xml_fixed.encode('utf-8'))
                     elif item.filename == 'word/document.xml':
                         zout.writestr(item, doc_xml_fixed.encode('utf-8'))
+                    elif item.filename == 'word/settings.xml' and settings_xml_fixed is not None:
+                        zout.writestr(item, settings_xml_fixed.encode('utf-8'))
                     else:
                         zout.writestr(item, zin.read(item.filename))
 
