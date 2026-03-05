@@ -101,12 +101,13 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 
 ---
 
-## Agents (13)
+## Agents (14)
 
 Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 | Agent | Role |
 |-------|------|
+| `assistant` | Personal productivity (email, calendar, tasks, notes, Google Workspace) |
 | `planner` | Implementation planning for complex features |
 | `architect` | System design and technical decisions |
 | `tdd-guide` | TDD workflow enforcement |
@@ -162,13 +163,13 @@ workflows/
 ├── .claude-plugin/             # Plugin manifest
 │   ├── plugin.json             # Version and metadata
 │   └── marketplace.json        # Marketplace listing
-├── agents/                     # Specialized subagents (13)
+├── agents/                     # Specialized subagents (14)
 │   ├── planner.md, architect.md, tdd-guide.md
 │   ├── dev-implementer.md, ds-analyst.md
 │   ├── code-reviewer.md, security-reviewer.md
 │   ├── build-error-resolver.md, e2e-runner.md
 │   ├── refactor-cleaner.md, doc-updater.md
-│   ├── data-explorer.md, librarian.md
+│   ├── data-explorer.md, librarian.md, assistant.md
 ├── skills/                     # User-facing skills (36)
 │   ├── dev/, ds/, writing*/    # Core workflow entry points
 │   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal

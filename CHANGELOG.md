@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.3.0] - 2026-03-05
+
+### Added
+- `assistant` agent for personal productivity (email, calendar, tasks, notes, Google Workspace)
+  - Wraps superhuman, morgen, obsidian CLI, and gws
+  - Delegates to `nlm` skill for deep research via Skill tool
+
+### Changed
+- `librarian` agent: replaced inline NLM command table with `Skill(skill="workflows:nlm")` invocation
+- `nlm` skill: extracted workflow recipes to `references/workflows.md`, added Readwise→NLM import docs
+
 ## [4.2.2] - 2026-02-15
 
 ### Added

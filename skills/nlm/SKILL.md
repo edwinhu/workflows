@@ -229,94 +229,16 @@ Execute multiple commands in a single request for better performance:
 nlm batch "create 'Research Notebook'" "add NOTEBOOK_ID https://example.com" "add NOTEBOOK_ID paper.pdf"
 ```
 
-## Common Workflows
+## Workflows
 
-### Research Workflow
+For detailed workflow recipes (research, study materials, content analysis, executive briefing, Readwise→NLM import), read `references/workflows.md`.
 
-**Option A: Automated Research (recommended)**
-
-Use the `research` command to automatically find and import sources:
+Quick start — automated research:
 
 ```bash
-# Create notebook
-id=$(nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
-
-# Research and auto-import sources
-nlm research "transformer architecture advances 2024" --notebook $id
-
-# For comprehensive investigation
-nlm research "transformer architecture advances 2024" --notebook $id --deep
-
-# Generate synthesis
+id=$(nlm create "Topic Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
+nlm research "your topic" --notebook $id
 nlm generate-chat $id "What are the key findings?"
-nlm audio-create $id "Summarize the key findings professionally"
-```
-
-**Option B: Manual Source Addition**
-
-1. Create a notebook for the topic
-2. Add sources manually (URLs, PDFs, text)
-3. Create notes with key findings
-4. Generate an audio overview for synthesis
-
-```bash
-# Create notebook
-id=$(nlm create "AI Research" | grep -o 'notebook [^ ]*' | cut -d' ' -f2)
-
-# Add sources manually
-nlm add $id https://arxiv.org/paper.pdf
-nlm add $id research-notes.txt
-
-# Generate audio
-nlm audio-create $id "Summarize the key findings professionally"
-```
-
-### Study Materials Workflow
-
-Generate comprehensive study materials from sources:
-
-```bash
-# Get notebook and source IDs
-nlm list
-nlm sources <notebook-id>
-
-# Generate study materials from a source
-nlm study-guide <notebook-id> <source-id>  # Key concepts + review questions
-nlm faq <notebook-id> <source-id>          # Common questions answered
-nlm outline <notebook-id> <source-id>      # Structured overview
-nlm explain <notebook-id> <source-id>      # Accessible explanations
-```
-
-### Content Analysis Workflow
-
-Deeply analyze and transform content:
-
-```bash
-# Summarize and synthesize
-nlm summarize <notebook-id> <source-id>
-nlm generate-magic <notebook-id> <src1> <src2>  # Cross-source synthesis
-
-# Critical analysis
-nlm critique <notebook-id> <source-id>
-nlm verify <notebook-id> <source-id>
-
-# Creative exploration
-nlm brainstorm <notebook-id> <source-id>
-nlm expand <notebook-id> <source-id>
-
-# Interactive Q&A
-nlm chat <notebook-id>
-```
-
-### Executive Briefing Workflow
-
-Create professional documents from sources:
-
-```bash
-# Generate briefing materials
-nlm briefing-doc <notebook-id> <source-id>  # Executive summary + recommendations
-nlm timeline <notebook-id> <source-id>      # Chronological overview
-nlm toc <notebook-id> <source-id>           # Structure overview
 ```
 
 ## Troubleshooting

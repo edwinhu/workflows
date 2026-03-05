@@ -72,9 +72,9 @@ If the answer isn't in the user's library (NLM -> Readwise -> Scholar) and resea
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. CHECK NLM FIRST (curated knowledge) - USE DIRECTLY      │
-│     - List notebooks: nlm list                              │
-│     - Search/chat: nlm chat <notebook-id>                   │
+│  1. CHECK NLM FIRST (curated knowledge)                      │
+│     - Invoke: Skill(skill="workflows:nlm") for full CLI ref │
+│     - Quick: nlm list → nlm chat <notebook-id>              │
 │     - Generate: summarize, study-guide, faq, outline, etc.  │
 └─────────────────────────────────────────────────────────────┘
                           │
@@ -182,21 +182,22 @@ Readwise already has the full archived content - including paywalled articles (B
 - Skip Readwise and fetch from the original source
 - Ask the caller "which URLs should I add?" - pull the content yourself
 
-## NLM Commands
+## NLM (NotebookLM)
 
-| Command | Purpose |
-|---------|---------|
-| `nlm list` | List all notebooks |
-| `nlm chat <id>` | Interactive Q&A with notebook |
-| `nlm generate-chat <id> "question"` | One-off question |
-| `nlm summarize <id> <source>` | Concise summary |
-| `nlm study-guide <id> <source>` | Key concepts + review questions |
-| `nlm faq <id> <source>` | Common questions answered |
-| `nlm briefing-doc <id> <source>` | Executive summary + recommendations |
-| `nlm outline <id> <source>` | Structured overview |
-| `nlm research "query" --notebook <id>` | Find and import web sources |
+For full NLM CLI reference, invoke the skill:
 
-NLM binary: `nlm` (on PATH via `~/.local/bin/nlm`)
+```
+Skill(skill="workflows:nlm")
+```
+
+The skill covers all notebook, source, note, audio/video, generation, transformation, and research commands. Use it whenever you need to interact with NotebookLM — don't try to remember commands from memory.
+
+**Quick reference (most common):**
+- `nlm list` — list notebooks
+- `nlm chat <id>` — interactive Q&A
+- `nlm generate-chat <id> "question"` — one-off question
+- `nlm research "query" --notebook <id>` — find and import sources
+- `nlm add <id> <file-or-url>` — add source to notebook
 
 ## Google Workspace (`gws` CLI)
 
@@ -252,7 +253,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 
 | Skill | Purpose |
 |-------|---------|
-| `nlm` | **PRIMARY** - NotebookLM: query, generate, transform content, research |
+| `nlm` | **PRIMARY** - NotebookLM: query, generate, transform, research. Invoke for ANY notebook operation — don't guess commands. |
 | `readwise-search` | Highlight search reference (vector + fulltext) |
 | `readwise-docs` | Document CRUD reference (list, get, save, update, delete) |
 | `readwise-chat` | RAG chat reference (one-shot, interactive, conversations) |
