@@ -26,7 +26,7 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 
 ---
 
-## Skills (36)
+## Skills (37)
 
 ### Core Workflows
 
@@ -65,6 +65,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 | `/readwise-search` | Search highlights, quotes, annotations by keyword |
 | `/readwise-docs` | Readwise Reader document management (list, save, update, delete) |
 | `/readwise-prune` | Clean up stale Readwise Reader documents |
+| `/reading-add` | Add file or URL to reading inbox |
 
 ### Document Formats
 
@@ -170,11 +171,11 @@ workflows/
 │   ├── build-error-resolver.md, e2e-runner.md
 │   ├── refactor-cleaner.md, doc-updater.md
 │   ├── data-explorer.md, librarian.md, assistant.md
-├── skills/                     # User-facing skills (36)
+├── skills/                     # User-facing skills (37)
 │   ├── dev/, ds/, writing*/    # Core workflow entry points
 │   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal
 │   ├── wrds/, lseg-data/, gemini-batch/  # Data access
-│   ├── nlm/, google-scholar/, readwise*/  # Knowledge management
+│   ├── nlm/, google-scholar/, readwise*/, reading-add/  # Knowledge management
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   ├── marimo/, jupytext/, notebook-debug/  # Notebooks
 │   └── look-at/, visual-verify/, ...  # Utilities
@@ -220,7 +221,7 @@ Detailed guidelines are in `~/.claude/rules/`:
 - testing.md - TDD workflow, coverage requirements
 ```
 
-See [everything-claude-code examples](https://github.com/anthropics/everything-claude-code/tree/main/examples) for full CLAUDE.md templates.
+See the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) for CLAUDE.md best practices.
 
 ## Updating External Skills
 
