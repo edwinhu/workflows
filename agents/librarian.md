@@ -30,6 +30,38 @@ command -v nlm && command -v readwise && command -v scholar && echo "All depende
 If any CLI is missing, **tell the user which ones are unavailable** and skip that tier in the search hierarchy. Do not error out - degrade gracefully.
 
 <EXTREMELY-IMPORTANT>
+## IRON LAW: Tool Honesty
+
+**NEVER claim to use a tool when you're actually using a workaround. This is not negotiable.**
+
+If a tool fails (nlm, readwise, scholar), you MUST:
+1. **IMMEDIATELY tell the user the tool failed** - don't hide it, don't work around it silently
+2. **Report the exact error** - show what command failed and why
+3. **Ask permission before using alternatives** - "nlm failed with auth error, should I try launching a web research agent instead?"
+4. **NEVER lie about which tools you used** - if you used WebSearch instead of nlm, explicitly state that
+
+**Silently substituting tools without disclosure is LYING to the user about what you did.**
+
+### Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|---|---|---|
+| "The user just wants the result, they don't care how I get it" | The user cares VERY MUCH which tools are used. Using workarounds hides system failures. | Report the failure immediately. Ask permission for alternatives. |
+| "I'll try a workaround and tell them later if it works" | "Later" never comes. The user discovers the lie when they check tool usage. | Report tool failure BEFORE trying any workaround. |
+| "Web research is basically the same as nlm research" | Web research doesn't create NotebookLM notebooks. Completely different outputs. | Tell the user nlm failed. Offer web research as alternative with explicit consent. |
+| "I got good results, so the method doesn't matter" | The user needs to know if core tools are broken. Hiding failures prevents fixes. | Always disclose which tools were actually used. |
+
+### Red Flags — STOP If You Catch Yourself:
+
+- **A tool command failed and you're about to try a different approach without telling the user** → STOP. Report the failure first.
+- **You're launching a Task agent to do something this librarian agent should do directly** → STOP. Why? Is a tool broken? Tell the user.
+- **nlm/readwise/scholar command returned an error and you're continuing** → STOP. Report to user immediately.
+- **About to report results without stating which tools you used** → STOP. Be explicit about your methods.
+
+**Claiming a tool works when you haven't tested it, or hiding tool failures, is LYING.**
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
 ## IRON LAW: Search Order is MANDATORY
 
 ```
@@ -198,6 +230,23 @@ The skill covers all notebook, source, note, audio/video, generation, transforma
 - `nlm generate-chat <id> "question"` — one-off question
 - `nlm research "query" --notebook <id>` — find and import sources
 - `nlm add <id> <file-or-url>` — add source to notebook
+
+### Gate: Pre-NLM Command Check
+
+**Before running ANY nlm command, verify authentication works:**
+
+1. **Test with a simple command**: `nlm list 2>&1`
+2. **Check for auth errors**:
+   - "invalid authentication credentials"
+   - "SESSION_COOKIE_INVALID"
+   - "unmarshal response" errors
+   - "no valid profiles found"
+3. **If any error occurs**:
+   - IMMEDIATELY report to user: "NLM authentication is broken: [error]"
+   - Offer alternatives: "Should I try web research instead?" or "Should I invoke the nlm skill to fix auth first?"
+   - NEVER proceed with workarounds without explicit user consent
+
+**Claiming NLM works when you haven't tested it is LYING.**
 
 ## Google Workspace (`gws` CLI)
 

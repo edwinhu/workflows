@@ -17,15 +17,47 @@ Manage Google NotebookLM notebooks, sources, notes, and audio overviews via the 
 Before first use, authenticate with Google:
 
 ```bash
-nlm auth
+nlm auth login -all
 ```
 
-This launches a browser for OAuth. Credentials are stored in `~/.nlm/env`.
+This connects to Chrome via CDP (Chrome DevTools Protocol) to extract cookies from an active NotebookLM session. Credentials are stored in `~/.nlm/env`.
 
-To check available browser profiles:
-```bash
-nlm auth --all --notebooks
-```
+### Troubleshooting Authentication
+
+If `nlm auth` fails with "no valid profiles found" or "SESSION_COOKIE_INVALID":
+
+1. **Verify Chrome is running with remote debugging**:
+   ```bash
+   ps aux | grep -E "chrome.*remote-debugging-port=9400"
+   ```
+
+   If not running, Chrome needs to be started with `--remote-debugging-port=9400` flag.
+
+2. **Test CDP connection**:
+   ```bash
+   curl http://localhost:9400/json/version
+   ```
+
+   Should return JSON with Chrome version info.
+
+3. **Re-authenticate**:
+   ```bash
+   nlm auth login -debug -all
+   ```
+
+   This will show which profiles are checked and why authentication succeeds or fails.
+
+4. **Verify authentication works**:
+   ```bash
+   nlm list
+   ```
+
+   Should list notebooks without errors.
+
+**If authentication still fails**, you may need to:
+- Log into notebooklm.google.com in Chrome manually
+- Ensure Chrome profile has an active NotebookLM session
+- Check `~/.nlm/env` file permissions
 
 ## Core Commands
 
