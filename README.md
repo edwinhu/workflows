@@ -26,7 +26,7 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 
 ---
 
-## Skills (38)
+## Skills (39)
 
 ### Core Workflows
 
@@ -98,6 +98,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 |-------|---------|
 | `/look-at` | Multimodal file analysis (PDFs, images, diagrams, charts) via Gemini |
 | `/visual-verify` | Render-vision-fix loops via Gemini vision |
+| `/skill-creator` | Skill creation with superpowers enforcement patterns (wraps built-in skill-creator) |
 | `/workflow-creator` | Design structured multi-phase LLM workflows |
 | `/data-context` | Extract dataset knowledge into reusable skills |
 | `/continuous-learning` | Cross-project pattern extraction |
@@ -177,7 +178,7 @@ workflows/
 │   ├── build-error-resolver.md, e2e-runner.md
 │   ├── refactor-cleaner.md, doc-updater.md
 │   ├── data-explorer.md, librarian.md, assistant.md
-├── skills/                     # User-facing skills (37)
+├── skills/                     # User-facing skills (39)
 │   ├── dev/, ds/, writing*/    # Core workflow entry points
 │   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal
 │   ├── wrds/, lseg-data/, gemini-batch/  # Data access
@@ -202,7 +203,7 @@ workflows/
 
 **Key Points:**
 - `agents/` contains specialized subagents (auto-discovered by Claude Code)
-- `skills/` contains user-facing skills (38, auto-discovered)
+- `skills/` contains user-facing skills (39, auto-discovered)
 - `hooks/` contains hook entry points called directly by hooks.json
 - `lib/skills/` contains internal phase skills (dev-implement, ds-verify, etc.)
 
