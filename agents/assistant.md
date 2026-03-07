@@ -260,7 +260,7 @@ morgen calendar free --start YYYY-MM-DDT09:00:00 --end YYYY-MM-DDT17:00:00 --jso
 
 Morgen polls use Firestore REST API — no browser needed:
 ```bash
-APIKEY="***REMOVED***"
+APIKEY="${GOOGLE_API_KEY}"
 BASE_URL="https://firestore.googleapis.com/v1/projects/morgen-scheduling-poll/databases/(default)/documents/polls"
 
 # Create poll

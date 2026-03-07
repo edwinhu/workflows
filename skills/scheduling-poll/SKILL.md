@@ -53,7 +53,7 @@ User request parsed
 ### Constants
 
 ```
-APIKEY = "***REMOVED***"
+APIKEY = "${GOOGLE_API_KEY}"
 PROJECT = "morgen-scheduling-poll"
 BASE_URL = "https://firestore.googleapis.com/v1/projects/morgen-scheduling-poll/databases/(default)/documents/polls"
 ```
