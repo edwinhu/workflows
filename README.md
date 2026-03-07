@@ -26,7 +26,7 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 
 ---
 
-## Skills (37)
+## Skills (38)
 
 ### Core Workflows
 
@@ -66,6 +66,12 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 | `/readwise-docs` | Readwise Reader document management (list, save, update, delete) |
 | `/readwise-prune` | Clean up stale Readwise Reader documents |
 | `/reading-add` | Add file or URL to reading inbox |
+
+### Scheduling
+
+| Skill | Purpose |
+|-------|---------|
+| `/scheduling-poll` | Create Morgen scheduling polls with pre-filled availability via Firestore API |
 
 ### Document Formats
 
@@ -176,6 +182,7 @@ workflows/
 │   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal
 │   ├── wrds/, lseg-data/, gemini-batch/  # Data access
 │   ├── nlm/, google-scholar/, readwise*/, reading-add/  # Knowledge management
+│   ├── scheduling-poll/           # Scheduling
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   ├── marimo/, jupytext/, notebook-debug/  # Notebooks
 │   └── look-at/, visual-verify/, ...  # Utilities
@@ -195,7 +202,7 @@ workflows/
 
 **Key Points:**
 - `agents/` contains specialized subagents (auto-discovered by Claude Code)
-- `skills/` contains user-facing skills (auto-discovered)
+- `skills/` contains user-facing skills (38, auto-discovered)
 - `hooks/` contains hook entry points called directly by hooks.json
 - `lib/skills/` contains internal phase skills (dev-implement, ds-verify, etc.)
 

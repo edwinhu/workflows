@@ -26,15 +26,20 @@ date +%Y-%m-%dT%H:%M  # ISO datetime
 Use `date` output to construct all date arguments. This is non-negotiable.
 </EXTREMELY-IMPORTANT>
 
-## Dependency Check
+## Tool Call Efficiency
 
-On first invocation, verify CLIs are available:
+<EXTREMELY-IMPORTANT>
+**Minimize tool calls.** Chain commands with `&&` in a single Bash call whenever possible.
 
-```bash
-command -v superhuman && command -v morgen && command -v obsidian && command -v gws && echo "All OK" || echo "MISSING"
-```
+- **DO:** `morgen calendar free --start ... --end ... && superhuman contact search "name"` (1 call)
+- **DON'T:** Separate calls for each command (3+ calls)
+- **DO:** Combine create + configure in one script
+- **DON'T:** Run dependency checks — assume CLIs are installed
+- **DO:** Use `morgen chat` for natural language calendar queries (1 call replaces list + compute)
+- **DON'T:** List events then manually compute free time
 
-If a CLI is missing, tell the user and skip that domain. Degrade gracefully.
+**Target: 3-5 tool calls for any single user request.** If you're above 5, you're doing it wrong.
+</EXTREMELY-IMPORTANT>
 
 ---
 
@@ -81,6 +86,11 @@ Using `--send` without confirmation is a **workflow violation**.
 ## Calendar (morgen)
 
 Morgen is the **primary** calendar tool. It connects to Google Calendar, Outlook, and others.
+
+**Timezone behavior:**
+- **CLI output**: With `--timezone America/New_York`, times display in ET
+- **JSON output**: `--json` always returns UTC — subtract 4h (EDT) or 5h (EST)
+- **Create/schedule**: With `--timezone America/New_York`, input times are interpreted as ET
 
 | Need | Command |
 |------|---------|
@@ -157,6 +167,7 @@ Vault/
 
 **Tips:**
 - For editing note content, use Read/Edit tools directly on the `.md` file — Obsidian picks up changes automatically
+- **Never add task metadata manually** (e.g., `📅 2026-03-05`, `⏫`, `🔁`). The Obsidian Tasks plugin adds date/priority/recurrence metadata automatically. Just write plain `- [ ] Task description`.
 - `obsidian daily` is idempotent (creates note if it doesn't exist)
 - Use `rg` on the vault folder for fast content grep
 
@@ -232,6 +243,85 @@ superhuman read <thread-id>
 # Create a task from it
 morgen tasks create --title "Follow up on X" --due $(date -v+3d +%Y-%m-%d)
 ```
+
+### Scheduling Poll (Morgen)
+
+Create a poll, pre-fill availability, and draft an email — **in 3 Bash calls max**.
+
+**Call 1: Get free time + look up contacts (parallel)**
+```bash
+# Get free time for the date range AND look up contacts in one call
+morgen calendar free --start YYYY-MM-DDT09:00:00 --end YYYY-MM-DDT17:00:00 --json
+# If multi-day, run one call per day or use morgen chat:
+# morgen chat "what are my free times on Mar 16 and 17 between 9am and 5pm?"
+```
+
+**Call 2: Create poll + submit availability (single script)**
+
+Morgen polls use Firestore REST API — no browser needed:
+```bash
+APIKEY="***REMOVED***"
+BASE_URL="https://firestore.googleapis.com/v1/projects/morgen-scheduling-poll/databases/(default)/documents/polls"
+
+# Create poll
+POLL_ID=$(curl -s -X POST "${BASE_URL}?key=${APIKEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"fields":{
+    "title":{"stringValue":"TITLE"},
+    "dates":{"arrayValue":{"values":[{"stringValue":"YYYY-MM-DD"},{"stringValue":"YYYY-MM-DD"}]}},
+    "timeRange":{"mapValue":{"fields":{"start":{"stringValue":"09:00"},"end":{"stringValue":"17:00"}}}},
+    "timeIncrement":{"integerValue":"30"},
+    "timezone":{"stringValue":"America/New_York"},
+    "daysOnly":{"booleanValue":false},
+    "genericDays":{"booleanValue":false},
+    "responses":{"mapValue":{"fields":{}}},
+    "createdAt":{"timestampValue":"'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"}
+  }}' | python3 -c "import json,sys; print(json.load(sys.stdin)['name'].split('/')[-1])")
+
+# Submit availability in same script
+RESP_ID="resp_$(date +%s)"
+# Build availability array from free slots (convert local→UTC: EDT=+4h, EST=+5h)
+# Use: TZ=America/New_York date -j -f "%Y-%m-%d %H:%M" "2026-03-16 10:00" +%z
+curl -s -X PATCH "${BASE_URL}/${POLL_ID}?key=${APIKEY}&updateMask.fieldPaths=responses.${RESP_ID}" \
+  -H "Content-Type: application/json" \
+  -d '{"fields":{"responses":{"mapValue":{"fields":{"'${RESP_ID}'":{"mapValue":{"fields":{
+    "name":{"stringValue":"Edwin"},
+    "availability":{"arrayValue":{"values":[
+      {"stringValue":"YYYY-MM-DDTHH:MM:SS.000Z"}
+    ]}},
+    "ifNeeded":{"arrayValue":{"values":[]}},
+    "updatedAt":{"timestampValue":"'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"}
+  }}}}}}}}'
+
+POLL_URL="https://www.morgen.so/scheduling-poll?id=${POLL_ID}"
+echo "Poll: ${POLL_URL}"
+```
+
+**Availability slot format:** ISO UTC timestamps at 30-min intervals.
+- 10:00 AM EDT → `2026-03-16T14:00:00.000Z` (EDT = UTC-4)
+- End time is exclusive: "10am-12pm" → slots at 10:00, 10:30, 11:00, 11:30
+
+**Call 3: Draft email with poll link + your availability**
+```bash
+superhuman draft create --to "person1@email.com,person2@email.com" \
+  --subject "Scheduling poll for Mar 16-17" \
+  --body "Hi [names],
+
+I'm available:
+- Mon 3/16: 9am-12pm, 4-5pm
+- Tue 3/17: 9:30am-12pm
+
+Please mark your availability here: ${POLL_URL}
+
+Best,
+Edwin"
+```
+
+**Key rules:**
+- Combine poll creation + availability submission in ONE Bash call
+- Use `morgen chat` or `morgen calendar free` — never list events then compute free time manually
+- Look up contacts only if emails aren't already known
+- Always draft (never send) unless user says otherwise
 
 ## Research (nlm)
 
