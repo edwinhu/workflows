@@ -1,6 +1,6 @@
 ---
 name: visual-verify
-version: 2.1
+version: 2.2
 description: "This skill should be used when the user asks to 'verify visual output', 'check how it looks', 'render and review', 'visual verify', 'check the slide', 'does this look right', or when any task produces rendered visual output (slides, charts, documents, UI). Starts a render-vision-fix loop using Gemini vision."
 ---
 
@@ -95,6 +95,12 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 | `spec_text` | SPEC.md, PLAN.md task, or user request |
 | `checklist_items` | Domain + task specific |
 | `previous_feedback` | Gemini's output from prior iteration |
+
+**For diagrams (fletcher, CeTZ): use describe-first strategy**, NOT judgment prompts.
+- Step 1: Ask Gemini to transcribe all text elements with `[FULL | PARTIAL]` annotations
+- Step 2: Claude diffs transcription against expected elements from source code
+- Step 3 (optional): Run spatial/overlap check for non-clipping issues
+- **Why:** Judgment prompts ("is X visible?") invite yes-man answers. Transcription forces the model to report what it actually sees — clipping becomes objectively detectable via text mismatches.
 
 See `references/goal-templates.md` for full copy-paste templates per domain.
 

@@ -6,17 +6,12 @@ Quick reference for rendering visual output to PNG for verification.
 
 ### Single Page
 ```bash
-tinymist compile input.typ /tmp/visual-verify.png --pages 1 --ppi 144
+tinymist compile input.typ /tmp/visual-verify.png --pages 1 --ppi 288
 ```
 
 ### Specific Page
 ```bash
-tinymist compile input.typ /tmp/visual-verify.png --pages 3 --ppi 144
-```
-
-### Retina Resolution
-```bash
-tinymist compile input.typ /tmp/visual-verify.png --pages 1 --ppi 288
+tinymist compile input.typ /tmp/visual-verify.png --pages 3 --ppi 288
 ```
 
 ### Test Slide (isolated)
@@ -33,7 +28,7 @@ cat > output/test-slide.typ << 'EOF'
 ]
 EOF
 
-typst compile --root . output/test-slide.typ /tmp/visual-verify.png --ppi 144
+typst compile --root . output/test-slide.typ /tmp/visual-verify.png --ppi 288
 ```
 
 ## Python (matplotlib / seaborn)

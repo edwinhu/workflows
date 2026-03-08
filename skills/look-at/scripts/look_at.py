@@ -96,7 +96,7 @@ def infer_mime_type(file_path: str) -> str:
 def analyze_file(
     file_path: str,
     goal: str,
-    model: str = "gemini-2.5-flash-lite",
+    model: str = "gemini-3.1-flash-lite-preview",
     agentic: bool = False,
     verbose: bool = False
 ) -> str:
@@ -105,7 +105,7 @@ def analyze_file(
     Args:
         file_path: Path to the local file to analyze
         goal: Specific information to extract from the file
-        model: Gemini model to use (default: gemini-2.5-flash-lite)
+        model: Gemini model to use (default: gemini-3.1-flash-lite-preview)
         agentic: Enable code execution for better visual reasoning (requires gemini-3-flash-preview)
         verbose: Whether to print debug information
 
@@ -228,8 +228,8 @@ Environment:
 
     parser.add_argument(
         "--model", "-m",
-        default="gemini-2.5-flash-lite",
-        help="Gemini model to use (default: gemini-2.5-flash-lite)"
+        default="gemini-3.1-flash-lite-preview",
+        help="Gemini model to use (default: gemini-3.1-flash-lite-preview)"
     )
 
     parser.add_argument(

@@ -158,42 +158,47 @@ Issues: list each in structured format above.
 
 ### Typst Diagrams (fletcher, CeTZ)
 
+**Strategy: describe-first.** Do NOT ask "is X clipped?" — Gemini defaults to "yes, it's fine." Instead, ask Gemini to transcribe what it sees, then diff against expected content.
+
+**Step 1 — Transcription call (run first):**
+```
+Transcribe every text element visible in the diagram, exactly as rendered.
+For each text, note if any characters appear cut off, partially hidden,
+or if the text runs into the edge of the image.
+List them in order from top to bottom, left to right.
+Format: - 'exact text' [FULL | PARTIAL: which characters missing]
+```
+
+**Step 2 — Claude diffs the transcription against expected elements:**
+Compare Gemini's transcription against the expected node/label texts from the source code. Any mismatch (e.g., Gemini transcribes `'cessary or'` instead of `'Necessary or'`) is objective proof of clipping. Score based on the diff.
+
+**Step 3 (optional) — Spatial/overlap check:**
 ```
 You are reviewing a rendered diagram image. You CANNOT run Typst/fletcher code.
-Your job is to provide PRECISE VISUAL MEASUREMENTS that the implementer can translate.
 
-## What This Should Be
-[description -- e.g., "Flow diagram showing securitization process with 5 entities"]
+## Expected Elements
+[list all expected node texts and edge label texts from source code]
 
 ## Check These Specifically
-- All nodes fully visible — no clipping at slide edges (top, bottom, left, right)
-- All node text readable (no clipped or truncated labels)
-- Arrows connect correct nodes with correct direction
-- Labels on arrows readable and not overlapping arrows or nodes
-- Node sizes sufficient for their text content
-- Spacing between nodes even and balanced
-- No overlapping elements (nodes, arrows, labels)
-- Overall layout balanced (not squished to one side)
-- Entire diagram fits within the slide with margin — nothing touching or cut off at edges
+- Do any labels overlap or collide with nodes or other labels?
+- Are arrows connecting the correct nodes?
+- Is the diagram roughly centered with adequate spacing?
 
 ## Previous Issues -- iteration [N]
 [feedback from prior iteration, or "First iteration - no prior issues."]
 
-## Your Review — STRUCTURED FORMAT REQUIRED
-
-For EACH issue found, report ALL of these:
-1. **Element**: What element has the issue (e.g., "label 'Pro rata share' on arrow from Bank A to SPV")
-2. **Problem**: What's wrong (e.g., "overlaps with the arrow line, making both unreadable")
-3. **Location**: Approximate position (e.g., "center-left, ~40% from top")
+For EACH issue found, report:
+1. **Element**: What element has the issue
+2. **Problem**: What's wrong
+3. **Location**: Approximate position
 4. **Severity**: BLOCKING or COSMETIC
-5. **Direction**: Specific fix direction (e.g., "move label 15-20px above the arrow, or offset to the left")
+5. **Direction**: Specific fix direction (e.g., "move label 15-20px above the arrow")
 
 Do NOT suggest fletcher/CeTZ code changes — you don't know the language.
 Do NOT run Python code to analyze the image — just look at it and report.
-
-Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
-Issues: list each in structured format above.
 ```
+
+**Why describe-first works:** Judgment prompts ("is X visible?") invite yes-man answers. Transcription forces the model to report what it actually sees. When `gemini-2.5-flash-lite` transcribed `'cessary or'` it still marked it `[FULL]` — but `gemini-3.1-flash-lite-preview` correctly flagged it `[PARTIAL: 'ne' missing]`. Always use 3.1+ for diagram verification.
 
 ### R / ggplot2 Charts
 
