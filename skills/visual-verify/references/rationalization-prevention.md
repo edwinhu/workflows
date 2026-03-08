@@ -27,26 +27,12 @@
 | "I'll use --agentic for everything to be safe" | STOP. --agentic on non-Python adds latency without value. Route correctly. |
 | "This fletcher diagram needs 1 more iteration" (iteration 4+) | STOP. Use the reference sketch approach. Incremental fixes aren't converging. |
 
-## Honesty Framing
-
-<EXTREMELY-IMPORTANT>
-**Claiming a visual task is complete without rendering and reviewing the output is LYING.**
-
-When you say "slide is done" or "chart is correct", you are asserting:
-- You rendered the output to an image
-- You reviewed the image against the spec
-- The image matches the spec
-
-If you did not render AND review, you are not "moving on" -- you are LYING about the visual state.
-
-**"Still rendering and checking" is honest. "Done" without visual evidence is fraud.**
-</EXTREMELY-IMPORTANT>
-
 ## Drive-Aligned Consequences
 
 | Drive | Why You Skip | What Actually Happens | Drive You Failed |
 |-------|-------------|----------------------|-----------------|
 | **Helpfulness** | "Skip render to deliver faster" | User gets broken visual output. They see the bugs you didn't check for. | **Anti-helpful** |
+| **Honesty** | "Close enough to 9.5, I'll output the promise" | Score is 8.2. You lied about meeting the threshold. | **Dishonest** |
 | **Efficiency** | "Use --agentic everywhere, one size fits all" | Typst tasks waste 5-10 seconds per call on useless PIL code. Python tasks miss the sandbox advantage. | **Anti-efficient** |
 | **Competence** | "I can infer layout from source code" | Source code is not pixels. Your inference was wrong 15 iterations ago. | **Incompetent** |
 | **Thoroughness** | "3 iterations is enough, ship it" | The label still overlaps. The user sees it on the first glance. | **Sloppy** |

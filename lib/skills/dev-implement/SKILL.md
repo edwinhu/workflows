@@ -330,6 +330,7 @@ If NO → REJECT and redo with correct approach
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
 | **Helpfulness** | "Skipping TDD gets code to user faster" | Untested code creates bugs the user discovers later | **Anti-helpful** |
+| **Honesty** | "Task complete" without running tests | You claimed tests pass without running them — that's lying | **Dishonest** |
 | **Efficiency** | "Skipping spec check saves time" | Spec drift means rework — your speed was waste | **Inefficient** |
 | **Competence** | "I assumed it works, no need to run tests" | The user runs it and it fails — your assumption destroyed trust | **Incompetent** |
 | **Thoroughness** | "I'll delegate without full context" | Subagent builds wrong thing, you redo everything | **Careless** |

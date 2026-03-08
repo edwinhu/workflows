@@ -9,11 +9,11 @@ description: "This skill should be used when the user asks to 'verify visual out
 <EXTREMELY-IMPORTANT>
 ## The Iron Law
 
-**NO VISUAL TASK IS COMPLETE WITHOUT RENDERING AND LOOKING AT THE OUTPUT.**
+**NO VISUAL TASK IS COMPLETE WITHOUT RENDERING, SCORING, AND MEETING THE THRESHOLD.**
 
-Source code correctness does NOT imply visual correctness. You MUST render to PNG, review with context-enriched Gemini vision, and fix or confirm. Skipping this is lying about the visual state.
+Source code correctness does NOT imply visual correctness. You MUST render to PNG, score with context-enriched Gemini vision (0-10), and iterate until score >= 9.5. Claiming "done" with a score below threshold is lying about the visual state.
 
-See `references/rationalization-prevention.md` for common excuses, red flags, and honesty framing.
+**Claiming visual completion without a score >= 9.5 in SCORES.md is LYING about quality.**
 </EXTREMELY-IMPORTANT>
 
 ## Domain Routing
@@ -35,19 +35,39 @@ Detection: `.py` / matplotlib / seaborn / plotly -> Python-native. Everything el
 2. RENDER  -> Produce PNG (see references/render-commands.md)
        |      Render fails? -> fix source, back to step 1
        |
-3. VISION  -> Domain-routed look-at call
+3. VISION  -> Domain-routed look-at call with SCORING
        |      Python? -> --agentic (Gemini executes code)
        |      Non-Python? -> vision-only (structured pixel feedback)
+       |      → Score 0-10 against checklist items
+       |      → Record in SCORES.md
        |
-4. DECIDE  -> PASS: output promise
-              FAIL: extract suggestions, back to step 1
+4. DECIDE  -> Score >= 9.5? → output promise (DONE)
+              Score < 9.5?  → extract suggestions, back to step 1
 ```
 
 ### Invocation
 
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Visual Task N: [TASK NAME] --max-iterations 5 --completion-promise VTASKN_DONE")
+Skill(skill="ralph-loop:ralph-loop", args="Visual Task N: [TASK NAME] --max-iterations 5 --completion-promise VTASKN_9_5")
 ```
+
+### Score Tracking
+
+Initialize SCORES.md before the first iteration:
+
+```markdown
+# Visual Verify Scores
+
+| Iteration | Score | Threshold | BLOCKING | COSMETIC | Delta |
+|-----------|-------|-----------|----------|----------|-------|
+```
+
+Each vision call must score the output 0-10:
+- 10.0 = all checklist items pass, zero issues
+- 9.5 = 95% pass, 1-2 cosmetic issues remain (default threshold)
+- < 9.0 = BLOCKING issues present
+
+The score reflects the fraction of checklist items that pass. Gemini counts BLOCKING and COSMETIC issues against the domain-specific checklist, and the score = (items passing / total items) * 10.
 
 ### Vision Calls
 

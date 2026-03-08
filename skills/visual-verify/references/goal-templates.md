@@ -40,7 +40,8 @@ You have access to matplotlib, seaborn, numpy, pandas, and PIL.
 1. Reproduce the key elements in your sandbox to verify measurements
 2. For each issue found, experiment with a fix in your sandbox
 3. Provide the EXACT Python code change (not "try adjusting X")
-Rate: PASS or FAIL with specific code fixes.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each with severity and specific code fix.
 ```
 
 ### Plotly Interactive Charts
@@ -70,7 +71,8 @@ You have access to matplotlib, numpy, pandas, and PIL (but not plotly itself).
 1. Examine the rendered static image for visual issues
 2. Use your sandbox to verify measurements if needed (matplotlib equivalent)
 3. Provide EXACT plotly code changes for each issue
-Rate: PASS or FAIL with specific code fixes.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each with severity and specific code fix.
 ```
 
 ---
@@ -112,7 +114,8 @@ For EACH issue found, report ALL of these:
 Do NOT suggest Typst code changes — you don't know the language.
 Do NOT run Python code to analyze the image — just look at it and report.
 
-Rate: PASS (all criteria met) or FAIL (list each issue in structured format above).
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each in structured format above.
 ```
 
 ### Typst Documents
@@ -149,7 +152,8 @@ For EACH issue found, report ALL of these:
 Do NOT suggest Typst code changes — you don't know the language.
 Do NOT run Python code to analyze the image — just look at it and report.
 
-Rate: PASS or FAIL with structured issues.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each in structured format above.
 ```
 
 ### Typst Diagrams (fletcher, CeTZ)
@@ -187,7 +191,8 @@ For EACH issue found, report ALL of these:
 Do NOT suggest fletcher/CeTZ code changes — you don't know the language.
 Do NOT run Python code to analyze the image — just look at it and report.
 
-Rate: PASS or FAIL with structured issues.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each in structured format above.
 ```
 
 ### R / ggplot2 Charts
@@ -223,7 +228,8 @@ For EACH issue found, report ALL of these:
 Do NOT suggest R code changes — you don't know the rendering context.
 Do NOT run Python code to analyze the image — just look at it and report.
 
-Rate: PASS or FAIL with structured issues.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each in structured format above.
 ```
 
 ### Web UI (HTML/CSS/JS)
@@ -259,7 +265,8 @@ For EACH issue found, report ALL of these:
 Do NOT suggest CSS/HTML/JS code changes — you don't know the full context.
 Do NOT run Python code to analyze the image — just look at it and report.
 
-Rate: PASS or FAIL with structured issues.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each in structured format above.
 ```
 
 ---
@@ -295,5 +302,6 @@ For EACH issue found, report ALL of these:
 Do NOT suggest source code changes — you don't know the language.
 Do NOT run Python code to analyze the image — just look at it and report.
 
-Rate: PASS or FAIL with structured issues.
+Score: [0-10] (fraction of checklist items passing, 9.5 = 95% compliant)
+Issues: list each in structured format above.
 ```
