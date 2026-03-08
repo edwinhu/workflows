@@ -14,7 +14,7 @@ Detect mode from user request, then follow the corresponding process below.
 
 ### Step 1: Ground in Philosophy
 
-Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. Every workflow must trace back to the three pillars: phased decomposition, deterministic gates, adversarial review.
+Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, iteration strategy, and two entry points.
 
 ### Step 2: Interview
 
@@ -75,12 +75,52 @@ Generate the specific enforcement content:
 - Build Rationalization Tables from the failure modes identified in Step 2
 - Define Red Flags + STOP for each phase's common wrong-path indicators
 
-### Step 5: Generate Workflow Files
+### Step 5: Design Two Entry Points
+
+Every workflow exposes exactly **two** user-facing commands. Everything else is internal.
+
+| Entry Point | Purpose | Example |
+|-------------|---------|---------|
+| **Entry** (start fresh) | Begins a new episode, runs brainstorm phase first | `/dev`, `/ds`, `/writing` |
+| **Midpoint** (re-enter) | Re-enters a running episode, diagnoses and routes to the right phase | `/dev-debug`, `/ds-fix`, `/writing-revise` |
+
+**Why two:** The user never needs to know which internal phase to invoke. Entry starts fresh. Midpoint diagnoses what's wrong and routes.
+
+#### Midpoint Constraint Loading
+
+The entry point runs sequentially — each phase loads its constraints and passes context forward. The midpoint can't rely on that. It may run in a new session, after context compression, or hours after the last edit. Prior constraints are gone.
+
+**The midpoint must be self-contained.** It loads every constraint layer it needs before touching the work:
+
+```
+/writing-revise loads:
+  1. ACTIVE_WORKFLOW.md    → workflow state (what phase, what style)
+  2. PRECIS.md, OUTLINE.md → structural intent (what we're building)
+  3. ai-anti-patterns      → universal constraints (no AI-smell)
+  4. domain skill           → domain constraints
+  THEN: check the draft against all four layers
+
+/dev-debug loads:
+  1. HYPOTHESES.md          → what's been tried
+  2. LEARNINGS.md           → accumulated knowledge
+  THEN: spawn fresh subagent for next investigation iteration
+
+/ds-fix loads:
+  1. SPEC.md, PLAN.md       → objectives and task breakdown
+  2. LEARNINGS.md            → pipeline state and observations
+  3. output-first protocol   → verification enforcement
+  THEN: diagnose and route to fix path
+```
+
+**Critical rule:** Any phase that evaluates quality must load the full constraint set, not a summary of it. Summaries enable reward hacking — the agent checks against a 4-item summary, finds no issues, and reports "all checks pass" when the full rules would have caught problems. The fix: `Read()` the actual skill before checking.
+
+### Step 6: Generate Workflow Files
 
 Create the following artifacts:
-1. **Entry command** (`commands/[name].md`) - routes to first phase
-2. **Phase skills** (`lib/skills/[name]-[phase]/SKILL.md`) - one per phase
-3. **Wire up transitions** - each phase ends by reading the next phase's skill
+1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
+2. **Midpoint command** (`skills/[name]-fix/SKILL.md` or `skills/[name]-debug/SKILL.md`) — self-contained re-entry
+3. **Phase skills** (`lib/skills/[name]-[phase]/SKILL.md`) — one per phase, internal only
+4. **Wire up transitions** — each phase ends by reading the next phase's skill
 
 Present complete file list for user approval before writing.
 
@@ -92,23 +132,33 @@ Present complete file list for user approval before writing.
 
 Read the workflow's entry command and ALL phase skills. Build a map of phases, transitions, and enforcement.
 
-### Step 2: Score Against Three Pillars
+### Step 2: Score Against Core Principles
 
 **Phased decomposition:**
 - Does each phase have a single responsibility?
 - Are phase boundaries clear?
 - Can phases be executed out of order? (they shouldn't be)
 
-**Deterministic gates:**
-- Are gates verifiable programmatically? (file exists, content check)
+**Gates (deterministic or judgment-based):**
+- Are gates machine-verifiable where possible? (file exists, test passes)
+- For subjective domains, are judgment gates explicit? (agent-assessed or human-assessed)
 - Or are they just prose? ("ensure quality is high")
 - Are there ungated transitions?
 
-**Adversarial review:**
-- Is there a review phase?
-- Does it use confidence scoring?
-- Does it check spec deviation?
-- Is honesty framing present?
+**Independent verification:**
+- Is verification structurally independent from implementation? (fresh subagent, not self-review)
+- Does the verifier see only spec + output, not the implementation journey?
+- For subjective output, are there multiple specialized reviewers? (team topology)
+- Is self-review ever the final gate? (it shouldn't be)
+
+**Two entry points:**
+- Does the workflow have both an entry (start fresh) and midpoint (re-enter)?
+- Is the midpoint self-contained? (loads all constraints, doesn't depend on prior phases)
+- Does the midpoint load full skills, not summaries?
+
+**Iteration strategy:**
+- Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
+- Are exit conditions structural (tests, convergence, human approval) not honor-system (promises)?
 
 ### Step 3: Score Against Enforcement Checklist
 
@@ -128,10 +178,12 @@ Format:
 ```
 ## Audit: [Workflow Name]
 
-### Pillar Scores
+### Architecture Scores
 - Phased decomposition: [score] - [notes]
-- Deterministic gates: [score] - [notes]
-- Adversarial review: [score] - [notes]
+- Gates (deterministic/judgment): [score] - [notes]
+- Independent verification: [score] - [notes]
+- Two entry points: [score] - [notes]
+- Iteration strategy: [score] - [notes]
 
 ### Enforcement Coverage
 | Pattern | Phase 1 | Phase 2 | ... | Phase N |
@@ -163,7 +215,7 @@ For each gap, generate the specific addition:
 - **Missing Iron Law** → Write the law with `<EXTREMELY-IMPORTANT>` tags and strong framing
 - **Missing Rationalization Table** → Identify 5-10 common excuses for that phase, write Excuse → Reality → Do Instead table
 - **Weak gate** → Propose verifiable condition (file exists, content contains X, command output matches Y)
-- **Missing review** → Design adversarial check with confidence scoring and honesty framing
+- **Self-review instead of independent verification** → Replace with fresh subagent reviewer that sees only spec + output, or team of specialized reviewers for subjective output
 - **Missing Red Flags** → Identify 3-5 wrong-path indicators for the phase
 
 ### Step 3: Present Changes
@@ -180,10 +232,10 @@ Edit the skill files with the approved changes. Verify each file is syntacticall
 ## Iron Laws of Workflow Creation
 
 ### NO WORKFLOW WITHOUT PHILOSOPHY
-Every workflow must trace back to the three pillars. If you can't explain how a phase serves phased decomposition, deterministic gates, or adversarial review, the phase doesn't belong.
+Every workflow must trace back to PHILOSOPHY.md. If you can't explain how a phase serves phased decomposition, gates, or adversarial review, the phase doesn't belong.
 
 ### NO PHASE WITHOUT A GATE
-If there's no verifiable exit condition, it's not a real phase - it's a suggestion. Define what artifact or condition proves the phase is complete.
+Every phase needs a gate — deterministic (test passes, file exists) or judgment-based (agent/human evaluates quality). Use the strongest gate available for the domain. No gate = not a real phase.
 
 ### NO HIGH-DRIFT PHASE WITHOUT ENFORCEMENT
 Identify where the agent is most tempted to shortcut. Enforce hardest there. Implementation and verification phases ALWAYS need Iron Laws.
@@ -194,7 +246,7 @@ Identify where the agent is most tempted to shortcut. Enforce hardest there. Imp
 | Action | Why Wrong | Do Instead |
 |---|---|---|
 | Creating a workflow without reading PHILOSOPHY.md | You'll miss the foundational principles | Read it first, every time |
-| Skipping the user interview | You'll design for an imagined domain, not the real one | Ask the four questions |
+| Skipping the user interview | You'll design for an imagined domain, not the real one | Ask the five questions |
 | Writing soft language instead of Iron Laws | LLMs ignore polite suggestions | Use strong framing with EXTREMELY-IMPORTANT tags |
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
