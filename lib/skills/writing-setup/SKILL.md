@@ -216,6 +216,25 @@ Before proceeding to outline phase:
 4. **VERIFY**: All three files exist and contain required content
 5. **CLAIM**: Only if steps 1-4 pass, proceed to outline phase
 
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|---|---|---|
+| "I'll refine the thesis during drafting" | Unrefined thesis = unfocused draft = complete rewrite | Nail the thesis now |
+| "Three claims is plenty" | Check if three is earned or arbitrary | Justify each claim's necessity |
+| "The scope section isn't important" | Unbounded scope produces unbounded documents | Define IN and OUT explicitly |
+| "I already know the structure" | You're guessing from similar papers, not this one | Derive structure from THIS thesis and claims |
+| "The outline doesn't need transitions planned yet" | Transitions ARE the argument's logic | Plan transitions now or the draft will be fragments |
+| "I can add counterarguments later" | Counterarguments shape the thesis itself | Confront objections before finalizing claims |
+
+**Claiming the PRECIS is complete without verifiable thesis and claims is LYING about readiness.** A vague thesis is not a thesis. Placeholder claims are not claims.
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Rushing PRECIS to get to drafting | The draft has no foundation — your impatience created 3x the work. |
+
 ## Red Flags - STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |
@@ -228,7 +247,7 @@ Before proceeding to outline phase:
 
 ## Next Phase
 
-After setup is complete:
+After setup is complete, IMMEDIATELY proceed to the outline phase. Do NOT pause to ask the user. Do NOT summarize what you just created. Load the next skill and continue:
 
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-outline/SKILL.md")

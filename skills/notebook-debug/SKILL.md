@@ -18,6 +18,8 @@ description: This skill should be used when the user asks to "debug notebook", "
 
 This skill covers inspecting executed `.ipynb` files to debug runtime errors, regardless of how the notebook was created (marimo, jupytext, or plain Jupyter).
 
+**If debugging within a /ds workflow**, first read `.claude/LEARNINGS.md` for pipeline context and `.claude/PLAN.md` for task expectations.
+
 ## Verification Enforcement
 
 ### IRON LAW: NO 'NOTEBOOK WORKS' CLAIM WITHOUT TRACEBACK CHECK
@@ -43,6 +45,13 @@ This is not negotiable. Claiming "notebook works" without checking for traceback
 | "Quick check with grep is enough" | Grep misses stderr and cell outputs | Use BOTH quick check AND Read tool |
 | "Only the last cell matters" | Middle cells can fail silently | VERIFY all cells executed (execution_count) |
 | "I'll fix errors if user reports them" | Proactive checking is your job | CHECK before user sees it |
+
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping cell-by-cell trace | You jumped to the error cell without tracing data flow. The root cause is 5 cells upstream — your shortcut missed it. |
+| Fixing without reproducing | You applied a fix without reproducing the error first. The fix is wrong — your confidence was negligence. |
 
 ### Red Flags - STOP Immediately If You Think:
 

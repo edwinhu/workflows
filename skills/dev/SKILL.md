@@ -5,6 +5,23 @@ description: "This skill should be used when the user asks to 'start a feature',
 
 **Announce:** "I'm using dev (Phase 1) to gather requirements."
 
+## Workflow Overview
+
+```
+Phase 1       Phase 2      Phase 3      Phase 4       Phase 5        Phase 6      Phase 7
+brainstorm → explore    → clarify   → design     → implement   → review    → verify
+ (SPEC.md)   (key files)  (resolved)   (PLAN.md)    (tests pass)   (>=80%)    (fresh evidence)
+    │            │            │            │              │             │            │
+    ▼            ▼            ▼            ▼              ▼             ▼            ▼
+  GATE:        GATE:        GATE:        GATE:          GATE:         GATE:        GATE:
+  Questions    All files    Ambiguities  User           All tasks     No issues    Fresh run
+  asked +      read by      resolved +   approved +     pass tests    >= 80%       confirms
+  SPEC.md      main chat    SPEC.md      PLAN.md        + spec        confidence   all claims
+  written                   updated      written        match
+```
+
+**Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.**
+
 ## Workflow Initialization
 
 Create `.claude/ACTIVE_WORKFLOW.md` to track workflow state:
@@ -328,6 +345,16 @@ If the project has no tests, your first task is to ADD test infrastructure, not 
 
 **Note:** No "Chosen Approach" yet - that comes after exploration and design phases.
 
+## Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Efficiency** | "Requirements are obvious, skip questions" | You build the wrong thing, rework everything | **Inefficient** |
+| **Helpfulness** | "Start coding to show progress" | Progress on wrong requirements is negative progress | **Anti-helpful** |
+| **Competence** | "I can infer what user wants" | Your inference is a guess — guesses become bugs | **Incompetent** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
 ## Red Flags - STOP If You're About To:
 
 | Action | Why It's Wrong | Do Instead |
@@ -345,6 +372,20 @@ Brainstorm complete when:
 - Success criteria defined
 - `.claude/SPEC.md` written (draft)
 - Open questions identified for exploration
+
+### Exit Gate
+
+Before transitioning to dev-explore, ALL checks must pass:
+
+```
+1. IDENTIFY: `.claude/SPEC.md` exists
+2. RUN: `Read(".claude/SPEC.md")`
+3. READ: Verify it contains: Problem Statement, Success Criteria, Scope sections
+4. VERIFY: User has confirmed the objectives (explicit approval, not assumed)
+5. CLAIM: Only proceed to dev-explore if ALL checks pass
+```
+
+**If any check fails, do NOT proceed. Fix the gap before transitioning.**
 
 ## Phase Complete
 

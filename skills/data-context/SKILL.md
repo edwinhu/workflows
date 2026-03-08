@@ -203,6 +203,18 @@ For each reference file, include:
 - **metrics.md**: Metric name, definition (SQL/formula), edge cases, common misinterpretations, time grain
 - **gotchas.md**: Issue description, why it happens, how to detect, how to handle
 
+## Exit Gate
+
+Before writing skill files, execute this gate:
+
+1. **IDENTIFY**: All 5 interview rounds completed
+2. **RUN**: Read back each generated section to the user
+3. **READ**: Verify entities, metrics, gotchas sections all have substantive content (not placeholders)
+4. **VERIFY**: User approved each section via explicit confirmation
+5. **CLAIM**: Only generate skill files after ALL checks pass
+
+**Skipping this gate produces a skill based on your assumptions, not the user's knowledge. That skill will mislead every future analysis.**
+
 ## Verification
 
 Before finalizing the skill:
@@ -227,6 +239,27 @@ When adding to an existing data context skill:
 - **Project-specific**: `.claude/skills/data-context/` in the project root
 - The generated skill becomes available to all future Claude sessions in that project
 - Subagents spawned by `ds-delegate` will have access to it automatically
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I can infer the metrics from column names" | Column names are labels, not business logic. `revenue` could be gross, net, or recognized. | Ask the user for the exact definition and edge cases |
+| "The schema tells me everything I need" | Schema captures structure, not semantics. It can't tell you which fields lie or which joins explode. | Interview the user — schema is the starting point, not the answer |
+| "I'll fill in the gotchas section later" | Gotchas are the most valuable part. Later means never — you'll ship a skill that misleads every analysis. | Capture gotchas during the interview while context is fresh |
+| "The entity relationships are obvious from foreign keys" | Foreign keys show connections, not business rules. A `user_id` FK doesn't tell you users can have multiple active accounts. | Verify every relationship with the user, especially cardinality |
+| "I already know this domain well enough" | Your training data is not this user's data. Their dataset has specific quirks you cannot guess. | Interview anyway — it takes 10 minutes and prevents weeks of wrong analysis |
+
+### Honesty Framing
+
+**Claiming you understand the dataset without interviewing the domain expert is LYING about your knowledge.** Pattern-matching from column names is not domain understanding.
+
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping the interview | You skip the interview to save time. The generated skill has wrong assumptions — every analysis using it produces wrong results. Your shortcut corrupted the entire pipeline. |
+| Generating from schema alone | You inferred metric definitions from column names. Three teams used your skill. All three published wrong numbers. Your inference was misinformation. |
 
 ## Red Flags - STOP If You Think:
 

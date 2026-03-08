@@ -276,6 +276,16 @@ Before proceeding to design, verify the testing strategy passes real-test enforc
 - Whether to build it (user already decided)
 - Architecture approach (that's design)
 
+## Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Efficiency** | "Assumptions are faster than questions" | Wrong assumptions mean rework — your speed was waste | **Inefficient** |
+| **Helpfulness** | "I don't want to bother the user with questions" | You build the wrong thing — your courtesy was sabotage | **Anti-helpful** |
+| **Competence** | "I can infer edge cases from the code" | Code shows HOW, not WHAT SHOULD happen — your inference was a guess | **Incompetent** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
 ## Red Flags - STOP If You're About To:
 
 | Action | Why It's Wrong | Do Instead |

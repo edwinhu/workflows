@@ -187,6 +187,22 @@ Before proceeding to edit/verify:
 
 **Reporting "all sections drafted" without checking each file is LYING.** You must verify every draft exists and has real content.
 
+### Staged Draft Verification (If Gate Fails)
+
+If a section fails the gate:
+
+| Failure Type | Action |
+|-------------|--------|
+| **Structural** (missing outline points) | REJECT section. Re-read outline. Re-draft with ALL points. |
+| **Depth** (points present but cursory) | RETURN to agent with expanded outline and word-count target. |
+| **Logic** (draft doesn't match outline logic) | REJECT. Diagnose where outline logic broke down. |
+
+Re-draft WITHOUT pausing. Agent re-opens outline, re-reads PRECIS.md, expands section with full depth.
+
+**No iteration limit at draft stage.** Cheap iterations here prevent expensive rework later.
+
+**Claiming the draft is complete without checking EVERY subsection expansion is LYING about depth.** A 2-paragraph section with a 5-subsection outline is a stub, not a draft.
+
 ---
 
 ## Rationalization Table
@@ -215,6 +231,14 @@ Before proceeding to edit/verify:
 | Stopping after one section to ask user | Breaks momentum and context | Continue to next section immediately |
 | Writing a section in 2 paragraphs when outline has 5 subsections | You are being cursory to "finish" faster | Expand every subsection properly |
 | Skipping evidence mapped in the outline | Claims without evidence are assertions | Include all evidence, developed in prose |
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Skipping depth to "help faster" | Cursory drafts create 3x the rework — your shortcut was anti-helpful. |
+| Not loading domain skill | You wrote without domain conventions. The prose reads as generic AI output — your efficiency produced embarrassment. |
+| Drafting without outline | You skipped the outline to save time. The draft has no structure — you created more work, not less. |
 
 ---
 

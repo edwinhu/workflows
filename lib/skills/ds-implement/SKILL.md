@@ -61,6 +61,17 @@ This is MANDATORY. ds-delegate contains the Task agent templates, output-first p
 **If you're about to write analysis code directly, STOP and read ds-delegate.**
 
 If you wrote analysis code in main chat, DELETE it immediately and dispatch a Task agent instead. Code written in main chat is contaminated by orchestrator context and must not be kept.
+
+### Delete & Restart Protocol
+
+| Scenario | Action |
+|----------|--------|
+| You wrote > 3 lines of analysis code in main chat | DELETE immediately. Restart via Task agent. |
+| You ran a cell, realized it should have been in Task agent | DELETE the cell output and cell. Re-do via Task agent. |
+| You started a transformation in main chat | STOP. DELETE what you've done. Spawn Task agent instead. |
+| "Just finish this quick analysis here" | STOP — if it's quick enough to finish, it's quick enough for a Task agent. Delete and restart. |
+
+**Honesty Check:** If you kept main-chat code "because it worked," you lied about the orchestration protocol. Working code written in the wrong place is still wrong code. Delete it.
 </EXTREMELY-IMPORTANT>
 
 ## What Output-First Means
@@ -76,6 +87,23 @@ If you wrote analysis code in main chat, DELETE it immediately and dispatch a Ta
 
 **The Mantra:** If not visible, it cannot be trusted.
 
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I'll combine these steps to save time" | Combined steps hide which one failed. Your efficiency creates undiagnosable bugs. | One operation per verification cycle |
+| "Output looks roughly right" | "Roughly" means you didn't actually check. Roughly right is precisely wrong. | Compare against PLAN.md expected output with specific numbers |
+| "LEARNINGS.md is overhead" | Undocumented steps are invisible to review. Skipping logs means review can't verify your work. | Log every task completion — it takes 30 seconds |
+| "This task is trivial, no need to delegate" | Trivial tasks in main chat accumulate into unverified analysis. | Delegate everything, verify everything |
+| "I'll read the agent's output later" | Running code without reading the output is running blind. The agent may have reported errors you missed. | Read agent output immediately, verify claims against actual data |
+
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping output verification | You assumed the output was correct because the code ran. The results are wrong — your assumption is the error the user publishes. |
+| Running all tasks sequentially yourself | You ran everything yourself to feel productive. Quality suffered without review — your productivity was counterproductive. |
+
 ## Red Flags - STOP Immediately
 
 | Thought | Why It's Wrong | Do Instead |
@@ -86,6 +114,10 @@ If you wrote analysis code in main chat, DELETE it immediately and dispatch a Ta
 | "Data looks fine" | STOP - you're confusing "looks" with verification | Print stats, show samples |
 | "I'll batch the outputs" | STOP - you're about to lose your ability to isolate issues | Output per operation |
 | "Just a quick plot in main chat" | STOP - you're about to violate delegation | Spawn a Task agent |
+| "I'll combine these steps to save time" | STOP - combined steps hide which one failed | One operation per verification cycle |
+| "Output looks roughly right" | STOP - "roughly" means you didn't actually check | Compare against PLAN.md expected output |
+| "LEARNINGS.md is overhead" | STOP - undocumented steps are invisible to review | Log every task completion, it takes 30 seconds |
+| "This task is trivial, no need to delegate" | STOP - trivial tasks in main chat accumulate into unverified analysis | Delegate everything, verify everything |
 
 
 ## Implementation Strategy Choice
@@ -258,6 +290,13 @@ Before invoking ds-review, execute this gate:
    - Verified output (shape, stats, or sample)
    - No unresolved issues flagged
 4. **VERIFY**: Count tasks in PLAN.md vs completed entries in LEARNINGS.md. They MUST match.
+
+**Staleness Check:** LEARNINGS.md must be updated in THIS session, not reused from prior work.
+- Does each task entry reference current outputs (file paths, cell numbers)?
+- If LEARNINGS.md is stale from a prior session, UPDATE it with fresh entries before claiming completion.
+
+**Stale LEARNINGS.md = false gate pass = unverified work = you're about to lie.**
+
 5. **CLAIM**: Only if all tasks accounted for, proceed to review
 
 **If ANY task is missing from LEARNINGS.md, implement it before proceeding.**

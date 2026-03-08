@@ -1,6 +1,6 @@
 ---
 name: dev-design
-description: This skill should be used when the user asks to "propose architecture", "design implementation approach", "choose between approaches", or in Phase 4 of /dev workflow after exploration is complete. Proposes 2-3 architecture approaches with clear trade-offs, decomposes features into independent tasks, and obtains explicit user approval before implementation begins.
+description: This skill should be used when the user asks to "propose architecture", "design implementation approach", "choose between approaches", or in Phase 4 of /dev workflow after exploration is complete.
 version: 0.1.0
 ---
 
@@ -21,6 +21,19 @@ version: 0.1.0
 Propose implementation approaches, explain trade-offs, get user approval.
 **Prerequisites:** SPEC.md finalized, exploration complete, clarifications resolved.
 
+## Prerequisite: dev-clarify Must Be Complete
+
+**dev-design REQUIRES dev-clarify to be complete. This is not optional.**
+
+Before writing PLAN.md, verify these clarify gates passed:
+- [ ] Testing approach documented (unit/integration/E2E)
+- [ ] Test framework specified
+- [ ] First test described
+- [ ] Test command documented
+- [ ] User workflow confirmed
+
+**If ANY gate is unchecked → DO NOT START DESIGN. Return to dev-clarify.**
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Design
 
@@ -36,6 +49,12 @@ Implementation CANNOT start without user saying "Yes" or choosing an approach.
 
 **STOP - you're about to implement without user approval.**
 </EXTREMELY-IMPORTANT>
+
+### Honesty Framing
+
+**Proposing an architecture without reading the codebase is GUESSING, not designing. Your proposal is fiction.**
+
+Design without exploration is not "efficiency" — it is fabricating an approach from imagination. The user trusts your proposal reflects the actual codebase. If it doesn't, you wasted their approval on fiction.
 
 ## What Design Does
 
@@ -354,6 +373,16 @@ Recognize these thoughts as red flags—they signal attempts to bypass the user 
 | "Time pressure" | You'll waste more time with the wrong approach. Wait for approval. |
 | "Only one viable option" | Present it anyway. User may see alternatives. |
 | "Ask forgiveness later" | No. Ask permission now. |
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Efficiency** | "Skip user approval to move faster" | Wrong approach means full rework | **Inefficient** |
+| **Helpfulness** | "I'll pick the best approach for them" | User had context you lacked — your choice was wrong | **Anti-helpful** |
+| **Competence** | "Only one viable option, no need to ask" | User sees alternatives you missed — your confidence was arrogance | **Incompetent** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
 
 ## Red Flags - STOP If You're About To:
 

@@ -270,6 +270,14 @@ Use with `/writing-legal` for complete legal scholarship workflow:
 2. `/writing-legal` ensures argument structure and evidence handling
 3. `/ai-anti-patterns` catches AI writing indicators before submission
 
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Guessing citation format to save time | You guessed the citation format to save time. The footnote is wrong — your guess undermines the paper's credibility. |
+| Skipping verification of reporter/volume | You cited without checking the reporter. The cite is to the wrong volume — your laziness is visible to every reader. |
+| Using short form without establishing full citation first | You used a short form before the full citation. The reader can't trace the source — your shortcut created confusion. |
+
 ## Delete & Restart Pattern
 
 **When to delete and restart:**

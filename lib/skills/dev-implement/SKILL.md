@@ -325,6 +325,17 @@ If NO → REJECT and redo with correct approach
 ```
 </EXTREMELY-IMPORTANT>
 
+## Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Helpfulness** | "Skipping TDD gets code to user faster" | Untested code creates bugs the user discovers later | **Anti-helpful** |
+| **Efficiency** | "Skipping spec check saves time" | Spec drift means rework — your speed was waste | **Inefficient** |
+| **Competence** | "I assumed it works, no need to run tests" | The user runs it and it fails — your assumption destroyed trust | **Incompetent** |
+| **Thoroughness** | "I'll delegate without full context" | Subagent builds wrong thing, you redo everything | **Careless** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
 ## Sub-Skills Reference
 
 | Skill | Purpose | Used By |
@@ -485,6 +496,23 @@ Main chat should:
 The promise signals task completion. After outputting promise, update PLAN.md, then IMMEDIATELY start next task’s loop.
 
 **Pausing between tasks is procrastination disguised as courtesy.**
+
+### Task Transition Gate (MANDATORY)
+
+After each task’s ralph loop completes:
+
+1. Update PLAN.md — mark completed task `[x]`
+2. Append to LEARNINGS.md — what was accomplished, test command, exit code
+3. Check for blockers — dependencies from task N needed for N+1?
+4. If clear → IMMEDIATELY spawn ralph loop for task N+1
+5. If blocked → Ask user EXACTLY what’s missing (not "I’m blocked")
+
+**Violations to catch:**
+- "Let me check with user if they want me to continue" → NO, continue automatically
+- "Should I move to task N+1?" → NO, you’re supposed to move
+- "Let me summarize what we learned" → NO, move to task N+1
+
+Pausing > 30 seconds between tasks means you’ve stopped. You shouldn’t have.
 </EXTREMELY-IMPORTANT>
 
 ## Agent Team Implementation (Parallel)

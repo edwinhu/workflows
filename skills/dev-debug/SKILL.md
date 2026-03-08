@@ -233,6 +233,8 @@ When a subagent reports STATUS: FIXED with a test command:
    - YES → Run the full test suite too. All green? → **Bug is fixed. Report to user.**
    - NO → Log in HYPOTHESES.md as false positive. Continue loop.
 
+**If a subagent's fix is a false positive (passes tests but doesn't fix the real issue), DELETE the fix entirely. Do not patch a false fix — revert and spawn a fresh subagent with updated context.**
+
 **This is the only structural gate.** The subagent writes the test and fix. The main chat runs the test independently. The agent can't fake test output.
 
 ### Step 5: Report Resolution
@@ -267,6 +269,10 @@ You may NOT claim "root cause found" unless:
 3. You can explain WHY the bug occurred (mechanism, not just location)
 
 **"I found the line that's wrong" is NOT root cause.**
+
+### Honesty Framing
+
+**Claiming "root cause found" without a reproducing test that fails before the fix and passes after is LYING about your diagnosis.** Your hypothesis is not a root cause. Your confidence is not evidence.
 
 ## GUI Application Debugging
 

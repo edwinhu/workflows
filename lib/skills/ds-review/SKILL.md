@@ -1,6 +1,6 @@
 ---
 name: ds-review
-description: "This skill should be used when running Phase 4 of the /ds workflow to review methodology, data quality, and statistical validity. Provides structured review checklists, confidence scoring, and issue identification for data analysis validation."
+description: "This skill should be used when running Phase 4 of the /ds workflow or reviewing data analysis methodology."
 version: 1.0.0
 ---
 
@@ -505,6 +505,17 @@ Report only issues with >= 80 confidence.
 Return structured output per /ds-review format.
 """)
 ```
+
+### Honesty Framing
+
+**Approving analysis without running independent verification code is LYING about your review.** Reading the analyst's notebook and thinking "looks reasonable" is not verification. If you did not execute code that independently checks the results, you did not review — you rubber-stamped.
+
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Trusting analyst claims | You trusted 'data is clean' without checking. The results are wrong — your trust was credulity. |
+| Skipping independent verification | You reported 'methodology sound' without running anything. The user publishes wrong results — you lied. |
 
 ## Rationalization Table
 

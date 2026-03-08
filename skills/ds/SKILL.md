@@ -144,6 +144,17 @@ After selecting an approach:
 - Option C: [why rejected]
 ```
 
+### Honesty Framing
+
+**Claiming you understand the user's objectives without asking them is LYING about your comprehension.** You are pattern-matching from similar-sounding requests, not understanding THIS specific analysis.
+
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping user interview | You skipped questions because you thought it was faster. Wrong objectives mean the entire analysis is wasted — you were anti-helpful. |
+| Not gathering sources | You assumed you knew the data. Your assumptions produce wrong results — your confidence was negligence. |
+
 ## Rationalization Table
 
 | Excuse | Reality | Do Instead |
@@ -163,6 +174,22 @@ After selecting an approach:
 | Proposing specific models | You're jumping to HOW before clarifying WHAT | Define success criteria first |
 | Creating task lists | You're planning before objectives are clear | Complete brainstorm first |
 | Skipping replication question | You might miss critical methodology constraints | Always ask about replication upfront |
+
+## Gate: Exit Brainstorm
+
+Before transitioning to ds-plan, execute this gate:
+
+```
+1. IDENTIFY → SPEC.md exists at `.claude/SPEC.md`
+2. RUN      → Read(".claude/SPEC.md")
+3. READ     → Verify it contains: Objectives, Data Sources, Success Criteria sections
+4. VERIFY   → User has confirmed the objectives (not just agent self-assessment)
+5. CLAIM    → Only proceed to ds-plan if ALL checks pass
+```
+
+**If ANY check fails, do NOT proceed. Fix the gap first.**
+
+**Self-assessment is not user confirmation. If the user hasn't explicitly approved the objectives, you haven't finished brainstorm.**
 
 ## Output
 
@@ -200,15 +227,10 @@ This skill is Phase 1 of the 5-phase `/ds` workflow:
 
 After completing brainstorm, IMMEDIATELY invoke the next phase:
 
-```bash
-# Invoke Phase 2: Data profiling and task breakdown
-/ds-plan
-```
-
-Or use the Skill tool directly:
-
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")
 ```
+
+Fallback (if Read fails): `/ds-plan`
 
 **CRITICAL:** Do not skip to analysis implementation. Phase 2 profiles data and breaks down the analysis into discrete, manageable tasks.

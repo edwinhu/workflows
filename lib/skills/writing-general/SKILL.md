@@ -34,6 +34,40 @@ Every word must earn its place. Vigorous writing is concise. A sentence should c
 | "I should sound more formal" | Formality often means wordiness | Write naturally, then edit |
 | "This needs more emphasis" | Overemphasis dilutes meaning | Let strong words speak |
 
+## Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The passive voice is fine here" | Passive voice hides the actor; name them | REWRITE in active voice |
+| "This adverb adds emphasis" | Strong verbs don't need adverbs | DELETE the adverb, pick a stronger verb |
+| "The reader needs this context first" | Lead with the point, add context after | MOVE the point to the front |
+| "This paragraph needs one more sentence" | If the paragraph is complete, stop | STOP writing and move on |
+| "I should vary the sentence structure" | Clarity beats variety; don't complexify for style | KEEP the clear structure |
+
+### Delete & Restart Triggers
+
+**If you catch yourself writing ANY of these, DELETE THE SENTENCE and START FRESH:**
+
+| Anti-Pattern | Restart Approach |
+|---|---|
+| "It is [adjective] that..." | Rewrite as direct assertion |
+| "There are [X] reasons" | Replace with direct list or synthesis |
+| "In order to" | Replace with "to" |
+| Sentence > 40 words with nested clauses | Break into 2-3 sentences |
+| Passive voice hiding the actor | Name the actor, use active voice |
+
+After deleting, restart the sentence with THE POINT first, then evidence.
+
+**Claiming "omit needless words" without deleting bad sentences is LYING about editing.** Identify violations and purge them.
+
+## Honesty Framing
+
+**Claiming the prose follows Strunk & White principles without checking each sentence is LYING about quality.** Reading your own output and thinking "looks good" is not editing.
+
+## Drive-Aligned Consequences
+
+- You skip the style check because the content is correct. The prose reads as AI slop — your content expertise is hidden behind bad writing.
+
 ## Editing Checklist
 
 ### Sentence Level

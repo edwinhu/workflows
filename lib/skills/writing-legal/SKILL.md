@@ -79,6 +79,16 @@ If you cite a case/statute/historical fact via an intermediate source (law revie
 | "Arguably" makes my point | Acknowledges controversy without arguing | MAKE the argument explicitly |
 | "This metaphor is clear" | Metaphors hide incomplete logic | UNPACK: what's the actual argument? |
 
+### Honesty Framing
+
+**Citing a case without reading its holding is LYING about your research.** Relying on headnotes or training data is not legal research.
+
+### Drive-Aligned Consequences
+
+- You omitted the strongest counterargument to make the thesis look stronger. The reader sees through it — your omission destroyed credibility.
+- You cited a treatise instead of the primary case. The reader checks and finds you didn't read the original — your shortcut was academic dishonesty.
+- You wrote the analysis free-form to be "more natural." The argument has no structure — your creativity produced confusion.
+
 ### Red Flags - STOP Immediately If You Think:
 
 **Content Red Flags:**

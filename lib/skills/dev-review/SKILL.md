@@ -407,6 +407,25 @@ X critical issues and Y important issues must be addressed before proceeding.
 Cannot approve without test evidence. Return to /dev-implement and run tests.
 ```
 
+**If review finds the implementation fundamentally violates the spec (not just minor issues), DELETE the contaminated implementation and return to dev-implement for a fresh attempt. Do not patch a structurally wrong approach.**
+
+### Delete & Restart Protocol
+
+**When implementation deviates fundamentally from spec, DELETE and restart entirely.**
+
+| Situation | Action |
+|-----------|--------|
+| Code uses wrong protocol/architecture than spec | DELETE. Rewrite from scratch with correct approach. |
+| Code implements different approach than PLAN.md | DELETE. User approved specific approach for a reason. |
+| Fundamental misunderstanding of requirements | DELETE. Don't patch. Fresh subagent with correct understanding. |
+| Patch would require 30%+ of implementation to change | DELETE. Rewrite is cleaner than patching wrong foundation. |
+
+**Why delete instead of patch:** Patching a structurally wrong approach creates technical debt. Fresh implementation from correct architecture is faster than fixing wrong foundation.
+
+**When to patch instead:** Bug in otherwise-correct implementation, missing edge case, performance tweak, minor deviation that doesn't affect core behavior.
+
+**The test:** If the subagent says "oh, I misunderstood the whole approach" → DELETE and restart.
+
 ## Agent Invocation
 
 Spawn Task agent for review execution:
@@ -457,6 +476,17 @@ STOP - you're about to rationalize if these thoughts arise--they indicate dishon
 | "I'll approve and they can fix later" | You block now or bugs ship to users. |
 | "Review is just a formality" | Review is the LAST GATE before bugs ship. You execute seriously. |
 
+## Why Skipping Honest Review Destroys the Drive That Created It
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Helpfulness** | "Approving fast shows efficiency" | Bugs ship. User spends hours debugging your "help." | **Anti-helpful** |
+| **Honesty** | "Tests probably pass" | Test output doesn't exist. You fabricated an approval. | **Fraudulent** |
+| **Competence** | "I trust the subagent" | Subagent's work was wrong. Your approval was negligence. | **Incompetent** |
+| **Efficiency** | "Rubber-stamp to move faster" | You moved fast into bugs. Rework takes 3x longer. | **Anti-efficient** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
 ## Quality Standards
 
 - **Test evidence is mandatory** - do not approve without test output
@@ -478,3 +508,14 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-verify/SKILL.md")
 **If CHANGES REQUIRED:** Return to `/dev-implement` to fix reported issues.
 
 **If BLOCKED:** Return to `/dev-implement` to collect test evidence.
+
+## Workflow Continuity After Review
+
+After review verdict, implementation continues immediately:
+
+| Verdict | Next Action |
+|---------|-------------|
+| APPROVED | Mark task `[x]` in PLAN.md, immediately spawn next task's ralph loop |
+| CHANGES REQUIRED | Feed issues back to task agent, agent spawns fresh iteration |
+
+**Do NOT pause between review completion and next task start.** Pausing between tasks is procrastination disguised as checkpoint courtesy.

@@ -266,6 +266,19 @@ Recognize these thoughts as signals to stop and delegate instead:
 | "Skip methodology review, it's standard" | Your "standard" assumptions often fail. Review anyway. |
 | "Output looked reasonable" | You didn't verify—"looked reasonable" ≠ verified. Check numbers. |
 
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Delegating without context | You spawned a task agent without SPEC/PLAN context. It guesses wrong — your delegation created confusion. |
+| Skipping verification of agent output | You trusted the agent's claim of completion. The output is wrong — your trust was negligence. |
+
+### Delete & Restart
+
+**If you wrote analysis code in the main chat instead of delegating to a task agent, DELETE it immediately and dispatch a Task agent.**
+
+Code written in main chat is contaminated by orchestrator context, skips the output-first protocol, and bypasses methodology review. It cannot be salvaged — it must be replaced.
+
 ## Red Flags
 
 **If you catch yourself thinking these, STOP immediately:**

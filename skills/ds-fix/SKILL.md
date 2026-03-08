@@ -30,6 +30,27 @@ Before changing ANY analysis code, you MUST:
 **If you're about to change code without diagnosing first, STOP.**
 </EXTREMELY-IMPORTANT>
 
+### Honesty Framing
+
+**Claiming 'root cause found' without tracing the error backwards through actual code and data is LYING about your diagnosis.** Your guess is not a diagnosis. Your assumption is not evidence.
+
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping diagnosis | You skipped diagnosis because you thought you were smart enough to guess. A checklist would outperform you. |
+| Fixing without understanding | You applied a patch without understanding the root cause. The bug returns in a different form — your fix was cosmetic. |
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I can see the bug from the error message" | Error messages show symptoms, not causes. The traceback tells you WHERE, not WHY. | Trace backwards through the pipeline to find the first divergence point |
+| "This is the same bug as last time" | Similar symptoms can have different root causes. Pattern-matching from memory is not diagnosis. | Diagnose fresh — compare against LEARNINGS.md for prior context, but verify independently |
+| "The fix is obvious" | Obvious fixes mask deeper issues. The "obvious" fix is usually a patch over the symptom. | Identify root cause first, then fix. If it's truly obvious, diagnosis takes 30 seconds. |
+| "I'll just rerun and see if it works" | Retry without understanding is cargo cult debugging. If you don't know why it failed, you don't know why it passed. | Diagnose the failure, fix the cause, then rerun to verify |
+| "The data probably changed" | Verify before assuming external cause. Blaming data without evidence is a cop-out. | Compare data profiles before/after — shape, dtypes, distributions, nulls |
+
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
@@ -155,7 +176,10 @@ If the question itself changed:
 
 When 3+ plausible explanations exist, sequential investigation failed, or contradictory evidence is found, use the competing hypothesis protocol.
 
-Read the full protocol: `references/competing-hypothesis.md`
+**MANDATORY:** Before proceeding, load the protocol:
+```
+Read("${CLAUDE_PLUGIN_ROOT}/skills/ds-fix/references/competing-hypothesis.md")
+```
 
 Key steps:
 1. Generate 3-5 competing hypotheses (Data Quality, Methodology, Implementation, Domain)
@@ -172,6 +196,20 @@ After fixing, apply output-first verification:
 2. Re-run downstream steps: verify no cascading issues
 3. Check against SPEC.md success criteria
 4. Update LEARNINGS.md with fix documentation
+
+### Gate: Fix Verification
+
+Before claiming any fix is done, execute this gate:
+
+```
+1. IDENTIFY → What specific behavior was broken? (not vague — exact symptom)
+2. RUN      → Execute the fixed code with output-first verification
+3. READ     → Read the output: does it match SPEC.md success criteria?
+4. VERIFY   → Re-run downstream steps — no cascading failures introduced
+5. CLAIM    → Only declare "fix complete" if ALL gates pass
+```
+
+**Skipping this gate means your fix is unverified. An unverified fix is not a fix — it's a guess.**
 
 ## Delegation
 

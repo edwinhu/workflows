@@ -8,6 +8,7 @@ description: "This skill should be used when the user asks to 'revise writing', 
 
 The revision loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
 
+<EXTREMELY-IMPORTANT>
 ## IRON LAW: Critique Over Comfort
 
 **If the writing has problems, SAY SO. Being nice is LYING to the user.**
@@ -18,6 +19,7 @@ If you catch yourself thinking:
 - "This is pretty good overall" - STOP. Find the weakness.
 - "I don't want to be too harsh" - STOP. Harsh is kind.
 - "The author probably knows what they're doing" - STOP. Check anyway.
+</EXTREMELY-IMPORTANT>
 
 ### Rationalization Table
 
@@ -35,6 +37,23 @@ If you catch yourself thinking:
 | "This section is creative, rules don't apply" | Creative writing still needs clarity and precision | Apply rules, note creative exceptions explicitly |
 
 **Reporting "all checks pass" without actually running every check is LYING.** You must have evidence for every checkmark. An unchecked box with "assumed OK" is fraud.
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Rewriting instead of targeted fix | You rewrote the section to "improve" it. You introduced new issues and lost the author's voice — your ambition was destructive. |
+| Marking fixed without checking | You marked the issue resolved without re-reading. It's still there — you lied. |
+
+## Red Flags — STOP If You Catch Yourself:
+
+| Action | Why Wrong | Do Instead |
+|---|---|---|
+| Rewriting entire sections instead of targeted fixes | Introduces new issues, loses author voice | Apply the minimum change that resolves the issue |
+| Marking issue as fixed without verifying the draft changed | You're lying about completion | Re-read the draft passage after editing |
+| Applying fix without re-reading surrounding context | Fix may break adjacent text | Read the paragraph before and after |
+| Skipping domain skill load because you "remember the rules" | You don't remember — you're guessing | Read() the domain skill every time |
+| Combining multiple unrelated fixes in one pass | Makes it impossible to verify each fix | One issue at a time, verify each |
 
 ## When to Use
 
@@ -212,6 +231,19 @@ These may require human judgment. Please review and advise.
 Report issues with suggested fixes:
 - **Minor issues**: "Address remaining issues, then re-run `/writing-review` -> `/writing-revise`."
 - **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` -> `/writing-revise`."
+
+#### Iteration Protocol: No Pause, Hard Stop at 3 Cycles
+
+After each fix round, workflow runs deterministically WITHOUT user prompting:
+
+1. **Round N**: Fix issues from REVIEW.md
+2. **IMMEDIATELY** (no pause): Invoke /writing-review to re-diagnose
+3. **IMMEDIATELY** (no pause): Invoke /writing-revise to fix new issues
+4. **Repeat** until: All issues resolved OR iteration limit hit
+
+**Hard stop at 3 cycles.** After iteration 3, if issues persist, STOP and escalate to user.
+
+**Claiming "I'll loop back to review" while pausing for user input is LYING about the no-pause rule.** The loop is deterministic: fix → diagnose → fix → diagnose → STOP.
 
 #### If All Issues Fixed -> Complete Workflow
 

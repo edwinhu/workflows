@@ -66,6 +66,16 @@ One concept = One word. If you catch yourself varying terms ("industrialization"
 | "Passive voice sounds objective" | Sounds evasive | USE active voice |
 | "Technical writing must be formal" | Technical ≠ turgid | BE clear AND technical |
 
+### Honesty Framing
+
+**Describing an empirical strategy without understanding the identification assumption is LYING about methodology.** Pattern-matching from similar papers is not econometric reasoning.
+
+### Drive-Aligned Consequences
+
+- You opened with "In recent years..." to seem academic. The reader recognizes it as AI filler — your opening destroyed credibility.
+- You called the same variable "cost," then "expense," then "outlay" to avoid repetition. The reader thinks these are different concepts — your style created confusion.
+- You described the empirical approach without addressing endogeneity. The referee rejects the paper — your omission was fatal.
+
 ### Red Flags - STOP Immediately If You Think:
 
 - "Let me write a standard introduction" → NO. Find your hook first.

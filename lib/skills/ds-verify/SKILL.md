@@ -42,6 +42,23 @@ This applies even when:
 **If you catch yourself thinking "I can skip verification," STOP - you're about to lie.**
 </EXTREMELY-IMPORTANT>
 
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping fresh re-run | You assumed prior results still hold. They don't reproduce — your assumption is the irreproducibility the user discovers. |
+| Rubber-stamping | You reported 'verified' without re-executing. The analysis fails on fresh data — you lied. |
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The results matched before" | Prior results don't prove current reproducibility. Code, data, or environment may have changed. | Re-run fresh and compare outputs |
+| "I just need to check the numbers" | Reproducibility means re-running, not re-reading. Reading cached output proves nothing. | Execute the analysis fresh and verify outputs match |
+| "The reviewer already verified this" | Review checks methodology, verify checks reproducibility. They are different gates. | Run the reproducibility demonstration yourself |
+| "Fresh re-run will give same results" | If you're sure, running it costs nothing. If you're wrong, skipping it costs everything. | Run it. Proof is cheap, assumptions are expensive. |
+| "The user is waiting" | Publishing irreproducible results wastes more time than verification. A 10-minute check prevents a 10-day retraction. | Run verification now — the user wants correct results, not fast wrong ones |
+
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
@@ -248,6 +265,22 @@ These do NOT count as verification:
 - [List items requiring attention]
 - Recommended next steps
 ```
+
+## Workflow Loops (If NEEDS WORK)
+
+1. Identify which item(s) need fixing
+2. Return to ds-implement with specific task(s) to fix
+3. Re-run those tasks with output-first verification
+4. Update LEARNINGS.md with fixes
+5. Re-invoke ds-verify for fresh verification
+
+**Maximum 3 verification cycles.** If issues persist after 3 rounds, escalate to user with summary of blocking issues.
+
+**Chaining instruction (if NEEDS WORK):**
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
+```
+Then fix the identified issues and re-run verification.
 
 ## Completion Criteria
 

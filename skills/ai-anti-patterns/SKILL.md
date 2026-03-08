@@ -142,6 +142,26 @@ This plugin includes PostToolUse hooks that automatically scan Write/Edit output
 
 The hook checks for all CRITICAL and HIGH severity patterns automatically.
 
+## Rationalization Table - STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "This puffery is appropriate for the register" | Puffery is never appropriate; precision always beats vagueness | REPLACE with concrete, specific language |
+| "The user specifically requested this style" | Users request outcomes, not AI-smell | DELIVER the outcome without the patterns |
+| "Bold emphasis is needed here for readability" | If you need bold to make it readable, the sentence is weak | REWRITE the sentence so it stands without formatting |
+| "This hedge ('it's important to note') adds nuance" | It adds nothing; state the point directly | DELETE the hedge, keep the point |
+| "The transition phrase connects the ideas" | "Furthermore" and "Moreover" are filler, not connection | CUT the transition; if ideas connect, the reader sees it |
+| "This summary paragraph is helpful" | If the reader needs a summary of what you just said, you said it poorly | DELETE the summary, revise the original |
+
+## Honesty Framing
+
+**Claiming text is free of AI patterns without checking each sentence against the pattern list is LYING about your review.** Skimming is not checking.
+
+## Drive-Aligned Consequences
+
+- You let puffery pass because flagging it felt pedantic. The document reads as obviously AI-generated — your politeness destroyed the user's credibility.
+- You skipped the anti-pattern check to save time. The user submits AI-smelling text — your efficiency embarrassed them.
+
 ## Red Flags - Stop If You Think
 
 | Thought | Why It's Wrong | Do Instead |

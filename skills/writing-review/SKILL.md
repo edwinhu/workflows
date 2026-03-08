@@ -270,6 +270,26 @@ No issues found. Run /writing-revise to complete the workflow.
 | "Paragraph-level review is too detailed" | If you don't check paragraphs, you're reviewing headings not prose | The Topic Sentence Inventory is the review |
 | "The single-file document is too long to split" | Long documents need MORE structure, not less | Build the Section Map, assign line ranges |
 
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Rubber-stamping to seem efficient | Undetected issues mean the user discovers them in public — your efficiency destroyed their credibility. |
+| Skipping evidence quotes | You reported "no issues" without quoting text. You didn't actually read — your review was theater. |
+| Skipping a review level | You skipped transition review because sections "looked fine." The document reads as disconnected fragments — your laziness shows. |
+
+## Confidence Scoring
+
+Tag each reported issue with a confidence level:
+
+| Level | Threshold | Placement |
+|---|---|---|
+| **HIGH** | >= 90% certain this is a real problem | Main report — fix required |
+| **MEDIUM** | >= 80% certain | Main report — fix recommended |
+| **LOW** | < 80% certain | Separate "Possible Issues" section at end of REVIEW.md |
+
+Only issues at HIGH or MEDIUM confidence appear in the main report. LOW confidence issues go in a separate **"Possible Issues"** section so they are visible but do not clutter actionable fixes. This prevents false positives from overwhelming `/writing-revise`.
+
 ## Red Flags — STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |

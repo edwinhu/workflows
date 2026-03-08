@@ -21,6 +21,26 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 **Never skip to prose drafting without a detailed outline first.**
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Outline Before Prose
+
+**NO PROSE WITHOUT OUTLINE. Never skip to prose drafting without a detailed outline in `outlines/` first. This is not negotiable.**
+
+If you find yourself writing prose without a matching outline file:
+1. STOP immediately
+2. DELETE the prose
+3. Create the outline first
+4. THEN draft
+
+Thin outlines produce thin drafts. Each outline must have POINT, EVIDENCE, and LOGIC for every subsection.
+</EXTREMELY-IMPORTANT>
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Writing thin outlines to move faster | The draft has no structure to expand — your speed produced chaos. |
+
 ## Process
 
 ### Step 1: Load Context
@@ -233,6 +253,16 @@ Before finalizing each outline, verify:
 | Skipping the cross-reference with PRECIS | Section may not advance any claim | Check which claim this section serves |
 | Stopping after one outline to ask permission | Breaks momentum | Continue to next section immediately |
 | Making an outline without sources | Evidence-free outlines produce evidence-free prose | Go back to brainstorm for sources |
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|---|---|---|
+| "The outline is obvious for this structure" | Obvious outlines produce generic papers — the structure should reflect the argument's logic, not a template | Write the outline that THIS argument needs |
+| "I'll figure out transitions during drafting" | Transitions ARE the argument's logic; planning them IS the outline's job | Plan every transition now |
+| "Three sections is enough" | Check if three is earned by the argument or arbitrary — structure follows claims, not convention | Derive section count from PRECIS claims |
+| "I can add supporting points later" | Later means the draft section will be thin and need rewriting — evidence gaps compound | Map evidence to every point now |
+| "The PRECIS already covers the structure" | PRECIS is a summary, outline is the blueprint — they serve different purposes | Build the outline as a separate, detailed document |
 
 ## Common Problems
 

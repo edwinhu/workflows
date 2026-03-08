@@ -1,7 +1,7 @@
 ---
 name: dev-explore
 version: 1.0
-description: "REQUIRED Phase 2 of /dev workflow after dev-brainstorm. This skill should be used when the user asks to 'explore the codebase', 'map architecture', 'find similar features', 'discover test infrastructure', 'trace execution paths', 'identify code patterns', or needs to understand WHERE code lives and HOW it works before implementation. Launches parallel explore agents and returns prioritized key files list."
+description: "This skill should be used when the user asks to 'explore the codebase', 'map architecture', 'find similar features', or in Phase 2 of /dev workflow."
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
@@ -410,6 +410,16 @@ Each agent MUST return files in this format:
 | 4 | `src/types/user.ts:1` | User type definitions |
 | 5 | `tests/auth/login.test.ts:1` | Existing test patterns |
 ```
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Efficiency** | "I'll skip reading key files to save time" | You design against imagined code, rework everything | **Inefficient** |
+| **Helpfulness** | "User is waiting, I'll explore less" | Shallow exploration produces wrong architecture | **Anti-helpful** |
+| **Competence** | "File names tell me enough" | Implementation details surprise you mid-build | **Incompetent** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
 
 ## Red Flags - STOP If You're About To:
 

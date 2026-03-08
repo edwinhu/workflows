@@ -1,11 +1,29 @@
 ---
 name: writing
-description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', 'brainstorm writing topics', 'gather sources for a paper', 'what should I write about', or needs the writing workflow entry point for source gathering, topic discovery, and project setup before outlining and drafting."
+description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', 'brainstorm writing topics', 'gather sources for a paper', 'what should I write about', or needs the writing workflow entry point for any writing task."
 ---
 
 # Writing
 
 **Entry point for all writing tasks.** Routes to quick mode or project workflow.
+
+## Decision Flowchart (This IS the Spec)
+
+```
+START
+  │
+  ├─ Quick edit? ("check this paragraph", inline short text)
+  │  YES → Load writing-general/SKILL.md → Apply rules → Return → EXIT
+  │
+  ├─ Active workflow? (.claude/ACTIVE_WORKFLOW.md exists)
+  │  YES → Read ACTIVE_WORKFLOW.md → Resume at current phase → EXIT
+  │
+  └─ New project
+     → Phase 2: Detect Domain, Gather Sources
+     → Launch writing-setup
+```
+
+If text and flowchart disagree, the flowchart wins.
 
 ## Step 1: Detect Mode
 
@@ -394,6 +412,26 @@ Before proceeding to project setup:
 3. **READ**: Check that sources were gathered (sub-agent results returned) or topic was selected (discovery mode)
 4. **VERIFY**: User has confirmed topic, angle, and audience. Domain indicators are clear.
 5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-setup
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|---|---|---|
+| "I already know enough about this topic" | Your training data is not research | Search for real sources |
+| "One search is enough" | One search finds one perspective | Decompose into 3-6 parallel searches |
+| "The user seems impatient, skip the interview" | Wrong objectives waste more time than questions | Ask the clarifying questions |
+| "I'll gather more sources later" | Later never comes; you'll draft with what you have | Gather sources now |
+| "This topic is straightforward" | "Straightforward" means you haven't thought deeply enough | Find the complexity |
+
+**Claiming you've gathered sufficient sources without actually searching is LYING about your preparation.** Your training knowledge is not research. Your recall is not citation.
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Shortcut | Consequence |
+|---|---|
+| Skipping source gathering to draft faster | You skipped research to draft faster. The draft has no evidence — your speed produced empty prose. |
+| Not interviewing the user about angle/audience | You assumed you understood the topic. The paper argues the wrong thesis — your assumption wasted everything. |
+| Using training data as sources instead of searching | You cited from memory instead of searching. The citations are wrong or outdated — your confidence was academic dishonesty. |
 
 ## Red Flags - STOP If You Catch Yourself:
 

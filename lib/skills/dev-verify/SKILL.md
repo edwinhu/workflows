@@ -164,6 +164,8 @@ THEN AND ONLY THEN: E2E tests/screenshots
 See `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")` for the full gate sequence with examples.
 </EXTREMELY-IMPORTANT>
 
+**If verification discovers stale or fabricated evidence in LEARNINGS.md, DELETE the contaminated entries. Do not amend false claims — remove them entirely and re-run the verification from scratch.**
+
 ## Insufficient Evidence
 
 These do NOT count as verification:
@@ -220,6 +222,16 @@ These thoughts mean STOP—you're about to claim falsely:
 - Runtime: "The code WORKS" (valid)
 
 If you find yourself saying "the code exists" or "I verified the implementation" without running it, **STOP** - you're doing structural analysis, not verification.
+
+## Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Efficiency** | "Prior tests still pass, skip fresh evidence" | They don't — your assumption is the bug the user discovers | **Inefficient** |
+| **Helpfulness** | "Report 'verified' to unblock the user" | The user discovers the failure — you lied | **Anti-helpful** |
+| **Competence** | "I'm confident it works without running it" | Confidence without evidence is delusion, not competence | **Incompetent** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
 
 ## Verification Patterns
 

@@ -56,9 +56,16 @@ You cannot plan analysis steps without knowing:
 
 Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect results.
 
+### Drive-Aligned Consequences
+
+| Shortcut | Consequence |
+|----------|-------------|
+| Skipping data profiling | You skipped profiling to save time. NaN columns and type mismatches crash the pipeline 3 tasks in — your shortcut tripled the work. |
+| Thin task breakdown | You wrote vague tasks to move faster. The implementer guesses wrong — your speed created confusion. |
+
 ### No Pause After Completion
 
-After writing `.claude/PLAN.md`, IMMEDIATELY invoke:
+After writing `.claude/PLAN.md` and initializing `.claude/LEARNINGS.md`, IMMEDIATELY invoke:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
 ```
@@ -474,6 +481,19 @@ For each task, define what output proves completion:
 ### Data Flow
 [source] → [task] → [intermediate] → [task] → [output]
 
+### ETL Strategy Flowchart (Required in PLAN.md)
+
+Every PLAN.md with data processing MUST include an ASCII flowchart showing data sources, transformations, and outputs with annotations (FILTER/PARALLEL/CACHE):
+
+```
+Example:
+source.csv ──→ [Task 1: Clean] ──→ clean.parquet ──→ [Task 2: Analyze] ──→ results.csv
+               FILTER: SQL WHERE     CACHE: parquet    PARALLEL: disabled
+               (rows: 5M → 3M)      (rows: 3M)        (join key unique)
+```
+
+This flowchart IS the specification. If PLAN.md narrative and flowchart disagree, the flowchart wins.
+
 ### Scale-Up Testing Plan
 <!-- Include when any task involves batch APIs, irreversible operations, or >500 items through external services -->
 
@@ -526,11 +546,43 @@ Complete the plan when:
 - Order tasks by dependency
 - Define output verification criteria
 - Write `.claude/PLAN.md`
+- Initialize `.claude/LEARNINGS.md`
+- Pass Exit Gate
 - Confirm ready for implementation
+
+### Initialize LEARNINGS.md
+
+After writing `.claude/PLAN.md`, create `.claude/LEARNINGS.md`:
+
+```markdown
+# Analysis Learnings: [Analysis Name]
+
+## Data Quality Pipeline
+[To be populated during implementation]
+
+## Key Findings
+[To be populated during implementation]
+```
+
+This file is populated by ds-implement as tasks complete. Initializing it here ensures the file exists before implementation begins.
+
+### Exit Gate: PLAN.md Verification
+
+<EXTREMELY-IMPORTANT>
+Before proceeding to ds-implement, execute this gate:
+
+1. **IDENTIFY**: PLAN.md exists at `.claude/PLAN.md`
+2. **RUN**: `Read(".claude/PLAN.md")`
+3. **READ**: Verify it contains: Data Profile section, Task Breakdown section, Output Verification Plan
+4. **VERIFY**: If any data source > 1M rows, confirm ETL Strategy section exists
+5. **CLAIM**: Only proceed to ds-implement if ALL checks pass
+
+**Skipping this gate is LYING about plan completeness. An incomplete plan wastes more time than the 30 seconds this gate takes.**
+</EXTREMELY-IMPORTANT>
 
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After completing plan, IMMEDIATELY invoke:
+**REQUIRED SUB-SKILL:** After passing the exit gate, IMMEDIATELY invoke:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
 ```

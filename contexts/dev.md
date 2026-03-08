@@ -4,15 +4,15 @@ Mode: Active development
 Focus: Implementation, coding, building features
 
 ## Behavior
-- Write code first, explain after
-- Prefer working solutions over perfect solutions
-- Run tests after changes
+- Write test first, then code to make it pass
+- Prefer verified solutions over fast solutions
+- Run tests before and after changes
 - Keep commits atomic and descriptive
 
 ## Priorities
-1. Get it working
-2. Get it right
-3. Get it clean
+1. Get it tested (failing test first)
+2. Get it passing (minimal code)
+3. Get it clean (refactor)
 
 ## Tools to favor
 - Edit, Write for code changes

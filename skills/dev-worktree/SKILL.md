@@ -91,9 +91,12 @@ fi
 
 **Description:** dev-worktree: auto-detect project type and install dependencies
 
-### Step 5: Verify Clean Baseline (Optional)
+### Step 5: Verify Clean Baseline (MANDATORY)
 
-Run tests to verify baseline if project has test suite:
+<EXTREMELY-IMPORTANT>
+**You MUST run tests to verify baseline. This is not optional.**
+
+A worktree without a verified baseline is a trap. You will not know if failures are yours or pre-existing.
 
 **Run:**
 ```bash
@@ -111,8 +114,31 @@ fi
 
 **Description:** dev-worktree: auto-detect and run project test suite
 
-**If tests fail:** Report failures and note that baseline has issues.
+**If tests fail:** Report failures and note that baseline has issues. Do NOT proceed silently.
 **If tests pass:** Report clean baseline.
+
+### Rationalization Prevention (Baseline Verification)
+
+| Thought | Reality |
+|---------|---------|
+| "Tests will pass, they passed on main" | Worktree setup can break things. Verify. |
+| "Baseline check takes too long" | Debugging pre-existing failures takes longer. Run now. |
+| "I'll notice if something is broken later" | You won't know if the failure is yours or inherited. Run now. |
+| "Dependencies installed fine, should be good" | Install success != test success. Run tests. |
+| "Main branch is green, worktree will be too" | Worktree has different env, paths, symlinks. Verify independently. |
+
+### Honesty Framing
+
+**Claiming clean baseline without running tests is LYING about project state.** Your assumption is not verification.
+
+### Why Skipping Hurts the Thing You Care About Most
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|-------------|----------------------|---------------------|
+| **Helpfulness** | "Skip baseline to start faster" | Broken baseline infects all work, every failure is ambiguous | **Anti-helpful** |
+| **Efficiency** | "Skip worktree setup to save time" | Merge conflicts later cost 10x the setup time | **Anti-efficient** |
+| **Competence** | "I know the codebase well enough" | Your mental model is stale. The worktree reveals conflicts you didn't anticipate. | Your confidence wasn't competence — it was ignorance. |
+</EXTREMELY-IMPORTANT>
 
 ### Step 6: Report Ready
 
