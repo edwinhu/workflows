@@ -81,7 +81,8 @@ AskUserQuestion(questions=[
       {"label": "AI anti-patterns", "description": "12-category checklist for AI writing indicators (puffery, structure, artifacts)"},
       {"label": "Style guide", "description": "Domain rules: legal writing, econ writing, or Strunk & White (general)"},
       {"label": "Bluebook rules", "description": "Citation compliance against Bluebook 21st edition mechanical rules"},
-      {"label": "Enforcement patterns", "description": "Score skill/workflow against 12 superpowers enforcement patterns"}
+      {"label": "Enforcement patterns", "description": "Score skill/workflow against 12 superpowers enforcement patterns"},
+      {"label": "Source verification", "description": "Check citations against paperpile.bib, verify quotes against source PDFs (use source-verify skill)"}
     ],
     "multiSelect": true
   }
@@ -119,6 +120,7 @@ Each scorer has a specific audit method that ensures independence:
 | **Style guide** | Fresh subagent reads domain skill (writing-legal, writing-econ, or writing-general), then audits | Fresh subagent | Rule violations by severity |
 | **Bluebook rules** | Fresh subagent reads `${CLAUDE_PLUGIN_ROOT}/skills/bluebook/SKILL.md` + references, then audits citations | Fresh subagent | Violations by rule category |
 | **Enforcement patterns** | Fresh subagent reads `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`, scores all 12 patterns | Fresh subagent | Count of Absent + Weak scores |
+| **Source verification** | Invoke `Skill(skill="workflows:source-verify")` — checks citations against paperpile.bib, verifies quotes against source PDFs | Mechanical (bibtex grep) + NLM (quote search) | Verified / checkable citations |
 
 **Composing scorers:** When multiple scorers are selected, each audit iteration runs ALL of them. The total score is the sum of all findings across all scorers. This means the audit catches different failure modes simultaneously — AI-smell AND style violations AND unsupported claims.
 
@@ -297,7 +299,16 @@ This skill **does not replace** existing audit workflows. It plans and structure
 | **writing-review + writing-revise** | Can be wrapped in audit-fix-loop for iterative improvement |
 | **skill-creator** | Enforcement audit step IS an audit-fix pattern |
 | **ai-anti-patterns** | Used AS a scorer within audit-fix-loop |
+| **source-verify** | Domain-specific audit-fix-loop for citation/quote verification |
 
-## Future: Source Grounding
+## Source Verification
 
-Source grounding (fact-checking claims against NLM notebook sources) is planned but not yet implemented. It requires a pipeline: build NLM notebook with sources (via librarian agent + readwise/Google Scholar), then query the notebook to fact-check claims. When ready, it will be added as a scorer option.
+For citation and quote verification, use the dedicated skill:
+
+```
+Skill(skill="workflows:source-verify")
+```
+
+Source-verify checks citations against `paperpile.bib` (existence + field accuracy), verifies quotes against source PDFs (via `rga` or NLM), and optionally checks claim grounding via NLM. It implements its own audit-fix-loop with scored threshold termination.
+
+Use source-verify directly — do NOT try to reinvent citation checking inside a generic audit-fix-loop.
