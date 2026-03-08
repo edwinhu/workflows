@@ -106,6 +106,9 @@ See `references/goal-templates.md` for full copy-paste templates per domain.
 
 ### Translating Non-Python Feedback
 
+**Before editing Typst source to apply fixes, load the tinymist skill:** `Skill(skill="tinymist:typst")`
+It has Fletcher/CeTZ reference docs with correct parameter names (label-side, label-pos, spacing, inset). Without it, you will guess at parameter names and waste iterations.
+
 Gemini returns structured pixel measurements. Claude translates to source code:
 
 | Gemini says | Claude translates to (Typst example) |
