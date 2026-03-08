@@ -91,6 +91,7 @@ Your job is to provide PRECISE VISUAL MEASUREMENTS that the implementer can tran
 - Font sizes appropriate (headers larger than body)
 - Content centered and balanced within the slide
 - No text overlapping or running off edges
+- No content clipped by slide boundaries (diagrams, labels, nodes cut off at edges)
 - Theme elements (header bar, footer, logo) properly rendered
 - Bullet points or numbered lists properly aligned
 - Images/figures not overlapping text
@@ -161,13 +162,15 @@ Your job is to provide PRECISE VISUAL MEASUREMENTS that the implementer can tran
 [description -- e.g., "Flow diagram showing securitization process with 5 entities"]
 
 ## Check These Specifically
-- All nodes visible and readable (no clipped text)
+- All nodes fully visible — no clipping at slide edges (top, bottom, left, right)
+- All node text readable (no clipped or truncated labels)
 - Arrows connect correct nodes with correct direction
 - Labels on arrows readable and not overlapping arrows or nodes
 - Node sizes sufficient for their text content
 - Spacing between nodes even and balanced
 - No overlapping elements (nodes, arrows, labels)
 - Overall layout balanced (not squished to one side)
+- Entire diagram fits within the slide with margin — nothing touching or cut off at edges
 
 ## Previous Issues -- iteration [N]
 [feedback from prior iteration, or "First iteration - no prior issues."]
