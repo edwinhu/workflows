@@ -24,6 +24,7 @@ Use AskUserQuestion to understand the domain:
 2. **What's the deliverable?** (working feature, analysis report, polished document, etc.)
 3. **What are the common failure modes?** (skipping tests, shallow analysis, weak arguments, etc.)
 4. **When does drift happen?** (implementation without design, conclusions without evidence, etc.)
+5. **How should iteration work?** (one-shot with verification, serial hypothesis testing, parallel exploration, agent team review)
 
 ### Step 3: Propose Phase Decomposition
 
@@ -37,6 +38,28 @@ Present 2-3 topologies to the user:
 - **Linear** - phase 1 → phase 2 → ... → phase N (best for predictable work)
 - **Branching** - routing based on input type (best for varied work like writing)
 - **Iterative** - phases with loops (best for exploratory work like DS)
+
+### Iteration Topology
+
+Based on the interview answer about iteration, assign each phase an iteration strategy:
+
+| Strategy | When to Use | Implementation |
+|----------|------------|----------------|
+| **One-shot + verify** | Clear specs, low ambiguity | Single subagent, run tests, move on |
+| **Serial hypothesis** | Debugging, root cause analysis | Fresh subagent per iteration, HYPOTHESES.md as memory, progress-gated escalation |
+| **Parallel exploration** | Multiple valid approaches, robustness checking | Spawn N subagents simultaneously, converge findings in state file |
+| **Agent team** | Output needs multi-faceted review | Specialized reviewer subagents in parallel (e.g., copy + critic + fact-check), consolidate in REVIEW.md |
+
+**Exit conditions by strategy:**
+
+| Strategy | Exit Gate | Escalate When |
+|----------|-----------|---------------|
+| One-shot | Test passes | Test fails after fix attempt |
+| Serial | New findings stop emerging | 3+ consecutive failures, repeated hypotheses |
+| Parallel | Findings converge | Results contradictory, no convergence |
+| Agent team | Reviewers converge | Unresolvable disagreement on direction |
+
+**Key principle:** The agent never declares its own completion. Tests pass, findings converge, or the human approves.
 
 ### Step 4: Apply Enforcement Patterns
 

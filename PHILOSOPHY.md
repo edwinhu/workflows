@@ -98,7 +98,41 @@ The insight: **enforcement patterns work best when the consequence of violation 
 
 This is why Honesty Framing (#9) is disproportionately effective — it doesn't fight the honesty drive, it recruits it. Drive-Aligned Consequences (#12) generalizes this to all five drives.
 
-## 5. Domain-Specific Exploration
+## 5. Iteration Architecture: Fresh Subagents, Not Loops
+
+The original Ralph Wiggum technique (`while :; do cat PROMPT.md | claude-code; done`) solved a fundamental problem: long-running agent sessions suffer from **context pollution**. Each failed attempt, abandoned approach, and partial reasoning stays in conversation history, degrading reasoning quality.
+
+Fresh subagents achieve the same effect within a single session. Each subagent gets clean context. The filesystem is the durable memory. The conversation is ephemeral.
+
+**Core principle: Progress lives in files, not in conversation.**
+
+### The Three Topologies
+
+Different domains need different iteration shapes:
+
+| Topology | When to Use | Example |
+|----------|------------|---------|
+| **Serial** | Approaches must build on each other | Debugging: each hypothesis builds on what was ruled out |
+| **Parallel** | Multiple perspectives can be gathered independently | Data science: robustness checks run simultaneously |
+| **Team** | Output needs multi-faceted review from specialized roles | Writing: copy editor + critic + fact checker in parallel |
+
+### Shared Design Principles
+
+1. **Fresh subagent per iteration** — no context pollution across attempts
+2. **Filesystem as memory** — state files (HYPOTHESES.md, REVIEW.md) persist across iterations
+3. **Progress-gated escalation** — loop runs autonomously while making progress, involves the human only when stuck
+4. **No honor-system exits** — the agent doesn't decide when it's done. Convergence, test results, or the human decides.
+
+### Why Not Ralph Loops?
+
+The CC ralph-loop plugin uses a stop hook with a completion promise. In practice:
+- The agent outputs the promise on iteration 1 every time
+- The stop hook trusts the promise — no verification
+- The loop has never iterated past 1 in any recorded session
+
+The fix is not a better stop hook. The fix is removing the agent's ability to declare its own completion. Tests pass, findings converge, or the human approves. Those are structural gates the agent cannot fake.
+
+## 6. Domain-Specific Exploration
 
 Not all phases are equally constrained. Exploration needs vary by domain:
 
@@ -108,7 +142,7 @@ Not all phases are equally constrained. Exploration needs vary by domain:
 
 The constraint is not "no exploration" but "no implementation without understanding."
 
-## 6. The Deliverable Test
+## 7. The Deliverable Test
 
 A workflow succeeds when the human receives a deliverable that requires minimal rework. This reframes the goal:
 
@@ -117,7 +151,7 @@ A workflow succeeds when the human receives a deliverable that requires minimal 
 
 Good workflows produce deliverables where the human says "this is basically done" not "I'll take it from here."
 
-## 7. Two Entry Points
+## 8. Two Entry Points
 
 Each workflow exposes exactly **two** user-facing commands. Everything else is internal.
 
@@ -183,7 +217,7 @@ Standalone tools that aren't workflow phases stay as auto-triggered skills: `rea
 
 The test: if the skill makes sense outside of `/dev`, `/ds`, or `/writing`, it's a standalone tool. If it only makes sense as a phase within a workflow, it's internal.
 
-## 8. Workflows Improve Through Use
+## 9. Workflows Improve Through Use
 
 Enforcement patterns are discovered through iteration, not designed in advance. Dev is the most mature workflow because it has been used the most - each session reveals new rationalization patterns, new failure modes, new gates needed. Writing and DS are less mature not because they're less important, but because they've had fewer gradient updates.
 
