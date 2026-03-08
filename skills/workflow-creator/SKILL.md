@@ -40,9 +40,9 @@ Present 2-3 topologies to the user:
 
 ### Step 4: Apply Enforcement Patterns
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/references/enforcement-checklist.md`.
+Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`.
 
-For each phase, score which of the 11 patterns are needed:
+For each phase, score which of the 12 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Honesty Framing
 - **Medium-drift phases** (design, review): Gate Functions, Red Flags, Staged Review Loops
 - **Low-drift phases** (brainstorm, exploration): Red Flags only (creative phases need freedom)
@@ -89,9 +89,9 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 
 ### Step 3: Score Against Enforcement Checklist
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/references/enforcement-checklist.md`.
+Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`.
 
-For each of the 11 patterns, score:
+For each of the 12 patterns, score:
 - **Present** - pattern exists and is well-implemented
 - **Weak** - pattern exists but is insufficient (e.g., soft language instead of Iron Law)
 - **Absent** - pattern is missing where it should exist

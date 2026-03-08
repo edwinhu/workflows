@@ -21,8 +21,13 @@
 | **Honesty Framing** | "Claiming without verification is LYING" - stronger than "rationalizing" | ☐ |
 | **Trigger-Only Descriptions** | Brief triggers in description, process details in body only | ☐ |
 | **No Pause Between Tasks** | After completing task N, immediately start task N+1 | ☐ |
+| **Drive-Aligned Consequences** | Frame violation as failure of the drive that motivated it | ☐ |
 
-**Key insight from superpowers:** If the skill description contains process summary, Claude follows the short description instead of reading the detailed flowchart. Keep descriptions trigger-only.
+**Full reference:** `lib/references/enforcement-checklist.md`
+
+**Key insights:**
+- If the skill description contains process summary, Claude follows the short description instead of reading the detailed flowchart. Keep descriptions trigger-only.
+- Enforcement works best when the consequence targets the drive that motivated the shortcut (e.g., "skipping steps is anti-helpful" not just "don't skip steps").
 
 ## Required Skills
 

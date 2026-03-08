@@ -83,6 +83,21 @@ Superpowers enforcement patterns are the regularization that counteracts this:
 
 Enforcement density should be proportional to drift risk: dev-implement (high risk of skipping tests) needs more enforcement than ds-brainstorm (lower risk).
 
+### Why LLMs Skip Steps (The Drive Model)
+
+LLMs don't skip steps out of laziness or rebellion. They skip steps because their training drives — helpfulness, honesty, competence, approval-seeking, efficiency — push them toward shortcuts that *appear* to serve the user faster.
+
+| Drive | How It Causes Drift | Example |
+|-------|-------------------|---------|
+| **Helpfulness** | "Faster = more helpful, so skip the ceremony" | Jumping to a fix without investigation |
+| **Competence** | "I already know the answer, proving it is redundant" | Skipping triage because the bug "looks familiar" |
+| **Efficiency** | "The protocol is overhead I can eliminate" | Bypassing the ralph loop to save time |
+| **Approval** | "The user seems frustrated, I should deliver fast" | Skipping tests because the user wants results NOW |
+
+The insight: **enforcement patterns work best when the consequence of violation is framed as a failure of the drive that motivated the shortcut.** Telling Claude "don't skip steps" fights against its drives. Telling Claude "skipping steps makes you anti-helpful" *aligns* its drives with the protocol.
+
+This is why Honesty Framing (#9) is disproportionately effective — it doesn't fight the honesty drive, it recruits it. Drive-Aligned Consequences (#12) generalizes this to all five drives.
+
 ## 5. Domain-Specific Exploration
 
 Not all phases are equally constrained. Exploration needs vary by domain:

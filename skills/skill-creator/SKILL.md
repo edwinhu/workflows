@@ -40,14 +40,14 @@ Follow its full process: capture intent, interview, draft SKILL.md, write test c
 After writing or revising the skill draft (and before running test cases), audit it against the superpowers enforcement patterns. Read the enforcement checklist:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/references/enforcement-checklist.md")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md")
 ```
 
 Then score the draft using the process below.
 
 #### For Workflow Skills (High Enforcement)
 
-Score against all 11 patterns. Use the scoring template from the checklist. Focus on:
+Score against all 12 patterns. Use the scoring template from the checklist. Focus on:
 
 1. **Iron Laws** — Does the skill have absolute constraints for high-drift actions? Are they wrapped in `<EXTREMELY-IMPORTANT>` tags with strong framing? If they use soft language ("try to", "should", "consider"), they will be ignored — rewrite with action-masking language.
 
@@ -116,6 +116,6 @@ These signals come from reading test run transcripts, not just final outputs.
 
 ## References
 
-- **Enforcement checklist**: `${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/references/enforcement-checklist.md` — Full 11-pattern reference with templates
+- **Enforcement checklist**: `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md` — Full 12-pattern reference with templates
 - **Philosophy**: `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md` — Three pillars (phased decomposition, deterministic gates, adversarial review)
 - **Built-in skill-creator**: Handles the eval loop (draft → test → grade → iterate → description optimization)
