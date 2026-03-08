@@ -129,7 +129,7 @@ See `references/complex-diagram-strategy.md` for the full approach.
 
 | Domain | Command |
 |--------|---------|
-| Typst | `tinymist compile input.typ /tmp/visual-verify.png --pages N --ppi 144` |
+| Typst | `tinymist compile input.typ /tmp/visual-verify.png --pages N --ppi 144` (use `/find-slide-page` to get N) |
 | Python | `python3 script.py` (script saves to known path) |
 | Screenshot | `screencapture -x /tmp/visual-verify.png` |
 
