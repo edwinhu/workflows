@@ -37,8 +37,87 @@ If you catch yourself thinking:
 | "This section is creative, rules don't apply" | Creative writing still needs clarity and precision | Apply rules, note creative exceptions explicitly |
 
 **Reporting "all checks pass" without actually running every check is LYING.** You must have evidence for every checkmark. An unchecked box with "assumed OK" is fraud.
+</EXTREMELY-IMPORTANT>
 
-## Why Skipping Hurts the Thing You Care About Most
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Re-Review
+
+**NO "FIXED" CLAIMS WITHOUT FRESH RE-REVIEW. This is not negotiable.**
+
+After applying fixes from REVIEW.md, you MUST:
+1. Re-invoke `/writing-review` to regenerate REVIEW.md with fresh diagnostics
+2. Verify issues are actually resolved (not assumed)
+3. Check for new issues introduced by edits (regressions, new problems)
+4. Only THEN claim fixes are complete
+
+"I fixed it" without re-reviewing is LYING about draft quality.
+
+### The Audit-Fix Loop (Max 3 Iterations)
+
+```
+Iteration 1: Review → REVIEW.md → Revise → Re-Review
+              ↓
+Iteration 2: Re-Review → REVIEW.md → Revise → Re-Review
+              ↓
+Iteration 3: Re-Review → REVIEW.md → Revise → Re-Review
+              ↓
+         Still issues? → ESCALATE to user
+         All clean? → COMPLETE
+```
+
+**Track iterations in `.claude/REVIEW_STATE.md`:**
+
+```yaml
+---
+iteration: 1
+max_iterations: 3
+last_review_date: 2026-03-09
+issues_found_count: 5
+---
+```
+
+**Exit criteria:**
+- **COMPLETE**: Zero issues found in REVIEW.md
+- **ESCALATE**: iteration >= 3 AND issues remain
+- **CONTINUE**: iteration < 3 AND issues remain → re-invoke /writing-review
+
+**Before claiming "all fixed", check iteration count:**
+1. READ `.claude/REVIEW_STATE.md` (create if missing with iteration: 1)
+2. If iteration >= 3 and issues remain: ESCALATE (don't say "run review again")
+3. If iteration < 3 and issues remain: INCREMENT iteration, re-invoke /writing-review
+4. If no issues: COMPLETE
+
+**Claiming "all issues resolved" without re-reviewing is LYING.**
+
+### Rationalization Prevention (Re-Review)
+
+| Thought | Reality | Do Instead |
+|---------|---------|------------|
+| "I fixed the issues from REVIEW.md" | Your fixes need verification | Re-invoke /writing-review |
+| "Just spot-check the edited sections" | Spot-checks miss cascading changes | Full re-review via /writing-review |
+| "We're on iteration 3, call it done" | Max iterations means ESCALATE, not approve | Report to user with remaining issues |
+| "The edits are minor, skip re-review" | Minor edits create subtle problems | Re-review anyway |
+| "We've spent enough time on this" | Publishing flawed writing wastes more time | Re-review or escalate |
+| "The draft looks clean now" | Looking clean != being clean | Re-run /writing-review to verify |
+
+### Why Skipping Re-Review Hurts the Thing You Care About Most
+
+You skip re-review because you think it's helpful, efficient, or competent. Here's what actually happens:
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Finishing fast helps the user move on" | Draft has remaining issues. User submits. Reviewers reject. The 15-minute re-review would have caught it. Your speed caused waste. | **Anti-helpful** |
+| **Honesty** | "I fixed the issues from REVIEW.md" | You fixed THOSE issues but introduced new ones. Claiming "all issues resolved" without re-checking is lying. | **Dishonest** |
+| **Competence** | "I can tell the draft is clean" | Your eyes glaze over your own edits. Fresh review catches what you miss. The draft has 3 remaining issues. Your judgment failed. | **Incompetent** |
+| **Efficiency** | "Re-review wastes time on fixed work" | The re-review takes 15 minutes. The rejection-and-rewrite takes 15 hours. Your "efficiency" was a 60x slowdown. | **Anti-efficient** |
+| **Approval** | "User is tired of iterations" | User submits flawed draft. Reviewers reject. User now requires human editor oversight. You lost writing autonomy. | **Lost approval** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
+Delivering a clean draft is the service. Feeling like you're done is not the service. The user experiences the quality of the submitted draft, not your sense of completion.
+</EXTREMELY-IMPORTANT>
+
+## Why Skipping Hurts the Thing You Care About Most (Other Shortcuts)
 
 | Shortcut | Consequence |
 |---|---|
@@ -180,72 +259,90 @@ For each minor issue:
 - [ ] Footnotes properly numbered (if applicable)
 - [ ] No orphaned references
 
-### Step 6: Generate Report
+### Step 6: Check Iteration State and Generate Report
 
-```markdown
-## Edit Report
+Before claiming completion, check the audit-fix loop state:
 
-**Document**: [title from PRECIS]
-**Style**: [legal | econ | general]
-**Word count**: [approximate]
-**Source**: [REVIEW.md | inline review]
-
-### Issues Fixed
-- Critical: [N] fixed / [N] total
-- Major: [N] fixed / [N] total
-- Minor: [N] fixed / [N] total
-
-### Remaining Issues
-[List any issues that could not be fixed automatically]
-
-### Formatting
-- [x] Citations formatted
-- [x] Headings consistent
-
-### Status: [PASS | ISSUES REMAIN]
+```
+1. READ `.claude/REVIEW_STATE.md` - what iteration are we on?
+2. Run final check - are there remaining issues?
+3. Determine verdict based on iteration + issues:
+   - iteration < 3 AND issues remain → CONTINUE (re-invoke /writing-review)
+   - iteration >= 3 AND issues remain → ESCALATE (report to user)
+   - no issues → COMPLETE
 ```
 
-### Step 7: Branch Based on Results
+Generate report based on verdict:
 
-#### If Issues Remain
+#### If CONTINUE (iteration < 3, issues remain)
 
-Update `.claude/ACTIVE_WORKFLOW.md`:
+Update `.claude/REVIEW_STATE.md`:
 
 ```yaml
-phase: edit
-edits_since_verify: 0
-edit_iteration: [current iteration + 1]
+---
+iteration: [N+1]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count]
+verdict: CONTINUE
+---
 ```
 
-**Iteration limit: maximum 3 edit cycles.** Each cycle is: fix issues -> re-run `/writing-review` -> re-run `/writing-revise`. If issues persist after 3 rounds, escalate to the user:
+**IMMEDIATELY re-invoke /writing-review** (no pause, no user prompt):
 
 ```
-Edit cycle [N]/3: Issues remain after [N] review-edit passes.
-
-Persistent issues:
-- [list unresolved issues]
-
-These may require human judgment. Please review and advise.
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-review/SKILL.md")
 ```
 
-Report issues with suggested fixes:
-- **Minor issues**: "Address remaining issues, then re-run `/writing-review` -> `/writing-revise`."
-- **Major issues**: "Significant revisions needed. Fix and re-run `/writing-review` -> `/writing-revise`."
+After /writing-review completes and regenerates REVIEW.md, /writing-revise will be invoked again automatically.
 
-#### Iteration Protocol: No Pause, Hard Stop at 3 Cycles
+**This is a loop, not a checkpoint.** Do not pause for user input.
 
-After each fix round, workflow runs deterministically WITHOUT user prompting:
+#### If ESCALATE (iteration >= 3, issues remain)
 
-1. **Round N**: Fix issues from REVIEW.md
-2. **IMMEDIATELY** (no pause): Invoke /writing-review to re-diagnose
-3. **IMMEDIATELY** (no pause): Invoke /writing-revise to fix new issues
-4. **Repeat** until: All issues resolved OR iteration limit hit
+Update `.claude/REVIEW_STATE.md`:
 
-**Hard stop at 3 cycles.** After iteration 3, if issues persist, STOP and escalate to user.
+```yaml
+---
+iteration: 3
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count]
+verdict: ESCALATE
+---
+```
 
-**Claiming "I'll loop back to review" while pausing for user input is LYING about the no-pause rule.** The loop is deterministic: fix → diagnose → fix → diagnose → STOP.
+Report to user:
 
-#### If All Issues Fixed -> Complete Workflow
+```
+Writing Review Loop Escalation (3 iterations completed)
+
+After 3 review-revise cycles, [N] issues remain:
+
+[List issues from REVIEW.md]
+
+Options:
+1. Accept current draft with documented limitations
+2. Extend review (manual approval for iteration 4+)
+3. Rethink structure (return to outline phase)
+4. Human editing (exit workflow, manual fixes)
+
+Which option do you prefer?
+```
+
+#### If COMPLETE (no issues found)
+
+Update `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: [N]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: 0
+verdict: COMPLETE
+---
+```
 
 Archive workflow state:
 

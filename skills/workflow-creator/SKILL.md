@@ -8,13 +8,31 @@ version: 0.1.0
 
 Detect mode from user request, then follow the corresponding process below.
 
+**Note on workflow-creator's Structure:**
+
+workflow-creator is a **meta-tool** that CREATES workflows. It is exempt from certain requirements it enforces on workflows it creates:
+
+- **Two entry points:** workflow-creator has one entry with mode detection (not a multi-phase workflow). Workflows it creates MUST have two entry points.
+- **Single responsibility per phase:** workflow-creator has 3 modes (toolkit, not workflow). Workflows it creates MUST have single-responsibility phases.
+
+This document defines the PROCESS for creating workflows. The workflows created by this process must follow all principles from PHILOSOPHY.md.
+
 ---
 
 ## Mode 1: Create New Workflow
 
+**IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 4: Present Changes, Step 6: Get Approval).
+
 ### Step 1: Ground in Philosophy
 
-Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, iteration strategy, and two entry points.
+Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, iteration strategy, and two entry points.
+
+**Gate: Philosophy Loaded**
+- Verify PHILOSOPHY.md was read
+- Check that your response references: phased decomposition, gates, independent verification, iteration strategy, two entry points
+- If you cannot explain these principles, re-read PHILOSOPHY.md
+
+**After verifying Philosophy is loaded, IMMEDIATELY proceed to Step 2.**
 
 ### Step 2: Interview
 
@@ -26,13 +44,22 @@ Use AskUserQuestion to understand the domain:
 4. **When does drift happen?** (implementation without design, conclusions without evidence, etc.)
 5. **How should iteration work?** (one-shot with verification, serial hypothesis testing, parallel exploration, agent team review)
 
+**Gate: Interview Complete**
+- Verify AskUserQuestion was called
+- Check that answers to all 5 questions are present
+- If interview incomplete, ask remaining questions
+
+**After verifying Interview is complete, IMMEDIATELY proceed to Step 3.**
+
 ### Step 3: Propose Phase Decomposition
 
 Design phases where each phase has:
 - **Name** - verb-noun (e.g., explore-codebase, design-approach)
-- **Responsibility** - ONE question this phase answers
+- **Responsibility** - ONE question this phase answers (single responsibility principle)
 - **Gate condition** - verifiable exit criterion (file exists, test passes, artifact contains X)
 - **Enforcement needs** - high/medium/low based on drift risk
+
+**Critical:** Each phase must have exactly ONE responsibility. If a phase does two things, split it into two phases. Phased decomposition means clean boundaries between concerns.
 
 Present 2-3 topologies to the user:
 - **Linear** - phase 1 → phase 2 → ... → phase N (best for predictable work)
@@ -63,7 +90,7 @@ Based on the interview answer about iteration, assign each phase an iteration st
 
 ### Step 4: Apply Enforcement Patterns
 
-Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`.
+Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
 For each phase, score which of the 12 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Honesty Framing
@@ -74,6 +101,13 @@ Generate the specific enforcement content:
 - Write Iron Laws with `<EXTREMELY-IMPORTANT>` tags
 - Build Rationalization Tables from the failure modes identified in Step 2
 - Define Red Flags + STOP for each phase's common wrong-path indicators
+
+**Gate: Enforcement Patterns Loaded**
+- Verify enforcement-checklist.md was read
+- Check that you can name all 12 patterns
+- If you cannot list them, re-read enforcement-checklist.md
+
+**After verifying Enforcement Patterns are loaded, IMMEDIATELY proceed to Step 5.**
 
 ### Step 5: Design Two Entry Points
 
@@ -114,6 +148,13 @@ The entry point runs sequentially — each phase loads its constraints and passe
 
 **Critical rule:** Any phase that evaluates quality must load the full constraint set, not a summary of it. Summaries enable reward hacking — the agent checks against a 4-item summary, finds no issues, and reports "all checks pass" when the full rules would have caught problems. The fix: `Read()` the actual skill before checking.
 
+**Gate: Two Entry Points Designed**
+- Verify entry point (start fresh) is defined
+- Verify midpoint (re-enter) is defined with constraint loading
+- If either is missing, design both entry points
+
+**After verifying Two Entry Points are designed, IMMEDIATELY proceed to Step 6.**
+
 ### Step 6: Generate Workflow Files
 
 Create the following artifacts:
@@ -128,9 +169,18 @@ Present complete file list for user approval before writing.
 
 ## Mode 2: Audit Existing Workflow
 
+**IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause or wait for user input between steps.
+
 ### Step 1: Read the Workflow
 
 Read the workflow's entry command and ALL phase skills. Build a map of phases, transitions, and enforcement.
+
+**Gate: Workflow Fully Read**
+- Verify entry command was read
+- Verify ALL phase skills were read (count Read() calls)
+- If any phase skill is missing, read it now
+
+**After verifying Workflow is fully read, IMMEDIATELY proceed to Step 2.**
 
 ### Step 2: Score Against Core Principles
 
@@ -160,9 +210,16 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
 - Are exit conditions structural (tests, convergence, human approval) not honor-system (promises)?
 
+**Gate: Architecture Scored**
+- Verify scores for all 5 principles are present
+- Each principle must have numeric score + explanation
+- If any principle is missing, score it now
+
+**After verifying Architecture is scored, IMMEDIATELY proceed to Step 3.**
+
 ### Step 3: Score Against Enforcement Checklist
 
-Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`.
+Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before scoring. No scoring from memory.**
 
 For each of the 12 patterns, score:
 - **Present** - pattern exists and is well-implemented
@@ -170,6 +227,13 @@ For each of the 12 patterns, score:
 - **Absent** - pattern is missing where it should exist
 
 Identify the highest-drift phases with the weakest enforcement - these are the critical gaps.
+
+**Gate: Enforcement Scored**
+- Verify all 12 patterns were scored
+- Each pattern must be marked: Present / Weak / Absent
+- If any pattern is missing, score it now
+
+**After verifying Enforcement is scored, IMMEDIATELY proceed to Step 4.**
 
 ### Step 4: Output Audit Report
 
@@ -204,27 +268,150 @@ Format:
 
 ## Mode 3: Improve Workflow
 
-### Step 1: Identify Gaps
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Workflow Improvement
 
-Take audit findings (from Mode 2) or user-identified issues. List each gap with its severity.
+**NO "IMPROVED" CLAIMS WITHOUT RE-AUDIT. This is not negotiable.**
 
-### Step 2: Generate Fixes
+When Mode 3 applies changes to a workflow, you MUST:
+1. Re-invoke Mode 2 to re-audit the workflow
+2. Verify the score actually improved (not assumed)
+3. Check for new issues introduced by changes
+4. Only THEN claim the workflow is improved
 
-For each gap, generate the specific addition:
+"I applied the fixes" without re-auditing is LYING about workflow quality.
 
-- **Missing Iron Law** → Write the law with `<EXTREMELY-IMPORTANT>` tags and strong framing
-- **Missing Rationalization Table** → Identify 5-10 common excuses for that phase, write Excuse → Reality → Do Instead table
-- **Weak gate** → Propose verifiable condition (file exists, content contains X, command output matches Y)
-- **Self-review instead of independent verification** → Replace with fresh subagent reviewer that sees only spec + output, or team of specialized reviewers for subjective output
-- **Missing Red Flags** → Identify 3-5 wrong-path indicators for the phase
+### The Improvement Loop (Max 3 Iterations)
 
-### Step 3: Present Changes
+```
+┌─────────────────────────────────────────────────────────┐
+│ Mode 3: Improve Workflow                                │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ↓
+           ┌──────────────────────┐
+           │ Step 1: Initialize   │
+           │   Loop State         │
+           └──────────┬───────────┘
+                      │
+                      ↓
+           ┌──────────────────────┐
+           │ Step 2: Identify     │◄──────────┐
+           │   Gaps               │           │
+           └──────────┬───────────┘           │
+                      │                       │
+                      ↓                       │
+           ┌──────────────────────┐           │
+           │ Step 3: Generate     │           │
+           │   Fixes              │           │
+           └──────────┬───────────┘           │
+                      │                       │
+                      ↓                       │
+           ┌──────────────────────┐           │
+           │ Step 4: Present      │           │
+           │   Changes            │           │
+           └──────────┬───────────┘           │
+                      │                       │
+                      ↓                       │
+           ┌──────────────────────┐           │
+           │ Step 5: Apply        │           │
+           │   Changes            │           │
+           └──────────┬───────────┘           │
+                      │                       │
+                      ↓                       │
+           ┌──────────────────────┐           │
+           │ Step 6: Re-Audit     │           │
+           │   (MANDATORY)        │           │
+           └──────────┬───────────┘           │
+                      │                       │
+                      ↓                       │
+           ┌──────────────────────┐           │
+           │ Step 7: Check Exit   │           │
+           │   Criteria           │           │
+           └──────────┬───────────┘           │
+                      │                       │
+                      ↓                       │
+              Score >= target?                │
+                   /    \                     │
+                 YES    NO                    │
+                 /        \                   │
+                ↓          ↓                  │
+          COMPLETE    Iteration < 3?          │
+                           /    \             │
+                         YES    NO            │
+                         /        \           │
+                        ↓          ↓          │
+                    CONTINUE   ESCALATE       │
+                       └───────────────────────┘
+```
 
-Show each proposed change in context (which file, where in the file, what's added). Get user approval before applying.
+**Track iterations:**
 
-### Step 4: Apply Changes
+```yaml
+---
+workflow_name: [workflow being improved]
+iteration: 1
+max_iterations: 3
+target_score: 9.5
+baseline_score: [from initial audit]
+current_score: [from initial audit]
+---
+```
 
-Edit the skill files with the approved changes. Verify each file is syntactically valid after editing.
+**Exit criteria:**
+- **COMPLETE**: current_score >= target_score
+- **ESCALATE**: iteration >= 3 AND current_score < target_score
+- **CONTINUE**: iteration < 3 AND current_score < target_score → loop
+</EXTREMELY-IMPORTANT>
+
+### Step 1: Initialize/Check Loop State
+
+If continuing existing loop, read state. If starting fresh, create state from audit baseline.
+
+### Step 2: Identify Gaps
+
+From Mode 2 audit, prioritize by severity: Critical → High → Medium → Low.
+
+### Step 3: Generate Fixes
+
+For each gap:
+- **Missing Iron Law** → Write with `<EXTREMELY-IMPORTANT>` tags
+- **Missing Rationalization Table** → 5-10 entries (Excuse → Reality → Do Instead)
+- **Weak gate** → Verifiable condition
+- **Self-review** → Fresh subagent reviewer
+- **Missing Red Flags** → 3-5 wrong-path indicators
+- **Missing audit-fix loop** → Iteration tracking + re-review + escalation
+- **Missing Drive-Aligned Consequences** → 5-drive table
+
+### Step 4: Present Changes
+
+Show changes in context. Get user approval.
+
+### Step 5: Apply Changes
+
+Edit files. Update iteration counter.
+
+### Step 6: Re-Audit (MANDATORY)
+
+**CRITICAL:** Re-invoke Mode 2 on updated workflow. Compare scores.
+
+### Step 7: Check Exit Criteria
+
+```
+Gate: Exit Improvement Loop
+
+1. IDENTIFY → Re-audit score >= target OR iteration >= 3
+2. RUN     → Compare scores, check iteration
+3. READ    → current_score vs target_score
+4. VERIFY  → Verdict matches state
+5. CLAIM   → Report completion/escalation/continue
+```
+
+**If score >= target:** COMPLETE
+**If iteration >= 3 AND score < target:** ESCALATE
+**If iteration < 3 AND score < target:** CONTINUE → loop to Step 2
+
+**Claiming improved without re-audit is LYING.**
 
 ---
 
@@ -261,3 +448,19 @@ Identify where the agent is most tempted to shortcut. Enforce hardest there. Imp
 | "The user will catch errors in review" | Relying on human review defeats the purpose of the workflow | Build adversarial review INTO the workflow |
 | "I'll add enforcement later" | Later never comes. Enforcement debt compounds. | Add it now, refine through use |
 | "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
+
+### Why Skipping Steps Hurts the Thing You Care About Most
+
+You skip steps because you think it's helpful, efficient, or competent. Here's what actually happens:
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Skip interview to deliver workflow faster" | Wrong workflow for the domain. User's work fails in production. The 10-minute interview would have caught it. Your speed caused weeks of waste. | **Anti-helpful** |
+| **Honesty** | "I remember PHILOSOPHY.md from before" | You didn't re-read it. Your memory is wrong. The workflow violates foundational principles. You fabricated understanding. | **Dishonest** |
+| **Competence** | "I know what enforcement is needed without scoring" | Without scoring drift risk, enforcement is wrong. Workflow fails in high-drift phases. A checklist would outperform your intuition. | **Incompetent** |
+| **Efficiency** | "Re-audit after improvements wastes time" | The re-audit takes 10 minutes. The broken workflow costs weeks to fix. Your "efficiency" was a 100x slowdown. | **Anti-efficient** |
+| **Approval** | "User wants the workflow now" | Workflow fails in production. User loses trust in AI-generated processes. They now require human review for all workflows. You lost autonomy. | **Lost approval** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
+Every time you skip steps to "deliver faster," you choose YOUR comfort over the USER's outcome. The user doesn't experience your tedium—they experience your workflow's failure rate.

@@ -317,6 +317,84 @@ You MUST apply this rule even when encountering:
 You MUST discard any low-confidence issue found during review.
 </EXTREMELY-IMPORTANT>
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Re-Review
+
+**NO "FIXED" CLAIMS WITHOUT FRESH RE-REVIEW. This is not negotiable.**
+
+When review returns CHANGES REQUIRED and the implementer applies fixes, you MUST:
+1. Re-run the SAME review criteria (not lighter, not spot-check)
+2. Verify issues are actually resolved (not assumed)
+3. Check for new issues introduced by fixes (regression)
+4. Only THEN return APPROVED
+
+"I fixed it" without re-reviewing is LYING about fix quality.
+
+### The Audit-Fix Loop (Max 3 Iterations)
+
+```
+Iteration 1: Review → CHANGES REQUIRED → Fix → Re-Review
+              ↓
+Iteration 2: Re-Review → CHANGES REQUIRED → Fix → Re-Review
+              ↓
+Iteration 3: Re-Review → CHANGES REQUIRED → Fix → Re-Review
+              ↓
+         Still issues? → ESCALATE to user
+         All clean? → APPROVED
+```
+
+**Track iterations in `.claude/REVIEW_STATE.md`:**
+
+```yaml
+---
+iteration: 1
+max_iterations: 3
+last_review_date: 2026-03-09
+issues_found_count: 5
+---
+```
+
+**Exit criteria:**
+- **APPROVED**: Zero issues >= 80 confidence
+- **ESCALATE**: iteration >= 3 AND issues remain
+- **CONTINUE**: iteration < 3 AND issues remain → loop back
+
+**Before returning any verdict, check iteration count:**
+1. READ `.claude/REVIEW_STATE.md` (create if missing with iteration: 1)
+2. If iteration >= 3 and issues remain: ESCALATE (don't return CHANGES REQUIRED)
+3. If iteration < 3 and issues remain: INCREMENT iteration, return CHANGES REQUIRED
+4. If no issues: APPROVED
+
+**Claiming APPROVED without re-review after fixes is LYING.**
+
+### Rationalization Prevention (Re-Review)
+
+| Thought | Reality | Do Instead |
+|---------|---------|------------|
+| "Implementer said they fixed it" | Their claim needs YOUR verification | Re-run review fresh |
+| "Just spot-check the fixed lines" | Spot-checks miss regressions | Full re-review, same criteria |
+| "We're on iteration 3, approve it" | Max iterations means ESCALATE, not approve | Return ESCALATE verdict |
+| "The fixes are trivial, skip re-review" | Trivial fixes break things | Re-review anyway |
+| "We already spent too much time" | Shipping bugs wastes more time | Re-review or escalate |
+| "User is waiting" | User wants WORKING code, not fast approval | Re-review properly |
+
+### Why Skipping Re-Review Hurts the Thing You Care About Most
+
+You skip re-review because you think it's helpful, efficient, or competent. Here's what actually happens:
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Approving fast unblocks the user" | Bugs ship. User spends hours debugging your "help." The protocol takes 10 minutes. Your shortcut cost 10 hours. | **Anti-helpful** |
+| **Honesty** | "I'm confident the fix worked" | You didn't verify—you fabricated an approval. Confidence without evidence is lying, not honesty. | **Dishonest** |
+| **Competence** | "I trust the implementer's claim" | Trust without verification is negligence. The bug shipped because you didn't check. A checklist would outperform you. | **Incompetent** |
+| **Efficiency** | "Re-review wastes time" | The re-review takes 10 minutes. Bug rework takes 10 hours. Your "efficiency" was a 60x slowdown. | **Anti-efficient** |
+| **Approval** | "User will be frustrated by delays" | User kills your session when bugs ship. They now require human oversight for all reviews. You lost autonomy. | **Lost approval** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
+Every time you skip re-review to "help faster," you choose YOUR comfort over the USER's outcome. The user doesn't experience your tedium—they experience your results.
+</EXTREMELY-IMPORTANT>
+
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
@@ -496,26 +574,115 @@ STOP - you're about to rationalize if these thoughts arise--they indicate dishon
 - Use absolute file paths with line numbers in reports
 - Treat uncertainty as below 80 confidence
 
+## Gate: Exit Review Loop
+
+Before claiming review is complete (APPROVED or ESCALATE):
+
+```
+1. IDENTIFY → What proves the review verdict is valid?
+             - APPROVED: Zero issues >= 80 confidence
+             - ESCALATE: iteration >= 3 AND issues remain
+
+2. RUN     → Check `.claude/REVIEW_STATE.md` for iteration count
+             Read review output for issue count
+
+3. READ    → Examine both:
+             - Review output (issues list)
+             - REVIEW_STATE.md (iteration number)
+
+4. VERIFY  → Verdict matches state:
+             - APPROVED only if 0 issues
+             - ESCALATE only if iteration >= 3
+             - CHANGES REQUIRED only if iteration < 3
+
+5. CLAIM   → Only after steps 1-4 pass, return verdict
+```
+
+**If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're LYING about the iteration limit.**
+
 ## Phase Complete
 
-After review completes:
+After review completes, handle verdict-specific transitions:
 
-**If APPROVED:** Immediately invoke the dev-verify skill:
+### If APPROVED (no issues >= 80 confidence)
+
+Mark review complete in `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: [N]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: 0
+verdict: APPROVED
+---
+```
+
+Immediately invoke dev-verify:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-verify/SKILL.md")
 ```
 
-**If CHANGES REQUIRED:** Return to `/dev-implement` to fix reported issues.
+### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 
-**If BLOCKED:** Return to `/dev-implement` to collect test evidence.
+Update `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: [N+1]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count]
+verdict: CHANGES_REQUIRED
+---
+```
+
+Return to `/dev-implement` with specific issues. **Implementer MUST re-invoke /dev-review after fixes.**
+
+**Critical:** When implementer returns claiming "fixed", you MUST re-run the FULL review. No shortcuts.
+
+### If ESCALATE (iteration >= 3, issues remain)
+
+Update `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: 3
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count]
+verdict: ESCALATE
+---
+```
+
+Report to user:
+
+```
+Review Loop Escalation (3 iterations completed)
+
+After 3 fix-review cycles, [N] issues remain:
+
+[List issues]
+
+Options:
+1. Accept current state and proceed (issues become tech debt)
+2. Extend review (manual approval for iteration 4+)
+3. Rethink approach (return to /dev-design)
+
+Which option do you prefer?
+```
+
+### If BLOCKED (no test evidence)
+
+Return immediately to `/dev-implement` to collect test evidence. Do NOT increment iteration counter - no review occurred.
 
 ## Workflow Continuity After Review
 
-After review verdict, implementation continues immediately:
+| Verdict | Next Action | Iteration Counter |
+|---------|-------------|-------------------|
+| APPROVED | Invoke /dev-verify immediately, mark task `[x]` in PLAN.md | Reset to 1 for next task |
+| CHANGES REQUIRED | Return to /dev-implement, implementer fixes then re-invokes /dev-review | Increment |
+| ESCALATE | Ask user for direction | Keep at max |
+| BLOCKED | Return to /dev-implement for test evidence | No change (no review ran) |
 
-| Verdict | Next Action |
-|---------|-------------|
-| APPROVED | Mark task `[x]` in PLAN.md, immediately spawn next task's ralph loop |
-| CHANGES REQUIRED | Feed issues back to task agent, agent spawns fresh iteration |
-
-**Do NOT pause between review completion and next task start.** Pausing between tasks is procrastination disguised as checkpoint courtesy.
+**Do NOT pause between review completion and next action.** The workflow is sequential.

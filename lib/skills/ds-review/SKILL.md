@@ -252,6 +252,84 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT. You're about to compromise the review's integrity.**
 </EXTREMELY-IMPORTANT>
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Re-Review
+
+**NO "FIXED" CLAIMS WITHOUT FRESH RE-REVIEW. This is not negotiable.**
+
+When review returns CHANGES REQUIRED and the analyst applies fixes, you MUST:
+1. Re-run the SAME review criteria (methodology, data quality, reproducibility)
+2. Verify issues are actually resolved (not assumed)
+3. Check for new issues introduced by fixes (data changes, methodology shifts)
+4. Only THEN return APPROVED
+
+"I fixed it" without re-reviewing is LYING about analysis quality.
+
+### The Audit-Fix Loop (Max 3 Iterations)
+
+```
+Iteration 1: Review → CHANGES REQUIRED → Fix → Re-Review
+              ↓
+Iteration 2: Re-Review → CHANGES REQUIRED → Fix → Re-Review
+              ↓
+Iteration 3: Re-Review → CHANGES REQUIRED → Fix → Re-Review
+              ↓
+         Still issues? → ESCALATE to user
+         All clean? → APPROVED
+```
+
+**Track iterations in `.claude/REVIEW_STATE.md`:**
+
+```yaml
+---
+iteration: 1
+max_iterations: 3
+last_review_date: 2026-03-09
+issues_found_count: 5
+---
+```
+
+**Exit criteria:**
+- **APPROVED**: Zero issues >= 80 confidence
+- **ESCALATE**: iteration >= 3 AND issues remain
+- **CONTINUE**: iteration < 3 AND issues remain → loop back
+
+**Before returning any verdict, check iteration count:**
+1. READ `.claude/REVIEW_STATE.md` (create if missing with iteration: 1)
+2. If iteration >= 3 and issues remain: ESCALATE (don't return CHANGES REQUIRED)
+3. If iteration < 3 and issues remain: INCREMENT iteration, return CHANGES REQUIRED
+4. If no issues: APPROVED
+
+**Claiming APPROVED without re-review after fixes is LYING.**
+
+### Rationalization Prevention (Re-Review)
+
+| Thought | Reality | Do Instead |
+|---------|---------|------------|
+| "Analyst said they fixed it" | Their claim needs YOUR verification | Re-run review fresh |
+| "Just spot-check the fixed analysis" | Spot-checks miss downstream impacts | Full re-review, same criteria |
+| "We're on iteration 3, approve it" | Max iterations means ESCALATE, not approve | Return ESCALATE verdict |
+| "The fixes are minor tweaks" | Minor analysis changes break conclusions | Re-review anyway |
+| "We already spent too much time" | Publishing wrong results wastes more time | Re-review or escalate |
+| "Results look reasonable now" | Reasonable-looking != methodologically sound | Re-run full review |
+
+### Why Skipping Re-Review Hurts the Thing You Care About Most
+
+You skip re-review because you think it's helpful, efficient, or competent. Here's what actually happens:
+
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Approving fast delivers results" | Wrong results ship. User makes decisions on flawed analysis. The 20-minute re-review would have caught it. Your speed caused harm. | **Anti-helpful** |
+| **Honesty** | "The analyst said they fixed it" | You didn't verify—you rubber-stamped. You claimed "analysis is sound" based on trust, not evidence. That's academic fraud. | **Dishonest** |
+| **Competence** | "I trust the methodology now" | Trust without re-checking is negligence. The selection bias remained. Reviewers catch it. Your approval was incompetent. | **Incompetent** |
+| **Efficiency** | "Re-review wastes time on fixed issues" | The re-review takes 20 minutes. The retracted paper costs 20 weeks. Your "efficiency" destroyed months of work. | **Anti-efficient** |
+| **Approval** | "User wants results now" | User retracts the paper when flaws surface. They now require external review for all analysis. You lost their trust. | **Lost approval** |
+
+**The protocol is not overhead you pay. It is the service you provide.**
+
+Publishing wrong results is worse than slow results. The user experiences your conclusions, not your review process. Speed without correctness is malpractice.
+</EXTREMELY-IMPORTANT>
+
 ## Red Flags - STOP Immediately If You Think:
 
 | Thought | Why It's Wrong | Do Instead |
@@ -536,14 +614,110 @@ Return structured output per /ds-review format.
 - **If you're unsure, rate it below 80 confidence.** Uncertainty is not a reason to report—it's a reason to investigate more.
 - Focus on what affects conclusions, not style. **STOP if you catch yourself criticizing coding style—that's not your role here.**
 
+## Gate: Exit Review Loop
+
+Before claiming review is complete (APPROVED or ESCALATE):
+
+```
+1. IDENTIFY → What proves the review verdict is valid?
+             - APPROVED: Zero issues >= 80 confidence
+             - ESCALATE: iteration >= 3 AND issues remain
+
+2. RUN     → Check `.claude/REVIEW_STATE.md` for iteration count
+             Read review output for issue count
+
+3. READ    → Examine both:
+             - Review output (issues list)
+             - REVIEW_STATE.md (iteration number)
+
+4. VERIFY  → Verdict matches state:
+             - APPROVED only if 0 issues
+             - ESCALATE only if iteration >= 3
+             - CHANGES REQUIRED only if iteration < 3
+
+5. CLAIM   → Only after steps 1-4 pass, return verdict
+```
+
+**If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're LYING about the iteration limit.**
+
 ## Phase Complete
 
-After review is APPROVED, immediately invoke:
+After review completes, handle verdict-specific transitions:
 
+### If APPROVED (no issues >= 80 confidence)
+
+Mark review complete in `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: [N]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: 0
+verdict: APPROVED
+---
+```
+
+Immediately invoke ds-verify:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-verify/SKILL.md")
 ```
 
-If CHANGES REQUIRED, return to `/ds-implement` to fix issues first.
+### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 
-**Maximum 3 review cycles.** If issues persist after 3 rounds of review → implement → re-review, escalate to the user with a summary of unresolved issues. Do not loop indefinitely.
+Update `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: [N+1]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count]
+verdict: CHANGES_REQUIRED
+---
+```
+
+Return to `/ds-implement` with specific issues. **Analyst MUST re-invoke /ds-review after fixes.**
+
+**Critical:** When analyst returns claiming "fixed", you MUST re-run the FULL review. No shortcuts.
+
+### If ESCALATE (iteration >= 3, issues remain)
+
+Update `.claude/REVIEW_STATE.md`:
+
+```yaml
+---
+iteration: 3
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count]
+verdict: ESCALATE
+---
+```
+
+Report to user:
+
+```
+Review Loop Escalation (3 iterations completed)
+
+After 3 fix-review cycles, [N] issues remain:
+
+[List issues]
+
+Options:
+1. Accept current state and document limitations
+2. Extend review (manual approval for iteration 4+)
+3. Rethink methodology (return to /ds-plan)
+
+Which option do you prefer?
+```
+
+## Workflow Continuity After Review
+
+| Verdict | Next Action | Iteration Counter |
+|---------|-------------|-------------------|
+| APPROVED | Invoke /ds-verify immediately | Reset to 1 for next analysis |
+| CHANGES REQUIRED | Return to /ds-implement, analyst fixes then re-invokes /ds-review | Increment |
+| ESCALATE | Ask user for direction | Keep at max |
+
+**Do NOT pause between review completion and next action.** The workflow is sequential.
