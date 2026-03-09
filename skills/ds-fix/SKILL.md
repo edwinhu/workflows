@@ -72,6 +72,16 @@ Read(".claude/LEARNINGS.md")
 
 If no workflow state exists, suggest starting with `/ds` instead.
 
+### SAS Project Detection
+
+After loading PLAN.md, check if `Implementation Language` is `SAS` or `Mixed`. If so, reload SAS enforcement before any fix:
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")
+```
+
+**SAS projects have unique failure modes** (hash merge memory, WHERE function wrapping, SGE array misconfiguration). The SAS enforcement must be loaded BEFORE diagnosing — otherwise you will misdiagnose SAS-specific issues as generic bugs.
+
 ## Step 2: Diagnose
 
 Identify the issue category:

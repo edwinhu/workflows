@@ -21,6 +21,35 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 **Never skip to prose drafting without a detailed outline first.**
 
+## Outline Flowchart (This IS the Spec)
+
+```
+START (PRECIS + master OUTLINE exist)
+  │
+  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW)
+  │
+  ├─ Step 2: Select section (user choice or next unoutlined)
+  │
+  ├─ Step 3: Gather structure/depth preferences
+  │
+  ├─ Step 4: Create detailed outline
+  │  └─ For each subsection: POINT + EVIDENCE + LOGIC
+  │     Opening → Body (subsections with transitions) → Closing
+  │
+  ├─ Step 5: Cross-reference with PRECIS claims
+  │  └─ Verify: advances claim, within scope, thesis thread
+  │
+  ├─ Step 6: Update ACTIVE_WORKFLOW.md
+  │
+  └─ More sections remaining?
+     ├─ YES → Loop to Step 2 (NO pause, NO "should I continue?")
+     └─ NO → GATE: Every OUTLINE section has outlines/ file?
+            ├─ NO → Report missing, loop back
+            └─ YES → IMMEDIATELY load writing-draft (no pause)
+```
+
+If text and flowchart disagree, the flowchart wins.
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Outline Before Prose
 
@@ -37,9 +66,11 @@ Thin outlines produce thin drafts. Each outline must have POINT, EVIDENCE, and L
 
 ## Why Skipping Hurts the Thing You Care About Most
 
-| Shortcut | Consequence |
-|---|---|
-| Writing thin outlines to move faster | The draft has no structure to expand — your speed produced chaos. |
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Thin outlines let us get to drafting faster" | The draft has no structure to expand. Every section wanders. You redraft from scratch. Your speed produced chaos and rework. | **Anti-helpful** |
+| **Honesty** | "The outline covers the main points" | You listed topics without POINT, EVIDENCE, or LOGIC. Claiming "outline complete" when subsections lack evidence mapping is lying about readiness. | **Dishonest** |
+| **Competence** | "I know this topic well enough to skip detail" | Without mapped evidence, the draft section makes unsupported assertions. Without planned transitions, the argument fragments. Your confidence was incompetence. | **Incompetent** |
 
 ## Process
 
@@ -263,6 +294,23 @@ Before finalizing each outline, verify:
 | "Three sections is enough" | Check if three is earned by the argument or arbitrary — structure follows claims, not convention | Derive section count from PRECIS claims |
 | "I can add supporting points later" | Later means the draft section will be thin and need rewriting — evidence gaps compound | Map evidence to every point now |
 | "The PRECIS already covers the structure" | PRECIS is a summary, outline is the blueprint — they serve different purposes | Build the outline as a separate, detailed document |
+
+## Progress Gating
+
+**If 5+ iterations on the same section without meaningful progress, STOP and escalate to the user for scope adjustment.**
+
+Signs you are stuck:
+- Rewriting the same subsection structure repeatedly
+- Cycling between two structural approaches
+- Unable to find evidence for a claimed point after multiple searches
+- PRECIS claim doesn't decompose cleanly into this section
+
+When escalating, present:
+- What you've tried (briefly)
+- Where the section is stuck
+- Options: narrow scope, merge with adjacent section, drop the claim, or reframe the argument
+
+**Spinning without progress is anti-helpful.** Recognizing when to ask for guidance is competence, not weakness.
 
 ## Common Problems
 

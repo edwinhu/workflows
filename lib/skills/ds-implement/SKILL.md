@@ -99,10 +99,13 @@ If you wrote analysis code in main chat, DELETE it immediately and dispatch a Ta
 
 ### Drive-Aligned Consequences
 
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping output verification | You assumed the output was correct because the code ran. The results are wrong — your assumption is the error the user publishes. |
-| Running all tasks sequentially yourself | You ran everything yourself to feel productive. Quality suffered without review — your productivity was counterproductive. |
+| Drive | Shortcut | Consequence |
+|-------|----------|-------------|
+| **Helpfulness** | Skipping output verification | You assumed the output was correct because the code ran. The results are wrong — your assumption is the error the user publishes. You were anti-helpful. |
+| **Honesty** | Claiming task complete without checking output | You logged "COMPLETE" in LEARNINGS.md without verifying the output. That entry is a lie — the task may have silently failed. |
+| **Competence** | Running all tasks sequentially yourself | You ran everything yourself to feel productive. Quality suffered without delegation and review — your productivity was incompetence disguised as efficiency. |
+| **Approval** | Skipping LEARNINGS.md logging | You skipped documentation to move faster. The reviewer cannot verify your work. The user loses trust when review fails. You lost their approval. |
+| **Efficiency** | Not delegating to Task agents | You wrote analysis in main chat because it felt faster. Now it must be deleted and redone. Your shortcut doubled the work — anti-efficient. |
 
 ## Red Flags - STOP Immediately
 
@@ -154,6 +157,58 @@ AskUserQuestion(questions=[{
 If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforcement BEFORE dispatching any SAS tasks. Paste the enforcement block into every SAS subagent prompt.
 
 > **Full SAS enforcement rules:** See [references/sas-enforcement.md](references/sas-enforcement.md)
+
+## Implementation Process Flowchart
+
+```
+┌─────────────────────────┐
+│  Read PLAN.md + Load    │
+│  ds-delegate + ETL refs │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│  For each task in PLAN  │◄──────────────────────┐
+│  (in dependency order)  │                       │
+└───────────┬─────────────┘                       │
+            ▼                                     │
+┌─────────────────────────┐                       │
+│  Dispatch Task agent    │                       │
+│  (per ds-delegate)      │                       │
+└───────────┬─────────────┘                       │
+            ▼                                     │
+┌─────────────────────────┐     ┌──────────────┐  │
+│  Read agent output      │────→│ Output wrong │  │
+│  Verify output present  │     │ or missing?  │  │
+│  + reasonable            │     └──────┬───────┘  │
+└───────────┬─────────────┘            │           │
+            │ OK                       ▼           │
+            │                 ┌──────────────────┐ │
+            │                 │ STOP. Investigate │ │
+            │                 │ Log issue. Fix.   │ │
+            │                 │ Re-verify.        │ │
+            │                 └──────────────────┘ │
+            ▼                                     │
+┌─────────────────────────┐                       │
+│  Log to LEARNINGS.md    │                       │
+│  (Task N: COMPLETE)     │                       │
+└───────────┬─────────────┘                       │
+            ▼                                     │
+        More tasks? ──── YES ─────────────────────┘
+            │
+            NO
+            ▼
+┌─────────────────────────┐
+│  Exit Gate: Compare     │
+│  PLAN.md vs LEARNINGS   │
+│  (all tasks accounted?) │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│  Invoke ds-review       │
+└─────────────────────────┘
+```
+
+**This flowchart IS the specification.** If the narrative below and this flowchart disagree, the flowchart wins.
 
 ## Implementation Process
 

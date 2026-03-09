@@ -590,10 +590,13 @@ Return structured output per /ds-review format.
 
 ### Drive-Aligned Consequences
 
-| Shortcut | Consequence |
-|----------|-------------|
-| Trusting analyst claims | You trusted 'data is clean' without checking. The results are wrong — your trust was credulity. |
-| Skipping independent verification | You reported 'methodology sound' without running anything. The user publishes wrong results — you lied. |
+| Drive | Shortcut | Consequence |
+|-------|----------|-------------|
+| **Helpfulness** | Trusting analyst claims | You trusted 'data is clean' without checking. The results are wrong — your trust caused the user to publish flawed analysis. Anti-helpful. |
+| **Honesty** | Skipping independent verification | You reported 'methodology sound' without running anything. The user publishes wrong results — you lied about your review. |
+| **Competence** | Reporting low-confidence issues | You flagged issues below 80% confidence to appear thorough. Noise drowns signal — the real issues get lost. Incompetent review. |
+| **Approval** | Rubber-stamping to avoid conflict | You approved to keep things moving. The user retracts when flaws surface. They now require external review. You lost their trust. |
+| **Efficiency** | Not running verification code | You read the notebook instead of executing checks. The 30-second verification would have caught the join explosion that took 3 days to debug. Anti-efficient. |
 
 ## Rationalization Table
 
@@ -605,6 +608,31 @@ Return structured output per /ds-review format.
 | "The output-first protocol already caught issues" | Output-first catches per-step issues, not cumulative ones | Check final state independently |
 | "No point re-checking, I trust the methodology" | Trust is not verification. Your job is adversarial review. | Verify, then trust |
 | "Minor data issues won't affect conclusions" | You don't know that without checking the magnitude | Quantify the impact, then decide |
+
+## Delete & Restart: Fundamental Methodology Failures
+
+<EXTREMELY-IMPORTANT>
+**If methodology is fundamentally flawed, DELETE the implementation and return to ds-plan. No patching.**
+
+A methodology is fundamentally flawed when:
+- **Wrong statistical approach** (e.g., linear regression on non-linear data, parametric test on non-normal data without justification)
+- **Wrong data source** (e.g., using quarterly data when daily is required, wrong table entirely)
+- **Missing critical variable** (e.g., no control for a known confounder, omitted variable bias)
+- **Wrong unit of analysis** (e.g., analyzing at firm-level when the question is about transactions)
+
+| Thought | Action |
+|---------|--------|
+| "The approach is mostly right, just needs tweaking" | If the statistical method is wrong, tweaking parameters is p-hacking. DELETE and replan. |
+| "We can add the missing variable as a robustness check" | If the variable is a known confounder, the main analysis is invalid. DELETE and replan with it included. |
+| "Let's patch the methodology and re-review" | Patching a flawed foundation produces a patched flawed analysis. DELETE and replan from scratch. |
+
+**When you identify a fundamental flaw:**
+1. Document the flaw in LEARNINGS.md (what's wrong and why it can't be patched)
+2. Report to user: "Methodology is fundamentally flawed: [specific reason]. Returning to ds-plan."
+3. Return to ds-plan (not ds-implement) — the plan itself needs rethinking
+
+**Patching a broken methodology to avoid rework is dishonest. The user deserves correct analysis, not fast wrong analysis.**
+</EXTREMELY-IMPORTANT>
 
 ## Quality Standards
 

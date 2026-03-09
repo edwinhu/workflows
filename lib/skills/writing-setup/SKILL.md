@@ -9,6 +9,34 @@ Create the project foundation: PRECIS.md (thesis, audience, claims), OUTLINE.md 
 
 **Prerequisites:** Brainstorm complete. User has confirmed topic, angle, and audience.
 
+## Setup Flowchart (This IS the Spec)
+
+```
+START (brainstorm confirmed)
+  │
+  ├─ Step 1: Create project directories
+  │  └─ mkdir outlines/ drafts/ references/ scratch/ .claude/
+  │
+  ├─ Step 2: Interview → Create PRECIS.md
+  │  ├─ Ask thesis question
+  │  ├─ Ask counterargument question
+  │  └─ Write .claude/PRECIS.md (thesis, claims, audience, scope)
+  │
+  ├─ Step 3: Create OUTLINE.md
+  │  └─ Map sections → claims from PRECIS
+  │     Each section has: Goal, Claim, Key Points, Transition
+  │
+  ├─ Step 4: Detect domain (legal/econ/general)
+  │
+  ├─ Step 5: Create ACTIVE_WORKFLOW.md
+  │
+  └─ GATE: All 3 files exist with required content?
+     ├─ NO → Report missing content, fix before proceeding
+     └─ YES → IMMEDIATELY load writing-outline (no pause)
+```
+
+If text and flowchart disagree, the flowchart wins.
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Progressive Expansion
 
@@ -231,9 +259,11 @@ Before proceeding to outline phase:
 
 ## Why Skipping Hurts the Thing You Care About Most
 
-| Shortcut | Consequence |
-|---|---|
-| Rushing PRECIS to get to drafting | The draft has no foundation — your impatience created 3x the work. |
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Getting to drafting fast helps the user see progress" | The draft has no foundation. Every section wanders from the thesis. You rewrite the entire document. Your speed created 3x the work. | **Anti-helpful** |
+| **Honesty** | "The PRECIS is complete enough" | You wrote a vague thesis and placeholder claims. Claiming "setup complete" when the thesis is unfocused is lying about readiness. | **Dishonest** |
+| **Competence** | "I can hold the thesis in my head, no need for detailed PRECIS" | Without written claims, sections drift. Without scope boundaries, the document sprawls. Your mental model was incomplete — the PRECIS would have caught it. | **Incompetent** |
 
 ## Red Flags - STOP If You Catch Yourself:
 

@@ -9,6 +9,37 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and at least one section outline in `outlines/` must exist.
 
+## Draft Flowchart (This IS the Spec)
+
+```
+START (all section outlines in outlines/ exist)
+  │
+  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW)
+  │
+  ├─ Step 2: Load domain skill (legal/econ/general)
+  │
+  ├─ Step 3: Choose strategy (sequential/parallel/key-first)
+  │
+  ├─ Step 4: For each section with outline:
+  │  ├─ Read outline from outlines/[Section].md
+  │  ├─ Cross-reference with PRECIS claim
+  │  ├─ Expand ALL outline points into prose
+  │  │  └─ Every POINT → paragraph(s)
+  │  │  └─ Every EVIDENCE → cited in prose
+  │  │  └─ Every TRANSITION → explicit bridge
+  │  ├─ Save to drafts/[Section] (Draft).md
+  │  ├─ Self-check: covers all outline points? cursory or developed?
+  │  └─ 5+ iterations same section? → ESCALATE to user
+  │
+  ├─ Step 5: Update ACTIVE_WORKFLOW.md
+  │
+  └─ GATE: All OUTLINE sections have drafts/ files with substance?
+     ├─ NO → Identify gap, re-draft (no pause)
+     └─ YES → Invoke /writing-review
+```
+
+If text and flowchart disagree, the flowchart wins.
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Drafting
 
@@ -21,6 +52,20 @@ If you find yourself drafting without a matching outline file:
 4. THEN draft the prose
 
 Writing without an outline produces incoherent, wandering prose that requires complete rewriting.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Draft Honesty
+
+**Reporting sections complete without verifying every outline point was expanded is LYING about draft quality.**
+
+Before claiming a section is drafted:
+1. Open the outline file for that section
+2. Check off EVERY subsection point — is it in the prose?
+3. Check off EVERY evidence item — is it cited in the prose?
+4. Check the word count — does it match the outline's estimate?
+
+If ANY point or evidence is missing, the section is NOT complete. Saying "draft done" when outline points were skipped is dishonest. The outline is a contract; the draft must fulfill it.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -205,6 +250,23 @@ Re-draft WITHOUT pausing. Agent re-opens outline, re-reads PRECIS.md, expands se
 
 ---
 
+## Progress Gating
+
+**If 5+ iterations on the same section without meaningful progress, STOP and escalate to the user for scope adjustment.**
+
+Signs you are stuck:
+- Redrafting the same section repeatedly without quality improvement
+- Failing the gate check on the same points across iterations
+- Outline points that resist expansion (evidence may be insufficient)
+- Section keeps growing without advancing the PRECIS claim
+
+When escalating, present:
+- What you've tried (briefly)
+- Where the section is stuck
+- Options: simplify the section, return to outline phase, merge with adjacent section, or gather more sources
+
+**Spinning without progress is anti-helpful.** Five iterations is the threshold for asking the user if scope needs adjustment.
+
 ## Rationalization Table
 
 | Excuse | Reality | Do Instead |
@@ -234,11 +296,13 @@ Re-draft WITHOUT pausing. Agent re-opens outline, re-reads PRECIS.md, expands se
 
 ## Why Skipping Hurts the Thing You Care About Most
 
-| Shortcut | Consequence |
-|---|---|
-| Skipping depth to "help faster" | Cursory drafts create 3x the rework — your shortcut was anti-helpful. |
-| Not loading domain skill | You wrote without domain conventions. The prose reads as generic AI output — your efficiency produced embarrassment. |
-| Drafting without outline | You skipped the outline to save time. The draft has no structure — you created more work, not less. |
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Finishing the draft fast helps the user" | Cursory drafts create 3x the rework. Every skipped outline point becomes a revision cycle. Your speed produced waste. | **Anti-helpful** |
+| **Honesty** | "I expanded the outline points" | You skipped 3 of 5 subsections. Claiming "draft complete" when outline points are missing is lying about coverage. | **Dishonest** |
+| **Competence** | "I know the domain style rules" | You didn't load the domain skill. The prose reads as generic AI output. Reviewers will flag every paragraph. Your confidence was incompetence. | **Incompetent** |
+| **Efficiency** | "Outlining is overkill for a short section" | The section wandered without structure. You rewrote it twice. The 5-minute outline would have saved 30 minutes. Your "efficiency" was a 6x slowdown. | **Anti-efficient** |
+| **Approval** | "The user wants to see progress" | You showed a cursory draft. The user sees thin prose and loses confidence in the workflow. Next time they'll micromanage every section. You lost autonomy. | **Lost approval** |
 
 ---
 

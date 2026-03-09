@@ -108,11 +108,62 @@ AskUserQuestion(questions=[
 
 ---
 
+## Review Flowchart — Sequential Path (This IS the Spec)
+
+```
+START (PRECIS + OUTLINE + drafts/ exist)
+  │
+  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW, domain skill)
+  │
+  ├─ Step 2: Choose strategy (sequential or parallel)
+  │
+  └─ LEVEL 1: Section Review (bottom-up)
+     │  For EACH section in document order:
+     │  ├─ Spawn fresh subagent (Iron Law: Structural Independence)
+     │  ├─ Subagent reads outline + draft cold
+     │  ├─ Run section review checklist
+     │  ├─ Produce boundary summary (closing + opening sentences)
+     │  └─ Record issues with severity + location + quoted evidence
+     │  Loop until all sections reviewed (NO pause between sections)
+     │
+     └─ LEVEL 2: Transition Review (boundary analysis)
+        │  For EACH boundary (Section N → Section N+1):
+        │  ├─ Compare Section N closing with Section N+1 opening
+        │  ├─ Check planned transition from OUTLINE.md
+        │  ├─ Evaluate bridge: SMOOTH / ABRUPT / DISCONNECTED
+        │  └─ Record transition issues with quoted boundary text
+        │  Loop until all boundaries checked
+        │
+        └─ LEVEL 3: Document Review (whole-document)
+           │  ├─ Cross-section repetition: compare argument summaries
+           │  ├─ Concept introduction order: first-appearance map
+           │  ├─ Thesis threading: does each section advance thesis?
+           │  └─ Structural completeness: all PRECIS claims addressed?
+           │
+           └─ GATE: All 3 levels complete? Every section reviewed?
+              ├─ NO → Go back, complete missing level
+              └─ YES → Write .claude/REVIEW.md → Announce → Suggest /writing-revise
+```
+
+If text and flowchart disagree, the flowchart wins.
+
+---
+
 ## Level 1: Section Review
 
 Review each section individually against its outline and PRECIS claims.
 
 ### Sequential Mode (Default)
+
+<EXTREMELY-IMPORTANT>
+#### Iron Law: Structural Independence
+
+**REVIEW MUST BE DELEGATED TO A FRESH SUBAGENT. The reviewer must not share context with the drafter. This is not negotiable.**
+
+Even in sequential mode, the review must be performed by a fresh subagent that reads the draft cold — the way a real reviewer would. If you drafted the text, you CANNOT review it in the same context. Spawn a subagent via Task tool for the review work.
+
+Why: The drafter's context contains intent, shortcuts, and assumptions that bias review. A fresh reader catches what the author cannot see. Reviewing your own draft in the same context is rubber-stamping, not reviewing.
+</EXTREMELY-IMPORTANT>
 
 For each section, in document order:
 
@@ -272,11 +323,13 @@ No issues found. Run /writing-revise to complete the workflow.
 
 ## Why Skipping Hurts the Thing You Care About Most
 
-| Shortcut | Consequence |
-|---|---|
-| Rubber-stamping to seem efficient | Undetected issues mean the user discovers them in public — your efficiency destroyed their credibility. |
-| Skipping evidence quotes | You reported "no issues" without quoting text. You didn't actually read — your review was theater. |
-| Skipping a review level | You skipped transition review because sections "looked fine." The document reads as disconnected fragments — your laziness shows. |
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Finishing the review fast helps the user move on" | Undetected issues surface when the user submits publicly. Reviewers reject. The thorough review would have caught it. Your speed destroyed their credibility. | **Anti-helpful** |
+| **Honesty** | "The transitions are fine" | You said "fine" without quoting boundary text. You didn't actually check — you rubber-stamped. Your review was theater. | **Dishonest** |
+| **Competence** | "I can tell the draft is clean from reading it once" | One pass catches surface issues. Structural problems (repetition, late introductions, thesis drift) require systematic comparison. Your single pass missed 5 issues. | **Incompetent** |
+| **Efficiency** | "Three levels of review is overkill" | You skipped transition review. The document reads as disconnected fragments. The user rewrites transitions manually. Your "efficiency" created hours of rework. | **Anti-efficient** |
+| **Approval** | "The user is tired of the review process" | You rubber-stamped to please the user. They submitted a flawed document. Now they require human editors for all future work. You lost writing autonomy permanently. | **Lost approval** |
 
 ## Confidence Scoring
 

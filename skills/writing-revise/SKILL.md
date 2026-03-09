@@ -169,9 +169,33 @@ Read([current draft files in drafts/])
 
 If any file is missing, report and suggest starting with `/writing`.
 
-### Step 2: Load REVIEW.md or Fall Back
+### Step 2: Load REVIEW.md
 
-**Primary path (REVIEW.md exists):**
+<EXTREMELY-IMPORTANT>
+#### Iron Law: NO REVISION WITHOUT REVIEW.md
+
+**NO REVISION WITHOUT REVIEW.md. This is not negotiable.**
+
+If `.claude/REVIEW.md` does not exist, REFUSE to proceed:
+
+```
+REVIEW.md not found. Cannot revise without a structured review diagnosis.
+
+Run /writing-review first to produce .claude/REVIEW.md, then re-run /writing-revise.
+```
+
+**STOP HERE. Do not fall back to inline review. Do not offer to "do a quick check instead."**
+
+Why: Inline review is shallow by design — it misses cross-section issues, transition problems, and thesis drift that only hierarchical review catches. Allowing a fallback path means the full review is never run. The review-then-revise pipeline exists because revision without diagnosis produces random edits, not targeted fixes.
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I can do a quick inline review" | Inline review misses structural issues | Run /writing-review |
+| "The user just wants small fixes" | Small fixes without review context create new issues | Run /writing-review first |
+| "REVIEW.md will be generated anyway later" | Later never comes — the user thinks revision is done | Require it now |
+</EXTREMELY-IMPORTANT>
+
+**When REVIEW.md exists:**
 
 ```
 Read(".claude/REVIEW.md")
@@ -181,25 +205,6 @@ Parse the review into:
 - **Critical issues** -- fix first, these break the argument
 - **Major issues** -- fix second, these weaken the document
 - **Minor issues** -- fix last, these polish the prose
-
-**Backward-compatibility path (no REVIEW.md):**
-
-If `.claude/REVIEW.md` does not exist, inform the user:
-
-```
-No REVIEW.md found. For best results, run /writing-review first to produce
-a structured diagnosis, then re-run /writing-revise.
-
-Proceeding with inline review (less thorough than /writing-review).
-```
-
-If user chooses to proceed without REVIEW.md, perform a lightweight inline check:
-1. Load domain skill (Step 3)
-2. Do a single-pass review: structure verification, AI anti-patterns, domain check, formatting
-3. Fix issues found in-line
-4. Skip to Step 6 (Generate Report)
-
-This path exists for quick edits and backward compatibility. The `/writing-review` -> `/writing-revise` pipeline is the recommended workflow.
 
 ### Step 3: Load Domain Skill
 

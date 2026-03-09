@@ -404,14 +404,21 @@ This produces better-grounded brainstorming than sequential searches because par
 
 Before proceeding to project setup:
 
-1. **IDENTIFY**: What proves brainstorm is complete?
-   - Topic confirmed by user
-   - Domain detected (legal/econ/general)
-   - Key sources identified (discovery or gathering mode complete)
-2. **RUN**: Review the conversation - has the user confirmed a topic and angle?
-3. **READ**: Check that sources were gathered (sub-agent results returned) or topic was selected (discovery mode)
-4. **VERIFY**: User has confirmed topic, angle, and audience. Domain indicators are clear.
+1. **IDENTIFY**: What file-based evidence proves brainstorm is complete?
+   - Sources gathered: librarian sub-agent results returned with real quotes and source attributions
+   - Domain detected: indicators from source material (not guessed from topic name)
+   - User confirmation: AskUserQuestion response confirming topic, angle, and audience
+2. **RUN**: Verify file-based artifacts exist:
+   - At least one librarian sub-agent returned structured results (sources + quotes)
+   - OR (discovery mode) topic candidates were presented with supporting highlights
+   - AskUserQuestion was used to confirm angle and audience (not just conversation flow)
+3. **READ**: Check the evidence:
+   - Source results contain specific titles, authors, and quoted text (not summaries from training data)
+   - Domain indicators come from actual source material characteristics
+4. **VERIFY**: All three conditions met: (a) real sources gathered, (b) user confirmed via AskUserQuestion, (c) domain detected from evidence
 5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-setup
+
+**"User seemed to agree" is not confirmation. AskUserQuestion response or explicit typed confirmation is confirmation.** Inferring agreement from silence or topic continuation is rubber-stamping the gate.
 
 ## Rationalization Table
 
@@ -445,6 +452,14 @@ Before proceeding to project setup:
 | Moving to setup before user confirms the topic | User approval is the gate | Present findings, get confirmation |
 
 ## Next Phase
+
+<EXTREMELY-IMPORTANT>
+### No Pause Between Brainstorm and Setup
+
+**After the user confirms topic and sources are gathered, IMMEDIATELY proceed to writing-setup. Do NOT ask "should I continue?" or "ready to proceed?" or any variant.**
+
+The gate passed. The user confirmed. Asking permission to continue is procrastination disguised as courtesy. Load the next skill and execute it.
+</EXTREMELY-IMPORTANT>
 
 After brainstorm is complete, proceed to project setup:
 

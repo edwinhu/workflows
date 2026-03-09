@@ -223,6 +223,20 @@ This skill is Phase 1 of the 5-phase `/ds` workflow:
 4. **Phase 4: ds-review** - Review methodology, data quality, and statistical validity (max 3 cycles)
 5. **Phase 5: ds-verify** - Check reproducibility and obtain user acceptance
 
+## No Pause After Brainstorm
+
+<EXTREMELY-IMPORTANT>
+**After user confirms objectives, IMMEDIATELY proceed to ds-plan. Do NOT ask "should I continue?" or "ready to proceed?"**
+
+| Thought | Reality |
+|---------|---------|
+| "Should I ask if they want to continue?" | User already confirmed objectives. Asking again is stalling. |
+| "Let me summarize what we agreed on" | SPEC.md IS the summary. Repeating it wastes context. |
+| "Natural stopping point" | The workflow is sequential. Brainstorm done = plan starts. No gap. |
+
+**Your pause is procrastination disguised as courtesy. The user confirmed — move.**
+</EXTREMELY-IMPORTANT>
+
 ## Phase Complete
 
 After completing brainstorm, IMMEDIATELY invoke the next phase:
