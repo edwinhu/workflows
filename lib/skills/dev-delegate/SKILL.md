@@ -1,7 +1,7 @@
 ---
 name: dev-delegate
 version: 1.0
-description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - should only be invoked by dev-ralph-loop inside each implementation iteration. Handles Task agent spawning with TDD enforcement and two-stage review (spec compliance + code quality)."
+description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - should only be invoked by dev-ralph-loop inside each implementation iteration."
 ---
 
 **Announce:** "I'm using dev-delegate to dispatch implementation subagents."

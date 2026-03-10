@@ -360,6 +360,13 @@ Publishing wrong results is worse than slow results. The user experiences your c
 **Do NOT trust the analyst's claims about data quality. Run these checks yourself.**
 
 The analyst may have reported "no duplicates" without actually checking, or "handled missing values" by silently dropping rows. You MUST run independent verification.
+
+**Load shared check definitions first:**
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/ds-checks.md")
+```
+
+Run checks DQ1-DQ5, M1 from the shared definitions. This ensures ds-review and ds-fix use identical checks.
 </EXTREMELY-IMPORTANT>
 
 Dispatch a Task agent to run these checks on the final analysis data:

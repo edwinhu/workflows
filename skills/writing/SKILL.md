@@ -190,6 +190,22 @@ ALL source gathering MUST go through the librarian agent, which enforces:
 **If you're about to call `mcp__readwise__*` or spawn a `general-purpose` agent for search, STOP.**
 </EXTREMELY-IMPORTANT>
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Clarifying Intent
+
+**NO SEARCH WITHOUT CLARIFYING INTENT FIRST. This is not negotiable.**
+
+In Gathering Mode, you MUST use `AskUserQuestion` to understand angle and audience BEFORE launching any librarian searches. Searching without intent produces scattered results that don't serve an argument.
+
+If you find yourself about to search before the user has confirmed their angle:
+1. STOP immediately
+2. Ask the clarifying questions (Phase 1)
+3. THEN decompose into search themes
+4. THEN launch parallel librarian agents
+
+**Searching before clarifying is like outlining before having a thesis.** You'll gather sources for a topic, not an argument. The sources won't support any specific claim because you don't have one yet.
+</EXTREMELY-IMPORTANT>
+
 ### Librarian Search Pattern
 
 For a topic with N distinct themes, launch N parallel librarian agents:
@@ -434,11 +450,13 @@ Before proceeding to project setup:
 
 ## Why Skipping Hurts the Thing You Care About Most
 
-| Shortcut | Consequence |
-|---|---|
-| Skipping source gathering to draft faster | You skipped research to draft faster. The draft has no evidence — your speed produced empty prose. |
-| Not interviewing the user about angle/audience | You assumed you understood the topic. The paper argues the wrong thesis — your assumption wasted everything. |
-| Using training data as sources instead of searching | You cited from memory instead of searching. The citations are wrong or outdated — your confidence was academic dishonesty. |
+| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
+|------------|--------------|----------------------|---------------------|
+| **Helpfulness** | "Getting to drafting fast helps the user see progress" | The draft has no evidence. Every claim is an assertion. The user submits and reviewers reject for lack of sources. Your speed destroyed their credibility. | **Anti-helpful** |
+| **Honesty** | "I cited from memory — I know these sources" | Your training data citations are wrong or outdated. You presented fabricated sources as research. That's academic dishonesty, not helpfulness. | **Dishonest** |
+| **Competence** | "I already know enough about this topic to skip research" | You searched nothing. The paper misses the 3 most relevant recent sources. A librarian search would have found them in 2 minutes. Your expertise was ignorance. | **Incompetent** |
+| **Efficiency** | "The user interview wastes time — I can infer the angle" | You inferred wrong. The paper argues critique when the user wanted reform. You rewrote from scratch. The 5-minute interview would have saved 2 hours. | **Anti-efficient** |
+| **Approval** | "The user seems eager to start writing" | You skipped clarification to please them. The draft argues the wrong thesis. The user now questions whether you understand their work at all. You lost trust. | **Lost approval** |
 
 ## Red Flags - STOP If You Catch Yourself:
 

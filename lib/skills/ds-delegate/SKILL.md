@@ -235,6 +235,24 @@ Append to `.claude/LEARNINGS.md` after each task:
 **Next:** [what comes next]
 ```
 
+## Gate: Exit Delegation (Per-Task)
+
+Before marking any task as complete, execute this gate:
+
+```
+1. IDENTIFY → What proves this task is done?
+   - Task agent returned output (not just "done")
+   - Output matches PLAN.md expected output for this task
+2. RUN      → Read the agent's actual output (not just the summary)
+3. READ     → Verify: shapes reasonable? No unexpected nulls? Sample looks correct?
+4. VERIFY   → If statistical task: methodology reviewer approved
+5. CLAIM    → Only log "Task N: COMPLETE" in LEARNINGS.md if ALL checks pass
+```
+
+**If agent returned no visible output, this gate FAILS. Re-dispatch with explicit output requirements.**
+
+**Claiming task complete without verifying agent output is LYING about analysis progress.**
+
 ## Honesty Requirement
 
 <EXTREMELY-IMPORTANT>

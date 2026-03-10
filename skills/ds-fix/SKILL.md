@@ -62,13 +62,16 @@ Before changing ANY analysis code, you MUST:
 
 ## Step 1: Load Context
 
-Read workflow state:
+Read workflow state AND shared check definitions:
 
 ```
 Read(".claude/SPEC.md")
 Read(".claude/PLAN.md")
 Read(".claude/LEARNINGS.md")
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/ds-checks.md")
 ```
+
+**The shared checks file contains data quality check definitions (DQ1-DQ6, M1, R1) used by both ds-review and ds-fix.** Loading it here ensures the midpoint runs identical checks to the entry point's review phase. Without it, checks drift apart and the midpoint misses issues review would catch.
 
 If no workflow state exists, suggest starting with `/ds` instead.
 

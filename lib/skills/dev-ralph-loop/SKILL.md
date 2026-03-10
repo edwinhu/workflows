@@ -1,6 +1,6 @@
 ---
 name: dev-ralph-loop
-description: "Per-task ralph loop pattern for implementation and debugging. One loop per task, not one loop per feature."
+description: "This skill should be used when REQUIRED by dev-implement for per-task implementation loops."
 ---
 
 **Announce:** "I'm using dev-ralph-loop to set up verification loops."

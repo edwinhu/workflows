@@ -148,6 +148,20 @@ The entry point runs sequentially — each phase loads its constraints and passe
 
 **Critical rule:** Any phase that evaluates quality must load the full constraint set, not a summary of it. Summaries enable reward hacking — the agent checks against a 4-item summary, finds no issues, and reports "all checks pass" when the full rules would have caught problems. The fix: `Read()` the actual skill before checking.
 
+#### Shared Constraint Files
+
+When the entry point and midpoint both evaluate the same quality dimensions, extract those check definitions into a **shared reference file** rather than inlining them in each skill independently.
+
+**Why:** Entry and midpoint evolve at different times. A check added to the midpoint won't appear in the entry point unless they share a source. This causes drift — the midpoint catches issues the entry point doesn't, requiring unnecessary re-entry cycles.
+
+**Implementation:**
+1. Create `references/[workflow]-checks.md` with all check definitions (ID, specification, output format)
+2. Entry phases and midpoint skills both `Read()` this file
+3. Sub-agent prompts reference checks by ID: "Run checks S1, S2, X1 from references/[workflow]-checks.md"
+4. Include a **Check Matrix** showing which checks run in which context (entry, midpoint, reviewer)
+
+**When to extract:** If a check appears in both the entry point's verification step AND the midpoint's diagnostic step, it belongs in a shared file. Checks unique to one context can stay inline.
+
 **Gate: Two Entry Points Designed**
 - Verify entry point (start fresh) is defined
 - Verify midpoint (re-enter) is defined with constraint loading
@@ -205,6 +219,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Does the workflow have both an entry (start fresh) and midpoint (re-enter)?
 - Is the midpoint self-contained? (loads all constraints, doesn't depend on prior phases)
 - Does the midpoint load full skills, not summaries?
+- Do entry and midpoint share a common constraints file for checks they both run? (or do they inline duplicate definitions that will drift?)
 
 **Iteration strategy:**
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
@@ -382,6 +397,7 @@ For each gap:
 - **Missing Red Flags** → 3-5 wrong-path indicators
 - **Missing audit-fix loop** → Iteration tracking + re-review + escalation
 - **Missing Drive-Aligned Consequences** → 5-drive table
+- **Duplicate constraints between entry/midpoint** → Extract to shared `references/[workflow]-checks.md` with Check Matrix
 
 ### Step 4: Present Changes
 
@@ -426,6 +442,9 @@ Every phase needs a gate — deterministic (test passes, file exists) or judgmen
 
 ### NO HIGH-DRIFT PHASE WITHOUT ENFORCEMENT
 Identify where the agent is most tempted to shortcut. Enforce hardest there. Implementation and verification phases ALWAYS need Iron Laws.
+
+### NO DUPLICATE CONSTRAINTS BETWEEN ENTRY AND MIDPOINT
+If the entry point and midpoint both evaluate the same quality dimension, the check definition must live in a shared file — not inlined in each skill independently. Inlined duplicates WILL drift apart, and the entry point will ship broken work that the midpoint must catch.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:
@@ -437,6 +456,7 @@ Identify where the agent is most tempted to shortcut. Enforce hardest there. Imp
 | Writing soft language instead of Iron Laws | LLMs ignore polite suggestions | Use strong framing with EXTREMELY-IMPORTANT tags |
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
+| Inlining the same check in both entry and midpoint | They WILL drift apart. The course-materials redundancy gap: slides-edit had the check, lecture-prep didn't. | Extract shared checks to a reference file both Read() |
 
 ## Rationalization Table
 
@@ -448,6 +468,7 @@ Identify where the agent is most tempted to shortcut. Enforce hardest there. Imp
 | "The user will catch errors in review" | Relying on human review defeats the purpose of the workflow | Build adversarial review INTO the workflow |
 | "I'll add enforcement later" | Later never comes. Enforcement debt compounds. | Add it now, refine through use |
 | "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
+| "The entry and midpoint checks are close enough" | "Close enough" means the midpoint catches issues the entry point missed. That's a wasted first pass. | Extract to shared file. Identical checks, one definition. |
 
 ### Why Skipping Steps Hurts the Thing You Care About Most
 

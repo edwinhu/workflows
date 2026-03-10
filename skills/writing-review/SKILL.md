@@ -51,6 +51,18 @@ If you find yourself marking something as "OK" or "no issues found":
 | "This section is self-contained, no cross-section issues" | Self-contained sections don't make a document | Check how it connects to thesis and adjacent sections |
 | "I'll be thorough on the important sections" | Every section matters equally in review | Same depth for every section |
 
+## Delete & Restart
+
+If you catch yourself in any of these violations, the review output is contaminated. Delete it and start over:
+
+| Violation | Why Contaminated | Action |
+|---|---|---|
+| Reviewed a section without reading its draft file | You fabricated a review from outline knowledge | DELETE REVIEW.md. Read every draft. Start Level 1 over. |
+| Reviewed your own draft in the same context (no fresh subagent) | Self-review is rubber-stamping — you share the drafter's biases | DELETE the section review. Spawn a fresh subagent. Re-review. |
+| Wrote REVIEW.md without completing all 3 levels | Partial review misses cross-section issues | DELETE REVIEW.md. Complete all levels. Regenerate. |
+
+**Partial fixes to contaminated reviews create worse outcomes than restarting.** A review built on fabricated evidence will misdirect writing-revise into "fixing" non-problems while real issues persist.
+
 ## Red Flags — STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |

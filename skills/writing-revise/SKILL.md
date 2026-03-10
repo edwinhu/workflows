@@ -8,6 +8,42 @@ description: "This skill should be used when the user asks to 'revise writing', 
 
 The revision loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
 
+## Revise Flowchart (This IS the Spec)
+
+```
+START
+  │
+  ├─ Step 1: Load context (ACTIVE_WORKFLOW, PRECIS, OUTLINE, drafts)
+  │
+  ├─ Step 2: REVIEW.md exists?
+  │  ├─ NO → REFUSE. Suggest /writing-review. EXIT.
+  │  └─ YES → Parse issues (critical → major → minor)
+  │
+  ├─ Step 3: Load constraint layers
+  │  ├─ Domain skill (legal/econ/general)
+  │  └─ ai-anti-patterns (universal)
+  │
+  ├─ Step 4: Fix issues in priority order
+  │  ├─ 4a: Critical issues (argument-breaking)
+  │  ├─ 4b: Major issues (transitions, repetition, late introductions)
+  │  └─ 4c: Minor issues (polish)
+  │
+  ├─ Step 5: Formatting check
+  │
+  └─ Step 6: Check iteration state (.claude/REVIEW_STATE.md)
+     │
+     ├─ No issues remain → COMPLETE
+     │  └─ Archive workflow → Generate summary → EXIT
+     │
+     ├─ iteration < 3 AND issues remain → CONTINUE
+     │  └─ Increment iteration → Re-invoke /writing-review → Loop
+     │
+     └─ iteration >= 3 AND issues remain → ESCALATE
+        └─ Report to user with options → EXIT
+```
+
+If text and flowchart disagree, the flowchart wins.
+
 <EXTREMELY-IMPORTANT>
 ## IRON LAW: Critique Over Comfort
 
@@ -206,9 +242,13 @@ Parse the review into:
 - **Major issues** -- fix second, these weaken the document
 - **Minor issues** -- fix last, these polish the prose
 
-### Step 3: Load Domain Skill
+### Step 3: Load Constraint Layers
 
-Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md:
+The midpoint must be self-contained. Load ALL constraint layers before touching the draft:
+
+#### 3a: Load Domain Skill
+
+Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Load |
 |-------|------|
@@ -217,6 +257,28 @@ Load the full domain skill based on `style` in ACTIVE_WORKFLOW.md:
 | general | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")` |
 
 **You MUST Read() the domain skill before editing.** The domain skill contains the full rules, reference material, and enforcement patterns. Editing without it produces generic fixes.
+
+#### 3b: Load Universal Constraints
+
+```
+Skill(skill="workflows:ai-anti-patterns")
+```
+
+**You MUST load ai-anti-patterns before editing.** This catches AI writing smell (hedging, filler, false balance, weasel words) that domain skills don't cover. Revising without it means you'll fix structural issues while leaving AI-smell intact — the reviewer will flag the same draft again for different reasons.
+
+<EXTREMELY-IMPORTANT>
+### Iron Law: Full Constraint Loading
+
+**NO REVISION WITHOUT ALL CONSTRAINT LAYERS. This is not negotiable.**
+
+The midpoint cannot rely on constraints loaded during earlier phases. Prior context may be compressed or lost. You must load:
+1. ACTIVE_WORKFLOW.md → workflow state
+2. PRECIS.md, OUTLINE.md → structural intent
+3. Domain skill → domain-specific rules
+4. ai-anti-patterns → universal writing quality
+
+**Editing with only domain skill loaded is like reviewing with one eye closed.** You'll fix half the problems and miss the other half.
+</EXTREMELY-IMPORTANT>
 
 ### Step 4: Fix Issues from REVIEW.md
 

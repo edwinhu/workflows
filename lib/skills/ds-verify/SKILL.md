@@ -1,6 +1,6 @@
 ---
 name: ds-verify
-description: "This skill should be used when the user asks to 'verify analysis results', 'check reproducibility', 'validate data science output', 'confirm completion', or as Phase 5 of the /ds workflow (final). Enforces reproducibility demonstration and user acceptance before completion claims."
+description: "This skill should be used when the user asks to 'verify analysis results', 'check reproducibility', 'validate data science output', 'confirm completion', or as Phase 5 of the /ds workflow."
 ---
 
 Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."
@@ -44,10 +44,13 @@ This applies even when:
 
 ### Drive-Aligned Consequences
 
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping fresh re-run | You assumed prior results still hold. They don't reproduce — your assumption is the irreproducibility the user discovers. |
-| Rubber-stamping | You reported 'verified' without re-executing. The analysis fails on fresh data — you lied. |
+| Drive | Shortcut | Consequence |
+|-------|----------|-------------|
+| **Helpfulness** | Skipping fresh re-run | You assumed prior results still hold. They don't reproduce — the user publishes irreproducible work. Your assumption is the error they discover. Anti-helpful. |
+| **Honesty** | Rubber-stamping verification | You reported 'verified' without re-executing. The analysis fails on fresh data — you lied about verification. |
+| **Competence** | Verifying your own work | You ran the reproducibility check yourself instead of dispatching a fresh agent. You share the implementer's biases. A fresh agent would have caught the issue. Incompetent verification. |
+| **Approval** | Skipping user acceptance interview | You declared completion without asking the user. They discover the results don't answer their question. They now require manual review of all analysis. Lost approval. |
+| **Efficiency** | Not running reproducibility check | You skipped the 10-minute check. The irreproducible results take 10 days to debug when someone else tries to run them. Anti-efficient. |
 
 ## Rationalization Table
 
@@ -176,6 +179,38 @@ AskUserQuestion:
 
 **MANDATORY:** Demonstrate reproducibility before completion.
 
+<EXTREMELY-IMPORTANT>
+## Independent Verification Required
+
+**You MUST NOT verify your own work. Spawn a fresh Task agent for reproducibility.**
+
+The implementer shares biases and sunk-cost attachment. A fresh subagent sees only the spec and outputs — it verifies without context pollution.
+
+**If you're about to re-run the analysis yourself, STOP. Dispatch a Task agent.**
+</EXTREMELY-IMPORTANT>
+
+Dispatch a fresh Task agent to run the reproducibility check:
+
+```
+Agent(subagent_type="general-purpose", prompt="""
+# Reproducibility Verification
+
+Verify this analysis produces consistent results from a fresh run.
+
+## Context
+- Read .claude/SPEC.md for objectives and success criteria
+- Read .claude/PLAN.md for expected outputs
+- Read .claude/LEARNINGS.md for pipeline documentation
+
+## Shared Checks
+Read the shared check definitions:
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/ds-checks.md")
+
+Run checks: DQ1-DQ4, DQ6, M1, R1
+
+## Reproducibility Protocol
+
+### For scripts:
 ```python
 # Run 1
 result1 = run_analysis(seed=42)
@@ -190,14 +225,28 @@ assert hash1 == hash2, "Results not reproducible!"
 print(f"Reproducibility confirmed: {hash1} == {hash2}")
 ```
 
-For notebooks:
+### For notebooks:
 ```bash
-# notebook-reproduce: Clear and re-run all cells from scratch
 jupyter nbconvert --execute --inplace notebook.ipynb
-
-# notebook-reproduce-with-seed: Execute notebook with fixed random seed for reproducibility
 papermill notebook.ipynb output.ipynb -p seed 42
 ```
+
+## Required Checks
+1. RE-RUN: Execute analysis fresh (not cached results)
+2. CHECK: Verify outputs match SPEC.md success criteria
+3. REPRODUCE: Same inputs → same outputs (run twice, compare hashes)
+4. DATA INTEGRITY: Input data unchanged, row counts traceable
+
+## Output
+Report:
+- Reproducibility: PASS/FAIL (with hash comparison)
+- Data quality checks: DQ1-DQ4, DQ6 results
+- Spec compliance: M1 result
+- Any discrepancies found
+""")
+```
+
+**If Task agent reports FAIL:** Investigate the discrepancy before proceeding. Do NOT ignore reproducibility failures.
 
 ## Claims Requiring Evidence
 

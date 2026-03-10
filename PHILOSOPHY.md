@@ -94,6 +94,24 @@ The implementer should never verify its own work. Self-review is proofreading �
 
 The design principle: **use the most independent verifier available.** Machine verification when possible (tests pass), independent subagent review when judgment is needed, human review for final quality on subjective work. Self-review is never the answer.
 
+### Shared Constraints Between Entry and Midpoint
+
+When both the entry point and midpoint evaluate the same quality dimensions (coverage, fidelity, style, alignment), the check definitions must live in a **single shared file** — not inlined independently in each skill.
+
+**The drift problem:** Entry and midpoint skills evolve at different times. A new check added to the midpoint (e.g., redundancy detection) doesn't automatically appear in the entry point's verification step. Over time, the two diverge — the midpoint catches issues the entry point doesn't, which means the entry point ships broken work that requires midpoint re-entry to fix.
+
+**The solution:** Extract check definitions into a shared reference file (e.g., `references/verification-checks.md`). Both entry phases and midpoint skills `Read()` this file and reference checks by ID. When a check is updated, it's updated once and propagated everywhere.
+
+```
+references/verification-checks.md  ← single source of truth
+    ↑ Read()              ↑ Read()
+    │                     │
+entry phases          midpoint skills
+(sub-agent verify)    (diagnostic audit)
+```
+
+**The design principle:** If the same quality dimension is checked in both the entry point and midpoint, the check definition MUST be shared. Inlining the same check in two places guarantees drift.
+
 ## 5. Enforcement and Its Limits
 
 Superpowers enforcement patterns are the regularization that counteracts drift:

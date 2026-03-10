@@ -387,6 +387,21 @@ Before transitioning to dev-explore, ALL checks must pass:
 
 **If any check fails, do NOT proceed. Fix the gap before transitioning.**
 
+### Delete & Restart Protocol
+
+If a gate check fails:
+
+| Failure | Action |
+|---------|--------|
+| SPEC.md missing required sections | Delete SPEC.md, re-run brainstorm with focus on missing sections |
+| User hasn't confirmed objectives | Ask user to confirm before proceeding — do NOT assume approval |
+| Testing strategy empty | Re-ask testing questions (Step 2) — this is a BLOCKER |
+| Success criteria vague or missing | Re-ask requirements questions — do NOT proceed with weak criteria |
+
+**Do NOT patch a broken SPEC.md. Delete it and restart brainstorm with the gap identified.** Partial fixes to wrong-foundation work create worse outcomes than restarting.
+
+After fixing, re-run ALL gate checks (not just the one that failed).
+
 ## Phase Complete
 
 **REQUIRED SUB-SKILL:** After completing brainstorm, immediately invoke the explore phase:

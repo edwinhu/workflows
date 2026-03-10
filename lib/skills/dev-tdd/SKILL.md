@@ -1,6 +1,6 @@
 ---
 name: dev-tdd
-description: This skill should be used when the user asks to "implement using TDD", "test-driven development", "RED-GREEN-REFACTOR", or "write failing test first". Enforces test-first approach with RED-GREEN-REFACTOR cycle and execution-based verification.
+description: "This skill should be used when the user asks to 'implement using TDD', 'test-driven development', 'RED-GREEN-REFACTOR', or 'write failing test first'."
 version: 0.1.0
 ---
 

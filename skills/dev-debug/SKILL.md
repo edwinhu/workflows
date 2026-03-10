@@ -314,11 +314,27 @@ BUILD → LAUNCH (with logging) → WAIT → CHECK PROCESS → READ LOGS → VER
 
 **The protocol is not overhead you pay. It is the service you provide.**
 
+## No Pause Between Iterations
+
+After evaluating a subagent's results, IMMEDIATELY spawn the next iteration or complete. Do NOT:
+- Summarize what was learned (HYPOTHESES.md is the record)
+- Ask "should I continue?" (progress gating decides, not courtesy)
+- Wait for user confirmation between iterations
+- Write status updates before spawning next subagent
+
+**Pausing between iterations is procrastination disguised as courtesy.**
+
 ## When Fix Requires Substantial Changes
 
 If root cause reveals need for significant refactoring:
 1. Document root cause in LEARNINGS.md
 2. Report findings to user
-3. Use `Skill(skill="workflows:dev")` for the implementation work
+3. Immediately invoke the dev workflow for implementation:
+
+```bash
+Read("${CLAUDE_PLUGIN_ROOT}/skills/dev/SKILL.md")
+```
 
 Debug finds the problem. The dev workflow implements the solution.
+
+**Do NOT leave the user to manually invoke `/dev`. Chain to it explicitly.**

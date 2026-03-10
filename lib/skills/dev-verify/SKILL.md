@@ -286,11 +286,35 @@ Reference `.claude/SPEC.md` when asking—remind user of the success criteria th
 If user responds "Partially" or "No":
 1. Ask which specific requirement is not met
 2. Return to `/dev-implement` to address gaps
-3. Re-run verification
+3. **MANDATORY: Re-invoke dev-verify after fixes** — do not skip re-verification
+
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Re-Verification
+
+**NO COMPLETION CLAIMS WITHOUT RE-VERIFICATION AFTER USER FEEDBACK. This is not negotiable.**
+
+If the user says "Partially" or "No":
+1. Track iteration in `.claude/VERIFY_STATE.md`:
+   ```yaml
+   iteration: 1
+   max_iterations: 3
+   user_feedback: "Partially - missing X"
+   ```
+2. Return to dev-implement for targeted fixes
+3. Re-invoke dev-verify (re-read this skill from scratch)
+4. Re-run ALL verification gates (not just the failed one)
+5. Re-ask user acceptance question
+
+**Escalation:** After 3 iterations without "Yes", escalate to user:
+- "We've iterated 3 times without full acceptance. Should we continue, descope, or take a different approach?"
+
+**Claiming 'verified' after user said 'Partially' without re-running verification is LYING.**
+</EXTREMELY-IMPORTANT>
 
 **Only claim COMPLETE when:**
 - [ ] All technical tests pass (automated)
 - [ ] User confirms requirements met (manual)
+- [ ] If re-verification: iteration tracked and all gates re-run
 
 ## Bottom Line
 

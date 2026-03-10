@@ -1,7 +1,7 @@
 ---
 name: dev-implement
 version: 1.0
-description: “REQUIRED Phase 5 of /dev workflow. Orchestrates per-task ralph loops with delegated TDD implementation.”
+description: “This skill should be used when REQUIRED Phase 5 of /dev workflow, after design approval.”
 ---
 
 **Announce:** “I’m using dev-implement (Phase 5) to orchestrate implementation.”

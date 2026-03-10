@@ -1,6 +1,6 @@
 ---
 name: ds-implement
-description: "REQUIRED Phase 3 of /ds workflow. Enforces output-first verification at each step."
+description: "Phase 3 of /ds workflow. Execute analysis tasks with output-first verification."
 ---
 
 ## Overview
