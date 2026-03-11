@@ -316,7 +316,7 @@ def check_active_workflow() -> str:
     if not workflow_type:
         return ""
 
-    plugin_root = os.environ.get('CLAUDE_PLUGIN_ROOT', '')
+    plugin_root = os.environ.get('CLAUDE_PLUGIN_ROOT', '') or str(get_plugin_root())
 
     if workflow_type == 'writing':
         style = workflow.get('style', 'general')

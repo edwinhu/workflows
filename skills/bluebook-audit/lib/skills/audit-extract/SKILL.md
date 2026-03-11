@@ -18,7 +18,7 @@ Parse the DOCX file and build structured data for all subsequent phases.
 
 ## Script
 
-Run: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/extract_footnotes.py --docx <path>`
+Run (path relative to this skill's base directory): `python3 ../../../../../scripts/extract_footnotes.py --docx <path>`
 
 Output: `scratch/footnotes_data.json`
 
@@ -36,5 +36,5 @@ Before proceeding to Check phase:
 ## Next Phase
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-check/SKILL.md")
+Read("../audit-check/SKILL.md")
 ```

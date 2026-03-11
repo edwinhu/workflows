@@ -326,7 +326,7 @@ Search academic literature via the `scholar` CLI (on PATH via `~/.local/bin/scho
 
 ```bash
 # ALWAYS read this first
-cat ${CLAUDE_PLUGIN_ROOT}/skills/google-scholar/domain-knowledge.local.md
+cat ../skills/google-scholar/domain-knowledge.local.md
 ```
 
 This contains the user's curated list of trusted journals and authors. Use it to:

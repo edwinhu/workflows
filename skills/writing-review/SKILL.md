@@ -96,9 +96,9 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Action |
 |---|---|
-| legal | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md")` |
-| econ | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md")` |
-| general | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")` |
+| legal | `Read("../../lib/skills/writing-legal/SKILL.md")` (relative to this skill's base directory) |
+| econ | `Read("../../lib/skills/writing-econ/SKILL.md")` |
+| general | `Read("../../lib/skills/writing-general/SKILL.md")` |
 
 The domain skill contains style rules that inform your review criteria. You MUST read it before reviewing.
 

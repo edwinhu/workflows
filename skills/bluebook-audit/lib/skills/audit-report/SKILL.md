@@ -73,5 +73,5 @@ This is a **user gate**. The workflow pauses here.
 
 After user approval:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-correct/SKILL.md")
+Read("../audit-correct/SKILL.md")  # relative to this skill's base directory
 ```

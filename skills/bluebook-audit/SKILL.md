@@ -41,7 +41,7 @@ Seven-phase linear workflow: Extract -> Check -> Report -> Correct -> Verify -> 
 Read the entry command:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/commands/bluebook-audit.md")
+Read("commands/bluebook-audit.md")  # relative to this skill's base directory
 ```
 
 <EXTREMELY-IMPORTANT>

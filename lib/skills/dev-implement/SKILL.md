@@ -169,14 +169,15 @@ Simple work is EXACTLY when discipline matters most—because that’s when you�
 
 ## The Process
 
+*All paths below are relative to this skill's base directory.*
 ```
 For each task N in PLAN.md:
     1. Determine loop type:
-       - Visual task? → Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
-       - Standard task? → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md")
+       - Visual task? → Read("../../../skills/visual-verify/SKILL.md")
+       - Standard task? → Read("../dev-ralph-loop/SKILL.md")
 
     2. Inside loop: spawn Task agent
-       → Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")
+       → Read("../dev-delegate/SKILL.md")
 
     3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
        Visual tasks: also render output and vision-check with look-at
@@ -193,14 +194,14 @@ If a PLAN.md task involves rendered visual output, use **visual-verify** instead
 **Signals a task is visual:** task mentions "render", "slide", "chart", "figure", "layout", "UI", "screenshot", "visual", "diagram", or produces any file meant to be seen by humans (PNG, PDF, SVG).
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
+Read("../../../skills/visual-verify/SKILL.md")
 ```
 
 ### Step 1: Start Ralph Loop for Each Task
 
 **REQUIRED SUB-SKILL:**
 ```
-Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-ralph-loop/SKILL.md”)
+Read(“../dev-ralph-loop/SKILL.md”)
 ```
 
 Key points from dev-ralph-loop:
@@ -212,7 +213,7 @@ Key points from dev-ralph-loop:
 
 **REQUIRED SUB-SKILL:**
 ```
-Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md”)
+Read(“../dev-delegate/SKILL.md”)
 ```
 
 Key points from dev-delegate:
@@ -521,7 +522,7 @@ Pausing > 30 seconds between tasks means you’ve stopped. You shouldn’t have.
 For parallel implementation using agent teams, read the full protocol:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/references/agent-team-protocol.md")
+Read("../dev-implement/references/agent-team-protocol.md")
 ```
 
 **When to use:** User explicitly requests parallel implementation, OR 4+ independent tasks in PLAN.md.
@@ -536,7 +537,7 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/references/agent-team-proto
 
 **REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-review/SKILL.md")
+Read("../dev-review/SKILL.md")
 ```
 
 Do NOT proceed until automated tests pass for every task.

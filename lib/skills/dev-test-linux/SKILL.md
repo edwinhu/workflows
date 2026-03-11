@@ -104,8 +104,8 @@ Do NOT use Linux automation for:
 - Cross-platform testing
 
 For web testing, use:
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")` - debugging
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")` - CI/CD
+- `Read("../dev-test-chrome/SKILL.md")` - debugging (relative to this skill's base directory)
+- `Read("../dev-test-playwright/SKILL.md")` - CI/CD
 
 ### Rationalization Prevention
 
@@ -596,4 +596,4 @@ Test complete
 
 This skill integrates with `dev-test` for Linux desktop automation.
 
-For TDD protocol, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`
+For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`

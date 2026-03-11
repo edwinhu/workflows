@@ -161,7 +161,7 @@ THEN AND ONLY THEN: E2E tests/screenshots
 
 **You cannot skip GATE 5 (READ LOGS).** If you catch yourself about to take screenshots without reading logs first, STOP.
 
-See `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")` for the full gate sequence with examples.
+See `Read("../dev-tdd/SKILL.md")` for the full gate sequence with examples. (relative to this skill's base directory)
 </EXTREMELY-IMPORTANT>
 
 **If verification discovers stale or fabricated evidence in LEARNINGS.md, DELETE the contaminated entries. Do not amend false claims — remove them entirely and re-run the verification from scratch.**

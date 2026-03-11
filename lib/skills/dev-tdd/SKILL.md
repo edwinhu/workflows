@@ -360,7 +360,7 @@ This skill is invoked by:
 - `dev-implement` - for TDD during implementation
 - `dev-debug` - for regression tests during debugging
 
-For testing tool options (Playwright, ydotool, etc.), see:
+For testing tool options (Playwright, ydotool, etc.), see: (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test/SKILL.md")
+Read("../dev-test/SKILL.md")
 ```

@@ -136,12 +136,12 @@ Reply when installed and I'll continue testing.
 - Need headless CI/CD for web apps (use Playwright MCP)
 
 **For web apps, use:**
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")` - web debugging
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")` - headless CI/CD
+- `Read("../dev-test-chrome/SKILL.md")` - web debugging (relative to this skill's base directory)
+- `Read("../dev-test-playwright/SKILL.md")` - headless CI/CD
 
 **For native desktop apps, use:**
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-hammerspoon/SKILL.md")` - macOS
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-linux/SKILL.md")` - Linux
+- `Read("../dev-test-hammerspoon/SKILL.md")` - macOS
+- `Read("../dev-test-linux/SKILL.md")` - Linux
 
 ### Rationalization Prevention
 
@@ -739,8 +739,8 @@ Before writing VS Code extension test, verify:
 
 This skill is referenced by `dev-test` for Electron desktop application testing.
 
-**For web debugging, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")`
-**For headless web CI/CD, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")`
-**For macOS native apps, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-hammerspoon/SKILL.md")`
+**For web debugging, use:** `Read("../dev-test-chrome/SKILL.md")`
+**For headless web CI/CD, use:** `Read("../dev-test-playwright/SKILL.md")`
+**For macOS native apps, use:** `Read("../dev-test-hammerspoon/SKILL.md")`
 
-For TDD protocol and gate enforcement, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`
+For TDD protocol and gate enforcement, see: `Read("../dev-tdd/SKILL.md")`

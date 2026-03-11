@@ -12,9 +12,9 @@ Style guide for law review articles, seminar papers, and legal scholarship based
 
 ## On Skill Load
 
-**Step 1: Load base writing rules**
+**Step 1: Load base writing rules** (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/writing/SKILL.md")
+Read("../../../skills/writing/SKILL.md")
 ```
 
 **Step 2: Check for active workflow**
@@ -43,7 +43,7 @@ When generating Word documents (`.docx`), you MUST load the `/docx` skill first.
 
 ## Template Requirement
 
-**Template location:** `${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx`
+**Template location:** `templates/law_review_template.docx`
 
 When creating or converting a docx, load `references/formatting.md` for heading styles, body text styles, pandoc `--reference-doc` usage, and the document creation gate function.
 
@@ -53,7 +53,7 @@ When creating or converting a docx, load `references/formatting.md` for heading 
 
 Before creating ANY Word document for legal writing:
 1. Load the `/docx` skill
-2. Copy `${CLAUDE_PLUGIN_ROOT}/templates/law_review_template.docx` as the base
+2. Copy `templates/law_review_template.docx` as the base
 3. THEN add content to the template copy
 
 If you created a blank docx without the template, DELETE IT and START OVER with the template.

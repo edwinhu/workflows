@@ -10,8 +10,9 @@ description: "This skill should be used when REQUIRED by dev-implement for per-t
 
 Before starting ANY ralph loop, you MUST load the TDD skill to remember the testing gates and task reframing:
 
+*All paths below are relative to this skill's base directory.*
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")
+Read("../dev-tdd/SKILL.md")
 ```
 
 This loads:
@@ -256,7 +257,7 @@ Ralph loops are NOT for:
 For tasks that produce rendered visual output (slides, charts, UI), use **visual-verify** instead of a plain ralph loop. Visual-verify wraps the ralph-loop pattern with render → look-at → fix steps:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md")
+Read("../../../skills/visual-verify/SKILL.md")
 ```
 
 ## Integration

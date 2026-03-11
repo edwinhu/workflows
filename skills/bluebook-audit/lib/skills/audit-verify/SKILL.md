@@ -53,5 +53,5 @@ Before proceeding to Archive phase:
 ## Next Phase
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-archive/SKILL.md")
+Read("../audit-archive/SKILL.md")  # relative to this skill's base directory
 ```

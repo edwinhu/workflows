@@ -139,8 +139,9 @@ Write to `.claude/PRECIS.md`:
 
 After writing PRECIS.md, dispatch the precis reviewer BEFORE creating the outline. Do NOT skip this step.
 
+*All paths below are relative to this skill's base directory.*
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-precis-reviewer/SKILL.md")
+Read("../writing-precis-reviewer/SKILL.md")
 ```
 
 Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed to Step 3 when the reviewer returns APPROVED.
@@ -295,7 +296,7 @@ Before proceeding to outline phase:
 After setup is complete, IMMEDIATELY proceed to the outline phase. Do NOT pause to ask the user. Do NOT summarize what you just created. Load the next skill and continue:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-outline/SKILL.md")
+Read("../writing-outline/SKILL.md")
 ```
 
 Then follow its instructions immediately to create detailed section outlines.

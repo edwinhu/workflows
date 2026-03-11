@@ -58,9 +58,9 @@ Reading costs minutes. Wrong architecture costs days of rework.
 
 ### No Pause After Completion
 
-After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke:
+After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke: (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-clarify/SKILL.md")
+Read("../dev-clarify/SKILL.md")
 ```
 
 DO NOT:
@@ -481,5 +481,5 @@ This is not optional. Fake tests are worse than no tests because they create fal
 
 **REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-clarify/SKILL.md")
+Read("../dev-clarify/SKILL.md")
 ```

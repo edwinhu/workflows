@@ -52,8 +52,9 @@ This applies even when YOU think:
 
 You orchestrate. Subagents analyze. For every task in PLAN.md, use the delegation skill:
 
+*All paths below are relative to this skill's base directory.*
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
+Read("../ds-delegate/SKILL.md")
 ```
 
 This is MANDATORY. ds-delegate contains the Task agent templates, output-first protocol details, methodology review patterns, and rationalization prevention. Do not attempt to summarize or shortcut it.
@@ -216,7 +217,7 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ```
 Read(".claude/PLAN.md")
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
+Read("../ds-delegate/SKILL.md")
 ```
 
 Follow the task order defined in the plan. Use ds-delegate's templates for every task.
@@ -227,11 +228,11 @@ If PLAN.md contains an `## ETL Strategy` section, the user made decisions during
 
 | PLAN.md Section | Enforcement Reference | Inject Into |
 |-----------------|----------------------|-------------|
-| `Implementation Language: SAS` or `Mixed` | `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")` | Every SAS subagent prompt |
-| `Filter Strategy` table present | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Filter Push-Down | Subagent prompts for data loading tasks |
-| `Parallelism Plan` table present | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Parallelism | Implementation strategy choice |
-| `Data Flow` with intermediates | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Caching | Subagent prompts for tasks producing/consuming intermediates |
-| `Scale-Up Testing Plan` table present | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/etl-enforcement.md")` § Scale-Up + domain reference (e.g., `gemini-batch/references/scale-up-testing.md`) | Before any batch submission task |
+| `Implementation Language: SAS` or `Mixed` | `Read("../../../skills/wrds/references/sas-etl.md")` | Every SAS subagent prompt |
+| `Filter Strategy` table present | `Read("../ds-implement/references/etl-enforcement.md")` § Filter Push-Down | Subagent prompts for data loading tasks |
+| `Parallelism Plan` table present | `Read("../ds-implement/references/etl-enforcement.md")` § Parallelism | Implementation strategy choice |
+| `Data Flow` with intermediates | `Read("../ds-implement/references/etl-enforcement.md")` § Caching | Subagent prompts for tasks producing/consuming intermediates |
+| `Scale-Up Testing Plan` table present | `Read("../ds-implement/references/etl-enforcement.md")` § Scale-Up + domain reference (e.g., `gemini-batch/references/scale-up-testing.md`) | Before any batch submission task |
 
 **If PLAN.md has NO ETL Strategy section:** Skip this — proceed directly to Step 2.
 
@@ -363,5 +364,5 @@ Before invoking ds-review, execute this gate:
 
 After passing the exit gate, IMMEDIATELY invoke:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-review/SKILL.md")
+Read("../ds-review/SKILL.md")
 ```

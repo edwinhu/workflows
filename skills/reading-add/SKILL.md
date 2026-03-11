@@ -42,7 +42,7 @@ Use look-at to extract metadata from the first page:
 
 ```bash
 GOOGLE_API_KEY=$(cat /var/folders/01/wzs3mqmn3jx2b81f0dcq9w8h0000gq/T/agenix/gemini-api-key) \
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \  # relative to this skill's base directory
     --file "/path/to/file.pdf" \
     --goal "Extract the title, authors, and date/year from the first page. Return as: Title: ..., Authors: ..., Date: ..."
 ```

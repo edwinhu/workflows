@@ -86,8 +86,8 @@ Reply when installed and I'll continue testing.
 - Linux desktop automation (use dev-test-linux)
 
 **For web testing, use:**
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")` - debugging
-- `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-playwright/SKILL.md")` - CI/CD
+- `Read("../dev-test-chrome/SKILL.md")` - debugging (relative to this skill's base directory)
+- `Read("../dev-test-playwright/SKILL.md")` - CI/CD
 
 ### Rationalization Prevention
 
@@ -445,4 +445,4 @@ PASS: Workflow completed successfully
 
 This skill is referenced by `dev-test` for macOS desktop automation.
 
-For TDD protocol, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`
+For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`

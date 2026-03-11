@@ -68,6 +68,7 @@ Every delegation MUST include:
 
 Use this Task invocation (fill in brackets):
 
+*All paths below are relative to this skill's base directory.*
 ```
 Task(subagent_type="workflows:ds-analyst", prompt="""
 # TASK
@@ -88,7 +89,7 @@ This task requires:
 - [Statistical method]: [Why needed]
 - [Programming language]: Data manipulation
 - Output-first verification (mandatory)
-- SQL reference: Read `${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/references/sql-patterns.md` for dialect-specific patterns
+- SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
 
 ## REQUIRED TOOLS
 

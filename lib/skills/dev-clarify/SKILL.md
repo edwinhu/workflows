@@ -59,9 +59,9 @@ Asking costs minutes. Wrong assumptions cost hours of rework.
 
 ### No Pause After Completion
 
-After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
+After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke: (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-design/SKILL.md")
+Read("../dev-design/SKILL.md")
 ```
 
 DO NOT:
@@ -349,5 +349,5 @@ This is the last checkpoint before implementation planning. Fake tests caught he
 
 **REQUIRED SUB-SKILL:** After completing clarification, IMMEDIATELY invoke:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-design/SKILL.md")
+Read("../dev-design/SKILL.md")
 ```

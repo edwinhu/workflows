@@ -11,7 +11,8 @@ Skill(skill="ralph-loop:ralph-loop", args="Visual Task 1: Title Slide --max-iter
 tinymist compile presentation.typ /tmp/visual-verify.png --pages 1 --ppi 144
 
 # Vision check — NON-PYTHON PATH (no --agentic)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+# Path relative to this skill's base directory
+python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
     --goal "You are reviewing a Typst presentation slide. You CANNOT run Typst.
 
@@ -48,7 +49,7 @@ Skill(skill="ralph-loop:ralph-loop", args="Visual Task 2: Revenue Chart --max-it
 [Render: python3 charts/revenue.py]
 
 # Vision check — PYTHON-NATIVE PATH (--agentic)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
     --goal "You are reviewing a Python-generated chart.
 You have matplotlib, seaborn, numpy, pandas in your sandbox.
@@ -84,7 +85,7 @@ Rate: PASS or FAIL with verified code fixes." \
 # After 3 failed iterations on fletcher diagram label overlap...
 
 # Escalate to reference sketch approach
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
     --goal "This diagram has persistent label overlap issues after 3 iterations.
 Draw a REFERENCE VERSION using matplotlib/networkx showing ideal positions:

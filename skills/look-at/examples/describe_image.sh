@@ -1,7 +1,7 @@
 #!/bin/bash
 # Example: Describe and analyze images
 
-SCRIPT_DIR="${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts"
+SCRIPT_DIR="../scripts"
 
 # Example 1: Describe UI elements
 python3 "${SCRIPT_DIR}/look_at.py" \

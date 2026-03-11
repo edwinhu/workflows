@@ -100,5 +100,5 @@ Before proceeding to Verify phase:
 ## Next Phase
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-verify/SKILL.md")
+Read("../audit-verify/SKILL.md")  # relative to this skill's base directory
 ```

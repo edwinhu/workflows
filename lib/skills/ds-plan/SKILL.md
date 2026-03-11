@@ -65,9 +65,9 @@ Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect
 
 ### No Pause After Completion
 
-After writing `.claude/PLAN.md` and initializing `.claude/LEARNINGS.md`, IMMEDIATELY invoke:
+After writing `.claude/PLAN.md` and initializing `.claude/LEARNINGS.md`, IMMEDIATELY invoke: (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
+Read("../ds-implement/SKILL.md")
 ```
 
 DO NOT:
@@ -394,7 +394,7 @@ AskUserQuestion(questions=[{
 
 **If SAS or Mixed is selected:**
 1. Record `Implementation Language: SAS` (or `Mixed: SAS ETL + Python analysis`) in PLAN.md header
-2. Load WRDS SAS enforcement: `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")`
+2. Load WRDS SAS enforcement: `Read("../../../skills/wrds/references/sas-etl.md")`
 3. All SAS tasks in the plan MUST include performance annotations:
    - **Merge strategy:** hash or sort-merge (with justification if sort-merge)
    - **WHERE pattern:** range-based date literals (document that no function-wrapped filters are used)
@@ -415,9 +415,9 @@ Write to `.claude/PLAN.md`:
 ```markdown
 # Analysis Plan: [Analysis Name]
 
-> **For Claude:** REQUIRED SUB-SKILL: Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")` to implement this plan with output-first verification.
+> **For Claude:** REQUIRED SUB-SKILL: Use `Read("../ds-implement/SKILL.md")` to implement this plan with output-first verification.
 >
-> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")` for subagent templates.
+> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("../ds-delegate/SKILL.md")` for subagent templates.
 
 ## Spec Reference
 See: .claude/SPEC.md
@@ -507,7 +507,7 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 
 <!-- If SAS or Mixed, include this section: -->
 ## SAS Performance Constraints
-> **For Claude:** REQUIRED: Load `Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")` before writing ANY SAS code.
+> **For Claude:** REQUIRED: Load `Read("../../../skills/wrds/references/sas-etl.md")` before writing ANY SAS code.
 > Validate ALL SAS code against the SAS Code Validation Checklist in the WRDS skill.
 
 ### Per-Task SAS Annotations
@@ -593,12 +593,12 @@ Phase 2: ds-plan -> PLAN.md written -> exit gate passed
 
 **Step 1:** Load and follow the plan reviewer skill:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan-reviewer/SKILL.md")
+Read("../ds-plan-reviewer/SKILL.md")
 ```
 
 **Step 2:** Only after reviewer returns APPROVED, invoke the next phase:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
+Read("../ds-implement/SKILL.md")
 ```
 
 **CRITICAL:** Do not skip plan review. An unreviewed plan means subagents struggling with incomplete task definitions and missing verification steps.

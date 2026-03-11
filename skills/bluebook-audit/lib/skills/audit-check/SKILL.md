@@ -9,7 +9,7 @@ Two-stage checking: Python mechanical checks catch definite errors; Gemini batch
 
 ## Stage 2a: Mechanical Checks (Python)
 
-Run: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/scan_formatting.py --docx path/to/file.docx`
+Run (paths relative to this skill's base directory): `python3 ../../../../../scripts/scan_formatting.py --docx path/to/file.docx`
 
 Checks performed on ALL footnotes:
 1. **Journal name small caps** - Comprehensive pattern list (law reviews, finance journals, newspapers, periodicals, forums)
@@ -29,7 +29,7 @@ DOCX uses non-breaking spaces (`\xa0`) in abbreviations. ALL search functions mu
 
 ## Stage 2b: Gemini Formatted Audit
 
-Run: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/gemini_audit.py --docx path/to/file.docx`
+Run: `python3 ../../../../../scripts/gemini_audit.py --docx path/to/file.docx`
 
 Sends EVERY footnote to Gemini with inline formatting markup:
 - `*text*` = italic
@@ -88,5 +88,5 @@ Before proceeding to Report phase:
 ## Next Phase
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-report/SKILL.md")
+Read("../audit-report/SKILL.md")
 ```

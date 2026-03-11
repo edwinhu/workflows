@@ -17,13 +17,13 @@ Archive all non-permanent URLs in footnotes via perma.cc API.
 
 ## Prerequisites
 
-- Perma.cc API key in `.env` file (at `${CLAUDE_PLUGIN_ROOT}/.env` or workflow-level `.env`)
+- Perma.cc API key in `.env` file (at `../../../../../.env` (relative to this skill's base directory) or workflow-level `.env`)
 - For institutional accounts: organization folder ID (unlimited archives)
 - Free accounts: 10 links/month limit
 
 ## Script
 
-Run: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/permacc_archive.py --docx <path> --data scratch/footnotes_data.json`
+Run: `python3 ../../../../../scripts/permacc_archive.py --docx <path> --data scratch/footnotes_data.json`
 
 ## Institutional Account Setup
 
@@ -49,5 +49,5 @@ requests.post("https://api.perma.cc/v1/archives/", json={
 ## Next Phase
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-crossrefs/SKILL.md")
+Read("../audit-crossrefs/SKILL.md")
 ```

@@ -34,7 +34,7 @@ If text and flowchart disagree, the flowchart wins.
 - Short text provided inline
 - No mention of “project”, “paper”, “article”
 
-→ If quick mode: `Read(“${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md”)` and apply rules to text.
+→ If quick mode: `Read(“../../lib/skills/writing-general/SKILL.md”)` (relative to this skill's base directory) and apply rules to text.
 
 **Project Mode Indicators** (full workflow):
 - “Write a paper on...”
@@ -482,7 +482,7 @@ The gate passed. The user confirmed. Asking permission to continue is procrastin
 After brainstorm is complete, proceed to project setup:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-setup/SKILL.md")
+Read("../../lib/skills/writing-setup/SKILL.md")
 ```
 
 Then follow its instructions immediately to create PRECIS.md, OUTLINE.md, and ACTIVE_WORKFLOW.md.

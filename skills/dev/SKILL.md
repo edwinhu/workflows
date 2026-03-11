@@ -33,7 +33,7 @@ phase: 1
 phase_name: brainstorm
 started: [current timestamp]
 project_root: [current directory]
-active_skill: ${CLAUDE_PLUGIN_ROOT}/skills/dev/SKILL.md
+active_skill: ../../skills/dev/SKILL.md  # relative to this skill's base directory
 spec: .claude/SPEC.md
 plan: .claude/PLAN.md
 ---
@@ -94,7 +94,7 @@ After writing `.claude/SPEC.md` and completing brainstorm, immediately invoke th
 **Invoke the explore phase:**
 
 ```bash
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")
+Read("../../lib/skills/dev-explore/SKILL.md")
 ```
 
 DO NOT:
@@ -256,7 +256,7 @@ Write the initial spec to `.claude/SPEC.md`:
 ```markdown
 # Spec: [Feature Name]
 
-> **For Claude:** After writing this spec, use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")` for Phase 2.
+> **For Claude:** After writing this spec, use `Read("../../lib/skills/dev-explore/SKILL.md")` for Phase 2.
 
 ## Problem
 [What problem this solves]
@@ -274,7 +274,7 @@ Write the initial spec to `.claude/SPEC.md`:
 
 ## Testing Strategy (MANDATORY - USER APPROVED)
 
-> **For Claude:** Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test/SKILL.md")` for automation options.
+> **For Claude:** Use `Read("../../lib/skills/dev-test/SKILL.md")` for automation options.
 >
 > **⚠️ NO IMPLEMENTATION WITHOUT TESTS. If this section is empty, STOP.**
 
@@ -409,7 +409,7 @@ After fixing, re-run ALL gate checks (not just the one that failed).
 **Spec Review Gate (MANDATORY):**
 
 ```bash
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-spec-reviewer/SKILL.md")
+Read("../../lib/skills/dev-spec-reviewer/SKILL.md")
 ```
 
 Follow the spec reviewer's instructions:
@@ -420,5 +420,5 @@ Follow the spec reviewer's instructions:
 **After spec review APPROVED, start explore phase - Phase 2:**
 
 ```bash
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")
+Read("../../lib/skills/dev-explore/SKILL.md")
 ```

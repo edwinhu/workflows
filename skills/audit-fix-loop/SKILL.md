@@ -116,10 +116,10 @@ Each scorer has a specific audit method that ensures independence:
 
 | Scorer | Audit Method | Independence Mechanism | Score Metric |
 |--------|-------------|----------------------|-------------|
-| **AI anti-patterns** | Fresh subagent reads `${CLAUDE_PLUGIN_ROOT}/skills/ai-anti-patterns/SKILL.md` + all references, then audits the artifact | Fresh subagent (no fixer context) | Count by severity (CRITICAL/HIGH/MEDIUM) |
+| **AI anti-patterns** | Fresh subagent reads `../ai-anti-patterns/SKILL.md` (relative to this skill's base directory) + all references, then audits the artifact | Fresh subagent (no fixer context) | Count by severity (CRITICAL/HIGH/MEDIUM) |
 | **Style guide** | Fresh subagent reads domain skill (writing-legal, writing-econ, or writing-general), then audits | Fresh subagent | Rule violations by severity |
-| **Bluebook rules** | Fresh subagent reads `${CLAUDE_PLUGIN_ROOT}/skills/bluebook/SKILL.md` + references, then audits citations | Fresh subagent | Violations by rule category |
-| **Enforcement patterns** | Fresh subagent reads `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`, scores all 12 patterns | Fresh subagent | Count of Absent + Weak scores |
+| **Bluebook rules** | Fresh subagent reads `../bluebook/SKILL.md` + references, then audits citations | Fresh subagent | Violations by rule category |
+| **Enforcement patterns** | Fresh subagent reads `../../lib/references/enforcement-checklist.md`, scores all 12 patterns | Fresh subagent | Count of Absent + Weak scores |
 | **Source verification** | Invoke `Skill(skill="workflows:source-verify")` — checks citations against paperpile.bib, verifies quotes against source PDFs | Mechanical (bibtex grep) + NLM (quote search) | Verified / checkable citations |
 
 **Composing scorers:** When multiple scorers are selected, each audit iteration runs ALL of them. The total score is the sum of all findings across all scorers. This means the audit catches different failure modes simultaneously — AI-smell AND style violations AND unsupported claims.

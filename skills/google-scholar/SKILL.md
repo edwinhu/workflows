@@ -207,7 +207,7 @@ When presenting paper information to the user, follow this workflow:
 
 When searching Google Scholar, ALWAYS consult the domain knowledge file first:
 
-**File:** `${CLAUDE_PLUGIN_ROOT}/skills/google-scholar/domain-knowledge.local.md`
+**File:** `domain-knowledge.local.md` (relative to this skill's base directory)
 
 This file contains the user's curated list of trusted journals, authors, and research groups. Use it to:
 

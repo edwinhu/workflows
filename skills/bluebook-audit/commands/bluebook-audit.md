@@ -29,5 +29,5 @@ Create a `scratch/` directory next to the DOCX for intermediate artifacts:
 
 Read and follow:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/audit-extract/SKILL.md")
+Read("../lib/skills/audit-extract/SKILL.md")  # relative to this skill's base directory
 ```

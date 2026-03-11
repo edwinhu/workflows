@@ -2,14 +2,15 @@
 
 Use this template when writing `.claude/PLAN.md` after user approves an approach.
 
+*All paths below are relative to this skill's base directory.*
 ```markdown
 # Implementation Plan: [Feature]
 
-> **For Claude:** REQUIRED SUB-SKILL: Invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")` to implement this plan.
+> **For Claude:** REQUIRED SUB-SKILL: Invoke `Read("../dev-implement/SKILL.md")` to implement this plan.
 >
 > **Per-Task Ralph Loops:** Assign each task its OWN ralph loop. Do NOT combine multiple tasks into one loop.
 >
-> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-delegate/SKILL.md")` for subagent templates.
+> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("../dev-delegate/SKILL.md")` for subagent templates.
 
 ## Chosen Approach
 [Name]: [Brief description]

@@ -80,7 +80,7 @@ Reply when configured and I'll continue testing.
 - Recording GIFs of interactions (use Chrome MCP)
 - Interactive debugging with real browser (use Chrome MCP)
 
-**For debugging, use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")`
+**For debugging, use:** `Read("../dev-test-chrome/SKILL.md")` (relative to this skill's base directory)
 
 ### Rationalization Prevention
 
@@ -508,6 +508,6 @@ mcp__playwright__browser_wait_for(
 
 This skill is referenced by `dev-test` for Playwright browser automation.
 
-**For debugging (console/network), use:** `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-test-chrome/SKILL.md")`
+**For debugging (console/network), use:** `Read("../dev-test-chrome/SKILL.md")`
 
-For TDD protocol, see: `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")`
+For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`

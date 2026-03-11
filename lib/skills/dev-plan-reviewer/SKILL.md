@@ -112,9 +112,9 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 5 (implement):
+Proceed immediately to Phase 5 (implement): (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")
+Read("../dev-implement/SKILL.md")
 ```
 
 ### If ISSUES_FOUND

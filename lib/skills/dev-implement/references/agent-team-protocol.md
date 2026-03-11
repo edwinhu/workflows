@@ -50,7 +50,7 @@ Each teammate receives this self-contained prompt. **Teammates start with a blan
 - `TEST_COMMAND` → from PLAN.md Testing Strategy (e.g., `pytest tests/ -v`)
 - `TEST_FILE` → test file path for this task
 - `FILE_SCOPE` → specific files this teammate may modify (prevents merge conflicts)
-- `PLUGIN_ROOT` → resolved value of `${CLAUDE_PLUGIN_ROOT}`
+- `PLUGIN_ROOT` → resolved base directory for skill paths (relative to this skill's base directory)
 
 ```
 You are implementing one task as part of a development team. You have EXCLUSIVE
@@ -109,7 +109,7 @@ lead: "Need to modify [file] which is outside my scope. Reason: [why]."
 ## Step 1: Load Skills
 
 ```
-Read("{PLUGIN_ROOT}/lib/skills/dev-tdd/SKILL.md")
+Read("../dev-tdd/SKILL.md")
 ```
 
 If a testing skill is specified in PLAN.md (dev-test-electron, dev-test-playwright, etc.),

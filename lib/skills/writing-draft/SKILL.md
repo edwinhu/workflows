@@ -96,13 +96,13 @@ Read(".claude/OUTLINE.md")
 
 ### Step 2: Load Domain Skill
 
-Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose style:
+Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose style (relative to this skill's base directory):
 
 | Style | Action |
 |---|---|
-| legal | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md")` |
-| econ | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md")` |
-| general | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")` |
+| legal | `Read("../writing-legal/SKILL.md")` |
+| econ | `Read("../writing-econ/SKILL.md")` |
+| general | `Read("../writing-general/SKILL.md")` |
 
 <EXTREMELY-IMPORTANT>
 ### Legal Domain: MUST Load Full Skill
@@ -111,12 +111,12 @@ When `style: legal` is detected:
 
 1. **MUST Read the full skill file:**
    ```
-   Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md")
+   Read("../writing-legal/SKILL.md")
    ```
 
 2. **MUST use template for .docx export:**
    ```
-   ${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/templates/law_review_template.docx
+   ../writing-legal/templates/law_review_template.docx
    ```
 
 3. **Iron Laws from writing-legal:**
@@ -134,7 +134,7 @@ When `style: econ` is detected:
 
 1. **MUST Read the full skill file:**
    ```
-   Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md")
+   Read("../writing-econ/SKILL.md")
    ```
 
 2. **Iron Laws from writing-econ:**
@@ -194,7 +194,7 @@ After completing each section, IMMEDIATELY start the next section. Do NOT:
 For parallel drafting using agent teams, read the full protocol:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-draft/references/parallel-drafting.md")
+Read("../writing-draft/references/parallel-drafting.md")
 ```
 
 **When to use:** Document has 5+ substantive sections, sections are relatively independent, and `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is enabled. Falls back to Sequential if unavailable.

@@ -116,9 +116,9 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 3 (ds-implement):
+Proceed immediately to Phase 3 (ds-implement): (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
+Read("../ds-implement/SKILL.md")
 ```
 
 ### If ISSUES_FOUND

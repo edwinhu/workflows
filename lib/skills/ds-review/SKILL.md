@@ -88,7 +88,7 @@ Each reviewer receives a self-contained prompt from a reference file. **Reviewer
 - `SPEC_CONTEXT` → relevant sections of .claude/SPEC.md (paste inline, do NOT reference file)
 - `PLAN_TASKS` → task list from .claude/PLAN.md (paste inline, verify completed)
 - `LEARNINGS_PIPELINE` → data quality chain from .claude/LEARNINGS.md (paste inline)
-- `PLUGIN_ROOT` → resolved value of `${CLAUDE_PLUGIN_ROOT}`
+- `PLUGIN_ROOT` → resolved base directory for skill paths (relative to this skill's base directory)
 
 **Reviewer prompts (read, substitute variables, send as message):**
 
@@ -219,7 +219,7 @@ After parallel review completes:
 
 **If APPROVED:** Immediately invoke the ds-verify skill:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-verify/SKILL.md")
+Read("../ds-verify/SKILL.md")
 ```
 
 **If CHANGES REQUIRED:** Return to `/ds-implement` to fix reported issues.
@@ -363,7 +363,7 @@ The analyst may have reported "no duplicates" without actually checking, or "han
 
 **Load shared check definitions first:**
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/ds-checks.md")
+Read("../ds-implement/references/ds-checks.md")
 ```
 
 Run checks DQ1-DQ5, M1 from the shared definitions. This ensures ds-review and ds-fix use identical checks.
@@ -693,7 +693,7 @@ verdict: APPROVED
 
 Immediately invoke ds-verify:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-verify/SKILL.md")
+Read("../ds-verify/SKILL.md")
 ```
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)

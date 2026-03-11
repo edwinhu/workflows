@@ -8,6 +8,7 @@ Gemini to extract only relevant information, saving 80-95% of tokens.
 
 import json
 import sys
+from pathlib import Path
 
 IMAGE_EXTENSIONS = {
     '.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif',
@@ -37,6 +38,8 @@ def main():
         sys.exit(0)
 
     # Block and redirect to look-at
+    plugin_root = str(Path(__file__).resolve().parent.parent)
+    look_at_script = f"{plugin_root}/skills/look-at/scripts/look_at.py"
     result = {
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
@@ -46,7 +49,7 @@ def main():
                 "Reading images directly wastes context tokens. "
                 "Use the look-at skill to extract only relevant information:\n\n"
                 "```bash\n"
-                "python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \\\n"
+                f"python3 {look_at_script} \\\n"
                 f'    --file "{tool_input.get("file_path", "")}" \\\n'
                 '    --goal "Describe what is in this image"\n'
                 "```\n\n"

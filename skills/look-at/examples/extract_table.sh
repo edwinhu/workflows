@@ -1,7 +1,7 @@
 #!/bin/bash
 # Example: Extract structured data from tables
 
-SCRIPT_DIR="${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts"
+SCRIPT_DIR="../scripts"
 
 # Example 1: Extract as JSON
 python3 "${SCRIPT_DIR}/look_at.py" \

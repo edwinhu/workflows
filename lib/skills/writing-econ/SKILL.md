@@ -12,9 +12,9 @@ Style guide for economics journal articles, working papers, and finance analysis
 
 ## On Skill Load
 
-**Step 1: Load base writing rules**
+**Step 1: Load base writing rules** (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/writing/SKILL.md")
+Read("../../../skills/writing/SKILL.md")
 ```
 
 **Step 2: Check for active workflow**

@@ -18,10 +18,11 @@ Convert hardcoded supra/infra note numbers to NOTEREF field codes that auto-upda
 
 ```bash
 # Preview changes
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/create_crossrefs.py --docx <path> --dry-run
+# Paths relative to this skill's base directory
+python3 ../../../../../scripts/create_crossrefs.py --docx <path> --dry-run
 
 # Apply (creates .bak backup)
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/create_crossrefs.py --docx <path>
+python3 ../../../../../scripts/create_crossrefs.py --docx <path>
 ```
 
 ## Workflow

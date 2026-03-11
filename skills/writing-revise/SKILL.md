@@ -252,9 +252,9 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Load |
 |-------|------|
-| legal | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-legal/SKILL.md")` |
-| econ | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-econ/SKILL.md")` |
-| general | `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-general/SKILL.md")` |
+| legal | `Read("../../lib/skills/writing-legal/SKILL.md")` (relative to this skill's base directory) |
+| econ | `Read("../../lib/skills/writing-econ/SKILL.md")` |
+| general | `Read("../../lib/skills/writing-general/SKILL.md")` |
 
 **You MUST Read() the domain skill before editing.** The domain skill contains the full rules, reference material, and enforcement patterns. Editing without it produces generic fixes.
 
@@ -358,7 +358,7 @@ verdict: CONTINUE
 **IMMEDIATELY re-invoke /writing-review** (no pause, no user prompt):
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-review/SKILL.md")
+Read("../../lib/skills/writing-review/SKILL.md")
 ```
 
 After /writing-review completes and regenerates REVIEW.md, /writing-revise will be invoked again automatically.

@@ -7,7 +7,7 @@ For complex diagrams (flowcharts, entity diagrams, state machines) that consiste
 When the same issue persists across iterations, have Gemini draw a **reference layout** in matplotlib:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \  # relative to this skill's base directory
     --file "/tmp/visual-verify.png" \
     --goal "This diagram has persistent layout issues. Draw a REFERENCE VERSION using matplotlib/networkx showing the IDEAL positions for all nodes and labels. Output the x,y coordinates of each element." \
     --agentic

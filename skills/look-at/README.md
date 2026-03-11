@@ -38,7 +38,7 @@ echo 'export GOOGLE_API_KEY="your-api-key-here"' >> ~/.bashrc
 ### 3. Use the Skill
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date"
 ```

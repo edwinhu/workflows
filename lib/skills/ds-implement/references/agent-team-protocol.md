@@ -51,7 +51,7 @@ Each teammate receives this self-contained prompt. **Teammates start with a blan
 - `DATA_SCOPE` → specific datasets/subsets this teammate may use (prevents conflicts)
 - `OUTPUT_FILES` → specific output files this teammate will create (prevents overwrites)
 - `PREVIOUS_WORK` → relevant entries from LEARNINGS.md (foundation task results)
-- `PLUGIN_ROOT` → resolved value of `${CLAUDE_PLUGIN_ROOT}`
+- `PLUGIN_ROOT` → resolved base directory for skill paths (relative to this skill's base directory)
 
 ```
 You are implementing one analysis task as part of a data science team. You have EXCLUSIVE
@@ -120,7 +120,7 @@ Before moving to the next step, you MUST:
 ## Step 1: Load Analysis Protocol
 
 ```
-Read("{PLUGIN_ROOT}/lib/skills/ds-delegate/SKILL.md")
+Read("../ds-delegate/SKILL.md")
 ```
 
 This contains the detailed output-first protocol and verification patterns.

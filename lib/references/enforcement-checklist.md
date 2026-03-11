@@ -184,13 +184,13 @@ Partial fixes to wrong-order work create worse outcomes than restarting.
 
 **What it does:** Each phase skill explicitly reads and invokes the next phase, creating a chain.
 
-**Template:**
+**Template:** (relative to this skill's base directory)
 ```markdown
 ## Next Phase
 
 After completing this phase:
 
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/[workflow]-[next-phase]/SKILL.md")
+Read("../skills/[workflow]-[next-phase]/SKILL.md")
 
 Then follow its instructions immediately.
 ```

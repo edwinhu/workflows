@@ -118,7 +118,7 @@ After selecting an approach:
 ```markdown
 # Spec: [Analysis Name]
 
-> **For Claude:** After writing this spec, use `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")` for Phase 2.
+> **For Claude:** After writing this spec, use `Read("../../lib/skills/ds-plan/SKILL.md")` (relative to this skill's base directory) for Phase 2.
 
 ## Objective
 [What question this analysis answers]
@@ -250,12 +250,12 @@ Phase 1: Brainstorm -> SPEC.md written
 
 **Step 1:** Load and follow the spec reviewer skill:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-spec-reviewer/SKILL.md")
+Read("../../lib/skills/ds-spec-reviewer/SKILL.md")
 ```
 
 **Step 2:** Only after reviewer returns APPROVED, invoke the next phase:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")
+Read("../../lib/skills/ds-plan/SKILL.md")
 ```
 
 Fallback (if Read fails): `/ds-plan`

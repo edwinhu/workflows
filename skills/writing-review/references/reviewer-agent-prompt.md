@@ -10,7 +10,7 @@ Self-contained prompt template for parallel review agents. Each teammate starts 
 - `PREV_SECTION` → previous section name, or "none"
 - `NEXT_SECTION` → next section name, or "none"
 - `STYLE` → style value from ACTIVE_WORKFLOW.md
-- `PLUGIN_ROOT` → resolved value of `${CLAUDE_PLUGIN_ROOT}`
+- `PLUGIN_ROOT` → resolved to `../..` (relative to the writing-review skill's base directory)
 - `PRECIS_CLAIM` → the specific PRECIS claim this section advances
 
 ```

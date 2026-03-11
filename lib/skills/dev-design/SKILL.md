@@ -219,8 +219,9 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 
 Use the template from `references/plan-template.md` for the PLAN.md structure. Load it before writing the plan:
 
+*All paths below are relative to this skill's base directory.*
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-design/references/plan-template.md")
+Read("../dev-design/references/plan-template.md")
 ```
 
 ### 6. User Gate - Final Approval
@@ -407,7 +408,7 @@ Design complete when:
 
 1. **Plan Review Gate (MANDATORY):**
    ```bash
-   Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-plan-reviewer/SKILL.md")
+   Read("../dev-plan-reviewer/SKILL.md")
    ```
    Follow the plan reviewer's instructions:
    - If >15 tasks → chunk the plan first, review per-chunk
@@ -418,9 +419,9 @@ Design complete when:
 2. **Ask about worktree** (Step 7 above)
 3. **If worktree chosen:**
    - Invoke `Skill(skill="workflows:dev-worktree")`
-   - After worktree created, invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")`
+   - After worktree created, invoke `Read("../dev-implement/SKILL.md")`
 4. **If no worktree:**
-   - Directly invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")`
+   - Directly invoke `Read("../dev-implement/SKILL.md")`
 
 **Required before proceeding:**
 - Explicit user approval for implementation

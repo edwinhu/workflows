@@ -155,7 +155,7 @@ Each reviewer receives a self-contained prompt from a reference file. **Reviewer
 - `CHANGED_FILES` -> output of `git diff --name-only HEAD~1` (paste actual list)
 - `SPEC_CONTEXT` -> relevant sections of .claude/SPEC.md (paste inline, do NOT reference file)
 - `LEARNINGS_TEST_OUTPUT` -> test output from .claude/LEARNINGS.md (paste actual output)
-- `PLUGIN_ROOT` -> resolved value of `${CLAUDE_PLUGIN_ROOT}`
+- `PLUGIN_ROOT` -> resolved base directory for skill paths (relative to this skill's base directory)
 
 **Reviewer prompts (read, substitute variables, send as message):**
 
@@ -288,7 +288,7 @@ After parallel review completes:
 
 **If APPROVED:** Immediately invoke the dev-verify skill:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-verify/SKILL.md")
+Read("../dev-verify/SKILL.md")
 ```
 
 **If CHANGES REQUIRED:** Return to `/dev-implement` to fix reported issues.
@@ -621,7 +621,7 @@ verdict: APPROVED
 
 Immediately invoke dev-verify:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-verify/SKILL.md")
+Read("../dev-verify/SKILL.md")
 ```
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)

@@ -332,7 +332,7 @@ If root cause reveals need for significant refactoring:
 3. Immediately invoke the dev workflow for implementation:
 
 ```bash
-Read("${CLAUDE_PLUGIN_ROOT}/skills/dev/SKILL.md")
+Read("../dev/SKILL.md")  # relative to this skill's base directory
 ```
 
 Debug finds the problem. The dev workflow implements the solution.

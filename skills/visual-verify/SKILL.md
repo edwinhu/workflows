@@ -102,15 +102,17 @@ The score reflects the fraction of checklist items that pass. Gemini counts BLOC
 
 **Python-native** (`--agentic`):
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]" \
     --agentic
 ```
 
+(Paths are relative to this skill's base directory.)
+
 **Non-Python** (vision-only, no `--agentic`):
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]"
 ```

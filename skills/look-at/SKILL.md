@@ -74,12 +74,13 @@ Never display the full Python command to the user.
 
 ```bash
 # Basic usage
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
+# Script path is relative to this skill's base directory
 
 # With custom model
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "/path/to/diagram.png" \
     --goal "Describe the architecture shown in this diagram" \
     --model "gemini-2.5-flash"
@@ -134,7 +135,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
 
 **Usage:**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "photo.jpg" \
     --goal "Count the number of people in this image" \
     --agentic
@@ -150,7 +151,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the executive summary section"
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -159,7 +160,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: List all UI elements and their layout"
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "screenshot.png" \
     --goal "List all UI elements and their layout"
 ```
@@ -168,7 +169,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Explain the data flow and component relationships"
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "architecture.png" \
     --goal "Explain the data flow and component relationships"
 ```
@@ -177,7 +178,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the table data as JSON"
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "table.pdf" \
     --goal "Extract the table data as JSON with columns: name, value, date"
 ```
@@ -186,7 +187,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Count the number of people in the photo"
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "crowd.jpg" \
     --goal "Count the number of people visible in this image" \
     --agentic
@@ -196,7 +197,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract specific data points from the chart"
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 scripts/look_at.py \
     --file "quarterly_chart.png" \
     --goal "Extract the exact values for each quarter and calculate the year-over-year change" \
     --agentic

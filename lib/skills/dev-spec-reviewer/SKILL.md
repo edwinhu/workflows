@@ -98,9 +98,9 @@ Read the spec file, then evaluate against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 2 (explore):
+Proceed immediately to Phase 2 (explore): (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")
+Read("../dev-explore/SKILL.md")
 ```
 
 ### If ISSUES_FOUND

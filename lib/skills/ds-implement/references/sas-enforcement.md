@@ -2,9 +2,10 @@
 
 **After reading PLAN.md, check the `Implementation Language` field. If it says SAS or Mixed, you MUST load the SAS performance enforcement BEFORE dispatching any SAS tasks.**
 
+*All paths below are relative to this skill's base directory.*
 ```
 # If PLAN.md contains "Implementation Language: SAS" or "Mixed":
-Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")
+Read("../../../skills/wrds/references/sas-etl.md")
 ```
 
 **SAS subagent prompts MUST include the following enforcement block** (paste into every SAS Task agent prompt):

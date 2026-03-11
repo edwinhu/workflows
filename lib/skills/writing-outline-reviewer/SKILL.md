@@ -115,9 +115,9 @@ Read ALL files, then evaluate the outline against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to draft phase:
+Proceed immediately to draft phase: (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-draft/SKILL.md")
+Read("../writing-draft/SKILL.md")
 ```
 
 ### If ISSUES_FOUND

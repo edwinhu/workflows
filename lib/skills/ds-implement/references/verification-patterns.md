@@ -54,7 +54,7 @@ print(f"Gap: {train_score - val_score:.4f}")
 ## Batch Pipeline (Scale-Up Testing)
 
 Generic patterns for any batch/ETL pipeline. For task-specific patterns, see:
-- **Gemini batch:** `${CLAUDE_PLUGIN_ROOT}/skills/gemini-batch/references/scale-up-testing.md`
+- **Gemini batch:** `../../../skills/gemini-batch/references/scale-up-testing.md` (relative to this skill's base directory)
 
 ### Response Validation
 

@@ -260,9 +260,9 @@ Before proceeding to draft phase:
 2. **RUN**: List files in `outlines/`, compare against sections in OUTLINE.md
 3. **READ**: Check each outline has POINT, EVIDENCE, LOGIC for subsections
 4. **VERIFY**: All sections have outlines, all outlines reference PRECIS claims
-5. **REVIEW**: Dispatch outline reviewer subagent:
+5. **REVIEW**: Dispatch outline reviewer subagent: (relative to this skill's base directory)
    ```
-   Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-outline-reviewer/SKILL.md")
+   Read("../writing-outline-reviewer/SKILL.md")
    ```
    Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed when APPROVED.
 6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase
@@ -339,7 +339,7 @@ After all section outlines are complete:
 ### Outline Review Gate (MANDATORY)
 
 ```bash
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-outline-reviewer/SKILL.md")
+Read("../writing-outline-reviewer/SKILL.md")
 ```
 
 Follow the outline reviewer's instructions:
@@ -351,7 +351,7 @@ Follow the outline reviewer's instructions:
 **After outline review APPROVED:**
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-draft/SKILL.md")
+Read("../writing-draft/SKILL.md")
 ```
 
 Then follow its instructions immediately to expand outlines into prose.

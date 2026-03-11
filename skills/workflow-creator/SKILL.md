@@ -25,7 +25,7 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 ### Step 1: Ground in Philosophy
 
-Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
+Read `../../PHILOSOPHY.md` (relative to this skill's base directory). **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
 
 **Gate: Philosophy Loaded**
 - Verify PHILOSOPHY.md was read
@@ -125,7 +125,7 @@ Phase N produces ARTIFACT.md
 
 ### Step 4: Apply Enforcement Patterns
 
-Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
+Read `../../lib/references/enforcement-checklist.md`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
 For each phase, score which of the 13 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Artifact Review Gates
@@ -276,7 +276,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 
 ### Step 3: Score Against Enforcement Checklist
 
-Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before scoring. No scoring from memory.**
+Read `../../lib/references/enforcement-checklist.md`. **You MUST read this file before scoring. No scoring from memory.**
 
 For each of the 13 patterns, score:
 - **Present** - pattern exists and is well-implemented

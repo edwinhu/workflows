@@ -2,8 +2,8 @@
 
 Enforcement patterns for ETL decisions made during ds-plan. Each section corresponds to a subsection of PLAN.md's `## ETL Strategy`.
 
-For SAS-specific enforcement, see `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md`.
-For Gemini batch scale-up, see `${CLAUDE_PLUGIN_ROOT}/skills/gemini-batch/references/scale-up-testing.md`.
+For SAS-specific enforcement, see `../../../skills/wrds/references/sas-etl.md`. (relative to this skill's base directory)
+For Gemini batch scale-up, see `../../../skills/gemini-batch/references/scale-up-testing.md`.
 
 ---
 
@@ -157,7 +157,7 @@ Load the appropriate scale-up reference based on the batch operation type:
 
 | Operation Type | Enforcement Reference |
 |---------------|----------------------|
-| Gemini / Vertex AI batch | `${CLAUDE_PLUGIN_ROOT}/skills/gemini-batch/references/scale-up-testing.md` |
+| Gemini / Vertex AI batch | `../../../skills/gemini-batch/references/scale-up-testing.md` |
 | Generic API batch | Follow ds-implement Scale-Up Testing Protocol directly |
 | Database bulk operations | Validate on dev/staging table first, then production |
 

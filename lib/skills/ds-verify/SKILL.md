@@ -191,6 +191,7 @@ The implementer shares biases and sunk-cost attachment. A fresh subagent sees on
 
 Dispatch a fresh Task agent to run the reproducibility check:
 
+*All paths below are relative to this skill's base directory.*
 ```
 Agent(subagent_type="general-purpose", prompt="""
 # Reproducibility Verification
@@ -204,7 +205,7 @@ Verify this analysis produces consistent results from a fresh run.
 
 ## Shared Checks
 Read the shared check definitions:
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/ds-checks.md")
+Read("../ds-implement/references/ds-checks.md")
 
 Run checks: DQ1-DQ4, DQ6, M1, R1
 
@@ -327,7 +328,7 @@ These do NOT count as verification:
 
 **Chaining instruction (if NEEDS WORK):**
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
+Read("../ds-implement/SKILL.md")
 ```
 Then fix the identified issues and re-run verification.
 

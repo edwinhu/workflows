@@ -68,7 +68,7 @@ Read workflow state AND shared check definitions:
 Read(".claude/SPEC.md")
 Read(".claude/PLAN.md")
 Read(".claude/LEARNINGS.md")
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/references/ds-checks.md")
+Read("../../lib/skills/ds-implement/references/ds-checks.md")  # relative to this skill's base directory
 ```
 
 **The shared checks file contains data quality check definitions (DQ1-DQ6, M1, R1) used by both ds-review and ds-fix.** Loading it here ensures the midpoint runs identical checks to the entry point's review phase. Without it, checks drift apart and the midpoint misses issues review would catch.
@@ -80,7 +80,7 @@ If no workflow state exists, suggest starting with `/ds` instead.
 After loading PLAN.md, check if `Implementation Language` is `SAS` or `Mixed`. If so, reload SAS enforcement before any fix:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md")
+Read("../wrds/references/sas-etl.md")
 ```
 
 **SAS projects have unique failure modes** (hash merge memory, WHERE function wrapping, SGE array misconfiguration). The SAS enforcement must be loaded BEFORE diagnosing — otherwise you will misdiagnose SAS-specific issues as generic bugs.
@@ -133,7 +133,7 @@ AskUserQuestion(questions=[
 For notebook-specific errors, load notebook-debug patterns:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/notebook-debug/SKILL.md")
+Read("../notebook-debug/SKILL.md")
 ```
 
 ### Wrong Results → Re-analysis Protocol
@@ -164,7 +164,7 @@ The bug is at the FIRST step where output diverges from expected. Find that step
 3. After all changes, re-run review checks:
 
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-review/SKILL.md")
+Read("../../lib/skills/ds-review/SKILL.md")
 ```
 
 ### Data/Scope Change → Re-profiling Protocol
@@ -191,7 +191,7 @@ When 3+ plausible explanations exist, sequential investigation failed, or contra
 
 **MANDATORY:** Before proceeding, load the protocol:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/skills/ds-fix/references/competing-hypothesis.md")
+Read("references/competing-hypothesis.md")
 ```
 
 Key steps:

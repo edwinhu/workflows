@@ -54,7 +54,7 @@ open /tmp/visual-mockup.png
 If the layout has non-trivial spatial constraints (crossing-avoidance, region nesting, consistency across sub-diagrams), you may not catch problems from coordinates alone. Before showing the user, run Gemini `--agentic` on the mockup to check for issues:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py \
+python3 ../look-at/scripts/look_at.py \  # relative to this skill's base directory
     --file "/tmp/visual-mockup.png" \
     --goal "Check this diagram mockup for: (1) any arrows that cross other arrows or pass through nodes, (2) inconsistent layout between sub-diagrams (e.g., left side has X on the right but right side has X on the left), (3) overlapping labels or nodes. If you find issues, fix the matplotlib code and re-save to /tmp/visual-mockup.png." \
     --agentic

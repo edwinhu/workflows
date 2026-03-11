@@ -101,9 +101,9 @@ Read the spec file, then evaluate against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 2 (ds-plan):
+Proceed immediately to Phase 2 (ds-plan): (relative to this skill's base directory)
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")
+Read("../ds-plan/SKILL.md")
 ```
 
 ### If ISSUES_FOUND

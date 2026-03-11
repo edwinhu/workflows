@@ -41,7 +41,7 @@ Each teammate receives this self-contained prompt. **This is critical — teamma
 - `PREV_SECTION` → previous section name, or "none" if first section
 - `NEXT_SECTION` → next section name, or "none" if last section
 - `STYLE` → style value from ACTIVE_WORKFLOW.md (legal, econ, or general)
-- `PLUGIN_ROOT` → the resolved value of `${CLAUDE_PLUGIN_ROOT}`
+- `PLUGIN_ROOT` → resolved base directory for skill paths (relative to this skill's base directory)
 
 ```
 You are drafting one section of a longer document as part of a writing team.
@@ -78,7 +78,7 @@ Identify which PRECIS claim this section advances. Keep this in mind throughout.
 ## Step 2: Load Domain Style
 
 ```
-Read("{PLUGIN_ROOT}/lib/skills/writing-{STYLE}/SKILL.md")
+Read("../writing-{STYLE}/SKILL.md")
 ```
 
 Follow every style rule from this skill. Do not write generic prose.
