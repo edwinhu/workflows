@@ -373,6 +373,23 @@ Quality Reviewer: APPROVED
 [Mark Task 1 complete, move to Task 2]
 ```
 
+## Model Tier Hints
+
+When dispatching subagents, match model capability to task complexity. This is **advisory** — Claude Code doesn't yet support model routing — but documents intent for cost-aware delegation.
+
+| Task Complexity | Model Tier | Signals | Example |
+|----------------|------------|---------|---------|
+| **Mechanical** | Cheapest capable | Isolated function, 1-2 files, clear spec, boilerplate | "Add type definition file" |
+| **Integration** | Standard | Multi-file coordination, pattern matching, debugging within scope | "Connect auth service to API route" |
+| **Architecture/Review** | Most capable | Design judgment needed, broad codebase understanding, reviews | "Review entire implementation for spec compliance" |
+
+**Complexity signals:**
+- Touches 1-2 files with complete spec → mechanical
+- Touches 3+ files or requires cross-module understanding → integration
+- Requires design judgment or codebase-wide impact assessment → architecture
+
+**When in doubt, use the standard tier.** Over-allocating is wasteful; under-allocating produces poor results.
+
 ## Integration
 
 **Main chat invokes:**

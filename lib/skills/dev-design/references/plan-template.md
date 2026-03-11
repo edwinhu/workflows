@@ -113,6 +113,14 @@ See `lib/references/real-test-enforcement.md` for fake test detection red flags 
 |------|---------|
 | `src/auth/types.ts` | Session type definitions |
 
+## Chunking (for plans with >15 tasks)
+
+> **If your plan has >15 tasks:** Break the implementation order into chunks using `## Chunk N: <name>` headings.
+> Each chunk should be logically self-contained (e.g., "infrastructure", "core logic", "tests", "integration").
+> The plan reviewer will review each chunk separately.
+>
+> **If your plan has ≤15 tasks:** Skip chunking. Use a single implementation order section.
+
 ## Implementation Order (with Per-Task Ralph Loops)
 
 > **For Claude:** Each task = one ralph loop. Complete task N before starting task N+1.

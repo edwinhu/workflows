@@ -404,9 +404,20 @@ After fixing, re-run ALL gate checks (not just the one that failed).
 
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After completing brainstorm, immediately invoke the explore phase:
+**REQUIRED SUB-SKILL:** After completing brainstorm, dispatch the spec reviewer before exploring:
 
-**Start explore phase - Phase 2:**
+**Spec Review Gate (MANDATORY):**
+
+```bash
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-spec-reviewer/SKILL.md")
+```
+
+Follow the spec reviewer's instructions:
+1. Dispatch reviewer subagent
+2. If ISSUES_FOUND → fix SPEC.md → re-dispatch (max 5 iterations)
+3. If APPROVED → proceed to explore
+
+**After spec review APPROVED, start explore phase - Phase 2:**
 
 ```bash
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-explore/SKILL.md")

@@ -346,6 +346,23 @@ Analyst:
 [Mark Task 1 complete, move to Task 2]
 ```
 
+## Model Tier Hints
+
+When dispatching subagents, match model capability to task complexity. This is **advisory** -- Claude Code doesn't yet support model routing -- but documents intent for cost-aware delegation.
+
+| Task Complexity | Model Tier | Signals | Example |
+|----------------|------------|---------|---------|
+| **Mechanical** | Cheapest capable | Data loading, simple filtering, descriptive stats, file format conversion | "Load CSV and compute summary statistics" |
+| **Integration** | Standard | Merges/joins across sources, aggregations, visualization, data reshaping | "Merge transaction and customer tables, create pivot summary" |
+| **Architecture/Review** | Most capable | Feature engineering strategy, model selection, statistical assumption validation, methodology review | "Select appropriate model family and validate distributional assumptions" |
+
+**Complexity signals:**
+- Reads/writes 1 file with clear spec -> mechanical
+- Joins/reshapes across sources or produces visualizations -> integration
+- Requires statistical judgment or methodology design -> architecture
+
+**When in doubt, use the standard tier.** Over-allocating is wasteful; under-allocating produces poor results.
+
 ## Integration
 
 This skill is invoked by `ds-implement` during the output-first implementation phase.

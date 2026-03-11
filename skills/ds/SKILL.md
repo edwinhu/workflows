@@ -239,8 +239,21 @@ This skill is Phase 1 of the 5-phase `/ds` workflow:
 
 ## Phase Complete
 
-After completing brainstorm, IMMEDIATELY invoke the next phase:
+After completing brainstorm, dispatch the spec reviewer before proceeding:
 
+```
+Phase 1: Brainstorm -> SPEC.md written
+  -> Dispatch ds-spec-reviewer subagent
+  -> If APPROVED -> proceed to ds-plan
+  -> If ISSUES_FOUND -> fix SPEC.md -> re-dispatch reviewer (max 5 iterations)
+```
+
+**Step 1:** Load and follow the spec reviewer skill:
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-spec-reviewer/SKILL.md")
+```
+
+**Step 2:** Only after reviewer returns APPROVED, invoke the next phase:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")
 ```
@@ -248,3 +261,4 @@ Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan/SKILL.md")
 Fallback (if Read fails): `/ds-plan`
 
 **CRITICAL:** Do not skip to analysis implementation. Phase 2 profiles data and breaks down the analysis into discrete, manageable tasks.
+**CRITICAL:** Do not skip spec review. An unreviewed spec means profiling the wrong data and planning the wrong analysis.

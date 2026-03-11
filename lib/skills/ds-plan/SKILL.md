@@ -582,7 +582,23 @@ Before proceeding to ds-implement, execute this gate:
 
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After passing the exit gate, IMMEDIATELY invoke:
+After passing the exit gate, dispatch the plan reviewer before proceeding:
+
+```
+Phase 2: ds-plan -> PLAN.md written -> exit gate passed
+  -> Dispatch ds-plan-reviewer subagent
+  -> If APPROVED -> proceed to ds-implement
+  -> If ISSUES_FOUND -> fix PLAN.md -> re-dispatch reviewer (max 5 iterations)
+```
+
+**Step 1:** Load and follow the plan reviewer skill:
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-plan-reviewer/SKILL.md")
+```
+
+**Step 2:** Only after reviewer returns APPROVED, invoke the next phase:
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/ds-implement/SKILL.md")
 ```
+
+**CRITICAL:** Do not skip plan review. An unreviewed plan means subagents struggling with incomplete task definitions and missing verification steps.

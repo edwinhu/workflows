@@ -94,6 +94,32 @@ The implementer should never verify its own work. Self-review is proofreading �
 
 The design principle: **use the most independent verifier available.** Machine verification when possible (tests pass), independent subagent review when judgment is needed, human review for final quality on subjective work. Self-review is never the answer.
 
+### Artifact Review Before Consumption
+
+Workflows produce intermediate artifacts — specs, plans, outlines, hypotheses. Downstream phases consume these artifacts and build on them. If the artifact is flawed, everything downstream inherits the flaw.
+
+**The principle: no downstream phase should consume an unreviewed artifact.**
+
+A spec with a missing edge case survives into exploration (exploring the wrong areas), design (designing around incomplete requirements), and implementation (building the wrong thing). A plan with tasks that are too coarse survives into implementation (subagents struggle with 500-line tasks). Catching these at the artifact stage costs minutes; catching them during implementation costs hours.
+
+| Artifact | Produced By | Consumed By | Review Gate |
+|----------|------------|-------------|-------------|
+| SPEC.md | Brainstorm | Explore, Clarify, Design | Independent reviewer checks completeness, consistency, clarity |
+| PLAN.md | Design | Implement | Independent reviewer checks task decomposition, spec alignment |
+| OUTLINE.md | Brainstorm | Draft | Independent reviewer checks coverage, structure |
+| HYPOTHESES.md | Investigate | Test | Self-review acceptable (serial iteration, not final) |
+
+**Review mechanism:** Dispatch a fresh subagent with the artifact and a review checklist. The reviewer has no implementation context — it sees only the artifact and the checklist. This is independent verification applied to documents, not just code.
+
+**Chunking large artifacts:** When a plan exceeds ~15 tasks, break it into ordered chunks (logically self-contained groups). Review each chunk separately. This prevents reviewer fatigue and ensures each section gets focused attention.
+
+**Model tier guidance for delegation:** When dispatching implementation subagents, match model capability to task complexity:
+- **Mechanical tasks** (isolated functions, boilerplate, 1-2 files): Use the cheapest capable model
+- **Integration tasks** (multi-file coordination, pattern matching): Use a standard model
+- **Architecture/review tasks** (design judgment, broad codebase understanding): Use the most capable model
+
+This is advisory — Claude Code doesn't yet support model routing — but documenting the intent prevents over-allocating expensive models to trivial tasks.
+
 ### Shared Constraints Between Entry and Midpoint
 
 When both the entry point and midpoint evaluate the same quality dimensions (coverage, fidelity, style, alignment), the check definitions must live in a **single shared file** — not inlined independently in each skill.

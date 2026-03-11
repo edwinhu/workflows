@@ -25,11 +25,11 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 ### Step 1: Ground in Philosophy
 
-Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, iteration strategy, and two entry points.
+Read `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
 
 **Gate: Philosophy Loaded**
 - Verify PHILOSOPHY.md was read
-- Check that your response references: phased decomposition, gates, independent verification, iteration strategy, two entry points
+- Check that your response references: phased decomposition, gates, independent verification, artifact review, iteration strategy, two entry points
 - If you cannot explain these principles, re-read PHILOSOPHY.md
 
 **After verifying Philosophy is loaded, IMMEDIATELY proceed to Step 2.**
@@ -88,13 +88,48 @@ Based on the interview answer about iteration, assign each phase an iteration st
 
 **Key principle:** The agent never declares its own completion. Tests pass, findings converge, or the human approves.
 
+### Step 3b: Add Artifact Review Gates
+
+For every phase that produces an artifact consumed by downstream phases, add an **artifact review gate** between the producing phase and the consuming phase.
+
+```
+Phase N produces ARTIFACT.md
+  → Dispatch independent reviewer subagent
+  → Reviewer checks: completeness, consistency, clarity, YAGNI, spec alignment
+  → If ISSUES_FOUND → fix → re-dispatch (max 5 iterations)
+  → If APPROVED → Phase N+1 consumes the artifact
+```
+
+**Common artifact-producing phases:**
+| Artifact | Typical Producer | Typical Consumer |
+|----------|-----------------|------------------|
+| Spec/requirements | Brainstorm | Explore, Design |
+| Plan/task list | Design | Implement |
+| Outline | Brainstorm | Draft |
+| Hypothesis list | Investigate | Test |
+
+**Chunking rule:** If the artifact has >15 discrete items (tasks, requirements, sections), break into ordered chunks and review each separately.
+
+**Model tier guidance:** Add to any phase that dispatches implementation subagents:
+- Mechanical tasks (1-2 files, clear spec) → cheapest capable model
+- Integration tasks (multi-file coordination) → standard model
+- Architecture/review tasks (design judgment) → most capable model
+
+**Gate: Artifact Review Gates Designed**
+- Every artifact-producing phase has a review gate before the consuming phase
+- Reviewer is a fresh subagent (not self-review)
+- Fix-and-re-review loop with max 5 iterations
+- Chunking specified for large artifacts
+
+**After verifying Artifact Review Gates are designed, IMMEDIATELY proceed to Step 4.**
+
 ### Step 4: Apply Enforcement Patterns
 
 Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
-For each phase, score which of the 12 patterns are needed:
-- **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Honesty Framing
-- **Medium-drift phases** (design, review): Gate Functions, Red Flags, Staged Review Loops
+For each phase, score which of the 13 patterns are needed:
+- **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Honesty Framing, Artifact Review Gates
+- **Medium-drift phases** (design, review): Gate Functions, Red Flags, Staged Review Loops, Artifact Review Gates
 - **Low-drift phases** (brainstorm, exploration): Red Flags only (creative phases need freedom)
 
 Generate the specific enforcement content:
@@ -104,7 +139,7 @@ Generate the specific enforcement content:
 
 **Gate: Enforcement Patterns Loaded**
 - Verify enforcement-checklist.md was read
-- Check that you can name all 12 patterns
+- Check that you can name all 13 patterns
 - If you cannot list them, re-read enforcement-checklist.md
 
 **After verifying Enforcement Patterns are loaded, IMMEDIATELY proceed to Step 5.**
@@ -215,6 +250,13 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - For subjective output, are there multiple specialized reviewers? (team topology)
 - Is self-review ever the final gate? (it shouldn't be)
 
+**Artifact review:**
+- Are intermediate artifacts (specs, plans, outlines) reviewed before downstream phases consume them?
+- Is the reviewer a fresh subagent (not the phase that wrote the artifact)?
+- Is there a fix-and-re-review loop with iteration limits?
+- Are large artifacts (>15 items) chunked for separate review?
+- Is there model tier guidance for delegation phases?
+
 **Two entry points:**
 - Does the workflow have both an entry (start fresh) and midpoint (re-enter)?
 - Is the midpoint self-contained? (loads all constraints, doesn't depend on prior phases)
@@ -226,7 +268,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Are exit conditions structural (tests, convergence, human approval) not honor-system (promises)?
 
 **Gate: Architecture Scored**
-- Verify scores for all 5 principles are present
+- Verify scores for all 6 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -236,7 +278,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 
 Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before scoring. No scoring from memory.**
 
-For each of the 12 patterns, score:
+For each of the 13 patterns, score:
 - **Present** - pattern exists and is well-implemented
 - **Weak** - pattern exists but is insufficient (e.g., soft language instead of Iron Law)
 - **Absent** - pattern is missing where it should exist
@@ -244,7 +286,7 @@ For each of the 12 patterns, score:
 Identify the highest-drift phases with the weakest enforcement - these are the critical gaps.
 
 **Gate: Enforcement Scored**
-- Verify all 12 patterns were scored
+- Verify all 13 patterns were scored
 - Each pattern must be marked: Present / Weak / Absent
 - If any pattern is missing, score it now
 
@@ -398,6 +440,8 @@ For each gap:
 - **Missing audit-fix loop** → Iteration tracking + re-review + escalation
 - **Missing Drive-Aligned Consequences** → 5-drive table
 - **Duplicate constraints between entry/midpoint** → Extract to shared `references/[workflow]-checks.md` with Check Matrix
+- **Missing artifact review gate** → Add reviewer subagent dispatch between artifact-producing and consuming phases, with fix loop (max 5) and chunking for large artifacts
+- **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
 
 ### Step 4: Present Changes
 
@@ -443,6 +487,9 @@ Every phase needs a gate — deterministic (test passes, file exists) or judgmen
 ### NO HIGH-DRIFT PHASE WITHOUT ENFORCEMENT
 Identify where the agent is most tempted to shortcut. Enforce hardest there. Implementation and verification phases ALWAYS need Iron Laws.
 
+### NO UNREVIEWED ARTIFACT CROSSING A PHASE BOUNDARY
+If a phase produces an artifact (spec, plan, outline) that downstream phases consume, the artifact MUST be independently reviewed before the next phase starts. Self-review is rubber-stamping. A fresh subagent reviewer catches what the author cannot see.
+
 ### NO DUPLICATE CONSTRAINTS BETWEEN ENTRY AND MIDPOINT
 If the entry point and midpoint both evaluate the same quality dimension, the check definition must live in a shared file — not inlined in each skill independently. Inlined duplicates WILL drift apart, and the entry point will ship broken work that the midpoint must catch.
 </EXTREMELY-IMPORTANT>
@@ -457,6 +504,7 @@ If the entry point and midpoint both evaluate the same quality dimension, the ch
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
 | Inlining the same check in both entry and midpoint | They WILL drift apart. The course-materials redundancy gap: slides-edit had the check, lecture-prep didn't. | Extract shared checks to a reference file both Read() |
+| Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 
 ## Rationalization Table
 
@@ -469,6 +517,8 @@ If the entry point and midpoint both evaluate the same quality dimension, the ch
 | "I'll add enforcement later" | Later never comes. Enforcement debt compounds. | Add it now, refine through use |
 | "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
 | "The entry and midpoint checks are close enough" | "Close enough" means the midpoint catches issues the entry point missed. That's a wasted first pass. | Extract to shared file. Identical checks, one definition. |
+| "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
+| "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
 
 ### Why Skipping Steps Hurts the Thing You Care About Most
 

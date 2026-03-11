@@ -22,6 +22,11 @@ START (brainstorm confirmed)
   │  ├─ Ask counterargument question
   │  └─ Write .claude/PRECIS.md (thesis, claims, audience, scope)
   │
+  ├─ Step 2b: PRECIS Review Gate
+  │  └─ Dispatch writing-precis-reviewer subagent
+  │     ├─ APPROVED → proceed to Step 3
+  │     └─ ISSUES_FOUND → fix PRECIS.md → re-dispatch (max 5)
+  │
   ├─ Step 3: Create OUTLINE.md
   │  └─ Map sections → claims from PRECIS
   │     Each section has: Goal, Claim, Key Points, Transition
@@ -129,6 +134,16 @@ Write to `.claude/PRECIS.md`:
 ## Domain
 [legal | econ | general] → determines which writing skill to use
 ```
+
+## Step 2b: PRECIS Review Gate
+
+After writing PRECIS.md, dispatch the precis reviewer BEFORE creating the outline. Do NOT skip this step.
+
+```
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-precis-reviewer/SKILL.md")
+```
+
+Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed to Step 3 when the reviewer returns APPROVED.
 
 ## Step 3: Create OUTLINE.md
 

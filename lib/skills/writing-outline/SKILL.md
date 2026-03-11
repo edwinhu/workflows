@@ -45,7 +45,10 @@ START (PRECIS + master OUTLINE exist)
      ├─ YES → Loop to Step 2 (NO pause, NO "should I continue?")
      └─ NO → GATE: Every OUTLINE section has outlines/ file?
             ├─ NO → Report missing, loop back
-            └─ YES → IMMEDIATELY load writing-draft (no pause)
+            └─ YES → Outline Review Gate
+                     └─ Dispatch writing-outline-reviewer subagent
+                        ├─ APPROVED → IMMEDIATELY load writing-draft (no pause)
+                        └─ ISSUES_FOUND → fix outlines → re-dispatch (max 5)
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -257,9 +260,16 @@ Before proceeding to draft phase:
 2. **RUN**: List files in `outlines/`, compare against sections in OUTLINE.md
 3. **READ**: Check each outline has POINT, EVIDENCE, LOGIC for subsections
 4. **VERIFY**: All sections have outlines, all outlines reference PRECIS claims
-5. **CLAIM**: Only if steps 1-4 pass, proceed to draft phase
+5. **REVIEW**: Dispatch outline reviewer subagent:
+   ```
+   Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-outline-reviewer/SKILL.md")
+   ```
+   Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed when APPROVED.
+6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase
 
 **Claiming "outlines complete" without checking each file is LYING.** You must verify every outline exists and has real structure.
+
+**Proceeding to draft with a thin outline is LYING about readiness.** The reviewer must confirm depth before drafting begins.
 
 ---
 
@@ -325,6 +335,20 @@ When escalating, present:
 ## Next Phase
 
 After all section outlines are complete:
+
+### Outline Review Gate (MANDATORY)
+
+```bash
+Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-outline-reviewer/SKILL.md")
+```
+
+Follow the outline reviewer's instructions:
+- If 10+ sections → review in groups of 3-4
+- Dispatch reviewer subagent
+- If ISSUES_FOUND → fix outlines → re-dispatch (max 5 iterations)
+- If APPROVED → proceed to draft phase
+
+**After outline review APPROVED:**
 
 ```
 Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/writing-draft/SKILL.md")

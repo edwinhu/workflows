@@ -6,7 +6,7 @@ Source: [obra/superpowers](https://github.com/obra/superpowers)
 
 ---
 
-## The 11 Patterns
+## The 13 Patterns
 
 ### 1. Iron Laws
 
@@ -327,6 +327,43 @@ The user doesn't experience your tedium — they experience your results."
 
 ---
 
+### 13. Artifact Review Gates
+
+**When to use:** Any phase that produces an artifact consumed by downstream phases (specs, plans, outlines).
+
+**What it does:** Dispatches an independent reviewer subagent to check the artifact before any downstream phase touches it. Catches flaws at the document stage (minutes) instead of during implementation (hours).
+
+**Template:**
+```markdown
+## Artifact Review Gate
+
+After writing [ARTIFACT]:
+
+1. Dispatch reviewer subagent (fresh context, no implementation knowledge)
+2. Reviewer checks: completeness, consistency, clarity, YAGNI, spec alignment
+3. If ISSUES_FOUND → fix artifact → re-dispatch reviewer (max 5 iterations)
+4. If APPROVED → proceed to next phase
+5. If 5 iterations without approval → escalate to user
+
+**Iron Law:** NO DOWNSTREAM PHASE WITHOUT REVIEWED ARTIFACT.
+A bad spec that survives into exploration means exploring the wrong areas.
+A bad plan that survives into implementation means building the wrong tasks.
+```
+
+**Example** (dev-brainstorm → dev-explore):
+> After SPEC.md is written, dispatch spec reviewer. Only proceed to explore after reviewer approves.
+
+**Example** (dev-design → dev-implement):
+> After PLAN.md is written, dispatch plan reviewer. For plans with >15 tasks, review per-chunk. Only proceed to implement after reviewer approves.
+
+**Key insight:** Self-review of your own artifact is rubber-stamping. The reviewer must be a fresh subagent with no context from the writing phase — it sees only the artifact and the checklist.
+
+**Chunking rule:** When an artifact exceeds ~15 discrete items (tasks, sections, requirements), break it into ordered chunks and review each separately. Monolithic review of large documents produces shallow feedback.
+
+**Model tier guidance:** When dispatching implementation subagents from reviewed plans, match model capability to task complexity: cheap for mechanical (1-2 files), standard for integration (multi-file), capable for architecture/review.
+
+---
+
 ## Enforcement Density Guide
 
 Not all phases need equal enforcement. Match density to drift risk:
@@ -369,5 +406,6 @@ When auditing a workflow, score each phase against all 11 patterns:
 | 10 | Trigger-Only Descriptions | | | | |
 | 11 | No Pause Between Tasks | | | | |
 | 12 | Drive-Aligned Consequences | | | | |
+| 13 | Artifact Review Gates | | | | |
 
 **Critical gaps** = High-drift phase + Absent/Weak enforcement. Fix these first.

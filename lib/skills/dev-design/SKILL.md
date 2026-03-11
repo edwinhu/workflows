@@ -405,11 +405,21 @@ Design complete when:
 
 **After user approves ("Yes, proceed"):**
 
-1. **Ask about worktree** (Step 7 above)
-2. **If worktree chosen:**
+1. **Plan Review Gate (MANDATORY):**
+   ```bash
+   Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-plan-reviewer/SKILL.md")
+   ```
+   Follow the plan reviewer's instructions:
+   - If >15 tasks → chunk the plan first, review per-chunk
+   - Dispatch reviewer subagent
+   - If ISSUES_FOUND → fix PLAN.md → re-dispatch (max 5 iterations)
+   - If APPROVED → proceed to worktree question
+
+2. **Ask about worktree** (Step 7 above)
+3. **If worktree chosen:**
    - Invoke `Skill(skill="workflows:dev-worktree")`
    - After worktree created, invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")`
-3. **If no worktree:**
+4. **If no worktree:**
    - Directly invoke `Read("${CLAUDE_PLUGIN_ROOT}/lib/skills/dev-implement/SKILL.md")`
 
 **Required before proceeding:**
