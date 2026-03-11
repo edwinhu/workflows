@@ -32,7 +32,7 @@ Before claiming ANY LSEG query succeeded, follow these steps:
 6. **VERIFY** date range matches expectations
 7. **CLAIM** success only after all checks pass
 
-This is not negotiable. Claiming data retrieval without inspecting results is LYING to the user about data quality.
+This is not negotiable. Skipping result inspection is NOT HELPFUL — the user builds analysis on data with undetected quality problems.
 
 ### Rationalization Table - STOP If You Think:
 

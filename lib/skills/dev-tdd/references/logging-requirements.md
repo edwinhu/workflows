@@ -60,10 +60,10 @@ echo "✓ Log file exists and has content"
 
 **Tool description:** Verify log file exists and has content after launch
 
-## The Honesty Requirement (Logging)
+## Drive-Aligned Framing (Logging)
 
 <EXTREMELY-IMPORTANT>
-**Running code without file-based logging is LYING about verification.**
+**Running code without file-based logging is NOT HELPFUL — you have no evidence of what happened and can't debug when things go wrong.**
 
 When you claim "code executed" or "tests ran", you are asserting:
 - You created a log file

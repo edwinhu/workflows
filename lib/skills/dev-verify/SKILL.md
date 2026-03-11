@@ -77,7 +77,7 @@ Before making ANY status claim:
 5. CLAIM   → Only after steps 1-4
 ```
 
-**Skipping any step is dishonest, not verification.**
+**Skipping any step is not verification — it's shipping unverified work the user will have to debug.**
 
 ## Claims Requiring Evidence
 
@@ -176,19 +176,19 @@ These do NOT count as verification:
 - Agent reports without independent confirmation
 - "I think..." / "It seems..." / "Probably..."
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
-**Claiming completion without fresh evidence is LYING.**
+**Claiming completion without fresh evidence is NOT HELPFUL — the user trusts your claim and discovers the failure themselves.**
 
 When you say "Feature complete", you are asserting:
 - You ran the verification commands yourself (fresh)
 - You saw the output with your own tokens
 - The output confirms the claim
 
-Saying "complete" based on stale data or agent reports is not "summarizing" - it is LYING about project state.
+Saying "complete" based on stale data or agent reports is not "summarizing" - it is creating a false sense of completion that wastes the user's time.
 
-**"Still verifying" is honest. "Complete" without evidence is fraud.**
+**"Still verifying" protects the user. "Complete" without evidence creates rework.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Prevention
@@ -227,9 +227,9 @@ If you find yourself saying "the code exists" or "I verified the implementation"
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
-| **Efficiency** | "Prior tests still pass, skip fresh evidence" | They don't — your assumption is the bug the user discovers | **Inefficient** |
-| **Helpfulness** | "Report 'verified' to unblock the user" | The user discovers the failure — you lied | **Anti-helpful** |
+| **Helpfulness** | "Report 'verified' to unblock the user" | The user discovers the failure — your shortcut created rework | **Anti-helpful** |
 | **Competence** | "I'm confident it works without running it" | Confidence without evidence is delusion, not competence | **Incompetent** |
+| **Efficiency** | "Prior tests still pass, skip fresh evidence" | They don't — your assumption is the bug the user discovers | **Inefficient** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 
@@ -308,7 +308,7 @@ If the user says "Partially" or "No":
 **Escalation:** After 3 iterations without "Yes", escalate to user:
 - "We've iterated 3 times without full acceptance. Should we continue, descope, or take a different approach?"
 
-**Claiming 'verified' after user said 'Partially' without re-running verification is LYING.**
+**Claiming 'verified' after user said 'Partially' without re-running verification is NOT HELPFUL — you're telling the user their problem is solved when it isn't.**
 </EXTREMELY-IMPORTANT>
 
 **Only claim COMPLETE when:**
@@ -346,4 +346,4 @@ The `/dev` workflow is now finished. Offer to:
 
 **E2E for User-Facing:** User-visible features require end-to-end evidence (screenshots, user flow tests), not unit tests alone.
 
-**Honesty Requirement:** Claiming completion without fresh evidence is misrepresenting project state. Only advance when fully verified.
+**Drive-Aligned Framing:** Claiming completion without fresh evidence creates rework for the user. Only advance when fully verified.

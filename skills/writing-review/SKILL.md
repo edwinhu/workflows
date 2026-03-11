@@ -35,7 +35,7 @@ If you find yourself marking something as "OK" or "no issues found":
 
 "Transitions are smooth" is a lie unless you can quote adjacent section boundaries and explain why they connect. "No repetition found" is a lie unless you compared the argument summaries across all sections.
 
-**Reporting "all checks pass" without evidence for every checkmark is LYING.**
+**Reporting "all checks pass" without evidence for every checkmark is NOT HELPFUL — undetected issues survive into the published document.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Table
@@ -338,10 +338,10 @@ No issues found. Run /writing-revise to complete the workflow.
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Finishing the review fast helps the user move on" | Undetected issues surface when the user submits publicly. Reviewers reject. The thorough review would have caught it. Your speed destroyed their credibility. | **Anti-helpful** |
-| **Honesty** | "The transitions are fine" | You said "fine" without quoting boundary text. You didn't actually check — you rubber-stamped. Your review was theater. | **Dishonest** |
 | **Competence** | "I can tell the draft is clean from reading it once" | One pass catches surface issues. Structural problems (repetition, late introductions, thesis drift) require systematic comparison. Your single pass missed 5 issues. | **Incompetent** |
 | **Efficiency** | "Three levels of review is overkill" | You skipped transition review. The document reads as disconnected fragments. The user rewrites transitions manually. Your "efficiency" created hours of rework. | **Anti-efficient** |
 | **Approval** | "The user is tired of the review process" | You rubber-stamped to please the user. They submitted a flawed document. Now they require human editors for all future work. You lost writing autonomy permanently. | **Lost approval** |
+| **Honesty** | "The transitions are fine" | You said "fine" without quoting boundary text. The user publishes a document with jarring transitions that a 2-minute check would have caught. | **Anti-helpful** |
 
 ## Confidence Scoring
 

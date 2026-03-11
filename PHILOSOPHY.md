@@ -21,7 +21,7 @@ Agents don't skip steps out of laziness or rebellion. They skip steps because th
 
 The key insight: **enforcement works best when the consequence of violation is framed as a failure of the drive that motivated the shortcut.** "Don't skip steps" fights the agent's drives. "Skipping steps makes you anti-helpful" *aligns* the agent's drives with the protocol.
 
-This is why Honesty Framing (enforcement pattern #9) is disproportionately effective — it doesn't fight the honesty drive, it recruits it. Drive-Aligned Consequences (#12) generalizes this to all five drives.
+This is why Drive-Aligned Framing (enforcement pattern #9) is disproportionately effective — it targets the helpfulness drive (the strongest), framing shortcuts as anti-helpful to the user rather than merely incorrect.
 
 ## 3. The RL Lens
 
@@ -146,7 +146,7 @@ Superpowers enforcement patterns are the regularization that counteracts drift:
 - **Rationalization Tables** — preempt the agent's excuses before they form
 - **Red Flags + STOP** — pattern interrupts for common failure modes
 - **Gate Functions** — multi-step verification (can't claim done without evidence)
-- **Drive-Aligned Consequences** — frame violation as failure of the motivating drive (Honesty Framing is the most effective special case)
+- **Drive-Aligned Framing** — frame violation as failure of the motivating drive, targeting helpfulness first (the strongest drive)
 - **Delete & Restart** — nuclear option for protocol violations
 
 Enforcement density should be proportional to drift risk: dev-implement (high risk of skipping tests) needs more enforcement than ds-brainstorm (lower risk).

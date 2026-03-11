@@ -119,9 +119,9 @@ Escalate to user:
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the spec?"
 ```
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Proceeding to data profiling with a flawed spec is LYING about readiness.**
+**Proceeding to data profiling with a flawed spec is NOT HELPFUL — wrong profiling produces wrong plans, which produce wrong analysis, wasting everyone's time.**
 
 You know the spec has gaps. Profiling built on a bad spec profiles the wrong data. Plans built on wrong profiling produce wrong analysis. Implementation of a wrong plan wastes everyone's time and produces incorrect results.
 

@@ -12,7 +12,7 @@ description: "This skill should be used when the user asks to 'iteratively impro
 
 If the same agent that wrote the fix also scores it, you get rubber-stamping. The audit must be structurally independent: a fresh subagent, a different model (Gemini), or a mechanical checker. The fixer's opinion of its own work is worthless.
 
-**Claiming quality improved without an independent re-audit is LYING about the improvement.**
+**Skipping the independent re-audit is NOT HELPFUL — the user gets an artifact with unverified fixes that may have introduced new problems.**
 </EXTREMELY-IMPORTANT>
 
 ## The Pattern
@@ -246,7 +246,7 @@ Not when you "feel" the artifact is good enough. Not when you're tired of iterat
 
 Read SCORES.md, check the number against the threshold, output promise only if the score meets or exceeds it.
 
-**Outputting the completion promise when the score is below threshold is LYING about quality.**
+**Outputting the completion promise when the score is below threshold is NOT HELPFUL — the user receives a substandard artifact that fails its quality bar.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Table

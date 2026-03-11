@@ -32,7 +32,7 @@ Before claiming ANY notebook executed successfully, you MUST:
 5. **INSPECT** outputs for warnings/unexpected behavior
 6. **CLAIM** success only after all verification passes
 
-This is not negotiable. Claiming "notebook works" without checking for tracebacks is LYING to the user.
+This is not negotiable. Skipping traceback checks is NOT HELPFUL — the user opens a notebook that throws errors on first run.
 
 ### Rationalization Table - STOP If You Think:
 
@@ -46,7 +46,7 @@ This is not negotiable. Claiming "notebook works" without checking for traceback
 | "Only the last cell matters" | Middle cells can fail silently | VERIFY all cells executed (execution_count) |
 | "I'll fix errors if user reports them" | Proactive checking is your job | CHECK before user sees it |
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing
 
 | Shortcut | Consequence |
 |----------|-------------|

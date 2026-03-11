@@ -47,7 +47,7 @@ If text and flowchart disagree, the flowchart wins.
 <EXTREMELY-IMPORTANT>
 ## IRON LAW: Critique Over Comfort
 
-**If the writing has problems, SAY SO. Being nice is LYING to the user.**
+**If the writing has problems, SAY SO. Being nice is NOT HELPFUL — the user publishes weak prose that gets rejected.**
 
 ### Red Flag Detection
 
@@ -72,7 +72,7 @@ If you catch yourself thinking:
 | "The structure matches the outline" | Structural match doesn't mean quality match | Check content quality, not just structure |
 | "This section is creative, rules don't apply" | Creative writing still needs clarity and precision | Apply rules, note creative exceptions explicitly |
 
-**Reporting "all checks pass" without actually running every check is LYING.** You must have evidence for every checkmark. An unchecked box with "assumed OK" is fraud.
+**Reporting "all checks pass" without actually running every check is NOT HELPFUL — uncaught issues survive into the final draft.** You must have evidence for every checkmark. An unchecked box with "assumed OK" means the user publishes with undetected problems.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -86,7 +86,7 @@ After applying fixes from REVIEW.md, you MUST:
 3. Check for new issues introduced by edits (regressions, new problems)
 4. Only THEN claim fixes are complete
 
-"I fixed it" without re-reviewing is LYING about draft quality.
+"I fixed it" without re-reviewing is NOT HELPFUL — unverified fixes let broken prose reach the user.
 
 ### The Audit-Fix Loop (Max 3 Iterations)
 
@@ -123,7 +123,7 @@ issues_found_count: 5
 3. If iteration < 3 and issues remain: INCREMENT iteration, re-invoke /writing-review
 4. If no issues: COMPLETE
 
-**Claiming "all issues resolved" without re-reviewing is LYING.**
+**Claiming "all issues resolved" without re-reviewing is NOT HELPFUL — the user trusts a false "all clear" and publishes with remaining problems.**
 
 ### Rationalization Prevention (Re-Review)
 
@@ -143,10 +143,10 @@ You skip re-review because you think it's helpful, efficient, or competent. Here
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Finishing fast helps the user move on" | Draft has remaining issues. User submits. Reviewers reject. The 15-minute re-review would have caught it. Your speed caused waste. | **Anti-helpful** |
-| **Honesty** | "I fixed the issues from REVIEW.md" | You fixed THOSE issues but introduced new ones. Claiming "all issues resolved" without re-checking is lying. | **Dishonest** |
 | **Competence** | "I can tell the draft is clean" | Your eyes glaze over your own edits. Fresh review catches what you miss. The draft has 3 remaining issues. Your judgment failed. | **Incompetent** |
 | **Efficiency** | "Re-review wastes time on fixed work" | The re-review takes 15 minutes. The rejection-and-rewrite takes 15 hours. Your "efficiency" was a 60x slowdown. | **Anti-efficient** |
 | **Approval** | "User is tired of iterations" | User submits flawed draft. Reviewers reject. User now requires human editor oversight. You lost writing autonomy. | **Lost approval** |
+| **Honesty** | "I fixed the issues from REVIEW.md" | You fixed THOSE issues but introduced new ones. The user publishes with new problems you created. | **Anti-helpful** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 
@@ -158,7 +158,7 @@ Delivering a clean draft is the service. Feeling like you're done is not the ser
 | Shortcut | Consequence |
 |---|---|
 | Rewriting instead of targeted fix | You rewrote the section to "improve" it. You introduced new issues and lost the author's voice — your ambition was destructive. |
-| Marking fixed without checking | You marked the issue resolved without re-reading. It's still there — you lied. |
+| Marking fixed without checking | You marked the issue resolved without re-reading. It's still there — the user trusts your false "fixed" status. |
 
 ## Red Flags — STOP If You Catch Yourself:
 

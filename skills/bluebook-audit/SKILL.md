@@ -51,7 +51,7 @@ Read("${CLAUDE_PLUGIN_ROOT}/commands/bluebook-audit.md")
 
 Auditing only "major-severity" footnotes or a random sample guarantees missed errors. The formatted Gemini audit must cover ALL footnotes, not just previously flagged ones.
 
-Claiming audit completion without checking every footnote is LYING.
+Skipping footnotes is NOT HELPFUL — missed errors go to publication and embarrass the user.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>

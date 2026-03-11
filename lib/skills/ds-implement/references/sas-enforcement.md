@@ -42,4 +42,4 @@ Before writing ANY SAS code, validate against these rules:
 - [ ] Single-year benchmark before full array
 ```
 
-**Claiming SAS code is complete without checking the WHERE clause patterns is LYING about code quality.**
+**Skipping WHERE clause pattern checks is NOT HELPFUL — unverified SAS code fails silently and wastes the user's compute time.**

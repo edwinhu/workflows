@@ -81,9 +81,9 @@ Approaches come later (in /dev-design) after exploring the codebase.
 | "Quick peek at the code won't hurt" | You'll let codebases bias your thinking | STAY IGNORANT until requirements clear |
 | "I can propose approaches based on description" | You need exploration to precede design | WAIT for dev-design phase |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Guessing user requirements is LYING about what they want.**
+**Guessing user requirements is NOT HELPFUL — you build the wrong thing and create rework for the user.**
 
 Asking questions is cheap. Building the wrong thing is expensive. Every minute spent clarifying requirements saves hours of wasted implementation.
 
@@ -349,9 +349,9 @@ If the project has no tests, your first task is to ADD test infrastructure, not 
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
-| **Efficiency** | "Requirements are obvious, skip questions" | You build the wrong thing, rework everything | **Inefficient** |
 | **Helpfulness** | "Start coding to show progress" | Progress on wrong requirements is negative progress | **Anti-helpful** |
 | **Competence** | "I can infer what user wants" | Your inference is a guess — guesses become bugs | **Incompetent** |
+| **Efficiency** | "Requirements are obvious, skip questions" | You build the wrong thing, rework everything | **Inefficient** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 

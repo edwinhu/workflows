@@ -116,9 +116,9 @@ Escalate to user:
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the spec?"
 ```
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Proceeding to exploration with a flawed spec is LYING about readiness.**
+**Proceeding to exploration with a flawed spec is NOT HELPFUL — you'll explore the wrong areas and build the wrong thing, creating hours of rework.**
 
 You know the spec has gaps. Exploration built on a bad spec produces bad findings. Design built on bad findings produces a bad plan. Implementation of a bad plan wastes everyone's time.
 

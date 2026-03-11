@@ -71,7 +71,7 @@ When you catch yourself thinking these rationalizations, STOP—you're about to 
 | "This is just backend" | Does it affect user output? Then YOU need E2E. | Write E2E. |
 | "The tool setup is complex" | Your complexity = complex failure modes. E2E finds them. | Write E2E. |
 | "The UI is unchanged" | Your assumption isn't proven. | Prove it with a visual snapshot. |
-| "Manual testing is faster" | You're LYING about coverage to yourself. | Write E2E. |
+| "Manual testing is faster" | You're creating false confidence — manual testing misses regressions. | Write E2E. |
 | "It's just a small change" | Your small change breaks UIs. E2E proves it doesn't. | Write E2E. |
 | "User can verify" | NO. You don't trust users with QA. | Automated verification or it didn't happen. |
 | **"Log checking is my E2E test"** | **You're confusing observability with verification.** | **Verify your actual outputs.** |

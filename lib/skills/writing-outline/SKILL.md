@@ -72,8 +72,8 @@ Thin outlines produce thin drafts. Each outline must have POINT, EVIDENCE, and L
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Thin outlines let us get to drafting faster" | The draft has no structure to expand. Every section wanders. You redraft from scratch. Your speed produced chaos and rework. | **Anti-helpful** |
-| **Honesty** | "The outline covers the main points" | You listed topics without POINT, EVIDENCE, or LOGIC. Claiming "outline complete" when subsections lack evidence mapping is lying about readiness. | **Dishonest** |
 | **Competence** | "I know this topic well enough to skip detail" | Without mapped evidence, the draft section makes unsupported assertions. Without planned transitions, the argument fragments. Your confidence was incompetence. | **Incompetent** |
+| **Honesty** | "The outline covers the main points" | You listed topics without POINT, EVIDENCE, or LOGIC. The user drafts from a skeleton — every section is improvised and needs rewriting. | **Anti-helpful** |
 
 ## Process
 
@@ -267,9 +267,9 @@ Before proceeding to draft phase:
    Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed when APPROVED.
 6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase
 
-**Claiming "outlines complete" without checking each file is LYING.** You must verify every outline exists and has real structure.
+**Skipping the outline verification is NOT HELPFUL — the user drafts from a thin outline and rewrites every section.** You must verify every outline exists and has real structure.
 
-**Proceeding to draft with a thin outline is LYING about readiness.** The reviewer must confirm depth before drafting begins.
+**Proceeding to draft with a thin outline is NOT HELPFUL — every section will wander and require complete redrafting.** The reviewer must confirm depth before drafting begins.
 
 ---
 

@@ -141,16 +141,16 @@ STOP - you're about to rationalize if these thoughts arise:
 | "I would test it differently" | Your preference doesn't matter. Check if current tests verify behavior. |
 | "Pre-existing gap" | Pre-existing = 0 confidence. Discard. |
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
-**You approving without verifying test coverage is LYING.**
+**You approving without verifying test coverage is NOT HELPFUL — you're shipping undertested code the user will have to debug.**
 
 An "APPROVED" verdict means YOU assert:
 - Critical paths are tested (not "should be fine")
 - Tests verify behavior (not "tests exist")
 - Evidence exists and YOU verified it (not trusted reports)
 
-**CHANGES REQUIRED is honest. Your fake APPROVED is fraud.**
+**CHANGES REQUIRED protects the user. Your fake APPROVED ships bugs.**
 
 ## After Review Completes
 

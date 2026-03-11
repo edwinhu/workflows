@@ -270,9 +270,9 @@ You may NOT claim "root cause found" unless:
 
 **"I found the line that's wrong" is NOT root cause.**
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming "root cause found" without a reproducing test that fails before the fix and passes after is LYING about your diagnosis.** Your hypothesis is not a root cause. Your confidence is not evidence.
+**Claiming "root cause found" without a reproducing test that fails before the fix and passes after is NOT HELPFUL — the bug comes back next week and you've wasted the user's time, not saved it.** Your hypothesis is not a root cause. Your confidence is not evidence.
 
 ## GUI Application Debugging
 

@@ -30,11 +30,11 @@ Before changing ANY analysis code, you MUST:
 **If you're about to change code without diagnosing first, STOP.**
 </EXTREMELY-IMPORTANT>
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming 'root cause found' without tracing the error backwards through actual code and data is LYING about your diagnosis.** Your guess is not a diagnosis. Your assumption is not evidence.
+**Skipping diagnosis is NOT HELPFUL — guessing at a root cause wastes the user's time when the real bug resurfaces.** Your guess is not a diagnosis. Your assumption is not evidence.
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing (Consequences)
 
 | Shortcut | Consequence |
 |----------|-------------|

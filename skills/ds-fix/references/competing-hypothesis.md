@@ -113,7 +113,7 @@ Collect EVIDENCE that proves or disproves this hypothesis. You are looking for f
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Evidence
 
-**CLAIMING WITHOUT VERIFICATION IS LYING.**
+**CLAIMING WITHOUT VERIFICATION IS NOT HELPFUL — unverified claims lead the user to act on wrong information.**
 
 You MUST NOT:
 - Say "likely" or "probably" without data

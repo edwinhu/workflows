@@ -44,9 +44,9 @@ Before exploring data or creating tasks, you MUST have:
 | "User didn't mention data quality" | They assume YOU'LL check | QUALITY check is YOUR job |
 | "Profiling takes too long" | Your skipping it costs days later | INVEST time now |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Creating an analysis plan without profiling the data is LYING about understanding the data.**
+**Skipping data profiling is NOT HELPFUL — your plan will be built on assumptions, not facts, and the user wastes hours on rework.**
 
 You cannot plan analysis steps without knowing:
 - Your data's shape and types
@@ -56,7 +56,7 @@ You cannot plan analysis steps without knowing:
 
 Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect results.
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing (Consequences)
 
 | Shortcut | Consequence |
 |----------|-------------|
@@ -577,7 +577,7 @@ Before proceeding to ds-implement, execute this gate:
 4. **VERIFY**: If any data source > 1M rows, confirm ETL Strategy section exists
 5. **CLAIM**: Only proceed to ds-implement if ALL checks pass
 
-**Skipping this gate is LYING about plan completeness. An incomplete plan wastes more time than the 30 seconds this gate takes.**
+**Skipping this gate is NOT HELPFUL — an incomplete plan wastes the user's time when implementation hits missing sections. The 30 seconds this gate takes saves hours.**
 </EXTREMELY-IMPORTANT>
 
 ## Phase Complete

@@ -11,9 +11,9 @@ description: "This skill should be used when the user asks to 'verify visual out
 
 **NO VISUAL TASK IS COMPLETE WITHOUT RENDERING, SCORING, AND MEETING THE THRESHOLD.**
 
-Source code correctness does NOT imply visual correctness. You MUST render to PNG, score with context-enriched Gemini vision (0-10), and iterate until score >= 9.5. Claiming "done" with a score below threshold is lying about the visual state.
+Source code correctness does NOT imply visual correctness. You MUST render to PNG, score with context-enriched Gemini vision (0-10), and iterate until score >= 9.5. Claiming "done" with a score below threshold delivers broken visuals to the user.
 
-**Claiming visual completion without a score >= 9.5 in SCORES.md is LYING about quality.**
+**Skipping the score check is NOT HELPFUL — the user gets a visual artifact with defects you didn't verify.**
 </EXTREMELY-IMPORTANT>
 
 ## Domain Routing

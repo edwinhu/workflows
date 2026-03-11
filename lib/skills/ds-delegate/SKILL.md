@@ -10,7 +10,7 @@ description: "Subagent delegation for data analysis. Dispatches fresh Task agent
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)
 - [Core Principle](#core-principle)
 - [The Process](#the-process)
-- [Honesty Requirement](#honesty-requirement)
+- [Drive-Aligned Framing](#drive-aligned-framing)
 - [Rationalization Prevention](#rationalization-prevention)
 
 <EXTREMELY-IMPORTANT>
@@ -251,12 +251,12 @@ Before marking any task as complete, execute this gate:
 
 **If agent returned no visible output, this gate FAILS. Re-dispatch with explicit output requirements.**
 
-**Claiming task complete without verifying agent output is LYING about analysis progress.**
+**Skipping output verification is NOT HELPFUL — unverified results lead the user to act on wrong analysis.**
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
-**Claiming "analysis done" without output verification is LYING.**
+**Skipping output verification is NOT HELPFUL — the user makes decisions based on results you never checked.**
 
 When you say "Step complete", you are asserting:
 - A Task agent ran the analysis
@@ -264,9 +264,9 @@ When you say "Step complete", you are asserting:
 - You personally checked it (not just trusting the agent's word)
 - Methodology reviewer approved (for statistical tasks)
 
-If ANY of these didn't happen, you are not "summarizing" - you are LYING about the state of the analysis.
+If ANY of these didn't happen, you are not "summarizing" — you are being anti-helpful by giving the user false confidence in unverified work.
 
-**Your dishonest claims corrupt research. Your honest "investigating" maintains integrity.**
+**Unverified claims waste the user's time and corrupt their research. Verified "investigating" protects their work.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Prevention
@@ -284,7 +284,7 @@ Recognize these thoughts as signals to stop and delegate instead:
 | "Skip methodology review, it's standard" | Your "standard" assumptions often fail. Review anyway. |
 | "Output looked reasonable" | You didn't verify—"looked reasonable" ≠ verified. Check numbers. |
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing
 
 | Shortcut | Consequence |
 |----------|-------------|

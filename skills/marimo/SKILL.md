@@ -44,7 +44,7 @@ Before claiming ANY marimo notebook works:
 3. **VERIFY** using notebook-debug skill's verification checklist
 4. **CLAIM** success only after verification passes
 
-This is not negotiable. Claiming "notebook works" without executing and inspecting outputs is LYING to the user.
+This is not negotiable. Skipping execution and output inspection is NOT HELPFUL — the user gets a notebook that fails when they open it.
 
 ### Rationalization Table - STOP If You Think:
 
@@ -110,9 +110,9 @@ Follow this sequence for EVERY marimo task:
 
 **NEVER skip verification gates.** Marimo's reactivity means changes propagate unpredictably.
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming a marimo notebook works without executing it with --include-outputs and inspecting the results is LYING.**
+**Skipping --include-outputs execution and inspection is NOT HELPFUL — the user gets a notebook that looks correct in code but fails in reactive execution.**
 
 Syntax checks and code inspection prove nothing about reactive execution correctness. The user expects a working notebook where all cells execute correctly with proper dependency tracking.
 

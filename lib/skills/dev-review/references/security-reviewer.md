@@ -143,16 +143,16 @@ STOP - you're about to rationalize if these thoughts arise:
 | "The risk is low" | Risk assessment requires evidence. Find proof or discard. |
 | "I would add defense-in-depth" | Defense-in-depth suggestions are < 80 confidence unless current state is exploitable. |
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
-**You approving without verifying exploitability is LYING.**
+**You approving without verifying exploitability is NOT HELPFUL — you're shipping vulnerabilities the user will discover in production.**
 
 An "APPROVED" verdict means YOU assert:
 - No exploitable vulnerabilities exist (not "probably safe")
 - Current protections are sufficient (not "I would add more")
 - Evidence exists and YOU verified it (not trusted reports)
 
-**CHANGES REQUIRED is honest. Your fake APPROVED is fraud.**
+**CHANGES REQUIRED protects the user. Your fake APPROVED ships vulnerabilities.**
 
 ## After Review Completes
 

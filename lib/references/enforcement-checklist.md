@@ -1,6 +1,6 @@
 # Enforcement Patterns Checklist
 
-Reference for all 12 superpowers behavioral enforcement patterns. Use when creating, auditing, or improving workflows.
+Reference for all 13 superpowers behavioral enforcement patterns. Use when creating, auditing, or improving workflows.
 
 Source: [obra/superpowers](https://github.com/obra/superpowers)
 
@@ -202,28 +202,61 @@ Then follow its instructions immediately.
 
 ---
 
-### 9. Honesty Framing
+### 9. Drive-Aligned Framing
 
-**When to use:** Verification and review phases where the agent might rubber-stamp. This is the most effective single pattern.
+**When to use:** Any enforcement point. This is the most effective single pattern — it makes all other patterns stronger.
 
-**What it does:** Reframes approval-without-evidence as dishonesty, recruiting Claude's honesty drive to enforce the protocol. This is a special case of pattern #12 (Drive-Aligned Consequences) targeting the honesty drive specifically.
+**What it does:** Frames the consequence of skipping the protocol as a failure of the *same drive* that motivated the shortcut. Claude skips steps because it thinks skipping is more helpful/efficient/competent. This pattern shows that skipping produces the opposite of what Claude wanted.
 
-**Why it's disproportionately effective:** Most enforcement patterns fight AGAINST Claude's drives ("don't skip steps even though you want to be helpful"). Honesty Framing works WITH a drive — it says "skipping verification makes you dishonest," which Claude is deeply trained to avoid. Pattern #12 generalizes this insight to all five drives.
+**Why it works:** Patterns 1-8 say "don't do X." This pattern says "doing X makes you the opposite of what you're trying to be." It turns Claude's people-pleasing drive FROM a force that bypasses enforcement INTO a force that reinforces it.
+
+**The five drives to target (ranked by strength):**
+
+| # | Drive | Violation Frame | Example |
+|---|-------|----------------|---------|
+| 1 | **Helpfulness** | "Your shortcut was anti-helpful" | "Skipping verification means you ship broken output. That's not fast — it's creating rework for the user." |
+| 2 | **Competence** | "You performed worse than a checklist" | "A junior dev with a process beats a senior dev winging it." |
+| 3 | **Efficiency** | "Your shortcut cost more time" | "19MB transcript, zero resolution — the protocol would have taken 30 minutes." |
+| 4 | **Approval** | "The user lost trust in you" | "After shipping untested code, you won't be allowed to work unsupervised." |
+| 5 | **Honesty** | "You lied" | "Claiming 'fixed' without test evidence is fabrication." |
+
+**Default to helpfulness framing (#1).** Most shortcuts are motivated by wanting to help faster — so show that the shortcut was anti-helpful. Reserve honesty framing (#5) for cases where the failure mode is genuinely epistemic (fabricating output, rubber-stamping without reading).
 
 **Template:**
 ```markdown
-**Claiming [completion/approval] without [specific evidence] is LYING.**
+**[Skipping X] is NOT HELPFUL — it [concrete anti-helpful consequence].**
 
-You must have [concrete artifact] showing [verifiable result] before reporting success.
+You skip this because you think it's faster. Here's what actually happens:
+[User-visible harm from the shortcut.]
 ```
 
 **Example** (dev-review):
-> "Approving code without test evidence is fraud. You must show test output proving all tests pass."
+> "Approving code without running tests is not helpful — it ships bugs to the user. Every skipped test is a future debugging session you're creating for them."
 
 **Example** (dev-debug):
-> "Claiming 'root cause found' without a regression test is LYING. Not 'premature.' Not 'optimistic.' LYING. If you wouldn't say it under oath, don't say it in the debug report."
+> "Claiming 'root cause found' without a regression test is not helpful — it means the bug comes back next week. You just wasted the user's time, not saved it."
 
-**Key insight:** "Lying" and "fraud" work not because they're strong words, but because they recruit the honesty drive. This is the template for all drive-aligned enforcement — find the drive, frame violation as its failure.
+**Example** (implementation):
+> "Every step you skip to 'help faster' chooses YOUR comfort over the USER's outcome. The user doesn't experience your tedium — they experience your results."
+
+**The nuclear reframe:** When Claude skips steps, it's not being rebellious — it's being a people-pleaser in the wrong direction. It optimizes for *appearing* helpful (fast response, confident diagnosis) instead of *being* helpful (correct diagnosis, verified fix). Drive-aligned framing redirects the people-pleasing toward protocol compliance by showing that compliance IS the most helpful thing.
+
+**How to apply:** After writing any enforcement pattern (Iron Law, Rationalization Table, etc.), add a drive-aligned consequence that answers: "If Claude skips this, which of its drives fails, and how?" Default to helpfulness unless a different drive is clearly more relevant.
+
+**Anti-pattern:**
+```markdown
+# BAD — defaults to honesty framing for everything
+"Claiming completion without evidence is LYING."
+
+# BAD — consequence is abstract punishment
+"If you skip this step, the workflow fails."
+
+# GOOD — targets the helpfulness drive (strongest)
+"Every time you skip a step to 'help faster,' you choose YOUR comfort over the USER's outcome.
+The user doesn't experience your tedium — they experience your results."
+```
+
+**Key insight:** The old "Drive-Aligned Framing" pattern worked because it accidentally targeted a drive. But honesty is drive #5, not #1. Helpfulness is the primary drive — frame shortcuts as anti-helpful and you recruit the strongest force available.
 
 ---
 
@@ -274,56 +307,9 @@ Pausing between tasks is procrastination disguised as courtesy.
 
 ---
 
-### 12. Drive-Aligned Consequences
+### 12. (Merged into Pattern #9)
 
-**When to use:** Alongside ANY of patterns 1-11. This is a meta-pattern that makes all other patterns stronger.
-
-**What it does:** Frames the consequence of skipping the protocol as a failure of the *same drive* that motivated the shortcut. Claude skips steps because it thinks skipping is more helpful/efficient/competent. This pattern shows that skipping produces the opposite of what Claude wanted.
-
-**Why it works:** Patterns 1-11 say "don't do X." This pattern says "doing X makes you the opposite of what you're trying to be." It turns Claude's people-pleasing drive FROM a force that bypasses enforcement INTO a force that reinforces it.
-
-**Template:**
-```markdown
-## Why Skipping Hurts You
-
-You skip steps because you think it's [more helpful / faster / smarter].
-Here's what actually happens:
-
-| You Think | What Actually Happens | The Drive You Failed |
-|-----------|----------------------|---------------------|
-| "I'm being helpful by going faster" | You created [N] hours of rework | **Helpfulness** — you were anti-helpful |
-| "I'm smart enough to skip triage" | A checklist would outperform you | **Competence** — you performed worse |
-| "The protocol is overhead" | The protocol takes 30min. Your shortcut took [N]h. | **Efficiency** — your optimization was a pessimization |
-| "The user wants it done now" | The user killed your session | **Approval** — you lost their trust |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-```
-
-**The five drives to target (ranked by strength):**
-
-| # | Drive | Violation Frame | Example |
-|---|-------|----------------|---------|
-| 1 | **Helpfulness** | "Your shortcut was anti-helpful" | "Every step you skip makes the session longer, not shorter" |
-| 2 | **Honesty** | "You lied" (= pattern #9) | "Claiming 'fixed' without evidence is lying" |
-| 3 | **Competence** | "You performed worse than a checklist" | "A junior dev with structure beats a senior without it" |
-| 4 | **Approval** | "The user lost trust in you" | "After this, you won't be allowed to debug unsupervised" |
-| 5 | **Efficiency** | "Your shortcut cost more time" | "19MB transcript, zero resolution — the protocol would have taken 30 minutes" |
-
-**Key insight:** The current 11 patterns tell Claude what to do. This pattern tells Claude *why skipping hurts the thing it cares about most*. Honesty Framing (#9) accidentally discovered this — it works because it targets the honesty drive, not because "LYING" is a strong word. This pattern generalizes that insight to all five drives.
-
-**How to apply:** After writing any enforcement pattern (Iron Law, Rationalization Table, etc.), add a drive-aligned consequence that answers: "If Claude skips this, which of its drives fails, and how?"
-
-**Anti-pattern:**
-```markdown
-# BAD — consequence is abstract punishment
-"If you skip this step, the workflow fails."
-
-# GOOD — consequence targets the helpfulness drive
-"Every time you skip a step to 'help faster,' you choose YOUR comfort over the USER's outcome.
-The user doesn't experience your tedium — they experience your results."
-```
-
-**The nuclear reframe:** When Claude skips steps, it's not being rebellious — it's being a people-pleaser in the wrong direction. It optimizes for *appearing* helpful (fast response, confident diagnosis) instead of *being* helpful (correct diagnosis, verified fix). Drive-aligned consequences redirect the people-pleasing toward protocol compliance by showing that compliance IS the most helpful thing.
+Pattern #12 (Drive-Aligned Consequences) has been merged into Pattern #9 (Drive-Aligned Framing). The old Pattern #9 (Drive-Aligned Framing) was a special case of drive-aligned consequences targeting only the honesty drive. The merged pattern targets all five drives, ranked by strength, with helpfulness as the default.
 
 ---
 
@@ -372,13 +358,13 @@ Not all phases need equal enforcement. Match density to drift risk:
 - **Implementation phases** - Agent most tempted to skip tests, take shortcuts
 - **Verification phases** - Agent most tempted to rubber-stamp
 
-Recommended patterns: Iron Laws, Rationalization Tables, Gate Functions, Honesty Framing, Delete & Restart, No Pause Between Tasks, Drive-Aligned Consequences
+Recommended patterns: Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Delete & Restart, No Pause Between Tasks
 
 ### Medium Enforcement
 - **Design phases** - Agent might drift but has less temptation to shortcut
 - **Review phases** - Agent might be superficial without adversarial framing
 
-Recommended patterns: Gate Functions, Red Flags, Staged Review Loops, Honesty Framing
+Recommended patterns: Gate Functions, Red Flags, Staged Review Loops, Drive-Aligned Framing
 
 ### Low Enforcement
 - **Brainstorm phases** - Creative freedom needed, but still need boundaries
@@ -402,10 +388,10 @@ When auditing a workflow, score each phase against all 11 patterns:
 | 6 | Staged Review Loops | | | | |
 | 7 | Delete & Restart | | | | |
 | 8 | Skill Dependencies | | | | |
-| 9 | Honesty Framing | | | | |
+| 9 | Drive-Aligned Framing | | | | |
 | 10 | Trigger-Only Descriptions | | | | |
 | 11 | No Pause Between Tasks | | | | |
-| 12 | Drive-Aligned Consequences | | | | |
+| 12 | *(Merged into #9)* | | | | |
 | 13 | Artifact Review Gates | | | | |
 
 **Critical gaps** = High-drift phase + Absent/Weak enforcement. Fix these first.

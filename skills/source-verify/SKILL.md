@@ -139,7 +139,7 @@ Statutes are not yet verifiable — no structured database wired up. Flag as `SK
 
 Mechanical checks against `paperpile.bib` are deterministic and free. They catch the most common hallucinations (invented papers, wrong volume/pages) without any LLM judgment. Running LLM checks without running mechanical checks first is wasting expensive calls on problems a grep would catch.
 
-**Claiming a citation is verified without checking it against paperpile.bib is LYING about verification.**
+**Skipping the paperpile.bib check is NOT HELPFUL — the user publishes with unverified citations that may be hallucinated.**
 </EXTREMELY-IMPORTANT>
 
 ## Step 0: Prerequisites
@@ -398,7 +398,7 @@ Citation hallucination happens because the LLM confabulates plausible-sounding r
 - **Checks 3-4**: Readwise chat, `rga`, or NLM chat (grounded in actual source text)
 - **NEVER**: "I recall this paper exists" or "That quote sounds right"
 
-**Claiming citations are verified without checking them against an external source is LYING.**
+**Skipping external source checks is NOT HELPFUL — unverified citations damage the user's credibility when readers check them.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Table

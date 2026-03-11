@@ -77,7 +77,7 @@ if text.endswith(' ') and is_italic:
 
 After each category of corrections, verify the fix was applied by reading back the modified XML. Silent failures from NBSP, run boundaries, or wrong-run targeting are common.
 
-Claiming fixes were applied without reading them back is LYING.
+Skipping read-back verification is NOT HELPFUL — silent failures from NBSP or run boundaries mean the user's document still has errors.
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Table

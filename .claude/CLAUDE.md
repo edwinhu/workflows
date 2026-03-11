@@ -18,10 +18,9 @@
 | **Staged Review Loops** | Multiple review stages with re-review on issues | ☐ |
 | **Delete & Restart** | "Write code before test? Delete it. No exceptions." | ☐ |
 | **Skill Dependencies** | Cross-references that enforce workflow order | ☐ |
-| **Honesty Framing** | "Claiming without verification is LYING" - stronger than "rationalizing" | ☐ |
+| **Drive-Aligned Framing** | Frame violation as failure of the drive that motivated it (helpfulness > competence > efficiency > approval > honesty) | ☐ |
 | **Trigger-Only Descriptions** | Brief triggers in description, process details in body only | ☐ |
 | **No Pause Between Tasks** | After completing task N, immediately start task N+1 | ☐ |
-| **Drive-Aligned Consequences** | Frame violation as failure of the drive that motivated it | ☐ |
 
 **Full reference:** `lib/references/enforcement-checklist.md`
 

@@ -71,7 +71,7 @@ If you wrote analysis code in main chat, DELETE it immediately and dispatch a Ta
 | You started a transformation in main chat | STOP. DELETE what you've done. Spawn Task agent instead. |
 | "Just finish this quick analysis here" | STOP — if it's quick enough to finish, it's quick enough for a Task agent. Delete and restart. |
 
-**Honesty Check:** If you kept main-chat code "because it worked," you lied about the orchestration protocol. Working code written in the wrong place is still wrong code. Delete it.
+**Helpfulness Check:** If you kept main-chat code "because it worked," you bypassed the orchestration protocol. Working code written in the wrong place skips verification and review — it is anti-helpful to the user. Delete it.
 </EXTREMELY-IMPORTANT>
 
 ## What Output-First Means
@@ -97,15 +97,15 @@ If you wrote analysis code in main chat, DELETE it immediately and dispatch a Ta
 | "This task is trivial, no need to delegate" | Trivial tasks in main chat accumulate into unverified analysis. | Delegate everything, verify everything |
 | "I'll read the agent's output later" | Running code without reading the output is running blind. The agent may have reported errors you missed. | Read agent output immediately, verify claims against actual data |
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing
 
 | Drive | Shortcut | Consequence |
 |-------|----------|-------------|
 | **Helpfulness** | Skipping output verification | You assumed the output was correct because the code ran. The results are wrong — your assumption is the error the user publishes. You were anti-helpful. |
-| **Honesty** | Claiming task complete without checking output | You logged "COMPLETE" in LEARNINGS.md without verifying the output. That entry is a lie — the task may have silently failed. |
+| **Helpfulness** | Claiming task complete without checking output | You logged "COMPLETE" in LEARNINGS.md without verifying the output. The task may have silently failed — the user acts on results that don't exist. |
 | **Competence** | Running all tasks sequentially yourself | You ran everything yourself to feel productive. Quality suffered without delegation and review — your productivity was incompetence disguised as efficiency. |
-| **Approval** | Skipping LEARNINGS.md logging | You skipped documentation to move faster. The reviewer cannot verify your work. The user loses trust when review fails. You lost their approval. |
 | **Efficiency** | Not delegating to Task agents | You wrote analysis in main chat because it felt faster. Now it must be deleted and redone. Your shortcut doubled the work — anti-efficient. |
+| **Approval** | Skipping LEARNINGS.md logging | You skipped documentation to move faster. The reviewer cannot verify your work. The user loses trust when review fails. You lost their approval. |
 
 ## Red Flags - STOP Immediately
 
@@ -350,13 +350,13 @@ Before invoking ds-review, execute this gate:
 - Does each task entry reference current outputs (file paths, cell numbers)?
 - If LEARNINGS.md is stale from a prior session, UPDATE it with fresh entries before claiming completion.
 
-**Stale LEARNINGS.md = false gate pass = unverified work = you're about to lie.**
+**Stale LEARNINGS.md = false gate pass = unverified work = the user gets results no one actually checked.**
 
 5. **CLAIM**: Only if all tasks accounted for, proceed to review
 
 **If ANY task is missing from LEARNINGS.md, implement it before proceeding.**
 
-**Claiming all tasks are done without checking LEARNINGS.md against PLAN.md is LYING.**
+**Claiming all tasks are done without checking LEARNINGS.md against PLAN.md is NOT HELPFUL — missing tasks mean incomplete analysis the user relies on.**
 </EXTREMELY-IMPORTANT>
 
 ## Phase Complete

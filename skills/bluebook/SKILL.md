@@ -33,7 +33,7 @@ Before writing ANY citation:
 3. Verify court and year
 4. Verify pinpoint page exists
 
-**Guessing reporter volumes or page numbers is LYING. Period.**
+**Guessing reporter volumes or page numbers is NOT HELPFUL — the user publishes with wrong citations that fail verification. Period.**
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>

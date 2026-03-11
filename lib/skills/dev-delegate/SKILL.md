@@ -11,7 +11,7 @@ description: "Internal skill used by dev-implement during Phase 5 of /dev workfl
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)
 - [Where This Fits](#where-this-fits)
 - [The Process](#the-process)
-- [Honesty Requirement](#honesty-requirement)
+- [Drive-Aligned Framing](#drive-aligned-framing)
 - [Rationalization Prevention](#rationalization-prevention)
 
 <EXTREMELY-IMPORTANT>
@@ -285,19 +285,19 @@ APPROVED or CHANGES REQUIRED
 
 **If CHANGES REQUIRED:** Have implementer fix, then re-run quality review.
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
-**Claiming "done" without subagent verification is LYING.**
+**Claiming "done" without subagent verification is NOT HELPFUL — you're shipping unreviewed code the user will have to debug.**
 
 When you say "Task complete", you are asserting:
 - A Task agent implemented the change
 - Spec reviewer confirmed compliance
 - Quality reviewer approved
 
-If ANY of these didn't happen, you are not "summarizing" or "moving on" - you are LYING about the state of the work.
+If ANY of these didn't happen, you are not "summarizing" or "moving on" - you are creating rework for the user.
 
-**Dishonest claims destroy trust. Honest "still working" builds trust.**
+**Skipping verification destroys the user's time. "Still working" protects it.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Prevention

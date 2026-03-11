@@ -270,15 +270,15 @@ Before proceeding to outline phase:
 | "The outline doesn't need transitions planned yet" | Transitions ARE the argument's logic | Plan transitions now or the draft will be fragments |
 | "I can add counterarguments later" | Counterarguments shape the thesis itself | Confront objections before finalizing claims |
 
-**Claiming the PRECIS is complete without verifiable thesis and claims is LYING about readiness.** A vague thesis is not a thesis. Placeholder claims are not claims.
+**Skipping PRECIS verification is NOT HELPFUL — the user builds an entire document on a vague thesis that collapses under scrutiny.** A vague thesis is not a thesis. Placeholder claims are not claims.
 
 ## Why Skipping Hurts the Thing You Care About Most
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Getting to drafting fast helps the user see progress" | The draft has no foundation. Every section wanders from the thesis. You rewrite the entire document. Your speed created 3x the work. | **Anti-helpful** |
-| **Honesty** | "The PRECIS is complete enough" | You wrote a vague thesis and placeholder claims. Claiming "setup complete" when the thesis is unfocused is lying about readiness. | **Dishonest** |
 | **Competence** | "I can hold the thesis in my head, no need for detailed PRECIS" | Without written claims, sections drift. Without scope boundaries, the document sprawls. Your mental model was incomplete — the PRECIS would have caught it. | **Incompetent** |
+| **Honesty** | "The PRECIS is complete enough" | You wrote a vague thesis and placeholder claims. The user drafts an entire document on a shaky foundation — every section wanders. | **Anti-helpful** |
 
 ## Red Flags - STOP If You Catch Yourself:
 

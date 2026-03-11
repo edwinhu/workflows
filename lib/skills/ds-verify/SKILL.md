@@ -39,18 +39,18 @@ This applies even when:
 - "It should reproduce"
 - "User seemed happy earlier"
 
-**If you catch yourself thinking "I can skip verification," STOP - you're about to lie.**
+**If you catch yourself thinking "I can skip verification," STOP — you're about to deliver unverified results that waste the user's time.**
 </EXTREMELY-IMPORTANT>
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing
 
 | Drive | Shortcut | Consequence |
 |-------|----------|-------------|
 | **Helpfulness** | Skipping fresh re-run | You assumed prior results still hold. They don't reproduce — the user publishes irreproducible work. Your assumption is the error they discover. Anti-helpful. |
-| **Honesty** | Rubber-stamping verification | You reported 'verified' without re-executing. The analysis fails on fresh data — you lied about verification. |
 | **Competence** | Verifying your own work | You ran the reproducibility check yourself instead of dispatching a fresh agent. You share the implementer's biases. A fresh agent would have caught the issue. Incompetent verification. |
-| **Approval** | Skipping user acceptance interview | You declared completion without asking the user. They discover the results don't answer their question. They now require manual review of all analysis. Lost approval. |
 | **Efficiency** | Not running reproducibility check | You skipped the 10-minute check. The irreproducible results take 10 days to debug when someone else tries to run them. Anti-efficient. |
+| **Approval** | Skipping user acceptance interview | You declared completion without asking the user. They discover the results don't answer their question. They now require manual review of all analysis. Lost approval. |
+| **Honesty** | Rubber-stamping verification | You reported 'verified' without re-executing. The analysis fails on fresh data — your unverified claim wastes the user's time. |
 
 ## Rationalization Table
 

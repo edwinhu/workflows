@@ -250,11 +250,9 @@ When adding to an existing data context skill:
 | "The entity relationships are obvious from foreign keys" | Foreign keys show connections, not business rules. A `user_id` FK doesn't tell you users can have multiple active accounts. | Verify every relationship with the user, especially cardinality |
 | "I already know this domain well enough" | Your training data is not this user's data. Their dataset has specific quirks you cannot guess. | Interview anyway — it takes 10 minutes and prevents weeks of wrong analysis |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming you understand the dataset without interviewing the domain expert is LYING about your knowledge.** Pattern-matching from column names is not domain understanding.
-
-### Drive-Aligned Consequences
+**Skipping the domain expert interview is NOT HELPFUL — every downstream analysis inherits your wrong assumptions about the data.** Pattern-matching from column names is not domain understanding.
 
 | Shortcut | Consequence |
 |----------|-------------|

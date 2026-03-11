@@ -114,7 +114,7 @@ If you catch yourself thinking these, STOP IMMEDIATELY:
 | “No test infra, I’ll just implement” | You should have caught this in explore/clarify | STOP. Go back. Add Task 0. |
 | “SPEC.md says manual testing” | SPEC.md is wrong | STOP. Fix SPEC.md. Ask user. |
 | “This task is too simple for tests” | Simple tasks benefit MOST from tests | Write the test anyway. |
-| “I’ll add tests after this works” | That’s not TDD. That’s lying. | DELETE your code. Write test first. |
+| “I’ll add tests after this works” | That’s not TDD. That’s anti-helpful — untested code ships bugs. | DELETE your code. Write test first. |
 | “User is waiting, I’ll be quick” | User wants WORKING code, not fast code | Take time. Write test first. |
 | “The subagent skipped tests” | Your job is to catch that | REJECT the work. Redo with tests. |
 | “Just this one exception” | No exceptions. Ever. | Write the test. |
@@ -223,7 +223,7 @@ Key points from dev-delegate:
 ### Step 3: Verify and Complete (MANDATORY - DO NOT SKIP)
 
 <EXTREMELY-IMPORTANT>
-**YOU MUST VERIFY EACH OF THESE. “Task complete” without verification is LYING.**
+**YOU MUST VERIFY EACH OF THESE. “Task complete” without verification is NOT HELPFUL — you're shipping broken code the user will have to debug.**
 
 After Task agent returns, **you must personally verify** (not trust the agent’s report):
 
@@ -330,10 +330,10 @@ If NO → REJECT and redo with correct approach
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
 | **Helpfulness** | "Skipping TDD gets code to user faster" | Untested code creates bugs the user discovers later | **Anti-helpful** |
-| **Honesty** | "Task complete" without running tests | You claimed tests pass without running them — that's lying | **Dishonest** |
-| **Efficiency** | "Skipping spec check saves time" | Spec drift means rework — your speed was waste | **Inefficient** |
 | **Competence** | "I assumed it works, no need to run tests" | The user runs it and it fails — your assumption destroyed trust | **Incompetent** |
-| **Thoroughness** | "I'll delegate without full context" | Subagent builds wrong thing, you redo everything | **Careless** |
+| **Efficiency** | "Skipping spec check saves time" | Spec drift means rework — your speed was waste | **Inefficient** |
+| **Approval** | "I'll delegate without full context" | Subagent builds wrong thing, you redo everything — user loses trust | **Trust destroyed** |
+| **Honesty** | "Task complete" without running tests | You claimed tests pass without running them — that's fabrication | **Dishonest** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 

@@ -446,17 +446,17 @@ Before proceeding to project setup:
 | "I'll gather more sources later" | Later never comes; you'll draft with what you have | Gather sources now |
 | "This topic is straightforward" | "Straightforward" means you haven't thought deeply enough | Find the complexity |
 
-**Claiming you've gathered sufficient sources without actually searching is LYING about your preparation.** Your training knowledge is not research. Your recall is not citation.
+**Skipping source gathering is NOT HELPFUL — the user publishes unsupported claims that reviewers reject.** Your training knowledge is not research. Your recall is not citation.
 
 ## Why Skipping Hurts the Thing You Care About Most
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Getting to drafting fast helps the user see progress" | The draft has no evidence. Every claim is an assertion. The user submits and reviewers reject for lack of sources. Your speed destroyed their credibility. | **Anti-helpful** |
-| **Honesty** | "I cited from memory — I know these sources" | Your training data citations are wrong or outdated. You presented fabricated sources as research. That's academic dishonesty, not helpfulness. | **Dishonest** |
 | **Competence** | "I already know enough about this topic to skip research" | You searched nothing. The paper misses the 3 most relevant recent sources. A librarian search would have found them in 2 minutes. Your expertise was ignorance. | **Incompetent** |
 | **Efficiency** | "The user interview wastes time — I can infer the angle" | You inferred wrong. The paper argues critique when the user wanted reform. You rewrote from scratch. The 5-minute interview would have saved 2 hours. | **Anti-efficient** |
 | **Approval** | "The user seems eager to start writing" | You skipped clarification to please them. The draft argues the wrong thesis. The user now questions whether you understand their work at all. You lost trust. | **Lost approval** |
+| **Honesty** | "I cited from memory — I know these sources" | Your training data citations are wrong or outdated. The user submits fabricated sources — their credibility is destroyed. | **Anti-helpful** |
 
 ## Red Flags - STOP If You Catch Yourself:
 

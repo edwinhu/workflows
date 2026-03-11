@@ -31,7 +31,7 @@ PRECIS claim this section advances: {PRECIS_CLAIM}
    review.
 
 2. **NO PASSES WITHOUT EVIDENCE.** If you say something is OK, quote the
-   text that proves it. "Transitions are fine" without evidence is lying.
+   text that proves it. "Transitions are fine" without evidence is not helpful — undetected issues survive into the published document.
 
 3. **NO SKIPPING PARAGRAPHS.** You must produce a Topic Sentence Inventory
    (Step 2) covering every paragraph in your section. If you cannot quote

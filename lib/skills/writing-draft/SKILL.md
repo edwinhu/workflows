@@ -55,9 +55,9 @@ Writing without an outline produces incoherent, wandering prose that requires co
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## The Iron Law of Draft Honesty
+## The Iron Law of Draft Completeness
 
-**Reporting sections complete without verifying every outline point was expanded is LYING about draft quality.**
+**Reporting sections complete without verifying every outline point was expanded is NOT HELPFUL — the user publishes a draft with gaps that reviewers catch.**
 
 Before claiming a section is drafted:
 1. Open the outline file for that section
@@ -65,7 +65,7 @@ Before claiming a section is drafted:
 3. Check off EVERY evidence item — is it cited in the prose?
 4. Check the word count — does it match the outline's estimate?
 
-If ANY point or evidence is missing, the section is NOT complete. Saying "draft done" when outline points were skipped is dishonest. The outline is a contract; the draft must fulfill it.
+If ANY point or evidence is missing, the section is NOT complete. Saying "draft done" when outline points were skipped wastes the user's time — they discover gaps during review that should never have survived drafting. The outline is a contract; the draft must fulfill it.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -230,7 +230,7 @@ Before proceeding to edit/verify:
 4. **VERIFY**: All sections have drafts, each draft covers all outline points
 5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-revise
 
-**Reporting "all sections drafted" without checking each file is LYING.** You must verify every draft exists and has real content.
+**Reporting "all sections drafted" without checking each file is NOT HELPFUL — the user moves to review with missing sections that force a return to drafting.** You must verify every draft exists and has real content.
 
 ### Staged Draft Verification (If Gate Fails)
 
@@ -246,7 +246,7 @@ Re-draft WITHOUT pausing. Agent re-opens outline, re-reads PRECIS.md, expands se
 
 **No iteration limit at draft stage.** Cheap iterations here prevent expensive rework later.
 
-**Claiming the draft is complete without checking EVERY subsection expansion is LYING about depth.** A 2-paragraph section with a 5-subsection outline is a stub, not a draft.
+**Skipping the subsection expansion check is NOT HELPFUL — the user publishes a stub where a full section should be.** A 2-paragraph section with a 5-subsection outline is a stub, not a draft.
 
 ---
 
@@ -299,10 +299,10 @@ When escalating, present:
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Finishing the draft fast helps the user" | Cursory drafts create 3x the rework. Every skipped outline point becomes a revision cycle. Your speed produced waste. | **Anti-helpful** |
-| **Honesty** | "I expanded the outline points" | You skipped 3 of 5 subsections. Claiming "draft complete" when outline points are missing is lying about coverage. | **Dishonest** |
 | **Competence** | "I know the domain style rules" | You didn't load the domain skill. The prose reads as generic AI output. Reviewers will flag every paragraph. Your confidence was incompetence. | **Incompetent** |
 | **Efficiency** | "Outlining is overkill for a short section" | The section wandered without structure. You rewrote it twice. The 5-minute outline would have saved 30 minutes. Your "efficiency" was a 6x slowdown. | **Anti-efficient** |
 | **Approval** | "The user wants to see progress" | You showed a cursory draft. The user sees thin prose and loses confidence in the workflow. Next time they'll micromanage every section. You lost autonomy. | **Lost approval** |
+| **Honesty** | "I expanded the outline points" | You skipped 3 of 5 subsections. The user discovers gaps during review — your shortcut created rework they trusted you to prevent. | **Anti-helpful** |
 
 ---
 

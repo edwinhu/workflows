@@ -193,16 +193,16 @@ STOP - you're about to rationalize if these thoughts arise:
 | "Running checks would take too long" | Your unverified approval costs days of rework. Run them. |
 | "I trust the data quality pipeline" | Trust is not verification. Verify final state. |
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
-**You approving without verifying data quality is LYING.**
+**Approving without verifying data quality is NOT HELPFUL — the user acts on results built on data no one checked.**
 
 An "APPROVED" verdict means YOU assert:
 - Data quality is verified (not "analyst said it's clean")
 - Code is correct (not "looks right")
 - Evidence exists and YOU verified it (not trusted reports)
 
-**CHANGES REQUIRED is honest. Your fake APPROVED is fraud.**
+**CHANGES REQUIRED is helpful. An unverified APPROVED wastes the user's time and corrupts their research.**
 
 ## After Review Completes
 

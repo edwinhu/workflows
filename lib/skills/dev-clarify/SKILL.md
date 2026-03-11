@@ -49,9 +49,9 @@ Use this knowledge to ask **informed questions** about:
 | "I can make a reasonable assumption" | Reasonable != correct | ASK, don't assume |
 | "Asking too many questions annoys users" | Building wrong thing annoys users more | ASK clarifying questions |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Assuming user requirements without asking is LYING about what they want.**
+**Assuming user requirements without asking is NOT HELPFUL — you build the wrong thing and create hours of rework.**
 
 You explored the codebase and found patterns. But patterns show HOW things work, not WHAT the user wants. Clarification bridges this gap.
 
@@ -280,9 +280,9 @@ Before proceeding to design, verify the testing strategy passes real-test enforc
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
-| **Efficiency** | "Assumptions are faster than questions" | Wrong assumptions mean rework — your speed was waste | **Inefficient** |
 | **Helpfulness** | "I don't want to bother the user with questions" | You build the wrong thing — your courtesy was sabotage | **Anti-helpful** |
 | **Competence** | "I can infer edge cases from the code" | Code shows HOW, not WHAT SHOULD happen — your inference was a guess | **Incompetent** |
+| **Efficiency** | "Assumptions are faster than questions" | Wrong assumptions mean rework — your speed was waste | **Inefficient** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 

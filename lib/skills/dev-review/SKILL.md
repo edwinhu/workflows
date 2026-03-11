@@ -328,7 +328,7 @@ When review returns CHANGES REQUIRED and the implementer applies fixes, you MUST
 3. Check for new issues introduced by fixes (regression)
 4. Only THEN return APPROVED
 
-"I fixed it" without re-reviewing is LYING about fix quality.
+"I fixed it" without re-reviewing is NOT HELPFUL — unverified fixes ship bugs to the user.
 
 ### The Audit-Fix Loop (Max 3 Iterations)
 
@@ -365,7 +365,7 @@ issues_found_count: 5
 3. If iteration < 3 and issues remain: INCREMENT iteration, return CHANGES REQUIRED
 4. If no issues: APPROVED
 
-**Claiming APPROVED without re-review after fixes is LYING.**
+**Claiming APPROVED without re-review after fixes is NOT HELPFUL — you're rubber-stamping unverified work that ships bugs to the user.**
 
 ### Rationalization Prevention (Re-Review)
 
@@ -385,10 +385,10 @@ You skip re-review because you think it's helpful, efficient, or competent. Here
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Approving fast unblocks the user" | Bugs ship. User spends hours debugging your "help." The protocol takes 10 minutes. Your shortcut cost 10 hours. | **Anti-helpful** |
-| **Honesty** | "I'm confident the fix worked" | You didn't verify—you fabricated an approval. Confidence without evidence is lying, not honesty. | **Dishonest** |
 | **Competence** | "I trust the implementer's claim" | Trust without verification is negligence. The bug shipped because you didn't check. A checklist would outperform you. | **Incompetent** |
 | **Efficiency** | "Re-review wastes time" | The re-review takes 10 minutes. Bug rework takes 10 hours. Your "efficiency" was a 60x slowdown. | **Anti-efficient** |
 | **Approval** | "User will be frustrated by delays" | User kills your session when bugs ship. They now require human oversight for all reviews. You lost autonomy. | **Lost approval** |
+| **Honesty** | "I'm confident the fix worked" | You didn't verify — you fabricated an approval. Confidence without evidence is fabrication. | **Dishonest** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 
@@ -525,24 +525,24 @@ Report only issues with >= 80 confidence.
 Return structured output per /dev-review format."
 ```
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
-**You approving without test evidence is LYING.**
+**You approving without test evidence is NOT HELPFUL — you're shipping broken code the user will have to debug.**
 
 An "APPROVED" verdict means YOU assert:
 - Tests actually ran (not "should work")
 - Test output shows PASS (not SKIP, not assumed)
 - Evidence exists and YOU verified it (not trusted reports)
 
-You approving without test evidence is not "efficiency" - it is LYING about code quality.
+You approving without test evidence is not "efficiency" - it is creating rework for the user.
 
-**BLOCKED is honest. Your fake APPROVED is fraud.**
+**BLOCKED protects the user. Your fake APPROVED ships bugs.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Prevention
 
-STOP - you're about to rationalize if these thoughts arise--they indicate dishonest approval:
+STOP - you're about to rationalize if these thoughts arise--they indicate anti-helpful approval:
 
 | Thought | Reality |
 |---------|---------|
@@ -554,14 +554,15 @@ STOP - you're about to rationalize if these thoughts arise--they indicate dishon
 | "I'll approve and they can fix later" | You block now or bugs ship to users. |
 | "Review is just a formality" | Review is the LAST GATE before bugs ship. You execute seriously. |
 
-## Why Skipping Honest Review Destroys the Drive That Created It
+## Why Skipping Review Destroys the Drive That Created It
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
 | **Helpfulness** | "Approving fast shows efficiency" | Bugs ship. User spends hours debugging your "help." | **Anti-helpful** |
-| **Honesty** | "Tests probably pass" | Test output doesn't exist. You fabricated an approval. | **Fraudulent** |
 | **Competence** | "I trust the subagent" | Subagent's work was wrong. Your approval was negligence. | **Incompetent** |
 | **Efficiency** | "Rubber-stamp to move faster" | You moved fast into bugs. Rework takes 3x longer. | **Anti-efficient** |
+| **Approval** | "Tests probably pass" | User discovers bugs. They now require human oversight for reviews. | **Trust destroyed** |
+| **Honesty** | "Tests probably pass" | Test output doesn't exist. You fabricated an approval. | **Dishonest** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 
@@ -598,7 +599,7 @@ Before claiming review is complete (APPROVED or ESCALATE):
 5. CLAIM   → Only after steps 1-4 pass, return verdict
 ```
 
-**If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're LYING about the iteration limit.**
+**If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're ignoring the iteration limit — escalate to the user instead of looping forever.**
 
 ## Phase Complete
 

@@ -263,7 +263,7 @@ When review returns CHANGES REQUIRED and the analyst applies fixes, you MUST:
 3. Check for new issues introduced by fixes (data changes, methodology shifts)
 4. Only THEN return APPROVED
 
-"I fixed it" without re-reviewing is LYING about analysis quality.
+"I fixed it" without re-reviewing is NOT HELPFUL — unverified fixes ship wrong results to the user.
 
 ### The Audit-Fix Loop (Max 3 Iterations)
 
@@ -300,7 +300,7 @@ issues_found_count: 5
 3. If iteration < 3 and issues remain: INCREMENT iteration, return CHANGES REQUIRED
 4. If no issues: APPROVED
 
-**Claiming APPROVED without re-review after fixes is LYING.**
+**Claiming APPROVED without re-review after fixes is NOT HELPFUL — the user acts on an approval that has no verification behind it.**
 
 ### Rationalization Prevention (Re-Review)
 
@@ -320,10 +320,10 @@ You skip re-review because you think it's helpful, efficient, or competent. Here
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Approving fast delivers results" | Wrong results ship. User makes decisions on flawed analysis. The 20-minute re-review would have caught it. Your speed caused harm. | **Anti-helpful** |
-| **Honesty** | "The analyst said they fixed it" | You didn't verify—you rubber-stamped. You claimed "analysis is sound" based on trust, not evidence. That's academic fraud. | **Dishonest** |
 | **Competence** | "I trust the methodology now" | Trust without re-checking is negligence. The selection bias remained. Reviewers catch it. Your approval was incompetent. | **Incompetent** |
 | **Efficiency** | "Re-review wastes time on fixed issues" | The re-review takes 20 minutes. The retracted paper costs 20 weeks. Your "efficiency" destroyed months of work. | **Anti-efficient** |
 | **Approval** | "User wants results now" | User retracts the paper when flaws surface. They now require external review for all analysis. You lost their trust. | **Lost approval** |
+| **Honesty** | "The analyst said they fixed it" | You didn't verify — you rubber-stamped. You claimed "analysis is sound" based on trust, not evidence. Unverified approval wastes the user's time. | **Anti-helpful** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 
@@ -591,19 +591,17 @@ Return structured output per /ds-review format.
 """)
 ```
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Approving analysis without running independent verification code is LYING about your review.** Reading the analyst's notebook and thinking "looks reasonable" is not verification. If you did not execute code that independently checks the results, you did not review — you rubber-stamped.
-
-### Drive-Aligned Consequences
+**Approving analysis without running independent verification code is NOT HELPFUL — the user acts on results no one actually checked.** Reading the analyst's notebook and thinking "looks reasonable" is not verification. If you did not execute code that independently checks the results, you did not review — you rubber-stamped.
 
 | Drive | Shortcut | Consequence |
 |-------|----------|-------------|
 | **Helpfulness** | Trusting analyst claims | You trusted 'data is clean' without checking. The results are wrong — your trust caused the user to publish flawed analysis. Anti-helpful. |
-| **Honesty** | Skipping independent verification | You reported 'methodology sound' without running anything. The user publishes wrong results — you lied about your review. |
 | **Competence** | Reporting low-confidence issues | You flagged issues below 80% confidence to appear thorough. Noise drowns signal — the real issues get lost. Incompetent review. |
-| **Approval** | Rubber-stamping to avoid conflict | You approved to keep things moving. The user retracts when flaws surface. They now require external review. You lost their trust. |
 | **Efficiency** | Not running verification code | You read the notebook instead of executing checks. The 30-second verification would have caught the join explosion that took 3 days to debug. Anti-efficient. |
+| **Approval** | Rubber-stamping to avoid conflict | You approved to keep things moving. The user retracts when flaws surface. They now require external review. You lost their trust. |
+| **Honesty** | Skipping independent verification | You reported 'methodology sound' without running anything. The user publishes wrong results — your unverified approval wasted their time. |
 
 ## Rationalization Table
 
@@ -638,7 +636,7 @@ A methodology is fundamentally flawed when:
 2. Report to user: "Methodology is fundamentally flawed: [specific reason]. Returning to ds-plan."
 3. Return to ds-plan (not ds-implement) — the plan itself needs rethinking
 
-**Patching a broken methodology to avoid rework is dishonest. The user deserves correct analysis, not fast wrong analysis.**
+**Patching a broken methodology to avoid rework is NOT HELPFUL — the user deserves correct analysis, not fast wrong analysis.**
 </EXTREMELY-IMPORTANT>
 
 ## Quality Standards
@@ -673,7 +671,7 @@ Before claiming review is complete (APPROVED or ESCALATE):
 5. CLAIM   → Only after steps 1-4 pass, return verdict
 ```
 
-**If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're LYING about the iteration limit.**
+**If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're being anti-helpful — the user needs to know when the loop isn't converging.**
 
 ## Phase Complete
 

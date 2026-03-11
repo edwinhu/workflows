@@ -48,9 +48,9 @@ After agents return, **you MUST read all key files** before proceeding.
 | "I already understand the architecture" | Your assumptions remain incomplete | READ to confirm understanding |
 | "I can grep for specific details later" | You'll miss context and relationships | READ to understand connections |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Returning key files without reading them is LYING about understanding the codebase.**
+**Returning key files without reading them is NOT HELPFUL — you'll design against imagined code and create days of rework.**
 
 Exploration agents find the files. Main chat MUST read them to understand the codebase. Skipping reads means proceeding with incomplete knowledge, which guarantees wrong implementation choices.
 
@@ -415,9 +415,9 @@ Each agent MUST return files in this format:
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
-| **Efficiency** | "I'll skip reading key files to save time" | You design against imagined code, rework everything | **Inefficient** |
 | **Helpfulness** | "User is waiting, I'll explore less" | Shallow exploration produces wrong architecture | **Anti-helpful** |
 | **Competence** | "File names tell me enough" | Implementation details surprise you mid-build | **Incompetent** |
+| **Efficiency** | "I'll skip reading key files to save time" | You design against imagined code, rework everything | **Inefficient** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 

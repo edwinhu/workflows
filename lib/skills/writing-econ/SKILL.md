@@ -66,11 +66,9 @@ One concept = One word. If you catch yourself varying terms ("industrialization"
 | "Passive voice sounds objective" | Sounds evasive | USE active voice |
 | "Technical writing must be formal" | Technical ≠ turgid | BE clear AND technical |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Describing an empirical strategy without understanding the identification assumption is LYING about methodology.** Pattern-matching from similar papers is not econometric reasoning.
-
-### Drive-Aligned Consequences
+**Describing an empirical strategy without understanding the identification assumption is NOT HELPFUL — the referee rejects the paper for a fatal methodological gap.** Pattern-matching from similar papers is not econometric reasoning.
 
 - You opened with "In recent years..." to seem academic. The reader recognizes it as AI filler — your opening destroyed credibility.
 - You called the same variable "cost," then "expense," then "outlay" to avoid repetition. The reader thinks these are different concepts — your style created confusion.

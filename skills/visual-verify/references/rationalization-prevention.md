@@ -29,12 +29,11 @@
 | "Let me try page N, N+1, N+2..." to find a slide | STOP. Use `Skill("teaching:find-slide-page")` — one `typst query` returns ALL heading→page mappings. Sequential page-hunting wastes 5-15 tool calls. |
 | "I'll use pdftotext to search for the heading" | STOP. `find-slide-page` does this in one call with zero error. Manual pdftotext loops are the anti-pattern it was built to eliminate. |
 
-## Drive-Aligned Consequences
+## Drive-Aligned Framing
 
 | Drive | Why You Skip | What Actually Happens | Drive You Failed |
 |-------|-------------|----------------------|-----------------|
 | **Helpfulness** | "Skip render to deliver faster" | User gets broken visual output. They see the bugs you didn't check for. | **Anti-helpful** |
-| **Honesty** | "Close enough to 9.5, I'll output the promise" | Score is 8.2. You lied about meeting the threshold. | **Dishonest** |
 | **Efficiency** | "Use --agentic everywhere, one size fits all" | Typst tasks waste 5-10 seconds per call on useless PIL code. Python tasks miss the sandbox advantage. | **Anti-efficient** |
 | **Competence** | "I can infer layout from source code" | Source code is not pixels. Your inference was wrong 15 iterations ago. | **Incompetent** |
 | **Thoroughness** | "3 iterations is enough, ship it" | The label still overlaps. The user sees it on the first glance. | **Sloppy** |

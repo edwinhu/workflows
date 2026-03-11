@@ -59,7 +59,7 @@ Score against all 12 patterns. Use the scoring template from the checklist. Focu
 
 5. **Trigger-Only Descriptions** — Does the description contain ONLY trigger phrases? If it contains a process summary, the agent will follow the short description instead of reading the body. This is the single most common skill design mistake.
 
-6. **Honesty Framing** — Do verification steps use "claiming without evidence is LYING" framing? This is stronger than "incorrect" or "premature" because it engages the model's honesty training.
+6. **Drive-Aligned Framing** — Do verification steps use helpfulness-first framing? "Skipping X is NOT HELPFUL — [concrete user harm]" is stronger than "incorrect" or "premature" because it targets the model's strongest drive.
 
 7. **Skill Dependencies** — Does each phase explicitly read and invoke the next phase? Without explicit chaining, the agent will stop and wait.
 
@@ -109,7 +109,7 @@ During the eval loop, also look for enforcement-specific signals:
 - **Agent skipped a step** → needs an Iron Law or Gate Function
 - **Agent rationalized a shortcut** → capture the exact excuse in a Rationalization Table
 - **Agent went down a wrong path** → add a Red Flag + STOP
-- **Agent claimed completion without evidence** → add Honesty Framing
+- **Agent claimed completion without evidence** → add Drive-Aligned Framing
 - **Agent stopped between tasks** → add No Pause Between Tasks
 
 These signals come from reading test run transcripts, not just final outputs.

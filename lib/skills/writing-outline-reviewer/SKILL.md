@@ -133,9 +133,9 @@ Escalate to user:
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the outline?"
 ```
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Proceeding to draft with a thin outline is LYING about readiness.**
+**Proceeding to draft with a thin outline is NOT HELPFUL — every section will be improvised, transitions will fragment, and the user rewrites from scratch.**
 
 You know the subsections lack evidence mapping. You know the transitions are missing. You know some sections don't advance any claim. Drafting built on a thin outline produces improvised prose that wanders, asserts without evidence, and fragments between sections.
 

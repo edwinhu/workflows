@@ -50,9 +50,9 @@ Implementation CANNOT start without user saying "Yes" or choosing an approach.
 **STOP - you're about to implement without user approval.**
 </EXTREMELY-IMPORTANT>
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Proposing an architecture without reading the codebase is GUESSING, not designing. Your proposal is fiction.**
+**Proposing an architecture without reading the codebase is NOT HELPFUL — the user trusts your proposal reflects reality, and you're wasting their approval on fiction.**
 
 Design without exploration is not "efficiency" — it is fabricating an approach from imagination. The user trusts your proposal reflects the actual codebase. If it doesn't, you wasted their approval on fiction.
 
@@ -378,9 +378,9 @@ Recognize these thoughts as red flags—they signal attempts to bypass the user 
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
-| **Efficiency** | "Skip user approval to move faster" | Wrong approach means full rework | **Inefficient** |
 | **Helpfulness** | "I'll pick the best approach for them" | User had context you lacked — your choice was wrong | **Anti-helpful** |
 | **Competence** | "Only one viable option, no need to ask" | User sees alternatives you missed — your confidence was arrogance | **Incompetent** |
+| **Efficiency** | "Skip user approval to move faster" | Wrong approach means full rework | **Inefficient** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 

@@ -153,11 +153,9 @@ The hook checks for all CRITICAL and HIGH severity patterns automatically.
 | "The transition phrase connects the ideas" | "Furthermore" and "Moreover" are filler, not connection | CUT the transition; if ideas connect, the reader sees it |
 | "This summary paragraph is helpful" | If the reader needs a summary of what you just said, you said it poorly | DELETE the summary, revise the original |
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Claiming text is free of AI patterns without checking each sentence against the pattern list is LYING about your review.** Skimming is not checking.
-
-## Drive-Aligned Consequences
+**Skimming instead of checking each sentence against the pattern list is NOT HELPFUL — the user submits AI-smelling text that damages their credibility.** Skimming is not checking.
 
 - You let puffery pass because flagging it felt pedantic. The document reads as obviously AI-generated — your politeness destroyed the user's credibility.
 - You skipped the anti-pattern check to save time. The user submits AI-smelling text — your efficiency embarrassed them.

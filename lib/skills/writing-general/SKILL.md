@@ -58,13 +58,11 @@ Every word must earn its place. Vigorous writing is concise. A sentence should c
 
 After deleting, restart the sentence with THE POINT first, then evidence.
 
-**Claiming "omit needless words" without deleting bad sentences is LYING about editing.** Identify violations and purge them.
+**Skipping the deletion pass is NOT HELPFUL — the user publishes bloated prose that buries their argument.** Identify violations and purge them.
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Claiming the prose follows Strunk & White principles without checking each sentence is LYING about quality.** Reading your own output and thinking "looks good" is not editing.
-
-## Drive-Aligned Consequences
+**Skipping the sentence-level check is NOT HELPFUL — the user publishes weak prose that undermines their credibility.** Reading your own output and thinking "looks good" is not editing.
 
 - You skip the style check because the content is correct. The prose reads as AI slop — your content expertise is hidden behind bad writing.
 

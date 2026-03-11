@@ -259,10 +259,10 @@ grim -g "$DIALOG_GEOMETRY" /tmp/dialog.png
 **Tool description:** Crop screenshot to specific feature region being tested
 </EXTREMELY-IMPORTANT>
 
-## The Honesty Requirement
+## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
-**Skipping gates is LYING about verification.**
+**Skipping gates is NOT HELPFUL — you're shipping unverified code the user will have to debug.**
 
 When you say "E2E test passed", you are asserting:
 - You passed GATE 1 (built successfully)
@@ -273,7 +273,7 @@ When you say "E2E test passed", you are asserting:
 - **You passed GATE 6 (VERIFIED no errors in logs)**
 - You ran E2E tests with clean logs
 
-Saying "E2E passed" without completing GATES 5-6 is not "testing"—it is LYING about application state.
+Saying "E2E passed" without completing GATES 5-6 is not "testing" — it is creating false confidence that wastes the user's time when the bug surfaces.
 
-**"Checking logs now" is honest. "E2E verified" without GATE 5 is fraud.**
+**"Checking logs now" protects the user. "E2E verified" without GATE 5 ships hidden bugs.**
 </EXTREMELY-IMPORTANT>

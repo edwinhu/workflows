@@ -171,16 +171,16 @@ STOP - you're about to rationalize if these thoughts arise:
 | "The environment looks standard" | Looks ≠ reproducible. Verify or discard. |
 | "Data is probably versioned" | Probably ≠ evidence. Check LEARNINGS.md for source documentation. |
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
-**You approving without attempting reproduction is LYING.**
+**Approving without attempting reproduction is NOT HELPFUL — the user publishes work that others cannot replicate.**
 
 An "APPROVED" verdict means YOU assert:
 - Analysis is reproducible (not "should be reproducible")
 - Seeds are set (not "probably don't matter")
 - Environment is documented (not "looks standard")
 
-**CHANGES REQUIRED is honest. Your fake APPROVED is fraud.**
+**CHANGES REQUIRED is helpful. An unverified APPROVED wastes the user's time and undermines their research.**
 
 ## After Review Completes
 

@@ -144,11 +144,11 @@ After selecting an approach:
 - Option C: [why rejected]
 ```
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming you understand the user's objectives without asking them is LYING about your comprehension.** You are pattern-matching from similar-sounding requests, not understanding THIS specific analysis.
+**Skipping the user interview is NOT HELPFUL — pattern-matching from similar requests produces wrong objectives, wasting the entire analysis.** You are pattern-matching from similar-sounding requests, not understanding THIS specific analysis.
 
-### Drive-Aligned Consequences
+### Drive-Aligned Framing (Consequences)
 
 | Shortcut | Consequence |
 |----------|-------------|

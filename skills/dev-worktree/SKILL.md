@@ -127,17 +127,17 @@ fi
 | "Dependencies installed fine, should be good" | Install success != test success. Run tests. |
 | "Main branch is green, worktree will be too" | Worktree has different env, paths, symlinks. Verify independently. |
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming clean baseline without running tests is LYING about project state.** Your assumption is not verification.
+**Claiming clean baseline without running tests is NOT HELPFUL — every failure becomes ambiguous and you can't tell if bugs are yours or inherited.** Your assumption is not verification.
 
 ### Why Skipping Hurts the Thing You Care About Most
 
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|-------------|----------------------|---------------------|
 | **Helpfulness** | "Skip baseline to start faster" | Broken baseline infects all work, every failure is ambiguous | **Anti-helpful** |
+| **Competence** | "I know the codebase well enough" | Your mental model is stale. The worktree reveals conflicts you didn't anticipate. | **Incompetent** |
 | **Efficiency** | "Skip worktree setup to save time" | Merge conflicts later cost 10x the setup time | **Anti-efficient** |
-| **Competence** | "I know the codebase well enough" | Your mental model is stale. The worktree reveals conflicts you didn't anticipate. | Your confidence wasn't competence — it was ignorance. |
 </EXTREMELY-IMPORTANT>
 
 ### Step 6: Report Ready

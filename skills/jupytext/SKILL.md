@@ -30,7 +30,7 @@ Before claiming ANY jupytext script executed successfully, follow this sequence:
 4. **INSPECT** outputs using notebook-debug skill verification
 5. **CLAIM** success only after verification passes
 
-This is non-negotiable. Claiming "script works" without executing through papermill is LYING to the user.
+This is non-negotiable. Skipping papermill execution is NOT HELPFUL — the user gets a notebook that fails on first run.
 
 ### Rationalization Table - STOP If You Think:
 
@@ -97,9 +97,9 @@ Follow this sequence for EVERY jupytext task involving execution:
 
 **NEVER skip execution gate.** Converting without executing proves nothing about correctness.
 
-### Honesty Framing
+### Drive-Aligned Framing
 
-**Claiming a jupytext script works without executing it through papermill is LYING.**
+**Skipping papermill execution is NOT HELPFUL — the user gets a notebook that looks correct but fails when they run it.**
 
 This is not just format conversion - verify that the notebook executes correctly. The user expects a working notebook, not just syntactically valid code.
 

@@ -29,7 +29,7 @@ Before executing ANY WRDS query, you MUST:
 4. **EXECUTE** the query
 5. **INSPECT** a sample of results before claiming success
 
-This is not negotiable. Claiming query success without sample inspection is LYING to the user about data quality.
+This is not negotiable. Skipping sample inspection is NOT HELPFUL — the user builds analysis on data with undetected quality problems.
 
 ### Rationalization Table - STOP If You Think:
 
@@ -93,7 +93,7 @@ Before writing or executing ANY SAS code on WRDS, you MUST validate performance 
 3. **PARALLELISM** — Can this job run as an SGE array? Year-by-year is always parallelizable.
 4. **SQL OPTIMIZATION** — For PROC SQL: pass-through opportunity? Indexed join columns?
 
-Writing SAS code that forces full table scans when indexes exist is LYING about understanding the data infrastructure.
+Writing SAS code that forces full table scans when indexes exist is NOT HELPFUL — the user's job runs 100x slower than necessary and may timeout.
 </EXTREMELY-IMPORTANT>
 
 ### SAS Code Validation Checklist

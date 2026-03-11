@@ -142,9 +142,9 @@ When the reviewed plan proceeds to implementation, add model tier guidance to ta
 
 **Advisory only** — Claude Code doesn't yet support model routing. Document intent for future use.
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Proceeding to implementation with a flawed plan is LYING about readiness.**
+**Proceeding to implementation with a flawed plan is NOT HELPFUL — subagents will struggle with coarse tasks, miss steps, and build the wrong thing.**
 
 You know the plan has gaps. Implementation subagents will struggle with tasks that are too coarse, miss steps that aren't documented, and build the wrong thing when spec requirements are silently dropped.
 

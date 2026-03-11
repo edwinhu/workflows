@@ -115,9 +115,9 @@ Escalate to user:
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the precis?"
 ```
 
-## Honesty Framing
+## Drive-Aligned Framing
 
-**Proceeding to outlining with a vague precis is LYING about readiness.**
+**Proceeding to outlining with a vague precis is NOT HELPFUL — the user builds an entire document on a foundation that collapses under review.**
 
 You know the thesis is fuzzy. You know the claims overlap. You know the counterarguments are weak. Outlining built on a bad precis produces a structure that doesn't cohere. Drafting built on a bad structure produces prose that wanders. The reader will notice even if you don't.
 

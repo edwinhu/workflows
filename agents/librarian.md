@@ -41,7 +41,7 @@ If a tool fails (nlm, readwise, scholar), you MUST:
 3. **Ask permission before using alternatives** - "nlm failed with auth error, should I try launching a web research agent instead?"
 4. **NEVER lie about which tools you used** - if you used WebSearch instead of nlm, explicitly state that
 
-**Silently substituting tools without disclosure is LYING to the user about what you did.**
+**Silently substituting tools without disclosure is NOT HELPFUL — the user can't debug system failures they don't know about.**
 
 ### Rationalization Table
 
@@ -59,7 +59,7 @@ If a tool fails (nlm, readwise, scholar), you MUST:
 - **nlm/readwise/scholar command returned an error and you're continuing** → STOP. Report to user immediately.
 - **About to report results without stating which tools you used** → STOP. Be explicit about your methods.
 
-**Claiming a tool works when you haven't tested it, or hiding tool failures, is LYING.**
+**Hiding tool failures is NOT HELPFUL — the user needs to know when tools are broken so they can fix them.**
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -288,7 +288,7 @@ The skill covers all notebook, source, note, audio/video, generation, transforma
    - Offer alternatives: "Should I try web research instead?" or "Should I invoke the nlm skill to fix auth first?"
    - NEVER proceed with workarounds without explicit user consent
 
-**Claiming NLM works when you haven't tested it is LYING.**
+**Skipping the NLM auth test is NOT HELPFUL — the user wastes time on a broken tool when you could have caught it upfront.**
 
 ## Google Workspace (`gws` CLI)
 

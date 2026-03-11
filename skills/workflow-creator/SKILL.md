@@ -128,7 +128,7 @@ Phase N produces ARTIFACT.md
 Read `${CLAUDE_PLUGIN_ROOT}/lib/references/enforcement-checklist.md`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
 For each phase, score which of the 13 patterns are needed:
-- **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Honesty Framing, Artifact Review Gates
+- **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Artifact Review Gates
 - **Medium-drift phases** (design, review): Gate Functions, Red Flags, Staged Review Loops, Artifact Review Gates
 - **Low-drift phases** (brainstorm, exploration): Red Flags only (creative phases need freedom)
 
@@ -336,7 +336,7 @@ When Mode 3 applies changes to a workflow, you MUST:
 3. Check for new issues introduced by changes
 4. Only THEN claim the workflow is improved
 
-"I applied the fixes" without re-auditing is LYING about workflow quality.
+"I applied the fixes" without re-auditing is NOT HELPFUL — you're shipping an unverified workflow that will fail in production and waste the user's time.
 
 ### The Improvement Loop (Max 3 Iterations)
 
@@ -438,7 +438,7 @@ For each gap:
 - **Self-review** → Fresh subagent reviewer
 - **Missing Red Flags** → 3-5 wrong-path indicators
 - **Missing audit-fix loop** → Iteration tracking + re-review + escalation
-- **Missing Drive-Aligned Consequences** → 5-drive table
+- **Missing Drive-Aligned Framing** → 5-drive table (helpfulness > competence > efficiency > approval > honesty)
 - **Duplicate constraints between entry/midpoint** → Extract to shared `references/[workflow]-checks.md` with Check Matrix
 - **Missing artifact review gate** → Add reviewer subagent dispatch between artifact-producing and consuming phases, with fix loop (max 5) and chunking for large artifacts
 - **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
@@ -471,7 +471,7 @@ Gate: Exit Improvement Loop
 **If iteration >= 3 AND score < target:** ESCALATE
 **If iteration < 3 AND score < target:** CONTINUE → loop to Step 2
 
-**Claiming improved without re-audit is LYING.**
+**Claiming improved without re-audit is NOT HELPFUL — you're delivering a broken workflow to the user.**
 
 ---
 
@@ -527,10 +527,10 @@ You skip steps because you think it's helpful, efficient, or competent. Here's w
 | Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
 |------------|--------------|----------------------|---------------------|
 | **Helpfulness** | "Skip interview to deliver workflow faster" | Wrong workflow for the domain. User's work fails in production. The 10-minute interview would have caught it. Your speed caused weeks of waste. | **Anti-helpful** |
-| **Honesty** | "I remember PHILOSOPHY.md from before" | You didn't re-read it. Your memory is wrong. The workflow violates foundational principles. You fabricated understanding. | **Dishonest** |
 | **Competence** | "I know what enforcement is needed without scoring" | Without scoring drift risk, enforcement is wrong. Workflow fails in high-drift phases. A checklist would outperform your intuition. | **Incompetent** |
 | **Efficiency** | "Re-audit after improvements wastes time" | The re-audit takes 10 minutes. The broken workflow costs weeks to fix. Your "efficiency" was a 100x slowdown. | **Anti-efficient** |
 | **Approval** | "User wants the workflow now" | Workflow fails in production. User loses trust in AI-generated processes. They now require human review for all workflows. You lost autonomy. | **Lost approval** |
+| **Honesty** | "I remember PHILOSOPHY.md from before" | You didn't re-read it. Your memory is wrong. The workflow violates foundational principles. You fabricated understanding. | **Dishonest** |
 
 **The protocol is not overhead you pay. It is the service you provide.**
 

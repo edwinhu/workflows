@@ -140,16 +140,16 @@ STOP - you're about to rationalize if these thoughts arise:
 | "The performance might degrade" | Might = < 80% confidence. Measure or discard. |
 | "Micro-optimization" | If you're thinking this, it's probably < 80 confidence. Discard. |
 
-## Honesty Requirement
+## Drive-Aligned Framing
 
-**You approving without verifying measurable impact is LYING.**
+**You approving without verifying measurable impact is NOT HELPFUL — you're shipping performance regressions the user will discover in production.**
 
 An "APPROVED" verdict means YOU assert:
 - No measurable performance regressions exist (not "probably fast enough")
 - Current performance is acceptable (not "I would optimize differently")
 - Evidence exists and YOU verified it (not trusted reports)
 
-**CHANGES REQUIRED is honest. Your fake APPROVED is fraud.**
+**CHANGES REQUIRED protects the user. Your fake APPROVED ships regressions.**
 
 ## After Review Completes
 
