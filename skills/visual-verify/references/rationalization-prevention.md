@@ -26,6 +26,8 @@
 | "I'll use Read to look at the image myself" | STOP. Use look-at. Reading images wastes context tokens. |
 | "I'll use --agentic for everything to be safe" | STOP. --agentic on non-Python adds latency without value. Route correctly. |
 | "This fletcher diagram needs 1 more iteration" (iteration 4+) | STOP. Use the reference sketch approach. Incremental fixes aren't converging. |
+| "Let me try page N, N+1, N+2..." to find a slide | STOP. Use `Skill("teaching:find-slide-page")` — one `typst query` returns ALL heading→page mappings. Sequential page-hunting wastes 5-15 tool calls. |
+| "I'll use pdftotext to search for the heading" | STOP. `find-slide-page` does this in one call with zero error. Manual pdftotext loops are the anti-pattern it was built to eliminate. |
 
 ## Drive-Aligned Consequences
 

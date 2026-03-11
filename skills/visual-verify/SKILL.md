@@ -30,6 +30,10 @@ Detection: `.py` / matplotlib / seaborn / plotly -> Python-native. Everything el
 ## The Loop
 
 ```
+0. PAGE MAP -> If Typst + Touying: Skill("teaching:find-slide-page")
+       |      Returns heading → physical page mapping
+       |      Skip if: single-page file, non-Typst, or page already known
+       |
 1. CHANGE  -> Modify source code (Task agent)
        |
 2. RENDER  -> Produce PNG (see references/render-commands.md)
