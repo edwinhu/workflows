@@ -173,19 +173,26 @@ Format: - 'exact text' [FULL | PARTIAL: which characters missing]
 **Step 2 — Claude diffs the transcription against expected elements:**
 Compare Gemini's transcription against the expected node/label texts from the source code. Any mismatch (e.g., Gemini transcribes `'cessary or'` instead of `'Necessary or'`) is objective proof of clipping. Score based on the diff.
 
-**Step 3 (optional) — Spatial/overlap check:**
+**Step 3 — Structural + intent check (run after transcription diff):**
 ```
 You are reviewing a rendered diagram image. You CANNOT run Typst/fletcher code.
+
+## Design Intent
+[what this diagram should ARGUE — from STORY comment or spec. Not just "shows X" but "argues that X because Y"]
 
 ## Expected Elements
 [list all expected node texts and edge label texts from source code]
 
-## Check These Specifically
-- Do any labels overlap or collide with nodes or other labels?
-- Are arrows connecting the correct nodes? (Do any arrows/lines end in empty space, not at a node?)
-- Do all labels have clearance from adjacent elements? (Any labels squeezed between boxes with no breathing room?)
-- If there are parallel sub-diagrams (side-by-side panels), is the layout consistent? (Same element positions across panels, or are things swapped?)
-- Is the diagram roughly centered with adequate spacing?
+## Check These Specifically — 9 Defect Categories
+1. Text clipped by or overflowing its container
+2. Text or shapes overlapping other elements
+3. Arrows crossing through elements instead of routing around them
+4. Arrows landing on wrong element or pointing into empty space
+5. Labels floating ambiguously (not clearly anchored to what they describe)
+6. Labels squeezed between adjacent elements without clearance
+7. Uneven spacing (cramped sections next to spacious ones)
+8. Text too small to read at rendered size
+9. Parallel sub-diagrams with inconsistent layout (same elements in different positions across panels)
 
 ## Previous Issues -- iteration [N]
 [feedback from prior iteration, or "First iteration - no prior issues."]

@@ -26,6 +26,9 @@
 | "I'll use Read to look at the image myself" | STOP. Use look-at. Reading images wastes context tokens. |
 | "I'll use --agentic for everything to be safe" | STOP. --agentic on non-Python adds latency without value. Route correctly. |
 | "This fletcher diagram needs 1 more iteration" (iteration 4+) | STOP. Use the reference sketch approach. Incremental fixes aren't converging. |
+| "Score is 9.5 so I'm done" but you see an arrow pointing to empty space | STOP. The score is necessary but not sufficient. Check the 9 defect categories. Gemini misses structural issues. |
+| "It's defect-free so I'm done" but it doesn't match the design intent | STOP. A defect-free diagram that argues the wrong thing is still wrong. Check intent first, then defects. |
+| "One clean pass, ship it" | STOP. One pass catches bugs. A second pass catches composition — lopsided layout, cramped sections, inconsistent spacing. At least 2 clean passes. |
 | "Let me try page N, N+1, N+2..." to find a slide | STOP. Use `Skill("teaching:find-slide-page")` — one `typst query` returns ALL heading→page mappings. Sequential page-hunting wastes 5-15 tool calls. |
 | "I'll use pdftotext to search for the heading" | STOP. `find-slide-page` does this in one call with zero error. Manual pdftotext loops are the anti-pattern it was built to eliminate. |
 
@@ -37,5 +40,6 @@
 | **Efficiency** | "Use --agentic everywhere, one size fits all" | Typst tasks waste 5-10 seconds per call on useless PIL code. Python tasks miss the sandbox advantage. | **Anti-efficient** |
 | **Competence** | "I can infer layout from source code" | Source code is not pixels. Your inference was wrong 15 iterations ago. | **Incompetent** |
 | **Thoroughness** | "3 iterations is enough, ship it" | The label still overlaps. The user sees it on the first glance. | **Sloppy** |
+| **Helpfulness** | "Score hit 9.5, declare done" | Score checks checklist items but misses structural issues — arrows to empty space, inconsistent sub-diagram layout. User opens the slide and immediately sees what Gemini didn't report. | **Anti-helpful** |
 
 **The protocol is not overhead you pay. It is the service you provide.**

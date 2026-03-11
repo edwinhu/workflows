@@ -39,15 +39,40 @@ Detection: `.py` / matplotlib / seaborn / plotly -> Python-native. Everything el
 2. RENDER  -> Produce PNG (see references/render-commands.md)
        |      Render fails? -> fix source, back to step 1
        |
-3. VISION  -> Domain-routed look-at call with SCORING
+3. VISION  -> Two-part check:
+       |      a) INTENT — Does the render match the design intent?
+       |         (Does the visual structure argue what it should?)
+       |      b) DEFECTS — Scan for the 9 visual defect categories:
+       |         1. Text clipped by or overflowing its container
+       |         2. Text or shapes overlapping other elements
+       |         3. Arrows crossing through elements instead of routing around
+       |         4. Arrows landing on wrong element or pointing into empty space
+       |         5. Labels floating ambiguously (not anchored to what they describe)
+       |         6. Labels squeezed between adjacent elements without clearance
+       |         7. Uneven spacing (cramped sections next to spacious ones)
+       |         8. Text too small to read at rendered size
+       |         9. Parallel sub-diagrams with inconsistent layout
+       |      Domain-routed look-at call with SCORING:
        |      Python? -> --agentic (Gemini executes code)
        |      Non-Python? -> vision-only (structured pixel feedback)
        |      → Score 0-10 against checklist items
        |      → Record in SCORES.md
        |
-4. DECIDE  -> Score >= 9.5? → output promise (DONE)
-              Score < 9.5?  → extract suggestions, back to step 1
+4. DECIDE  -> Score >= 9.5 AND exit criteria met? → DONE
+              Score < 9.5 OR defects remain?      → extract fixes, back to step 1
 ```
+
+### When to Stop
+
+The loop is done when ALL of these hold:
+- Score >= 9.5
+- The rendered output matches the design intent (not just defect-free but *correct*)
+- No text is clipped, overlapping, or unreadable
+- All arrows/lines connect to the right elements and route cleanly
+- Spacing is consistent and composition is balanced
+- You'd show it to someone without caveats
+
+**Don't stop after one clean pass just because there are no critical bugs — if the composition could be better, improve it.** Conversely, don't loop forever on cosmetics — 5 iterations max before escalating to the user.
 
 ### Invocation
 
