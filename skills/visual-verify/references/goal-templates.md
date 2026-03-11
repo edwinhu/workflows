@@ -94,6 +94,7 @@ Your job is to provide PRECISE VISUAL MEASUREMENTS that the implementer can tran
 - Content centered and balanced within the slide
 - No text overlapping or running off edges
 - No content clipped by slide boundaries (diagrams, labels, nodes cut off at edges)
+- If diagrams present: arrows connect to nodes (not empty space), labels have clearance, parallel sub-diagrams use consistent layout
 - Theme elements (header bar, footer, logo) properly rendered
 - Bullet points or numbered lists properly aligned
 - Images/figures not overlapping text
@@ -181,7 +182,9 @@ You are reviewing a rendered diagram image. You CANNOT run Typst/fletcher code.
 
 ## Check These Specifically
 - Do any labels overlap or collide with nodes or other labels?
-- Are arrows connecting the correct nodes?
+- Are arrows connecting the correct nodes? (Do any arrows/lines end in empty space, not at a node?)
+- Do all labels have clearance from adjacent elements? (Any labels squeezed between boxes with no breathing room?)
+- If there are parallel sub-diagrams (side-by-side panels), is the layout consistent? (Same element positions across panels, or are things swapped?)
 - Is the diagram roughly centered with adequate spacing?
 
 ## Previous Issues -- iteration [N]
