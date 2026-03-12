@@ -62,9 +62,10 @@ Before changing ANY analysis code, you MUST:
 
 ## Step 1: Load Context
 
-Read workflow state AND shared check definitions:
+Read workflow state, shared enforcement, AND shared check definitions:
 
 ```
+Read("../../lib/references/ds-common-constraints.md")  # relative to this skill's base directory
 Read(".claude/SPEC.md")
 Read(".claude/PLAN.md")
 Read(".claude/LEARNINGS.md")

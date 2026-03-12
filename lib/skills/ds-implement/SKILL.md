@@ -213,9 +213,10 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ## Implementation Process
 
-### Step 1: Read Plan, Load ETL Enforcement, and Delegation Skill
+### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill
 
 ```
+Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcement
 Read(".claude/PLAN.md")
 Read("../ds-delegate/SKILL.md")
 ```

@@ -17,6 +17,11 @@ description: "This skill should be used when the user asks to 'start data analys
 Refine vague analysis requests into clear objectives through Socratic questioning.
 **NO data exploration, NO coding** - just questions and objectives.
 
+**Load shared enforcement first:**
+```
+Read("../../lib/references/ds-common-constraints.md")  # relative to this skill's base directory
+```
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Brainstorming
 

@@ -26,6 +26,11 @@ Final verification with reproducibility checks and user acceptance interview.
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION. This is not negotiable.**
 
+**Load shared enforcement first:**
+```
+Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcement
+```
+
 Before claiming analysis is complete, you MUST:
 1. RE-RUN - Execute analysis fresh (not cached results)
 2. CHECK - Verify outputs match expectations

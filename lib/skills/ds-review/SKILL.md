@@ -339,6 +339,13 @@ Publishing wrong results is worse than slow results. The user experiences your c
 | "This might cause problems" | Your "might" means < 80% confidence | Find proof or discard |
 | "Unusual approach" | Unusual isn't wrong—your bias toward familiar methods is clouding judgment | Verify the methodology is sound |
 
+## Shared Enforcement
+
+**Load shared ds constraints before reviewing:**
+```
+Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcement
+```
+
 ## Review Focus Areas
 
 ### Spec Compliance
