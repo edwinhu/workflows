@@ -199,7 +199,11 @@ All tests PASSED
 <EXTREMELY-IMPORTANT>
 ### REAL Tests vs FAKE "Tests"
 
-See `lib/references/real-test-enforcement.md` for the canonical reference on real vs fake tests, including detection tables and the Iron Law of REAL Tests.
+**Read the shared enforcement:**
+
+```
+Read("../../references/real-test-enforcement.md")
+```
 
 **Key rule: THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.** Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
 </EXTREMELY-IMPORTANT>

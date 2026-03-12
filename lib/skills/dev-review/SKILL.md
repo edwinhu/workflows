@@ -16,6 +16,11 @@ description: "This skill should be used as REQUIRED Phase 6 of /dev workflow whe
 
 # Code Review
 
+**Load shared enforcement:**
+```
+Read("../../references/dev-common-constraints.md")
+```
+
 Single-pass code review combining spec compliance and quality checks. Uses confidence-based filtering to report only high-priority issues.
 
 <EXTREMELY-IMPORTANT>

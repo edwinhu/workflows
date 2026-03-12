@@ -6,6 +6,11 @@ description: “This skill should be used when REQUIRED Phase 5 of /dev workflow
 
 **Announce:** “I’m using dev-implement (Phase 5) to orchestrate implementation.”
 
+**Load shared enforcement:**
+```
+Read(“../../references/dev-common-constraints.md”)
+```
+
 ## Where This Fits
 
 ```

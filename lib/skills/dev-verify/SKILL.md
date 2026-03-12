@@ -6,6 +6,11 @@ version: 1.0.0
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
 
+**Load shared enforcement:**
+```
+Read("../../references/dev-common-constraints.md")
+```
+
 ## Contents
 
 - [The Iron Law of Verification](#the-iron-law-of-verification)

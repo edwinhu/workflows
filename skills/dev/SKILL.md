@@ -210,29 +210,15 @@ AskUserQuestion(questions=[{
 - Use programmatic shortcuts instead of actual UI
 - Pass but don't verify real behavior
 
-### The Iron Law of REAL Tests
+### Real Test Enforcement
 
-**A test that doesn't replicate the user's actual workflow is a FAKE test.**
+**Read the shared enforcement for REAL vs FAKE test definitions:**
 
-| REAL Test | FAKE Test (looks like a test, isn't) |
-|-----------|--------------------------------------|
-| Simulates actual user action | Calls function programmatically |
-| Uses same protocol as production | Uses different protocol |
-| Verifies what user sees | Verifies internal state only |
-| Follows user's exact sequence | Takes shortcuts |
-| Uses skill user specified | Ignores skill, writes own thing |
+```
+Read("../../lib/references/dev-common-constraints.md")
+```
 
-### Protocol Mismatch Examples (Common Fake Test Trap)
-
-| Production Uses | FAKE Test Uses | Result |
-|-----------------|----------------|--------|
-| WebSocket | HTTP | Wrong code path |
-| GraphQL | REST mock | Wrong serialization |
-| Async/await | Sync calls | Race conditions hidden |
-| IPC (Electron) | Direct import | Process boundary skipped |
-| CLI invocation | Function call | Argument parsing skipped |
-
-**The test must use the SAME protocol/transport as production.**
+See constraints C2 (Real Test Enforcement) and the protocol mismatch table. **A test that doesn't replicate the user's actual workflow is a FAKE test.**
 
 **Document in SPEC.md:**
 - User workflow to replicate
@@ -303,30 +289,7 @@ Write the initial spec to `.claude/SPEC.md`:
 
 ### The Iron Law of REAL Tests
 
-**If the test doesn't do what the user does, it's a FAKE test.**
-
-| ✅ REAL TEST | ❌ FAKE TEST (looks like test, isn't) |
-|--------------|---------------------------------------|
-| Uses same protocol as production | Tests different protocol |
-| Clicks actual UI elements | Calls functions programmatically |
-| Verifies what user sees | Verifies internal state only |
-| Follows user's exact sequence | Takes shortcuts |
-| Uses skill user specified | Ignores skill, writes own thing |
-| Fails when feature is broken | Passes even when feature is broken |
-
-### Fake Test Detection (Red Flags)
-
-**If you catch yourself doing these, STOP - you're writing a FAKE test:**
-
-| What You're Doing | Why It's Fake | Do Instead |
-|-------------------|---------------|------------|
-| Using different protocol than production | Wrong code path | Use same protocol |
-| Calling function directly instead of user action | Skipping user workflow | Simulate actual user action |
-| Changing assertions to make tests pass | Hiding bugs | Question if test is valid |
-| Ignoring the testing skill user specified | "I know better" arrogance | Use the specified skill |
-| Testing internal state, not user-visible output | Missing the point | Test what user sees |
-| Mocking the thing you're supposed to test | Defeats the purpose | Test actual behavior |
-| Skipping async/await when production uses it | Race conditions hidden | Match async behavior |
+**If the test doesn't do what the user does, it's a FAKE test.** See `lib/references/dev-common-constraints.md` (C2) and `lib/references/real-test-enforcement.md` for the full REAL vs FAKE detection tables and protocol mismatch examples.
 
 ### No Test Infrastructure? That's a BLOCKER.
 

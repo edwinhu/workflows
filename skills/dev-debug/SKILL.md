@@ -6,6 +6,11 @@ description: "This skill should be used when the user asks to 'debug', 'fix bug'
 
 **Announce:** "I'm using dev-debug for systematic debugging."
 
+**Load shared enforcement:**
+```
+Read("../../lib/references/dev-common-constraints.md")
+```
+
 <EXTREMELY-IMPORTANT>
 ## STEP ZERO — INITIALIZE THE DEBUG LOOP
 
