@@ -142,7 +142,31 @@ Generate the specific enforcement content:
 - Check that you can name all 13 patterns
 - If you cannot list them, re-read enforcement-checklist.md
 
-**After verifying Enforcement Patterns are loaded, IMMEDIATELY proceed to Step 5.**
+**After verifying Enforcement Patterns are loaded, IMMEDIATELY proceed to Step 4b.**
+
+### Step 4b: Common Enforcement Across Skill Families
+
+When multiple skills operate on the same domain, they need consistent enforcement. Scan the target plugin:
+
+1. List all `skills/*/SKILL.md` files in the target plugin directory
+2. For each sibling skill, identify enforcement patterns (Iron Laws, Rationalization Tables, Red Flags)
+3. Check if a shared constraints file already exists (e.g., `references/common-constraints.md`)
+
+**If shared constraints file exists:** new skills MUST `Read()` that file to inherit the common enforcement.
+
+**If no shared file exists but sibling skills share the same domain:** identify which enforcement patterns should apply consistently across the family and extract them to `references/common-constraints.md`:
+- Common Iron Laws that apply to all skills in the domain
+- Shared Rationalization Tables and Red Flags
+- Each skill `Read()`s the shared file; skill-specific enforcement stays inline
+
+**Why:** Skills in the same domain need the same guardrails. Without a shared enforcement file, each skill gets its own version of the rules — and they drift apart over time as skills are edited independently.
+
+**Gate: Common Enforcement Complete**
+- Verify sibling skills were scanned (or note that no siblings exist)
+- If shared constraints exist, verify new skills Read() the shared file
+- If skills share a domain, verify common enforcement is in a shared file
+
+**After verifying Cross-Skill Dedup is complete, IMMEDIATELY proceed to Step 5.**
 
 ### Step 5: Design Two Entry Points
 
@@ -185,17 +209,18 @@ The entry point runs sequentially — each phase loads its constraints and passe
 
 #### Shared Constraint Files
 
-When the entry point and midpoint both evaluate the same quality dimensions, extract those check definitions into a **shared reference file** rather than inlining them in each skill independently.
+When multiple skills in the same plugin operate on the same domain, their common enforcement must live in a **shared reference file** that every skill `Read()`s.
 
-**Why:** Entry and midpoint evolve at different times. A check added to the midpoint won't appear in the entry point unless they share a source. This causes drift — the midpoint catches issues the entry point doesn't, requiring unnecessary re-entry cycles.
+**Why:** Without shared enforcement, each skill enforces its own version of the rules. Skills are edited independently, so their enforcement drifts apart — one skill catches issues the others miss. The user shouldn't have to run lecture-prep-edit to catch what lecture-prep should have enforced in the first place.
 
 **Implementation:**
-1. Create `references/[workflow]-checks.md` with all check definitions (ID, specification, output format)
-2. Entry phases and midpoint skills both `Read()` this file
-3. Sub-agent prompts reference checks by ID: "Run checks S1, S2, X1 from references/[workflow]-checks.md"
-4. Include a **Check Matrix** showing which checks run in which context (entry, midpoint, reviewer)
+1. Create `references/common-constraints.md` with the enforcement patterns common to all domain skills
+2. Every skill that operates on the domain `Read()`s this file
+3. Sub-agent prompts reference checks by ID: "Run checks S1, S2, X1 from references/common-constraints.md"
+4. Include a **Check Matrix** showing which checks run in which context (entry, midpoint, reviewer, or specific skills)
+5. Skill-specific enforcement stays inline in that skill's SKILL.md
 
-**When to extract:** If a check appears in both the entry point's verification step AND the midpoint's diagnostic step, it belongs in a shared file. Checks unique to one context can stay inline.
+**When to extract:** When you're creating the second skill in a domain, ask: "What enforcement should every skill in this domain share?" Extract that to the common file from the start. Don't wait for drift to reveal the gap.
 
 **Gate: Two Entry Points Designed**
 - Verify entry point (start fresh) is defined
@@ -261,7 +286,8 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Does the workflow have both an entry (start fresh) and midpoint (re-enter)?
 - Is the midpoint self-contained? (loads all constraints, doesn't depend on prior phases)
 - Does the midpoint load full skills, not summaries?
-- Do entry and midpoint share a common constraints file for checks they both run? (or do they inline duplicate definitions that will drift?)
+- Do skills that share a domain share a common enforcement file? (or does each skill enforce its own version of the rules?)
+- Could a user get inconsistent enforcement depending on which skill they invoke?
 
 **Iteration strategy:**
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
@@ -439,7 +465,7 @@ For each gap:
 - **Missing Red Flags** → 3-5 wrong-path indicators
 - **Missing audit-fix loop** → Iteration tracking + re-review + escalation
 - **Missing Drive-Aligned Framing** → 5-drive table (helpfulness > competence > efficiency > approval > honesty)
-- **Duplicate constraints between entry/midpoint** → Extract to shared `references/[workflow]-checks.md` with Check Matrix
+- **Skills sharing a domain without shared enforcement** → Extract common constraints to `references/common-constraints.md`; every domain skill Read()s it so any single skill enforces the full rule set
 - **Missing artifact review gate** → Add reviewer subagent dispatch between artifact-producing and consuming phases, with fix loop (max 5) and chunking for large artifacts
 - **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
 
@@ -490,8 +516,8 @@ Identify where the agent is most tempted to shortcut. Enforce hardest there. Imp
 ### NO UNREVIEWED ARTIFACT CROSSING A PHASE BOUNDARY
 If a phase produces an artifact (spec, plan, outline) that downstream phases consume, the artifact MUST be independently reviewed before the next phase starts. Self-review is rubber-stamping. A fresh subagent reviewer catches what the author cannot see.
 
-### NO DUPLICATE CONSTRAINTS BETWEEN ENTRY AND MIDPOINT
-If the entry point and midpoint both evaluate the same quality dimension, the check definition must live in a shared file — not inlined in each skill independently. Inlined duplicates WILL drift apart, and the entry point will ship broken work that the midpoint must catch.
+### NO SKILL FAMILY WITHOUT SHARED ENFORCEMENT
+If multiple skills in the same plugin operate on the same domain, their common enforcement MUST live in a shared file (e.g., `references/common-constraints.md`) that every skill `Read()`s. Without this, skills enforce different rules — and the user has to run multiple skills to catch what any single skill should have caught on its own.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:
@@ -503,7 +529,7 @@ If the entry point and midpoint both evaluate the same quality dimension, the ch
 | Writing soft language instead of Iron Laws | LLMs ignore polite suggestions | Use strong framing with EXTREMELY-IMPORTANT tags |
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
-| Inlining the same check in both entry and midpoint | They WILL drift apart. The course-materials redundancy gap: slides-edit had the check, lecture-prep didn't. | Extract shared checks to a reference file both Read() |
+| Creating domain skills without shared enforcement | Each skill enforces its own version of the rules. lecture-prep misses checks that slides-edit catches — user has to run multiple skills to get consistent quality. | Extract common enforcement to `references/common-constraints.md` that all domain skills Read() |
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 
 ## Rationalization Table
@@ -516,7 +542,7 @@ If the entry point and midpoint both evaluate the same quality dimension, the ch
 | "The user will catch errors in review" | Relying on human review defeats the purpose of the workflow | Build adversarial review INTO the workflow |
 | "I'll add enforcement later" | Later never comes. Enforcement debt compounds. | Add it now, refine through use |
 | "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
-| "The entry and midpoint checks are close enough" | "Close enough" means the midpoint catches issues the entry point missed. That's a wasted first pass. | Extract to shared file. Identical checks, one definition. |
+| "Each skill can have its own enforcement" | Then lecture-prep misses what slides-edit catches, and the user runs 3 skills to get what 1 should provide. | Shared enforcement file. One source of truth for the domain. |
 | "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
 | "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
 
