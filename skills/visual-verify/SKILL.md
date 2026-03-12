@@ -1,6 +1,6 @@
 ---
 name: visual-verify
-version: 2.2
+version: 2.3
 description: "This skill should be used when the user asks to 'verify visual output', 'check how it looks', 'render and review', 'visual verify', 'check the slide', 'does this look right', or when any task produces rendered visual output (slides, charts, documents, UI). Starts a render-vision-fix loop using Gemini vision."
 ---
 
@@ -16,16 +16,21 @@ Source code correctness does NOT imply visual correctness. You MUST render to PN
 **Skipping the score check is NOT HELPFUL — the user gets a visual artifact with defects you didn't verify.**
 </EXTREMELY-IMPORTANT>
 
-## Domain Routing
+## Agentic Vision Routing
 
-**Detect the domain BEFORE choosing the verification path.**
+**Route based on image complexity, not source language.**
 
-| Domain | Path | `--agentic`? | Why |
-|--------|------|-------------|-----|
-| Python (matplotlib, seaborn, plotly) | Python-native | YES | Gemini can execute and fix plotting code in sandbox |
-| Typst, R, JS, HTML, LaTeX, other | Non-Python | NO | Gemini can't run these; `--agentic` just adds PIL overhead |
+Agentic vision (`--agentic`) enables Gemini's Think-Act-Observe loop: it can crop, zoom, annotate, and re-examine regions of the image autonomously. This catches fine-grained defects that full-image viewing misses.
 
-Detection: `.py` / matplotlib / seaborn / plotly -> Python-native. Everything else -> Non-Python (vision-only).
+| Image characteristic | `--agentic`? | Why |
+|---|---|---|
+| Dense diagram (5+ nodes, many arrows/labels) | YES | Can crop individual arrow paths, zoom into small labels to check connections |
+| Small text or labels near container edges | YES | Implicit zoom catches clipping that full-image view misses |
+| Side-by-side or before/after comparison | YES | Can crop matching regions and annotate differences |
+| Simple layout (2-3 large elements) | NO | Full image is sufficient; agentic adds latency for no gain |
+| Single chart with large text | NO | No fine-grained details to investigate |
+
+**Decision rule:** If the image has details that are easy to miss at full resolution, use `--agentic`. If you can see everything clearly at a glance, skip it.
 
 ## The Loop
 
@@ -52,9 +57,9 @@ Detection: `.py` / matplotlib / seaborn / plotly -> Python-native. Everything el
        |         7. Uneven spacing (cramped sections next to spacious ones)
        |         8. Text too small to read at rendered size
        |         9. Parallel sub-diagrams with inconsistent layout
-       |      Domain-routed look-at call with SCORING:
-       |      Python? -> --agentic (Gemini executes code)
-       |      Non-Python? -> vision-only (structured pixel feedback)
+       |      Complexity-routed look-at call with SCORING:
+       |      Dense/fine-grained? -> --agentic (Gemini crops/zooms/annotates)
+       |      Simple/large elements? -> vision-only (structured pixel feedback)
        |      → Score 0-10 against checklist items
        |      → Record in SCORES.md
        |
@@ -100,7 +105,7 @@ The score reflects the fraction of checklist items that pass. Gemini counts BLOC
 
 ### Vision Calls
 
-**Python-native** (`--agentic`):
+**Agentic** (dense diagrams, fine-grained details, comparisons):
 ```bash
 python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
@@ -110,7 +115,12 @@ python3 ../look-at/scripts/look_at.py \
 
 (Paths are relative to this skill's base directory.)
 
-**Non-Python** (vision-only, no `--agentic`):
+Gemini will autonomously crop, zoom, and annotate regions it wants to inspect more closely. This is most valuable for:
+- Verifying arrow connections in dense node diagrams
+- Checking whether small labels are fully visible (not clipped)
+- Comparing spatial consistency across sub-diagrams
+
+**Vision-only** (simple layouts, large elements):
 ```bash
 python3 ../look-at/scripts/look_at.py \
     --file "/tmp/visual-verify.png" \
