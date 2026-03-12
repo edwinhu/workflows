@@ -117,6 +117,50 @@ AskUserQuestion(questions=[
 ])
 ```
 
+### Diagnostic Routing Flowchart
+
+```
+┌───────────────────────┐
+│  Load Context (Step 1) │
+│  SPEC + PLAN + LEARN   │
+└───────────┬───────────┘
+            ▼
+┌───────────────────────┐
+│  Identify Symptoms     │
+│  (Step 2)              │
+└───────────┬───────────┘
+            ▼
+     ┌──────┴──────┐
+     │  Traceback?  │─── YES ──→ Debug Protocol
+     └──────┬──────┘              (Runtime Error)
+            │ NO
+            ▼
+     ┌──────────────┐
+     │ Numbers wrong │─── YES ──→ Re-analysis Protocol
+     │ or unexpected?│              (Trace backwards)
+     └──────┬───────┘
+            │ NO
+            ▼
+     ┌──────────────┐
+     │ 3+ plausible │─── YES ──→ Competing Hypothesis
+     │ explanations?│              (Parallel investigation)
+     └──────┬───────┘
+            │ NO
+            ▼
+     ┌──────────────┐
+     │ Reviewer      │─── YES ──→ Revision Protocol
+     │ feedback?     │              (Fix per feedback)
+     └──────┬───────┘
+            │ NO
+            ▼
+     ┌──────────────┐
+     │ Data or scope │─── YES ──→ Re-profiling / Spec Update
+     │ changed?      │
+     └──────────────┘
+```
+
+**This flowchart IS the diagnostic spec.** If the category table and flowchart disagree, the flowchart wins.
+
 ## Step 3: Fix by Category
 
 ### Runtime Error → Debug Protocol

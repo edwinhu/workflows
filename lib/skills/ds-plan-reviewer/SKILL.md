@@ -44,6 +44,15 @@ A bad plan that survives into implementation means:
 | "It's a simple analysis, no review needed" | Simple plans hide the most missing steps | Review it anyway |
 | "I'll catch issues during implementation" | Implementation subagents don't know the spec | Review BEFORE implementing |
 
+### Red Flags - STOP If You Catch Yourself:
+
+| Thought | Why It's Wrong | Do Instead |
+|---------|----------------|------------|
+| "The plan looks fine to me" | Self-assessment is rubber-stamping — check EVERY task against the checklist | Read each task individually, verify outputs and verification steps defined |
+| "Plan looks similar to a prior analysis" | Similar structure ≠ complete tasks — prior plans had different data sources | Evaluate THIS plan against THIS spec's requirements |
+| "Tasks are obvious, they don't need intermediate output definitions" | Subagents receiving these tasks have no context — vague tasks produce wrong analysis | Verify EVERY task defines what it produces and what proves completion |
+| "Missing verification steps are fine, ds-implement handles that" | ds-implement enforces output-first per step, but missing task-level verification means no one checks the task's overall outcome | Flag missing verification criteria NOW |
+
 ## Chunking Rule
 
 **If PLAN.md has >15 tasks:** Break into ordered chunks using `## Chunk N: <name>` headings. Each chunk should be logically self-contained (e.g., "data cleaning", "feature engineering", "analysis", "visualization"). Review each chunk separately.

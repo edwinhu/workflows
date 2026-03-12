@@ -90,6 +90,7 @@ This task requires:
 - [Programming language]: Data manipulation
 - Output-first verification (mandatory)
 - SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
+- Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
 
 ## REQUIRED TOOLS
 
@@ -274,16 +275,16 @@ If ANY of these didn't happen, you are not "summarizing" — you are being anti-
 
 Recognize these thoughts as signals to stop and delegate instead:
 
-| Thought | Reality |
-|---------|---------|
-| "I'll just check the shape quickly" | You'll skip the output-first protocol. Delegate instead. |
-| "It's just a simple merge" | Your merges fail silently. Delegate with verification. |
-| "I already know this data" | Your knowing ≠ verified. Delegate anyway. |
-| "The subagent will be slower" | You're wrong—wrong results are slower than slow results. Delegate. |
-| "Just this one plot" | You're hiding data issues with one plot. Delegate. |
-| "User wants results fast" | They want CORRECT results. You're optimizing for wrong metric. Delegate. |
-| "Skip methodology review, it's standard" | Your "standard" assumptions often fail. Review anyway. |
-| "Output looked reasonable" | You didn't verify—"looked reasonable" ≠ verified. Check numbers. |
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I'll just check the shape quickly" | You'll skip the output-first protocol | Delegate to Task agent with full verification |
+| "It's just a simple merge" | Your merges fail silently | Delegate with verification requirements |
+| "I already know this data" | Your knowing ≠ verified | Delegate anyway with output-first protocol |
+| "The subagent will be slower" | Wrong results are slower than slow results | Delegate — correctness beats speed |
+| "Just this one plot" | You're hiding data issues with one plot | Delegate with full output requirements |
+| "User wants results fast" | They want CORRECT results | Delegate — optimize for correctness, not speed |
+| "Skip methodology review, it's standard" | Your "standard" assumptions often fail | Dispatch methodology reviewer anyway |
+| "Output looked reasonable" | "Looked reasonable" ≠ verified | Check the actual numbers against expectations |
 
 ### Drive-Aligned Framing
 

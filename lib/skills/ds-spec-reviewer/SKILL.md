@@ -43,6 +43,15 @@ A bad spec that survives into planning means:
 | "It's a simple analysis, no review needed" | Simple specs have the most hidden assumptions | Review it anyway |
 | "I'll catch issues during data profiling" | You'll profile the wrong data | Review BEFORE profiling |
 
+### Red Flags - STOP If You Catch Yourself:
+
+| Thought | Why It's Wrong | Do Instead |
+|---------|----------------|------------|
+| "This spec looks complete to me" | Self-assessment is rubber-stamping — check EVERY section against the checklist | Read each section individually, verify none are empty or vague |
+| "Spec looks similar to a prior one, should be fine" | Similar structure ≠ complete content — prior specs had different data sources and objectives | Evaluate THIS spec against THIS analysis's requirements |
+| "The objectives are obvious, no need to scrutinize" | Obvious objectives hide unstated assumptions — the user's intent may differ from your inference | Verify objectives are specific, measurable, and user-confirmed |
+| "Incomplete section is fine, they'll fill it in during planning" | Planning consumes the spec as-is — gaps survive into data profiling and task breakdown | Flag the gap NOW, before it propagates downstream |
+
 ## Dispatch Template
 
 Use this Task invocation to dispatch the spec reviewer:
