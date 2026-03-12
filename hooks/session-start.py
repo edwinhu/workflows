@@ -373,6 +373,50 @@ The workflow state is tracked in .claude/ACTIVE_WORKFLOW.md.
     return ""
 
 
+def check_pending_patterns() -> str:
+    """Check for pending pattern-capture suggestions from previous session.
+
+    Reads ~/.claude/pending-patterns.json written by the SessionEnd
+    pattern-scan hook. Deletes the file after reading (one-shot).
+    """
+    # Project-scoped: matches the path convention used by pattern-scan.py
+    cwd = str(Path.cwd())
+    project_slug = cwd.replace('/', '-')
+    pending_file = Path.home() / '.claude' / 'projects' / project_slug / 'pending-patterns.json'
+    if not pending_file.exists():
+        return ""
+
+    try:
+        data = json.loads(pending_file.read_text())
+        pending_file.unlink()  # Consume: one-shot
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Warning: Failed to read pending patterns: {e}", file=sys.stderr)
+        try:
+            pending_file.unlink()
+        except OSError:
+            pass
+        return ""
+
+    count = data.get('correction_count', 0)
+    if count < 2:
+        return ""
+
+    samples = data.get('samples', [])
+    sample_lines = []
+    for s in samples[:3]:
+        text = s.get('text', '')[:100]
+        sample_lines.append(f'  - "{text}"')
+
+    return f"""
+[PATTERN CAPTURE SUGGESTION]
+
+Previous session had {count} user corrections detected. Samples:
+{chr(10).join(sample_lines)}
+
+Consider running `/pattern-capture` to classify these and create appropriate enforcement artifacts.
+"""
+
+
 def main():
     # Read hook input
     try:
@@ -401,8 +445,11 @@ def main():
     # Check for active workflow (dev, ds, or writing)
     workflow_section = check_active_workflow()
 
+    # Check for pending pattern-capture suggestions from previous session
+    pattern_section = check_pending_patterns()
+
     # Combine context
-    combined_context = env_section + "\n" + workflow_section + "\n" + plan_section + "\n" + using_skills
+    combined_context = env_section + "\n" + workflow_section + "\n" + plan_section + "\n" + pattern_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {

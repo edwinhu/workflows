@@ -87,6 +87,18 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "clear|logout|prompt_input_exit|other",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/pattern-scan.py",
+            "async": true
+          }
+        ]
+      }
     ]
   }
 }
