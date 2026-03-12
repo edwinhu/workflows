@@ -9,6 +9,14 @@ Create the project foundation: PRECIS.md (thesis, audience, claims), OUTLINE.md 
 
 **Prerequisites:** Brainstorm complete. User has confirmed topic, angle, and audience.
 
+## Shared Enforcement
+
+Before any work, load the common constraints that apply to ALL writing phases:
+
+```
+Read("../../references/writing-common-constraints.md")
+```
+
 ## Setup Flowchart (This IS the Spec)
 
 ```

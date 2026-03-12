@@ -7,6 +7,14 @@ description: "This skill should be used when the user asks to 'write a paper', '
 
 **Entry point for all writing tasks.** Routes to quick mode or project workflow.
 
+## Shared Enforcement
+
+Before any work, load the common constraints that apply to ALL writing phases:
+
+```
+Read("../../lib/references/writing-common-constraints.md")
+```
+
 ## Decision Flowchart (This IS the Spec)
 
 ```

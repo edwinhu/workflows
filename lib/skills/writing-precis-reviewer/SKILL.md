@@ -8,6 +8,14 @@ description: "Internal skill used by writing-setup at exit gate. Dispatches a re
 
 **Purpose:** Catch precis gaps BEFORE they survive into outlining and drafting. A vague thesis that survives into outlining means every section wanders, every draft rewrites, and the document never coheres.
 
+## Shared Enforcement
+
+Load the common constraints for context on the writing workflow:
+
+```
+Read("../../references/writing-common-constraints.md")
+```
+
 ## When to Dispatch
 
 After writing-setup writes `.claude/PRECIS.md` and before `.claude/OUTLINE.md` creation begins.

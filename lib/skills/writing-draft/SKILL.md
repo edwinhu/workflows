@@ -9,6 +9,16 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and at least one section outline in `outlines/` must exist.
 
+## Shared Enforcement
+
+Before any work, load the common constraints that apply to ALL writing phases:
+
+```
+Read("../../references/writing-common-constraints.md")
+```
+
+This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before writing prose. See the shared file for the full loading table.
+
 ## Draft Flowchart (This IS the Spec)
 
 ```
@@ -149,6 +159,14 @@ When `style: econ` is detected:
 
 **If you write boilerplate in an econ paper, DELETE THE SECTION and START OVER with a hook.**
 </EXTREMELY-IMPORTANT>
+
+### Step 2b: Load Universal Constraints
+
+```
+Skill(skill="workflows:ai-anti-patterns")
+```
+
+**You MUST load ai-anti-patterns before drafting.** Domain skills catch domain-specific issues; ai-anti-patterns catches AI writing smell (hedging, filler, false balance, weasel words). Both layers are required — see `writing-common-constraints.md` for why.
 
 ### Step 3: Choose Drafting Strategy
 

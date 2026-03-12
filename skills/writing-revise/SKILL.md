@@ -8,6 +8,16 @@ description: "This skill should be used when the user asks to 'revise writing', 
 
 The revision loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
 
+## Shared Enforcement
+
+Before any work, load the common constraints that apply to ALL writing phases:
+
+```
+Read("../../lib/references/writing-common-constraints.md")
+```
+
+This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before revising prose.
+
 ## Revise Flowchart (This IS the Spec)
 
 ```

@@ -8,6 +8,14 @@ description: "Internal skill used by writing-outline at exit gate. Dispatches a 
 
 **Purpose:** Catch outline gaps BEFORE they survive into drafting. A thin outline that survives into drafting means every section is improvised, every transition is missing, and every draft rewrites from scratch.
 
+## Shared Enforcement
+
+Load the common constraints for context on the writing workflow:
+
+```
+Read("../../references/writing-common-constraints.md")
+```
+
 ## When to Dispatch
 
 After writing-outline completes `.claude/OUTLINE.md` (master outline) and all section outlines in `outlines/`, before writing-draft begins.

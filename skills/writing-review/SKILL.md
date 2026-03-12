@@ -9,6 +9,16 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and draft files in `drafts/` must exist.
 
+## Shared Enforcement
+
+Before any work, load the common constraints that apply to ALL writing phases:
+
+```
+Read("../../lib/references/writing-common-constraints.md")
+```
+
+This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before reviewing prose.
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Reading
 
@@ -101,6 +111,14 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 | general | `Read("../../lib/skills/writing-general/SKILL.md")` |
 
 The domain skill contains style rules that inform your review criteria. You MUST read it before reviewing.
+
+### Step 2b: Load Universal Constraints
+
+```
+Skill(skill="workflows:ai-anti-patterns")
+```
+
+**You MUST load ai-anti-patterns before reviewing.** Domain skills inform domain-specific review criteria; ai-anti-patterns catches AI writing smell (hedging, filler, false balance) that domain skills don't cover. Both layers are required — see `writing-common-constraints.md`.
 
 ### Step 3: Choose Review Strategy
 

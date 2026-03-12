@@ -21,6 +21,14 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 **Never skip to prose drafting without a detailed outline first.**
 
+## Shared Enforcement
+
+Before any work, load the common constraints that apply to ALL writing phases:
+
+```
+Read("../../references/writing-common-constraints.md")
+```
+
 ## Outline Flowchart (This IS the Spec)
 
 ```
