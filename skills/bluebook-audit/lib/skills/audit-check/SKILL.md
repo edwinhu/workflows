@@ -1,11 +1,11 @@
 ---
 name: audit-check
-description: "Phase 2: Run mechanical checks and Claude formatted audit"
+description: "Phase 2: Run mechanical checks and Gemini formatted audit"
 ---
 
 # Phase 2: Check (Mechanical + AI Audit)
 
-Two-stage checking: Python mechanical checks catch definite errors; Claude in-context audit catches judgment-call issues.
+Two-stage checking: Python mechanical checks catch definite errors; Gemini batch audit catches judgment-call issues.
 
 ## Stage 2a: Mechanical Checks (Python)
 
@@ -19,7 +19,7 @@ Checks performed on ALL footnotes:
 5. **Terminal period** - Every footnote must end with a period
 6. **Hereinafter consistency** - Defined at first citation, used consistently after
 7. **Author name supra format** - Text before `*supra*` should be roman, not italic (unless it's a case name short form). Catches `*Manne, supra*` → should be `Manne, *supra*`
-8. **Italic spillover** - Trailing/leading spaces inside italic or small caps runs (e.g., `*supra *` should be `*supra* `). These don't affect Word display but cause LLM misparses
+8. **Italic spillover** - Trailing/leading spaces inside italic or small caps runs (e.g., `*supra *` should be `*supra* `). These don't affect Word display but cause Gemini misparses
 
 ### NBSP Handling
 
@@ -27,86 +27,115 @@ DOCX uses non-breaking spaces (`\xa0`) in abbreviations. ALL search functions mu
 - `No.\xa02106`, `Feb.\xa07`, `Oct.\xa021`
 - `Wall St.\xa0J.`, `Corp.\xa0Governance`
 
-## Stage 2b: Claude In-Context Formatted Audit
+## Stage 2b: Gemini Batch Formatted Audit
 
-**Extract all formatted footnotes, then analyze them directly in Claude's context.**
+**Default: Use Gemini Batch API** (50% cheaper, handles all footnotes in one job). Fallback to sync calls if batch is unavailable.
 
 ### Step 1: Extract formatted footnotes
 
 Run: `python3 ../../../../../scripts/gemini_audit.py --docx path/to/file.docx --extract-only`
 
-If `--extract-only` is not supported, use the extraction function directly:
-```python
-from gemini_audit import extract_formatted_footnotes
-footnotes = extract_formatted_footnotes("path/to/file.docx")
-```
-
-Or extract manually — the formatted text uses inline markup:
+This outputs a JSON file mapping footnote numbers to formatted text with inline markup:
 - `*text*` = italic
 - `[SC]text[/SC]` = small caps
 - Plain text = roman
 
-### Step 2: Analyze ALL footnotes in context
+### Step 2: Submit Gemini Batch Job
 
-With ~200 footnotes at ~100-200 tokens each (~20-40K tokens), Claude can analyze them all in a single pass. This is **better than per-footnote Gemini calls** because Claude sees cross-footnote patterns (supra chains, hereinafter consistency, repeated source type issues).
+Build a JSONL file with one request per footnote, then submit via Batch API:
 
-**Audit focuses on:**
+```python
+# Build JSONL (one line per footnote)
+for fn_num, formatted_text in footnotes.items():
+    request = {
+        "custom_id": f"fn-{fn_num}",
+        "body": {
+            "contents": [{"parts": [{"text": PROMPT.format(fn_num=fn_num, formatted_text=formatted_text)}]}],
+            "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1}
+        }
+    }
+
+# Submit batch job (see /gemini-batch skill for full pattern)
+# Use examples/batch_processor.py pattern — DO NOT guess API parameters
+```
+
+**IMPORTANT:** Follow the `/gemini-batch` skill's Iron Law — read `examples/batch_processor.py` before writing batch code.
+
+**Fallback (sync):** If batch is unavailable, use `python3 ../../../../../scripts/gemini_audit.py --docx path/to/file.docx` for per-footnote sync calls.
+
+### Gemini Prompt Focuses On:
 - Source type classification (case, statute, article, book, newspaper, working paper, hearing, letter, regulation)
 - Typeface correctness per Rule 2 (italic vs small caps vs roman)
 - Abbreviation correctness per T6/T13
 - Short form validity (cases must not use supra)
-- Cross-footnote consistency (supra references, hereinafter definitions)
-
-**Output format:** JSON array matching the same schema as before:
-```json
-[{
-  "fn_num": 1,
-  "issues": [{"type": "typeface", "element": "...", "current_format": "roman", "correct_format": "italic", "rule": "Rule 2.1", "description": "..."}],
-  "severity": "clean|minor|moderate|major"
-}]
-```
 
 <EXTREMELY-IMPORTANT>
 ## Iron Law: Audit ALL Footnotes
 
-The audit MUST cover every footnote, not a subset. Auditing only "major" or "flagged" footnotes guarantees missed errors.
+The Gemini audit MUST cover every footnote, not a subset. Auditing only "major" or "flagged" footnotes guarantees missed errors.
 
 Previous failure: Auditing 45 of 239 footnotes missed 41 journal names needing small caps.
 </EXTREMELY-IMPORTANT>
+
+## Stage 2c: Claude Cross-Footnote Review
+
+**Never trust a single agent.** After Gemini's per-footnote audit, Claude reviews the full set for cross-footnote patterns that per-footnote analysis misses.
+
+Claude receives:
+1. ALL formatted footnotes (fits in 1M context at ~20-40K tokens)
+2. Gemini's per-footnote findings
+3. Mechanical check results
+
+**Claude reviews for:**
+- **Supra chain validity** — does `supra note 42` actually point to the right source?
+- **Hereinafter consistency** — defined at first citation? Used consistently after?
+- **Repeated source type errors** — if Gemini misclassified one SEC release, it likely missed them all
+- **Id. chain context** — predecessor footnote analysis that per-footnote Gemini can't see
+- **Gemini false positive filtering** — flag Gemini suggestions that are likely wrong (SEC releases, exec orders, working papers)
+
+**Output:** Annotated version of Gemini findings with cross-footnote issues added and false positives flagged.
 
 ## Red Flags - STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |
 |---|---|---|
-| Auditing plain text without formatting markup | 10-20x false positives without formatting info | Always include inline markup |
+| Sending plain text to Gemini | 10-20x false positives without formatting info | Always include inline markup |
 | Auditing a subset of footnotes | Missed errors guaranteed | Audit ALL footnotes |
 | Skipping NBSP variants in mechanical checks | Silent search failures | Always try both space types |
-| Trusting AI audit results without cross-checking | AI audits can hallucinate rules | Cross-reference findings with Bluebook rules |
+| Trusting Gemini results without Claude cross-check | Per-footnote misses cross-footnote patterns | Always run Stage 2c |
+| Trusting Claude review without mechanical checks | Claude misses deterministic patterns | Mechanical checks are authoritative for their categories |
+| Skipping any stage | Each stage catches different error classes | Run all three: mechanical → Gemini → Claude |
 
-## Merging Mechanical + Claude Findings
+## Merging Three-Layer Findings
 
-When deduplicating findings, **mechanical checks are authoritative for deterministic rules**:
+**Priority order: Mechanical > Claude cross-review > Gemini per-footnote**
+
+Mechanical checks are authoritative for deterministic rules:
 - Signal italic formatting → trust mechanical checker (regex on run-level XML)
 - Terminal periods → trust mechanical checker
 - Id. chain validation → trust mechanical checker
 - Journal/book small caps patterns → trust mechanical checker
 
-Claude's in-context audit is authoritative for **judgment calls** that require citation classification:
-- Source type classification (is this a book or a report?)
-- Typeface rules that depend on source type (italic title vs small caps title)
+Claude cross-review is authoritative for:
+- Cross-footnote consistency (supra chains, hereinafter definitions)
+- Gemini false positive filtering (source type misclassifications)
+- Patterns across footnotes that per-footnote analysis misses
+
+Gemini per-footnote is authoritative for:
+- Individual source type classification (when not overridden by Claude)
 - Abbreviation correctness (T6/T13 tables)
 - Short form validity
-- Cross-footnote consistency (advantage over per-footnote Gemini: Claude sees all footnotes at once)
 
-**Never drop a mechanical finding because the AI audit didn't flag it.** The mechanical checker catches 100% of signal issues by design.
+**Never drop a mechanical finding because Gemini or Claude didn't flag it.** The mechanical checker catches 100% of signal issues by design.
 
 ## Gate: Exit Check
 
 Before proceeding to Report phase:
 - [ ] `scratch/audit_findings.json` exists
 - [ ] Mechanical check results cover ALL footnotes
-- [ ] Claude audit results cover ALL footnotes (verify count matches extract)
-- [ ] Findings deduplicated (mechanical findings preserved; only Claude-unique judgment calls added)
+- [ ] Gemini audit results cover ALL footnotes (verify count matches extract)
+- [ ] Claude cross-footnote review complete
+- [ ] Findings merged (mechanical > Claude > Gemini priority)
 
 ## Next Phase
 

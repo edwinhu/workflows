@@ -64,7 +64,7 @@ Example: `Jamie Dimon, Chairman & CEO Letter to Shareholders, in JPMorgan Chase 
 - Split 2: "JPMorgan Chase & Co., 2023 Annual Report" → small caps (splits the third run from Split 1)
 
 ### Italic Spillover Cleanup
-After all substantive fixes, clean up trailing/leading spaces in italic runs. Word displays these fine, but they cause annotation issues on re-audit:
+After all substantive fixes, clean up trailing/leading spaces in italic runs. Word displays these fine, but they cause Gemini annotation issues on re-audit:
 ```python
 # Find italic runs with trailing spaces
 if text.endswith(' ') and is_italic:

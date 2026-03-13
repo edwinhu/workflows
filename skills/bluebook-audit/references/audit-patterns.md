@@ -13,10 +13,9 @@ Stage 1: Python Mechanical Checks
   ├── Hereinafter definition tracking
   └── Output: list of definite errors + suspect patterns
 
-Stage 2: Claude In-Context Audit (all footnotes at once)
-  ├── Load all footnotes with formatting markup into Claude's context
+Stage 2: Gemini Batch Audit (per-footnote)
+  ├── Send each footnote with formatting markup to Gemini
   ├── Structured output: issue description, rule, severity, fix
-  ├── Cross-footnote pattern detection (supra chains, hereinafter consistency)
   ├── Deduplication against Stage 1 findings
   └── Output: prioritized issue list (~20-30 real issues from ~240 footnotes)
 
@@ -41,7 +40,7 @@ Stage 5: Perma.cc Archiving
 
 ## Source Type Typeface Reference (Rule 2.1 for Law Review Footnotes)
 
-The hardest part of the AI audit is source type classification. LLMs can misclassify non-standard sources. This reference table is authoritative.
+The hardest part of the Gemini audit is source type classification. Gemini consistently misclassifies non-standard sources. This reference table is authoritative.
 
 ### ITALIC (titles of articles, named documents, speeches)
 
@@ -85,19 +84,19 @@ The hardest part of the AI audit is source type classification. LLMs can misclas
 | Author name before *supra* | Levine, *supra* note 13 | Rule 4.2 |
 | Hereinafter short forms | GAO Report, CRS Report | Rule 4.2(b) |
 
-### Common AI Misclassifications
+### Common Gemini Misclassifications
 
-LLMs can get these wrong. When reviewing AI audit suggestions for these source types, default to the table above:
+Gemini consistently gets these wrong. When reviewing Gemini suggestions for these source types, default to the table above:
 
-1. **SEC releases/rules** — AI may say italic; actually roman (regulatory material)
-2. **Executive orders** — AI may say italic; actually roman (Rule 14.7)
-3. **Working paper series names** — AI may say small caps; actually roman (parenthetical designation)
-4. **Company names in no-action letters** — AI may say italic; actually roman
-5. **Author names before supra** — AI may not flag italic author names; they should be roman
+1. **SEC releases/rules** — Gemini says italic; actually roman (regulatory material)
+2. **Executive orders** — Gemini says italic; actually roman (Rule 14.7)
+3. **Working paper series names** — Gemini says small caps; actually roman (parenthetical designation)
+4. **Company names in no-action letters** — Gemini says italic; actually roman
+5. **Author names before supra** — Gemini doesn't flag italic author names; they should be roman
 
 ## Annotation Extraction: Space-in-Marker Bug
 
-When extracting formatted text from DOCX runs, trailing/leading spaces inside italic or small caps runs produce malformed annotations:
+When extracting formatted text from DOCX runs for Gemini, trailing/leading spaces inside italic or small caps runs produce malformed annotations:
 
 ```
 BAD:  *supra * (space inside marker — LLMs don't parse this as italic)
@@ -122,20 +121,20 @@ if is_italic or has_sc:
 
 In the "Other People's Votes" audit, 14% of italic runs had this bug, inflating false positives from 61 to 80.
 
-## Stage 2: Formatted Text Is Essential for AI Audit
+## Stage 2: Formatted Text Is Essential for Gemini Audit
 
 ### The Problem
 
-Sending **plain text** footnotes for Bluebook audit produces massive false positives. In testing: 414 flagged issues from 239 footnotes, the vast majority spurious.
+Sending **plain text** footnotes to Gemini for Bluebook audit produces massive false positives. In testing: 414 flagged issues from 239 footnotes, the vast majority spurious.
 
-**Root cause:** Without formatting information, the auditor cannot distinguish:
+**Root cause:** Without formatting information, Gemini cannot distinguish:
 - Italic case names from roman text (is "Smith v. Jones" italicized or not?)
 - Small caps journal names from roman (is "U. Pa. L. Rev." in small caps?)
 - Italic signals from text ("See" as signal vs. "See" as English word)
 
 ### The Solution: Inline Formatting Markup
 
-Convert DOCX runs to inline markup before auditing:
+Convert DOCX runs to inline markup before sending to Gemini:
 
 ```
 Plain text (BAD):
@@ -186,17 +185,13 @@ def footnote_to_markup(footnote_elem):
     return ''.join(parts)
 ```
 
-### Claude In-Context Audit
+### Gemini Prompt Structure
 
-With 1M context, load ALL footnotes at once (not per-footnote). This enables:
-1. Cross-footnote supra chain validation
-2. Hereinafter consistency checking
-3. Repeated source type classification (flag once, apply everywhere)
-
-Include with each footnote:
-1. The formatted text with inline markup
+Send each footnote with:
+1. The formatted text
 2. The footnote number
-3. Request structured JSON output: `{issue, rule, severity, suggested_fix}`
+3. The preceding footnote's formatted text (for id. chain validation)
+4. Request structured JSON output: `{issue, rule, severity, suggested_fix}`
 
 Use `response_mime_type: "application/json"` for reliable structured output.
 
