@@ -13,9 +13,10 @@ Stage 1: Python Mechanical Checks
   ├── Hereinafter definition tracking
   └── Output: list of definite errors + suspect patterns
 
-Stage 2: Gemini Batch Audit (per-footnote)
-  ├── Send each footnote with formatting markup to Gemini
+Stage 2: Claude In-Context Audit (all footnotes at once)
+  ├── Load all footnotes with formatting markup into Claude's context
   ├── Structured output: issue description, rule, severity, fix
+  ├── Cross-footnote pattern detection (supra chains, hereinafter consistency)
   ├── Deduplication against Stage 1 findings
   └── Output: prioritized issue list (~20-30 real issues from ~240 footnotes)
 
@@ -38,20 +39,20 @@ Stage 5: Perma.cc Archiving
   └── Insert perma.cc links into footnotes
 ```
 
-## Stage 2: Formatted Text Is Essential for Gemini Audit
+## Stage 2: Formatted Text Is Essential for AI Audit
 
 ### The Problem
 
-Sending **plain text** footnotes to Gemini for Bluebook audit produces massive false positives. In testing: 414 flagged issues from 239 footnotes, the vast majority spurious.
+Sending **plain text** footnotes for Bluebook audit produces massive false positives. In testing: 414 flagged issues from 239 footnotes, the vast majority spurious.
 
-**Root cause:** Without formatting information, Gemini cannot distinguish:
+**Root cause:** Without formatting information, the auditor cannot distinguish:
 - Italic case names from roman text (is "Smith v. Jones" italicized or not?)
 - Small caps journal names from roman (is "U. Pa. L. Rev." in small caps?)
 - Italic signals from text ("See" as signal vs. "See" as English word)
 
 ### The Solution: Inline Formatting Markup
 
-Convert DOCX runs to inline markup before sending to Gemini:
+Convert DOCX runs to inline markup before auditing:
 
 ```
 Plain text (BAD):
@@ -102,15 +103,17 @@ def footnote_to_markup(footnote_elem):
     return ''.join(parts)
 ```
 
-### Gemini Prompt Structure
+### Claude In-Context Audit
 
-Send each footnote with:
-1. The formatted text
+With 1M context, load ALL footnotes at once (not per-footnote). This enables:
+1. Cross-footnote supra chain validation
+2. Hereinafter consistency checking
+3. Repeated source type classification (flag once, apply everywhere)
+
+Include with each footnote:
+1. The formatted text with inline markup
 2. The footnote number
-3. The preceding footnote's formatted text (for id. chain validation)
-4. Request structured JSON output: `{issue, rule, severity, suggested_fix}`
-
-Use `response_mime_type: "application/json"` for reliable structured output.
+3. Request structured JSON output: `{issue, rule, severity, suggested_fix}`
 
 ## Stage 3: Citation Registry and Cross-Reference Resolution
 

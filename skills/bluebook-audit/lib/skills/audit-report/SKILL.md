@@ -9,7 +9,7 @@ Generate a human-readable audit report and present to the user for review before
 
 ## What This Phase Does
 
-1. Merge mechanical findings + Gemini audit results (**mechanical findings take priority** — see audit-check merge rules)
+1. Merge mechanical findings + Claude audit results (**mechanical findings take priority** — see audit-check merge rules)
 2. Categorize by issue type and severity
 3. Flag items needing manual review (low-confidence cross-refs, ambiguous citations)
 4. Generate `scratch/AUDIT_REPORT.md`
@@ -17,7 +17,7 @@ Generate a human-readable audit report and present to the user for review before
 
 ### Merge Priority
 
-Mechanical findings (signal italic, terminal periods, Id. chains, small caps patterns) are deterministic and **must never be dropped** even if Gemini's audit for the same footnote reported "clean". Gemini adds findings for judgment-call issues (source classification, abbreviation tables) that the mechanical checker cannot evaluate.
+Mechanical findings (signal italic, terminal periods, Id. chains, small caps patterns) are deterministic and **must never be dropped** even if the AI audit for the same footnote reported "clean". The AI audit adds findings for judgment-call issues (source classification, abbreviation tables) that the mechanical checker cannot evaluate.
 
 ## Report Structure
 
@@ -46,15 +46,15 @@ Mechanical findings (signal italic, terminal periods, Id. chains, small caps pat
 ## Items Needing Manual Review
 [low-confidence cross-refs, ambiguous citations, judgment calls]
 
-## Correct As-Is (Gemini False Positives)
-[Items Gemini flagged but are actually correct, with reasoning]
+## Correct As-Is (AI Audit False Positives)
+[Items the AI audit flagged but are actually correct, with reasoning]
 [Group by source type: SEC releases (roman), exec orders (roman), etc.]
 [Reference: audit-patterns.md Source Type Typeface Reference table]
 ```
 
 ### Why "Correct As-Is" Matters
 
-Many Gemini suggestions are wrong — especially for non-standard source types (SEC releases, exec orders, working paper designations). Documenting WHY these are correct:
+Some AI audit suggestions may be wrong — especially for non-standard source types (SEC releases, exec orders, working paper designations). Documenting WHY these are correct:
 1. Prevents re-flagging if someone re-runs the audit
 2. Forces the reviewer to consciously evaluate each judgment call
 3. Creates a record of the source type classification decisions

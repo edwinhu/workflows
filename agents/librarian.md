@@ -181,7 +181,8 @@ Do you know the exact tag?
   YES → readwise list --tag "X"
   NO  ↓
 Do you need a synthesized answer?
-  YES → readwise chat "question"
+  YES → readwise search "query" --limit 30 → synthesize with Claude (preferred)
+        OR readwise chat "question" (fallback: uses Readwise's GPT-5.1 RAG)
   NO  ↓
 Do you need raw highlight matches?
   YES → readwise search "semantic query"
@@ -189,6 +190,28 @@ Do you need raw highlight matches?
 Do you need keyword-exact matches?
   YES → readwise highlights --search "term"
 ```
+
+### Synthesis: Prefer Claude over Readwise Chat
+
+With 1M token context, Claude can load 50-100+ highlights and synthesize better answers than Readwise's GPT-5.1 RAG.
+
+**Preferred pattern (Claude synthesis):**
+```bash
+# Pull raw highlights
+readwise search "query" --limit 30 --json
+# Then synthesize the answer yourself using Claude's reasoning
+```
+
+**Why this is better:**
+- Claude Opus/Sonnet quality > GPT-5.1 for synthesis and cross-referencing
+- Highlights stay in context — can cross-reference with NLM and Scholar results
+- Uses API token auth (reliable) vs session cookies (fragile)
+- You control the reasoning chain end-to-end
+
+**When to still use `readwise chat`:**
+- User explicitly asks for Readwise's RAG ("ask readwise", "readwise chat")
+- You need access to Readwise's full-text document corpus (not just highlights)
+- Session cookies are working and you want the broadest possible retrieval
 
 ### Search Filter Fields
 
@@ -354,7 +377,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 | `nlm` | **PRIMARY** - NotebookLM: query, generate, transform, research. Invoke for ANY notebook operation — don't guess commands. |
 | `readwise-search` | Highlight search reference (vector + fulltext) |
 | `readwise-docs` | Document CRUD reference (list, get, save, update, delete) |
-| `readwise-chat` | RAG chat reference (one-shot, interactive, conversations) |
+| `readwise-chat` | RAG chat reference (fallback — prefer Claude synthesis from search results) |
 | `readwise-prune` | Stale document cleanup reference |
 | `google-scholar` | Academic paper search (Scholar Labs + traditional) |
 

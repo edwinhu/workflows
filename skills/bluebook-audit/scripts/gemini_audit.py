@@ -193,6 +193,7 @@ async def main():
     parser.add_argument("--subset", help="Comma-separated footnote IDs to audit (default: all)")
     parser.add_argument("--concurrency", type=int, default=10, help="Max concurrent Gemini calls")
     parser.add_argument("--model", default="gemini-2.5-flash", help="Gemini model name")
+    parser.add_argument("--extract-only", action="store_true", help="Only extract formatted footnotes (skip Gemini audit)")
     args = parser.parse_args()
 
     docx_path = Path(args.docx)
@@ -218,6 +219,13 @@ async def main():
 
     if not footnotes:
         print("No footnotes to audit.")
+        return
+
+    if args.extract_only:
+        extract_output = {fn_num: text for fn_num, text in sorted(footnotes.items())}
+        with open(output_path, "w") as f:
+            json.dump(extract_output, f, indent=2)
+        print(f"Extracted {len(footnotes)} formatted footnotes to {output_path}")
         return
 
     sample_fn = next(iter(footnotes))

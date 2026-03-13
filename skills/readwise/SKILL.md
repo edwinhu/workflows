@@ -108,7 +108,7 @@ The `readwise` CLI (`~/.local/bin/readwise`) covers all Readwise API surfaces.
 |-------|---------|
 | `readwise-search` | Vector + fulltext highlight search |
 | `readwise-docs` | Document CRUD (list, get, save, update, delete) |
-| `readwise-chat` | GPT-5.1 RAG chat over highlights |
+| `readwise-chat` | GPT-5.1 RAG chat over highlights (fallback — prefer `readwise search` + Claude synthesis) |
 | `readwise-prune` | Two-pass stale document cleanup |
 
 ---
