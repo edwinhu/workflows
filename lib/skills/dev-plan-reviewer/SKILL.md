@@ -112,10 +112,13 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 5 (implement): (relative to this skill's base directory)
+Proceed immediately to Phase 5 (implement):
+
+Discover and read the implement phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-implement/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-implement/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.claude/PLAN.md`

@@ -52,10 +52,11 @@ This applies even when YOU think:
 
 You orchestrate. Subagents analyze. For every task in PLAN.md, use the delegation skill:
 
-*All paths below are relative to this skill's base directory.*
+Discover and read ds-delegate skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-delegate/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-delegate/SKILL.md")
-```
+Use the output path with `Read()`.
 
 This is MANDATORY. ds-delegate contains the Task agent templates, output-first protocol details, methodology review patterns, and rationalization prevention. Do not attempt to summarize or shortcut it.
 
@@ -215,11 +216,21 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill
 
+Discover and read shared DS constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcement
+Use the output path with `Read()`.
+
+```
 Read(".claude/PLAN.md")
-Read("../ds-delegate/SKILL.md")
 ```
+
+Discover and read ds-delegate skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-delegate/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 
 Follow the task order defined in the plan. Use ds-delegate's templates for every task.
 
@@ -229,11 +240,18 @@ If PLAN.md contains an `## ETL Strategy` section, the user made decisions during
 
 | PLAN.md Section | Enforcement Reference | Inject Into |
 |-----------------|----------------------|-------------|
-| `Implementation Language: SAS` or `Mixed` | `Read("../../../skills/wrds/references/sas-etl.md")` | Every SAS subagent prompt |
-| `Filter Strategy` table present | `Read("../ds-implement/references/etl-enforcement.md")` § Filter Push-Down | Subagent prompts for data loading tasks |
-| `Parallelism Plan` table present | `Read("../ds-implement/references/etl-enforcement.md")` § Parallelism | Implementation strategy choice |
-| `Data Flow` with intermediates | `Read("../ds-implement/references/etl-enforcement.md")` § Caching | Subagent prompts for tasks producing/consuming intermediates |
-| `Scale-Up Testing Plan` table present | `Read("../ds-implement/references/etl-enforcement.md")` § Scale-Up + domain reference (e.g., `gemini-batch/references/scale-up-testing.md`) | Before any batch submission task |
+| `Implementation Language: SAS` or `Mixed` | SAS ETL enforcement (`skills/wrds/references/sas-etl.md`) | Every SAS subagent prompt |
+| `Filter Strategy` table present | ETL enforcement (`lib/skills/ds-implement/references/etl-enforcement.md`) § Filter Push-Down | Subagent prompts for data loading tasks |
+| `Parallelism Plan` table present | ETL enforcement (`lib/skills/ds-implement/references/etl-enforcement.md`) § Parallelism | Implementation strategy choice |
+| `Data Flow` with intermediates | ETL enforcement (`lib/skills/ds-implement/references/etl-enforcement.md`) § Caching | Subagent prompts for tasks producing/consuming intermediates |
+| `Scale-Up Testing Plan` table present | ETL enforcement (`lib/skills/ds-implement/references/etl-enforcement.md`) § Scale-Up + domain reference (e.g., `gemini-batch/references/scale-up-testing.md`) | Before any batch submission task |
+
+**To load these references, discover the plugin cache path first:**
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/wrds/references/sas-etl.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/references/etl-enforcement.md 2>/dev/null | sort -V | tail -1
+```
+Use the output paths with `Read()`.
 
 **If PLAN.md has NO ETL Strategy section:** Skip this — proceed directly to Step 2.
 
@@ -363,7 +381,8 @@ Before invoking ds-review, execute this gate:
 
 ## Phase Complete
 
-After passing the exit gate, IMMEDIATELY invoke:
+After passing the exit gate, IMMEDIATELY discover and load ds-review:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-review/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-review/SKILL.md")
-```
+Use the output path with `Read()`.

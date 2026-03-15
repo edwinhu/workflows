@@ -58,10 +58,13 @@ Reading costs minutes. Wrong architecture costs days of rework.
 
 ### No Pause After Completion
 
-After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke: (relative to this skill's base directory)
+After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke:
+
+Discover and read the clarify phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-clarify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-clarify/SKILL.md")
-```
+Use the output path with `Read()`.
 
 DO NOT:
 - Summarize findings (proceed directly)
@@ -480,6 +483,9 @@ This is not optional. Fake tests are worse than no tests because they create fal
 ## Phase Complete
 
 **REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
+
+Discover and read the clarify phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-clarify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-clarify/SKILL.md")
-```
+Use the output path with `Read()`.

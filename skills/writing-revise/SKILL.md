@@ -12,9 +12,11 @@ The revision loop for writing projects. Consumes `.claude/REVIEW.md` (produced b
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before revising prose.
 
@@ -262,9 +264,9 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Load |
 |-------|------|
-| legal | `Read("../../lib/skills/writing-legal/SKILL.md")` (relative to this skill's base directory) |
-| econ | `Read("../../lib/skills/writing-econ/SKILL.md")` |
-| general | `Read("../../lib/skills/writing-general/SKILL.md")` |
+| legal | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-legal/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| econ | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-econ/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| general | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
 
 **You MUST Read() the domain skill before editing.** The domain skill contains the full rules, reference material, and enforcement patterns. Editing without it produces generic fixes.
 
@@ -367,9 +369,11 @@ verdict: CONTINUE
 
 **IMMEDIATELY re-invoke /writing-review** (no pause, no user prompt):
 
+Discover and read the writing-review skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-review/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/skills/writing-review/SKILL.md")
-```
+Use the output path with `Read()`.
 
 After /writing-review completes and regenerates REVIEW.md, /writing-revise will be invoked again automatically.
 

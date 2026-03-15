@@ -23,10 +23,11 @@ dev-implement
 
 Before choosing testing tools, you MUST load the TDD skill to ensure gate compliance:
 
-*All paths below are relative to this skill's base directory.*
+Discover and read the TDD skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-tdd/SKILL.md")
-```
+Use the output path with `Read()`.
 
 This loads:
 - Task reframing (your job is writing tests, not features)
@@ -276,15 +277,15 @@ Each sub-skill has its own availability gate. Load the appropriate skill and fol
 
 | Skill | Use Case | Key Capabilities |
 |-------|----------|------------------|
-| `Read("../dev-test-chrome/SKILL.md")` | Debugging, console/network inspection | `read_console_messages`, `read_network_requests`, `javascript_tool` |
-| `Read("../dev-test-playwright/SKILL.md")` | CI/CD, headless, cross-browser E2E | Headless mode, Firefox/WebKit, test isolation |
+| `lib/skills/dev-test-chrome/SKILL.md` (via cache lookup) | Debugging, console/network inspection | `read_console_messages`, `read_network_requests`, `javascript_tool` |
+| `lib/skills/dev-test-playwright/SKILL.md` (via cache lookup) | CI/CD, headless, cross-browser E2E | Headless mode, Firefox/WebKit, test isolation |
 
 ### Desktop Automation
 
 | Skill | Platform | Primary Tool |
 |-------|----------|--------------|
-| `Read("../dev-test-hammerspoon/SKILL.md")` | macOS | Hammerspoon (`hs`) |
-| `Read("../dev-test-linux/SKILL.md")` | Linux | ydotool (Wayland) / xdotool (X11) |
+| `lib/skills/dev-test-hammerspoon/SKILL.md` (via cache lookup) | macOS | Hammerspoon (`hs`) |
+| `lib/skills/dev-test-linux/SKILL.md` (via cache lookup) | Linux | ydotool (Wayland) / xdotool (X11) |
 
 ## Unit & Integration Tests
 
@@ -360,8 +361,11 @@ tests/test_feature.py::test_error FAILED
 ## Integration
 
 For TDD protocol (RED-GREEN-REFACTOR), see:
+
+Discover and read the TDD skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-tdd/SKILL.md")
-```
+Use the output path with `Read()`.
 
 This skill is invoked by Task agents during `dev-implement` phase.

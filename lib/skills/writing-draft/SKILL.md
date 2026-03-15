@@ -13,9 +13,11 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before writing prose. See the shared file for the full loading table.
 
@@ -110,9 +112,9 @@ Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose
 
 | Style | Action |
 |---|---|
-| legal | `Read("../writing-legal/SKILL.md")` |
-| econ | `Read("../writing-econ/SKILL.md")` |
-| general | `Read("../writing-general/SKILL.md")` |
+| legal | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-legal/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| econ | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-econ/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| general | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
 
 <EXTREMELY-IMPORTANT>
 ### Legal Domain: MUST Load Full Skill
@@ -120,9 +122,7 @@ Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose
 When `style: legal` is detected:
 
 1. **MUST Read the full skill file:**
-   ```
-   Read("../writing-legal/SKILL.md")
-   ```
+   Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-legal/SKILL.md 2>/dev/null | sort -V | tail -1`, then `Read()` the output.
 
 2. **MUST use template for .docx export:**
    ```
@@ -143,9 +143,7 @@ When `style: legal` is detected:
 When `style: econ` is detected:
 
 1. **MUST Read the full skill file:**
-   ```
-   Read("../writing-econ/SKILL.md")
-   ```
+   Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-econ/SKILL.md 2>/dev/null | sort -V | tail -1`, then `Read()` the output.
 
 2. **Iron Laws from writing-econ:**
    - NO BOILERPLATE - Delete "This paper discusses...", roadmap paragraphs
@@ -211,9 +209,11 @@ After completing each section, IMMEDIATELY start the next section. Do NOT:
 
 For parallel drafting using agent teams, read the full protocol:
 
+Discover and read the parallel drafting protocol:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-draft/references/parallel-drafting.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../writing-draft/references/parallel-drafting.md")
-```
+Use the output path with `Read()`.
 
 **When to use:** Document has 5+ substantive sections, sections are relatively independent, and `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is enabled. Falls back to Sequential if unavailable.
 

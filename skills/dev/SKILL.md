@@ -93,9 +93,11 @@ After writing `.claude/SPEC.md` and completing brainstorm, immediately invoke th
 
 **Invoke the explore phase:**
 
+Discover and read the explore phase skill:
 ```bash
-Read("../../lib/skills/dev-explore/SKILL.md")
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-explore/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
+Use the output path with `Read()`.
 
 DO NOT:
 - Summarize what was learned
@@ -214,9 +216,11 @@ AskUserQuestion(questions=[{
 
 **Read the shared enforcement for REAL vs FAKE test definitions:**
 
+Discover and read the shared dev enforcement constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/dev-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/dev-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 See constraints C2 (Real Test Enforcement) and the protocol mismatch table. **A test that doesn't replicate the user's actual workflow is a FAKE test.**
 
@@ -242,7 +246,7 @@ Write the initial spec to `.claude/SPEC.md`:
 ```markdown
 # Spec: [Feature Name]
 
-> **For Claude:** After writing this spec, use `Read("../../lib/skills/dev-explore/SKILL.md")` for Phase 2.
+> **For Claude:** After writing this spec, discover and read the explore phase skill via cache lookup for `lib/skills/dev-explore/SKILL.md`.
 
 ## Problem
 [What problem this solves]
@@ -260,7 +264,7 @@ Write the initial spec to `.claude/SPEC.md`:
 
 ## Testing Strategy (MANDATORY - USER APPROVED)
 
-> **For Claude:** Use `Read("../../lib/skills/dev-test/SKILL.md")` for automation options.
+> **For Claude:** Discover and read the test skill via cache lookup for `lib/skills/dev-test/SKILL.md` for automation options.
 >
 > **⚠️ NO IMPLEMENTATION WITHOUT TESTS. If this section is empty, STOP.**
 
@@ -371,9 +375,11 @@ After fixing, re-run ALL gate checks (not just the one that failed).
 
 **Spec Review Gate (MANDATORY):**
 
+Discover and read the spec reviewer skill:
 ```bash
-Read("../../lib/skills/dev-spec-reviewer/SKILL.md")
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-spec-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
+Use the output path with `Read()`.
 
 Follow the spec reviewer's instructions:
 1. Dispatch reviewer subagent
@@ -382,6 +388,8 @@ Follow the spec reviewer's instructions:
 
 **After spec review APPROVED, start explore phase - Phase 2:**
 
+Discover and read the explore phase skill:
 ```bash
-Read("../../lib/skills/dev-explore/SKILL.md")
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-explore/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
+Use the output path with `Read()`.

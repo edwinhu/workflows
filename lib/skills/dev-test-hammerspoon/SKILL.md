@@ -85,9 +85,14 @@ Reply when installed and I'll continue testing.
 - Cross-platform testing needed
 - Linux desktop automation (use dev-test-linux)
 
-**For web testing, use:**
-- `Read("../dev-test-chrome/SKILL.md")` - debugging (relative to this skill's base directory)
-- `Read("../dev-test-playwright/SKILL.md")` - CI/CD
+**For web testing, discover and read the relevant skill:**
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-chrome/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-playwright/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path(s) with `Read()`:
+- Chrome MCP skill - debugging
+- Playwright skill - CI/CD
 
 ### Rationalization Prevention
 
@@ -445,4 +450,8 @@ PASS: Workflow completed successfully
 
 This skill is referenced by `dev-test` for macOS desktop automation.
 
-For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`
+Discover and read the TDD protocol:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.

@@ -12,9 +12,11 @@ description: "Internal skill used by writing-outline at exit gate. Dispatches a 
 
 Load the common constraints for context on the writing workflow:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 ## When to Dispatch
 
@@ -123,10 +125,11 @@ Read ALL files, then evaluate the outline against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to draft phase: (relative to this skill's base directory)
+Proceed immediately to draft phase. Discover and read the writing-draft skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-draft/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../writing-draft/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in the relevant outline files

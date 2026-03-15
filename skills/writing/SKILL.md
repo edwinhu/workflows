@@ -11,9 +11,11 @@ description: "This skill should be used when the user asks to 'write a paper', '
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 ## Decision Flowchart (This IS the Spec)
 
@@ -42,7 +44,7 @@ If text and flowchart disagree, the flowchart wins.
 - Short text provided inline
 - No mention of “project”, “paper”, “article”
 
-→ If quick mode: `Read(“../../lib/skills/writing-general/SKILL.md”)` (relative to this skill's base directory) and apply rules to text.
+→ If quick mode: discover the writing-general skill path via `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null | sort -V | tail -1`, then `Read()` the output path and apply rules to text.
 
 **Project Mode Indicators** (full workflow):
 - “Write a paper on...”
@@ -489,8 +491,10 @@ The gate passed. The user confirmed. Asking permission to continue is procrastin
 
 After brainstorm is complete, proceed to project setup:
 
+Discover and read the writing-setup skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-setup/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/skills/writing-setup/SKILL.md")
-```
+Use the output path with `Read()`.
 
 Then follow its instructions immediately to create PRECIS.md, OUTLINE.md, and ACTIVE_WORKFLOW.md.

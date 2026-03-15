@@ -7,9 +7,12 @@ description: "This skill should be used when the user asks to 'debug', 'fix bug'
 **Announce:** "I'm using dev-debug for systematic debugging."
 
 **Load shared enforcement:**
+
+Discover and read the shared dev enforcement constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/dev-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/dev-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 <EXTREMELY-IMPORTANT>
 ## STEP ZERO — INITIALIZE THE DEBUG LOOP
@@ -336,9 +339,11 @@ If root cause reveals need for significant refactoring:
 2. Report findings to user
 3. Immediately invoke the dev workflow for implementation:
 
+Discover and read the dev workflow skill:
 ```bash
-Read("../dev/SKILL.md")  # relative to this skill's base directory
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/dev/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
+Use the output path with `Read()`.
 
 Debug finds the problem. The dev workflow implements the solution.
 

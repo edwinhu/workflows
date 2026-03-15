@@ -119,9 +119,11 @@ Before moving to the next step, you MUST:
 
 ## Step 1: Load Analysis Protocol
 
+Discover and read ds-delegate skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-delegate/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-delegate/SKILL.md")
-```
+Use the output path with `Read()`.
 
 This contains the detailed output-first protocol and verification patterns.
 

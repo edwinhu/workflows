@@ -65,10 +65,11 @@ Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect
 
 ### No Pause After Completion
 
-After writing `.claude/PLAN.md` and initializing `.claude/LEARNINGS.md`, IMMEDIATELY invoke: (relative to this skill's base directory)
+After writing `.claude/PLAN.md` and initializing `.claude/LEARNINGS.md`, IMMEDIATELY discover and load ds-implement:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-implement/SKILL.md")
-```
+Use the output path with `Read()`.
 
 DO NOT:
 - Ask "should I proceed with implementation?"
@@ -394,7 +395,11 @@ AskUserQuestion(questions=[{
 
 **If SAS or Mixed is selected:**
 1. Record `Implementation Language: SAS` (or `Mixed: SAS ETL + Python analysis`) in PLAN.md header
-2. Load WRDS SAS enforcement: `Read("../../../skills/wrds/references/sas-etl.md")`
+2. Load WRDS SAS enforcement (discover path first):
+   ```bash
+   ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/wrds/references/sas-etl.md 2>/dev/null | sort -V | tail -1
+   ```
+   Use the output path with `Read()`.
 3. All SAS tasks in the plan MUST include performance annotations:
    - **Merge strategy:** hash or sort-merge (with justification if sort-merge)
    - **WHERE pattern:** range-based date literals (document that no function-wrapped filters are used)
@@ -415,9 +420,17 @@ Write to `.claude/PLAN.md`:
 ```markdown
 # Analysis Plan: [Analysis Name]
 
-> **For Claude:** REQUIRED SUB-SKILL: Use `Read("../ds-implement/SKILL.md")` to implement this plan with output-first verification.
+> **For Claude:** REQUIRED SUB-SKILL: Discover and load ds-implement for output-first verification:
+> ```bash
+> ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/SKILL.md 2>/dev/null | sort -V | tail -1
+> ```
+> Use the output path with `Read()`.
 >
-> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("../ds-delegate/SKILL.md")` for subagent templates.
+> **Delegation:** Main chat orchestrates, Task agents implement. Discover and load ds-delegate:
+> ```bash
+> ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-delegate/SKILL.md 2>/dev/null | sort -V | tail -1
+> ```
+> Use the output path with `Read()`.
 
 ## Spec Reference
 See: .claude/SPEC.md
@@ -507,7 +520,11 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 
 <!-- If SAS or Mixed, include this section: -->
 ## SAS Performance Constraints
-> **For Claude:** REQUIRED: Load `Read("../../../skills/wrds/references/sas-etl.md")` before writing ANY SAS code.
+> **For Claude:** REQUIRED: Load SAS ETL enforcement before writing ANY SAS code:
+> ```bash
+> ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/wrds/references/sas-etl.md 2>/dev/null | sort -V | tail -1
+> ```
+> Use the output path with `Read()`.
 > Validate ALL SAS code against the SAS Code Validation Checklist in the WRDS skill.
 
 ### Per-Task SAS Annotations
@@ -591,14 +608,16 @@ Phase 2: ds-plan -> PLAN.md written -> exit gate passed
   -> If ISSUES_FOUND -> fix PLAN.md -> re-dispatch reviewer (max 5 iterations)
 ```
 
-**Step 1:** Load and follow the plan reviewer skill:
+**Step 1:** Discover and load the plan reviewer skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-plan-reviewer/SKILL.md")
-```
+Use the output path with `Read()`.
 
-**Step 2:** Only after reviewer returns APPROVED, invoke the next phase:
+**Step 2:** Only after reviewer returns APPROVED, discover and load the next phase:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-implement/SKILL.md")
-```
+Use the output path with `Read()`.
 
 **CRITICAL:** Do not skip plan review. An unreviewed plan means subagents struggling with incomplete task definitions and missing verification steps.

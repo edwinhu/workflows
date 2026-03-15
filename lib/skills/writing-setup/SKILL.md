@@ -13,9 +13,11 @@ Create the project foundation: PRECIS.md (thesis, audience, claims), OUTLINE.md 
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 ## Setup Flowchart (This IS the Spec)
 
@@ -147,10 +149,11 @@ Write to `.claude/PRECIS.md`:
 
 After writing PRECIS.md, dispatch the precis reviewer BEFORE creating the outline. Do NOT skip this step.
 
-*All paths below are relative to this skill's base directory.*
+Discover and read the precis reviewer skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-precis-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../writing-precis-reviewer/SKILL.md")
-```
+Use the output path with `Read()`.
 
 Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed to Step 3 when the reviewer returns APPROVED.
 
@@ -303,8 +306,10 @@ Before proceeding to outline phase:
 
 After setup is complete, IMMEDIATELY proceed to the outline phase. Do NOT pause to ask the user. Do NOT summarize what you just created. Load the next skill and continue:
 
+Discover and read the writing-outline skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-outline/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../writing-outline/SKILL.md")
-```
+Use the output path with `Read()`.
 
 Then follow its instructions immediately to create detailed section outlines.

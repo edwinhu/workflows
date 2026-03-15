@@ -6,11 +6,17 @@ Use this template when writing `.claude/PLAN.md` after user approves an approach
 ```markdown
 # Implementation Plan: [Feature]
 
-> **For Claude:** REQUIRED SUB-SKILL: Invoke `Read("../dev-implement/SKILL.md")` to implement this plan.
+> **For Claude:** REQUIRED SUB-SKILL: Discover and read `lib/skills/dev-implement/SKILL.md` via cache lookup to implement this plan.
 >
 > **Per-Task Ralph Loops:** Assign each task its OWN ralph loop. Do NOT combine multiple tasks into one loop.
 >
-> **Delegation:** Main chat orchestrates, Task agents implement. Use `Read("../dev-delegate/SKILL.md")` for subagent templates.
+> **Delegation:** Main chat orchestrates, Task agents implement. Discover and read `lib/skills/dev-delegate/SKILL.md` via cache lookup for subagent templates.
+>
+> **Cache lookup pattern:**
+> ```bash
+> ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/TARGET/PATH 2>/dev/null | sort -V | tail -1
+> ```
+> Use the output path with `Read()`.
 
 ## Chosen Approach
 [Name]: [Brief description]

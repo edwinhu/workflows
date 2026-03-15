@@ -64,13 +64,23 @@ Before changing ANY analysis code, you MUST:
 
 Read workflow state, shared enforcement, AND shared check definitions:
 
+Discover and read shared DS constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/ds-common-constraints.md")  # relative to this skill's base directory
+Use the output path with `Read()`.
+
+```
 Read(".claude/SPEC.md")
 Read(".claude/PLAN.md")
 Read(".claude/LEARNINGS.md")
-Read("../../lib/skills/ds-implement/references/ds-checks.md")  # relative to this skill's base directory
 ```
+
+Discover and read shared check definitions:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/references/ds-checks.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 
 **The shared checks file contains data quality check definitions (DQ1-DQ6, M1, R1) used by both ds-review and ds-fix.** Loading it here ensures the midpoint runs identical checks to the entry point's review phase. Without it, checks drift apart and the midpoint misses issues review would catch.
 
@@ -80,9 +90,11 @@ If no workflow state exists, suggest starting with `/ds` instead.
 
 After loading PLAN.md, check if `Implementation Language` is `SAS` or `Mixed`. If so, reload SAS enforcement before any fix:
 
+Discover and read SAS ETL enforcement:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/wrds/references/sas-etl.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../wrds/references/sas-etl.md")
-```
+Use the output path with `Read()`.
 
 **SAS projects have unique failure modes** (hash merge memory, WHERE function wrapping, SGE array misconfiguration). The SAS enforcement must be loaded BEFORE diagnosing — otherwise you will misdiagnose SAS-specific issues as generic bugs.
 
@@ -177,9 +189,11 @@ AskUserQuestion(questions=[
 
 For notebook-specific errors, load notebook-debug patterns:
 
+Discover and read notebook-debug skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/notebook-debug/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../notebook-debug/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### Wrong Results → Re-analysis Protocol
 
@@ -208,9 +222,11 @@ The bug is at the FIRST step where output diverges from expected. Find that step
    - Document in LEARNINGS.md
 3. After all changes, re-run review checks:
 
+Discover and read ds-review skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-review/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/skills/ds-review/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### Data/Scope Change → Re-profiling Protocol
 

@@ -110,10 +110,11 @@ Read the spec file, then evaluate against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 2 (ds-plan): (relative to this skill's base directory)
+Proceed immediately to Phase 2 (ds-plan). Discover and load:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-plan/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.claude/SPEC.md`

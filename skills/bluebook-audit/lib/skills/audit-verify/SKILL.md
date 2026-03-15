@@ -52,6 +52,8 @@ Before proceeding to Archive phase:
 
 ## Next Phase
 
+Discover and read the archive phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-archive/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../audit-archive/SKILL.md")  # relative to this skill's base directory
-```
+Use the output path with `Read()`.

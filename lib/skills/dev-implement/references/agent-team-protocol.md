@@ -108,9 +108,11 @@ lead: "Need to modify [file] which is outside my scope. Reason: [why]."
 
 ## Step 1: Load Skills
 
+Discover and read the TDD skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-tdd/SKILL.md")
-```
+Use the output path with `Read()`.
 
 If a testing skill is specified in PLAN.md (dev-test-electron, dev-test-playwright, etc.),
 load that too.

@@ -99,6 +99,8 @@ Before proceeding to Verify phase:
 
 ## Next Phase
 
+Discover and read the verify phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-verify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../audit-verify/SKILL.md")  # relative to this skill's base directory
-```
+Use the output path with `Read()`.

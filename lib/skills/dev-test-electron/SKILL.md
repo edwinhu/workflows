@@ -135,13 +135,18 @@ Reply when installed and I'll continue testing.
 - Testing non-Electron desktop apps (use Hammerspoon for macOS, dev-test-linux for Linux)
 - Need headless CI/CD for web apps (use Playwright MCP)
 
-**For web apps, use:**
-- `Read("../dev-test-chrome/SKILL.md")` - web debugging (relative to this skill's base directory)
-- `Read("../dev-test-playwright/SKILL.md")` - headless CI/CD
-
-**For native desktop apps, use:**
-- `Read("../dev-test-hammerspoon/SKILL.md")` - macOS
-- `Read("../dev-test-linux/SKILL.md")` - Linux
+**For web apps or native desktop apps, discover and read the relevant skill:**
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-chrome/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-playwright/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-hammerspoon/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-linux/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path(s) with `Read()`:
+- Chrome MCP skill - web debugging
+- Playwright skill - headless CI/CD
+- Hammerspoon skill - macOS native
+- Linux skill - Linux native
 
 ### Rationalization Prevention
 
@@ -739,8 +744,15 @@ Before writing VS Code extension test, verify:
 
 This skill is referenced by `dev-test` for Electron desktop application testing.
 
-**For web debugging, use:** `Read("../dev-test-chrome/SKILL.md")`
-**For headless web CI/CD, use:** `Read("../dev-test-playwright/SKILL.md")`
-**For macOS native apps, use:** `Read("../dev-test-hammerspoon/SKILL.md")`
-
-For TDD protocol and gate enforcement, see: `Read("../dev-tdd/SKILL.md")`
+Discover and read related skills:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-chrome/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-playwright/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-hammerspoon/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path(s) with `Read()`:
+- Chrome MCP skill - web debugging
+- Playwright skill - headless web CI/CD
+- Hammerspoon skill - macOS native apps
+- TDD skill - TDD protocol and gate enforcement

@@ -59,10 +59,13 @@ Asking costs minutes. Wrong assumptions cost hours of rework.
 
 ### No Pause After Completion
 
-After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke: (relative to this skill's base directory)
+After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
+
+Discover and read the design phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-design/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-design/SKILL.md")
-```
+Use the output path with `Read()`.
 
 DO NOT:
 - Summarize what you learned
@@ -348,6 +351,9 @@ This is the last checkpoint before implementation planning. Fake tests caught he
 ## Phase Complete
 
 **REQUIRED SUB-SKILL:** After completing clarification, IMMEDIATELY invoke:
+
+Discover and read the design phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-design/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-design/SKILL.md")
-```
+Use the output path with `Read()`.

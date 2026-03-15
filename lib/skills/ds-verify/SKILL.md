@@ -26,10 +26,11 @@ Final verification with reproducibility checks and user acceptance interview.
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION. This is not negotiable.**
 
-**Load shared enforcement first:**
+**Load shared enforcement first.** Discover and read:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcement
-```
+Use the output path with `Read()`.
 
 Before claiming analysis is complete, you MUST:
 1. RE-RUN - Execute analysis fresh (not cached results)
@@ -210,7 +211,11 @@ Verify this analysis produces consistent results from a fresh run.
 
 ## Shared Checks
 Read the shared check definitions:
-Read("../ds-implement/references/ds-checks.md")
+Discover and read shared check definitions:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/references/ds-checks.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 
 Run checks: DQ1-DQ4, DQ6, M1, R1
 
@@ -331,10 +336,11 @@ These do NOT count as verification:
 
 **Maximum 3 verification cycles.** If issues persist after 3 rounds, escalate to user with summary of blocking issues.
 
-**Chaining instruction (if NEEDS WORK):**
+**Chaining instruction (if NEEDS WORK).** Discover and load ds-implement:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-implement/SKILL.md")
-```
+Use the output path with `Read()`.
 Then fix the identified issues and re-run verification.
 
 ## Completion Criteria

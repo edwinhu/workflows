@@ -7,9 +7,12 @@ description: “This skill should be used when REQUIRED Phase 5 of /dev workflow
 **Announce:** “I’m using dev-implement (Phase 5) to orchestrate implementation.”
 
 **Load shared enforcement:**
+
+Discover and read the shared dev enforcement constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/dev-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read(“../../references/dev-common-constraints.md”)
-```
+Use the output path with `Read()`.
 
 ## Where This Fits
 
@@ -174,15 +177,14 @@ Simple work is EXACTLY when discipline matters most—because that’s when you�
 
 ## The Process
 
-*All paths below are relative to this skill's base directory.*
 ```
 For each task N in PLAN.md:
     1. Determine loop type:
-       - Visual task? → Read("../../../skills/visual-verify/SKILL.md")
-       - Standard task? → Read("../dev-ralph-loop/SKILL.md")
+       - Visual task? → discover and read skills/visual-verify/SKILL.md via cache lookup
+       - Standard task? → discover and read lib/skills/dev-ralph-loop/SKILL.md via cache lookup
 
     2. Inside loop: spawn Task agent
-       → Read("../dev-delegate/SKILL.md")
+       → discover and read lib/skills/dev-delegate/SKILL.md via cache lookup
 
     3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
        Visual tasks: also render output and vision-check with look-at
@@ -192,22 +194,33 @@ For each task N in PLAN.md:
     5. Move to task N+1, start NEW loop
 ```
 
+**Cache lookup pattern for all paths above:**
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/TARGET/PATH 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
+
 ### Visual Task Detection
 
 If a PLAN.md task involves rendered visual output, use **visual-verify** instead of plain ralph-loop. Visual-verify adds render → look-at → fix steps inside each iteration.
 
 **Signals a task is visual:** task mentions "render", "slide", "chart", "figure", "layout", "UI", "screenshot", "visual", "diagram", or produces any file meant to be seen by humans (PNG, PDF, SVG).
 
+Discover and read the visual-verify skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/visual-verify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../../skills/visual-verify/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### Step 1: Start Ralph Loop for Each Task
 
 **REQUIRED SUB-SKILL:**
+
+Discover and read the ralph-loop skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-ralph-loop/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read(“../dev-ralph-loop/SKILL.md”)
-```
+Use the output path with `Read()`.
 
 Key points from dev-ralph-loop:
 - ONE loop PER TASK (not one loop for feature)
@@ -217,9 +230,12 @@ Key points from dev-ralph-loop:
 ### Step 2: Inside Loop - Spawn Task Agent
 
 **REQUIRED SUB-SKILL:**
+
+Discover and read the delegate skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-delegate/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read(“../dev-delegate/SKILL.md”)
-```
+Use the output path with `Read()`.
 
 Key points from dev-delegate:
 - Implementer → Spec reviewer → Quality reviewer
@@ -526,9 +542,11 @@ Pausing > 30 seconds between tasks means you’ve stopped. You shouldn’t have.
 
 For parallel implementation using agent teams, read the full protocol:
 
+Discover and read the agent team protocol:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-implement/references/agent-team-protocol.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-implement/references/agent-team-protocol.md")
-```
+Use the output path with `Read()`.
 
 **When to use:** User explicitly requests parallel implementation, OR 4+ independent tasks in PLAN.md.
 
@@ -541,8 +559,11 @@ Read("../dev-implement/references/agent-team-protocol.md")
 ## Phase Complete
 
 **REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests:
+
+Discover and read the review phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-review/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-review/SKILL.md")
-```
+Use the output path with `Read()`.
 
 Do NOT proceed until automated tests pass for every task.

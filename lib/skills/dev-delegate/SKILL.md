@@ -149,7 +149,11 @@ You will need:
 Before writing any code, you MUST load the TDD skill:
 
 ```
-Read("../dev-tdd/SKILL.md") (relative to this skill's base directory)
+Discover and read the TDD skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 ```
 
 This loads:

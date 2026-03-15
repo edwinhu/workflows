@@ -39,9 +39,11 @@ Follow its full process: capture intent, interview, draft SKILL.md, write test c
 
 After writing or revising the skill draft (and before running test cases), audit it against the superpowers enforcement patterns. Read the enforcement checklist:
 
+Discover and read the enforcement checklist:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/enforcement-checklist.md")  # relative to this skill's base directory
-```
+Use the output path with `Read()`.
 
 Then score the draft using the process below.
 
@@ -116,6 +118,6 @@ These signals come from reading test run transcripts, not just final outputs.
 
 ## References
 
-- **Enforcement checklist**: `../../lib/references/enforcement-checklist.md` — Full 12-pattern reference with templates
-- **Philosophy**: `../../PHILOSOPHY.md` — Three pillars (phased decomposition, deterministic gates, adversarial review)
+- **Enforcement checklist**: `lib/references/enforcement-checklist.md` (in plugin root) — Full 12-pattern reference with templates. Discover via: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1`
+- **Philosophy**: `PHILOSOPHY.md` (in plugin root) — Three pillars (phased decomposition, deterministic gates, adversarial review). Discover via: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/PHILOSOPHY.md 2>/dev/null | sort -V | tail -1`
 - **Built-in skill-creator**: Handles the eval loop (draft → test → grade → iterate → description optimization)

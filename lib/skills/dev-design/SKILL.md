@@ -219,10 +219,11 @@ After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
 
 Use the template from `references/plan-template.md` for the PLAN.md structure. Load it before writing the plan:
 
-*All paths below are relative to this skill's base directory.*
+Discover and read the plan template:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-design/references/plan-template.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-design/references/plan-template.md")
-```
+Use the output path with `Read()`.
 
 ### 6. User Gate - Final Approval
 
@@ -407,9 +408,11 @@ Design complete when:
 **After user approves ("Yes, proceed"):**
 
 1. **Plan Review Gate (MANDATORY):**
+   Discover and read the plan reviewer skill:
    ```bash
-   Read("../dev-plan-reviewer/SKILL.md")
+   ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-plan-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
    ```
+   Use the output path with `Read()`.
    Follow the plan reviewer's instructions:
    - If >15 tasks → chunk the plan first, review per-chunk
    - Dispatch reviewer subagent
@@ -419,9 +422,9 @@ Design complete when:
 2. **Ask about worktree** (Step 7 above)
 3. **If worktree chosen:**
    - Invoke `Skill(skill="workflows:dev-worktree")`
-   - After worktree created, invoke `Read("../dev-implement/SKILL.md")`
+   - After worktree created, discover and read `lib/skills/dev-implement/SKILL.md` via cache lookup, then invoke with `Read()`
 4. **If no worktree:**
-   - Directly invoke `Read("../dev-implement/SKILL.md")`
+   - Directly discover and read `lib/skills/dev-implement/SKILL.md` via cache lookup, then invoke with `Read()`
 
 **Required before proceeding:**
 - Explicit user approval for implementation

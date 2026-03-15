@@ -28,6 +28,8 @@ Create a `scratch/` directory next to the DOCX for intermediate artifacts:
 ## Step 3: Begin Phase 1 (Extract)
 
 Read and follow:
+Discover and read the extract phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-extract/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../lib/skills/audit-extract/SKILL.md")  # relative to this skill's base directory
-```
+Use the output path with `Read()`.

@@ -64,7 +64,8 @@ All skills that evaluate data quality (ds-review, ds-fix, ds-verify) MUST Read()
 
 Each ds-family skill should Read() this file at the start of its process. Phase-specific enforcement (Iron Laws, phase-specific rationalizations) remains in each skill's SKILL.md. This file provides the shared baseline that prevents cross-skill drift.
 
-```
-Read("../../lib/references/ds-common-constraints.md")  # from skills/ds/ or skills/ds-fix/
-Read("../../../lib/references/ds-common-constraints.md")  # from lib/skills/ds-*/
+```bash
+# From any skill — discover via plugin cache:
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
+# Then Read() the output path
 ```

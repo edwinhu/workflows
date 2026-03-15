@@ -13,9 +13,11 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before reviewing prose.
 
@@ -106,9 +108,9 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Action |
 |---|---|
-| legal | `Read("../../lib/skills/writing-legal/SKILL.md")` (relative to this skill's base directory) |
-| econ | `Read("../../lib/skills/writing-econ/SKILL.md")` |
-| general | `Read("../../lib/skills/writing-general/SKILL.md")` |
+| legal | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-legal/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| econ | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-econ/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| general | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
 
 The domain skill contains style rules that inform your review criteria. You MUST read it before reviewing.
 

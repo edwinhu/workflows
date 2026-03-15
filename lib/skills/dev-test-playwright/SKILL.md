@@ -80,7 +80,11 @@ Reply when configured and I'll continue testing.
 - Recording GIFs of interactions (use Chrome MCP)
 - Interactive debugging with real browser (use Chrome MCP)
 
-**For debugging, use:** `Read("../dev-test-chrome/SKILL.md")` (relative to this skill's base directory)
+**For debugging, discover and read the Chrome MCP skill:**
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-chrome/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 
 ### Rationalization Prevention
 
@@ -508,6 +512,11 @@ mcp__playwright__browser_wait_for(
 
 This skill is referenced by `dev-test` for Playwright browser automation.
 
-**For debugging (console/network), use:** `Read("../dev-test-chrome/SKILL.md")`
-
-For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`
+Discover and read related skills:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-chrome/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path(s) with `Read()`:
+- Chrome MCP skill - debugging (console/network)
+- TDD skill - TDD protocol

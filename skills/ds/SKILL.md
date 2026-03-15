@@ -18,9 +18,12 @@ Refine vague analysis requests into clear objectives through Socratic questionin
 **NO data exploration, NO coding** - just questions and objectives.
 
 **Load shared enforcement first:**
+
+Discover and read shared DS constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/references/ds-common-constraints.md")  # relative to this skill's base directory
-```
+Use the output path with `Read()`.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Brainstorming
@@ -123,7 +126,11 @@ After selecting an approach:
 ```markdown
 # Spec: [Analysis Name]
 
-> **For Claude:** After writing this spec, use `Read("../../lib/skills/ds-plan/SKILL.md")` (relative to this skill's base directory) for Phase 2.
+> **For Claude:** After writing this spec, discover and load the ds-plan skill for Phase 2:
+> ```bash
+> ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan/SKILL.md 2>/dev/null | sort -V | tail -1
+> ```
+> Use the output path with `Read()`.
 
 ## Objective
 [What question this analysis answers]
@@ -253,15 +260,17 @@ Phase 1: Brainstorm -> SPEC.md written
   -> If ISSUES_FOUND -> fix SPEC.md -> re-dispatch reviewer (max 5 iterations)
 ```
 
-**Step 1:** Load and follow the spec reviewer skill:
+**Step 1:** Discover and load the spec reviewer skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-spec-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/skills/ds-spec-reviewer/SKILL.md")
-```
+Use the output path with `Read()`.
 
-**Step 2:** Only after reviewer returns APPROVED, invoke the next phase:
+**Step 2:** Only after reviewer returns APPROVED, discover and load the next phase:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../lib/skills/ds-plan/SKILL.md")
-```
+Use the output path with `Read()`.
 
 Fallback (if Read fails): `/ds-plan`
 

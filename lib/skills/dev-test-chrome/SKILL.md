@@ -83,7 +83,11 @@ Reply when configured and I'll continue testing.
 - Cross-browser testing needed (Chrome only)
 - Headless automation required
 
-**For CI/CD and headless, use:** `Read("../dev-test-playwright/SKILL.md")` (relative to this skill's base directory)
+**For CI/CD and headless, discover and read the Playwright skill:**
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-playwright/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 
 ### Rationalization Prevention
 
@@ -565,6 +569,11 @@ mcp__claude-in-chrome__gif_creator(
 
 This skill is referenced by `dev-test` for Chrome MCP browser automation.
 
-**For headless/CI testing, use:** `Read("../dev-test-playwright/SKILL.md")`
-
-For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`
+Discover and read related skills:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-playwright/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path(s) with `Read()`:
+- Playwright skill - headless/CI testing
+- TDD skill - TDD protocol

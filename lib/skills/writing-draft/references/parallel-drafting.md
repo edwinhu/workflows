@@ -78,7 +78,8 @@ Identify which PRECIS claim this section advances. Keep this in mind throughout.
 ## Step 2: Load Domain Style
 
 ```
-Read("../writing-{STYLE}/SKILL.md")
+Discover the domain style skill path, then Read() it:
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-{STYLE}/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
 
 Follow every style rule from this skill. Do not write generic prose.

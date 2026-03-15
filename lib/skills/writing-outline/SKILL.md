@@ -25,9 +25,11 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 ## Outline Flowchart (This IS the Spec)
 
@@ -268,10 +270,8 @@ Before proceeding to draft phase:
 2. **RUN**: List files in `outlines/`, compare against sections in OUTLINE.md
 3. **READ**: Check each outline has POINT, EVIDENCE, LOGIC for subsections
 4. **VERIFY**: All sections have outlines, all outlines reference PRECIS claims
-5. **REVIEW**: Dispatch outline reviewer subagent: (relative to this skill's base directory)
-   ```
-   Read("../writing-outline-reviewer/SKILL.md")
-   ```
+5. **REVIEW**: Dispatch outline reviewer subagent:
+   Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-outline-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1`, then `Read()` the output.
    Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed when APPROVED.
 6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase
 
@@ -346,9 +346,11 @@ After all section outlines are complete:
 
 ### Outline Review Gate (MANDATORY)
 
+Discover and read the outline reviewer skill:
 ```bash
-Read("../writing-outline-reviewer/SKILL.md")
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-outline-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
+Use the output path with `Read()`.
 
 Follow the outline reviewer's instructions:
 - If 10+ sections → review in groups of 3-4
@@ -358,8 +360,10 @@ Follow the outline reviewer's instructions:
 
 **After outline review APPROVED:**
 
+Discover and read the writing-draft skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-draft/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../writing-draft/SKILL.md")
-```
+Use the output path with `Read()`.
 
 Then follow its instructions immediately to expand outlines into prose.

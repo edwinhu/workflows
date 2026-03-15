@@ -10,10 +10,11 @@ description: "This skill should be used when REQUIRED by dev-implement for per-t
 
 Before starting ANY ralph loop, you MUST load the TDD skill to remember the testing gates and task reframing:
 
-*All paths below are relative to this skill's base directory.*
+Discover and read the TDD skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-tdd/SKILL.md")
-```
+Use the output path with `Read()`.
 
 This loads:
 - Task reframing (your job is writing tests, not features)
@@ -256,9 +257,11 @@ Ralph loops are NOT for:
 
 For tasks that produce rendered visual output (slides, charts, UI), use **visual-verify** instead of a plain ralph loop. Visual-verify wraps the ralph-loop pattern with render → look-at → fix steps:
 
+Discover and read the visual-verify skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/visual-verify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../../skills/visual-verify/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ## Integration
 

@@ -201,9 +201,11 @@ All tests PASSED
 
 **Read the shared enforcement:**
 
+Discover and read the real test enforcement reference:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/real-test-enforcement.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/real-test-enforcement.md")
-```
+Use the output path with `Read()`.
 
 **Key rule: THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.** Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
 </EXTREMELY-IMPORTANT>
@@ -364,7 +366,10 @@ This skill is invoked by:
 - `dev-implement` - for TDD during implementation
 - `dev-debug` - for regression tests during debugging
 
-For testing tool options (Playwright, ydotool, etc.), see: (relative to this skill's base directory)
+For testing tool options (Playwright, ydotool, etc.), see:
+
+Discover and read the test skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-test/SKILL.md")
-```
+Use the output path with `Read()`.

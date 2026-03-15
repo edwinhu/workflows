@@ -217,10 +217,11 @@ X critical and Y important issues must be addressed. Return to /ds-implement.
 
 After parallel review completes:
 
-**If APPROVED:** Immediately invoke the ds-verify skill:
+**If APPROVED:** Immediately discover and load the ds-verify skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-verify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-verify/SKILL.md")
-```
+Use the output path with `Read()`.
 
 **If CHANGES REQUIRED:** Return to `/ds-implement` to fix reported issues.
 
@@ -341,10 +342,11 @@ Publishing wrong results is worse than slow results. The user experiences your c
 
 ## Shared Enforcement
 
-**Load shared ds constraints before reviewing:**
+**Load shared ds constraints before reviewing.** Discover and read:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcement
-```
+Use the output path with `Read()`.
 
 ## Review Focus Areas
 
@@ -368,10 +370,11 @@ Read("../../../lib/references/ds-common-constraints.md")  # shared ds enforcemen
 
 The analyst may have reported "no duplicates" without actually checking, or "handled missing values" by silently dropping rows. You MUST run independent verification.
 
-**Load shared check definitions first:**
+**Load shared check definitions first.** Discover and read:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/references/ds-checks.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-implement/references/ds-checks.md")
-```
+Use the output path with `Read()`.
 
 Run checks DQ1-DQ5, M1 from the shared definitions. This ensures ds-review and ds-fix use identical checks.
 </EXTREMELY-IMPORTANT>
@@ -698,10 +701,11 @@ verdict: APPROVED
 ---
 ```
 
-Immediately invoke ds-verify:
+Immediately discover and load ds-verify:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-verify/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../ds-verify/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 

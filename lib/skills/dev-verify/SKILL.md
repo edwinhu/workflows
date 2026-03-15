@@ -7,9 +7,12 @@ version: 1.0.0
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
 
 **Load shared enforcement:**
+
+Discover and read the shared dev enforcement constraints:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/dev-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/dev-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 ## Contents
 
@@ -166,7 +169,7 @@ THEN AND ONLY THEN: E2E tests/screenshots
 
 **You cannot skip GATE 5 (READ LOGS).** If you catch yourself about to take screenshots without reading logs first, STOP.
 
-See `Read("../dev-tdd/SKILL.md")` for the full gate sequence with examples. (relative to this skill's base directory)
+For the full gate sequence with examples, discover and read `lib/skills/dev-tdd/SKILL.md` via cache lookup.
 </EXTREMELY-IMPORTANT>
 
 **If verification discovers stale or fabricated evidence in LEARNINGS.md, DELETE the contaminated entries. Do not amend false claims — remove them entirely and re-run the verification from scratch.**

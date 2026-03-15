@@ -188,15 +188,15 @@ Partial fixes to wrong-order work create worse outcomes than restarting.
 ```markdown
 ## Next Phase
 
-After completing this phase:
-
-Read("../skills/[workflow]-[next-phase]/SKILL.md")
-
-Then follow its instructions immediately.
+After completing this phase, discover and read the next phase:
+```bash
+command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/TARGET/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`. Then follow its instructions immediately.
 ```
 
 **Example** (every dev phase):
-> dev-brainstorm ends with: Read dev-explore SKILL.md → execute
+> dev-brainstorm ends with: discover dev-explore SKILL.md via cache → Read → execute
 
 **Key insight:** Without explicit chaining, the agent will "finish" a phase and wait for instructions instead of continuing the workflow.
 

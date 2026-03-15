@@ -12,9 +12,11 @@ description: "Internal skill used by writing-setup at exit gate. Dispatches a re
 
 Load the common constraints for context on the writing workflow:
 
+Discover and read shared writing constraints:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../references/writing-common-constraints.md")
-```
+Use the output path with `Read()`.
 
 ## When to Dispatch
 

@@ -12,10 +12,13 @@ Style guide for law review articles, seminar papers, and legal scholarship based
 
 ## On Skill Load
 
-**Step 1: Load base writing rules** (relative to this skill's base directory)
+**Step 1: Load base writing rules**
+
+Discover and read the writing entry-point skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/writing/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../../../skills/writing/SKILL.md")
-```
+Use the output path with `Read()`.
 
 **Step 2: Check for active workflow**
 

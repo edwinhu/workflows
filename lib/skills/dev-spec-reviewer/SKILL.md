@@ -98,10 +98,13 @@ Read the spec file, then evaluate against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 2 (explore): (relative to this skill's base directory)
+Proceed immediately to Phase 2 (explore):
+
+Discover and read the explore phase skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-explore/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../dev-explore/SKILL.md")
-```
+Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.claude/SPEC.md`

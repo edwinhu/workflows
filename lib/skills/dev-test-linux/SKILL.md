@@ -103,9 +103,14 @@ Do NOT use Linux automation for:
 - macOS desktop automation (use dev-test-hammerspoon)
 - Cross-platform testing
 
-For web testing, use:
-- `Read("../dev-test-chrome/SKILL.md")` - debugging (relative to this skill's base directory)
-- `Read("../dev-test-playwright/SKILL.md")` - CI/CD
+For web testing, discover and read the relevant skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-chrome/SKILL.md 2>/dev/null | sort -V | tail -1
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-playwright/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path(s) with `Read()`:
+- Chrome MCP skill - for debugging
+- Playwright skill - for CI/CD
 
 ### Rationalization Prevention
 
@@ -596,4 +601,8 @@ Test complete
 
 This skill integrates with `dev-test` for Linux desktop automation.
 
-For TDD protocol, see: `Read("../dev-tdd/SKILL.md")`
+Discover and read the TDD protocol:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-tdd/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.

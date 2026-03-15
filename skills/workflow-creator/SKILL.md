@@ -25,7 +25,11 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 ### Step 1: Ground in Philosophy
 
-Read `../../PHILOSOPHY.md` (relative to this skill's base directory). **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
+Discover and read PHILOSOPHY.md:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/PHILOSOPHY.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
 
 **Gate: Philosophy Loaded**
 - Verify PHILOSOPHY.md was read
@@ -125,7 +129,11 @@ Phase N produces ARTIFACT.md
 
 ### Step 4: Apply Enforcement Patterns
 
-Read `../../lib/references/enforcement-checklist.md`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
+Discover and read the enforcement checklist:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
 For each phase, score which of the 13 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Artifact Review Gates
@@ -302,7 +310,11 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 
 ### Step 3: Score Against Enforcement Checklist
 
-Read `../../lib/references/enforcement-checklist.md`. **You MUST read this file before scoring. No scoring from memory.**
+Discover and read the enforcement checklist:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`. **You MUST read this file before scoring. No scoring from memory.**
 
 For each of the 13 patterns, score:
 - **Present** - pattern exists and is well-implemented
@@ -316,7 +328,48 @@ Identify the highest-drift phases with the weakest enforcement - these are the c
 - Each pattern must be marked: Present / Weak / Absent
 - If any pattern is missing, score it now
 
-**After verifying Enforcement is scored, IMMEDIATELY proceed to Step 4.**
+**After verifying Enforcement is scored, IMMEDIATELY proceed to Step 3b.**
+
+### Step 3b: Audit Path Portability
+
+Skills run in the user's project CWD, not the plugin directory. Every path in a SKILL.md that references plugin-internal files must resolve regardless of CWD.
+
+**Scan every SKILL.md and references/*.md file in the workflow for these patterns:**
+
+1. **Relative script paths** — `python3 scripts/`, `python3 ../`, `python3 ../../` referencing plugin scripts
+   - These break because the agent's CWD is the user's project
+   - **Fix:** Inline cache discovery pattern:
+     ```bash
+     SCRIPTS=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/skills/SKILL/scripts 2>/dev/null | sort -V | tail -1) && python3 "$SCRIPTS/script.py" args
+     ```
+   - Determine MARKETPLACE and PLUGIN from `.claude-plugin/marketplace.json`
+
+2. **Relative Read() paths** — `Read("../../lib/skills/...")`, `Read("../audit-check/SKILL.md")`
+   - The Read tool requires absolute paths; `../../` resolves from user's project CWD, not skill directory
+   - **Fix:** Discover the path first, then Read():
+     ```
+     Discover and read the next phase:
+     ```bash
+     command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/PATH/TO/FILE.md 2>/dev/null | sort -V | tail -1
+     ```
+     Use the output path with `Read()`.
+     ```
+
+3. **`${CLAUDE_PLUGIN_ROOT}` in skill text** — This variable is only expanded by Claude Code in `hooks.json` commands and agent frontmatter hooks. In SKILL.md body text, it is NOT expanded — agents see the literal string.
+   - **OK in:** `hooks.json` commands, agent `.md` frontmatter `command:` fields
+   - **Broken in:** SKILL.md body text, references/*.md, anywhere the agent reads it as an instruction
+
+**Score:**
+- **Clean** — no broken paths found
+- **Partial** — some paths fixed, others remain
+- **Broken** — relative paths present in skill instructions
+
+**Gate: Path Portability Scored**
+- Verify all SKILL.md and references/*.md files were scanned
+- Every `python3 ../` and `Read("../` pattern was flagged
+- Score is recorded
+
+**After verifying Path Portability is scored, IMMEDIATELY proceed to Step 4.**
 
 ### Step 4: Output Audit Report
 
@@ -337,6 +390,12 @@ Format:
 |---------|---------|---------|-----|---------|
 | Iron Laws | ✅/⚠️/❌ | ... | ... | ... |
 | ... | ... | ... | ... | ... |
+
+### Path Portability
+| File | Pattern | Status |
+|------|---------|--------|
+| skills/X/SKILL.md | `python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
+| lib/skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
 
 ### Critical Gaps
 1. [Highest priority gap + recommendation]
@@ -468,6 +527,8 @@ For each gap:
 - **Skills sharing a domain without shared enforcement** → Extract common constraints to `references/common-constraints.md`; every domain skill Read()s it so any single skill enforces the full rule set
 - **Missing artifact review gate** → Add reviewer subagent dispatch between artifact-producing and consuming phases, with fix loop (max 5) and chunking for large artifacts
 - **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
+- **Broken paths (script)** → Replace `python3 scripts/...` or `python3 ../...` with inline cache discovery: `SCRIPTS=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/skills/SKILL/scripts 2>/dev/null | sort -V | tail -1) && python3 "$SCRIPTS/script.py"`
+- **Broken paths (Read)** → Replace `Read("../../lib/...")` with: discover path via Bash `command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/PATH 2>/dev/null | sort -V | tail -1`, then `Read()` the output
 
 ### Step 4: Present Changes
 

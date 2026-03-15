@@ -76,6 +76,8 @@ This is a **user gate**. The workflow pauses here.
 ## Next Phase
 
 After user approval:
+Discover and read the correct phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-correct/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../audit-correct/SKILL.md")  # relative to this skill's base directory
-```
+Use the output path with `Read()`.

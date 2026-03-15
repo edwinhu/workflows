@@ -250,7 +250,11 @@ Once root cause identified:
 
 2. **Route to ds-delegate for fix:**
 ```
-Read("../../lib/skills/ds-delegate/SKILL.md")  # relative to this skill's base directory
+Discover and read ds-delegate skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-delegate/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
 
 Task(subagent_type="workflows:ds-analyst", prompt="""
 Fix identified root cause: [HYPOTHESIS C]
