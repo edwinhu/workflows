@@ -153,10 +153,10 @@ NO  → Use Read tool for source code/text
 - `.mp3`, `.wav`, `.aac`, `.ogg` - Audio
 - Any file where you need to UNDERSTAND content, not just see raw bytes
 
-**Pattern:** (all paths below are relative to this skill's base directory)
+**Pattern:**
 ```bash
 # look-at: Extract information from media file with specific goal
-python3 ../../../skills/look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "/absolute/path/to/file" \
     --goal "What specific information to extract"
 ```
@@ -197,17 +197,17 @@ python3 ../../../skills/look-at/scripts/look_at.py \
 
 ```bash
 # look-at: Extract specific information from image file
-python3 ../../../skills/look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "$HOME/Downloads/screenshot.png" \
     --goal "List all buttons and their labels"
 
 # look-at: Analyze diagram to understand data flow
-python3 ../../../skills/look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "$HOME/Documents/architecture.png" \
     --goal "Explain the data flow between components"
 
 # look-at: Extract information from PDF document
-python3 ../../../skills/look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "$HOME/Downloads/report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -252,13 +252,13 @@ When a skill requires `description` parameter on Bash calls (like look-at), you 
 
 ```bash
 # ❌ WRONG: No description parameter
-python3 ../../../skills/look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "/path/to/file.pdf" \
     --goal "Extract title"
 
 # ✅ CORRECT: With description parameter as skill requires
 Bash(
-    command='python3 ../../../skills/look-at/scripts/look_at.py --file "/path/to/file.pdf" --goal "Extract title"',
+    command='LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" --file "/path/to/file.pdf" --goal "Extract title"',
     description="look-at: Extract title"
 )
 ```

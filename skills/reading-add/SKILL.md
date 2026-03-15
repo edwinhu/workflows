@@ -41,8 +41,7 @@ Is it a local file (PDF, DOCX, etc.)?
 Use look-at to extract metadata from the first page:
 
 ```bash
-GOOGLE_API_KEY=$(cat /var/folders/01/wzs3mqmn3jx2b81f0dcq9w8h0000gq/T/agenix/gemini-api-key) \
-python3 ../look-at/scripts/look_at.py \  # relative to this skill's base directory
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title, authors, and date/year from the first page. Return as: Title: ..., Authors: ..., Date: ..."
 ```

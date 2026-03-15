@@ -17,13 +17,15 @@ Archive all non-permanent URLs in footnotes via perma.cc API.
 
 ## Prerequisites
 
-- Perma.cc API key in `.env` file (at `../../../../../.env` (relative to this skill's base directory) or workflow-level `.env`)
+- Perma.cc API key in `.env` file (project-level or user home directory)
 - For institutional accounts: organization folder ID (unlimited archives)
 - Free accounts: 10 links/month limit
 
 ## Script
 
-Run: `python3 ../../../../../scripts/permacc_archive.py --docx <path> --data scratch/footnotes_data.json`
+```bash
+BB_SCRIPTS=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/scripts 2>/dev/null | sort -V | tail -1) && python3 "$BB_SCRIPTS/permacc_archive.py" --docx <path> --data scratch/footnotes_data.json
+```
 
 ## Institutional Account Setup
 
@@ -48,6 +50,8 @@ requests.post("https://api.perma.cc/v1/archives/", json={
 
 ## Next Phase
 
+Discover and read the next phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-crossrefs/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../audit-crossrefs/SKILL.md")
-```
+Use the output path with `Read()`.

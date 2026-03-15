@@ -9,7 +9,9 @@ Two-stage checking: Python mechanical checks catch definite errors; Gemini batch
 
 ## Stage 2a: Mechanical Checks (Python)
 
-Run (paths relative to this skill's base directory): `python3 ../../../../../scripts/scan_formatting.py --docx path/to/file.docx`
+```bash
+BB_SCRIPTS=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/scripts 2>/dev/null | sort -V | tail -1) && python3 "$BB_SCRIPTS/scan_formatting.py" --docx path/to/file.docx
+```
 
 Checks performed on ALL footnotes:
 1. **Journal name small caps** - Comprehensive pattern list (law reviews, finance journals, newspapers, periodicals, forums)
@@ -33,7 +35,9 @@ DOCX uses non-breaking spaces (`\xa0`) in abbreviations. ALL search functions mu
 
 ### Step 1: Extract formatted footnotes
 
-Run: `python3 ../../../../../scripts/gemini_audit.py --docx path/to/file.docx --extract-only`
+```bash
+BB_SCRIPTS=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/scripts 2>/dev/null | sort -V | tail -1) && python3 "$BB_SCRIPTS/gemini_audit.py" --docx path/to/file.docx --extract-only
+```
 
 This outputs a JSON file mapping footnote numbers to formatted text with inline markup:
 - `*text*` = italic
@@ -61,7 +65,10 @@ for fn_num, formatted_text in footnotes.items():
 
 **IMPORTANT:** Follow the `/gemini-batch` skill's Iron Law — read `examples/batch_processor.py` before writing batch code.
 
-**Fallback (sync):** If batch is unavailable, use `python3 ../../../../../scripts/gemini_audit.py --docx path/to/file.docx` for per-footnote sync calls.
+**Fallback (sync):** If batch is unavailable, use:
+```bash
+BB_SCRIPTS=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/scripts 2>/dev/null | sort -V | tail -1) && python3 "$BB_SCRIPTS/gemini_audit.py" --docx path/to/file.docx
+```
 
 ### Gemini Prompt Focuses On:
 - Source type classification (case, statute, article, book, newspaper, working paper, hearing, letter, regulation)
@@ -139,6 +146,8 @@ Before proceeding to Report phase:
 
 ## Next Phase
 
+Discover and read the next phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-report/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../audit-report/SKILL.md")
-```
+Use the output path with `Read()`.

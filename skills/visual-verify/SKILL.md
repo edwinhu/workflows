@@ -107,13 +107,11 @@ The score reflects the fraction of checklist items that pass. Gemini counts BLOC
 
 **Agentic** (dense diagrams, fine-grained details, comparisons):
 ```bash
-python3 ../look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]" \
     --agentic
 ```
-
-(Paths are relative to this skill's base directory.)
 
 Gemini will autonomously crop, zoom, and annotate regions it wants to inspect more closely. This is most valuable for:
 - Verifying arrow connections in dense node diagrams
@@ -122,7 +120,7 @@ Gemini will autonomously crop, zoom, and annotate regions it wants to inspect mo
 
 **Vision-only** (simple layouts, large elements):
 ```bash
-python3 ../look-at/scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]"
 ```

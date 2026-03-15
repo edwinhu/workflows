@@ -358,10 +358,11 @@ Converts hardcoded supra/infra note numbers to NOTEREF fields that auto-update w
 
 ### Script: `create_crossrefs.py`
 
-```
-python3 scripts/create_crossrefs.py --docx file.docx --dry-run   # preview
-python3 scripts/create_crossrefs.py --docx file.docx              # apply (creates .bak)
-python3 scripts/create_crossrefs.py --docx file.docx --output out.docx
+```bash
+BB_SCRIPTS=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/scripts 2>/dev/null | sort -V | tail -1)
+python3 "$BB_SCRIPTS/create_crossrefs.py" --docx file.docx --dry-run   # preview
+python3 "$BB_SCRIPTS/create_crossrefs.py" --docx file.docx              # apply (creates .bak)
+python3 "$BB_SCRIPTS/create_crossrefs.py" --docx file.docx --output out.docx
 ```
 
 ### What It Does

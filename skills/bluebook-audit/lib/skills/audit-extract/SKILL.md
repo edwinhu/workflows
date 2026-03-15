@@ -18,7 +18,9 @@ Parse the DOCX file and build structured data for all subsequent phases.
 
 ## Script
 
-Run (path relative to this skill's base directory): `python3 ../../../../../scripts/extract_footnotes.py --docx <path>`
+```bash
+BB_SCRIPTS=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/scripts 2>/dev/null | sort -V | tail -1) && python3 "$BB_SCRIPTS/extract_footnotes.py" --docx <path>
+```
 
 Output: `scratch/footnotes_data.json`
 
@@ -35,6 +37,8 @@ Before proceeding to Check phase:
 
 ## Next Phase
 
+Discover and read the next phase skill:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/bluebook-audit/lib/skills/audit-check/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Read("../audit-check/SKILL.md")
-```
+Use the output path with `Read()`.

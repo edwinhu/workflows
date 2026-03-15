@@ -73,18 +73,22 @@ description: "look-at: [goal text]"
 Never display the full Python command to the user.
 
 ```bash
+# Discover script path from plugin cache (run inline with each command)
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1)
+
 # Basic usage
-python3 scripts/look_at.py \
+python3 "$LOOK_AT" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
-# Script path is relative to this skill's base directory
 
 # With custom model
-python3 scripts/look_at.py \
+python3 "$LOOK_AT" \
     --file "/path/to/diagram.png" \
     --goal "Describe the architecture shown in this diagram" \
     --model "gemini-2.5-flash"
 ```
+
+**IMPORTANT:** Each Bash call starts a fresh shell. Include the `LOOK_AT=...` discovery line in every Bash command that calls look_at.py.
 
 **IMPORTANT:**
 - Always use absolute paths for files
@@ -135,7 +139,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
 
 **Usage:**
 ```bash
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "photo.jpg" \
     --goal "Count the number of people in this image" \
     --agentic
@@ -151,7 +155,7 @@ python3 scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the executive summary section"
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -160,7 +164,7 @@ python3 scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: List all UI elements and their layout"
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "screenshot.png" \
     --goal "List all UI elements and their layout"
 ```
@@ -169,7 +173,7 @@ python3 scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Explain the data flow and component relationships"
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "architecture.png" \
     --goal "Explain the data flow and component relationships"
 ```
@@ -178,7 +182,7 @@ python3 scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the table data as JSON"
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "table.pdf" \
     --goal "Extract the table data as JSON with columns: name, value, date"
 ```
@@ -187,7 +191,7 @@ python3 scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Count the number of people in the photo"
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "crowd.jpg" \
     --goal "Count the number of people visible in this image" \
     --agentic
@@ -197,7 +201,7 @@ python3 scripts/look_at.py \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract specific data points from the chart"
-python3 scripts/look_at.py \
+LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
     --file "quarterly_chart.png" \
     --goal "Extract the exact values for each quarter and calculate the year-over-year change" \
     --agentic
