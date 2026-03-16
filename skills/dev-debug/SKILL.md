@@ -160,9 +160,24 @@ Read LEARNINGS.md if it exists for accumulated codebase knowledge.
 - Update HYPOTHESES.md with result
 
 ### Phase 4: Fix (ONLY if hypothesis CONFIRMED)
-- Write regression test FIRST — it must FAIL before fix
+
+<EXTREMELY-IMPORTANT>
+**NO FIX WITHOUT A NEW FAILING REGRESSION TEST FIRST. This is not negotiable.**
+
+Steps in order — no skipping:
+1. Write a NEW test that specifically reproduces this bug (in the relevant test file)
+2. Run it — it MUST FAIL (proves the test actually catches this bug)
+3. ONLY THEN implement the minimal fix
+4. Run the test again — it MUST PASS
+
+**"Existing tests already cover this"** is NOT acceptable. If they covered it, the bug wouldn't have shipped. Write a new test. Name it after the bug.
+
+**If you applied the fix before writing the failing test: DELETE the fix entirely. Write the failing test. Confirm it fails. Then re-implement.**
+</EXTREMELY-IMPORTANT>
+
+- Write regression test FIRST — run it, confirm output shows FAIL
 - Implement minimal fix
-- Run regression test — it must PASS after fix
+- Run regression test — confirm output shows PASS
 - Run full test suite — no new failures
 - Document fix and test command in LEARNINGS.md
 
@@ -183,8 +198,18 @@ CONFIDENCE: [LOW | MEDIUM | HIGH — and why]
 ## Rules
 - ONE hypothesis per invocation
 - Write to HYPOTHESES.md as you go
-- If FIXED: document the exact test command in your report
+- If FIXED: REGRESSION TEST field must name the SPECIFIC NEW TEST written for this bug (e.g., `test_route_strips_internal_tags in src/routing.test.ts`). "Existing tests pass" is not acceptable.
 - If BLOCKED: explain specifically what information you need
+
+## Regression Test Rationalizations — STOP If You Think:
+
+| Excuse | Reality |
+|--------|---------|
+| "Existing tests already cover this behavior" | If they covered it, the bug wouldn't exist. Write a NEW test. |
+| "The existing test is close enough" | Close ≠ the same. A test for the right bug must fail before the fix. |
+| "The test would be identical to an existing one" | Then show which existing test fails with this bug present. If none fail, none cover it. |
+| "The fix is a one-liner, a test is overkill" | One-liners are the regressions that come back silently next month. |
+| "I'll add a test in a follow-up" | "Follow-up" means "never." The regression test is part of this fix, not a separate task. |
 """)
 ```
 
@@ -234,16 +259,28 @@ D) Accept as blocker and document
 
 ### Step 4: Verify Fix
 
-When a subagent reports STATUS: FIXED with a test command:
+When a subagent reports STATUS: FIXED:
 
-1. **Run the test yourself**: `Bash("[test command from subagent report]")`
-2. **Did it pass?**
+**Gate 1: Verify a NEW regression test was written**
+
+1. Check the REGRESSION TEST field in the subagent report:
+   - `not yet` → false positive (skipped TDD). Log in HYPOTHESES.md. Spawn next iteration with explicit instruction: "Phase 4 requires writing a NEW failing test FIRST. Report the specific test name and file."
+   - Vague value (`existing tests pass`, `full suite passes`, `not applicable`) → false positive. Same action.
+   - Must be specific: e.g., `test_route_strips_internal_tags in src/routing.test.ts`
+
+2. Verify a test file was actually modified: `Bash("cd [project_root] && git diff HEAD -- '*.test.*' '*.spec.*' | head -5")`
+   - No output (no test file changed) → false positive. Revert the fix (`git stash`), log in HYPOTHESES.md, spawn next iteration: "No regression test was written. Phase 4 requires a new failing test before the fix."
+
+**Gate 2: Verify the test passes**
+
+3. **Run the test yourself**: `Bash("[test command from subagent report]")`
+4. **Did it pass?**
    - YES → Run the full test suite too. All green? → **Bug is fixed. Report to user.**
    - NO → Log in HYPOTHESES.md as false positive. Continue loop.
 
-**If a subagent's fix is a false positive (passes tests but doesn't fix the real issue), DELETE the fix entirely. Do not patch a false fix — revert and spawn a fresh subagent with updated context.**
+**If a subagent's fix is a false positive, DELETE the fix entirely. Do not patch — revert and spawn a fresh subagent with updated context.**
 
-**This is the only structural gate.** The subagent writes the test and fix. The main chat runs the test independently. The agent can't fake test output.
+**Two structural gates:** (1) a new regression test exists in a modified test file; (2) that test passes. The subagent can't fake either — the main chat verifies both independently.
 
 ### Step 5: Report Resolution
 
