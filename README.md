@@ -26,7 +26,7 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 
 ---
 
-## Skills (39)
+## Skills (40)
 
 ### Core Workflows
 
@@ -106,6 +106,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 | `/dev-tools` | Discover available dev plugins and MCP servers |
 | `/ds-tools` | Discover available DS plugins and MCP servers |
 | `/dev-worktree` | Git worktree isolation with automatic dependency setup |
+| `/companion` | Launch and correctly frame companion (host Claude Code) sessions |
 
 ---
 
