@@ -47,6 +47,7 @@ Use AskUserQuestion to understand the domain:
 3. **What are the common failure modes?** (skipping tests, shallow analysis, weak arguments, etc.)
 4. **When does drift happen?** (implementation without design, conclusions without evidence, etc.)
 5. **How should iteration work?** (one-shot with verification, serial hypothesis testing, parallel exploration, agent team review)
+6. **What does verification look like?** (running tests, checking output exists, reviewing summary artifact — define concretely so "verification" can't become investigation)
 
 **Gate: Interview Complete**
 - Verify AskUserQuestion was called
@@ -301,6 +302,20 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
 - Are exit conditions structural (tests, convergence, human approval) not honor-system (promises)?
 
+**Post-subagent enforcement (from dev-debug v5.0 audit, March 16 2026):**
+- When a subagent returns, what is main chat allowed to do? Is there an explicit tool whitelist?
+- Is "verification" defined concretely for this domain? (Without a definition, investigation gets disguised as verification)
+- Are operational tools (Bash commands beyond test running, Read on source files, Grep/Glob) restricted after subagent returns?
+- Is there a topic change protocol? (Without one, off-topic user messages silently kill iterative loops)
+
+| Domain | Verification (main chat CAN do) | Investigation (main chat CANNOT do) |
+|--------|----------------------------------|--------------------------------------|
+| Dev | Run test suite, check exit code | Read source, grep, docker exec, curl, log reading |
+| DS | Check output file exists, view summary stats | Re-run queries, explore data, read notebook cells |
+| Writing | Read review summary artifact | Read/edit the draft, rephrase sections, "polish" |
+
+**The post-subagent moment is the highest-risk point in any delegated workflow.** If the audit finds no enforcement there, flag it as a critical gap.
+
 **Gate: Architecture Scored**
 - Verify scores for all 6 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy)
 - Each principle must have numeric score + explanation
@@ -529,6 +544,9 @@ For each gap:
 - **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
 - **Broken paths (script)** → Replace `python3 scripts/...` or `python3 ../...` with inline cache discovery: `SCRIPTS=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/skills/SKILL/scripts 2>/dev/null | sort -V | tail -1) && python3 "$SCRIPTS/script.py"`
 - **Broken paths (Read)** → Replace `Read("../../lib/...")` with: discover path via Bash `command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/PATH 2>/dev/null | sort -V | tail -1`, then `Read()` the output
+- **Missing post-subagent enforcement** → Add explicit verification/investigation boundary table for the domain. Define what main chat CAN do (verification) vs CANNOT do (investigation) after a subagent returns. Add rationalization entries for "let me verify by reading the code/data/draft"
+- **Missing topic change protocol** → For any workflow with iterative loops, add: announce pause, handle off-topic, announce resume, reload state. Without this, off-topic user messages silently kill the loop
+- **Rationalizations are generic, not grounded in real failures** → Replace hypothetical examples with citations from actual failed sessions (dates, transcript IDs, violation counts). "March 16: 71 violations" is more effective than "agents sometimes skip steps"
 
 ### Step 4: Present Changes
 
@@ -592,6 +610,9 @@ If multiple skills in the same plugin operate on the same domain, their common e
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
 | Creating domain skills without shared enforcement | Each skill enforces its own version of the rules. lecture-prep misses checks that slides-edit catches — user has to run multiple skills to get consistent quality. | Extract common enforcement to `references/common-constraints.md` that all domain skills Read() |
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
+| No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
+| No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
+| Rationalizations are hypothetical, not grounded | "Agents sometimes skip" is ignorable. "March 16: 71 violations, 3 re-invocations" is not. | Cite real failed sessions with dates, IDs, and violation counts |
 
 ## Rationalization Table
 
