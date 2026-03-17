@@ -20,6 +20,13 @@ Main chat orchestrates. Subagents implement and investigate. If you catch yourse
 | Run git commands | Any code editing |
 | Run test commands (verification) | Grep/Glob code (investigation) |
 | Read HYPOTHESES.md, LEARNINGS.md | Read project source files |
+| | Docker exec into containers |
+| | Read application logs |
+| | Query databases (sqlite3, etc.) |
+| | Curl/wget to test endpoints |
+| | Inspect process state / env vars |
+
+**Operational debugging is investigation.** Running `docker exec`, reading logs, querying databases, and curling endpoints are ALL investigation — they require interpreting results and forming hypotheses. Delegate to subagents.
 
 ### Rationalization Prevention (Delegation)
 
@@ -41,6 +48,25 @@ Main chat orchestrates. Subagents implement and investigate. If you catch yourse
 | "I have a strong hypothesis already" | That's what you thought last time. Subagent. |
 
 **The Meta-Rationalization:** If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've already failed. Simple work is EXACTLY when discipline matters most.
+
+---
+
+## C1b: Verification vs Investigation
+
+**Running the test suite is verification. Reading source code is investigation. These are NOT the same thing.**
+
+The most common delegation violation is disguising investigation as "verification." After a subagent returns, main chat "verifies" by grepping source files, reading logs, checking container state — this is investigation, not verification.
+
+| Verification (main chat allowed) | Investigation (subagent only) |
+|----------------------------------|-------------------------------|
+| Run test suite (`vitest`, `pytest`, `npm test`) | Read/Grep/Glob source files |
+| Check test exit code | Read application logs |
+| `git diff -- '*.test.*'` (check test file changed) | Docker exec / container inspection |
+| Read HYPOTHESES.md / LEARNINGS.md | Database queries |
+| `git status` / `git log` | Curl/wget endpoints |
+| | Inspect env vars / process state |
+
+**If you need to READ CODE to "verify," you need a subagent, not verification.**
 
 ---
 
@@ -111,6 +137,7 @@ Which constraints apply in which context:
 | Check | Brainstorm | Explore | Clarify | Design | Implement | Review | Verify | Debug |
 |-------|-----------|---------|---------|--------|-----------|--------|--------|-------|
 | C1: Delegation | - | - | - | - | **CRITICAL** | - | - | **CRITICAL** |
+| C1b: Verification vs Investigation | - | - | - | - | Post-subagent | Post-subagent | Post-subagent | **CRITICAL** |
 | C2: Real Tests | Define | Discover infra | Verify strategy | Lock in plan | Enforce TDD | Gate evidence | Prove E2E | Regression |
 | C3: Structural vs Runtime | - | - | - | - | Verify agent output | Gate test evidence | Fresh evidence | Verify fix |
 

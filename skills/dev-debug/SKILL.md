@@ -1,6 +1,6 @@
 ---
 name: dev-debug
-version: 4.0
+version: 5.0
 description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic debugging with fresh-context subagent iterations and progress-gated escalation."
 ---
 
@@ -88,6 +88,46 @@ Main chat does exactly four things:
 | `Agent` (spawn subagent) | **YES** — this is your job | — |
 
 **Why?** The moment you read code, you form opinions. Opinions bias hypotheses. You end up editing directly. This is how the 19MB transcript happened.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Verification vs Investigation
+
+**Running the test suite IS verification. Reading source code IS investigation. If you need to READ CODE to "verify," you need a SUBAGENT, not verification.**
+
+This distinction exists because on March 16, 2026, an agent rationalized reading source code, grepping project files, and running docker exec commands as "verification" after a subagent returned. It was investigation disguised as verification. 71 protocol violations followed.
+
+| Verification (main chat CAN do) | Investigation (main chat CANNOT do) |
+|----------------------------------|--------------------------------------|
+| `vitest run` / `npm test` | `grep` / `rg` in source code |
+| `git diff HEAD -- '*.test.*'` | `Read()` any project source file |
+| Read HYPOTHESES.md / LEARNINGS.md | `docker exec` into containers |
+| Check test exit code | Read application logs |
+| `git status` / `git log` | Query databases (`sqlite3`, etc.) |
+| | `curl` / `wget` to test endpoints |
+| | Inspect process state / env vars |
+
+**The test command is the ONLY Bash command main chat runs on the project.** Everything else — log reading, container inspection, database queries, curl testing, env var checking — is investigation. Delegate it.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Topic Changes
+
+**If the user sends a message that is NOT about the current debug bug, you MUST announce the loop pause before responding.**
+
+On March 16, 2026, the user asked "What's in spotless db" mid-debug-loop. The assistant silently abandoned the protocol, ran 15+ direct database queries, and never resumed the debug loop. The user had to re-invoke dev-debug.
+
+**Protocol:**
+1. Announce: "Pausing dev-debug loop to address your request."
+2. Handle the off-topic request (normal tools allowed — you're outside the loop)
+3. Announce: "Resuming dev-debug loop. Reading HYPOTHESES.md for current state."
+4. Read HYPOTHESES.md and spawn the next subagent
+
+**If the user's message could be interpreted as EITHER a new topic OR part of the debug:**
+- Ask: "Is this related to the current debug, or a separate request?"
+- Do NOT assume it's separate and abandon the loop silently
+
+**Silent loop abandonment is NOT HELPFUL — the user invoked dev-debug because they want structured debugging. Silently dropping the structure wastes their explicit request.**
 </EXTREMELY-IMPORTANT>
 
 ## The Process
@@ -343,10 +383,36 @@ BUILD → LAUNCH (with logging) → WAIT → CHECK PROCESS → READ LOGS → VER
 | "I already know the codebase" | You claimed root cause 30 times. You were wrong 30 times. |
 | "Subagents are slow, I'll do it myself" | You lose objectivity and can't revert cleanly |
 | "I can test two hypotheses at once" | Neither confirmed nor refuted. You learned nothing. |
+| "Let me verify the subagent's work by reading the code" | Running the TEST is verification. Reading CODE is investigation. Subagent. |
+| "This error is urgent/persistent, I need to act now" | Urgency is EXACTLY when you need the protocol. You'll do 50 commands and still need a subagent. |
+| "Let me check the logs/container/database real quick" | Log reading IS investigation. Docker exec IS investigation. DB queries ARE investigation. Subagent. |
+| "The user asked about something else, I'll just handle it" | Announce the pause. Don't silently abandon the loop. |
+| "I'll just check one thing before spawning the subagent" | That's what happened on March 16: "one thing" became 50 commands. Spawn first, check never. |
+| "The subagent won't know how to docker exec / curl / read logs" | Subagents have full tool access. They CAN do operational debugging. You CANNOT. |
 
 ### The Confidence Trap
 
 **The more confident you feel, the MORE you need the protocol.** High confidence = strong prior = resistance to disconfirming evidence.
+
+### Observed Escape Patterns (March 16, 2026 — nanoclaw audit)
+
+An agent loaded dev-debug and committed 71 protocol violations. The user had to re-invoke dev-debug 3 times. Only 3 of 15 subagent spawns were properly delegated. These are the EXACT patterns that caused the escape:
+
+**Escape A: "Verification" Rationalization**
+After a subagent returned, main chat "verified" by grepping source code, reading setup scripts, diagnosing root causes. It called this "verification." It was investigation.
+- STOP trigger: If you're about to Read/Grep/Glob ANY file that isn't HYPOTHESES.md or LEARNINGS.md after a subagent returns → STOP. That's investigation. Spawn a subagent.
+
+**Escape B: Silent Loop Abandonment**
+User asked "What's in spotless db" — a different topic. Main chat silently abandoned the debug loop and never resumed.
+- STOP trigger: If the user's message isn't about the current bug → STOP. Announce the pause. Handle request. Announce resume. Read HYPOTHESES.md. Spawn next subagent.
+
+**Escape C: Urgency Bypass**
+A new 500 error appeared. Main chat "urgently" checked logs, diagnosed the 14MB session, remediated, and read source code. 20+ direct investigation commands.
+- STOP trigger: If a new error appears and you feel urgency → STOP. Urgency is EXACTLY when you break protocol. Update HYPOTHESES.md with the new symptom. Spawn a subagent.
+
+**Escape D: Pre-Delegation Investigation**
+Persistent 400 errors appeared. Main chat ran 50+ lines of docker exec, curl, env inspection, log analysis, source reading BEFORE spawning a subagent. By the time it delegated, it had already done all the investigation.
+- STOP trigger: If you're about to run docker exec, curl, sqlite3, or read logs → STOP. These are investigation tools. Spawn a subagent with the symptom description. Let the subagent investigate.
 
 ## Why Skipping Hurts the Thing You Care About Most
 
