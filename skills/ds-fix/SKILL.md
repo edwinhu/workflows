@@ -285,6 +285,27 @@ Before claiming any fix is done, execute this gate:
 
 **Skipping this gate means your fix is unverified. An unverified fix is not a fix — it's a guess.**
 
+## Post-Subagent Boundary
+
+<EXTREMELY-IMPORTANT>
+**After a fix agent returns, constraints C5 from ds-common-constraints.md apply.**
+
+**ALLOWED:** Read the agent's returned report. Check LEARNINGS.md. Confirm file existence with `ls`.
+**FORBIDDEN:** Read project source code, run analysis code, inspect data files, Grep/Glob project files.
+
+**If the fix looks incomplete, re-dispatch a Task agent. Do NOT investigate yourself.**
+</EXTREMELY-IMPORTANT>
+
+## Topic Change Protocol
+
+**If user sends an off-topic message during ds-fix, follow C6 from ds-common-constraints.md:**
+
+1. Announce: "Pausing ds-fix to address your request."
+2. Handle the request.
+3. Announce: "Resuming ds-fix. Reading state files for current progress."
+4. Reload: Read SPEC.md, PLAN.md, LEARNINGS.md.
+5. Resume from where you left off.
+
 ## Delegation
 
 Main chat orchestrates. Task agents do the fixing:

@@ -162,13 +162,25 @@ Report: what you did, key outputs observed, any data quality issues found.
 
 **If analyst completes task:** Verify outputs, then proceed or review.
 
-## Step 2: Verify Outputs
+## Step 2: Verify Outputs (Post-Subagent Boundary)
 
-Confirm before proceeding:
-- [ ] Output files/variables exist
-- [ ] Shapes are reasonable (no unexpected row loss)
-- [ ] No silent null introduction
-- [ ] Sample output matches expectations
+<EXTREMELY-IMPORTANT>
+**After analyst returns, you are at the post-subagent boundary. Constraints C5 from ds-common-constraints.md apply.**
+
+**ALLOWED (Verification):**
+- [ ] Read the analyst's returned report/summary
+- [ ] Check LEARNINGS.md for output documentation
+- [ ] Confirm output files exist (`ls -la`)
+- [ ] Compare task counts (expected vs actual)
+
+**FORBIDDEN (Investigation):**
+- ❌ Read project source code, notebooks, or data files
+- ❌ Run analysis code to "confirm" results
+- ❌ Query databases or inspect intermediate files
+- ❌ Grep/Glob project files
+
+**If the analyst's report shows problems, re-dispatch a Task agent. Do NOT investigate yourself.**
+</EXTREMELY-IMPORTANT>
 
 Upon verification failure, re-dispatch analyst with specific fix instructions.
 

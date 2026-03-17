@@ -257,7 +257,9 @@ Report:
 """)
 ```
 
-**If Task agent reports FAIL:** Investigate the discrepancy before proceeding. Do NOT ignore reproducibility failures.
+**Post-subagent boundary (C5):** After verification agent returns, read its report only. Do NOT read source code, notebooks, or data files yourself. If FAIL, dispatch a fresh investigation subagent.
+
+**If Task agent reports FAIL:** Dispatch a fresh Task agent to investigate the discrepancy. Do NOT investigate yourself — that violates the post-subagent boundary (C5 from ds-common-constraints.md).
 
 ## Claims Requiring Evidence
 

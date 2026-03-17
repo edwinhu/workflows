@@ -212,6 +212,18 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 **This flowchart IS the specification.** If the narrative below and this flowchart disagree, the flowchart wins.
 
+## Topic Change Protocol
+
+**If user sends an off-topic message during implementation, follow C6 from ds-common-constraints.md:**
+
+1. **Announce:** "Pausing ds-implement to address your request."
+2. **Handle:** Process the request (normal tools allowed outside the loop).
+3. **Announce:** "Resuming ds-implement. Reading state files for current progress."
+4. **Reload:** Read LEARNINGS.md and PLAN.md to restore context.
+5. **Resume:** Continue from where you left off.
+
+**Do NOT silently switch context. Silent switches kill the implementation loop.**
+
 ## Implementation Process
 
 ### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill

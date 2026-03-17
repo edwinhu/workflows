@@ -379,6 +379,8 @@ Use the output path with `Read()`.
 Run checks DQ1-DQ5, M1 from the shared definitions. This ensures ds-review and ds-fix use identical checks.
 </EXTREMELY-IMPORTANT>
 
+**Post-subagent boundary (C5):** After any review Task agent returns, do NOT read project source code or data files to "double-check." Read the agent's report only. If issues found, re-dispatch.
+
 Dispatch a Task agent to run these checks on the final analysis data:
 
 ```python
