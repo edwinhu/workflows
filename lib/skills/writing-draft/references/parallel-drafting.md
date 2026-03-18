@@ -10,9 +10,9 @@ Before spawning any teammates:
 
 ```
 Glob("outlines/*.md")   # Verify all section outlines exist
-Read(".claude/ACTIVE_WORKFLOW.md")  # Get style, section list
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/ACTIVE_WORKFLOW.md")  # Get style, section list
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 ```
 
 Confirm: every section listed in OUTLINE.md has a corresponding outline file. If any are missing:
@@ -68,8 +68,8 @@ Next section: {NEXT_SECTION}
 ## Step 1: Read Context (in this order)
 
 ```
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 Read("{SECTION_OUTLINE_PATH}")
 ```
 
@@ -128,7 +128,7 @@ Only mark your task complete after all boxes pass.
 
 ## If You Encounter Issues
 
-- **File not found:** Verify your working directory contains `.claude/`, `outlines/`,
+- **File not found:** Verify your working directory contains `.planning/`, `outlines/`,
   and `drafts/`. If not, message the lead with your current directory.
 - **Outline is unclear or incomplete:** Do NOT draft generic prose to fill gaps.
   Message the lead: "Outline for SECTION_NAME is missing [specific element]."
@@ -173,7 +173,7 @@ For each section boundary (N → N+1):
 
 ##### 6. Update Workflow State
 
-After reconciliation, update `.claude/ACTIVE_WORKFLOW.md`:
+After reconciliation, update `.planning/ACTIVE_WORKFLOW.md`:
 
 ```yaml
 phase: draft

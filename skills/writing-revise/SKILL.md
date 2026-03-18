@@ -6,7 +6,7 @@ description: "This skill should be used when the user asks to 'revise writing', 
 
 # Writing Revise
 
-The revision loop for writing projects. Consumes `.claude/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
+The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
 
 ## Shared Enforcement
 
@@ -19,6 +19,18 @@ command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references
 Use the output path with `Read()`.
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before revising prose.
+
+## Session Resume Detection
+
+Before starting, check for an existing handoff:
+
+1. Check if `.planning/HANDOFF.md` exists
+2. **If found:** Read it and present to user:
+   - Show the phase, section in progress, and Next Action
+   - Ask: "Resume from handoff, or start fresh?"
+   - If resume: skip to the recorded phase
+   - If fresh: proceed with mode detection
+3. **If not found:** Proceed normally
 
 ## Revise Flowchart (This IS the Spec)
 
@@ -42,7 +54,7 @@ START
   │
   ├─ Step 5: Formatting check
   │
-  └─ Step 6: Check iteration state (.claude/REVIEW_STATE.md)
+  └─ Step 6: Check iteration state (.planning/REVIEW_STATE.md)
      │
      ├─ No issues remain → COMPLETE
      │  └─ Archive workflow → Generate summary → EXIT
@@ -113,7 +125,7 @@ Iteration 3: Re-Review → REVIEW.md → Revise → Re-Review
          All clean? → COMPLETE
 ```
 
-**Track iterations in `.claude/REVIEW_STATE.md`:**
+**Track iterations in `.planning/REVIEW_STATE.md`:**
 
 ```yaml
 ---
@@ -130,7 +142,7 @@ issues_found_count: 5
 - **CONTINUE**: iteration < 3 AND issues remain → re-invoke /writing-review
 
 **Before claiming "all fixed", check iteration count:**
-1. READ `.claude/REVIEW_STATE.md` (create if missing with iteration: 1)
+1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
 2. If iteration >= 3 and issues remain: ESCALATE (don't say "run review again")
 3. If iteration < 3 and issues remain: INCREMENT iteration, re-invoke /writing-review
 4. If no issues: COMPLETE
@@ -184,7 +196,7 @@ Delivering a clean draft is the service. Feeling like you're done is not the ser
 
 ## When to Use
 
-- After `/writing-review` produces `.claude/REVIEW.md`
+- After `/writing-review` produces `.planning/REVIEW.md`
 - When hook suggests it (after ~10 edits)
 - Before finishing a writing project
 
@@ -192,11 +204,11 @@ Delivering a clean draft is the service. Feeling like you're done is not the ser
 
 Before running edits, verify the workflow is ready:
 
-1. **IDENTIFY**: `.claude/ACTIVE_WORKFLOW.md`, `.claude/PRECIS.md`, `.claude/OUTLINE.md`, and at least one file in `drafts/` must exist
+1. **IDENTIFY**: `.planning/ACTIVE_WORKFLOW.md`, `.planning/PRECIS.md`, `.planning/OUTLINE.md`, and at least one file in `drafts/` must exist
 2. **RUN**: Check file existence
 3. **READ**: Confirm ACTIVE_WORKFLOW shows `workflow: writing`
 4. **VERIFY**: All required files present and draft content exists
-5. **CHECK FOR REVIEW.MD**: Look for `.claude/REVIEW.md`
+5. **CHECK FOR REVIEW.MD**: Look for `.planning/REVIEW.md`
 
 If any file is missing, report and suggest the appropriate phase:
 - No PRECIS.md -> `/writing` (start from brainstorm)
@@ -209,9 +221,9 @@ If any file is missing, report and suggest the appropriate phase:
 ### Step 1: Load Context
 
 ```
-Read(".claude/ACTIVE_WORKFLOW.md")
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/ACTIVE_WORKFLOW.md")
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 Read([current draft files in drafts/])
 ```
 
@@ -224,12 +236,12 @@ If any file is missing, report and suggest starting with `/writing`.
 
 **NO REVISION WITHOUT REVIEW.md. This is not negotiable.**
 
-If `.claude/REVIEW.md` does not exist, REFUSE to proceed:
+If `.planning/REVIEW.md` does not exist, REFUSE to proceed:
 
 ```
 REVIEW.md not found. Cannot revise without a structured review diagnosis.
 
-Run /writing-review first to produce .claude/REVIEW.md, then re-run /writing-revise.
+Run /writing-review first to produce .planning/REVIEW.md, then re-run /writing-revise.
 ```
 
 **STOP HERE. Do not fall back to inline review. Do not offer to "do a quick check instead."**
@@ -246,7 +258,7 @@ Why: Inline review is shallow by design — it misses cross-section issues, tran
 **When REVIEW.md exists:**
 
 ```
-Read(".claude/REVIEW.md")
+Read(".planning/REVIEW.md")
 ```
 
 Parse the review into:
@@ -343,7 +355,7 @@ For each minor issue:
 Before claiming completion, check the audit-fix loop state:
 
 ```
-1. READ `.claude/REVIEW_STATE.md` - what iteration are we on?
+1. READ `.planning/REVIEW_STATE.md` - what iteration are we on?
 2. Run final check - are there remaining issues?
 3. Determine verdict based on iteration + issues:
    - iteration < 3 AND issues remain → CONTINUE (re-invoke /writing-review)
@@ -355,7 +367,7 @@ Generate report based on verdict:
 
 #### If CONTINUE (iteration < 3, issues remain)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -381,7 +393,7 @@ After /writing-review completes and regenerates REVIEW.md, /writing-revise will 
 
 #### If ESCALATE (iteration >= 3, issues remain)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -413,7 +425,7 @@ Which option do you prefer?
 
 #### If COMPLETE (no issues found)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -428,8 +440,8 @@ verdict: COMPLETE
 Archive workflow state:
 
 ```bash
-mkdir -p .claude/completed-workflows
-mv .claude/ACTIVE_WORKFLOW.md ".claude/completed-workflows/$(date +%Y-%m-%d)-writing.md"
+mkdir -p .planning/completed-workflows
+mv .planning/ACTIVE_WORKFLOW.md ".planning/completed-workflows/$(date +%Y-%m-%d)-writing.md"
 ```
 
 Generate completion summary:
@@ -442,9 +454,9 @@ Generate completion summary:
 **Style**: [legal | econ | general]
 
 ### Artifacts
-- `.claude/PRECIS.md` - Thesis, audience, claims
-- `.claude/OUTLINE.md` - Document structure
-- `.claude/REVIEW.md` - Final review diagnosis
+- `.planning/PRECIS.md` - Thesis, audience, claims
+- `.planning/OUTLINE.md` - Document structure
+- `.planning/REVIEW.md` - Final review diagnosis
 - `outlines/` - Detailed section outlines
 - `drafts/` - Final prose
 

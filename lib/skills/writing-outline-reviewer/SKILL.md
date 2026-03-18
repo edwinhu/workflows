@@ -20,7 +20,7 @@ Use the output path with `Read()`.
 
 ## When to Dispatch
 
-After writing-outline completes `.claude/OUTLINE.md` (master outline) and all section outlines in `outlines/`, before writing-draft begins.
+After writing-outline completes `.planning/OUTLINE.md` (master outline) and all section outlines in `outlines/`, before writing-draft begins.
 
 ```
 Outline phase complete → all outlines/ files written
@@ -74,9 +74,9 @@ Agent(
   prompt="""
 You are an outline document reviewer. Verify this outline is complete, maps to the PRECIS, and is ready for prose drafting.
 
-**Master outline:** .claude/OUTLINE.md [— Chunk: sections N-M only, if chunked]
+**Master outline:** .planning/OUTLINE.md [— Chunk: sections N-M only, if chunked]
 **Section outlines:** outlines/ directory
-**Precis for reference:** .claude/PRECIS.md
+**Precis for reference:** .planning/PRECIS.md
 
 Read ALL files, then evaluate the outline against ALL categories below.
 
@@ -155,7 +155,7 @@ You know the subsections lack evidence mapping. You know the transitions are mis
 ## Gate Function
 
 ```
-1. IDENTIFY: `.claude/OUTLINE.md` and all `outlines/*.md` files exist
+1. IDENTIFY: `.planning/OUTLINE.md` and all `outlines/*.md` files exist
 2. DISPATCH: Send to reviewer subagent (per-chunk if 10+ sections)
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)

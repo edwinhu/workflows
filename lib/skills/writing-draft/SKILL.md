@@ -47,7 +47,7 @@ START (all section outlines in outlines/ exist)
   │
   └─ GATE: All OUTLINE sections have drafts/ files with substance?
      ├─ NO → Identify gap, re-draft (no pause)
-     └─ YES → Invoke /writing-review
+     └─ YES → Load writing-validate → Validate claim coverage → Then /writing-review
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -101,9 +101,9 @@ If you catch yourself writing a section significantly shorter than the outline i
 ### Step 1: Load Context
 
 ```
-Read(".claude/ACTIVE_WORKFLOW.md")
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/ACTIVE_WORKFLOW.md")
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 ```
 
 ### Step 2: Load Domain Skill
@@ -226,7 +226,7 @@ Use the output path with `Read()`.
 
 ### Step 4: Update Workflow State
 
-After each section, update `.claude/ACTIVE_WORKFLOW.md`:
+After each section, update `.planning/ACTIVE_WORKFLOW.md`:
 
 ```yaml
 phase: draft
@@ -246,7 +246,7 @@ Before proceeding to edit/verify:
 2. **RUN**: List files in `drafts/`, compare against OUTLINE.md sections
 3. **READ**: Check each draft exists and has substantial content (not cursory stubs)
 4. **VERIFY**: All sections have drafts, each draft covers all outline points
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-revise
+5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-validate
 
 **Reporting "all sections drafted" without checking each file is NOT HELPFUL — the user moves to review with missing sections that force a return to drafting.** You must verify every draft exists and has real content.
 
@@ -284,6 +284,31 @@ When escalating, present:
 - Options: simplify the section, return to outline phase, merge with adjacent section, or gather more sources
 
 **Spinning without progress is anti-helpful.** Five iterations is the threshold for asking the user if scope needs adjustment.
+
+## Deviation Rules
+
+When drafting reveals unplanned issues, follow this 4-rule system:
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Factual Error** | Wrong fact, misattribution, incorrect citation, anachronism, wrong date/name | Fix → verify against source → track `[Rule 1 - Factual]` | Auto |
+| **R2: Missing Evidence** | Claim without citation, unsupported assertion, missing example, evidence gap | Add evidence/citation → track `[Rule 2 - Evidence]` | Auto |
+| **R3: Structural Blocker** | Missing section referenced by another, broken cross-reference, orphaned footnote, missing transition | Fix blocker → track `[Rule 3 - Structural]` | Auto |
+| **R4: Argument Restructuring** | Claim order needs changing, thesis angle needs adjustment, major section add/remove, argument flow fundamentally broken | **STOP** → present to user → may require `.planning/OUTLINE.md` revision → track `[Rule 4 - Restructuring]` | **Ask user** |
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure → R4.
+
+**Edge cases:**
+- Missing footnote for existing claim → R2 (add evidence)
+- Entire section doesn't fit the argument → R4 (restructuring)
+- Cross-reference to nonexistent section → R3 (structural blocker)
+- Claim contradicts evidence found during drafting → R4 (argument restructuring)
+- Typo in citation → R1 (factual error)
+- Section too long, needs splitting → R3 (structural) unless it changes the argument flow → R4
+
+**Tracking format per section:**
+Each section's draft summary should include:
+**Deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
 
 ## Rationalization Table
 
@@ -328,4 +353,8 @@ When escalating, present:
 
 After all sections are drafted:
 
-Invoke `/writing-review` to diagnose structural issues (transitions, repetition, late-introduced concepts), then `/writing-revise` to fix them.
+Discover and read the validation phase:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-validate/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`. Follow its instructions to validate claim coverage before review.

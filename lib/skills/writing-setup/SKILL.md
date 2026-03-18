@@ -25,12 +25,12 @@ Use the output path with `Read()`.
 START (brainstorm confirmed)
   │
   ├─ Step 1: Create project directories
-  │  └─ mkdir outlines/ drafts/ references/ scratch/ .claude/
+  │  └─ mkdir outlines/ drafts/ references/ scratch/ .planning/
   │
   ├─ Step 2: Interview → Create PRECIS.md
   │  ├─ Ask thesis question
   │  ├─ Ask counterargument question
-  │  └─ Write .claude/PRECIS.md (thesis, claims, audience, scope)
+  │  └─ Write .planning/PRECIS.md (thesis, claims, audience, scope)
   │
   ├─ Step 2b: PRECIS Review Gate
   │  └─ Dispatch writing-precis-reviewer subagent
@@ -69,7 +69,7 @@ Skipping levels produces incoherent documents. Each level expands the previous.
 ## Step 1: Create Project Structure
 
 ```bash
-mkdir -p outlines drafts references scratch .claude
+mkdir -p outlines drafts references scratch .planning
 echo "scratch/" >> .gitignore
 ```
 
@@ -107,7 +107,7 @@ AskUserQuestion(questions=[
 
 ### PRECIS.md Template
 
-Write to `.claude/PRECIS.md`:
+Write to `.planning/PRECIS.md`:
 
 ```markdown
 # Precis: [Working Title]
@@ -217,7 +217,7 @@ Detect domain from sources and topic:
 
 ## Step 5: Create ACTIVE_WORKFLOW.md
 
-Create `.claude/ACTIVE_WORKFLOW.md` to track workflow state:
+Create `.planning/ACTIVE_WORKFLOW.md` to track workflow state:
 
 ```yaml
 ---
@@ -225,8 +225,8 @@ workflow: writing
 style: [legal|econ|general]
 phase: outline
 project_root: [current directory]
-precis: .claude/PRECIS.md
-outline: .claude/OUTLINE.md
+precis: .planning/PRECIS.md
+outline: .planning/OUTLINE.md
 current_part: [if multi-part document]
 edits_since_verify: 0
 verify_threshold: 10
@@ -246,9 +246,9 @@ Style: [legal/econ/general]
 Phase: outline
 
 Files created:
-- .claude/PRECIS.md (thesis, audience, claims)
-- .claude/OUTLINE.md (structure)
-- .claude/ACTIVE_WORKFLOW.md (workflow state)
+- .planning/PRECIS.md (thesis, audience, claims)
+- .planning/OUTLINE.md (structure)
+- .planning/ACTIVE_WORKFLOW.md (workflow state)
 
 Next: Create detailed section outlines.
 ```
@@ -260,9 +260,9 @@ Next: Create detailed section outlines.
 Before proceeding to outline phase:
 
 1. **IDENTIFY**: What proves setup is complete?
-   - `.claude/PRECIS.md` exists with thesis, claims, audience
-   - `.claude/OUTLINE.md` exists with sections mapped to claims
-   - `.claude/ACTIVE_WORKFLOW.md` exists with style and phase
+   - `.planning/PRECIS.md` exists with thesis, claims, audience
+   - `.planning/OUTLINE.md` exists with sections mapped to claims
+   - `.planning/ACTIVE_WORKFLOW.md` exists with style and phase
 2. **RUN**: Read each file
 3. **READ**: Check content
    - PRECIS has non-empty Thesis, Key Claims, Audience, Domain

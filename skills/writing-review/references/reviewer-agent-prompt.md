@@ -42,8 +42,8 @@ PRECIS claim this section advances: {PRECIS_CLAIM}
 Read ALL of the following before reviewing. Do not skip any.
 
 ```
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 Read("{SECTION_OUTLINE_PATH}")
 {DRAFT_READ_INSTRUCTION}
 Read("{PLUGIN_ROOT}/lib/skills/writing-review/SKILL.md")

@@ -11,9 +11,9 @@ Shared enforcement for ALL writing skills. Every writing phase skill MUST `Read(
 Writing proceeds through levels of detail. Each level expands the previous. **Never skip levels.**
 
 ```
-.claude/PRECIS.md          # Level 1: Thesis, claims, audience
+.planning/PRECIS.md          # Level 1: Thesis, claims, audience
        ↓
-.claude/OUTLINE.md         # Level 2: Master structure (sections, goals)
+.planning/OUTLINE.md         # Level 2: Master structure (sections, goals)
        ↓
 outlines/Part I.md         # Level 3: Detailed section outline (bullets, sources)
        ↓
@@ -36,8 +36,8 @@ Every phase that touches draft prose MUST load ALL constraint layers before edit
 
 | Layer | What | When |
 |-------|------|------|
-| **Workflow state** | `.claude/ACTIVE_WORKFLOW.md` | Always |
-| **Structural intent** | `.claude/PRECIS.md`, `.claude/OUTLINE.md` | Always |
+| **Workflow state** | `.planning/ACTIVE_WORKFLOW.md` | Always |
+| **Structural intent** | `.planning/PRECIS.md`, `.planning/OUTLINE.md` | Always |
 | **Domain skill** | `writing-legal`, `writing-econ`, or `writing-general` based on `style` in ACTIVE_WORKFLOW | Before any prose work (drafting, reviewing, revising) |
 | **AI anti-patterns** | `Skill(skill="workflows:ai-anti-patterns")` | Before any prose work (drafting, reviewing, revising) |
 
@@ -238,3 +238,25 @@ These are the most common rationalizations that cause main chat to bypass the wr
 When in doubt about whether to skip a step, ask: **"If I skip this, does the user's published work get worse?"**
 
 If yes, do not skip. The user experiences the quality of the final document, not your sense of completion. Every step you skip to "help faster" chooses YOUR comfort over the USER's outcome.
+
+---
+
+## Deviation Rules
+
+Drafting subagents follow a 4-rule system for unplanned discoveries:
+
+- **R1-R3 (Auto):** Factual errors, missing evidence, and structural blockers are fixed automatically and tracked.
+- **R4 (STOP):** Argument restructuring requires user decision — may require OUTLINE.md revision.
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure → R4.
+
+Each section's summary must include a deviation tracking line. This is how we know what changed from the outline.
+
+### Rationalization Prevention (Deviation Rules)
+
+| Thought | Reality |
+|---------|---------|
+| "This restructuring is minor" | If it changes the argument flow, it's R4. User decides. |
+| "I'll note the change later" | Later = never. STOP now, track it. |
+| "Adding a section won't change the argument" | New sections shift emphasis and flow. User MUST know. |
+| "Tracking deviations interrupts the writing flow" | 30 seconds of tracking prevents hours of "why did the argument change?" |

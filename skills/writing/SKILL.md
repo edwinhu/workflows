@@ -17,6 +17,18 @@ command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references
 ```
 Use the output path with `Read()`.
 
+## Session Resume Detection
+
+Before starting, check for an existing handoff:
+
+1. Check if `.planning/HANDOFF.md` exists
+2. **If found:** Read it and present to user:
+   - Show the phase, section in progress, and Next Action
+   - Ask: "Resume from handoff, or start fresh?"
+   - If resume: skip to the recorded phase
+   - If fresh: proceed with mode detection
+3. **If not found:** Proceed normally
+
 ## Decision Flowchart (This IS the Spec)
 
 ```
@@ -25,7 +37,7 @@ START
   ├─ Quick edit? ("check this paragraph", inline short text)
   │  YES → Load writing-general/SKILL.md → Apply rules → Return → EXIT
   │
-  ├─ Active workflow? (.claude/ACTIVE_WORKFLOW.md exists)
+  ├─ Active workflow? (.planning/ACTIVE_WORKFLOW.md exists)
   │  YES → Read ACTIVE_WORKFLOW.md → Resume at current phase → EXIT
   │
   └─ New project
@@ -57,10 +69,10 @@ If text and flowchart disagree, the flowchart wins.
 ## Step 2: Check for Active Workflow
 
 ```
-if .claude/ACTIVE_WORKFLOW.md exists:
-    Read(“.claude/ACTIVE_WORKFLOW.md”)
-    Read(“.claude/PRECIS.md”)
-    Read(“.claude/OUTLINE.md”)
+if .planning/ACTIVE_WORKFLOW.md exists:
+    Read(“.planning/ACTIVE_WORKFLOW.md”)
+    Read(“.planning/PRECIS.md”)
+    Read(“.planning/OUTLINE.md”)
     → Resume at current phase with appropriate domain skill
 else:
     → Continue to Phase 3 (new project setup)
@@ -78,7 +90,7 @@ Writing projects should follow this standardized structure:
 
 ```
 project-name/
-├── .claude/
+├── .planning/
 │   ├── ACTIVE_WORKFLOW.md      # Workflow state (auto-created)
 │   ├── PRECIS.md               # Thesis, audience, claims, counterarguments
 │   └── OUTLINE.md              # Master document structure
@@ -101,7 +113,7 @@ project-name/
 
 | Directory | Purpose | Tracked in Git |
 |-----------|---------|----------------|
-| `.claude/` | Workflow state + high-level docs (PRECIS, OUTLINE) | Yes |
+| `.planning/` | Workflow state + high-level docs (PRECIS, OUTLINE) | Yes |
 | `outlines/` | Detailed outlines per section/part | Yes |
 | `drafts/` | Prose versions of outlines | Yes |
 | `references/` | Sources, research notes | Yes |
@@ -112,9 +124,9 @@ project-name/
 Writing proceeds through levels of detail:
 
 ```
-.claude/PRECIS.md          # Level 1: Thesis, claims, audience
+.planning/PRECIS.md          # Level 1: Thesis, claims, audience
        ↓
-.claude/OUTLINE.md         # Level 2: Master structure (sections, goals)
+.planning/OUTLINE.md         # Level 2: Master structure (sections, goals)
        ↓
 outlines/Part I.md         # Level 3: Detailed section outline (bullets, sources)
        ↓
@@ -133,7 +145,7 @@ For multi-part documents:
 - Prose drafts: `drafts/Part I (Draft).md`
 
 For single documents:
-- Master outline in `.claude/OUTLINE.md` is sufficient
+- Master outline in `.planning/OUTLINE.md` is sufficient
 - Draft: `drafts/draft.md` or `drafts/[title].md`
 
 ### Creating Project Structure
@@ -141,7 +153,7 @@ For single documents:
 When starting a new writing project, create the directories:
 
 ```bash
-mkdir -p outlines drafts references scratch .claude
+mkdir -p outlines drafts references scratch .planning
 echo “scratch/” >> .gitignore
 ```
 
@@ -169,7 +181,7 @@ echo “scratch/” >> .gitignore
                                     │
                                     └── /writing-review (diagnose → REVIEW.md)
                                             │ Hierarchical review: section → transition → document
-                                            │ .claude/REVIEW.md
+                                            │ .planning/REVIEW.md
                                             │ GATE: All sections reviewed, all levels complete
                                             │
                                             └── /writing-revise (fix from REVIEW.md + complete)

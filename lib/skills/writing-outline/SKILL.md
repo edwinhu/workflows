@@ -10,9 +10,9 @@ Create a detailed outline for a specific section/part before drafting prose. Thi
 ## Progressive Expansion Context
 
 ```
-.claude/PRECIS.md          # Level 1: Thesis, claims, audience
+.planning/PRECIS.md          # Level 1: Thesis, claims, audience
        ↓
-.claude/OUTLINE.md         # Level 2: Master structure (sections, goals)
+.planning/OUTLINE.md         # Level 2: Master structure (sections, goals)
        ↓
 outlines/Part I.md         # Level 3: THIS STEP - Detailed section outline
        ↓
@@ -90,9 +90,9 @@ Thin outlines produce thin drafts. Each outline must have POINT, EVIDENCE, and L
 ### Step 1: Load Context
 
 ```
-Read(".claude/ACTIVE_WORKFLOW.md")
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/ACTIVE_WORKFLOW.md")
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 ```
 
 If master OUTLINE.md is missing, run writing-brainstorm first.
@@ -238,7 +238,7 @@ Report any misalignments.
 
 ### Step 6: Update Workflow State
 
-Update `.claude/ACTIVE_WORKFLOW.md`:
+Update `.planning/ACTIVE_WORKFLOW.md`:
 
 ```yaml
 phase: outline

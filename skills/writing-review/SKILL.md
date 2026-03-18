@@ -5,7 +5,7 @@ description: "This skill should be used when the user asks to 'review my writing
 
 # Writing Review
 
-Hierarchical bottom-up review that diagnoses structural problems across a drafted document. Produces `.claude/REVIEW.md` — a structured diagnosis consumed by `/writing-revise`.
+Hierarchical bottom-up review that diagnoses structural problems across a drafted document. Produces `.planning/REVIEW.md` — a structured diagnosis consumed by `/writing-revise`.
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and draft files in `drafts/` must exist.
 
@@ -20,6 +20,18 @@ command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references
 Use the output path with `Read()`.
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before reviewing prose.
+
+## Session Resume Detection
+
+Before starting, check for an existing handoff:
+
+1. Check if `.planning/HANDOFF.md` exists
+2. **If found:** Read it and present to user:
+   - Show the phase, section in progress, and Next Action
+   - Ask: "Resume from handoff, or start fresh?"
+   - If resume: skip to the recorded phase
+   - If fresh: proceed with mode detection
+3. **If not found:** Proceed normally
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Reading
@@ -93,9 +105,9 @@ If you catch yourself in any of these violations, the review output is contamina
 ### Step 1: Load Context
 
 ```
-Read(".claude/ACTIVE_WORKFLOW.md")
-Read(".claude/PRECIS.md")
-Read(".claude/OUTLINE.md")
+Read(".planning/ACTIVE_WORKFLOW.md")
+Read(".planning/PRECIS.md")
+Read(".planning/OUTLINE.md")
 Glob("outlines/*.md")
 Glob("drafts/*.md")
 ```
@@ -174,7 +186,7 @@ START (PRECIS + OUTLINE + drafts/ exist)
            │
            └─ GATE: All 3 levels complete? Every section reviewed?
               ├─ NO → Go back, complete missing level
-              └─ YES → Write .claude/REVIEW.md → Announce → Suggest /writing-revise
+              └─ YES → Write .planning/REVIEW.md → Announce → Suggest /writing-revise
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -293,7 +305,7 @@ Using all section review data and boundary summaries, check the document as a wh
 
 ## Step 4: Generate REVIEW.md
 
-Write the complete review to `.claude/REVIEW.md`.
+Write the complete review to `.planning/REVIEW.md`.
 
 > **Full REVIEW.md template:** See `references/review-template.md`
 
@@ -303,7 +315,7 @@ Write the complete review to `.claude/REVIEW.md`.
 
 Before declaring review complete:
 
-1. **IDENTIFY**: `.claude/REVIEW.md` exists
+1. **IDENTIFY**: `.planning/REVIEW.md` exists
 2. **RUN**: Read REVIEW.md, verify every section from OUTLINE.md has a review entry
 3. **READ**: Confirm every issue has severity + location + quoted evidence + suggestion
 4. **VERIFY**: All three levels completed (section, transition, document)
@@ -315,7 +327,7 @@ Before declaring review complete:
 
 ## Step 5: Update Workflow State
 
-Update `.claude/ACTIVE_WORKFLOW.md`:
+Update `.planning/ACTIVE_WORKFLOW.md`:
 
 ```yaml
 phase: review
@@ -327,7 +339,7 @@ critical_issues: [critical count]
 ## Step 6: Announce and Suggest Next Step
 
 ```
-Review complete. Results written to .claude/REVIEW.md.
+Review complete. Results written to .planning/REVIEW.md.
 
 Found [N] issues ([critical] critical, [major] major, [minor] minor).
 
@@ -394,4 +406,4 @@ Only issues at HIGH or MEDIUM confidence appear in the main report. LOW confiden
 
 After review is complete:
 
-Invoke `/writing-revise` to fix issues identified in `.claude/REVIEW.md`.
+Invoke `/writing-revise` to fix issues identified in `.planning/REVIEW.md`.

@@ -36,7 +36,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 |-------------|-------------------|--------|
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
 | `/ds` | `/ds-fix` | 6-phase data science with output-first verification and DQ validation |
-| `/writing` | `/writing-review` + `/writing-revise` | Writing: brainstorm, outline, draft, review, revise |
+| `/writing` | `/writing-review` + `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 
 ### Legal & Citation
 

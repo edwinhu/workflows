@@ -20,7 +20,7 @@ Use the output path with `Read()`.
 
 ## When to Dispatch
 
-After writing-setup writes `.claude/PRECIS.md` and before `.claude/OUTLINE.md` creation begins.
+After writing-setup writes `.planning/PRECIS.md` and before `.planning/OUTLINE.md` creation begins.
 
 ```
 Step 2: Interview → PRECIS.md written
@@ -65,7 +65,7 @@ Agent(
   prompt="""
 You are a precis document reviewer. Verify this precis is sharp, complete, and ready to guide outlining and drafting.
 
-**Precis to review:** .claude/PRECIS.md
+**Precis to review:** .planning/PRECIS.md
 
 Read the precis file, then evaluate against ALL categories below.
 
@@ -113,7 +113,7 @@ Read the precis file, then evaluate against ALL categories below.
 Proceed immediately to Step 3 (create OUTLINE.md) in writing-setup.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.claude/PRECIS.md`
+1. Fix the specific issues in `.planning/PRECIS.md`
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations
 
@@ -136,7 +136,7 @@ You know the thesis is fuzzy. You know the claims overlap. You know the countera
 ## Gate Function
 
 ```
-1. IDENTIFY: `.claude/PRECIS.md` exists with content
+1. IDENTIFY: `.planning/PRECIS.md` exists with content
 2. DISPATCH: Send to reviewer subagent
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)

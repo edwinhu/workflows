@@ -22,9 +22,9 @@ Use the output path with `Read()`.
 
 **Step 2: Check for active workflow**
 
-If `.claude/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: econ`.
+If `.planning/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: econ`.
 
-If no `.claude/PRECIS.md` exists in the project:
+If no `.planning/PRECIS.md` exists in the project:
 - Suggest: "No PRECIS.md found. Consider `/writing` to set up thesis, audience, and claims first."
 
 **Step 3: Apply econ-specific rules below**

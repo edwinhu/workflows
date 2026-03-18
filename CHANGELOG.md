@@ -3,6 +3,19 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.44.0] - 2026-03-18
+
+### Added
+- Writing workflow: full GSD adoption — deviation rules (R1 factual, R2 evidence, R3 structural, R4 argument restructuring STOP), `.planning/` state folder, `writing-validate` phase (claim coverage), `writing-handoff` skill
+- `writing-validate` skill: maps PRECIS claims to draft sections, 4-level validation (exists, substantive, supported, addresses claim), produces VALIDATION.md
+- `writing-handoff` skill: structured session handoff with writing-specific frontmatter (section_in_progress, total_sections)
+- Deviation rules constraint in `writing-common-constraints.md`
+- Handoff detection in `/writing`, `/writing-review`, and `/writing-revise` entry points
+
+### Changed
+- All writing state files migrated from `.claude/` to `.planning/` (PRECIS.md, OUTLINE.md, REVIEW.md, REVIEW_STATE.md, ACTIVE_WORKFLOW.md, completed-workflows/)
+- `writing-draft` now chains to `writing-validate` (not `/writing-review` directly)
+
 ## [4.43.0] - 2026-03-18
 
 ### Added
