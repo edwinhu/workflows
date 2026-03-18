@@ -230,7 +230,7 @@ Rate each issue 0-100. Only report issues >= 80 confidence.
 
 ## Step 4: Log to LEARNINGS.md
 
-Append to `.claude/LEARNINGS.md` after each task:
+Append to `.planning/LEARNINGS.md` after each task:
 
 ```markdown
 ## Task N: [Name] - COMPLETE

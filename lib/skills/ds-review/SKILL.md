@@ -85,9 +85,9 @@ Each reviewer receives a self-contained prompt from a reference file. **Reviewer
 
 **Before spawning, substitute these variables in each prompt:**
 - `ANALYSIS_FILES` → list of notebooks/scripts in scope (paste actual list)
-- `SPEC_CONTEXT` → relevant sections of .claude/SPEC.md (paste inline, do NOT reference file)
-- `PLAN_TASKS` → task list from .claude/PLAN.md (paste inline, verify completed)
-- `LEARNINGS_PIPELINE` → data quality chain from .claude/LEARNINGS.md (paste inline)
+- `SPEC_CONTEXT` → relevant sections of .planning/SPEC.md (paste inline, do NOT reference file)
+- `PLAN_TASKS` → task list from .planning/PLAN.md (paste inline, verify completed)
+- `LEARNINGS_PIPELINE` → data quality chain from .planning/LEARNINGS.md (paste inline)
 - `PLUGIN_ROOT` → resolved base directory for skill paths (relative to this skill's base directory)
 
 **Reviewer prompts (read, substitute variables, send as message):**
@@ -279,7 +279,7 @@ Iteration 3: Re-Review → CHANGES REQUIRED → Fix → Re-Review
          All clean? → APPROVED
 ```
 
-**Track iterations in `.claude/REVIEW_STATE.md`:**
+**Track iterations in `.planning/REVIEW_STATE.md`:**
 
 ```yaml
 ---
@@ -296,7 +296,7 @@ issues_found_count: 5
 - **CONTINUE**: iteration < 3 AND issues remain → loop back
 
 **Before returning any verdict, check iteration count:**
-1. READ `.claude/REVIEW_STATE.md` (create if missing with iteration: 1)
+1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
 2. If iteration >= 3 and issues remain: ESCALATE (don't return CHANGES REQUIRED)
 3. If iteration < 3 and issues remain: INCREMENT iteration, return CHANGES REQUIRED
 4. If no issues: APPROVED
@@ -351,7 +351,7 @@ Use the output path with `Read()`.
 ## Review Focus Areas
 
 ### Spec Compliance
-- [ ] Verify all objectives from .claude/SPEC.md are addressed
+- [ ] Verify all objectives from .planning/SPEC.md are addressed
 - [ ] Confirm success criteria can be verified
 - [ ] Check constraints were respected (especially replication requirements)
 - [ ] Verify analysis answers the original question
@@ -578,7 +578,7 @@ Spawn a Task agent to review the analysis:
 
 ```
 Task(subagent_type="general-purpose", prompt="""
-Review analysis against .claude/SPEC.md.
+Review analysis against .planning/SPEC.md.
 
 Execute TWO-PASS review:
 
@@ -668,7 +668,7 @@ Before claiming review is complete (APPROVED or ESCALATE):
              - APPROVED: Zero issues >= 80 confidence
              - ESCALATE: iteration >= 3 AND issues remain
 
-2. RUN     → Check `.claude/REVIEW_STATE.md` for iteration count
+2. RUN     → Check `.planning/REVIEW_STATE.md` for iteration count
              Read review output for issue count
 
 3. READ    → Examine both:
@@ -691,7 +691,7 @@ After review completes, handle verdict-specific transitions:
 
 ### If APPROVED (no issues >= 80 confidence)
 
-Mark review complete in `.claude/REVIEW_STATE.md`:
+Mark review complete in `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -711,7 +711,7 @@ Use the output path with `Read()`.
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -729,7 +729,7 @@ Return to `/ds-implement` with specific issues. **Analyst MUST re-invoke /ds-rev
 
 ### If ESCALATE (iteration >= 3, issues remain)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---

@@ -10,7 +10,7 @@ description: "Internal skill used by ds-brainstorm at Phase 1 exit gate. Dispatc
 
 ## When to Dispatch
 
-After Phase 1 (brainstorm) writes `.claude/SPEC.md` and before Phase 2 (ds-plan) begins.
+After Phase 1 (brainstorm) writes `.planning/SPEC.md` and before Phase 2 (ds-plan) begins.
 
 ```
 Phase 1: Brainstorm -> SPEC.md written
@@ -63,7 +63,7 @@ Agent(
   prompt="""
 You are a data science spec document reviewer. Verify this spec is complete and ready for data profiling and analysis planning.
 
-**Spec to review:** .claude/SPEC.md
+**Spec to review:** .planning/SPEC.md
 
 Read the spec file, then evaluate against ALL categories below.
 
@@ -117,7 +117,7 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan/SKI
 Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.claude/SPEC.md`
+1. Fix the specific issues in `.planning/SPEC.md`
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations
 
@@ -140,7 +140,7 @@ You know the spec has gaps. Profiling built on a bad spec profiles the wrong dat
 ## Gate Function
 
 ```
-1. IDENTIFY: `.claude/SPEC.md` exists
+1. IDENTIFY: `.planning/SPEC.md` exists
 2. DISPATCH: Send to reviewer subagent
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)

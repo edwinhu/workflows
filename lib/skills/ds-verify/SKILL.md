@@ -205,9 +205,9 @@ Agent(subagent_type="general-purpose", prompt="""
 Verify this analysis produces consistent results from a fresh run.
 
 ## Context
-- Read .claude/SPEC.md for objectives and success criteria
-- Read .claude/PLAN.md for expected outputs
-- Read .claude/LEARNINGS.md for pipeline documentation
+- Read .planning/SPEC.md for objectives and success criteria
+- Read .planning/PLAN.md for expected outputs
+- Read .planning/LEARNINGS.md for pipeline documentation
 
 ## Shared Checks
 Read the shared check definitions:
@@ -366,5 +366,5 @@ When user confirms all criteria are met:
 
 The `/ds` workflow is now finished. Offer to:
 - Export results to final format
-- Clean up `.claude/` files
+- Clean up `.planning/` files
 - Start a new analysis with `/ds`

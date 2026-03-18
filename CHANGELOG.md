@@ -3,6 +3,20 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.43.0] - 2026-03-18
+
+### Added
+- DS workflow: full GSD adoption — deviation rules (R1-R3 auto, R4a data assumptions, R4b methodology STOP), `.planning/` state folder, `ds-validate` phase (DQ checks as test suite), `ds-handoff` skill for session pause/resume
+- `ds-validate` skill: maps SPEC.md requirements to output artifacts, runs DQ1-DQ5 + M1 checks, produces VALIDATION.md
+- `ds-handoff` skill: structured session handoff with YAML frontmatter and mandatory sections
+- C8 (Deviation Rules) constraint in `ds-common-constraints.md`
+- Handoff detection in both `/ds` and `/ds-fix` entry points
+
+### Changed
+- All DS state files migrated from `.claude/` to `.planning/` (SPEC.md, PLAN.md, LEARNINGS.md, REVIEW_STATE.md)
+- `ds-implement` now chains to `ds-validate` (not `ds-review` directly)
+- `ds-checks.md` check matrix updated with `ds-validate` column
+
 ## [4.42.0] - 2026-03-18
 
 ### Fixed

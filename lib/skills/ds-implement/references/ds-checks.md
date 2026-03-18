@@ -1,21 +1,21 @@
 # DS Common Checks
 
-Shared check definitions for data quality verification. Referenced by ds-review, ds-fix, and ds-verify.
+Shared check definitions for data quality verification. Referenced by ds-validate, ds-review, ds-fix, and ds-verify.
 
 **Iron Law: Both entry and midpoint MUST Read() this file before evaluating data quality. Inlined copies will drift.**
 
 ## Check Matrix
 
-| Check ID | Description | ds-review | ds-fix | ds-verify |
-|----------|-------------|-----------|--------|-----------|
-| DQ1 | Empty/constant columns | ✅ | ✅ | ✅ |
-| DQ2 | High-null columns (>50%) | ✅ | ✅ | ✅ |
-| DQ3 | Duplicate rows on key columns | ✅ | ✅ | ✅ |
-| DQ4 | Row count traceability (vs LEARNINGS.md) | ✅ | ✅ | ✅ |
-| DQ5 | Cardinality check on categoricals | ✅ | ✅ | ❌ |
-| DQ6 | Output-first verification (shape before/after) | ❌ | ✅ | ✅ |
-| R1 | Reproducibility (same inputs → same outputs) | ❌ | ❌ | ✅ |
-| M1 | Spec compliance (all SPEC.md objectives addressed) | ✅ | ✅ | ✅ |
+| Check ID | Description | ds-validate | ds-review | ds-fix | ds-verify |
+|----------|-------------|-------------|-----------|--------|-----------|
+| DQ1 | Empty/constant columns | ✅ | ✅ | ✅ | ✅ |
+| DQ2 | High-null columns (>50%) | ✅ | ✅ | ✅ | ✅ |
+| DQ3 | Duplicate rows on key columns | ✅ | ✅ | ✅ | ✅ |
+| DQ4 | Row count traceability (vs LEARNINGS.md) | ✅ | ✅ | ✅ | ✅ |
+| DQ5 | Cardinality check on categoricals | ✅ | ✅ | ✅ | ❌ |
+| DQ6 | Output-first verification (shape before/after) | ❌ | ❌ | ✅ | ✅ |
+| R1 | Reproducibility (same inputs → same outputs) | ❌ | ❌ | ❌ | ✅ |
+| M1 | Spec compliance (all SPEC.md objectives addressed) | ✅ | ✅ | ✅ | ✅ |
 
 ## Data Quality Checks (DQ1-DQ6)
 
@@ -112,7 +112,7 @@ df.head()
 
 ### M1: Spec Compliance
 
-Verify all objectives from .claude/SPEC.md are addressed in the analysis output.
+Verify all objectives from .planning/SPEC.md are addressed in the analysis output.
 
 - [ ] Each objective has corresponding output
 - [ ] Success criteria can be verified against actual results

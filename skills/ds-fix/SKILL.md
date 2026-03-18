@@ -6,6 +6,18 @@ description: "This skill should be used when the user asks to 'fix analysis', 'w
 
 **Announce:** "Using ds-fix for mid-analysis course correction."
 
+## Session Resume Detection
+
+Before starting, check for an existing handoff:
+
+1. Check if `.planning/HANDOFF.md` exists
+2. **If found:** Read it and present to user:
+   - Show the phase, task progress, and Next Action from the handoff
+   - Ask: "Resume from handoff, or start fresh?"
+   - If resume: skip to the recorded phase
+   - If fresh: proceed with diagnosis
+3. **If not found:** Proceed normally with Step 1 (Load Context)
+
 ## Where This Fits
 
 ```
@@ -71,9 +83,9 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-comm
 Use the output path with `Read()`.
 
 ```
-Read(".claude/SPEC.md")
-Read(".claude/PLAN.md")
-Read(".claude/LEARNINGS.md")
+Read(".planning/SPEC.md")
+Read(".planning/PLAN.md")
+Read(".planning/LEARNINGS.md")
 ```
 
 Discover and read shared check definitions:
@@ -315,9 +327,9 @@ Task(subagent_type="general-purpose", prompt="""
 Fix [SPECIFIC ISSUE] in the analysis.
 
 Context:
-- Read .claude/LEARNINGS.md for prior steps
-- Read .claude/PLAN.md for task details
-- Read .claude/SPEC.md for objectives
+- Read .planning/LEARNINGS.md for prior steps
+- Read .planning/PLAN.md for task details
+- Read .planning/SPEC.md for objectives
 
 Fix Protocol:
 1. Trace to root cause (do NOT guess)

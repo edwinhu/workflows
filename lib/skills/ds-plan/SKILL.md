@@ -17,7 +17,7 @@ Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
 # Planning (Data Profiling + Task Breakdown)
 
 Profile the data and create an analysis plan based on the spec.
-**Requires `.claude/SPEC.md` from /ds first.**
+**Requires `.planning/SPEC.md` from /ds first.**
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning
@@ -25,11 +25,11 @@ Profile the data and create an analysis plan based on the spec.
 **SPEC MUST EXIST BEFORE PLANNING. This is not negotiable.**
 
 Before exploring data or creating tasks, you MUST have:
-1. `.claude/SPEC.md` with objectives and constraints
+1. `.planning/SPEC.md` with objectives and constraints
 2. Clear success criteria
 3. User-approved spec
 
-**If `.claude/SPEC.md` doesn't exist, run /ds first.**
+**If `.planning/SPEC.md` doesn't exist, run /ds first.**
 </EXTREMELY-IMPORTANT>
 
 ### Rationalization Table - STOP If You Think:
@@ -65,7 +65,7 @@ Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect
 
 ### No Pause After Completion
 
-After writing `.claude/PLAN.md` and initializing `.claude/LEARNINGS.md`, IMMEDIATELY discover and load ds-implement:
+After writing `.planning/PLAN.md` and initializing `.planning/LEARNINGS.md`, IMMEDIATELY discover and load ds-implement:
 ```bash
 ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
@@ -83,11 +83,11 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 
 | DO | DON'T |
 |-------|----------|
-| Read .claude/SPEC.md | Skip brainstorm phase |
+| Read .planning/SPEC.md | Skip brainstorm phase |
 | Profile data (shape, types, stats) | Skip to analysis |
 | Identify data quality issues | Ignore missing/duplicate data |
 | Create ordered task list | Write final analysis code |
-| Write .claude/PLAN.md | Make completion claims |
+| Write .planning/PLAN.md | Make completion claims |
 
 **Brainstorm answers: WHAT and WHY**
 **Plan answers: HOW and DATA QUALITY**
@@ -97,7 +97,7 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 ### 1. Verify Spec Exists
 
 ```bash
-cat .claude/SPEC.md  # verify-spec: read SPEC file to confirm it exists
+cat .planning/SPEC.md  # verify-spec: read SPEC file to confirm it exists
 ```
 
 If missing, stop and run `/ds` first.
@@ -415,7 +415,7 @@ Break analysis into ordered tasks:
 
 ### 7. Write Plan Doc
 
-Write to `.claude/PLAN.md`:
+Write to `.planning/PLAN.md`:
 
 ```markdown
 # Analysis Plan: [Analysis Name]
@@ -433,7 +433,7 @@ Write to `.claude/PLAN.md`:
 > Use the output path with `Read()`.
 
 ## Spec Reference
-See: .claude/SPEC.md
+See: .planning/SPEC.md
 
 ## Data Profile
 
@@ -555,21 +555,21 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 ## Output
 
 Complete the plan when:
-- Read and understand `.claude/SPEC.md`
+- Read and understand `.planning/SPEC.md`
 - Profile all data sources (shape, types, stats)
 - Document data quality issues
 - Define cleaning strategy for each issue
 - Assess ETL strategy (if data > 1M rows or multiple sources)
 - Order tasks by dependency
 - Define output verification criteria
-- Write `.claude/PLAN.md`
-- Initialize `.claude/LEARNINGS.md`
+- Write `.planning/PLAN.md`
+- Initialize `.planning/LEARNINGS.md`
 - Pass Exit Gate
 - Confirm ready for implementation
 
 ### Initialize LEARNINGS.md
 
-After writing `.claude/PLAN.md`, create `.claude/LEARNINGS.md`:
+After writing `.planning/PLAN.md`, create `.planning/LEARNINGS.md`:
 
 ```markdown
 # Analysis Learnings: [Analysis Name]
@@ -588,8 +588,8 @@ This file is populated by ds-implement as tasks complete. Initializing it here e
 <EXTREMELY-IMPORTANT>
 Before proceeding to ds-implement, execute this gate:
 
-1. **IDENTIFY**: PLAN.md exists at `.claude/PLAN.md`
-2. **RUN**: `Read(".claude/PLAN.md")`
+1. **IDENTIFY**: PLAN.md exists at `.planning/PLAN.md`
+2. **RUN**: `Read(".planning/PLAN.md")`
 3. **READ**: Verify it contains: Data Profile section, Task Breakdown section, Output Verification Plan
 4. **VERIFY**: If any data source > 1M rows, confirm ETL Strategy section exists
 5. **CLAIM**: Only proceed to ds-implement if ALL checks pass

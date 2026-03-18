@@ -10,7 +10,7 @@ description: "Internal skill used by ds-plan at Phase 2 exit gate. Dispatches a 
 
 ## When to Dispatch
 
-After Phase 2 (ds-plan) writes `.claude/PLAN.md` and before Phase 3 (ds-implement) begins.
+After Phase 2 (ds-plan) writes `.planning/PLAN.md` and before Phase 3 (ds-implement) begins.
 
 ```
 Phase 2: ds-plan -> PLAN.md written
@@ -72,8 +72,8 @@ Agent(
   prompt="""
 You are a data science plan document reviewer. Verify this plan is complete, matches the spec, and is ready for implementation.
 
-**Plan to review:** .claude/PLAN.md [-- Chunk N only, if chunked]
-**Spec for reference:** .claude/SPEC.md
+**Plan to review:** .planning/PLAN.md [-- Chunk N only, if chunked]
+**Spec for reference:** .planning/SPEC.md
 
 Read BOTH files, then evaluate the plan against ALL categories below.
 
@@ -132,7 +132,7 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implemen
 Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.claude/PLAN.md`
+1. Fix the specific issues in `.planning/PLAN.md`
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations
 
@@ -167,7 +167,7 @@ You know the plan has gaps. Implementation subagents will struggle with tasks th
 ## Gate Function
 
 ```
-1. IDENTIFY: `.claude/PLAN.md` exists
+1. IDENTIFY: `.planning/PLAN.md` exists
 2. DISPATCH: Send to reviewer subagent (per-chunk if >15 tasks)
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)

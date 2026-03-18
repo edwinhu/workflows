@@ -12,6 +12,18 @@ description: "This skill should be used when the user asks to 'start data analys
 - [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
 
+## Session Resume Detection
+
+Before starting, check for an existing handoff:
+
+1. Check if `.planning/HANDOFF.md` exists
+2. **If found:** Read it and present to user:
+   - Show the phase, task progress, and Next Action from the handoff
+   - Ask: "Resume from handoff, or start fresh?"
+   - If resume: skip to the recorded phase
+   - If fresh: proceed with brainstorm
+3. **If not found:** Proceed normally with Phase 1 (brainstorm)
+
 # Brainstorming (Questions Only)
 
 Refine vague analysis requests into clear objectives through Socratic questioning.
@@ -119,7 +131,7 @@ After objectives are clear:
 ### 4. Write Spec Doc
 
 After selecting an approach:
-- Write to `.claude/SPEC.md`
+- Write to `.planning/SPEC.md`
 - Include: objectives, data sources, success criteria, constraints
 - **NO implementation details** - reserve those for /ds-plan
 
@@ -192,8 +204,8 @@ After selecting an approach:
 Before transitioning to ds-plan, execute this gate:
 
 ```
-1. IDENTIFY → SPEC.md exists at `.claude/SPEC.md`
-2. RUN      → Read(".claude/SPEC.md")
+1. IDENTIFY → SPEC.md exists at `.planning/SPEC.md`
+2. RUN      → Read(".planning/SPEC.md")
 3. READ     → Verify it contains: Objectives, Data Sources, Success Criteria sections
 4. VERIFY   → User has confirmed the objectives (not just agent self-assessment)
 5. CLAIM    → Only proceed to ds-plan if ALL checks pass
@@ -211,7 +223,7 @@ Declare brainstorm complete when:
 - Success criteria defined
 - Constraints documented (especially replication requirements)
 - Approach chosen from alternatives
-- `.claude/SPEC.md` written
+- `.planning/SPEC.md` written
 - User confirms ready for data exploration
 
 ## Workflow Context

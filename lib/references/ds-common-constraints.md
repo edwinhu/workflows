@@ -267,6 +267,28 @@ Violation: Main chat already did the investigation; Task agent duplicates or is 
 
 ---
 
+## C8: Deviation Rules
+
+Implementation subagents follow a 4-rule system for unplanned discoveries:
+
+- **R1-R3 (Auto):** Bugs, missing critical checks, and blockers are fixed automatically with output-first verification and tracked in `.planning/LEARNINGS.md`.
+- **R4a/R4b (STOP):** Data assumption violations and methodology changes require user decision before proceeding.
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure → R4.
+
+Each task's LEARNINGS.md entry must include a deviation summary line. This is not optional — it's how we know what changed from the plan.
+
+### Rationalization Prevention (Deviation Rules)
+
+| Thought | Reality |
+|---------|---------|
+| "This data issue is minor, just fix it" | If it changes what the data represents, it's R4a. User decides. |
+| "I'll note the methodology change later" | Later = never. STOP now, track it. |
+| "The user won't care about this deviation" | Undisclosed deviations are undisclosed assumptions. User MUST know. |
+| "Tracking deviations slows me down" | 30 seconds of tracking prevents hours of "why did the results change?" |
+
+---
+
 ## How to Use
 
 Each ds-family skill should Read() this file at the start of its process. Phase-specific enforcement (Iron Laws, phase-specific rationalizations) remains in each skill's SKILL.md. This file provides the shared baseline that prevents cross-skill drift.

@@ -206,7 +206,7 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 └───────────┬─────────────┘
             ▼
 ┌─────────────────────────┐
-│  Invoke ds-review       │
+│  Invoke ds-validate     │
 └─────────────────────────┘
 ```
 
@@ -235,7 +235,7 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-comm
 Use the output path with `Read()`.
 
 ```
-Read(".claude/PLAN.md")
+Read(".planning/PLAN.md")
 ```
 
 Discover and read ds-delegate skill:
@@ -353,6 +353,32 @@ Three stages: Test (~10 items, always required) -> Intermediate (~100, if total 
 </EXTREMELY-IMPORTANT>
 
 
+## Deviation Rules
+
+When subagents encounter unplanned issues during implementation, follow this 4-rule system:
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Bug** | Data integrity bugs, wrong joins, type errors, off-by-one in date ranges, NaN propagation, index alignment errors | Fix → verify output with output-first protocol → track `[Rule 1 - Bug]` | Auto |
+| **R2: Missing Critical** | Missing null handling, no dedup check after merge, missing row count verification, no dtype validation, missing outlier handling | Add → verify → track `[Rule 2 - Missing Critical]` | Auto |
+| **R3: Blocking** | Missing dependency/package, wrong file path, data file unavailable, API rate limit, memory error on large data | Fix blocker → verify proceeds → track `[Rule 3 - Blocking]` | Auto |
+| **R4a: Data Assumption** | Data doesn't match expected shape/schema/distribution — expected panel but got cross-section, unexpected nulls in key column, different date range than specified, unexpected categories | **STOP** → present finding with evidence → track `[Rule 4a - Data Assumption]` | **Ask user** |
+| **R4b: Methodology Change** | Analysis approach needs changing — different model needed, different sample definition, different variable construction, need to add/remove control variables | **STOP** → present decision with alternatives → track `[Rule 4b - Methodology]` | **Ask user** |
+
+**Priority:** R4a/R4b (STOP) > R1-R3 (auto) > unsure → escalate as R4.
+
+**Edge cases:**
+- Unexpected nulls in non-key column → R2 (add handling)
+- Unexpected nulls in key/ID column → R4a (data assumption violated)
+- Package version mismatch → R3 (blocking)
+- Need different statistical test → R4b (methodology change)
+- Wrong merge type (left vs inner) → R1 (bug)
+- Data has different granularity than expected → R4a (assumption)
+
+**Tracking format per task:**
+Each task summary in `.planning/LEARNINGS.md` should end with:
+**Deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
+
 ## Agent Team Implementation (Parallel)
 
 > **Full protocol:** See [references/agent-team-protocol.md](references/agent-team-protocol.md) for prerequisites, spawn prompt template, lead monitoring, reconciliation (3 passes), and usage guidelines.
@@ -368,10 +394,10 @@ Key points:
 <EXTREMELY-IMPORTANT>
 **You MUST NOT proceed to review without verifying ALL tasks are complete. This is not negotiable.**
 
-Before invoking ds-review, execute this gate:
+Before proceeding to validation, execute this gate:
 
-1. **IDENTIFY**: Read `.claude/PLAN.md` — list every task by number and name
-2. **RUN**: Read `.claude/LEARNINGS.md` — find entries for each task
+1. **IDENTIFY**: Read `.planning/PLAN.md` — list every task by number and name
+2. **RUN**: Read `.planning/LEARNINGS.md` — find entries for each task
 3. **READ**: For each task, confirm LEARNINGS.md contains:
    - A "Task N: [Name] - COMPLETE" entry
    - Verified output (shape, stats, or sample)
@@ -393,8 +419,8 @@ Before invoking ds-review, execute this gate:
 
 ## Phase Complete
 
-After passing the exit gate, IMMEDIATELY discover and load ds-review:
+After passing the exit gate, IMMEDIATELY discover and read the validation phase:
 ```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-review/SKILL.md 2>/dev/null | sort -V | tail -1
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-validate/SKILL.md 2>/dev/null | sort -V | tail -1
 ```
-Use the output path with `Read()`.
+Use the output path with `Read()`. Follow its instructions to validate outputs before review.
