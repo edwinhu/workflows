@@ -26,7 +26,7 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 
 ---
 
-## Skills (40)
+## Skills (48)
 
 ### Core Workflows
 
@@ -35,7 +35,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 | Start Fresh | Midpoint Re-entry | Domain |
 |-------------|-------------------|--------|
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
-| `/ds` | `/ds-fix` | 5-phase data science with output-first verification |
+| `/ds` | `/ds-fix` | 6-phase data science with output-first verification and DQ validation |
 | `/writing` | `/writing-review` + `/writing-revise` | Writing: brainstorm, outline, draft, review, revise |
 
 ### Legal & Citation
@@ -110,7 +110,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 
 ---
 
-## Agents (14)
+## Agents (18)
 
 Specialized subagents auto-discovered by Claude Code from `agents/`:
 
@@ -121,6 +121,10 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 | `architect` | System design and technical decisions |
 | `tdd-guide` | TDD workflow enforcement |
 | `dev-implementer` | Feature implementation with automatic linting |
+| `dev-debugger` | Hypothesis-driven debugging with serial iteration |
+| `dev-verifier` | Goal-backward verification (4-level: exists, substantive, wired, functional) |
+| `dev-plan-checker` | Plan review before implementation |
+| `test-gap-auditor` | Requirement-to-test coverage mapping and gap filling |
 | `ds-analyst` | Data analysis with output-first verification |
 | `code-reviewer` | Code quality, security, and maintainability review |
 | `security-reviewer` | Security vulnerability detection |
@@ -153,9 +157,7 @@ Hooks auto-run at specific lifecycle events:
 
 ## Session Continuity
 
-The plugin uses a PLAN.md + LEARNINGS.md system for cross-session persistence.
-The `/continuous-learning` skill extracts reusable patterns, and hooks
-automatically save session state.
+Workflows use a `.planning/` state folder (SPEC.md, PLAN.md, LEARNINGS.md, HANDOFF.md, VALIDATION.md) for cross-session persistence. The `/continuous-learning` skill extracts reusable patterns, and hooks automatically save session state.
 
 For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 
@@ -172,14 +174,14 @@ workflows/
 ├── .claude-plugin/             # Plugin manifest
 │   ├── plugin.json             # Version and metadata
 │   └── marketplace.json        # Marketplace listing
-├── agents/                     # Specialized subagents (14)
+├── agents/                     # Specialized subagents (18)
 │   ├── planner.md, architect.md, tdd-guide.md
 │   ├── dev-implementer.md, ds-analyst.md
 │   ├── code-reviewer.md, security-reviewer.md
 │   ├── build-error-resolver.md, e2e-runner.md
 │   ├── refactor-cleaner.md, doc-updater.md
 │   ├── data-explorer.md, librarian.md, assistant.md
-├── skills/                     # User-facing skills (39)
+├── skills/                     # User-facing skills (48)
 │   ├── dev/, ds/, writing*/    # Core workflow entry points
 │   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal
 │   ├── wrds/, lseg-data/, gemini-batch/  # Data access
@@ -192,7 +194,7 @@ workflows/
 │   ├── hooks.json              # Hook configuration
 │   └── *.py                    # Hook implementations
 ├── lib/
-│   ├── skills/                 # Internal phase skills (27)
+│   ├── skills/                 # Internal phase skills (37)
 │   └── references/             # Reference docs and templates
 ├── contexts/                   # Example context modes (see below)
 ├── rules/                      # Example rules (see below)
@@ -203,8 +205,8 @@ workflows/
 ```
 
 **Key Points:**
-- `agents/` contains specialized subagents (auto-discovered by Claude Code)
-- `skills/` contains user-facing skills (39, auto-discovered)
+- `agents/` contains specialized subagents (18, auto-discovered by Claude Code)
+- `skills/` contains user-facing skills (48, auto-discovered)
 - `hooks/` contains hook entry points called directly by hooks.json
 - `lib/skills/` contains internal phase skills (dev-implement, ds-verify, etc.)
 
