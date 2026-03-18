@@ -272,9 +272,37 @@ npm run build && echo "Exit code: $?"
 
 **Tool description:** Build application and verify exit code is 0
 
+## Goal-Backward Verification (Subagent)
+
+After technical tests pass, spawn the dev-verifier agent to check that phase GOALS were achieved, not just tasks completed:
+
+```
+Agent(subagent_type="workflows:dev-verifier", prompt="""
+Verify that the dev workflow goals have been achieved for this feature.
+
+Read these files:
+- .planning/SPEC.md (requirements and success criteria)
+- .planning/PLAN.md (implementation plan)
+- .planning/STATE.md (workflow state)
+
+For each success criterion in SPEC.md, verify with FRESH runtime evidence that the goal was met.
+Task completion ≠ goal achievement. A file existing ≠ feature working.
+
+Report:
+- GOAL: [from SPEC.md success criteria]
+- STATUS: MET | NOT_MET | PARTIAL
+- EVIDENCE: [fresh runtime output proving it]
+
+If ANY goal is NOT_MET, list the specific gaps.
+""")
+```
+
+**If dev-verifier finds gaps:** Return to dev-implement to address them before proceeding to user acceptance.
+**If all goals MET:** Proceed to user acceptance below.
+
 ## User Acceptance (Final Step)
 
-After technical verification passes, confirm with user. Use the AskUserQuestion pattern:
+After technical verification and goal-backward verification pass, confirm with user. Use the AskUserQuestion pattern:
 
 **Tool description:** Request user confirmation that implementation meets specified requirements
 
@@ -289,7 +317,7 @@ options:
     description: "Does not meet requirements, needs more work"
 ```
 
-Reference `.claude/SPEC.md` when asking—remind user of the success criteria they defined.
+Reference `.planning/SPEC.md` when asking—remind user of the success criteria they defined.
 
 If user responds "Partially" or "No":
 1. Ask which specific requirement is not met

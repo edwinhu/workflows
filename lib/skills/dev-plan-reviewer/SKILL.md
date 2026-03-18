@@ -10,7 +10,7 @@ description: "Internal skill used by dev-design at Phase 4 exit gate. Dispatches
 
 ## When to Dispatch
 
-After Phase 4 (design) writes `.claude/PLAN.md` and before Phase 5 (implement) begins.
+After Phase 4 (design) writes `.planning/PLAN.md` and before Phase 5 (implement) begins.
 
 ```
 Phase 4: Design → PLAN.md written → user approved
@@ -58,13 +58,13 @@ Use this Task invocation to dispatch the plan reviewer:
 
 ```
 Agent(
-  subagent_type="general-purpose",
+  subagent_type="workflows:dev-plan-checker",
   description="Review plan document",
   prompt="""
 You are a plan document reviewer. Verify this plan is complete, matches the spec, and is ready for implementation.
 
-**Plan to review:** .claude/PLAN.md [— Chunk N only, if chunked]
-**Spec for reference:** .claude/SPEC.md
+**Plan to review:** .planning/PLAN.md [— Chunk N only, if chunked]
+**Spec for reference:** .planning/SPEC.md
 
 Read BOTH files, then evaluate the plan against ALL categories below.
 
@@ -121,7 +121,7 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-impleme
 Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.claude/PLAN.md`
+1. Fix the specific issues in `.planning/PLAN.md`
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations
 
@@ -156,7 +156,7 @@ You know the plan has gaps. Implementation subagents will struggle with tasks th
 ## Gate Function
 
 ```
-1. IDENTIFY: `.claude/PLAN.md` exists and user approved
+1. IDENTIFY: `.planning/PLAN.md` exists and user approved
 2. DISPATCH: Send to reviewer subagent (per-chunk if >15 tasks)
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)

@@ -29,12 +29,12 @@ fi
 
 ### Step 2: Determine Branch Name
 
-Extract from `.claude/PLAN.md` first line or infer from feature name:
+Extract from `.planning/PLAN.md` first line or infer from feature name:
 
 **Run:**
 ```bash
 # Extract from PLAN.md if exists
-feature_name=$(grep -m1 '^# ' .claude/PLAN.md 2>/dev/null | sed 's/^# //' | tr '[:upper:] ' '[:lower:]-' | sed 's/[^a-z0-9-]//g')
+feature_name=$(grep -m1 '^# ' .planning/PLAN.md 2>/dev/null | sed 's/^# //' | tr '[:upper:] ' '[:lower:]-' | sed 's/[^a-z0-9-]//g')
 
 # Or ask user if needed
 ```

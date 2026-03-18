@@ -59,7 +59,7 @@ Asking costs minutes. Wrong assumptions cost hours of rework.
 
 ### No Pause After Completion
 
-After updating `.claude/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
+After updating `.planning/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
 
 Discover and read the design phase skill:
 ```bash
@@ -138,7 +138,7 @@ AskUserQuestion(questions=[{
 
 ### 4. Update SPEC.md
 
-After each answer, update `.claude/SPEC.md`:
+After each answer, update `.planning/SPEC.md`:
 - Add clarified requirements
 - Document decisions made
 - Note trade-offs accepted
@@ -304,7 +304,7 @@ Clarification complete when:
 - All integration points clarified
 - Edge cases resolved
 - Pattern choices made
-- `.claude/SPEC.md` updated with final requirements
+- `.planning/SPEC.md` updated with final requirements
 - No remaining ambiguities
 - **Automated testing strategy confirmed (MANDATORY)**
 

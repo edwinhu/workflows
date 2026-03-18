@@ -1,6 +1,6 @@
 # PLAN.md Template
 
-Use this template when writing `.claude/PLAN.md` after user approves an approach.
+Use this template when writing `.planning/PLAN.md` after user approves an approach.
 
 *All paths below are relative to this skill's base directory.*
 ```markdown

@@ -230,16 +230,26 @@ def get_project_task_list_id() -> str:
 
 def check_plan_exists() -> str:
     """Check if PLAN.md exists and return continuation message."""
-    plan_path = Path.cwd() / '.claude' / 'PLAN.md'
-    if not plan_path.exists():
-        return ""
+    # Check both .planning/ (new) and .claude/ (legacy) locations
+    planning_path = Path.cwd() / '.planning' / 'PLAN.md'
+    legacy_path = Path.cwd() / '.claude' / 'PLAN.md'
 
-    return """
+    if planning_path.exists():
+        return """
+[PLAN.md DETECTED]
+
+An implementation plan exists at `.planning/PLAN.md`.
+Read it to understand the current task state before continuing.
+"""
+    elif legacy_path.exists():
+        return """
 [PLAN.md DETECTED]
 
 An implementation plan exists at `.claude/PLAN.md`.
 Read it to understand the current task state before continuing.
 """
+
+    return ""
 
 
 def parse_yaml_simple(content: str) -> dict:
@@ -298,10 +308,13 @@ def parse_yaml_simple(content: str) -> dict:
 def check_active_workflow() -> str:
     """Check for active workflow and return context/instructions.
 
-    Reads .claude/ACTIVE_WORKFLOW.md and returns appropriate context
-    based on workflow type (dev, ds, or writing).
+    Reads ACTIVE_WORKFLOW.md from .planning/ (new) or .claude/ (legacy)
+    and returns appropriate context based on workflow type (dev, ds, or writing).
     """
-    workflow_path = Path.cwd() / '.claude' / 'ACTIVE_WORKFLOW.md'
+    # Check both .planning/ (new) and .claude/ (legacy) locations
+    workflow_path = Path.cwd() / '.planning' / 'ACTIVE_WORKFLOW.md'
+    if not workflow_path.exists():
+        workflow_path = Path.cwd() / '.claude' / 'ACTIVE_WORKFLOW.md'
     if not workflow_path.exists():
         return ""
 
@@ -371,6 +384,56 @@ The workflow state is tracked in .claude/ACTIVE_WORKFLOW.md.
 """
 
     return ""
+
+
+def check_handoff_exists() -> str:
+    """Check if a session handoff file exists from a previous session.
+
+    Reads .planning/HANDOFF.md frontmatter and returns a notification
+    so the user is aware before starting work.
+    """
+    handoff_path = Path.cwd() / '.planning' / 'HANDOFF.md'
+    if not handoff_path.exists():
+        return ""
+
+    try:
+        content = handoff_path.read_text()
+        frontmatter = parse_yaml_simple(content)
+    except Exception as e:
+        print(f"Warning: Failed to read HANDOFF.md: {e}", file=sys.stderr)
+        return ""
+
+    phase_name = frontmatter.get('phase_name', 'unknown')
+    task = frontmatter.get('task', '?')
+    total_tasks = frontmatter.get('total_tasks', '?')
+    last_updated = frontmatter.get('last_updated', 'unknown')
+
+    # Extract the "Next Action" section content (first line after the heading)
+    next_action = ""
+    in_next_action = False
+    for line in content.split('\n'):
+        if line.strip().startswith('## Next Action'):
+            in_next_action = True
+            continue
+        if in_next_action:
+            stripped = line.strip()
+            if stripped and not stripped.startswith('#'):
+                next_action = stripped
+                break
+
+    next_action_line = f"\n   Next action: {next_action}" if next_action else ""
+
+    return f"""
+[SESSION HANDOFF DETECTED]
+
+A previous session left a handoff at `.planning/HANDOFF.md`.
+   Phase: {phase_name}
+   Task: {task} of {total_tasks}
+   Last updated: {last_updated}{next_action_line}
+
+Run `/dev` to resume from the handoff or start fresh.
+Read `.planning/HANDOFF.md` for full context.
+"""
 
 
 def check_pending_patterns() -> str:
@@ -445,11 +508,14 @@ def main():
     # Check for active workflow (dev, ds, or writing)
     workflow_section = check_active_workflow()
 
+    # Check for session handoff from previous session
+    handoff_section = check_handoff_exists()
+
     # Check for pending pattern-capture suggestions from previous session
     pattern_section = check_pending_patterns()
 
     # Combine context
-    combined_context = env_section + "\n" + workflow_section + "\n" + plan_section + "\n" + pattern_section + "\n" + using_skills
+    combined_context = env_section + "\n" + handoff_section + "\n" + workflow_section + "\n" + plan_section + "\n" + pattern_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {

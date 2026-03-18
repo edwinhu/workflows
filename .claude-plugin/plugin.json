@@ -1,7 +1,7 @@
 {
   "name": "workflows",
-  "version": "4.39.0",
-  "description": "Development, data science, and writing workflows with TDD enforcement, output-first verification, and agent team parallelization.",
+  "version": "4.40.0",
+  "description": "Development, data science, and writing workflows with TDD enforcement, output-first verification, agent team parallelization, and GSD-style deviation rules, test gap validation, and session handoff.",
   "author": {
     "name": "edwinhu"
   },

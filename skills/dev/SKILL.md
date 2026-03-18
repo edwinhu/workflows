@@ -5,18 +5,70 @@ description: "This skill should be used when the user asks to 'start a feature',
 
 **Announce:** "I'm using dev (Phase 1) to gather requirements."
 
+## Resume Detection
+
+**BEFORE creating any new state, check for a previous session handoff.**
+
+Check if `.planning/HANDOFF.md` exists:
+
+```bash
+test -f .planning/HANDOFF.md && echo "HANDOFF_EXISTS" || echo "NO_HANDOFF"
+```
+
+**If HANDOFF_EXISTS:**
+
+1. Read `.planning/HANDOFF.md`
+2. Present the user with a status summary:
+
+```
+Previous session handoff detected:
+- Phase: [phase_name from frontmatter]
+- Task: [task] of [total_tasks]
+- Status: [status]
+- Last updated: [last_updated]
+- Next action: [from "Next Action" section]
+```
+
+3. Ask the user:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "A handoff from a previous session was found. How would you like to proceed?",
+  "header": "Session Handoff Detected",
+  "options": [
+    {"label": "Resume from handoff", "description": "Continue where the previous session left off"},
+    {"label": "Start fresh", "description": "Discard the handoff and begin a new workflow from scratch"}
+  ],
+  "multiSelect": false
+}])
+```
+
+4. **If "Resume from handoff":**
+   - Read `.claude/ACTIVE_WORKFLOW.md` to get the recorded phase
+   - Read `.planning/SPEC.md` and `.planning/PLAN.md` if they exist
+   - Skip directly to the recorded phase by discovering and reading the appropriate phase skill:
+     ```bash
+     ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-[phase_name]/SKILL.md 2>/dev/null | sort -V | tail -1
+     ```
+   - Delete `.planning/HANDOFF.md` after successfully resuming (it has been consumed)
+   - Announce: "Resuming from handoff — picking up at Phase [N]: [phase_name]."
+
+5. **If "Start fresh":**
+   - Delete `.planning/HANDOFF.md`
+   - Proceed with normal workflow initialization below
+
 ## Workflow Overview
 
 ```
-Phase 1       Phase 2      Phase 3      Phase 4       Phase 5        Phase 6      Phase 7
-brainstorm → explore    → clarify   → design     → implement   → review    → verify
- (SPEC.md)   (key files)  (resolved)   (PLAN.md)    (tests pass)   (>=80%)    (fresh evidence)
-    │            │            │            │              │             │            │
-    ▼            ▼            ▼            ▼              ▼             ▼            ▼
-  GATE:        GATE:        GATE:        GATE:          GATE:         GATE:        GATE:
-  Questions    All files    Ambiguities  User           All tasks     No issues    Fresh run
-  asked +      read by      resolved +   approved +     pass tests    >= 80%       confirms
-  SPEC.md      main chat    SPEC.md      PLAN.md        + spec        confidence   all claims
+Phase 1       Phase 2      Phase 3      Phase 4       Phase 5        Phase 5.5      Phase 6      Phase 7
+brainstorm → explore    → clarify   → design     → implement   → validate    → review    → verify
+ (SPEC.md)   (key files)  (resolved)   (PLAN.md)    (tests pass)   (gaps filled)  (>=80%)    (fresh evidence)
+    │            │            │            │              │              │             │            │
+    ▼            ▼            ▼            ▼              ▼              ▼             ▼            ▼
+  GATE:        GATE:        GATE:        GATE:          GATE:          GATE:         GATE:        GATE:
+  Questions    All files    Ambiguities  User           All tasks      Goals met     No issues    Fresh run
+  asked +      read by      resolved +   approved +     pass tests     vs tasks      >= 80%       confirms
+  SPEC.md      main chat    SPEC.md      PLAN.md        + spec         completed     confidence   all claims
   written                   updated      written        match
 ```
 
@@ -34,12 +86,35 @@ phase_name: brainstorm
 started: [current timestamp]
 project_root: [current directory]
 active_skill: ../../skills/dev/SKILL.md  # relative to this skill's base directory
-spec: .claude/SPEC.md
-plan: .claude/PLAN.md
+spec: .planning/SPEC.md
+plan: .planning/PLAN.md
 ---
 ```
 
 This enables session persistence - returning to the project will reload the current phase.
+
+Also create `.planning/STATE.md` to track workflow state:
+
+```markdown
+---
+workflow: dev
+phase: 1
+phase_name: brainstorm
+status: in_progress
+started: [timestamp]
+---
+# Dev Workflow State
+
+## Current Position
+Phase: 1 (brainstorm)
+Status: In progress
+
+## Decisions
+(none yet)
+
+## Blockers
+(none)
+```
 
 ## Contents
 
@@ -89,7 +164,7 @@ Asking questions is cheap. Building the wrong thing is expensive. Every minute s
 
 ### No Pause After Completion
 
-After writing `.claude/SPEC.md` and completing brainstorm, immediately invoke the next phase:
+After writing `.planning/SPEC.md` and completing brainstorm, immediately invoke the next phase:
 
 **Invoke the explore phase:**
 
@@ -241,7 +316,7 @@ After understanding requirements AND testing strategy, define measurable success
 
 ### 4. Write Draft SPEC.md
 
-Write the initial spec to `.claude/SPEC.md`:
+Write the initial spec to `.planning/SPEC.md`:
 
 ```markdown
 # Spec: [Feature Name]
@@ -337,7 +412,7 @@ Brainstorm complete when:
 - Problem is clearly understood
 - Requirements defined
 - Success criteria defined
-- `.claude/SPEC.md` written (draft)
+- `.planning/SPEC.md` written (draft)
 - Open questions identified for exploration
 
 ### Exit Gate
@@ -345,8 +420,8 @@ Brainstorm complete when:
 Before transitioning to dev-explore, ALL checks must pass:
 
 ```
-1. IDENTIFY: `.claude/SPEC.md` exists
-2. RUN: `Read(".claude/SPEC.md")`
+1. IDENTIFY: `.planning/SPEC.md` exists
+2. RUN: `Read(".planning/SPEC.md")`
 3. READ: Verify it contains: Problem Statement, Success Criteria, Scope sections
 4. VERIFY: User has confirmed the objectives (explicit approval, not assumed)
 5. CLAIM: Only proceed to dev-explore if ALL checks pass

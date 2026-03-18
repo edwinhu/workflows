@@ -37,6 +37,7 @@ dev-implement (this skill)
 - [Sub-Skills Reference](#sub-skills-reference)
 - [If Max Iterations Reached](#if-max-iterations-reached)
 - [Agent Team Implementation (Parallel)](#agent-team-implementation-parallel)
+- [Test Gap Validation Gate (MANDATORY)](#test-gap-validation-gate-mandatory)
 - [Phase Complete](#phase-complete)
 
 # Implementation (Orchestration)
@@ -46,8 +47,8 @@ dev-implement (this skill)
 
 **Do NOT start implementation without these:**
 
-1. `.claude/SPEC.md` exists with final requirements
-2. `.claude/PLAN.md` exists with chosen approach
+1. `.planning/SPEC.md` exists with final requirements
+2. `.planning/PLAN.md` exists with chosen approach
 3. **User explicitly approved** in /dev-design phase
 4. **PLAN.md Testing Strategy section is COMPLETE** (all boxes checked)
 
@@ -297,55 +298,47 @@ you MUST verify it works against the real system, not just mocks.
 
 **If ALL pass → output the promise.** If ANY fail → iterate.
 
-## Spec Deviation Detection (CRITICAL)
+## Deviation Rules (CRITICAL)
 
-<EXTREMELY-IMPORTANT>
-**The most common failure mode: Subagent implements DIFFERENT approach than spec.**
+You WILL discover unplanned work during implementation. Apply these rules automatically and track all deviations.
 
-Examples of spec deviations:
-- Spec says “IPC channels” → Code uses DOM selectors
-- Spec says “WebSocket” → Code uses HTTP polling
-- Spec says “use library X” → Code uses library Y
-- Spec says “reuse existing function” → Code duplicates logic
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **1: Bug** | Broken behavior, errors, wrong queries, type errors, security vulns, race conditions, leaks | Fix → test → verify → track `[Rule 1 - Bug]` | Auto |
+| **2: Missing Critical** | Missing essentials: error handling, validation, auth, CSRF/CORS, rate limiting, indexes, logging | Add → test → verify → track `[Rule 2 - Missing Critical]` | Auto |
+| **3: Blocking** | Prevents completion: missing deps, wrong types, broken imports, missing env/config/files, circular deps | Fix blocker → verify proceeds → track `[Rule 3 - Blocking]` | Auto |
+| **4: Architectural** | Structural change: new DB table, schema change, new service, switching libs, breaking API, new infra | STOP → present decision → track `[Rule 4 - Architectural]` | Ask user |
 
-### How to Catch Deviations
+**Priority:** Rule 4 (STOP) > Rules 1-3 (auto) > unsure → Rule 4
+**Edge cases:** missing validation → R2 | null crash → R1 | new table → R4 | new column → R1/2
 
-After EVERY implementation, ask yourself:
+### Rule 4 Format
 
-```
-1. What APPROACH did SPEC.md specify?
-   (Read SPEC.md, find the specific approach)
-
-2. What APPROACH did the code actually use?
-   (Read the actual implementation code)
-
-3. Are they THE SAME?
-   (Not “similar” or “equivalent” - THE SAME)
-```
-
-If they differ → REJECT. The spec was approved by the user. Changing the approach without approval is a spec violation.
-
-### Why Subagents Deviate
-
-| Subagent Thinks | Reality |
-|-----------------|---------|
-| “This approach is easier” | Easier ≠ correct. Follow the spec. |
-| “This is equivalent” | User chose the spec approach for a reason. |
-| “I couldn’t figure out the spec approach” | Ask questions. Don’t substitute. |
-| “The spec approach doesn’t work” | Report failure. Don’t silently change. |
-
-### The Deviation Test
-
-Before marking any task complete, verify:
+When you encounter an architectural deviation, STOP and present:
 
 ```
-SPEC.md says: [exact quote of approach]
-Code does: [actual approach used]
-Match: YES / NO
-
-If NO → REJECT and redo with correct approach
+⚠️ Architectural Decision Needed
+- Current task: [task name]
+- Discovery: [what prompted this]
+- Proposed change: [modification]
+- Why needed: [rationale]
+- Impact: [what this affects]
+- Alternatives: [other approaches]
+Proceed with proposed change? (yes / different approach / defer)
 ```
-</EXTREMELY-IMPORTANT>
+
+### Documenting Deviations
+
+All deviations tracked per task:
+
+**[Rule N - Category] Title**
+- Found during: Task X
+- Issue: [description]
+- Fix: [what was done]
+- Files modified: [list]
+- Verification: [how confirmed]
+
+End each task summary with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
 
 ## Why Skipping Hurts the Thing You Care About Most
 
@@ -556,9 +549,55 @@ Use the output path with `Read()`.
 - Reconcile results after all teammates complete
 - Fall back to sequential if fewer than 3 tasks
 
+## Test Gap Validation Gate (MANDATORY)
+
+<EXTREMELY-IMPORTANT>
+**After ALL implementation tasks complete, you MUST run test gap test gap validation BEFORE proceeding to review.**
+
+This gate validates that every requirement in SPEC.md has corresponding test coverage. TDD ensures task-level coverage; test gap ensures requirement-level coverage. They are different checks.
+
+### Invoke test gap Validation
+
+Discover and read the test gap validation skill:
+```bash
+ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-test-gaps/SKILL.md 2>/dev/null | sort -V | tail -1
+```
+Use the output path with `Read()`.
+
+### Gate Conditions
+
+**Must produce `.planning/VALIDATION.md` before proceeding to review.**
+
+| VALIDATION.md Status | Action |
+|---------------------|--------|
+| `validated` | Proceed to review phase |
+| `gaps_found` (gaps filled, no escalations) | Re-run full test suite. If all pass, proceed. |
+| `gaps_found` (with escalations) | Address escalated implementation bugs: spawn targeted ralph loops for failing requirements, then re-run test gap validation |
+| Missing | STOP. Run test gap validation. |
+
+### Re-validation After Gap Fixes
+
+If test gap reports implementation bugs (escalations):
+
+1. Spawn ralph loops ONLY for the specific failing requirements
+2. After fixes, re-invoke dev-test-gaps to re-validate
+3. Repeat until VALIDATION.md status is `validated`
+4. Max 2 re-validation cycles. After that, escalate to user.
+
+### Rationalization Prevention
+
+| Thought | Reality |
+|---------|---------|
+| "All task tests pass, test gap is redundant" | Task tests != requirement coverage. Gaps hide between tasks. Run test gap. |
+| "test gap will slow us down" | Shipping untested requirements slows the USER down. Run test gap. |
+| "I'll validate coverage manually" | Manual validation is not validation. Run the skill. |
+| "Requirements are simple, tests obviously cover them" | "Obviously" is not evidence. Run test gap and prove it. |
+| "We already wrote thorough tests" | Then test gap will confirm that quickly. Run it. |
+</EXTREMELY-IMPORTANT>
+
 ## Phase Complete
 
-**REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests:
+**REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests AND test gap validation passes:
 
 Discover and read the review phase skill:
 ```bash
@@ -566,4 +605,4 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-review/
 ```
 Use the output path with `Read()`.
 
-Do NOT proceed until automated tests pass for every task.
+Do NOT proceed until automated tests pass for every task AND `.planning/VALIDATION.md` status is `validated`.

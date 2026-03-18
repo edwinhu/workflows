@@ -27,15 +27,27 @@ WORKFLOW_PATTERNS = {
 
 
 def find_learnings_file() -> Path | None:
-    """Find .claude/LEARNINGS.md in current project."""
-    learnings_path = Path.cwd() / '.claude' / 'LEARNINGS.md'
-    return learnings_path if learnings_path.exists() else None
+    """Find LEARNINGS.md in .planning/ (new) or .claude/ (legacy)."""
+    planning_path = Path.cwd() / '.planning' / 'LEARNINGS.md'
+    if planning_path.exists():
+        return planning_path
+    legacy_path = Path.cwd() / '.claude' / 'LEARNINGS.md'
+    return legacy_path if legacy_path.exists() else None
 
 
 def find_plan_file() -> Path | None:
-    """Find .claude/PLAN.md in current project."""
-    plan_path = Path.cwd() / '.claude' / 'PLAN.md'
-    return plan_path if plan_path.exists() else None
+    """Find PLAN.md in .planning/ (new) or .claude/ (legacy)."""
+    planning_path = Path.cwd() / '.planning' / 'PLAN.md'
+    if planning_path.exists():
+        return planning_path
+    legacy_path = Path.cwd() / '.claude' / 'PLAN.md'
+    return legacy_path if legacy_path.exists() else None
+
+
+def find_state_file() -> Path | None:
+    """Find STATE.md in .planning/."""
+    state_path = Path.cwd() / '.planning' / 'STATE.md'
+    return state_path if state_path.exists() else None
 
 
 def detect_active_workflow(plan_path: Path) -> str | None:
@@ -96,10 +108,18 @@ def main():
             "was in use (/dev, /ds, or /writing) and reload it."
         )
 
+    # Include .planning/STATE.md if it exists
+    state_path = find_state_file()
+    if state_path:
+        reload_instructions.append(
+            "Read .planning/STATE.md for current workflow phase and decisions."
+        )
+
     # Always remind about LEARNINGS.md
     if learnings_path:
+        learnings_loc = str(learnings_path.relative_to(Path.cwd()))
         reload_instructions.append(
-            "Read .claude/LEARNINGS.md for session context and recent progress."
+            f"Read {learnings_loc} for session context and recent progress."
         )
 
     # Output additionalContext to be included in compaction summary

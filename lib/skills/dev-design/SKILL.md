@@ -74,7 +74,7 @@ Design without exploration is not "efficiency" — it is fabricating an approach
 ### 1. Review Inputs
 
 Before designing, ensure the following exist:
-- `.claude/SPEC.md` - final requirements
+- `.planning/SPEC.md` - final requirements
 - Exploration findings - key files, patterns
 - Clarified decisions - edge cases, integrations
 
@@ -213,7 +213,7 @@ Proceed to write PLAN.md for the entire scope (step 5 below).
 
 ### 5. Write PLAN.md
 
-After user chooses approach AND confirms scope, write `.claude/PLAN.md`:
+After user chooses approach AND confirms scope, write `.planning/PLAN.md`:
 
 ### PLAN.md Template
 
@@ -400,7 +400,7 @@ Recognize these thoughts as red flags—they signal attempts to bypass the user 
 Design complete when:
 - 2-3 approaches presented with trade-offs
 - User chose an approach
-- `.claude/PLAN.md` written with chosen approach
+- `.planning/PLAN.md` written with chosen approach
 - **User explicitly approved** ("Yes, proceed")
 
 ## Phase Complete

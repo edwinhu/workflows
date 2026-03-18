@@ -19,7 +19,7 @@ description: "This skill should be used when the user asks to 'explore the codeb
 # Codebase Exploration
 
 Map relevant code, trace execution paths, and return prioritized files for reading.
-**Prerequisite:** `.claude/SPEC.md` must exist with draft requirements.
+**Prerequisite:** `.planning/SPEC.md` must exist with draft requirements.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Exploration
@@ -58,7 +58,7 @@ Reading costs minutes. Wrong architecture costs days of rework.
 
 ### No Pause After Completion
 
-After reading all key files and updating `.claude/SPEC.md` with findings, IMMEDIATELY invoke:
+After reading all key files and updating `.planning/SPEC.md` with findings, IMMEDIATELY invoke:
 
 Discover and read the clarify phase skill:
 ```bash
@@ -104,7 +104,7 @@ This enables true parallel execution:
 Pattern from oh-my-opencode: Default to background + parallel for exploratory work.
 </EXTREMELY-IMPORTANT>
 
-Based on `.claude/SPEC.md`, spawn 3-5 agents with different focuses:
+Based on `.planning/SPEC.md`, spawn 3-5 agents with different focuses:
 
 ```
 # PARALLEL + BACKGROUND: All Task calls in ONE message

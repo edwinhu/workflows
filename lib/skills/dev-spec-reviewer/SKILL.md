@@ -10,7 +10,7 @@ description: "Internal skill used by dev-brainstorm at Phase 1 exit gate. Dispat
 
 ## When to Dispatch
 
-After Phase 1 (brainstorm) writes `.claude/SPEC.md` and before Phase 2 (explore) begins.
+After Phase 1 (brainstorm) writes `.planning/SPEC.md` and before Phase 2 (explore) begins.
 
 ```
 Phase 1: Brainstorm → SPEC.md written
@@ -54,7 +54,7 @@ Agent(
   prompt="""
 You are a spec document reviewer. Verify this spec is complete and ready for codebase exploration and implementation planning.
 
-**Spec to review:** .claude/SPEC.md
+**Spec to review:** .planning/SPEC.md
 
 Read the spec file, then evaluate against ALL categories below.
 
@@ -107,7 +107,7 @@ ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-explore
 Use the output path with `Read()`.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.claude/SPEC.md`
+1. Fix the specific issues in `.planning/SPEC.md`
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations
 
@@ -130,7 +130,7 @@ You know the spec has gaps. Exploration built on a bad spec produces bad finding
 ## Gate Function
 
 ```
-1. IDENTIFY: `.claude/SPEC.md` exists
+1. IDENTIFY: `.planning/SPEC.md` exists
 2. DISPATCH: Send to reviewer subagent
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)

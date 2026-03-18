@@ -153,7 +153,7 @@ If HYPOTHESES.md already exists (resumed session), read it to understand current
 Each iteration spawns exactly ONE fresh subagent with this prompt (fill in brackets):
 
 ```
-Agent(prompt="""
+Agent(subagent_type="workflows:dev-debugger", prompt="""
 ## Your Task
 
 Debug this issue: [SYMPTOM]

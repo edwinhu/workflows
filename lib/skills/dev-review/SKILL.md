@@ -161,7 +161,7 @@ Each reviewer receives a self-contained prompt from a reference file. **Reviewer
 
 **Before spawning, substitute these variables in each prompt:**
 - `CHANGED_FILES` -> output of `git diff --name-only HEAD~1` (paste actual list)
-- `SPEC_CONTEXT` -> relevant sections of .claude/SPEC.md (paste inline, do NOT reference file)
+- `SPEC_CONTEXT` -> relevant sections of .planning/SPEC.md (paste inline, do NOT reference file)
 - `LEARNINGS_TEST_OUTPUT` -> test output from .claude/LEARNINGS.md (paste actual output)
 - `PLUGIN_ROOT` -> resolved base directory for skill paths (relative to this skill's base directory)
 
@@ -428,7 +428,7 @@ Every time you skip re-review to "help faster," you choose YOUR comfort over the
 - [ ] E2E test simulates actual user flow, not just component render
 
 ### Spec Compliance
-- [ ] All requirements from .claude/SPEC.md are implemented
+- [ ] All requirements from .planning/SPEC.md are implemented
 - [ ] Acceptance criteria are met
 - [ ] No requirements were skipped or partially implemented
 - [ ] Edge cases mentioned in spec are handled
@@ -521,7 +521,7 @@ Spawn Task agent for review execution:
 
 ```
 Task(subagent_type="general-purpose"):
-"Review implementation against .claude/SPEC.md.
+"Review implementation against .planning/SPEC.md.
 
 FIRST: Check .claude/LEARNINGS.md for test output.
 Return BLOCKED immediately if no test output is found.

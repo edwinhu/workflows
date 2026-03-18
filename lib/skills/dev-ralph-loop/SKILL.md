@@ -100,8 +100,8 @@ Task(subagent_type="general-purpose", prompt="""
 
 Context:
 - Read .claude/LEARNINGS.md for prior attempts
-- Read .claude/SPEC.md for requirements
-- Read .claude/PLAN.md for approach
+- Read .planning/SPEC.md for requirements
+- Read .planning/PLAN.md for approach
 
 Report back: what was done, results, any blockers.
 """)

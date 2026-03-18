@@ -131,6 +131,24 @@ You will need:
 - ❌ Use `any` / `@ts-ignore` / type suppression
 - ❌ Commit broken code
 
+## DEVIATION RULES
+
+You WILL discover unplanned work. Apply these rules and track all deviations:
+
+| Rule | Trigger | Action |
+|------|---------|--------|
+| **R1: Bug** | Broken behavior, errors, type errors, security vulns | Auto-fix → test → track `[Rule 1 - Bug]` |
+| **R2: Missing Critical** | Missing error handling, validation, auth, logging | Auto-fix → test → track `[Rule 2 - Missing Critical]` |
+| **R3: Blocking** | Missing deps, wrong types, broken imports | Auto-fix → test → track `[Rule 3 - Blocking]` |
+| **R4: Architectural** | New DB table, schema change, switching libs, breaking API | **STOP → escalate to delegator** |
+
+**Rules 1-3:** Fix automatically, test, document what you did.
+**Rule 4:** Do NOT proceed. Report the architectural decision needed back to the delegator with: what you found, proposed change, why needed, impact, and alternatives.
+
+**Unsure which rule?** Default to Rule 4 (STOP and escalate).
+
+In your output, include: **Deviations:** N auto-fixed (R1: X, R2: Y, R3: Z), N escalated (R4: W).
+
 ## CONTEXT
 
 ### Task Description
