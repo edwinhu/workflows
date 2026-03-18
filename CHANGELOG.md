@@ -3,6 +3,24 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.42.0] - 2026-03-18
+
+### Fixed
+- `dev-common-constraints.md`: replaced relative `Read("real-test-enforcement.md")` with cache discovery pattern for path portability
+- `dev-clarify`, `dev-design`, `dev-review`: removed process hints from skill descriptions (trigger-only per enforcement pattern #10)
+
+## [4.41.0] - 2026-03-18
+
+### Added
+- `workflow-creator`: GSD deviation rules, state folder convention, and session handoff patterns
+
+## [4.40.0] - 2026-03-18
+
+### Added
+- Dev workflow: GSD patterns — deviation rules (4-rule system), `.planning/` state folder, test gap validation phase, session handoff (`dev-handoff` skill), goal-backward verification (`dev-verifier` agent)
+- `dev-test-gaps` skill and `test-gap-auditor` agent for requirement-to-test coverage mapping
+- `dev-handoff` skill for structured session pause/resume
+
 ## [4.39.0] - 2026-03-17
 
 ### Added
