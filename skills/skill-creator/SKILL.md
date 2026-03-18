@@ -25,6 +25,43 @@ Before drafting, classify the skill being created:
 
 This classification determines how much enforcement audit to apply after each draft.
 
+### Anti-Patterns: Read Before Drafting
+
+These are real lessons from production. Read them before writing your first draft.
+
+#### Anti-Pattern 1: Using `${CLAUDE_PLUGIN_ROOT}`
+
+The `${CLAUDE_PLUGIN_ROOT}` environment variable is **NOT available at runtime** in Claude Code plugin contexts. Skills that reference it (e.g., `"${CLAUDE_PLUGIN_ROOT}/scripts/my-script.sh"`) will fail silently or error.
+
+**Instead**, use the cache discovery pattern with absolute paths via glob + sort:
+
+```bash
+# Discover and run a script
+FSP=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/scripts/script-name.sh 2>/dev/null | sort -V | tail -1) && "$FSP" args
+
+# Discover and read a reference file
+REF=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/references/file.md 2>/dev/null | sort -V | tail -1) && echo "$REF"
+```
+
+Replace `MARKETPLACE` and `PLUGIN` with the actual marketplace and plugin names. The `sort -V | tail -1` picks the latest version.
+
+#### Anti-Pattern 2: Including Implementation Code Directly in SKILL.md
+
+When a skill body contains step-by-step implementation code (create this file, run this command, parse the output with this script), agents memorize the recipe on first read and then **reimplement it inline** in subsequent invocations — bypassing all the skill's enforcement patterns (red flags, rationalization tables, Iron Laws).
+
+No amount of "don't reimplement me" enforcement text can overcome this. The skill is literally a cookbook that says "don't cook this yourself" while printing the full recipe. The agent will always cook.
+
+**The fix:** Extract deterministic multi-step implementations into `scripts/` and have the skill invoke the script. This flips the path of least resistance — running the script becomes easier than hand-rolling the implementation.
+
+**Real example:** The `find-slide-page` skill had Steps 1-3 showing how to create a `query-headings.typ` wrapper file, run `typst query`, and parse JSON output with an inline Python script. Despite having 10 red flag entries and 8 rationalization table entries, agents in every session reimplemented the recipe inline instead of invoking the skill. After extracting to `scripts/find-slide-page.sh`, the skill became a one-liner invocation and the bypass pattern stopped completely.
+
+| Extract to `scripts/` when | Keep inline when |
+|---|---|
+| Implementation is >10 lines of deterministic code | Implementation requires judgment calls that change per invocation |
+| Same sequence of commands repeats every invocation | Code is truly trivial (1-2 lines) |
+| Enforcement patterns agents keep bypassing | Skill is a knowledge reference, not a tool wrapper |
+| Multiple steps could be a single script call | |
+
 ### Step 2: Invoke the Built-in Skill Creator
 
 Use the Skill tool to invoke the built-in skill-creator:
