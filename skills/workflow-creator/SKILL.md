@@ -93,6 +93,34 @@ Based on the interview answer about iteration, assign each phase an iteration st
 
 **Key principle:** The agent never declares its own completion. Tests pass, findings converge, or the human approves.
 
+### Verification Depth
+
+When designing verification phases, ensure they check all 4 levels — not just existence:
+
+| Level | Question | Gate Fails If... |
+|-------|----------|-----------------|
+| 1. Exists | Is the deliverable physically present? | File/function/test missing |
+| 2. Substantive | Is it real, not a stub? | Body is `pass`, `TODO`, placeholder, or trivial |
+| 3. Wired | Is it connected to the system? | Defined but never imported, called, or routed |
+| 4. Functional | Does it actually work? | Tests fail, feature errors at runtime |
+
+Verification gates that only check Level 1 ("file exists") are theater. Design gates that verify through Level 4 where possible.
+
+### Test Gap Validation Phase
+
+Workflows with implementation phases should include a **validation phase** between implement and review. This phase maps every requirement from the spec to test coverage, classifying each as COVERED / PARTIAL / MISSING, and fills gaps before review begins.
+
+**Why:** Implementation subagents write tests per-task, but gaps hide *between* tasks. A dedicated validation pass catches requirements that no single task covered.
+
+**Phase design:**
+1. Read requirements from spec
+2. Scan existing tests and map each requirement to coverage
+3. Classify: COVERED / PARTIAL / MISSING
+4. Fill gaps (write new tests, not implementation fixes)
+5. Produce VALIDATION.md with the full coverage map
+
+**Gate condition:** VALIDATION.md exists with status `validated` — all requirements COVERED, all tests passing.
+
 ### Step 3b: Add Artifact Review Gates
 
 For every phase that produces an artifact consumed by downstream phases, add an **artifact review gate** between the producing phase and the consuming phase.
@@ -110,8 +138,11 @@ Phase N produces ARTIFACT.md
 |----------|-----------------|------------------|
 | Spec/requirements | Brainstorm | Explore, Design |
 | Plan/task list | Design | Implement |
+| VALIDATION.md | Validate (test gap) | Review |
 | Outline | Brainstorm | Draft |
 | Hypothesis list | Investigate | Test |
+
+**VALIDATION.md** gates the transition from implement to review. Without it, review has no evidence that requirements were tested — it can only review what it sees, not what's missing. The validation phase produces this artifact; the review phase consumes it.
 
 **Chunking rule:** If the artifact has >15 discrete items (tasks, requirements, sections), break into ordered chunks and review each separately.
 
@@ -145,6 +176,23 @@ Generate the specific enforcement content:
 - Write Iron Laws with `<EXTREMELY-IMPORTANT>` tags
 - Build Rationalization Tables from the failure modes identified in Step 2
 - Define Red Flags + STOP for each phase's common wrong-path indicators
+
+#### Deviation Rules for Implementation Phases
+
+Any phase where agents execute work (implementation, drafting, transformation) should include a **4-rule deviation system** governing unplanned discoveries:
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **1: Bug** | Broken behavior, errors, type errors, security vulns | Fix → test → verify → track `[Rule 1 - Bug]` | Auto |
+| **2: Missing Critical** | Missing essentials: error handling, validation, auth, logging | Add → test → verify → track `[Rule 2 - Missing Critical]` | Auto |
+| **3: Blocking** | Prevents completion: missing deps, wrong types, broken imports | Fix blocker → verify proceeds → track `[Rule 3 - Blocking]` | Auto |
+| **4: Architectural** | Structural change: new service, schema change, switching libs | STOP → present decision → track `[Rule 4 - Architectural]` | Ask user |
+
+**Priority:** Rule 4 (STOP) > Rules 1-3 (auto) > unsure → Rule 4
+
+**Adapt categories to the domain:** For DS workflows, R1 includes data integrity bugs; R2 includes missing null handling; R4 includes schema changes. For writing workflows, R1 includes factual errors; R2 includes missing citations; R4 includes structural reorganization.
+
+Each task summary should end with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
 
 **Gate: Enforcement Patterns Loaded**
 - Verify enforcement-checklist.md was read
@@ -231,6 +279,24 @@ When multiple skills in the same plugin operate on the same domain, their common
 
 **When to extract:** When you're creating the second skill in a domain, ask: "What enforcement should every skill in this domain share?" Extract that to the common file from the start. Don't wait for drift to reveal the gap.
 
+#### Session Handoff Support
+
+Both entry points should support **session handoff** via `.planning/HANDOFF.md` — a structured pause/resume mechanism for when work spans multiple sessions.
+
+**Entry point startup check:**
+```
+1. Check if .planning/HANDOFF.md exists
+2. If found → read it, offer to resume from recorded state
+3. If not found → proceed with normal entry (fresh start or midpoint diagnosis)
+```
+
+**Handoff document requirements:**
+- YAML frontmatter (phase, task, status, last_updated) for machine parsing
+- Sections: Current State, Completed Work, Remaining Work, Decisions Made, Rejected Approaches, Blockers, Next Action
+- "Next Action" must be specific enough to start immediately (not "continue working")
+
+**Why:** Long workflows often exceed context windows. Without structured handoff, the next session wastes significant time re-discovering where the previous session left off. The handoff captures decisions, dead ends, and in-flight context that state files alone don't preserve.
+
 **Gate: Two Entry Points Designed**
 - Verify entry point (start fresh) is defined
 - Verify midpoint (re-enter) is defined with constraint loading
@@ -245,6 +311,22 @@ Create the following artifacts:
 2. **Midpoint command** (`skills/[name]-fix/SKILL.md` or `skills/[name]-debug/SKILL.md`) — self-contained re-entry
 3. **Phase skills** (`lib/skills/[name]-[phase]/SKILL.md`) — one per phase, internal only
 4. **Wire up transitions** — each phase ends by reading the next phase's skill
+
+#### State Folder Convention
+
+Workflows should store all state files in a `.planning/` directory at the project root (not `.claude/`). This keeps workflow state separate from Claude Code configuration.
+
+**Standard state files:**
+| File | Purpose | When Created |
+|------|---------|-------------|
+| `SPEC.md` | Requirements, goals, constraints | Brainstorm/clarify phase |
+| `PLAN.md` | Task breakdown with status tracking | Design phase |
+| `STATE.md` | Current workflow position (active phase, blockers) | Entry point startup |
+| `HANDOFF.md` | Session pause/resume context | On pause or context exhaustion |
+| `VALIDATION.md` | Requirement-to-test coverage map | Validation phase |
+| `LEARNINGS.md` | Accumulated discoveries and decisions | Throughout workflow |
+
+**Design principles:** File-based, git-trackable, human-editable. No databases, no external services. YAML frontmatter for machine-readable state; markdown body for human reading.
 
 Present complete file list for user approval before writing.
 
@@ -283,6 +365,18 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Does the verifier see only spec + output, not the implementation journey?
 - For subjective output, are there multiple specialized reviewers? (team topology)
 - Is self-review ever the final gate? (it shouldn't be)
+- Does verification check all 4 depth levels, or just existence?
+
+**Verification depth levels** (from GSD goal-backward verification):
+
+| Level | Name | Checks | Example Failure |
+|-------|------|--------|-----------------|
+| 1 | **Exists** | File/function/test physically present | Test file never created |
+| 2 | **Substantive** | Not a stub, placeholder, or TODO | Function body is `pass` or `return {}` |
+| 3 | **Wired** | Connected to the system (imported, called, routed) | Component defined but never rendered |
+| 4 | **Functional** | Actually works end-to-end | Tests pass, feature runs |
+
+If verification only checks Level 1 (exists), it's theater. A workflow that claims "test exists" without checking the test is substantive, wired, and functional is shipping false confidence.
 
 **Artifact review:**
 - Are intermediate artifacts (specs, plans, outlines) reviewed before downstream phases consume them?
@@ -316,8 +410,23 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 
 **The post-subagent moment is the highest-risk point in any delegated workflow.** If the audit finds no enforcement there, flag it as a critical gap.
 
+**Deviation rules (from GSD 4-rule system):**
+- Do implementation phases have a deviation rule system (auto-fix for bugs/missing/blocking, STOP for architectural)?
+- Are deviation categories adapted to the domain?
+- Are deviations tracked and summarized per task?
+
+**State management:**
+- Does the workflow use `.planning/` for state files (not `.claude/` or scattered locations)?
+- Are standard state files present (SPEC.md, PLAN.md, STATE.md, LEARNINGS.md)?
+- Is state file-based, git-trackable, and human-editable?
+
+**Session handoff:**
+- Does the entry point check for `.planning/HANDOFF.md` on startup?
+- Is the handoff document structured with frontmatter and mandatory sections?
+- Can work resume from a handoff without re-discovering context?
+
 **Gate: Architecture Scored**
-- Verify scores for all 6 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy)
+- Verify scores for all 9 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -547,6 +656,9 @@ For each gap:
 - **Missing post-subagent enforcement** → Add explicit verification/investigation boundary table for the domain. Define what main chat CAN do (verification) vs CANNOT do (investigation) after a subagent returns. Add rationalization entries for "let me verify by reading the code/data/draft"
 - **Missing topic change protocol** → For any workflow with iterative loops, add: announce pause, handle off-topic, announce resume, reload state. Without this, off-topic user messages silently kill the loop
 - **Rationalizations are generic, not grounded in real failures** → Replace hypothetical examples with citations from actual failed sessions (dates, transcript IDs, violation counts). "March 16: 71 violations" is more effective than "agents sometimes skip steps"
+- **Missing deviation rules** → Add 4-rule deviation system to implementation phases (R1: Bug auto-fix, R2: Missing Critical auto-fix, R3: Blocking auto-fix, R4: Architectural STOP). Adapt categories to the domain. Add per-task deviation tracking
+- **Missing state folder** → Consolidate workflow state into `.planning/` directory with standard files (SPEC.md, PLAN.md, STATE.md, HANDOFF.md, VALIDATION.md, LEARNINGS.md). File-based, git-trackable, human-editable
+- **Missing session handoff** → Add HANDOFF.md check to entry point startup. Define handoff template with frontmatter + mandatory sections. Ensure "Next Action" is specific enough to start immediately
 
 ### Step 4: Present Changes
 
@@ -613,6 +725,9 @@ If multiple skills in the same plugin operate on the same domain, their common e
 | No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
 | No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
 | Rationalizations are hypothetical, not grounded | "Agents sometimes skip" is ignorable. "March 16: 71 violations, 3 re-invocations" is not. | Cite real failed sessions with dates, IDs, and violation counts |
+| Implementation phase with no deviation rules | Agents encounter unplanned work and either silently change architecture or halt on trivial bugs. | Add 4-rule deviation system with auto-fix for R1-R3, STOP for R4 |
+| State files scattered across `.claude/` and project root | Next session can't find state; handoff fails. | Consolidate into `.planning/` directory |
+| No handoff support in entry points | Context window exhaustion means lost work — next session starts from scratch. | Check for HANDOFF.md at startup, support structured resume |
 
 ## Rationalization Table
 
