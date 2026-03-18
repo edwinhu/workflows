@@ -1,6 +1,6 @@
 ---
 name: dev-review
-description: "This skill should be used as REQUIRED Phase 6 of /dev workflow when the implementation is complete and needs code review. Combines spec compliance and code quality checks with confidence-based filtering."
+description: "Code review with spec compliance and quality checks using confidence-based filtering."
 ---
 
 ## Contents

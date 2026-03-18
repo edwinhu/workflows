@@ -1,6 +1,6 @@
 ---
 name: dev-clarify
-description: "REQUIRED Phase 3 of /dev workflow. Asks targeted questions based on codebase exploration findings."
+description: "Asks targeted clarification questions based on codebase exploration findings."
 ---
 
 **Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."

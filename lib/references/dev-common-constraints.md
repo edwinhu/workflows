@@ -74,11 +74,13 @@ The most common delegation violation is disguising investigation as "verificatio
 
 **Read the canonical reference:**
 
+Discover and read the real-test-enforcement reference:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/real-test-enforcement.md 2>/dev/null | sort -V | tail -1
 ```
-Read("real-test-enforcement.md")
-```
+Use the output path with `Read()`.
 
-This file (`lib/references/real-test-enforcement.md`) is the single source of truth for REAL vs FAKE test definitions. Do NOT duplicate its content inline. Read() it.
+This file is the single source of truth for REAL vs FAKE test definitions. Do NOT duplicate its content inline. Read() it.
 
 ### Protocol Mismatch Detection (Common Fake Test Trap)
 

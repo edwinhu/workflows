@@ -1,6 +1,6 @@
 ---
 name: dev-design
-description: "This skill should be used when the user asks to 'propose architecture', 'design implementation approach', 'choose between approaches', or REQUIRED Phase 4 of /dev workflow after exploration is complete."
+description: "Propose architecture, design implementation approach, or choose between approaches."
 version: 0.1.0
 ---
 
