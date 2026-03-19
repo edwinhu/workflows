@@ -1,6 +1,7 @@
 ---
 name: source-verify
 description: "This skill should be used when the user asks to 'verify sources', 'check citations', 'fact-check footnotes', 'verify quotes', 'source check', 'are my cites real', 'check for hallucinated citations', or needs to verify that citations in a legal/academic manuscript actually exist and are accurate. Also use when the user wants to check that quoted text actually appears in the cited source."
+user-invocable: false
 ---
 
 # Source Verification

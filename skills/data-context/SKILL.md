@@ -1,6 +1,7 @@
 ---
 name: data-context
 description: "This skill should be used when the user asks to 'set up data analysis for our database', 'extract tribal knowledge about dataset', 'generate data skill', 'document this dataset', 'what does this column mean', 'create data dictionary', 'help me understand this data schema', 'capture domain knowledge about our data', or needs to create a reusable data context skill from dataset expertise."
+user-invocable: false
 ---
 
 # Data Context Extractor

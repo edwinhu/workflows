@@ -1,6 +1,7 @@
 ---
 name: continuous-learning
 description: "This skill should be used when the user asks to 'extract patterns from this session', 'save what we learned', 'create a skill from this workflow', 'learn from this conversation', 'capture reusable knowledge', or wants to turn session patterns into reusable skills."
+user-invocable: false
 ---
 
 # Continuous Learning Skill

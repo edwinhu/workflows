@@ -5,6 +5,7 @@ description: >-
   "organize notes", "move notes to right folder", "clean up vault", "tidy vault",
   "file this note", or when creating new notes in the Obsidian vault. Also use when
   moving, renaming, or categorizing notes, or when the vault root has stray files.
+user-invocable: false
 ---
 
 # Obsidian Note Organization

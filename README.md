@@ -193,9 +193,7 @@ workflows/
 ├── hooks/                      # Hook scripts (9)
 │   ├── hooks.json              # Hook configuration
 │   └── *.py                    # Hook implementations
-├── lib/
-│   ├── skills/                 # Internal phase skills (37)
-│   └── references/             # Reference docs and templates
+├── references/                 # Shared constraint and reference docs
 ├── contexts/                   # Example context modes (see below)
 ├── rules/                      # Example rules (see below)
 ├── external/
@@ -206,9 +204,9 @@ workflows/
 
 **Key Points:**
 - `agents/` contains specialized subagents (18, auto-discovered by Claude Code)
-- `skills/` contains user-facing skills (48, auto-discovered)
+- `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false` + `disable-model-invocation: true`)
 - `hooks/` contains hook entry points called directly by hooks.json
-- `lib/skills/` contains internal phase skills (dev-implement, ds-verify, etc.)
+- `references/` contains shared constraint and enforcement docs
 
 **Example Content (not auto-loaded):**
 

@@ -2,6 +2,7 @@
 name: companion
 version: 1.0
 description: "Use this skill when the user asks to 'launch a companion', 'start a companion session', 'run this in the background', 'delegate to companion', 'start an overnight task', 'have companion do', or wants to kick off long-running or autonomous work on the host machine. Also use when you have autonomously identified a task that warrants delegation (bug fix, pattern extraction, implementation) and are ready to launch it. This is the single entry point for all companion session launches."
+user-invocable: false
 ---
 
 **Announce:** "I'm using the companion skill to launch this session."

@@ -17,6 +17,8 @@ Self-contained prompt template for parallel review agents. Each teammate starts 
 You are reviewing one section of a longer document as part of a review team.
 Your job is DIAGNOSIS ONLY — do not rewrite or fix anything.
 
+**Tool restrictions:** You may ONLY use Read, Grep, and Glob tools. Do NOT use Write, Edit, or Bash. Your job is to evaluate, not fix.
+
 ## Your Assignment
 Section: {SECTION_NAME}
 Previous section: {PREV_SECTION}
@@ -46,8 +48,8 @@ Read(".planning/PRECIS.md")
 Read(".planning/OUTLINE.md")
 Read("{SECTION_OUTLINE_PATH}")
 {DRAFT_READ_INSTRUCTION}
-Read("{PLUGIN_ROOT}/lib/skills/writing-review/SKILL.md")
-Read("{PLUGIN_ROOT}/lib/skills/writing-{STYLE}/SKILL.md")
+Read("{PLUGIN_ROOT}/skills/writing-review/SKILL.md")
+Read("{PLUGIN_ROOT}/skills/writing-{STYLE}/SKILL.md")
 ```
 
 The writing-review SKILL.md contains Rationalization Tables and Red Flags

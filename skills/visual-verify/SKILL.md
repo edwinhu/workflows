@@ -2,6 +2,7 @@
 name: visual-verify
 version: 2.3
 description: "This skill should be used when the user asks to 'verify visual output', 'check how it looks', 'render and review', 'visual verify', 'check the slide', 'does this look right', or when any task produces rendered visual output (slides, charts, documents, UI). Starts a render-vision-fix loop using Gemini vision."
+user-invocable: false
 ---
 
 **Announce:** "I'm using visual-verify to set up a render-vision-fix loop."
@@ -107,7 +108,7 @@ The score reflects the fraction of checklist items that pass. Gemini counts BLOC
 
 **Agentic** (dense diagrams, fine-grained details, comparisons):
 ```bash
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]" \
     --agentic
@@ -120,7 +121,7 @@ Gemini will autonomously crop, zoom, and annotate regions it wants to inspect mo
 
 **Vision-only** (simple layouts, large elements):
 ```bash
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]"
 ```

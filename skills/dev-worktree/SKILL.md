@@ -1,6 +1,7 @@
 ---
 name: dev-worktree
 description: This skill should be used when the user asks to "create an isolated worktree", "set up worktree for feature", "create a feature branch worktree", or needs workspace isolation with automatic dependency setup and test verification.
+user-invocable: false
 ---
 
 # Create Development Worktree

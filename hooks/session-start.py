@@ -110,7 +110,7 @@ def load_using_skills_content() -> str:
     This teaches Claude HOW to use skills, not WHAT skills exist.
     The skill catalog is already in the Skill tool description.
     """
-    skill_file = get_plugin_root() / 'lib' / 'skills' / 'using-skills' / 'SKILL.md'
+    skill_file = get_plugin_root() / 'skills' / 'using-skills' / 'SKILL.md'
     try:
         content = skill_file.read_text()
         # Substitute ${CLAUDE_PLUGIN_ROOT} since hook injects as raw text,
@@ -337,11 +337,11 @@ def check_active_workflow() -> str:
         current_part = workflow.get('current_part', '')
         skill_stack = workflow.get('skill_stack', ['writing'])
 
-        # Build skill read instructions (skills are now in lib/)
+        # Build skill read instructions
         skill_reads = []
         for skill in skill_stack:
             if plugin_root:
-                skill_reads.append(f'Read("{plugin_root}/lib/skills/{skill}/SKILL.md")')
+                skill_reads.append(f'Read("{plugin_root}/skills/{skill}/SKILL.md")')
             else:
                 skill_reads.append(f'Read the {skill} skill')
 

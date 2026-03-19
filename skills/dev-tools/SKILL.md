@@ -1,6 +1,7 @@
 ---
 name: dev-tools
 description: "This skill should be used when the user asks 'what development tools are available', 'list dev plugins', 'what MCP servers can I use', 'enable code intelligence', 'what testing tools exist', or needs to discover development plugins like serena, playwright, or context7. Use this for general development tool discovery; use ds-tools for data science-specific tools."
+user-invocable: false
 ---
 
 # Available Development Tools

@@ -2,6 +2,7 @@
 name: google-scholar
 description: This skill should be used when the user asks to "search Google Scholar", "find academic papers", "scholar search", "lookup papers", "find citations", "academic search", "search for papers by author", "find journal articles", "get BibTeX", "cite this paper", "download paper", or needs to search Google Scholar for academic literature via the scholar CLI tool.
 version: 0.2.0
+user-invocable: false
 ---
 
 # Google Scholar CLI (scholar)

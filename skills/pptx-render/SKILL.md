@@ -5,6 +5,7 @@ description: >
   "compare with pptx", "pptx to image", "export pptx slide",
   "original slide", "show me the original", "what does the pptx look like",
   or needs to extract a specific PPTX slide's content for visual comparison.
+user-invocable: false
 ---
 
 **Announce:** "I'm using pptx-render to extract PPTX slide content."

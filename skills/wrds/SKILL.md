@@ -2,6 +2,7 @@
 name: wrds
 version: 1.0
 description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
+user-invocable: false
 ---
 
 ## Contents

@@ -1,6 +1,7 @@
 ---
 name: reading-add
 description: Add file or URL to reading inbox. Use when "add to reading list", "save for reading", "put this on my reading list", "reading inbox", "read later", or when triaging email attachments for reading.
+user-invocable: false
 ---
 
 # Add to Reading Inbox
@@ -41,7 +42,7 @@ Is it a local file (PDF, DOCX, etc.)?
 Use look-at to extract metadata from the first page:
 
 ```bash
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title, authors, and date/year from the first page. Return as: Title: ..., Authors: ..., Date: ..."
 ```

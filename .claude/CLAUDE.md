@@ -22,7 +22,20 @@
 | **Trigger-Only Descriptions** | Brief triggers in description, process details in body only | ☐ |
 | **No Pause Between Tasks** | After completing task N, immediately start task N+1 | ☐ |
 
-**Full reference:** `lib/references/enforcement-checklist.md`
+**Full reference:** `references/enforcement-checklist.md`
+
+## Path Variables in Skills
+
+**Skill content** (SKILL.md body): Only `${CLAUDE_SKILL_DIR}`, `${CLAUDE_SESSION_ID}`, `$ARGUMENTS` are substituted.
+**Hook commands**: `${CLAUDE_PLUGIN_ROOT}`, `$CLAUDE_PROJECT_DIR`, `${CLAUDE_PLUGIN_DATA}` are substituted.
+
+| Context | Use | Example |
+|---------|-----|---------|
+| Skill content (top-level) | `${CLAUDE_SKILL_DIR}/../..` | `!`cat ${CLAUDE_SKILL_DIR}/../../references/X.md`` |
+| Hook command | `${CLAUDE_PLUGIN_ROOT}` | `python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py` |
+| Internal skill (Read-loaded) | `${CLAUDE_PLUGIN_ROOT}` convention | Claude infers from context |
+
+**`${CLAUDE_PLUGIN_ROOT}` does NOT work in skill content — use `${CLAUDE_SKILL_DIR}` instead.**
 
 **Key insights:**
 - If the skill description contains process summary, Claude follows the short description instead of reading the detailed flowchart. Keep descriptions trigger-only.

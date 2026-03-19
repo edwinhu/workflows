@@ -1,6 +1,7 @@
 ---
 name: audit-fix-loop
 description: "This skill should be used when the user asks to 'iteratively improve', 'audit and fix', 'hill-climb quality', 'grade and improve', 'score and fix', 'audit loop', 'quality loop', or needs structured iterative improvement of an artifact using scored independent audits. Also use when the user invokes a ralph loop for quality improvement rather than task completion."
+user-invocable: false
 ---
 
 **Announce:** "Using audit-fix-loop to plan a scored iterative improvement loop."
@@ -119,7 +120,7 @@ Each scorer has a specific audit method that ensures independence:
 | **AI anti-patterns** | Fresh subagent reads `../ai-anti-patterns/SKILL.md` (relative to this skill's base directory) + all references, then audits the artifact | Fresh subagent (no fixer context) | Count by severity (CRITICAL/HIGH/MEDIUM) |
 | **Style guide** | Fresh subagent reads domain skill (writing-legal, writing-econ, or writing-general), then audits | Fresh subagent | Rule violations by severity |
 | **Bluebook rules** | Fresh subagent reads `../bluebook/SKILL.md` + references, then audits citations | Fresh subagent | Violations by rule category |
-| **Enforcement patterns** | Fresh subagent reads `../../lib/references/enforcement-checklist.md`, scores all 12 patterns | Fresh subagent | Count of Absent + Weak scores |
+| **Enforcement patterns** | Fresh subagent reads `references/enforcement-checklist.md`, scores all 12 patterns | Fresh subagent | Count of Absent + Weak scores |
 | **Source verification** | Invoke `Skill(skill="workflows:source-verify")` — checks citations against paperpile.bib, verifies quotes against source PDFs | Mechanical (bibtex grep) + NLM (quote search) | Verified / checkable citations |
 
 **Composing scorers:** When multiple scorers are selected, each audit iteration runs ALL of them. The total score is the sum of all findings across all scorers. This means the audit catches different failure modes simultaneously — AI-smell AND style violations AND unsupported claims.

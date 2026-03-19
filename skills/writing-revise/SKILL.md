@@ -2,6 +2,12 @@
 name: writing-revise
 version: 1.0
 description: "This skill should be used when the user asks to 'revise writing', 'fix review issues', 'polish draft', 'apply review feedback', 'complete writing workflow', or after /writing-review produces REVIEW.md with issues to fix."
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
 ---
 
 # Writing Revise
@@ -12,11 +18,7 @@ The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
-Discover and read shared writing constraints:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before revising prose.
 
@@ -276,9 +278,9 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Load |
 |-------|------|
-| legal | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-legal/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
-| econ | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-econ/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
-| general | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| legal | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md")` |
+| econ | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md")` |
+| general | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md")` |
 
 **You MUST Read() the domain skill before editing.** The domain skill contains the full rules, reference material, and enforcement patterns. Editing without it produces generic fixes.
 
@@ -303,6 +305,17 @@ The midpoint cannot rely on constraints loaded during earlier phases. Prior cont
 
 **Editing with only domain skill loaded is like reviewing with one eye closed.** You'll fix half the problems and miss the other half.
 </EXTREMELY-IMPORTANT>
+
+### Deviation Rules (Revise Phase)
+
+When applying fixes reveals unplanned issues, follow the deviation rules from `writing-common-constraints.md`:
+
+- **R1 (Factual):** Fix reveals a factual error elsewhere → auto-fix: correct and track
+- **R2 (Evidence):** Fix requires additional evidence not in the outline → auto-fix: add citation and track
+- **R3 (Structural):** Fix breaks a cross-reference or transition → auto-fix: repair and track
+- **R4 (Restructuring):** Fix reveals the argument structure is fundamentally broken → **STOP**, present to user, may require returning to outline or PRECIS
+
+Track deviations per fix batch. Report at Step 6: **Deviations during revision:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
 
 ### Step 4: Fix Issues from REVIEW.md
 
@@ -381,11 +394,7 @@ verdict: CONTINUE
 
 **IMMEDIATELY re-invoke /writing-review** (no pause, no user prompt):
 
-Discover and read the writing-review skill:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-review/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-review/SKILL.md` and follow its instructions.
 
 After /writing-review completes and regenerates REVIEW.md, /writing-revise will be invoked again automatically.
 

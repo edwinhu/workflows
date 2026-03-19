@@ -159,6 +159,37 @@ When you hit the ceiling, the next step is **structural enforcement**: hooks tha
 
 **The gradient:** prompt enforcement → structural enforcement → human judgment. Use the lightest mechanism that works. Escalate when it doesn't.
 
+### Hooks Over Prompt: The Structural Enforcement Preference
+
+Skills and agents can scope `PreToolUse` and `PostToolUse` hooks to their own lifetime. A hook that fires on every `Read` call during a skill's execution is **strictly more reliable** than an Iron Law telling the agent not to Read images — the hook runs whether the agent "remembers" the rule or not.
+
+**The principle: if a constraint is mechanically checkable, enforce it with a hook, not a prompt.**
+
+| Constraint Type | Enforcement | Example |
+|----------------|-------------|---------|
+| File extension guard | Hook (PreToolUse Read) | Block Read on `.png`/`.pdf`, suggest look-at |
+| Path guard | Hook (PreToolUse Edit/Write) | Block edits to cache directories |
+| Tool parameter validation | Hook (PreToolUse Bash) | Require `description` parameter |
+| Sequence enforcement | Hook (PreToolUse + state) | Require test file before source edit |
+| Post-subagent restrictions | Hook (PostToolUse Agent → PreToolUse) | Block Read/Grep on source after subagent returns |
+| Quality judgment | Prompt (Iron Law) | "Is this outline complete?" |
+| Domain knowledge | Prompt (Rationalization Table) | Why TDD matters |
+| Creative guidance | Prompt (Red Flags) | "Don't over-engineer" |
+
+**Why hooks win:**
+1. **Zero prompt tokens** — the constraint doesn't consume context window
+2. **No drift** — hooks fire every time, regardless of context length or compression
+3. **No rationalization** — the agent can't talk itself out of a hook
+4. **Composable** — hooks from different skills stack without conflicting prompt text
+
+**When to keep prompt enforcement:**
+- The constraint requires judgment (subjective quality, design decisions)
+- The constraint is educational (rationalization tables teach *why*, not just *what*)
+- The constraint depends on conversation context (topic detection, intent classification)
+- The hook would have too many false positives without semantic understanding
+
+**Design rule:** Write the hook first. If the hook can't express the constraint, write the prompt enforcement. Never write 50 lines of prompt for something a 15-line hook handles better.
+
 ## 6. Iteration: Fresh Subagents, Not Loops
 
 Long-running agent sessions suffer from **context pollution**: each failed attempt, abandoned approach, and partial reasoning stays in conversation history, degrading reasoning quality. The original Ralph Wiggum technique (`while :; do cat PROMPT.md | claude-code; done`) solved this by starting each iteration as a fresh process.
@@ -229,4 +260,4 @@ Dev is the most mature workflow because it has had the most gradient updates —
 
 The `workflow-creator` skill accelerates this by transferring lessons from mature workflows to immature ones. The `continuous-learning` skill captures patterns from sessions. When you see a failure mode in one workflow, ask: "does this same failure mode exist in the others?"
 
-The enforcement checklist (`lib/references/enforcement-checklist.md`) is the accumulation of these gradient updates — 12 patterns discovered through repeated failure, not designed in advance.
+The enforcement checklist (`references/enforcement-checklist.md`) is the accumulation of these gradient updates — 12 patterns discovered through repeated failure, not designed in advance.

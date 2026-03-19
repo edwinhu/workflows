@@ -1,6 +1,7 @@
 ---
 name: docx-footnotes
 description: "Repair DOCX footnote damage from Google Docs or Word Online round-trips, and convert hardcoded supra/infra note references to auto-updating NOTEREF field codes. Use this skill whenever a user's .docx footnotes are broken after editing in a cloud editor — common symptoms include missing footnote separator lines, stripped paragraph styles (pStyle), author bio custom marks (*, †, ‡) replaced with numbers, footnote numbering starting at the wrong number, or TOC separator paragraphs that inflate to fill a whole page. Also use this skill when the user wants to convert 'supra note N' cross-references to NOTEREF fields, fix footnote numbering offsets caused by customMarkFollows bio footnotes, or perform any OOXML-level footnote surgery on a Word document. Even if the user doesn't mention OOXML or XML directly — if they describe footnote formatting problems in a .docx that was edited in Google Docs or Word Online, this is the right skill."
+user-invocable: false
 ---
 
 # DOCX Footnote Repair & Cross-References

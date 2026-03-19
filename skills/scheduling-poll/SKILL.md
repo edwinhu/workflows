@@ -1,6 +1,7 @@
 ---
 name: scheduling-poll
 description: Create a Morgen scheduling poll and pre-fill your availability. Use when "create scheduling poll", "find time to meet", "scheduling poll", "when can we meet", "poll for meeting time", or coordinating group availability.
+user-invocable: false
 ---
 
 # Scheduling Poll

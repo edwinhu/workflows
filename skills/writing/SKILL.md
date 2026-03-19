@@ -1,6 +1,7 @@
 ---
 name: writing
 description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', 'brainstorm writing topics', 'gather sources for a paper', 'what should I write about', or needs the writing workflow entry point for any writing task."
+allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 ---
 
 # Writing
@@ -11,11 +12,7 @@ description: "This skill should be used when the user asks to 'write a paper', '
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
-Discover and read shared writing constraints:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 ## Session Resume Detection
 
@@ -56,7 +53,7 @@ If text and flowchart disagree, the flowchart wins.
 - Short text provided inline
 - No mention of “project”, “paper”, “article”
 
-→ If quick mode: discover the writing-general skill path via `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null | sort -V | tail -1`, then `Read()` the output path and apply rules to text.
+→ If quick mode: discover the writing-general skill path via `${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md`, then `Read()` the output path and apply rules to text.
 
 **Project Mode Indicators** (full workflow):
 - “Write a paper on...”
@@ -166,15 +163,15 @@ echo “scratch/” >> .gitignore
             │ Mode detect, source gathering, topic exploration
             │ GATE: Sources gathered, domain detected
             │
-            └── lib/skills/writing-setup/ (project foundation)
+            └── skills/writing-setup/ (project foundation)
                     │ PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md
                     │ GATE: All three files exist with required content
                     │
-                    └── lib/skills/writing-outline/ (per section)
+                    └── skills/writing-outline/ (per section)
                             │ outlines/[Section] (Outline).md
                             │ GATE: Outline cross-references PRECIS claims
                             │
-                            └── lib/skills/writing-draft/ (per section)
+                            └── skills/writing-draft/ (per section)
                                     │ Domain skill loaded (legal/econ/general)
                                     │ drafts/[Section] (Draft).md
                                     │ GATE: All sections drafted with depth
@@ -379,9 +376,9 @@ After gathering sources, detect the topic domain and load the appropriate skill:
 
 | Domain Indicators | Style | Skill to Load |
 |-------------------|-------|---------------|
-| Legal cases, statutes, law reviews, constitutional | legal | `lib/skills/writing-legal/SKILL.md` |
-| Economics, markets, policy, data, empirical | econ | `lib/skills/writing-econ/SKILL.md` |
-| General/other | general | `lib/skills/writing-general/SKILL.md` |
+| Legal cases, statutes, law reviews, constitutional | legal | `skills/writing-legal/SKILL.md` |
+| Economics, markets, policy, data, empirical | econ | `skills/writing-econ/SKILL.md` |
+| General/other | general | `skills/writing-general/SKILL.md` |
 
 Domain-specific enforcement rules are applied during the **draft phase** (writing-draft skill), not during brainstorm. Brainstorm only detects the domain; enforcement happens later.
 
@@ -503,10 +500,6 @@ The gate passed. The user confirmed. Asking permission to continue is procrastin
 
 After brainstorm is complete, proceed to project setup:
 
-Discover and read the writing-setup skill:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-setup/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-setup/SKILL.md` and follow its instructions.
 
 Then follow its instructions immediately to create PRECIS.md, OUTLINE.md, and ACTIVE_WORKFLOW.md.

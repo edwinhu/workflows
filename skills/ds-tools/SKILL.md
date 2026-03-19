@@ -1,6 +1,7 @@
 ---
 name: ds-tools
 description: "This skill should be used when the user asks 'what data science tools are available', 'list data analysis plugins', 'what skills work with data', 'enable data science code intelligence', or needs to discover data-specific plugins and skills like wrds, lseg-data, gemini-batch, or data context skills. Use this for data science tool discovery; use dev-tools for general development tool discovery."
+user-invocable: false
 ---
 
 # Available Data Science Tools

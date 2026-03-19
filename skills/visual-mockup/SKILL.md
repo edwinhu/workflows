@@ -2,6 +2,7 @@
 name: visual-mockup
 version: 2.1
 description: "This skill should be used when the user asks to 'mockup the layout', 'sketch the diagram', 'show me the layout before coding', 'draft the positions', 'quick visual of the layout', 'matplotlib mockup', 'interactive mockup', 'drag and drop layout', 'draw a rough layout', 'prototype the diagram', 'let me arrange the nodes', 'mockup the chart before CeTZ', or when you're about to write a diagram with 4+ nodes or a CeTZ chart and want to confirm the visual with the user first."
+user-invocable: false
 ---
 
 **Announce:** "I'll create a mockup so you can see the layout before I code the real diagram."

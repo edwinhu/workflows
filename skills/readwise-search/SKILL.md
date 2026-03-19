@@ -1,6 +1,9 @@
 ---
 name: readwise-search
 description: Search Readwise highlights. Use when the user wants to find highlights, quotes, notes, or annotations from their reading library. Triggers on "search highlights", "find in readwise", "what did I highlight about", "my notes on".
+context: fork
+agent: librarian
+user-invocable: false
 ---
 
 # Readwise Highlight Search

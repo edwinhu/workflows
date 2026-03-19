@@ -2,6 +2,7 @@
 name: look-at
 version: 1.1
 description: "This skill should be used when the user asks to 'look at', 'analyze', 'describe', 'extract from', or 'what's in' media files like PDFs, images, diagrams, screenshots, or charts. Triggers include: 'what does this image show', 'extract the table from this PDF', 'describe this diagram', 'what's in this screenshot', 'analyze this chart', 'read this image', 'get text from this PDF', 'summarize this document', or requests for specific data extraction from visual or document files. Use when analyzed/interpreted content is needed rather than literal file reading (which uses Read tool)."
+user-invocable: false
 ---
 
 # Look At - Multimodal File Analysis
@@ -74,7 +75,7 @@ Never display the full Python command to the user.
 
 ```bash
 # Discover script path from plugin cache (run inline with each command)
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1)
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py)
 
 # Basic usage
 python3 "$LOOK_AT" \
@@ -139,7 +140,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
 
 **Usage:**
 ```bash
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "photo.jpg" \
     --goal "Count the number of people in this image" \
     --agentic
@@ -155,7 +156,7 @@ LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skil
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the executive summary section"
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -164,7 +165,7 @@ LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skil
 ```bash
 # Bash tool call with:
 # description: "look-at: List all UI elements and their layout"
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "screenshot.png" \
     --goal "List all UI elements and their layout"
 ```
@@ -173,7 +174,7 @@ LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skil
 ```bash
 # Bash tool call with:
 # description: "look-at: Explain the data flow and component relationships"
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "architecture.png" \
     --goal "Explain the data flow and component relationships"
 ```
@@ -182,7 +183,7 @@ LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skil
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the table data as JSON"
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "table.pdf" \
     --goal "Extract the table data as JSON with columns: name, value, date"
 ```
@@ -191,7 +192,7 @@ LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skil
 ```bash
 # Bash tool call with:
 # description: "look-at: Count the number of people in the photo"
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "crowd.jpg" \
     --goal "Count the number of people visible in this image" \
     --agentic
@@ -201,7 +202,7 @@ LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skil
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract specific data points from the chart"
-LOOK_AT=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/look-at/scripts/look_at.py 2>/dev/null | sort -V | tail -1) && python3 "$LOOK_AT" \
+LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
     --file "quarterly_chart.png" \
     --goal "Extract the exact values for each quarter and calculate the year-over-year change" \
     --agentic

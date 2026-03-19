@@ -1,6 +1,8 @@
 ---
 name: writing-review
 description: "This skill should be used when the user asks to 'review my writing', 'check document structure', 'find issues in draft', 'review transitions', or needs hierarchical document review that produces REVIEW.md for /writing-revise."
+user-invocable: false
+allowed-tools: Read, Grep, Glob, Agent, Skill
 ---
 
 # Writing Review
@@ -13,11 +15,7 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 Before any work, load the common constraints that apply to ALL writing phases:
 
-Discover and read shared writing constraints:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before reviewing prose.
 
@@ -120,9 +118,9 @@ Based on `style` in ACTIVE_WORKFLOW.md:
 
 | Style | Action |
 |---|---|
-| legal | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-legal/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
-| econ | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-econ/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
-| general | Discover path: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/writing-general/SKILL.md 2>/dev/null \| sort -V \| tail -1`, then `Read()` the output |
+| legal | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md")` |
+| econ | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md")` |
+| general | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md")` |
 
 The domain skill contains style rules that inform your review criteria. You MUST read it before reviewing.
 

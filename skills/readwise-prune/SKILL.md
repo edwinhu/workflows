@@ -1,6 +1,9 @@
 ---
 name: readwise-prune
 description: Clean up stale Readwise Reader documents. Use when the user wants to declutter their reading library, remove old unread articles, or manage Reader inbox. Triggers on "clean up readwise", "prune reader", "delete old articles", "declutter reading list".
+context: fork
+agent: librarian
+user-invocable: false
 ---
 
 # Readwise Reader Prune

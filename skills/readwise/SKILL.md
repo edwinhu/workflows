@@ -2,6 +2,9 @@
 name: readwise
 description: This skill should be used when the user asks to "search Readwise", "find highlights", "get quotes from my reading", "add highlights to notebook", "search my annotations", "get full document text", "fetch article content", "add tagged documents to notebook", or needs to query their Readwise library.
 version: 0.9.0
+context: fork
+agent: librarian
+user-invocable: false
 ---
 
 # Readwise

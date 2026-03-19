@@ -1,6 +1,7 @@
 ---
 name: pattern-capture
 description: "This skill should be used when the user asks to 'find repeated feedback', 'what do I keep correcting', 'capture this pattern', 'DRY my prompting', 'stop repeating myself', 'turn this into a check', 'automate this correction', or when the same type of feedback has been given 3+ times across sessions."
+user-invocable: false
 ---
 
 # Pattern Capture
@@ -320,6 +321,6 @@ Container runs jq 1.6. Always use explicit syntax: `{title: .title}` not `{title
 
 - **Classification quick reference:** `references/classification-guide.md` — fast-path matrix and enforcement strength ladder
 - **Artifact templates:** `references/artifact-templates.md` — copy-paste templates for all artifact types with formatting guidance
-- **Enforcement checklist:** `../../lib/references/enforcement-checklist.md` — full 12-pattern reference (when adding enforcement to existing skills)
+- **Enforcement checklist:** `references/enforcement-checklist.md` — full 12-pattern reference (when adding enforcement to existing skills)
 - **Continuous-learning:** `../continuous-learning/SKILL.md` — upstream pattern detection (feeds into this skill)
 - **Skill-creator:** `../skill-creator/SKILL.md` — downstream skill generation (this skill delegates to it for learned skills)

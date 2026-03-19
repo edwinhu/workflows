@@ -1,6 +1,7 @@
 ---
 name: notebook-debug
 description: This skill should be used when the user asks to "debug notebook", "inspect notebook outputs", "find notebook error", "read traceback from ipynb", "why did notebook fail", or needs to understand runtime errors in executed Jupyter notebooks from any source (marimo, jupytext, papermill).
+user-invocable: false
 ---
 
 ## Contents

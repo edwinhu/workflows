@@ -1,6 +1,7 @@
 ---
 name: bluebook-audit
 description: "This skill should be used when the user asks to 'audit footnotes', 'check Bluebook formatting', 'audit citations', 'run footnote audit', 'check my footnotes', 'bluebook audit', or needs systematic Bluebook compliance checking of a law review manuscript."
+user-invocable: false
 ---
 
 # Bluebook Footnote Audit Workflow

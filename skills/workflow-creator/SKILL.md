@@ -27,9 +27,32 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 ---
 
+## Startup: State Check
+
+Before detecting mode, check for existing workflow-creator state:
+
+1. Check if `.planning/wc/HANDOFF.md` exists
+2. If found → read it, offer to resume from recorded state (skip mode detection)
+3. If not found → proceed with mode detection below
+
+**Why `.planning/wc/`:** workflow-creator's state files must NOT conflict with the target project's `.planning/` state files (SPEC.md, PLAN.md, STATE.md, etc.). The `wc/` subdirectory isolates workflow-creator's meta-state from the workflow state it's auditing or creating.
+
+**Standard workflow-creator state files:**
+
+| File | Purpose | Created By |
+|------|---------|-----------|
+| `.planning/wc/STATE.md` | Current mode + step | All modes at startup |
+| `.planning/wc/INTERVIEW.md` | Captured interview answers | Mode 1 Step 2 |
+| `.planning/wc/DESIGN.md` | Phase decomposition decisions | Mode 1 Step 3 |
+| `.planning/wc/AUDIT.md` | Audit findings and scores | Mode 2 Step 4, Mode 3 Phase A |
+| `.planning/wc/SCORES.md` | Score history across iterations | Mode 3 Phase A |
+| `.planning/wc/HANDOFF.md` | Session resume context | Any mode on context exhaustion |
+
+---
+
 ## Mode 1: Create New Workflow
 
-**IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 4: Present Changes, Step 6: Get Approval).
+**IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
 
 ### Step 1: Ground in Philosophy
 
@@ -40,7 +63,19 @@ Discover and read PHILOSOPHY.md:Read `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md` a
 - Check that your response references: phased decomposition, gates, independent verification, artifact review, iteration strategy, two entry points
 - If you cannot explain these principles, re-read PHILOSOPHY.md
 
-**After verifying Philosophy is loaded, IMMEDIATELY proceed to Step 2.**
+**After verifying Philosophy is loaded, write initial state:**
+```bash
+mkdir -p .planning/wc && cat > .planning/wc/STATE.md << 'EOF'
+---
+mode: create
+step: 1-philosophy
+status: completed
+---
+Philosophy loaded. Proceeding to interview.
+EOF
+```
+
+**IMMEDIATELY proceed to Step 2.**
 
 ### Step 2: Interview
 
@@ -58,7 +93,26 @@ Use AskUserQuestion to understand the domain:
 - Check that answers to all 5 questions are present
 - If interview incomplete, ask remaining questions
 
-**After verifying Interview is complete, IMMEDIATELY proceed to Step 3.**
+**After verifying Interview is complete, persist answers and update state:**
+
+Write `.planning/wc/INTERVIEW.md` with all 6 answers in structured format:
+```yaml
+---
+workflow_name: [proposed name]
+domain: [code/data/writing/research/other]
+---
+## Answers
+1. **Work type:** ...
+2. **Deliverable:** ...
+3. **Failure modes:** ...
+4. **Drift points:** ...
+5. **Iteration style:** ...
+6. **Verification:** ...
+```
+
+Update `.planning/wc/STATE.md`: `step: 2-interview, status: completed`
+
+**IMMEDIATELY proceed to Step 3.**
 
 ### Step 3: Propose Phase Decomposition
 
@@ -310,9 +364,19 @@ Phase N produces ARTIFACT.md
 - Fix-and-re-review loop with max 5 iterations
 - Chunking specified for large artifacts
 
-**After verifying Artifact Review Gates are designed, IMMEDIATELY proceed to Step 4.**
+**After verifying Artifact Review Gates are designed, persist design decisions:**
+
+Write `.planning/wc/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
+
+Update `.planning/wc/STATE.md`: `step: 3b-artifact-review, status: completed`
+
+**IMMEDIATELY proceed to Step 4.**
 
 ### Step 4: Apply Enforcement Patterns
+
+**Context check:** Steps 4-6 generate enforcement content and workflow files — the most context-intensive work. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/HANDOFF.md` with interview answers (from `.planning/wc/INTERVIEW.md`), phase decomposition (from `.planning/wc/DESIGN.md`), and current progress. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately — do not start enforcement generation.
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md` **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
@@ -325,6 +389,35 @@ Generate the specific enforcement content:
 - Write Iron Laws with `<EXTREMELY-IMPORTANT>` tags
 - Build Rationalization Tables from the failure modes identified in Step 2
 - Define Red Flags + STOP for each phase's common wrong-path indicators
+
+#### Hooks Over Prompt Enforcement
+
+Before writing prompt-based enforcement for a constraint, ask: **is this mechanically checkable?** If yes, write a scoped hook instead.
+
+Skills and agents can declare `PreToolUse` and `PostToolUse` hooks in their frontmatter. These hooks fire on every matching tool call during the skill's lifetime — no prompt tokens consumed, no drift, no rationalization.
+
+**For each constraint identified in the enforcement plan:**
+
+| If the constraint is... | Then use... |
+|------------------------|-------------|
+| File extension/path guard | `PreToolUse` hook on Read/Edit/Write — check path |
+| Tool parameter validation | `PreToolUse` hook — check required params |
+| Tool sequence enforcement | `PreToolUse` hook with state file — track what's been done |
+| Post-subagent restriction | `PostToolUse` on Agent + `PreToolUse` on restricted tools |
+| Quality/judgment call | Prompt enforcement (Iron Law, Red Flags) |
+| Educational/motivational | Prompt enforcement (Rationalization Table, Drive-Aligned Framing) |
+
+**Write the hook as a Python script** in `skills/[phase]/scripts/` and reference it in the skill's frontmatter:
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/[phase]/scripts/guard-media-files.py"
+```
+
+**Design rule:** Hook first. If the hook can't express the constraint (requires judgment, context, or semantics), fall back to prompt enforcement.
 
 #### Deviation Rules for Implementation Phases
 
@@ -512,11 +605,50 @@ Visual artifacts *can* make `decision` checkpoints faster — but what helps dep
 
 Present complete file list for user approval before writing.
 
+### Step 7: Self-Audit the Generated Workflow
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Eating Your Own Cooking
+
+**NO GENERATED WORKFLOW WITHOUT A MODE 2 AUDIT ON IT. This is not negotiable.**
+
+workflow-creator mandates audit-fix loops, independent verification, and artifact review gates for every workflow it creates. It cannot exempt its own output from these same standards.
+
+**Skipping the self-audit is NOT HELPFUL — you're shipping an unverified workflow to the user. The user will discover the gaps when the workflow fails in production. The 5-minute audit would have caught them.**
+</EXTREMELY-IMPORTANT>
+
+After generating workflow files in Step 6:
+
+1. **Run Mode 2** on the generated workflow — audit architecture (16 principles) and enforcement (13 patterns)
+2. **Check score:** If composite score < 8.0, fix the generated files and re-audit (max 3 iterations)
+3. **Present to user** with the audit report attached — the user sees both the workflow AND its quality score
+
+```
+Step 6: Generate Files
+    ↓
+Step 7: Mode 2 Audit on generated files
+    ↓
+Score >= 8.0? ──YES──→ Present files + audit report to user
+    │
+    NO
+    ↓
+Fix gaps (max 3 iterations) → Re-audit
+    │
+    ↓ (after 3 iterations)
+Present files + audit report + remaining gaps to user
+```
+
+**Why 8.0 not 9.5:** Generated workflows are first drafts. They need real-world usage to reach 9.5. But they should clear 8.0 — no missing gates, no broken paths, no ungated phase transitions. Mode 3 exists for the 8.0 → 9.5 climb.
+
+Update `.planning/wc/STATE.md`: `step: 7-self-audit, status: completed`
+
 ---
 
 ## Mode 2: Audit Existing Workflow
 
 **IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause or wait for user input between steps.
+
+**State initialization:** Create `.planning/wc/STATE.md` with `mode: audit, step: 1-read, status: in_progress, target: [workflow name]`.
 
 ### Step 1: Read the Workflow
 
@@ -644,8 +776,15 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Does the workflow log what the human actually looks at during review (in LEARNINGS.md)?
 - If the human has asked for the same view 3+ times, has it been automated into a script?
 
+**Hooks over prompt enforcement:**
+- Are mechanically-checkable constraints enforced via scoped hooks (PreToolUse/PostToolUse in skill frontmatter)?
+- Or are they enforced only via prompt text (Iron Laws, Red Flags) that consume context and can be rationalized away?
+- Specifically check for: file extension guards, path guards, tool parameter validation, tool sequence enforcement, post-subagent restrictions
+- Behavioral/motivational constraints (rationalization tables, drive-aligned framing) should STAY as prompt — hooks can't teach reasoning
+- Score based on: how many mechanical constraints are prompt-only when they could be hooks?
+
 **Gate: Architecture Scored**
-- Verify scores for all 16 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification)
+- Verify scores for all 17 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification, hooks over prompt)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -747,6 +886,8 @@ Format:
 [Specific, actionable changes]
 ```
 
+**Persist audit results:** Write the audit report to `.planning/wc/AUDIT.md` in addition to displaying it. Update `.planning/wc/STATE.md`: `step: 4-report, status: completed`.
+
 ---
 
 ## Mode 3: Improve Workflow
@@ -754,165 +895,191 @@ Format:
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Workflow Improvement
 
-**NO "IMPROVED" CLAIMS WITHOUT RE-AUDIT. This is not negotiable.**
+**MODE 3 IS AN AUDIT-FIX LOOP. THE SCORE DECIDES WHEN TO STOP, NOT YOU. This is not negotiable.**
 
-When Mode 3 applies changes to a workflow, you MUST:
-1. Re-invoke Mode 2 to re-audit the workflow
-2. Verify the score actually improved (not assumed)
-3. Check for new issues introduced by changes
-4. Only THEN claim the workflow is improved
+Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → re-audit. The loop terminates when the **auditor's score** crosses the threshold (default: 9.5/10), NOT when you "feel" the workflow is good enough.
 
-"I applied the fixes" without re-auditing is NOT HELPFUL — you're shipping an unverified workflow that will fail in production and waste the user's time.
-
-### The Improvement Loop (Max 3 Iterations)
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ Mode 3: Improve Workflow                                │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      ↓
-           ┌──────────────────────┐
-           │ Step 1: Initialize   │
-           │   Loop State         │
-           └──────────┬───────────┘
-                      │
-                      ↓
-           ┌──────────────────────┐
-           │ Step 2: Identify     │◄──────────┐
-           │   Gaps               │           │
-           └──────────┬───────────┘           │
-                      │                       │
-                      ↓                       │
-           ┌──────────────────────┐           │
-           │ Step 3: Generate     │           │
-           │   Fixes              │           │
-           └──────────┬───────────┘           │
-                      │                       │
-                      ↓                       │
-           ┌──────────────────────┐           │
-           │ Step 4: Present      │           │
-           │   Changes            │           │
-           └──────────┬───────────┘           │
-                      │                       │
-                      ↓                       │
-           ┌──────────────────────┐           │
-           │ Step 5: Apply        │           │
-           │   Changes            │           │
-           └──────────┬───────────┘           │
-                      │                       │
-                      ↓                       │
-           ┌──────────────────────┐           │
-           │ Step 6: Re-Audit     │           │
-           │   (MANDATORY)        │           │
-           └──────────┬───────────┘           │
-                      │                       │
-                      ↓                       │
-           ┌──────────────────────┐           │
-           │ Step 7: Check Exit   │           │
-           │   Criteria           │           │
-           └──────────┬───────────┘           │
-                      │                       │
-                      ↓                       │
-              Score >= target?                │
-                   /    \                     │
-                 YES    NO                    │
-                 /        \                   │
-                ↓          ↓                  │
-          COMPLETE    Iteration < 3?          │
-                           /    \             │
-                         YES    NO            │
-                         /        \           │
-                        ↓          ↓          │
-                    CONTINUE   ESCALATE       │
-                       └───────────────────────┘
-```
-
-**Track iterations:**
-
-```yaml
----
-workflow_name: [workflow being improved]
-iteration: 1
-max_iterations: 3
-target_score: 9.5
-baseline_score: [from initial audit]
-current_score: [from initial audit]
----
-```
-
-**Exit criteria:**
-- **COMPLETE**: current_score >= target_score
-- **ESCALATE**: iteration >= 3 AND current_score < target_score
-- **CONTINUE**: iteration < 3 AND current_score < target_score → loop
+**The structural problem Mode 3 solves:** Without a loop, the agent audits once, applies some fixes, and stops — rationalizing that the remaining gaps are "domain characteristics" or "diminishing returns." March 19, 2026: agent stopped at 8.5/10 and said "close enough." It wasn't.
 </EXTREMELY-IMPORTANT>
 
-### Step 1: Initialize/Check Loop State
+### Step 1: Run Initial Audit (Mode 2)
 
-If continuing existing loop, read state. If starting fresh, create state from audit baseline.
+**State initialization:** Create `.planning/wc/STATE.md` with `mode: improve, step: 1-initial-audit, status: in_progress, target: [workflow name]`.
 
-### Step 2: Identify Gaps
+Run Mode 2 on the target workflow. This produces the baseline score.
 
-From Mode 2 audit, prioritize by severity: Critical → High → Medium → Low.
+**Gate:** Mode 2 audit report exists with numeric scores for all 16 principles.
 
-### Step 3: Generate Fixes
+### Step 2: Launch Audit-Fix Loop
 
-For each gap:
-- **Missing Iron Law** → Write with `<EXTREMELY-IMPORTANT>` tags
-- **Missing Rationalization Table** → 5-10 entries (Excuse → Reality → Do Instead)
-- **Weak gate** → Verifiable condition
-- **Self-review** → Fresh subagent reviewer
-- **Missing Red Flags** → 3-5 wrong-path indicators
-- **Missing audit-fix loop** → Iteration tracking + re-review + escalation
-- **Missing Drive-Aligned Framing** → 5-drive table (helpfulness > competence > efficiency > approval > honesty)
-- **Skills sharing a domain without shared enforcement** → Extract common constraints to `references/common-constraints.md`; every domain skill Read()s it so any single skill enforces the full rule set
-- **Missing artifact review gate** → Add reviewer subagent dispatch between artifact-producing and consuming phases, with fix loop (max 5) and chunking for large artifacts
-- **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
-- **Broken paths (script)** → Replace `python3 scripts/...` or `python3 ../...` with `python3 "${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py"` or `python3 "${CLAUDE_SKILL_DIR}/scripts/script.py"`
-- **Broken paths (Read)** → Replace `Read("../../...")` with `Read "${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md"` or `Read "${CLAUDE_SKILL_DIR}/references/file.md"`
-- **Missing post-subagent enforcement** → Add explicit verification/investigation boundary table for the domain. Define what main chat CAN do (verification) vs CANNOT do (investigation) after a subagent returns. Add rationalization entries for "let me verify by reading the code/data/draft"
-- **Missing topic change protocol** → For any workflow with iterative loops, add: announce pause, handle off-topic, announce resume, reload state. Without this, off-topic user messages silently kill the loop
-- **Rationalizations are generic, not grounded in real failures** → Replace hypothetical examples with citations from actual failed sessions (dates, transcript IDs, violation counts). "March 16: 71 violations" is more effective than "agents sometimes skip steps"
-- **Missing deviation rules** → Add 4-rule deviation system to implementation phases (R1: Bug auto-fix, R2: Missing Critical auto-fix, R3: Blocking auto-fix, R4: Architectural STOP). Adapt categories to the domain. Add per-task deviation tracking
-- **Missing state folder** → Consolidate workflow state into `.planning/` directory with standard files (SPEC.md, PLAN.md, STATE.md, HANDOFF.md, VALIDATION.md, LEARNINGS.md). File-based, git-trackable, human-editable
-- **Missing session handoff** → Add HANDOFF.md check to entry point startup. Define handoff template with frontmatter + mandatory sections. Ensure "Next Action" is specific enough to start immediately
-- **Missing checkpoint types** → Classify every gate as `human-verify` (auto-advanceable), `decision` (choose from options), or `human-action` (truly manual). Most gates should be `human-verify`. Without classification, autonomous mode can't know which gates to auto-advance
-- **Missing context monitoring** → Add context checks at phase entry. Warning at ≤35% remaining (complete current task then handoff), critical at ≤25% (immediate handoff). Without this, agents start 10-task phases with 20% context and produce garbage
-- **Missing summary frontmatter** → Add structured YAML frontmatter to phase SUMMARY.md files with `implements`, `requires`, `provides`, `affects`, `key-files`, `deviations` fields. One-liner must be substantive. Without this, handoff/resume requires re-reading all changed files
-- **Missing agent tool restrictions** → Add `allowed-tools` frontmatter to verification/review agents restricting them to read-only tools (Read, Grep, Glob). A verifier that can Write/Edit will silently "fix" issues, bypassing plan-execute-verify. Tool restrictions make verification structurally honest
-- **Missing requirement traceability** → Assign unique IDs in SPEC.md (CATEGORY-NN format), reference IDs in PLAN.md task frontmatter (`implements: [AUTH-01]`), map IDs to evidence in VALIDATION.md. Classify scope as v1/v2/out-of-scope. Without IDs, requirement coverage is fuzzy
-- **Missing autonomous phase chaining** → Add auto-advance for `human-verify` checkpoints, smart-discuss batching (all ambiguities in one question), plan re-read after each phase completion, and blocker handling (retry/skip/stop). Without this, a 7-phase workflow requires 7 manual interventions
-- **No visual output learning at decision checkpoints** → Add observation logging to decision checkpoints: what did the human ask for? After 3+ reviews with the same pattern, offer to bundle a script that generates the view automatically. Don't build visualizations speculatively — build what the human actually uses
-
-### Step 4: Present Changes
-
-Show changes in context. Get user approval.
-
-### Step 5: Apply Changes
-
-Edit files. Update iteration counter.
-
-### Step 6: Re-Audit (MANDATORY)
-
-**CRITICAL:** Re-invoke Mode 2 on updated workflow. Compare scores.
-
-### Step 7: Check Exit Criteria
+Use the audit-fix-loop pattern with ralph-loop infrastructure:
 
 ```
-Gate: Exit Improvement Loop
-
-1. IDENTIFY → Re-audit score >= target OR iteration >= 3
-2. RUN     → Compare scores, check iteration
-3. READ    → current_score vs target_score
-4. VERIFY  → Verdict matches state
-5. CLAIM   → Report completion/escalation/continue
+Skill(skill="ralph-loop:ralph-loop", args="Improve [WORKFLOW_NAME] workflow to >= 9.5 enforcement score. --max-iterations 10 --completion-promise WORKFLOW_9_5")
 ```
 
-**If score >= target:** COMPLETE
-**If iteration >= 3 AND score < target:** ESCALATE
-**If iteration < 3 AND score < target:** CONTINUE → loop to Step 2
+**Each iteration of the loop follows this exact sequence:**
 
-**Claiming improved without re-audit is NOT HELPFUL — you're delivering a broken workflow to the user.**
+#### Phase A: AUDIT (Fresh Subagent — MANDATORY)
+
+Spawn a fresh audit subagent that:
+1. Reads ALL skill files in the workflow (entry, midpoint, all phases, references, common-constraints)
+2. Scores against the 16 architecture principles (0-10 each)
+3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
+4. Checks path portability
+5. Computes composite score (average of 16 principle scores)
+6. Writes findings to `.planning/wc/AUDIT.md`
+7. Appends score to `.planning/wc/SCORES.md`
+
+```
+Agent(
+  subagent_type="general-purpose",
+  description="Audit workflow enforcement",
+  prompt="""You are an independent workflow auditor. You have NO knowledge of any prior fixes.
+
+Read the workflow-creator Mode 2 audit criteria:
+Read "${CLAUDE_SKILL_DIR}/SKILL.md" — Mode 2 section only.
+
+Read the enforcement checklist:
+Read "${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md"
+
+Then audit this workflow by reading ALL its skill files:
+[LIST ALL SKILL FILES IN THE WORKFLOW]
+
+Score each of the 16 architecture principles 0-10.
+Score each of the 13 enforcement patterns per phase: Present/Weak/Absent.
+Check path portability.
+
+Compute composite score = average of 16 principle scores.
+
+Output to .planning/wc/AUDIT.md with this format:
+- Composite score (single number)
+- Per-principle scores with 1-line justification
+- Critical gaps (principle score < 9.0) with specific fix recommendations
+- Enforcement matrix (13 patterns × N phases)
+
+Be thorough. A generous audit that misses gaps is worse than a harsh one.
+Do NOT soften findings. Do NOT say 'overall good.'
+""")
+```
+
+<EXTREMELY-IMPORTANT>
+**THE AUDITOR MUST BE A FRESH SUBAGENT. If you audit your own fixes, you are rubber-stamping.**
+
+The auditor has no context from the fix phase. It reads the files cold. This is what makes the score trustworthy.
+</EXTREMELY-IMPORTANT>
+
+#### Phase B: DECIDE
+
+Read `.planning/wc/SCORES.md`. Check composite score against threshold:
+
+| Condition | Action |
+|-----------|--------|
+| Score >= 9.5 | Output `<promise>WORKFLOW_9_5</promise>` — workflow meets quality bar |
+| Score < 9.5 AND iteration < 10 | Continue to Phase C |
+| Score < 9.5 AND iteration >= 10 | Escalate to user with current score and remaining gaps |
+
+**You may ONLY output the completion promise when the auditor's score >= 9.5. Not when you "feel" it's good enough. Not when the remaining gaps seem minor. The score decides.**
+
+#### Phase C: FIX
+
+Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
+
+1. Fix all principles scoring < 7.0 first (critical gaps)
+2. Then principles scoring 7.0-8.9 (medium gaps)
+3. Then principles scoring 9.0-9.4 (polish)
+
+**Fix reference — common gap → fix mapping:**
+
+| Gap | Fix |
+|-----|-----|
+| Missing Iron Law | Write with `<EXTREMELY-IMPORTANT>` tags |
+| Missing Rationalization Table | 5-10 entries (Excuse → Reality → Do Instead) |
+| Weak gate | Replace with verifiable condition |
+| Self-review as final gate | Add fresh subagent reviewer dispatch |
+| Missing Red Flags | 3-5 wrong-path indicators |
+| Missing Drive-Aligned Framing | 5-drive table (helpfulness > competence > efficiency > approval > honesty) |
+| No shared enforcement across skill family | Extract to `references/common-constraints.md`; all domain skills Read() it |
+| Missing artifact review gate | Add reviewer subagent dispatch between producing/consuming phases, max 5 iterations |
+| Broken paths (script) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py` |
+| Broken paths (Read) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` |
+| Missing post-subagent enforcement | Add verification/investigation boundary table for the domain |
+| Missing topic change protocol | Add announce-pause / handle / announce-resume |
+| Missing deviation rules | Add 4-rule system (R1-R3 auto, R4 STOP) adapted to domain |
+| Missing state folder | Consolidate into `.planning/` with standard files |
+| Missing session handoff | Add HANDOFF.md check to entry point startup |
+| Missing checkpoint types | Classify every gate as human-verify/decision/human-action |
+| Missing context monitoring | Add thresholds: warning ≤35%, critical ≤25% |
+| Missing summary frontmatter | Add YAML frontmatter with implements/requires/provides/affects |
+| Missing agent tool restrictions | Add `allowed-tools` to reviewer/verifier skills |
+| Missing requirement traceability | Add CATEGORY-NN IDs in spec, trace through plan and validation |
+| Missing autonomous phase chaining | Add auto-advance for human-verify gates, smart-discuss batching |
+| Mechanical constraints enforced only via prompt | Write scoped `PreToolUse`/`PostToolUse` hooks in skill frontmatter. File extension guards, path guards, tool param validation, sequence enforcement → hooks. Keep rationalization tables, drive-aligned framing, and quality judgments as prompt text |
+
+**Fix rules:**
+- Targeted changes only — do NOT rewrite entire skill files
+- Each fix addresses ONE gap from the audit
+- After fixing, do NOT self-assess — the next iteration's audit will judge
+- **End your turn immediately** so the loop feeds you back for re-audit
+
+### Efficiency Optimizations
+
+Mode 3 can be expensive. These optimizations reduce cost without sacrificing audit independence.
+
+#### 1. Batch Fixes Per File
+
+Group all fixes targeting the same file into a single edit. Don't make 5 separate edits to `references/common-constraints.md` — read the audit findings, plan all changes to that file, apply them in one Edit call.
+
+#### 2. Scoped Re-Audit After Iteration 1
+
+The first audit (baseline) must read ALL files — no shortcuts. After that, subsequent audits can be **scoped**: the audit subagent reads all files but the fix agent only needs to re-read files it changed + common-constraints.md. The audit subagent always does a full read (independence requires it), but the fixer can be smarter about what it reads before fixing.
+
+#### 3. Prioritize Cheapest High-Impact Fixes
+
+After the audit, sort gaps by `impact / effort`:
+- Adding a section to common-constraints.md (shared file, all skills inherit) = high impact, low effort
+- Adding `allowed-tools` frontmatter to 3 reviewer skills = high impact, 5 seconds each
+- Rewriting a phase skill's entire gate structure = medium impact, high effort
+
+Fix the cheap high-impact gaps first. This maximizes score improvement per iteration.
+
+#### 4. Domain-Appropriate Scoring
+
+Some principles have natural ceilings in certain domains:
+- Writing gates are judgment-based (not deterministic) — 9.0 is the natural ceiling for "gates" in writing
+- Writing has one midpoint because the domain only needs one — 9.0 is appropriate for "two entry points"
+
+The auditor should note when a score reflects a **domain ceiling** vs a **fixable gap**. Domain ceilings don't count against the composite if the auditor justifies them. The composite then averages only the non-ceiling scores.
+
+**Caution:** This is the auditor's call, not the fixer's. The fixer cannot declare a domain ceiling to avoid work. Only the independent auditor can classify a principle as domain-limited.
+
+### Why This Must Be a Loop (Not Manual Iteration)
+
+The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It relied on the agent manually deciding to continue iterating. This is an honor system — the exact failure mode that audit-fix-loop was built to prevent.
+
+**What happened (March 19, 2026):** Agent ran Mode 2 audit (baseline 7.3), applied fixes, re-audited to 8.5, applied more fixes, re-audited to 9.2, then stopped and rationalized: "remaining 0.3 is spread across many principles at 9.0 — diminishing returns." The target was 9.5. The agent stopped because it was tired of iterating, not because the score met the threshold.
+
+**The structural fix:** ralph-loop drives the iteration. The agent can't stop until the auditor's score says 9.5. The fixer's opinion of whether 9.2 is "close enough" is irrelevant.
+
+### Rationalization Table — Mode 3
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "9.2 is close enough to 9.5" | The threshold exists for a reason. 0.3 means real gaps remain. | Fix them. The score decides, not you. |
+| "The remaining gaps are domain characteristics" | Maybe, but prove it by having the auditor agree, not by self-declaring | Let the auditor score it. If it's truly a domain limit, the auditor will note it. |
+| "Diminishing returns on further iteration" | You don't know that. The last 0.3 might be one targeted fix. | Run the audit, see what's cheapest to fix, try it. |
+| "I'll run the audit manually instead of using ralph-loop" | Manual loops have no enforcement. You'll stop early. You literally just did. | Use ralph-loop. The score decides. |
+| "Re-reading all files each iteration is wasteful" | Fresh-context audit is what makes the score trustworthy. Incremental audits miss regressions. | Full re-read every iteration. Independence > efficiency. |
+
+### Red Flags — STOP If You Catch Yourself:
+
+| Action | Why Wrong | Do Instead |
+|--------|-----------|------------|
+| Running Mode 3 without ralph-loop | Honor system — you'll stop early | Use ralph-loop with completion promise |
+| Auditing your own fixes | Rubber-stamping | Spawn fresh audit subagent |
+| Declaring "close enough" below 9.5 | Threshold violation | Keep iterating or escalate at max iterations |
+| Skipping the audit subagent "to save time" | The audit IS the value — without it, fixes are unverified | Full independent audit every iteration |
+| Stopping after 1-2 iterations without checking score | You don't know if you're done | Read SCORES.md, check against 9.5 |
 
 ---
 
