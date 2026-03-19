@@ -1,6 +1,7 @@
 ---
 name: dev
 description: "This skill should be used when the user asks to 'start a feature', 'build a feature', 'implement a feature', 'develop', 'new feature', or needs the full 7-phase development workflow with TDD enforcement."
+allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 ---
 
 **Announce:** "I'm using dev (Phase 1) to gather requirements."
@@ -48,7 +49,7 @@ AskUserQuestion(questions=[{
    - Read `.planning/SPEC.md` and `.planning/PLAN.md` if they exist
    - Skip directly to the recorded phase by discovering and reading the appropriate phase skill:
      ```bash
-     ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-[phase_name]/SKILL.md 2>/dev/null | sort -V | tail -1
+     ${CLAUDE_SKILL_DIR}/../../skills/dev-[phase_name]/SKILL.md
      ```
    - Delete `.planning/HANDOFF.md` after successfully resuming (it has been consumed)
    - Announce: "Resuming from handoff — picking up at Phase [N]: [phase_name]."
@@ -168,11 +169,7 @@ After writing `.planning/SPEC.md` and completing brainstorm, immediately invoke 
 
 **Invoke the explore phase:**
 
-Discover and read the explore phase skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-explore/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-explore/SKILL.md` and follow its instructions.
 
 DO NOT:
 - Summarize what was learned
@@ -291,11 +288,7 @@ AskUserQuestion(questions=[{
 
 **Read the shared enforcement for REAL vs FAKE test definitions:**
 
-Discover and read the shared dev enforcement constraints:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/dev-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`
 
 See constraints C2 (Real Test Enforcement) and the protocol mismatch table. **A test that doesn't replicate the user's actual workflow is a FAKE test.**
 
@@ -321,25 +314,32 @@ Write the initial spec to `.planning/SPEC.md`:
 ```markdown
 # Spec: [Feature Name]
 
-> **For Claude:** After writing this spec, discover and read the explore phase skill via cache lookup for `lib/skills/dev-explore/SKILL.md`.
+> **For Claude:** After writing this spec, discover and read the explore phase skill via cache lookup for `skills/dev-explore/SKILL.md`.
 
 ## Problem
 [What problem this solves]
 
 ## Requirements
-- [Requirement 1]
-- [Requirement 2]
+
+Assign each requirement a unique ID using `CATEGORY-NN` format (e.g., `AUTH-01`, `UI-02`, `DATA-03`). Categories come from natural groupings.
+
+| ID | Requirement | Scope |
+|----|-------------|-------|
+| [CAT-01] | [Requirement 1] | v1 |
+| [CAT-02] | [Requirement 2] | v1 |
+
+Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly excluded.
 
 ## Success Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
+- [ ] [CAT-01] [Criterion derived from requirement]
+- [ ] [CAT-02] [Criterion derived from requirement]
 
 ## Constraints
 - [Any limitations or boundaries]
 
 ## Testing Strategy (MANDATORY - USER APPROVED)
 
-> **For Claude:** Discover and read the test skill via cache lookup for `lib/skills/dev-test/SKILL.md` for automation options.
+> **For Claude:** Discover and read the test skill via cache lookup for `skills/dev-test/SKILL.md` for automation options.
 >
 > **⚠️ NO IMPLEMENTATION WITHOUT TESTS. If this section is empty, STOP.**
 
@@ -368,7 +368,7 @@ Write the initial spec to `.planning/SPEC.md`:
 
 ### The Iron Law of REAL Tests
 
-**If the test doesn't do what the user does, it's a FAKE test.** See `lib/references/dev-common-constraints.md` (C2) and `lib/references/real-test-enforcement.md` for the full REAL vs FAKE detection tables and protocol mismatch examples.
+**If the test doesn't do what the user does, it's a FAKE test.** See `references/dev-common-constraints.md` (C2) and `references/real-test-enforcement.md` for the full REAL vs FAKE detection tables and protocol mismatch examples.
 
 ### No Test Infrastructure? That's a BLOCKER.
 
@@ -417,6 +417,8 @@ Brainstorm complete when:
 
 ### Exit Gate
 
+**Checkpoint type:** human-verify (auto-advanceable — SPEC.md content is machine-verifiable)
+
 Before transitioning to dev-explore, ALL checks must pass:
 
 ```
@@ -450,11 +452,7 @@ After fixing, re-run ALL gate checks (not just the one that failed).
 
 **Spec Review Gate (MANDATORY):**
 
-Discover and read the spec reviewer skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-spec-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-spec-reviewer/SKILL.md` and follow its instructions.
 
 Follow the spec reviewer's instructions:
 1. Dispatch reviewer subagent
@@ -463,8 +461,4 @@ Follow the spec reviewer's instructions:
 
 **After spec review APPROVED, start explore phase - Phase 2:**
 
-Discover and read the explore phase skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/dev-explore/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-explore/SKILL.md` and follow its instructions.

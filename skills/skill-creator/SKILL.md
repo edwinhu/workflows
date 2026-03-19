@@ -7,6 +7,8 @@ hooks:
       hooks:
         - type: command
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
 ---
 
 # Skill Creator (with Superpowers Enforcement)
@@ -50,7 +52,8 @@ These are real lessons from production. Read them before writing your first draf
 
 ```markdown
 # In skill content (SKILL.md) — use ${CLAUDE_SKILL_DIR} with relative navigation:
-!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`
+# Bang-backtick injection (inlines file at load time):
+#   BANG + `cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`
 Read `${CLAUDE_SKILL_DIR}/../../skills/other-skill/SKILL.md` and follow its instructions.
 
 # In hook commands — ${CLAUDE_PLUGIN_ROOT} works:

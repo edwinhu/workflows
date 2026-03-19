@@ -8,6 +8,8 @@ hooks:
       hooks:
         - type: command
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
 ---
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
@@ -122,6 +124,155 @@ Workflows with implementation phases should include a **validation phase** betwe
 5. Produce VALIDATION.md with the full coverage map
 
 **Gate condition:** VALIDATION.md exists with status `validated` — all requirements COVERED, all tests passing.
+
+### Checkpoint Types
+
+Not all gates are the same. GSD distinguishes three checkpoint types with dramatically different frequencies:
+
+| Type | Frequency | Description | What Happens |
+|------|-----------|-------------|-------------|
+| `human-verify` | ~90% | Agent did the work, human confirms | Review and approve (auto-advanceable) |
+| `decision` | ~9% | Human chooses direction from options | Select from options with pros/cons |
+| `human-action` | ~1% | Auth gates, 2FA, physical access | Human performs truly manual step |
+
+**When designing gates, classify each one.** Most gates are `human-verify` — the agent can auto-advance them in autonomous mode. Only `decision` (choose between approaches) and `human-action` (credentials, physical access) require genuine human pause.
+
+**Golden rule:** If the agent CAN automate it, the agent MUST automate it. `human-action` is reserved for things genuinely impossible to automate.
+
+**Why this matters:** Without checkpoint classification, every gate pauses for human input. Workflows become unusable in autonomous/overnight mode because they stop at every `human-verify` checkpoint that could have been auto-approved.
+
+### Context Monitoring
+
+Long workflows must plan for context exhaustion. Without monitoring, agents start complex work when context is nearly full, produce degraded output, and lose in-flight state.
+
+**Requirements for workflows:**
+1. **Graceful degradation** — phases should check context availability before starting expensive work
+2. **Handoff trigger** — when context is low, trigger HANDOFF.md creation instead of starting a new phase
+3. **Phase-aware warnings** — implementation phases need more remaining context than exploration phases
+
+**Implementation pattern:**
+- At phase entry, check if sufficient context remains for the phase's expected work
+- If context is low (≤35% remaining), write HANDOFF.md and pause rather than starting degraded work
+- If context is critical (≤25% remaining), immediately write HANDOFF.md — no new work
+
+**Standard thresholds:**
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25-35% | Complete current task, then handoff |
+| Critical | ≤25% | Immediate handoff, no new tasks |
+
+**Why:** Context exhaustion is the #1 cause of lost work in long workflows. An agent that starts a 10-task implementation phase with 20% context remaining will produce garbage for the last 5 tasks. Better to handoff cleanly and resume fresh.
+
+### Summary Frontmatter
+
+Phase completions should produce structured YAML summaries for machine-readable context assembly. This enables automated resume, dependency analysis, and audit trails.
+
+**Phase SUMMARY.md format:**
+
+```yaml
+---
+phase: explore-codebase
+status: completed
+duration: 12m
+implements: [REQ-01, REQ-03]
+requires: [SPEC.md]
+provides: [EXPLORATION.md]
+affects: [src/auth/, src/middleware/]
+key-files:
+  created: [tests/test_auth.py]
+  modified: [src/auth/handler.py]
+deviations: {r1: 1, r2: 0, r3: 1, r4: 0}
+tags: [authentication, middleware]
+---
+
+One-liner: JWT auth exploration — identified 3 integration points and 2 missing test paths.
+
+## Findings
+...
+```
+
+**Required fields:**
+- `phase`, `status` — identification
+- `implements` — which requirement IDs this phase addressed
+- `requires` / `provides` — dependency graph between phases
+- `affects` — directories/files changed (for conflict detection)
+- `key-files.created`, `key-files.modified` — file tracking
+- `deviations` — R1-R4 counts from deviation rules
+
+**One-liner rule:** Must be SUBSTANTIVE. Good: "JWT auth with refresh rotation using jose". Bad: "Phase complete" or "Implemented authentication".
+
+**Why:** Without structured summaries, handoff and resume require re-reading all changed files. With frontmatter, the next session can reconstruct what happened from `provides`/`affects` fields without reading the full phase output.
+
+### Agent Tool Restrictions (READ-ONLY Verifiers)
+
+Verification agents must be structurally prevented from modifying the work they verify. A verifier that can Write/Edit will "fix" issues it discovers, bypassing the plan-execute-verify cycle.
+
+**Implementation:** Use `allowed-tools` frontmatter on verification/review agents:
+
+```yaml
+---
+name: code-reviewer
+description: Reviews code for quality issues
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash(command_prefix:cat)
+  - Bash(command_prefix:git log)
+  - Bash(command_prefix:git diff)
+---
+```
+
+**Tool restriction tiers:**
+
+| Agent Role | Can Use | Cannot Use |
+|-----------|---------|------------|
+| **Executor** | Read, Write, Edit, Bash, Grep, Glob | — |
+| **Verifier** | Read, Grep, Glob, Bash (read-only commands) | Write, Edit, Bash (modifying commands) |
+| **Researcher** | Read, Grep, Glob, WebFetch, WebSearch | Write, Edit, Bash |
+| **Auditor** | Read, Grep, Glob | Write, Edit, Bash |
+
+**Why:** Without tool restrictions, "independent verification" is a polite fiction. The verifier reads, finds a bug, fixes it in-place, and reports "all checks pass." The fix was never planned, never reviewed, and never tested. Tool restrictions make verification structurally honest.
+
+### Requirement Traceability
+
+Requirements should have unique IDs that flow through the entire workflow — from spec through plan through implementation through verification.
+
+**Tracing chain:**
+1. **SPEC.md** assigns unique IDs per requirement (e.g., `AUTH-01`, `AUTH-02`, `DATA-01`)
+2. **PLAN.md** tasks reference requirement IDs (`implements: [AUTH-01, AUTH-02]`)
+3. **Phase summaries** track which IDs were addressed (`implements: [AUTH-01]`)
+4. **VALIDATION.md** maps every ID to test evidence (COVERED / PARTIAL / MISSING)
+5. **Milestone audit** checks all v1 requirements are satisfied before marking complete
+
+**ID format:** `CATEGORY-NN` (e.g., `AUTH-01`, `DATA-03`, `UI-12`). Categories come from natural groupings in the spec.
+
+**Scope classification:**
+
+| Tag | Meaning |
+|-----|---------|
+| `v1` | Must be complete for milestone |
+| `v2` | Nice to have, defer if needed |
+| `out-of-scope` | Explicitly excluded |
+
+**Why:** Without IDs, requirement-to-test mapping is fuzzy. "We tested authentication" doesn't tell you whether `AUTH-01` (login), `AUTH-02` (refresh tokens), and `AUTH-03` (logout) are all covered. IDs make gaps visible and auditable.
+
+### Autonomous Phase Chaining
+
+Workflows should support autonomous execution — chaining phases automatically without human intervention at every step.
+
+**Key mechanisms:**
+1. **Smart Discuss** — batch all ambiguities into one question instead of sequential asks. Present all grey areas at once for a single human response.
+2. **Dynamic phase re-read** — after each phase completes, re-read the ROADMAP/PLAN to catch dynamically inserted phases (phases added during execution of an earlier phase).
+3. **Checkpoint-aware pausing** — only pause at `decision` and `human-action` checkpoints; auto-advance `human-verify` checkpoints.
+4. **Blocker handling** — when execution fails, offer: retry / skip / stop options.
+5. **Post-execution routing** — based on verification status, route to: next phase / retry / human escalation.
+
+**Auto-advance mode:** Auto-approves `human-verify` checkpoints, auto-selects first option for `decision` checkpoints. Only `human-action` pauses.
+
+**Why:** Without autonomous chaining, the user must manually invoke each phase. A 7-phase workflow requires 7 manual interventions. With autonomous mode, the user kicks off the workflow and returns to find it complete (or paused at a genuine decision point).
 
 ### Step 3b: Add Artifact Review Gates
 
@@ -423,8 +574,40 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Is the handoff document structured with frontmatter and mandatory sections?
 - Can work resume from a handoff without re-discovering context?
 
+**Checkpoint types:**
+- Are gates classified by type (human-verify, decision, human-action)?
+- Can the workflow auto-advance human-verify checkpoints in autonomous mode?
+- Are true decision points (multiple valid approaches) distinguished from rubber-stamp approvals?
+
+**Context monitoring:**
+- Do phases check context availability before starting expensive work?
+- Is there a handoff trigger when context is low (≤35%)?
+- Does the workflow degrade gracefully or just produce garbage at context exhaustion?
+
+**Summary frontmatter:**
+- Do phase completions produce structured YAML summaries?
+- Do summaries include `implements`, `requires`, `provides`, `affects` fields?
+- Is the one-liner substantive (not "Phase complete")?
+
+**Agent tool restrictions:**
+- Are verification/review agents restricted to read-only tools via `allowed-tools` frontmatter?
+- Can a verifier Write or Edit? (it shouldn't — that bypasses plan-execute-verify)
+- Are tool restriction tiers appropriate for each agent role?
+
+**Requirement traceability:**
+- Do requirements have unique IDs in SPEC.md (e.g., AUTH-01)?
+- Do PLAN.md tasks reference requirement IDs?
+- Does VALIDATION.md map every ID to test evidence?
+- Is there a scope classification (v1/v2/out-of-scope)?
+
+**Autonomous phase chaining:**
+- Can phases chain automatically without human intervention at every step?
+- Does the workflow batch ambiguities (smart discuss) instead of sequential asks?
+- Does it re-read the plan after each phase to catch dynamically inserted phases?
+- Are blockers handled with retry/skip/stop options?
+
 **Gate: Architecture Scored**
-- Verify scores for all 9 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff)
+- Verify scores for all 15 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -472,11 +655,7 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
      Read `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` and follow its instructions.
      ```
 
-3. **Dynamic context via `!` injection** — For constraint files that should be inlined at skill load time:
-   ```
-   !`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`
-   ```
-   Note: `!` injection only works in top-level skills loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions instead.
+3. **Dynamic context via bang-backtick injection** — For constraint files that should be inlined at skill load time, use the pattern: exclamation mark followed by backtick-cat path backtick. Example: `BANG` + `` `cat ${CLAUDE_SKILL_DIR}/../../references/file.md` ``. This inlines the file contents at skill load time. Note: bang-backtick injection only works in top-level skills loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions instead.
 
 4. **`${CLAUDE_PLUGIN_ROOT}` in skill content** — This is NOT a valid skill substitution variable. It only works in hook `command:` fields.
    - **In skill content:** Use `${CLAUDE_SKILL_DIR}` (substituted at load time)
@@ -659,6 +838,12 @@ For each gap:
 - **Missing deviation rules** → Add 4-rule deviation system to implementation phases (R1: Bug auto-fix, R2: Missing Critical auto-fix, R3: Blocking auto-fix, R4: Architectural STOP). Adapt categories to the domain. Add per-task deviation tracking
 - **Missing state folder** → Consolidate workflow state into `.planning/` directory with standard files (SPEC.md, PLAN.md, STATE.md, HANDOFF.md, VALIDATION.md, LEARNINGS.md). File-based, git-trackable, human-editable
 - **Missing session handoff** → Add HANDOFF.md check to entry point startup. Define handoff template with frontmatter + mandatory sections. Ensure "Next Action" is specific enough to start immediately
+- **Missing checkpoint types** → Classify every gate as `human-verify` (auto-advanceable), `decision` (choose from options), or `human-action` (truly manual). Most gates should be `human-verify`. Without classification, autonomous mode can't know which gates to auto-advance
+- **Missing context monitoring** → Add context checks at phase entry. Warning at ≤35% remaining (complete current task then handoff), critical at ≤25% (immediate handoff). Without this, agents start 10-task phases with 20% context and produce garbage
+- **Missing summary frontmatter** → Add structured YAML frontmatter to phase SUMMARY.md files with `implements`, `requires`, `provides`, `affects`, `key-files`, `deviations` fields. One-liner must be substantive. Without this, handoff/resume requires re-reading all changed files
+- **Missing agent tool restrictions** → Add `allowed-tools` frontmatter to verification/review agents restricting them to read-only tools (Read, Grep, Glob). A verifier that can Write/Edit will silently "fix" issues, bypassing plan-execute-verify. Tool restrictions make verification structurally honest
+- **Missing requirement traceability** → Assign unique IDs in SPEC.md (CATEGORY-NN format), reference IDs in PLAN.md task frontmatter (`implements: [AUTH-01]`), map IDs to evidence in VALIDATION.md. Classify scope as v1/v2/out-of-scope. Without IDs, requirement coverage is fuzzy
+- **Missing autonomous phase chaining** → Add auto-advance for `human-verify` checkpoints, smart-discuss batching (all ambiguities in one question), plan re-read after each phase completion, and blocker handling (retry/skip/stop). Without this, a 7-phase workflow requires 7 manual interventions
 
 ### Step 4: Present Changes
 
@@ -709,6 +894,12 @@ If a phase produces an artifact (spec, plan, outline) that downstream phases con
 
 ### NO SKILL FAMILY WITHOUT SHARED ENFORCEMENT
 If multiple skills in the same plugin operate on the same domain, their common enforcement MUST live in a shared file (e.g., `references/common-constraints.md`) that every skill `Read()`s. Without this, skills enforce different rules — and the user has to run multiple skills to catch what any single skill should have caught on its own.
+
+### NO VERIFIER WITH WRITE ACCESS
+Verification and review agents MUST use `allowed-tools` frontmatter restricting them to read-only tools. A verifier that can Write/Edit will "fix" issues it finds — silently bypassing the plan-execute-verify cycle. The fix was never planned, never reviewed, never tested. Tool restrictions make verification structurally honest, not just procedurally independent.
+
+### NO LONG WORKFLOW WITHOUT CONTEXT MONITORING
+Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% remaining context (complete current task, then handoff). Critical at ≤25% (immediate handoff). An agent that starts a 10-task implementation phase with 20% context remaining will produce garbage for the last 5 tasks.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:
@@ -728,6 +919,12 @@ If multiple skills in the same plugin operate on the same domain, their common e
 | Implementation phase with no deviation rules | Agents encounter unplanned work and either silently change architecture or halt on trivial bugs. | Add 4-rule deviation system with auto-fix for R1-R3, STOP for R4 |
 | State files scattered across `.claude/` and project root | Next session can't find state; handoff fails. | Consolidate into `.planning/` directory |
 | No handoff support in entry points | Context window exhaustion means lost work — next session starts from scratch. | Check for HANDOFF.md at startup, support structured resume |
+| Verification agent with Write/Edit access | Verifier silently "fixes" issues, bypassing plan-execute-verify. The fix was never planned or tested. | Add `allowed-tools` frontmatter restricting to Read, Grep, Glob only |
+| All gates treated as human-required | Workflow stops 7 times for rubber-stamp approvals. Unusable in autonomous/overnight mode. | Classify gates: human-verify (auto-advance), decision (pause), human-action (manual) |
+| No context monitoring in multi-phase workflow | Agent starts expensive phase with 20% context, produces degraded output, loses state. | Add context checks at phase entry, trigger handoff at ≤35% |
+| Phase summaries are unstructured prose | Handoff/resume requires re-reading all files. No dependency graph for parallel execution. | Add YAML frontmatter with implements/requires/provides/affects |
+| Requirements have no unique IDs | "We tested auth" doesn't tell you if login, refresh, AND logout are covered. | Assign IDs in SPEC.md, trace through PLAN.md and VALIDATION.md |
+| Every phase requires manual invocation | 7-phase workflow needs 7 human interventions to run. | Add autonomous chaining with auto-advance for human-verify gates |
 
 ## Rationalization Table
 
@@ -742,6 +939,10 @@ If multiple skills in the same plugin operate on the same domain, their common e
 | "Each skill can have its own enforcement" | Then lecture-prep misses what slides-edit catches, and the user runs 3 skills to get what 1 should provide. | Shared enforcement file. One source of truth for the domain. |
 | "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
 | "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
+| "The reviewer can just fix small issues it finds" | That bypasses plan-execute-verify. The "fix" was never planned, never reviewed, never tested. Now you have unverified code in production. | Restrict verifiers to read-only tools. Issues go back to the executor. |
+| "Context monitoring is overkill for short workflows" | A 4-phase workflow can exhaust context on phase 2 if implementation is complex. "Short" is about phase count, not context usage. | Add monitoring. It costs nothing when context is plentiful. |
+| "Requirement IDs are bureaucracy" | Without IDs, the validation phase maps requirements by fuzzy text matching. "Auth" matches 3 different requirements and misses 2. | IDs take 30 seconds to assign and make coverage auditable. |
+| "Autonomous mode is too risky without human oversight" | 90% of gates are rubber-stamp `human-verify`. The other 10% still pause. Autonomous mode skips the rubber stamps, not the real decisions. | Classify checkpoints. Auto-advance the rubber stamps. |
 
 ### Why Skipping Steps Hurts the Thing You Care About Most
 

@@ -8,11 +8,7 @@ description: "This skill should be used when the user asks to 'debug', 'fix bug'
 
 **Load shared enforcement:**
 
-Discover and read the shared dev enforcement constraints:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/dev-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`
 
 <EXTREMELY-IMPORTANT>
 ## STEP ZERO — INITIALIZE THE DEBUG LOOP
@@ -147,6 +143,18 @@ Started: [timestamp]
 ```
 
 If HYPOTHESES.md already exists (resumed session), read it to understand current state.
+
+### Context Monitoring
+
+Before spawning each subagent iteration, check context availability:
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Spawn next subagent |
+| Warning | 25-35% | Complete current iteration evaluation, then write HYPOTHESES.md and invoke dev-handoff |
+| Critical | ≤25% | Write HYPOTHESES.md immediately, invoke dev-handoff |
+
+**Why:** Debug loops can run 10+ iterations. Without monitoring, the orchestrator degrades and loses track of hypotheses tested vs. remaining.
 
 ### Step 2: Spawn Investigation Subagent
 
@@ -442,11 +450,7 @@ If root cause reveals need for significant refactoring:
 2. Report findings to user
 3. Immediately invoke the dev workflow for implementation:
 
-Discover and read the dev workflow skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/dev/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev/SKILL.md` and follow its instructions.
 
 Debug finds the problem. The dev workflow implements the solution.
 

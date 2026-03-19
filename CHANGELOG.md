@@ -3,6 +3,26 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.46.0] - 2026-03-18
+
+### Added
+- **GSD patterns in workflow-creator**: checkpoint types (human-verify/decision/human-action), context monitoring (35%/25% thresholds), summary frontmatter (implements/requires/provides/affects), READ-ONLY verifier enforcement (allowed-tools), requirement traceability (CATEGORY-NN IDs), autonomous phase chaining (smart-discuss, blocker handling)
+- **Dev workflow audit fixes** (8.1 → 9.5 composite):
+  - Requirement IDs (`CAT-NN` format) in SPEC.md, PLAN.md `implements` column, VALIDATION.md mapping, review issue output, verification traceability
+  - `allowed-tools` restrictions on all reviewer/verifier agents (dev-spec-reviewer, dev-plan-reviewer, dev-review parallel reviewers, dev-verify, dev-delegate spec/quality reviewers)
+  - Checkpoint type annotations on all 8 phase gates + handoff
+  - Context monitoring in dev-implement and dev-debug (Warning at ≤35%, Critical at ≤25%, auto-handoff)
+  - Structured task summaries with YAML frontmatter in dev-implement LEARNINGS.md
+  - Smart-discuss batching in dev-clarify (batch 3+ independent questions)
+  - Test-gap auditor tool restrictions (write tests only, never implementation)
+- **Fenced bang-backtick detection** in validate-skill-paths.py hook — catches `!`cat`` inside markdown fences (Claude Code parser ignores fences and executes them)
+- Fixed fenced bang-backtick examples in skill-creator and workflow-creator
+
+### Changed
+- workflow-creator Mode 2 audit now scores 15 principles (was 9) — added checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining
+- workflow-creator Mode 3 fix patterns expanded with 7 new gap fixes
+- workflow-creator Iron Laws: added NO VERIFIER WITH WRITE ACCESS, NO LONG WORKFLOW WITHOUT CONTEXT MONITORING
+
 ## [4.45.0] - 2026-03-18
 
 ### Added
