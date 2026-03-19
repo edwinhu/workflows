@@ -44,88 +44,112 @@ writing-review MUST NOT start until `.planning/VALIDATION.md` confirms all PRECI
 
 ## Purpose
 
-This phase sits between writing-draft and writing-review. Its job is to ensure every claim in PRECIS.md has substantive coverage in the drafts before review begins. Review checks prose quality, argument strength, and structural coherence — it should NOT be discovering that entire claims were dropped.
+This phase sits between writing-draft and writing-review. It runs the **same constraint checks** that review uses — from `writing-common-constraints.md`, the domain skill, and `ai-anti-patterns` — but earlier, so gaps are caught before review begins. Review should NOT be discovering missing claims, broken expansion hierarchy, or AI writing smell.
 
-## Validation Levels
+**The constraint checks ARE the validation.** This phase doesn't invent new checks — it systematically runs the existing ones against every draft section.
 
-Each PRECIS claim is validated at four levels, in order:
+## Constraint Checks to Run
 
-| Level | Check | Example |
-|-------|-------|---------|
-| 1. Exists | Draft section present for this claim | `drafts/Part II (Draft).md` exists |
-| 2. Substantive | Real argument, not placeholder | >200 words, includes reasoning |
-| 3. Supported | Evidence/citations present | At least one source per major claim |
-| 4. Addresses Claim | Section actually argues the PRECIS claim | Thesis threading intact, not a tangent |
+Load and run checks from three sources:
+
+### Source 1: writing-common-constraints.md
+
+Discover and read:
+```bash
+command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/writing-common-constraints.md 2>/dev/null | sort -V | tail -1
+```
+
+Run these checks from the constraints file:
+
+| Check | From Constraint | What to Verify |
+|-------|----------------|----------------|
+| **Progressive Expansion** | Expansion Hierarchy | Every PRECIS claim → OUTLINE section → outlines/ file → drafts/ file. No gaps in the chain. |
+| **Claim Coverage** | NO DRAFT WITHOUT OUTLINE | Every PRECIS claim has a corresponding draft section that argues it (not just mentions it) |
+| **Thesis Threading** | Structural intent | Each draft section connects back to the PRECIS thesis. No tangential sections. |
+| **Constraint Loading** | Constraint Loading Protocol | Domain skill + ai-anti-patterns were loaded before drafting (check for violations in prose) |
+
+### Source 2: Domain Skill
+
+Read `.planning/ACTIVE_WORKFLOW.md` for the `style` field, then load the matching domain skill:
+
+| Style | Skill to Load |
+|-------|--------------|
+| legal | `lib/skills/writing-legal/SKILL.md` |
+| econ | `lib/skills/writing-econ/SKILL.md` |
+| general | `lib/skills/writing-general/SKILL.md` |
+
+Run domain-specific checks against each draft section (citation format, style compliance, terminology).
+
+### Source 3: AI Anti-Patterns
+
+Invoke `Skill(skill="workflows:ai-anti-patterns")` and check each draft section for AI writing indicators.
 
 ## The Process
 
 ```
-1. READ .planning/PRECIS.md — extract all claims
-2. READ .planning/OUTLINE.md — map claims to sections
-3. For each claim: READ the corresponding draft in drafts/
-4. CLASSIFY each claim: COVERED / PARTIAL / MISSING
-5. For MISSING: flag to user (do NOT auto-draft)
-6. WRITE .planning/VALIDATION.md
+1. LOAD constraint checks (writing-common-constraints + domain skill + ai-anti-patterns)
+2. READ .planning/PRECIS.md — extract all claims
+3. READ .planning/OUTLINE.md — map claims to sections
+4. For each claim: READ the corresponding draft in drafts/
+5. RUN constraint checks on each draft section
+6. CLASSIFY each claim: COVERED / PARTIAL / MISSING
+7. For MISSING/PARTIAL: flag to user (do NOT auto-draft)
+8. WRITE .planning/VALIDATION.md
 ```
 
-### Step 1: Extract Claims from PRECIS
+### Step 1: Load Constraint Checks
+
+Load all three check sources before reading any drafts. This ensures every section is evaluated against the same criteria.
+
+### Step 2: Extract Claims from PRECIS
 
 Read `.planning/PRECIS.md` and extract every claim:
+- Main claims (thesis, sub-theses)
+- Counterarguments to be addressed
+- Audience-specific framing commitments
+- Evidence commitments ("I will show X using Y")
 
-```
-For each claim in PRECIS.md:
-  - Main claims (thesis, sub-theses)
-  - Counterarguments to be addressed
-  - Audience-specific framing commitments
-  - Evidence commitments ("I will show X using Y")
-```
+### Step 3: Map Claims to Sections
 
-### Step 2: Map Claims to Sections
+Read `.planning/OUTLINE.md` and map each claim to sections:
+- Which section(s) address this claim?
+- Is any claim orphaned (no section maps to it)?
+- Is any section present that doesn't serve a claim?
 
-Read `.planning/OUTLINE.md` and map each PRECIS claim to one or more sections:
+### Step 4: Read and Validate Each Draft
 
-```
-For each claim:
-  - Which section(s) in OUTLINE.md address this claim?
-  - Is any claim orphaned (no section maps to it)?
-  - Is any section present that doesn't serve a claim?
-```
+For each claim, read the corresponding draft file and run ALL constraint checks:
 
-### Step 3: Read and Verify Each Draft
+| Check | PASS | FAIL |
+|-------|------|------|
+| Draft exists | File in `drafts/` present | MISSING — no draft for this claim |
+| Substantive | >200 words, real argument | Placeholder, stub, or outline-level content |
+| Evidence | Citations/sources present per claim | Unsupported assertions |
+| Thesis threading | Section argues the PRECIS claim | Tangent — section exists but doesn't address the claim |
+| Domain compliance | Passes domain skill checks | Style violations (citation format, terminology, etc.) |
+| AI anti-patterns | No AI writing indicators | AI smell detected |
 
-For each claim, read the corresponding draft file in `drafts/`:
-
-```
-For each mapped section:
-  - Does the draft file exist?
-  - Is the content substantive (>200 words, real argument)?
-  - Are evidence/citations present for the claim?
-  - Does the section actually ARGUE the PRECIS claim, or just mention it?
-```
-
-### Step 4: Classify
-
-For each PRECIS claim, assign a classification:
+### Step 5: Classify
 
 | Classification | Criteria |
 |---------------|----------|
-| **COVERED** | All 4 validation levels pass — section exists, is substantive, has evidence, and argues the claim |
-| **PARTIAL** | Section exists but has weak evidence, is too short, or tangential to the claim |
+| **COVERED** | All checks pass — section exists, argues the claim, has evidence, passes domain + AI checks |
+| **PARTIAL** | Section exists but fails one or more checks (weak evidence, AI smell, domain violation, tangent) |
 | **MISSING** | No draft section addresses this claim |
 
-### Step 5: Flag Gaps to User
+### Step 6: Flag Gaps to User
 
 <EXTREMELY-IMPORTANT>
-**Do NOT auto-draft missing or partial claims. Writing requires human judgment on argument direction.**
+**Do NOT auto-draft or auto-fix. Writing requires human judgment on argument direction.**
 
-When gaps are found, present them to the user and wait for a decision:
+When gaps are found, present them with the specific check that failed:
 - **Fix**: Return to writing-draft to address the gap
 - **Accept**: Proceed to writing-review with known gaps
 
-This is the critical difference from automated validation. In writing, a missing claim may mean the argument needs restructuring, the claim should be dropped, or the approach needs rethinking. Only the user can judge.
+Only the user can decide whether a gap means the claim should be rewritten, dropped, or restructured.
 </EXTREMELY-IMPORTANT>
 
-### Step 6: Write VALIDATION.md
+### Step 7: Write VALIDATION.md
 
 Compile all results into `.planning/VALIDATION.md` using the template below.
 
@@ -143,16 +167,16 @@ missing: N
 # Claim Validation
 
 ## Claims Map
-| # | PRECIS Claim | Draft Section | Evidence Count | Level 1 (Exists) | Level 2 (Substantive) | Level 3 (Supported) | Level 4 (Addresses Claim) | Classification |
-|---|-------------|---------------|----------------|-------------------|-----------------------|---------------------|---------------------------|----------------|
-| 1 | [from PRECIS] | [drafts/Section.md] | 3 | PASS | PASS | PASS | PASS | COVERED |
-| 2 | [from PRECIS] | [drafts/Section.md] | 1 | PASS | PASS | WARN | PASS | PARTIAL |
-| 3 | [from PRECIS] | — | 0 | FAIL | — | — | — | MISSING |
+| # | PRECIS Claim | Draft Section | Exists | Substantive | Evidence | Threading | Domain | AI Check | Classification |
+|---|-------------|---------------|--------|-------------|----------|-----------|--------|----------|----------------|
+| 1 | [from PRECIS] | [drafts/Section.md] | PASS | PASS | PASS | PASS | PASS | PASS | COVERED |
+| 2 | [from PRECIS] | [drafts/Section.md] | PASS | PASS | WARN | PASS | PASS | WARN | PARTIAL |
+| 3 | [from PRECIS] | — | FAIL | — | — | — | — | — | MISSING |
 
 ## Gap Details
-[For any PARTIAL or MISSING claim, include the specific finding:
-- What's missing or weak
-- Which validation level failed
+[For any PARTIAL or MISSING claim, include:
+- Which constraint check failed
+- The specific finding
 - Suggested remediation (for user decision)]
 
 ## Summary
