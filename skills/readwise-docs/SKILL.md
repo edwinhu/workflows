@@ -8,73 +8,119 @@ user-invocable: false
 
 # Readwise Reader Document Management
 
-CRUD operations on the Reader document library via API v3.
+CRUD operations on the Reader document library via official CLI (`readwise`) and custom CLI (`readwise-custom`).
 
-## Commands
+## Commands — Official CLI (`readwise`)
 
 ### List Documents
 
 ```bash
-readwise list                                    # All documents
-readwise list --limit 20                         # First 20
-readwise list --tag "proxy advisors"             # By tag
-readwise list --category pdf --location archive  # By category + location
-readwise list --updated-after 2026-01-01T00:00:00Z
-readwise list --html --json                      # With full HTML content
+readwise reader-list-documents                                    # All documents (limit 10)
+readwise reader-list-documents --limit 20                         # First 20
+readwise reader-list-documents --tag "proxy advisors"             # By tag (up to 5 for AND logic)
+readwise reader-list-documents --category pdf --location archive  # By category + location
+readwise reader-list-documents --updated-after 2026-01-01T00:00:00Z
+readwise reader-list-documents --seen false                       # Unseen only
+readwise reader-list-documents --response-fields title,author,summary  # Reduce token usage
+readwise reader-list-documents --id <id>                          # Specific document
 ```
 
 **Filter values:**
 
 | Flag | Values |
 |------|--------|
-| `--location` | `new`, `later`, `shortlist`, `archive`, `feed` |
-| `--category` | `article`, `email`, `rss`, `highlight`, `note`, `pdf`, `epub`, `tweet`, `video` |
-| `--tag` | Any tag name (server-side filter, up to 5 for AND logic) |
+| `--location` | `new` (inbox), `later`, `shortlist`, `archive`, `feed` |
+| `--category` | `article`, `email`, `rss`, `highlight`, `note`, `pdf`, `epub`, `tweet`, `video`, `podcast`, `audiobook` |
+| `--tag` | Any tag name (up to 5 tags for AND logic) |
+| `--seen` | `true` (opened), `false` (unopened) |
+
+### Search Documents (Hybrid)
+
+```bash
+readwise reader-search-documents --query "proxy advisors"
+readwise reader-search-documents --query "regulation" --author-search "Jackson"
+readwise reader-search-documents --query "AI" --category-in article --location-in later,archive
+readwise reader-search-documents --query "climate" --published-date-gt 2025-01-01
+```
 
 ### Get Document
 
 ```bash
-readwise get <id>                  # Summary view
-readwise get <id> --json           # Full JSON
-readwise get <id> --html --json    # With HTML content
+readwise reader-get-document-details --document-id <id>   # Returns markdown content
 ```
 
 ### Save URL
 
 ```bash
-readwise save https://example.com/article
-readwise save https://example.com/article --tag research
+readwise reader-create-document --url https://example.com/article
+readwise reader-create-document --url https://example.com --title "Title" --tags research,ai --notes "Note"
+readwise reader-create-document --title "Custom Doc" --markdown "# Content..." --url "https://me.com#doc1"
 ```
 
-### Update Metadata
+### Move Documents
 
 ```bash
-readwise update <id> --location archive
-readwise update <id> --category article
+readwise reader-move-documents --document-ids <id1>,<id2> --location archive   # Max 50 per call
+readwise reader-move-documents --document-ids <id> --location later
 ```
 
-### Delete Document
+### Bulk Edit Metadata
 
 ```bash
-readwise delete <id>
+readwise reader-bulk-edit-document-metadata --documents '[{"document_id": "<id>", "seen": true}]'
+readwise reader-bulk-edit-document-metadata --documents '[{"document_id": "<id>", "title": "New Title"}]'
 ```
 
 ### Tags
 
 ```bash
-readwise tags           # List all tags
-readwise tags --json    # As JSON
+readwise reader-list-tags                                                    # List all tags
+readwise reader-add-tags-to-document --document-id <id> --tag-names important,research
+readwise reader-remove-tags-from-document --document-id <id> --tag-names old-tag
 ```
 
-## Highlights & Books (v2 API)
+### Highlights
 
 ```bash
-readwise highlights                              # All highlights
-readwise highlights --search "fiduciary"         # Keyword search
-readwise highlights --book-id 12345 --json       # By source
+readwise reader-get-document-highlights --document-id <id>
+readwise reader-create-highlight --document-id <id> --html-content "<p>passage</p>"
+readwise reader-create-highlight --document-id <id> --html-content "<p>passage</p>" --note "Note" --tags concept
+readwise reader-add-tags-to-highlight --document-id <id> --highlight-document-id <hid> --tag-names concept
+readwise reader-set-highlight-notes --document-id <id> --highlight-document-id <hid> --notes "Updated note"
+```
 
-readwise books                                   # All sources
-readwise books --category articles --search "law"
+### Export
+
+```bash
+readwise reader-export-documents                                         # Full library as ZIP of markdown
+readwise reader-export-documents --since-updated "2026-01-01T00:00:00Z"  # Delta export
+readwise reader-get-export-documents-status --export-id <id>             # Check status
+```
+
+## Commands — Custom CLI (`readwise-custom`)
+
+### Delete Document (not available in official CLI)
+
+```bash
+readwise-custom delete <id>
+```
+
+### Highlights & Books (v2 API)
+
+```bash
+readwise-custom highlights                              # All highlights
+readwise-custom highlights --search "fiduciary"         # Keyword search
+readwise-custom highlights --book-id 12345 --json       # By source
+
+readwise-custom books                                   # All sources
+readwise-custom books --category articles --search "law"
+```
+
+### Upload File (PDF/EPUB)
+
+```bash
+readwise-custom upload <file.pdf>
+readwise-custom upload <file.epub>
 ```
 
 ## Piping & Scripting
@@ -83,11 +129,11 @@ All commands support `--json` for machine-readable output:
 
 ```bash
 # Get IDs of all PDFs
-readwise list --category pdf --json | jq -r '.[].id'
+readwise reader-list-documents --category pdf --json | jq -r '.results[].id'
 
 # Count highlights per book
-readwise books --json | jq '.[] | {title, num_highlights}'
+readwise-custom books --json | jq '.[] | {title, num_highlights}'
 
 # Export all tags
-readwise tags --json > tags.json
+readwise reader-list-tags --json > tags.json
 ```

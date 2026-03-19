@@ -148,7 +148,7 @@ Only when user explicitly requests Readwise.
 
 **For URLs:**
 ```bash
-readwise save "https://example.com/article" --tag reading-inbox
+readwise reader-create-document --url "https://example.com/article" --tags reading-inbox
 ```
 
 **For files (PDFs, EPUB, etc.):**
@@ -193,7 +193,7 @@ Same as above, daily note entry:
 **"Save this article to reading and readwise"**
 ```
 1. Daily note: "- [ ] [Article Title](https://example.com/article)"
-2. readwise save "https://example.com/article" --tag reading-inbox
+2. readwise reader-create-document --url "https://example.com/article" --tags reading-inbox
 ```
 
 ## Red Flags — STOP If You Catch Yourself:

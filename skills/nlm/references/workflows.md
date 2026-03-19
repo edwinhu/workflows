@@ -101,8 +101,8 @@ RW_NLM=$(${CLAUDE_PLUGIN_ROOT}/skills/readwise/scripts/readwise_to_nlm.py) && py
 ```
 
 For individual documents:
-1. Get full text: `readwise get <id> --html --json`
-2. Convert HTML to markdown and save to temp file
+1. Get full text: `readwise reader-get-document-details --document-id <id> --json`
+2. Save markdown content to temp file
 3. Add to NLM: `nlm add <notebook-id> /tmp/source.md`
 
 **Important:** Always pull full text from Readwise, never from source URLs — Readwise has archived paywalled content (Bloomberg, WSJ, NYT).

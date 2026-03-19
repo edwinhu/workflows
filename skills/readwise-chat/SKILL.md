@@ -21,7 +21,7 @@ grep SESSION_COOKIES ~/.readwise/env
 If missing, run:
 
 ```bash
-readwise auth session
+readwise-custom auth session
 ```
 
 This launches Chrome, navigates to readwise.io/chat, and extracts httpOnly session cookies via CDP.
@@ -33,15 +33,15 @@ This launches Chrome, navigates to readwise.io/chat, and extracts httpOnly sessi
 Streams the response to stdout as it arrives:
 
 ```bash
-readwise chat "What are my highlights about fiduciary duty?"
-readwise chat "Summarize my notes on proxy advisors"
-readwise chat "Compare what I've read about SEC regulation vs FINRA"
+readwise-custom chat "What are my highlights about fiduciary duty?"
+readwise-custom chat "Summarize my notes on proxy advisors"
+readwise-custom chat "Compare what I've read about SEC regulation vs FINRA"
 ```
 
 With JSON output (includes related highlights):
 
 ```bash
-readwise chat "What do my highlights say about broker-dealer regulation?" --json
+readwise-custom chat "What do my highlights say about broker-dealer regulation?" --json
 ```
 
 ### Interactive REPL
@@ -49,8 +49,8 @@ readwise chat "What do my highlights say about broker-dealer regulation?" --json
 Multi-turn conversation with context preserved:
 
 ```bash
-readwise chat-interactive
-readwise chat-interactive --model 5.1-thinking  # reasoning model
+readwise-custom chat-interactive
+readwise-custom chat-interactive --model 5.1-thinking  # reasoning model
 ```
 
 Type `exit` to quit.
@@ -58,10 +58,10 @@ Type `exit` to quit.
 ### Conversation Management
 
 ```bash
-readwise chat-list                           # List all conversations
-readwise chat-get <id>                       # Get conversation with messages
-readwise chat-delete <id>                    # Delete conversation
-readwise chat-rename <id> "Better Title"     # Rename conversation
+readwise-custom chat-list                           # List all conversations
+readwise-custom chat-get <id>                       # Get conversation with messages
+readwise-custom chat-delete <id>                    # Delete conversation
+readwise-custom chat-rename <id> "Better Title"     # Rename conversation
 ```
 
 ## Model Options
@@ -73,7 +73,7 @@ readwise chat-rename <id> "Better Title"     # Rename conversation
 
 ## Chat vs Search
 
-| Feature | `readwise chat` | `readwise search` |
+| Feature | `readwise-custom chat` | `readwise readwise-search-highlights` |
 |---------|-----------------|-------------------|
 | Returns | Synthesized answer + highlights | Raw highlight matches |
 | Model | GPT-5.1 RAG | Vector similarity |

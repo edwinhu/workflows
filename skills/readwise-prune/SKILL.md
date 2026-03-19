@@ -36,20 +36,20 @@ Two-pass stale document removal with safe defaults.
 
 ```bash
 # Dry run (always do this first)
-readwise prune
-readwise prune --months 6
-readwise prune --category rss --location new
-readwise prune --exclude-tag "keep" --exclude-tag "reference"
+readwise-custom prune
+readwise-custom prune --months 6
+readwise-custom prune --category rss --location new
+readwise-custom prune --exclude-tag "keep" --exclude-tag "reference"
 
 # Limit candidates shown
-readwise prune --months 3 --limit 20
+readwise-custom prune --months 3 --limit 20
 
 # JSON output (for review)
-readwise prune --months 6 --json
+readwise-custom prune --months 6 --json
 
 # Actually delete (after reviewing dry run)
-readwise prune --months 3 --delete
-readwise prune --category rss --months 1 --delete
+readwise-custom prune --months 3 --delete
+readwise-custom prune --category rss --months 1 --delete
 ```
 
 ## Flags
@@ -68,14 +68,14 @@ readwise prune --category rss --months 1 --delete
 
 ### Weekly RSS cleanup
 ```bash
-readwise prune --category rss --months 1 --location new
+readwise-custom prune --category rss --months 1 --location new
 # Review, then:
-readwise prune --category rss --months 1 --location new --delete
+readwise-custom prune --category rss --months 1 --location new --delete
 ```
 
 ### Quarterly deep clean
 ```bash
-readwise prune --months 6 --exclude-tag "reference"
+readwise-custom prune --months 6 --exclude-tag "reference"
 # Review, then:
-readwise prune --months 6 --exclude-tag "reference" --delete
+readwise-custom prune --months 6 --exclude-tag "reference" --delete
 ```

@@ -62,7 +62,7 @@ The key insight: **verification must use external ground truth, never the agent'
 │  VERIFIER HIERARCHY — QUOTES (try in order)              │
 │                                                          │
 │  1. Readwise highlights — User highlighted the passage.  │
-│     readwise highlights --search "quote fragment"        │
+│     readwise-custom highlights --search "quote fragment"  │
 │     If found: verified against actual source text.       │
 │     Fastest — no download, no LLM.                       │
 │                                                          │
@@ -238,10 +238,11 @@ If the user highlighted the quoted passage in Readwise, it's already verified ag
 
 ```bash
 # Search for the quote text in highlights
-readwise highlights --search "quoted text fragment" --limit 10
+readwise-custom highlights --search "quoted text fragment" --limit 10
 
-# Or search with author filter
-readwise search "quoted text fragment" --author "Egan"
+# Or vector search with author filter
+readwise readwise-search-highlights --vector-search-term "quoted text fragment" \
+  --full-text-queries '[{"field_name": "document_author", "search_term": "Egan"}]'
 ```
 
 A matching highlight confirms the quote exists in the source — Readwise captured it directly from the original document. Check that the highlight comes from the correct source (match author/title).
