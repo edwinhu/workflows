@@ -53,7 +53,24 @@ For each task:
     4. Mark task complete, log to LEARNINGS.md
 ```
 
-## Step 1: Dispatch Analyst
+## Task Type Detection
+
+Each task in PLAN.md should have a `type` field. Detect and route accordingly:
+
+| Task Type | Agent | Constraints | Example Tasks |
+|-----------|-------|-------------|---------------|
+| `engineering` | `workflows:ds-engineer` | ds-common-constraints.md + ds-engineering-constraints.md | ETL, merge, clean, transform, pipeline, schema, join |
+| `analysis` | `workflows:ds-analyst` | ds-common-constraints.md + ds-analysis-constraints.md | regression, test, model, visualize, estimate, summarize |
+
+**Detection heuristic (when type field is missing):**
+
+| Task contains these keywords | Type |
+|------------------------------|------|
+| merge, join, clean, ETL, transform, pipeline, ingest, schema, deduplicate, normalize | engineering |
+| regression, estimate, test, model, plot, chart, visualize, summarize, correlate, panel | analysis |
+| ambiguous | Default to `analysis` (safer — analysis constraints are stricter) |
+
+## Step 1: Dispatch Analyst/Engineer
 
 **Pattern:** Use structured delegation template from `references/delegation-template.md`
 
@@ -67,9 +84,11 @@ Every delegation MUST include:
 7. CONTEXT - Data sources and previous work
 8. VERIFICATION - Output requirements
 
-Use this Task invocation (fill in brackets):
+Use this Task invocation (fill in brackets). **Route based on task type detected above:**
 
 *All paths below are relative to this skill's base directory.*
+
+**For `analysis` tasks:**
 ```
 Task(subagent_type="workflows:ds-analyst", prompt="""
 # TASK
@@ -92,6 +111,7 @@ This task requires:
 - Output-first verification (mandatory)
 - SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
 - Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
+- Analysis constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-analysis-constraints.md` for analysis-specific checks (statistical validity, p-hacking prevention, robustness, sample selection, SE specification)
 
 ## REQUIRED TOOLS
 
@@ -159,9 +179,102 @@ Report: what you did, key outputs observed, any data quality issues found.
 """)
 ```
 
-**If analyst asks questions:** Answer clearly, especially about methodology choices.
+**For `engineering` tasks:**
+```
+Task(subagent_type="workflows:ds-engineer", prompt="""
+# TASK
 
-**If analyst completes task:** Verify outputs, then proceed or review.
+Engineer: [TASK NAME]
+
+## EXPECTED OUTCOME
+
+You will have successfully completed this task when:
+- [ ] [Specific engineering output 1]
+- [ ] [Specific engineering output 2]
+- [ ] Output-first verification at each step
+- [ ] Results documented with evidence
+
+## REQUIRED SKILLS
+
+This task requires:
+- [Engineering method]: [Why needed]
+- [Programming language]: Data manipulation
+- Output-first verification (mandatory)
+- SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
+- Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
+- Engineering constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-engineering-constraints.md` for engineering-specific checks (determinism, schema validation, join audits, idempotency)
+
+## REQUIRED TOOLS
+
+You will need:
+- Read: Load datasets and existing code
+- Write: Create ETL scripts/pipelines
+- Bash: Run transformations and verify outputs
+
+**Tools denied:** None (full engineering access)
+
+## MUST DO
+
+- [ ] Print state BEFORE each operation (shape, head)
+- [ ] Print state AFTER each operation (nulls, sample)
+- [ ] Verify schema contracts at each step
+- [ ] Validate determinism (same input → same output)
+- [ ] Check join key uniqueness before merging
+- [ ] Document pipeline decisions
+
+## MUST NOT DO
+
+- ❌ Skip verification outputs
+- ❌ Proceed with non-deterministic transforms without flagging
+- ❌ Introduce silent data loss (row drops without logging)
+- ❌ Claim completion without visible outputs
+
+## CONTEXT
+
+### Task Description
+[PASTE FULL TASK TEXT FROM PLAN.md]
+
+### Engineering Context
+- Pipeline objective: [from SPEC.md]
+- Data sources: [list with paths]
+- Previous steps: [summary from LEARNINGS.md]
+
+## Output-First Protocol (MANDATORY)
+For EVERY operation:
+1. Print state BEFORE (shape, head)
+2. Execute operation
+3. Print state AFTER (shape, nulls, sample)
+4. Verify output is reasonable
+
+Example:
+```python
+print(f"Before: {df.shape}")
+df = df.merge(other, on='key')
+print(f"After: {df.shape}")
+print(f"Nulls introduced: {df.isnull().sum().sum()}")
+df.head()
+```
+
+## Required Outputs by Operation
+| Operation | Required Output |
+|-----------|-----------------|
+| Load data | shape, dtypes, head() |
+| Filter | shape before/after, % removed |
+| Merge/Join | shape, null check, key uniqueness |
+| Transform | before/after sample, determinism check |
+| Pipeline step | input shape → output shape, schema validation |
+
+## If Unclear
+Ask questions BEFORE implementing. Don't guess on architecture.
+
+## Output
+Report: what you did, key outputs observed, any data quality or schema issues found.
+""")
+```
+
+**If agent asks questions:** Answer clearly, especially about methodology choices (analysis) or architecture decisions (engineering).
+
+**If agent completes task:** Verify outputs, then proceed or review.
 
 ## Step 2: Verify Outputs (Post-Subagent Boundary)
 
@@ -187,16 +300,17 @@ Upon verification failure, re-dispatch analyst with specific fix instructions.
 
 ## Step 3: Dispatch Methodology Reviewer (Complex Tasks)
 
-For statistical analysis, modeling, or methodology-sensitive tasks, dispatch a methodology reviewer:
+For statistical analysis, modeling, or methodology-sensitive tasks, dispatch a methodology reviewer. **Tailor the review checklist to the task type:**
 
 ```
 Task(subagent_type="general-purpose",
   allowed_tools=["Read", "Glob", "Grep", "Bash(read-only)"],
   prompt="""
 Review methodology for: [TASK NAME]
+Task type: [engineering | analysis]
 
 ## What Was Done
-[SUMMARY FROM ANALYST OUTPUT]
+[SUMMARY FROM ANALYST/ENGINEER OUTPUT]
 
 ## Original Requirements
 [FROM SPEC.md - especially any replication requirements]
@@ -205,7 +319,7 @@ Review methodology for: [TASK NAME]
 
 ## CRITICAL: Do Not Trust the Report
 
-The analyst may have:
+The agent may have:
 - Reported success without actually running the code
 - Cherry-picked output that looks correct
 - Glossed over data quality issues
@@ -215,14 +329,27 @@ The analyst may have:
 - Read the actual code or notebook cells
 - Verify outputs exist and match claims
 - Check for silent failures (empty DataFrames, all nulls)
-- Confirm statistical assumptions were checked
+- Confirm assumptions were checked
 
-## Review Checklist
+## Review Checklist — Engineering Tasks
+Use this checklist when task type is `engineering`:
+1. Are schema contracts validated at each pipeline stage?
+2. Is the pipeline deterministic (same input → same output)?
+3. Is the transform idempotent (safe to re-run)?
+4. Are error handling and edge cases covered (empty inputs, missing keys)?
+5. Are join keys validated for uniqueness before merge?
+6. Is data loss accounted for (row counts before/after, logged drops)?
+
+## Review Checklist — Analysis Tasks
+Use this checklist when task type is `analysis`:
 1. Is the statistical method appropriate for the data type?
 2. Are assumptions documented and checked?
 3. Is sample size adequate for conclusions?
-4. Are there data leakage concerns?
-5. Is the approach reproducible (seeds, versions)?
+4. Is the specification justified (why these controls, why this functional form)?
+5. Are robustness checks included (alternative specs, subsamples)?
+6. Is the standard error specification appropriate (clustered, HC, bootstrap)?
+7. Are there data leakage or p-hacking concerns?
+8. Is the approach reproducible (seeds, versions)?
 
 ## Confidence Scoring
 Rate each issue 0-100. Only report issues >= 80 confidence.

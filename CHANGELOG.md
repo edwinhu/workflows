@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.48.0] - 2026-03-18
+
+### Added
+- **Two-track DS delegation**: ds-delegate routes tasks by type (`engineering` vs `analysis`)
+  - `ds-engineer` agent: pipeline/ETL tasks with determinism, schema validation, join audits, idempotency enforcement
+  - `ds-analyst` agent: analysis tasks with statistical validity, p-hacking prevention, robustness, SE specification
+  - Keyword-based type detection heuristic when PLAN.md tasks lack explicit `type` field
+- `references/ds-engineering-constraints.md` (E1-E5): determinism, schema contracts, join audits, idempotency, error handling
+- `references/ds-analysis-constraints.md` (A1-A7): statistical validity, p-hacking prevention, robustness checks, sample selection, SE specification, visualization integrity, analysis-specific deviation rules
+- Type-aware methodology reviewer in ds-delegate: engineering checklist (schema, determinism) vs analysis checklist (stats, specification)
+
 ## [4.47.0] - 2026-03-18
 
 ### Added
