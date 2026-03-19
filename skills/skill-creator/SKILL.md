@@ -1,6 +1,12 @@
 ---
 name: skill-creator
 description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'add enforcement patterns to a skill', 'audit skill enforcement', 'skill with superpowers patterns', or needs skill creation with behavioral enforcement (Iron Laws, Rationalization Tables, Red Flags). Wraps the built-in skill-creator with superpowers enforcement awareness. Use this INSTEAD of skill-creator:skill-creator when working in the workflows plugin."
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
 ---
 
 # Skill Creator (with Superpowers Enforcement)
@@ -29,21 +35,34 @@ This classification determines how much enforcement audit to apply after each dr
 
 These are real lessons from production. Read them before writing your first draft.
 
-#### Anti-Pattern 1: Using `${CLAUDE_PLUGIN_ROOT}`
+#### Anti-Pattern 1: Using `${CLAUDE_PLUGIN_ROOT}` in Skill Content
 
-The `${CLAUDE_PLUGIN_ROOT}` environment variable is **NOT available at runtime** in Claude Code plugin contexts. Skills that reference it (e.g., `"${CLAUDE_PLUGIN_ROOT}/scripts/my-script.sh"`) will fail silently or error.
+`${CLAUDE_PLUGIN_ROOT}` is **NOT a valid string substitution** in skill content. It works in **hook commands only** (Claude Code substitutes it there). In skill content, only these substitutions are available:
 
-**Instead**, use the cache discovery pattern with absolute paths via glob + sort:
+| Variable | Works In | Description |
+|----------|----------|-------------|
+| `${CLAUDE_SKILL_DIR}` | Skill content | Directory containing the skill's SKILL.md |
+| `${CLAUDE_SESSION_ID}` | Skill content | Current session ID |
+| `$ARGUMENTS` / `$N` | Skill content | Arguments passed to skill |
+| `${CLAUDE_PLUGIN_ROOT}` | **Hook commands only** | Plugin installation directory |
 
-```bash
-# Discover and run a script
-FSP=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/scripts/script-name.sh 2>/dev/null | sort -V | tail -1) && "$FSP" args
+**For referencing files outside the skill directory:**
 
-# Discover and read a reference file
-REF=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/references/file.md 2>/dev/null | sort -V | tail -1) && echo "$REF"
+```markdown
+# In skill content (SKILL.md) — use ${CLAUDE_SKILL_DIR} with relative navigation:
+!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`
+Read `${CLAUDE_SKILL_DIR}/../../skills/other-skill/SKILL.md` and follow its instructions.
+
+# In hook commands — ${CLAUDE_PLUGIN_ROOT} works:
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/my-hook.py"
 ```
 
-Replace `MARKETPLACE` and `PLUGIN` with the actual marketplace and plugin names. The `sort -V | tail -1` picks the latest version.
+**For internal skills loaded via Read() (not Skill system):** No substitution occurs. Use `${CLAUDE_PLUGIN_ROOT}` as a readable convention — Claude infers the actual path from context.
 
 #### Anti-Pattern 2: Including Implementation Code Directly in SKILL.md
 
@@ -76,11 +95,7 @@ Follow its full process: capture intent, interview, draft SKILL.md, write test c
 
 After writing or revising the skill draft (and before running test cases), audit it against the superpowers enforcement patterns. Read the enforcement checklist:
 
-Discover and read the enforcement checklist:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md`
 
 Then score the draft using the process below.
 
@@ -155,6 +170,6 @@ These signals come from reading test run transcripts, not just final outputs.
 
 ## References
 
-- **Enforcement checklist**: `lib/references/enforcement-checklist.md` (in plugin root) — Full 12-pattern reference with templates. Discover via: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1`
-- **Philosophy**: `PHILOSOPHY.md` (in plugin root) — Three pillars (phased decomposition, deterministic gates, adversarial review). Discover via: `command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/PHILOSOPHY.md 2>/dev/null | sort -V | tail -1`
+- **Enforcement checklist**: `references/enforcement-checklist.md` (in plugin root) — Full 12-pattern reference with templates. Discover via: `${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md`
+- **Philosophy**: `PHILOSOPHY.md` (in plugin root) — Three pillars (phased decomposition, deterministic gates, adversarial review). Discover via: `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md`
 - **Built-in skill-creator**: Handles the eval loop (draft → test → grade → iterate → description optimization)

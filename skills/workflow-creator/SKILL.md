@@ -2,6 +2,12 @@
 name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'add enforcement patterns', or needs to design structured multi-phase processes for LLM agents."
 version: 0.1.0
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
 ---
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
@@ -25,11 +31,7 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 ### Step 1: Ground in Philosophy
 
-Discover and read PHILOSOPHY.md:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/PHILOSOPHY.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
+Discover and read PHILOSOPHY.md:Read `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md` and follow its instructions. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
 
 **Gate: Philosophy Loaded**
 - Verify PHILOSOPHY.md was read
@@ -161,11 +163,7 @@ Phase N produces ARTIFACT.md
 
 ### Step 4: Apply Enforcement Patterns
 
-Discover and read the enforcement checklist:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`. **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
+!`cat ${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md` **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
 
 For each phase, score which of the 13 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Artifact Review Gates
@@ -309,7 +307,7 @@ Both entry points should support **session handoff** via `.planning/HANDOFF.md` 
 Create the following artifacts:
 1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
 2. **Midpoint command** (`skills/[name]-fix/SKILL.md` or `skills/[name]-debug/SKILL.md`) — self-contained re-entry
-3. **Phase skills** (`lib/skills/[name]-[phase]/SKILL.md`) — one per phase, internal only
+3. **Phase skills** (`skills/[name]-[phase]/SKILL.md`) — one per phase, internal only
 4. **Wire up transitions** — each phase ends by reading the next phase's skill
 
 #### State Folder Convention
@@ -434,11 +432,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 
 ### Step 3: Score Against Enforcement Checklist
 
-Discover and read the enforcement checklist:
-```bash
-command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/enforcement-checklist.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`. **You MUST read this file before scoring. No scoring from memory.**
+!`cat ${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md` **You MUST read this file before scoring. No scoring from memory.**
 
 For each of the 13 patterns, score:
 - **Present** - pattern exists and is well-implemented
@@ -462,26 +456,32 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 
 1. **Relative script paths** — `python3 scripts/`, `python3 ../`, `python3 ../../` referencing plugin scripts
    - These break because the agent's CWD is the user's project
-   - **Fix:** Inline cache discovery pattern:
+   - **Fix:** Use `${CLAUDE_SKILL_DIR}/../..` for absolute paths:
      ```bash
-     SCRIPTS=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/skills/SKILL/scripts 2>/dev/null | sort -V | tail -1) && python3 "$SCRIPTS/script.py" args
+     python3 "${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py" args
      ```
-   - Determine MARKETPLACE and PLUGIN from `.claude-plugin/marketplace.json`
+   - Or use `${CLAUDE_SKILL_DIR}` for files within the same skill directory:
+     ```bash
+     python3 "${CLAUDE_SKILL_DIR}/scripts/script.py" args
+     ```
 
-2. **Relative Read() paths** — `Read("../../lib/skills/...")`, `Read("../audit-check/SKILL.md")`
+2. **Relative Read() paths** — `Read("../../skills/...")`, `Read("../audit-check/SKILL.md")`
    - The Read tool requires absolute paths; `../../` resolves from user's project CWD, not skill directory
-   - **Fix:** Discover the path first, then Read():
+   - **Fix:** Use `${CLAUDE_SKILL_DIR}/../..` or `${CLAUDE_SKILL_DIR}`:
      ```
-     Discover and read the next phase:
-     ```bash
-     command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/PATH/TO/FILE.md 2>/dev/null | sort -V | tail -1
-     ```
-     Use the output path with `Read()`.
+     Read `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` and follow its instructions.
      ```
 
-3. **`${CLAUDE_PLUGIN_ROOT}` in skill text** — This variable is only expanded by Claude Code in `hooks.json` commands and agent frontmatter hooks. In SKILL.md body text, it is NOT expanded — agents see the literal string.
-   - **OK in:** `hooks.json` commands, agent `.md` frontmatter `command:` fields
-   - **Broken in:** SKILL.md body text, references/*.md, anywhere the agent reads it as an instruction
+3. **Dynamic context via `!` injection** — For constraint files that should be inlined at skill load time:
+   ```
+   !`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`
+   ```
+   Note: `!` injection only works in top-level skills loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions instead.
+
+4. **`${CLAUDE_PLUGIN_ROOT}` in skill content** — This is NOT a valid skill substitution variable. It only works in hook `command:` fields.
+   - **In skill content:** Use `${CLAUDE_SKILL_DIR}` (substituted at load time)
+   - **In hook commands:** Use `${CLAUDE_PLUGIN_ROOT}` (substituted by hook system)
+   - **In internal skills (loaded via Read):** Use `${CLAUDE_PLUGIN_ROOT}` as a convention — Claude infers the actual path from context
 
 **Score:**
 - **Clean** — no broken paths found
@@ -519,7 +519,7 @@ Format:
 | File | Pattern | Status |
 |------|---------|--------|
 | skills/X/SKILL.md | `python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
-| lib/skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
+| skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
 
 ### Critical Gaps
 1. [Highest priority gap + recommendation]
@@ -651,8 +651,8 @@ For each gap:
 - **Skills sharing a domain without shared enforcement** → Extract common constraints to `references/common-constraints.md`; every domain skill Read()s it so any single skill enforces the full rule set
 - **Missing artifact review gate** → Add reviewer subagent dispatch between artifact-producing and consuming phases, with fix loop (max 5) and chunking for large artifacts
 - **Missing model tier guidance** → Add tier hints to delegation phases (cheap/standard/capable)
-- **Broken paths (script)** → Replace `python3 scripts/...` or `python3 ../...` with inline cache discovery: `SCRIPTS=$(command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/skills/SKILL/scripts 2>/dev/null | sort -V | tail -1) && python3 "$SCRIPTS/script.py"`
-- **Broken paths (Read)** → Replace `Read("../../lib/...")` with: discover path via Bash `command ls -d ~/.claude/plugins/cache/MARKETPLACE/PLUGIN/*/PATH 2>/dev/null | sort -V | tail -1`, then `Read()` the output
+- **Broken paths (script)** → Replace `python3 scripts/...` or `python3 ../...` with `python3 "${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py"` or `python3 "${CLAUDE_SKILL_DIR}/scripts/script.py"`
+- **Broken paths (Read)** → Replace `Read("../../...")` with `Read "${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md"` or `Read "${CLAUDE_SKILL_DIR}/references/file.md"`
 - **Missing post-subagent enforcement** → Add explicit verification/investigation boundary table for the domain. Define what main chat CAN do (verification) vs CANNOT do (investigation) after a subagent returns. Add rationalization entries for "let me verify by reading the code/data/draft"
 - **Missing topic change protocol** → For any workflow with iterative loops, add: announce pause, handle off-topic, announce resume, reload state. Without this, off-topic user messages silently kill the loop
 - **Rationalizations are generic, not grounded in real failures** → Replace hypothetical examples with citations from actual failed sessions (dates, transcript IDs, violation counts). "March 16: 71 violations" is more effective than "agents sometimes skip steps"

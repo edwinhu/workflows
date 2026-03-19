@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.45.0] - 2026-03-18
+
+### Added
+- Plugin validation hook (`plugin-validate.py`): runs `claude plugin validate` after Write/Edit of plugin files (plugin.json, marketplace.json, SKILL.md, agent/command .md, hooks.json)
+- Scoped PostToolUse hooks in `skill-creator` and `workflow-creator` frontmatter — validation runs automatically during plugin development skills only
+
 ## [4.44.0] - 2026-03-18
 
 ### Added
@@ -91,7 +97,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ## [4.0.0] - 2026-02-11
 
 ### Changed (BREAKING)
-- Moved all entry skills from `lib/skills/` to discoverable `skills/` root
+- Moved all entry skills from `skills/` to discoverable `skills/` root
 - Renamed midpoint skills for consistency (e.g., `dev-edit` -> `dev-debug`)
 
 ## [3.0.1] - 2026-02-11
