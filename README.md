@@ -26,7 +26,9 @@ See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternativ
 
 ---
 
-## Skills (48)
+## User Commands (12)
+
+These are the skills you invoke directly with `/name`:
 
 ### Core Workflows
 
@@ -36,42 +38,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 |-------------|-------------------|--------|
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
 | `/ds` | `/ds-fix` | 6-phase data science with output-first verification and DQ validation |
-| `/writing` | `/writing-review` + `/writing-revise` | 6-phase writing with claim validation and deviation rules |
-
-### Legal & Citation
-
-| Skill | Purpose |
-|-------|---------|
-| `/bluebook` | Bluebook 21st edition citation formatting (cases, statutes, secondary sources) |
-| `/bluebook-audit` | 7-phase document audit: extract, check, report, correct, verify, crossrefs, archive |
-| `/docx-footnotes` | Repair DOCX footnote damage from cloud editors (Google Docs, Word Online) |
-
-### Data Access
-
-| Skill | Purpose |
-|-------|---------|
-| `/wrds` | WRDS PostgreSQL + SAS ETL patterns (Compustat, CRSP, EDGAR, ISS, ExecuComp) |
-| `/lseg-data` | LSEG Data Library (Refinitiv) for market data, ESG, M&A, PE/VC |
-| `/gemini-batch` | Gemini Batch API for large-scale LLM document processing |
-
-### Knowledge Management
-
-| Skill | Purpose |
-|-------|---------|
-| `/nlm` | NotebookLM CLI: notebooks, sources, audio overviews, research |
-| `/google-scholar` | Google Scholar CLI: search, BibTeX export, cite, download |
-| `/readwise` | Readwise highlight search and source gathering |
-| `/readwise-chat` | RAG over Readwise highlights via GPT-5.1 |
-| `/readwise-search` | Search highlights, quotes, annotations by keyword |
-| `/readwise-docs` | Readwise Reader document management (list, save, update, delete) |
-| `/readwise-prune` | Clean up stale Readwise Reader documents |
-| `/reading-add` | Add file or URL to reading inbox |
-
-### Scheduling
-
-| Skill | Purpose |
-|-------|---------|
-| `/scheduling-poll` | Create Morgen scheduling polls with pre-filled availability via Firestore API |
+| `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 
 ### Document Formats
 
@@ -84,29 +51,43 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 
 > Office format skills sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule.
 
-### Notebook Tools
+### Meta
 
 | Skill | Purpose |
 |-------|---------|
-| `/marimo` | Marimo reactive Python notebooks |
-| `/jupytext` | Jupyter notebooks as text files for version control |
-| `/notebook-debug` | Debug runtime errors in Jupyter/marimo notebooks |
-
-### Utility & Meta
-
-| Skill | Purpose |
-|-------|---------|
-| `/look-at` | Multimodal file analysis (PDFs, images, diagrams, charts) via Gemini |
-| `/visual-verify` | Render-vision-fix loops via Gemini vision |
-| `/skill-creator` | Skill creation with superpowers enforcement patterns (wraps built-in skill-creator) |
+| `/skill-creator` | Skill creation with superpowers enforcement patterns |
 | `/workflow-creator` | Design structured multi-phase LLM workflows |
-| `/data-context` | Extract dataset knowledge into reusable skills |
-| `/continuous-learning` | Cross-project pattern extraction |
-| `/ai-anti-patterns` | Detect 12 categories of AI writing indicators |
-| `/dev-tools` | Discover available dev plugins and MCP servers |
-| `/ds-tools` | Discover available DS plugins and MCP servers |
-| `/dev-worktree` | Git worktree isolation with automatic dependency setup |
-| `/companion` | Launch and correctly frame companion (host Claude Code) sessions |
+
+---
+
+## Auto-Invoked Skills (60+)
+
+These skills have `user-invocable: false` — Claude loads them automatically when relevant. You don't call them directly.
+
+### Legal & Citation
+`bluebook`, `bluebook-audit`, `docx-footnotes`, `source-verify`
+
+### Data Access
+`wrds`, `lseg-data`, `gemini-batch`
+
+### Knowledge Management
+`nlm`, `google-scholar`, `readwise`, `readwise-chat`, `readwise-search`, `readwise-docs`, `readwise-prune`, `reading-add`
+
+### Scheduling
+`scheduling-poll`
+
+### Notebook Tools
+`marimo`, `jupytext`, `notebook-debug`
+
+### Utilities
+`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `audit-fix-loop`
+
+### Internal Workflow Phases
+Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-ralph-loop`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*`
+
+DS: `ds-plan`, `ds-delegate`, `ds-implement`, `ds-review`, `ds-validate`, `ds-verify`, `ds-handoff`, `ds-spec-reviewer`, `ds-plan-reviewer`
+
+Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, `writing-review`, `writing-validate`, `writing-handoff`
 
 ---
 
@@ -137,7 +118,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 ---
 
-## Hooks (9)
+## Hooks (10)
 
 Hooks auto-run at specific lifecycle events:
 
@@ -149,8 +130,9 @@ Hooks auto-run at specific lifecycle events:
 | `suggest-compact.py` | PreToolUse | Edit/Write | Suggest compaction when context is large |
 | `readwise-guard.py` | PreToolUse | Readwise MCP calls | Enforce librarian delegation |
 | `image-read-guard.py` | PreToolUse | Read | Redirect to look-at for media files |
-| `lint-check.py` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
+| `writing-outline-guard.py` | PreToolUse | Write (writing-draft) | Warn when drafting without matching outline |
 | `writing-suggest-verify.py` | PostToolUse | Edit/Write | Suggest visual verification for writing |
+| `lint-check.py` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
 | `pr-url-logger.py` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
 
 ---
@@ -175,22 +157,11 @@ workflows/
 │   ├── plugin.json             # Version and metadata
 │   └── marketplace.json        # Marketplace listing
 ├── agents/                     # Specialized subagents (18)
-│   ├── planner.md, architect.md, tdd-guide.md
-│   ├── dev-implementer.md, ds-analyst.md
-│   ├── code-reviewer.md, security-reviewer.md
-│   ├── build-error-resolver.md, e2e-runner.md
-│   ├── refactor-cleaner.md, doc-updater.md
-│   ├── data-explorer.md, librarian.md, assistant.md
-├── skills/                     # User-facing skills (48)
+├── skills/                     # All skills (12 user-facing + 60+ internal)
 │   ├── dev/, ds/, writing*/    # Core workflow entry points
-│   ├── bluebook/, bluebook-audit/, docx-footnotes/  # Legal
-│   ├── wrds/, lseg-data/, gemini-batch/  # Data access
-│   ├── nlm/, google-scholar/, readwise*/, reading-add/  # Knowledge management
-│   ├── scheduling-poll/           # Scheduling
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
-│   ├── marimo/, jupytext/, notebook-debug/  # Notebooks
-│   └── look-at/, visual-verify/, ...  # Utilities
-├── hooks/                      # Hook scripts (9)
+│   └── ...                     # Internal phases and auto-invoked skills
+├── hooks/                      # Hook scripts (10)
 │   ├── hooks.json              # Hook configuration
 │   └── *.py                    # Hook implementations
 ├── references/                 # Shared constraint and reference docs
@@ -203,8 +174,8 @@ workflows/
 ```
 
 **Key Points:**
+- `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false`)
 - `agents/` contains specialized subagents (18, auto-discovered by Claude Code)
-- `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false` + `disable-model-invocation: true`)
 - `hooks/` contains hook entry points called directly by hooks.json
 - `references/` contains shared constraint and enforcement docs
 
