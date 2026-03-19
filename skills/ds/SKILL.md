@@ -1,6 +1,7 @@
 ---
 name: ds
 description: "This skill should be used when the user asks to 'start data analysis', 'brainstorm analysis approach', 'plan a data project', 'clarify analysis requirements', or needs the full 5-phase data science workflow with output-first verification."
+allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 ---
 
 ## Contents
@@ -31,11 +32,7 @@ Refine vague analysis requests into clear objectives through Socratic questionin
 
 **Load shared enforcement first:**
 
-Discover and read shared DS constraints:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md`
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Brainstorming
@@ -100,6 +97,22 @@ Employ `AskUserQuestion` immediately:
 - **Multiple-choice preferred** - easier to answer
 - Focus on: objectives, data sources, constraints, replication requirements
 
+### Smart-Discuss: Batch Ambiguities
+
+When multiple analysis questions arise, batch them into ONE AskUserQuestion call:
+
+**Batched (fast — 1 round-trip):**
+```python
+AskUserQuestion(questions=[
+  {"question": "Primary dataset?", "options": [{"label": "CRSP"}, {"label": "Compustat"}, {"label": "Both merged"}]},
+  {"question": "Sample period?", "options": [{"label": "2000-2024"}, {"label": "2010-2024"}, {"label": "Custom"}]},
+  {"question": "Frequency?", "options": [{"label": "Monthly"}, {"label": "Quarterly"}, {"label": "Annual"}]}
+])
+```
+
+**When to batch:** After understanding the research question, if 3+ independent questions arise, batch them.
+**When NOT to batch:** If a question's answer changes what other questions to ask (e.g., dataset choice affects available variables).
+
 ### 2. Identify Replication Requirements
 
 **CRITICAL:** Ask early if replicating existing work:
@@ -139,10 +152,7 @@ After selecting an approach:
 # Spec: [Analysis Name]
 
 > **For Claude:** After writing this spec, discover and load the ds-plan skill for Phase 2:
-> ```bash
-> ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan/SKILL.md 2>/dev/null | sort -V | tail -1
-> ```
-> Use the output path with `Read()`.
+>Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan/SKILL.md` and follow its instructions.
 
 ## Objective
 [What question this analysis answers]
@@ -151,9 +161,20 @@ After selecting an approach:
 - [Source 1]: [location, format, time period]
 - [Source 2]: [location, format, time period]
 
+## Requirements
+
+Assign each requirement a unique ID using `CATEGORY-NN` format (e.g., `DATA-01`, `VIZ-02`, `STAT-03`). Categories come from natural groupings in the analysis.
+
+| ID | Requirement | Scope |
+|----|-------------|-------|
+| [CAT-01] | [Requirement 1] | v1 |
+| [CAT-02] | [Requirement 2] | v1 |
+
+Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly excluded.
+
 ## Success Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
+- [ ] [CAT-01] [Criterion]
+- [ ] [CAT-02] [Criterion]
 
 ## Constraints
 - Replication: [yes/no - if yes, reference source]
@@ -200,6 +221,8 @@ After selecting an approach:
 | Skipping replication question | You might miss critical methodology constraints | Always ask about replication upfront |
 
 ## Gate: Exit Brainstorm
+
+**Checkpoint type:** human-verify (SPEC.md content is machine-verifiable)
 
 Before transitioning to ds-plan, execute this gate:
 
@@ -273,16 +296,10 @@ Phase 1: Brainstorm -> SPEC.md written
 ```
 
 **Step 1:** Discover and load the spec reviewer skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-spec-reviewer/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-spec-reviewer/SKILL.md` and follow its instructions.
 
 **Step 2:** Only after reviewer returns APPROVED, discover and load the next phase:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-plan/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan/SKILL.md` and follow its instructions.
 
 Fallback (if Read fails): `/ds-plan`
 

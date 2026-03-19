@@ -149,7 +149,7 @@ These do NOT count as COVERED:
 
 ## Phase 5: Fill Gaps
 
-For each MISSING requirement, spawn a `test-gap-auditor` Task agent:
+For each MISSING requirement, spawn a test-gap-auditor agent using `subagent_type="workflows:test-gap-auditor"`:
 
 **Tool Restrictions:** The auditor can Write/Edit test files ONLY. It MUST NOT modify implementation source code. If it discovers an implementation bug, it escalates — it does not fix.
 

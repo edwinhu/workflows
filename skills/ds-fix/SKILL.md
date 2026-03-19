@@ -76,11 +76,7 @@ Before changing ANY analysis code, you MUST:
 
 Read workflow state, shared enforcement, AND shared check definitions:
 
-Discover and read shared DS constraints:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/references/ds-common-constraints.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+!`cat ${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md`
 
 ```
 Read(".planning/SPEC.md")
@@ -88,11 +84,7 @@ Read(".planning/PLAN.md")
 Read(".planning/LEARNINGS.md")
 ```
 
-Discover and read shared check definitions:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-implement/references/ds-checks.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` and follow its instructions.
 
 **The shared checks file contains data quality check definitions (DQ1-DQ6, M1, R1) used by both ds-review and ds-fix.** Loading it here ensures the midpoint runs identical checks to the entry point's review phase. Without it, checks drift apart and the midpoint misses issues review would catch.
 
@@ -102,13 +94,24 @@ If no workflow state exists, suggest starting with `/ds` instead.
 
 After loading PLAN.md, check if `Implementation Language` is `SAS` or `Mixed`. If so, reload SAS enforcement before any fix:
 
-Discover and read SAS ETL enforcement:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/wrds/references/sas-etl.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/sas-etl.md` and follow its instructions.
 
 **SAS projects have unique failure modes** (hash merge memory, WHERE function wrapping, SGE array misconfiguration). The SAS enforcement must be loaded BEFORE diagnosing — otherwise you will misdiagnose SAS-specific issues as generic bugs.
+
+### Context Monitoring
+
+Before starting diagnosis, check context availability:
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed with diagnosis and fix |
+| Warning | 25-35% | Complete current fix, then invoke ds-handoff |
+| Critical | ≤25% | Invoke ds-handoff immediately — no new fixes |
+
+**At Warning level:** After current fix completes, invoke:
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-handoff/SKILL.md` and follow its instructions.
+
+**Why:** A multi-step fix pipeline with 20% context remaining produces degraded output. Better to handoff cleanly and resume fresh.
 
 ## Step 2: Diagnose
 
@@ -201,11 +204,7 @@ AskUserQuestion(questions=[
 
 For notebook-specific errors, load notebook-debug patterns:
 
-Discover and read notebook-debug skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/skills/notebook-debug/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/notebook-debug/SKILL.md` and follow its instructions.
 
 ### Wrong Results → Re-analysis Protocol
 
@@ -234,11 +233,7 @@ The bug is at the FIRST step where output diverges from expected. Find that step
    - Document in LEARNINGS.md
 3. After all changes, re-run review checks:
 
-Discover and read ds-review skill:
-```bash
-ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/lib/skills/ds-review/SKILL.md 2>/dev/null | sort -V | tail -1
-```
-Use the output path with `Read()`.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-review/SKILL.md` and follow its instructions.
 
 ### Data/Scope Change → Re-profiling Protocol
 
@@ -284,6 +279,8 @@ After fixing, apply output-first verification:
 4. Update LEARNINGS.md with fix documentation
 
 ### Gate: Fix Verification
+
+**Checkpoint type:** human-verify (fix output is machine-verifiable)
 
 Before claiming any fix is done, execute this gate:
 

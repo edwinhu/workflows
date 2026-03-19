@@ -3,6 +3,19 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.47.0] - 2026-03-18
+
+### Added
+- **DS workflow audit fixes** (6.5 → 9.4 composite):
+  - Requirement IDs (`CAT-NN` format) in SPEC.md template with scope classification (v1/v2/out-of-scope)
+  - Checkpoint type annotations on all 11 DS phase gates (human-verify/decision)
+  - `allowed-tools` restrictions on all reviewer/verifier agents (ds-spec-reviewer, ds-plan-reviewer, ds-review parallel reviewers, ds-verify, ds-delegate methodology reviewer)
+  - Context monitoring in ds-implement and ds-fix (Warning ≤35%, Critical ≤25%, auto-handoff)
+  - Structured task summaries with YAML frontmatter in ds-implement LEARNINGS.md
+  - Smart-discuss batching in ds brainstorm (batch 3+ independent questions)
+  - Requirement tracing in ds-review issue output and ds-verify success criteria
+- Wired `test-gap-auditor` agent in dev-test-gaps (was using `general-purpose`)
+
 ## [4.46.0] - 2026-03-18
 
 ### Added
