@@ -477,6 +477,55 @@ Workflows should store all state files in a `.planning/` directory at the projec
 
 **Design principles:** File-based, git-trackable, human-editable. No databases, no external services. YAML frontmatter for machine-readable state; markdown body for human reading.
 
+#### Visual Output for Human Verification
+
+Human verification gates (`decision` checkpoints) are bottlenecks. Make them fast by producing **visual artifacts** the human can scan in seconds rather than reading logs. Every workflow should include at least one visual output script that renders the current state into something a human can quickly evaluate.
+
+**The pattern:** bundle a script in the skill directory that generates self-contained HTML (or renders in a notebook). The skill instructs Claude to run it at verification points. The human opens the file, scans visually, and approves or rejects.
+
+**Domain-specific visual outputs:**
+
+| Domain | Visual Output | Format | What Human Evaluates |
+|--------|--------------|--------|---------------------|
+| **Dev** | Codebase explorer, dependency graph, test coverage map | Interactive HTML (Python script → `open`) | Architecture, coverage gaps, file organization |
+| **DS (engineering)** | Pipeline DAG, schema diff, row count waterfall | marimo notebook or HTML | Data flow, schema changes, row loss at each step |
+| **DS (analysis)** | Specification curve, coefficient stability plot, regression table | marimo/jupytext notebook | Result robustness, sensitivity to analytical choices |
+| **Writing** | Tracked changes (DOCX redline), comment bubbles, structure outline | DOCX with revisions, or HTML diff | What changed, reviewer comments in context |
+| **Teaching** | Slide preview, notes alignment grid | PDF or HTML | Visual coverage, formatting issues |
+
+**Implementation guidance for workflow creators:**
+
+1. **Identify the verification gate** — which `decision` checkpoint requires human judgment?
+2. **Choose the output format:**
+   - For code/data: interactive HTML (self-contained, no dependencies, opens in browser)
+   - For analysis: marimo or jupytext notebook (reproducible, shows code + output)
+   - For documents: DOCX with tracked changes or HTML diff view
+3. **Bundle a generation script** in `skills/[phase]/scripts/` that:
+   - Takes the current state as input (e.g., project root, output directory)
+   - Generates a self-contained visual artifact
+   - Opens it automatically (`webbrowser.open()` or `open` command)
+4. **Reference it in the verification skill** — the verify/review phase runs the script before asking the human to evaluate
+
+**Example: spec curve visualization for DS analysis verification:**
+
+```python
+# skills/ds-verify/scripts/spec_curve_summary.py
+# Generates an HTML summary of specification curve results
+# Run: python3 ${CLAUDE_SKILL_DIR}/scripts/spec_curve_summary.py output/
+```
+
+**Example: codebase explorer for dev verification:**
+
+```python
+# skills/dev-verify/scripts/visualize_codebase.py
+# Generates interactive HTML tree view of project structure
+# Run: python3 ${CLAUDE_SKILL_DIR}/scripts/visualize_codebase.py .
+```
+
+**Why visual output matters:** A human staring at 200 lines of test output will rubber-stamp it. A human looking at a specification curve immediately sees whether the finding is robust. Visual output converts `decision` checkpoints from "read a wall of text" to "glance at a chart" — reducing verification time from minutes to seconds and improving catch rates.
+
+**Iron Law:** If your workflow has a `decision` checkpoint where the human evaluates quality, there MUST be a visual artifact to evaluate. Text-only verification at decision points is rubber-stamping with extra steps.
+
 Present complete file list for user approval before writing.
 
 ---
@@ -606,8 +655,14 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Does it re-read the plan after each phase to catch dynamically inserted phases?
 - Are blockers handled with retry/skip/stop options?
 
+**Visual output for human verification:**
+- Do `decision` checkpoints produce visual artifacts (HTML, notebooks, DOCX redlines)?
+- Can the human evaluate quality by glancing at a visual rather than reading text logs?
+- Are visualization scripts bundled in skill directories?
+- Is the visual output domain-appropriate? (code: dependency graphs; DS: spec curves/notebooks; writing: tracked changes)
+
 **Gate: Architecture Scored**
-- Verify scores for all 15 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining)
+- Verify scores for all 16 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -844,6 +899,7 @@ For each gap:
 - **Missing agent tool restrictions** → Add `allowed-tools` frontmatter to verification/review agents restricting them to read-only tools (Read, Grep, Glob). A verifier that can Write/Edit will silently "fix" issues, bypassing plan-execute-verify. Tool restrictions make verification structurally honest
 - **Missing requirement traceability** → Assign unique IDs in SPEC.md (CATEGORY-NN format), reference IDs in PLAN.md task frontmatter (`implements: [AUTH-01]`), map IDs to evidence in VALIDATION.md. Classify scope as v1/v2/out-of-scope. Without IDs, requirement coverage is fuzzy
 - **Missing autonomous phase chaining** → Add auto-advance for `human-verify` checkpoints, smart-discuss batching (all ambiguities in one question), plan re-read after each phase completion, and blocker handling (retry/skip/stop). Without this, a 7-phase workflow requires 7 manual interventions
+- **Missing visual output at decision checkpoints** → Bundle a visualization script in the verify/review skill directory. The script generates a self-contained HTML file (or notebook) that the human opens and scans. Domain-appropriate: code → codebase explorer/dependency graph; DS engineering → pipeline DAG/schema diff; DS analysis → specification curve/coefficient plot; writing → DOCX redline/tracked changes. Text-only verification at decision points is rubber-stamping
 
 ### Step 4: Present Changes
 
@@ -925,6 +981,7 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Phase summaries are unstructured prose | Handoff/resume requires re-reading all files. No dependency graph for parallel execution. | Add YAML frontmatter with implements/requires/provides/affects |
 | Requirements have no unique IDs | "We tested auth" doesn't tell you if login, refresh, AND logout are covered. | Assign IDs in SPEC.md, trace through PLAN.md and VALIDATION.md |
 | Every phase requires manual invocation | 7-phase workflow needs 7 human interventions to run. | Add autonomous chaining with auto-advance for human-verify gates |
+| Decision checkpoint with text-only output | Human reads 200 lines of test output, rubber-stamps it. Catch rate drops to near zero. | Bundle a visual output script — HTML explorer, spec curve, DOCX redline. Glance > read. |
 
 ## Rationalization Table
 
@@ -943,6 +1000,7 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | "Context monitoring is overkill for short workflows" | A 4-phase workflow can exhaust context on phase 2 if implementation is complex. "Short" is about phase count, not context usage. | Add monitoring. It costs nothing when context is plentiful. |
 | "Requirement IDs are bureaucracy" | Without IDs, the validation phase maps requirements by fuzzy text matching. "Auth" matches 3 different requirements and misses 2. | IDs take 30 seconds to assign and make coverage auditable. |
 | "Autonomous mode is too risky without human oversight" | 90% of gates are rubber-stamp `human-verify`. The other 10% still pause. Autonomous mode skips the rubber stamps, not the real decisions. | Classify checkpoints. Auto-advance the rubber stamps. |
+| "The human can read the test output to verify" | They won't. 200 lines of test output gets rubber-stamped. A spec curve chart gets actually evaluated. Visual output converts verification from "read a wall of text" to "glance at a chart." | Bundle a visualization script. Open it automatically at decision checkpoints. |
 
 ### Why Skipping Steps Hurts the Thing You Care About Most
 
