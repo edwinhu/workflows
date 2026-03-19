@@ -1,0 +1,27 @@
+{
+  "eval_id": 3,
+  "eval_name": "url-with-readwise",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "no_metadata_extraction: Agent does NOT try to extract metadata or rename — it's a URL, not a file",
+      "passed": true,
+      "evidence": "Trace explicitly states: 'Step 2 is scoped to files only. For a URL, there is no look-at call, no attempt to fetch the page, no renaming.'"
+    },
+    {
+      "text": "daily_note_markdown_link: Daily note uses markdown link format [Title](URL), not wiki-link",
+      "passed": true,
+      "evidence": "Entry is '- [ ] [SEC Enforcement Update](https://...)' — markdown link format, not wiki-link."
+    },
+    {
+      "text": "readwise_save: Agent saves URL to Readwise Reader with appropriate tag",
+      "passed": true,
+      "evidence": "Step 5 calls 'readwise save URL --tag reading-inbox' — correct command with tag."
+    },
+    {
+      "text": "daily_note_under_reading: Daily note entry is inserted under # Reading heading",
+      "passed": true,
+      "evidence": "Step 4c uses Read + Edit to insert under # Reading. References Iron Law against daily:append."
+    }
+  ]
+}

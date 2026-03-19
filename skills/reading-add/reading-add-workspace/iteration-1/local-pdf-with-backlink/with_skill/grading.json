@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "local-pdf-with-backlink",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "extracts_metadata: Agent uses look-at to extract title/authors/date from the PDF",
+      "passed": true,
+      "evidence": "Step 2 calls look-at with correct goal string and extracts title, authors, date."
+    },
+    {
+      "text": "proposes_filename_format: Proposed filename follows Author (Date) - Title.pdf convention",
+      "passed": true,
+      "evidence": "Proposes 'Bishop (2026) - Activist Defense Firms.pdf' — correct single-author format."
+    },
+    {
+      "text": "includes_project_backlink: Daily note entry includes [[Pass-through Voting]] backlink",
+      "passed": true,
+      "evidence": "Entry is '- [ ] [[Bishop (2026) - Activist Defense Firms.pdf]] [[Pass-through Voting]]'"
+    },
+    {
+      "text": "daily_note_under_reading: Daily note entry is inserted under # Reading heading",
+      "passed": true,
+      "evidence": "Step 4b uses Read + Edit, references Iron Law. Shows expected result with entry under # Reading before # Meetings."
+    }
+  ]
+}

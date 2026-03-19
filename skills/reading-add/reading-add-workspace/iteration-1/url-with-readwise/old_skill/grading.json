@@ -1,0 +1,27 @@
+{
+  "eval_id": 3,
+  "eval_name": "url-with-readwise",
+  "configuration": "old_skill",
+  "expectations": [
+    {
+      "text": "no_metadata_extraction: Agent does NOT try to extract metadata or rename — it's a URL, not a file",
+      "passed": false,
+      "evidence": "Baseline Step 1 attempts WebFetch to extract metadata from the URL — unnecessary for a URL save."
+    },
+    {
+      "text": "daily_note_markdown_link: Daily note uses markdown link format [Title](URL), not wiki-link",
+      "passed": true,
+      "evidence": "Baseline uses '- [ ] [SEC Enforcement Update](url)' format — correct markdown link."
+    },
+    {
+      "text": "readwise_save: Agent saves URL to Readwise Reader with appropriate tag",
+      "passed": false,
+      "evidence": "Baseline cannot find Readwise save tool, falls back to raw curl API call without knowing auth token. Would likely fail."
+    },
+    {
+      "text": "daily_note_under_reading: Daily note entry is inserted under # Reading heading",
+      "passed": false,
+      "evidence": "Baseline guesses vault path and note structure — 'Don't know vault path, note structure, or template.'"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "eval_id": 1,
+  "eval_name": "email-attachment-resolve",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "searches_email_first: Agent searches email (superhuman) before trying web/SSRN/scholar",
+      "passed": true,
+      "evidence": "Step 1 is 'superhuman search' immediately. Trace explicitly states: 'The word attachment is the decisive trigger... No web, SSRN, or scholar search would be attempted.'"
+    },
+    {
+      "text": "extracts_metadata: Agent uses look-at to extract title/authors/date from the PDF",
+      "passed": true,
+      "evidence": "Step 3 uses look-at with the correct goal string to extract title, authors, and date."
+    },
+    {
+      "text": "proposes_filename_format: Proposed filename follows Author (Date) - Title.pdf convention",
+      "passed": true,
+      "evidence": "Step 4 proposes 'Smith, Jones (2026) - Judicial Appointments and Reform.pdf' — correct two-author format."
+    },
+    {
+      "text": "daily_note_under_reading: Daily note entry is inserted under # Reading heading, not appended to end",
+      "passed": true,
+      "evidence": "Step 7 explicitly uses Read + Edit, references Iron Law against daily:append."
+    }
+  ]
+}

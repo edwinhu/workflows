@@ -84,6 +84,50 @@ No amount of "don't reimplement me" enforcement text can overcome this. The skil
 | Enforcement patterns agents keep bypassing | Skill is a knowledge reference, not a tool wrapper |
 | Multiple steps could be a single script call | |
 
+### Step 1b: Check for Bang and Hook Opportunities
+
+Before drafting, identify constraints that should be **mechanically enforced** rather than prompt-enforced:
+
+#### Bang-Backtick Injection (`!`command``)
+
+Use bangs to inject dynamic context at skill load time — the command runs before Claude sees the content:
+
+| Use Case | Example |
+|----------|---------|
+| Environment detection | `!`if [ -f /.dockerenv ]; then echo "CONTAINER"; else echo "HOST"; fi`` |
+| Inline reference files | `!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`` |
+| Inject current state | `!`git branch --show-current`` |
+
+Bangs only work in **top-level skills** loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions.
+
+#### Scoped Hooks (PreToolUse / PostToolUse)
+
+Hooks in skill frontmatter fire only while the skill is active — automatically cleaned up when the skill finishes. Use them for constraints that are **mechanically checkable**:
+
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 $HOME/.claude/skills/my-skill/hooks/guard.py"
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint.py"
+```
+
+| Enforce with Hook | Keep as Prompt |
+|-------------------|----------------|
+| File path/extension guards | Rationalization tables |
+| Missing prerequisite file checks | Drive-aligned framing |
+| Tool parameter validation | Red flags (judgment-based) |
+| Post-edit lint/format checks | "Why" explanations |
+| Outline-before-prose guards | Deviation rule classification |
+
+**The principle:** if a constraint is mechanically checkable, enforce it with a hook. If it requires judgment or motivation, keep it as prompt text. Hooks cost zero tokens and can't be rationalized away.
+
 ### Step 2: Invoke the Built-in Skill Creator
 
 Use the Skill tool to invoke the built-in skill-creator:
@@ -168,6 +212,8 @@ During the eval loop, also look for enforcement-specific signals:
 - **Agent went down a wrong path** → add a Red Flag + STOP
 - **Agent claimed completion without evidence** → add Drive-Aligned Framing
 - **Agent stopped between tasks** → add No Pause Between Tasks
+- **Agent bypassed a mechanical constraint** → extract to a scoped hook (PreToolUse/PostToolUse)
+- **Skill loads stale context** → use bang-backtick to inject live state at load time
 
 These signals come from reading test run transcripts, not just final outputs.
 

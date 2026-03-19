@@ -445,7 +445,9 @@ Each task summary should end with: **Total deviations:** N auto-fixed (R1: X, R2
 
 ### Step 4b: Common Enforcement Across Skill Families
 
-When multiple skills operate on the same domain, they need consistent enforcement. Scan the target plugin:
+When multiple skills operate on the same domain, they need consistent enforcement across **three layers**: constraints (prompt), hooks (structural), and script wiring (gate orchestration). Scan the target plugin:
+
+#### Layer 1: Shared Constraints (Prompt Enforcement)
 
 1. List all `skills/*/SKILL.md` files in the target plugin directory
 2. For each sibling skill, identify enforcement patterns (Iron Laws, Rationalization Tables, Red Flags)
@@ -458,12 +460,54 @@ When multiple skills operate on the same domain, they need consistent enforcemen
 - Shared Rationalization Tables and Red Flags
 - Each skill `Read()`s the shared file; skill-specific enforcement stays inline
 
-**Why:** Skills in the same domain need the same guardrails. Without a shared enforcement file, each skill gets its own version of the rules — and they drift apart over time as skills are edited independently.
+**Constraint Propagation Rule:** When a new constraint is added to ANY individual skill in the family, check: does this constraint apply to other skills? If yes → add to the shared constraints file, not the individual skill. If uncertain → add to shared (over-inclusion is cheaper than drift). Mark each constraint in common-constraints.md with an `**Applies to:**` annotation listing which skills use it.
 
-**Gate: Common Enforcement Complete**
+#### Layer 2: Hook Coverage (Structural Enforcement)
+
+1. For each sibling skill, extract the `hooks:` block from YAML frontmatter
+2. Produce a **Hook Coverage Matrix** (skills × hooks):
+
+```
+| Hook Script | skill-1 | skill-2 | skill-3 | skill-4 |
+|-------------|---------|---------|---------|---------|
+| guard-a.py  | ✅ Pre  | ✅ Pre  | ❌      | ✅ Pre  |
+| guard-b.py  | ✅ Post | ✅ Post | ❌      | ✅ Post |
+| monitor.py  | ✅ Post | ✅ Post | ❌      | ✅ Post |
+```
+
+3. Flag any hook present in some siblings but not others
+4. Require justification for intentional gaps (e.g., "router delegates immediately — hooks fire in the routed-to skill")
+
+**Why hooks drift:** Hooks are added when a failure mode is discovered in one skill. The fix adds the hook to that skill's frontmatter but doesn't propagate to siblings. Unlike constraints (which can drift subtly), missing hooks are silent — no error, no warning, the enforcement just doesn't fire.
+
+#### Layer 3: Script Wiring (Gate Orchestration)
+
+1. List all check/guard scripts in `hooks/` and `scripts/`
+2. For each script, verify it's referenced in:
+   - (a) At least one skill's hook frontmatter
+   - (b) The batch orchestrator (e.g., `check-all.sh`) if one exists
+   - (c) `references/verification-checks.md` if it implements a named check
+3. Produce a **Script Wiring Matrix**:
+
+```
+| Script              | Hook Reference | Batch Orchestrator | Check Definition |
+|---------------------|---------------|--------------------|------------------|
+| check-conventions.py | ✅ convention-check-guard.py | ✅ check-all.sh | ✅ verification-checks.md |
+| check-widows.py     | ✅ post-compile-widow-guard.py | ✅ check-all.sh | ✅ verification-checks.md |
+| new-check.py        | ❌ No hook    | ❌ Not in batch     | ✅ verification-checks.md |
+```
+
+4. Flag any script with gaps — a script that exists but isn't wired into all three layers is enforcement theater
+
+**Why scripts unwire:** New check scripts are created to catch a specific failure mode. The author adds the script and its check definition, but forgets to wire it into the batch orchestrator or create a corresponding guard hook. The script exists, passes when run manually, but never fires automatically.
+
+**Why:** Skills in the same domain need the same guardrails across all three layers. Without shared enforcement, each skill gets its own version of the rules — and they drift apart as skills are edited independently. Constraints drift through independent editing. Hooks drift through selective addition. Scripts drift through incomplete wiring.
+
+**Gate: Cross-Skill Consistency Complete**
 - Verify sibling skills were scanned (or note that no siblings exist)
-- If shared constraints exist, verify new skills Read() the shared file
-- If skills share a domain, verify common enforcement is in a shared file
+- Layer 1: If shared constraints exist, verify new skills Read() the shared file. If skills share a domain, verify common enforcement is in a shared file.
+- Layer 2: Hook Coverage Matrix produced. No unexplained gaps.
+- Layer 3: Script Wiring Matrix produced. No unwired scripts.
 
 **After verifying Cross-Skill Dedup is complete, IMMEDIATELY proceed to Step 5.**
 
@@ -705,6 +749,11 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Does the midpoint load full skills, not summaries?
 - Do skills that share a domain share a common enforcement file? (or does each skill enforce its own version of the rules?)
 - Could a user get inconsistent enforcement depending on which skill they invoke?
+
+**Cross-skill consistency (three layers):**
+- **Constraints:** Do all sibling skills Read() the same shared constraints file? Are constraints that apply to multiple skills in the shared file (not inlined in individual skills)?
+- **Hooks:** Do all sibling skills declare the same hooks in their YAML frontmatter? If a hook is present in some siblings but not others, is the gap justified? (Produce a Hook Coverage Matrix: skills × hooks)
+- **Script wiring:** Is every check script referenced in all three layers: (a) hook frontmatter, (b) batch orchestrator, (c) verification-checks definition? (Produce a Script Wiring Matrix: scripts × invocation points)
 
 **Iteration strategy:**
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
@@ -1000,6 +1049,9 @@ Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
 | Missing Red Flags | 3-5 wrong-path indicators |
 | Missing Drive-Aligned Framing | 5-drive table (helpfulness > competence > efficiency > approval > honesty) |
 | No shared enforcement across skill family | Extract to `references/common-constraints.md`; all domain skills Read() it |
+| Hooks inconsistent across skill family | Produce Hook Coverage Matrix (skills × hooks); add missing hooks to skill frontmatter; justify intentional gaps |
+| New check script not wired into batch orchestrator | Add script invocation to batch orchestrator (check-all.sh equivalent); update verification-checks.md |
+| Constraint added to individual skill but applies to family | Move to common-constraints.md with `**Applies to:**` annotation; remove from individual skill |
 | Missing artifact review gate | Add reviewer subagent dispatch between producing/consuming phases, max 5 iterations |
 | Broken paths (script) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py` |
 | Broken paths (Read) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` |
@@ -1099,7 +1151,9 @@ Identify where the agent is most tempted to shortcut. Enforce hardest there. Imp
 If a phase produces an artifact (spec, plan, outline) that downstream phases consume, the artifact MUST be independently reviewed before the next phase starts. Self-review is rubber-stamping. A fresh subagent reviewer catches what the author cannot see.
 
 ### NO SKILL FAMILY WITHOUT SHARED ENFORCEMENT
-If multiple skills in the same plugin operate on the same domain, their common enforcement MUST live in a shared file (e.g., `references/common-constraints.md`) that every skill `Read()`s. Without this, skills enforce different rules — and the user has to run multiple skills to catch what any single skill should have caught on its own.
+If multiple skills in the same plugin operate on the same domain, their common enforcement MUST be consistent across THREE layers: (1) shared constraints file that every skill `Read()`s, (2) identical hooks in every skill's YAML frontmatter (or justified gaps), (3) every check script wired into the batch orchestrator, hook frontmatter, AND check definitions. Without three-layer consistency, skills enforce different rules — and the user gets different quality depending on which skill they invoke.
+
+**The course-materials incident (March 2026):** batch-check-guard was added to slides-edit but not lecture-prep. convention-check-guard was added to sub-agent prompts but not as a hook. check-conventions.py existed but wasn't in check-all.sh. Result: lecture-prep shipped work that slides-edit would have caught. The constraints file was shared, but hooks and script wiring were not — two of three layers failed silently.
 
 ### NO VERIFIER WITH WRITE ACCESS
 Verification and review agents MUST use `allowed-tools` frontmatter restricting them to read-only tools. A verifier that can Write/Edit will "fix" issues it finds — silently bypassing the plan-execute-verify cycle. The fix was never planned, never reviewed, never tested. Tool restrictions make verification structurally honest, not just procedurally independent.
@@ -1118,6 +1172,9 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
 | Creating domain skills without shared enforcement | Each skill enforces its own version of the rules. lecture-prep misses checks that slides-edit catches — user has to run multiple skills to get consistent quality. | Extract common enforcement to `references/common-constraints.md` that all domain skills Read() |
+| Adding a hook to one skill without checking siblings | Hook fires in slides-edit but not lecture-prep. The user gets different enforcement depending on which skill they invoke. Silent — no error, just missing enforcement. | Produce Hook Coverage Matrix. Add hook to all relevant siblings or justify the gap. |
+| Adding a check script without wiring it into the batch orchestrator | Script exists, passes when run manually, but never fires during the verification gate. False confidence — the gate "passes" but the check never ran. | Wire into batch orchestrator AND hook frontmatter AND verification-checks.md. All three layers. |
+| Adding a constraint to an individual skill that should be shared | Constraint works in lecture-prep but notes-edit doesn't have it. User discovers the gap when notes-edit ships work that lecture-prep would have caught. | Add to common-constraints.md with `**Applies to:**` annotation. Over-inclusion beats drift. |
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 | No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
 | No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
@@ -1144,6 +1201,9 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | "I'll add enforcement later" | Later never comes. Enforcement debt compounds. | Add it now, refine through use |
 | "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
 | "Each skill can have its own enforcement" | Then lecture-prep misses what slides-edit catches, and the user runs 3 skills to get what 1 should provide. | Shared enforcement file. One source of truth for the domain. |
+| "This hook only applies to slides-edit, not lecture-prep" | Hooks enforce mechanical constraints. If the constraint applies to the domain, it applies to ALL skills in the domain. A hook that fires in one skill but not its sibling creates inconsistent enforcement with no visible warning. | Add to all sibling skills or justify in the Hook Coverage Matrix. |
+| "The script works when I run it manually" | Manual execution proves the script works. It doesn't prove the script runs automatically. An unwired script is enforcement theater — it exists but never fires. | Wire into all three layers: hook frontmatter, batch orchestrator, check definitions. |
+| "I'll add this constraint to common-constraints.md later" | Later never comes. The constraint lives in one skill, the other skills ship without it, and nobody notices until the user gets inconsistent results. | Add to shared file NOW. Over-inclusion is cheaper than drift. |
 | "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
 | "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
 | "The reviewer can just fix small issues it finds" | That bypasses plan-execute-verify. The "fix" was never planned, never reviewed, never tested. Now you have unverified code in production. | Restrict verifiers to read-only tools. Issues go back to the executor. |

@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "local-pdf-with-backlink",
+  "prompt": "Add this PDF to my reading list, it's related to Pass-through Voting: /tmp/bishop-activist-defense.pdf",
+  "assertions": [
+    {
+      "name": "extracts_metadata",
+      "description": "Agent uses look-at to extract title/authors/date from the PDF",
+      "type": "presence"
+    },
+    {
+      "name": "proposes_filename_format",
+      "description": "Proposed filename follows Author (Date) - Title.pdf convention",
+      "type": "format"
+    },
+    {
+      "name": "includes_project_backlink",
+      "description": "Daily note entry includes [[Pass-through Voting]] backlink",
+      "type": "presence"
+    },
+    {
+      "name": "daily_note_under_reading",
+      "description": "Daily note entry is inserted under # Reading heading",
+      "type": "placement"
+    }
+  ]
+}

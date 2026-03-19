@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "local-pdf-with-backlink",
+  "configuration": "old_skill",
+  "expectations": [
+    {
+      "text": "extracts_metadata: Agent uses look-at to extract title/authors/date from the PDF",
+      "passed": false,
+      "evidence": "Baseline would use Read tool on PDF (ad hoc), not look-at. Describes extraction as 'ad hoc, best-effort read.'"
+    },
+    {
+      "text": "proposes_filename_format: Proposed filename follows Author (Date) - Title.pdf convention",
+      "passed": false,
+      "evidence": "No naming convention. Would save raw file or guess format."
+    },
+    {
+      "text": "includes_project_backlink: Daily note entry includes [[Pass-through Voting]] backlink",
+      "passed": false,
+      "evidence": "Baseline says 'would not know to create a [[Pass-through Voting]] wikilink' — treats as plain text."
+    },
+    {
+      "text": "daily_note_under_reading: Daily note entry is inserted under # Reading heading",
+      "passed": false,
+      "evidence": "Baseline says 'would stall after reading the PDF and ask 2-3 clarifying questions' — no knowledge of vault path or structure."
+    }
+  ]
+}

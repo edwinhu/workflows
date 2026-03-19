@@ -138,6 +138,22 @@ entry phases          midpoint skills
 
 **The design principle:** If the same quality dimension is checked in both the entry point and midpoint, the check definition MUST be shared. Inlining the same check in two places guarantees drift.
 
+### Three-Layer Cross-Skill Consistency
+
+Shared constraints (the section above) address only one layer of cross-skill enforcement. In practice, skill families need consistency across **three layers**:
+
+| Layer | What It Covers | Drift Mechanism |
+|-------|---------------|-----------------|
+| **Constraints** (prompt) | Iron Laws, Rationalization Tables, Red Flags in shared file | Skills edited independently, new rules added to one but not shared |
+| **Hooks** (structural) | PreToolUse/PostToolUse in YAML frontmatter | Hook added to fix a failure in one skill, not propagated to siblings |
+| **Script wiring** (gate) | Check scripts referenced by hooks, batch orchestrator, and check definitions | New script created but not wired into all three invocation points |
+
+**The constraint-only trap:** A workflow can have perfect constraint sharing (all skills Read() common-constraints.md) while hooks and script wiring are inconsistent. The constraints tell the agent what to do; the hooks force it; the scripts verify it. If only constraints are shared, enforcement is prompt-only — the weakest layer.
+
+**The incident pattern:** A failure mode is discovered in skill A. The fix adds (1) a constraint to common-constraints.md, (2) a hook to skill A's frontmatter, (3) a check script. Steps 2 and 3 happen only in skill A. Skills B, C, D get the constraint (via shared file) but not the hook or the script wiring. The constraint fires via prompt; the hook never fires; the script never runs automatically. The user discovers the gap when skill B ships work that skill A would have caught.
+
+**The design principle:** When adding enforcement to any skill in a family, propagate across all three layers — or document why a layer doesn't apply to a specific skill.
+
 ## 5. Enforcement and Its Limits
 
 Superpowers enforcement patterns are the regularization that counteracts drift:
