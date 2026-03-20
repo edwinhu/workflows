@@ -12,9 +12,19 @@ allowed-tools: Read, Grep, Glob, Agent
 
 ## Shared Enforcement
 
-Load the common constraints for context on the writing workflow:
+Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`.
+Then load these reviewer-specific files:
+
+**Constraints:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+
+**Conventions:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
 
 ## When to Dispatch
 

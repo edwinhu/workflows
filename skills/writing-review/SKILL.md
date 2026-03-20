@@ -13,11 +13,31 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 ## Shared Enforcement
 
-Before any work, load the common constraints that apply to ALL writing phases:
+Load the constraint index:
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
-This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before reviewing prose.
+Then load these phase-specific files:
+
+**Constraints:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before reviewing prose**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/post-subagent-enforcement.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/writing-stop-triggers.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+
+**Conventions:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
 
 ## Session Resume Detection
 
@@ -130,7 +150,7 @@ The domain skill contains style rules that inform your review criteria. You MUST
 Skill(skill="workflows:ai-anti-patterns")
 ```
 
-**You MUST load ai-anti-patterns before reviewing.** Domain skills inform domain-specific review criteria; ai-anti-patterns catches AI writing smell (hedging, filler, false balance) that domain skills don't cover. Both layers are required — see `writing-common-constraints.md`.
+**You MUST load ai-anti-patterns before reviewing.** Domain skills inform domain-specific review criteria; ai-anti-patterns catches AI writing smell (hedging, filler, false balance) that domain skills don't cover. Both layers are required — see `constraints/constraint-loading-protocol.md`.
 
 ### Step 3: Choose Review Strategy
 

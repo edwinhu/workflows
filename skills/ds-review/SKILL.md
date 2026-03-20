@@ -342,7 +342,13 @@ Publishing wrong results is worse than slow results. The user experiences your c
 
 ## Shared Enforcement
 
-**Load shared ds constraints before reviewing.** Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md`.
+**Load shared ds constraints before reviewing.** Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md` for the full constraint index.
+
+For review phase, load these specific constraints:
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deferred-verification.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-data-quality-checks.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
 
 ## Review Focus Areas
 

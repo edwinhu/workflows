@@ -76,7 +76,17 @@ Before changing ANY analysis code, you MUST:
 
 Read workflow state, shared enforcement, AND shared check definitions:
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
+
+As the midpoint, load ALL common constraints (can route to any phase):
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-impatience-over-process.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-topic-change-protocol.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-escape-patterns.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules.md`
 
 ```
 Read(".planning/SPEC.md")

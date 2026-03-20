@@ -24,11 +24,29 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 ## Shared Enforcement
 
-Before any work, load the common constraints that apply to ALL writing phases:
+Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`.
+Then load these phase-specific files:
 
-This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before writing prose. See the shared file for the full loading table.
+**Constraints:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before writing prose**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/writing-stop-triggers.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/deviation-rules.md`
+
+**Conventions:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
 
 ## Draft Flowchart (This IS the Spec)
 
@@ -185,7 +203,7 @@ When `style: econ` is detected:
 Skill(skill="workflows:ai-anti-patterns")
 ```
 
-**You MUST load ai-anti-patterns before drafting.** Domain skills catch domain-specific issues; ai-anti-patterns catches AI writing smell (hedging, filler, false balance, weasel words). Both layers are required — see `writing-common-constraints.md` for why.
+**You MUST load ai-anti-patterns before drafting.** Domain skills catch domain-specific issues; ai-anti-patterns catches AI writing smell (hedging, filler, false balance, weasel words). Both layers are required — see `constraints/constraint-loading-protocol.md` for why.
 
 ### Step 3: Choose Drafting Strategy
 
@@ -257,7 +275,7 @@ edits_since_verify: 0
 
 ## Gate: Exit Draft
 
-Before proceeding to edit/verify (see `writing-common-constraints.md` for the full 6-step gate including SUMMARY):
+Before proceeding to edit/verify (see `conventions/gate-function-standard.md` for the full 6-step gate including SUMMARY):
 
 1. **IDENTIFY**: Draft files in `drafts/` for all sections listed in OUTLINE.md
 2. **RUN**: List files in `drafts/`, compare against OUTLINE.md sections

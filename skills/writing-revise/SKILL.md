@@ -16,11 +16,31 @@ The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced
 
 ## Shared Enforcement
 
-Before any work, load the common constraints that apply to ALL writing phases:
+Load the constraint index:
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
-This includes the **Constraint Loading Protocol** — you MUST load both the domain skill AND ai-anti-patterns before revising prose.
+Then load these phase-specific files:
+
+**Constraints:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before revising prose**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/post-subagent-enforcement.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/writing-stop-triggers.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/deviation-rules.md`
+
+**Conventions:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
 
 ## Session Resume Detection
 
@@ -308,7 +328,7 @@ The midpoint cannot rely on constraints loaded during earlier phases. Prior cont
 
 ### Deviation Rules (Revise Phase)
 
-When applying fixes reveals unplanned issues, follow the deviation rules from `writing-common-constraints.md`:
+When applying fixes reveals unplanned issues, follow the deviation rules from `constraints/deviation-rules.md`:
 
 - **R1 (Factual):** Fix reveals a factual error elsewhere → auto-fix: correct and track
 - **R2 (Evidence):** Fix requires additional evidence not in the outline → auto-fix: add citation and track

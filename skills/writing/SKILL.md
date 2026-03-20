@@ -10,9 +10,11 @@ allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 
 ## Shared Enforcement
 
-Before any work, load the common constraints that apply to ALL writing phases:
+Load the constraint index for the writing workflow:
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
+
+**Router loads index only.** Phase skills load specific atomic files relevant to their phase.
 
 ## Session Resume Detection
 

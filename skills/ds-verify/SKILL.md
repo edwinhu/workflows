@@ -28,7 +28,12 @@ Final verification with reproducibility checks and user acceptance interview.
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION. This is not negotiable.**
 
-**Load shared enforcement first.** Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md`.
+**Load shared enforcement first.** Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md` for the full constraint index.
+
+For verification phase, load these specific constraints:
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deferred-verification.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
 
 Before claiming analysis is complete, you MUST:
 1. RE-RUN - Execute analysis fresh (not cached results)

@@ -47,22 +47,36 @@ writing-review MUST NOT start until `.planning/VALIDATION.md` confirms all PRECI
 
 ## Purpose
 
-This phase sits between writing-draft and writing-review. It runs the **same constraint checks** that review uses — from `writing-common-constraints.md`, the domain skill, and `ai-anti-patterns` — but earlier, so gaps are caught before review begins. Review should NOT be discovering missing claims, broken expansion hierarchy, or AI writing smell.
+This phase sits between writing-draft and writing-review. It runs the **same constraint checks** that review uses — from the writing constraints, the domain skill, and `ai-anti-patterns` — but earlier, so gaps are caught before review begins. Review should NOT be discovering missing claims, broken expansion hierarchy, or AI writing smell.
 
 **The constraint checks ARE the validation.** This phase doesn't invent new checks — it systematically runs the existing ones against every draft section.
+
+## Shared Enforcement
+
+Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
+
+Then load these phase-specific files:
+
+**Constraints:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/constraint-loading-protocol.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+
+**Conventions:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
 
 ## Constraint Checks to Run
 
 Load and run checks from three sources:
 
-### Source 1: writing-common-constraints.md
+### Source 1: Writing Constraints (atomic files loaded above)
 
-Discover and read:
-```bash
-${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md
-```
-
-Run these checks from the constraints file:
+Run these checks from the constraint files:
 
 | Check | From Constraint | What to Verify |
 |-------|----------------|----------------|
@@ -90,7 +104,7 @@ Invoke `Skill(skill="workflows:ai-anti-patterns")` and check each draft section 
 ## The Process
 
 ```
-1. LOAD constraint checks (writing-common-constraints + domain skill + ai-anti-patterns)
+1. LOAD constraint checks (atomic constraint files + domain skill + ai-anti-patterns)
 2. READ .planning/PRECIS.md — extract all claims
 3. READ .planning/OUTLINE.md — map claims to sections
 4. For each claim: READ the corresponding draft in drafts/

@@ -31,9 +31,28 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 ## Shared Enforcement
 
-Before any work, load the common constraints that apply to ALL writing phases:
+Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`.
+Then load these phase-specific files:
+
+**Constraints:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/deviation-rules.md`
+
+**Conventions:**
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
 
 ## Outline Flowchart (This IS the Spec)
 
@@ -278,7 +297,7 @@ When ALL sections from OUTLINE.md have detailed outlines in `outlines/`, proceed
 
 ## Deviation Rules (Outline Phase)
 
-When outlining reveals unplanned issues, follow the deviation rules from `writing-common-constraints.md`:
+When outlining reveals unplanned issues, follow the deviation rules from `constraints/deviation-rules.md`:
 
 - **R1 (Factual):** Source contradicts a PRECIS claim → auto-fix: note the contradiction, adjust the outline point
 - **R2 (Evidence):** No source found for an outline point → auto-fix: flag as evidence gap, search for sources
@@ -289,7 +308,7 @@ Track deviations per section outline. Each section summary should include: **Dev
 
 ## Gate: Exit Outline Phase
 
-Before proceeding to draft phase (see `writing-common-constraints.md` for the full 6-step gate including SUMMARY):
+Before proceeding to draft phase (see `conventions/gate-function-standard.md` for the full 6-step gate including SUMMARY):
 
 1. **IDENTIFY**: What proves outlining is complete?
    - Every section in OUTLINE.md has a corresponding file in `outlines/`

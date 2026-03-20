@@ -227,7 +227,16 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md`.
+Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md` for the full constraint index.
+
+For implementation phase, load these specific constraints:
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deferred-verification.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-data-quality-checks.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-topic-change-protocol.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-escape-patterns.md`
+Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deviation-rules.md`
 
 ```
 Read(".planning/PLAN.md")

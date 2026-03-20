@@ -59,8 +59,8 @@ Each task in PLAN.md should have a `type` field. Detect and route accordingly:
 
 | Task Type | Agent | Constraints | Example Tasks |
 |-----------|-------|-------------|---------------|
-| `engineering` | `workflows:ds-engineer` | ds-common-constraints.md + ds-engineering-constraints.md | ETL, merge, clean, transform, pipeline, schema, join |
-| `analysis` | `workflows:ds-analyst` | ds-common-constraints.md + ds-analysis-constraints.md | regression, test, model, visualize, estimate, summarize |
+| `engineering` | `workflows:ds-engineer` | ds-engineering-constraints.md index + atomic E1-E5 files | ETL, merge, clean, transform, pipeline, schema, join |
+| `analysis` | `workflows:ds-analyst` | ds-analysis-constraints.md index + atomic A1-A7 files | regression, test, model, visualize, estimate, summarize |
 
 **Detection heuristic (when type field is missing):**
 
@@ -111,7 +111,14 @@ This task requires:
 - Output-first verification (mandatory)
 - SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
 - Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
-- Analysis constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-analysis-constraints.md` for analysis-specific checks (statistical validity, p-hacking prevention, robustness, sample selection, SE specification)
+- Analysis constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-analysis-constraints.md` for the constraint index, then load:
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-statistical-validity.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-p-hacking-prevention.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-robustness-checks.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-sample-selection.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-standard-error-spec.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-visualization-integrity.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules-analysis.md`
 
 ## REQUIRED TOOLS
 
@@ -202,7 +209,12 @@ This task requires:
 - Output-first verification (mandatory)
 - SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
 - Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
-- Engineering constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-engineering-constraints.md` for engineering-specific checks (determinism, schema validation, join audits, idempotency)
+- Engineering constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-engineering-constraints.md` for the constraint index, then load:
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-determinism.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-schema-contracts.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-join-audits.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-idempotency.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-error-handling.md`
 
 ## REQUIRED TOOLS
 

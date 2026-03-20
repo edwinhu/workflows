@@ -1,0 +1,41 @@
+---
+name: data-quality-checks
+description: Canonical DQ1-DQ6, M1, R1 check definitions — load from ds-checks.md, never inline
+applies-to: [ds-fix, ds-implement, ds-review, ds-verify, ds-delegate]
+---
+
+## Rule
+
+All skills that evaluate data quality MUST Read() the canonical checks file at `skills/ds-implement/references/ds-checks.md` to ensure identical DQ1-DQ6, M1, R1 definitions. Do not inline check definitions — they will drift.
+
+## Rationale
+
+**Why this exists** — When check definitions are inlined in multiple skills, each skill's version drifts independently. ds-review runs DQ3 one way while ds-fix runs it another. The canonical file is the single source of truth.
+
+## Examples
+
+### Correct
+```
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md`
+# Now DQ1-DQ6, M1, R1 are loaded from canonical source
+```
+
+### Incorrect
+```
+# Inlining check definitions in the skill
+DQ1: Check for nulls in key columns
+DQ2: Check for duplicates
+# These will drift from the canonical definitions
+```
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I remember the check definitions" | Your memory drifts. The canonical file doesn't. | Read the file. |
+| "It's faster to inline them" | Faster to write, slower to maintain. Drift is invisible until it causes wrong results. | Read the canonical file. |
+
+## Red Flags
+
+- **"I know what DQ3 checks for"** → STOP. Read the canonical file.
+- **"I'll just add a quick quality check"** → STOP. Use the standard DQ1-DQ6 definitions.
