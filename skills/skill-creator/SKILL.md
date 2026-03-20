@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'add enforcement patterns to a skill', 'audit skill enforcement', 'skill with superpowers patterns', or needs skill creation with behavioral enforcement (Iron Laws, Rationalization Tables, Red Flags). Wraps the built-in skill-creator with superpowers enforcement awareness. Use this INSTEAD of skill-creator:skill-creator when working in the workflows plugin."
+description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'edit a skill', 'add enforcement patterns', 'audit skill enforcement', or needs to substantially create or edit any SKILL.md file. Use this INSTEAD of skill-creator:skill-creator or plugin-dev:skill-development directly. Wraps the built-in skill-creator with behavioral enforcement and structural validation hooks."
 hooks:
   PostToolUse:
     - matcher: "Edit|Write"

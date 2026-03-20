@@ -43,10 +43,11 @@
 
 ## Required Skills
 
-**Always use these skills when working on this project:**
+**Always use these wrapper skills (they invoke the built-ins internally):**
 
-- `/plugin-dev:create-plugin` - For plugin creation workflow
-- `/plugin-dev:skill-development` - For creating or updating skills
+- `/workflows:plugin-creator` - For plugin creation/editing (wraps `plugin-dev:create-plugin`)
+- `/workflows:skill-creator` - For skill creation/editing (wraps `skill-creator:skill-creator`)
+- `/workflows:workflow-creator` - For workflow creation/editing/auditing
 - `/plugin-dev:hook-development` - For creating or working with hooks
 
 ## Related Skills
