@@ -462,6 +462,108 @@ When multiple skills operate on the same domain, they need consistent enforcemen
 
 **Constraint Propagation Rule:** When a new constraint is added to ANY individual skill in the family, check: does this constraint apply to other skills? If yes → add to the shared constraints file, not the individual skill. If uncertain → add to shared (over-inclusion is cheaper than drift). Mark each constraint in common-constraints.md with an `**Applies to:**` annotation listing which skills use it.
 
+#### Atomic Reference File Architecture
+
+When a shared constraints or conventions file grows beyond ~15 sections, refactor to an **atomic file architecture**:
+
+```
+references/
+├── common-constraints.md          → TOC/index (links + 1-line descriptions)
+├── typst-conventions.md           → TOC/index (links + 1-line descriptions)
+├── constraints/                   → atomic constraint files
+│   ├── source-first-fixes.md
+│   ├── verbatim-quotes.md
+│   └── ...
+├── conventions/                   → atomic convention files
+│   ├── bullet-spacing.md
+│   ├── fletcher-diagrams.md
+│   └── ...
+```
+
+**Two categories of reference files:**
+
+| Category | Directory | Contains | Examples |
+|----------|-----------|----------|----------|
+| **Constraints** | `constraints/` | Behavioral rules — Iron Laws, process rules, "never do X" | source-first-fixes, verbatim-quotes, no-generic-subtitles |
+| **Conventions** | `conventions/` | Formatting/structural patterns — "how to format X" | bullet-spacing, fletcher-diagrams, image-centering |
+
+**Each atomic file is self-contained** with this structure:
+
+```markdown
+---
+name: constraint-name
+description: One-line trigger description
+applies-to: [skill-1, skill-2, skill-3]
+---
+
+## Rule
+
+The constraint/convention stated clearly.
+
+## Rationale
+
+**Why this exists** — cite the real incident or failure mode.
+
+## Examples
+
+### Correct
+[Example of correct behavior]
+
+### Incorrect
+[Example of incorrect behavior]
+
+## Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| ... | ... | ... |
+
+## Red Flags
+
+- **"..."** → STOP. [Why this thought is wrong]
+```
+
+**The parent index file** (`common-constraints.md` or `typst-conventions.md`) becomes a pure TOC:
+
+```markdown
+# Common Constraints
+
+Behavioral rules for the [domain] skill family. Each constraint is self-contained in its own file.
+
+## Index
+
+| Constraint | File | Description |
+|------------|------|-------------|
+| Source-First Fixes | [constraints/source-first-fixes.md](constraints/source-first-fixes.md) | Never edit generated output — fix the source |
+| Verbatim Quotes | [constraints/verbatim-quotes.md](constraints/verbatim-quotes.md) | Quotes must match source exactly |
+| ... | ... | ... |
+```
+
+**When to use atomic vs monolithic:**
+
+| Condition | Architecture |
+|-----------|-------------|
+| ≤15 sections in shared file | Monolithic — one file is fine |
+| >15 sections OR multiple distinct categories | Atomic — split into individual files |
+| Skills need different subsets of constraints | Atomic — skills `Read()` only the files they need |
+| Constraints have complex examples/rationale | Atomic — keeps each file focused and complete |
+
+**How skills reference atomic files:**
+
+Skills can reference constraints at two granularity levels:
+1. **Load the index** — `Read()` the parent TOC to get the full list, then load specific files as needed
+2. **Load specific files** — `Read()` only the atomic files relevant to the current phase
+
+```
+# In a skill's SKILL.md:
+Read `${CLAUDE_SKILL_DIR}/../../references/common-constraints.md` for the full constraint index.
+For this phase, load these specific constraints:
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/source-first-fixes.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/verbatim-quotes.md`
+```
+
+**Constraint Propagation Rule (atomic version):** When adding a new constraint, create a new atomic file in the appropriate directory (`constraints/` or `conventions/`), add a row to the parent index, and set the `applies-to` frontmatter. Over-inclusion beats drift — when uncertain whether a constraint applies to a skill, include it.
+
 #### Layer 2: Hook Coverage (Structural Enforcement)
 
 1. For each sibling skill, extract the `hooks:` block from YAML frontmatter
@@ -565,6 +667,19 @@ When multiple skills in the same plugin operate on the same domain, their common
 
 **When to extract:** When you're creating the second skill in a domain, ask: "What enforcement should every skill in this domain share?" Extract that to the common file from the start. Don't wait for drift to reveal the gap.
 
+**When to go atomic:** When the shared file grows beyond ~15 sections or mixes distinct categories (behavioral rules vs formatting patterns), refactor to atomic architecture (see Step 4b: Atomic Reference File Architecture). The parent file becomes a TOC; each constraint/convention gets its own self-contained file. Skills then `Read()` only the specific atomic files they need — reducing context load and making enforcement modular.
+
+**Midpoint constraint loading with atomic files:** The midpoint must load every constraint it needs before touching the work. With atomic files, this means loading the specific constraint files relevant to the current phase — not the entire index. The index tells you WHAT exists; the atomic files contain the actual enforcement.
+
+```
+/writing-revise loads:
+  1. .planning/ACTIVE_WORKFLOW.md    → workflow state
+  2. references/common-constraints.md → index (scan for relevant constraints)
+  3. references/constraints/verbatim-quotes.md → specific constraint needed for revision
+  4. references/constraints/source-first-fixes.md → specific constraint needed for revision
+  THEN: check the draft against loaded constraints
+```
+
 #### Session Handoff Support
 
 Both entry points should support **session handoff** via `.planning/HANDOFF.md` — a structured pause/resume mechanism for when work spans multiple sessions.
@@ -596,7 +711,12 @@ Create the following artifacts:
 1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
 2. **Midpoint command** (`skills/[name]-fix/SKILL.md` or `skills/[name]-debug/SKILL.md`) — self-contained re-entry
 3. **Phase skills** (`skills/[name]-[phase]/SKILL.md`) — one per phase, internal only
-4. **Wire up transitions** — each phase ends by reading the next phase's skill
+4. **Shared reference files** — if >15 constraints/conventions identified, use atomic architecture:
+   - `references/common-constraints.md` — TOC/index linking to atomic files
+   - `references/constraints/*.md` — one file per behavioral rule (Iron Laws, process rules)
+   - `references/conventions/*.md` — one file per formatting/structural pattern (if applicable)
+   - If ≤15 total, a single monolithic `references/common-constraints.md` is fine
+5. **Wire up transitions** — each phase ends by reading the next phase's skill
 
 #### State Folder Convention
 
@@ -751,7 +871,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Could a user get inconsistent enforcement depending on which skill they invoke?
 
 **Cross-skill consistency (three layers):**
-- **Constraints:** Do all sibling skills Read() the same shared constraints file? Are constraints that apply to multiple skills in the shared file (not inlined in individual skills)?
+- **Constraints:** Do all sibling skills Read() the same shared constraints file? Are constraints that apply to multiple skills in the shared file (not inlined in individual skills)? If the shared file has >15 sections or mixes behavioral rules with formatting patterns, is it refactored to atomic architecture (`constraints/` + `conventions/` subdirectories with self-contained files)?
 - **Hooks:** Do all sibling skills declare the same hooks in their YAML frontmatter? If a hook is present in some siblings but not others, is the gap justified? (Produce a Hook Coverage Matrix: skills × hooks)
 - **Script wiring:** Is every check script referenced in all three layers: (a) hook frontmatter, (b) batch orchestrator, (c) verification-checks definition? (Produce a Script Wiring Matrix: scripts × invocation points)
 
@@ -1049,6 +1169,9 @@ Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
 | Missing Red Flags | 3-5 wrong-path indicators |
 | Missing Drive-Aligned Framing | 5-drive table (helpfulness > competence > efficiency > approval > honesty) |
 | No shared enforcement across skill family | Extract to `references/common-constraints.md`; all domain skills Read() it |
+| Monolithic shared file >15 sections | Refactor to atomic architecture: `constraints/` and/or `conventions/` subdirs; parent file becomes TOC/index; each atomic file self-contained with rule + rationale + examples + rationalization table + red flags |
+| Skills loading entire monolithic file when they need 3 constraints | Switch to atomic: skills `Read()` only the specific constraint files they need |
+| Mixed behavioral rules and formatting patterns in one file | Split into `constraints/` (behavioral/Iron Laws) and `conventions/` (formatting/structural patterns) |
 | Hooks inconsistent across skill family | Produce Hook Coverage Matrix (skills × hooks); add missing hooks to skill frontmatter; justify intentional gaps |
 | New check script not wired into batch orchestrator | Add script invocation to batch orchestrator (check-all.sh equivalent); update verification-checks.md |
 | Constraint added to individual skill but applies to family | Move to common-constraints.md with `**Applies to:**` annotation; remove from individual skill |
@@ -1175,6 +1298,8 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Adding a hook to one skill without checking siblings | Hook fires in slides-edit but not lecture-prep. The user gets different enforcement depending on which skill they invoke. Silent — no error, just missing enforcement. | Produce Hook Coverage Matrix. Add hook to all relevant siblings or justify the gap. |
 | Adding a check script without wiring it into the batch orchestrator | Script exists, passes when run manually, but never fires during the verification gate. False confidence — the gate "passes" but the check never ran. | Wire into batch orchestrator AND hook frontmatter AND verification-checks.md. All three layers. |
 | Adding a constraint to an individual skill that should be shared | Constraint works in lecture-prep but notes-edit doesn't have it. User discovers the gap when notes-edit ships work that lecture-prep would have caught. | Add to common-constraints.md with `**Applies to:**` annotation. Over-inclusion beats drift. |
+| Growing a monolithic constraints file past 20+ sections | Every skill loads 450+ lines of constraints when it needs 5. Context bloat, slow loads, hard to maintain. Each edit risks breaking unrelated sections. | Refactor to atomic files. Parent becomes TOC. Each constraint self-contained. Skills load only what they need. |
+| Mixing behavioral rules and formatting patterns in one file | "Don't edit generated output" (constraint) and "center images with #align" (convention) serve different purposes, apply to different phases, and confuse maintainers. | Separate into `constraints/` (behavioral) and `conventions/` (formatting). |
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 | No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
 | No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
@@ -1204,6 +1329,8 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | "This hook only applies to slides-edit, not lecture-prep" | Hooks enforce mechanical constraints. If the constraint applies to the domain, it applies to ALL skills in the domain. A hook that fires in one skill but not its sibling creates inconsistent enforcement with no visible warning. | Add to all sibling skills or justify in the Hook Coverage Matrix. |
 | "The script works when I run it manually" | Manual execution proves the script works. It doesn't prove the script runs automatically. An unwired script is enforcement theater — it exists but never fires. | Wire into all three layers: hook frontmatter, batch orchestrator, check definitions. |
 | "I'll add this constraint to common-constraints.md later" | Later never comes. The constraint lives in one skill, the other skills ship without it, and nobody notices until the user gets inconsistent results. | Add to shared file NOW. Over-inclusion is cheaper than drift. |
+| "One big constraints file is simpler than many small files" | Simpler to create, harder to maintain. At 20+ sections, every edit is a merge risk, every skill loads 400+ lines it doesn't need, and nobody reads the whole thing. | Atomic files: one constraint per file, self-contained, independently loadable. |
+| "Splitting constraints into files is premature" | If you have 15+ sections or mixed categories, the split is overdue. The course-materials plugin hit 453 lines / 20 sections before refactoring. | Split when >15 sections or when behavioral and formatting rules coexist. |
 | "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
 | "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
 | "The reviewer can just fix small issues it finds" | That bypasses plan-execute-verify. The "fix" was never planned, never reviewed, never tested. Now you have unverified code in production. | Restrict verifiers to read-only tools. Issues go back to the executor. |
