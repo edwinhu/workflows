@@ -228,28 +228,223 @@ def get_project_task_list_id() -> str:
     return cwd.name
 
 
-def check_plan_exists() -> str:
-    """Check if PLAN.md exists and return continuation message."""
-    # Check both .planning/ (new) and .claude/ (legacy) locations
-    planning_path = Path.cwd() / '.planning' / 'PLAN.md'
-    legacy_path = Path.cwd() / '.claude' / 'PLAN.md'
+def extract_plan_progress(content: str) -> dict:
+    """Extract task progress from PLAN.md by counting checkboxes.
 
-    if planning_path.exists():
-        return """
-[PLAN.md DETECTED]
+    Returns dict with completed, total, current_task (first unchecked), and
+    a list of recent completed tasks for context.
+    """
+    completed = 0
+    total = 0
+    current_task = None
+    recent_completed = []
 
-An implementation plan exists at `.planning/PLAN.md`.
-Read it to understand the current task state before continuing.
-"""
-    elif legacy_path.exists():
-        return """
-[PLAN.md DETECTED]
+    for line in content.split('\n'):
+        stripped = line.strip()
+        if stripped.startswith('- [x]') or stripped.startswith('- [X]'):
+            total += 1
+            completed += 1
+            # Keep last 2 completed for context
+            task_text = stripped[5:].strip()
+            recent_completed.append(task_text)
+            recent_completed = recent_completed[-2:]
+        elif stripped.startswith('- [ ]'):
+            total += 1
+            if current_task is None:
+                current_task = stripped[5:].strip()
 
-An implementation plan exists at `.claude/PLAN.md`.
-Read it to understand the current task state before continuing.
-"""
+    return {
+        'completed': completed,
+        'total': total,
+        'current_task': current_task,
+        'recent_completed': recent_completed,
+    }
 
-    return ""
+
+def extract_first_heading_and_summary(content: str, max_lines: int = 5) -> str:
+    """Extract the first heading and a few lines of content for a brief summary."""
+    lines = content.split('\n')
+    # Skip frontmatter
+    in_frontmatter = False
+    body_lines = []
+    for line in lines:
+        if line.strip() == '---':
+            if not in_frontmatter:
+                in_frontmatter = True
+                continue
+            else:
+                in_frontmatter = False
+                continue
+        if in_frontmatter:
+            continue
+        body_lines.append(line)
+
+    # Return first max_lines non-empty lines
+    result = []
+    for line in body_lines:
+        if line.strip():
+            result.append(line)
+            if len(result) >= max_lines:
+                break
+    return '\n'.join(result)
+
+
+def build_in_progress_section() -> str:
+    """Build a consolidated in-progress work briefing from .planning/ state.
+
+    Instead of separate thin notifications, this inlines enough context
+    for Claude to orient immediately without extra tool calls.
+    Inspired by GSD's approach: inline state into dispatch prompt.
+    """
+    # Discover all planning files
+    planning_dir = Path.cwd() / '.planning'
+    legacy_dir = Path.cwd() / '.claude'
+
+    # Check which directory has state
+    if planning_dir.exists() and any(planning_dir.iterdir()):
+        state_dir = planning_dir
+        state_prefix = '.planning'
+    elif legacy_dir.exists() and (legacy_dir / 'PLAN.md').exists():
+        state_dir = legacy_dir
+        state_prefix = '.claude'
+    else:
+        return ""
+
+    # Inventory: what state files exist?
+    state_files = []
+    key_files = ['PLAN.md', 'SPEC.md', 'ACTIVE_WORKFLOW.md', 'HANDOFF.md',
+                 'PRECIS.md', 'OUTLINE.md', 'VALIDATION.md', 'REVIEW.md',
+                 'REVIEW_STATE.md', 'PHASE_SUMMARY.md']
+    for name in key_files:
+        path = state_dir / name
+        if path.exists():
+            state_files.append(name)
+
+    # Also check for subdirectories (outlines/, drafts/)
+    subdirs = []
+    for subdir_name in ['outlines', 'drafts']:
+        subdir = state_dir / subdir_name
+        if subdir.exists() and subdir.is_dir():
+            files = list(subdir.glob('*.md'))
+            if files:
+                subdirs.append(f"{subdir_name}/ ({len(files)} files)")
+
+    if not state_files and not subdirs:
+        return ""
+
+    lines = ["## IN-PROGRESS WORK DETECTED", ""]
+    lines.append(f"State directory: `{state_prefix}/`")
+    lines.append(f"Files: {', '.join(state_files)}")
+    if subdirs:
+        lines.append(f"Subdirs: {', '.join(subdirs)}")
+    lines.append("")
+
+    # --- Handoff (highest priority — explicit pause point) ---
+    handoff_path = state_dir / 'HANDOFF.md'
+    if handoff_path.exists():
+        try:
+            content = handoff_path.read_text()
+            fm = parse_yaml_simple(content)
+            phase_name = fm.get('phase_name', 'unknown')
+            task = fm.get('task', '?')
+            total_tasks = fm.get('total_tasks', '?')
+            last_updated = fm.get('last_updated', 'unknown')
+
+            # Extract Next Action section
+            next_action = ""
+            in_next = False
+            for line in content.split('\n'):
+                if line.strip().startswith('## Next Action'):
+                    in_next = True
+                    continue
+                if in_next:
+                    s = line.strip()
+                    if s and not s.startswith('#'):
+                        next_action = s
+                        break
+
+            lines.append("### Handoff from previous session")
+            lines.append(f"- Phase: **{phase_name}** | Task {task}/{total_tasks} | Updated: {last_updated}")
+            if next_action:
+                lines.append(f"- Next action: {next_action}")
+            lines.append(f"- Full context: `{state_prefix}/HANDOFF.md`")
+            lines.append("")
+        except Exception:
+            pass
+
+    # --- Active Workflow ---
+    workflow_path = state_dir / 'ACTIVE_WORKFLOW.md'
+    if workflow_path.exists():
+        try:
+            content = workflow_path.read_text()
+            wf = parse_yaml_simple(content)
+            wf_type = wf.get('workflow', '')
+            phase_name = wf.get('phase_name', wf.get('phase', 'unknown'))
+
+            if wf_type:
+                lines.append(f"### Active workflow: **{wf_type}** — phase: **{phase_name}**")
+
+                if wf_type == 'writing':
+                    style = wf.get('style', 'general')
+                    current_part = wf.get('current_part', '')
+                    lines.append(f"- Style: {style}")
+                    if current_part:
+                        lines.append(f"- Current part: {current_part}")
+                    lines.append("- Resume: `/writing-revise`")
+                elif wf_type in ('dev', 'ds'):
+                    lines.append(f"- Resume: `/{wf_type}` or `/{wf_type}-debug`")
+
+                lines.append("")
+        except Exception:
+            pass
+
+    # --- Plan progress ---
+    plan_path = state_dir / 'PLAN.md'
+    if plan_path.exists():
+        try:
+            content = plan_path.read_text()
+            progress = extract_plan_progress(content)
+
+            if progress['total'] > 0:
+                pct = int(100 * progress['completed'] / progress['total'])
+                lines.append(f"### Plan progress: {progress['completed']}/{progress['total']} tasks ({pct}%)")
+                if progress['recent_completed']:
+                    lines.append(f"- Last completed: {progress['recent_completed'][-1]}")
+                if progress['current_task']:
+                    lines.append(f"- **Next task: {progress['current_task']}**")
+                else:
+                    lines.append("- All tasks completed")
+            else:
+                # Plan exists but no checkboxes — show first few lines
+                summary = extract_first_heading_and_summary(content, max_lines=3)
+                lines.append("### Plan exists (no checkbox tasks)")
+                if summary:
+                    lines.append(f"```\n{summary}\n```")
+
+            lines.append(f"- Full plan: `{state_prefix}/PLAN.md`")
+            lines.append("")
+        except Exception:
+            pass
+
+    # --- Spec summary ---
+    spec_path = state_dir / 'SPEC.md'
+    if spec_path.exists():
+        try:
+            content = spec_path.read_text()
+            summary = extract_first_heading_and_summary(content, max_lines=3)
+            if summary:
+                lines.append("### Spec")
+                lines.append(f"```\n{summary}\n```")
+                lines.append(f"- Full spec: `{state_prefix}/SPEC.md`")
+                lines.append("")
+        except Exception:
+            pass
+
+    # --- Action guidance ---
+    lines.append("**Read the full state files before taking action.** Do not ask the user to summarize — the context is in the files.")
+    lines.append("")
+
+    return "\n".join(lines)
 
 
 def parse_yaml_simple(content: str) -> dict:
@@ -304,136 +499,6 @@ def parse_yaml_simple(content: str) -> dict:
 
     return result
 
-
-def check_active_workflow() -> str:
-    """Check for active workflow and return context/instructions.
-
-    Reads ACTIVE_WORKFLOW.md from .planning/ (new) or .claude/ (legacy)
-    and returns appropriate context based on workflow type (dev, ds, or writing).
-    """
-    # Check both .planning/ (new) and .claude/ (legacy) locations
-    workflow_path = Path.cwd() / '.planning' / 'ACTIVE_WORKFLOW.md'
-    if not workflow_path.exists():
-        workflow_path = Path.cwd() / '.claude' / 'ACTIVE_WORKFLOW.md'
-    if not workflow_path.exists():
-        return ""
-
-    try:
-        content = workflow_path.read_text()
-        workflow = parse_yaml_simple(content)
-    except Exception as e:
-        print(f"Warning: Failed to parse ACTIVE_WORKFLOW.md: {e}", file=sys.stderr)
-        return ""
-
-    workflow_type = workflow.get('workflow', '')
-    if not workflow_type:
-        return ""
-
-    plugin_root = os.environ.get('CLAUDE_PLUGIN_ROOT', '') or str(get_plugin_root())
-
-    if workflow_type == 'writing':
-        style = workflow.get('style', 'general')
-        phase = workflow.get('phase', 'draft')
-        current_part = workflow.get('current_part', '')
-        skill_stack = workflow.get('skill_stack', ['writing'])
-
-        # Build skill read instructions
-        skill_reads = []
-        for skill in skill_stack:
-            if plugin_root:
-                skill_reads.append(f'Read("{plugin_root}/skills/{skill}/SKILL.md")')
-            else:
-                skill_reads.append(f'Read the {skill} skill')
-
-        part_info = f"\n   Current part: {current_part}" if current_part else ""
-
-        return f"""
-[ACTIVE WRITING WORKFLOW]
-
-Style: {style}
-Phase: {phase}{part_info}
-
-Re-read the writing rules to stay on track:
-{chr(10).join('- ' + r for r in skill_reads)}
-
-Commands:
-- /writing-revise - Apply review fixes, polish, and complete workflow
-"""
-
-    elif workflow_type in ('dev', 'ds'):
-        phase_name = workflow.get('phase_name', 'unknown')
-        active_skill = workflow.get('active_skill', '')
-
-        # Build read instruction
-        if active_skill:
-            if '${CLAUDE_PLUGIN_ROOT}' in active_skill and plugin_root:
-                active_skill = active_skill.replace('${CLAUDE_PLUGIN_ROOT}', plugin_root)
-            read_instruction = f'Read("{active_skill}")'
-        else:
-            read_instruction = f'Read the {phase_name} phase skill'
-
-        return f"""
-[ACTIVE {workflow_type.upper()} WORKFLOW]
-
-Phase: {phase_name}
-
-Re-read the phase constraints:
-- {read_instruction}
-
-The workflow state is tracked in .claude/ACTIVE_WORKFLOW.md.
-"""
-
-    return ""
-
-
-def check_handoff_exists() -> str:
-    """Check if a session handoff file exists from a previous session.
-
-    Reads .planning/HANDOFF.md frontmatter and returns a notification
-    so the user is aware before starting work.
-    """
-    handoff_path = Path.cwd() / '.planning' / 'HANDOFF.md'
-    if not handoff_path.exists():
-        return ""
-
-    try:
-        content = handoff_path.read_text()
-        frontmatter = parse_yaml_simple(content)
-    except Exception as e:
-        print(f"Warning: Failed to read HANDOFF.md: {e}", file=sys.stderr)
-        return ""
-
-    phase_name = frontmatter.get('phase_name', 'unknown')
-    task = frontmatter.get('task', '?')
-    total_tasks = frontmatter.get('total_tasks', '?')
-    last_updated = frontmatter.get('last_updated', 'unknown')
-
-    # Extract the "Next Action" section content (first line after the heading)
-    next_action = ""
-    in_next_action = False
-    for line in content.split('\n'):
-        if line.strip().startswith('## Next Action'):
-            in_next_action = True
-            continue
-        if in_next_action:
-            stripped = line.strip()
-            if stripped and not stripped.startswith('#'):
-                next_action = stripped
-                break
-
-    next_action_line = f"\n   Next action: {next_action}" if next_action else ""
-
-    return f"""
-[SESSION HANDOFF DETECTED]
-
-A previous session left a handoff at `.planning/HANDOFF.md`.
-   Phase: {phase_name}
-   Task: {task} of {total_tasks}
-   Last updated: {last_updated}{next_action_line}
-
-Run `/dev` to resume from the handoff or start fresh.
-Read `.planning/HANDOFF.md` for full context.
-"""
 
 
 def check_pending_patterns() -> str:
@@ -502,20 +567,15 @@ def main():
     env_section = build_env_section(env_context, persisted_vars)
     using_skills = load_using_skills_content()
 
-    # Check for existing PLAN.md
-    plan_section = check_plan_exists()
-
-    # Check for active workflow (dev, ds, or writing)
-    workflow_section = check_active_workflow()
-
-    # Check for session handoff from previous session
-    handoff_section = check_handoff_exists()
+    # Check for in-progress work (.planning/ state files)
+    # Consolidates plan, workflow, and handoff detection into one briefing
+    in_progress_section = build_in_progress_section()
 
     # Check for pending pattern-capture suggestions from previous session
     pattern_section = check_pending_patterns()
 
     # Combine context
-    combined_context = env_section + "\n" + handoff_section + "\n" + workflow_section + "\n" + plan_section + "\n" + pattern_section + "\n" + using_skills
+    combined_context = env_section + "\n" + in_progress_section + "\n" + pattern_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {
