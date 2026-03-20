@@ -19,7 +19,7 @@ user-invocable: false
 
 This skill covers inspecting executed `.ipynb` files to debug runtime errors, regardless of how the notebook was created (marimo, jupytext, or plain Jupyter).
 
-**If debugging within a /ds workflow**, first read `.claude/LEARNINGS.md` for pipeline context and `.claude/PLAN.md` for task expectations.
+**If debugging within a /ds workflow**, first read `.planning/LEARNINGS.md` for pipeline context and `.planning/PLAN.md` for task expectations.
 
 ## Verification Enforcement
 

@@ -45,7 +45,7 @@ AskUserQuestion(questions=[{
 ```
 
 4. **If "Resume from handoff":**
-   - Read `.claude/ACTIVE_WORKFLOW.md` to get the recorded phase
+   - Read `.planning/ACTIVE_WORKFLOW.md` to get the recorded phase
    - Read `.planning/SPEC.md` and `.planning/PLAN.md` if they exist
    - Skip directly to the recorded phase by discovering and reading the appropriate phase skill:
      ```bash
@@ -77,7 +77,7 @@ brainstorm → explore    → clarify   → design     → implement   → valid
 
 ## Workflow Initialization
 
-Create `.claude/ACTIVE_WORKFLOW.md` to track workflow state:
+Create `.planning/ACTIVE_WORKFLOW.md` to track workflow state:
 
 ```yaml
 ---

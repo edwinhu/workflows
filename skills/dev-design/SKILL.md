@@ -184,7 +184,7 @@ AskUserQuestion(questions=[{
 
 3. **Write PLAN.md for ONLY the chosen feature**
 
-4. **Document remaining features** in `.claude/BACKLOG.md`:
+4. **Document remaining features** in `.planning/BACKLOG.md`:
    ```markdown
    # Feature Backlog
 
@@ -430,7 +430,7 @@ Design complete when:
 
 **After this feature is implemented and PR'd:**
 
-If multiple features were identified in step 4, check `.claude/BACKLOG.md` for remaining features:
+If multiple features were identified in step 4, check `.planning/BACKLOG.md` for remaining features:
 1. View remaining features in BACKLOG.md
 2. Invoke `/dev` again to tackle the next feature
 3. Repeat until all features are complete

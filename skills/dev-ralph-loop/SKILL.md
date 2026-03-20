@@ -97,7 +97,7 @@ Task(subagent_type="general-purpose", prompt="""
 [TASK-SPECIFIC INSTRUCTIONS]
 
 Context:
-- Read .claude/LEARNINGS.md for prior attempts
+- Read .planning/LEARNINGS.md for prior attempts
 - Read .planning/SPEC.md for requirements
 - Read .planning/PLAN.md for approach
 

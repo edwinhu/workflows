@@ -26,9 +26,9 @@ PLAN (this skill)
 LOOP (ralph-loop infrastructure)
   ↓
   ┌─────────────────────────────────────────────┐
-  │ AUDIT: Fresh subagent scores artifact        │
-  │   → Produces scored findings in AUDIT.md     │
-  │   → Records score (0-10) in SCORES.md       │
+  │ AUDIT: Fresh subagent scores artifact            │
+  │   → Produces scored findings in .planning/AUDIT.md     │
+  │   → Records score (0-10) in .planning/SCORES.md       │
   │                                              │
   │ DECIDE: Check score against threshold        │
   │   → Score >= 9.5? → DONE (output promise)   │
@@ -127,9 +127,13 @@ Each scorer has a specific audit method that ensures independence:
 
 ## Step 2: Initialize State Files
 
-Create two state files before starting the loop:
+Create the `.planning/` directory and two state files before starting the loop:
 
-**AUDIT.md** — current audit findings (overwritten each iteration):
+```bash
+mkdir -p .planning
+```
+
+**`.planning/AUDIT.md`** — current audit findings (overwritten each iteration):
 ```markdown
 # Audit Findings
 
@@ -143,7 +147,7 @@ Create two state files before starting the loop:
 | 1 | HIGH | ... | ... | ... |
 ```
 
-**SCORES.md** — score history across iterations (append-only):
+**`.planning/SCORES.md`** — score history across iterations (append-only):
 ```markdown
 # Score History
 
@@ -196,7 +200,7 @@ Do NOT soften findings. Do NOT say "overall good."
 """, subagent_type="general-purpose")
 ```
 
-After all audit subagents return, compile findings into AUDIT.md and compute the score:
+After all audit subagents return, compile findings into `.planning/AUDIT.md` and compute the score:
 
 **Scoring:** The auditor scores the artifact 0-10 across the selected scoring surfaces.
 
@@ -209,11 +213,11 @@ The score reflects compliance rate: 9.5/10 = 95% of checkable items pass. For ch
 | 8.0 | 80% — several items need fixing |
 | < 7.0 | Major gaps — significant work needed |
 
-Record in SCORES.md.
+Record in `.planning/SCORES.md`.
 
 **Phase B: Decide**
 
-Read SCORES.md. Check against threshold:
+Read `.planning/SCORES.md`. Check against threshold:
 
 | Condition | Action |
 |-----------|--------|
@@ -223,7 +227,7 @@ Read SCORES.md. Check against threshold:
 
 **Phase C: Fix**
 
-Address findings from AUDIT.md, prioritized by severity:
+Address findings from `.planning/AUDIT.md`, prioritized by severity:
 1. Fix all CRITICAL findings first
 2. Then HIGH
 3. Then MEDIUM (if iteration budget allows)
@@ -245,7 +249,7 @@ Address findings from AUDIT.md, prioritized by severity:
 
 Not when you "feel" the artifact is good enough. Not when you're tired of iterating. Not when the remaining findings seem minor. The auditor's score decides — you don't.
 
-Read SCORES.md, check the number against the threshold, output promise only if the score meets or exceeds it.
+Read `.planning/SCORES.md`, check the number against the threshold, output promise only if the score meets or exceeds it.
 
 **Outputting the completion promise when the score is below threshold is NOT HELPFUL — the user receives a substandard artifact that fails its quality bar.**
 </EXTREMELY-IMPORTANT>
@@ -276,7 +280,7 @@ Read SCORES.md, check the number against the threshold, output promise only if t
 | Starting a ralph loop without running Step 1 | Naive loop — no audit structure | Plan the loop first |
 | Using `--completion-promise FIXED` | Honor system — agent decides when done | Use descriptive promise with threshold (e.g., `DRAFT_9_5`) |
 | Auditing your own fixes in the same context | Rubber-stamping — no independence | Spawn fresh audit subagent |
-| Outputting promise when score < threshold | Lying about quality | Read SCORES.md, check score >= threshold |
+| Outputting promise when score < threshold | Lying about quality | Read `.planning/SCORES.md`, check score >= threshold |
 | Rewriting the entire artifact instead of targeted fixes | Introduces new issues, loses original voice | Fix one finding at a time |
 | Skipping a selected scorer "to save time" | Partial audit misses entire failure categories | Run all selected scorers every iteration |
 

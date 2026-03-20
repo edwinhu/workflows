@@ -225,7 +225,7 @@ This builds deep understanding before asking clarifying questions.
 
 ### 4. Document Findings
 
-Write exploration summary (can be verbal or in `.claude/EXPLORATION.md`):
+Write exploration summary (can be verbal or in `.planning/EXPLORATION.md`):
 - Patterns discovered
 - Architecture insights
 - Dependencies identified

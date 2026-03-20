@@ -340,7 +340,7 @@ If user responds "Partially" or "No":
 **NO COMPLETION CLAIMS WITHOUT RE-VERIFICATION AFTER USER FEEDBACK. This is not negotiable.**
 
 If the user says "Partially" or "No":
-1. Track iteration in `.claude/VERIFY_STATE.md`:
+1. Track iteration in `.planning/VERIFY_STATE.md`:
    ```yaml
    iteration: 1
    max_iterations: 3
@@ -379,7 +379,7 @@ Announce: "Dev workflow complete. All 7 phases passed."
 
 The `/dev` workflow is now finished. Offer to:
 - Commit the changes
-- Clean up `.claude/` files
+- Clean up `.planning/` files
 - Start a new feature with `/dev`
 
 ---

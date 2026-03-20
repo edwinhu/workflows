@@ -30,7 +30,7 @@ Single-pass code review combining spec compliance and quality checks. Uses confi
 **Do NOT start review without test evidence.**
 
 Before reviewing, verify these preconditions:
-1. `.claude/LEARNINGS.md` contains **actual test output**
+1. `.planning/LEARNINGS.md` contains **actual test output**
 2. Tests were **run** (not just written)
 3. Test output shows **PASS** (not SKIP, not assumed)
 
@@ -72,7 +72,7 @@ Return BLOCKED if E2E evidence is missing for user-facing changes.
 Check LEARNINGS.md for test output:
 
 ```bash
-rg -E "(PASS|OK|SUCCESS|\d+ passed)" .claude/LEARNINGS.md
+rg -E "(PASS|OK|SUCCESS|\d+ passed)" .planning/LEARNINGS.md
 ```
 
 If no test output is found, STOP and return to /dev-implement.
@@ -162,7 +162,7 @@ Each reviewer receives a self-contained prompt from a reference file. **Reviewer
 **Before spawning, substitute these variables in each prompt:**
 - `CHANGED_FILES` -> output of `git diff --name-only HEAD~1` (paste actual list)
 - `SPEC_CONTEXT` -> relevant sections of .planning/SPEC.md (paste inline, do NOT reference file)
-- `LEARNINGS_TEST_OUTPUT` -> test output from .claude/LEARNINGS.md (paste actual output)
+- `LEARNINGS_TEST_OUTPUT` -> test output from .planning/LEARNINGS.md (paste actual output)
 - `PLUGIN_ROOT` -> resolved base directory for skill paths (relative to this skill's base directory)
 
 **Reviewer prompts (read, substitute variables, send as message):**
@@ -350,7 +350,7 @@ Iteration 3: Re-Review → CHANGES REQUIRED → Fix → Re-Review
          All clean? → APPROVED
 ```
 
-**Track iterations in `.claude/REVIEW_STATE.md`:**
+**Track iterations in `.planning/REVIEW_STATE.md`:**
 
 ```yaml
 ---
@@ -367,7 +367,7 @@ issues_found_count: 5
 - **CONTINUE**: iteration < 3 AND issues remain → loop back
 
 **Before returning any verdict, check iteration count:**
-1. READ `.claude/REVIEW_STATE.md` (create if missing with iteration: 1)
+1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
 2. If iteration >= 3 and issues remain: ESCALATE (don't return CHANGES REQUIRED)
 3. If iteration < 3 and issues remain: INCREMENT iteration, return CHANGES REQUIRED
 4. If no issues: APPROVED
@@ -524,7 +524,7 @@ Task(subagent_type="general-purpose",
 
 **Tool Restrictions:** You are READ-ONLY. You MUST NOT use Write or Edit tools. You read code, check test evidence, and report issues — you do NOT fix them. The main chat handles all fixes.
 
-FIRST: Check .claude/LEARNINGS.md for test output.
+FIRST: Check .planning/LEARNINGS.md for test output.
 Return BLOCKED immediately if no test output is found.
 
 Complete single-pass review covering:
@@ -598,7 +598,7 @@ Before claiming review is complete (APPROVED or ESCALATE):
              - APPROVED: Zero issues >= 80 confidence
              - ESCALATE: iteration >= 3 AND issues remain
 
-2. RUN     → Check `.claude/REVIEW_STATE.md` for iteration count
+2. RUN     → Check `.planning/REVIEW_STATE.md` for iteration count
              Read review output for issue count
 
 3. READ    → Examine both:
@@ -621,7 +621,7 @@ After review completes, handle verdict-specific transitions:
 
 ### If APPROVED (no issues >= 80 confidence)
 
-Mark review complete in `.claude/REVIEW_STATE.md`:
+Mark review complete in `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -639,7 +639,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-verify/SKILL.md` and follow its instructi
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
@@ -657,7 +657,7 @@ Return to `/dev-implement` with specific issues. **Implementer MUST re-invoke /d
 
 ### If ESCALATE (iteration >= 3, issues remain)
 
-Update `.claude/REVIEW_STATE.md`:
+Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---

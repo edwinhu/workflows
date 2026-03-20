@@ -140,7 +140,7 @@ Main chat orchestrates. Subagents implement. If you catch yourself about to use 
 |---------------------|--------------------------|
 | Spawn Task agents | Write/Edit code files |
 | Review Task agent output | Direct implementation |
-| Write to .claude/*.md files | “Quick fixes” |
+| Write to .planning/*.md files | “Quick fixes” |
 | Run git commands | Any code editing |
 | Start ralph loops | Bypassing delegation |
 
@@ -411,7 +411,7 @@ Iteration 3: Implement approach C → tests fail
 2. **REVERT** to last known working state
    - `git checkout <last-passing-commit>`
    - Or revert specific files
-   - Document what was attempted in `.claude/RECOVERY.md`
+   - Document what was attempted in `.planning/RECOVERY.md`
 
 3. **DOCUMENT** what was attempted
    - All 3 approaches tried
@@ -468,7 +468,7 @@ Loop 3: Implement with promises → Tests fail assertion
 → RECOVERY PROTOCOL:
 1. STOP (no loop 4)
 2. REVERT: git checkout HEAD -- src/feature.ts tests/
-3. DOCUMENT in .claude/RECOVERY.md:
+3. DOCUMENT in .planning/RECOVERY.md:
    - Pattern: All async implementations cause timing issues
    - Tests expect synchronous behavior
    - Hypothesis: Requirements may need async, tests don’t handle it

@@ -31,7 +31,7 @@ Capture current workflow state into `.planning/HANDOFF.md` so a fresh session ca
 Before writing `.planning/HANDOFF.md`, you MUST:
 1. READ `.planning/SPEC.md` (if exists) — understand the requirements
 2. READ `.planning/PLAN.md` (if exists) — understand task breakdown and progress
-3. READ `.claude/ACTIVE_WORKFLOW.md` (if exists) — understand current phase
+3. READ `.planning/ACTIVE_WORKFLOW.md` (if exists) — understand current phase
 4. ASSESS what is actually done vs. what remains
 5. Only THEN write the handoff document
 
@@ -55,7 +55,7 @@ Before writing `.planning/HANDOFF.md`, you MUST:
 Read all available state files to understand where we are:
 
 ```
-1. Read .claude/ACTIVE_WORKFLOW.md → current phase, workflow type
+1. Read .planning/ACTIVE_WORKFLOW.md → current phase, workflow type
 2. Read .planning/SPEC.md → requirements and success criteria
 3. Read .planning/PLAN.md → task breakdown and approach
 4. Scan recent git log → what's been committed
@@ -65,7 +65,7 @@ Read all available state files to understand where we are:
 **Run:**
 ```bash
 # Check workflow state
-cat .claude/ACTIVE_WORKFLOW.md 2>/dev/null || echo "No active workflow"
+cat .planning/ACTIVE_WORKFLOW.md 2>/dev/null || echo "No active workflow"
 
 # Check for uncommitted work
 git status --short 2>/dev/null

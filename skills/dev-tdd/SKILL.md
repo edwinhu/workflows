@@ -209,7 +209,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/references/real-test-enforcement.md`.
 
 ## Logging TDD Progress
 
-Document every TDD cycle in `.claude/LEARNINGS.md`:
+Document every TDD cycle in `.planning/LEARNINGS.md`:
 
 ```markdown
 ## TDD Cycle: [Feature/Test Name]
