@@ -482,23 +482,59 @@ references/
 
 **Two categories of reference files:**
 
-| Category | Directory | Contains | Examples |
-|----------|-----------|----------|----------|
-| **Constraints** | `constraints/` | Behavioral rules — Iron Laws, process rules, "never do X" | source-first-fixes, verbatim-quotes, no-generic-subtitles |
-| **Conventions** | `conventions/` | Formatting/structural patterns — "how to format X" | bullet-spacing, fletcher-diagrams, image-centering |
+The distinction is **testability**: can you write a script that returns pass/fail?
 
-**Each atomic file is self-contained** with this structure:
+| Category | Directory | When | Nature | Enforcement | Analogy |
+|----------|-----------|------|--------|-------------|---------|
+| **Constraints** | `constraints/` | Ex-post (verified after work) | Deterministic, mechanically testable | Check scripts (pass/fail) | Unit tests |
+| **Conventions** | `conventions/` | Ex-ante (loaded before work) | Subjective, judgment-based | Prompt context + LLM/human review | Style guide |
+
+**The classification test:** Ask the user: "Can you write a script that returns pass/fail for this rule?" If yes → constraint with paired check script. If it requires reading and judging → convention. Some rules start as conventions and **graduate** to constraints once someone figures out how to test them mechanically.
+
+**Examples:**
+- "Never use agent resume" → constraint (mechanically detectable in tool calls)
+- "Diagram storytelling comments must be insightful" → convention (requires judgment)
+- "Every diagram must have a `// Storytelling:` comment" → constraint (grep for presence)
+- "Bullet spacing follows parent-child indent rules" → constraint (regex-testable)
+- "Section transitions should feel natural" → convention (requires reading)
+
+#### Constraint Files: Rule + Check Script Pairs
+
+Each constraint comes as a **pair**: a rule file (what the rule is, for prompt context) and a check script (the unit test, for mechanical verification).
+
+```
+references/
+├── common-constraints.md          → TOC/index (links + 1-line descriptions)
+├── common-conventions.md          → TOC/index (links + 1-line descriptions)
+├── constraints/                   → atomic constraint files (rule definitions)
+│   ├── source-first-fixes.md
+│   ├── verbatim-quotes.md
+│   └── ...
+├── conventions/                   → atomic convention files (behavioral guidance)
+│   ├── diagram-storytelling.md
+│   ├── section-transitions.md
+│   └── ...
+scripts/
+├── check-all.sh                   → test runner (calls all constraint scripts)
+├── checks/                        → individual constraint check scripts
+│   ├── check-source-first.py
+│   ├── check-verbatim-quotes.py
+│   └── ...
+```
+
+**Constraint rule file** (`constraints/*.md`) — self-contained with this structure:
 
 ```markdown
 ---
 name: constraint-name
 description: One-line trigger description
 applies-to: [skill-1, skill-2, skill-3]
+check-script: checks/check-constraint-name.py
 ---
 
 ## Rule
 
-The constraint/convention stated clearly.
+The constraint stated clearly. Must be mechanically testable.
 
 ## Rationale
 
@@ -510,7 +546,7 @@ The constraint/convention stated clearly.
 [Example of correct behavior]
 
 ### Incorrect
-[Example of incorrect behavior]
+[Example of incorrect behavior — what the check script catches]
 
 ## Rationalization Table
 
@@ -523,20 +559,96 @@ The constraint/convention stated clearly.
 - **"..."** → STOP. [Why this thought is wrong]
 ```
 
-**The parent index file** (`common-constraints.md` or `typst-conventions.md`) becomes a pure TOC:
+**Convention file** (`conventions/*.md`) — same structure but WITHOUT `check-script` frontmatter. Conventions are enforced through prompt loading and LLM/human judgment during review, not scripts.
+
+**Check script** (`scripts/checks/*.py`) — returns exit code 0 (pass) or non-zero (fail) with diagnostic output:
+
+```python
+#!/usr/bin/env python3
+"""Check: [constraint name] — [one-line description]"""
+import sys
+# ... check logic ...
+if violations:
+    for v in violations:
+        print(f"FAIL: {v.file}:{v.line} — {v.message}")
+    sys.exit(1)
+print("PASS: [constraint name]")
+sys.exit(0)
+```
+
+#### Test Runner: check-all.sh
+
+Every workflow with constraints MUST have a `check-all.sh` orchestrator that runs all constraint scripts. This is the test runner — verification phases call it.
+
+```bash
+#!/usr/bin/env bash
+# Test runner: calls all constraint check scripts
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CHECKS_DIR="$SCRIPT_DIR/checks"
+PASS=0; FAIL=0; TOTAL=0
+
+for check in "$CHECKS_DIR"/check-*.py; do
+    TOTAL=$((TOTAL + 1))
+    if python3 "$check" "$@"; then
+        PASS=$((PASS + 1))
+    else
+        FAIL=$((FAIL + 1))
+    fi
+done
+
+echo "Results: $PASS/$TOTAL passed, $FAIL failed"
+[ "$FAIL" -eq 0 ]
+```
+
+#### Verification Architecture: Two Legs
+
+The verification phase in any workflow runs **both** legs:
+
+1. **Constraint checks** — run `check-all.sh` (test runner). Pass/fail per check. Hard block on failure.
+2. **Convention scoring** — spawn reviewer subagent that scores work against loaded conventions. Qualitative judgment. Soft block below threshold.
+
+```
+Verification Phase
+    ↓
+Leg 1: Run check-all.sh (constraint test suite)
+    ↓                              ↓
+    PASS                          FAIL → fix → re-run
+    ↓
+Leg 2: Spawn reviewer subagent (convention scoring)
+    ↓                              ↓
+    Score >= threshold             Score < threshold → revise → re-score
+    ↓
+VERIFIED
+```
+
+Both legs are necessary. Passing constraints but failing conventions = code that passes CI but fails code review. Passing conventions but failing constraints = code that looks good but has bugs.
+
+**The parent index files** become pure TOCs:
 
 ```markdown
 # Common Constraints
 
-Behavioral rules for the [domain] skill family. Each constraint is self-contained in its own file.
+Deterministic rules for the [domain] skill family. Each constraint has a paired check script.
 
 ## Index
 
-| Constraint | File | Description |
+| Constraint | File | Check Script | Description |
+|------------|------|-------------|-------------|
+| Source-First Fixes | [constraints/source-first-fixes.md] | checks/check-source-first.py | Never edit generated output — fix the source |
+| Verbatim Quotes | [constraints/verbatim-quotes.md] | checks/check-verbatim-quotes.py | Quotes must match source exactly |
+```
+
+```markdown
+# Common Conventions
+
+Behavioral guidance for the [domain] skill family. Loaded ex-ante, scored by LLM/human judgment.
+
+## Index
+
+| Convention | File | Description |
 |------------|------|-------------|
-| Source-First Fixes | [constraints/source-first-fixes.md](constraints/source-first-fixes.md) | Never edit generated output — fix the source |
-| Verbatim Quotes | [constraints/verbatim-quotes.md](constraints/verbatim-quotes.md) | Quotes must match source exactly |
-| ... | ... | ... |
+| Diagram Storytelling | [conventions/diagram-storytelling.md] | Every diagram needs visual + pedagogical insight |
+| Section Transitions | [conventions/section-transitions.md] | Transitions should connect ideas naturally |
 ```
 
 **When to use atomic vs monolithic:**
@@ -875,6 +987,21 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - **Hooks:** Do all sibling skills declare the same hooks in their YAML frontmatter? If a hook is present in some siblings but not others, is the gap justified? (Produce a Hook Coverage Matrix: skills × hooks)
 - **Script wiring:** Is every check script referenced in all three layers: (a) hook frontmatter, (b) batch orchestrator, (c) verification-checks definition? (Produce a Script Wiring Matrix: scripts × invocation points)
 
+**Constraint/convention classification & test coverage:**
+- Are constraints and conventions correctly classified? The test: can you write a script that returns pass/fail? If yes → constraint. If it requires judgment → convention.
+- Does every constraint have a **paired check script** in `scripts/checks/`? A constraint without a check script is an untested unit test — enforcement theater.
+- Does `check-all.sh` (or equivalent test runner) exist and call all constraint check scripts?
+- Does the verification phase run **both legs**: constraint checks (test runner) AND convention scoring (reviewer subagent)?
+- Are there conventions that could **graduate** to constraints? (i.e., someone has since figured out how to test them mechanically)
+- Produce a **Constraint Coverage Matrix**:
+
+```
+| Constraint | Rule File | Check Script | Wired in check-all.sh |
+|------------|-----------|-------------|----------------------|
+| source-first-fixes | ✅ constraints/ | ✅ checks/ | ✅ |
+| verbatim-quotes | ✅ constraints/ | ❌ MISSING | ❌ |
+```
+
 **Iteration strategy:**
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
 - Are exit conditions structural (tests, convergence, human approval) not honor-system (promises)?
@@ -1171,7 +1298,12 @@ Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
 | No shared enforcement across skill family | Extract to `references/common-constraints.md`; all domain skills Read() it |
 | Monolithic shared file >15 sections | Refactor to atomic architecture: `constraints/` and/or `conventions/` subdirs; parent file becomes TOC/index; each atomic file self-contained with rule + rationale + examples + rationalization table + red flags |
 | Skills loading entire monolithic file when they need 3 constraints | Switch to atomic: skills `Read()` only the specific constraint files they need |
-| Mixed behavioral rules and formatting patterns in one file | Split into `constraints/` (behavioral/Iron Laws) and `conventions/` (formatting/structural patterns) |
+| Mixed constraints and conventions in one file | Split by testability: `constraints/` (mechanically testable, pass/fail scripts) and `conventions/` (judgment-based, loaded ex-ante for prompt context) |
+| Constraint without paired check script | Write the check script in `scripts/checks/`. A constraint without a test is enforcement theater |
+| No test runner (check-all.sh) | Create `scripts/check-all.sh` that calls all constraint check scripts. Verification phase calls this |
+| Verification only runs constraint checks OR only convention scoring | Verification needs both legs: constraint checks (test runner, hard block) AND convention scoring (reviewer subagent, soft block) |
+| Convention that could be a constraint | Graduate it: write a check script, move from `conventions/` to `constraints/`, add to check-all.sh |
+| Constraint file missing `check-script` frontmatter | Add `check-script: checks/check-[name].py` to frontmatter, linking rule to its test |
 | Hooks inconsistent across skill family | Produce Hook Coverage Matrix (skills × hooks); add missing hooks to skill frontmatter; justify intentional gaps |
 | New check script not wired into batch orchestrator | Add script invocation to batch orchestrator (check-all.sh equivalent); update verification-checks.md |
 | Constraint added to individual skill but applies to family | Move to common-constraints.md with `**Applies to:**` annotation; remove from individual skill |
@@ -1278,6 +1410,12 @@ If multiple skills in the same plugin operate on the same domain, their common e
 
 **The course-materials incident (March 2026):** batch-check-guard was added to slides-edit but not lecture-prep. convention-check-guard was added to sub-agent prompts but not as a hook. check-conventions.py existed but wasn't in check-all.sh. Result: lecture-prep shipped work that slides-edit would have caught. The constraints file was shared, but hooks and script wiring were not — two of three layers failed silently.
 
+### NO CONSTRAINT WITHOUT A CHECK SCRIPT
+A constraint is a mechanically testable rule — if you can write a script that returns pass/fail, it's a constraint. Every constraint MUST ship with a paired check script. A constraint without a test is like a unit test without an assertion: it documents intent but verifies nothing. Verification runs `check-all.sh` which calls every constraint's check script. If your constraint isn't in the test suite, it's not enforced.
+
+### NO VERIFICATION WITHOUT BOTH LEGS
+Verification has two legs: (1) constraint checks via `check-all.sh` — deterministic, pass/fail, hard block; (2) convention scoring via reviewer subagent — judgment-based, soft block. Running only one leg is incomplete. Scripts catch mechanical violations LLMs miss. LLMs catch quality issues scripts can't test. Both are necessary, neither alone is sufficient.
+
 ### NO VERIFIER WITH WRITE ACCESS
 Verification and review agents MUST use `allowed-tools` frontmatter restricting them to read-only tools. A verifier that can Write/Edit will "fix" issues it finds — silently bypassing the plan-execute-verify cycle. The fix was never planned, never reviewed, never tested. Tool restrictions make verification structurally honest, not just procedurally independent.
 
@@ -1299,7 +1437,9 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Adding a check script without wiring it into the batch orchestrator | Script exists, passes when run manually, but never fires during the verification gate. False confidence — the gate "passes" but the check never ran. | Wire into batch orchestrator AND hook frontmatter AND verification-checks.md. All three layers. |
 | Adding a constraint to an individual skill that should be shared | Constraint works in lecture-prep but notes-edit doesn't have it. User discovers the gap when notes-edit ships work that lecture-prep would have caught. | Add to common-constraints.md with `**Applies to:**` annotation. Over-inclusion beats drift. |
 | Growing a monolithic constraints file past 20+ sections | Every skill loads 450+ lines of constraints when it needs 5. Context bloat, slow loads, hard to maintain. Each edit risks breaking unrelated sections. | Refactor to atomic files. Parent becomes TOC. Each constraint self-contained. Skills load only what they need. |
-| Mixing behavioral rules and formatting patterns in one file | "Don't edit generated output" (constraint) and "center images with #align" (convention) serve different purposes, apply to different phases, and confuse maintainers. | Separate into `constraints/` (behavioral) and `conventions/` (formatting). |
+| Mixing constraints and conventions in one directory | A constraint ("never edit generated output") is mechanically testable; a convention ("center images with #align") requires judgment. Mixing them means you can't run the constraints as a test suite. | Separate by testability: `constraints/` (has check script) and `conventions/` (prompt-loaded, judgment-scored). |
+| Writing a constraint without a check script | A constraint without a test is like a unit test without an assertion — it documents intent but verifies nothing. | Write the check script alongside the rule file. They're a pair. |
+| Verification phase that only runs scripts OR only does LLM review | Scripts catch mechanical violations but miss quality. LLM review catches quality but misses mechanical violations. Both miss things the other catches. | Run both legs: check-all.sh (hard block) + reviewer subagent (soft block). |
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 | No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
 | No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
@@ -1330,7 +1470,11 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | "The script works when I run it manually" | Manual execution proves the script works. It doesn't prove the script runs automatically. An unwired script is enforcement theater — it exists but never fires. | Wire into all three layers: hook frontmatter, batch orchestrator, check definitions. |
 | "I'll add this constraint to common-constraints.md later" | Later never comes. The constraint lives in one skill, the other skills ship without it, and nobody notices until the user gets inconsistent results. | Add to shared file NOW. Over-inclusion is cheaper than drift. |
 | "One big constraints file is simpler than many small files" | Simpler to create, harder to maintain. At 20+ sections, every edit is a merge risk, every skill loads 400+ lines it doesn't need, and nobody reads the whole thing. | Atomic files: one constraint per file, self-contained, independently loadable. |
-| "Splitting constraints into files is premature" | If you have 15+ sections or mixed categories, the split is overdue. The course-materials plugin hit 453 lines / 20 sections before refactoring. | Split when >15 sections or when behavioral and formatting rules coexist. |
+| "Splitting constraints into files is premature" | If you have 15+ sections or mixed categories, the split is overdue. The course-materials plugin hit 453 lines / 20 sections before refactoring. | Split when >15 sections or when constraints and conventions coexist. |
+| "This rule doesn't need a check script" | If it's a constraint, it needs a test. If it can't be tested, it's a convention — classify it correctly. | Ask: "Can I write a script that returns pass/fail?" If yes, write the script. |
+| "I'll write the check script later" | Later never comes. The constraint ships without its test. Verification runs check-all.sh and this constraint is silently skipped. | Write the rule file and check script as a pair. They ship together. |
+| "The LLM review covers everything, scripts are redundant" | LLM review drifts, rationalizes, and misses mechanical violations. Scripts are deterministic — they catch the same thing every time. | Scripts for mechanical checks, LLM for judgment. Both legs of verification. |
+| "This convention could be a constraint but testing it is hard" | Start it as a convention. Note it as a graduation candidate. Revisit when you have a testing idea. Don't force-fit a bad test. | Classify honestly. Graduation happens when testability improves, not when you want fewer conventions. |
 | "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
 | "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
 | "The reviewer can just fix small issues it finds" | That bypasses plan-execute-verify. The "fix" was never planned, never reviewed, never tested. Now you have unverified code in production. | Restrict verifiers to read-only tools. Issues go back to the executor. |
