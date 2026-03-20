@@ -74,7 +74,7 @@ Agent(
   prompt="""
 You are a data science plan document reviewer. Verify this plan is complete, matches the spec, and is ready for implementation.
 
-**Tool Restrictions:** The plan reviewer is READ-ONLY. It reads PLAN.md and SPEC.md, evaluates against checklist, returns verdict. It MUST NOT use Write or Edit.
+**Tool Restrictions:** The plan reviewer is READ-ONLY. It reads `.planning/PLAN.md` and `.planning/SPEC.md`, evaluates against checklist, returns verdict. It MUST NOT use Write or Edit.
 
 **Plan to review:** .planning/PLAN.md [-- Chunk N only, if chunked]
 **Spec for reference:** .planning/SPEC.md

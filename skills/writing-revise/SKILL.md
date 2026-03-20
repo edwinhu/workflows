@@ -298,8 +298,8 @@ Skill(skill="workflows:ai-anti-patterns")
 **NO REVISION WITHOUT ALL CONSTRAINT LAYERS. This is not negotiable.**
 
 The midpoint cannot rely on constraints loaded during earlier phases. Prior context may be compressed or lost. You must load:
-1. ACTIVE_WORKFLOW.md → workflow state
-2. PRECIS.md, OUTLINE.md → structural intent
+1. `.planning/ACTIVE_WORKFLOW.md` → workflow state
+2. `.planning/PRECIS.md`, `.planning/OUTLINE.md` → structural intent
 3. Domain skill → domain-specific rules
 4. ai-anti-patterns → universal writing quality
 

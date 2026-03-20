@@ -201,13 +201,13 @@ Long workflows must plan for context exhaustion. Without monitoring, agents star
 
 **Requirements for workflows:**
 1. **Graceful degradation** — phases should check context availability before starting expensive work
-2. **Handoff trigger** — when context is low, trigger HANDOFF.md creation instead of starting a new phase
+2. **Handoff trigger** — when context is low, trigger `.planning/HANDOFF.md` creation instead of starting a new phase
 3. **Phase-aware warnings** — implementation phases need more remaining context than exploration phases
 
 **Implementation pattern:**
 - At phase entry, check if sufficient context remains for the phase's expected work
-- If context is low (≤35% remaining), write HANDOFF.md and pause rather than starting degraded work
-- If context is critical (≤25% remaining), immediately write HANDOFF.md — no new work
+- If context is low (≤35% remaining), write `.planning/HANDOFF.md` and pause rather than starting degraded work
+- If context is critical (≤25% remaining), immediately write `.planning/HANDOFF.md` — no new work
 
 **Standard thresholds:**
 
@@ -530,20 +530,20 @@ The entry point runs sequentially — each phase loads its constraints and passe
 
 ```
 /writing-revise loads:
-  1. ACTIVE_WORKFLOW.md    → workflow state (what phase, what style)
-  2. PRECIS.md, OUTLINE.md → structural intent (what we're building)
+  1. .planning/ACTIVE_WORKFLOW.md    → workflow state (what phase, what style)
+  2. .planning/PRECIS.md, .planning/OUTLINE.md → structural intent (what we're building)
   3. ai-anti-patterns      → universal constraints (no AI-smell)
   4. domain skill           → domain constraints
   THEN: check the draft against all four layers
 
 /dev-debug loads:
-  1. HYPOTHESES.md          → what's been tried
-  2. LEARNINGS.md           → accumulated knowledge
+  1. .planning/HYPOTHESES.md          → what's been tried
+  2. .planning/LEARNINGS.md           → accumulated knowledge
   THEN: spawn fresh subagent for next investigation iteration
 
 /ds-fix loads:
-  1. SPEC.md, PLAN.md       → objectives and task breakdown
-  2. LEARNINGS.md            → pipeline state and observations
+  1. .planning/SPEC.md, .planning/PLAN.md       → objectives and task breakdown
+  2. .planning/LEARNINGS.md            → pipeline state and observations
   3. output-first protocol   → verification enforcement
   THEN: diagnose and route to fix path
 ```
@@ -602,15 +602,15 @@ Create the following artifacts:
 
 Workflows should store all state files in a `.planning/` directory at the project root (not `.claude/`). This keeps workflow state separate from Claude Code configuration.
 
-**Standard state files:**
+**Standard state files (all written to `.planning/`):**
 | File | Purpose | When Created |
 |------|---------|-------------|
-| `SPEC.md` | Requirements, goals, constraints | Brainstorm/clarify phase |
-| `PLAN.md` | Task breakdown with status tracking | Design phase |
-| `STATE.md` | Current workflow position (active phase, blockers) | Entry point startup |
-| `HANDOFF.md` | Session pause/resume context | On pause or context exhaustion |
-| `VALIDATION.md` | Requirement-to-test coverage map | Validation phase |
-| `LEARNINGS.md` | Accumulated discoveries and decisions | Throughout workflow |
+| `.planning/SPEC.md` | Requirements, goals, constraints | Brainstorm/clarify phase |
+| `.planning/PLAN.md` | Task breakdown with status tracking | Design phase |
+| `.planning/STATE.md` | Current workflow position (active phase, blockers) | Entry point startup |
+| `.planning/HANDOFF.md` | Session pause/resume context | On pause or context exhaustion |
+| `.planning/VALIDATION.md` | Requirement-to-test coverage map | Validation phase |
+| `.planning/LEARNINGS.md` | Accumulated discoveries and decisions | Throughout workflow |
 
 **Design principles:** File-based, git-trackable, human-editable. No databases, no external services. YAML frontmatter for machine-readable state; markdown body for human reading.
 
@@ -780,7 +780,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 
 **State management:**
 - Does the workflow use `.planning/` for state files (not `.claude/` or scattered locations)?
-- Are standard state files present (SPEC.md, PLAN.md, STATE.md, LEARNINGS.md)?
+- Are standard state files present (`.planning/SPEC.md`, `.planning/PLAN.md`, `.planning/STATE.md`, `.planning/LEARNINGS.md`)?
 - Is state file-based, git-trackable, and human-editable?
 
 **Session handoff:**
@@ -809,9 +809,9 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Are tool restriction tiers appropriate for each agent role?
 
 **Requirement traceability:**
-- Do requirements have unique IDs in SPEC.md (e.g., AUTH-01)?
-- Do PLAN.md tasks reference requirement IDs?
-- Does VALIDATION.md map every ID to test evidence?
+- Do requirements have unique IDs in `.planning/SPEC.md` (e.g., AUTH-01)?
+- Do `.planning/PLAN.md` tasks reference requirement IDs?
+- Does `.planning/VALIDATION.md` map every ID to test evidence?
 - Is there a scope classification (v1/v2/out-of-scope)?
 
 **Autonomous phase chaining:**
@@ -822,7 +822,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 
 **Visual output for human verification:**
 - Do `decision` checkpoints offer visual artifacts when the human's review pattern suggests them?
-- Does the workflow log what the human actually looks at during review (in LEARNINGS.md)?
+- Does the workflow log what the human actually looks at during review (in `.planning/LEARNINGS.md`)?
 - If the human has asked for the same view 3+ times, has it been automated into a script?
 
 **Hooks over prompt enforcement:**
@@ -1059,7 +1059,7 @@ Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
 | Missing topic change protocol | Add announce-pause / handle / announce-resume |
 | Missing deviation rules | Add 4-rule system (R1-R3 auto, R4 STOP) adapted to domain |
 | Missing state folder | Consolidate into `.planning/` with standard files |
-| Missing session handoff | Add HANDOFF.md check to entry point startup |
+| Missing session handoff | Add `.planning/HANDOFF.md` check to entry point startup |
 | Missing checkpoint types | Classify every gate as human-verify/decision/human-action |
 | Missing context monitoring | Add thresholds: warning ≤35%, critical ≤25% |
 | Missing summary frontmatter | Add YAML frontmatter with implements/requires/provides/affects |
@@ -1181,12 +1181,12 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Rationalizations are hypothetical, not grounded | "Agents sometimes skip" is ignorable. "March 16: 71 violations, 3 re-invocations" is not. | Cite real failed sessions with dates, IDs, and violation counts |
 | Implementation phase with no deviation rules | Agents encounter unplanned work and either silently change architecture or halt on trivial bugs. | Add 4-rule deviation system with auto-fix for R1-R3, STOP for R4 |
 | State files scattered across `.claude/` and project root | Next session can't find state; handoff fails. | Consolidate into `.planning/` directory |
-| No handoff support in entry points | Context window exhaustion means lost work — next session starts from scratch. | Check for HANDOFF.md at startup, support structured resume |
+| No handoff support in entry points | Context window exhaustion means lost work — next session starts from scratch. | Check for `.planning/HANDOFF.md` at startup, support structured resume |
 | Verification agent with Write/Edit access | Verifier silently "fixes" issues, bypassing plan-execute-verify. The fix was never planned or tested. | Add `allowed-tools` frontmatter restricting to Read, Grep, Glob only |
 | All gates treated as human-required | Workflow stops 7 times for rubber-stamp approvals. Unusable in autonomous/overnight mode. | Classify gates: human-verify (auto-advance), decision (pause), human-action (manual) |
 | No context monitoring in multi-phase workflow | Agent starts expensive phase with 20% context, produces degraded output, loses state. | Add context checks at phase entry, trigger handoff at ≤35% |
 | Phase summaries are unstructured prose | Handoff/resume requires re-reading all files. No dependency graph for parallel execution. | Add YAML frontmatter with implements/requires/provides/affects |
-| Requirements have no unique IDs | "We tested auth" doesn't tell you if login, refresh, AND logout are covered. | Assign IDs in SPEC.md, trace through PLAN.md and VALIDATION.md |
+| Requirements have no unique IDs | "We tested auth" doesn't tell you if login, refresh, AND logout are covered. | Assign IDs in `.planning/SPEC.md`, trace through `.planning/PLAN.md` and `.planning/VALIDATION.md` |
 | Every phase requires manual invocation | 7-phase workflow needs 7 human interventions to run. | Add autonomous chaining with auto-advance for human-verify gates |
 | Decision checkpoint with no review pattern tracking | You don't know what the human looks at, so you can't optimize for it. | Log what the human asks for at each review. After 3+ patterns, offer to automate. |
 

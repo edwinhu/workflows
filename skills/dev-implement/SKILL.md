@@ -48,15 +48,15 @@ dev-implement (this skill)
 1. `.planning/SPEC.md` exists with final requirements
 2. `.planning/PLAN.md` exists with chosen approach
 3. **User explicitly approved** in /dev-design phase
-4. **PLAN.md Testing Strategy section is COMPLETE** (all boxes checked)
+4. **`.planning/PLAN.md` Testing Strategy section is COMPLETE** (all boxes checked)
 
 If any prerequisite is missing, STOP and complete the earlier phases.
 
-**Check PLAN.md for:** files to modify, implementation order, testing strategy.
+**Check `.planning/PLAN.md` for:** files to modify, implementation order, testing strategy.
 
 ### Pre-Flight Testing Check (MANDATORY)
 
-Before starting ANY task, verify PLAN.md Testing Strategy:
+Before starting ANY task, verify `.planning/PLAN.md` Testing Strategy:
 
 ```
 [ ] Framework specified (not empty, not “TBD”)

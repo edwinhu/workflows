@@ -56,7 +56,7 @@ Agent(
   prompt="""
 You are a spec document reviewer. Verify this spec is complete and ready for codebase exploration and implementation planning.
 
-**Tool Restrictions:** You are READ-ONLY. You MUST NOT use Write or Edit tools. You read SPEC.md, evaluate it against the checklist, and return a verdict. If you find issues, you report them — the main chat fixes them.
+**Tool Restrictions:** You are READ-ONLY. You MUST NOT use Write or Edit tools. You read `.planning/SPEC.md`, evaluate it against the checklist, and return a verdict. If you find issues, you report them — the main chat fixes them.
 
 **Spec to review:** .planning/SPEC.md
 

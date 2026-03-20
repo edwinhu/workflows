@@ -47,9 +47,9 @@ Use this section when user chose "Parallel review (Research-grade)" above.
 
 Before spawning reviewers, verify:
 
-1. **SPEC.md exists** - reviewers verify against spec, not assumptions
-2. **PLAN.md exists** - reviewers check tasks were completed
-3. **LEARNINGS.md exists** - reviewers verify data quality pipeline documented
+1. **`.planning/SPEC.md` exists** - reviewers verify against spec, not assumptions
+2. **`.planning/PLAN.md` exists** - reviewers check tasks were completed
+3. **`.planning/LEARNINGS.md` exists** - reviewers verify data quality pipeline documented
 4. **Analysis files identified** - notebooks/scripts in scope for review
 
 If any prerequisite fails, STOP and return to /ds-implement.

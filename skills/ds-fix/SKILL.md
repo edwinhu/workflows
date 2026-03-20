@@ -312,7 +312,7 @@ Before claiming any fix is done, execute this gate:
 1. Announce: "Pausing ds-fix to address your request."
 2. Handle the request.
 3. Announce: "Resuming ds-fix. Reading state files for current progress."
-4. Reload: Read SPEC.md, PLAN.md, LEARNINGS.md.
+4. Reload: Read `.planning/SPEC.md`, `.planning/PLAN.md`, `.planning/LEARNINGS.md`.
 5. Resume from where you left off.
 
 ## Delegation

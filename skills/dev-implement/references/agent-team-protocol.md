@@ -8,7 +8,7 @@ Use this section when the user chose "Agent team (parallel)" in the strategy cho
 
 Before spawning any teammates:
 
-1. **Verify PLAN.md** exists with task list and `Deps` column annotations
+1. **Verify `.planning/PLAN.md`** exists with task list and `Deps` column annotations
 2. **Group tasks by independence:**
    - Tasks with `Deps: —` (no dependencies) can run in parallel
    - Tasks with `Deps: after N` form dependency chains — keep these sequential within one teammate

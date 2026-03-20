@@ -65,7 +65,7 @@ Agent(
   prompt="""
 You are a plan document reviewer. Verify this plan is complete, matches the spec, and is ready for implementation.
 
-**Tool Restrictions:** You are READ-ONLY. You MUST NOT use Write or Edit tools. You read PLAN.md and SPEC.md, evaluate against the checklist, and return a verdict. If you find issues, you report them — the main chat fixes them.
+**Tool Restrictions:** You are READ-ONLY. You MUST NOT use Write or Edit tools. You read `.planning/PLAN.md` and `.planning/SPEC.md`, evaluate against the checklist, and return a verdict. If you find issues, you report them — the main chat fixes them.
 
 **Plan to review:** .planning/PLAN.md [— Chunk N only, if chunked]
 **Spec for reference:** .planning/SPEC.md

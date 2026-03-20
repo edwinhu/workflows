@@ -36,7 +36,7 @@ Before moving to the next step, you MUST:
 1. Run the code
 2. See the output (print, display, plot)
 3. Verify output is correct/reasonable
-4. Document in LEARNINGS.md
+4. Document in `.planning/LEARNINGS.md`
 5. Only THEN proceed to next step
 
 This applies even when YOU think:
@@ -119,8 +119,8 @@ If you wrote analysis code in main chat, DELETE it immediately and dispatch a Ta
 | "I'll batch the outputs" | STOP - you're about to lose your ability to isolate issues | Output per operation |
 | "Just a quick plot in main chat" | STOP - you're about to violate delegation | Spawn a Task agent |
 | "I'll combine these steps to save time" | STOP - combined steps hide which one failed | One operation per verification cycle |
-| "Output looks roughly right" | STOP - "roughly" means you didn't actually check | Compare against PLAN.md expected output |
-| "LEARNINGS.md is overhead" | STOP - undocumented steps are invisible to review | Log every task completion, it takes 30 seconds |
+| "Output looks roughly right" | STOP - "roughly" means you didn't actually check | Compare against `.planning/PLAN.md` expected output |
+| "LEARNINGS.md is overhead" | STOP - undocumented steps are invisible to review | Log every task completion to `.planning/LEARNINGS.md`, it takes 30 seconds |
 | "This task is trivial, no need to delegate" | STOP - trivial tasks in main chat accumulate into unverified analysis | Delegate everything, verify everything |
 
 
