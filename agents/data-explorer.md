@@ -65,5 +65,5 @@ Return structured findings:
 - Use pandas/polars for tabular data
 - Use pyarrow for large files
 - Save intermediate results to scratch/
-- Document findings in LEARNINGS.md
+- Document findings in .planning/LEARNINGS.md
 - Let errors surface naturally (no defensive coding)

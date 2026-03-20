@@ -49,7 +49,7 @@ Run these after EVERY transformation step:
 After EVERY operation:
 1. Show the output (df.shape, df.dtypes, df.head(), df.describe())
 2. Run DQ checks
-3. Log to LEARNINGS.md
+3. Log to .planning/LEARNINGS.md
 4. THEN proceed to next step
 
 **Never claim "pipeline works" without showing output.**
