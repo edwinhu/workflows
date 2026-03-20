@@ -1,6 +1,6 @@
 ---
 name: workflow-creator
-description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'add enforcement patterns', or needs to design structured multi-phase processes for LLM agents."
+description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', or needs to substantially create or edit any multi-phase workflow. Use this INSTEAD of designing workflows ad-hoc. Adds behavioral enforcement and structural validation hooks."
 version: 0.1.0
 hooks:
   PostToolUse:
@@ -90,7 +90,7 @@ Use AskUserQuestion to understand the domain:
 
 **Gate: Interview Complete**
 - Verify AskUserQuestion was called
-- Check that answers to all 5 questions are present
+- Check that answers to all 6 questions are present
 - If interview incomplete, ask remaining questions
 
 **After verifying Interview is complete, persist answers and update state:**
@@ -766,20 +766,7 @@ The entry point runs sequentially — each phase loads its constraints and passe
 
 #### Shared Constraint Files
 
-When multiple skills in the same plugin operate on the same domain, their common enforcement must live in a **shared reference file** that every skill `Read()`s.
-
-**Why:** Without shared enforcement, each skill enforces its own version of the rules. Skills are edited independently, so their enforcement drifts apart — one skill catches issues the others miss. The user shouldn't have to run lecture-prep-edit to catch what lecture-prep should have enforced in the first place.
-
-**Implementation:**
-1. Create `references/common-constraints.md` with the enforcement patterns common to all domain skills
-2. Every skill that operates on the domain `Read()`s this file
-3. Sub-agent prompts reference checks by ID: "Run checks S1, S2, X1 from references/common-constraints.md"
-4. Include a **Check Matrix** showing which checks run in which context (entry, midpoint, reviewer, or specific skills)
-5. Skill-specific enforcement stays inline in that skill's SKILL.md
-
-**When to extract:** When you're creating the second skill in a domain, ask: "What enforcement should every skill in this domain share?" Extract that to the common file from the start. Don't wait for drift to reveal the gap.
-
-**When to go atomic:** When the shared file grows beyond ~15 sections or mixes distinct categories (behavioral rules vs formatting patterns), refactor to atomic architecture (see Step 4b: Atomic Reference File Architecture). The parent file becomes a TOC; each constraint/convention gets its own self-contained file. Skills then `Read()` only the specific atomic files they need — reducing context load and making enforcement modular.
+See Step 4b for the full atomic constraint/convention architecture. This section covers only the **midpoint-specific** concern.
 
 **Midpoint constraint loading with atomic files:** The midpoint must load every constraint it needs before touching the work. With atomic files, this means loading the specific constraint files relevant to the current phase — not the entire index. The index tells you WHAT exists; the atomic files contain the actual enforcement.
 
@@ -895,7 +882,7 @@ workflow-creator mandates audit-fix loops, independent verification, and artifac
 
 After generating workflow files in Step 6:
 
-1. **Run Mode 2** on the generated workflow — audit architecture (16 principles) and enforcement (13 patterns)
+1. **Run Mode 2** on the generated workflow — audit architecture (20 principles) and enforcement (13 patterns)
 2. **Check score:** If composite score < 8.0, fix the generated files and re-audit (max 3 iterations)
 3. **Present to user** with the audit report attached — the user sees both the workflow AND its quality score
 
@@ -983,7 +970,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Could a user get inconsistent enforcement depending on which skill they invoke?
 
 **Cross-skill consistency (three layers):**
-- **Constraints:** Do all sibling skills Read() the same shared constraints file? Are constraints that apply to multiple skills in the shared file (not inlined in individual skills)? If the shared file has >15 sections or mixes behavioral rules with formatting patterns, is it refactored to atomic architecture (`constraints/` + `conventions/` subdirectories with self-contained files)?
+- **Constraints:** Do all sibling skills Read() the same shared constraints file? Are constraints that apply to multiple skills in the shared file (not inlined in individual skills)? If the shared file has >15 sections or mixes constraints with conventions, is it refactored to atomic architecture (`constraints/` + `conventions/` subdirectories with self-contained files)?
 - **Hooks:** Do all sibling skills declare the same hooks in their YAML frontmatter? If a hook is present in some siblings but not others, is the gap justified? (Produce a Hook Coverage Matrix: skills × hooks)
 - **Script wiring:** Is every check script referenced in all three layers: (a) hook frontmatter, (b) batch orchestrator, (c) verification-checks definition? (Produce a Script Wiring Matrix: scripts × invocation points)
 
@@ -1080,7 +1067,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Score based on: how many mechanical constraints are prompt-only when they could be hooks?
 
 **Gate: Architecture Scored**
-- Verify scores for all 17 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, iteration strategy, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification, hooks over prompt)
+- Verify scores for all 20 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, cross-skill consistency, constraint/convention test coverage, iteration strategy, post-subagent enforcement, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification, hooks over prompt)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -1204,7 +1191,7 @@ Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → 
 
 Run Mode 2 on the target workflow. This produces the baseline score.
 
-**Gate:** Mode 2 audit report exists with numeric scores for all 16 principles.
+**Gate:** Mode 2 audit report exists with numeric scores for all 20 principles.
 
 ### Step 2: Launch Audit-Fix Loop
 
@@ -1223,7 +1210,7 @@ Spawn a fresh audit subagent that:
 2. Scores against the 16 architecture principles (0-10 each)
 3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
 4. Checks path portability
-5. Computes composite score (average of 16 principle scores)
+5. Computes composite score (average of 20 principle scores)
 6. Writes findings to `.planning/wc/AUDIT.md`
 7. Appends score to `.planning/wc/SCORES.md`
 
@@ -1246,7 +1233,7 @@ Score each of the 16 architecture principles 0-10.
 Score each of the 13 enforcement patterns per phase: Present/Weak/Absent.
 Check path portability.
 
-Compute composite score = average of 16 principle scores.
+Compute composite score = average of 20 principle scores.
 
 Output to .planning/wc/AUDIT.md with this format:
 - Composite score (single number)
@@ -1428,7 +1415,7 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Action | Why Wrong | Do Instead |
 |---|---|---|
 | Creating a workflow without reading PHILOSOPHY.md | You'll miss the foundational principles | Read it first, every time |
-| Skipping the user interview | You'll design for an imagined domain, not the real one | Ask the five questions |
+| Skipping the user interview | You'll design for an imagined domain, not the real one | Ask the six questions |
 | Writing soft language instead of Iron Laws | LLMs ignore polite suggestions | Use strong framing with EXTREMELY-IMPORTANT tags |
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
