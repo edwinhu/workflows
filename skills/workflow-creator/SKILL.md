@@ -1,6 +1,6 @@
 ---
 name: workflow-creator
-description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', or needs to substantially create or edit any multi-phase workflow. Use this INSTEAD of designing workflows ad-hoc. Adds behavioral enforcement and structural validation hooks."
+description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', or needs to substantially create or edit any multi-phase workflow."
 version: 0.1.0
 hooks:
   PostToolUse:

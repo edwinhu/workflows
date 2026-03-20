@@ -334,39 +334,26 @@ plugin-dev:skill-development, plugin-dev:plugin-structure, etc.)
 
 ### Creator Routing Table
 
-| Activity | Route To | Wraps | Trigger Words |
-|----------|----------|-------|---------------|
-| Create/edit a skill | `workflows:skill-creator` | `skill-creator:skill-creator` | create skill, improve skill, edit skill, add enforcement, audit skill |
-| Create/edit a workflow | `workflows:workflow-creator` | (standalone meta-tool) | create workflow, design workflow, audit workflow, improve workflow |
-| Create/edit a plugin | `workflows:plugin-creator` | `plugin-dev:create-plugin` | create plugin, scaffold plugin, new plugin, plugin structure |
+| Activity | Route To | Wraps |
+|----------|----------|-------|
+| Create/edit a skill | `workflows:skill-creator` | `skill-creator:skill-creator` |
+| Create/edit a workflow | `workflows:workflow-creator` | (standalone meta-tool) |
+| Create/edit a plugin | `workflows:plugin-creator` | `plugin-dev:create-plugin` |
 
-### What the Wrappers Add
-
-Built-in creators handle structure. Wrappers add what they lack:
-
-1. **PostToolUse hooks** — `plugin-validate.py` and `validate-skill-paths.py` fire on every Edit/Write, catching structural errors and invalid paths mechanically
-2. **Enforcement audit** — superpowers checklist scored against each draft (Iron Laws, rationalization tables, red flags, gate functions)
-3. **Anti-pattern awareness** — production lessons like `${CLAUDE_PLUGIN_ROOT}` misuse in skill content, recipe-in-SKILL.md bypass pattern
+Trigger words: see Skill Triggers table above.
 
 ### Rationalization Table - STOP If You Think:
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "I'll just use the built-in skill-creator directly" | Built-in has no PostToolUse hooks — path errors and structural issues go uncaught | Invoke `workflows:skill-creator` which wraps the built-in AND adds hooks |
-| "This is a simple skill, doesn't need enforcement" | Even simple skills need trigger-only descriptions and valid paths — hooks catch these | Use the wrapper. It adds hooks regardless of complexity |
-| "I'm not in the workflows project, so the wrapper doesn't apply" | Wrappers apply globally — enforcement patterns matter everywhere | Invoke the workflows wrapper from any project |
-| "I'll add enforcement patterns myself without the wrapper" | You'll miss the structured audit checklist and the mechanical hook validation | The wrapper exists so you don't have to remember all 12 patterns |
-| "It's just a quick edit to an existing skill" | "Quick" edits to enforcement patterns or process flow ARE substantial | If changing sections, hooks, or flow — use the wrapper |
-| "I know the enforcement patterns already" | Knowing is not doing. The hooks fire automatically; your memory does not | Use the wrapper for mechanical enforcement |
+| "I'll use the built-in creator directly / I know the patterns" | Built-in has no PostToolUse hooks — path errors and structural issues go uncaught. Knowing is not doing; hooks fire automatically, your memory does not | Invoke the workflows wrapper |
+| "This is a simple/quick edit" | If changing process flow, hooks, or enforcement sections, it's substantial | Use the wrapper |
+| "I'm not in the workflows project" | Wrappers apply globally — enforcement patterns matter everywhere | Invoke the workflows wrapper from any project |
 
 ### Red Flags - STOP If You Catch Yourself:
 
-- **About to invoke `skill-creator:skill-creator` directly** → STOP. Use `workflows:skill-creator`.
-- **About to invoke `plugin-dev:skill-development` directly** → STOP. Use `workflows:skill-creator`.
-- **About to invoke `plugin-dev:plugin-structure` directly** → STOP. Use `workflows:plugin-creator`.
-- **Writing a SKILL.md without going through any creator skill** → STOP. Invoke the appropriate wrapper first.
-- **Editing enforcement patterns (Iron Laws, red flags, rationalization tables) without the wrapper** → STOP. This is exactly when the audit matters most.
-- **Thinking "this is just a minor change"** → STOP. If you're changing process flow, hooks, or enforcement sections, use the wrapper.
+- **About to invoke a built-in creator directly** (`skill-creator:skill-creator`, `plugin-dev:*`, etc.) → STOP. Use the workflows wrapper.
+- **Editing enforcement patterns without the wrapper** → STOP. This is exactly when the audit matters most.
 
 ## Advanced Agent Harnessing Patterns
 
