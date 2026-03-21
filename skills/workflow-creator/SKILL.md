@@ -447,94 +447,66 @@ Each task summary should end with: **Total deviations:** N auto-fixed (R1: X, R2
 
 When multiple skills operate on the same domain, they need consistent enforcement across **three layers**: constraints (prompt), hooks (structural), and script wiring (gate orchestration). Scan the target plugin:
 
-#### Layer 1: Shared Constraints (Prompt Enforcement)
+#### Layer 1: Shared Constraints (Co-located in `constraints/`)
 
 1. List all `skills/*/SKILL.md` files in the target plugin directory
 2. For each sibling skill, identify enforcement patterns (Iron Laws, Rationalization Tables, Red Flags)
-3. Check if a shared constraints file already exists (e.g., `references/common-constraints.md`)
+3. Check if a `references/constraints/` directory already exists with co-located `.md` + `.py` pairs
 
-**If shared constraints file exists:** new skills MUST `Read()` that file to inherit the common enforcement.
+**If `constraints/` directory exists:** new skills MUST `Read()` the specific `.md` files they need from that directory.
 
-**If no shared file exists but sibling skills share the same domain:** identify which enforcement patterns should apply consistently across the family and extract them to `references/common-constraints.md`:
-- Common Iron Laws that apply to all skills in the domain
-- Shared Rationalization Tables and Red Flags
-- Each skill `Read()`s the shared file; skill-specific enforcement stays inline
+**If no shared directory exists but sibling skills share the same domain:** create `references/constraints/` and extract common enforcement into atomic files — one `.md` per rule, co-located `.py` for mechanically testable rules. Each skill `Read()`s only the specific files it needs; skill-specific enforcement stays inline.
 
-**Constraint Propagation Rule:** When a new constraint is added to ANY individual skill in the family, check: does this constraint apply to other skills? If yes → add to the shared constraints file, not the individual skill. If uncertain → add to shared (over-inclusion is cheaper than drift). Mark each constraint in common-constraints.md with an `**Applies to:**` annotation listing which skills use it.
+**Constraint Propagation Rule:** When adding a new rule, create the `.md` file (+ `.py` if testable) in `references/constraints/` with `applies-to` frontmatter. Over-inclusion beats drift. The filesystem is the index — no separate TOC file to maintain.
 
-#### Atomic Reference File Architecture
+#### Constraint Architecture: Co-located Pairs, Auto-discovered
 
-When a shared constraints or conventions file grows beyond ~15 sections, refactor to an **atomic file architecture**:
+Constraints and conventions are **unit tests for agent behavior**. The architecture follows test framework design: co-located files, auto-discovery, structured output, no manual wiring.
+
+#### The One Directory
+
+All rules live in a single `constraints/` directory. No separate `conventions/` directory. The distinction between constraint and convention is **presence of a check script**, not directory location.
 
 ```
 references/
-├── common-constraints.md          → TOC/index (links + 1-line descriptions)
-├── typst-conventions.md           → TOC/index (links + 1-line descriptions)
-├── constraints/                   → atomic constraint files
-│   ├── source-first-fixes.md
+├── constraints/                       → all rules live here
+│   ├── no-agent-resume.md             → rule (loaded into LLM context)
+│   ├── no-agent-resume.py             → check script (run by test runner)
+│   ├── source-first-fixes.md          → has .py pair = constraint (tested)
+│   ├── source-first-fixes.py
 │   ├── verbatim-quotes.md
-│   └── ...
-├── conventions/                   → atomic convention files
-│   ├── bullet-spacing.md
-│   ├── fletcher-diagrams.md
+│   ├── verbatim-quotes.py
+│   ├── diagram-storytelling.md        → no .py pair = convention (judgment-only)
+│   ├── section-transitions.md         → convention (graduation candidate)
 │   └── ...
 ```
 
-**Two categories of reference files:**
+**Same name links them.** `source-first-fixes.md` + `source-first-fixes.py` = a constraint. `diagram-storytelling.md` alone = a convention. No frontmatter wiring. No manual registration. No index files to maintain.
 
-The distinction is **testability**: can you write a script that returns pass/fail?
+**Graduation = writing the `.py` file.** A convention becomes a constraint the moment you add its check script. No moving files, no updating indexes.
 
-| Category | Directory | When | Nature | Enforcement | Analogy |
-|----------|-----------|------|--------|-------------|---------|
-| **Constraints** | `constraints/` | Ex-post (verified after work) | Deterministic, mechanically testable | Check scripts (pass/fail) | Unit tests |
-| **Conventions** | `conventions/` | Ex-ante (loaded before work) | Subjective, judgment-based | Prompt context + LLM/human review | Style guide |
-
-**The classification test:** Ask the user: "Can you write a script that returns pass/fail for this rule?" If yes → constraint with paired check script. If it requires reading and judging → convention. Some rules start as conventions and **graduate** to constraints once someone figures out how to test them mechanically.
+**The classification test:** Ask the user: "Can you write a script that returns pass/fail for this rule?" If yes → write the `.py` file (constraint). If it requires reading and judging → `.md` only (convention). Some rules start as conventions and graduate when testability improves.
 
 **Examples:**
-- "Never use agent resume" → constraint (mechanically detectable in tool calls)
-- "Diagram storytelling comments must be insightful" → convention (requires judgment)
-- "Every diagram must have a `// Storytelling:` comment" → constraint (grep for presence)
-- "Bullet spacing follows parent-child indent rules" → constraint (regex-testable)
-- "Section transitions should feel natural" → convention (requires reading)
+- `no-agent-resume.md` + `no-agent-resume.py` → constraint (mechanically detectable)
+- `diagram-storytelling.md` (no `.py`) → convention (requires judgment)
+- `verbatim-quotes.md` + `verbatim-quotes.py` → constraint (diff-checkable)
+- `section-transitions.md` (no `.py`) → convention (requires reading)
 
-#### Constraint Files: Rule + Check Script Pairs
+#### Rule File Structure
 
-Each constraint comes as a **pair**: a rule file (what the rule is, for prompt context) and a check script (the unit test, for mechanical verification).
-
-```
-references/
-├── common-constraints.md          → TOC/index (links + 1-line descriptions)
-├── common-conventions.md          → TOC/index (links + 1-line descriptions)
-├── constraints/                   → atomic constraint files (rule definitions)
-│   ├── source-first-fixes.md
-│   ├── verbatim-quotes.md
-│   └── ...
-├── conventions/                   → atomic convention files (behavioral guidance)
-│   ├── diagram-storytelling.md
-│   ├── section-transitions.md
-│   └── ...
-scripts/
-├── check-all.sh                   → test runner (calls all constraint scripts)
-├── checks/                        → individual constraint check scripts
-│   ├── check-source-first.py
-│   ├── check-verbatim-quotes.py
-│   └── ...
-```
-
-**Constraint rule file** (`constraints/*.md`) — self-contained with this structure:
+Each `.md` file is self-contained:
 
 ```markdown
 ---
 name: constraint-name
 description: One-line trigger description
 applies-to: [skill-1, skill-2, skill-3]
-check-script: checks/check-constraint-name.py
 ---
 
 ## Rule
 
-The constraint stated clearly. Must be mechanically testable.
+The rule stated clearly.
 
 ## Rationale
 
@@ -546,7 +518,7 @@ The constraint stated clearly. Must be mechanically testable.
 [Example of correct behavior]
 
 ### Incorrect
-[Example of incorrect behavior — what the check script catches]
+[Example of incorrect behavior]
 
 ## Rationalization Table
 
@@ -559,62 +531,85 @@ The constraint stated clearly. Must be mechanically testable.
 - **"..."** → STOP. [Why this thought is wrong]
 ```
 
-**Convention file** (`conventions/*.md`) — same structure but WITHOUT `check-script` frontmatter. Conventions are enforced through prompt loading and LLM/human judgment during review, not scripts.
+#### Check Script Interface
 
-**Check script** (`scripts/checks/*.py`) — returns exit code 0 (pass) or non-zero (fail) with diagnostic output:
+Each `.py` file follows a standard interface so the runner can auto-discover and execute it:
 
 ```python
 #!/usr/bin/env python3
-"""Check: [constraint name] — [one-line description]"""
-import sys
-# ... check logic ...
-if violations:
-    for v in violations:
-        print(f"FAIL: {v.file}:{v.line} — {v.message}")
-    sys.exit(1)
-print("PASS: [constraint name]")
-sys.exit(0)
+"""Constraint: no-agent-resume — NEVER use agent resume; spawn fresh."""
+
+CONSTRAINT = "no-agent-resume"
+APPLIES_TO = ["all"]
+SEVERITY = "hard"  # hard = block, soft = warn
+
+def check(context):
+    """Returns list of violations. Empty list = pass."""
+    violations = []
+    # ... check logic ...
+    return violations
+
+if __name__ == "__main__":
+    import json, sys
+    violations = check({"cwd": sys.argv[1] if len(sys.argv) > 1 else "."})
+    if violations:
+        for v in violations:
+            print(f"FAIL: {v}")
+        sys.exit(1)
+    print(f"PASS: {CONSTRAINT}")
 ```
 
-#### Test Runner: check-all.sh
+#### Test Runner: Auto-discovery
 
-Every workflow with constraints MUST have a `check-all.sh` orchestrator that runs all constraint scripts. This is the test runner — verification phases call it.
+The runner **discovers** check scripts — no manual wiring. Add a `.py` file, it runs automatically.
 
-```bash
-#!/usr/bin/env bash
-# Test runner: calls all constraint check scripts
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CHECKS_DIR="$SCRIPT_DIR/checks"
-PASS=0; FAIL=0; TOTAL=0
+```python
+#!/usr/bin/env python3
+"""check-all.py — auto-discovers and runs all constraint checks."""
+import glob, importlib.util, json, sys
 
-for check in "$CHECKS_DIR"/check-*.py; do
-    TOTAL=$((TOTAL + 1))
-    if python3 "$check" "$@"; then
-        PASS=$((PASS + 1))
-    else
-        FAIL=$((FAIL + 1))
-    fi
-done
+constraints_dir = "references/constraints"
+results = {"passed": [], "failed": [], "conventions": [], "errors": []}
 
-echo "Results: $PASS/$TOTAL passed, $FAIL failed"
-[ "$FAIL" -eq 0 ]
+md_files = set(p.stem for p in Path(constraints_dir).glob("*.md"))
+py_files = set(p.stem for p in Path(constraints_dir).glob("*.py"))
+
+for name in sorted(md_files):
+    if name in py_files:
+        # Constraint — has check script, run it
+        mod = import_check(f"{constraints_dir}/{name}.py")
+        violations = mod.check(context)
+        if violations:
+            results["failed"].append({"name": name, "violations": violations})
+        else:
+            results["passed"].append(name)
+    else:
+        # Convention — no check script, flag for reviewer
+        results["conventions"].append(name)
+
+print(json.dumps(results, indent=2))
+print(f"\n{len(results['passed'])}/{len(md_files)} passed, "
+      f"{len(results['failed'])} failed, "
+      f"{len(results['conventions'])} conventions (judgment-only)")
+sys.exit(1 if results["failed"] else 0)
 ```
+
+**Coverage is automatic.** The runner computes it from the filesystem — no hand-maintained coverage matrix.
 
 #### Verification Architecture: Two Legs
-
-The verification phase in any workflow runs **both** legs:
-
-1. **Constraint checks** — run `check-all.sh` (test runner). Pass/fail per check. Hard block on failure.
-2. **Convention scoring** — spawn reviewer subagent that scores work against loaded conventions. Qualitative judgment. Soft block below threshold.
 
 ```
 Verification Phase
     ↓
-Leg 1: Run check-all.sh (constraint test suite)
-    ↓                              ↓
-    PASS                          FAIL → fix → re-run
+Leg 1: python3 check-all.py (auto-discovers constraints/*.py)
     ↓
-Leg 2: Spawn reviewer subagent (convention scoring)
+    Structured results: {passed: [...], failed: [...], conventions: [...]}
+    ↓                              ↓
+    All passed                    FAIL → fix → re-run
+    ↓
+Leg 2: Spawn reviewer subagent
+    ↓  (runner passes conventions list — the .md files without .py pairs)
+    ↓  (reviewer loads those .md files and scores work against them)
     ↓                              ↓
     Score >= threshold             Score < threshold → revise → re-score
     ↓
@@ -623,58 +618,19 @@ VERIFIED
 
 Both legs are necessary. Passing constraints but failing conventions = code that passes CI but fails code review. Passing conventions but failing constraints = code that looks good but has bugs.
 
-**The parent index files** become pure TOCs:
+**How skills reference constraint files:**
 
-```markdown
-# Common Constraints
-
-Deterministic rules for the [domain] skill family. Each constraint has a paired check script.
-
-## Index
-
-| Constraint | File | Check Script | Description |
-|------------|------|-------------|-------------|
-| Source-First Fixes | [constraints/source-first-fixes.md] | checks/check-source-first.py | Never edit generated output — fix the source |
-| Verbatim Quotes | [constraints/verbatim-quotes.md] | checks/check-verbatim-quotes.py | Quotes must match source exactly |
-```
-
-```markdown
-# Common Conventions
-
-Behavioral guidance for the [domain] skill family. Loaded ex-ante, scored by LLM/human judgment.
-
-## Index
-
-| Convention | File | Description |
-|------------|------|-------------|
-| Diagram Storytelling | [conventions/diagram-storytelling.md] | Every diagram needs visual + pedagogical insight |
-| Section Transitions | [conventions/section-transitions.md] | Transitions should connect ideas naturally |
-```
-
-**When to use atomic vs monolithic:**
-
-| Condition | Architecture |
-|-----------|-------------|
-| ≤15 sections in shared file | Monolithic — one file is fine |
-| >15 sections OR multiple distinct categories | Atomic — split into individual files |
-| Skills need different subsets of constraints | Atomic — skills `Read()` only the files they need |
-| Constraints have complex examples/rationale | Atomic — keeps each file focused and complete |
-
-**How skills reference atomic files:**
-
-Skills can reference constraints at two granularity levels:
-1. **Load the index** — `Read()` the parent TOC to get the full list, then load specific files as needed
-2. **Load specific files** — `Read()` only the atomic files relevant to the current phase
+Skills `Read()` only the specific `.md` files relevant to the current phase:
 
 ```
 # In a skill's SKILL.md:
-Read `${CLAUDE_SKILL_DIR}/../../references/common-constraints.md` for the full constraint index.
-For this phase, load these specific constraints:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/source-first-fixes.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/verbatim-quotes.md`
 ```
 
-**Constraint Propagation Rule (atomic version):** When adding a new constraint, create a new atomic file in the appropriate directory (`constraints/` or `conventions/`), add a row to the parent index, and set the `applies-to` frontmatter. Over-inclusion beats drift — when uncertain whether a constraint applies to a skill, include it.
+No index file needed. The filesystem IS the index. `ls constraints/*.md` shows all rules. `ls constraints/*.py` shows all tests.
+
+**Constraint Propagation Rule:** When adding a new rule, create the `.md` file in `constraints/`. If it's mechanically testable, also create the `.py` file. Set `applies-to` in the `.md` frontmatter. Over-inclusion beats drift.
 
 #### Layer 2: Hook Coverage (Structural Enforcement)
 
@@ -694,32 +650,32 @@ Read `${CLAUDE_SKILL_DIR}/../../references/constraints/verbatim-quotes.md`
 
 **Why hooks drift:** Hooks are added when a failure mode is discovered in one skill. The fix adds the hook to that skill's frontmatter but doesn't propagate to siblings. Unlike constraints (which can drift subtly), missing hooks are silent — no error, no warning, the enforcement just doesn't fire.
 
-#### Layer 3: Script Wiring (Gate Orchestration)
+#### Layer 3: Script Wiring (Auto-discovery + Hooks)
 
-1. List all check/guard scripts in `hooks/` and `scripts/`
-2. For each script, verify it's referenced in:
-   - (a) At least one skill's hook frontmatter
-   - (b) The batch orchestrator (e.g., `check-all.sh`) if one exists
-   - (c) `references/verification-checks.md` if it implements a named check
-3. Produce a **Script Wiring Matrix**:
+With the co-located architecture, script wiring is simpler — the auto-discovering runner (`check-all.py`) handles batch execution. But hooks still need explicit wiring:
+
+1. List all `.py` check scripts in `references/constraints/`
+2. Verify the auto-discovering runner (`check-all.py`) exists and globs `constraints/*.py`
+3. For guard hooks (`PreToolUse`/`PostToolUse`), verify each is in at least one skill's YAML frontmatter
+4. Produce a **Script Wiring Matrix**:
 
 ```
-| Script              | Hook Reference | Batch Orchestrator | Check Definition |
-|---------------------|---------------|--------------------|------------------|
-| check-conventions.py | ✅ convention-check-guard.py | ✅ check-all.sh | ✅ verification-checks.md |
-| check-widows.py     | ✅ post-compile-widow-guard.py | ✅ check-all.sh | ✅ verification-checks.md |
-| new-check.py        | ❌ No hook    | ❌ Not in batch     | ✅ verification-checks.md |
+| Script              | Auto-discovered | Hook Reference |
+|---------------------|----------------|----------------|
+| no-agent-resume.py  | ✅ constraints/ | ✅ pre-tool guard |
+| source-first.py     | ✅ constraints/ | ✅ pre-tool guard |
+| check-widows.py     | ✅ constraints/ | ✅ post-compile guard |
+| new-check.py        | ✅ constraints/ | ❌ No hook |
 ```
 
-4. Flag any script with gaps — a script that exists but isn't wired into all three layers is enforcement theater
+5. Flag any `.py` file in `constraints/` without a corresponding `.md` file (orphaned test)
+6. Flag any guard hook that references a script NOT in `constraints/` (manual wiring when it should be co-located)
 
-**Why scripts unwire:** New check scripts are created to catch a specific failure mode. The author adds the script and its check definition, but forgets to wire it into the batch orchestrator or create a corresponding guard hook. The script exists, passes when run manually, but never fires automatically.
-
-**Why:** Skills in the same domain need the same guardrails across all three layers. Without shared enforcement, each skill gets its own version of the rules — and they drift apart as skills are edited independently. Constraints drift through independent editing. Hooks drift through selective addition. Scripts drift through incomplete wiring.
+**Why auto-discovery eliminates most wiring bugs:** Adding a `.py` to `constraints/` = automatically run by the test runner. No manual registration. The main wiring failure mode now is hooks — guard hooks still need explicit YAML frontmatter.
 
 **Gate: Cross-Skill Consistency Complete**
 - Verify sibling skills were scanned (or note that no siblings exist)
-- Layer 1: If shared constraints exist, verify new skills Read() the shared file. If skills share a domain, verify common enforcement is in a shared file.
+- Layer 1: If `constraints/` directory exists, verify sibling skills `Read()` the specific `.md` files they need. If skills share a domain, verify common rules are in `constraints/` (not inlined).
 - Layer 2: Hook Coverage Matrix produced. No unexplained gaps.
 - Layer 3: Script Wiring Matrix produced. No unwired scripts.
 
@@ -768,14 +724,13 @@ The entry point runs sequentially — each phase loads its constraints and passe
 
 See Step 4b for the full atomic constraint/convention architecture. This section covers only the **midpoint-specific** concern.
 
-**Midpoint constraint loading with atomic files:** The midpoint must load every constraint it needs before touching the work. With atomic files, this means loading the specific constraint files relevant to the current phase — not the entire index. The index tells you WHAT exists; the atomic files contain the actual enforcement.
+**Midpoint constraint loading:** The midpoint must load every constraint it needs before touching the work. Load the specific `.md` files relevant to the current phase directly — no index file needed.
 
 ```
 /writing-revise loads:
   1. .planning/ACTIVE_WORKFLOW.md    → workflow state
-  2. references/common-constraints.md → index (scan for relevant constraints)
-  3. references/constraints/verbatim-quotes.md → specific constraint needed for revision
-  4. references/constraints/source-first-fixes.md → specific constraint needed for revision
+  2. references/constraints/verbatim-quotes.md → specific constraint for revision
+  3. references/constraints/source-first-fixes.md → specific constraint for revision
   THEN: check the draft against loaded constraints
 ```
 
@@ -810,11 +765,11 @@ Create the following artifacts:
 1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
 2. **Midpoint command** (`skills/[name]-fix/SKILL.md` or `skills/[name]-debug/SKILL.md`) — self-contained re-entry
 3. **Phase skills** (`skills/[name]-[phase]/SKILL.md`) — one per phase, internal only
-4. **Shared reference files** — if >15 constraints/conventions identified, use atomic architecture:
-   - `references/common-constraints.md` — TOC/index linking to atomic files
-   - `references/constraints/*.md` — one file per behavioral rule (Iron Laws, process rules)
-   - `references/conventions/*.md` — one file per formatting/structural pattern (if applicable)
-   - If ≤15 total, a single monolithic `references/common-constraints.md` is fine
+4. **Constraint files** — co-located in `references/constraints/`:
+   - One `.md` per rule (loaded into LLM context)
+   - Co-located `.py` for mechanically testable rules (auto-discovered by runner)
+   - `.md` without `.py` = convention (judgment-only)
+   - `check-all.py` auto-discovering runner
 5. **Wire up transitions** — each phase ends by reading the next phase's skill
 
 #### State Folder Convention
@@ -970,24 +925,17 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Could a user get inconsistent enforcement depending on which skill they invoke?
 
 **Cross-skill consistency (three layers):**
-- **Constraints:** Do all sibling skills Read() the same shared constraints file? Are constraints that apply to multiple skills in the shared file (not inlined in individual skills)? If the shared file has >15 sections or mixes constraints with conventions, is it refactored to atomic architecture (`constraints/` + `conventions/` subdirectories with self-contained files)?
+- **Constraints:** Do all sibling skills Read() from the same `constraints/` directory? Are rules co-located (`.md` + `.py` pairs for testable rules, `.md` only for conventions)? Is there an auto-discovering runner (`check-all.py`) that globs `constraints/*.py`?
 - **Hooks:** Do all sibling skills declare the same hooks in their YAML frontmatter? If a hook is present in some siblings but not others, is the gap justified? (Produce a Hook Coverage Matrix: skills × hooks)
 - **Script wiring:** Is every check script referenced in all three layers: (a) hook frontmatter, (b) batch orchestrator, (c) verification-checks definition? (Produce a Script Wiring Matrix: scripts × invocation points)
 
-**Constraint/convention classification & test coverage:**
-- Are constraints and conventions correctly classified? The test: can you write a script that returns pass/fail? If yes → constraint. If it requires judgment → convention.
-- Does every constraint have a **paired check script** in `scripts/checks/`? A constraint without a check script is an untested unit test — enforcement theater.
-- Does `check-all.sh` (or equivalent test runner) exist and call all constraint check scripts?
-- Does the verification phase run **both legs**: constraint checks (test runner) AND convention scoring (reviewer subagent)?
-- Are there conventions that could **graduate** to constraints? (i.e., someone has since figured out how to test them mechanically)
-- Produce a **Constraint Coverage Matrix**:
-
-```
-| Constraint | Rule File | Check Script | Wired in check-all.sh |
-|------------|-----------|-------------|----------------------|
-| source-first-fixes | ✅ constraints/ | ✅ checks/ | ✅ |
-| verbatim-quotes | ✅ constraints/ | ❌ MISSING | ❌ |
-```
+**Constraint/convention test coverage:**
+- Do all rules live in a single `constraints/` directory? (no separate `conventions/` directory)
+- Is the constraint/convention distinction based on **presence of a `.py` check script**, not directory location?
+- Does `check-all.py` (auto-discovering test runner) exist? Does it glob `constraints/*.py` — no manual wiring?
+- Does the verification phase run **both legs**: constraint checks (test runner, hard block) AND convention scoring (reviewer subagent loads `.md` files without `.py` pairs, soft block)?
+- Are there `.md`-only files (conventions) that could **graduate** to constraints by adding a `.py` check script?
+- Compute **coverage** from the filesystem: `len(*.py) / len(*.md)` — what percentage of rules have mechanical tests?
 
 **Iteration strategy:**
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
@@ -1282,18 +1230,18 @@ Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
 | Self-review as final gate | Add fresh subagent reviewer dispatch |
 | Missing Red Flags | 3-5 wrong-path indicators |
 | Missing Drive-Aligned Framing | 5-drive table (helpfulness > competence > efficiency > approval > honesty) |
-| No shared enforcement across skill family | Extract to `references/common-constraints.md`; all domain skills Read() it |
-| Monolithic shared file >15 sections | Refactor to atomic architecture: `constraints/` and/or `conventions/` subdirs; parent file becomes TOC/index; each atomic file self-contained with rule + rationale + examples + rationalization table + red flags |
-| Skills loading entire monolithic file when they need 3 constraints | Switch to atomic: skills `Read()` only the specific constraint files they need |
-| Mixed constraints and conventions in one file | Split by testability: `constraints/` (mechanically testable, pass/fail scripts) and `conventions/` (judgment-based, loaded ex-ante for prompt context) |
-| Constraint without paired check script | Write the check script in `scripts/checks/`. A constraint without a test is enforcement theater |
-| No test runner (check-all.sh) | Create `scripts/check-all.sh` that calls all constraint check scripts. Verification phase calls this |
-| Verification only runs constraint checks OR only convention scoring | Verification needs both legs: constraint checks (test runner, hard block) AND convention scoring (reviewer subagent, soft block) |
-| Convention that could be a constraint | Graduate it: write a check script, move from `conventions/` to `constraints/`, add to check-all.sh |
-| Constraint file missing `check-script` frontmatter | Add `check-script: checks/check-[name].py` to frontmatter, linking rule to its test |
+| No shared enforcement across skill family | Move rules to `references/constraints/`; all domain skills `Read()` the specific `.md` files they need |
+| Rules in separate `constraints/` and `conventions/` directories | Merge into single `constraints/` directory. Presence of `.py` file = constraint; `.md` only = convention |
+| Monolithic shared constraints file >15 sections | Refactor to atomic files in `constraints/` — one `.md` per rule, co-located `.py` for testable rules |
+| Constraint `.md` without co-located `.py` check script | Write the `.py` file alongside the `.md`. Same name, same directory. Auto-discovered by runner |
+| No auto-discovering test runner | Create `check-all.py` that globs `constraints/*.py` — no manual wiring needed |
+| Manual test runner that lists scripts explicitly | Replace with auto-discovery (`glob("constraints/*.py")`). Adding a `.py` file = automatically tested |
+| Verification only runs scripts OR only does LLM review | Both legs: `check-all.py` (hard block on `.py` failures) + reviewer subagent (soft block, scores `.md`-only conventions) |
+| Convention that could be a constraint | Graduate it: write the `.py` check script alongside the existing `.md`. No file moves needed |
+| `check-script` frontmatter linking `.md` to `.py` | Remove — naming convention handles the link. `foo.md` + `foo.py` = paired |
+| Index/TOC files manually listing constraints | Remove — the filesystem IS the index. `ls constraints/*.md` = all rules, `ls constraints/*.py` = all tests |
 | Hooks inconsistent across skill family | Produce Hook Coverage Matrix (skills × hooks); add missing hooks to skill frontmatter; justify intentional gaps |
-| New check script not wired into batch orchestrator | Add script invocation to batch orchestrator (check-all.sh equivalent); update verification-checks.md |
-| Constraint added to individual skill but applies to family | Move to common-constraints.md with `**Applies to:**` annotation; remove from individual skill |
+| Constraint added to individual skill but applies to family | Move to `references/constraints/` with `applies-to` frontmatter; remove from individual skill |
 | Missing artifact review gate | Add reviewer subagent dispatch between producing/consuming phases, max 5 iterations |
 | Broken paths (script) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py` |
 | Broken paths (Read) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` |
@@ -1322,16 +1270,16 @@ Mode 3 can be expensive. These optimizations reduce cost without sacrificing aud
 
 #### 1. Batch Fixes Per File
 
-Group all fixes targeting the same file into a single edit. Don't make 5 separate edits to `references/common-constraints.md` — read the audit findings, plan all changes to that file, apply them in one Edit call.
+Group all fixes targeting the same file into a single edit. Don't make 5 separate edits to the same constraint file — read the audit findings, plan all changes, apply them in one Edit call.
 
 #### 2. Scoped Re-Audit After Iteration 1
 
-The first audit (baseline) must read ALL files — no shortcuts. After that, subsequent audits can be **scoped**: the audit subagent reads all files but the fix agent only needs to re-read files it changed + common-constraints.md. The audit subagent always does a full read (independence requires it), but the fixer can be smarter about what it reads before fixing.
+The first audit (baseline) must read ALL files — no shortcuts. After that, subsequent audits can be **scoped**: the audit subagent reads all files but the fix agent only needs to re-read files it changed + the specific constraint `.md` files relevant to the fix. The audit subagent always does a full read (independence requires it), but the fixer can be smarter about what it reads before fixing.
 
 #### 3. Prioritize Cheapest High-Impact Fixes
 
 After the audit, sort gaps by `impact / effort`:
-- Adding a section to common-constraints.md (shared file, all skills inherit) = high impact, low effort
+- Adding a `.md` + `.py` pair to `constraints/` (all skills inherit, auto-discovered) = high impact, low effort
 - Adding `allowed-tools` frontmatter to 3 reviewer skills = high impact, 5 seconds each
 - Rewriting a phase skill's entire gate structure = medium impact, high effort
 
@@ -1397,11 +1345,11 @@ If multiple skills in the same plugin operate on the same domain, their common e
 
 **The course-materials incident (March 2026):** batch-check-guard was added to slides-edit but not lecture-prep. convention-check-guard was added to sub-agent prompts but not as a hook. check-conventions.py existed but wasn't in check-all.sh. Result: lecture-prep shipped work that slides-edit would have caught. The constraints file was shared, but hooks and script wiring were not — two of three layers failed silently.
 
-### NO CONSTRAINT WITHOUT A CHECK SCRIPT
-A constraint is a mechanically testable rule — if you can write a script that returns pass/fail, it's a constraint. Every constraint MUST ship with a paired check script. A constraint without a test is like a unit test without an assertion: it documents intent but verifies nothing. Verification runs `check-all.sh` which calls every constraint's check script. If your constraint isn't in the test suite, it's not enforced.
+### NO CONSTRAINT WITHOUT A CO-LOCATED CHECK SCRIPT
+A constraint is a mechanically testable rule. Every constraint `.md` MUST have a co-located `.py` check script with the same name in the same `constraints/` directory. No frontmatter linking, no manual wiring — same name = paired. The auto-discovering runner (`check-all.py`) globs `constraints/*.py`. If your constraint doesn't have a `.py` file, it's a convention (judgment-only), not a constraint. A `.md` that claims to be a constraint but has no `.py` is an untested unit test.
 
 ### NO VERIFICATION WITHOUT BOTH LEGS
-Verification has two legs: (1) constraint checks via `check-all.sh` — deterministic, pass/fail, hard block; (2) convention scoring via reviewer subagent — judgment-based, soft block. Running only one leg is incomplete. Scripts catch mechanical violations LLMs miss. LLMs catch quality issues scripts can't test. Both are necessary, neither alone is sufficient.
+Verification has two legs: (1) constraint checks via auto-discovering `check-all.py` — runs all `constraints/*.py` files, structured JSON output, hard block on failure; (2) convention scoring via reviewer subagent — loads the `.md`-only files (no `.py` pair = convention), scores work against them, soft block below threshold. Running only one leg is incomplete. Scripts catch mechanical violations LLMs miss. LLMs catch quality issues scripts can't test. Both are necessary, neither alone is sufficient.
 
 ### NO VERIFIER WITH WRITE ACCESS
 Verification and review agents MUST use `allowed-tools` frontmatter restricting them to read-only tools. A verifier that can Write/Edit will "fix" issues it finds — silently bypassing the plan-execute-verify cycle. The fix was never planned, never reviewed, never tested. Tool restrictions make verification structurally honest, not just procedurally independent.
@@ -1419,14 +1367,13 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Writing soft language instead of Iron Laws | LLMs ignore polite suggestions | Use strong framing with EXTREMELY-IMPORTANT tags |
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
-| Creating domain skills without shared enforcement | Each skill enforces its own version of the rules. lecture-prep misses checks that slides-edit catches — user has to run multiple skills to get consistent quality. | Extract common enforcement to `references/common-constraints.md` that all domain skills Read() |
+| Creating domain skills without shared enforcement | Each skill enforces its own version of the rules. lecture-prep misses checks that slides-edit catches — user has to run multiple skills to get consistent quality. | Co-locate common rules in `references/constraints/` — skills `Read()` the specific `.md` files they need |
 | Adding a hook to one skill without checking siblings | Hook fires in slides-edit but not lecture-prep. The user gets different enforcement depending on which skill they invoke. Silent — no error, just missing enforcement. | Produce Hook Coverage Matrix. Add hook to all relevant siblings or justify the gap. |
-| Adding a check script without wiring it into the batch orchestrator | Script exists, passes when run manually, but never fires during the verification gate. False confidence — the gate "passes" but the check never ran. | Wire into batch orchestrator AND hook frontmatter AND verification-checks.md. All three layers. |
-| Adding a constraint to an individual skill that should be shared | Constraint works in lecture-prep but notes-edit doesn't have it. User discovers the gap when notes-edit ships work that lecture-prep would have caught. | Add to common-constraints.md with `**Applies to:**` annotation. Over-inclusion beats drift. |
-| Growing a monolithic constraints file past 20+ sections | Every skill loads 450+ lines of constraints when it needs 5. Context bloat, slow loads, hard to maintain. Each edit risks breaking unrelated sections. | Refactor to atomic files. Parent becomes TOC. Each constraint self-contained. Skills load only what they need. |
-| Mixing constraints and conventions in one directory | A constraint ("never edit generated output") is mechanically testable; a convention ("center images with #align") requires judgment. Mixing them means you can't run the constraints as a test suite. | Separate by testability: `constraints/` (has check script) and `conventions/` (prompt-loaded, judgment-scored). |
-| Writing a constraint without a check script | A constraint without a test is like a unit test without an assertion — it documents intent but verifies nothing. | Write the check script alongside the rule file. They're a pair. |
-| Verification phase that only runs scripts OR only does LLM review | Scripts catch mechanical violations but miss quality. LLM review catches quality but misses mechanical violations. Both miss things the other catches. | Run both legs: check-all.sh (hard block) + reviewer subagent (soft block). |
+| Adding a constraint to an individual skill that should be shared | Constraint works in lecture-prep but notes-edit doesn't have it. User discovers the gap when notes-edit ships work that lecture-prep would have caught. | Add `.md` + `.py` to `references/constraints/` with `applies-to` frontmatter. Over-inclusion beats drift. |
+| Growing a monolithic constraints file past 20+ sections | Every skill loads 450+ lines of constraints when it needs 5. Context bloat, slow loads, hard to maintain. | Refactor to atomic files in `constraints/`. One `.md` per rule, co-located `.py` for testable ones. Skills `Read()` only what they need. |
+| Writing a constraint `.md` without a co-located `.py` | A constraint without a test is like a unit test without an assertion — it documents intent but verifies nothing. | Write the `.py` alongside the `.md`. Same name, same directory. Auto-discovered by runner. |
+| Manually wiring check scripts into a runner | Manual wiring means new checks silently fail to run. Adding a file should be enough. | Use auto-discovering runner (`glob("constraints/*.py")`). No registration needed. |
+| Verification phase that only runs scripts OR only does LLM review | Scripts catch mechanical violations but miss quality. LLM review catches quality but misses mechanical violations. | Run both legs: `check-all.py` (hard block) + reviewer subagent scoring `.md`-only conventions (soft block). |
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 | No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
 | No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
@@ -1454,13 +1401,13 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
 | "Each skill can have its own enforcement" | Then lecture-prep misses what slides-edit catches, and the user runs 3 skills to get what 1 should provide. | Shared enforcement file. One source of truth for the domain. |
 | "This hook only applies to slides-edit, not lecture-prep" | Hooks enforce mechanical constraints. If the constraint applies to the domain, it applies to ALL skills in the domain. A hook that fires in one skill but not its sibling creates inconsistent enforcement with no visible warning. | Add to all sibling skills or justify in the Hook Coverage Matrix. |
-| "The script works when I run it manually" | Manual execution proves the script works. It doesn't prove the script runs automatically. An unwired script is enforcement theater — it exists but never fires. | Wire into all three layers: hook frontmatter, batch orchestrator, check definitions. |
-| "I'll add this constraint to common-constraints.md later" | Later never comes. The constraint lives in one skill, the other skills ship without it, and nobody notices until the user gets inconsistent results. | Add to shared file NOW. Over-inclusion is cheaper than drift. |
-| "One big constraints file is simpler than many small files" | Simpler to create, harder to maintain. At 20+ sections, every edit is a merge risk, every skill loads 400+ lines it doesn't need, and nobody reads the whole thing. | Atomic files: one constraint per file, self-contained, independently loadable. |
-| "Splitting constraints into files is premature" | If you have 15+ sections or mixed categories, the split is overdue. The course-materials plugin hit 453 lines / 20 sections before refactoring. | Split when >15 sections or when constraints and conventions coexist. |
-| "This rule doesn't need a check script" | If it's a constraint, it needs a test. If it can't be tested, it's a convention — classify it correctly. | Ask: "Can I write a script that returns pass/fail?" If yes, write the script. |
-| "I'll write the check script later" | Later never comes. The constraint ships without its test. Verification runs check-all.sh and this constraint is silently skipped. | Write the rule file and check script as a pair. They ship together. |
-| "The LLM review covers everything, scripts are redundant" | LLM review drifts, rationalizes, and misses mechanical violations. Scripts are deterministic — they catch the same thing every time. | Scripts for mechanical checks, LLM for judgment. Both legs of verification. |
+| "I'll add this constraint to the shared file later" | Later never comes. The rule lives in one skill, others ship without it. | Add `.md` (+ `.py` if testable) to `constraints/` NOW. Over-inclusion is cheaper than drift. |
+| "One big constraints file is simpler than many small files" | Simpler to create, harder to maintain. At 20+ sections, every skill loads 400+ lines it doesn't need. | Atomic files: one `.md` per rule, co-located `.py` for testable ones. |
+| "I need an index file to track all constraints" | The filesystem IS the index. `ls constraints/*.md` = all rules. `ls constraints/*.py` = all tests. | No index needed. Auto-discovery replaces manual tracking. |
+| "This rule doesn't need a check script" | If it's mechanically testable, it needs a `.py` file. If it can't be tested, it's a convention — that's fine, just don't call it a constraint. | Ask: "Can I write a script that returns pass/fail?" If yes, write the `.py`. |
+| "I'll write the check script later" | Later never comes. The `.md` ships without its `.py`. The runner auto-discovers nothing. | Write `.md` and `.py` together. They're a pair. |
+| "I need to register the check script in the runner" | Auto-discovery means adding the `.py` file IS registration. Manual wiring is a bug source. | Just add the `.py` file. The runner globs `constraints/*.py`. |
+| "The LLM review covers everything, scripts are redundant" | LLM review drifts, rationalizes, and misses mechanical violations. Scripts are deterministic. | Scripts for mechanical checks, LLM for judgment. Both legs of verification. |
 | "This convention could be a constraint but testing it is hard" | Start it as a convention. Note it as a graduation candidate. Revisit when you have a testing idea. Don't force-fit a bad test. | Classify honestly. Graduation happens when testability improves, not when you want fewer conventions. |
 | "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
 | "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
