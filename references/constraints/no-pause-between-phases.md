@@ -2,6 +2,7 @@
 name: no-pause-between-phases
 description: After passing a phase gate, IMMEDIATELY load and execute the next skill
 applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+check-script: checks/check-no-pause-between-phases.py
 ---
 
 ## Rule
