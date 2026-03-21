@@ -119,6 +119,8 @@ Score against all 12 patterns. Use the scoring template from the checklist. Focu
 
 8. **No Pause Between Tasks** — Does the skill prevent "should I continue?" between tasks?
 
+8b. **Flat Agent Dispatch** — If the skill spawns agents that perform multiple checks or tasks, does the skill spawn them ALL directly in parallel? Or does it spawn a "dispatcher" agent that spawns its own sub-agents? Three-layer delegation (skill → agent → sub-agents) fails because sub-sub-agent results don't reliably return. The orchestrator must spawn all agents directly. See workflow-creator's Iron Law of Flat Dispatch.
+
 9. **Delete & Restart** — For protocol violations, does the skill mandate deletion of contaminated work?
 
 10. **Staged Review Loops** — Do implementation sections have review loops with iteration limits?

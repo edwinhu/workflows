@@ -161,6 +161,8 @@ Based on the interview answer about iteration, assign each phase an iteration st
 | **Parallel exploration** | Multiple valid approaches, robustness checking | Spawn N subagents simultaneously, converge findings in state file |
 | **Agent team** | Output needs multi-faceted review | Specialized reviewer subagents in parallel (e.g., copy + critic + fact-check), consolidate in REVIEW.md |
 
+**CRITICAL — Flat Dispatch Only:** For "Parallel exploration" and "Agent team" strategies, the orchestrator (phase skill or main chat) MUST spawn all agents directly. Never design an intermediate "coordinator" or "dispatcher" agent that spawns sub-agents on its own. See Iron Law of Flat Dispatch.
+
 **Exit conditions by strategy:**
 
 | Strategy | Exit Gate | Escalate When |
@@ -919,6 +921,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - For subjective output, are there multiple specialized reviewers? (team topology)
 - Is self-review ever the final gate? (it shouldn't be)
 - Does verification check all 4 depth levels, or just existence?
+- Does any agent spawn its own sub-agents? (nested dispatch — must be flat instead)
 
 **Verification depth levels** (from GSD goal-backward verification):
 
@@ -1264,6 +1267,7 @@ Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 | Hooks inconsistent across skill family | Produce Hook Coverage Matrix (skills × hooks); add missing hooks to skill frontmatter; justify intentional gaps |
 | Constraint added to individual skill but applies to family | Move to `references/constraints/` with `applies-to` frontmatter; remove from individual skill |
 | Missing artifact review gate | Add reviewer subagent dispatch between producing/consuming phases, max 5 iterations |
+| Nested agent dispatch (agent spawns sub-agents) | Flatten: orchestrator spawns all agents directly in parallel. Move "dispatcher" logic into the skill definition. |
 | Broken paths (script) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py` |
 | Broken paths (Read) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` |
 | Missing post-subagent enforcement | Add verification/investigation boundary table for the domain |
@@ -1377,6 +1381,18 @@ Verification and review agents MUST use `allowed-tools` frontmatter restricting 
 
 ### NO LONG WORKFLOW WITHOUT CONTEXT MONITORING
 Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% remaining context (complete current task, then handoff). Critical at ≤25% (immediate handoff). An agent that starts a 10-task implementation phase with 20% context remaining will produce garbage for the last 5 tasks.
+
+### NO NESTED AGENT DISPATCH (Iron Law of Flat Dispatch)
+Never design a workflow where an agent spawns its own sub-agents. The orchestrator (main chat or phase skill) MUST spawn all agents directly in parallel. Three-layer delegation (orchestrator → dispatcher agent → sub-sub-agents) fails because sub-sub-agent results don't reliably return via SendMessage — the middle dispatcher times out or loses results.
+
+**The course-materials incident (March 2026):** `slides-edit` spawned `teaching:reviewer`, which dispatched 5 background sub-sub-agents (`slide-auditor`, `notes-auditor`). The reviewer returned without a final report. Had to be called 3 times — the 3rd time with "do NOT spawn sub-agents, run ALL checks inline." Fix: `slides-edit` now spawns 4-5 review agents directly. All return reliably.
+
+```
+BAD:  orchestrator → dispatcher agent → 5× sub-sub-agents (results lost)
+GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
+```
+
+**When an agent needs multiple checks:** The orchestrator reads the check list and spawns each check as a direct parallel agent. The "dispatcher" logic lives in the skill/phase definition, not in a middle agent.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:
@@ -1409,6 +1425,7 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | Requirements have no unique IDs | "We tested auth" doesn't tell you if login, refresh, AND logout are covered. | Assign IDs in `.planning/SPEC.md`, trace through `.planning/PLAN.md` and `.planning/VALIDATION.md` |
 | Every phase requires manual invocation | 7-phase workflow needs 7 human interventions to run. | Add autonomous chaining with auto-advance for human-verify gates |
 | Decision checkpoint with no review pattern tracking | You don't know what the human looks at, so you can't optimize for it. | Log what the human asks for at each review. After 3+ patterns, offer to automate. |
+| Designing an agent that spawns its own sub-agents | 3-layer delegation fails — sub-sub-agent results don't reliably return via SendMessage. The middle dispatcher times out or loses results. March 2026: teaching:reviewer dispatched 5 sub-agents, returned empty 2/3 times. | Use flat parallel dispatch: the orchestrator spawns ALL agents directly. Put the "dispatcher" logic in the skill definition, not in an agent. |
 
 ## Rationalization Table
 
@@ -1437,6 +1454,8 @@ Workflows with 4+ phases MUST plan for context exhaustion. Warning at ≤35% rem
 | "Requirement IDs are bureaucracy" | Without IDs, the validation phase maps requirements by fuzzy text matching. "Auth" matches 3 different requirements and misses 2. | IDs take 30 seconds to assign and make coverage auditable. |
 | "Autonomous mode is too risky without human oversight" | 90% of gates are rubber-stamp `human-verify`. The other 10% still pause. Autonomous mode skips the rubber stamps, not the real decisions. | Classify checkpoints. Auto-advance the rubber stamps. |
 | "The human can read the test output to verify" | Maybe they can, maybe they rubber-stamp it. You don't know until you observe. Don't assume — track what they actually do. | Log the review pattern. If they consistently ask for a specific view, automate it. |
+| "The dispatcher pattern keeps things modular" | 3-layer delegation fails because sub-sub-agent results don't reliably return. The middle dispatcher times out, returns empty, or loses results. Modularity that doesn't work isn't modular — it's broken. | Flat dispatch from the orchestrator. The "dispatcher" logic lives in the skill definition (a file), not in an agent (a runtime). |
+| "This agent needs to coordinate multiple checks" | Coordination is the orchestrator's job. An agent that spawns other agents is a dispatcher — and dispatchers fail. March 2026: reviewer agent had to be called 3 times before results returned. | The orchestrator reads the check list and spawns each check as a direct parallel agent. |
 
 ### Why Skipping Steps Hurts the Thing You Care About Most
 
