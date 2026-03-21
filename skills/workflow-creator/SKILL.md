@@ -31,22 +31,43 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 Before detecting mode, check for existing workflow-creator state:
 
-1. Check if `.planning/wc/HANDOFF.md` exists
-2. If found → read it, offer to resume from recorded state (skip mode detection)
+1. Check if `.planning/wc/` exists and list subdirectories
+2. If any subdirectory contains `HANDOFF.md` → read it, offer to resume from recorded state (skip mode detection)
 3. If not found → proceed with mode detection below
 
+**Determining `{name}`:** The `{name}` in all state file paths is the target workflow name (e.g., `dev`, `ds`, `writing`, `teaching`). For Mode 1, use the proposed workflow name from the interview. For Modes 2-3, use the workflow being audited/improved.
+
 **Why `.planning/wc/`:** workflow-creator's state files must NOT conflict with the target project's `.planning/` state files (SPEC.md, PLAN.md, STATE.md, etc.). The `wc/` subdirectory isolates workflow-creator's meta-state from the workflow state it's auditing or creating.
+
+**Namespace by target workflow:** Each workflow-creator invocation operates on a specific target workflow. State files go in `.planning/wc/{workflow-name}/` to prevent clashes when auditing/improving multiple workflows in parallel (e.g., parallel companions auditing dev, ds, writing simultaneously).
+
+```
+.planning/wc/
+├── dev/                    → audit/improve state for dev workflow
+│   ├── STATE.md
+│   ├── AUDIT.md
+│   └── SCORES.md
+├── ds/                     → audit/improve state for ds workflow
+│   ├── STATE.md
+│   ├── AUDIT.md
+│   └── SCORES.md
+└── writing/                → audit/improve state for writing workflow
+    ├── STATE.md
+    └── AUDIT.md
+```
+
+For Mode 1 (create), use the proposed workflow name: `.planning/wc/{new-workflow-name}/`.
 
 **Standard workflow-creator state files:**
 
 | File | Purpose | Created By |
 |------|---------|-----------|
-| `.planning/wc/STATE.md` | Current mode + step | All modes at startup |
-| `.planning/wc/INTERVIEW.md` | Captured interview answers | Mode 1 Step 2 |
-| `.planning/wc/DESIGN.md` | Phase decomposition decisions | Mode 1 Step 3 |
-| `.planning/wc/AUDIT.md` | Audit findings and scores | Mode 2 Step 4, Mode 3 Phase A |
-| `.planning/wc/SCORES.md` | Score history across iterations | Mode 3 Phase A |
-| `.planning/wc/HANDOFF.md` | Session resume context | Any mode on context exhaustion |
+| `.planning/wc/{name}/STATE.md` | Current mode + step | All modes at startup |
+| `.planning/wc/{name}/INTERVIEW.md` | Captured interview answers | Mode 1 Step 2 |
+| `.planning/wc/{name}/DESIGN.md` | Phase decomposition decisions | Mode 1 Step 3 |
+| `.planning/wc/{name}/AUDIT.md` | Audit findings and scores | Mode 2 Step 4, Mode 3 Phase A |
+| `.planning/wc/{name}/SCORES.md` | Score history across iterations | Mode 3 Phase A |
+| `.planning/wc/{name}/HANDOFF.md` | Session resume context | Any mode on context exhaustion |
 
 ---
 
@@ -65,7 +86,7 @@ Discover and read PHILOSOPHY.md:Read `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md` a
 
 **After verifying Philosophy is loaded, write initial state:**
 ```bash
-mkdir -p .planning/wc && cat > .planning/wc/STATE.md << 'EOF'
+mkdir -p .planning/wc/{name} && cat > .planning/wc/{name}/STATE.md << 'EOF'
 ---
 mode: create
 step: 1-philosophy
@@ -95,7 +116,7 @@ Use AskUserQuestion to understand the domain:
 
 **After verifying Interview is complete, persist answers and update state:**
 
-Write `.planning/wc/INTERVIEW.md` with all 6 answers in structured format:
+Write `.planning/wc/{name}/INTERVIEW.md` with all 6 answers in structured format:
 ```yaml
 ---
 workflow_name: [proposed name]
@@ -110,7 +131,7 @@ domain: [code/data/writing/research/other]
 6. **Verification:** ...
 ```
 
-Update `.planning/wc/STATE.md`: `step: 2-interview, status: completed`
+Update `.planning/wc/{name}/STATE.md`: `step: 2-interview, status: completed`
 
 **IMMEDIATELY proceed to Step 3.**
 
@@ -366,16 +387,16 @@ Phase N produces ARTIFACT.md
 
 **After verifying Artifact Review Gates are designed, persist design decisions:**
 
-Write `.planning/wc/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
+Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
 
-Update `.planning/wc/STATE.md`: `step: 3b-artifact-review, status: completed`
+Update `.planning/wc/{name}/STATE.md`: `step: 3b-artifact-review, status: completed`
 
 **IMMEDIATELY proceed to Step 4.**
 
 ### Step 4: Apply Enforcement Patterns
 
 **Context check:** Steps 4-6 generate enforcement content and workflow files — the most context-intensive work. Before proceeding:
-- If context is low (≤35% remaining), write `.planning/wc/HANDOFF.md` with interview answers (from `.planning/wc/INTERVIEW.md`), phase decomposition (from `.planning/wc/DESIGN.md`), and current progress. Pause.
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with interview answers (from `.planning/wc/{name}/INTERVIEW.md`), phase decomposition (from `.planning/wc/{name}/DESIGN.md`), and current progress. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately — do not start enforcement generation.
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md` **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
@@ -858,7 +879,7 @@ Present files + audit report + remaining gaps to user
 
 **Why 8.0 not 9.5:** Generated workflows are first drafts. They need real-world usage to reach 9.5. But they should clear 8.0 — no missing gates, no broken paths, no ungated phase transitions. Mode 3 exists for the 8.0 → 9.5 climb.
 
-Update `.planning/wc/STATE.md`: `step: 7-self-audit, status: completed`
+Update `.planning/wc/{name}/STATE.md`: `step: 7-self-audit, status: completed`
 
 ---
 
@@ -866,7 +887,7 @@ Update `.planning/wc/STATE.md`: `step: 7-self-audit, status: completed`
 
 **IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause or wait for user input between steps.
 
-**State initialization:** Create `.planning/wc/STATE.md` with `mode: audit, step: 1-read, status: in_progress, target: [workflow name]`.
+**State initialization:** Create `.planning/wc/{name}/STATE.md` with `mode: audit, step: 1-read, status: in_progress, target: [workflow name]`.
 
 ### Step 1: Read the Workflow
 
@@ -1117,7 +1138,7 @@ Format:
 [Specific, actionable changes]
 ```
 
-**Persist audit results:** Write the audit report to `.planning/wc/AUDIT.md` in addition to displaying it. Update `.planning/wc/STATE.md`: `step: 4-report, status: completed`.
+**Persist audit results:** Write the audit report to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`: `step: 4-report, status: completed`.
 
 ---
 
@@ -1135,7 +1156,7 @@ Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → 
 
 ### Step 1: Run Initial Audit (Mode 2)
 
-**State initialization:** Create `.planning/wc/STATE.md` with `mode: improve, step: 1-initial-audit, status: in_progress, target: [workflow name]`.
+**State initialization:** Create `.planning/wc/{name}/STATE.md` with `mode: improve, step: 1-initial-audit, status: in_progress, target: [workflow name]`.
 
 Run Mode 2 on the target workflow. This produces the baseline score.
 
@@ -1159,8 +1180,8 @@ Spawn a fresh audit subagent that:
 3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
 4. Checks path portability
 5. Computes composite score (average of 20 principle scores)
-6. Writes findings to `.planning/wc/AUDIT.md`
-7. Appends score to `.planning/wc/SCORES.md`
+6. Writes findings to `.planning/wc/{name}/AUDIT.md`
+7. Appends score to `.planning/wc/{name}/SCORES.md`
 
 ```
 Agent(
@@ -1183,7 +1204,7 @@ Check path portability.
 
 Compute composite score = average of 20 principle scores.
 
-Output to .planning/wc/AUDIT.md with this format:
+Output to .planning/wc/{name}/AUDIT.md with this format:
 - Composite score (single number)
 - Per-principle scores with 1-line justification
 - Critical gaps (principle score < 9.0) with specific fix recommendations
@@ -1202,7 +1223,7 @@ The auditor has no context from the fix phase. It reads the files cold. This is 
 
 #### Phase B: DECIDE
 
-Read `.planning/wc/SCORES.md`. Check composite score against threshold:
+Read `.planning/wc/{name}/SCORES.md`. Check composite score against threshold:
 
 | Condition | Action |
 |-----------|--------|
@@ -1214,7 +1235,7 @@ Read `.planning/wc/SCORES.md`. Check composite score against threshold:
 
 #### Phase C: FIX
 
-Address findings from `.planning/wc/AUDIT.md`, prioritized by severity:
+Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 
 1. Fix all principles scoring < 7.0 first (critical gaps)
 2. Then principles scoring 7.0-8.9 (medium gaps)
