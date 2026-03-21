@@ -59,14 +59,25 @@ def main():
     md_stems, py_paths = _discover(_plugin_constraints_dir, exclude_names={"check-all"})
     _run_checks(md_stems, py_paths, "constraints", context, results)
 
-    # --- Layer 2: skill-local constraints (co-located with .md in skills/*/references/) ---
+    # --- Layer 2: skill-local constraints (prefixed .py files in skills/*/references/) ---
+    # Skill reference .md files are long source documents (Strunk, McCloskey, etc.), not
+    # constraint definitions — so .py files here run unconditionally, no .md pairing required.
     skills_dir = _repo_root / "skills"
     if skills_dir.is_dir():
         for skill_refs in sorted(skills_dir.glob("*/references")):
             skill_name = skill_refs.parent.name
-            md_stems, py_paths = _discover(skill_refs)
-            if py_paths:  # Only process skills that have at least one .py check
-                _run_checks(md_stems, py_paths, f"skills/{skill_name}/references", context, results)
+            py_files = sorted(skill_refs.glob("*.py"))
+            for py_path in py_files:
+                label = f"skills/{skill_name}/references/{py_path.stem}"
+                try:
+                    mod = import_check(py_path)
+                    violations = mod.check(context)
+                    if violations:
+                        results["failed"].append({"name": label, "violations": violations})
+                    else:
+                        results["passed"].append(label)
+                except Exception as e:
+                    results["errors"].append({"name": label, "error": str(e)})
 
     total = len(results["passed"]) + len(results["failed"]) + len(results["conventions"]) + len(results["errors"])
     print(json.dumps(results, indent=2))
