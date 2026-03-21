@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""check-all.py — auto-discovers and runs all constraint checks in references/constraints/."""
+"""check-all.py — auto-discovers and runs all constraint checks.
+
+Discovers from two directories:
+  - references/constraints/*.py       — plugin-wide constraints
+  - skills/*/references/*.py          — skill-local constraints (co-located with their .md pairs)
+"""
 import importlib.util
 import json
 import sys
 from pathlib import Path
 
-constraints_dir = Path(__file__).parent
+_repo_root = Path(__file__).parent.parent.parent  # workflows/
+_plugin_constraints_dir = Path(__file__).parent
 
 
 def import_check(py_path):
@@ -15,34 +21,55 @@ def import_check(py_path):
     return mod
 
 
+def _discover(directory, exclude_names=None):
+    """Return (md_stems, py_stems, py_paths) for a directory."""
+    exclude_names = exclude_names or set()
+    md_stems = {p.stem for p in directory.glob("*.md")}
+    py_paths = {
+        p.stem: p
+        for p in directory.glob("*.py")
+        if p.stem not in exclude_names
+    }
+    return md_stems, py_paths
+
+
+def _run_checks(md_stems, py_paths, directory_label, context, results):
+    for name in sorted(md_stems):
+        qualified = f"{directory_label}/{name}"
+        if name in py_paths:
+            try:
+                mod = import_check(py_paths[name])
+                violations = mod.check(context)
+                if violations:
+                    results["failed"].append({"name": qualified, "violations": violations})
+                else:
+                    results["passed"].append(qualified)
+            except Exception as e:
+                results["errors"].append({"name": qualified, "error": str(e)})
+        else:
+            results["conventions"].append(qualified)
+
+
 def main():
     cwd = sys.argv[1] if len(sys.argv) > 1 else "."
     context = {"cwd": cwd}
-
-    md_stems = {p.stem for p in constraints_dir.glob("*.md")}
-    py_stems = {p.stem for p in constraints_dir.glob("*.py") if p.stem != "check-all"}
-
     results = {"passed": [], "failed": [], "conventions": [], "errors": []}
 
-    for name in sorted(md_stems):
-        if name in py_stems:
-            # Constraint — has check script, run it
-            py_path = constraints_dir / f"{name}.py"
-            try:
-                mod = import_check(py_path)
-                violations = mod.check(context)
-                if violations:
-                    results["failed"].append({"name": name, "violations": violations})
-                else:
-                    results["passed"].append(name)
-            except Exception as e:
-                results["errors"].append({"name": name, "error": str(e)})
-        else:
-            # Convention — no check script, flag for reviewer
-            results["conventions"].append(name)
+    # --- Layer 1: plugin-wide constraints ---
+    md_stems, py_paths = _discover(_plugin_constraints_dir, exclude_names={"check-all"})
+    _run_checks(md_stems, py_paths, "constraints", context, results)
 
+    # --- Layer 2: skill-local constraints (co-located with .md in skills/*/references/) ---
+    skills_dir = _repo_root / "skills"
+    if skills_dir.is_dir():
+        for skill_refs in sorted(skills_dir.glob("*/references")):
+            skill_name = skill_refs.parent.name
+            md_stems, py_paths = _discover(skill_refs)
+            if py_paths:  # Only process skills that have at least one .py check
+                _run_checks(md_stems, py_paths, f"skills/{skill_name}/references", context, results)
+
+    total = len(results["passed"]) + len(results["failed"]) + len(results["conventions"]) + len(results["errors"])
     print(json.dumps(results, indent=2))
-    total = len(md_stems)
     print(
         f"\n{len(results['passed'])}/{total} passed, "
         f"{len(results['failed'])} failed, "
