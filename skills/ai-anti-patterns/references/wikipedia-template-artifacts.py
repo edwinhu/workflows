@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ai-template-artifacts"
+CONSTRAINT = "wikipedia-template-artifacts"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise", "writing-validate"]
 SEVERITY = "hard"  # Placeholders must never appear in final draft
 

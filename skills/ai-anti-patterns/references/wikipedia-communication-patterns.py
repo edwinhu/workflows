@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ai-communication-patterns"
+CONSTRAINT = "wikipedia-communication-patterns"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "hard"  # These should never appear in finished academic writing
 

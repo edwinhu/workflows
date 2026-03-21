@@ -65,9 +65,10 @@ Then load these phase-specific files:
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
 
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
+
 **Conventions:**
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
 
 ## Constraint Checks to Run
@@ -101,17 +102,65 @@ Run domain-specific checks against each draft section (citation format, style co
 
 Invoke `Skill(skill="workflows:ai-anti-patterns")` and check each draft section for AI writing indicators.
 
-## The Process
+## Flowchart — This IS the Spec
 
 ```
-1. LOAD constraint checks (atomic constraint files + domain skill + ai-anti-patterns)
-2. READ .planning/PRECIS.md — extract all claims
-3. READ .planning/OUTLINE.md — map claims to sections
-4. For each claim: READ the corresponding draft in drafts/
-5. RUN constraint checks on each draft section
-6. CLASSIFY each claim: COVERED / PARTIAL / MISSING
-7. For MISSING/PARTIAL: flag to user (do NOT auto-draft)
-8. WRITE .planning/VALIDATION.md
+┌────────────────────────────┐
+│  LOAD constraint checks    │
+│  (constraints + domain +   │
+│   ai-anti-patterns)        │
+└────────────┬───────────────┘
+             │
+             ▼
+┌────────────────────────────┐
+│  READ .planning/PRECIS.md  │
+│  Extract all CLAIM-XX IDs  │
+└────────────┬───────────────┘
+             │
+             ▼
+┌────────────────────────────┐
+│  READ .planning/OUTLINE.md │
+│  Map claims → sections     │
+└────────────┬───────────────┘
+             │
+             ▼
+┌────────────────────────────┐
+│  For each claim:           │
+│  READ drafts/ file         │◄──┐
+│  RUN all constraint checks │   │
+│  CLASSIFY: COVERED /       │   │
+│    PARTIAL / MISSING       │   │
+└────────────┬───────────────┘   │
+             │                   │
+             │ more claims       │
+             └───────────────────┘
+             │ all claims checked
+             ▼
+┌────────────────────────────┐
+│  Run check-all.sh          │
+│  (mechanical constraint    │
+│   checks — hard block)     │
+└────────────┬───────────────┘
+             │
+             ▼
+┌────────────────────────────┐
+│  WRITE .planning/          │
+│  VALIDATION.md             │
+└────────────┬───────────────┘
+             │
+        ┌────┴────┐
+        │ status? │
+        └────┬────┘
+     ┌───────┴───────┐
+     ▼               ▼
+ validated      gaps_found
+     │               │
+     ▼               ▼
+ → review      Present to user
+                     │
+              ┌──────┴──────┐
+              ▼             ▼
+           fix (→draft)  accept (→review)
 ```
 
 ### Step 1: Load Constraint Checks
@@ -153,6 +202,18 @@ For each claim, read the corresponding draft file and run ALL constraint checks:
 | **COVERED** | All checks pass — section exists, argues the claim, has evidence, passes domain + AI checks |
 | **PARTIAL** | Section exists but fails one or more checks (weak evidence, AI smell, domain violation, tangent) |
 | **MISSING** | No draft section addresses this claim |
+
+### Step 5b: Run Mechanical Constraint Checks (First Leg)
+
+Run the constraint test suite as the first leg of two-legged verification:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/check-all.sh
+```
+
+This runs all constraint check scripts (progressive-expansion, claim-id-traceability, flowchart-authority, no-pause-between-phases). **Any failure is a hard block** — fix before proceeding to Step 6.
+
+The second leg (convention scoring via judgment) happens in Steps 4-5 above and in the writing-review phase.
 
 ### Step 6: Flag Gaps to User
 

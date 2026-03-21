@@ -55,7 +55,7 @@ def main():
         return
 
     # Check for active writing workflow
-    workflow_path = Path.cwd() / '.claude' / 'ACTIVE_WORKFLOW.md'
+    workflow_path = Path.cwd() / '.planning' / 'ACTIVE_WORKFLOW.md'
     if not workflow_path.exists():
         print(json.dumps({"result": "continue"}))
         return

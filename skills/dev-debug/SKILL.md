@@ -2,6 +2,12 @@
 name: dev-debug
 version: 5.0
 description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic debugging with fresh-context subagent iterations and progress-gated escalation."
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
 ---
 
 **Announce:** "I'm using dev-debug for systematic debugging."

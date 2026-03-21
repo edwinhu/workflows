@@ -3,6 +3,16 @@ name: ds-plan-reviewer
 description: "Internal skill used by ds-plan at Phase 2 exit gate. Dispatches a reviewer subagent to verify PLAN.md quality before implementation. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.py"
 ---
 
 # Plan Document Reviewer (Data Science)
@@ -130,7 +140,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 
 ### If APPROVED
 Proceed immediately to Phase 3 (ds-implement). Discover and load:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.planning/PLAN.md`

@@ -4,6 +4,41 @@ description: "Phase 3 of /ds workflow. Execute analysis tasks with output-first 
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent
+hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Grep"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Glob"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
 ---
 
 ## Overview
@@ -55,7 +90,7 @@ This applies even when YOU think:
 
 You orchestrate. Subagents analyze. For every task in PLAN.md, use the delegation skill:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-delegate/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
 
 This is MANDATORY. ds-delegate contains the Task agent templates, output-first protocol details, methodology review patterns, and rationalization prevention. Do not attempt to summarize or shortcut it.
 
@@ -227,22 +262,25 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md` for the full constraint index.
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
 
 For implementation phase, load these specific constraints:
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-data-quality-checks.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-topic-change-protocol.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-escape-patterns.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deviation-rules.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules.md`
+
+Load conventions for implementation phase:
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-topic-change-protocol.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-escape-patterns.md`
 
 ```
 Read(".planning/PLAN.md")
 ```
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-delegate/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
 
 Follow the task order defined in the plan. Use ds-delegate's templates for every task.
 
@@ -259,8 +297,8 @@ If PLAN.md contains an `## ETL Strategy` section, the user made decisions during
 | `Scale-Up Testing Plan` table present | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Scale-Up + domain reference (e.g., `gemini-batch/references/scale-up-testing.md`) | Before any batch submission task |
 
 **To load these references, discover the plugin cache path first:**
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/references/etl-enforcement.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/sas-etl.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/etl-enforcement.md` and follow its instructions.
 
 **If PLAN.md has NO ETL Strategy section:** Skip this — proceed directly to Step 2.
 
@@ -275,7 +313,7 @@ Before starting each task, check context availability:
 | Critical | ≤25% | Invoke ds-handoff immediately — no new tasks |
 
 **At Warning level:** After current task completes, invoke:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-handoff/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-handoff/SKILL.md` and follow its instructions.
 
 **Why:** A multi-task analysis pipeline with 20% context remaining produces degraded output. Better to handoff cleanly and resume fresh.
 
@@ -460,4 +498,4 @@ Before proceeding to validation, execute this gate:
 ## Phase Complete
 
 After passing the exit gate, IMMEDIATELY discover and read the validation phase:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-validate/SKILL.md` and follow its instructions. Follow its instructions to validate outputs before review.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-validate/SKILL.md` and follow its instructions. Follow its instructions to validate outputs before review.

@@ -3,6 +3,12 @@ name: writing-setup
 description: Internal skill for creating PRECIS.md, OUTLINE.md, and ACTIVE_WORKFLOW.md. Called after brainstorm sources are gathered.
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PostToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-precis-guard.py"
 ---
 
 # Writing Setup
@@ -37,12 +43,12 @@ Then load these phase-specific files:
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
 
 **Conventions:**
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`

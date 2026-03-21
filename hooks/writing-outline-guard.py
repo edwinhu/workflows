@@ -63,15 +63,16 @@ def main():
     if outline_found:
         sys.exit(0)  # Outline exists, allow
 
-    # Warn — no matching outline (soft gate, not a hard block)
-    warning = (
-        f"⚠️ NO OUTLINE FOUND for this draft.\n\n"
+    # Hard block — NO PROSE WITHOUT OUTLINE (Iron Law enforcement)
+    error = (
+        f"BLOCKED: No outline found for this draft.\n\n"
         f"Writing to `{file_path}` but no matching outline in `{outlines_dir}/`.\n"
         f"Expected: `{outlines_dir}/{section_name}.md`\n\n"
-        f"Consider creating the outline first — prose without structure tends to wander."
+        f"Create the outline first. Prose without structure produces wandering drafts "
+        f"that require full rewrites — that's anti-helpful, not efficient."
     )
-    print(warning, file=sys.stderr)
-    sys.exit(0)
+    print(error, file=sys.stderr)
+    sys.exit(1)
 
 
 if __name__ == '__main__':

@@ -3,9 +3,52 @@ name: ds-review
 description: "This skill should be used when running Phase 4 of the /ds workflow or reviewing data analysis methodology."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Grep"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Glob"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
 ---
 
 Announce: "Using ds-review (Phase 4) to check methodology and quality."
+
+## Context Monitoring
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25-35% | Complete current review cycle, then trigger ds-handoff |
+| Critical | ≤25% | Immediately trigger ds-handoff — do not start new review cycles |
 
 ## Review Strategy Choice
 
@@ -221,7 +264,7 @@ X critical and Y important issues must be addressed. Return to /ds-implement.
 After parallel review completes:
 
 **If APPROVED:** Immediately discover and load the ds-verify skill:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/SKILL.md` and follow its instructions.
 
 **If CHANGES REQUIRED:** Return to `/ds-implement` to fix reported issues.
 
@@ -342,13 +385,16 @@ Publishing wrong results is worse than slow results. The user experiences your c
 
 ## Shared Enforcement
 
-**Load shared ds constraints before reviewing.** Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md` for the full constraint index.
+**Load shared ds constraints before reviewing.** Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
 
 For review phase, load these specific constraints:
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-data-quality-checks.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
+
+Load conventions for review phase:
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
 
 ## Review Focus Areas
 
@@ -372,7 +418,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
 
 The analyst may have reported "no duplicates" without actually checking, or "handled missing values" by silently dropping rows. You MUST run independent verification.
 
-**Load shared check definitions first.** Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/references/ds-checks.md` and follow its instructions.
+**Load shared check definitions first.** Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` and follow its instructions.
 
 Run checks DQ1-DQ5, M1 from the shared definitions. This ensures ds-review and ds-fix use identical checks.
 </EXTREMELY-IMPORTANT>
@@ -708,7 +754,7 @@ verdict: APPROVED
 ```
 
 Immediately discover and load ds-verify:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/SKILL.md` and follow its instructions.
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 

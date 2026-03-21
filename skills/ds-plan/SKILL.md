@@ -3,6 +3,29 @@ name: ds-plan
 description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Grep"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Glob"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
 ---
 
 Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
@@ -14,6 +37,14 @@ Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
 - [Process](#process)
 - [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
+
+## Context Monitoring
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25-35% | Complete current profiling task, then trigger ds-handoff |
+| Critical | ≤25% | Immediately trigger ds-handoff — do not start new profiling |
 
 # Planning (Data Profiling + Task Breakdown)
 
@@ -67,7 +98,7 @@ Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect
 ### No Pause After Completion
 
 After writing `.planning/PLAN.md` and initializing `.planning/LEARNINGS.md`, IMMEDIATELY discover and load ds-implement:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
 
 DO NOT:
 - Ask "should I proceed with implementation?"
@@ -395,7 +426,7 @@ AskUserQuestion(questions=[{
 
 **If SAS or Mixed is selected:**
 1. Record `Implementation Language: SAS` (or `Mixed: SAS ETL + Python analysis`) in PLAN.md header
-2. Load WRDS SAS enforcement (discover path first):Read `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md` and follow its instructions.
+2. Load WRDS SAS enforcement (discover path first):Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/sas-etl.md` and follow its instructions.
 3. All SAS tasks in the plan MUST include performance annotations:
    - **Merge strategy:** hash or sort-merge (with justification if sort-merge)
    - **WHERE pattern:** range-based date literals (document that no function-wrapped filters are used)
@@ -414,13 +445,23 @@ Break analysis into ordered tasks:
 Write to `.planning/PLAN.md`:
 
 ```markdown
+---
+phase: ds-plan
+status: completed
+implements: [all requirement IDs from SPEC.md]
+requires: [.planning/SPEC.md]
+provides: [.planning/PLAN.md, .planning/LEARNINGS.md]
+affects: [.planning/]
+tags: [planning, data-profiling]
+---
+
 # Analysis Plan: [Analysis Name]
 
 > **For Claude:** REQUIRED SUB-SKILL: Discover and load ds-implement for output-first verification:
->Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/SKILL.md` and follow its instructions.
+>Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
 >
 > **Delegation:** Main chat orchestrates, Task agents implement. Discover and load ds-delegate:
->Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-delegate/SKILL.md` and follow its instructions.
+>Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
 
 ## Spec Reference
 See: .planning/SPEC.md
@@ -511,7 +552,7 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 <!-- If SAS or Mixed, include this section: -->
 ## SAS Performance Constraints
 > **For Claude:** REQUIRED: Load SAS ETL enforcement before writing ANY SAS code:
->Read `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sas-etl.md` and follow its instructions.
+>Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/sas-etl.md` and follow its instructions.
 > Validate ALL SAS code against the SAS Code Validation Checklist in the WRDS skill.
 
 ### Per-Task SAS Annotations
@@ -559,6 +600,17 @@ Complete the plan when:
 After writing `.planning/PLAN.md`, create `.planning/LEARNINGS.md`:
 
 ```markdown
+---
+phase: ds-implement
+status: in_progress
+implements: []
+requires: [.planning/PLAN.md]
+provides: [analysis outputs]
+affects: []
+deviations: {r1: 0, r2: 0, r3: 0, r4: 0}
+tags: [implementation, data-quality]
+---
+
 # Analysis Learnings: [Analysis Name]
 
 ## Data Quality Pipeline
@@ -598,9 +650,9 @@ Phase 2: ds-plan -> PLAN.md written -> exit gate passed
 ```
 
 **Step 1:** Discover and load the plan reviewer skill:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-plan-reviewer/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan-reviewer/SKILL.md` and follow its instructions.
 
 **Step 2:** Only after reviewer returns APPROVED, discover and load the next phase:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
 
 **CRITICAL:** Do not skip plan review. An unreviewed plan means subagents struggling with incomplete task definitions and missing verification steps.

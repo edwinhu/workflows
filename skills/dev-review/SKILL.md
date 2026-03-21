@@ -467,7 +467,7 @@ Reviewing: [files/scope being reviewed]
 
 **Location:** `file/path.ext:line_number`
 
-**Requirement:** [REQ-ID if this issue relates to a specific requirement, or "general"]
+**Requirement:** [REQ-ID from SPEC.md — every issue MUST trace to a requirement ID]
 
 **Problem:** Clear description of the issue
 

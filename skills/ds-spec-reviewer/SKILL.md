@@ -3,6 +3,16 @@ name: ds-spec-reviewer
 description: "Internal skill used by ds-brainstorm at Phase 1 exit gate. Dispatches a reviewer subagent to verify SPEC.md completeness before planning. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.py"
 ---
 
 # Spec Document Reviewer (Data Science)
@@ -115,7 +125,7 @@ Read the spec file, then evaluate against ALL categories below.
 
 ### If APPROVED
 Proceed immediately to Phase 2 (ds-plan). Discover and load:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-plan/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.planning/SPEC.md`

@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ai-promotional-language"
+CONSTRAINT = "wikipedia-promotional-language"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"
 

@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ai-chatgpt-specific-artifacts"
+CONSTRAINT = "wikipedia-chatgpt-artifacts"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise", "writing-validate"]
 SEVERITY = "hard"  # These artifacts must be removed — they expose AI provenance unambiguously
 

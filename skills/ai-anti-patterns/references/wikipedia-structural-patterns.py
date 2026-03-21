@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ai-structural-patterns"
+CONSTRAINT = "wikipedia-structural-patterns"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"
 

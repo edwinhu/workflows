@@ -3,6 +3,41 @@ name: ds-verify
 description: "This skill should be used when the user asks to 'verify analysis results', 'check reproducibility', 'validate data science output', 'confirm completion', or as Phase 5 of the /ds workflow."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Grep"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Glob"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
 ---
 
 Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."
@@ -19,6 +54,14 @@ Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."
 - [Required Output Structure](#required-output-structure)
 - [Completion Criteria](#completion-criteria)
 
+## Context Monitoring
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25-35% | Complete current review cycle, then trigger ds-handoff |
+| Critical | ≤25% | Immediately trigger ds-handoff — do not start new review cycles |
+
 # Verification Gate
 
 Final verification with reproducibility checks and user acceptance interview.
@@ -28,12 +71,15 @@ Final verification with reproducibility checks and user acceptance interview.
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION. This is not negotiable.**
 
-**Load shared enforcement first.** Read `${CLAUDE_PLUGIN_ROOT}/references/ds-common-constraints.md` for the full constraint index.
+**Load shared enforcement first.** Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
 
 For verification phase, load these specific constraints:
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-post-subagent-boundary.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
+
+Load conventions for verification phase:
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
 
 Before claiming analysis is complete, you MUST:
 1. RE-RUN - Execute analysis fresh (not cached results)
@@ -81,6 +127,20 @@ This applies even when:
 | "User will be happy" | Your assumption isn't their acceptance | Ask explicitly |
 | "Outputs look right" | Your visual inspection isn't verified | Check against criteria |
 
+## Static Analysis (Constraint Check Scripts)
+
+Before running runtime DQ checks, run the static analysis constraint check suite:
+
+```bash
+bash "${CLAUDE_SKILL_DIR}/../../scripts/check-all-ds.sh" "$(pwd)"
+```
+
+This runs all DS constraint check scripts (determinism, join audits, idempotency, error handling, schema contracts, standard errors, visualization integrity).
+
+**If any check FAILS:** Report the failures in LEARNINGS.md. These are code quality issues in the analysis scripts that must be fixed before proceeding. Dispatch a fix subagent if needed.
+
+**If all checks PASS:** Proceed to runtime DQ checks.
+
 ## The Verification Gate
 
 **Checkpoint type:** decision (user confirms results — cannot auto-advance)
@@ -96,6 +156,19 @@ Before making ANY completion claim:
 ```
 
 **Skipping any step is not verification.**
+
+## Visual Diagnostics for Verification
+
+When presenting verification results to the user in the acceptance interview, generate diagnostic plots to support the decision:
+
+| Verification Check | Diagnostic to Generate |
+|-------------------|----------------------|
+| Reproducibility comparison | Overlay plot of Run 1 vs Run 2 key outputs |
+| Data integrity | Pipeline waterfall chart (input rows → cleaning → joins → final) |
+| Distribution sanity | Histogram/density plots of key variables with expected ranges annotated |
+| Model performance | ROC curve, residual plot, or coefficient comparison (as appropriate) |
+
+**Format:** Inline plots in notebooks, or saved to `scratch/diagnostics/` for script-based workflows. Present alongside the acceptance interview questions.
 
 ## Verification Checklist
 
@@ -222,7 +295,7 @@ Verify this analysis produces consistent results from a fresh run.
 
 ## Shared Checks
 Read the shared check definitions:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/references/ds-checks.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` and follow its instructions.
 
 Run checks: DQ1-DQ4, DQ6, M1, R1
 
@@ -346,7 +419,7 @@ These do NOT count as verification:
 **Maximum 3 verification cycles.** If issues persist after 3 rounds, escalate to user with summary of blocking issues.
 
 **Chaining instruction (if NEEDS WORK).** Discover and load ds-implement:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
 Then fix the identified issues and re-run verification.
 
 ## Completion Criteria

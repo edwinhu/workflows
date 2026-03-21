@@ -2,6 +2,12 @@
 name: ds
 description: "This skill should be used when the user asks to 'start data analysis', 'brainstorm analysis approach', 'plan a data project', 'clarify analysis requirements', or needs the full 5-phase data science workflow with output-first verification."
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-brainstorm-no-exploration-guard.py"
 ---
 
 ## Contents
@@ -34,10 +40,11 @@ Refine vague analysis requests into clear objectives through Socratic questionin
 
 Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
 
-For brainstorm phase, load these specific constraints:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-impatience-over-process.md`
+Load conventions for brainstorm phase:
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-impatience-over-process.md`
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Brainstorming

@@ -69,6 +69,34 @@ But not all domains have machine-verifiable gates. Writing and DS rely on **judg
 
 Judgment gates are weaker than deterministic gates but stronger than no gates. The design principle: **use the strongest gate available for the domain.** Deterministic when possible, judgment-based when not, honor-system never.
 
+### Constraints vs Conventions
+
+Enforcement rules split into two categories with fundamentally different natures:
+
+**Conventions** are ex-ante behavioral guidance loaded before work begins. They shape how the agent approaches work — style, tone, methodology, judgment calls. A convention requires reading and interpreting. "Use active voice in documentation" is a convention. "Match the codebase's existing patterns" is a convention. You can't write a script that returns pass/fail for these — they require judgment.
+
+**Constraints** are ex-post deterministic checks run after work completes. They are mechanically testable: a script reads the output and returns pass or fail. "No file exceeds 500 lines" is a constraint. "Every public function has a test" is a constraint. "No agent resume — always spawn fresh" is a constraint.
+
+**The litmus test: can you write a script that returns pass/fail?** If yes → constraint. If it requires reading and judging → convention.
+
+| | Conventions | Constraints |
+|---|---|---|
+| **When** | Ex-ante (loaded before work) | Ex-post (checked after work) |
+| **Nature** | Subjective, judgment-based | Deterministic, mechanically testable |
+| **Analogy** | Style guide | Unit test |
+| **Enforcement** | Prompt-loaded, reviewer-scored | Script-executed, pass/fail |
+| **Failure mode** | Soft block (score below threshold) | Hard block (script fails) |
+
+Both are necessary. Constraints catch what's mechanically checkable. Conventions guide what isn't. A workflow with only constraints has no taste. A workflow with only conventions has no teeth.
+
+**Co-located architecture:** Constraints live as paired files — `foo.md` (the rule) + `foo.py` (the check script) — in the same `constraints/` directory. Conventions are `foo.md` files without a paired script. An auto-discovering runner (`check-all.py`) globs all `*.py` files and executes them — no manual wiring, no registration. Adding a check script = automatically tested.
+
+**Two-leg verification:** The verification stage runs both legs:
+1. **Constraint checks** — `check-all.py` runs all check scripts. Hard block on any failure.
+2. **Convention scoring** — A reviewer subagent scores work against loaded conventions. Soft block below threshold.
+
+Neither leg alone is sufficient. Constraint checks without convention scoring miss qualitative issues. Convention scoring without constraint checks relies entirely on prompt compliance.
+
 ### Independent Verification
 
 The implementer should never verify its own work. Self-review is proofreading — the agent that did the work shares all the same context, biases, and sunk-cost attachment. True verification requires **structural independence**: the verifier has no memory of the implementation journey.
@@ -122,21 +150,25 @@ This is advisory — Claude Code doesn't yet support model routing — but docum
 
 ### Shared Constraints Between Entry and Midpoint
 
-When both the entry point and midpoint evaluate the same quality dimensions (coverage, fidelity, style, alignment), the check definitions must live in a **single shared file** — not inlined independently in each skill.
+When both the entry point and midpoint evaluate the same quality dimensions, the enforcement rules must live in a **single shared location** — not inlined independently in each skill.
 
-**The drift problem:** Entry and midpoint skills evolve at different times. A new check added to the midpoint (e.g., redundancy detection) doesn't automatically appear in the entry point's verification step. Over time, the two diverge — the midpoint catches issues the entry point doesn't, which means the entry point ships broken work that requires midpoint re-entry to fix.
+**The drift problem:** Entry and midpoint skills evolve at different times. A new check added to the midpoint doesn't automatically appear in the entry point's verification step. Over time, the two diverge — the midpoint catches issues the entry point doesn't, which means the entry point ships broken work that requires midpoint re-entry to fix.
 
-**The solution:** Extract check definitions into a shared reference file (e.g., `references/verification-checks.md`). Both entry phases and midpoint skills `Read()` this file and reference checks by ID. When a check is updated, it's updated once and propagated everywhere.
+**The solution:** Co-located constraint/convention files in a shared `constraints/` directory. Both entry phases and midpoint skills load from the same directory. Constraints have paired check scripts that run automatically via the auto-discovering runner. Conventions are loaded as prompt context for reviewer subagents.
 
 ```
-references/verification-checks.md  ← single source of truth
-    ↑ Read()              ↑ Read()
-    │                     │
-entry phases          midpoint skills
-(sub-agent verify)    (diagnostic audit)
+constraints/
+├── no-agent-resume.md       ← constraint rule
+├── no-agent-resume.py       ← check script (auto-discovered)
+├── match-codebase-style.md  ← convention (no .py = judgment-based)
+└── check-all.py             ← runner: globs *.py, runs all checks
+    ↑ runs                        ↑ loads
+    │                             │
+entry verification            midpoint audit
+(hard block on fail)          (re-runs same checks)
 ```
 
-**The design principle:** If the same quality dimension is checked in both the entry point and midpoint, the check definition MUST be shared. Inlining the same check in two places guarantees drift.
+**The design principle:** If the same quality dimension is checked in both the entry point and midpoint, the enforcement rule MUST be shared. Inlining the same check in two places guarantees drift. The co-located architecture makes sharing automatic — both entry and midpoint point at the same `constraints/` directory.
 
 ### Three-Layer Cross-Skill Consistency
 
@@ -273,6 +305,25 @@ Workflows improve through a feedback loop, not through upfront design:
 ```
 
 Dev is the most mature workflow because it has had the most gradient updates — each session reveals new rationalization patterns, new failure modes, new gates. Writing and DS are less mature because they've had fewer iterations, not because they're less important.
+
+### Graduation: Conventions Become Constraints
+
+Most enforcement starts as a convention — someone notices a failure mode and writes a rule: "don't inline check definitions." The rule works when the agent reads it. It fails when the context window is full, the rule gets compressed, or the agent rationalizes around it.
+
+**Graduation** is the moment someone figures out how to test the convention mechanically. The convention "don't inline check definitions" graduates to a constraint when you write a script that greps for inlined definitions and returns pass/fail. Adding the `.py` file next to the existing `.md` file is the graduation ceremony — no file moves, no directory changes, just a new paired script.
+
+```
+Before graduation:
+  constraints/no-inline-checks.md       ← convention (judgment-based)
+
+After graduation:
+  constraints/no-inline-checks.md       ← constraint rule (unchanged)
+  constraints/no-inline-checks.py       ← check script (new, auto-discovered)
+```
+
+Not every convention can graduate. "Use active voice" requires judgment. "Match the codebase's existing patterns" requires reading and interpreting. These stay as conventions — and that's fine. The goal isn't to eliminate conventions but to graduate every one that *can* be tested.
+
+**The improvement signal:** When a convention keeps failing (the agent keeps violating it despite prompt enforcement), that's the signal to invest in graduation. If you can't write a pass/fail script, escalate to a hook. If you can't write a hook, the convention needs stronger prompt enforcement (rationalization tables, red flags). The gradient is: convention → graduated constraint → hook → structural enforcement.
 
 The `workflow-creator` skill accelerates this by transferring lessons from mature workflows to immature ones. The `continuous-learning` skill captures patterns from sessions. When you see a failure mode in one workflow, ask: "does this same failure mode exist in the others?"
 

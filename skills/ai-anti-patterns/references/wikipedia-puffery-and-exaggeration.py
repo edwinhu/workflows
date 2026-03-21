@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ai-puffery-and-exaggeration"
+CONSTRAINT = "wikipedia-puffery-and-exaggeration"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"  # warn — puffery phrases can appear in legitimate academic prose
 

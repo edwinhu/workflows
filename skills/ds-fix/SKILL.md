@@ -2,6 +2,25 @@
 name: ds-fix
 version: 1.0
 description: "This skill should be used when the user asks to 'fix analysis', 'wrong results', 'notebook error', 'reviewer feedback', 'data changed', 'debug notebook', or needs mid-analysis course-correction for wrong results, notebook errors, or data changes."
+hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+  PreToolUse:
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Grep"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Glob"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
 ---
 
 **Announce:** "Using ds-fix for mid-analysis course correction."
@@ -79,14 +98,17 @@ Read workflow state, shared enforcement, AND shared check definitions:
 Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
 
 As the midpoint, load ALL common constraints (can route to any phase):
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-impatience-over-process.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-topic-change-protocol.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-escape-patterns.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules.md`
+
+Load ALL common conventions (midpoint can route to any phase):
+Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-impatience-over-process.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-topic-change-protocol.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-escape-patterns.md`
 
 ```
 Read(".planning/SPEC.md")

@@ -3,6 +3,25 @@ name: ds-delegate
 description: "Subagent delegation for data analysis. Dispatches fresh Task agents with output-first verification."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+  PreToolUse:
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Grep"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Glob"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
 ---
 
 
@@ -112,13 +131,14 @@ This task requires:
 - SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
 - Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
 - Analysis constraints: Read `${CLAUDE_SKILL_DIR}/../../references/ds-analysis-constraints.md` for the constraint index, then load:
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-statistical-validity.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-p-hacking-prevention.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-robustness-checks.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-sample-selection.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-standard-error-spec.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-visualization-integrity.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules-analysis.md`
+- Analysis conventions: Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the convention index, then load:
+  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-statistical-validity.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-p-hacking-prevention.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-sample-selection.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deviation-rules-analysis.md`
 
 ## REQUIRED TOOLS
 

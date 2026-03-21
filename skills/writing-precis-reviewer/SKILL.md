@@ -21,10 +21,10 @@ Then load these reviewer-specific files:
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
 - Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
 
 **Conventions:**
 - Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/claim-id-traceability.md`
 
 ## When to Dispatch
 
