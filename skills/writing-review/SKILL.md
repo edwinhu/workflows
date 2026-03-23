@@ -20,24 +20,24 @@ Load the constraint index:
 Then load these phase-specific files:
 
 **Constraints:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before reviewing prose**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/post-subagent-enforcement.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/writing-stop-triggers.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before reviewing prose**
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/post-subagent-enforcement.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-stop-triggers.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
 
 **Conventions:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
 
 ## Session Resume Detection
 

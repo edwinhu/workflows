@@ -220,7 +220,7 @@ After user chooses approach AND confirms scope, write `.planning/PLAN.md`:
 
 Use the template from `references/plan-template.md` for the PLAN.md structure. Load it before writing the plan:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-design/references/plan-template.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-design/references/plan-template.md` and follow its instructions.
 
 ### 6. User Gate - Final Approval
 
@@ -409,7 +409,7 @@ Design complete when:
 **After user approves ("Yes, proceed"):**
 
 1. **Plan Review Gate (MANDATORY):**
-   Discover and read the plan reviewer skill:Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-plan-reviewer/SKILL.md` and follow its instructions.
+   Discover and read the plan reviewer skill:Read `${CLAUDE_SKILL_DIR}/../../skills/dev-plan-reviewer/SKILL.md` and follow its instructions.
    Follow the plan reviewer's instructions:
    - If >15 tasks → chunk the plan first, review per-chunk
    - Dispatch reviewer subagent

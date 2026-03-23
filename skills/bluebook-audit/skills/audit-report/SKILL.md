@@ -76,4 +76,4 @@ This is a **user gate**. The workflow pauses here.
 ## Next Phase
 
 After user approval:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/skills/audit-correct/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/skills/audit-correct/SKILL.md` and follow its instructions.

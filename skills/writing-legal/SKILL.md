@@ -16,7 +16,7 @@ Style guide for law review articles, seminar papers, and legal scholarship based
 
 **Step 1: Load base writing rules**
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing/SKILL.md` and follow its instructions.
 
 **Step 2: Check for active workflow**
 

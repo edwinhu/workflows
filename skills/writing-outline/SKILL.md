@@ -33,28 +33,28 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 Then load these phase-specific files:
 
 **Constraints:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/deviation-rules.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/deviation-rules.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
 
 ## Outline Flowchart (This IS the Spec)
 
@@ -319,7 +319,7 @@ Before proceeding to draft phase (see `conventions/gate-function-standard.md` fo
 3. **READ**: Check each outline has POINT, EVIDENCE, LOGIC for subsections
 4. **VERIFY**: All sections have outlines, all outlines reference PRECIS claims
 5. **REVIEW**: Dispatch outline reviewer subagent:
-   Discover path: `${CLAUDE_PLUGIN_ROOT}/skills/writing-outline-reviewer/SKILL.md`, then `Read()` the output.
+   Discover path: `${CLAUDE_SKILL_DIR}/../../skills/writing-outline-reviewer/SKILL.md`, then `Read()` the output.
    Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed when APPROVED.
 6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase
 
@@ -394,7 +394,7 @@ After all section outlines are complete:
 
 ### Outline Review Gate (MANDATORY)
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-outline-reviewer/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-outline-reviewer/SKILL.md` and follow its instructions.
 
 Follow the outline reviewer's instructions:
 - If 10+ sections → review in groups of 3-4
@@ -404,6 +404,6 @@ Follow the outline reviewer's instructions:
 
 **After outline review APPROVED:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-draft/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-draft/SKILL.md` and follow its instructions.
 
 Then follow its instructions immediately to expand outlines into prose.

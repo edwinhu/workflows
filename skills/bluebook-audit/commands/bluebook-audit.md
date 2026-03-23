@@ -28,4 +28,4 @@ Create a `scratch/` directory next to the DOCX for intermediate artifacts:
 ## Step 3: Begin Phase 1 (Extract)
 
 Read and follow:
-Read `${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/skills/audit-extract/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/bluebook-audit/skills/audit-extract/SKILL.md` and follow its instructions.

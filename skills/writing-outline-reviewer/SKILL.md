@@ -12,20 +12,20 @@ allowed-tools: Read, Grep, Glob, Agent
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 Then load these reviewer-specific files:
 
 **Constraints:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
 
 ## When to Dispatch
 
@@ -136,7 +136,7 @@ Read ALL files, then evaluate the outline against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to draft phase. Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-draft/SKILL.md` and follow its instructions.
+Proceed immediately to draft phase. Read `${CLAUDE_SKILL_DIR}/../../skills/writing-draft/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in the relevant outline files

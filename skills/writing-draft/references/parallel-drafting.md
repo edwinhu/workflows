@@ -79,7 +79,7 @@ Identify which PRECIS claim this section advances. Keep this in mind throughout.
 
 ```
 Discover the domain style skill path, then Read() it:
-${CLAUDE_PLUGIN_ROOT}/skills/writing-{STYLE}/SKILL.md
+${CLAUDE_SKILL_DIR}/../../skills/writing-{STYLE}/SKILL.md
 ```
 
 Follow every style rule from this skill. Do not write generic prose.

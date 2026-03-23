@@ -188,7 +188,7 @@ Partial fixes to wrong-order work create worse outcomes than restarting.
 ```markdown
 ## Next Phase
 
-After completing this phase, discover and read the next phase:Read `${CLAUDE_PLUGIN_ROOT}/TARGET/SKILL.md` and follow its instructions. Then follow its instructions immediately.
+After completing this phase, discover and read the next phase:Read `${CLAUDE_SKILL_DIR}/../../TARGET/SKILL.md` and follow its instructions. Then follow its instructions immediately.
 ```
 
 **Example** (every dev phase):

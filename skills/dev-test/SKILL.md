@@ -25,7 +25,7 @@ dev-implement
 
 Before choosing testing tools, you MUST load the TDD skill to ensure gate compliance:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 
 This loads:
 - Task reframing (your job is writing tests, not features)
@@ -360,6 +360,6 @@ tests/test_feature.py::test_error FAILED
 
 For TDD protocol (RED-GREEN-REFACTOR), see:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 
 This skill is invoked by Task agents during `dev-implement` phase.

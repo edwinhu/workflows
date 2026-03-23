@@ -99,4 +99,4 @@ Before proceeding to Verify phase:
 
 ## Next Phase
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/skills/audit-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/skills/audit-verify/SKILL.md` and follow its instructions.

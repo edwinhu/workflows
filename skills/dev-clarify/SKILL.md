@@ -63,7 +63,7 @@ Asking costs minutes. Wrong assumptions cost hours of rework.
 
 After updating `.planning/SPEC.md` with all clarified requirements, IMMEDIATELY invoke:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-design/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-design/SKILL.md` and follow its instructions.
 
 DO NOT:
 - Summarize what you learned
@@ -379,4 +379,4 @@ This is the last checkpoint before implementation planning. Fake tests caught he
 
 **REQUIRED SUB-SKILL:** After completing clarification, IMMEDIATELY invoke:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-design/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-design/SKILL.md` and follow its instructions.

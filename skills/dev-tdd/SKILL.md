@@ -202,7 +202,7 @@ All tests PASSED
 
 **Read the shared enforcement:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/real-test-enforcement.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/real-test-enforcement.md`.
 
 **Key rule: THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.** Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
 </EXTREMELY-IMPORTANT>
@@ -365,4 +365,4 @@ This skill is invoked by:
 
 For testing tool options (Playwright, ydotool, etc.), see:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test/SKILL.md` and follow its instructions.

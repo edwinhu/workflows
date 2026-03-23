@@ -12,19 +12,19 @@ allowed-tools: Read, Grep, Glob, Agent
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 Then load these reviewer-specific files:
 
 **Constraints:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
 
 ## When to Dispatch
 

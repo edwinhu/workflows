@@ -1089,10 +1089,10 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 
 3. **Dynamic context via bang-backtick injection** — For constraint files that should be inlined at skill load time, use the pattern: exclamation mark followed by backtick-cat path backtick. Example: `BANG` + `` `cat ${CLAUDE_SKILL_DIR}/../../references/file.md` ``. This inlines the file contents at skill load time. Note: bang-backtick injection only works in top-level skills loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions instead.
 
-4. **`${CLAUDE_PLUGIN_ROOT}` in skill content** — This is NOT a valid skill substitution variable. It only works in hook `command:` fields.
-   - **In skill content:** Use `${CLAUDE_SKILL_DIR}` (substituted at load time)
-   - **In hook commands:** Use `${CLAUDE_PLUGIN_ROOT}` (substituted by hook system)
-   - **In internal skills (loaded via Read):** Use `${CLAUDE_PLUGIN_ROOT}` as a convention — Claude infers the actual path from context
+4. **Path variable substitution** — Only `${CLAUDE_SKILL_DIR}`, `${CLAUDE_SESSION_ID}`, and `$ARGUMENTS` are substituted in skill content. `${CLAUDE_PLUGIN_ROOT}` is only substituted in hook `command:` fields, NOT in skill content.
+   - **In top-level skill content (loaded via Skill()):** Use `${CLAUDE_SKILL_DIR}/../../` to reach plugin root from `skills/<name>/`. Example: `${CLAUDE_SKILL_DIR}/../../references/file.md`
+   - **In hook commands:** Use `${CLAUDE_PLUGIN_ROOT}` — substituted by the hook system
+   - **In internal skills (loaded via Read):** Neither variable is substituted. Use `${CLAUDE_SKILL_DIR}/../../` as a consistent convention — Claude infers the actual path from context. Consistency with top-level skills makes the codebase easier to maintain.
 
 **Score:**
 - **Clean** — no broken paths found

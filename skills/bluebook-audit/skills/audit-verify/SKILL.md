@@ -52,4 +52,4 @@ Before proceeding to Archive phase:
 
 ## Next Phase
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/skills/audit-archive/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/skills/audit-archive/SKILL.md` and follow its instructions.

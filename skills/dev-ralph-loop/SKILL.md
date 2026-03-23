@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 Before starting ANY ralph loop, you MUST load the TDD skill to remember the testing gates and task reframing:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 
 This loads:
 - Task reframing (your job is writing tests, not features)
@@ -255,7 +255,7 @@ Ralph loops are NOT for:
 
 For tasks that produce rendered visual output (slides, charts, UI), use **visual-verify** instead of a plain ralph loop. Visual-verify wraps the ralph-loop pattern with render → look-at → fix steps:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/visual-verify/SKILL.md` and follow its instructions.
 
 ## Integration
 

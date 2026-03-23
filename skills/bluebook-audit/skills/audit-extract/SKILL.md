@@ -19,7 +19,7 @@ Parse the DOCX file and build structured data for all subsequent phases.
 ## Script
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/extract_footnotes.py" --docx <path>
+python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/extract_footnotes.py" --docx <path>
 ```
 
 Output: `scratch/footnotes_data.json`
@@ -37,4 +37,4 @@ Before proceeding to Check phase:
 
 ## Next Phase
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/skills/audit-check/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/skills/audit-check/SKILL.md` and follow its instructions.

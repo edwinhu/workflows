@@ -9,7 +9,7 @@ Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence.
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
 
 ## Contents
 

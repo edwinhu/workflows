@@ -74,7 +74,7 @@ The most common delegation violation is disguising investigation as "verificatio
 
 **Read the canonical reference:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/real-test-enforcement.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/real-test-enforcement.md`.
 
 This file is the single source of truth for REAL vs FAKE test definitions. Do NOT duplicate its content inline. Read() it.
 

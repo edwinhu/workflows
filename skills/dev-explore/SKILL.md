@@ -61,7 +61,7 @@ Reading costs minutes. Wrong architecture costs days of rework.
 
 After reading all key files and updating `.planning/SPEC.md` with findings, IMMEDIATELY invoke:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-clarify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-clarify/SKILL.md` and follow its instructions.
 
 DO NOT:
 - Summarize findings (proceed directly)
@@ -485,4 +485,4 @@ This is not optional. Fake tests are worse than no tests because they create fal
 
 **REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-clarify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-clarify/SKILL.md` and follow its instructions.

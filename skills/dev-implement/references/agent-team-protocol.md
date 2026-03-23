@@ -108,7 +108,7 @@ lead: "Need to modify [file] which is outside my scope. Reason: [why]."
 
 ## Step 1: Load Skills
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 
 If a testing skill is specified in PLAN.md (dev-test-electron, dev-test-playwright, etc.),
 load that too.

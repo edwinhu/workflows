@@ -139,10 +139,10 @@ Reply when installed and I'll continue testing.
 
 **For web apps or native desktop apps, discover and read the relevant skill:**
 Related skills:
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-chrome/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-playwright/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-hammerspoon/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-linux/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-hammerspoon/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-linux/SKILL.md` and follow its instructions.
 - Chrome MCP skill - web debugging
 - Playwright skill - headless CI/CD
 - Hammerspoon skill - macOS native
@@ -745,10 +745,10 @@ Before writing VS Code extension test, verify:
 This skill is referenced by `dev-test` for Electron desktop application testing.
 
 Related skills:
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-chrome/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-playwright/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-hammerspoon/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-hammerspoon/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 - Chrome MCP skill - web debugging
 - Playwright skill - headless web CI/CD
 - Hammerspoon skill - macOS native apps

@@ -20,7 +20,7 @@ disable-model-invocation: true
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
 
 Single-pass code review combining spec compliance and quality checks. Uses confidence-based filtering to report only high-priority issues.
 
@@ -296,7 +296,7 @@ After parallel review completes:
 
 **If APPROVED:** Immediately invoke the dev-verify skill:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-verify/SKILL.md` and follow its instructions.
 
 **If CHANGES REQUIRED:** Return to `/dev-implement` to fix reported issues.
 
@@ -635,7 +635,7 @@ verdict: APPROVED
 
 Immediately invoke dev-verify:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-verify/SKILL.md` and follow its instructions.
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 

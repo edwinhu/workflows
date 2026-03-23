@@ -168,7 +168,7 @@ In your output, include: **Deviations:** N auto-fixed (R1: X, R2: Y, R3: Z), N e
 Before writing any code, you MUST load the TDD skill:
 
 ```
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 ```
 
 This loads:

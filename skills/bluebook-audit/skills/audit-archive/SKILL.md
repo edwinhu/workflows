@@ -24,7 +24,7 @@ Archive all non-permanent URLs in footnotes via perma.cc API.
 ## Script
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/permacc_archive.py" --docx <path> --data scratch/footnotes_data.json
+python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/permacc_archive.py" --docx <path> --data scratch/footnotes_data.json
 ```
 
 ## Institutional Account Setup
@@ -50,4 +50,4 @@ requests.post("https://api.perma.cc/v1/archives/", json={
 
 ## Next Phase
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/skills/audit-crossrefs/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/skills/audit-crossrefs/SKILL.md` and follow its instructions.

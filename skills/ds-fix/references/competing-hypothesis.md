@@ -250,7 +250,7 @@ Once root cause identified:
 
 2. **Route to ds-delegate for fix:**
 ```
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-delegate/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
 
 Task(subagent_type="workflows:ds-analyst", prompt="""
 Fix identified root cause: [HYPOTHESIS C]

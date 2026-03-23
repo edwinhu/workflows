@@ -89,8 +89,8 @@ Reply when installed and I'll continue testing.
 
 **For web testing, discover and read the relevant skill:**
 Related skills:
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-chrome/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-playwright/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
 - Chrome MCP skill - debugging
 - Playwright skill - CI/CD
 
@@ -450,4 +450,4 @@ PASS: Workflow completed successfully
 
 This skill is referenced by `dev-test` for macOS desktop automation.
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.

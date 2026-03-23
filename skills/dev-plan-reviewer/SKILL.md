@@ -118,7 +118,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 ### If APPROVED
 Proceed immediately to Phase 5 (implement):
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-implement/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-implement/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.planning/PLAN.md`

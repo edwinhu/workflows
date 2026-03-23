@@ -105,8 +105,8 @@ Do NOT use Linux automation for:
 - Cross-platform testing
 
 Related skills:
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-chrome/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-playwright/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
 - Chrome MCP skill - for debugging
 - Playwright skill - for CI/CD
 
@@ -599,4 +599,4 @@ Test complete
 
 This skill integrates with `dev-test` for Linux desktop automation.
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.

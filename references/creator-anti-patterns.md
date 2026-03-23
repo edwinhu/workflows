@@ -30,7 +30,7 @@ hooks:
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/my-hook.py"
 ```
 
-**For internal skills loaded via Read() (not Skill system):** No substitution occurs. Use `${CLAUDE_PLUGIN_ROOT}` as a readable convention — Claude infers the actual path from context.
+**For internal skills loaded via Read() (not Skill system):** No substitution occurs — neither `${CLAUDE_PLUGIN_ROOT}` nor `${CLAUDE_SKILL_DIR}` is substituted. Use `${CLAUDE_SKILL_DIR}/../../` as a consistent convention for paths — Claude infers the actual path from context, and consistency with top-level skills makes the codebase easier to maintain.
 
 ## Anti-Pattern 2: Including Implementation Code Directly in SKILL.md
 

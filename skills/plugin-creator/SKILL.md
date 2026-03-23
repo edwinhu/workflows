@@ -78,7 +78,7 @@ Score against all 12 patterns from the checklist. Focus especially on:
 Verify:
 
 1. **Matcher coverage** — Do hooks fire on the right tool events?
-2. **Path validity** — Do hook commands use `${CLAUDE_PLUGIN_ROOT}` (not `${CLAUDE_SKILL_DIR}`)?
+2. **Path validity** — Do hook commands use `${CLAUDE_SKILL_DIR}/../..` (not `${CLAUDE_SKILL_DIR}`)?
 3. **Error handling** — Do hooks fail gracefully (non-zero exit blocks the action)?
 4. **Scope** — Are hooks scoped to skills (frontmatter) or global (plugin.json)?
 

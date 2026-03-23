@@ -10,7 +10,7 @@ allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
 
 ## Where This Fits
 
@@ -211,7 +211,7 @@ For each task N in PLAN.md:
     5. Move to task N+1, start NEW loop
 ```
 
-**Cache lookup pattern for all paths above:**Read `${CLAUDE_PLUGIN_ROOT}/TARGET/PATH` and follow its instructions.
+**Cache lookup pattern for all paths above:**Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
 
 ### Visual Task Detection
 
@@ -219,13 +219,13 @@ If a PLAN.md task involves rendered visual output, use **visual-verify** instead
 
 **Signals a task is visual:** task mentions "render", "slide", "chart", "figure", "layout", "UI", "screenshot", "visual", "diagram", or produces any file meant to be seen by humans (PNG, PDF, SVG).
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/visual-verify/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/visual-verify/SKILL.md` and follow its instructions.
 
 ### Step 1: Start Ralph Loop for Each Task
 
 **REQUIRED SUB-SKILL:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-ralph-loop/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-ralph-loop/SKILL.md` and follow its instructions.
 
 Key points from dev-ralph-loop:
 - ONE loop PER TASK (not one loop for feature)
@@ -236,7 +236,7 @@ Key points from dev-ralph-loop:
 
 **REQUIRED SUB-SKILL:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-delegate/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-delegate/SKILL.md` and follow its instructions.
 
 Key points from dev-delegate:
 - Implementer → Spec reviewer → Quality reviewer
@@ -561,7 +561,7 @@ Pausing > 30 seconds between tasks means you’ve stopped. You shouldn’t have.
 
 For parallel implementation using agent teams, read the full protocol:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-implement/references/agent-team-protocol.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-implement/references/agent-team-protocol.md` and follow its instructions.
 
 **When to use:** User explicitly requests parallel implementation, OR 4+ independent tasks in PLAN.md.
 
@@ -584,7 +584,7 @@ This gate validates that every requirement in SPEC.md has corresponding test cov
 
 ### Invoke test gap Validation
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-gaps/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-gaps/SKILL.md` and follow its instructions.
 
 ### Gate Conditions
 
@@ -621,6 +621,6 @@ If test gap reports implementation bugs (escalations):
 
 **REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests AND test gap validation passes:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-review/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-review/SKILL.md` and follow its instructions.
 
 Do NOT proceed until automated tests pass for every task AND `.planning/VALIDATION.md` status is `validated`.

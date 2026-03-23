@@ -31,27 +31,27 @@ Before starting, check for an existing handoff:
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 Then load these phase-specific files:
 
 **Constraints:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/artifact-review-gates.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
 
 ## Setup Flowchart (This IS the Spec)
 
@@ -183,7 +183,7 @@ Write to `.planning/PRECIS.md`:
 
 After writing PRECIS.md, dispatch the precis reviewer BEFORE creating the outline. Do NOT skip this step.
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-precis-reviewer/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-precis-reviewer/SKILL.md` and follow its instructions.
 
 Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed to Step 3 when the reviewer returns APPROVED.
 
@@ -336,6 +336,6 @@ Before proceeding to outline phase (see `conventions/gate-function-standard.md` 
 
 After setup is complete, IMMEDIATELY proceed to the outline phase. Do NOT pause to ask the user. Do NOT summarize what you just created. Load the next skill and continue:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-outline/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-outline/SKILL.md` and follow its instructions.
 
 Then follow its instructions immediately to create detailed section outlines.

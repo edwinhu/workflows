@@ -83,7 +83,7 @@ Reply when configured and I'll continue testing.
 - Interactive debugging with real browser (use Chrome MCP)
 
 **For debugging, discover and read the Chrome MCP skill:**
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-chrome/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
 
 ### Rationalization Prevention
 
@@ -512,7 +512,7 @@ mcp__playwright__browser_wait_for(
 This skill is referenced by `dev-test` for Playwright browser automation.
 
 Related skills:
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-chrome/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 - Chrome MCP skill - debugging (console/network)
 - TDD skill - TDD protocol

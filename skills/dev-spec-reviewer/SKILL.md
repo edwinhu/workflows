@@ -104,7 +104,7 @@ Read the spec file, then evaluate against ALL categories below.
 ### If APPROVED
 Proceed immediately to Phase 2 (explore):
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-explore/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-explore/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
 1. Fix the specific issues in `.planning/SPEC.md`

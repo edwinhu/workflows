@@ -86,7 +86,7 @@ Reply when configured and I'll continue testing.
 - Headless automation required
 
 **For CI/CD and headless, discover and read the Playwright skill:**
-Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-playwright/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
 
 ### Rationalization Prevention
 
@@ -569,7 +569,7 @@ mcp__claude-in-chrome__gif_creator(
 This skill is referenced by `dev-test` for Chrome MCP browser automation.
 
 Related skills:
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-test-playwright/SKILL.md` and follow its instructions.
-- Read `${CLAUDE_PLUGIN_ROOT}/skills/dev-tdd/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
+- Read `${CLAUDE_SKILL_DIR}/../../skills/dev-tdd/SKILL.md` and follow its instructions.
 - Playwright skill - headless/CI testing
 - TDD skill - TDD protocol

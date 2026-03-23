@@ -119,7 +119,7 @@ Before moving to the next step, you MUST:
 
 ## Step 1: Load Analysis Protocol
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ds-delegate/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
 
 This contains the detailed output-first protocol and verification patterns.
 

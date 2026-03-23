@@ -26,29 +26,29 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_PLUGIN_ROOT}/references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
 
 Then load these phase-specific files:
 
 **Constraints:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before writing prose**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/progress-gating.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/writing-stop-triggers.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/context-monitoring.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/deviation-rules.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/constraints/claim-id-traceability.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before writing prose**
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-stop-triggers.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/deviation-rules.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_PLUGIN_ROOT}/references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
 
 ## Draft Flowchart (This IS the Spec)
 
@@ -153,9 +153,9 @@ Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose
 
 | Style | Action |
 |---|---|
-| legal | `Read("${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md")` |
-| econ | `Read("${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md")` |
-| general | `Read("${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md")` |
+| legal | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md")` |
+| econ | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md")` |
+| general | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md")` |
 
 <EXTREMELY-IMPORTANT>
 ### Legal Domain: MUST Load Full Skill
@@ -163,7 +163,7 @@ Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose
 When `style: legal` is detected:
 
 1. **MUST Read the full skill file:**
-   Discover path: `${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md`, then `Read()` the output.
+   Discover path: `${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md`, then `Read()` the output.
 
 2. **MUST use template for .docx export:**
    ```
@@ -184,7 +184,7 @@ When `style: legal` is detected:
 When `style: econ` is detected:
 
 1. **MUST Read the full skill file:**
-   Discover path: `${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md`, then `Read()` the output.
+   Discover path: `${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md`, then `Read()` the output.
 
 2. **Iron Laws from writing-econ:**
    - NO BOILERPLATE - Delete "This paper discusses...", roadmap paragraphs
@@ -250,7 +250,7 @@ After completing each section, IMMEDIATELY start the next section. Do NOT:
 
 For parallel drafting using agent teams, read the full protocol:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-draft/references/parallel-drafting.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-draft/references/parallel-drafting.md` and follow its instructions.
 
 **When to use:** Document has 5+ substantive sections, sections are relatively independent, and `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is enabled. Falls back to Sequential if unavailable.
 
@@ -390,4 +390,4 @@ Each section's draft summary should include:
 
 After all sections are drafted:
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/writing-validate/SKILL.md` and follow its instructions. Follow its instructions to validate claim coverage before review.
+Read `${CLAUDE_SKILL_DIR}/../../skills/writing-validate/SKILL.md` and follow its instructions. Follow its instructions to validate claim coverage before review.

@@ -13,7 +13,7 @@ Use this template when writing `.planning/PLAN.md` after user approves an approa
 > **Delegation:** Main chat orchestrates, Task agents implement. Discover and read `skills/dev-delegate/SKILL.md` via cache lookup for subagent templates.
 >
 > **Cache lookup pattern:**
->Read `${CLAUDE_PLUGIN_ROOT}/TARGET/PATH` and follow its instructions.
+>Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
 
 ## Chosen Approach
 [Name]: [Brief description]
