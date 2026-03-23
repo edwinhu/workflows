@@ -643,13 +643,48 @@ Both legs are necessary. Passing constraints but failing conventions = code that
 
 **How skills reference constraint files:**
 
-Skills `Read()` only the specific `.md` files relevant to the current phase:
+Skills use a bang to auto-load all applicable constraints at skill load time:
 
 ```
 # In a skill's SKILL.md:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/source-first-fixes.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/verbatim-quotes.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
 ```
+
+This mirrors `check-all.py`'s auto-discovery but for `.md` prose:
+
+```python
+#!/usr/bin/env python3
+"""load-constraints.py — load .md constraint prose for a skill, filtered by applies-to."""
+import yaml, sys
+from pathlib import Path
+
+def load(skill_name, constraints_dir="references/constraints"):
+    for md in sorted(Path(constraints_dir).glob("*.md")):
+        text = md.read_text()
+        if not text.startswith("---"):
+            continue
+        _, fm, body = text.split("---", 2)
+        meta = yaml.safe_load(fm)
+        applies = meta.get("applies-to", [])
+        if "all" in applies or skill_name in applies:
+            print(f"\n{'='*60}")
+            print(f"# Constraint: {meta.get('name', md.stem)}")
+            print(f"{'='*60}")
+            print(body.strip())
+
+if __name__ == "__main__":
+    load(sys.argv[1])
+```
+
+The script:
+1. Globs `constraints/*.md`
+2. Parses `applies-to` frontmatter
+3. Filters for the skill name (or `all`)
+4. Outputs concatenated content
+
+Adding a new constraint = create the `.md` file with `applies-to`. No skill edits needed.
+
+> **Fallback:** For plugins without the loader script, explicit `Read()` calls to specific `.md` files still work — but the auto-discovery pattern is preferred.
 
 No index file needed. The filesystem IS the index. `ls constraints/*.md` shows all rules. `ls constraints/*.py` shows all tests.
 
