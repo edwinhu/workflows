@@ -37,25 +37,46 @@ This classification determines how much enforcement audit to apply after each dr
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/creator-anti-patterns.md`
 
-### Step 1b: Check for Bang and Hook Opportunities
+### Step 1b: Check for Mechanical Enforcement Opportunities
 
-Before drafting, identify constraints that should be **mechanically enforced** rather than prompt-enforced:
+Before drafting, identify what should be **mechanically enforced** rather than prompt-enforced. Four mechanisms are available, each resolving at a different time:
+
+| Mechanism | Resolves at | Gives you | Use for |
+|-----------|------------|-----------|---------|
+| `${CLAUDE_SKILL_DIR}` | Skill load | A path string | Script paths in Bash templates |
+| `!`command`` (bang) | Skill load | Command stdout as inline text | Injecting reference files, environment state |
+| Scoped hooks (Pre/PostToolUse) | Each tool call | Pass/fail gate | Mechanically checkable constraints |
+| SessionStart hook (`once: true`) | Session start | Value written to a file | Expensive computations (API calls, index builds) |
+
+#### `${CLAUDE_SKILL_DIR}` — Script Path References
+
+Use directly in Bash command templates — substituted at skill load time to the full absolute path:
+
+```bash
+# ✅ CORRECT: Variable substituted at load time, Claude sees literal path
+python3 "${CLAUDE_SKILL_DIR}/scripts/my_script.py" --arg value
+
+# ❌ WRONG: Broken $() subshell — executes script with no args, captures garbage
+SCRIPT=$(${CLAUDE_SKILL_DIR}/scripts/my_script.py) && python3 "$SCRIPT" --arg value
+```
+
+The `$()` indirection pattern is a common mistake. It tries to execute the script in a subshell and capture its stdout — but scripts require arguments and fail with no args, leaving the variable empty.
 
 #### Bang-Backtick Injection (`!`command``)
 
-Use bangs to inject dynamic context at skill load time — the command runs before Claude sees the content:
+Bangs run a shell command at skill load time and inline the stdout into the prompt text. Use them to inject **content**, not paths:
 
 | Use Case | Example |
 |----------|---------|
-| Environment detection | `!`if [ -f /.dockerenv ]; then echo "CONTAINER"; else echo "HOST"; fi`` |
 | Inline reference files | `!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`` |
+| Environment detection | `!`if [ -f /.dockerenv ]; then echo "CONTAINER"; else echo "HOST"; fi`` |
 | Inject current state | `!`git branch --show-current`` |
 
 Bangs only work in **top-level skills** loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions.
 
 #### Scoped Hooks (PreToolUse / PostToolUse)
 
-Hooks in skill frontmatter fire only while the skill is active — automatically cleaned up when the skill finishes. Use them for constraints that are **mechanically checkable**:
+Hooks in skill frontmatter fire only while the skill is active — automatically cleaned up when the skill finishes:
 
 ```yaml
 hooks:
@@ -78,6 +99,21 @@ hooks:
 | Tool parameter validation | Red flags (judgment-based) |
 | Post-edit lint/format checks | "Why" explanations |
 | Outline-before-prose guards | Deviation rule classification |
+
+#### SessionStart Hooks for Expensive Resolutions
+
+For values that genuinely require expensive computation (API calls, multi-step searches, environment probes) and are stable for the session:
+
+```yaml
+hooks:
+  SessionStart:
+    - hooks:
+        - type: command
+          command: "expensive-api-call --query env > .planning/CACHED_VALUE"
+          once: true
+```
+
+Then instruct the skill to read from `.planning/CACHED_VALUE`. **Do NOT use for path resolution** (`${CLAUDE_SKILL_DIR}`) or content injection (bangs) — those are free at load time. See `references/sessionstart-caching.md`.
 
 **The principle:** if a constraint is mechanically checkable, enforce it with a hook. If it requires judgment or motivation, keep it as prompt text. Hooks cost zero tokens and can't be rationalized away.
 

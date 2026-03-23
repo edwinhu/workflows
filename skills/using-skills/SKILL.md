@@ -160,7 +160,7 @@ NO  → Use Read tool for source code/text
 **Pattern:**
 ```bash
 # look-at: Extract information from media file with specific goal
-LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
     --file "/absolute/path/to/file" \
     --goal "What specific information to extract"
 ```
@@ -201,17 +201,17 @@ LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$
 
 ```bash
 # look-at: Extract specific information from image file
-LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
     --file "$HOME/Downloads/screenshot.png" \
     --goal "List all buttons and their labels"
 
 # look-at: Analyze diagram to understand data flow
-LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
     --file "$HOME/Documents/architecture.png" \
     --goal "Explain the data flow between components"
 
 # look-at: Extract information from PDF document
-LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
     --file "$HOME/Downloads/report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -256,13 +256,13 @@ When a skill requires `description` parameter on Bash calls (like look-at), you 
 
 ```bash
 # ❌ WRONG: No description parameter
-LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
     --file "/path/to/file.pdf" \
     --goal "Extract title"
 
 # ✅ CORRECT: With description parameter as skill requires
 Bash(
-    command='LOOK_AT=$(${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" --file "/path/to/file.pdf" --goal "Extract title"',
+    command='python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" --file "/path/to/file.pdf" --goal "Extract title"',
     description="look-at: Extract title"
 )
 ```

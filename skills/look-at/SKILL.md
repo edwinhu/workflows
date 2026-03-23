@@ -74,22 +74,19 @@ description: "look-at: [goal text]"
 Never display the full Python command to the user.
 
 ```bash
-# Discover script path from plugin cache (run inline with each command)
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py)
-
 # Basic usage
-python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
 
 # With custom model
-python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "/path/to/diagram.png" \
     --goal "Describe the architecture shown in this diagram" \
     --model "gemini-2.5-flash"
 ```
 
-**IMPORTANT:** Each Bash call starts a fresh shell. Include the `LOOK_AT=...` discovery line in every Bash command that calls look_at.py.
+`${CLAUDE_SKILL_DIR}` is substituted at skill load time, so the full path is already resolved — no per-call discovery needed.
 
 **IMPORTANT:**
 - Always use absolute paths for files
@@ -140,7 +137,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
 
 **Usage:**
 ```bash
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "photo.jpg" \
     --goal "Count the number of people in this image" \
     --agentic
@@ -156,7 +153,7 @@ LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the executive summary section"
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -165,7 +162,7 @@ LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
 ```bash
 # Bash tool call with:
 # description: "look-at: List all UI elements and their layout"
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "screenshot.png" \
     --goal "List all UI elements and their layout"
 ```
@@ -174,7 +171,7 @@ LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Explain the data flow and component relationships"
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "architecture.png" \
     --goal "Explain the data flow and component relationships"
 ```
@@ -183,7 +180,7 @@ LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the table data as JSON"
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "table.pdf" \
     --goal "Extract the table data as JSON with columns: name, value, date"
 ```
@@ -192,7 +189,7 @@ LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Count the number of people in the photo"
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "crowd.jpg" \
     --goal "Count the number of people visible in this image" \
     --agentic
@@ -202,7 +199,7 @@ LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract specific data points from the chart"
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
     --file "quarterly_chart.png" \
     --goal "Extract the exact values for each quarter and calculate the year-over-year change" \
     --agentic

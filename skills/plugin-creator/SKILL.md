@@ -32,12 +32,16 @@ Before drafting, classify what's being created or edited:
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/creator-anti-patterns.md`
 
-### Step 1b: Check for Bang and Hook Opportunities
+### Step 1b: Check for Mechanical Enforcement Opportunities
 
-Before drafting, identify constraints that should be **mechanically enforced** rather than prompt-enforced:
+Before drafting, identify constraints that should be **mechanically enforced** rather than prompt-enforced. Four mechanisms are available:
 
-- **Bang-backtick injection** (`!`command``) — inject dynamic context at skill load time
-- **Scoped hooks** (PreToolUse/PostToolUse) — fire only while the skill is active, auto-cleaned up
+| Mechanism | Resolves at | Use for |
+|-----------|------------|---------|
+| `${CLAUDE_SKILL_DIR}` | Skill load | Script paths in Bash templates (use directly, never wrap in `$()`) |
+| `!`command`` (bang) | Skill load | Injecting reference file content, environment state |
+| Scoped hooks (Pre/PostToolUse) | Each tool call | Mechanically checkable constraints (lint, path guards) |
+| SessionStart hook (`once: true`) | Session start | Expensive computations (API calls, index builds) — not paths or content |
 
 **The principle:** if a constraint is mechanically checkable, enforce it with a hook. If it requires judgment, keep it as prompt text.
 

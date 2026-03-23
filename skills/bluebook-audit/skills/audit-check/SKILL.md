@@ -10,7 +10,7 @@ Two-stage checking: Python mechanical checks catch definite errors; Gemini batch
 ## Stage 2a: Mechanical Checks (Python)
 
 ```bash
-BB_SCRIPTS=$(${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts) && python3 "$BB_SCRIPTS/scan_formatting.py" --docx path/to/file.docx
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/scan_formatting.py" --docx path/to/file.docx
 ```
 
 Checks performed on ALL footnotes:
@@ -36,7 +36,7 @@ DOCX uses non-breaking spaces (`\xa0`) in abbreviations. ALL search functions mu
 ### Step 1: Extract formatted footnotes
 
 ```bash
-BB_SCRIPTS=$(${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts) && python3 "$BB_SCRIPTS/gemini_audit.py" --docx path/to/file.docx --extract-only
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/gemini_audit.py" --docx path/to/file.docx --extract-only
 ```
 
 This outputs a JSON file mapping footnote numbers to formatted text with inline markup:
@@ -67,7 +67,7 @@ for fn_num, formatted_text in footnotes.items():
 
 **Fallback (sync):** If batch is unavailable, use:
 ```bash
-BB_SCRIPTS=$(${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts) && python3 "$BB_SCRIPTS/gemini_audit.py" --docx path/to/file.docx
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/gemini_audit.py" --docx path/to/file.docx
 ```
 
 ### Gemini Prompt Focuses On:

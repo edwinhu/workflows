@@ -108,7 +108,7 @@ The score reflects the fraction of checklist items that pass. Gemini counts BLOC
 
 **Agentic** (dense diagrams, fine-grained details, comparisons):
 ```bash
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py" \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]" \
     --agentic
@@ -121,7 +121,7 @@ Gemini will autonomously crop, zoom, and annotate regions it wants to inspect mo
 
 **Vision-only** (simple layouts, large elements):
 ```bash
-LOOK_AT=$(${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py) && python3 "$LOOK_AT" \
+python3 "${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py" \
     --file "/tmp/visual-verify.png" \
     --goal "[CONTEXT-ENRICHED GOAL]"
 ```

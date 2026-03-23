@@ -17,13 +17,11 @@ Convert hardcoded supra/infra note numbers to NOTEREF field codes that auto-upda
 ## Script
 
 ```bash
-BB_SCRIPTS=$(${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts)
-
 # Preview changes
-python3 "$BB_SCRIPTS/create_crossrefs.py" --docx <path> --dry-run
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/create_crossrefs.py" --docx <path> --dry-run
 
 # Apply (creates .bak backup)
-python3 "$BB_SCRIPTS/create_crossrefs.py" --docx <path>
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/bluebook-audit/scripts/create_crossrefs.py" --docx <path>
 ```
 
 ## Workflow
