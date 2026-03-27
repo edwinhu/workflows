@@ -1,7 +1,7 @@
 ---
 name: atomic-constraints
 description: Constraints must be atomic — one rule per .md file in references/constraints/, never monolithic multi-section files
-applies-to: [all]
+applies-to: [skill-creator, workflow-creator, plugin-creator]
 ---
 
 ## Rule

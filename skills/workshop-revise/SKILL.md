@@ -153,6 +153,9 @@ Report violations:
 - [ ] slides.typ compiles without errors
 - [ ] notes.typ compiles without errors
 - [ ] PDF widow detection passes (0 widows)
+- [ ] Overflow detection passes (no slides spill to next page)
+- [ ] All diagrams pass visual-verify (score >= 9.5) — if diagrams were created/modified
+- [ ] Source fidelity verified (claims traceable to paper) — if content was added/changed
 - [ ] `qr: none` present in config-info
 - [ ] No cetz-plot imports
 - [ ] No bullet spacing violations (top-level or sub-bullet)
@@ -164,6 +167,11 @@ Report violations:
 - [ ] No hardcoded calculations (use `calc` module)
 - [ ] CeTZ canvas has `length: 2em` minimum + `// Storytelling:` comment (if used)
 - [ ] Dollar signs escaped (`\$`)
+- [ ] Notes are teleprompter-style prose (1-2 sentences per bullet, no fragments)
+- [ ] Notes sections match slide sections
+- [ ] Section transitions present (verbal bridges between topics)
+- [ ] Label-bullet spacing correct (blank line after `*Label:*` before bullets)
+- [ ] Verbatim quotes preserved from source (no paraphrasing)
 
 **Report changes to user:**
 ```
@@ -172,6 +180,9 @@ Changes applied:
 - slides.typ: [compiles ✓/✗]
 - notes.typ: [compiles ✓/✗]
 - Widow detection: [0 widows / N widows fixed]
+- Overflow detection: [clean / N slides fixed]
+- Visual-verify: [N diagrams verified / N/A]
+- Source fidelity: [verified / N claims flagged]
 ```
 
 ### Red Flags — STOP If You Catch Yourself:

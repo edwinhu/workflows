@@ -454,12 +454,37 @@ Be thorough. Do NOT soften findings.
    - Exit code 0 = clean → proceed
    - **This is a binary gate: 0 widows or phase incomplete.**
 
-5. **Verify metadata:**
+5. **Run overflow detection** (after successful compile):
+   ```bash
+   # Compile in handout mode and query for overflow metadata
+   cd [presentation directory] && typst compile slides.typ --input handout=true slides-handout.pdf && \
+   typst query slides.typ '<val>' --field value --root . 2>/dev/null | \
+   python3 ${CLAUDE_SKILL_DIR}/../../scripts/checks/overflow.py
+   ```
+   - If overflow detected → cut content, split slides, or use columns → recompile
+   - If no validation.typ import exists, visually check: page count should ≈ slide count in handout mode
+
+6. **Visual-verify all diagrams** (if any CeTZ or Fletcher diagrams exist):
+   ```bash
+   # Check if diagrams exist
+   rg -c 'cetz.canvas\|fletcher-diagram' slides.typ
+   ```
+   If diagrams found, run visual-verify loop for each:
+   - Render relevant PDF page via look-at with goal targeting the diagram
+   - Score against defect checklist (clipped text, overlapping, arrow routing, label anchoring, spacing, text size)
+   - Fix if score < 9.5 → recompile → re-render → re-score (max 5 iterations per diagram)
+
+7. **Verify source fidelity:**
+   - List all factual claims in slides (empirical results, statistics, case holdings, author conclusions)
+   - For each claim, verify against the source paper (via look-at or rga on the paper PDF)
+   - Flag any ungrounded claims to user: "Could not verify: [claim]"
+
+8. **Verify metadata:**
    - Title in slides.typ matches SOURCES.md
    - Authors in slides.typ match SOURCES.md
    - Affiliations match
 
-6. **Verify conventions:**
+9. **Verify conventions:**
    ```bash
    # Check for missing blank lines between bullets (top-level and sub-bullets)
    rg -n '^\s*-.*\n\s*-' slides.typ notes.typ
@@ -488,6 +513,9 @@ Be thorough. Do NOT soften findings.
 - [ ] slides.typ compiles without errors
 - [ ] notes.typ compiles without errors
 - [ ] PDF widow detection passes (0 widows)
+- [ ] Overflow detection passes (no slides spill to next page)
+- [ ] All diagrams pass visual-verify (score >= 9.5)
+- [ ] Source fidelity verified (all claims traceable to paper)
 - [ ] Title/authors match source paper
 - [ ] `qr: none` present in config-info
 - [ ] No cetz-plot imports
@@ -500,6 +528,11 @@ Be thorough. Do NOT soften findings.
 - [ ] No hardcoded calculations (use `calc` module)
 - [ ] CeTZ canvas has `length: 2em` minimum + `// Storytelling:` comment (if used)
 - [ ] Dollar signs escaped (`\$`)
+- [ ] Notes are teleprompter-style prose (1-2 sentences per bullet, no fragments)
+- [ ] Notes sections match slide sections
+- [ ] Section transitions present (verbal bridges between topics)
+- [ ] Label-bullet spacing correct (blank line after `*Label:*` before bullets)
+- [ ] Verbatim quotes preserved from source (no paraphrasing)
 
 **Present results to user:**
 ```
