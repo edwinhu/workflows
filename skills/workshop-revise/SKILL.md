@@ -9,7 +9,9 @@ description: "This skill should be used when the user asks to 'revise workshop s
 
 Load ALL Typst conventions before touching any files:
 
-Read `${CLAUDE_SKILL_DIR}/../../references/typst-workshop-constraints.md` — **You MUST read this file before any edits. No claiming you "remember" it.**
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+
+**You MUST have these constraints loaded before any edits. No claiming you "remember" them.**
 
 ## Midpoint Entry — Self-Contained Constraint Loading
 
@@ -19,7 +21,7 @@ This skill may run in a new session. Load ALL needed context before touching any
 
 1. **Read `.planning/SOURCES.md`** — paper metadata (title, authors, affiliations)
 2. **Read `.planning/OUTLINE.md`** — section structure and timing
-3. **Read `${CLAUDE_SKILL_DIR}/../../references/typst-workshop-constraints.md`** — all Typst conventions
+3. **Load constraints:** `python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
 4. **Read existing `slides.typ`** — current slide content
 5. **Read existing `notes.typ`** — current speaker notes
 
@@ -93,7 +95,7 @@ For content changes or structural changes (NOT simple formatting fixes), dispatc
 Agent(prompt="""
 You are an independent reviewer. Check edited sections against Typst workshop constraints.
 
-Read: ${CLAUDE_SKILL_DIR}/../../references/typst-workshop-constraints.md
+Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise
 
 Review the changed sections in slides.typ and notes.typ.
 Report violations:

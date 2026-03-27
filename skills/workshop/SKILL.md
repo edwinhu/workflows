@@ -9,7 +9,9 @@ description: "This skill should be used when the user asks to 'create a workshop
 
 Load ALL Typst conventions before any slide or notes work:
 
-Read `${CLAUDE_SKILL_DIR}/../../references/typst-workshop-constraints.md` — these are the conventions from course-materials that apply to workshop presentations. **You MUST read this file before proceeding to Phase 3. No claiming you "remember" it.**
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop`
+
+**You MUST have these constraints loaded before proceeding to Phase 3. No claiming you "remember" them.**
 
 ## Session Resume Detection
 
@@ -400,14 +402,14 @@ If convention violations persist after 3 fix-and-recheck cycles, escalate to use
 Agent(prompt="""
 You are an independent reviewer. Check these files against the Typst workshop constraints.
 
-Read the constraints:
-${CLAUDE_SKILL_DIR}/../../references/typst-workshop-constraints.md
+Load the constraints:
+Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop
 
 Then review:
 1. [presentation dir]/slides.typ
 2. [presentation dir]/notes.typ
 
-Check ALL 10 constraint categories. Report violations:
+Check ALL constraint categories. Report violations:
 | # | Severity | Constraint | Location | Issue |
 
 Also check:
@@ -448,7 +450,7 @@ Be thorough. Do NOT soften findings.
    ```bash
    DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && python3 "$DETECT_WIDOWS" slides.pdf
    ```
-   - Exit code 1 = widows found → fix using strategies from typst-workshop-constraints.md → recompile → re-run detector
+   - Exit code 1 = widows found → fix using strategies from the typst-widow-detection constraint → recompile → re-run detector
    - Exit code 0 = clean → proceed
    - **This is a binary gate: 0 widows or phase incomplete.**
 
