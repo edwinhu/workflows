@@ -41,7 +41,10 @@ YES → SKILL IS ALREADY LOADED
       DO NOT invoke again with Skill tool
       ↓
       Proceed to next step (follow skill instructions)
-NO  → Check: Does this match any skill trigger?
+NO  → Contains session keyword? (companion, new session, background session, etc.)
+    ↓
+YES → Invoke COMPANION skill FIRST — put everything else in the session prompt
+NO  → Check: Does this match any other skill trigger?
     ↓
 YES → Invoke skill FIRST, then follow its protocol
 NO  → Proceed normally
@@ -56,11 +59,43 @@ Each workflow has two entry points — start fresh or re-enter mid-workflow:
 | `/dev` | `/dev-debug` | Feature development (7 phases) / debug, fix, re-test |
 | `/ds` | `/ds-fix` | Data analysis (5 phases) / wrong results, notebook errors, revisions |
 | `/writing` | `/writing-revise` | Writing projects / apply review fixes, polish |
+| `/workshop` | `/workshop-revise` | Workshop presentations (4 phases) / revise slides, fix notes |
+
+## IRON LAW: Companion Transport Priority
+
+<EXTREMELY-IMPORTANT>
+**When session keywords appear, invoke the companion skill FIRST. This is not negotiable.**
+
+When the user's request mentions **any session keyword** — 'companion session', 'new session', 'separate session', 'background session', 'parallel session', 'companion', 'hand off to a session', 'in a new session' — the **companion skill MUST be invoked FIRST**, regardless of what other skills are mentioned.
+
+The companion skill is a **TRANSPORT mechanism**. It launches the session. Other skills/tasks go **inside** the session's prompt.
+
+```
+"use workflows creator in a new companion session"
+    ↓
+WRONG: invoke workflows:skill-creator directly (or Agent tool)
+RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
+```
+
+**The rule:** 'do X in a companion session' = companion launches, X goes in the prompt. NOT 'do X directly'.
+
+**Invoking X directly when the user said 'in a companion session' is NOT HELPFUL — the task runs in your current context, dies when the conversation ends, and the user cannot monitor or interact with it in the companion web UI. You did the opposite of what was asked.**
+</EXTREMELY-IMPORTANT>
+
+### Rationalization Table — Companion Routing
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "The user wants X, not a companion launch" | The user said "in a companion session" — they want X running in a separate persistent instance | Invoke companion, put X in the prompt |
+| "Agent tool with run_in_background is the same thing" | Background agents die when the conversation ends and can't be accessed via companion web UI | Use companion skill for real independence |
+| "I'll invoke X directly, it's simpler" | Simpler for you, wrong for the user — they asked for a separate session they can monitor | Invoke companion as the transport layer |
+| "Session keyword was incidental, not the main intent" | If the user said "companion" or "in a new session," the transport is the intent — respect it | Companion first, X goes in the prompt |
 
 ## Skill Triggers (Can Auto-Invoke)
 
 | User Intent | Command | Trigger Words |
 |-------------|---------|---------------|
+| **Session/companion** | **companion** | **companion session, new session, separate session, background session, hand off, in a new session** |
 | Bug/fix | `/dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
 | Wrong results | `/ds-fix` | results wrong, notebook error, reviewer feedback, data changed |
 | Writing | `/writing` | write, draft, document, essay, paper |
@@ -68,6 +103,8 @@ Each workflow has two entry points — start fresh or re-enter mid-workflow:
 | Create/edit skill | `workflows:skill-creator` | create skill, improve skill, edit skill, add enforcement, audit skill, SKILL.md |
 | Create/edit workflow | `workflows:workflow-creator` | create workflow, design workflow, edit workflow, audit workflow, improve workflow |
 | Create/edit plugin | `workflows:plugin-creator` | create plugin, scaffold plugin, new plugin, plugin structure, edit plugin |
+| Workshop presentation | `/workshop` | workshop presentation, workshop slides, faculty workshop, workshop talk, slides from paper |
+| Revise workshop | `/workshop-revise` | revise workshop, fix slides, update presentation, workshop feedback |
 
 ## Red Flags - You're Skipping the Skill Check
 
@@ -84,6 +121,8 @@ If you think any of these, STOP:
 | "It's just one file" | Scope doesn't exempt you from process |
 | "Let me quickly check..." | "Quickly" means skipping the workflow |
 | **"I can read this image directly"** | **Use look-at to save context tokens** |
+| **"User said 'use X in a companion session' — I'll invoke X directly"** | **'In a companion session' = invoke companion skill, put X in the prompt** |
+| **"I'll use Agent tool for this companion request"** | **Agent = subagent in THIS session. Companion = separate server session. Use companion skill.** |
 
 ## Bug Reports - Mandatory Response
 
@@ -108,8 +147,9 @@ INSTEAD:
 
 When multiple skills could apply:
 
-1. **Process skills first** - debugging, brainstorming determine approach
-2. **Then implementation** - dev, ds, writing execute the approach
+1. **Transport skills first** - companion session routes EVERYTHING else inside the session prompt
+2. **Process skills next** - debugging, brainstorming determine approach
+3. **Then implementation** - dev, ds, writing execute the approach
 
 ## How to Invoke
 
