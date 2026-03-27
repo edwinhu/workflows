@@ -1,6 +1,6 @@
 ---
 name: typst-overflow
-description: Overflow detection and handling — cut content, split slides, use columns, run mechanical checks
+description: Overflow detection and handling — cut content, split slides, use columns, run mechanical checks after every compile
 applies-to: [workshop, workshop-revise]
 ---
 
@@ -15,18 +15,21 @@ applies-to: [workshop, workshop-revise]
 
 ### Mechanical Overflow Detection
 
-After compiling slides, run overflow detection using the validation query approach:
+After compiling slides, run the overflow check script:
 
 ```bash
-# Handout mode (each slide = 1 page, gap > 1 = overflow)
-typst compile slides.typ --input handout=true && \
-typst query slides.typ '<val>' --field value --root . | \
-python3 [overflow-check-script]
+OVERFLOW_CHECK=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/scripts/checks/check-overflow.sh 2>/dev/null | sort -V | tail -1) && bash "$OVERFLOW_CHECK" slides.typ
 ```
 
-If the project has a `validation.typ` imported in the slides, overflow detection uses Typst's introspection to count physical pages per slide and flag any slide that spills beyond its boundary.
+This script:
+1. Creates a temporary wrapper importing `validation.typ` with handout mode
+2. Compiles (each slide = 1 page in handout mode)
+3. Queries Typst metadata for heading positions and page counts
+4. Detects any slide that spills beyond 1 page
 
-**Without validation.typ:** Compile to PDF and visually check page count against expected slide count. If a slide takes 2+ pages in handout mode, it overflows.
+Exit code 1 = overflow found. **Gate does NOT pass until 0 overflows.**
+
+A PostToolUse hook also fires automatically after every `typst compile` on slides files.
 
 ### Heuristic Source-Level Checks
 

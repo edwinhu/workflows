@@ -6,7 +6,7 @@ applies-to: [workshop, workshop-revise]
 
 ## Rule
 
-CeTZ canvas diagrams (timelines, conceptual visuals, information matrices) are used for visuals that don't fit table or bullet format.
+CeTZ canvas diagrams (timelines, conceptual visuals, information matrices) are used for visuals that don't fit table or bullet format. **Diagrams must be grounded in the paper's content** — they should visualize the paper's arguments, model structure, or data relationships. If a diagram synthesizes information not directly in the paper (e.g., a timeline of related regulation), document the decision and verify all facts against the source.
 
 ```typst
 #cetz.canvas(length: 2em, {

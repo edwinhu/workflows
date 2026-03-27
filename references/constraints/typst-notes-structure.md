@@ -25,7 +25,7 @@ Use sub-bullets to organize notes by topic and sub-topic. The parent bullet stat
   - If there is a material misstatement, it gets incorporated into the stock price.
 ```
 
-Every bullet — parent or sub — must be full speakable prose (max 2 sentences). No outline fragments.
+Every bullet — parent or sub — must be full speakable prose (max 2 sentences). No outline fragments. **Content must be extracted from the paper** — when discussing figures, tables, or empirical results, extract the specific values from the paper inventory in SOURCES.md rather than summarizing from memory.
 
 ### Section Transitions
 

@@ -118,7 +118,15 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
    ln -sf ~/areas/secreg/assets assets
    ```
 
-7. **Write SOURCES.md** in `.planning/`:
+7. **Inventory the paper's figures, tables, and key results:**
+   ```bash
+   python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+       --file "/path/to/paper.pdf" \
+       --goal "List ALL: (1) figures with figure numbers and captions, (2) tables with table numbers and captions, (3) key empirical results with specific numbers (coefficients, percentages, sample sizes), (4) main theoretical propositions or hypotheses"
+   ```
+   This inventory is the **authoritative source** for all content in slides and notes. Every figure, table, statistic, and claim in the presentation must trace back to this inventory.
+
+8. **Write SOURCES.md** in `.planning/`:
    ```markdown
    ---
    title: [extracted title]
@@ -138,6 +146,28 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
    - Path: [path to paper]
    - Key sections: [list]
 
+   ## Paper Inventory
+
+   ### Figures
+   - Figure 1: [caption] (p. XX)
+   - Figure 2: [caption] (p. XX)
+   ...
+
+   ### Tables
+   - Table 1: [caption] (p. XX)
+   - Table 2: [caption] (p. XX)
+   ...
+
+   ### Key Empirical Results
+   - [Result 1 with specific numbers] (Table/Figure X, p. XX)
+   - [Result 2 with specific numbers] (Table/Figure X, p. XX)
+   ...
+
+   ### Main Arguments / Hypotheses
+   - [Argument 1] (Section X)
+   - [Argument 2] (Section X)
+   ...
+
    ## Related Teaching Materials
    - [list of found materials with paths]
 
@@ -151,7 +181,8 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 ### Gate: Sources Gathered
 
 - [ ] Paper metadata extracted via look-at (NOT inferred)
-- [ ] SOURCES.md written with title, authors, affiliations
+- [ ] Paper inventory completed (figures, tables, key results, arguments)
+- [ ] SOURCES.md written with title, authors, affiliations, AND full inventory
 - [ ] Theme symlinks created (templates/, assets/)
 - [ ] Related materials searched (~/areas/, notes, gdrive)
 

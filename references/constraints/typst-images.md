@@ -6,6 +6,8 @@ applies-to: [workshop, workshop-revise]
 
 ## Rule
 
+**Images should be paper figures extracted during the Phase 1 inventory.** If an image is a synthesized diagram (not from the paper), document the decision. Paper figures are the authoritative visual source — never recreate a figure from memory.
+
 Images must be centered on slides. Typst defaults to left-aligned.
 
 ```typst

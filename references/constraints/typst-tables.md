@@ -6,6 +6,8 @@ applies-to: [workshop, workshop-revise]
 
 ## Rule
 
+**Tables must be grounded in the source paper.** If the table reproduces paper data (regression results, summary statistics), extract values from the paper — never type numbers from training knowledge. If the table synthesizes information for pedagogical purposes (comparison matrices, timeline summaries), document that decision in a comment.
+
 **Minimum `inset: 10pt`.** Smaller values (2pt, 4pt, 5pt) produce cramped, unreadable tables on projected slides.
 
 ```typst

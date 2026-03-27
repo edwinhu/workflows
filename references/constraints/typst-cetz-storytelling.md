@@ -24,7 +24,7 @@ Every `cetz.canvas` block MUST have a preceding `// Storytelling:` comment expla
 - **Visual mechanism**: The specific visual property that carries meaning — gradient direction, spatial layout, branching, timeline shape, color coding, parallel structure.
 - **Pedagogical insight**: What the audience should understand from seeing the diagram that bullets cannot convey — the "aha" that is spatial, relational, or temporal.
 
-The `→` separates *how* from *why*. Both halves are required.
+The `→` separates *how* from *why*. Both halves are required. **The pedagogical insight must connect to the paper's argument** — diagrams should make the paper's logic visible, not illustrate generic concepts.
 
 **Examples:**
 

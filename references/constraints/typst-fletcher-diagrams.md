@@ -6,7 +6,7 @@ applies-to: [workshop, workshop-revise]
 
 ## Rule
 
-Fletcher diagrams are used for flowcharts, timelines, and decision trees.
+Fletcher diagrams are used for flowcharts, timelines, and decision trees. **Diagrams must represent the paper's logic, timeline, or decision structure** — not synthesized content from training knowledge. Every node label and edge label must trace to a specific concept in the paper.
 
 ```typst
 #fletcher-diagram(

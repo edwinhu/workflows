@@ -6,6 +6,8 @@ applies-to: [workshop, workshop-revise]
 
 ## Rule
 
+**Base values must be extracted from the paper first.** Then use Typst's `calc` module for derived values. Never type a number from memory — extract it from the paper's tables/figures, then compute.
+
 **Never hardcode calculated numbers.** Use Typst's `calc` module:
 
 ```typst
