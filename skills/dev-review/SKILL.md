@@ -20,7 +20,7 @@ disable-model-invocation: true
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
 
 Single-pass code review combining spec compliance and quality checks. Uses confidence-based filtering to report only high-priority issues.
 

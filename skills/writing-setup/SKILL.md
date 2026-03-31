@@ -31,7 +31,7 @@ Before starting, check for an existing handoff:
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
 
 Then load these phase-specific files:
 

@@ -110,13 +110,13 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 6. **Set up theme infrastructure:**
    ```bash
    # Create presentation directory if needed
-   mkdir -p presentation
-   cd presentation
+   mkdir -p presentation/templates presentation/assets
 
-   # Create symlinks to secreg theme
-   ln -sf ~/areas/secreg/templates templates
-   ln -sf ~/areas/secreg/assets assets
+   # Copy bundled workshop templates
+   cp "${CLAUDE_SKILL_DIR}/templates/theme.typ" presentation/templates/
+   cp "${CLAUDE_SKILL_DIR}/templates/custom-outline.typ" presentation/templates/
    ```
+   The `assets/` directory starts empty — add project-specific logos and images there.
 
 7. **Inventory the paper's figures, tables, and key results:**
    ```bash
@@ -284,7 +284,7 @@ This applies to EVERY list in EVERY slide. No exceptions.
     ),
     date: datetime.today(),
     institution: [#text(size: 0.8em)[#super[\*]Affiliation1  #h(1em) #super[†]Affiliation2]],
-    logo: image("assets/LawP_horizontal_short_4c_RGB.png"),
+    logo: image("assets/logo.png"),  // place your institution logo in assets/
     qr: none,
   ),
 )

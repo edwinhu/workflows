@@ -14,7 +14,7 @@ hooks:
 
 **Load shared enforcement:**
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`
+!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`
 
 <EXTREMELY-IMPORTANT>
 ## STEP ZERO — INITIALIZE THE DEBUG LOOP

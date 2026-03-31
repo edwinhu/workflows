@@ -33,7 +33,7 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
 
 Then load these phase-specific files:
 

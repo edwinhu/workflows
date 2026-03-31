@@ -20,7 +20,7 @@ The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced
 
 Load the constraint index:
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
+!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
 
 Then load these phase-specific files:
 

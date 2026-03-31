@@ -31,6 +31,9 @@ scratch/
 .claude/settings.json
 .env
 
+# Investigation reports (local only)
+docs/investigations/
+
 # Development workspace files (for developing workflows itself)
 .claude/PLAN.md
 .claude/SPEC.md

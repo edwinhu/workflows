@@ -10,7 +10,7 @@ allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
 
 ## Where This Fits
 

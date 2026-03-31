@@ -385,14 +385,14 @@ Publishing wrong results is worse than slow results. The user experiences your c
 
 ## Shared Enforcement
 
-**Load shared ds constraints before reviewing.** Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
+**Load shared ds constraints before reviewing.** Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
 
 For review phase, load these specific constraints:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
 
 Load conventions for review phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
 

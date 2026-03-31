@@ -42,7 +42,7 @@ This is MORE dangerous than no tests because it creates FALSE CONFIDENCE.
 | IPC (Electron) | Direct import | Process boundary skipped |
 | CLI invocation | Function call | Argument parsing skipped |
 
-**The full canonical reference:** `references/real-test-enforcement.md`
+**The full canonical reference:** `references/constraints/real-test-enforcement.md`
 
 ## Rationale
 

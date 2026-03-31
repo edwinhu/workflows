@@ -9,7 +9,7 @@ Announce: "Using dev-test-gaps (Phase 5.5) to validate test coverage against req
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
 
 ## Contents
 

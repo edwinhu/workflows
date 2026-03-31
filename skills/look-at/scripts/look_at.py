@@ -18,13 +18,17 @@ Examples:
     # Extract table data
     python3 look_at.py --file data.pdf --goal "Extract the table as JSON"
 
-Environment:
-    GOOGLE_API_KEY: Required. Your Google API key for Gemini access.
+Environment (checked in order):
+    GOOGLE_API_KEY: Google API key for Gemini access.
+    GEMINI_API_KEY: Alternative env var with the key value directly.
+    GEMINI_API_KEY_FILE: Path to a file containing the key.
+    Fallback: reads from $(getconf DARWIN_USER_TEMP_DIR)/agenix/gemini-api-key.
 """
 
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 import argparse
 from pathlib import Path
@@ -93,6 +97,47 @@ def infer_mime_type(file_path: str) -> str:
     return mime_types.get(ext, "application/octet-stream")
 
 
+def _resolve_api_key() -> str | None:
+    """Resolve the Gemini/Google API key from multiple sources.
+
+    Checks in order:
+    1. GOOGLE_API_KEY env var
+    2. GEMINI_API_KEY env var (direct value)
+    3. GEMINI_API_KEY_FILE env var (path to file containing key)
+    4. $(getconf DARWIN_USER_TEMP_DIR)/agenix/gemini-api-key (macOS agenix fallback)
+    """
+    # 1. GOOGLE_API_KEY
+    key = os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+
+    # 2. GEMINI_API_KEY
+    key = os.environ.get("GEMINI_API_KEY")
+    if key:
+        return key
+
+    # 3. GEMINI_API_KEY_FILE
+    key_file = os.environ.get("GEMINI_API_KEY_FILE")
+    if key_file:
+        try:
+            return Path(key_file).read_text().strip()
+        except (OSError, IOError):
+            pass
+
+    # 4. macOS agenix fallback
+    try:
+        tmp_dir = subprocess.check_output(
+            ["getconf", "DARWIN_USER_TEMP_DIR"], text=True
+        ).strip()
+        agenix_path = Path(tmp_dir) / "agenix" / "gemini-api-key"
+        if agenix_path.is_file():
+            return agenix_path.read_text().strip()
+    except (subprocess.SubprocessError, OSError):
+        pass
+
+    return None
+
+
 def analyze_file(
     file_path: str,
     goal: str,
@@ -117,9 +162,12 @@ def analyze_file(
         Exception: For API errors
     """
     # Validate inputs
-    api_key = os.environ.get("GOOGLE_API_KEY")
+    api_key = _resolve_api_key()
     if not api_key:
-        raise ValueError("GOOGLE_API_KEY environment variable not set")
+        raise ValueError(
+            "No Gemini API key found. Set one of: GOOGLE_API_KEY, "
+            "GEMINI_API_KEY, or GEMINI_API_KEY_FILE"
+        )
 
     file_path = os.path.abspath(file_path)
     if not os.path.exists(file_path):
@@ -209,8 +257,11 @@ Examples:
   %(prog)s --file diagram.png --goal "Describe the architecture"
   %(prog)s --file data.pdf --goal "Extract table as JSON"
 
-Environment:
-  GOOGLE_API_KEY    Required. Your Google API key for Gemini access.
+Environment (checked in order):
+  GOOGLE_API_KEY       Google API key for Gemini access
+  GEMINI_API_KEY       Alternative env var with key value
+  GEMINI_API_KEY_FILE  Path to file containing the key
+  Fallback: $(getconf DARWIN_USER_TEMP_DIR)/agenix/gemini-api-key
         """
     )
 

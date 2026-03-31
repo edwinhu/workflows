@@ -15,6 +15,11 @@
         "PATH": "/Users/vwh7mb/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
       },
       "description": "Readwise highlights and documents"
+    },
+    "consensus": {
+      "type": "http",
+      "url": "https://mcp.consensus.app/mcp",
+      "description": "Academic paper search via Consensus.app (librarian-scoped)"
     }
   },
   "_comments": {

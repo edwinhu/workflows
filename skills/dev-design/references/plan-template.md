@@ -64,7 +64,7 @@ Before implementation, verify:
 
 ### Test Strategy in Design
 
-The PLAN.md must specify REAL tests (not fake ones). See `references/real-test-enforcement.md` for the Iron Law of REAL Tests and detection tables.
+The PLAN.md must specify REAL tests (not fake ones). See `references/constraints/real-test-enforcement.md` for the Iron Law of REAL Tests and detection tables.
 
 ### The Iron Law of This Plan
 
@@ -104,7 +104,7 @@ If you catch yourself thinking these thoughts, STOP:
 
 ### Rationalization Prevention (Fake Tests)
 
-See `references/real-test-enforcement.md` for fake test detection red flags and rationalization patterns.
+See `references/constraints/real-test-enforcement.md` for fake test detection red flags and rationalization patterns.
 
 ## Files to Modify
 | File | Change |

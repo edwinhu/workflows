@@ -294,7 +294,7 @@ AskUserQuestion(questions=[{
 
 **Read the shared enforcement for REAL vs FAKE test definitions:**
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`
+!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`
 
 See constraints C2 (Real Test Enforcement) and the protocol mismatch table. **A test that doesn't replicate the user's actual workflow is a FAKE test.**
 
@@ -374,7 +374,7 @@ Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly ex
 
 ### The Iron Law of REAL Tests
 
-**If the test doesn't do what the user does, it's a FAKE test.** See `references/dev-common-constraints.md` (C2) and `references/real-test-enforcement.md` for the full REAL vs FAKE detection tables and protocol mismatch examples.
+**If the test doesn't do what the user does, it's a FAKE test.** See `references/constraints/dev-common-constraints.md` (C2) and `references/constraints/real-test-enforcement.md` for the full REAL vs FAKE detection tables and protocol mismatch examples.
 
 ### No Test Infrastructure? That's a BLOCKER.
 

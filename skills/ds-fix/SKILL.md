@@ -95,7 +95,7 @@ Before changing ANY analysis code, you MUST:
 
 Read workflow state, shared enforcement, AND shared check definitions:
 
-Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
 
 As the midpoint, load ALL common constraints (can route to any phase):
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
@@ -103,7 +103,7 @@ Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules.md`
 
 Load ALL common conventions (midpoint can route to any phase):
-Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-impatience-over-process.md`

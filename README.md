@@ -1,44 +1,30 @@
 # Workflows
 
-A curated collection of development, data science, writing, legal, and research workflows -- available for both **Claude Code** and **OpenCode** from a single source.
+A curated collection of development, data science, writing, workshop, legal, and research workflows for **Claude Code**.
 
 ## Quick Start
 
-### Claude Code
 ```bash
 /plugin marketplace add edwinhu/workflows
 /plugin install dev
 ```
 
-### OpenCode
-```bash
-# Clone the opencode-compatibility branch
-git clone -b opencode-compatibility https://github.com/edwinhu/workflows.git ~/.config/opencode/workflows
-
-# Install plugin (optional, recommended)
-mkdir -p ~/.config/opencode/plugin
-cp ~/.config/opencode/workflows/.opencode/plugin/workflows.js ~/.config/opencode/plugin/
-
-# In OpenCode: find_skills
-```
-
-See [.opencode/INSTALL.md](.opencode/INSTALL.md) for full details and alternatives.
-
 ---
 
-## User Commands (12)
+## User Commands (15)
 
 These are the skills you invoke directly with `/name`:
 
 ### Core Workflows
 
-Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
+Four primary workflows, each with a fresh-start entry and a midpoint re-entry:
 
 | Start Fresh | Midpoint Re-entry | Domain |
 |-------------|-------------------|--------|
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
 | `/ds` | `/ds-fix` | 6-phase data science with output-first verification and DQ validation |
 | `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
+| `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
 
 ### Document Formats
 
@@ -57,6 +43,7 @@ Three primary workflows, each with a fresh-start entry and a midpoint re-entry:
 |-------|---------|
 | `/skill-creator` | Skill creation with superpowers enforcement patterns |
 | `/workflow-creator` | Design structured multi-phase LLM workflows |
+| `/headline-card` | LWT-style headline cards for Typst presentations |
 
 ---
 
@@ -71,16 +58,16 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `wrds`, `lseg-data`, `gemini-batch`
 
 ### Knowledge Management
-`nlm`, `google-scholar`, `readwise`, `readwise-chat`, `readwise-search`, `readwise-docs`, `readwise-prune`, `reading-add`
+`nlm`, `google-scholar`, `readwise`, `readwise-chat`, `readwise-search`, `readwise-docs`, `readwise-prune`
 
-### Scheduling
-`scheduling-poll`
+### Research
+`consensus`, `research`
 
 ### Notebook Tools
 `marimo`, `jupytext`, `notebook-debug`
 
 ### Utilities
-`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `audit-fix-loop`
+`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `audit-fix-loop`, `plugin-creator`
 
 ### Internal Workflow Phases
 Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-ralph-loop`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*`
@@ -89,9 +76,11 @@ DS: `ds-plan`, `ds-delegate`, `ds-implement`, `ds-review`, `ds-validate`, `ds-ve
 
 Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, `writing-review`, `writing-validate`, `writing-handoff`
 
+Workshop: (no internal phase skills — `workshop` and `workshop-revise` are both user-facing entry points)
+
 ---
 
-## Agents (18)
+## Agents (19)
 
 Specialized subagents auto-discovered by Claude Code from `agents/`:
 
@@ -107,6 +96,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 | `dev-plan-checker` | Plan review before implementation |
 | `test-gap-auditor` | Requirement-to-test coverage mapping and gap filling |
 | `ds-analyst` | Data analysis with output-first verification |
+| `ds-engineer` | Data engineering pipelines, ETL, and transformations |
 | `code-reviewer` | Code quality, security, and maintainability review |
 | `security-reviewer` | Security vulnerability detection |
 | `build-error-resolver` | Fix build/type errors with minimal diffs |
@@ -118,7 +108,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 ---
 
-## Hooks (10)
+## Hooks (11)
 
 Hooks auto-run at specific lifecycle events:
 
@@ -128,12 +118,13 @@ Hooks auto-run at specific lifecycle events:
 | `session-end.py` | Stop | * | Update LEARNINGS.md timestamp |
 | `pre-compact.py` | PreCompact | * | Preserve state before compaction |
 | `suggest-compact.py` | PreToolUse | Edit/Write | Suggest compaction when context is large |
-| `readwise-guard.py` | PreToolUse | Readwise MCP calls | Enforce librarian delegation |
 | `image-read-guard.py` | PreToolUse | Read | Redirect to look-at for media files |
-| `writing-outline-guard.py` | PreToolUse | Write (writing-draft) | Warn when drafting without matching outline |
-| `writing-suggest-verify.py` | PostToolUse | Edit/Write | Suggest visual verification for writing |
 | `lint-check.py` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
+| `writing-suggest-verify.py` | PostToolUse | Edit/Write | Suggest visual verification for writing |
+| `atomic-constraint-guard.py` | PostToolUse | Edit/Write | Validate atomic constraint file structure |
 | `pr-url-logger.py` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
+| `overflow-check.py` | PostToolUse | Bash | Detect Typst content overflow after compilation |
+| `pattern-scan.py` | SessionEnd | clear/logout | Scan session for reusable patterns |
 
 ---
 
@@ -156,52 +147,25 @@ workflows/
 ├── .claude-plugin/             # Plugin manifest
 │   ├── plugin.json             # Version and metadata
 │   └── marketplace.json        # Marketplace listing
-├── agents/                     # Specialized subagents (18)
-├── skills/                     # All skills (12 user-facing + 60+ internal)
-│   ├── dev/, ds/, writing*/    # Core workflow entry points
+├── agents/                     # Specialized subagents (19)
+├── skills/                     # All skills (15 user-facing + 60+ internal)
+│   ├── dev/, ds/, writing*/, workshop*/  # Core workflow entry points
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   └── ...                     # Internal phases and auto-invoked skills
-├── hooks/                      # Hook scripts (10)
+├── hooks/                      # Hook scripts (11)
 │   ├── hooks.json              # Hook configuration
 │   └── *.py                    # Hook implementations
 ├── references/                 # Shared constraint and reference docs
-├── contexts/                   # Example context modes (see below)
-├── rules/                      # Example rules (see below)
 ├── external/
 │   └── anthropic-skills/       # Git submodule for document skills
-├── .opencode/                  # OpenCode integration
 └── PHILOSOPHY.md               # Workflow design philosophy
 ```
 
 **Key Points:**
 - `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false`)
-- `agents/` contains specialized subagents (18, auto-discovered by Claude Code)
+- `agents/` contains specialized subagents (19, auto-discovered by Claude Code)
 - `hooks/` contains hook entry points called directly by hooks.json
 - `references/` contains shared constraint and enforcement docs
-
-**Example Content (not auto-loaded):**
-
-The `rules/` and `contexts/` directories contain **example content** for users to copy to their own configuration. These are NOT auto-loaded by the plugin.
-
-To use rules and contexts, copy them to your user-level config and reference in your CLAUDE.md:
-
-```bash
-# Copy to user config
-cp -r rules/ ~/.claude/rules/
-cp -r contexts/ ~/.claude/contexts/
-```
-
-Then in `~/.claude/CLAUDE.md`, reference them:
-
-```markdown
-## Modular Rules
-Detailed guidelines are in `~/.claude/rules/`:
-- security.md - Security checks, secret management
-- coding-style.md - File organization, error handling
-- testing.md - TDD workflow, coverage requirements
-```
-
-See the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) for CLAUDE.md best practices.
 
 ## Updating External Skills
 

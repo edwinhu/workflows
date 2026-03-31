@@ -202,7 +202,7 @@ All tests PASSED
 
 **Read the shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/real-test-enforcement.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/real-test-enforcement.md`.
 
 **Key rule: THE TEST MUST EXECUTE THE CODE AND VERIFY RUNTIME BEHAVIOR.** Grepping is NOT testing. Log reading is NOT testing. Code review is NOT testing.
 </EXTREMELY-IMPORTANT>

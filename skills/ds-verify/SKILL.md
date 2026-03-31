@@ -71,13 +71,13 @@ Final verification with reproducibility checks and user acceptance interview.
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION. This is not negotiable.**
 
-**Load shared enforcement first.** Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
+**Load shared enforcement first.** Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
 
 For verification phase, load these specific constraints:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
 
 Load conventions for verification phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
 

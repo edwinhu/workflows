@@ -38,10 +38,10 @@ Refine vague analysis requests into clear objectives through Socratic questionin
 
 **Load shared enforcement first:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-constraints.md` for the full constraint index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
 
 Load conventions for brainstorm phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/ds-common-conventions.md` for the full convention index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
 Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-impatience-over-process.md`

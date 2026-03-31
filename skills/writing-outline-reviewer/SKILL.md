@@ -12,7 +12,7 @@ allowed-tools: Read, Grep, Glob, Agent
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
+Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
 
 Then load these reviewer-specific files:
 

@@ -249,7 +249,7 @@ Use ast-grep (`sg`) for precise AST-based pattern matching and ripgrep-all (`rga
 REAL automated tests EXECUTE code and verify RUNTIME behavior.
 Grepping source files is NOT testing. Log checking is NOT testing.
 
-See `references/real-test-enforcement.md` for the canonical REAL vs FAKE test tables.
+See `references/constraints/real-test-enforcement.md` for the canonical REAL vs FAKE test tables.
 
 ### The Gate Function
 
@@ -390,7 +390,7 @@ A REAL test must use WebSocket, not HTTP endpoint.
 
 ### Fake Test Prevention
 
-**If you skip code path discovery, you WILL write fake tests.** See `references/real-test-enforcement.md` for the full fake test detection tables and the Iron Law of REAL Tests.
+**If you skip code path discovery, you WILL write fake tests.** See `references/constraints/real-test-enforcement.md` for the full fake test detection tables and the Iron Law of REAL Tests.
 
 **Update SPEC.md with code path findings before proceeding.**
 </EXTREMELY-IMPORTANT>

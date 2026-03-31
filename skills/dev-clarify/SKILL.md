@@ -285,7 +285,7 @@ If any of these don't match, the test will be FAKE. Clarify now.
 
 ### Test Strategy Validation
 
-Before proceeding to design, verify the testing strategy passes real-test enforcement. See `references/real-test-enforcement.md` for what constitutes a REAL vs FAKE test.
+Before proceeding to design, verify the testing strategy passes real-test enforcement. See `references/constraints/real-test-enforcement.md` for what constitutes a REAL vs FAKE test.
 
 **If the test approach doesn't match what you discovered, STOP and clarify.**
 </EXTREMELY-IMPORTANT>
@@ -364,7 +364,7 @@ Before proceeding to design, verify REAL test criteria:
 
 ### Fake Test Prevention Gate
 
-See `references/real-test-enforcement.md` for detection tables and the Iron Law of REAL Tests.
+See `references/constraints/real-test-enforcement.md` for detection tables and the Iron Law of REAL Tests.
 
 Ask yourself:
 1. Does the test do what the user does? (Not a shortcut)

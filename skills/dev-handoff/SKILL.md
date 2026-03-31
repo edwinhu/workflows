@@ -9,7 +9,7 @@ Announce: "Using dev-handoff to capture session state for clean resumption."
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
 
 ## Contents
 

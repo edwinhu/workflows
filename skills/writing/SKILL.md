@@ -12,7 +12,7 @@ allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 
 Load the constraint index for the writing workflow:
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/writing-common-constraints.md`
+!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
 
 **Router loads index only.** Phase skills load specific atomic files relevant to their phase.
 
@@ -196,7 +196,7 @@ Invoke this skill for:
 
 ## Prerequisites
 
-Source searching is handled by the **librarian agent** (`workflows:librarian`), which routes through NLM first, then Readwise via opencode. You do NOT need direct Readwise MCP access.
+Source searching is handled by the **librarian agent** (`workflows:librarian`), which routes through NLM first, then Readwise via the official CLI. You do NOT need direct Readwise MCP access.
 
 ## Critical: ALL Source Searches Go Through Librarian
 
@@ -205,7 +205,7 @@ Source searching is handled by the **librarian agent** (`workflows:librarian`), 
 
 ALL source gathering MUST go through the librarian agent, which enforces:
 1. Check NLM first (curated knowledge)
-2. Readwise via opencode (context-safe, 1M window)
+2. Readwise via official CLI (context-safe)
 3. Structured output (sources, quotes, synthesis)
 
 **If you're about to call `mcp__readwise__*` or spawn a `general-purpose` agent for search, STOP.**
