@@ -69,6 +69,38 @@ But not all domains have machine-verifiable gates. Writing and DS rely on **judg
 
 Judgment gates are weaker than deterministic gates but stronger than no gates. The design principle: **use the strongest gate available for the domain.** Deterministic when possible, judgment-based when not, honor-system never.
 
+### Structural Gate Artifacts
+
+A gate that exists only as instructional text ("you must run X before Y") is advisory — the consuming phase has no way to verify the gate ran. Advisory gates are the honor system by another name.
+
+**The principle: every mandatory inter-phase gate must produce a concrete artifact that the consuming phase checks before starting.** If the main chat skips the gate skill entirely and jumps straight to the next phase, the next phase must REFUSE to start.
+
+The pattern:
+1. Gate skill writes a marker file (e.g., `.planning/PLAN_REVIEWED.md`) with `status: APPROVED` frontmatter
+2. Consuming phase checks for the file at startup — missing file = STOP
+3. The marker contains the reviewer's actual output (not just a flag), so it can't be fabricated without running the reviewer
+
+Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
+
+**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools (Write, Edit, Agent) until the gate artifact exists. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Use the generic `phase-gate-guard.py` hook with environment variables to configure per-phase gates:
+
+```yaml
+# In consuming phase's SKILL.md frontmatter:
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Plan review"
+            GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+```
+
+**The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks can't express the constraint.
+
 ### Constraints vs Conventions
 
 Enforcement rules split into two categories with fundamentally different natures:

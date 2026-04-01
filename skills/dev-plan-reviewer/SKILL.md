@@ -116,7 +116,30 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 5 (implement):
+
+**Write the approval marker (MANDATORY):**
+
+Before proceeding, you MUST create `.planning/PLAN_REVIEWED.md` with the reviewer's approval evidence. This file is the structural gate that dev-implement checks before starting.
+
+```markdown
+---
+status: APPROVED
+reviewed_at: [ISO timestamp]
+reviewer: dev-plan-reviewer
+iteration: [N]
+---
+# Plan Review: APPROVED
+
+## Spec Coverage Check
+[Paste the reviewer's full spec coverage check output here — every requirement ID with ✅/❌]
+
+## Issues Fixed (if any)
+[List any issues fixed during review iterations]
+```
+
+**If you skip writing this file, dev-implement will REFUSE to start. This is intentional.**
+
+Then proceed to Phase 5 (implement):
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/dev-implement/SKILL.md` and follow its instructions.
 

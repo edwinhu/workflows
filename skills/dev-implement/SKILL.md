@@ -4,6 +4,17 @@ description: “This skill should be used when REQUIRED Phase 5 of /dev workflow
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent
+hooks:
+  PreToolUse:
+    - matcher: “Agent”
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION=”Plan review”
+            GATE_REMEDY=”Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval.”
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** “I’m using dev-implement (Phase 5) to orchestrate implementation.”
@@ -49,8 +60,30 @@ dev-implement (this skill)
 2. `.planning/PLAN.md` exists with chosen approach
 3. **User explicitly approved** in /dev-design phase
 4. **`.planning/PLAN.md` Testing Strategy section is COMPLETE** (all boxes checked)
+5. **`.planning/PLAN_REVIEWED.md` exists with `status: APPROVED`**
 
 If any prerequisite is missing, STOP and complete the earlier phases.
+
+### Plan Review Gate Check (MANDATORY — CHECK FIRST)
+
+Before anything else, verify the plan was reviewed:
+
+```bash
+# Check for plan review approval marker
+head -5 .planning/PLAN_REVIEWED.md 2>/dev/null
+```
+
+**If `.planning/PLAN_REVIEWED.md` does not exist → STOP. Return to dev-design Phase Complete.**
+**If `status:` is not `APPROVED` → STOP. Plan review is incomplete.**
+
+This file is written by dev-plan-reviewer when it approves the plan. Its absence means the plan reviewer was SKIPPED — which means spec requirements may have been silently dropped from the plan.
+
+| Thought | Reality |
+|---------|---------|
+| “I can see the plan looks complete” | Self-assessment is not review. The reviewer catches what you miss. |
+| “Plan reviewer would have approved anyway” | Then it takes 30 seconds. Run it. |
+| “User approved the plan directly” | User approves the approach. Reviewer checks spec coverage. Different gates. |
+| “I'll review it myself as I implement” | You won't. You'll be focused on code. That's why the gate exists. |
 
 **Check `.planning/PLAN.md` for:** files to modify, implementation order, testing strategy.
 

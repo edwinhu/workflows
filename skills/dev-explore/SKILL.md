@@ -3,6 +3,16 @@ name: dev-explore
 description: "This skill should be used when the user asks to 'explore the codebase', 'map architecture', 'find similar features', or in Phase 2 of /dev workflow."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Grep|Glob|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SPEC.md
+            GATE_DESCRIPTION="Spec document"
+            GATE_REMEDY="Return to dev-brainstorm (Phase 1) to write and review SPEC.md before exploring."
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."

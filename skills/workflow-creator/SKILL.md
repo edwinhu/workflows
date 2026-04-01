@@ -141,7 +141,76 @@ Design phases where each phase has:
 - **Name** - verb-noun (e.g., explore-codebase, design-approach)
 - **Responsibility** - ONE question this phase answers (single responsibility principle)
 - **Gate condition** - verifiable exit criterion (file exists, test passes, artifact contains X)
+- **Gate artifact** - the concrete file the producing phase writes and the consuming phase checks (see Structural Gate Artifacts below)
 - **Enforcement needs** - high/medium/low based on drift risk
+
+### Structural Gate Artifacts
+
+<EXTREMELY-IMPORTANT>
+**Every mandatory gate between phases MUST be enforced by a concrete artifact — not instructional text.**
+
+Advisory gates ("you must run X before proceeding", "prerequisite: Y complete") are unenforceable. The agent that skips a gate doesn't check whether it was supposed to run. The consuming phase must structurally refuse to start without the artifact.
+
+**The pattern:**
+1. **Producing phase** writes a marker file (e.g., `.planning/PHASE_REVIEWED.md`) with status frontmatter
+2. **Consuming phase** checks for the file at startup and REFUSES to proceed without it
+3. The marker file includes: `status: APPROVED/COMPLETED`, timestamp, and summary of what was verified
+
+**Example (from dev workflow):**
+```
+dev-plan-reviewer writes → .planning/PLAN_REVIEWED.md (status: APPROVED)
+dev-implement checks   → file exists AND status == APPROVED, else REFUSE to start
+```
+
+**Naming convention:** `.planning/{PHASE_NAME}_{ACTION}.md` (e.g., `SPEC_REVIEWED.md`, `DESIGN_APPROVED.md`, `EXPLORATION_COMPLETE.md`)
+
+**Red Flags — STOP if you catch yourself thinking:**
+- "The skill says 'must' so it will be followed" → STOP. Advisory text is not enforcement. The agent that would skip the gate is the same agent reading the advisory text.
+- "The entry point chains phases automatically so gates can't be skipped" → STOP. Users can invoke any phase skill directly. Mid-point entry bypasses the chain.
+- "Adding marker files is overhead" → STOP. The dev workflow shipped advisory-only gates for months. The bug was only caught by a meta-audit, not by the workflow itself.
+
+| Gate Type | Enforcement | Can Be Bypassed? | Strength |
+|-----------|-------------|-------------------|----------|
+| **Advisory** | "You must run X first" | Yes — agent rationalizes past it | Weakest |
+| **Artifact check** | Instructional text checks for file at startup | Mostly no — but can be skipped under context pressure | Medium |
+| **Hook-enforced** | PreToolUse blocks tool calls until artifact exists | No — Claude Code blocks before action, no rationalization possible | Strongest |
+
+**Design every inter-phase gate as hook-enforced. Artifact checks are fallback. Never advisory-only.**
+
+### Hook-Enforced Gates (Preferred Pattern)
+
+Use the generic `phase-gate-guard.py` hook to enforce gate artifacts at runtime. The hook blocks Write/Edit/Agent tools until the required artifact exists with the correct status.
+
+**Frontmatter pattern for consuming phase:**
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Plan review"
+            GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+```
+
+**How it works:**
+1. Producing phase writes `.planning/X_REVIEWED.md` with `status: APPROVED` frontmatter (unchanged)
+2. Consuming phase declares a PreToolUse hook that checks for the artifact
+3. Claude Code blocks Write/Edit/Agent calls until the artifact exists
+4. Writes to `.planning/` and `.claude/` are always allowed (the phase can still write state files)
+
+**Why hooks > artifact checks in instructions:**
+- Instructions can be compressed away during context compaction
+- Claude can rationalize "the file probably exists, I'll check later"
+- Hooks fire on EVERY tool call — no escape, no rationalization, no context dependency
+
+**When designing gates for a new workflow, generate BOTH:**
+1. The artifact (producing phase writes it)
+2. The hook (consuming phase declares it in frontmatter)
+</EXTREMELY-IMPORTANT>
 
 **Critical:** Each phase must have exactly ONE responsibility. If a phase does two things, split it into two phases. Phased decomposition means clean boundaries between concerns.
 
@@ -423,6 +492,7 @@ Skills and agents can declare `PreToolUse` and `PostToolUse` hooks in their fron
 
 | If the constraint is... | Then use... |
 |------------------------|-------------|
+| **Phase gate prerequisite** | `PreToolUse` hook using `phase-gate-guard.py` — checks artifact exists with correct status before allowing Write/Edit/Agent |
 | File extension/path guard | `PreToolUse` hook on Read/Edit/Write — check path |
 | Tool parameter validation | `PreToolUse` hook — check required params |
 | Tool sequence enforcement | `PreToolUse` hook with state file — track what's been done |
@@ -950,6 +1020,26 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Or are they just prose? ("ensure quality is high")
 - Are there ungated transitions?
 
+**Structural gate enforcement (CRITICAL — this is the #1 audit gap):**
+- For every mandatory inter-phase gate, classify as STRUCTURAL or ADVISORY:
+  - **STRUCTURAL:** Producing phase writes a concrete artifact (`.planning/X_REVIEWED.md`), consuming phase checks for it at startup and refuses to proceed without it
+  - **ADVISORY:** Gate uses instructional text only ("you must", "prerequisite:", "do not proceed without") — no artifact, no check
+- **Any advisory-only mandatory gate is a defect.** Flag it in the Critical Gaps section.
+- Check BOTH sides: (1) does the producing phase actually write the artifact? (2) does the consuming phase actually check for it?
+- Produce a **Gate Enforcement Matrix**:
+
+```
+| Transition | Gate | Artifact | Producer Writes? | Consumer Checks? | Status |
+|------------|------|----------|-------------------|-------------------|--------|
+| design → implement | plan reviewed | PLAN_REVIEWED.md | ✅ | ✅ | STRUCTURAL |
+| explore → clarify | exploration done | (none) | ❌ | ❌ | ADVISORY ⚠️ |
+```
+
+- Additionally classify STRUCTURAL gates as **HOOK-ENFORCED** or **INSTRUCTION-ONLY**:
+  - **HOOK-ENFORCED:** Skill frontmatter declares a PreToolUse hook that checks for the artifact (strongest)
+  - **INSTRUCTION-ONLY:** Skill text checks for the artifact but no hook blocks tool calls (weaker — can be rationalized past under context pressure)
+- Score: count of STRUCTURAL gates / total mandatory gates. Below 80% = critical gap. Count of HOOK-ENFORCED / STRUCTURAL gates — below 50% = recommend hook migration.
+
 **Independent verification:**
 - Is verification structurally independent from implementation? (fresh subagent, not self-review)
 - Does the verifier see only spec + output, not the implementation journey?
@@ -1069,12 +1159,12 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 **Hooks over prompt enforcement:**
 - Are mechanically-checkable constraints enforced via scoped hooks (PreToolUse/PostToolUse in skill frontmatter)?
 - Or are they enforced only via prompt text (Iron Laws, Red Flags) that consume context and can be rationalized away?
-- Specifically check for: file extension guards, path guards, tool parameter validation, tool sequence enforcement, post-subagent restrictions
+- Specifically check for: **phase gate enforcement** (prerequisite artifact checks), file extension guards, path guards, tool parameter validation, tool sequence enforcement, post-subagent restrictions
 - Behavioral/motivational constraints (rationalization tables, drive-aligned framing) should STAY as prompt — hooks can't teach reasoning
 - Score based on: how many mechanical constraints are prompt-only when they could be hooks?
 
 **Gate: Architecture Scored**
-- Verify scores for all 20 principles are present (phased decomposition, gates, independent verification, artifact review, two entry points, cross-skill consistency, constraint/convention test coverage, iteration strategy, post-subagent enforcement, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification, hooks over prompt)
+- Verify scores for all 21 principles are present (phased decomposition, gates, **structural gate enforcement**, independent verification, artifact review, two entry points, cross-skill consistency, constraint/convention test coverage, iteration strategy, post-subagent enforcement, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification, hooks over prompt)
 - Each principle must have numeric score + explanation
 - If any principle is missing, score it now
 
@@ -1151,9 +1241,15 @@ Format:
 ### Architecture Scores
 - Phased decomposition: [score] - [notes]
 - Gates (deterministic/judgment): [score] - [notes]
+- Structural gate enforcement: [score] - [notes] (STRUCTURAL gates / total mandatory gates)
 - Independent verification: [score] - [notes]
 - Two entry points: [score] - [notes]
 - Iteration strategy: [score] - [notes]
+
+### Gate Enforcement Matrix
+| Transition | Gate | Artifact | Producer Writes? | Consumer Checks? | Hook Enforced? | Status |
+|------------|------|----------|-------------------|-------------------|----------------|--------|
+| [phase A] → [phase B] | [gate desc] | [artifact file] | ✅/❌ | ✅/❌ | ✅/❌ | HOOK/STRUCTURAL/ADVISORY ⚠️ |
 
 ### Enforcement Coverage
 | Pattern | Phase 1 | Phase 2 | ... | Phase N |

@@ -3,6 +3,16 @@ name: dev-design
 description: "Propose architecture, design implementation approach, or choose between approaches."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SPEC.md
+            GATE_DESCRIPTION="Spec document"
+            GATE_REMEDY="SPEC.md must exist before designing. Complete brainstorm and exploration first."
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
@@ -408,13 +418,19 @@ Design complete when:
 
 **After user approves ("Yes, proceed"):**
 
-1. **Plan Review Gate (MANDATORY):**
+1. **Plan Review Gate (MANDATORY — produces `.planning/PLAN_REVIEWED.md`):**
    Discover and read the plan reviewer skill:Read `${CLAUDE_SKILL_DIR}/../../skills/dev-plan-reviewer/SKILL.md` and follow its instructions.
    Follow the plan reviewer's instructions:
    - If >15 tasks → chunk the plan first, review per-chunk
    - Dispatch reviewer subagent
    - If ISSUES_FOUND → fix PLAN.md → re-dispatch (max 5 iterations)
-   - If APPROVED → proceed to worktree question
+   - If APPROVED → **write `.planning/PLAN_REVIEWED.md`** (per dev-plan-reviewer instructions) → proceed to worktree question
+
+   <EXTREMELY-IMPORTANT>
+   **`.planning/PLAN_REVIEWED.md` is the structural handoff artifact.**
+   dev-implement will REFUSE to start without it. You CANNOT skip this step.
+   If you proceed to step 2 without PLAN_REVIEWED.md existing, implementation will be blocked.
+   </EXTREMELY-IMPORTANT>
 
 2. **Ask about worktree** (Step 7 above)
 3. **If worktree chosen:**
@@ -426,6 +442,7 @@ Design complete when:
 **Required before proceeding:**
 - Explicit user approval for implementation
 - Feature scope decision (one feature vs multiple)
+- `.planning/PLAN_REVIEWED.md` exists with status: APPROVED
 - User choice on worktree (Yes/No)
 
 **After this feature is implemented and PR'd:**
