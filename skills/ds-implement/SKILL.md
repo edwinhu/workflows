@@ -271,10 +271,10 @@ Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules.md`
 
 Load conventions for implementation phase:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-topic-change-protocol.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-escape-patterns.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-topic-change-protocol.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-escape-patterns.md`
 
 ```
 Read(".planning/PLAN.md")

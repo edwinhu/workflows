@@ -454,6 +454,21 @@ After fixing, re-run ALL gate checks (not just the one that failed).
 
 ## Phase Complete
 
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Brainstorm
+
+---
+phase: brainstorm
+status: completed
+requires: []
+provides: [SPEC.md, ACTIVE_WORKFLOW.md]
+requirements-count: N
+success-criteria-count: M
+---
+```
+
 **REQUIRED SUB-SKILL:** After completing brainstorm, dispatch the spec reviewer before exploring:
 
 **Spec Review Gate (MANDATORY):**

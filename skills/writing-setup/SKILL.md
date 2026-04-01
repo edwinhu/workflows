@@ -46,12 +46,12 @@ Then load these phase-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
 
 ## Setup Flowchart (This IS the Spec)
 
@@ -287,7 +287,7 @@ Next: Create detailed section outlines.
 
 ## Gate: Exit Setup
 
-Before proceeding to outline phase (see `conventions/gate-function-standard.md` for the full 6-step gate including SUMMARY):
+Before proceeding to outline phase (see `constraints/gate-function-standard.md` for the full 6-step gate including SUMMARY):
 
 1. **IDENTIFY**: What proves setup is complete?
    - `.planning/PRECIS.md` exists with thesis, claims, audience
@@ -299,7 +299,12 @@ Before proceeding to outline phase (see `conventions/gate-function-standard.md` 
    - OUTLINE has sections with Goals and Claim references
    - ACTIVE_WORKFLOW has `workflow: writing` and valid `style:`
 4. **VERIFY**: All three files exist and contain required content
-5. **CLAIM**: Only if steps 1-4 pass, proceed to outline phase
+5. **CLAIM**: Only if steps 1-4 pass, proceed to outline phase. **Gate type: `human-verify` — auto-advance to writing-outline.**
+6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
+   - phase: setup
+   - artifacts_produced: [PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, PRECIS_REVIEWED.md]
+   - provides: [.planning/PRECIS.md, .planning/OUTLINE.md, .planning/ACTIVE_WORKFLOW.md]
+   - Include substantive one-liner (NOT "Setup complete")
 
 ## Rationalization Table
 

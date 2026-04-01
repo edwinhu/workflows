@@ -1,6 +1,32 @@
 ---
 name: workshop-revise
 description: "This skill should be used when the user asks to 'revise workshop slides', 'fix presentation', 'update slides', 'change slide', 'fix notes', 'workshop feedback', or needs to modify existing workshop presentation slides or speaker notes."
+hooks:
+  PreToolUse:
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+  PostToolUse:
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+    - matcher: "*"
+      hooks:
+        - type: command
+          command: >-
+            COMPACT_THRESHOLD=40
+            COMPACT_INTERVAL=20
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
 ---
 
 **Announce:** "I'm using workshop-revise to apply changes to the workshop presentation."
@@ -95,13 +121,22 @@ For content changes or structural changes (NOT simple formatting fixes), dispatc
 Agent(prompt="""
 You are an independent reviewer. Check edited sections against Typst workshop constraints.
 
-Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise
+Step 1: Run constraint checks (auto-discovers all .py check scripts):
+  cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 
-Review the changed sections in slides.typ and notes.typ.
+Step 2: Load convention text for judgment review:
+  Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise
+
+Step 3: Review the changed sections in slides.typ and notes.typ against loaded conventions.
 Report violations:
 | # | Severity | Constraint | Location | Issue |
-""", subagent_type="general-purpose")
+
+Be thorough. Do NOT soften findings.
+""", subagent_type="general-purpose",
+allowed_tools=["Read", "Grep", "Glob", "Bash"])
 ```
+
+**The reviewer MUST NOT have Write or Edit access.** Issues go back to main chat for fixing.
 
 - If reviewer finds CRITICAL/HIGH issues → fix → re-dispatch (max 3 iterations)
 - If approved → proceed to Step 4
@@ -120,29 +155,16 @@ Report violations:
    - Exit code 1 = widows found → fix → recompile → re-run
    - Exit code 0 = clean → proceed
 
-3. **Check conventions:**
+3. **Two-leg verification:**
+
+   **Leg 1 — Constraint checks (hard block):**
    ```bash
-   # Missing blank lines between bullets
-   rg -n '^\s*-.*\n\s*-' slides.typ notes.typ
-   # Fake sub-bullets (-- as marker)
-   rg -n '^\s+--\s' slides.typ notes.typ
-   # qr: none present
-   rg 'qr: none' slides.typ
-   # No cetz-plot
-   rg 'cetz-plot' slides.typ notes.typ
-   # Uncentered images
-   rg -n '#image\(' slides.typ | rg -v 'align\(center\)'
-   # Table inset check
-   rg -n 'inset:' slides.typ
-   # Smart apostrophe issues
-   rg -n "[)\]]'s" slides.typ notes.typ
-   # CeTZ canvas without Storytelling comment
-   rg -B3 'cetz.canvas' slides.typ | rg -v 'Storytelling'
-   # Small cetz canvas length
-   rg -n 'length:' slides.typ | rg -v '2em\|2.5em\|3em'
-   # Unescaped dollar signs
-   rg -n '[^\\]\$[0-9]' slides.typ notes.typ
+   cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
    ```
+   - If any constraint fails → fix the violation → re-run (max 3 attempts)
+   - Hard block: ALL constraints must pass
+
+   **Leg 2 — Convention review (judgment):** For conventions listed by check-all.py (`.md` without `.py`), manually verify against the changed sections.
 
 4. **If compilation fails:** Fix and recompile (max 3 attempts).
 

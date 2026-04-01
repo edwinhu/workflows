@@ -4,6 +4,16 @@ description: Internal skill for creating detailed section outlines. Called by /w
 user-invocable: false
 disable-model-invocation: true
 hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/PRECIS_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Precis review"
+            GATE_REMEDY="Return to writing-setup and run the precis reviewer before outlining"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
@@ -49,12 +59,12 @@ Then load these phase-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
 
 ## Outline Flowchart (This IS the Spec)
 
@@ -310,7 +320,7 @@ Track deviations per section outline. Each section summary should include: **Dev
 
 ## Gate: Exit Outline Phase
 
-Before proceeding to draft phase (see `conventions/gate-function-standard.md` for the full 6-step gate including SUMMARY):
+Before proceeding to draft phase (see `constraints/gate-function-standard.md` for the full 6-step gate including SUMMARY):
 
 1. **IDENTIFY**: What proves outlining is complete?
    - Every section in OUTLINE.md has a corresponding file in `outlines/`
@@ -321,7 +331,13 @@ Before proceeding to draft phase (see `conventions/gate-function-standard.md` fo
 5. **REVIEW**: Dispatch outline reviewer subagent:
    Discover path: `${CLAUDE_SKILL_DIR}/../../skills/writing-outline-reviewer/SKILL.md`, then `Read()` the output.
    Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/ISSUES_FOUND, fix and re-review up to 5 times. Only proceed when APPROVED.
-6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase
+6. **CLAIM**: Only if steps 1-5 pass (including reviewer APPROVED), proceed to draft phase. **Gate type: `human-verify` — auto-advance to writing-draft.**
+7. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
+   - phase: outline
+   - artifacts_produced: [list all outlines/*.md files created]
+   - provides: [outlines/*.md, .planning/OUTLINE_REVIEWED.md]
+   - deviations: {r1: X, r2: Y, r3: Z, r4: W}
+   - Include substantive one-liner (NOT "Outlining complete")
 
 **Skipping the outline verification is NOT HELPFUL — the user drafts from a thin outline and rewrites every section.** You must verify every outline exists and has real structure.
 

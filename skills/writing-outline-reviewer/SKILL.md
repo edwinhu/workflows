@@ -24,8 +24,8 @@ Then load these reviewer-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
 
 ## When to Dispatch
 
@@ -136,9 +136,35 @@ Read ALL files, then evaluate the outline against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
+
+Write the gate artifact so downstream phases can verify the gate ran:
+
+```
+Write(".planning/OUTLINE_REVIEWED.md", """---
+status: APPROVED
+date: [ISO 8601]
+reviewer: outline-reviewer-subagent
+---
+# Outline Review: APPROVED
+
+[Include reviewer's approval summary here]
+""")
+```
+
 Proceed immediately to draft phase. Read `${CLAUDE_SKILL_DIR}/../../skills/writing-draft/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
+
+Staged improvement criteria per iteration:
+
+| Iteration | Focus | Expected Improvement |
+|-----------|-------|---------------------|
+| 1 | Fix blocking issues (orphan claims, missing outlines/, no POINT/EVIDENCE/LOGIC) | Every claim mapped, every section has structure |
+| 2 | Fix secondary issues (missing transitions, weak evidence mapping) | Transitions planned, evidence mapped to specific points |
+| 3 | Fix refinement issues (scope drift, filler sections, consistency) | All sections earn their place, no drift outside PRECIS scope |
+| 4-5 | Polish (if still needed) | Edge cases, cross-section consistency |
+
+Process:
 1. Fix the specific issues in the relevant outline files
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations

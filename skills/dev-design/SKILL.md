@@ -1,6 +1,6 @@
 ---
 name: dev-design
-description: "Propose architecture, design implementation approach, or choose between approaches."
+description: "This skill should be used when the user asks to 'design the approach', 'propose architecture', or 'choose between approaches'."
 user-invocable: false
 disable-model-invocation: true
 hooks:
@@ -415,6 +415,20 @@ Design complete when:
 - **User explicitly approved** ("Yes, proceed")
 
 ## Phase Complete
+
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Design
+
+---
+phase: design
+status: completed
+requires: [SPEC.md, clarified-requirements]
+provides: [PLAN.md, PLAN_REVIEWED.md, architecture-decision]
+chosen-approach: [one-liner describing selected approach]
+---
+```
 
 **After user approves ("Yes, proceed"):**
 

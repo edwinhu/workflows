@@ -3,7 +3,23 @@ name: writing-validate
 description: "Validate draft sections cover all PRECIS claims before review."
 user-invocable: false
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Bash
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Outline review (required before validation)"
+            GATE_REMEDY="Outline must be reviewed before validation can produce artifacts"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+  PostToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
 ---
 
 Announce: "Using writing-validate (Phase 3.5) to validate draft sections against PRECIS.md claims."
@@ -64,12 +80,16 @@ Then load these phase-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
 
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
 
 ## Constraint Checks to Run
 
@@ -275,9 +295,15 @@ missing: N
 
 `.planning/VALIDATION.md` must exist before proceeding.
 
-- If status is `validated`: proceed to writing-review.
-- If status is `gaps_found`: present gaps to user before proceeding.
+- If status is `validated`: proceed to writing-review. **Gate type: `human-verify` — auto-advance.**
+- If status is `gaps_found`: present gaps to user before proceeding. **Gate type: `decision` — wait for user.**
   - User decides: **fix** (return to writing-draft) or **accept** (proceed to writing-review with known gaps).
+
+**SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
+- phase: validate
+- artifacts_produced: [.planning/VALIDATION.md]
+- provides: [.planning/VALIDATION.md]
+- Include substantive one-liner with claim coverage stats (NOT "Validation complete")
 
 <EXTREMELY-IMPORTANT>
 **Do NOT silently proceed past gaps. Present them and wait for user decision.**
@@ -308,6 +334,24 @@ Gaps in claim coverage are not cosmetic — they mean the argument has holes. On
 
 **The protocol is not overhead you pay. It is the safety net you provide.**
 </EXTREMELY-IMPORTANT>
+
+## Visual Output for Decision Checkpoints
+
+When validation finds gaps (status: `gaps_found`), present a claim coverage summary table to help the user decide:
+
+```
+## Claim Coverage Summary
+
+| Claim | Section | Status | Issue |
+|-------|---------|--------|-------|
+| CLAIM-01 | Part I | COVERED | — |
+| CLAIM-02 | Part II | PARTIAL | Weak evidence (domain check failed) |
+| CLAIM-03 | — | MISSING | No draft section addresses this claim |
+
+Coverage: 1/3 COVERED, 1/3 PARTIAL, 1/3 MISSING
+```
+
+This table is generated from VALIDATION.md and presented inline. No separate script needed unless the user asks for the same view 3+ times.
 
 ## Phase Transition
 

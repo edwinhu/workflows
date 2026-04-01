@@ -12,15 +12,15 @@ After reading this index, load the specific convention files needed for your cur
 
 | ID | Convention | File | Description |
 |----|-----------|------|-------------|
-| V1 | Assumption Over Evidence | [conventions/ds-assumption-over-evidence.md](conventions/ds-assumption-over-evidence.md) | Never treat assumptions as evidence — profile/verify fresh every time |
-| V2 | Deferred Verification | [conventions/ds-deferred-verification.md](conventions/ds-deferred-verification.md) | Verify after EVERY step — "later" means never |
-| V3 | Impatience Over Process | [conventions/ds-impatience-over-process.md](conventions/ds-impatience-over-process.md) | Follow process — speed without correctness is malpractice |
-| V4 | Topic Change Protocol | [conventions/ds-topic-change-protocol.md](conventions/ds-topic-change-protocol.md) | Off-topic messages require announce-pause-handle-resume |
-| V5 | DS Escape Patterns | [conventions/ds-escape-patterns.md](conventions/ds-escape-patterns.md) | Four observed escape patterns to watch for |
-| V6 | Statistical Validity | [conventions/ds-statistical-validity.md](conventions/ds-statistical-validity.md) | Every statistical claim must have correct test |
-| V7 | P-Hacking Prevention | [conventions/ds-p-hacking-prevention.md](conventions/ds-p-hacking-prevention.md) | Pre-register specifications, no post-hoc fishing |
-| V8 | Sample Selection | [conventions/ds-sample-selection.md](conventions/ds-sample-selection.md) | Document and justify every sample filter |
-| V9 | Deviation Rules (Analysis) | [conventions/ds-deviation-rules-analysis.md](conventions/ds-deviation-rules-analysis.md) | Analysis-specific deviation handling |
+| V1 | Assumption Over Evidence | [constraints/ds-assumption-over-evidence.md](constraints/ds-assumption-over-evidence.md) | Never treat assumptions as evidence — profile/verify fresh every time |
+| V2 | Deferred Verification | [constraints/ds-deferred-verification.md](constraints/ds-deferred-verification.md) | Verify after EVERY step — "later" means never |
+| V3 | Impatience Over Process | [constraints/ds-impatience-over-process.md](constraints/ds-impatience-over-process.md) | Follow process — speed without correctness is malpractice |
+| V4 | Topic Change Protocol | [constraints/ds-topic-change-protocol.md](constraints/ds-topic-change-protocol.md) | Off-topic messages require announce-pause-handle-resume |
+| V5 | DS Escape Patterns | [constraints/ds-escape-patterns.md](constraints/ds-escape-patterns.md) | Four observed escape patterns to watch for |
+| V6 | Statistical Validity | [constraints/ds-statistical-validity.md](constraints/ds-statistical-validity.md) | Every statistical claim must have correct test |
+| V7 | P-Hacking Prevention | [constraints/ds-p-hacking-prevention.md](constraints/ds-p-hacking-prevention.md) | Pre-register specifications, no post-hoc fishing |
+| V8 | Sample Selection | [constraints/ds-sample-selection.md](constraints/ds-sample-selection.md) | Document and justify every sample filter |
+| V9 | Deviation Rules (Analysis) | [constraints/ds-deviation-rules-analysis.md](constraints/ds-deviation-rules-analysis.md) | Analysis-specific deviation handling |
 
 ## Phase Loading Guide
 

@@ -1,8 +1,22 @@
 ---
 name: dev-review
-description: "Code review with spec compliance and quality checks using confidence-based filtering."
+description: "This skill should be used when the user asks to 'review the code', 'check implementation quality', or 'run code review'."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/VALIDATION.md
+            GATE_DESCRIPTION="Test gap validation"
+            GATE_REMEDY="Return to dev-implement and run dev-test-gaps (Phase 5.5) before starting review."
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 ## Contents
@@ -20,7 +34,14 @@ disable-model-invocation: true
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md` (index), then load the phase-specific constraints:
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/delegation-law.md` (C1)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/real-test-enforcement.md` (C2)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-requirement-traceability.md` (C5)
+
+**Dynamic plan re-read:** Before starting review, re-read `.planning/SPEC.md` and `.planning/PLAN.md` to catch any requirements or tasks added during implementation. Do not rely on cached state from prior phases.
 
 Single-pass code review combining spec compliance and quality checks. Uses confidence-based filtering to report only high-priority issues.
 
@@ -616,6 +637,22 @@ Before claiming review is complete (APPROVED or ESCALATE):
 **If iteration >= 3 and you're returning CHANGES REQUIRED instead of ESCALATE, you're ignoring the iteration limit — escalate to the user instead of looping forever.**
 
 ## Phase Complete
+
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Review
+
+---
+phase: review
+status: completed
+requires: [VALIDATION.md, LEARNINGS.md]
+provides: [REVIEW_STATE.md, review-verdict]
+verdict: APPROVED | CHANGES_REQUIRED | ESCALATE | BLOCKED
+iterations: N
+issues-found: X (Y critical, Z important)
+---
+```
 
 After review completes, handle verdict-specific transitions:
 

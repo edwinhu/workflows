@@ -16,6 +16,13 @@ hooks:
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`
 
+Then load the phase-specific constraints:
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/delegation-law.md` (C1)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/real-test-enforcement.md` (C2)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-deviation-rules.md` (C4)
+
 <EXTREMELY-IMPORTANT>
 ## STEP ZERO — INITIALIZE THE DEBUG LOOP
 

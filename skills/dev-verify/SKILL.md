@@ -3,13 +3,32 @@ name: dev-verify
 description: "This skill should be used when the user asks to 'verify completion', 'check that tests pass', 'confirm feature works', or REQUIRED Phase 7 of /dev workflow (final). Enforces fresh runtime evidence before claiming completion."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/REVIEW_STATE.md
+            GATE_DESCRIPTION="Code review completion"
+            GATE_REMEDY="Return to dev-review (Phase 6). Review must complete and write REVIEW_STATE.md before verification."
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md` (index), then load the phase-specific constraints:
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-requirement-traceability.md` (C5)
+
+**Dynamic plan re-read:** Before starting verification, re-read `.planning/SPEC.md` to verify against the latest requirements. Do not rely on cached state from prior phases.
 
 ## Contents
 
@@ -271,7 +290,19 @@ npm run build && echo "Exit code: $?"
 
 **Tool description:** Build application and verify exit code is 0
 
-## Goal-Backward Verification (Subagent)
+## Constraint Check (Leg 1 — Hard Block)
+
+Before spawning the goal-backward verifier, run the auto-discovering constraint runner:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+```
+
+**If any constraint FAILS:** Address the failure before proceeding. Constraint failures are hard blocks — do not proceed to goal-backward verification with failing constraints.
+
+**If all constraints PASS:** Proceed to goal-backward verification below.
+
+## Goal-Backward Verification (Subagent — Leg 2)
 
 After technical tests pass, spawn the dev-verifier agent to check that phase GOALS were achieved, not just tasks completed:
 
@@ -372,6 +403,22 @@ If the user says "Partially" or "No":
 Both must pass. No shortcuts exist.
 
 ## Workflow Complete
+
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Verify
+
+---
+phase: verify
+status: completed
+requires: [REVIEW_STATE.md, all-tests-passing]
+provides: [user-acceptance, workflow-complete]
+constraint-check: PASS
+goal-backward-verification: all-goals-met
+user-verdict: "Yes, requirements met"
+---
+```
 
 When user confirms "Yes, requirements met":
 

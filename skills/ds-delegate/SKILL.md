@@ -10,6 +10,10 @@ hooks:
         - type: command
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
   PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
     - matcher: "Read"
       hooks:
         - type: command
@@ -22,6 +26,18 @@ hooks:
       hooks:
         - type: command
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
 ---
 
 
@@ -135,10 +151,10 @@ This task requires:
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-standard-error-spec.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-visualization-integrity.md`
 - Analysis conventions: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the convention index, then load:
-  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-statistical-validity.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-p-hacking-prevention.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-sample-selection.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deviation-rules-analysis.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-statistical-validity.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-p-hacking-prevention.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-sample-selection.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules-analysis.md`
 
 ## REQUIRED TOOLS
 

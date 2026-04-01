@@ -1,8 +1,19 @@
 ---
 name: writing-review
-description: "This skill should be used when the user asks to 'review my writing', 'check document structure', 'find issues in draft', 'review transitions', or needs hierarchical document review that produces REVIEW.md for /writing-revise."
+description: "Internal skill for hierarchical document review. Called by writing-validate after claim validation passes."
 user-invocable: false
 allowed-tools: Read, Grep, Glob, Agent, Skill
+hooks:
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/VALIDATION.md
+            GATE_STATUS=validated
+            GATE_DESCRIPTION="Claim validation"
+            GATE_REMEDY="Run writing-validate first to validate claim coverage before review"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 # Writing Review
@@ -30,14 +41,15 @@ Then load these phase-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-stop-triggers.md`
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/artifact-review-gates.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
 
 ## Session Resume Detection
 
@@ -188,7 +200,7 @@ START (PRECIS + OUTLINE + drafts/ exist)
      │  └─ Record issues with severity + location + quoted evidence
      │  Loop until all sections reviewed (NO pause between sections)
      │
-     └─ LEVEL 2: Transition Review (boundary analysis)
+     └─ LEVEL 2: Transition Review (boundary analysis) ← IMMEDIATELY after Level 1 (NO pause)
         │  For EACH boundary (Section N → Section N+1):
         │  ├─ Compare Section N closing with Section N+1 opening
         │  ├─ Check planned transition from OUTLINE.md
@@ -196,7 +208,7 @@ START (PRECIS + OUTLINE + drafts/ exist)
         │  └─ Record transition issues with quoted boundary text
         │  Loop until all boundaries checked
         │
-        └─ LEVEL 3: Document Review (whole-document)
+        └─ LEVEL 3: Document Review (whole-document) ← IMMEDIATELY after Level 2 (NO pause)
            │  ├─ Cross-section repetition: compare argument summaries
            │  ├─ Concept introduction order: first-appearance map
            │  ├─ Thesis threading: does each section advance thesis?
@@ -214,6 +226,15 @@ If text and flowchart disagree, the flowchart wins.
 ## Level 1: Section Review
 
 Review each section individually against its outline and PRECIS claims.
+
+### Iteration Topology
+
+| Level | Strategy | Exit Gate | Escalate When |
+|-------|----------|-----------|---------------|
+| Level 1 (Section) | One-shot + verify per section | Subagent returns structured review with quoted evidence | Subagent returns empty/fabricated review — re-dispatch once, then escalate |
+| Level 2 (Transition) | One-shot (orchestrator) | All boundary pairs evaluated | N/A — orchestrator runs this directly |
+| Level 3 (Document) | One-shot (orchestrator) | Cross-section checks complete | Contradictory findings across levels — present to user |
+| Overall loop | Consumed by writing-revise (max 3 iterations) | writing-revise declares COMPLETE | iteration >= 3 with remaining issues → ESCALATE |
 
 ### Sequential Mode (Default)
 
@@ -337,7 +358,12 @@ Before declaring review complete:
 2. **RUN**: Read REVIEW.md, verify every section from OUTLINE.md has a review entry
 3. **READ**: Confirm every issue has severity + location + quoted evidence + suggestion
 4. **VERIFY**: All three levels completed (section, transition, document)
-5. **CLAIM**: Only if steps 1-4 pass, announce review complete
+5. **CLAIM**: Only if steps 1-4 pass, announce review complete. **Gate type: `human-verify` — auto-advance to /writing-revise.**
+6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
+   - phase: review
+   - artifacts_produced: [.planning/REVIEW.md]
+   - provides: [.planning/REVIEW.md]
+   - Include substantive one-liner with issue counts by severity (NOT "Review complete")
 
 **If any section is missing from REVIEW.md, the review is incomplete. Go back.**
 

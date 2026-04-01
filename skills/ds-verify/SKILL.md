@@ -78,8 +78,8 @@ Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary
 
 Load conventions for verification phase:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
 
 Before claiming analysis is complete, you MUST:
 1. RE-RUN - Execute analysis fresh (not cached results)

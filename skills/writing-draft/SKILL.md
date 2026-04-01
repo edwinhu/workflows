@@ -5,6 +5,15 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
+    - matcher: "Write|Edit|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Outline review"
+            GATE_REMEDY="Return to writing-outline and run the outline reviewer before drafting"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
     - matcher: "Write"
       hooks:
         - type: command
@@ -44,11 +53,11 @@ Then load these phase-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
 
 ## Draft Flowchart (This IS the Spec)
 
@@ -237,6 +246,8 @@ For each section with a completed outline, in order:
    - Every piece of evidence from the outline appears in prose
    - Transitions between subsections are explicit
 4. **Save to drafts/**: `Write("drafts/[Section] (Draft).md", content)`
+   - Include frontmatter with `implements: [CLAIM-XX, CLAIM-YY]` matching the outline's claim references
+   - This enables mechanical traceability from PRECIS through outlines through drafts
 5. **Self-check**: Does the draft cover every point in the outline? Is it cursory or developed?
 
 After completing each section, IMMEDIATELY start the next section. Do NOT:
@@ -277,13 +288,19 @@ edits_since_verify: 0
 
 ## Gate: Exit Draft
 
-Before proceeding to edit/verify (see `conventions/gate-function-standard.md` for the full 6-step gate including SUMMARY):
+Before proceeding to edit/verify (see `constraints/gate-function-standard.md` for the full 6-step gate including SUMMARY):
 
 1. **IDENTIFY**: Draft files in `drafts/` for all sections listed in OUTLINE.md
 2. **RUN**: List files in `drafts/`, compare against OUTLINE.md sections
 3. **READ**: Check each draft exists and has substantial content (not cursory stubs)
 4. **VERIFY**: All sections have drafts, each draft covers all outline points
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-validate
+5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-validate. **Gate type: `human-verify` — auto-advance to writing-validate.**
+6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
+   - phase: draft
+   - artifacts_produced: [list all drafts/*.md files created]
+   - provides: [drafts/*.md]
+   - deviations: {r1: X, r2: Y, r3: Z, r4: W}
+   - Include substantive one-liner (NOT "Drafting complete")
 
 **Reporting "all sections drafted" without checking each file is NOT HELPFUL — the user moves to review with missing sections that force a return to drafting.** You must verify every draft exists and has real content.
 
@@ -299,7 +316,20 @@ If a section fails the gate:
 
 Re-draft WITHOUT pausing. Agent re-opens outline, re-reads PRECIS.md, expands section with full depth.
 
-**No iteration limit at draft stage.** Cheap iterations here prevent expensive rework later.
+### Staged Section Quality Loop
+
+After drafting each section, run a quick self-verification loop before moving to the next section:
+
+```
+Draft section → Self-check (outline coverage + depth + evidence) →
+  ├─ PASS → Next section (no pause)
+  └─ FAIL → Re-read outline → Fix gaps → Self-check again (max 3 per section)
+             └─ Still failing after 3 → Flag for later, move on
+```
+
+This catches depth and coverage issues WITHIN each section before they accumulate. The gate at phase exit catches cross-section issues.
+
+**No iteration limit at draft stage overall, but 3 iterations per section for the quality loop.** Cheap iterations here prevent expensive rework later.
 
 **Skipping the subsection expansion check is NOT HELPFUL — the user publishes a stub where a full section should be.** A 2-paragraph section with a 5-subsection outline is a stub, not a draft.
 

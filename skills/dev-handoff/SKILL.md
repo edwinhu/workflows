@@ -3,6 +3,12 @@ name: dev-handoff
 description: "This skill should be used when the user asks to 'pause work', 'hand off session', 'save progress', 'create handoff', or when context is running low and work needs to continue in a new session."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
 ---
 
 Announce: "Using dev-handoff to capture session state for clean resumption."

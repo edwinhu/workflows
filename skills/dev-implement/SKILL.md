@@ -1,11 +1,15 @@
 ---
 name: dev-implement
-description: “This skill should be used when REQUIRED Phase 5 of /dev workflow, after design approval.”
+description: “This skill should be used when the user asks to 'implement the plan', 'start building', or 'execute the tasks'.”
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent
 hooks:
   PreToolUse:
+    - matcher: “Write|Edit”
+      hooks:
+        - type: command
+          command: “python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py”
     - matcher: “Agent”
       hooks:
         - type: command
@@ -21,7 +25,15 @@ hooks:
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md` (index), then load the phase-specific constraints:
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/delegation-law.md` (C1)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/real-test-enforcement.md` (C2)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-deviation-rules.md` (C4)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-requirement-traceability.md` (C5)
+
+**Dynamic plan re-read:** Before starting work, re-read `.planning/PLAN.md` to catch any phases or tasks that were dynamically inserted by earlier phases. Do not rely on cached plan state from a prior phase.
 
 ## Where This Fits
 
@@ -651,6 +663,21 @@ If test gap reports implementation bugs (escalations):
 </EXTREMELY-IMPORTANT>
 
 ## Phase Complete
+
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Implement
+
+---
+phase: implement
+status: completed
+requires: [PLAN.md, PLAN_REVIEWED.md]
+provides: [VALIDATION.md, implementation-complete, all-tests-passing]
+tasks-completed: N/N
+total-deviations: {r1: X, r2: Y, r3: Z, r4: W}
+---
+```
 
 **REQUIRED SUB-SKILL:** After ALL tasks complete with passing tests AND test gap validation passes:
 

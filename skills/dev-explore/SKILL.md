@@ -493,6 +493,21 @@ This is not optional. Fake tests are worse than no tests because they create fal
 
 ## Phase Complete
 
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Explore
+
+---
+phase: explore
+status: completed
+requires: [SPEC.md]
+provides: [codebase-map, testing-infra-discovery, dependency-audit]
+key-findings:
+  - [one-liner per significant discovery]
+---
+```
+
 **REQUIRED SUB-SKILL:** After completing exploration, IMMEDIATELY invoke:
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/dev-clarify/SKILL.md` and follow its instructions.

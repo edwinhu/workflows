@@ -3,6 +3,16 @@ name: dev-clarify
 description: "Asks targeted clarification questions based on codebase exploration findings."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SPEC.md
+            GATE_DESCRIPTION="Spec document"
+            GATE_REMEDY="SPEC.md must exist before clarifying. Complete brainstorm first."
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."
@@ -376,6 +386,21 @@ If ANY answer is "no" or "not sure" → STOP. Clarify before design.
 This is the last checkpoint before implementation planning. Fake tests caught here save hours of wasted implementation.
 
 ## Phase Complete
+
+**Phase summary (append to LEARNINGS.md):**
+
+```yaml
+## Phase: Clarify
+
+---
+phase: clarify
+status: completed
+requires: [SPEC.md, codebase-map]
+provides: [clarified-requirements, testing-strategy-validated]
+questions-resolved:
+  - [one-liner per clarification]
+---
+```
 
 **REQUIRED SUB-SKILL:** After completing clarification, IMMEDIATELY invoke:
 

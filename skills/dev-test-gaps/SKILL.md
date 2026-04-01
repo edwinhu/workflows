@@ -3,6 +3,12 @@ name: dev-test-gaps
 description: "This skill should be used when validating test coverage against requirements, after implementation tasks complete (Phase 5.5 of /dev workflow). Invoked automatically by dev-implement before review phase."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
 ---
 
 Announce: "Using dev-test-gaps (Phase 5.5) to validate test coverage against requirements."

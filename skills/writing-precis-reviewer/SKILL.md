@@ -24,7 +24,7 @@ Then load these reviewer-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
 
 ## When to Dispatch
 
@@ -120,9 +120,35 @@ Read the precis file, then evaluate against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
+
+Write the gate artifact so downstream phases can verify the gate ran:
+
+```
+Write(".planning/PRECIS_REVIEWED.md", """---
+status: APPROVED
+date: [ISO 8601]
+reviewer: precis-reviewer-subagent
+---
+# Precis Review: APPROVED
+
+[Include reviewer's approval summary here]
+""")
+```
+
 Proceed immediately to Step 3 (create OUTLINE.md) in writing-setup.
 
 ### If ISSUES_FOUND
+
+Staged improvement criteria per iteration:
+
+| Iteration | Focus | Expected Improvement |
+|-----------|-------|---------------------|
+| 1 | Fix blocking issues (vague thesis, missing claims) | Thesis becomes arguable, claims become distinct |
+| 2 | Fix secondary issues (weak counterarguments, vague scope) | Counterarguments steel-manned, scope boundaries clear |
+| 3 | Fix refinement issues (audience specificity, source mapping) | All sections complete and internally consistent |
+| 4-5 | Polish (if still needed) | Edge cases, consistency between sections |
+
+Process:
 1. Fix the specific issues in `.planning/PRECIS.md`
 2. Re-dispatch the reviewer (same template)
 3. Repeat until APPROVED or max 5 iterations

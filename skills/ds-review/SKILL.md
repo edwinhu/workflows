@@ -393,8 +393,8 @@ Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary
 
 Load conventions for review phase:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
 
 ## Review Focus Areas
 
@@ -698,6 +698,22 @@ A methodology is fundamentally flawed when:
 
 **Patching a broken methodology to avoid rework is NOT HELPFUL — the user deserves correct analysis, not fast wrong analysis.**
 </EXTREMELY-IMPORTANT>
+
+## Visual Diagnostics for Review Decision Points
+
+When presenting review findings to the user (especially at CHANGES REQUIRED verdicts), generate diagnostic plots to support the decision:
+
+| Review Finding | Diagnostic to Generate |
+|---------------|----------------------|
+| Join explosion detected | Row count waterfall (before/after each join) |
+| Selection bias suspected | Distribution comparison (included vs excluded populations) |
+| Missing value impact | Missingness heatmap (columns x time periods) |
+| Outlier influence | Coefficient sensitivity plot (with/without outliers) |
+| Reproducibility failure | Side-by-side run comparison (key metrics from Run 1 vs Run 2) |
+
+**Format:** Inline plots in notebooks, or saved to `scratch/diagnostics/` for script-based workflows. Present alongside the review verdict.
+
+**When to generate:** Only at `decision` checkpoints where the user must choose between accepting or fixing. Do not generate plots for clean review passes (no decision needed).
 
 ## Quality Standards
 

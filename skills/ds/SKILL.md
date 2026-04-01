@@ -31,6 +31,14 @@ Before starting, check for an existing handoff:
    - If fresh: proceed with brainstorm
 3. **If not found:** Proceed normally with Phase 1 (brainstorm)
 
+## Context Monitoring
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25-35% | Complete current question round, then trigger ds-handoff |
+| Critical | ≤25% | Immediately trigger ds-handoff — do not start new question rounds |
+
 # Brainstorming (Questions Only)
 
 Refine vague analysis requests into clear objectives through Socratic questioning.
@@ -42,9 +50,9 @@ Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md`
 
 Load conventions for brainstorm phase:
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-deferred-verification.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/conventions/ds-impatience-over-process.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-impatience-over-process.md`
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Brainstorming
@@ -241,14 +249,15 @@ Before transitioning to ds-plan, execute this gate:
 ```
 1. IDENTIFY → SPEC.md exists at `.planning/SPEC.md`
 2. RUN      → Read(".planning/SPEC.md")
-3. READ     → Verify it contains: Objectives, Data Sources, Success Criteria sections
-4. VERIFY   → User has confirmed the objectives (not just agent self-assessment)
+3. READ     → Verify it contains: Objectives, Data Sources, Requirements (with CATEGORY-NN IDs), Success Criteria sections
+4. VERIFY   → User has confirmed the objectives via AskUserQuestion response (not agent self-assessment).
+              Check: was AskUserQuestion called and did user respond affirmatively?
 5. CLAIM    → Only proceed to ds-plan if ALL checks pass
 ```
 
 **If ANY check fails, do NOT proceed. Fix the gap first.**
 
-**Self-assessment is not user confirmation. If the user hasn't explicitly approved the objectives, you haven't finished brainstorm.**
+**Self-assessment is not user confirmation. If the user hasn't explicitly approved the objectives via AskUserQuestion, you haven't finished brainstorm.**
 
 ## Output
 
@@ -295,6 +304,24 @@ This skill is Phase 1 of the 5-phase `/ds` workflow:
 
 **Your pause is procrastination disguised as courtesy. The user confirmed — move.**
 </EXTREMELY-IMPORTANT>
+
+## Phase Summary
+
+After writing SPEC.md, update it with structured frontmatter:
+
+```yaml
+---
+phase: ds-brainstorm
+status: completed
+implements: [all requirement IDs assigned in this phase]
+requires: [user input]
+provides: [.planning/SPEC.md]
+affects: [.planning/]
+tags: [brainstorm, objectives, requirements]
+---
+```
+
+**One-liner rule:** Must be SUBSTANTIVE. Good: "Panel regression study of CEO pay-performance sensitivity using CRSP-Compustat 2000-2024". Bad: "Brainstorm complete".
 
 ## Phase Complete
 

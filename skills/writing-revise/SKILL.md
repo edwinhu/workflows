@@ -3,6 +3,15 @@ name: writing-revise
 version: 1.0
 description: "This skill should be used when the user asks to 'revise writing', 'fix review issues', 'polish draft', 'apply review feedback', 'complete writing workflow', or after /writing-review produces REVIEW.md with issues to fix."
 hooks:
+  PreToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/REVIEW.md
+            GATE_DESCRIPTION="Writing review"
+            GATE_REMEDY="Run /writing-review first to produce .planning/REVIEW.md before revising"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
@@ -36,13 +45,14 @@ Then load these phase-specific files:
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
 - Read `${CLAUDE_SKILL_DIR}/../../references/constraints/deviation-rules.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
 
 **Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/conventions/iteration-topology.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
+- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
 
 ## Session Resume Detection
 
@@ -161,9 +171,9 @@ issues_found_count: 5
 ```
 
 **Exit criteria:**
-- **COMPLETE**: Zero issues found in REVIEW.md
-- **ESCALATE**: iteration >= 3 AND issues remain
-- **CONTINUE**: iteration < 3 AND issues remain → re-invoke /writing-review
+- **COMPLETE**: Zero issues found in REVIEW.md. **Gate type: `human-verify` — auto-advance to archive.**
+- **ESCALATE**: iteration >= 3 AND issues remain. **Gate type: `decision` — present options, wait for user.**
+- **CONTINUE**: iteration < 3 AND issues remain → re-invoke /writing-review. **Gate type: `human-verify` — auto-advance to next iteration.**
 
 **Before claiming "all fixed", check iteration count:**
 1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
@@ -467,6 +477,13 @@ issues_found_count: 0
 verdict: COMPLETE
 ---
 ```
+
+**SUMMARY**: Append final phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
+- phase: revise
+- artifacts_produced: [list all modified drafts/*.md files]
+- provides: [final drafts/*.md]
+- deviations: {r1: X, r2: Y, r3: Z, r4: W}
+- Include substantive one-liner with total iterations and final verdict (NOT "Revision complete")
 
 Archive workflow state:
 

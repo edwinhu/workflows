@@ -1,6 +1,41 @@
 ---
 name: workshop
 description: "This skill should be used when the user asks to 'create a workshop presentation', 'prepare a workshop talk', 'make slides for a workshop', 'presentation for faculty workshop', 'workshop slides from paper', or needs to create academic workshop presentation slides and speaker notes from a research paper."
+hooks:
+  PreToolUse:
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SOURCES_VERIFIED.md
+            GATE_STATUS=VERIFIED
+            GATE_DESCRIPTION="Phase 1 sources gate"
+            GATE_REMEDY="Return to Phase 1 and complete source gathering before writing any files"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+  PostToolUse:
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+    - matcher: "*"
+      hooks:
+        - type: command
+          command: >-
+            COMPACT_THRESHOLD=40
+            COMPACT_INTERVAL=20
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
 ---
 
 **Announce:** "I'm using workshop to create academic presentation slides and speaker notes."
@@ -38,6 +73,64 @@ gather       → structure     → generate      → verify
 
 After completing each phase, IMMEDIATELY proceed to the next phase. Do not pause for user approval except where explicitly required (Phase 2: user approves outline).
 
+**Smart Discuss:** If multiple questions arise in Phase 1 (e.g., paper path unclear, venue unknown, desired structure), batch them into a SINGLE user interaction. Do NOT ask one question, wait, ask another, wait. Present all ambiguities at once:
+```
+Before proceeding, I need to clarify:
+1. Paper path: [what I found vs. what's unclear]
+2. Venue/date: [known or unknown]
+3. Structure preference: [default or ask]
+Please answer all at once so we can proceed efficiently.
+```
+
+## Context Monitoring
+
+Before starting each phase, check context availability:
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25-35% | Complete current task, then write `.planning/HANDOFF.md` and pause |
+| Critical | <=25% | Write `.planning/HANDOFF.md` immediately — no new phase |
+
+**Phase 3 (generate) is the most context-intensive phase.** If context is at Warning level before Phase 3, write `.planning/HANDOFF.md`:
+```yaml
+---
+workflow: workshop
+phase: [current phase number]
+phase_name: [current phase name]
+status: context_exhaustion
+last_updated: [timestamp]
+---
+
+## Current State
+[What phase we're in, what's been completed in this phase]
+
+## Completed Work
+- Phase 1: [status — SOURCES.md path, inventory count]
+- Phase 2: [status — OUTLINE.md path, section count]
+- Phase 3: [status — slides written? notes written?]
+
+## Remaining Work
+[Specific tasks left in current phase + all subsequent phases]
+
+## Decisions Made
+[Any user decisions captured — structure proportions, venue, etc.]
+
+## Next Action
+[Specific enough to start immediately — e.g., "Write notes.typ sections 3-5 following OUTLINE.md"]
+```
+
+**Skipping handoff to "finish faster" means the last slides are garbage. The user debugs context-degraded output instead of resuming from a clean handoff. That is anti-helpful.**
+
+## Checkpoint Types
+
+| Phase | Gate | Type | Behavior |
+|-------|------|------|----------|
+| Phase 1 | Sources gathered | human-verify | Auto-advanceable |
+| Phase 2 | Outline approved | decision | Pause for user input |
+| Phase 3 | Slides reviewed | human-verify | Auto-advanceable (independent reviewer) |
+| Phase 4 | Verified | human-verify | Auto-advanceable |
+
 ## Workflow Initialization
 
 Create `.planning/ACTIVE_WORKFLOW.md`:
@@ -48,6 +141,10 @@ phase: 1
 phase_name: gather
 started: [current timestamp]
 project_root: [current directory]
+implements: "4-phase workshop creation (gather → structure → generate → verify)"
+requires: "source paper (PDF), user structure preferences"
+provides: "slides.typ, notes.typ, slides.pdf, notes.pdf"
+affects: "presentation/ directory"
 ---
 ```
 
@@ -148,24 +245,27 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 
    ## Paper Inventory
 
+   Every item gets a unique ID (F1, T1, R1, A1...) for traceability.
+   Each slide in the presentation must reference at least one inventory ID.
+
    ### Figures
-   - Figure 1: [caption] (p. XX)
-   - Figure 2: [caption] (p. XX)
+   - **F1:** Figure 1: [caption] (p. XX)
+   - **F2:** Figure 2: [caption] (p. XX)
    ...
 
    ### Tables
-   - Table 1: [caption] (p. XX)
-   - Table 2: [caption] (p. XX)
+   - **T1:** Table 1: [caption] (p. XX)
+   - **T2:** Table 2: [caption] (p. XX)
    ...
 
    ### Key Empirical Results
-   - [Result 1 with specific numbers] (Table/Figure X, p. XX)
-   - [Result 2 with specific numbers] (Table/Figure X, p. XX)
+   - **R1:** [Result 1 with specific numbers] (Table/Figure X, p. XX)
+   - **R2:** [Result 2 with specific numbers] (Table/Figure X, p. XX)
    ...
 
    ### Main Arguments / Hypotheses
-   - [Argument 1] (Section X)
-   - [Argument 2] (Section X)
+   - **A1:** [Argument 1] (Section X)
+   - **A2:** [Argument 2] (Section X)
    ...
 
    ## Related Teaching Materials
@@ -186,6 +286,28 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 - [ ] Theme symlinks created (templates/, assets/)
 - [ ] Related materials searched (~/areas/, notes, gdrive)
 
+**Structural gate artifact:** After verifying all checks pass, write `.planning/SOURCES_VERIFIED.md`:
+```yaml
+---
+status: VERIFIED
+phase: gather
+verified_at: [timestamp]
+title_source: look-at (NOT inferred)
+implements: "Phase 1 — source gathering and metadata extraction"
+requires: "source paper PDF"
+provides: "SOURCES.md with paper inventory (F/T/R/A IDs)"
+affects: "presentation/templates/, presentation/assets/"
+inventory_count:
+  figures: [N]
+  tables: [N]
+  results: [N]
+  arguments: [N]
+---
+Sources gathered and verified. Paper metadata extracted from source document.
+```
+
+**Phase 2 will refuse to start without this file.**
+
 **IMMEDIATELY proceed to Phase 2.**
 
 ---
@@ -193,6 +315,12 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 ## Phase 2: Structure Outline
 
 **Responsibility:** Create section-level outline with content allocation based on user's desired structure.
+
+### Prerequisites
+- [ ] `.planning/SOURCES_VERIFIED.md` exists with `status: VERIFIED`
+- [ ] `.planning/SOURCES.md` exists with paper metadata and inventory
+
+**If `.planning/SOURCES_VERIFIED.md` is missing, STOP. Return to Phase 1 and complete the sources gate.**
 
 ### Steps
 
@@ -219,8 +347,8 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
    ### Part 1: [Section Name] (~[Y] minutes, [N] slides)
    = [Touying section heading]
    == [Subsection 1]
-   - Slide: [slide title] — [content source: paper §X / teaching material / predecessor]
-   - Slide: [slide title] — [content source]
+   - Slide: [slide title] — [content source: paper §X / teaching material / predecessor] → [F1, R2, A1]
+   - Slide: [slide title] — [content source] → [T1, R3]
 
    ### Part 2: [Section Name] (~[Y] minutes, [N] slides)
    ...
@@ -228,11 +356,40 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 
 5. **Present outline to user for approval.**
 
+**Producing an outline from memory instead of the paper's structure means the presentation won't match the paper. The user discovers misaligned sections during Phase 3, requiring rework of both the outline AND the slides. Getting the structure right here saves hours downstream.**
+
+### Red Flags — STOP If You Catch Yourself:
+
+- **Writing an outline without having read the paper's section structure** → STOP. Use look-at first.
+- **Allocating time without user's preferred proportions** → STOP. Ask the user.
+- **Creating slides in OUTLINE.md without inventory IDs** → STOP. Every slide traces to F/T/R/A IDs.
+- **Proceeding past Phase 2 without user approval** → STOP. This is a decision checkpoint.
+
 ### Gate: Outline Approved (decision checkpoint)
 
 - [ ] OUTLINE.md written with section proportions and timing
 - [ ] User has approved the outline
-- [ ] Content sources identified for each slide
+- [ ] Content sources identified for each slide with inventory IDs (F/T/R/A)
+
+**Structural gate artifact:** After user approves, write `.planning/OUTLINE_APPROVED.md`:
+```yaml
+---
+status: APPROVED
+phase: structure
+approved_at: [timestamp]
+checkpoint_type: decision
+implements: "Phase 2 — outline structure with content allocation"
+requires: "SOURCES_VERIFIED.md, user structure preferences"
+provides: "OUTLINE.md with section proportions, timing, and inventory ID mapping"
+affects: ".planning/OUTLINE.md"
+total_time: [N] minutes
+section_count: [N]
+slide_count: [N]
+---
+Outline approved by user. Structure: [brief summary of proportions].
+```
+
+**Phase 3 will refuse to start without this file.**
 
 **IMMEDIATELY proceed to Phase 3 after user approval.**
 
@@ -241,6 +398,14 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 ## Phase 3: Generate Slides & Notes
 
 **Responsibility:** Write slides.typ and notes.typ following ALL Typst conventions.
+
+### Prerequisites
+- [ ] `.planning/OUTLINE_APPROVED.md` exists with `status: APPROVED`
+- [ ] `.planning/SOURCES_VERIFIED.md` exists with `status: VERIFIED`
+- [ ] `.planning/SOURCES.md` exists with paper inventory
+- [ ] `.planning/OUTLINE.md` exists with approved structure
+
+**If any prerequisite is missing, STOP. Do not generate slides without approved outline and verified sources.**
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Typst Conventions
@@ -341,6 +506,19 @@ This applies to EVERY list in EVERY slide. No exceptions.
 
 If you wrote slides.typ or notes.typ WITHOUT having read the paper (Phase 1), DELETE them and start over from Phase 1. Content written without source material is hallucinated content — it cannot be patched, only rewritten.
 
+### Deviation Rules (Phase 3)
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Bug** | Typst compilation error, syntax error, broken import | Fix → recompile → verify | Auto |
+| **R2: Missing Critical** | Missing template file, missing asset, broken theme reference | Add/fix → recompile → verify → track `[R2]` | Auto |
+| **R3: Blocking** | Typst version incompatibility, font not found, package conflict | Fix blocker → verify proceeds → track `[R3]` | Auto |
+| **R4: Structural** | Outline restructuring, section reordering, changing presentation proportions | STOP → present to user → track `[R4]` | Ask user |
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure = R4
+
+After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
+
 ### Rationalization Table — Typst Conventions
 
 | Excuse | Reality | Do Instead |
@@ -433,27 +611,66 @@ If convention violations persist after 3 fix-and-recheck cycles, escalate to use
 Agent(prompt="""
 You are an independent reviewer. Check these files against the Typst workshop constraints.
 
-Load the constraints:
+Step 1 — Constraint checks (hard block):
+Run: cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+Report any failures.
+
+Step 2 — Convention review (judgment):
 Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop
+Review slides.typ and notes.typ against loaded conventions.
 
-Then review:
-1. [presentation dir]/slides.typ
-2. [presentation dir]/notes.typ
-
-Check ALL constraint categories. Report violations:
-| # | Severity | Constraint | Location | Issue |
-
-Also check:
+Step 3 — Cross-check:
 - Every slide in slides.typ has corresponding coverage in notes.typ
 - Slide titles are complete sentences
 - Notes are flowing prose, not bullet recaps
+- Every factual claim traces to a paper inventory ID (F/T/R/A)
+
+Report violations:
+| # | Severity | Constraint | Location | Issue |
 
 Be thorough. Do NOT soften findings.
-""", subagent_type="general-purpose")
+""", subagent_type="general-purpose",
+allowed_tools=["Read", "Grep", "Glob", "Bash"])
 ```
 
-- If reviewer finds CRITICAL/HIGH issues → fix → re-dispatch reviewer (max 3 iterations)
-- If reviewer approves or only LOW issues remain → proceed to Phase 4
+**The reviewer MUST NOT have Write or Edit access.** A reviewer that "fixes" issues it finds bypasses the plan-execute-verify cycle. Issues go back to the generator for fixing.
+
+### Post-Subagent Enforcement
+
+After the reviewer subagent returns, main chat follows these boundaries:
+
+| Verification (main chat CAN do) | Investigation (main chat CANNOT do) |
+|----------------------------------|--------------------------------------|
+| Read reviewer's violation report | Read slides.typ/notes.typ directly |
+| Check compilation (typst compile) | Grep through .typ files |
+| Check gate artifact exists | Edit slides.typ/notes.typ directly |
+| Run convention check scripts | "Quick fix" a reported issue |
+
+**If fixes are needed, dispatch a new subagent to make the fixes, then re-dispatch the reviewer.**
+
+- If reviewer finds CRITICAL/HIGH issues → fix via subagent → re-dispatch reviewer (max 3 iterations)
+- If reviewer approves or only LOW issues remain → write gate artifact and proceed to Phase 4
+
+**Structural gate artifact:** After reviewer approves, write `.planning/SLIDES_REVIEWED.md`:
+```yaml
+---
+status: APPROVED
+phase: generate
+reviewed_at: [timestamp]
+reviewer: independent subagent
+implements: "Phase 3 — slide and notes generation with independent review"
+requires: "OUTLINE_APPROVED.md, SOURCES_VERIFIED.md"
+provides: "slides.typ, notes.typ (reviewed and convention-compliant)"
+affects: "presentation/slides.typ, presentation/notes.typ"
+iterations: [N]
+slides_count: [N]
+notes_sections: [N]
+deviations: {r1: [X], r2: [Y], r3: [Z], r4: [W]}
+---
+Slides and notes reviewed by independent subagent. [Summary of review outcome].
+```
+
+**Phase 4 will refuse to start without this file.**
 
 **IMMEDIATELY proceed to Phase 4 after review gate passes.**
 
@@ -462,6 +679,13 @@ Be thorough. Do NOT soften findings.
 ## Phase 4: Verify & Compile
 
 **Responsibility:** Compile both files, run widow detection, and verify correctness.
+
+### Prerequisites
+- [ ] `.planning/SLIDES_REVIEWED.md` exists with `status: APPROVED`
+- [ ] `slides.typ` exists in presentation directory
+- [ ] `notes.typ` exists in presentation directory
+
+**If `.planning/SLIDES_REVIEWED.md` is missing, STOP. Return to Phase 3 and complete the artifact review gate.**
 
 ### Steps
 
@@ -515,29 +739,31 @@ Be thorough. Do NOT soften findings.
    - Authors in slides.typ match SOURCES.md
    - Affiliations match
 
-9. **Verify conventions:**
+9. **Two-leg verification:**
+
+   **Leg 1 — Constraint checks (hard block):** Run all auto-discovered `.py` check scripts:
    ```bash
-   # Check for missing blank lines between bullets (top-level and sub-bullets)
-   rg -n '^\s*-.*\n\s*-' slides.typ notes.typ
-   # Check for fake sub-bullets (-- used as marker)
-   rg -n '^\s+--\s' slides.typ notes.typ
-   # Check for cetz-plot imports
-   rg 'cetz-plot' slides.typ
-   # Verify qr: none present
-   rg 'qr: none' slides.typ
-   # Check for uncentered images
-   rg -n '#image\(' slides.typ | rg -v 'align\(center\)'
-   # Check table inset
-   rg -n 'inset:' slides.typ
-   # Check for smart apostrophe issues
-   rg -n "[)\]]'s" slides.typ notes.typ
-   # Check for cetz.canvas without Storytelling comment (manual review)
-   rg -B3 'cetz.canvas' slides.typ | rg -v 'Storytelling'
-   # Check for small cetz canvas length
-   rg -n 'length:' slides.typ | rg -v '2em\|2.5em\|3em'
-   # Check for unescaped dollar signs (rough heuristic)
-   rg -n '[^\\]\$[0-9]' slides.typ notes.typ
+   cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
    ```
+   - If any constraint fails → fix the violation → re-run check-all.py (max 3 attempts)
+   - Hard block: ALL constraints must pass before proceeding
+
+   **Leg 2 — Convention review (judgment):** For each convention listed by check-all.py (`.md` without `.py`), manually verify:
+   - Source fidelity (claims match paper)
+   - Verbatim quotes preserved
+   - Visual-verify results (if diagrams exist)
+   - Teleprompter-style notes quality
+   - Section transitions present
+
+**Skipping verification steps to "finish faster" is anti-helpful — the presenter discovers widows, overflow, or wrong numbers at the podium. Every skipped check is a defect you shipped instead of caught. Verification is the service, not overhead.**
+
+### Red Flags — STOP If You Catch Yourself:
+
+- **Skipping widow detection after compile** → STOP. PDF is ground truth, not compilation.
+- **Skipping overflow detection** → STOP. Overflow means content spills off-slide.
+- **Declaring "verified" without running check-all.py** → STOP. Run the constraint checks.
+- **Reporting "all clean" without checking source fidelity** → STOP. Every claim must trace to the paper.
+- **Skipping visual-verify on diagrams** → STOP. Compilation proves syntax, not readability.
 
 ### Gate: Verified (final)
 
