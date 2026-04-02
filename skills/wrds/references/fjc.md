@@ -197,6 +197,71 @@ From a full pull of 89,889 cases (filedate 1980–2023):
 
 Note: Class action flag (`class_action`) is NULL for ~71% of cases — coded primarily post-1990.
 
+## `fjc.bankruptcy` — Annual Filing Counts
+
+### Schema highlights (89 columns)
+
+| Column | Description |
+|--------|-------------|
+| `casekey` | Unique case identifier — use for dedup |
+| `orgfldt` | Original filing date (use this for filing year) |
+| `filedate` | Filing date (may differ from `orgfldt` on converted cases) |
+| `filecy` / `filefy` | Filing calendar / fiscal year (stored fields) |
+| `snapshot` | Annual snapshot date (Sep 30 each year) — table is a panel |
+| `orgflchp` | Original chapter filed (`'7'`,`'11'`,`'12'`,`'13'`) |
+| `crntchp` | Current chapter (may differ if converted) |
+| `ntrdbt` | Nature of debt: `'b'`=business, `'c'`=consumer, `'o'`=other |
+| `dbtrtyp` | Debtor type: `'i'`=individual, `'u'`=unknown, others=business |
+| `totassts` / `totlblts` | Total assets / liabilities |
+| `involuntary_flag` | 1 = involuntary petition |
+| `closedt` / `closecy` | Close date / calendar year |
+| `d1fdsp` | Debtor 1 final disposition code |
+
+### Critical dedup: snapshot panel structure
+
+`fjc.bankruptcy` is **not** a flat case file — it's a **rolling annual panel**. Each case appears once per annual snapshot (Sep 30) for as long as it remains active. With 18 snapshots (2008–2025), a long-running case appears up to 18 times.
+
+**Always dedup with `COUNT(DISTINCT casekey)`** when computing filing counts.
+
+```sql
+-- Correct: annual filing counts
+SELECT EXTRACT(YEAR FROM orgfldt)::int AS yr,
+       COUNT(DISTINCT casekey)         AS n_cases
+FROM fjc.bankruptcy
+WHERE orgfldt BETWEEN %s AND %s
+  AND casekey IS NOT NULL
+GROUP BY yr ORDER BY yr
+```
+
+### Coverage window
+
+Snapshots run **2008-09-30 through 2025-09-30** (annual). Cases closed before 2008 are not in the database. **Reliable annual counts: 2008–2023 only.** Pre-2008 counts using this table are severely understated (only long-running cases survive to the 2008 snapshot).
+
+For historical data before 2008, use the Administrative Office of U.S. Courts bankruptcy statistics at [uscourts.gov](https://www.uscourts.gov/statistics-reports/analysis-reports/federal-judicial-caseload-statistics).
+
+### Chapter codes
+
+| `orgflchp` | Chapter | Typical filer |
+|------------|---------|---------------|
+| `'7'` | Liquidation | Consumer + business |
+| `'11'` | Reorganization | Business |
+| `'12'` | Family farmer/fisherman | Agricultural |
+| `'13'` | Wage earner repayment plan | Consumer |
+| `'15m'`/`'15a'`/`'15n'` | Cross-border insolvency | Foreign debtor |
+| `'9'` | Municipality | Government |
+
+### Empirical benchmarks (2008–2023, DISTINCT casekey)
+
+| Year | Total | Ch.7 | Ch.11 | Ch.13 | Notes |
+|------|-------|------|-------|-------|-------|
+| 2008 | 1,151,255 | 765,893 | 10,635 | 374,487 | Financial crisis |
+| 2010 | 1,607,477 | 1,146,996 | 14,728 | 444,016 | **Peak** |
+| 2020 | 537,732 | 374,456 | 8,103 | 154,181 | COVID moratoriums |
+| 2021 | 406,923 | 283,562 | 4,488 | 118,095 | Post-moratorium low |
+| 2023 | 450,913 | 260,319 | 7,275 | 183,064 | Recovering |
+
+Business filings (~`ntrdbt='b'`): ~2–5% of total; consumer filings dominate.
+
 ## Coverage Notes & Quirks
 
 - **Placeholder dates**: Some pre-1980 cases have `filedate = '1900-01-01'` — always filter `filedate >= '1970-01-01'`
