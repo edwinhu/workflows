@@ -206,4 +206,4 @@ Note: Class action flag (`class_action`) is NULL for ~71% of cases — coded pri
 - **circuit stored as float**: Cast to int before joining or grouping: `circuit::int`
 - **`fjc_litigation`** schema is a mirror of `fjc` — use either; `fjc` is preferred; never UNION them
 - **`fjc_linking` join key**: Must join on all five columns — `(filedate, docket, circuit, district, office)` — omitting `office` produces spurious matches
-- **EDA notebook**: `~/projects/workflows/skills/wrds/fjc_eda.ipynb` has full worked examples including dedup verification and linking join
+- **EDA notebook**: `~/projects/workflows/skills/wrds/examples/fjc_eda.ipynb` has full worked examples including dedup verification and linking join
