@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", "FJC database", "federal court cases", "securities litigation data", "Form D data", "Reg D data", "private placements data", "private offering data", "Regulation D filings", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
+description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", "FJC database", "federal court cases", "securities litigation data", "Form D data", "Reg D data", "private placements data", "private offering data", "Regulation D filings", "IPO data", "SEO data", "new issues", "equity offerings", "SDC new issues", "SDC Platinum", "SDC M&A", "mergers acquisitions data", "M&A database", "FISD", "bond issuances", "144A offerings", "high yield bonds", "investment grade bonds", "Mergent bond data", "fund formation data", "hedge fund registrations", "private equity fund data", "closed-end fund filings", "Form ADV data", "investment adviser registrations", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
 user-invocable: false
 ---
 
@@ -182,6 +182,9 @@ See **`references/sas-etl.md`** for complete patterns:
 | LSEG/Datastream | `tr_ds` | `ds2constmth`, `ds2indexlist` |
 | FJC (Federal Judicial Center) | `fjc` | `civil`, `criminal`, `bankruptcy`, `appeals` |
 | FJC Linking | `fjc_linking` | `wrds_civil_link`, `wrds_criminal_link` |
+| SDC New Issues (IPO/SEO/Debt) | `tdc1` (discover) | `sdc_ni` — equity + debt offerings |
+| SDC Mergers & Acquisitions | `tdc1` (discover) | `sdc_ma` — M&A transactions |
+| FISD / Mergent (Bonds) | `fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
 
 ## Connection
 
@@ -273,6 +276,10 @@ Detailed query patterns and table documentation:
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
 - **`references/fjc.md`** - FJC Integrated Database: civil/criminal case data, NOS codes, securities litigation queries, firm linking
+- **`references/sdc-issuances.md`** - SDC New Issues: IPOs, SEOs, 144A equity, debt offerings — schema discovery, cleaning filters, CRSP/Compustat linking
+- **`references/fisd-bonds.md`** - FISD/Mergent: corporate bond issuances, IG vs HY, 144A vs registered, rating classification, TRACE linking
+- **`references/sdc-ma.md`** - SDC M&A: deal counts, PE/LBO vs strategic buyer, deal status codes, public vs private target
+- **`references/fund-formation.md`** - Fund formation: Form D (pooled investment funds), EDGAR N-2 (closed-end fund IPOs), Form ADV (RIA registrations)
 
 ### Example Files
 
@@ -281,6 +288,9 @@ Working code from real projects:
 - **`examples/form4_disposals.py`** - Insider trading analysis (from a prior project)
 - **`examples/wrds_connector.py`** - Connection pooling pattern
 - **`examples/formd_regd.ipynb`** - Form D / Reg D: dedup validation, SEC TSV download, exemption trend charts
+- **`examples/sdc_issuances_eda.ipynb`** - SDC New Issues: annual IPO/SEO/debt counts, 144A share, IG vs HY breakdown
+- **`examples/sdc_ma_eda.ipynb`** - SDC M&A: annual deal counts, PE/LBO vs strategic, public vs private target trends
+- **`examples/fund_formation_eda.ipynb`** - Fund formation: Form D 3C.1/3C.7 counts, EDGAR N-2 closed-end fund IPOs, Form ADV RIA registrations
 
 ### Scripts
 
