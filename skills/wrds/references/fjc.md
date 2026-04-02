@@ -138,7 +138,7 @@ WHERE nos = 850
   AND filedate BETWEEN %s AND %s
 """
 
-df = pd.read_sql(query, conn, params=('1980-01-01', '2023-12-31'))
+df = pd.read_sql(query, conn, params=('1980-01-01', '2025-12-31'))
 ```
 
 No additional filters required for NOS=850 (unlike Compustat which requires indfmt/datafmt/etc.).
@@ -158,7 +158,7 @@ Do **not** UNION `fjc.civil` and `fjc_litigation.civil` — they are mirrors of 
 | 20–29 | Judgment on merits (trial) |
 | 30–45 | Settlement / Consent judgment |
 
-Post-PSLRA (1995–2023): ~72% of NOS=850 cases dismissed pre-trial, <1% reach trial judgment. Class action cases have nearly identical disposition profile — PSLRA's heightened pleading standard did not measurably shift cases toward trial.
+Post-PSLRA (1995–2025): ~72% of NOS=850 cases dismissed pre-trial, <1% reach trial judgment. Class action cases have nearly identical disposition profile — PSLRA's heightened pleading standard did not measurably shift cases toward trial.
 
 ## `fjc_linking.wrds_civil_link` — Firm Matching
 
@@ -180,9 +180,9 @@ Join on `(filedate, docket, circuit, district, office)` to merge with `fjc.civil
 
 Filter on `d_score = 1.0` for high-confidence defendant matches.
 
-## Empirical Benchmarks (NOS=850, 1980–2023)
+## Empirical Benchmarks (NOS=850, 1980–2025)
 
-From a full pull of 89,889 cases (filedate 1980–2023):
+From a full pull of 110,533 cases (filedate 1970–2025-12-16):
 
 | Metric | Value |
 |--------|-------|
@@ -235,7 +235,7 @@ GROUP BY yr ORDER BY yr
 
 ### Coverage window
 
-Snapshots run **2008-09-30 through 2025-09-30** (annual). Cases closed before 2008 are not in the database. **Reliable annual counts: 2008–2023 only.** Pre-2008 counts using this table are severely understated (only long-running cases survive to the 2008 snapshot).
+Snapshots run **2008-09-30 through 2025-09-30** (annual). Cases closed before 2008 are not in the database. **Reliable annual counts: 2008–2025 (through Sep 2025 snapshot).** Pre-2008 counts using this table are severely understated (only long-running cases survive to the 2008 snapshot).
 
 For historical data before 2008, use the Administrative Office of U.S. Courts bankruptcy statistics at [uscourts.gov](https://www.uscourts.gov/statistics-reports/analysis-reports/federal-judicial-caseload-statistics).
 
@@ -250,7 +250,7 @@ For historical data before 2008, use the Administrative Office of U.S. Courts ba
 | `'15m'`/`'15a'`/`'15n'` | Cross-border insolvency | Foreign debtor |
 | `'9'` | Municipality | Government |
 
-### Empirical benchmarks (2008–2023, DISTINCT casekey)
+### Empirical benchmarks (2008–2025, DISTINCT casekey)
 
 | Year | Total | Ch.7 | Ch.11 | Ch.13 | Notes |
 |------|-------|------|-------|-------|-------|
