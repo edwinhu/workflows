@@ -140,6 +140,18 @@ WHERE di.isleadinvestor = true    -- WRONG
 
 Use `pitchbk_companies_deals_old.*` to reconstruct prior state or detect changes.
 
+### 11. `hqglobalregion` uses **"Americas"**, not "North America"
+
+```sql
+-- CORRECT
+WHERE c.hqglobalregion = 'Americas'
+
+-- WRONG — returns 0 rows
+WHERE c.hqglobalregion = 'North America'
+```
+
+Valid values: `'Americas'`, `'Europe'`, `'Asia'`, `'Oceania'`, `'Middle East'`, `'Africa'`. "Americas" covers the US, Canada, and Latin America combined — there is no continent-level US/Canada split in this field.
+
 ## Key Tables
 
 ### `pitchbk_companies_deals.deal` — Key Columns
@@ -238,7 +250,7 @@ Non-null rates: IRR 48%, TVPI 55%, DPI 56%, NAV 58%. IRR distribution: p25=2.3%,
 | `companyfinancingstatus` | "Corporation", "Venture Capital-Backed", "Private Equity-Backed", etc. |
 | `yearfounded` | 15% null |
 | `hqcountry`, `hqstate_province`, `hqcity` | Location |
-| `hqglobalregion` | "North America", "Europe", etc. |
+| `hqglobalregion` | "Americas", "Europe", "Asia", "Oceania", "Middle East", "Africa" — **NOT "North America"** |
 | `primaryindustrysector`, `primaryindustrygroup` | PitchBook taxonomy |
 | `totalraised` | USD millions, cumulative (96% null) |
 | `lastfinancingdate`, `lastfinancingsize`, `lastfinancingdealtype` | Most recent deal |
