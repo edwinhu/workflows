@@ -96,7 +96,7 @@ The `subsect` field theoretically identifies the specific provision, but **is sp
 
 | `subsect` | Provision | Reliability |
 |-----------|-----------|-------------|
-| `'J'`, `'JB'`, `'j'`, `'jb'` | §10(b) / Rule 10b-5 | Sparse (~830 cases in NOS=850) |
+| `'J'`, `'JB'`, `'j'`, `'jb'` | §10(b) / Rule 10b-5 | Sparse (~613 cases in NOS=850, 0.7%) |
 | `'K'`, `'k'` | §11 (SA 1933) | Very sparse (~10 cases) |
 | `'L'`, `'l'` | §12 (SA 1933) | Very sparse (~2 cases) |
 | `'-8'` | Not coded | ~60% of cases |
@@ -135,10 +135,12 @@ SELECT
     district
 FROM fjc.civil
 WHERE nos = 850
-  AND filedate BETWEEN %s AND %s
+  AND filedate >= %s
 """
 
-df = pd.read_sql(query, conn, params=('1980-01-01', '2025-12-31'))
+# No upper date bound — pull everything available. Recent years (current - 1) may be
+# incomplete due to court reporting lag; exclude from trend analysis if counts look low.
+df = pd.read_sql(query, conn, params=('1980-01-01',))
 ```
 
 No additional filters required for NOS=850 (unlike Compustat which requires indfmt/datafmt/etc.).
@@ -182,20 +184,22 @@ Filter on `d_score = 1.0` for high-confidence defendant matches.
 
 ## Empirical Benchmarks (NOS=850, 1980–2025)
 
-From a full pull of 110,533 cases (filedate 1970–2025-12-16):
+From a full pull of 90,882 cases (filedate 1980-01-01 – 2025-12-16); 2025 partial (court reporting lag):
 
 | Metric | Value |
 |--------|-------|
-| Exchange Act (§78) cases | 41,858 (46.6%) |
-| Securities Act (§77) cases | 10,260 (11.4%) |
-| Other / uncoded | 37,771 (42.0%) |
-| Class actions (where coded) | 14,225 (15.8%) |
+| Exchange Act (§78) cases | 42,512 (46.8%) |
+| Securities Act (§77) cases | 10,411 (11.5%) |
+| Other / uncoded | 37,959 (41.8%) |
+| Class actions (where coded) | 14,424 (16.0% of coded cases) |
 | Pre-PSLRA avg class actions/yr (1985–94) | ~140 |
 | Post-PSLRA avg class actions/yr (1996–05) | ~578 |
-| Top circuit (2014–23) | 9th (CA) |
-| 2nd highest (2014–23) | 2nd (NY) |
+| Top circuit (2014–25) | 9th (CA) |
+| 2nd highest (2014–25) | 2nd (NY) |
+| Dismissed pre-trial (post-PSLRA) | ~72.5% |
+| Reached trial (post-PSLRA) | <0.1% |
 
-Note: Class action flag (`class_action`) is NULL for ~71% of cases — coded primarily post-1990.
+Note: Class action flag (`class_action`) is NULL for ~68.5% of cases — coded primarily post-1990.
 
 ## `fjc.bankruptcy` — Annual Filing Counts
 
@@ -259,6 +263,8 @@ For historical data before 2008, use the Administrative Office of U.S. Courts ba
 | 2020 | 537,732 | 374,456 | 8,103 | 154,181 | COVID moratoriums |
 | 2021 | 406,923 | 283,562 | 4,488 | 118,095 | Post-moratorium low |
 | 2023 | 450,913 | 260,319 | 7,275 | 183,064 | Recovering |
+| 2024 | 513,953 | — | — | — | Continued recovery |
+| 2025 | 424,415 | — | — | — | Partial (through Sep 2025 snapshot) |
 
 Business filings (~`ntrdbt='b'`): ~2–5% of total; consumer filings dominate.
 
