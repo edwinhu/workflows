@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
+description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", "FJC database", "federal court cases", "securities litigation data", "Form D data", "Reg D data", "private placements data", "private offering data", "Regulation D filings", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
 user-invocable: false
 ---
 
@@ -174,11 +174,14 @@ See **`references/sas-etl.md`** for complete patterns:
 | ISS Incentive Lab | `iss_incentive_lab` | `comppeer`, `sumcomp`, `participantfy` |
 | Capital IQ | `ciq` | `wrds_compensation` |
 | IBES | `tr_ibes` | `det_epsus`, `statsum_epsus` |
+| Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020), `wrds_forms` (index, 2008–present) |
 | SEC EDGAR | `wrdssec` | `wrds_forms`, `wciklink_cusip` |
 | SEC Search | `wrds_sec_search` | `filing_view`, `registrant` |
 | EDGAR | `edgar` | `filings`, `filing_docs` |
 | Fama-French | `ff` | `factors_monthly`, `factors_daily` |
 | LSEG/Datastream | `tr_ds` | `ds2constmth`, `ds2indexlist` |
+| FJC (Federal Judicial Center) | `fjc` | `civil`, `criminal`, `bankruptcy`, `appeals` |
+| FJC Linking | `fjc_linking` | `wrds_civil_link`, `wrds_criminal_link` |
 
 ## Connection
 
@@ -265,9 +268,11 @@ Detailed query patterns and table documentation:
 - **`references/crsp.md`** - CRSP stock data, CCM linking, v2 format
 - **`references/insider-form4.md`** - Thomson Reuters Form 4, rolecodes, insider types
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
+- **`references/formd.md`** - Form D / Reg D: denormalization gotcha, dedup pattern, exemption codes, post-2020 gap, SEC TSV download
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
+- **`references/fjc.md`** - FJC Integrated Database: civil/criminal case data, NOS codes, securities litigation queries, firm linking
 
 ### Example Files
 
@@ -275,6 +280,7 @@ Working code from real projects:
 
 - **`examples/form4_disposals.py`** - Insider trading analysis (from a prior project)
 - **`examples/wrds_connector.py`** - Connection pooling pattern
+- **`examples/formd_regd.ipynb`** - Form D / Reg D: dedup validation, SEC TSV download, exemption trend charts
 
 ### Scripts
 
