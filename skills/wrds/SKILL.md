@@ -182,10 +182,10 @@ See **`references/sas-etl.md`** for complete patterns:
 | LSEG/Datastream | `tr_ds` | `ds2constmth`, `ds2indexlist` |
 | FJC (Federal Judicial Center) | `fjc` | `civil`, `criminal`, `bankruptcy`, `appeals` |
 | FJC Linking | `fjc_linking` | `wrds_civil_link`, `wrds_criminal_link` |
-| SDC New Issues (IPO/SEO/Debt) | `tfn` | `sdc_ni` — equity + debt offerings |
-| SDC Mergers & Acquisitions | `tfn` | `sdc_ma` — M&A transactions |
+| SDC New Issues (IPO/SEO/Debt) | `tr_sdc_ni` | `wrds_ni_details` — equity + debt offerings |
+| SDC Mergers & Acquisitions | `tr_sdc_ma` | `wrds_ma_details` — M&A transactions |
 | Thomson S12 (Mutual Fund Holdings) | `tfn` | `s12` — 13F/N-CSR fund holdings |
-| FISD / Mergent (Bonds) | `fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
+| FISD / Mergent (Bonds) | `fisd_fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
 | PitchBook | `pitchbk_companies_deals`, `pitchbk_investors_funds_lps`, `pitchbk_fund_returns` | `deal`, `company`, `fund`, `wrds_fund_returns` — dealsize in USD millions |
 
 ## Connection

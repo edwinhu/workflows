@@ -4,8 +4,8 @@
 
 - [Overview](#overview)
 - [Tables](#tables)
-- [fisd.fisd_mergedissue Key Columns](#fisdfisd_mergedissue-key-columns)
-- [fisd.fisd_mergedissuer Key Columns](#fisdfisd_mergedissuer-key-columns)
+- [fisd_fisd.fisd_mergedissue Key Columns](#fisd_fisdfisd_mergedissue-key-columns)
+- [fisd_fisd.fisd_mergedissuer Key Columns](#fisd_fisdfisd_mergedissuer-key-columns)
 - [Bond Type Codes](#bond-type-codes)
 - [Rule 144A vs Registered Filter](#rule-144a-vs-registered-filter)
 - [Investment Grade vs High Yield Classification](#investment-grade-vs-high-yield-classification)
@@ -26,10 +26,10 @@ Mergent FISD (Fixed Income Securities Database), now maintained by LSEG Mergent,
 
 | Resource | Schema.Table | Description |
 |----------|-------------|-------------|
-| Issue characteristics | `fisd.fisd_mergedissue` | 1 row per bond issue (9-digit CUSIP) |
-| Issuer characteristics | `fisd.fisd_mergedissuer` | 1 row per issuer (SIC, country) |
-| Ratings history | `fisd.fisd_ratings` | Time-series of Moody's/S&P/Fitch ratings |
-| Prospectus filings | `fisd.fisd_mergedprospectus` | Prospectus dates and types (if available) |
+| Issue characteristics | `fisd_fisd.fisd_mergedissue` | 1 row per bond issue (9-digit CUSIP) |
+| Issuer characteristics | `fisd_fisd.fisd_mergedissuer` | 1 row per issuer (SIC, country) |
+| Ratings history | `fisd_fisd.fisd_ratings` | Time-series of Moody's/S&P/Fitch ratings |
+| Prospectus filings | `fisd_fisd.fisd_issue` | Issue-level data (alternative to mergedissue) |
 
 ## Tables
 
@@ -37,15 +37,15 @@ Mergent FISD (Fixed Income Securities Database), now maintained by LSEG Mergent,
 # Verify available FISD tables
 cur.execute("""
     SELECT table_name,
-           pg_size_pretty(pg_total_relation_size('fisd.'||table_name)) AS size
+           pg_size_pretty(pg_total_relation_size('fisd_fisd.'||table_name)) AS size
     FROM information_schema.tables
-    WHERE table_schema = 'fisd'
+    WHERE table_schema = 'fisd_fisd'
     ORDER BY table_name
 """)
 for row in cur.fetchall(): print(row)
 ```
 
-## fisd.fisd_mergedissue Key Columns
+## fisd_fisd.fisd_mergedissue Key Columns
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -88,7 +88,7 @@ for row in cur.fetchall(): print(row)
 | `fitch_rating` | varchar | Fitch rating at issuance |
 | `last_interest_date` | date | Last coupon payment date |
 
-## fisd.fisd_mergedissuer Key Columns
+## fisd_fisd.fisd_mergedissuer Key Columns
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -216,8 +216,8 @@ SELECT
     AVG(i.coupon)                            AS avg_coupon,
     AVG(EXTRACT(YEAR FROM i.maturity) -
         EXTRACT(YEAR FROM i.offering_date))  AS avg_maturity_yrs
-FROM fisd.fisd_mergedissue i
-JOIN fisd.fisd_mergedissuer u ON i.issuer_id = u.issuer_id
+FROM fisd_fisd.fisd_mergedissue i
+JOIN fisd_fisd.fisd_mergedissuer u ON i.issuer_id = u.issuer_id
 WHERE u.country_domicile = 'USA'
   AND i.bond_type IN ('CDEB','CMTN','CMTZ','CZ','USBN','CFRN')
   AND (i.yankee = 'N' OR i.yankee IS NULL)
@@ -258,8 +258,8 @@ SELECT
     END AS rating_cat,
     COUNT(*)              AS n_issues,
     SUM(offering_amt)/1e3 AS proceeds_bn
-FROM fisd.fisd_mergedissue i
-JOIN fisd.fisd_mergedissuer u ON i.issuer_id = u.issuer_id
+FROM fisd_fisd.fisd_mergedissue i
+JOIN fisd_fisd.fisd_mergedissuer u ON i.issuer_id = u.issuer_id
 WHERE u.country_domicile = 'USA'
   AND i.bond_type IN ('CDEB','CMTN','CMTZ','CZ','USBN')
   AND (i.yankee = 'N' OR i.yankee IS NULL)
@@ -321,7 +321,7 @@ link_query = """
     JOIN comp.company c USING (gvkey)
     WHERE s.cusip = ANY(%s)
 """
-# Match fisd.fisd_mergedissuer.cusip6 to comp.security.cusip
+# Match fisd_fisd.fisd_mergedissuer.issuer_cusip to comp.security.cusip (6-char)
 ```
 
 ### FISD → CRSP Bond / WRDS Linking

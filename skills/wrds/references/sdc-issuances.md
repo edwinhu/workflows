@@ -44,9 +44,8 @@ cur = conn.cursor()
 cur.execute("""
     SELECT schema_name
     FROM information_schema.schemata
-    WHERE schema_name ILIKE '%tfn%'
-       OR schema_name ILIKE '%sdc%'
-       OR schema_name ILIKE '%tdc%'
+    WHERE schema_name ILIKE '%sdc%'
+       OR schema_name ILIKE '%tr_sdc%'
     ORDER BY schema_name
 """)
 print("SDC schemas:", cur.fetchall())
@@ -56,22 +55,22 @@ cur.execute("""
     SELECT table_schema, table_name, pg_size_pretty(pg_total_relation_size(
         quote_ident(table_schema)||'.'||quote_ident(table_name))) AS size
     FROM information_schema.tables
-    WHERE table_schema ILIKE '%tfn%' OR table_schema ILIKE '%sdc%'
+    WHERE table_schema = 'tr_sdc_ni'
     ORDER BY table_schema, table_name
 """)
 for row in cur.fetchall():
     print(row)
 ```
 
-**Expected schema**: `tfn` (Thomson Financial — SDC was acquired by Thomson Financial). Tables likely named `sdc_ni` (new issues) and `sdc_ma` (M&A). Note: `tfn` also contains `tfn.s12` (mutual fund holdings) — SDC is a separate product within the same vendor schema.
+**Confirmed schema**: `tr_sdc_ni` (Thomson Reuters SDC New Issues). Main table: `wrds_ni_details`. Note: `tfn.s12` (mutual fund holdings) is a separate product within the Thomson Financial schema.
 
 ```python
-# Once schema is found, inspect new issues columns
-SCHEMA = 'tfn'   # Thomson Financial (SDC acquired by TFN)
+# Inspect new issues columns
+SCHEMA = 'tr_sdc_ni'
 cur.execute("""
     SELECT column_name, data_type
     FROM information_schema.columns
-    WHERE table_schema = %s AND table_name ILIKE '%ni%'
+    WHERE table_schema = %s AND table_name = 'wrds_ni_details'
     ORDER BY ordinal_position
 """, (SCHEMA,))
 for col in cur.fetchall():
@@ -80,47 +79,51 @@ for col in cur.fetchall():
 
 ## Tables
 
-| Table | Description | Rows (approx) |
-|-------|-------------|---------------|
-| `{schema}.sdc_ni` | All new issues: equity + debt | ~1M+ |
-| `{schema}.sdc_ma` | Mergers & acquisitions | See `sdc-ma.md` |
+| Table | Description |
+|-------|-------------|
+| `tr_sdc_ni.wrds_ni_details` | All new issues: equity + debt (main table) |
+| `tr_sdc_ni.wrds_ni_events` | Deal events / amendments timeline |
+| `tr_sdc_ni.wrds_ni_managers` | Underwriter/manager details |
+| `tr_sdc_ni.wrds_ni_related` | Related M&A deal cross-references |
+| `tr_sdc_ni.wrds_ni_sharehlds` | Shareholder selling data |
 
-For debt offerings specifically, the SDC New Issues database includes both equity and debt in a single table, differentiated by `security_type` or `deal_type`.
+For debt offerings specifically, the SDC New Issues database includes both equity and debt in `wrds_ni_details`, differentiated by `security` (security type field).
 
 ## Equity Issuances: Key Columns
 
-Column names use SDC short codes; PostgreSQL column names are lowercase equivalents.
+Column names are the actual PostgreSQL column names in `tr_sdc_ni.wrds_ni_details`.
 
-| SDC Code | PostgreSQL Col | Type | Description |
-|----------|---------------|------|-------------|
-| `DEAL_NO` | `deal_no` | varchar | Unique deal identifier |
-| `FILED` | `filing_date` | date | S-1/S-11 filing date |
-| `D` | `issue_date` | date | Pricing / issuance date |
-| `I` | `issuer` | varchar | Issuer company name |
-| `ST` | `state` | varchar | US state of incorporation |
-| `NAT` | `nation` | varchar | Country (use `'United States'`) |
-| `IPO` | `ipo` | varchar | IPO flag: `'Yes'` = IPO, `'No'` = SEO |
-| `ORIG_IPO` | `orig_ipo` | varchar | Original IPO flag (more conservative) |
-| `P` | `offer_price` | numeric | Offer price per share ($) |
-| `SECUR` | `security_type` | varchar | Security type (see below) |
-| `DESCR` | `description` | varchar | Full description |
-| `REIT_TYPE` | `reit` | varchar | REIT type code (blank = not a REIT) |
-| `UIT` | `unit` | varchar | Unit investment trust flag |
-| `DEPOSITARY` | `adr` | varchar | ADR/depositary receipt flag |
-| `CU` | `cusip` | varchar | 6-digit CUSIP |
-| `CUSIP9` | `cusip9` | varchar | 9-digit CUSIP |
-| `PROCDS` | `proceeds` | numeric | Gross proceeds ($M) |
-| `VE` | `vc` | varchar | VC-backed flag (`'Yes'`/`'No'`) |
-| `GPCT` | `gross_spread` | numeric | Gross underwriting spread (%) |
-| `ALLMGRROLECODE` | `mgr_codes` | varchar | Underwriter/manager codes |
-| `HITECHP` | `tech_ind` | varchar | Technology company indicator |
-| `LFILE` | `low_price` | numeric | Low end of filing price range |
-| `HFILE` | `high_price` | numeric | High end of filing price range |
-| `AH_LFILE` | `low_price_history` | varchar | Amendment history low prices |
-| `AH_HFILE` | `high_price_history` | varchar | Amendment history high prices |
-| — | `closed_end_fund` | varchar | Closed-end fund flag (CEF) |
-| — | `exchange` | varchar | Listing exchange |
-| — | `sic` | varchar | SIC code |
+| PostgreSQL Col | Type | Description |
+|---------------|------|-------------|
+| `master_deal_no` | varchar | Unique deal identifier (primary key) |
+| `filingdate` | date | S-1/S-11 filing date |
+| `master_deal_date` | date | Pricing / issuance date |
+| `ninames` | varchar | Issuer company name |
+| `state` | varchar | US state of incorporation |
+| `nation` | varchar | Country (use `'United States'`) |
+| `ipo` | varchar | IPO flag: `'Yes'` = IPO, `'No'` = SEO |
+| `listipo` | varchar | Listed on IPO exchange flag |
+| `offerpric` | varchar | Offer price per share ($) — string, cast to numeric |
+| `security` | varchar | Security type (see below) |
+| `description` | varchar | Full description |
+| `cusip` | varchar | 6-digit CUSIP |
+| `cusip9` | varchar | 9-digit CUSIP |
+| `totdolamt` | numeric | Total dollar amount of offering ($M) |
+| `totgrossmil` | numeric | Total gross proceeds ($M) |
+| `grosspercent` | varchar | Gross underwriting spread (%) |
+| `hightech` | varchar | Technology company indicator |
+| `lowfileprice` | numeric | Low end of filing price range ($) |
+| `highfileprice` | numeric | High end of filing price range ($) |
+| `exchange` | varchar | Listing exchange |
+| `sicp` | varchar | SIC code |
+| `ticker` | varchar | Stock ticker |
+| `moody` | varchar | Moody's rating (debt offerings) |
+| `sp` | varchar | S&P rating (debt offerings) |
+| `coupon` | varchar | Coupon rate (debt offerings) |
+| `maturity` | date | Maturity date (debt offerings) |
+| `year` | varchar | Year of issuance |
+
+**Note on missing legacy fields**: The WRDS `wrds_ni_details` table does not contain separate VC-backed (`vc`), REIT (`reit`), ADR (`adr`), closed-end fund, or unit trust flags as documented in older SDC Platinum literature. Use `security` type and `description` fields to identify these deal types post-query.
 
 ### Security Type Values (common)
 
@@ -139,25 +142,26 @@ Column names use SDC short codes; PostgreSQL column names are lowercase equivale
 
 ## Debt Issuances: Key Columns
 
-SDC tracks debt offerings separately in the New Issues database. Key additional fields for debt:
+SDC New Issues tracks both equity and debt in `wrds_ni_details`. Additional debt-specific columns:
 
-| SDC Code | PostgreSQL Col | Type | Description |
-|----------|---------------|------|-------------|
-| `DEAL_NO` | `deal_no` | varchar | Unique deal identifier |
-| `D` | `issue_date` | date | Pricing / issuance date |
-| `I` | `issuer` | varchar | Issuer company name |
-| `NAT` | `nation` | varchar | Country |
-| `PROCDS` | `proceeds` | numeric | Gross proceeds ($M) |
-| — | `maturity_date` | date | Bond maturity date |
-| — | `coupon` | numeric | Coupon rate (%) |
-| — | `bond_type` | varchar | Bond type: straight, MTN, convertible, etc. |
-| — | `is_144a` | varchar | Rule 144A flag (`'Yes'`/`'No'`) |
-| — | `is_reg_s` | varchar | Regulation S (offshore) flag |
-| — | `sp_rating` | varchar | S&P rating at issuance |
-| — | `moodys_rating` | varchar | Moody's rating at issuance |
-| — | `fitch_rating` | varchar | Fitch rating at issuance |
-| — | `seniority` | varchar | Senior/Subordinated/Junior |
-| — | `collateral` | varchar | Secured/Unsecured |
+| PostgreSQL Col | Type | Description |
+|---------------|------|-------------|
+| `master_deal_no` | varchar | Unique deal identifier |
+| `master_deal_date` | date | Pricing / issuance date |
+| `ninames` | varchar | Issuer company name |
+| `nation` | varchar | Country |
+| `totdolamt` | numeric | Offering amount ($M) |
+| `maturity` | date | Bond maturity date |
+| `coupon` | varchar | Coupon rate (%) — string, cast to numeric |
+| `moody` | varchar | Moody's rating at issuance |
+| `sp` | varchar | S&P rating at issuance |
+| `description` | varchar | Bond description (check for "144A", "Senior") |
+| `security` | varchar | Security type code |
+| `registration_status` | varchar | Registration status |
+| `registration_status_long` | varchar | Full registration description |
+| `regrights` | varchar | Registration rights indicator |
+
+**Note**: For comprehensive debt issuance analysis with explicit 144A flags and IG/HY ratings at issuance, prefer **FISD/Mergent** (`fisd_fisd.fisd_mergedissue`) over SDC New Issues. FISD has explicit `rule_144a` and `bond_type` fields and broader debt coverage.
 
 ### Rating → IG/HY Classification
 
@@ -186,43 +190,39 @@ def classify_rating(moodys, sp):
 | `orig_ipo = 'Yes'` | SDC's more conservative IPO flag | Blank for many non-US or early-period deals |
 | Neither flag | Follow-on / secondary offering (SEO) | No explicit SEO flag — infer by exclusion |
 
-**Standard academic practice (Lowry, Michaely, Volkova 2017):**
+**Standard approach (adapted for WRDS `wrds_ni_details` column names):**
 ```python
-# Step 1: Require either IPO flag is 'Yes' (exclude non-IPO rows)
-df_ipo = df[(df['ipo_flag'] != 'No') & (df['orig_ipo_flag'] != 'No')]
+# Step 1: Require IPO flag = 'Yes' (exclude SEOs)
+df_ipo = df[df['ipo'] == 'Yes'].copy()
 
-# Step 2: Keep common shares only (exclude units, LPs, MLPs)
+# Step 2: Keep common shares only (exclude units, LPs, MLPs, preferred)
 EXCLUDE_TYPES = {'Units', 'Ltd Prtnr Int', 'MLP-Common Shs',
                  'Shs Benficl Int', 'Ltd Liab Int', 'Stock Unit',
-                 'Trust Units', 'Beneficial Ints'}
-df_ipo = df_ipo[~df_ipo['security_type'].isin(EXCLUDE_TYPES)]
+                 'Trust Units', 'Beneficial Ints', 'Preferred Stock'}
+df_ipo = df_ipo[~df_ipo['security'].isin(EXCLUDE_TYPES)]
 
-# Step 3: Exclude REITs (reit is not blank)
-df_ipo = df_ipo[df_ipo['reit'].isna() | (df_ipo['reit'] == '')]
+# Step 3: Exclude REITs, ADRs, CEFs via description/security text
+EXCLUDE_DESCR = ['reit', 'real estate investment', 'depositary',
+                 'closed-end fund', 'unit trust']
+excl_mask = df_ipo['description'].str.lower().str.contains(
+    '|'.join(EXCLUDE_DESCR), na=False)
+df_ipo = df_ipo[~excl_mask]
 
-# Step 4: Exclude ADRs
-df_ipo = df_ipo[df_ipo['adr'] == 'No']
-
-# Step 5: Exclude closed-end funds
-df_ipo = df_ipo[df_ipo['closed_end_fund'] == 'No']
-
-# Step 6: Exclude unit investment trusts
-df_ipo = df_ipo[(df_ipo['unit'] == 'No') | (df_ipo['unit'] == '')]
-
-# Step 7: Exclude penny stocks
-df_ipo = df_ipo[df_ipo['offer_price'] >= 5.0]
+# Step 4: Exclude penny stocks (cast offerpric to float)
+df_ipo['offer_price_num'] = pd.to_numeric(df_ipo['offerpric'], errors='coerce')
+df_ipo = df_ipo[df_ipo['offer_price_num'] >= 5.0]
 ```
 
 **SEOs (seasoned equity offerings):**
 ```python
-# SEOs = not flagged as IPO, common stock, US market
+# SEOs = ipo flag 'No', common stock, US market
 df_seo = df[
-    (df['ipo_flag'] == 'No') &                    # not an IPO
-    (~df['security_type'].isin(EXCLUDE_TYPES)) &  # common stock
-    (df['adr'] == 'No') &                         # not ADR
-    (df['nation'] == 'United States') &
-    (df['offer_price'] >= 1.0)                    # exclude near-zero
-]
+    (df['ipo'] == 'No') &                         # not an IPO
+    (~df['security'].isin(EXCLUDE_TYPES)) &       # common stock
+    (df['nation'] == 'United States')
+].copy()
+df_seo['offer_price_num'] = pd.to_numeric(df_seo['offerpric'], errors='coerce')
+df_seo = df_seo[df_seo['offer_price_num'] >= 1.0]
 ```
 
 ## Rule 144A Equity Offerings
@@ -242,60 +242,62 @@ Rule 144A allows large institutional investors to trade unregistered securities.
 ```python
 query = """
 SELECT
-    deal_no,
-    issue_date,
-    EXTRACT(YEAR FROM issue_date)::int AS issue_year,
-    issuer,
+    master_deal_no,
+    master_deal_date,
+    EXTRACT(YEAR FROM master_deal_date)::int AS issue_year,
+    ninames             AS issuer,
     nation,
-    ipo         AS ipo_flag,
-    orig_ipo    AS orig_ipo_flag,
-    offer_price,
-    proceeds,
-    security_type,
-    vc          AS vc_backed,
-    gross_spread,
-    reit,
-    adr,
-    closed_end_fund,
-    unit,
-    cusip9
-FROM {schema}.sdc_ni
+    ipo                 AS ipo_flag,
+    offerpric           AS offer_price,
+    totdolamt           AS proceeds_mm,
+    security            AS security_type,
+    grosspercent        AS gross_spread_pct,
+    highfileprice,
+    lowfileprice,
+    hightech,
+    description,
+    cusip9,
+    exchange,
+    ticker
+FROM tr_sdc_ni.wrds_ni_details
 WHERE nation = 'United States'
-  AND issue_date BETWEEN %s AND %s
-  AND proceeds IS NOT NULL
-  AND proceeds > 0
-ORDER BY issue_date
+  AND master_deal_date BETWEEN %s AND %s    -- use '1985-01-01' to '2026-12-31'
+  AND totdolamt IS NOT NULL
+  AND totdolamt > 0
+ORDER BY master_deal_date
 """
 ```
 
-Then apply Python-side filters (security type exclusions, price floors) as above.
+Then apply Python-side filters (security type exclusions, price floors) as shown in CRITICAL section above.
 
-### US Debt Issuances
+### US Debt Issuances (SDC)
 
 ```python
+# Use FISD/Mergent for comprehensive debt analysis — it has explicit 144A/IG/HY flags.
+# SDC NI can supplement: filter by security type containing 'Bond', 'Note', 'MTN'
 query = """
 SELECT
-    deal_no,
-    issue_date,
-    EXTRACT(YEAR FROM issue_date)::int AS issue_year,
-    issuer,
-    proceeds,
-    bond_type,
-    is_144a,
-    is_reg_s,
+    master_deal_no,
+    master_deal_date,
+    EXTRACT(YEAR FROM master_deal_date)::int AS issue_year,
+    ninames             AS issuer,
+    totdolamt           AS proceeds_mm,
+    security            AS security_type,
+    moody               AS moodys_rating,
+    sp                  AS sp_rating,
     coupon,
-    maturity_date,
-    sp_rating,
-    moodys_rating,
-    seniority,
+    maturity,
+    description,
+    registration_status,
+    registration_status_long,
     nation
-FROM {schema}.sdc_ni
+FROM tr_sdc_ni.wrds_ni_details
 WHERE nation = 'United States'
-  AND security_type ILIKE '%bond%'     -- adjust to actual bond type codes
-  AND issue_date BETWEEN %s AND %s
-  AND proceeds IS NOT NULL
-  AND proceeds > 0
-ORDER BY issue_date
+  AND security ILIKE '%bond%'      -- check actual security values first
+  AND master_deal_date BETWEEN %s AND %s    -- use '1985-01-01' to '2026-12-31'
+  AND totdolamt IS NOT NULL
+  AND totdolamt > 0
+ORDER BY master_deal_date
 """
 ```
 
@@ -308,7 +310,7 @@ ORDER BY issue_date
 # CRSP stocknames: ncusip is 8-char (6+2 check digits)
 # SDC cusip9 is 9-digit; take first 8 chars = ncusip
 
-df['ncusip'] = df['cusip9'].str[:8]
+df['ncusip'] = df['cusip9'].str[:8]  # cusip9 column exists in wrds_ni_details
 
 # Then join on crsp.stocknames
 link_query = """

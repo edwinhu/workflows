@@ -41,14 +41,13 @@ cur = conn.cursor()
 cur.execute("""
     SELECT schema_name
     FROM information_schema.schemata
-    WHERE schema_name ILIKE '%tfn%'
-       OR schema_name ILIKE '%sdc%'
+    WHERE schema_name ILIKE '%tr_sdc%'
     ORDER BY schema_name
 """)
 print("SDC schemas:", cur.fetchall())
 
-# Find M&A table within discovered schema
-SCHEMA = 'tfn'   # Thomson Financial (SDC acquired by TFN)
+# Find M&A tables within confirmed schema
+SCHEMA = 'tr_sdc_ma'
 cur.execute("""
     SELECT table_name,
            pg_size_pretty(pg_total_relation_size(
@@ -63,56 +62,63 @@ for row in cur.fetchall(): print(row)
 cur.execute("""
     SELECT column_name, data_type
     FROM information_schema.columns
-    WHERE table_schema = %s AND table_name ILIKE '%ma%'
+    WHERE table_schema = %s AND table_name = 'wrds_ma_details'
     ORDER BY ordinal_position
 """, (SCHEMA,))
 for col in cur.fetchall(): print(col)
 ```
 
-**Expected schema**: `tfn` (Thomson Financial — SDC acquired by TFN). **Expected M&A table**: `sdc_ma` or `ma`.
+**Confirmed schema**: `tr_sdc_ma` (Thomson Reuters SDC M&A). Main table: `wrds_ma_details`.
 
 ## Tables
 
 | Table | Description |
 |-------|-------------|
-| `{schema}.sdc_ma` | M&A transactions: all announcements |
-| `{schema}.sdc_ni` | New issues (see `sdc-issuances.md`) |
-| `{schema}.sdc_jv` | Joint ventures and alliances |
+| `tr_sdc_ma.wrds_ma_details` | M&A transactions: all announcements (main table) |
+| `tr_sdc_ma.wrds_ma_advisors` | Financial advisor data per deal |
+| `tr_sdc_ma.wrds_ma_competition` | Competing bids |
+| `tr_sdc_ma.wrds_ma_events` | Deal timeline events |
+| `tr_sdc_ma.wrds_ma_purpose` | Deal purpose codes (e.g., LBO strategy, expansion) |
+| `tr_sdc_ma.wrds_ma_related` | Related deal cross-references |
+| `tr_sdc_ni.wrds_ni_details` | New issues (see `sdc-issuances.md`) |
 
 ## Key Columns
 
-SDC M&A columns (PostgreSQL column names are lowercase versions of SDC field codes):
+Actual PostgreSQL column names in `tr_sdc_ma.wrds_ma_details`:
 
-| SDC Code | PostgreSQL Col | Type | Description |
-|----------|---------------|------|-------------|
-| `DEAL_NO` | `deal_no` | varchar | Unique deal identifier |
-| `DA` | `date_announced` | date | Public announcement date |
-| `DE` | `date_effective` | date | Deal completion / effective date |
-| `DW` | `date_withdrawn` | date | Withdrawal date (if deal fell through) |
-| `STAT` | `status` | varchar | Deal status code (see below) |
-| `AN` | `acquiror_name` | varchar | Acquiror company name |
-| `TN` | `target_name` | varchar | Target company name |
-| `ANATION` | `acquiror_nation` | varchar | Acquiror country |
-| `TNATION` | `target_nation` | varchar | Target country |
-| `ASIC` | `acquiror_sic` | varchar | Acquiror SIC code |
-| `TSIC` | `target_sic` | varchar | Target SIC code |
-| `APUB` | `acquiror_public` | varchar | Acquiror public/private flag |
-| `TPUB` | `target_public` | varchar | Target public/private flag |
-| `TV` | `deal_value` | numeric | Transaction value ($M) |
-| `FORM` | `form_of_transaction` | varchar | Deal structure (see below) |
-| `CONS` | `consideration_paid` | varchar | Payment form (cash, stock, mixed) |
-| `PCT_ACQRD` | `pct_acquired` | numeric | Percent of target acquired |
-| `PCT_OWNED` | `pct_owned_after` | numeric | Percent owned after transaction |
-| `LBO` | `lbo` | varchar | LBO flag: `'Yes'` if leveraged buyout |
-| `ACQTYPE` | `acquiror_type` | varchar | Acquiror type codes (see PE section) |
-| `FRIENDLY` | `attitude` | varchar | `'Friendly'`/`'Hostile'`/`'Unsolicited'` |
-| `PREMIUM` | `premium_4wk` | numeric | 4-week premium over market price (%) |
-| `NASDAQ` | `target_exchange` | varchar | Target stock exchange |
-| `ACV` | `acqr_cusip` | varchar | Acquiror CUSIP |
-| `TCV` | `target_cusip` | varchar | Target CUSIP |
-| — | `acqr_sic` | varchar | Acquiror 4-digit SIC |
-| — | `target_sic` | varchar | Target 4-digit SIC |
-| — | `mgr_codes` | varchar | Advisor codes (financial advisor names) |
+| PostgreSQL Col | Type | Description |
+|---------------|------|-------------|
+| `master_deal_no` | varchar | Unique deal identifier (primary key) |
+| `dateann` | date | Public announcement date |
+| `dateeff` | date | Deal completion / effective date |
+| `datewith` | date | Withdrawal date (if deal fell through) |
+| `status` | varchar | Deal status code (see below) |
+| `amanames` | varchar | Acquiror company name |
+| `tmanames` | varchar | Target company name |
+| `anation` | varchar | Acquiror country |
+| `tnation` | varchar | Target country |
+| `tsicp` | varchar | Target SIC code |
+| `apublic` | varchar | Acquiror public/private flag |
+| `tpublic` | varchar | Target public/private flag |
+| `deal_value` | numeric | Transaction value ($M) |
+| `form` | varchar | Deal structure / form of transaction |
+| `consid` | varchar | Consideration paid (cash, stock, mixed) |
+| `pctacq` | numeric | Percent of target acquired |
+| `pctown` | numeric | Percent owned after transaction |
+| `albofirm` | varchar | LBO flag: `'Yes'` if leveraged buyout, `'No'` otherwise |
+| `sftype` | varchar | Source of financing (e.g., `'Borrowings'`, `'Corporate Funds'`) |
+| `attitude` | varchar | `'Friendly'`/`'Hostile'`/`'Unsolicited'` |
+| `pm4wk` | numeric | 4-week premium over market price (%) |
+| `acusip` | varchar | Acquiror CUSIP |
+| `master_cusip` | varchar | Target CUSIP |
+| `entval` | numeric | Enterprise value ($M) |
+| `eqval` | numeric | Equity value ($M) |
+| `mv` | numeric | Market value of target ($M) |
+| `pct_cash` | numeric | Percent of consideration in cash |
+| `pct_stk` | numeric | Percent of consideration in stock |
+| `compete` | varchar | Competing bid indicator |
+| `tender` | varchar | Tender offer indicator |
+| `rd` | varchar | Reverse deal indicator |
 
 ## Deal Status Codes
 
@@ -129,10 +135,10 @@ SDC M&A columns (PostgreSQL column names are lowercase versions of SDC field cod
 # Completed deals, US targets, by announcement year
 df_completed = df[
     (df['status'] == 'C') &
-    (df['target_nation'] == 'United States')
+    (df['tnation'] == 'United States')
 ].copy()
 df_completed['announce_year'] = pd.to_datetime(
-    df_completed['date_announced']).dt.year
+    df_completed['dateann']).dt.year
 ```
 
 ## Form of Transaction Codes
@@ -167,45 +173,39 @@ Three complementary flags to identify private equity / financial sponsor transac
 ### 1. LBO Flag (direct)
 
 ```python
-# SDC LBO flag — most direct but may undercount
-df_lbo = df[df['lbo'] == 'Yes']
-
-# Also check lbo_type if available
-# lbo_type values: 'MBO' (management), 'LBO', 'MLBO' (management LBO)
+# albofirm = 'Yes' means an LBO firm is the acquiror (confirmed WRDS column name)
+df_lbo = df[df['albofirm'] == 'Yes']
 ```
 
-### 2. Acquiror Type Codes (richer classification)
+### 2. Source of Financing (supplemental)
 
 ```python
-# SDC acquiror_type codes — look for financial sponsor indicators
-# Common PE-related codes:
-PE_ACQUIROR_TYPES = {
-    'PE',    # Private equity firm
-    'VC',    # Venture capital
-    'I',     # Investment company / fund
-    'SP',    # Special purpose / SPAC
-}
-df_pe = df[df['acquiror_type'].isin(PE_ACQUIROR_TYPES)]
+# sftype shows how deal was financed — useful for LBO confirmation
+# PE-suggestive values: 'Borrowings', 'Line of Credit', 'Bridge Loan', 'Debt Issue'
+# Strategic values: 'Corporate Funds', 'Common Stock Issue'
+print(df['sftype'].value_counts().head(20))
 
-# Show all acquiror type values to validate
-print(df['acquiror_type'].value_counts().head(20))
+# Leveraged financing: any deal using significant debt
+df_leveraged = df[
+    df['sftype'].str.contains('Borrowings|Bridge Loan|Line of Credit|Debt Issue',
+                              na=False, regex=True)
+]
 ```
 
 ### 3. Acquiror Name Pattern Match (backup)
 
 ```python
-# Known PE firm name patterns — use when flags are incomplete
-PE_NAME_PATTERNS = [
-    'equity', 'capital', 'partners', 'fund', 'advisors',
-    'apollo', 'blackstone', 'carlyle', 'kkr', 'tpg', 'warburg',
-    'bain capital', 'advent', 'vista', 'thoma bravo',
-    'francisco partners', 'silver lake', 'cerberus',
-    'ares', 'oaktree', 'bc partners', 'apax',
-]
-import re
-pattern = '|'.join(PE_NAME_PATTERNS)
-df['pe_name_match'] = df['acquiror_name'].str.lower().str.contains(
-    pattern, na=False, regex=True
+# Known PE firm name patterns — no acquiror_type column in wrds_ma_details;
+# name matching provides supplemental PE identification
+PE_NAME_PATTERNS = (
+    r'private equity|buyout|capital partners|equity partners|'
+    r'apollo|blackstone|carlyle|kkr|tpg|warburg pincus|bain capital|'
+    r'advent|vista equity|thoma bravo|francisco partners|silver lake|'
+    r'cerberus|ares management|oaktree|bc partners|apax|'
+    r'general atlantic|insight partners|summit partners'
+)
+df['pe_name_match'] = df['amanames'].str.lower().str.contains(
+    PE_NAME_PATTERNS, na=False, regex=True
 )
 ```
 
@@ -213,9 +213,8 @@ df['pe_name_match'] = df['acquiror_name'].str.lower().str.contains(
 
 ```python
 df['is_pe_buyer'] = (
-    (df['lbo'] == 'Yes') |
-    (df['acquiror_type'].isin(PE_ACQUIROR_TYPES)) |
-    df['pe_name_match']
+    (df['albofirm'] == 'Yes') |    # LBO firm flag
+    df['pe_name_match']             # name pattern fallback
 )
 
 # Strategic = not PE
@@ -223,7 +222,7 @@ df['is_strategic_buyer'] = ~df['is_pe_buyer']
 
 # Annual PE vs Strategic split
 pe_share = (df.groupby(['announce_year', 'is_pe_buyer'])
-              .agg(n_deals=('deal_no', 'count'),
+              .agg(n_deals=('master_deal_no', 'count'),
                    total_value=('deal_value', 'sum'))
               .reset_index())
 ```
@@ -244,15 +243,15 @@ pe_share = (df.groupby(['announce_year', 'is_pe_buyer'])
 ```python
 # Public-target deals (most relevant for securities law)
 df_public_target = df[
-    (df['target_public'] == 'P') &
-    (df['target_nation'] == 'United States') &
+    (df['tpublic'] == 'P') &
+    (df['tnation'] == 'United States') &
     (df['status'] == 'C')
 ]
 
 # Private target deals (more frequent, lower dollar value)
 df_private_target = df[
-    (df['target_public'] == 'V') &
-    (df['target_nation'] == 'United States') &
+    (df['tpublic'] == 'V') &
+    (df['tnation'] == 'United States') &
     (df['status'] == 'C')
 ]
 ```
@@ -264,49 +263,54 @@ df_private_target = df[
 ```python
 query = """
 SELECT
-    deal_no,
-    date_announced,
-    date_effective,
-    date_withdrawn,
+    master_deal_no,
+    dateann             AS date_announced,
+    dateeff             AS date_effective,
+    datewith            AS date_withdrawn,
     status,
-    acquiror_name,
-    target_name,
-    acquiror_nation,
-    target_nation,
-    acquiror_sic,
-    target_sic,
-    acquiror_public   AS apub,
-    target_public     AS tpub,
-    deal_value        AS tv,
-    form_of_transaction,
-    consideration_paid,
-    pct_acquired,
-    lbo,
-    acquiror_type,
+    amanames            AS acquiror_name,
+    tmanames            AS target_name,
+    anation             AS acquiror_nation,
+    tnation             AS target_nation,
+    tsicp               AS target_sic,
+    apublic,
+    tpublic,
+    deal_value,
+    form                AS form_of_transaction,
+    consid              AS consideration_paid,
+    pctacq              AS pct_acquired,
+    pctown              AS pct_owned_after,
+    albofirm            AS lbo_flag,
+    sftype              AS source_of_financing,
     attitude,
-    premium_4wk,
-    target_cusip
-FROM {schema}.sdc_ma
-WHERE target_nation = 'United States'
-  AND date_announced BETWEEN %s AND %s
-  AND status IN ('C', 'W')   -- completed and withdrawn (add 'P' for pending)
-  AND deal_value > 0         -- has a disclosed deal value
-ORDER BY date_announced
+    pm4wk               AS premium_4wk,
+    pct_cash,
+    pct_stk,
+    master_cusip        AS target_cusip,
+    acusip              AS acquiror_cusip
+FROM tr_sdc_ma.wrds_ma_details
+WHERE tnation = 'United States'
+  AND dateann BETWEEN %s AND %s
+  AND status IN ('C', 'W')   -- completed and withdrawn
+ORDER BY dateann
 """
-df = pd.read_sql(query.format(schema=SCHEMA), conn,
-                 params=('1985-01-01', '2024-12-31'))
+df = pd.read_sql(query, conn, params=('1985-01-01', '2024-12-31'))
 ```
 
 ### Minimal Sample (high-quality deal counts)
 
 ```python
 # For clean annual counts comparable across years:
+FULL_CONTROL_FORMS = {
+    'Merger', 'Acq. of Majority Interest',
+    'Acq. of Remaining Interest', 'Asset Acquisition',
+}
 df_clean = df[
     (df['status'] == 'C') &
-    (df['target_nation'] == 'United States') &
+    (df['tnation'] == 'United States') &
     (df['form_of_transaction'].isin(FULL_CONTROL_FORMS)) &
-    (df['pct_acquired'] >= 50) &  # majority acquisition
-    (df['deal_value'] >= 1)        # at least $1M disclosed value
+    (pd.to_numeric(df['pct_acquired'], errors='coerce').fillna(100) >= 50) &
+    (df['deal_value'] >= 1)   # at least $1M disclosed value
 ].copy()
 
 df_clean['year'] = pd.to_datetime(df_clean['date_announced']).dt.year
@@ -319,20 +323,20 @@ df_clean['year'] = pd.to_datetime(df_clean['date_announced']).dt.year
 ```python
 query = """
 SELECT
-    EXTRACT(YEAR FROM date_announced)::int AS announce_year,
+    EXTRACT(YEAR FROM dateann)::int AS announce_year,
     status,
-    target_public,
-    lbo,
-    COUNT(*)                AS n_deals,
-    SUM(deal_value)         AS total_value_mm,
-    AVG(deal_value)         AS avg_value_mm,
-    AVG(premium_4wk)        AS avg_premium_pct
-FROM {schema}.sdc_ma
-WHERE target_nation = 'United States'
-  AND date_announced BETWEEN %s AND %s
+    tpublic             AS target_public,
+    albofirm            AS lbo_flag,
+    COUNT(*)            AS n_deals,
+    SUM(deal_value)     AS total_value_mm,
+    AVG(deal_value)     AS avg_value_mm,
+    AVG(pm4wk)          AS avg_premium_pct
+FROM tr_sdc_ma.wrds_ma_details
+WHERE tnation = 'United States'
+  AND dateann BETWEEN %s AND %s
   AND deal_value > 0
-GROUP BY announce_year, status, target_public, lbo
-ORDER BY announce_year, status, target_public
+GROUP BY announce_year, status, tpublic, albofirm
+ORDER BY announce_year, status, tpublic
 """
 ```
 
@@ -348,7 +352,7 @@ link_query = """
     JOIN comp.company c USING (gvkey)
     WHERE s.cusip = ANY(%s)
 """
-# Note: SDC CUSIP may be 6- or 8-digit; strip trailing digits
+# Note: SDC master_cusip may be 6- or 8-digit; strip trailing digits
 target_cusips = df['target_cusip'].dropna().str[:6].tolist()
 ```
 
