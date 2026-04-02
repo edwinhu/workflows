@@ -41,15 +41,14 @@ cur = conn.cursor()
 cur.execute("""
     SELECT schema_name
     FROM information_schema.schemata
-    WHERE schema_name ILIKE '%sdc%'
-       OR schema_name ILIKE '%tdc%'
-       OR schema_name ILIKE '%deals%'
+    WHERE schema_name ILIKE '%tfn%'
+       OR schema_name ILIKE '%sdc%'
     ORDER BY schema_name
 """)
 print("SDC schemas:", cur.fetchall())
 
 # Find M&A table within discovered schema
-SCHEMA = 'tdc1'  # replace with actual schema from above
+SCHEMA = 'tfn'   # Thomson Financial (SDC acquired by TFN)
 cur.execute("""
     SELECT table_name,
            pg_size_pretty(pg_total_relation_size(
@@ -70,7 +69,7 @@ cur.execute("""
 for col in cur.fetchall(): print(col)
 ```
 
-**Expected schema**: `tdc1` or `sdc`. **Expected M&A table**: `sdc_ma` or `ma`.
+**Expected schema**: `tfn` (Thomson Financial — SDC acquired by TFN). **Expected M&A table**: `sdc_ma` or `ma`.
 
 ## Tables
 

@@ -44,9 +44,9 @@ cur = conn.cursor()
 cur.execute("""
     SELECT schema_name
     FROM information_schema.schemata
-    WHERE schema_name ILIKE '%sdc%'
+    WHERE schema_name ILIKE '%tfn%'
+       OR schema_name ILIKE '%sdc%'
        OR schema_name ILIKE '%tdc%'
-       OR schema_name ILIKE '%deals%'
     ORDER BY schema_name
 """)
 print("SDC schemas:", cur.fetchall())
@@ -56,18 +56,18 @@ cur.execute("""
     SELECT table_schema, table_name, pg_size_pretty(pg_total_relation_size(
         quote_ident(table_schema)||'.'||quote_ident(table_name))) AS size
     FROM information_schema.tables
-    WHERE table_schema ILIKE '%sdc%' OR table_schema ILIKE '%tdc%'
+    WHERE table_schema ILIKE '%tfn%' OR table_schema ILIKE '%sdc%'
     ORDER BY table_schema, table_name
 """)
 for row in cur.fetchall():
     print(row)
 ```
 
-**Expected schema names** (confirm via above): `tdc1` (legacy) or `sdc` (post-2023 migration). Tables likely named `sdc_ni` (new issues) and `sdc_ma` (M&A).
+**Expected schema**: `tfn` (Thomson Financial — SDC was acquired by Thomson Financial). Tables likely named `sdc_ni` (new issues) and `sdc_ma` (M&A). Note: `tfn` also contains `tfn.s12` (mutual fund holdings) — SDC is a separate product within the same vendor schema.
 
 ```python
 # Once schema is found, inspect new issues columns
-SCHEMA = 'tdc1'  # replace with actual schema
+SCHEMA = 'tfn'   # Thomson Financial (SDC acquired by TFN)
 cur.execute("""
     SELECT column_name, data_type
     FROM information_schema.columns

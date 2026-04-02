@@ -182,9 +182,11 @@ See **`references/sas-etl.md`** for complete patterns:
 | LSEG/Datastream | `tr_ds` | `ds2constmth`, `ds2indexlist` |
 | FJC (Federal Judicial Center) | `fjc` | `civil`, `criminal`, `bankruptcy`, `appeals` |
 | FJC Linking | `fjc_linking` | `wrds_civil_link`, `wrds_criminal_link` |
-| SDC New Issues (IPO/SEO/Debt) | `tdc1` (discover) | `sdc_ni` — equity + debt offerings |
-| SDC Mergers & Acquisitions | `tdc1` (discover) | `sdc_ma` — M&A transactions |
+| SDC New Issues (IPO/SEO/Debt) | `tfn` | `sdc_ni` — equity + debt offerings |
+| SDC Mergers & Acquisitions | `tfn` | `sdc_ma` — M&A transactions |
+| Thomson S12 (Mutual Fund Holdings) | `tfn` | `s12` — 13F/N-CSR fund holdings |
 | FISD / Mergent (Bonds) | `fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
+| PitchBook | `pitchbk_companies_deals`, `pitchbk_investors_funds_lps`, `pitchbk_fund_returns` | `deal`, `company`, `fund`, `wrds_fund_returns` — dealsize in USD millions |
 
 ## Connection
 
@@ -280,6 +282,7 @@ Detailed query patterns and table documentation:
 - **`references/fisd-bonds.md`** - FISD/Mergent: corporate bond issuances, IG vs HY, 144A vs registered, rating classification, TRACE linking
 - **`references/sdc-ma.md`** - SDC M&A: deal counts, PE/LBO vs strategic buyer, deal status codes, public vs private target
 - **`references/fund-formation.md`** - Fund formation: Form D (pooled investment funds), EDGAR N-2 (closed-end fund IPOs), Form ADV (RIA registrations)
+- **`references/pitchbook.md`** - PitchBook: schema architecture, dealsize/fundsize in USD millions, dealdate outliers, CIK crosswalk, fund performance (wrds_fund_returns), PE/VC/fund formation patterns
 
 ### Example Files
 
@@ -291,6 +294,7 @@ Working code from real projects:
 - **`examples/sdc_issuances_eda.ipynb`** - SDC New Issues: annual IPO/SEO/debt counts, 144A share, IG vs HY breakdown
 - **`examples/sdc_ma_eda.ipynb`** - SDC M&A: annual deal counts, PE/LBO vs strategic, public vs private target trends
 - **`examples/fund_formation_eda.ipynb`** - Fund formation: Form D 3C.1/3C.7 counts, EDGAR N-2 closed-end fund IPOs, Form ADV RIA registrations
+- **`examples/pitchbook_eda.ipynb`** - PitchBook: PE deal activity, VC rounds by stage, fund formation by vintage, IRR/TVPI by strategy
 
 ### Scripts
 
