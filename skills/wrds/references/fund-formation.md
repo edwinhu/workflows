@@ -18,7 +18,7 @@
 | Source | What it Measures | WRDS Table | Coverage |
 |--------|-----------------|-----------|----------|
 | Form D | Private fund launches (hedge, PE, VC) that sold securities | `wrdssec.wrds_vc_formd` | 2008–2020 (frozen) |
-| EDGAR N-2 | Closed-end fund IPO registrations | `edgar.filings` | 1993–present |
+| EDGAR N-2 | Closed-end fund IPO registrations | `wrdssec.wrds_forms` | 1993–present |
 | Form ADV | New investment adviser registrations (RIA proxy) | SEC IAPD bulk data | 2000–present |
 
 **Recommended combination**:
@@ -154,22 +154,24 @@ EDGAR Form N-2 is the registration statement for closed-end investment companies
 
 ```python
 # Annual closed-end fund IPO registrations
+# Table: wrdssec.wrds_forms  (NOT edgar.filings — that table does not exist on WRDS)
+# Date column: fdate   Form column: form  (NOT form_type)
 query_n2 = """
 SELECT
     EXTRACT(YEAR FROM fdate)::int   AS filing_year,
-    form_type,
+    form,
     COUNT(DISTINCT accession)       AS n_registrations,
     COUNT(DISTINCT cik)             AS n_unique_filers
-FROM edgar.filings
-WHERE form_type IN ('N-2', 'N-2/A', 'N-2 MEF')
+FROM wrdssec.wrds_forms
+WHERE form IN ('N-2', 'N-2/A', 'N-2 MEF')
   AND fdate BETWEEN %s AND %s
-GROUP BY filing_year, form_type
-ORDER BY filing_year, form_type
+GROUP BY filing_year, form
+ORDER BY filing_year, form
 """
-df_n2 = pd.read_sql(query_n2, conn, params=('1993-01-01', '2024-12-31'))
+df_n2 = pd.read_sql(query_n2, conn, params=('1993-01-01', '2026-12-31'))
 
 # Initial registrations only (not amendments)
-df_n2_new = df_n2[df_n2['form_type'] == 'N-2']
+df_n2_new = df_n2[df_n2['form'] == 'N-2']
 ```
 
 **Business Development Companies (BDCs)** also file N-2 (they are closed-end funds registered under the Investment Company Act). BDCs are a major growth area post-2010. You cannot distinguish BDC from traditional closed-end fund from the N-2 form type alone — you'd need to check the prospectus text or use a separate BDC list.

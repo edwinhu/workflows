@@ -83,10 +83,9 @@ for row in cur.fetchall(): print(row)
 | `exchangeable` | varchar(1) | `'Y'`=exchangeable into equity |
 | `defeased` | varchar(1) | `'Y'`=defeased/economically retired early |
 | `defeased_date` | date | Date of defeasance |
-| `moody_rating` | varchar | Moody's rating at issuance (e.g., `'Baa2'`) |
-| `sp_rating` | varchar | S&P rating at issuance (e.g., `'BBB'`) |
-| `fitch_rating` | varchar | Fitch rating at issuance |
 | `last_interest_date` | date | Last coupon payment date |
+
+> **Note**: `moody_rating`, `sp_rating`, and `fitch_rating` are **NOT columns in `fisd_mergedissue`**. Ratings are in the separate `fisd_fisd.fisd_ratings` table — join on `issue_id`. See [Investment Grade vs High Yield Classification](#investment-grade-vs-high-yield-classification) for the correct join pattern.
 
 ## fisd_fisd.fisd_mergedissuer Key Columns
 
@@ -149,49 +148,69 @@ df_all_corporate = df[
 
 ## Investment Grade vs High Yield Classification
 
+Ratings are **not in `fisd_mergedissue`**. They are in `fisd_fisd.fisd_ratings`:
+
+| Column | Values | Description |
+|--------|--------|-------------|
+| `issue_id` | int | Join key to `fisd_mergedissue.issue_id` |
+| `rating_type` | `'MR'`=Moody's, `'SPR'`=S&P, `'FR'`=Fitch, `'DPR'`=D&P | Agency |
+| `rating_date` | date | Date rating was assigned |
+| `rating` | e.g. `'Baa2'`, `'BBB-'` | Rating string |
+| `investment_grade` | `'Y'` / `'N'` / NULL | Pre-computed IG flag |
+| `rating_status` | `'A'`=active, `'T'`=terminated | Use `'A'` for current |
+
+### Joining ratings at issuance
+
+Pick the rating closest to (but not after) `offering_date` for each agency:
+
 ```python
-# Moody's investment grade: Aaa, Aa*, A*, Baa*
-# Moody's high yield: Ba*, B*, Caa*, Ca, C
-# S&P investment grade: AAA, AA*, A*, BBB*
-# S&P high yield: BB*, B*, CCC*, CC, C, D
-
-IG_MOODYS = {
-    'Aaa', 'Aa1', 'Aa2', 'Aa3',
-    'A1', 'A2', 'A3',
-    'Baa1', 'Baa2', 'Baa3'
-}
-HY_MOODYS = {
-    'Ba1', 'Ba2', 'Ba3',
-    'B1', 'B2', 'B3',
-    'Caa1', 'Caa2', 'Caa3',
-    'Ca', 'C'
-}
-IG_SP = {
-    'AAA', 'AA+', 'AA', 'AA-',
-    'A+', 'A', 'A-',
-    'BBB+', 'BBB', 'BBB-'
-}
-HY_SP = {
-    'BB+', 'BB', 'BB-',
-    'B+', 'B', 'B-',
-    'CCC+', 'CCC', 'CCC-',
-    'CC', 'C', 'D', 'SD'
-}
-
-def classify_ig_hy(row):
-    """Return 'IG', 'HY', or 'NR' based on Moody's or S&P rating."""
-    m = str(row.get('moody_rating', '') or '')
-    s = str(row.get('sp_rating', '') or '')
-    if m in IG_MOODYS or s in IG_SP:
-        return 'IG'
-    if m in HY_MOODYS or s in HY_SP:
-        return 'HY'
-    return 'NR'
-
-df['rating_cat'] = df.apply(classify_ig_hy, axis=1)
+query_rated = """
+WITH rated AS (
+    SELECT DISTINCT ON (r.issue_id, r.rating_type)
+        r.issue_id,
+        r.rating_type,
+        r.rating,
+        r.investment_grade
+    FROM fisd_fisd.fisd_ratings r
+    JOIN fisd_fisd.fisd_mergedissue i USING (issue_id)
+    WHERE r.rating_date <= i.offering_date
+      AND r.rating_type IN ('MR', 'SPR')
+    ORDER BY r.issue_id, r.rating_type, r.rating_date DESC
+),
+moody AS (SELECT issue_id, rating AS moody_rating, investment_grade AS moody_ig
+          FROM rated WHERE rating_type = 'MR'),
+sp    AS (SELECT issue_id, rating AS sp_rating,    investment_grade AS sp_ig
+          FROM rated WHERE rating_type = 'SPR')
+SELECT
+    EXTRACT(YEAR FROM i.offering_date)::int AS issue_year,
+    i.rule_144a,
+    CASE
+        WHEN m.moody_ig = 'Y' OR s.sp_ig = 'Y' THEN 'IG'
+        WHEN m.moody_ig = 'N' OR s.sp_ig = 'N' THEN 'HY'
+        ELSE 'NR'
+    END AS rating_cat,
+    COUNT(*)              AS n_issues,
+    SUM(i.offering_amt)/1e3 AS proceeds_bn
+FROM fisd_fisd.fisd_mergedissue i
+JOIN fisd_fisd.fisd_mergedissuer u ON u.issuer_id = i.issuer_id
+LEFT JOIN moody m USING (issue_id)
+LEFT JOIN sp    s USING (issue_id)
+WHERE u.country_domicile = 'USA'
+  AND i.bond_type IN ('CDEB','CMTN','CMTZ','CZ','USBN')
+  AND (i.yankee = 'N' OR i.yankee IS NULL)
+  AND (i.foreign_currency = 'N' OR i.foreign_currency IS NULL)
+  AND (i.asset_backed = 'N' OR i.asset_backed IS NULL)
+  AND (i.convertible = 'N' OR i.convertible IS NULL)
+  AND (i.preferred_security = 'N' OR i.preferred_security IS NULL)
+  AND i.offering_date BETWEEN %s AND %s
+  AND i.offering_amt > 0
+GROUP BY issue_year, i.rule_144a, rating_cat
+ORDER BY issue_year, rating_cat, i.rule_144a
+"""
+df_rated = pd.read_sql(query_rated, conn, params=('2000-01-01', '2026-12-31'))
 ```
 
-**Note**: When Moody's and S&P disagree ("split-rated"), convention is to use the lower rating. For counting purposes, use "at least one IG" = IG.
+**Split-rated convention**: "at least one IG agency = IG" (use `moody_ig='Y' OR sp_ig='Y'`). For the lower-rating convention, require both: `moody_ig='Y' AND sp_ig='Y'`.
 
 ## Canonical Query Patterns
 
@@ -238,43 +257,7 @@ df = pd.read_sql(query, conn, params=('1990-01-01', '2024-12-31'))
 
 ### Annual Counts by IG/HY and 144A Status
 
-```python
-query_rated = """
-SELECT
-    EXTRACT(YEAR FROM i.offering_date)::int  AS issue_year,
-    i.rule_144a,
-    CASE
-        WHEN i.moody_rating IN ('Aaa','Aa1','Aa2','Aa3',
-                                'A1','A2','A3','Baa1','Baa2','Baa3')
-          OR i.sp_rating IN ('AAA','AA+','AA','AA-',
-                              'A+','A','A-','BBB+','BBB','BBB-')
-        THEN 'IG'
-        WHEN i.moody_rating IN ('Ba1','Ba2','Ba3','B1','B2','B3',
-                                'Caa1','Caa2','Caa3','Ca','C')
-          OR i.sp_rating IN ('BB+','BB','BB-','B+','B','B-',
-                              'CCC+','CCC','CCC-','CC','C','D')
-        THEN 'HY'
-        ELSE 'NR'
-    END AS rating_cat,
-    COUNT(*)              AS n_issues,
-    SUM(offering_amt)/1e3 AS proceeds_bn
-FROM fisd_fisd.fisd_mergedissue i
-JOIN fisd_fisd.fisd_mergedissuer u ON i.issuer_id = u.issuer_id
-WHERE u.country_domicile = 'USA'
-  AND i.bond_type IN ('CDEB','CMTN','CMTZ','CZ','USBN')
-  AND (i.yankee = 'N' OR i.yankee IS NULL)
-  AND (i.canadian = 'N' OR i.canadian IS NULL)
-  AND (i.foreign_currency = 'N' OR i.foreign_currency IS NULL)
-  AND (i.asset_backed = 'N' OR i.asset_backed IS NULL)
-  AND (i.convertible = 'N' OR i.convertible IS NULL)
-  AND (i.preferred_security = 'N' OR i.preferred_security IS NULL)
-  AND i.offering_date BETWEEN %s AND %s
-  AND i.offering_amt > 0
-GROUP BY issue_year, i.rule_144a, rating_cat
-ORDER BY issue_year, rating_cat, i.rule_144a
-"""
-df_rated = pd.read_sql(query_rated, conn, params=('2000-01-01', '2024-12-31'))
-```
+See the join pattern in [Investment Grade vs High Yield Classification](#investment-grade-vs-high-yield-classification). The `query_rated` there produces the correct `df_rated` with columns `issue_year`, `rule_144a`, `rating_cat`, `n_issues`, `proceeds_bn`.
 
 ## Standard Issuance Count Query
 
