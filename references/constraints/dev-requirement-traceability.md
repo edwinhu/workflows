@@ -1,7 +1,7 @@
 ---
 name: dev-requirement-traceability
 description: CATEGORY-NN requirement IDs from SPEC.md must flow through PLAN.md, VALIDATION.md, and verification
-applies-to: [dev-implement, dev-review, dev-verify, dev-test-gaps]
+applies-to: [dev-design, dev-plan-reviewer, dev-implement, dev-review, dev-verify, dev-test-gaps]
 ---
 
 ## Rule
@@ -73,6 +73,18 @@ The app needs authentication and pagination.
 | "Adding IDs clutters the plan" | IDs are one line per task. Clutter is finding out in review that a requirement was never tested. | Add the `implements:` line. |
 | "I'll add traceability during validation" | Validation checks traceability -- it can't add it. IDs must exist before validation runs. | Add IDs at each phase as artifacts are created. |
 | "Not all requirements map neatly to tasks" | Then the plan structure needs revision. A requirement with no task is a coverage gap. | Flag it as a structural issue during design. |
+
+## Prose Section Audit
+
+**Every behavioral statement in SPEC.md prose sections MUST have a CATEGORY-NN ID in the Requirements table.**
+
+Sections to audit: Design Decisions, Discovered Protocol, Clarified Requirements, and any other prose sections outside the Requirements table.
+
+A "behavioral statement" is any prose that describes an implementable feature, user-facing behavior, protocol handling, or UI element. Examples:
+- "The extension should show a permission_request dialog when the server sends a permission_request message"
+- "A session selector allows the user to switch between active sessions"
+
+**If a behavioral statement is found in prose without a corresponding CATEGORY-NN ID in the Requirements table → STOP.** Assign an ID and add it to the Requirements table before proceeding. These un-ID'd requirements are invisible to the entire downstream traceability chain (PLAN.md, VALIDATION.md, dev-verify) and will be silently dropped.
 
 ## Red Flags
 

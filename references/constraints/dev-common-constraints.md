@@ -28,7 +28,7 @@ Not every phase needs every constraint. Load by relevance:
 | **Brainstorm** | — | No deterministic constraints at brainstorm stage |
 | **Explore** | — | Read-only exploration, no implementation |
 | **Clarify** | — | Clarification has no deterministic constraints |
-| **Design** | — | Design is advisory, no code written |
+| **Design** | C5 | Verify plan covers all SPEC requirement IDs, audit prose sections for un-ID'd requirements |
 | **Implement** | C1, C1b, C2, C3, C4, C5 | All constraints: delegation, test reality, runtime evidence, deviation tracking, requirement tracing |
 | **Review** | C1, C1b, C2, C3, C5 | Delegation boundary, test evidence gating, requirement coverage |
 | **Verify** | C1b, C3, C5 | Verification boundary, runtime evidence, requirement tracing |

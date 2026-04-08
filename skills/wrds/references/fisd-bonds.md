@@ -347,3 +347,18 @@ Annual US non-financial corporate bond issuance (plain vanilla IG + HY):
 **Rule 144A share of issuance**: ~50–60% of IG bond count, ~70–80% of HY bond count in most years. This is the dominant capital markets product by volume.
 
 **Practice area implication**: US investment-grade and high-yield debt capital markets (primarily 144A) produce more lawyer work by number of transactions than all other capital markets products combined. A single large law firm may close 100+ 144A bond deals per year vs. 20–30 IPOs.
+
+## FISD vs SDC vs PitchBook for Debt
+
+| Database | Best For | 144A Flag | Structured Products | Coverage |
+|----------|----------|-----------|-------------------|----------|
+| **FISD** (`fisd.fisd_issue`) | Corporate bonds (IG/HY), 144A analysis | `rule_144a = 'Y'` (clean) | Limited — no MBS/CLO/ABS | US bonds, ~1983–present |
+| **SDC NI** (`sdc.wrds_ni_details`) | Global issuance, structured products (MBS/CLO/ABS), IPO/SEO/debt combined | `market = 'EURO/144A'` | Yes (`assettype_print`) | Global, ~1970–present |
+| **PitchBook** (`pitchbk.deal`) | Private credit (term loans, revolvers), VC, PE | **None** — no 144A/registered distinction | No | 2008–present, private market focus |
+
+**When to use which:**
+- **Corporate bond 144A analysis** → FISD (cleaner data, explicit `rule_144a` flag, rating joins)
+- **Structured products (ABS/MBS/CLO)** → SDC NI (FISD doesn't cover these)
+- **Full capital markets picture (IPO + SEO + Debt + M&A)** → SDC NI + SDC M&A (`sdc.wrds_ma_details`)
+- **Private credit / term loans** → PitchBook (no 144A distinction available)
+- **144A share of all debt** → SDC NI `market` field (broadest coverage, includes structured); cross-validate with FISD for corporate bonds specifically

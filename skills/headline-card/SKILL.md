@@ -40,6 +40,26 @@ The quote should be **vivid and specific** — something that makes the audience
 **Good**: "Anyone who gives them money — shame on you. They should be gone and dead and done with."
 **Bad**: "JPMorgan CEO criticizes proxy advisory industry practices."
 
+### Widow check
+
+Headlines and quotes are displayed at large font sizes on a centered card — a single orphaned word on the last line is highly visible and looks sloppy. After writing the headline and quote text, check for widows:
+
+1. **Compile the presentation** and visually inspect each headline card
+2. **Run the widow detector** if available:
+   ```bash
+   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && python3 "$DETECT_WIDOWS" presentation.pdf
+   ```
+3. **Fix widows in the JSON text** (not in Typst source):
+   - **Tighten wording** — cut redundant words so the last line has 2+ words
+   - **Use `\u00a0`** (non-breaking space, JSON-safe) between the last 2-3 words: `"proxy\u00a0advisors."` keeps "proxy advisors." together
+   - **Shorten the quote** — trim from the beginning or end to shift the line break
+   - **Never pad with filler words** just to fix a widow
+
+| Before (widow) | After (fixed) |
+|---|---|
+| `"...should be gone and dead and done\nwith."` | `"...should be gone and dead and done\u00a0with."` |
+| `"...the impact on shareholder\nvalue"` | `"...the impact on shareholder value"` (tightened) |
+
 ### Path resolution rule
 
 Logo paths in JSON are resolved **relative to `templates/theme.typ`**, not relative to `slides.typ` or the project root. Since theme.typ lives in `templates/`, use `../assets/logos/` to reach the assets directory.
@@ -53,6 +73,26 @@ This is because Typst's `image()` function resolves relative to the file contain
 ## Step 2: Prepare the SVG Logo
 
 Headline cards have a dark background (`#12121e`). Logos need to be **white on transparent** to be visible.
+
+### IRON LAW: Real Vector Logos Only
+
+**Text-based SVG placeholders are NOT logos.** If you catch yourself creating an SVG with `<text>` elements spelling out the publication name — STOP. That is a fake placeholder, not a real logo.
+
+- Logos MUST contain real vector paths (`<path>`, `<polygon>`, `<rect>`, etc.) from the publication's actual branding
+- Logos must be DOWNLOADED from authoritative sources: Wikimedia Commons SVGs, official brand/press pages, or GitHub logo repos
+- **Never** generate a text-based SVG as a "temporary" logo — there is no temporary; it ships
+
+**Verification step** — after downloading, check that it's real:
+```bash
+# If this finds matches, it's a fake placeholder, not a real logo
+grep '<text' assets/logos/publication-white.svg && echo "FAKE — contains <text> elements, download a real logo"
+```
+
+| Excuse | Reality |
+|---|---|
+| "I'll use a text placeholder for now" | There is no "for now" — the placeholder ships and looks unprofessional |
+| "I can't find an SVG" | Wikimedia Commons has SVGs for virtually every major publication. Search harder. |
+| "The text version looks fine" | It doesn't — it has the wrong font, wrong weight, wrong spacing. Real logos are designed. |
 
 ### Creating a white variant
 
@@ -113,6 +153,8 @@ Cards are rendered by looping over the JSON. This pattern should already exist i
 | Card doesn't fill vertical space | Using `height: 100%` instead of `1fr`, or `===` heading is present | Use `block(height: 1fr)` and remove `===` from the slide |
 | Quote is generic/boring | Summarized instead of quoted | Find the actual vivid quote from the source |
 | Typst error: "file not found" | Logo SVG doesn't exist at the resolved path | Check that the file exists at `templates/../assets/logos/...` |
+| Logo SVG contains `<text>` elements | You created a text placeholder instead of downloading a real logo | `grep '<text' logo.svg` — if it matches, delete it and download the real SVG from Wikimedia Commons or the brand's press page |
+| Single word on last line of headline or quote | Widow — large centered text makes this very visible | Use `\u00a0` between last 2-3 words in JSON, or tighten wording |
 
 ## Modifying the headline-card Function
 

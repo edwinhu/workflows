@@ -152,6 +152,16 @@ WHERE c.hqglobalregion = 'North America'
 
 Valid values: `'Americas'`, `'Europe'`, `'Asia'`, `'Oceania'`, `'Middle East'`, `'Africa'`. "Americas" covers the US, Canada, and Latin America combined — there is no continent-level US/Canada split in this field.
 
+### 12. PitchBook debt is private credit — no 144A/registered distinction
+
+PitchBook `deal` table debt types (`'Debt - General'`, `'Debt Refinancing'`, etc.) are predominantly **private credit** (term loans, revolvers, mezzanine). The main `deal` table has **no field** distinguishing 144A from registered offerings.
+
+The `dealbondrelation` table has a `marketplace` field with values like `"144A"` and `"RegS"`, but coverage is sparse — it only captures bonds associated with PitchBook-tracked deals, not the broader public bond market.
+
+**For 144A/registered debt analysis, use:**
+- **Mergent FISD** (`fisd.fisd_issue`, `rule_144a` flag) — corporate bonds
+- **SDC NI** (`sdc.wrds_ni_details`, `market = 'EURO/144A'`) — global issuance including structured products
+
 ## Key Tables
 
 ### `pitchbk_companies_deals.deal` — Key Columns

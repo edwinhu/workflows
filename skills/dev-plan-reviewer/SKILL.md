@@ -78,6 +78,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 |----------|------------------|
 | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
 | Spec Alignment | Plan covers ALL spec requirements, no scope creep, no requirements silently dropped |
+| Prose Section Audit | Scan SPEC.md Design Decisions, Discovered Protocol, Clarified Requirements, and any other prose sections for behavioral requirements missing CATEGORY-NN IDs — **BLOCKING if found** |
 | Task Decomposition | Tasks atomic enough for a single subagent, clear boundaries, steps actionable |
 | Task Ordering | Dependencies correct, no circular dependencies, independent tasks marked |
 | File Structure | Files have clear single responsibilities, split by responsibility not layer |
@@ -93,6 +94,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 - Missing verification steps or expected outputs
 - Files planned to hold multiple responsibilities or likely to grow unwieldy
 - Spec requirements not covered by ANY task (silently dropped)
+- **Behavioral requirements in SPEC.md prose sections (Design Decisions, Discovered Protocol, Clarified Requirements) that lack CATEGORY-NN IDs** — these are invisible to PLAN.md task mapping and will be silently dropped. Flag as BLOCKING.
 - Tasks too large for a single subagent (>100 lines of change)
 
 ## Output Format

@@ -1,6 +1,6 @@
 ---
 name: marimo
-description: This skill should be used when the user asks to "use marimo", "create a marimo notebook", "debug a marimo notebook", "inspect cells", "understand reactive execution", "fix marimo errors", "convert from jupyter to marimo", or works with marimo reactive Python notebooks.
+description: Use when working with marimo notebooks — creating, editing, debugging, converting from Jupyter, or pairing with a running marimo server.
 user-invocable: false
 ---
 
@@ -12,6 +12,7 @@ user-invocable: false
 - [Editing Rules](#editing-rules)
 - [Core CLI Commands](#core-cli-commands)
 - [Export Commands](#export-commands)
+- [Live Session (marimo-pair)](#live-session-marimo-pair)
 - [Data and Visualization](#data-and-visualization)
 - [Debugging Workflow](#debugging-workflow)
 - [Common Issues](#common-issues)
@@ -180,6 +181,63 @@ marimo export html notebook.py -o __marimo__/notebook.html --watch
 
 **Tip:** Use `__marimo__/` folder for all exports (ipynb, html). The editor can auto-save there.
 
+## Live Session (marimo-pair)
+
+For working inside a **running** marimo notebook kernel — executing code, creating/editing cells, and building notebooks interactively — use the marimo-pair protocol. Full details: `marimo-pair/SKILL.md`.
+
+### Starting a Server
+
+See `marimo-pair/reference/finding-marimo.md` for the full decision tree. Quick start:
+
+```bash
+# pixi project (our standard)
+pixi run marimo edit notebook.py --no-token
+
+# uv project
+uv run marimo edit notebook.py --no-token
+
+# standalone / sandbox
+uvx marimo@latest edit notebook.py --no-token --sandbox
+```
+
+**Always start as a background task** (`run_in_background`) so the server doesn't block the conversation. Do NOT use `--headless` unless asked — let marimo open the browser.
+
+### Discovery and Execution
+
+```bash
+# Discover running servers
+bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/discover-servers.sh
+
+# Execute code in the kernel (one-liner)
+bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/execute-code.sh -c "df.head()"
+
+# Execute code (multiline — use heredoc to avoid shell escaping)
+bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/execute-code.sh <<'EOF'
+import marimo._code_mode as cm
+
+async with cm.get_context() as ctx:
+    cid = ctx.create_cell("x = 1")
+    ctx.run_cell(cid)
+EOF
+```
+
+Use `--port` to target a specific server, `--session` for a specific notebook, `--url` for remote servers.
+
+### Key Concepts
+
+- **Scratchpad execution**: Code runs in the kernel with all cell variables in scope, but nothing persists between calls. Use this to explore and validate.
+- **Cell mutations**: Use `marimo._code_mode` with `async with cm.get_context() as ctx:` to create/edit/delete cells and install packages. All `ctx.*` methods are synchronous — do NOT await them.
+- **Cells are not auto-executed**: `create_cell` and `edit_cell` are structural only — call `ctx.run_cell(cid)` to execute.
+- **Install packages via `ctx.install_packages()`**, not `uv add` or `pip`.
+- **NEVER write to the `.py` file directly while a session is running** — the kernel owns it.
+
+### marimo-pair References
+
+- `marimo-pair/reference/finding-marimo.md` — How to find and invoke the right marimo binary
+- `marimo-pair/reference/gotchas.md` — Cached module proxies and other traps
+- `marimo-pair/reference/rich-representations.md` — Custom anywidgets, `_display_()`, Arrow IPC for large data
+- `marimo-pair/reference/notebook-improvements.md` — Setup cells, lifting functions, `mo.persistent_cache`
+
 ## Data and Visualization
 
 - Prefer polars over pandas for performance
@@ -220,6 +278,10 @@ For detailed patterns and advanced techniques, consult:
 - **`references/debugging.md`** - Error patterns, runtime debugging, environment-specific issues
 - **`references/widgets.md`** - Interactive UI components and mo.ui patterns
 - **`references/sql.md`** - SQL cells and database integration techniques
+- **`marimo-pair/reference/finding-marimo.md`** - How to find and invoke marimo across project types
+- **`marimo-pair/reference/gotchas.md`** - Cached module proxies (e.g., polars + pyarrow mid-session)
+- **`marimo-pair/reference/rich-representations.md`** - Custom anywidgets, Arrow IPC, `_display_()` protocol
+- **`marimo-pair/reference/notebook-improvements.md`** - Setup cells, lifting functions, `mo.persistent_cache`
 
 ### Examples
 
@@ -230,10 +292,13 @@ Working examples available in `examples/`:
 
 ### Scripts
 
-Validation utilities in `scripts/`:
+Validation and live-session utilities:
 - **`scripts/check_notebook.sh`** - Primary validation: syntax check, marimo validation, cell structure overview
 - **`scripts/get_cell_map.py`** - Extract cell metadata (invoked by check_notebook.sh)
+- **`marimo-pair/scripts/discover-servers.sh`** - Find running marimo servers
+- **`marimo-pair/scripts/execute-code.sh`** - Execute code in a running marimo kernel
 
 ### Related Skills
 
 - **`notebook-debug`** - Debugging executed ipynb files with tracebacks and output inspection
+- **`marimo-pair/SKILL.md`** - Full marimo-pair protocol for live kernel interaction

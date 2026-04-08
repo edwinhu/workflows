@@ -1,6 +1,6 @@
 ---
 name: jupytext
-description: This skill should be used when the user asks to "convert notebook to text", "use jupytext", "version control notebooks", "share data between kernels", "set up multi-kernel project", "pair notebooks with Python files", "sync ipynb and py files", or needs multi-kernel projects (Python/R/Stata/SAS) with version-control-friendly notebooks.
+description: Use when working with jupytext — converting notebooks to/from text formats, syncing paired .ipynb/.py files, multi-kernel projects (Python/R/Stata/SAS), or executing notebooks via papermill.
 user-invocable: false
 ---
 

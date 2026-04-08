@@ -501,6 +501,41 @@ def parse_yaml_simple(content: str) -> dict:
 
 
 
+def build_calendar_section() -> str:
+    """Pre-fetch tomorrow's calendar events via morgen-events (pre-filtered).
+
+    Uses ~/.local/bin/morgen-events which excludes family calendars,
+    family calendars, and morgen-routine events before returning results.
+    This ensures Claude never sees excluded calendar entries.
+    """
+    import subprocess
+    from datetime import date, timedelta
+
+    tomorrow = date.today() + timedelta(days=1)
+    day_after = tomorrow + timedelta(days=1)
+
+    try:
+        result = subprocess.run(
+            [str(Path.home() / '.local' / 'bin' / 'morgen-events'),
+             '--start', tomorrow.isoformat(),
+             '--end', day_after.isoformat()],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        output = result.stdout.strip()
+    except Exception:
+        return ""
+
+    if not output:
+        return ""
+
+    lines = [f"## Tomorrow's Calendar ({tomorrow.strftime('%a %b %-d')})", ""]
+    lines.append(output)
+    lines.append("")
+    return "\n".join(lines)
+
+
 def check_pending_patterns() -> str:
     """Check for pending pattern-capture suggestions from previous session.
 
@@ -574,8 +609,11 @@ def main():
     # Check for pending pattern-capture suggestions from previous session
     pattern_section = check_pending_patterns()
 
+    # Pre-fetch tomorrow's calendar (pre-filtered, excludes family calendars etc.)
+    calendar_section = build_calendar_section()
+
     # Combine context
-    combined_context = env_section + "\n" + in_progress_section + "\n" + pattern_section + "\n" + using_skills
+    combined_context = env_section + "\n" + calendar_section + "\n" + in_progress_section + "\n" + pattern_section + "\n" + using_skills
 
     print(json.dumps({
         "hookSpecificOutput": {

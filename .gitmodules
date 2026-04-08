@@ -1,3 +1,6 @@
 [submodule "external/anthropic-skills"]
 	path = external/anthropic-skills
 	url = https://github.com/anthropics/skills.git
+[submodule "skills/marimo/marimo-pair"]
+	path = skills/marimo/marimo-pair
+	url = https://github.com/marimo-team/marimo-pair.git

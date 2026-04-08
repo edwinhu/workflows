@@ -155,13 +155,52 @@ SDC New Issues tracks both equity and debt in `wrds_ni_details`. Additional debt
 | `coupon` | varchar | Coupon rate (%) — string, cast to numeric |
 | `moody` | varchar | Moody's rating at issuance |
 | `sp` | varchar | S&P rating at issuance |
-| `description` | varchar | Bond description (check for "144A", "Senior") |
-| `security` | varchar | Security type code |
-| `registration_status` | varchar | Registration status |
-| `registration_status_long` | varchar | Full registration description |
+| `description` | varchar | Bond description |
+| `security` | varchar | Security type code (see below) |
+| `market` | varchar | **Market/placement type — THE key field for 144A identification** |
+| `assettype_print` | varchar | Structured product type (MBS, CLO, ABS — NULL for plain vanilla) |
 | `regrights` | varchar | Registration rights indicator |
+| `registration_status` | varchar | ⚠️ **99.6% NULL — do NOT use for 144A classification** |
 
-**Note**: For comprehensive debt issuance analysis with explicit 144A flags and IG/HY ratings at issuance, prefer **FISD/Mergent** (`fisd_fisd.fisd_mergedissue`) over SDC New Issues. FISD has explicit `rule_144a` and `bond_type` fields and broader debt coverage.
+**CRITICAL: The `market` field is the correct way to identify 144A offerings in SDC NI.**
+
+| `market` value | Meaning | Count (2000–24) | $ (Bn) |
+|----------------|---------|-----------------|--------|
+| `'U.S. Public'` | SEC-registered US public offering | ~332K | ~$147T |
+| `'Euro Public'` | Public Euro-market offering | ~179K | ~$75T |
+| `'EURO/144A'` | **Rule 144A offering** | ~75K | ~$62T |
+| `'U.S. Private'` | US private placement (Reg D / Reg S) | ~49K | ~$19T |
+| `'Euro Private'` | Euro private placement | ~78K | ~$17T |
+| `'Registration'` | In SEC registration (pipeline) | ~52K | ~$5T |
+| `'China Public'` | Chinese public market | ~126K | ~$35T |
+| Other regional | Country-specific markets | varies | varies |
+
+**Do NOT use `registration_status`** — it is populated for <0.5% of records and is effectively useless.
+
+### Debt Security Type Values (common)
+
+| `security` | Category | Notes |
+|-----------|----------|-------|
+| `'Fxd/Straight Bd'` | Corporate bond (fixed) | Largest by $ |
+| `'Medium-Term Nts'` | MTN program | Registered shelf takedowns |
+| `'Senior Bonds'` | Senior unsecured | |
+| `'Bonds'` | Generic bonds | |
+| `'Sr Med Term Nts'` | Senior MTN | |
+| `'Senior Notes'` | Senior notes | |
+| `'Sr Unsecurd Nts'` | Senior unsecured notes | |
+| `'Global Notes'` | Global offering | Largest avg deal size |
+| `'Float Rate Nts'` | Floating rate | |
+| `'Unsecured Bond'` | Unsecured | |
+| `'Gtd Mdm-Trm Nts'` | Guaranteed MTN | |
+| `'Convertible Bds'` | Convertible | |
+| `'CP'` | Commercial paper | Short-term |
+| `'Asset Bkd Certs'` | ABS | Structured |
+| `'Coll Loan Oblig'` | CLO | Structured |
+| `'Pass-Thru Certs'` | MBS pass-through | Structured |
+| `'Mtg Bkd Certs'` | MBS | Structured |
+| `'Comm Mtg PT Crt'` | CMBS | Structured |
+
+**SDC vs FISD for debt**: SDC NI has broader coverage of structured products (MBS, CLO, ABS) that FISD lacks. FISD has cleaner `rule_144a` and `bond_type` flags for plain vanilla corporate bonds. Use SDC for structured product analysis; use FISD for corporate bond 144A/IG/HY analysis.
 
 ### Rating → IG/HY Classification
 
@@ -225,15 +264,25 @@ df_seo['offer_price_num'] = pd.to_numeric(df_seo['offerpric'], errors='coerce')
 df_seo = df_seo[df_seo['offer_price_num'] >= 1.0]
 ```
 
-## Rule 144A Equity Offerings
+## Rule 144A Offerings
 
-Rule 144A allows large institutional investors to trade unregistered securities. SDC tracks 144A equity separately:
+Rule 144A allows qualified institutional buyers (QIBs) to trade unregistered securities. SDC identifies 144A offerings via the `market` field:
 
-- In Figure A.5 of the Lowry et al. appendix, "US Rule 144A Common Stock" = 239 observations (1973–2016)
-- Filter: `security_type ILIKE '%144A%'` or `is_144a = 'Yes'`
-- 144A equity is less common than 144A debt; primary use case is PIPE-like institutional placements
+```sql
+-- 144A offerings (all security types)
+WHERE market = 'EURO/144A'
+```
 
-**Note for practice area analysis**: 144A equity is a distinct capital markets product but small in count compared to 144A debt. Include separately in tables but not in clean IPO/SEO counts.
+**144A by security type** (2000–2024):
+- **Debt (bonds/notes)**: ~60K deals, ~$56T — the vast majority of 144A. Primarily investment-grade corporate bonds.
+- **Equity (IPO/SEO)**: Small subset (~239 in Lowry et al. 1973–2016). PIPE-like institutional placements.
+- **Convertible**: Meaningful 144A subset — convertible bonds placed with QIBs.
+
+**Do NOT use** `security_type ILIKE '%144A%'` or `is_144a = 'Yes'` — these fields do not exist in `wrds_ni_details`. The `market` field is the only reliable 144A indicator.
+
+**For corporate bond 144A analysis**, prefer Mergent FISD (`fisd.fisd_issue`, `rule_144a = 'Y'`) — it has cleaner bond-level data. Use SDC `market = 'EURO/144A'` for structured products (ABS/MBS/CLO) and global issuance where FISD has no coverage.
+
+**Note for practice area analysis**: 144A debt dwarfs 144A equity. The 144A share of all debt issuance has grown from ~10% in 2000 to ~18.5% by $ in 2024.
 
 ## Standard Cleaning Filters
 
@@ -273,8 +322,8 @@ Then apply Python-side filters (security type exclusions, price floors) as shown
 ### US Debt Issuances (SDC)
 
 ```python
-# Use FISD/Mergent for comprehensive debt analysis — it has explicit 144A/IG/HY flags.
-# SDC NI can supplement: filter by security type containing 'Bond', 'Note', 'MTN'
+# SDC NI tracks debt by security type + market (for 144A classification).
+# Use FISD/Mergent for clean corporate bond analysis — SDC is better for structured products.
 query = """
 SELECT
     master_deal_no,
@@ -283,22 +332,39 @@ SELECT
     ninames             AS issuer,
     totdolamt           AS proceeds_mm,
     security            AS security_type,
+    market,                                    -- KEY: 144A vs Public vs Private
+    assettype_print,                           -- MBS/CLO/ABS for structured products
     moody               AS moodys_rating,
     sp                  AS sp_rating,
     coupon,
     maturity,
     description,
-    registration_status,
-    registration_status_long,
     nation
 FROM tr_sdc_ni.wrds_ni_details
 WHERE nation = 'United States'
-  AND security ILIKE '%bond%'      -- check actual security values first
-  AND master_deal_date BETWEEN %s AND %s    -- use '1985-01-01' to '2026-12-31'
+  AND ipo = 'No'                               -- exclude equity IPOs
+  AND security NOT IN (                        -- exclude equity security types
+      'Ord/Common Shs.', 'Common Shares', 'Class A Ord Shs',
+      'Ordinary Shares', 'ADRs', 'Units', 'Class B Ord Shs'
+  )
+  AND market IS NOT NULL
+  AND market != 'Withdrawn'
+  AND master_deal_date BETWEEN %s AND %s       -- use '2000-01-01' to '2026-12-31'
   AND totdolamt IS NOT NULL
   AND totdolamt > 0
 ORDER BY master_deal_date
 """
+
+# Classify 144A vs Registered vs Private in Python:
+def classify_market(market):
+    if market == 'EURO/144A':
+        return '144A'
+    elif 'Public' in market or market == 'Registration':
+        return 'Public/Registered'
+    elif 'Private' in market:
+        return 'Private Placement'
+    else:
+        return 'Other'
 ```
 
 ## Linking to Other Datasets
@@ -371,5 +437,18 @@ Approximate annual US common stock IPO counts (clean academic sample):
 Source: Jay Ritter IPO data; compare against SDC counts after cleaning.
 
 **SEOs are ~3–5× more frequent than IPOs** in any given year. In 2021: ~900 traditional SEOs vs ~450 IPOs.
+
+**Debt issuance benchmarks** (SDC NI, cumulative 2000–2024):
+
+| Category | Cumulative $ | Avg Deals/Year |
+|----------|-------------|----------------|
+| Debt — Registered (Public) | ~$238T | — |
+| Debt — 144A | ~$56T | — |
+| Debt — Private Placement | ~$47T | — |
+| M&A (completed) | ~$72T | — |
+| SEO (Follow-on Equity) | ~$19T | — |
+| IPO | ~$10T | — |
+
+**144A share of debt**: ~10% in 2000 → ~18.5% by $ in 2024 (SDC). FISD shows similar trend for corporate bonds specifically.
 
 **Practice area implication**: In a typical year, capital markets lawyers do far more SEO work than IPO work. 144A debt dwarfs both in dollar volume. IPOs get the press; SEOs and 144A are the volume business.

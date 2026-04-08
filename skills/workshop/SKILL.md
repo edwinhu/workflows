@@ -468,7 +468,7 @@ This applies to EVERY list in EVERY slide. No exceptions.
 **Heading hierarchy:**
 - `=` — Section (Part separator, e.g., `= Motivation & Background`)
 - `==` — Subsection (topic group, e.g., `== The Rise of Proxy Advisors`)
-- `===` — Slide title (inside `#slide[]`, e.g., `=== Proxy advisors emerged to fill this gap.`)
+- `===` — Slide title as a **takeaway sentence** (inside `#slide[]`, e.g., `=== Proxy advisors emerged to fill this gap.`). If the subtitle states the takeaway, do NOT add a conclusion bullet restating the same point — the subtitle already carries it. Body bullets should add new information (evidence, examples, applications).
 
 **Slide structure:**
 ```typ
@@ -595,7 +595,7 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 - [ ] `qr: none` present in config-info
 - [ ] No cetz-plot imports
 - [ ] Heading hierarchy: =/==/===
-- [ ] No subtitle-body echo (=== title not repeated as first body line)
+- [ ] No subtitle-body echo (=== subtitle not repeated as first body line OR conclusion bullet)
 - [ ] Tables have `inset: 10pt` minimum
 - [ ] Images wrapped in `#align(center)`
 - [ ] No hardcoded calculations (use `calc` module)
@@ -778,7 +778,7 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 - [ ] No cetz-plot imports
 - [ ] No bullet spacing violations (top-level or sub-bullet)
 - [ ] No fake sub-bullets (`--` as marker)
-- [ ] No subtitle-body echoes
+- [ ] No subtitle-body echoes (first line or conclusion bullet)
 - [ ] No uncentered images
 - [ ] Table insets >= 10pt
 - [ ] No smart apostrophe issues (`)'s` / `]'s`)

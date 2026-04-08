@@ -222,6 +222,22 @@ Proceed to write PLAN.md for the entire scope (step 5 below).
 - Separate features = clean PRs, incremental progress, easier reviews
 - After first feature PR merges, come back and tackle next feature
 
+### 4b. Prose Section Audit (MANDATORY)
+
+**Before writing PLAN.md, scan ALL sections of SPEC.md for behavioral statements that lack CATEGORY-NN IDs.**
+
+Check these sections specifically:
+- Design Decisions
+- Discovered Protocol
+- Clarified Requirements
+- Any other prose sections outside the Requirements table
+
+Any prose that describes an implementable feature, user-facing behavior, protocol handling, or UI element MUST have a corresponding CATEGORY-NN ID in the Requirements table.
+
+**If any implementable feature lacks an ID → STOP. Add it to the Requirements table before writing PLAN.md.**
+
+Un-ID'd requirements in prose are invisible to PLAN.md task mapping, VALIDATION.md coverage, and dev-verify tracing. They will be silently dropped from the entire implementation.
+
 ### 5. Write PLAN.md
 
 After user chooses approach AND confirms scope, write `.planning/PLAN.md`:
@@ -317,6 +333,8 @@ Complete all steps before starting implementation:
 5. DECOMPOSE → Ask "One feature or multiple?" (CRITICAL)
    └─ If multiple → List features, ask which first, write BACKLOG.md
 6. WAIT → Do NOT proceed until user responds
+6b. PROSE AUDIT → Scan ALL SPEC.md prose sections for un-ID'd behavioral requirements (MANDATORY)
+   └─ If found → STOP. Add CATEGORY-NN IDs to Requirements table before proceeding.
 7. DOCUMENT → Write PLAN.md with Testing Strategy section FILLED
 8. VERIFY PLAN → Check PLAN.md Testing Strategy table has all boxes checked
    └─ If any unchecked → STOP. Fill them before proceeding.
@@ -326,7 +344,7 @@ Complete all steps before starting implementation:
 12. GATE → Only start /dev-implement after all approvals
 ```
 
-**Mandatory steps (NEVER skip):** VERIFY TESTING, DECOMPOSE, VERIFY PLAN, WAIT, WORKSPACE, and GATE.
+**Mandatory steps (NEVER skip):** VERIFY TESTING, DECOMPOSE, PROSE AUDIT, VERIFY PLAN, WAIT, WORKSPACE, and GATE.
 
 ### Testing Strategy Verification (Step 2 & 8)
 
@@ -405,6 +423,7 @@ Recognize these thoughts as red flags—they signal attempts to bypass the user 
 | Skip trade-offs | You're making decision for user | Explain pros/cons clearly |
 | Start implementing | You don't have approval yet | Wait for explicit "Yes" |
 | Assume recommendation accepted | You're guessing at user preference | Ask and wait for answer |
+| Write PLAN.md without checking SPEC.md prose sections for un-ID'd requirements | Behavioral features in Design Decisions, Discovered Protocol, or Clarified Requirements will be silently dropped from the entire traceability chain | Run Prose Section Audit (step 4b) first |
 
 ## Output
 
