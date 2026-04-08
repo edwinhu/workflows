@@ -1,8 +1,14 @@
 ---
 name: visual-verify
-version: 2.4
+version: 2.5
 description: "This skill should be used when the user asks to 'verify visual output', 'check how it looks', 'render and review', 'visual verify', 'check the slide', 'does this look right', or when any task produces rendered visual output (slides, charts, documents, UI). Starts a render-vision-fix loop using Gemini vision."
 user-invocable: false
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/find-slide-page-inject.py"
 ---
 
 **Announce:** "I'm using visual-verify to set up a render-vision-fix loop."
