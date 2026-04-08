@@ -12,6 +12,8 @@ Fires on: Bash tool calls containing "tinymist compile" + a slides/*.typ target.
 No-ops silently on: anything else.
 """
 
+from __future__ import annotations
+
 import glob
 import json
 import os
