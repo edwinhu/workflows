@@ -153,10 +153,54 @@ nyse_sz = nyse.groupby('jdate')['me'].median()
 nyse_bm = nyse.groupby('jdate')['beme'].describe(percentiles=[0.3, 0.7])
 ```
 
+## Market Index Tables
+
+| Table | Description |
+|-------|-------------|
+| `crsp.msi` | Monthly market index (vwretd, ewretd) |
+| `crsp.dsi` | Daily market index |
+
+### Annual Stock Performance (Market-Adjusted)
+
+```python
+# Log returns, calendar year, require ≥10 months
+merged["log_ret"] = np.log(1 + merged["ret"])
+merged["log_vwretd"] = np.log(1 + merged["vwretd"])
+
+annual = merged.groupby(["permno", "year"]).agg(
+    firm_log_ret=("log_ret", lambda x: x.sum() if x.notna().sum() >= 10 else np.nan),
+    idx_log_ret=("log_vwretd", lambda x: x.sum() if x.notna().sum() >= 10 else np.nan),
+)
+stock_performance = firm_log_ret - idx_log_ret  # market-adjusted
+```
+
+### 60-Month Rolling Volatility
+
+```python
+# Rolling std of monthly returns, annualized
+group["vol_monthly"] = group["ret"].rolling(window=60, min_periods=24).std()
+volatility = vol_monthly * np.sqrt(12)
+# Take December value for each permno-year
+```
+
+**Lookback**: To compute volatility starting in year Y, pull monthly data from Y-5.
+
+### Year-End Market Cap
+
+```python
+mktcap = abs(prc) * shrout  # in $thousands (shrout is in thousands)
+# Use December observation
+```
+
 ## Common Gotchas
 
 1. **Negative prices** - Absolute value needed: `abs(prc)`
 2. **Delisting returns** - CIZ format includes in time series (no separate adjustment)
-3. **Link dates** - Always check `linkdt` and `linkenddt` bounds
+3. **Link dates** - Always check `linkdt` and `linkenddt` bounds; `linkenddt` can be NULL (still active)
 4. **Primary links** - Use `linkprim IN ('P', 'C')` for primary links only
 5. **Share classes** - Aggregate to PERMCO for company-level market cap
+6. **Lookback for volatility** — if your sample starts 1996, pull returns from 1991 for 60-month window
+7. **December selection** — for annual variables (vol, mktcap), use December month-end obs
+8. **`ret` includes dividends** — this is total return, not price return
+9. **`shrout` units** — thousands of shares, not raw shares
+10. **Duplicate CCM links** — some gvkey-fyear pairs match multiple permnos; deduplicate (keep first or largest)

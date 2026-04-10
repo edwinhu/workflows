@@ -336,13 +336,60 @@ def get_bank_data(pool, gvkey: str, start_date: str):
         return cursor.fetchall()
 ```
 
+## Common Derived Variables
+
+```python
+tobins_q = (csho * prcc_f + at - ceq) / at    # where at > 0
+roa = ib / at                                   # where at > 0
+log_sales = np.log(sale)                        # where sale > 0
+leverage = (dltt + dlc) / at
+cusip6 = cusip[:6]                              # for linking to CRSP/ISS
+```
+
+## Business Segments
+
+#### compseg.seg_annfund
+Business segment data (annual, one row per segment per firm-year).
+
+```sql
+SELECT gvkey, EXTRACT(YEAR FROM datadate)::int AS fyear,
+       COUNT(*) AS num_segments
+FROM compseg.seg_annfund
+WHERE stype = 'BUSSEG'
+GROUP BY gvkey, EXTRACT(YEAR FROM datadate)::int
+```
+
+Firms not in `seg_annfund` are single-segment — fill missing with 1.
+
+## SIC Code Fallback
+
+`sich` in funda can be NULL (~5-10% missing). Fallback to `comp.company.sic` (static, less precise):
+
+```python
+company = pd.read_sql("SELECT gvkey, sic FROM comp.company", conn)
+df["sich"] = df["sich"].fillna(company_sic_lookup)
+```
+
+## Winsorization
+
+Standard practice: winsorize `tobins_q` and `roa` at 1st/99th percentiles.
+
+```python
+from scipy.stats.mstats import winsorize
+vals = winsorize(df["tobins_q"].dropna(), limits=[0.01, 0.01])
+```
+
 ## Data Quality Notes
 
 1. **Missing values**: Many fields are NULL; always use `NULLIF()` in divisions
 2. **Restatements**: Use `datadate` for point-in-time; `rdq` shows when reported
 3. **Currency**: North American data in USD; global in local currency
-4. **Fiscal years**: `fyear` is fiscal year; `datadate` is fiscal year end
+4. **Fiscal years**: `fyear` is fiscal year; `datadate` is fiscal year end — ~70% of firms have Dec fiscal year-end, but many don't
 5. **Industry codes**: SIC being replaced by NAICS; check both
+6. **`at` can be zero or negative** — filter `at > 0` before computing ratios
+7. **`cusip` is historical** — changes with M&A; use `gvkey` as the stable identifier
+8. **`sich` nulls** — ~5-10% missing, use `comp.company.sic` as fallback
+9. **Segment count** — absent firms in seg_annfund are single-segment, not missing
 
 ## Linking Tables
 

@@ -191,14 +191,16 @@ See `marimo-pair/reference/finding-marimo.md` for the full decision tree. Quick 
 
 ```bash
 # pixi project (our standard)
-pixi run marimo edit notebook.py --no-token
+pixi run marimo edit notebook.py --no-token --watch
 
 # uv project
-uv run marimo edit notebook.py --no-token
+uv run marimo edit notebook.py --no-token --watch
 
 # standalone / sandbox
-uvx marimo@latest edit notebook.py --no-token --sandbox
+uvx marimo@latest edit notebook.py --no-token --watch --sandbox
 ```
+
+**Always use `--watch`** so the server detects file edits and reloads automatically. Without it, file changes are invisible to the browser and the user sees stale content.
 
 **Always start as a background task** (`run_in_background`) so the server doesn't block the conversation. Do NOT use `--headless` unless asked — let marimo open the browser.
 
