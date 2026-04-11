@@ -234,13 +234,55 @@ qsas -set year "$year" script.sas    # Often fails silently
 
 ### Log Management
 
-```bash
-# GOOD — per-year log files avoid lock contention
-#$ -o logs/etl_$TASK_ID.log
+SGE jobs produce **three separate output streams** that must all be captured to `logs/`:
 
-# BAD — single log file causes write contention across parallel tasks
-#$ -o logs/etl.log
+| Stream | Source | How to capture |
+|--------|--------|---------------|
+| **SGE stdout/stderr** | Shell script `echo`, error messages, SAS startup errors | `#$ -o logs/job.log -j y` or `qsub -o logs/ -j y` |
+| **SAS log** | SAS `NOTE:`, `WARNING:`, `ERROR:`, macro resolution, step timings | `sas -log logs/script.log` |
+| **SAS listing** | `PROC PRINT`, `PROC SQL` output, `PROC CONTENTS` | `sas -print logs/script.lst` |
+
+**If you only set `#$ -o`, you only get SGE output.** SAS writes its log and listing to the working directory by default (or `$HOME` without `-cwd`) — not to SGE's stdout. You must explicitly route all three.
+
+```bash
+#!/bin/bash
+#$ -cwd
+#$ -j y                     # merge stderr into stdout
+
+SCRIPT="$1"
+SYSPARM="${2:-}"
+mkdir -p logs
+
+BASENAME=$(basename "$SCRIPT" .sas)
+LOGNAME="logs/${BASENAME}"
+[ -n "$SYSPARM" ] && LOGNAME="logs/${BASENAME}-${SYSPARM}"
+
+# Route SAS log + listing to logs/ (prevents lock contention for parallel jobs)
+if [ -n "$SYSPARM" ]; then
+    sas -sysparm "$SYSPARM" -log "${LOGNAME}.log" -print "${LOGNAME}.lst" "$SCRIPT"
+else
+    sas -log "${LOGNAME}.log" -print "${LOGNAME}.lst" "$SCRIPT"
+fi
 ```
+
+For Python jobs, stdout/stderr go to SGE output directly — no separate routing needed:
+
+```bash
+#!/bin/bash
+#$ -cwd
+#$ -j y
+mkdir -p logs
+# -u for unbuffered output so SGE log updates in real time
+pixi run python -u "$@"
+```
+
+**Key rules:**
+- **Per-job log files** — never share a log file across parallel jobs (SAS write-locks its log)
+- **`mkdir -p logs`** in the wrapper — job may be first to run on a fresh checkout
+- **`-j y`** — always merge stderr into stdout; split streams are harder to correlate
+- **Include sysparm in log name** — `logs/tfn-2019-2019.log` not `logs/tfn.log`
+- **SAS log buffering** — SAS flushes logs in 64K blocks, not line-by-line; don't expect real-time updates like Python `-u`
+- **Check SGE output too** — SAS startup failures (bad `/sastemp` permissions, missing libraries) appear in the SGE log, not the SAS log
 
 ### Memory Allocation
 
