@@ -290,11 +290,21 @@ project/
 ```
 
 ```bash
-# close_trade.sh — minimal wrapper
+# close_trade.sh — SAS wrapper
 #!/bin/bash
 #$ -cwd
 sas -sysparm $1-$2 close_trade.sas -log logs/ctrade-$1-$2.log -print logs/ctrade-$1-$2.lst
 ```
+
+```bash
+# run_python.sh — Python wrapper using project-local pixi
+#!/bin/bash
+#$ -cwd
+# -cwd ensures pixi resolves from the project's pixi.toml
+pixi run python -u "$@"
+```
+
+**Why `#$ -cwd` matters:** Without it, SGE jobs run from `$HOME`. `pixi run` won't find `pixi.toml`, relative paths break, and `autoexec.sas` may not load. With `-cwd`, the job inherits the project directory — pixi environments, SAS scripts, and log directories all resolve correctly.
 
 ### Multi-Dimensional Sysparm
 
@@ -570,6 +580,6 @@ options nomprint nomlogic nosymbolgen;
 6. **Use `/scratch` for inter-job data, not `/sastemp`.** `/sastemp` is per-node local disk — invisible to jobs on other grid nodes. Only `/scratch` (NFS-shared) works for passing data between SGE jobs.
 7. **Benchmark single-year first** before submitting full array. Check log for errors and timing.
 8. **One script per logical step.** Don't chain unrelated operations in a single SAS program. Use paired `.sas`/`.sh` files.
-9. **Use shell wrappers for qsub.** Always use a `.sh` script with `#$ -cwd` rather than `qsub -b y sas script.sas` — the latter may not find the SAS file or load autoexec correctly.
+9. **Use shell wrappers for qsub with `#$ -cwd`.** Always use a `.sh` script with `#$ -cwd` rather than `qsub -b y sas script.sas`. The `-cwd` directive is critical: it sets the working directory to the project root, so the job can find project-local `pixi` environments (`pixi run python script.py`), relative script paths, and `autoexec.sas`. Without it, jobs run from `$HOME` and can't resolve any project-local paths.
 10. **Use SGE array jobs for uniform tasks.** `#$ -t 2003-2024` is cleaner than a manual qsub loop when each task is the same script with a different year. Use manual loops only when tasks have dependencies or non-uniform parameters.
 11. **Stack after parallel, then export.** Array jobs write per-year datasets to `/scratch`. A final hold_jid step concatenates with `SET scratch.prefix_:` and exports to CSV/parquet.
