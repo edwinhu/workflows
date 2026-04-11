@@ -306,9 +306,18 @@ grep -E "(ERROR|WARNING|real time)" logs/test_2020.log
 # Step 3: If clean, submit full array
 qsub scripts/etl_array.sh
 
-# Step 4: Monitor
+# Step 4: Monitor with streaming events (no polling)
+Monitor(
+  description="SGE job progress for etl_array",
+  timeout_ms=600000, persistent=false,
+  command="while qstat -u $USER 2>/dev/null | grep -q .; do qstat -u $USER | grep -v '\\-\\-' | tail -n +2; sleep 30; done && echo 'ALL JOBS COMPLETE'"
+)
+
+# Or simple one-shot check:
 qstat -u $USER
 ```
+
+**Prefer Monitor over manual `qstat` polling.** Monitor emits events as jobs transition states — you keep working and get notified when jobs finish. Use `persistent: true` for multi-hour pipelines.
 
 ---
 

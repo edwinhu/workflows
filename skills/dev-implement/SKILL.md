@@ -237,6 +237,28 @@ Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its inst
 
 **Why:** A 10-task implementation phase with 20% context remaining produces garbage for the last 5 tasks. Better to handoff cleanly and resume fresh than to push through with degraded output.
 
+### Long-Running Task Monitoring
+
+Use the **Monitor tool** for builds, test suites, or scripts that take >30 seconds. Monitor streams stdout events without blocking — you keep working and get notified on completion.
+
+```
+# Watch a test suite run
+Monitor(
+  description="test suite progress",
+  timeout_ms=300000, persistent=false,
+  command="npm test 2>&1 | grep --line-buffered -E '(PASS|FAIL|✓|✗|error|complete)'"
+)
+
+# Watch a build
+Monitor(
+  description="build progress",
+  timeout_ms=300000, persistent=false,
+  command="npm run build 2>&1 | grep --line-buffered -E '(error|warning|built|done|fail)'"
+)
+```
+
+**When NOT to use Monitor:** For quick commands (<30s), use Bash directly. For one-shot "run and wait," use `Bash(run_in_background=true)`. Monitor is for streaming progress from longer operations.
+
 ## The Process
 
 ```

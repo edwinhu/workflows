@@ -186,3 +186,55 @@ Load the appropriate scale-up reference based on the batch operation type:
 - [ ] Each stage gate passed before proceeding to next
 - [ ] Domain-specific reference loaded for the operation type
 - [ ] Cost extrapolation documented in LEARNINGS.md before full batch
+
+---
+
+## Long-Running Task Monitoring
+
+**Use the Monitor tool for any ETL step that takes >30 seconds.** Monitor streams events without blocking the conversation — you keep working and get notified on completion.
+
+### When to Use Monitor vs run_in_background
+
+| Scenario | Tool | Why |
+|----------|------|-----|
+| Script runs to completion, you need the exit code | `Bash(run_in_background=true)` | One-shot notification on exit |
+| Script produces streaming progress you want to see | `Monitor` | Each stdout line is an event |
+| Watching external job queue (SGE, batch API) | `Monitor` | Poll loop emits state transitions |
+| Multiple independent scripts in parallel | `Bash(run_in_background=true)` × N | Each notifies independently |
+
+### Patterns
+
+**Watch a long-running Python ETL script:**
+```
+Monitor(
+  description="ETL: merge_panel.py progress",
+  timeout_ms=600000, persistent=false,
+  command="python3 -u src/merge_panel.py 2>&1 | grep --line-buffered -E '(rows|shape|complete|error|warning)'"
+)
+```
+
+**Watch SGE job queue (WRDS):**
+```
+Monitor(
+  description="SGE jobs for pipeline",
+  persistent=true, timeout_ms=3600000,
+  command="while qstat -u $USER 2>/dev/null | grep -q .; do qstat -u $USER | tail -n +3; sleep 30; done && echo 'ALL JOBS COMPLETE'"
+)
+```
+
+**Watch Gemini batch job:**
+```
+Monitor(
+  description="Gemini batch completion",
+  persistent=true, timeout_ms=3600000,
+  command="while true; do state=$(python3 -c \"import google.genai as genai; print(genai.batches.get(name='$JOB').state)\"); echo \"$state\"; [ \"$state\" = 'JOB_STATE_SUCCEEDED' ] || [ \"$state\" = 'JOB_STATE_FAILED' ] && break; sleep 60; done"
+)
+```
+
+### Key Rules
+
+- **Always use `grep --line-buffered`** in pipes — without it, pipe buffering delays events by minutes
+- **Use `-u` flag for Python** (`python3 -u`) to disable output buffering
+- **Filter stdout aggressively** — every line becomes a notification; don't pipe raw logs
+- **Set `persistent: true`** for jobs >10 minutes (SGE pipelines, batch APIs)
+- **Set reasonable `timeout_ms`** — 600000 (10 min) for local scripts, 3600000 (1 hr) for remote jobs

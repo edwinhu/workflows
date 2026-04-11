@@ -221,16 +221,19 @@ Task(
 ```
 
 **After launching agents:**
-- Continue to other work (don't wait)
-- Check status with `/tasks` command
-- Collect results with TaskOutput when ready
+- Continue to other work (don't wait) — you'll be notified when each completes
+- For agents running long ETL/profiling scripts, use Monitor to stream progress:
 
 ```
-# Collect profiling results
-TaskOutput(task_id="task-abc123", block=true, timeout=30000)
-TaskOutput(task_id="task-def456", block=true, timeout=30000)
-TaskOutput(task_id="task-ghi789", block=true, timeout=30000)
+# If a profiling agent runs a heavy script, monitor its progress
+Monitor(
+  description="Profile large dataset progress",
+  timeout_ms=600000, persistent=false,
+  command="tail -f /tmp/profile_dataset1.log 2>/dev/null | grep --line-buffered -E '(rows|shape|complete|error)'"
+)
 ```
+
+**Note:** Background agents already notify on completion. Use Monitor only when you need streaming progress from a specific long-running script within the agent's work.
 
 **Benefits:**
 - 3x faster profiling for 3 datasets

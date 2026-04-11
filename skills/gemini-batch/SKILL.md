@@ -172,16 +172,31 @@ job = client.batches.create(
 1. **Create JSONL** request file with prompts
 2. **Upload JSONL** to File API via `client.files.upload()`
 3. **Submit batch job** via `client.batches.create(src=uploaded.name)`
-4. **Poll for completion** (jobs expire after 24 hours)
+4. **Monitor for completion** — use Monitor tool (jobs expire after 24 hours)
 5. **Download results** from `job.dest.file_name`
 
 **Vertex AI:**
 1. **Upload files** to GCS bucket (us-central1 region required)
 2. **Create JSONL** request file with document URIs and prompts
 3. **Submit batch job** via `client.batches.create(src=..., dest=...)`
-4. **Poll for completion** (jobs expire after 24 hours)
+4. **Monitor for completion** — use Monitor tool (jobs expire after 24 hours)
 5. **Download and parse** results from GCS output URI
 6. **Handle failures** gracefully (partial failures are common)
+
+### Monitoring Batch Jobs with Monitor Tool
+
+After submitting a batch job, use Monitor instead of sleep-polling in Python:
+
+```
+Monitor(
+  description="Gemini batch job progress",
+  persistent=true,
+  timeout_ms=3600000,
+  command="while true; do python3 -c \"import google.genai as genai; j=genai.batches.get(name='$JOB_NAME'); print(f'{j.state} | {j.name}'); exit(0 if j.state in ('JOB_STATE_SUCCEEDED','JOB_STATE_FAILED','JOB_STATE_CANCELLED') else 1)\" && break; sleep 60; done"
+)
+```
+
+This frees the conversation to continue working while the batch runs. You get notified when the job completes or fails — no polling loop blocking your context.
 
 ## Key Gotchas (API Structure)
 
