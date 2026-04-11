@@ -413,8 +413,12 @@ options nomprint nomlogic nosymbolgen;
 
 ## Pipeline Design Principles
 
-1. **SAS = ETL only.** Merge, aggregate, export. Move all filtering and analysis to downstream notebooks (Python/R).
+1. **SAS should aggregate before handing off to Python.** If SAS outputs raw detail rows (millions per chunk), Python will OOM reading the SAS7BDAT files. Push CUSIP→PERMNO mapping, TSO joins, and final aggregation into SAS. Output the small analytical dataset, not intermediate holdings.
 2. **Export fund-year level counts**, not pre-aggregated rates. Maximizes downstream flexibility.
 3. **Parallelize by year** even when hash merge is fast. SGE array jobs are free parallelism.
-4. **Benchmark single-year first** before submitting full array. Check log for errors and timing.
-5. **One script per logical step.** Don't chain unrelated operations in a single SAS program.
+4. **Balance year ranges by row count, not equal width.** Financial data volume grows over time — profile `SELECT year, COUNT(*) GROUP BY year` before choosing splits. S12 went from ~4M/yr (2003-2016) to ~20-26M/yr (2018-2024). Recent years need 1 year each; early years can be 6-8 year ranges.
+5. **Avoid NFS contention on large SAS files.** Multiple parallel SAS jobs reading the same large NFS file (e.g., `tfn.s12` at 44GB) causes each to take ~40 min instead of ~5 min. Solution: read once via PostgreSQL (`PROC SQL; CONNECT TO POSTGRES`), write year-range partitions to `/scratch`, then parallel jobs read their own partition. See `split_s12.sas` in `examples/voting_ownership_pipeline/`.
+6. **Use `/scratch` for inter-job data, not `/sastemp`.** `/sastemp` is per-node local disk — invisible to jobs on other grid nodes. Only `/scratch` (NFS-shared) works for passing data between SGE jobs.
+7. **Benchmark single-year first** before submitting full array. Check log for errors and timing.
+8. **One script per logical step.** Don't chain unrelated operations in a single SAS program.
+9. **Use shell wrappers for qsub.** Always use a `.sh` script with `#$ -cwd` rather than `qsub -b y sas script.sas` — the latter may not find the SAS file or load autoexec correctly.

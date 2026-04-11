@@ -80,10 +80,29 @@ For each task in PLAN.md Parallelism Plan:
 - Process one at a time (user chose this deliberately)
 - Still print timing per step for future optimization
 
+### Shared-Source Contention Check (all parallel methods)
+Before parallelizing, check: **do all workers read the same large file/table?**
+
+If yes, parallel reads can be SLOWER than sequential due to I/O contention (NFS, shared disk, API rate limits). Observed: 7 parallel SAS jobs reading the same 44GB NFS file took ~40 min each instead of ~5 min solo.
+
+**Pattern: read once → partition → parallelize on partitions.**
+
+1. Add a single-reader pre-split step that reads the source once
+2. Write partitions (by year, key, etc.) to fast intermediate storage
+3. Parallel workers each read their own partition — zero contention
+
+Alternative read paths that avoid contention:
+- Database (PostgreSQL, etc.) handles concurrent reads natively
+- Object store APIs (S3) parallelize at the HTTP level
+- Local SSD vs shared NFS
+
+**When to skip:** If the source is small (<1GB), a database with good concurrency, or an API with high rate limits, contention is unlikely.
+
 ### Self-Check
 - [ ] Each parallelizable task uses the method specified in PLAN.md
 - [ ] Independent tasks are NOT run sequentially without justification
 - [ ] Parallel results are reconciled before downstream tasks
+- [ ] Shared-source contention risk assessed for parallel tasks
 ```
 
 ### Rationalization Table
@@ -93,6 +112,7 @@ For each task in PLAN.md Parallelism Plan:
 | "Sequential is simpler to debug" | The user already decided this is parallelizable. You're overriding their decision. | Follow the plan. Use the method they chose. |
 | "I'll parallelize after I get it working" | You won't. The pipeline runs once and moves on. | Parallelize now, as planned. |
 | "The overhead of spawning agents isn't worth it" | 20 years × 5 min = 100 min sequential vs ~10 min parallel. It's worth it. | Spawn the agents. |
+| "More parallel workers = faster" | If all workers read the same source, contention makes it slower. 7 jobs × 40 min > 1 job × 5 min. | Check for shared-source contention first. Pre-split if needed. |
 
 ---
 

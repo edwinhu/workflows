@@ -184,7 +184,8 @@ See **`references/sas-etl.md`** for complete patterns:
 | FJC Linking | `fjc_linking` | `wrds_civil_link`, `wrds_criminal_link` |
 | SDC New Issues (IPO/SEO/Debt) | `tr_sdc_ni` | `wrds_ni_details` — equity + debt offerings |
 | SDC Mergers & Acquisitions | `tr_sdc_ma` | `wrds_ma_details` — M&A transactions |
-| Thomson S12 (Mutual Fund Holdings) | `tfn` | `s12` — 13F/N-CSR fund holdings |
+| Thomson S12 (Mutual Fund Holdings) | `tfn` (SAS) / `tr_mutualfunds` (PG) | `s12` — 13F/N-CSR fund holdings |
+| Thomson S34 (13-F Institutional) | `tfn` (SAS) / `tr_13f` (PG) | `s34` — 13-F institutional holdings |
 | FISD / Mergent (Bonds) | `fisd_fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
 | PitchBook | `pitchbk_companies_deals`, `pitchbk_investors_funds_lps`, `pitchbk_fund_returns` | `deal`, `company`, `fund`, `wrds_fund_returns` — dealsize in USD millions |
 
@@ -277,6 +278,7 @@ Detailed query patterns and table documentation:
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
+- **`references/postgres-vs-sas.md`** - Decision guide: when to use PostgreSQL vs SAS for WRDS ETL (benchmarks, constraints, hybrid pattern)
 - **`references/fjc.md`** - FJC Integrated Database: civil/criminal case data, NOS codes, securities litigation queries, firm linking
 - **`references/sdc-issuances.md`** - SDC New Issues: IPOs, SEOs, 144A equity, debt offerings — schema discovery, cleaning filters, CRSP/Compustat linking
 - **`references/fisd-bonds.md`** - FISD/Mergent: corporate bond issuances, IG vs HY, 144A vs registered, rating classification, TRACE linking
@@ -295,6 +297,7 @@ Working code from real projects:
 - **`examples/sdc_ma_eda.ipynb`** - SDC M&A: annual deal counts, PE/LBO vs strategic, public vs private target trends
 - **`examples/fund_formation_eda.ipynb`** - Fund formation: Form D 3C.1/3C.7 counts, EDGAR N-2 closed-end fund IPOs, Form ADV RIA registrations
 - **`examples/pitchbook_eda.ipynb`** - PitchBook: PE deal activity, VC rounds by stage, fund formation by vintage, IRR/TVPI by strategy
+- **`examples/voting_ownership_pipeline/`** - Self-contained hybrid SAS+Python pipeline: ISS votes, 13-F inst. ownership, MF holdings via MFLINKS, merged panel. Canonical example of PostgreSQL vs SAS decision-making on WRDS. See `README.md` for architecture and usage.
 
 ### Scripts
 

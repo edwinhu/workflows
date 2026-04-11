@@ -257,7 +257,8 @@ TaskOutput(task_id="task-ghi789", block=true, timeout=30000)
 - Multiple data sources requiring joins/merges
 - Data sourced from remote databases (WRDS, SQL servers, APIs)
 
-**If triggered, assess these three dimensions before creating the task breakdown:**
+**If triggered, assess these dimensions before creating the task breakdown.**
+**If WRDS data is involved**, also load the PostgreSQL vs SAS decision guide: Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/postgres-vs-sas.md` — use the decision flowchart to assign each ETL task to the right engine.
 
 #### A. Filter Push-Down Strategy
 
@@ -301,6 +302,10 @@ AskUserQuestion(questions=[{
 ```
 
 **Document in PLAN.md:** For each task, note if it can be parallelized, on what dimension, and the chosen execution method.
+
+**When splitting by time ranges:** Profile row counts per period BEFORE choosing splits. Data volume often grows exponentially — equal-width year ranges produce wildly unequal workloads. Query `SELECT year, COUNT(*) FROM table GROUP BY year` first, then split so each chunk has roughly equal row counts.
+
+**Shared-source contention check:** If parallel workers all read the same large file (NFS, shared disk), they may contend on I/O and run SLOWER than sequential. Pattern: add a single-reader pre-split step that reads the source once, writes partitions to intermediate storage, then parallel workers each read their own partition. See `etl-enforcement.md` § Parallelism for the full checklist.
 
 #### C. Intermediate Result Caching
 
@@ -377,10 +382,23 @@ AskUserQuestion(questions=[{
 | source2 | 50K | Application (pandas) | — | Small enough for full load |
 
 ### Parallelism Plan
-| Task | Parallelizable? | Dimension | Method |
-|------|----------------|-----------|--------|
-| Task 1 | Yes | By year (2003-2023) | Background Task agents / SGE array |
-| Task 2 | No | — | Sequential (depends on Task 1 output) |
+| Task | Parallelizable? | Dimension | Method | Contention Risk |
+|------|----------------|-----------|--------|-----------------|
+| Task 1 | Yes | By year (2003-2023) | Background Task agents / SGE array | See Split Plan |
+| Task 2 | No | — | Sequential (depends on Task 1 output) | N/A |
+
+### Split Plan (if parallel tasks read same source)
+<!-- Profile row counts first: SELECT year, COUNT(*) FROM table GROUP BY year -->
+<!-- Then balance by row count, not year count -->
+| Range | Rows | Size (est.) | Rationale |
+|-------|------|-------------|-----------|
+| 2003-2010 | 34M | 5.4GB | 8 years, low volume (~4M/yr) |
+| 2011-2016 | 27M | 4.3GB | 6 years, moderate growth |
+| 2017-2018 | 30M | 4.7GB | 2 years, volume explosion |
+| 2019 | 22M | 3.6GB | 1 year, high volume |
+| ... | ... | ... | 1 year each for high-volume years |
+
+**Contention mitigation:** If source is large file on shared storage (NFS, network drive), add pre-split step that reads once via alternative path (database, API) and writes partitions to fast intermediate storage.
 
 ### Data Flow
 source1.csv → [Task 1: Clean] → clean_source1.parquet → [Task 2: Merge]
@@ -395,6 +413,8 @@ source2.csv → [Task 1: Clean] → clean_source2.parquet ↗
 |--------|---------|------------|
 | "I'll just read the whole table, it's easier" | 50M rows × 200 columns = OOM crash or 30-minute wait | Filter at source with SQL WHERE |
 | "Sequential processing is simpler to write" | 20 years × 5 minutes = 100 minutes vs 5 minutes parallel | Use background agents or SGE arrays |
+| "More parallel workers = always faster" | If all workers read the same large source, I/O contention makes it slower (7×40 min > 1×5 min). | Profile source size; if >1GB shared file, add a pre-split step |
+| "Equal year ranges are fair splits" | Data volume often grows 5-10× over a decade. 2003-2006 may be 16M rows while 2020-2023 is 100M. | Profile row counts per year FIRST, then split by row count |
 | "I'll re-read the source in each task" | Re-parsing 5GB CSV five times wastes hours | Save intermediate parquet after first read |
 | "Filtering in pandas is more flexible" | Pandas loads ALL rows before filtering — you've already paid the cost | Push coarse filters to database, fine filters to pandas |
 | "The data isn't that big" | You just profiled it. Check the row count. If >1M, it IS that big. | Follow the ETL strategy, don't guess |
@@ -427,11 +447,12 @@ AskUserQuestion(questions=[{
 **If SAS or Mixed is selected:**
 1. Record `Implementation Language: SAS` (or `Mixed: SAS ETL + Python analysis`) in PLAN.md header
 2. Load WRDS SAS enforcement (discover path first):Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/sas-etl.md` and follow its instructions.
-3. All SAS tasks in the plan MUST include performance annotations:
+3. Load PostgreSQL vs SAS decision guide: Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/postgres-vs-sas.md`. Use this to assign each ETL task to PostgreSQL or SAS based on the decision flowchart. Document the choice and rationale per task in PLAN.md.
+4. All SAS tasks in the plan MUST include performance annotations:
    - **Merge strategy:** hash or sort-merge (with justification if sort-merge)
    - **WHERE pattern:** range-based date literals (document that no function-wrapped filters are used)
    - **Parallelism:** SGE array or sequential (with justification if sequential)
-4. Add `## SAS Performance Constraints` section to PLAN.md (see template below)
+5. Add `## SAS Performance Constraints` section to PLAN.md (see template below)
 
 ### 6. Create Task Breakdown
 

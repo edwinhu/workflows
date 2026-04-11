@@ -19,7 +19,7 @@ WRDS PostgreSQL reference for 13-F institutional holdings (S34) and mutual fund 
 
 | Table | Description | Grain |
 |-------|-------------|-------|
-| `tfn.s12` | Fund-level stock holdings | fundno-rdate-cusip |
+| `tfn.s12` (SAS) / `tr_mutualfunds.s12` (PG) | Fund-level stock holdings | fundno-rdate-cusip |
 
 **s12 fields:** `rdate`, `fdate`, `fundno`, `cusip`, `shares`, `fundname`
 
@@ -147,6 +147,43 @@ merged = pd.merge_asof(
     by='permno', direction='backward'
 )
 ```
+
+## ETL Performance Notes
+
+### 13-F Institutional Ownership (S34)
+
+**Recommended approach:** PostgreSQL with per-year server-side CTEs. Each year's CTE joins s34type1 + s34type3 + CUSIP mapping and aggregates to permno-quarter, returning ~30–50K rows. Total: 674K rows in 5.2 minutes for 2002–2024.
+
+**Key settings:** `SET work_mem = '256MB'` and `SET statement_timeout = '3600s'` before querying.
+
+**Anti-pattern:** Downloading raw s34type3 holdings locally — recent years (2020+) have millions of rows and can OOM the compute node.
+
+### Mutual Fund Holdings (S12)
+
+**Recommended approach:** SAS with SGE parallelism + PostgreSQL for bulk reads. The MFLINKS join chain (fundno → wficn → crsp_fundno → portnomap) creates large intermediates that PostgreSQL cannot store (read-only, no temp tables), so SAS handles the ETL. But the initial S12 read uses PostgreSQL to avoid NFS contention.
+
+**Working pipeline:** `examples/voting_ownership_pipeline/` in the WRDS skill — see `README.md` for architecture, `run_pipeline.sh` for orchestration.
+
+**Pipeline pattern:**
+1. SAS: Build mfl2/mfl3 prereqs (`build_mflinks.sas`, ~1 min)
+2. SAS: Read S12 via PostgreSQL, write year-range partitions to /scratch (`split_s12.sas`, ~15 min)
+3. SAS: 9 parallel SGE jobs reading /scratch partitions (`tfn_holdings_parallel.sas`), each doing MFLINKS join + CUSIP→PERMNO + TSO + permno-quarter aggregation → small `mf_own_YYYY_YYYY.sas7bdat`
+4. SAS: Merge all outputs (`merge_panel.sas`)
+
+**NFS contention:** `tfn.s12` is 44GB on NFS. Running 7+ parallel SAS jobs reading it causes each to take ~40 min instead of ~5 min. The `split_s12.sas` step reads via WRDS PostgreSQL (`tr_mutualfunds.s12`) — a single sequential read through the database, no NFS contention. Partitions total ~40GB on /scratch (check quota before running).
+
+**Year range balancing:** S12 data exploded from ~4M rows/year (2003-2016) to ~20-26M rows/year (2018-2024). Year ranges must be balanced by row count, not year count: 2003-2010 (34M), 2011-2016 (27M), 2017-2018 (30M), then 1 year each for 2019-2024 (~22-27M each).
+
+**PostgreSQL schema mapping:** SAS `tfn.s12` → PostgreSQL `tr_mutualfunds.s12`. SAS `tfn.s34` → PostgreSQL `tr_13f.s34`. Connection via `PROC SQL; CONNECT TO POSTGRES (server='wrds-pgdata-ident-w.wharton.private' port=9737 ...)`. Credentials in `~/.pgpass`.
+
+**Critical lesson:** SAS must aggregate to permno-quarter before outputting. If SAS outputs raw fund-level holdings (millions of rows, 1–12GB per chunk), Python will OOM reading the SAS7BDAT files.
+
+**Why PostgreSQL fails for the full S12 ETL:**
+- Read-only: cannot `CREATE TEMP TABLE` for the MFLINKS chain
+- Full join query (s12 × mflink2 × mflink1 × portnomap) is too complex for the query planner
+- But PostgreSQL works well for the initial bulk read with server-side WHERE filtering
+
+See `postgres-vs-sas.md` for the full decision framework.
 
 ## Common Gotchas
 

@@ -161,6 +161,12 @@ Director elections use these ISS agenda item codes:
 
 `M0201`, `M0208`, `M0214`, `M0220`, `M0221`, `M0224`, `M0225`, `M0226`, `M0228`, `M0233`, `M0249`, `M0250`, `M0271`, `M0275`, `M0276`, `M0296`, `M0297`, `M0299`
 
+## ETL Performance Notes
+
+**Recommended approach:** PostgreSQL with server-side filtering. The full `vavoteresults` table for 2003–2024 is ~834K rows and downloads in ~13.5 seconds with a simple `WHERE meetingdate BETWEEN ...` filter. No chunking or SAS needed.
+
+**Use `python3 -u`** when running via `qsub` on WRDS — Python stdout is fully buffered when redirected to a log file, hiding all progress output until the script finishes.
+
 ## Common Gotchas
 
 1. **`base` field determines denominator** -- there are multiple base types; use conditional logic, not a single formula
