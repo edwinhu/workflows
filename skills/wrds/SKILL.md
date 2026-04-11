@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", "FJC database", "federal court cases", "securities litigation data", "Form D data", "Reg D data", "private placements data", "private offering data", "Regulation D filings", "IPO data", "SEO data", "new issues", "equity offerings", "SDC new issues", "SDC Platinum", "SDC M&A", "mergers acquisitions data", "M&A database", "FISD", "bond issuances", "144A offerings", "high yield bonds", "investment grade bonds", "Mergent bond data", "fund formation data", "hedge fund registrations", "private equity fund data", "closed-end fund filings", "Form ADV data", "investment adviser registrations", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
+description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", "TAQ data", "trades and quotes", "NBBO", "intraday data", "millisecond data", "closing auction", "VWAP TAQ", "order imbalance", "FJC database", "federal court cases", "securities litigation data", "Form D data", "Reg D data", "private placements data", "private offering data", "Regulation D filings", "IPO data", "SEO data", "new issues", "equity offerings", "SDC new issues", "SDC Platinum", "SDC M&A", "mergers acquisitions data", "M&A database", "FISD", "bond issuances", "144A offerings", "high yield bonds", "investment grade bonds", "Mergent bond data", "fund formation data", "hedge fund registrations", "private equity fund data", "closed-end fund filings", "Form ADV data", "investment adviser registrations", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
 user-invocable: false
 ---
 
@@ -184,6 +184,8 @@ See **`references/sas-etl.md`** for complete patterns:
 | FJC Linking | `fjc_linking` | `wrds_civil_link`, `wrds_criminal_link` |
 | SDC New Issues (IPO/SEO/Debt) | `tr_sdc_ni` | `wrds_ni_details` — equity + debt offerings |
 | SDC Mergers & Acquisitions | `tr_sdc_ma` | `wrds_ma_details` — M&A transactions |
+| TAQ Legacy | `taq` | `mast_YYYY`, `wrds_iid_YYYY` — second-level (1993–2006) |
+| TAQ Millisecond | `taqmsec` | `mastm_YYYY`, `wrds_iid_YYYY`, `ctm_YYYYMM`, `complete_nbbo_YYYYMMDD` |
 | Thomson S12 (Mutual Fund Holdings) | `tfn` (SAS) / `tr_mutualfunds` (PG) | `s12` — 13F/N-CSR fund holdings |
 | Thomson S34 (13-F Institutional) | `tfn` (SAS) / `tr_13f` (PG) | `s34` — 13-F institutional holdings |
 | FISD / Mergent (Bonds) | `fisd_fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
@@ -277,6 +279,7 @@ Detailed query patterns and table documentation:
 - **`references/formd.md`** - Form D / Reg D: denormalization gotcha, dedup pattern, exemption codes, post-2020 gap, SEC TSV download
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
+- **`references/taq.md`** - TAQ: master files, IID, raw tick processing (NBBO, VWAP, closing auctions), CRSP–TAQ merge, era transition (legacy vs millisecond)
 - **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
 - **`references/postgres-vs-sas.md`** - Decision guide: when to use PostgreSQL vs SAS for WRDS ETL (benchmarks, constraints, hybrid pattern)
 - **`references/fjc.md`** - FJC Integrated Database: civil/criminal case data, NOS codes, securities litigation queries, firm linking

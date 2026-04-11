@@ -455,27 +455,16 @@ data raw;
 run;
 ```
 
-### TAQ Millisecond Data Pattern
+### TAQ Data Patterns
 
-TAQ data is partitioned by year-month with separate master and trade files:
-
-```sas
-/* Combine master files across year boundary for symbol continuity */
-data mastm_&yyyy.;
-    set taq.mast_%sysevalf(&yyyy.-1):
-        taq.mast_&yyyy.:
-        taq.mast_%sysevalf(&yyyy.+1):;
-    SYM_ROOT = scan(SYMBOL, 1, ' ');
-    SYM_SUFFIX = scan(SYMBOL, 2, ' ');
-run;
-
-/* Trade files use month suffix */
-data trades / view=trades;
-    set taqmsec.ctm_&yyyy.&mm.:;
-run;
-```
-
-**Note:** TAQ master files must span year boundaries (prior + current + next year) to handle symbols that list/delist near year-end.
+See **`references/taq.md`** for comprehensive TAQ reference including:
+- Master file loading (legacy vs millisecond, ±1 year boundary)
+- CRSP–TAQ merge via CUSIP
+- WRDS Intraday Indicators (IID) variable mapping
+- Raw tick processing (NBBO midpoints, VWAP, closing auctions)
+- Trade condition codes and tape–exchange routing
+- SGE job patterns (year-level arrays, year-month loops)
+- Era transition (legacy 1993–2006 → millisecond 2007+)
 
 ---
 
