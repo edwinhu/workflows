@@ -8,6 +8,7 @@ Reference for writing efficient SAS code on the WRDS cloud (SAS Grid / SGE clust
 - [Hash Accumulator](#hash-accumulator) - Aggregate without PROC MEANS
 - [Index-Friendly WHERE Clauses](#index-friendly-where-clauses) - The #1 performance mistake
 - [SGE Array Jobs](#sge-array-jobs) - Year-parallel processing on WRDS grid
+- [Project Organization Patterns](#project-organization-patterns) - Paired scripts, stacking, shared macros
 - [PROC SQL Optimization](#proc-sql-optimization) - Indexed joins, pass-through, monotonic
 - [SAS Macro Patterns](#sas-macro-patterns) - Safe resolution, quoting, debugging
 
@@ -269,6 +270,154 @@ qstat -u $USER
 
 ---
 
+## Project Organization Patterns
+
+Patterns observed across multiple WRDS research projects (close, bank_pin, robo, muni, pass, pin-code).
+
+### Paired .sas/.sh Files
+
+Every SAS script gets a matching shell wrapper. The wrapper handles SGE directives, log routing, and parameter passing — the SAS script stays pure logic.
+
+```
+project/
+├── close_trade.sas       # SAS logic
+├── close_trade.sh        # SGE wrapper
+├── mid.sas
+├── mid.sh
+├── fi.sas
+├── fi.sh
+└── logs/
+```
+
+```bash
+# close_trade.sh — minimal wrapper
+#!/bin/bash
+#$ -cwd
+sas -sysparm $1-$2 close_trade.sas -log logs/ctrade-$1-$2.log -print logs/ctrade-$1-$2.lst
+```
+
+### Multi-Dimensional Sysparm
+
+Pass multiple parameters via `-sysparm` with a delimiter, parse with `%scan`:
+
+```sas
+/* Receive year-month from sysparm (e.g., "2017-03") */
+%let yyyy = %scan(&sysparm., 1, '-');
+%let m = %scan(&sysparm., 2, '-');
+%let mm = %sysfunc(putn(&m., z2.));  /* zero-pad month */
+```
+
+Use hyphens as delimiter — works with `%scan` and is visually clear in job names and log files.
+
+### SGE Array vs Manual Qsub Loop
+
+**Array job** (`#$ -t`) — SGE manages iteration. Best for uniform tasks (same script, different year):
+
+```bash
+#!/bin/bash
+#$ -N bank_pin_taq
+#$ -cwd
+#$ -j y
+#$ -t 2003-2024
+mkdir -p logs
+sas -sysparm $SGE_TASK_ID data.sas -log logs/data-$SGE_TASK_ID.log -print logs/data-$SGE_TASK_ID.lst
+```
+
+**Manual qsub loop** — shell manages iteration. Best when jobs have dependencies or non-uniform parameters:
+
+```bash
+for range in "2003-2010" "2011-2016" "2017-2018"; do
+    JOB=$(qsub -N tfn_${range} -hold_jid "$PREREQ_JOB" \
+        run_sas.sh tfn_holdings.sas "$range" | awk '{print $3}')
+done
+```
+
+| Use | Array `#$ -t` | Manual qsub loop |
+|-----|---------------|-------------------|
+| Uniform year-by-year | Preferred | Works |
+| Unequal year ranges | Can't do | Required |
+| Job dependencies (hold_jid) | Only on whole array | Per-job control |
+| Monitoring | `qstat` shows array | `qstat` shows individual jobs |
+
+### Stack Pattern (Array → Concatenate → Export)
+
+Array jobs write per-year datasets to `/scratch`. A final step concatenates and exports:
+
+```sas
+/* Stack yearly outputs using SAS name range (colon or hyphen) */
+data all_results;
+    set scratch.agreement_2003-scratch.agreement_2024;
+run;
+
+/* Or using wildcard prefix */
+data all_results;
+    set scratch.mf_own_:;  /* matches mf_own_2003_2010, mf_own_2011_2016, etc. */
+run;
+
+proc export data=all_results
+    outfile="/scratch/nyu/hue/results.csv"
+    dbms=csv replace;
+run;
+```
+
+**Key:** The stack step runs as a separate qsub job with `hold_jid` on all array jobs, ensuring all pieces exist before concatenation.
+
+### Shared SAS Macros in ~/sas/
+
+Reusable macros kept in `~/sas/` and loaded with `%INCLUDE`:
+
+| Macro | File | Purpose |
+|-------|------|---------|
+| `%MERGE_ASOF` | `~/sas/MERGE_ASOF.sas` | Backward as-of merge (most recent obs in B for each A) |
+| `%CC_LINK` | `~/sas/CC_LINK.sas` | CRSP-Compustat linking with book equity |
+
+```sas
+%INCLUDE "~/sas/MERGE_ASOF.sas";
+%MERGE_ASOF(a=events, b=ownership, merged=panel,
+    idvar=permno, datevar=recorddate,
+    num_vars=ior mf_pct passive_pct);
+```
+
+These macros are project-agnostic — they work with any dataset that has the required variables.
+
+### Gzipped CSV Ingest
+
+Read compressed CSV directly without decompressing to disk:
+
+```sas
+filename ZIPFILE ZIP "/scratch/nyu/hue/data_2020.csv.gz" gzip;
+data raw;
+    infile ZIPFILE delimiter=',' MISSOVER DSD firstobs=2;
+    informat date ANYDTDTE9. amount BEST12. cusip $9.;
+    format date B8601DA10.;
+    input date amount cusip $;
+run;
+```
+
+### TAQ Millisecond Data Pattern
+
+TAQ data is partitioned by year-month with separate master and trade files:
+
+```sas
+/* Combine master files across year boundary for symbol continuity */
+data mastm_&yyyy.;
+    set taq.mast_%sysevalf(&yyyy.-1):
+        taq.mast_&yyyy.:
+        taq.mast_%sysevalf(&yyyy.+1):;
+    SYM_ROOT = scan(SYMBOL, 1, ' ');
+    SYM_SUFFIX = scan(SYMBOL, 2, ' ');
+run;
+
+/* Trade files use month suffix */
+data trades / view=trades;
+    set taqmsec.ctm_&yyyy.&mm.:;
+run;
+```
+
+**Note:** TAQ master files must span year boundaries (prior + current + next year) to handle symbols that list/delist near year-end.
+
+---
+
 ## PROC SQL Optimization
 
 ### Pass-Through SQL (Skip SAS Processing)
@@ -420,5 +569,7 @@ options nomprint nomlogic nosymbolgen;
 5. **Avoid NFS contention on large SAS files.** Multiple parallel SAS jobs reading the same large NFS file (e.g., `tfn.s12` at 44GB) causes each to take ~40 min instead of ~5 min. Solution: read once via PostgreSQL (`PROC SQL; CONNECT TO POSTGRES`), write year-range partitions to `/scratch`, then parallel jobs read their own partition. See `split_s12.sas` in `examples/voting_ownership_pipeline/`.
 6. **Use `/scratch` for inter-job data, not `/sastemp`.** `/sastemp` is per-node local disk — invisible to jobs on other grid nodes. Only `/scratch` (NFS-shared) works for passing data between SGE jobs.
 7. **Benchmark single-year first** before submitting full array. Check log for errors and timing.
-8. **One script per logical step.** Don't chain unrelated operations in a single SAS program.
+8. **One script per logical step.** Don't chain unrelated operations in a single SAS program. Use paired `.sas`/`.sh` files.
 9. **Use shell wrappers for qsub.** Always use a `.sh` script with `#$ -cwd` rather than `qsub -b y sas script.sas` — the latter may not find the SAS file or load autoexec correctly.
+10. **Use SGE array jobs for uniform tasks.** `#$ -t 2003-2024` is cleaner than a manual qsub loop when each task is the same script with a different year. Use manual loops only when tasks have dependencies or non-uniform parameters.
+11. **Stack after parallel, then export.** Array jobs write per-year datasets to `/scratch`. A final hold_jid step concatenates with `SET scratch.prefix_:` and exports to CSV/parquet.
