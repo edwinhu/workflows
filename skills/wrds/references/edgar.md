@@ -308,41 +308,229 @@ def get_filings_from_sec_api(cik: str) -> dict:
     return response.json()
 ```
 
-### Download Filing via WRDS
+### Download Filing Text via WRDS rclone (Preferred for Bulk Access)
 
-For bulk downloads, use WRDS file access:
+<EXTREMELY-IMPORTANT>
+**IRON LAW: For bulk filing text, use rclone from the WRDS filesystem. NEVER pull text blobs through SQL. NEVER make per-filing SEC.gov HTTP requests.**
+
+The correct pattern is always:
+1. **Query metadata** from WRDS SQL (accession numbers, fnames, dates) — fast, small result
+2. **rclone the raw files** from `/wrds/sec/archives/` — parallelizable, cacheable to disk
+3. **Process locally** — regex, NLP, whatever — no database round-trips
+</EXTREMELY-IMPORTANT>
+
+#### WRDS Filing Filesystem Layout
+
+WRDS provides two copies of every filing:
+
+| Directory | Content | Use case |
+|-----------|---------|----------|
+| `/wrds/sec/archives/` | Raw filings (HTML, images, full SGML) | When you need exact original formatting |
+| `/wrds/sec/wrds_clean_filings/` | **Cleaned plain text** (HTML stripped, images removed) | **Default choice** — text extraction, NLP, regex |
+
+**Use `wrds_clean_filings` by default.** It's dramatically smaller (clean text compresses ~5-10x vs HTML's ~0.8x), faster to transfer, and easier to parse. Only use `archives` if you specifically need the original HTML/SGML structure.
+
+Both directories share the same path layout: `{CIK_prefix}/{CIK_int}/{accession}.txt`
+
+The `fname` field from `wrdssec_all.wrds_forms` gives the path as `edgar/data/{CIK_int}/{accession}.txt`. Convert to filesystem path:
 
 ```python
-import subprocess
-from pathlib import Path
+def fname_to_rclone_path(fname: str) -> str:
+    """Convert WRDS fname to rclone path.
 
-def download_filing_from_wrds(accession_number: str,
-                               local_dir: Path) -> Path | None:
-    """Download filing from WRDS archive.
+    fname: 'edgar/data/1034196/0001104659-20-000437.txt'
+    -> wrds:/wrds/sec/archives/000103/1034196/0001104659-20-000437.txt
 
-    Note: Requires WRDS SFTP access configured via rclone.
+    Path mapping:
+    - CIK as integer: 1034196
+    - Zero-pad to 10 digits: 0001034196
+    - Parent directory: first 6 chars = 000103
+    - Child directory: CIK as integer = 1034196
     """
-    # WRDS stores filings by year/quarter
-    # Path structure: /wrds/sec/edgar/filings/YYYY/QTR/
-
-    local_dir = Path(local_dir)
-    local_dir.mkdir(parents=True, exist_ok=True)
-
-    # Try rclone first
-    try:
-        result = subprocess.run(
-            ['rclone', 'ls', f'wrds:/wrds/sec/edgar/'],
-            capture_output=True, text=True, timeout=30
-        )
-        if result.returncode == 0:
-            # Search for the accession number
-            # Implementation depends on WRDS file structure
-            pass
-    except Exception:
-        pass
-
-    return None
+    parts = fname.split("/")
+    cik_int = parts[2]       # '1034196'
+    filename = parts[3]      # '0001104659-20-000437.txt'
+    cik_padded = cik_int.zfill(10)
+    parent = cik_padded[:6]  # '000103'
+    # Use wrds_clean_filings for text extraction (default):
+    return f"/wrds/sec/wrds_clean_filings/{parent}/{cik_int}/{filename}"
+    # Use archives only if you need original HTML/SGML:
+    # return f"/wrds/sec/archives/{parent}/{cik_int}/{filename}"
 ```
+
+#### Step 1: Query Metadata (Fast)
+
+```python
+import wrds
+
+db = wrds.Connection(wrds_username="eddyhu")
+
+# Get filing paths for all CIKs at once — one query per form type
+meta = db.raw_sql(f"""
+    SELECT cik, accession, form, fdate AS filing_date, fname
+    FROM wrdssec_all.wrds_forms
+    WHERE cik IN ('{cik_list}')
+    AND form IN ('SC 13D', 'SC 13D/A')
+    AND fdate >= '2000-01-01'
+""")
+# Result: ~60K rows of metadata, no text — fast
+db.close()
+```
+
+#### Step 2: Bulk Download via rclone (bash script)
+
+Python generates the file list, bash does the download. Clean separation — the rclone part is deterministic and rerunnable.
+
+**Step 2a: Python generates the files-from list**
+
+```python
+# Convert WRDS fnames to rclone-relative paths
+with open("data/raw/edgar_filings/files_to_download.txt", "w") as f:
+    for fname in meta["fname"]:
+        # fname: 'edgar/data/1034196/0001104659-20-000437.txt'
+        # rclone path: 000103/1034196/0001104659-20-000437.txt
+        parts = fname.split("/")
+        cik_int = parts[2]
+        filename = parts[3]
+        parent = cik_int.zfill(10)[:6]
+        f.write(f"{parent}/{cik_int}/{filename}\n")
+```
+
+**Step 2b: Bash downloads the files**
+
+For small batches (<10K files), `rclone copy --files-from` is fine:
+
+```bash
+rclone copy wrds:/wrds/sec/wrds_clean_filings/ "$OUTPUT_DIR" \
+    --files-from "$FILES_FROM" --transfers 16 --no-traverse --stats 30s --stats-one-line
+```
+
+For large batches (>10K files), use the tar approach below instead — it's significantly faster.
+
+**For large batches (>10K files): tar server-side, download one archive (PREFERRED)**
+
+This is the fastest approach: (1) one large sequential transfer beats thousands of SFTP round-trips, (2) `rclone copy` handles resume if the connection drops. Use `scp` for the small file list upload (rclone SFTP can be flaky after heavy use), `rclone` for the large archive download.
+
+```bash
+#!/usr/bin/env bash
+# download_filings_tar.sh — tar on WRDS server, download single archive
+set -euo pipefail
+
+FILES_FROM="${1:?Usage: $0 <files-from.txt> <output-dir>}"
+OUTPUT_DIR="${2:?Usage: $0 <files-from.txt> <output-dir>}"
+
+# Use /scratch/<institution>/<user>/ for large files — NOT /tmp (only 44 GB)
+WRDS_USER="$(ssh wrds whoami)"
+WRDS_SCRATCH="/scratch/nyu/${WRDS_USER}"  # Change 'nyu' to your institution
+REMOTE_TMP="${WRDS_SCRATCH}/filings_$(date +%s).tar.gz"
+REMOTE_LIST="/tmp/$(basename "$FILES_FROM")"  # file list is small, /tmp is fine
+
+mkdir -p "$OUTPUT_DIR"
+
+# 1. Upload file list via scp (small file, reliable)
+scp "$FILES_FROM" "wrds:$REMOTE_LIST"
+
+# 2. Create tar.gz server-side on /scratch (use nohup — can take 30+ min)
+echo "Creating archive on WRDS server..."
+ssh wrds "mkdir -p $WRDS_SCRATCH"
+ssh wrds "nohup bash -c 'cd /wrds/sec/wrds_clean_filings && tar czf $REMOTE_TMP -T $REMOTE_LIST' > ${WRDS_SCRATCH}/tar.log 2>&1 &
+echo PID: \$!"
+
+# Wait for tar to finish (poll every 60s)
+echo "Waiting for tar to complete..."
+while ssh wrds "pgrep -f 'tar czf.*filings_' > /dev/null 2>&1"; do
+    size=$(ssh wrds "ls -lh $REMOTE_TMP 2>/dev/null | awk '{print \$5}'" 2>/dev/null)
+    echo "  Archive size: ${size:-starting...}"
+    sleep 60
+done
+ssh wrds "ls -lh $REMOTE_TMP"
+
+# 3. Download single archive via rclone (handles resume on large files)
+echo "Downloading archive..."
+rclone copy "wrds:$REMOTE_TMP" "$OUTPUT_DIR" --stats 30s --stats-one-line
+
+# 4. Extract locally
+echo "Extracting..."
+tar xzf "$OUTPUT_DIR/$(basename "$REMOTE_TMP")" -C "$OUTPUT_DIR"
+rm "$OUTPUT_DIR/$(basename "$REMOTE_TMP")"
+
+# 5. Cleanup remote
+ssh wrds "rm -f $REMOTE_TMP $REMOTE_LIST"
+
+echo "Done. $(find "$OUTPUT_DIR" -name '*.txt' | wc -l) files extracted."
+```
+
+Usage:
+```bash
+# Python generates the file list (step 2a above), then:
+bash download_filings_tar.sh data/raw/edgar_filings/files_to_download.txt data/raw/edgar_filings/raw/
+```
+
+**IMPORTANT: WRDS `/tmp` is only ~44 GB — do NOT tar there.** Use `/scratch/nyu/<username>/` instead (13 TB free, NFS-mounted).
+
+Key paths on WRDS:
+- `/tmp/` — 44 GB, shared, fills up fast. Only for small temp files (<1 GB).
+- `/scratch/nyu/<username>/` — 13 TB, institution-scoped. Use for large archives.
+- `/home/<username>/` — quota-limited. Don't use for bulk data.
+
+Size estimates for 110K filings:
+- **`wrds_clean_filings`** (plain text): ~5-10 GB tar.gz. Clean text compresses well (~5-10x).
+- **`archives`** (raw HTML): ~40-70 GB tar.gz. HTML compresses poorly (~0.8x).
+
+**Step 2c: Python reads the downloaded files**
+
+```python
+# Read local files — no network, no DB
+texts = {}
+for fname in meta["fname"]:
+    parts = fname.split("/")
+    cik_int, filename = parts[2], parts[3]
+    parent = cik_int.zfill(10)[:6]
+    local_path = Path(f"data/raw/edgar_filings/raw/{parent}/{cik_int}/{filename}")
+    if local_path.exists():
+        texts[fname] = local_path.read_text(errors="replace")
+```
+
+**Anti-patterns to avoid:**
+
+| Approach | Problem |
+|----------|---------|
+| `rclone cat` per file in Python | Spawns N subprocesses — for 60K files, orders of magnitude slower |
+| `rclone copy` per CIK directory in a Python loop | Sequential; 3K dirs = 3K rclone invocations |
+| `subprocess.run(["rclone", ...])` from Python | Mixing download logic into Python; not rerunnable independently |
+| `--transfers 32` over SFTP | Overwhelms SSH multiplexing, causes `mux_client_request_session` errors |
+| `--progress` flag in scripts | Generates too much terminal output — use `--stats 30s --stats-one-line` instead |
+| Pulling text via SQL (`SELECT filing_text`) | 9GB+ in memory for 60K filings. OOM risk. |
+| Per-filing SEC.gov HTTP requests | Rate-limited to 10 req/sec. 60K files = 100+ min. |
+
+#### Step 3: Process Locally
+
+```python
+# Extract whatever you need from the raw text — no DB needed
+for fname, text in texts.items():
+    result = your_extractor(text[:80000])  # Limit to first 80K chars
+```
+
+#### Ticker-to-CIK Mapping
+
+Use `secsamp._names_` for bulk ticker-to-CIK mapping:
+
+```python
+ticker_map = db.raw_sql(f"""
+    SELECT DISTINCT tickerh AS ticker, cik
+    FROM secsamp._names_
+    WHERE tickerh IN ('{ticker_list}')
+""")
+```
+
+#### Why Not SQL Text Blobs or SEC.gov URLs?
+
+| Approach | Problem |
+|----------|---------|
+| `SELECT filing_text FROM wrds_sec_search.filing_*` | Text columns are huge — 9GB+ for 60K filings. OOM risk. |
+| Per-filing `SELECT` in a loop | N round-trips to WRDS PostgreSQL. 60K queries = hours. |
+| SEC.gov HTTP requests | Rate-limited to 10 req/sec. 60K files = 100+ minutes. |
+| **rclone from WRDS filesystem** | Parallel file reads, disk cache, no rate limit, no OOM. |
 
 ## Linking CIK to Other Identifiers
 
@@ -439,11 +627,9 @@ def get_filing_statistics(pool, cik: str) -> dict:
 
 ## Working with Filing Content
 
-WRDS EDGAR data focuses on metadata. For actual filing content:
+For actual filing content, **always prefer rclone from the WRDS filesystem** (see [Download Filing Text via WRDS rclone](#download-filing-text-via-wrds-rclone-preferred-for-bulk-access) above). This is faster, has no rate limits, and caches to disk.
 
-1. **Use SEC EDGAR directly**: Download from SEC.gov URLs
-2. **Use WRDS file archive**: Access via rclone/SFTP
-3. **Consider edgar-online**: For parsed/structured data
+For small one-off downloads (<10 filings), SEC.gov URLs are acceptable:
 
 ### Parsing 10-K Sections
 
