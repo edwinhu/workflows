@@ -29,6 +29,8 @@ TOOLS=(
   "edwinhu/readwise-cli|readwise-custom|readwise-custom-${OS}-${ARCH}"
   "edwinhu/google-scholar-cli|scholar|scholar-${OS}-${ARCH}"
   "edwinhu/consensus-cli|consensus|consensus-${OS}-${ARCH}"
+  "edwinhu/morgen-cli|morgen|morgen-${OS}-${ARCH}"
+  "edwinhu/superhuman-cli|superhuman|superhuman-${OS}-${ARCH}"
 )
 
 for entry in "${TOOLS[@]}"; do
