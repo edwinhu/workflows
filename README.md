@@ -5,17 +5,14 @@ A curated collection of development, data science, writing, workshop, legal, and
 ## Quick Start
 
 ```bash
+# 1. Install the plugin
 /plugin marketplace add edwinhu/workflows
-/plugin install dev
+
+# 2. (Optional) Install CLI dependencies for knowledge management, email, and calendar
+bash ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/bin/install-deps.sh
 ```
 
-### Optional CLI Dependencies
-
-Some skills depend on external CLI tools (knowledge management, email, calendar). Install them with:
-
-```bash
-bash bin/install-deps.sh
-```
+The core workflows (`/dev`, `/ds`, `/writing`, `/workshop`, document formats) work without any CLI dependencies. The install script is only needed for skills that use external tools.
 
 This downloads pre-built binaries for your platform (macOS arm64, Linux x64, Windows x64) from GitHub Releases:
 
