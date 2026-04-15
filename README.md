@@ -9,6 +9,27 @@ A curated collection of development, data science, writing, workshop, legal, and
 /plugin install dev
 ```
 
+### Optional CLI Dependencies
+
+Some skills depend on external CLI tools (knowledge management, email, calendar). Install them with:
+
+```bash
+bash bin/install-deps.sh
+```
+
+This downloads pre-built binaries for your platform (macOS arm64, Linux x64, Windows x64) from GitHub Releases:
+
+| Tool | Purpose | Used by |
+|------|---------|---------|
+| [nlm](https://github.com/edwinhu/nlm) | NotebookLM CLI | `librarian` agent, `/nlm` |
+| [readwise-custom](https://github.com/edwinhu/readwise-cli) | Readwise RAG/chat/upload | `librarian` agent, `/readwise-chat` |
+| [scholar](https://github.com/edwinhu/google-scholar-cli) | Google Scholar search | `librarian` agent, `/google-scholar` |
+| [consensus](https://github.com/edwinhu/consensus-cli) | Academic paper search | `librarian` agent, `/consensus` |
+| [morgen](https://github.com/edwinhu/morgen-cli) | Calendar & tasks | `assistant` agent |
+| [superhuman](https://github.com/edwinhu/superhuman-cli) | Email | `assistant` agent |
+
+Requires `gh` (GitHub CLI). Tools already on your `$PATH` are skipped.
+
 ---
 
 ## User Commands (15)
