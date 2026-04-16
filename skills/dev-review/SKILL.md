@@ -22,7 +22,10 @@ hooks:
 ## Contents
 
 - [Prerequisites - Test Output Gate](#prerequisites---test-output-gate)
-- [The Iron Law of Review](#the-iron-law-of-review)
+- [Review Strategy Choice](#review-strategy-choice)
+- [Codex Adversarial Review](#codex-adversarial-review) (default when Codex is installed)
+- [Parallel Review (Thorough)](#parallel-review-thorough) (Claude-only fallback)
+- [The Iron Law of Review](#the-iron-law-of-review) (single Claude reviewer path)
 - [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
 - [Review Focus Areas](#review-focus-areas)
 - [Confidence Scoring](#confidence-scoring)
@@ -111,7 +114,47 @@ After verifying test output in LEARNINGS.md, choose review strategy.
 - Automated refactoring (rename, extract)
 - Internal utility functions (not user-facing or security-sensitive)
 
-**Otherwise, ask the user:**
+### Step 1: Probe Codex availability (silent)
+
+Codex provides an out-of-process adversarial reviewer that uses a different
+model family than Claude — the diversity catches issues a Claude-reviewing-Claude
+loop would miss. When installed and authenticated, it is the **default**
+adversarial path. When unavailable, fall back to the existing Claude-based
+flow without prompting the user about installation.
+
+Read `${CLAUDE_SKILL_DIR}/../../references/codex-availability.md` for the full
+probe and invocation contract. Execute the probe before asking the user:
+
+```bash
+CODEX_SCRIPT=$(find "$HOME/.claude/plugins/cache/openai-codex/codex" -maxdepth 3 -name codex-companion.mjs -type f 2>/dev/null | sort -rV | head -1)
+if [ -n "$CODEX_SCRIPT" ]; then
+  node "$CODEX_SCRIPT" setup --json 2>/dev/null | jq -r '.ready // false'
+else
+  echo "false"
+fi
+```
+
+Set `CODEX_READY=true` only when the probe prints `true`. Otherwise
+`CODEX_READY=false` and skip Codex entirely — do not announce its absence.
+
+### Step 2: Ask the user
+
+**If `CODEX_READY=true`:**
+
+```python
+AskUserQuestion(questions=[{
+  "question": "How should we review this implementation?",
+  "header": "Review Strategy",
+  "options": [
+    {"label": "Codex adversarial review (Recommended)", "description": "Out-of-process adversarial review via Codex. Different model family from Claude — catches issues a Claude-on-Claude loop misses. Default for adversarial review."},
+    {"label": "Single Claude reviewer", "description": "Combined Claude review covering spec compliance and code quality. Faster, lower overhead. Use when Codex is overkill."},
+    {"label": "Parallel Claude review (Thorough)", "description": "Spawn 3 specialized Claude reviewers (Security, Performance, Tests). Use when Codex is unavailable or you want multi-perspective Claude review."}
+  ],
+  "multiSelect": false
+}])
+```
+
+**If `CODEX_READY=false`:**
 
 ```python
 AskUserQuestion(questions=[{
@@ -125,9 +168,119 @@ AskUserQuestion(questions=[{
 }])
 ```
 
-**If Single reviewer:** Proceed to [The Iron Law of Review](#the-iron-law-of-review) below (current behavior).
+**Routing:**
 
-**If Parallel review:** Skip to [Parallel Review (Thorough)](#parallel-review-thorough).
+| Choice | Go to |
+|--------|-------|
+| Codex adversarial review | [Codex Adversarial Review](#codex-adversarial-review) |
+| Single (Claude) reviewer | [The Iron Law of Review](#the-iron-law-of-review) |
+| Parallel (Claude) review | [Parallel Review (Thorough)](#parallel-review-thorough) |
+
+---
+
+## Codex Adversarial Review
+
+Use this section when the user chose **Codex adversarial review**.
+
+> **Reference:** See `references/codex-availability.md` for the full invocation
+> contract, JSON schema, and verdict mapping table.
+
+### 1. Prerequisites Check
+
+Before invoking Codex, verify (same as the other review paths):
+
+1. **Test evidence exists** — LEARNINGS.md contains actual test output
+2. **E2E evidence for UI changes** — user-facing changes have E2E test output
+3. **SPEC.md exists** — for REQ-ID tagging of findings post-hoc
+4. **Git repo present** — Codex adversarial review is git-diff scoped
+
+If any prerequisite fails, STOP and return BLOCKED to /dev-implement.
+
+### 2. Estimate Scope and Choose Wait vs Background
+
+```bash
+# Working-tree review
+git status --short --untracked-files=all
+git diff --shortstat --cached
+git diff --shortstat
+```
+
+Wait when the diff is clearly tiny (1-2 files, no untracked dir-sized changes).
+Otherwise launch in background.
+
+### 3. Invoke Codex
+
+**Foreground (small diff):**
+
+```bash
+CODEX_SCRIPT=$(find "$HOME/.claude/plugins/cache/openai-codex/codex" -maxdepth 3 -name codex-companion.mjs -type f 2>/dev/null | sort -rV | head -1)
+node "$CODEX_SCRIPT" adversarial-review --wait
+```
+
+**Background (anything bigger):**
+
+Launch with `Bash(..., run_in_background: true)` and tell the user:
+"Codex adversarial review started in the background. Check `/codex:status` for progress."
+
+Then await completion notification before proceeding to step 4.
+
+**Optional focus text** — append SPEC.md context to weight the review:
+
+```bash
+node "$CODEX_SCRIPT" adversarial-review --wait "focus: REQ-AUTH-01 token rotation under retry"
+```
+
+### 4. Parse Verdict
+
+Codex returns JSON validated against its review-output schema. Top-level fields:
+`verdict` (`approve` | `needs-attention`), `summary`, `findings[]`, `next_steps[]`.
+Each finding has `severity`, `title`, `body`, `file`, `line_start`, `line_end`,
+`confidence` (0-1 float), `recommendation`.
+
+**Apply the iron law: only `confidence >= 0.8` findings block.** Multiply by 100
+when displaying alongside Claude-style scores.
+
+| Codex result | dev-review verdict |
+|--------------|--------------------|
+| `verdict: approve` | APPROVED |
+| `needs-attention` + any finding ≥ 0.8 confidence | CHANGES_REQUIRED |
+| `needs-attention` + all findings < 0.8 confidence | APPROVED (log advisory findings to LEARNINGS.md) |
+
+### 5. Tag Findings to Requirements
+
+Codex doesn't know SPEC.md REQ-IDs. For each blocking finding:
+
+1. Read `.planning/SPEC.md`
+2. Tag the finding with the most likely REQ-ID (or `OUT-OF-SPEC`)
+3. `OUT-OF-SPEC` findings are advisory unless user opts in
+
+### 6. Report
+
+Use the same output structure as `## Required Output Structure` below, with
+**Reviewer: Codex (adversarial)** in the header. Each issue includes the
+Codex confidence (×100) and the REQ-ID you tagged in step 5.
+
+### 7. Iteration & Re-Review
+
+Codex adversarial review participates in the same `REVIEW_STATE.md` loop as
+Claude reviewers — increment iteration on CHANGES_REQUIRED, escalate at
+iteration 3. **Re-runs stay on Codex** unless it becomes unavailable between
+runs (re-probe each iteration).
+
+The "Iron Law of Re-Review" still applies: implementer claims "fixed" → main
+chat re-invokes Codex via the same command — no spot-checks.
+
+### Phase Complete (Codex Adversarial)
+
+After Codex review completes:
+
+**If APPROVED:** Immediately invoke the dev-verify skill:
+
+Read `${CLAUDE_SKILL_DIR}/../../skills/dev-verify/SKILL.md` and follow its instructions.
+
+**If CHANGES_REQUIRED:** Return to `/dev-implement` with the parsed findings.
+
+**If BLOCKED (test evidence missing):** Return to `/dev-implement` to collect test evidence.
 
 ---
 
