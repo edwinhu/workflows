@@ -1214,15 +1214,37 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 
 3. **Dynamic context via bang-backtick injection** — For constraint files that should be inlined at skill load time, use the pattern: exclamation mark followed by backtick-cat path backtick. Example: `BANG` + `` `cat ${CLAUDE_SKILL_DIR}/../../references/file.md` ``. This inlines the file contents at skill load time. Note: bang-backtick injection only works in top-level skills loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions instead.
 
-4. **Path variable substitution** — Only `${CLAUDE_SKILL_DIR}`, `${CLAUDE_SESSION_ID}`, and `$ARGUMENTS` are substituted in skill content. `${CLAUDE_PLUGIN_ROOT}` is only substituted in hook `command:` fields, NOT in skill content.
-   - **In top-level skill content (loaded via Skill()):** Use `${CLAUDE_SKILL_DIR}/../../` to reach plugin root from `skills/<name>/`. Example: `${CLAUDE_SKILL_DIR}/../../references/file.md`
-   - **In hook commands:** Use `${CLAUDE_PLUGIN_ROOT}` — substituted by the hook system
-   - **In internal skills (loaded via Read):** Neither variable is substituted. Use `${CLAUDE_SKILL_DIR}/../../` as a consistent convention — Claude infers the actual path from context. Consistency with top-level skills makes the codebase easier to maintain.
+4. **Path variable substitution** — the two variables apply to DIFFERENT contexts:
+
+| Context | Correct Variable | Docs |
+|---------|------------------|------|
+| **Hook `command:` fields in YAML frontmatter** | `${CLAUDE_PLUGIN_ROOT}` | [hooks.md](https://code.claude.com/docs/en/hooks.md) |
+| **Skill content body (markdown + bash injection)** | `${CLAUDE_SKILL_DIR}` | [skills.md](https://code.claude.com/docs/en/skills.md) |
+| **Internal skills (loaded via Read)** | Neither substitutes. Use `${CLAUDE_SKILL_DIR}/../../` as a convention so a consistent style is preserved — the agent infers the actual path from context. | — |
+
+   **The hook/content variables ARE NOT INTERCHANGEABLE.** `${CLAUDE_SKILL_DIR}` is bound in the shell environment only when a skill is actively loaded via `Skill()`. When a hook fires for a tool call *outside* that active session — e.g., a `matcher: "*"` hook, or an `Agent` matcher spawned from main chat — the env var is empty and the path resolves to garbage like `/../../hooks/foo.py`.
+
+5. **Hook-command variable misuse — the April 2026 incident** ⚠️
+   - **What happened:** course-materials plugin v2.83.1 (Apr 15 2026) switched hook commands from `${CLAUDE_PLUGIN_ROOT}/hooks/...` to `${CLAUDE_SKILL_DIR}/../../hooks/...` based on a misdiagnosis claiming CLAUDE_PLUGIN_ROOT was "unset at PreToolUse runtime". Five skills across two plugins (teaching + derivative exam skills) shipped with broken hook paths for 9 days.
+   - **Why it stayed hidden:** the affected hooks (`no-agent-resume-guard.py`, `context-monitor.py`) default to `{"decision": "approve"}` when the script runs. When the script doesn't exist at all, Claude Code *also* approves. The silent-failure mode was indistinguishable from a clean approval, so "no enforcement" looked like "approved every time".
+   - **Why exam-prep finally exposed it:** a new skill added `matcher: "*"` under `PreToolUse` for `context-monitor.py`. `matcher: "*"` fires on every tool call in the session, including tool calls *before* the new skill was ever invoked via `Skill()`. At that moment `${CLAUDE_SKILL_DIR}` was empty, producing a nonexistent path — Claude Code blocked every tool call with the hook's failure.
+   - **The lesson:** **`${CLAUDE_SKILL_DIR}` in hook frontmatter is a silent-failure landmine.** It appears to work because existing hooks default-approve. Add one blocking hook — or a broad matcher — and the whole plugin surfaces the latent bug at once.
+
+**Hook Command Variable Audit (mandatory during Path Portability review):**
+```bash
+# This command should return EMPTY — any hit is a defect:
+grep -rn "command:.*\${CLAUDE_SKILL_DIR}" skills/*/SKILL.md
+
+# All hook commands should match this pattern:
+grep -rn "command:.*python3 \${CLAUDE_PLUGIN_ROOT}" skills/*/SKILL.md
+```
+
+If the first grep returns anything, flag as a Critical Gap.
 
 **Score:**
-- **Clean** — no broken paths found
+- **Clean** — no broken paths found AND no `${CLAUDE_SKILL_DIR}` in hook command fields
 - **Partial** — some paths fixed, others remain
-- **Broken** — relative paths present in skill instructions
+- **Broken** — relative paths present in skill instructions OR `${CLAUDE_SKILL_DIR}` in hook command fields (even if file paths happen to resolve when tested)
 
 **Gate: Path Portability Scored**
 - Verify all SKILL.md and references/*.md files were scanned
@@ -1402,6 +1424,8 @@ Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 | Broken paths (script) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py` |
 | Broken paths (Read) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` |
 | Missing post-subagent enforcement | Add verification/investigation boundary table for the domain |
+| Hook command uses `${CLAUDE_SKILL_DIR}` instead of `${CLAUDE_PLUGIN_ROOT}` | Replace with `${CLAUDE_PLUGIN_ROOT}/hooks/script.py`. `${CLAUDE_SKILL_DIR}` only substitutes in skill content, not hook frontmatter — it's empty when hooks fire outside an active Skill() session, silently failing. See April 2026 incident (teaching plugin v2.83.1→v2.84.4). |
+| Hook `matcher: "*"` under `PreToolUse` without hardened script | Move to `PostToolUse` unless the hook genuinely needs to block every tool call. A PreToolUse `"*"` hook that fails (bad path, missing file, non-zero exit) blocks *every* tool in the session — so the hook script must be resilient (defaults to approve on error) and its command path must be rock-solid. |
 | Missing topic change protocol | Add announce-pause / handle / announce-resume |
 | Missing deviation rules | Add 4-rule system (R1-R3 auto, R4 STOP) adapted to domain |
 | Missing state folder | Consolidate into `.planning/` with standard files |
@@ -1557,6 +1581,8 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 | Every phase requires manual invocation | 7-phase workflow needs 7 human interventions to run. | Add autonomous chaining with auto-advance for human-verify gates |
 | Decision checkpoint with no review pattern tracking | You don't know what the human looks at, so you can't optimize for it. | Log what the human asks for at each review. After 3+ patterns, offer to automate. |
 | Designing an agent that spawns its own sub-agents | 3-layer delegation fails — sub-sub-agent results don't reliably return via SendMessage. The middle dispatcher times out or loses results. March 2026: teaching:reviewer dispatched 5 sub-agents, returned empty 2/3 times. | Use flat parallel dispatch: the orchestrator spawns ALL agents directly. Put the "dispatcher" logic in the skill definition, not in an agent. |
+| Copying a hook frontmatter pattern from a sibling skill without checking the variable | Sibling skills can carry latent bugs that only surface under specific matcher combinations. The teaching plugin carried a `${CLAUDE_SKILL_DIR}` vs `${CLAUDE_PLUGIN_ROOT}` bug in hook commands for 9 days (v2.83.1–v2.84.4) — silently default-approving because hook scripts also default to approve. Adding a single `matcher: "*"` hook in a new skill exposed the latent bug across the plugin. | Check docs: `${CLAUDE_PLUGIN_ROOT}` for hook `command:` fields, `${CLAUDE_SKILL_DIR}` for skill content. Never trust a sibling's pattern without verifying. |
+| Using `matcher: "*"` under `PreToolUse` without a bulletproof hook script | `matcher: "*"` fires for *every* tool call in the entire session — including calls before the skill was loaded. A hook script that can't find its path or exits non-zero blocks every tool. | Move to `PostToolUse` unless blocking is genuinely needed. If blocking IS needed, use a specific matcher (`Write\|Edit\|Agent`) and a defensively-coded script. |
 
 ## Rationalization Table
 
