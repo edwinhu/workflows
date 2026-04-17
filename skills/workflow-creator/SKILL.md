@@ -508,6 +508,10 @@ Workflows should support autonomous execution — chaining phases automatically 
 ### Step 3b: Add Artifact Review Gates
 <!-- implements: WC-04 -->
 
+**Context check:** Step 3b produces DESIGN.md — the recoverable artifact for enforcement generation. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with decomposition progress and current DESIGN.md draft. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately.
+
 For every phase that produces an artifact consumed by downstream phases, add an **artifact review gate** between the producing phase and the consuming phase.
 
 ```
@@ -555,6 +559,33 @@ requires: [PHILOSOPHY.md, INTERVIEW.md]
 provides: [DESIGN.md]
 affects: [.planning/wc/{name}/DESIGN.md]
 ```
+
+#### DESIGN.md Review Gate
+
+Before proceeding to enforcement generation, verify the decomposition design is sound. Dispatch a lightweight reviewer:
+
+```python
+Agent(
+  subagent_type="general-purpose",
+  description="Review DESIGN.md completeness",
+  allowed_tools=["Read", "Grep", "Glob"],
+  prompt="""Read .planning/wc/{name}/DESIGN.md.
+
+Check against decomposition requirements:
+1. Each phase has a single responsibility (one question answered)
+2. Every phase has a gate condition (verifiable exit criterion)
+3. Gate artifacts are specified (concrete files, not prose)
+4. Iteration topology is assigned per phase
+5. Artifact review gates exist between producing/consuming phases
+
+Report: APPROVED if design is sound, or list specific gaps.
+Do NOT edit the file — report only."""
+)
+```
+
+**Gate: Design Reviewed** `[checkpoint: human-verify, auto-advanceable]`
+- If reviewer reports APPROVED → proceed
+- If reviewer reports gaps → fix DESIGN.md, re-review (max 3 iterations)
 
 **IMMEDIATELY proceed to Step 4.**
 
@@ -632,6 +663,10 @@ Each task summary should end with: **Total deviations:** N auto-fixed (R1: X, R2
 **After verifying Enforcement Patterns are loaded, IMMEDIATELY proceed to Step 4b.**
 
 ### Step 4b: Common Enforcement Across Skill Families
+
+**Context check:** Cross-skill consistency analysis reads multiple sibling skills and produces hook/script coverage matrices. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with enforcement plan from Step 4 and current progress. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
 When multiple skills operate on the same domain, they need consistent enforcement across **three layers**: constraints (prompt), hooks (structural), and script wiring (gate orchestration). Scan the target plugin:
 
@@ -917,6 +952,10 @@ affects: [.planning/wc/{name}/STATE.md]
 ### Step 5: Design Two Entry Points
 <!-- implements: WC-06 -->
 
+**Context check:** Entry point design is moderate effort. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with enforcement plan and current progress. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately.
+
 Every workflow exposes exactly **two** user-facing commands. Everything else is internal.
 
 | Entry Point | Purpose | Example |
@@ -1131,7 +1170,7 @@ After generating workflow files in Step 6:
      allowed_tools=["Read", "Grep", "Glob"],  # REQUIRED — no Write/Edit
      prompt="""You are an independent workflow auditor with no knowledge of how
      these files were written. Read Mode 2 criteria in
-     /Users/vwh7mb/projects/workflows/skills/workflow-creator/SKILL.md, then
+     ${CLAUDE_SKILL_DIR}/SKILL.md, then
      read ALL generated skill files: [LIST THEM].
 
      Score the 20 architecture principles (0-10 each) and 13 enforcement
@@ -1854,6 +1893,15 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 | Declaring "close enough" below 9.5 | Threshold violation | Keep iterating or escalate at max iterations |
 | Skipping the audit subagent "to save time" | The audit IS the value — without it, fixes are unverified | Full independent audit every iteration |
 | Stopping after 1-2 iterations without checking score | You don't know if you're done | Read SCORES.md, check against 9.5 |
+
+#### Drive-Aligned Framing — Mode 3
+
+| Your Drive | Why You Cut Corners | What Actually Happens | The Drive You Failed |
+|------------|--------------------|-----------------------|---------------------|
+| **Helpfulness** | "Ship the fixes faster, skip the re-audit" | Unverified fixes ship broken enforcement. User discovers gaps when the workflow fails. | **Anti-helpful** |
+| **Competence** | "I can tell from the diff this fixes the gap" | Self-assessment is rubber-stamping. The auditor exists because you can't see your own blind spots. | **Incompetent** |
+| **Efficiency** | "Re-reading all files each iteration is wasteful" | Fresh-context audit catches regressions that incremental review misses. One regression undoes 3 fixes. | **Anti-efficient** |
+| **Honesty** | "9.2 is close enough to 9.5" | The threshold exists for a reason. Declaring "close enough" below threshold is fabricating completion. | **Dishonest** |
 
 ---
 

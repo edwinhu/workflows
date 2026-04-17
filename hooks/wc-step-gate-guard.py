@@ -2,19 +2,24 @@
 """
 PreToolUse hook: Multi-step gate guard for workflow-creator.
 
-Two enforcement layers (mode: create only, audit/improve bypass):
+Two enforcement layers across ALL three modes:
 
-Layer 1 — File-path gates:
+Layer 1 — File-path gates (mode: create only):
   INTERVIEW.md  → requires 1-philosophy
   DESIGN.md     → requires 2-interview
   AUDIT.md      → requires 6-generate
   skills/*.md   → requires 5-entry-points
   constraints/  → requires 5-entry-points
 
-Layer 2 — STATE.md step-chain validation:
+Layer 2 — STATE.md step-chain validation (all modes):
   When writing to STATE.md with a new step, the predecessor step must be completed.
-  Chain: 1-philosophy → 2-interview → 3-decomposition → 3b-artifact-review
-         → 4-enforcement → 4b-cross-skill → 5-entry-points → 6-generate → 7-self-audit
+
+  Mode create:  1-philosophy → 2-interview → 3-decomposition → 3b-artifact-review
+                → 4-enforcement → 4b-cross-skill → 5-entry-points → 6-generate → 7-self-audit
+
+  Mode audit:   1-read → 2-score → 3-enforcement → 3b-portability → 4-report
+
+  Mode improve: 1-initial-audit → 1-audit-loop
 """
 
 import json
@@ -22,22 +27,38 @@ import re
 import sys
 from pathlib import Path
 
-STEP_ORDER = [
-    "1-philosophy",
-    "2-interview",
-    "3-decomposition",
-    "3b-artifact-review",
-    "4-enforcement",
-    "4b-cross-skill",
-    "5-entry-points",
-    "6-generate",
-    "7-self-audit",
-]
+STEP_CHAINS = {
+    "create": [
+        "1-philosophy",
+        "2-interview",
+        "3-decomposition",
+        "3b-artifact-review",
+        "4-enforcement",
+        "4b-cross-skill",
+        "5-entry-points",
+        "6-generate",
+        "7-self-audit",
+    ],
+    "audit": [
+        "1-read",
+        "2-score",
+        "3-enforcement",
+        "3b-portability",
+        "4-report",
+    ],
+    "improve": [
+        "1-initial-audit",
+        "1-audit-loop",
+    ],
+}
 
-STEP_PREDECESSORS = {}
-for i, step in enumerate(STEP_ORDER):
-    if i > 0:
-        STEP_PREDECESSORS[step] = STEP_ORDER[i - 1]
+
+def build_predecessors(chain):
+    preds = {}
+    for i, step in enumerate(chain):
+        if i > 0:
+            preds[step] = chain[i - 1]
+    return preds
 
 
 def find_active_wc_state():
@@ -50,14 +71,14 @@ def find_active_wc_state():
     return max(state_files, key=lambda p: p.stat().st_mtime)
 
 
-def get_completed_steps(state_path):
+def parse_state(state_path):
     try:
         content = state_path.read_text()
     except Exception:
-        return set(), ""
+        return set(), None
 
-    if not re.search(r'mode:\s*create', content):
-        return {"__ALL__"}, content
+    mode_match = re.search(r'mode:\s*(\S+)', content)
+    mode = mode_match.group(1) if mode_match else None
 
     completed = set()
     for match in re.finditer(r'step:\s*(\S+)', content):
@@ -66,10 +87,10 @@ def get_completed_steps(state_path):
         if re.search(r'status:\s*completed', rest):
             completed.add(step)
 
-    return completed, content
+    return completed, mode
 
 
-def match_file_to_gate(file_path):
+def match_file_to_gate(file_path, mode):
     p = Path(file_path)
     parts = p.parts
     name = p.name
@@ -81,7 +102,7 @@ def match_file_to_gate(file_path):
         return "STATE_CHAIN"
 
     if '.planning' in parts or '.claude' in parts:
-        if 'wc' in parts:
+        if 'wc' in parts and mode == "create":
             if name == "INTERVIEW.md":
                 return ("1-philosophy", "Step 1 (philosophy) must be completed before writing INTERVIEW.md")
             if name == "DESIGN.md":
@@ -90,16 +111,16 @@ def match_file_to_gate(file_path):
                 return ("6-generate", "Step 6 (generate) must be completed before writing AUDIT.md")
         return None
 
-    if 'skills' in parts and p.suffix == '.md':
-        return ("5-entry-points", "Steps 1-5 must be completed before generating skill files")
-
-    if 'constraints' in parts:
-        return ("5-entry-points", "Steps 1-5 must be completed before generating constraint files")
+    if mode == "create":
+        if 'skills' in parts and p.suffix == '.md':
+            return ("5-entry-points", "Steps 1-5 must be completed before generating skill files")
+        if 'constraints' in parts:
+            return ("5-entry-points", "Steps 1-5 must be completed before generating constraint files")
 
     return None
 
 
-def check_state_chain(tool_input, completed_steps):
+def check_state_chain(tool_input, completed_steps, mode):
     content = tool_input.get("content", "")
     new_string = tool_input.get("new_string", "")
     text = content or new_string
@@ -113,10 +134,16 @@ def check_state_chain(tool_input, completed_steps):
 
     new_step = step_match.group(1).rstrip(',')
 
-    if new_step not in STEP_PREDECESSORS:
+    chain = STEP_CHAINS.get(mode)
+    if not chain:
         return None
 
-    predecessor = STEP_PREDECESSORS[new_step]
+    predecessors = build_predecessors(chain)
+
+    if new_step not in predecessors:
+        return None
+
+    predecessor = predecessors[new_step]
     if predecessor not in completed_steps:
         return (
             f"STEP-CHAIN BLOCKED: Cannot write step '{new_step}' — "
@@ -149,17 +176,17 @@ def main():
     if not state_path:
         sys.exit(0)
 
-    completed_steps, _ = get_completed_steps(state_path)
+    completed_steps, mode = parse_state(state_path)
 
-    if "__ALL__" in completed_steps:
+    if not mode:
         sys.exit(0)
 
-    gate = match_file_to_gate(file_path)
+    gate = match_file_to_gate(file_path, mode)
     if gate is None:
         sys.exit(0)
 
     if gate == "STATE_CHAIN":
-        reason = check_state_chain(tool_input, completed_steps)
+        reason = check_state_chain(tool_input, completed_steps, mode)
         if reason:
             result = {
                 "hookSpecificOutput": {
