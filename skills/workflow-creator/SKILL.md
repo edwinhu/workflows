@@ -3,6 +3,14 @@ name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', or needs to substantially create or edit any multi-phase workflow."
 version: 0.1.0
 hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: >-
+            WC_REQUIRED_STEP=5-entry-points
+            WC_GATE_DESCRIPTION="Steps 1-5 (philosophy, interview, decomposition, enforcement, entry points)"
+            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.py
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
@@ -73,6 +81,25 @@ For Mode 1 (create), use the proposed workflow name: `.planning/wc/{new-workflow
 
 ## Mode 1: Create New Workflow
 
+```
+Step 1: Philosophy ──→ Step 2: Interview ──→ Step 3/3b: Decomposition + Artifact Gates
+  [auto]                [pause: interview]     [auto]
+    │                       │                      │
+    ▼                       ▼                      ▼
+  STATE.md updated        INTERVIEW.md           DESIGN.md
+                          STATE.md updated       STATE.md updated
+                                                     │
+Step 7: Self-Audit ◄── Step 6: Generate ◄── Step 5: Entry Points ◄── Step 4/4b: Enforcement
+  [decision: present]    [decision: present]   [auto]                    [auto]
+    │                       │                      │                        │
+    ▼                       ▼                      ▼                        ▼
+  AUDIT.md via subagent   Skill files written    STATE.md updated         STATE.md updated
+  Score ≥ 8.0? ──NO──→ Fix ──→ Re-audit (max 3)
+    │ YES
+    ▼
+  Present to user
+```
+
 **IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
 
 <EXTREMELY-IMPORTANT>
@@ -87,7 +114,7 @@ If you catch yourself thinking "the skill just said 'IMMEDIATELY proceed' so I c
 
 Discover and read PHILOSOPHY.md:Read `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md` and follow its instructions. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
 
-**Gate: Philosophy Loaded**
+**Gate: Philosophy Loaded** `[checkpoint: human-verify, auto-advanceable]`
 - Verify PHILOSOPHY.md was read
 - Check that your response references: phased decomposition, gates, independent verification, artifact review, iteration strategy, two entry points
 - If you cannot explain these principles, re-read PHILOSOPHY.md
@@ -99,6 +126,9 @@ mkdir -p .planning/wc/{name} && cat > .planning/wc/{name}/STATE.md << 'EOF'
 mode: create
 step: 1-philosophy
 status: completed
+requires: [PHILOSOPHY.md]
+provides: []
+affects: [.planning/wc/{name}/STATE.md]
 ---
 Philosophy loaded. Proceeding to interview.
 EOF
@@ -117,7 +147,7 @@ Use AskUserQuestion to understand the domain:
 5. **How should iteration work?** (one-shot with verification, serial hypothesis testing, parallel exploration, agent team review)
 6. **What does verification look like?** (running tests, checking output exists, reviewing summary artifact — define concretely so "verification" can't become investigation)
 
-**Gate: Interview Complete**
+**Gate: Interview Complete** `[checkpoint: human-verify, auto-advanceable]`
 - Verify AskUserQuestion was called
 - Check that answers to all 6 questions are present
 - If interview incomplete, ask remaining questions
@@ -139,7 +169,14 @@ domain: [code/data/writing/research/other]
 6. **Verification:** ...
 ```
 
-Update `.planning/wc/{name}/STATE.md`: `step: 2-interview, status: completed`
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 2-interview
+status: completed
+requires: [PHILOSOPHY.md]
+provides: [INTERVIEW.md]
+affects: [.planning/wc/{name}/INTERVIEW.md, .planning/wc/{name}/STATE.md]
+```
 
 **IMMEDIATELY proceed to Step 3.**
 
@@ -458,7 +495,7 @@ Phase N produces ARTIFACT.md
 - Integration tasks (multi-file coordination) → standard model
 - Architecture/review tasks (design judgment) → most capable model
 
-**Gate: Artifact Review Gates Designed**
+**Gate: Artifact Review Gates Designed** `[checkpoint: human-verify, auto-advanceable]`
 - Every artifact-producing phase has a review gate before the consuming phase
 - Reviewer is a fresh subagent (not self-review)
 - Fix-and-re-review loop with max 5 iterations
@@ -468,7 +505,14 @@ Phase N produces ARTIFACT.md
 
 Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
 
-Update `.planning/wc/{name}/STATE.md`: `step: 3b-artifact-review, status: completed`
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 3b-artifact-review
+status: completed
+requires: [PHILOSOPHY.md, INTERVIEW.md]
+provides: [DESIGN.md]
+affects: [.planning/wc/{name}/DESIGN.md]
+```
 
 **IMMEDIATELY proceed to Step 4.**
 
@@ -537,7 +581,7 @@ Any phase where agents execute work (implementation, drafting, transformation) s
 
 Each task summary should end with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
 
-**Gate: Enforcement Patterns Loaded**
+**Gate: Enforcement Patterns Loaded** `[checkpoint: human-verify, auto-advanceable]`
 - Verify enforcement-checklist.md was read
 - Check that you can name all 13 patterns
 - If you cannot list them, re-read enforcement-checklist.md
@@ -809,13 +853,22 @@ With the co-located architecture, script wiring is simpler — the auto-discover
 
 **Why auto-discovery eliminates most wiring bugs:** Adding a `.py` to `constraints/` = automatically run by the test runner. No manual registration. The main wiring failure mode now is hooks — guard hooks still need explicit YAML frontmatter.
 
-**Gate: Cross-Skill Consistency Complete**
+**Gate: Cross-Skill Consistency Complete** `[checkpoint: human-verify, auto-advanceable]`
 - Verify sibling skills were scanned (or note that no siblings exist)
 - Layer 1: If `constraints/` directory exists, verify sibling skills `Read()` the specific `.md` files they need. If skills share a domain, verify common rules are in `constraints/` (not inlined).
 - Layer 2: Hook Coverage Matrix produced. No unexplained gaps.
 - Layer 3: Script Wiring Matrix produced. No unwired scripts.
 
-**After verifying Cross-Skill Dedup is complete, IMMEDIATELY proceed to Step 5.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 4b-cross-skill
+status: completed
+requires: [DESIGN.md, enforcement-checklist.md]
+provides: [enforcement plan, hook coverage matrix]
+affects: [.planning/wc/{name}/STATE.md]
+```
+
+**IMMEDIATELY proceed to Step 5.**
 
 ### Step 5: Design Two Entry Points
 
@@ -888,12 +941,21 @@ Both entry points should support **session handoff** via `.planning/HANDOFF.md` 
 
 **Why:** Long workflows often exceed context windows. Without structured handoff, the next session wastes significant time re-discovering where the previous session left off. The handoff captures decisions, dead ends, and in-flight context that state files alone don't preserve.
 
-**Gate: Two Entry Points Designed**
+**Gate: Two Entry Points Designed** `[checkpoint: human-verify, auto-advanceable]`
 - Verify entry point (start fresh) is defined
 - Verify midpoint (re-enter) is defined with constraint loading
 - If either is missing, design both entry points
 
-**After verifying Two Entry Points are designed, IMMEDIATELY proceed to Step 6.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 5-entry-points
+status: completed
+requires: [DESIGN.md]
+provides: [entry point design, midpoint design]
+affects: [.planning/wc/{name}/STATE.md]
+```
+
+**IMMEDIATELY proceed to Step 6.**
 
 ### Step 6: Generate Workflow Files
 
@@ -957,7 +1019,37 @@ Visual artifacts *can* make `decision` checkpoints faster — but what helps dep
 
 **Implementation:** bundle scripts in `skills/[phase]/scripts/`. Self-contained HTML or notebooks. The verify/review phase offers to run the script — it doesn't force it.
 
-Present complete file list for user approval before writing.
+Present complete file list for user approval before writing. `[checkpoint: decision — user chooses which files to generate]`
+
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 6-generate
+status: completed
+requires: [INTERVIEW.md, DESIGN.md]
+provides: [skills/{name}/SKILL.md, skills/{name}-fix/SKILL.md, phase skills, constraint files]
+affects: [skills/{name}/, references/constraints/]
+```
+
+### Deviation Rules for Steps 4-6 (File Generation)
+
+During enforcement generation (Step 4) and file writing (Step 6), unplanned issues may arise. Apply these deviation rules:
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Bug** | Broken path, invalid YAML, syntax error in generated file | Fix immediately, note in STATE.md | Auto |
+| **R2: Missing Critical** | Generated workflow missing a gate, missing enforcement for high-drift phase | Add the missing element, note in STATE.md | Auto |
+| **R3: Blocking** | Constraint file conflict, skill naming collision, hook script missing | Fix blocker, note in STATE.md | Auto |
+| **R4: Architectural** | User's domain doesn't fit proposed topology, need to restructure phases | STOP — present decision to user with options | Ask user |
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure → R4
+
+### Delete & Restart Protocol
+
+<EXTREMELY-IMPORTANT>
+If you generate workflow files (Step 6) without having completed Steps 1-5 — or if STATE.md does not show steps 1-5 as completed — DELETE all generated files and restart from Step 1. No exceptions.
+
+Patching files generated without proper investigation, interview, decomposition, and enforcement design is worse than restarting. The generated files inherit every gap from the skipped steps.
+</EXTREMELY-IMPORTANT>
 
 ### Step 7: Self-Audit the Generated Workflow
 
@@ -999,7 +1091,7 @@ After generating workflow files in Step 6:
    ```
 
 2. **Check score:** If composite score < 8.0, fix the generated files and re-dispatch a fresh audit subagent (max 3 iterations). Each iteration gets a NEW subagent — no resume, no context carryover.
-3. **Present to user** with the audit report attached — the user sees both the workflow AND its quality score
+3. **Present to user** `[checkpoint: decision — user approves or requests changes]` with the audit report attached — the user sees both the workflow AND its quality score
 
 ```
 Step 6: Generate Files
@@ -1018,11 +1110,49 @@ Present files + audit report + remaining gaps to user
 
 **Why 8.0 not 9.5:** Generated workflows are first drafts. They need real-world usage to reach 9.5. But they should clear 8.0 — no missing gates, no broken paths, no ungated phase transitions. Mode 3 exists for the 8.0 → 9.5 climb.
 
-Update `.planning/wc/{name}/STATE.md`: `step: 7-self-audit, status: completed`
+#### Post-Subagent Enforcement (Step 7)
+
+After the audit subagent returns, main chat operates under these restrictions:
+
+| Main chat CAN do (verification) | Main chat CANNOT do (investigation) |
+|----------------------------------|--------------------------------------|
+| Read AUDIT.md and SCORES.md | Re-score principles (auditor's scores are authoritative) |
+| Fix specific gaps identified in AUDIT.md | Override audit findings ("the auditor was wrong about X") |
+| Re-dispatch a NEW audit subagent | Declare "close enough" below 8.0 |
+| Present results to user | Edit generated files without addressing a scored gap |
+
+**The audit subagent's score is authoritative.** If you disagree with a score, fix the gap and let the next audit re-score — do not override.
+
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 7-self-audit
+status: completed
+requires: [DESIGN.md, generated skill files]
+provides: [AUDIT.md]
+affects: [.planning/wc/{name}/AUDIT.md]
+```
 
 ---
 
 ## Mode 2: Audit Existing Workflow
+
+```
+Step 1: Read All Files ──→ Step 2: Score 20 Principles ──→ Step 3: Score 13 Patterns
+  [auto]                     [auto]                          [auto]
+    │                           │                               │
+    ▼                           ▼                               ▼
+  File map built              P01-P20 scored                  Patterns scored per phase
+                                                                  │
+                              Step 3b: Path Portability ◄─────────┘
+                                [auto]
+                                  │
+                                  ▼
+                              Step 4: Output Report
+                                [decision: present to user]
+                                  │
+                                  ▼
+                              AUDIT.md written
+```
 
 **IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause or wait for user input between steps.
 
@@ -1032,27 +1162,29 @@ Update `.planning/wc/{name}/STATE.md`: `step: 7-self-audit, status: completed`
 
 Read the workflow's entry command and ALL phase skills. Build a map of phases, transitions, and enforcement.
 
-**Gate: Workflow Fully Read**
+**Gate: Workflow Fully Read** `[checkpoint: human-verify, auto-advanceable]`
 - Verify entry command was read
 - Verify ALL phase skills were read (count Read() calls)
 - If any phase skill is missing, read it now
 
 **After verifying Workflow is fully read, IMMEDIATELY proceed to Step 2.**
 
-### Step 2: Score Against Core Principles
+### Step 2: Score Against Core Principles (P01-P20)
 
-**Phased decomposition:**
+Score each principle 0-10. Use the formal ID (P01-P20) in all audit output for traceability.
+
+**P01 — Phased decomposition:**
 - Does each phase have a single responsibility?
 - Are phase boundaries clear?
 - Can phases be executed out of order? (they shouldn't be)
 
-**Gates (deterministic or judgment-based):**
+**P02 — Gates (deterministic or judgment-based):**
 - Are gates machine-verifiable where possible? (file exists, test passes)
 - For subjective domains, are judgment gates explicit? (agent-assessed or human-assessed)
 - Or are they just prose? ("ensure quality is high")
 - Are there ungated transitions?
 
-**Structural gate enforcement (CRITICAL — this is the #1 audit gap):**
+**P03 — Structural gate enforcement (CRITICAL — this is the #1 audit gap):**
 - For every mandatory inter-phase gate, classify as STRUCTURAL or ADVISORY:
   - **STRUCTURAL:** Producing phase writes a concrete artifact (`.planning/X_REVIEWED.md`), consuming phase checks for it at startup and refuses to proceed without it
   - **ADVISORY:** Gate uses instructional text only ("you must", "prerequisite:", "do not proceed without") — no artifact, no check
@@ -1072,7 +1204,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
   - **INSTRUCTION-ONLY:** Skill text checks for the artifact but no hook blocks tool calls (weaker — can be rationalized past under context pressure)
 - Score: count of STRUCTURAL gates / total mandatory gates. Below 80% = critical gap. Count of HOOK-ENFORCED / STRUCTURAL gates — below 50% = recommend hook migration.
 
-**Independent verification:**
+**P04 — Independent verification:**
 - Is verification structurally independent from implementation? (fresh subagent, not self-review)
 - Does the verifier see only spec + output, not the implementation journey?
 - For subjective output, are there multiple specialized reviewers? (team topology)
@@ -1091,26 +1223,26 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 
 If verification only checks Level 1 (exists), it's theater. A workflow that claims "test exists" without checking the test is substantive, wired, and functional is shipping false confidence.
 
-**Artifact review:**
+**P05 — Artifact review:**
 - Are intermediate artifacts (specs, plans, outlines) reviewed before downstream phases consume them?
 - Is the reviewer a fresh subagent (not the phase that wrote the artifact)?
 - Is there a fix-and-re-review loop with iteration limits?
 - Are large artifacts (>15 items) chunked for separate review?
 - Is there model tier guidance for delegation phases?
 
-**Two entry points:**
+**P06 — Two entry points:**
 - Does the workflow have both an entry (start fresh) and midpoint (re-enter)?
 - Is the midpoint self-contained? (loads all constraints, doesn't depend on prior phases)
 - Does the midpoint load full skills, not summaries?
 - Do skills that share a domain share a common enforcement file? (or does each skill enforce its own version of the rules?)
 - Could a user get inconsistent enforcement depending on which skill they invoke?
 
-**Cross-skill consistency (three layers):**
+**P07 — Cross-skill consistency (three layers):**
 - **Constraints:** Do all sibling skills Read() from the same `constraints/` directory? Are rules co-located (`.md` + `.py` pairs for testable rules, `.md` only for conventions)? Is there an auto-discovering runner (`check-all.py`) that globs `constraints/*.py`?
 - **Hooks:** Do all sibling skills declare the same hooks in their YAML frontmatter? If a hook is present in some siblings but not others, is the gap justified? (Produce a Hook Coverage Matrix: skills × hooks)
 - **Script wiring:** Is every check script referenced in all three layers: (a) hook frontmatter, (b) batch orchestrator, (c) verification-checks definition? (Produce a Script Wiring Matrix: scripts × invocation points)
 
-**Constraint/convention test coverage:**
+**P08 — Constraint/convention test coverage:**
 - Do all rules live in a single `constraints/` directory? (no separate `conventions/` directory)
 - Is the constraint/convention distinction based on **presence of a `.py` check script**, not directory location?
 - Does `check-all.py` (auto-discovering test runner) exist? Does it glob `constraints/*.py` — no manual wiring?
@@ -1118,11 +1250,11 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Are there `.md`-only files (conventions) that could **graduate** to constraints by adding a `.py` check script?
 - Compute **coverage** from the filesystem: `len(*.py) / len(*.md)` — what percentage of rules have mechanical tests?
 
-**Iteration strategy:**
+**P09 — Iteration strategy:**
 - Does each phase have an appropriate iteration topology? (one-shot, serial, parallel, team)
 - Are exit conditions structural (tests, convergence, human approval) not honor-system (promises)?
 
-**Post-subagent enforcement (from dev-debug v5.0 audit, March 16 2026):**
+**P10 — Post-subagent enforcement (from dev-debug v5.0 audit, March 16 2026):**
 - When a subagent returns, what is main chat allowed to do? Is there an explicit tool whitelist?
 - Is "verification" defined concretely for this domain? (Without a definition, investigation gets disguised as verification)
 - Are operational tools (Bash commands beyond test running, Read on source files, Grep/Glob) restricted after subagent returns?
@@ -1136,69 +1268,70 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 
 **The post-subagent moment is the highest-risk point in any delegated workflow.** If the audit finds no enforcement there, flag it as a critical gap.
 
-**Deviation rules (from GSD 4-rule system):**
+**P11 — Deviation rules (from GSD 4-rule system):**
 - Do implementation phases have a deviation rule system (auto-fix for bugs/missing/blocking, STOP for architectural)?
 - Are deviation categories adapted to the domain?
 - Are deviations tracked and summarized per task?
 
-**State management:**
+**P12 — State management:**
 - Does the workflow use `.planning/` for state files (not `.claude/` or scattered locations)?
 - Are standard state files present (`.planning/SPEC.md`, `.planning/PLAN.md`, `.planning/STATE.md`, `.planning/LEARNINGS.md`)?
 - Is state file-based, git-trackable, and human-editable?
 
-**Session handoff:**
+**P13 — Session handoff:**
 - Does the entry point check for `.planning/HANDOFF.md` on startup?
 - Is the handoff document structured with frontmatter and mandatory sections?
 - Can work resume from a handoff without re-discovering context?
 
-**Checkpoint types:**
+**P14 — Checkpoint types:**
 - Are gates classified by type (human-verify, decision, human-action)?
 - Can the workflow auto-advance human-verify checkpoints in autonomous mode?
 - Are true decision points (multiple valid approaches) distinguished from rubber-stamp approvals?
 
-**Context monitoring:**
+**P15 — Context monitoring:**
 - Do phases check context availability before starting expensive work?
 - Is there a handoff trigger when context is low (≤35%)?
 - Does the workflow degrade gracefully or just produce garbage at context exhaustion?
 
-**Summary frontmatter:**
+**P16 — Summary frontmatter:**
 - Do phase completions produce structured YAML summaries?
 - Do summaries include `implements`, `requires`, `provides`, `affects` fields?
 - Is the one-liner substantive (not "Phase complete")?
 
-**Agent tool restrictions:**
+**P17 — Agent tool restrictions:**
 - Are verification/review agents restricted to read-only tools via `allowed-tools` frontmatter?
 - Can a verifier Write or Edit? (it shouldn't — that bypasses plan-execute-verify)
 - Are tool restriction tiers appropriate for each agent role?
 
-**Requirement traceability:**
+**P18 — Requirement traceability:**
 - Do requirements have unique IDs in `.planning/SPEC.md` (e.g., AUTH-01)?
 - Do `.planning/PLAN.md` tasks reference requirement IDs?
 - Does `.planning/VALIDATION.md` map every ID to test evidence?
 - Is there a scope classification (v1/v2/out-of-scope)?
 
-**Autonomous phase chaining:**
+**P19 — Autonomous phase chaining:**
 - Can phases chain automatically without human intervention at every step?
 - Does the workflow batch ambiguities (smart discuss) instead of sequential asks?
 - Does it re-read the plan after each phase to catch dynamically inserted phases?
 - Are blockers handled with retry/skip/stop options?
 
-**Visual output for human verification:**
+**P19b — Visual output for human verification:**
 - Do `decision` checkpoints offer visual artifacts when the human's review pattern suggests them?
 - Does the workflow log what the human actually looks at during review (in `.planning/LEARNINGS.md`)?
 - If the human has asked for the same view 3+ times, has it been automated into a script?
 
-**Hooks over prompt enforcement:**
+**P20 — Hooks over prompt enforcement:**
 - Are mechanically-checkable constraints enforced via scoped hooks (PreToolUse/PostToolUse in skill frontmatter)?
 - Or are they enforced only via prompt text (Iron Laws, Red Flags) that consume context and can be rationalized away?
 - Specifically check for: **phase gate enforcement** (prerequisite artifact checks), file extension guards, path guards, tool parameter validation, tool sequence enforcement, post-subagent restrictions
 - Behavioral/motivational constraints (rationalization tables, drive-aligned framing) should STAY as prompt — hooks can't teach reasoning
 - Score based on: how many mechanical constraints are prompt-only when they could be hooks?
 
-**Gate: Architecture Scored**
-- Verify scores for all 21 principles are present (phased decomposition, gates, **structural gate enforcement**, independent verification, artifact review, two entry points, cross-skill consistency, constraint/convention test coverage, iteration strategy, post-subagent enforcement, deviation rules, state management, session handoff, checkpoint types, context monitoring, summary frontmatter, agent tool restrictions, requirement traceability, autonomous phase chaining, visual output for verification, hooks over prompt)
-- Each principle must have numeric score + explanation
-- If any principle is missing, score it now
+**Gate: Architecture Scored** `[checkpoint: human-verify, auto-advanceable]`
+- Verify scores for all P01-P20 (+ P19b) principles are present
+- Each principle must have numeric score (0-10) + 1-line justification
+- If any principle ID is missing, score it now
+- Composite = average of scored (non-N/A) principles
 
 **After verifying Architecture is scored, IMMEDIATELY proceed to Step 3.**
 
@@ -1213,7 +1346,7 @@ For each of the 13 patterns, score:
 
 Identify the highest-drift phases with the weakest enforcement - these are the critical gaps.
 
-**Gate: Enforcement Scored**
+**Gate: Enforcement Scored** `[checkpoint: human-verify, auto-advanceable]`
 - Verify all 13 patterns were scored
 - Each pattern must be marked: Present / Weak / Absent
 - If any pattern is missing, score it now
@@ -1278,7 +1411,7 @@ If the first grep returns anything, flag as a Critical Gap.
 - **Partial** — some paths fixed, others remain
 - **Broken** — relative paths present in skill instructions OR `${CLAUDE_SKILL_DIR}` in hook command fields (even if file paths happen to resolve when tested)
 
-**Gate: Path Portability Scored**
+**Gate: Path Portability Scored** `[checkpoint: human-verify, auto-advanceable]`
 - Verify all SKILL.md and references/*.md files were scanned
 - Every `python3 ../` and `Read("../` pattern was flagged
 - Score is recorded
@@ -1292,13 +1425,30 @@ Format:
 ```
 ## Audit: [Workflow Name]
 
-### Architecture Scores
-- Phased decomposition: [score] - [notes]
-- Gates (deterministic/judgment): [score] - [notes]
-- Structural gate enforcement: [score] - [notes] (STRUCTURAL gates / total mandatory gates)
-- Independent verification: [score] - [notes]
-- Two entry points: [score] - [notes]
-- Iteration strategy: [score] - [notes]
+### Architecture Scores (P01-P20)
+| ID | Principle | Score | Notes |
+|----|-----------|-------|-------|
+| P01 | Phased decomposition | [0-10] | [notes] |
+| P02 | Gates (deterministic/judgment) | [0-10] | [notes] |
+| P03 | Structural gate enforcement | [0-10] | [notes] (STRUCTURAL/total) |
+| P04 | Independent verification | [0-10] | [notes] |
+| P05 | Artifact review (4-level) | [0-10] | [notes] |
+| P06 | Two entry points | [0-10] | [notes] |
+| P07 | Cross-skill consistency | [0-10] | [notes] |
+| P08 | Constraint/convention coverage | [0-10] | [notes] |
+| P09 | Iteration strategy | [0-10] | [notes] |
+| P10 | Post-subagent enforcement | [0-10] | [notes] |
+| P11 | Deviation rules | [0-10] | [notes] |
+| P12 | State management | [0-10] | [notes] |
+| P13 | Session handoff | [0-10] | [notes] |
+| P14 | Checkpoint types | [0-10] | [notes] |
+| P15 | Context monitoring | [0-10] | [notes] |
+| P16 | Summary frontmatter | [0-10] | [notes] |
+| P17 | Agent tool restrictions | [0-10] | [notes] |
+| P18 | Requirement traceability | [0-10] | [notes] |
+| P19 | Autonomous phase chaining | [0-10] | [notes] |
+| P19b | Visual output | [0-10] | [notes] |
+| P20 | Hooks over prompt | [0-10] | [notes] |
 
 ### Gate Enforcement Matrix
 | Transition | Gate | Artifact | Producer Writes? | Consumer Checks? | Hook Enforced? | Status |
@@ -1326,7 +1476,45 @@ Format:
 [Specific, actionable changes]
 ```
 
-**Persist audit results:** Write the audit report to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`: `step: 4-report, status: completed`.
+**Persist audit results:** Write the audit report to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 4-report
+status: completed
+requires: [all workflow skill files]
+provides: [AUDIT.md]
+affects: [.planning/wc/{name}/AUDIT.md]
+```
+
+### Mode 2 Enforcement
+
+#### Rationalization Table — Mode 2
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "This workflow is simple, I can skim the skill files" | Skimming produces generous scores. You miss enforcement gaps in the middle of long files. March 2026: 285-line Step 3 hid 6 un-gated sub-responsibilities. | Read ALL files line by line. Use Read with offset/limit to chunk large files. |
+| "This principle obviously doesn't apply to this domain" | Score it anyway with a justification. The auditor's job is to score everything, not to pre-filter. A principle that "doesn't apply" gets a justified N/A, not a skip. | Score it. Write the justification. Let the reader decide if N/A is warranted. |
+| "The workflow has good enforcement overall, I'll give generous scores" | Generous audits ship broken workflows. April 2026: baseline 5.2 was generous at 6.5 before careful tally. | Score each principle independently. Sum at the end. Don't anchor to an overall impression. |
+| "Enforcement patterns don't matter for low-drift phases" | Low-drift phases still need gates. A brainstorm phase with no gate means the agent can skip directly to implementation. | Score enforcement for every phase. Note "low enforcement appropriate" in justification if warranted. |
+| "The audit is already long enough, I'll skip the matrices" | The Gate Enforcement Matrix and Hook Coverage Matrix catch gaps that prose misses. Without them, the audit is subjective. | Produce all required matrices. They take 5 minutes and catch what prose can't. |
+
+#### Red Flags — STOP If You Catch Yourself:
+
+| Action | Why Wrong | Do Instead |
+|--------|-----------|------------|
+| Scoring a principle without reading the relevant skill file section | You're scoring from memory or impression, not evidence | Read the specific section, find the line numbers, then score |
+| Giving a 9 or 10 without finding specific evidence | High scores require evidence of excellence, not absence of problems | Find the specific line/pattern that earns the score. No evidence = no high score |
+| Skipping the enforcement pattern matrix | "I covered it in prose" — matrices catch asymmetries prose misses | Produce the matrix. Score every pattern × every phase |
+| Scoring structural gate enforcement without producing the Gate Enforcement Matrix | You can't assess gates without mapping every transition | Produce the matrix first, then score from it |
+| Combining two principles into one score | Each principle measures a different quality dimension | Score each P01-P20 independently |
+
+#### Drive-Aligned Framing — Mode 2
+
+| Your Drive | Why You Cut Corners | What Actually Happens | The Drive You Failed |
+|------------|--------------------|-----------------------|---------------------|
+| **Helpfulness** | "Quick audit so user gets results faster" | Generous audit ships broken workflow. User discovers gaps in production. | **Anti-helpful** |
+| **Competence** | "I can tell from the structure this is fine" | Without line-by-line reading, you miss the gap buried at line 285 of a 500-line file. | **Incompetent** |
+| **Efficiency** | "Matrices are overhead, prose covers it" | Prose catches narrative gaps. Matrices catch structural gaps. You shipped an asymmetric hook coverage. | **Anti-efficient** |
+| **Honesty** | "I'll score this 8 because it's mostly there" | "Mostly there" means gaps exist. An honest score reflects the gaps. | **Dishonest** |
 
 ---
 
@@ -1348,7 +1536,7 @@ Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → 
 
 Run Mode 2 on the target workflow. This produces the baseline score.
 
-**Gate:** Mode 2 audit report exists with numeric scores for all 20 principles.
+**Gate:** Mode 2 audit report exists with numeric scores for all P01-P20 principles. `[checkpoint: human-verify, auto-advanceable]`
 
 ### Step 2: Launch Audit-Fix Loop
 
