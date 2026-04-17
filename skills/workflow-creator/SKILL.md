@@ -124,6 +124,7 @@ mkdir -p .planning/wc/{name} && cat > .planning/wc/{name}/STATE.md << 'EOF'
 mode: create
 step: 1-philosophy
 status: completed
+implements: [WC-01]
 requires: [PHILOSOPHY.md]
 provides: []
 affects: [.planning/wc/{name}/STATE.md]
@@ -176,6 +177,7 @@ Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 2-interview
 status: completed
+implements: [WC-02]
 requires: [PHILOSOPHY.md]
 provides: [INTERVIEW.md]
 affects: [.planning/wc/{name}/INTERVIEW.md, .planning/wc/{name}/STATE.md]
@@ -189,6 +191,7 @@ Before proceeding to decomposition, verify the interview capture is complete and
 Agent(
   subagent_type="general-purpose",
   description="Review INTERVIEW.md completeness",
+  allowed_tools=["Read", "Grep", "Glob"],
   prompt="""Read .planning/wc/{name}/INTERVIEW.md.
 
 Check against the 6 required interview questions:
@@ -547,6 +550,7 @@ Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 3b-artifact-review
 status: completed
+implements: [WC-03, WC-04]
 requires: [PHILOSOPHY.md, INTERVIEW.md]
 provides: [DESIGN.md]
 affects: [.planning/wc/{name}/DESIGN.md]
@@ -902,6 +906,7 @@ Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 4b-cross-skill
 status: completed
+implements: [WC-05]
 requires: [DESIGN.md, enforcement-checklist.md]
 provides: [enforcement plan, hook coverage matrix]
 affects: [.planning/wc/{name}/STATE.md]
@@ -990,6 +995,7 @@ Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 5-entry-points
 status: completed
+implements: [WC-06]
 requires: [DESIGN.md]
 provides: [entry point design, midpoint design]
 affects: [.planning/wc/{name}/STATE.md]
@@ -1066,6 +1072,7 @@ Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 6-generate
 status: completed
+implements: [WC-07, WC-10, WC-11]
 requires: [INTERVIEW.md, DESIGN.md]
 provides: [skills/{name}/SKILL.md, skills/{name}-fix/SKILL.md, phase skills, constraint files]
 affects: [skills/{name}/, references/constraints/]
@@ -1173,6 +1180,7 @@ Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 7-self-audit
 status: completed
+implements: [WC-08, WC-09]
 requires: [DESIGN.md, generated skill files]
 provides: [AUDIT.md]
 affects: [.planning/wc/{name}/AUDIT.md]
@@ -1527,14 +1535,30 @@ Format:
 [Specific, actionable changes]
 ```
 
+**Render score trend** (if SCORES.md exists from a prior audit):
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
+```
+
 **Persist audit results:** Write the audit report to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 4-report
 status: completed
+implements: [WC-09]
 requires: [all workflow skill files]
 provides: [AUDIT.md]
 affects: [.planning/wc/{name}/AUDIT.md]
 ```
+
+<EXTREMELY-IMPORTANT>
+### The Iron Law of Thorough Scoring
+
+**NO PRINCIPLE SCORE WITHOUT LINE-NUMBER EVIDENCE. This is not negotiable.**
+
+Mode 2 is the highest-drift mode: the auditor is tempted to skim, anchor to an overall impression, and give generous scores. Every principle score MUST cite specific line numbers or artifact names as evidence. A score without evidence is a guess, not an audit.
+
+**If you cannot point to a specific line, file, or pattern that justifies the score — the score is wrong.**
+</EXTREMELY-IMPORTANT>
 
 ### Deviation Rules for Mode 2 (Auditing)
 
@@ -1663,7 +1687,7 @@ Read "${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md"
 Then audit this workflow by reading ALL its skill files:
 [LIST ALL SKILL FILES IN THE WORKFLOW]
 
-Score each of the 16 architecture principles 0-10.
+Score each of the 20 architecture principles (P01-P20 + P19b) 0-10.
 Score each of the 13 enforcement patterns per phase: Present/Weak/Absent.
 Check path portability.
 
@@ -1686,7 +1710,7 @@ Do NOT soften findings. Do NOT say 'overall good.'
 The auditor has no context from the fix phase. It reads the files cold. This is what makes the score trustworthy.
 </EXTREMELY-IMPORTANT>
 
-#### Phase B: DECIDE
+#### Phase B: DECIDE `[checkpoint: decision]`
 
 Read `.planning/wc/{name}/SCORES.md`. Render the score trend for visual context:
 
