@@ -38,9 +38,10 @@ This document defines the PROCESS for creating workflows. The workflows created 
 
 Before detecting mode, check for existing workflow-creator state:
 
-1. Check if `.planning/wc/` exists and list subdirectories
-2. If any subdirectory contains `HANDOFF.md` → read it, offer to resume from recorded state (skip mode detection)
-3. If not found → proceed with mode detection below
+1. **IDENTIFY:** Run `Glob(".planning/wc/*/HANDOFF.md")` and `Glob(".planning/wc/*/STATE.md")`
+2. **READ:** If any HANDOFF.md found → read it. If STATE.md found without HANDOFF.md → read STATE.md to determine last completed step.
+3. **VERIFY:** If HANDOFF.md exists, confirm the recorded mode/step match what STATE.md shows. If they conflict, trust STATE.md (it's hook-enforced).
+4. **DECIDE:** If resumable state found → offer to resume from recorded position (skip mode detection). If not found → proceed with mode detection below. [checkpoint: decision]
 
 **Determining `{name}`:** The `{name}` in all state file paths is the target workflow name (e.g., `dev`, `ds`, `writing`, `teaching`). For Mode 1, use the proposed workflow name from the interview. For Modes 2-3, use the workflow being audited/improved.
 
@@ -102,7 +103,9 @@ Step 7: Self-Audit ◄── Step 6: Generate ◄── Step 5: Entry Points ◄
 **IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
 
 <EXTREMELY-IMPORTANT>
-**Known self-violation:** Mode 1 and Mode 2 step transitions below use advisory "IMMEDIATELY proceed" text rather than hook-enforced gates — the exact anti-pattern Step 3b flags as a defect in generated workflows. This gap is acknowledged in the April 2026 self-audit (`/Users/vwh7mb/projects/course-materials/.planning/wc/workflow-creator/AUDIT.md`).
+**Known self-violation:** Mode 1 and Mode 2 step transitions below use advisory "IMMEDIATELY proceed" text rather than hook-enforced gates — the exact anti-pattern Step 3b flags as a defect in generated workflows. This gap is acknowledged in the April 2026 self-audit (see `.planning/wc/workflow-creator/AUDIT.md` in the project where the audit was conducted).
+
+**Why this is acceptable for workflow-creator specifically:** workflow-creator is a meta-tool, not a multi-phase workflow. Its step transitions are linear within a single session (no parallel phases, no cross-session handoff between steps). The STATE.md step-chain hook (`wc-step-gate-guard.py`) enforces predecessor completion for ALL modes — the "advisory" text is backstopped by Layer 2 enforcement. The remaining gap is Layer 1 (file-path gates), which only applies to Mode 1 artifact creation. For Modes 2/3, the step-chain is the primary gate mechanism and is fully hook-enforced.
 
 **Mitigation:** at every step labelled "IMMEDIATELY proceed to Step N", you MUST update `.planning/wc/{name}/STATE.md` with `step: N-name, status: completed` BEFORE reading the next step. A future Mode 2 audit or resume scanner will refuse to continue from an incomplete STATE.md entry. This is an artifact-check gate (medium strength), not hook-enforced (strongest) — hook migration is the next improvement.
 
@@ -1672,6 +1675,14 @@ During auditing, unplanned issues may arise. Apply these deviation rules:
 | Skipping the enforcement pattern matrix | "I covered it in prose" — matrices catch asymmetries prose misses | Produce the matrix. Score every pattern × every phase |
 | Scoring structural gate enforcement without producing the Gate Enforcement Matrix | You can't assess gates without mapping every transition | Produce the matrix first, then score from it |
 | Combining two principles into one score | Each principle measures a different quality dimension | Score each P01-P20 independently |
+
+#### Staged Review — Mode 2
+
+If the audit report composite is below 5.0 on first pass, STOP and re-read all workflow files from scratch before finalizing scores. Audits below 5.0 usually indicate the auditor missed a section or misunderstood the workflow structure — not that the workflow is truly that weak. Re-reading costs 5 minutes; a wrong baseline wastes the entire improvement cycle.
+
+#### Delete & Restart — Mode 2
+
+If you discover mid-audit that you scored Steps 1-2 without reading all phase skill files: delete your partial scores and restart from Step 1. Partial-read audits produce anchored scores that resist correction. Starting fresh is faster than debiasing.
 
 #### Drive-Aligned Framing — Mode 2
 
