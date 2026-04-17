@@ -100,16 +100,16 @@ Step 7: Self-Audit ◄── Step 6: Generate ◄── Step 5: Entry Points ◄
   Present to user
 ```
 
-**IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
+**IMPORTANT:** After completing each step, proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
 
 <EXTREMELY-IMPORTANT>
-**Known self-violation:** Mode 1 and Mode 2 step transitions below use advisory "IMMEDIATELY proceed" text rather than hook-enforced gates — the exact anti-pattern Step 3b flags as a defect in generated workflows. This gap is acknowledged in the April 2026 self-audit (see `.planning/wc/workflow-creator/AUDIT.md` in the project where the audit was conducted).
+**Enforcement architecture:** Step transitions are hook-enforced via `wc-step-gate-guard.py`:
+- **Layer 2 (step-chain):** Writing `step: N` to STATE.md is BLOCKED unless `step: N-1` shows `status: completed`. This fires for ALL modes (create, audit, improve).
+- **Layer 1 (file-path gates):** Writing INTERVIEW.md, DESIGN.md, AUDIT.md, and skill/constraint files is BLOCKED unless the prerequisite step is completed. Mode 1 only.
 
-**Why this is acceptable for workflow-creator specifically:** workflow-creator is a meta-tool, not a multi-phase workflow. Its step transitions are linear within a single session (no parallel phases, no cross-session handoff between steps). The STATE.md step-chain hook (`wc-step-gate-guard.py`) enforces predecessor completion for ALL modes — the "advisory" text is backstopped by Layer 2 enforcement. The remaining gap is Layer 1 (file-path gates), which only applies to Mode 1 artifact creation. For Modes 2/3, the step-chain is the primary gate mechanism and is fully hook-enforced.
+Every step below has a STATE.md YAML template. You MUST write this template to STATE.md BEFORE advancing — the hook enforces the chain.
 
-**Mitigation:** at every step labelled "IMMEDIATELY proceed to Step N", you MUST update `.planning/wc/{name}/STATE.md` with `step: N-name, status: completed` BEFORE reading the next step. A future Mode 2 audit or resume scanner will refuse to continue from an incomplete STATE.md entry. This is an artifact-check gate (medium strength), not hook-enforced (strongest) — hook migration is the next improvement.
-
-If you catch yourself thinking "the skill just said 'IMMEDIATELY proceed' so I can skip the STATE.md update" — STOP. The STATE.md update IS the gate artifact. Skipping it means the next session has no recoverable position.
+If you catch yourself thinking "I can skip the STATE.md update" — STOP. The STATE.md update IS the gate artifact. The hook will BLOCK subsequent writes without it.
 </EXTREMELY-IMPORTANT>
 
 ### Step 1: Ground in Philosophy
@@ -138,7 +138,7 @@ Philosophy loaded. Proceeding to interview.
 EOF
 ```
 
-**IMMEDIATELY proceed to Step 2.**
+**Proceed to Step 2.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 2: Interview
 <!-- implements: WC-02 -->
@@ -218,7 +218,7 @@ Do NOT edit the file — report only."""
 - If reviewer reports APPROVED → proceed
 - If reviewer reports gaps → ask remaining questions, update INTERVIEW.md, re-review (max 3 iterations)
 
-**IMMEDIATELY proceed to Step 3.**
+**Proceed to Step 3.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 3: Propose Phase Decomposition
 <!-- implements: WC-03 -->
@@ -512,6 +512,19 @@ Workflows should support autonomous execution — chaining phases automatically 
 
 **Why:** Without autonomous chaining, the user must manually invoke each phase. A 7-phase workflow requires 7 manual interventions. With autonomous mode, the user kicks off the workflow and returns to find it complete (or paused at a genuine decision point).
 
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 3-decomposition
+status: completed
+implements: [WC-03]
+requires: [PHILOSOPHY.md, INTERVIEW.md]
+provides: [phase decomposition, gate conditions, enforcement needs]
+affects: [.planning/wc/{name}/STATE.md]
+one-liner: "Phases decomposed with single responsibilities, gate conditions, and enforcement needs."
+```
+
+**Proceed to Step 3b.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
+
 ### Step 3b: Add Artifact Review Gates
 <!-- implements: WC-04 -->
 
@@ -596,7 +609,7 @@ Do NOT edit the file — report only."""
 - If reviewer reports APPROVED → proceed
 - If reviewer reports gaps → fix DESIGN.md, re-review (max 3 iterations)
 
-**IMMEDIATELY proceed to Step 4.**
+**Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 4: Apply Enforcement Patterns
 <!-- implements: WC-05 -->
@@ -669,7 +682,18 @@ Each task summary should end with: **Total deviations:** N auto-fixed (R1: X, R2
 - Check that you can name all 13 patterns
 - If you cannot list them, re-read enforcement-checklist.md
 
-**After verifying Enforcement Patterns are loaded, IMMEDIATELY proceed to Step 4b.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 4-enforcement
+status: completed
+implements: [WC-05]
+requires: [DESIGN.md, enforcement-checklist.md]
+provides: [enforcement pattern assignments per phase]
+affects: [.planning/wc/{name}/STATE.md]
+one-liner: "13 enforcement patterns assigned to phases based on drift risk."
+```
+
+**Proceed to Step 4b.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 4b: Common Enforcement Across Skill Families
 
@@ -956,7 +980,7 @@ provides: [enforcement plan, hook coverage matrix]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
-**IMMEDIATELY proceed to Step 5.**
+**Proceed to Step 5.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 5: Design Two Entry Points
 <!-- implements: WC-06 -->
@@ -1050,7 +1074,7 @@ affects: [.planning/wc/{name}/STATE.md]
 one-liner: "Entry point (start fresh) and midpoint (re-enter with constraint loading) designed."
 ```
 
-**IMMEDIATELY proceed to Step 6.**
+**Proceed to Step 6.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 6: Generate Workflow Files
 <!-- implements: WC-07 -->
@@ -1291,7 +1315,7 @@ provides: [file map, phase/transition inventory]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
-**IMMEDIATELY proceed to Step 2.**
+**Proceed to Step 2.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 2: Score Against Core Principles (P01-P20)
 <!-- implements: WC-09 -->
@@ -1468,7 +1492,7 @@ provides: [P01-P20 scores with justifications]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
-**IMMEDIATELY proceed to Step 3.**
+**Proceed to Step 3.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 3: Score Against Enforcement Checklist
 
@@ -1495,7 +1519,7 @@ provides: [13-pattern scores per phase]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
-**IMMEDIATELY proceed to Step 3b.**
+**Proceed to Step 3b.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 3b: Audit Path Portability
 
@@ -1569,7 +1593,7 @@ provides: [path portability score]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
-**IMMEDIATELY proceed to Step 4.**
+**Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 4: Output Audit Report
 
