@@ -1158,6 +1158,10 @@ Step 1: Read All Files ──→ Step 2: Score 20 Principles ──→ Step 3: S
 
 **State initialization:** Create `.planning/wc/{name}/STATE.md` with `mode: audit, step: 1-read, status: in_progress, target: [workflow name]`.
 
+**Context monitoring:** Mode 2 audits complex multi-file workflows. Check context availability:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` and pause — the audit will degrade if context is exhausted mid-scoring.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately.
+
 ### Step 1: Read the Workflow
 
 Read the workflow's entry command and ALL phase skills. Build a map of phases, transitions, and enforcement.
@@ -1534,6 +1538,10 @@ Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → 
 
 **State initialization:** Create `.planning/wc/{name}/STATE.md` with `mode: improve, step: 1-initial-audit, status: in_progress, target: [workflow name]`.
 
+**Context monitoring:** Mode 3 runs multi-iteration audit-fix loops. Each iteration consumes significant context. Check availability:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with current iteration, score, and remaining gaps before starting the next iteration.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately — do not start another iteration.
+
 Run Mode 2 on the target workflow. This produces the baseline score.
 
 **Gate:** Mode 2 audit report exists with numeric scores for all P01-P20 principles. `[checkpoint: human-verify, auto-advanceable]`
@@ -1548,14 +1556,29 @@ Skill(skill="ralph-loop:ralph-loop", args="Improve [WORKFLOW_NAME] workflow to >
 
 **Each iteration of the loop follows this exact sequence:**
 
+```
+Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
+  [fresh subagent]   [check score]       [targeted edits]
+    │                    │                    │
+    ▼                    ▼                    ▼
+  AUDIT.md            Score >= 9.5?         Fix gaps by priority:
+  SCORES.md             │                   1. P < 7.0 (critical)
+                    YES ──→ DONE            2. P 7-8.9 (medium)
+                        │                   3. P 9-9.4 (polish)
+                    NO ──→ Phase C              │
+                                                ▼
+                                            End turn → ralph-loop
+                                            feeds back to Phase A
+```
+
 #### Phase A: AUDIT (Fresh Subagent — MANDATORY)
 
 Spawn a fresh audit subagent that:
 1. Reads ALL skill files in the workflow (entry, midpoint, all phases, references, common-constraints)
-2. Scores against the 16 architecture principles (0-10 each)
+2. Scores against the P01-P20 architecture principles (0-10 each)
 3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
 4. Checks path portability
-5. Computes composite score (average of 20 principle scores)
+5. Computes composite score (average of non-N/A principle scores)
 6. Writes findings to `.planning/wc/{name}/AUDIT.md`
 7. Appends score to `.planning/wc/{name}/SCORES.md`
 

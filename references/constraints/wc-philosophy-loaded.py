@@ -34,6 +34,12 @@ def check(context):
             continue
 
         content = state.read_text()
+
+        # Only check workflow-creator "create" mode state (not audit/improve)
+        is_create_mode = bool(re.search(r"mode:\s*create", content))
+        if not is_create_mode:
+            continue
+
         has_philosophy = bool(re.search(r"step:\s*1-philosophy", content))
         has_completed = bool(re.search(r"status:\s*completed", content))
 

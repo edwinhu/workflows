@@ -20,19 +20,21 @@ def check(context):
 
     content = skill_file.read_text()
 
-    # Check Mode 1 Step 7 has fresh subagent dispatch
-    if "Step 7" in content:
-        step7_idx = content.index("Step 7")
-        step7_section = content[step7_idx:step7_idx + 2000]
+    import re
+
+    # Check Mode 1 Step 7 has fresh subagent dispatch (use heading pattern)
+    step7_match = re.search(r'^### Step 7:', content, re.MULTILINE)
+    if step7_match:
+        step7_section = content[step7_match.start():step7_match.start() + 3000]
         if "Agent(" not in step7_section and "subagent" not in step7_section.lower():
             violations.append("Step 7 does not contain Agent() dispatch for self-audit")
         if 'allowed_tools' not in step7_section and 'allowed-tools' not in step7_section:
             violations.append("Step 7 audit dispatch missing allowed_tools restriction")
 
-    # Check Mode 3 Phase A has fresh subagent dispatch
-    if "Phase A" in content:
-        phase_a_idx = content.index("Phase A")
-        phase_a_section = content[phase_a_idx:phase_a_idx + 2000]
+    # Check Mode 3 Phase A has fresh subagent dispatch (use heading pattern)
+    phase_a_match = re.search(r'^#### Phase A:', content, re.MULTILINE)
+    if phase_a_match:
+        phase_a_section = content[phase_a_match.start():phase_a_match.start() + 3000]
         if "Agent(" not in phase_a_section and "subagent" not in phase_a_section.lower():
             violations.append("Phase A does not contain Agent() dispatch for audit")
         if 'allowed_tools' not in phase_a_section and 'allowed-tools' not in phase_a_section:
