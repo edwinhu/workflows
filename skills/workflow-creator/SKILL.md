@@ -7,10 +7,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: >-
-            WC_REQUIRED_STEP=5-entry-points
-            WC_GATE_DESCRIPTION="Steps 1-5 (philosophy, interview, decomposition, enforcement, entry points)"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.py
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
@@ -111,6 +108,7 @@ If you catch yourself thinking "the skill just said 'IMMEDIATELY proceed' so I c
 </EXTREMELY-IMPORTANT>
 
 ### Step 1: Ground in Philosophy
+<!-- implements: WC-01 -->
 
 Discover and read PHILOSOPHY.md:Read `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md` and follow its instructions. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
 
@@ -137,6 +135,11 @@ EOF
 **IMMEDIATELY proceed to Step 2.**
 
 ### Step 2: Interview
+<!-- implements: WC-02 -->
+
+**Context check:** The interview is interactive and may require multiple exchanges. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with philosophy status and current progress. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
 Use AskUserQuestion to understand the domain:
 
@@ -178,9 +181,41 @@ provides: [INTERVIEW.md]
 affects: [.planning/wc/{name}/INTERVIEW.md, .planning/wc/{name}/STATE.md]
 ```
 
+#### INTERVIEW.md Review Gate
+
+Before proceeding to decomposition, verify the interview capture is complete and unambiguous. Dispatch a lightweight reviewer:
+
+```python
+Agent(
+  subagent_type="general-purpose",
+  description="Review INTERVIEW.md completeness",
+  prompt="""Read .planning/wc/{name}/INTERVIEW.md.
+
+Check against the 6 required interview questions:
+1. Work type  2. Deliverable  3. Failure modes  4. Drift points  5. Iteration style  6. Verification
+
+For each question, verify the answer is:
+- Present (not missing or placeholder)
+- Specific enough for decomposition (not "TBD" or "various")
+- Consistent with the stated domain
+
+Report: APPROVED if all 6 are adequate, or list specific gaps.
+Do NOT edit the file — report only."""
+)
+```
+
+**Gate: Interview Reviewed** `[checkpoint: human-verify, auto-advanceable]`
+- If reviewer reports APPROVED → proceed
+- If reviewer reports gaps → ask remaining questions, update INTERVIEW.md, re-review (max 3 iterations)
+
 **IMMEDIATELY proceed to Step 3.**
 
 ### Step 3: Propose Phase Decomposition
+<!-- implements: WC-03 -->
+
+**Context check:** Decomposition and artifact gate design (Steps 3-3b) produce DESIGN.md — the recoverable artifact for enforcement generation. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with interview answers (from INTERVIEW.md) and current progress. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
 Design phases where each phase has:
 - **Name** - verb-noun (e.g., explore-codebase, design-approach)
@@ -317,6 +352,7 @@ Workflows with implementation phases should include a **validation phase** betwe
 **Gate condition:** VALIDATION.md exists with status `validated` — all requirements COVERED, all tests passing.
 
 ### Checkpoint Types
+<!-- implements: WC-10 -->
 
 Not all gates are the same. GSD distinguishes three checkpoint types with dramatically different frequencies:
 
@@ -357,6 +393,7 @@ Long workflows must plan for context exhaustion. Without monitoring, agents star
 **Why:** Context exhaustion is the #1 cause of lost work in long workflows. An agent that starts a 10-task implementation phase with 20% context remaining will produce garbage for the last 5 tasks. Better to handoff cleanly and resume fresh.
 
 ### Summary Frontmatter
+<!-- implements: WC-11 -->
 
 Phase completions should produce structured YAML summaries for machine-readable context assembly. This enables automated resume, dependency analysis, and audit trails.
 
@@ -466,6 +503,7 @@ Workflows should support autonomous execution — chaining phases automatically 
 **Why:** Without autonomous chaining, the user must manually invoke each phase. A 7-phase workflow requires 7 manual interventions. With autonomous mode, the user kicks off the workflow and returns to find it complete (or paused at a genuine decision point).
 
 ### Step 3b: Add Artifact Review Gates
+<!-- implements: WC-04 -->
 
 For every phase that produces an artifact consumed by downstream phases, add an **artifact review gate** between the producing phase and the consuming phase.
 
@@ -517,6 +555,7 @@ affects: [.planning/wc/{name}/DESIGN.md]
 **IMMEDIATELY proceed to Step 4.**
 
 ### Step 4: Apply Enforcement Patterns
+<!-- implements: WC-05 -->
 
 **Context check:** Steps 4-6 generate enforcement content and workflow files — the most context-intensive work. Before proceeding:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with interview answers (from `.planning/wc/{name}/INTERVIEW.md`), phase decomposition (from `.planning/wc/{name}/DESIGN.md`), and current progress. Pause.
@@ -871,6 +910,7 @@ affects: [.planning/wc/{name}/STATE.md]
 **IMMEDIATELY proceed to Step 5.**
 
 ### Step 5: Design Two Entry Points
+<!-- implements: WC-06 -->
 
 Every workflow exposes exactly **two** user-facing commands. Everything else is internal.
 
@@ -958,6 +998,7 @@ affects: [.planning/wc/{name}/STATE.md]
 **IMMEDIATELY proceed to Step 6.**
 
 ### Step 6: Generate Workflow Files
+<!-- implements: WC-07 -->
 
 Create the following artifacts:
 1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
@@ -1052,6 +1093,11 @@ Patching files generated without proper investigation, interview, decomposition,
 </EXTREMELY-IMPORTANT>
 
 ### Step 7: Self-Audit the Generated Workflow
+<!-- implements: WC-08 -->
+
+**Context check:** Step 7 dispatches a subagent with a large prompt containing all generated file paths and audit criteria. This is one of the most context-intensive operations. Before proceeding:
+- If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with generated file list, current step, and note that self-audit is pending. Pause.
+- If context is critical (≤25% remaining), write HANDOFF.md immediately — do not attempt the subagent dispatch.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Eating Your Own Cooking
@@ -1174,6 +1220,7 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 **After verifying Workflow is fully read, IMMEDIATELY proceed to Step 2.**
 
 ### Step 2: Score Against Core Principles (P01-P20)
+<!-- implements: WC-09 -->
 
 Score each principle 0-10. Use the formal ID (P01-P20) in all audit output for traceability.
 
@@ -1489,6 +1536,19 @@ provides: [AUDIT.md]
 affects: [.planning/wc/{name}/AUDIT.md]
 ```
 
+### Deviation Rules for Mode 2 (Auditing)
+
+During auditing, unplanned issues may arise. Apply these deviation rules:
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Broken path** | Skill file path doesn't resolve, Read fails on referenced file | Note broken path in audit, score affected principles accordingly | Auto |
+| **R2: Missing section** | Expected section (gates, enforcement, state management) absent from workflow | Note as critical gap in audit report, don't invent content | Auto |
+| **R3: Blocking format** | Workflow file is malformed YAML, unparseable frontmatter, or encoding issue | Note the format issue, score what you can read, flag the rest | Auto |
+| **R4: Scope change** | Audit scope needs to expand (new files discovered, dependency chain found) | STOP — present the expanded scope to the user before continuing | Ask user |
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure → R4
+
 ### Mode 2 Enforcement
 
 #### Rationalization Table — Mode 2
@@ -1547,6 +1607,7 @@ Run Mode 2 on the target workflow. This produces the baseline score.
 **Gate:** Mode 2 audit report exists with numeric scores for all P01-P20 principles. `[checkpoint: human-verify, auto-advanceable]`
 
 ### Step 2: Launch Audit-Fix Loop
+<!-- implements: WC-12 -->
 
 Use the audit-fix-loop pattern with ralph-loop infrastructure:
 
@@ -1627,7 +1688,13 @@ The auditor has no context from the fix phase. It reads the files cold. This is 
 
 #### Phase B: DECIDE
 
-Read `.planning/wc/{name}/SCORES.md`. Check composite score against threshold:
+Read `.planning/wc/{name}/SCORES.md`. Render the score trend for visual context:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
+```
+
+Check composite score against threshold:
 
 | Condition | Action |
 |-----------|--------|
@@ -1685,6 +1752,19 @@ Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 | Missing requirement traceability | Add CATEGORY-NN IDs in spec, trace through plan and validation |
 | Missing autonomous phase chaining | Add auto-advance for human-verify gates, smart-discuss batching |
 | Mechanical constraints enforced only via prompt | Write scoped `PreToolUse`/`PostToolUse` hooks in skill frontmatter. File extension guards, path guards, tool param validation, sequence enforcement → hooks. Keep rationalization tables, drive-aligned framing, and quality judgments as prompt text |
+
+### Deviation Rules for Mode 3 Phase C (Fixing)
+
+During fix application, unplanned issues may arise. Apply these deviation rules:
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Fix regression** | A fix for one principle breaks another (e.g., adding a hook causes a constraint script false positive) | Revert the specific fix, note the regression in STATE.md, try alternative approach | Auto |
+| **R2: Fix incomplete** | Fix partially addresses the gap but can't fully close it in one edit | Apply partial fix, note remaining work in AUDIT.md for next iteration | Auto |
+| **R3: Blocking dependency** | Fix requires a file/hook/script that doesn't exist yet | Create the dependency first, then apply the fix, track both in STATE.md | Auto |
+| **R4: Approach change** | Fix requires restructuring the skill file, splitting phases, or changing the architecture | STOP — present the approach change to the user before proceeding | Ask user |
+
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure → R4
 
 **Fix rules:**
 - Targeted changes only — do NOT rewrite entire skill files

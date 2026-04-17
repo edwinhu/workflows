@@ -31,6 +31,7 @@ Maps workflow-creator's functional requirements to implementation steps and cons
 - **5 with co-located constraint checks** (WC-01, WC-08, WC-09, WC-10, WC-11)
 - **7 convention-only** (judgment-based, graduation candidates)
 - **Coverage: 42% graduated to constraints**
+- **12/12 with inline `<!-- implements: WC-XX -->` annotations in SKILL.md**
 
 ### Graduation Candidates
 
