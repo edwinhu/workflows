@@ -186,6 +186,8 @@ implements: [WC-02]
 requires: [PHILOSOPHY.md]
 provides: [INTERVIEW.md]
 affects: [.planning/wc/{name}/INTERVIEW.md, .planning/wc/{name}/STATE.md]
+key-files: {created: [.planning/wc/{name}/INTERVIEW.md]}
+one-liner: "Captured domain, deliverables, failure modes, drift points, iteration style, and verification approach."
 ```
 
 #### INTERVIEW.md Review Gate
@@ -563,6 +565,8 @@ implements: [WC-03, WC-04]
 requires: [PHILOSOPHY.md, INTERVIEW.md]
 provides: [DESIGN.md]
 affects: [.planning/wc/{name}/DESIGN.md]
+key-files: {created: [.planning/wc/{name}/DESIGN.md]}
+one-liner: "Phase decomposition, topology, iteration strategies, and artifact review gates finalized."
 ```
 
 #### DESIGN.md Review Gate
@@ -1043,6 +1047,7 @@ implements: [WC-06]
 requires: [DESIGN.md]
 provides: [entry point design, midpoint design]
 affects: [.planning/wc/{name}/STATE.md]
+one-liner: "Entry point (start fresh) and midpoint (re-enter with constraint loading) designed."
 ```
 
 **IMMEDIATELY proceed to Step 6.**
@@ -1060,6 +1065,10 @@ Create the following artifacts:
    - `.md` without `.py` = convention (judgment-only)
    - `check-all.py` auto-discovering runner
 5. **Wire up transitions** — each phase ends by reading the next phase's skill
+6. **Post-subagent boundaries** — each phase skill that dispatches a subagent MUST include:
+   - What main chat CAN do after subagent returns (read results, fix gaps, present to user)
+   - What main chat CANNOT do (re-score, override subagent findings, declare "close enough")
+   - Tool restriction tier for the subagent (executor/verifier/researcher/auditor)
 
 #### State Folder Convention
 
@@ -1120,6 +1129,8 @@ implements: [WC-07, WC-10, WC-11]
 requires: [INTERVIEW.md, DESIGN.md]
 provides: [skills/{name}/SKILL.md, skills/{name}-fix/SKILL.md, phase skills, constraint files]
 affects: [skills/{name}/, references/constraints/]
+key-files: {created: [skills/{name}/SKILL.md, skills/{name}-fix/SKILL.md]}
+one-liner: "All workflow files generated: entry command, midpoint, phase skills, constraints."
 ```
 
 ### Deviation Rules for Steps 4-6 (File Generation)
@@ -1228,6 +1239,8 @@ implements: [WC-08, WC-09]
 requires: [DESIGN.md, generated skill files]
 provides: [AUDIT.md]
 affects: [.planning/wc/{name}/AUDIT.md]
+key-files: {created: [.planning/wc/{name}/AUDIT.md]}
+one-liner: "Fresh subagent audit complete. Composite score and per-principle gaps recorded."
 ```
 
 ---
