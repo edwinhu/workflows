@@ -6,9 +6,9 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/../../hooks/plugin-validate.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/../../hooks/validate-skill-paths.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
 ---
 
 # Skill Creator (with Superpowers Enforcement)
@@ -84,13 +84,15 @@ hooks:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 $HOME/.claude/skills/my-skill/hooks/guard.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/guard.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/../../hooks/lint.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint.py"
 ```
+
+**⚠️ Hook-command variable rule:** use `${CLAUDE_PLUGIN_ROOT}` in hook `command:` fields — **not** `${CLAUDE_SKILL_DIR}`. The latter is for skill content (markdown body, bang-backtick commands). Hook frontmatter is a different substitution context; mixing these up causes silent failures when the hook fires outside an active `Skill()` session. See `workflow-creator` Step 3b for the April 2026 incident.
 
 | Enforce with Hook | Keep as Prompt |
 |-------------------|----------------|
