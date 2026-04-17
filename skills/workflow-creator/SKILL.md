@@ -75,6 +75,14 @@ For Mode 1 (create), use the proposed workflow name: `.planning/wc/{new-workflow
 
 **IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
 
+<EXTREMELY-IMPORTANT>
+**Known self-violation:** Mode 1 and Mode 2 step transitions below use advisory "IMMEDIATELY proceed" text rather than hook-enforced gates — the exact anti-pattern Step 3b flags as a defect in generated workflows. This gap is acknowledged in the April 2026 self-audit (`/Users/vwh7mb/projects/course-materials/.planning/wc/workflow-creator/AUDIT.md`).
+
+**Mitigation:** at every step labelled "IMMEDIATELY proceed to Step N", you MUST update `.planning/wc/{name}/STATE.md` with `step: N-name, status: completed` BEFORE reading the next step. A future Mode 2 audit or resume scanner will refuse to continue from an incomplete STATE.md entry. This is an artifact-check gate (medium strength), not hook-enforced (strongest) — hook migration is the next improvement.
+
+If you catch yourself thinking "the skill just said 'IMMEDIATELY proceed' so I can skip the STATE.md update" — STOP. The STATE.md update IS the gate artifact. Skipping it means the next session has no recoverable position.
+</EXTREMELY-IMPORTANT>
+
 ### Step 1: Ground in Philosophy
 
 Discover and read PHILOSOPHY.md:Read `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md` and follow its instructions. **You MUST read this file before proceeding. No claiming you "remember" it.** Every workflow must address: phased decomposition, gates (deterministic or judgment-based), independent verification, artifact review, iteration strategy, and two entry points.
@@ -965,8 +973,32 @@ workflow-creator mandates audit-fix loops, independent verification, and artifac
 
 After generating workflow files in Step 6:
 
-1. **Run Mode 2** on the generated workflow — audit architecture (20 principles) and enforcement (13 patterns)
-2. **Check score:** If composite score < 8.0, fix the generated files and re-audit (max 3 iterations)
+<EXTREMELY-IMPORTANT>
+**The audit MUST be run by a fresh subagent with read-only tools — not by you.** If you run the audit yourself, you are self-reviewing your own work; see the Iron Law above. The same agent that wrote the files cannot score them independently.
+</EXTREMELY-IMPORTANT>
+
+1. **Dispatch fresh audit subagent** (same pattern as Mode 3 Phase A):
+
+   ```python
+   Agent(
+     subagent_type="general-purpose",
+     description="Self-audit generated workflow",
+     allowed_tools=["Read", "Grep", "Glob"],  # REQUIRED — no Write/Edit
+     prompt="""You are an independent workflow auditor with no knowledge of how
+     these files were written. Read Mode 2 criteria in
+     /Users/vwh7mb/projects/workflows/skills/workflow-creator/SKILL.md, then
+     read ALL generated skill files: [LIST THEM].
+
+     Score the 20 architecture principles (0-10 each) and 13 enforcement
+     patterns (Present/Weak/Absent per phase). Compute composite (average of
+     non-exempt principles).
+
+     Write findings to .planning/wc/{name}/AUDIT.md. Do NOT soften.
+     """
+   )
+   ```
+
+2. **Check score:** If composite score < 8.0, fix the generated files and re-dispatch a fresh audit subagent (max 3 iterations). Each iteration gets a NEW subagent — no resume, no context carryover.
 3. **Present to user** with the audit report attached — the user sees both the workflow AND its quality score
 
 ```
@@ -1343,7 +1375,12 @@ Spawn a fresh audit subagent that:
 Agent(
   subagent_type="general-purpose",
   description="Audit workflow enforcement",
+  allowed_tools=["Read", "Grep", "Glob"],  # REQUIRED — verifier MUST NOT Write/Edit
   prompt="""You are an independent workflow auditor. You have NO knowledge of any prior fixes.
+
+You have Read/Grep/Glob ONLY. If you find a violation, REPORT it — do not
+silently fix it. A verifier that edits bypasses the plan-execute-verify cycle
+(see Iron Law of Read-Only Verifiers).
 
 Read the workflow-creator Mode 2 audit criteria:
 Read "${CLAUDE_SKILL_DIR}/SKILL.md" — Mode 2 section only.
