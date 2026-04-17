@@ -15,6 +15,8 @@ hooks:
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
         - type: command
           command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
+        - type: command
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-constraint-check.py"
 ---
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
@@ -1177,7 +1179,7 @@ After generating workflow files in Step 6:
      patterns (Present/Weak/Absent per phase). Compute composite (average of
      non-exempt principles).
 
-     Write findings to .planning/wc/{name}/AUDIT.md. Do NOT soften.
+     Return findings as text output (you have read-only tools — the caller writes AUDIT.md). Do NOT soften.
      """
    )
    ```
@@ -1264,7 +1266,16 @@ Read the workflow's entry command and ALL phase skills. Build a map of phases, t
 - Verify ALL phase skills were read (count Read() calls)
 - If any phase skill is missing, read it now
 
-**After verifying Workflow is fully read, IMMEDIATELY proceed to Step 2.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 1-read
+status: completed
+requires: [all workflow skill files]
+provides: [file map, phase/transition inventory]
+affects: [.planning/wc/{name}/STATE.md]
+```
+
+**IMMEDIATELY proceed to Step 2.**
 
 ### Step 2: Score Against Core Principles (P01-P20)
 <!-- implements: WC-09 -->
@@ -1431,7 +1442,17 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - If any principle ID is missing, score it now
 - Composite = average of scored (non-N/A) principles
 
-**After verifying Architecture is scored, IMMEDIATELY proceed to Step 3.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 2-score
+status: completed
+implements: [WC-09]
+requires: [all workflow skill files]
+provides: [P01-P20 scores with justifications]
+affects: [.planning/wc/{name}/STATE.md]
+```
+
+**IMMEDIATELY proceed to Step 3.**
 
 ### Step 3: Score Against Enforcement Checklist
 
@@ -1449,7 +1470,16 @@ Identify the highest-drift phases with the weakest enforcement - these are the c
 - Each pattern must be marked: Present / Weak / Absent
 - If any pattern is missing, score it now
 
-**After verifying Enforcement is scored, IMMEDIATELY proceed to Step 3b.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 3-enforcement
+status: completed
+requires: [enforcement-checklist.md, all workflow skill files]
+provides: [13-pattern scores per phase]
+affects: [.planning/wc/{name}/STATE.md]
+```
+
+**IMMEDIATELY proceed to Step 3b.**
 
 ### Step 3b: Audit Path Portability
 
@@ -1514,7 +1544,16 @@ If the first grep returns anything, flag as a Critical Gap.
 - Every `python3 ../` and `Read("../` pattern was flagged
 - Score is recorded
 
-**After verifying Path Portability is scored, IMMEDIATELY proceed to Step 4.**
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 3b-portability
+status: completed
+requires: [all SKILL.md and references/*.md files]
+provides: [path portability score]
+affects: [.planning/wc/{name}/STATE.md]
+```
+
+**IMMEDIATELY proceed to Step 4.**
 
 ### Step 4: Output Audit Report
 
@@ -1703,8 +1742,7 @@ Spawn a fresh audit subagent that:
 3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
 4. Checks path portability
 5. Computes composite score (average of non-N/A principle scores)
-6. Writes findings to `.planning/wc/{name}/AUDIT.md`
-7. Appends score to `.planning/wc/{name}/SCORES.md`
+6. Returns findings as text output (read-only tools — caller writes AUDIT.md and SCORES.md)
 
 ```
 Agent(
@@ -1730,7 +1768,7 @@ Score each of the 20 architecture principles (P01-P20 + P19b) 0-10.
 Score each of the 13 enforcement patterns per phase: Present/Weak/Absent.
 Check path portability.
 
-Compute composite score = average of 20 principle scores.
+Compute composite score = average of non-N/A principle scores (exclude any principle marked N/A from both numerator and denominator).
 
 Output to .planning/wc/{name}/AUDIT.md with this format:
 - Composite score (single number)
