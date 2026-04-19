@@ -204,6 +204,12 @@ Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly ex
 ## Chosen Approach
 [Description of selected approach]
 
+## External Skills Likely In Play
+<!-- List plugin skills whose data/tools will be touched. ds-plan Step 5b will Glob their references/ and examples/ before drafting tasks. -->
+- [e.g. wrds — holdings/voting data via SAS on WRDS grid]
+- [e.g. gemini-batch — LLM extraction for text fields]
+- [none]
+
 ## Rejected Alternatives
 - Option B: [why rejected]
 - Option C: [why rejected]

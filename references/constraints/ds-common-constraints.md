@@ -17,6 +17,8 @@ After reading this index, load the specific constraint files needed for your cur
 | C1 | Data Quality Checks | [constraints/ds-data-quality-checks.md](constraints/ds-data-quality-checks.md) | Canonical DQ1-DQ6, M1, R1 definitions — load from ds-checks.md, never inline |
 | C2 | Post-Subagent Boundary | [constraints/ds-post-subagent-boundary.md](constraints/ds-post-subagent-boundary.md) | After subagent returns, main chat MUST NOT read source/data — verify via state files only |
 | C3 | Deviation Rules | [constraints/ds-deviation-rules.md](constraints/ds-deviation-rules.md) | R1-R3 auto-fix, R4 STOP for user decision — track all deviations in LEARNINGS.md |
+| C4 | External Skill Discovery | [ds-external-skill-discovery.md](ds-external-skill-discovery.md) | Before drafting PLAN.md tasks that reference an external skill (wrds, gemini-batch, etc.), Glob its references/ and examples/, load domain refs, read example READMEs, prefer ADOPT/PATCH over greenfield |
+| C5 | Data Pull Profile | [ds-data-pull-profile.md](ds-data-pull-profile.md) | Before finalizing PLAN.md with any source >= 50M rows, >= 500 MB, or flagged large/bulk/TB/millions — dispatch read-only profiling subagent to quantify raw vs aggregate ship size, record decision table in PLAN.md |
 
 ## Phase Loading Guide
 
@@ -25,8 +27,8 @@ Not every phase needs every constraint. Load by relevance:
 | Phase | Must Load | Why |
 |-------|-----------|-----|
 | **ds (brainstorm)** | — | Brainstorm has no deterministic constraints (see conventions V1-V3) |
-| **ds-fix (midpoint)** | C1-C3 (all) | Midpoint can route to any phase — needs full constraint set |
-| **ds-plan** | — | Planning has no deterministic constraints (see conventions V1, V3) |
+| **ds-fix (midpoint)** | C1-C5 (all) | Midpoint can route to any phase — needs full constraint set |
+| **ds-plan** | C4, C5 | Before drafting external-skill tasks: External Skill Discovery; before finalizing with a large pull: Data Pull Profile |
 | **ds-implement** | C1, C2, C3 | Implementation: data quality, delegation boundary, deviation tracking |
 | **ds-review** | C1, C2 | Review: data quality checks, post-subagent boundary |
 | **ds-verify** | C2 | Verification: delegation boundary |

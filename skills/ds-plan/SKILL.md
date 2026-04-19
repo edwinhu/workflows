@@ -51,6 +51,12 @@ Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
 Profile the data and create an analysis plan based on the spec.
 **Requires `.planning/SPEC.md` from /ds first.**
 
+**Load shared enforcement first:**
+
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.md` — governs Step 5b (External Skill Discovery Gate).
+Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.md` — governs Step 5c (Data Pull Profiling Gate).
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning
 
@@ -457,12 +463,223 @@ AskUserQuestion(questions=[{
    - **Parallelism:** SGE array or sequential (with justification if sequential)
 5. Add `## SAS Performance Constraints` section to PLAN.md (see template below)
 
+### 5b. External Skill Discovery Gate (MANDATORY BEFORE TASK BREAKDOWN)
+
+<EXTREMELY-IMPORTANT>
+**NO TASK BREAKDOWN WITHOUT EXTERNAL SKILL DISCOVERY COMPLETED. This is not negotiable.**
+
+If any task will touch an external plugin skill (WRDS, gemini-batch, lseg-data, nlm, readwise, pdf, docx, pptx, xlsx, bluebook, etc.), you MUST complete the discovery checklist for each such skill before drafting tasks. Loading only rule references (e.g. `sas-etl.md`, `postgres-vs-sas.md`) is necessary but NOT sufficient. Rule refs teach syntax; domain refs teach the recipe; `examples/` contains battle-tested implementations.
+
+Skipping this is NOT HELPFUL — you will draft greenfield code that duplicates (worse than) a tested pipeline already sitting in `skills/<skill>/examples/`. Days of reinvention avoidable in 5 minutes.
+</EXTREMELY-IMPORTANT>
+
+#### Step 5b.1: Identify external skills in play
+
+List every external plugin skill any task will touch. Include any skill whose `references/` or `examples/` directory might contain relevant material — not just the skill you planned to load rule refs from.
+
+#### Step 5b.2: For EACH external skill X, run the checklist
+
+```
+1. IDENTIFY references
+   Glob skills/X/references/*.md     # enumerate every reference
+
+2. LOAD domain-specific references
+   For each task, map the data/task domain to reference filenames by name:
+     WRDS holdings/ownership → tfn-ownership.md
+     WRDS voting            → iss-voting.md
+     WRDS TAQ microstructure → taq.md
+     WRDS Compustat         → compustat.md
+     WRDS insider           → insider-form4.md
+     WRDS EDGAR filings     → edgar.md
+     WRDS ExecuComp         → execucomp.md
+     WRDS ISS compensation  → iss-compensation.md
+     WRDS ISS directors     → iss-directors.md
+     WRDS SDC M&A / issuances → sdc-ma.md / sdc-issuances.md
+     WRDS PitchBook         → pitchbook.md
+     WRDS LPC Dealscan      → lpc-dealscan.md
+     WRDS FJC courts        → fjc.md
+     WRDS FISD bonds        → fisd-bonds.md
+     WRDS Form D / Reg D    → formd.md
+     WRDS fund formation    → fund-formation.md
+     (other skills: map by filename / domain match)
+   Read every matched domain reference in full. Rule refs alone are not enough.
+
+3. IDENTIFY examples
+   Glob skills/X/examples/**         # enumerate every prior pipeline
+
+4. READ matching example READMEs
+   For every example whose directory or filename matches the task domain
+   (e.g. "ownership", "voting", "insider", "batch", "dealscan"), Read its
+   README.md (or the top-level file if no README) in full.
+
+5. DECIDE ADOPT / PATCH / GREENFIELD per task
+   - ADOPT: the example matches exactly — reuse verbatim.
+   - PATCH: the example is close — reuse with a documented delta.
+   - GREENFIELD: no example or domain ref applies. Must justify why.
+```
+
+#### Step 5b.3: Record decisions in PLAN.md
+
+Every task that touches an external skill MUST have an entry in the **External Skill Discovery** section of PLAN.md (template below). The plan reviewer and the check script (`ds-external-skill-discovery.py`) both check for this section; a missing or stub section blocks progress to ds-implement.
+
+#### Step 5b.4: Gate — cannot proceed to Step 6 without discovery complete
+
+```
+1. IDENTIFY: list of external skills in play (Step 5b.1)
+2. RUN:      Glob + Read steps per skill (Step 5b.2)
+3. READ:     every matched domain reference and example README
+4. VERIFY:   External Skill Discovery section of PLAN.md documents
+             ADOPT/PATCH/GREENFIELD decision per relevant task
+5. CLAIM:    only then proceed to Task Breakdown
+```
+
+If no external skills are in play, note this explicitly in PLAN.md's External Skill Discovery section ("No external skills referenced — greenfield Python analysis only"). Do not skip the section.
+
+#### Step 5b Rationalization — STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I already loaded `sas-etl.md`, that's enough" | Rule refs teach syntax, not recipes. The recipe for your specific data is in a domain ref and/or example. | Load domain refs + check examples. 5 minutes. |
+| "I'll check examples if the implementer hits a blocker" | Implementers will draft from your plan. If the plan says greenfield, they greenfield — even when a tested example exists. | Do discovery at planning time, not implementation time. |
+| "The example is slightly different from our task" | Patching a battle-tested script beats greenfielding 9 times out of 10. SGE parameters, hash sizes, WHERE patterns are already tuned. | PATCH. Document the delta. |
+| "Globbing is a waste — I know the skill's structure" | You don't. New examples get added, refs renamed. Filesystem IS ground truth. | Glob every time. 2 seconds. |
+
+### 5c. Data Pull Profiling Gate (MANDATORY WHEN TRIGGERED)
+
+<EXTREMELY-IMPORTANT>
+**NO PLAN.md FINALIZATION WITH A LARGE EXTERNAL PULL UNTIL RAW-VS-AGGREGATE SHIP SIZE HAS BEEN PROFILED. This is not negotiable.**
+
+Agents systematically underestimate data size and overlook aggregate-vs-raw trade-offs. Shipping a plan with an ungated pull-raw decision for a ≥50M row or ≥500 MB source means the user discovers the waste at implementation time — after the pull has kicked off, after downstream code assumes raw rows, after hours of rework become days.
+
+**Skipping this profile is NOT HELPFUL — your plan's row-count estimate is a guess, and a guess at 150M-row scale costs days of rework when wrong. The 10-minute profile makes the pull-raw vs aggregate-at-source vs server-side-pipeline decision data-driven instead of guessed.**
+</EXTREMELY-IMPORTANT>
+
+Full rule: `references/constraints/ds-data-pull-profile.md` (loaded above).
+
+#### Step 5c.1: Check triggers
+
+Fire this gate when **any** of the following is true of **any** data source in SPEC.md or the draft PLAN.md:
+
+- Estimated raw row count ≥ **50M**
+- Estimated raw ship size ≥ **500 MB** (compressed parquet or equivalent)
+- SPEC / draft PLAN uses large-source language: "large", "bulk", "TB", "terabyte", "millions of rows", "hundreds of millions", "full universe", "entire history", "whole table"
+- The agent said "unsure" about size (underestimation is systematic — treat "unsure" as triggered)
+
+**Fire liberally.** A 3-minute profile on a source that turned out to be 40M rows costs nothing; a missed profile on a source that turned out to be 150M costs days.
+
+If no source triggers, note this in PLAN.md's Data Pull Profile section with one line ("No source exceeded 50M rows or 500 MB thresholds — profiling gate not triggered") and proceed. Do not skip the section header.
+
+#### Step 5c.2: Dispatch the read-only profiling subagent
+
+For every triggered source, dispatch a profiling subagent. The subagent is **read-only** (Read, Grep, Glob, Bash for SQL/metadata queries; no Write to pipeline files).
+
+```
+Task(
+    subagent_type="general-purpose",
+    description="Profile data pull size vs aggregate trade-off",
+    prompt="""
+Profile the following data source(s) for raw-vs-aggregate ship size trade-offs.
+This is a READ-ONLY profiling pass. Do NOT pull the full table.
+
+Sources to profile (from draft PLAN.md):
+- <source 1>: <planned WHERE filter>
+- <source 2>: <planned WHERE filter>
+- ...
+
+For EACH source, perform:
+
+1. COUNT(*) with the planned WHERE filter. No full table pull.
+   Example: SELECT COUNT(*) FROM risk.voteanalysis_npx v
+            JOIN risk.vavoteresults r USING (itemonagendaid)
+            WHERE r.meetingtype IN (...) AND v.meetingdate BETWEEN ...
+
+2. Fetch ~100K-row sample (stratified by year/partition key if possible),
+   write to scratch/ as parquet with the project's codec (zstd or snappy —
+   check the existing pipeline for which). Measure bytes-per-row from file
+   size. Delete the sample after measurement.
+
+3. For EACH candidate aggregation level in the draft PLAN.md, run:
+     SELECT <agg_keys>, COUNT(*), SUM(<metric>) FROM <source>
+     WHERE <filter> GROUP BY <agg_keys>
+   Record the aggregate row count.
+
+4. Information-preservation check: for each aggregation level, list which
+   columns survive and which are lost. Flag any aggregation that drops
+   columns needed by downstream tasks (e.g., fundid/permno/wficn for block
+   classification, ticker for cross-section panels).
+
+5. Compute ratio = raw_rows / aggregate_rows per aggregation level.
+
+6. Write docs/investigations/YYYY-MM-DD_pull_profile.md with:
+   - Machine-readable decision table (schema below)
+   - Bytes/row calibration notes (codec, sample size, stratification)
+   - Per-aggregation information-preservation notes
+   - Final recommendation per source:
+       pull-raw / SQL GROUP BY / server-side pipeline (SAS-on-WRDS, BigQuery, etc.) / hybrid
+
+Decision table schema (required):
+| Source | Raw rows | Raw MB | Aggregate level | Aggregate rows | Aggregate MB | Ratio | Recommendation |
+
+Ratio rule of thumb:
+  < 10x  -> pull-raw is usually fine
+  10-100x -> server-side aggregation wins on transfer; prefer SQL GROUP BY
+  > 100x -> pull-raw is malpractice UNLESS downstream needs raw rows
+          (information-preservation check must justify it)
+
+Do NOT write to pipeline files. Only docs/investigations/ and scratch/.
+Return the path to the investigation file when done.
+"""
+)
+```
+
+**Parallelize across sources.** If 3 sources trigger the gate, launch 3 profiling subagents in a single message with `run_in_background=true` — same pattern as Step 2 parallel profiling.
+
+#### Step 5c.3: Record decisions in PLAN.md
+
+After the profiling subagent(s) complete, read the investigation file(s) and record the decision in PLAN.md under a `## Data Pull Profile` section (template below). The section must include:
+
+- Decision table with all required columns (Source, Raw rows, Raw MB, Aggregate level, Aggregate rows, Aggregate MB, Ratio, Recommendation)
+- One-sentence per-source justification for the chosen strategy (especially when ratio is high but recommendation is still `pull-raw` — information-preservation trumps ratio)
+- Reference to the investigation file: `See: docs/investigations/YYYY-MM-DD_pull_profile.md`
+
+The check script `ds-data-pull-profile.py` enforces this section — a missing or stub Data Pull Profile section when triggers fired blocks progress to ds-implement.
+
+#### Step 5c.4: Gate — cannot proceed to Step 6 without profile complete
+
+```
+1. IDENTIFY: list of triggered sources (Step 5c.1)
+2. RUN:      read-only profiling subagent per source (Step 5c.2)
+3. READ:     every investigation file produced
+4. VERIFY:   PLAN.md ## Data Pull Profile section contains the decision
+             table with required columns and per-source justification
+5. CLAIM:    only then proceed to Task Breakdown
+```
+
+#### Step 5c Rationalization — STOP If You Think:
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "My row estimate is approximate — profiling just confirms what I already know" | Agents underestimate by 20-80% routinely. v12 session: s12 +18%, s34 -78% vs planning. The profile changes the plan, not just confirms it. | Run the profile. |
+| "A 100x ratio obviously means aggregate-at-source" | Ratio alone doesn't decide. NPX had 89x ratio and pull-raw was correct because aggregate drops fundid/wficn. | Profile BOTH ratio AND information preservation. |
+| "I'll profile at implementation time, not planning" | Implementers follow the plan. Plan says pull-raw, they pull raw — even when profiling would say aggregate. | Profile at planning time. |
+| "The trigger is close but not quite 50M rows" | 50M is a floor. Estimate "30-50M" or "tens of millions" = treat as triggered. | Fire liberally. |
+| "I'll do COUNT(*) and GROUP BY myself in main chat" | Main chat doing data work violates the post-subagent boundary. Profile = real data = subagent. | Dispatch read-only profiling subagent. |
+
+#### Step 5c Red Flags — STOP If You Catch Yourself:
+
+- About to finalize PLAN.md with a source ≥50M rows and no Data Pull Profile section -> STOP.
+- Rationalizing "Task N really does need raw rows" without having profiled the aggregate -> STOP. Speculation, not data.
+- Writing COUNT/GROUP BY SQL in main chat -> STOP. Dispatch subagent.
+- Treating "large"/"bulk"/"TB" keywords as prose rather than triggers -> STOP.
+- Seeing ratio > 100x and assuming aggregate wins without checking preserved columns -> STOP.
+
 ### 6. Create Task Breakdown
 
 Break analysis into ordered tasks:
 - Each task should produce **visible output**
 - Order by data dependencies
 - Include data cleaning tasks FIRST
+- For any task touching an external skill, reference the ADOPT/PATCH decision recorded in Step 5b (example path, delta)
 
 ### 7. Write Plan Doc
 
@@ -511,6 +728,47 @@ See: .planning/SPEC.md
 
 ### Source 2: [name]
 [Same structure]
+
+## External Skill Discovery
+<!-- Required. If no external skills are referenced, state so explicitly. -->
+<!-- For each external skill in play, record Glob results, loaded refs, example READMEs read, and ADOPT/PATCH/GREENFIELD decision per task. -->
+
+### Skills in play
+- [skill-name] — tasks: [list task IDs]
+
+### Per-skill discovery
+
+#### skills/[skill-name]
+- **References globbed:** skills/[skill-name]/references/*.md
+- **Domain refs loaded:** [e.g. tfn-ownership.md, sas-etl.md]
+- **Examples globbed:** skills/[skill-name]/examples/**
+- **READMEs read:** [e.g. examples/voting_ownership_pipeline/README.md]
+- **Decisions:**
+
+| Task | Decision | Example Path | Delta (for PATCH) / Justification (for GREENFIELD) |
+|------|----------|--------------|-----------------------------------------------------|
+| Task 2 | ADOPT | skills/wrds/examples/voting_ownership_pipeline/build_inst_own.sas | — |
+| Task 3 | PATCH | skills/wrds/examples/voting_ownership_pipeline/merge_panel.py | New date window 2020Q1-2024Q4; add new classification column |
+| Task 4 | GREENFIELD | — | No example covers this specific aggregation; domain ref tfn-ownership.md §4 gives the SAS pattern |
+
+## Data Pull Profile
+<!-- Required when any source >= 50M rows, >= 500 MB ship size, or SPEC uses large-source keywords. -->
+<!-- If no source triggered, state so explicitly in one line and omit the decision table. -->
+<!-- Otherwise include the decision table AND per-source justification. -->
+
+See: docs/investigations/YYYY-MM-DD_pull_profile.md
+
+### Decision Table
+
+| Source | Raw rows | Raw MB | Aggregate level | Aggregate rows | Aggregate MB | Ratio | Recommendation |
+|--------|---------:|-------:|-----------------|---------------:|-------------:|------:|----------------|
+| source1 | 144M | 720 | (meeting_id, item_id, vote) | 1.62M | 50 | 89x | pull-raw |
+| source2 | 245M | 2500 | (permno, rqdate) | 450K | 18 | 540x | server-side pipeline (SAS-on-WRDS) |
+
+### Per-Source Justification
+
+- **source1:** Ratio 89x favors aggregate, BUT aggregate drops `fundid` required by Task 5 block classification. pull-raw despite ratio.
+- **source2:** Ratio 540x; aggregate preserves (permno, rqdate) — everything downstream needs. SAS-on-WRDS pipeline ships 18 MB result instead of 2.5 GB raw.
 
 ## Task Breakdown
 
@@ -603,6 +861,10 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 | Process years sequentially | Embarrassingly parallel = free speedup | Use background agents or SGE arrays |
 | Re-read same source in multiple tasks | Redundant I/O multiplies runtime | Save intermediate results after first read |
 | Submit full batch without test batch | One bad schema/prompt = entire batch wasted | Plan scale-up testing stages for expensive operations |
+| Draft tasks for an external skill without Globbing its examples/ | Reinventing a tested pipeline that already exists | Run Step 5b External Skill Discovery before Task Breakdown |
+| Load only rule refs (sas-etl.md, postgres-vs-sas.md) and proceed | Rule refs teach syntax, not recipes. Domain refs + examples have the recipe. | Load domain refs matching the data; Read matching example READMEs |
+| Finalize PLAN.md with a >=50M row pull and no Data Pull Profile section | Agents underestimate size by 20-80%. Ungated pull-raw decisions cost days of rework. | Run Step 5c Data Pull Profiling — dispatch read-only subagent, record decision table |
+| Assume ratio > 100x means aggregate-at-source without checking preserved columns | NPX had 89x ratio and pull-raw was correct because aggregate dropped fundid | Profile ratio AND information preservation; record both in decision table |
 
 ## Output
 
@@ -612,6 +874,8 @@ Complete the plan when:
 - Document data quality issues
 - Define cleaning strategy for each issue
 - Assess ETL strategy (if data > 1M rows or multiple sources)
+- **Run External Skill Discovery (Step 5b)** for every external skill in play — record ADOPT/PATCH/GREENFIELD per task
+- **Run Data Pull Profiling (Step 5c)** for every source >= 50M rows, >= 500 MB, or flagged large in SPEC — record decision table in PLAN.md, investigation file in `docs/investigations/`
 - Order tasks by dependency
 - Define output verification criteria
 - Write `.planning/PLAN.md`
@@ -654,9 +918,14 @@ This file is populated by ds-implement as tasks complete. Initializing it here e
 Before proceeding to ds-implement, execute this gate:
 
 1. **IDENTIFY**: PLAN.md exists at `.planning/PLAN.md`
-2. **RUN**: `Read(".planning/PLAN.md")`
-3. **READ**: Verify it contains: Data Profile section, Task Breakdown section, Output Verification Plan
-4. **VERIFY**: If any data source > 1M rows, confirm ETL Strategy section exists
+2. **RUN**: `Read(".planning/PLAN.md")`, `python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.py .`, and `python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.py .`
+3. **READ**: Verify it contains: Data Profile section, Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
+4. **VERIFY**:
+   - If any data source > 1M rows, confirm ETL Strategy section exists
+   - If any task references an external skill, confirm the External Skill Discovery section names the skill(s), lists Glob results, loaded domain refs, example READMEs read, and an ADOPT/PATCH/GREENFIELD decision per task
+   - If any source >= 50M rows OR >= 500 MB OR SPEC uses large-source keywords, confirm the Data Pull Profile section contains the decision table (Source, Raw rows, Raw MB, Aggregate level, Aggregate rows, Aggregate MB, Ratio, Recommendation) AND references `docs/investigations/YYYY-MM-DD_pull_profile.md`
+   - `ds-external-skill-discovery.py` exits 0 (PASS)
+   - `ds-data-pull-profile.py` exits 0 (PASS)
 5. **CLAIM**: Only proceed to ds-implement if ALL checks pass
 
 **Skipping this gate is NOT HELPFUL — an incomplete plan wastes the user's time when implementation hits missing sections. The 30 seconds this gate takes saves hours.**
