@@ -1821,7 +1821,7 @@ Compute composite score = average of non-N/A principle scores (exclude any princ
 Output to .planning/wc/{name}/AUDIT.md with this format:
 - Composite score (single number)
 - Per-principle scores with 1-line justification
-- Critical gaps (principle score < 9.0) with specific fix recommendations
+- Critical gaps (principle score < target composite, i.e. < 9.5) with specific fix recommendations
 - Enforcement matrix (13 patterns × N phases)
 
 Be thorough. A generous audit that misses gaps is worse than a harsh one.
