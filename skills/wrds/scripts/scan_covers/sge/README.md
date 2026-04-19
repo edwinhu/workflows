@@ -2,7 +2,9 @@
 
 One SGE array task per calendar year. Each task runs `scan_covers` on a
 pre-built filelist of that year's SC 13D/G filings (pulled from
-`wrdssec_all.wrds_forms`, deduped by accession) and writes a gzipped TSV.
+`wrdssec_all.forms`, deduped by accession) and writes a gzipped TSV. See
+`skills/wrds/references/wrds-forms-tables.md` for why `forms` (not
+`wrds_forms`) is the default.
 
 ## Layout on WRDS
 

@@ -1,7 +1,7 @@
 """Stage a per-year blockholders run on WRDS SGE.
 
 Steps (all runnable independently via --step):
-    1. metadata  — query wrdssec_all.wrds_forms for SC 13D/G rows, split by year
+    1. metadata  — query wrdssec_all.forms for SC 13D/G rows, split by year
     2. upload    — scp per-year filelists + worker scripts + binary to WRDS
     3. submit    — qsub the SGE array (optional --dry-run prints command)
     4. fetch     — rclone per-year TSV.gz back to --local-out
@@ -30,7 +30,10 @@ if _MIRROR.exists():
 from src import wrds_pull  # noqa: E402
 
 
-FORM_TYPES = ("SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A")
+FORM_TYPES = (
+    "SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A",
+    "SCHEDULE 13D", "SCHEDULE 13D/A", "SCHEDULE 13G", "SCHEDULE 13G/A",
+)
 REMOTE_HOST = "wrds"
 BIN_NAME = "scan_covers"
 
@@ -54,7 +57,7 @@ def step_metadata(start: int, end: int, filelist_dir: Path, years_file: Path,
     forms_csv = "'" + "','".join(FORM_TYPES) + "'"
     sql = f"""
         SELECT DISTINCT fname, EXTRACT(YEAR FROM fdate)::int AS year
-        FROM wrdssec_all.wrds_forms
+        FROM wrdssec_all.forms
         WHERE form IN ({forms_csv})
           AND fdate BETWEEN %s AND %s
     """

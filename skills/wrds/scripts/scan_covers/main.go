@@ -12,9 +12,9 @@
 //               [-concurrency N]
 //
 // The list file must be one path per line. Paths may be absolute, or
-// relative to -root (convenient if the list comes from wrds_forms.fname
-// with its "edgar/data/CIK/ACCESSION.txt" structure — map to
-// <root>/<CIK6>/<CIK>/<ACCESSION>.txt upstream).
+// relative to -root (convenient if the list comes from wrdssec_all.forms
+// (or wrds_forms) fname with its "edgar/data/CIK/ACCESSION.txt" structure
+// — map to <root>/<CIK6>/<CIK>/<ACCESSION>.txt upstream).
 //
 // Output columns match the profile's Fields slice, prefixed with the
 // filepath column. No header row — consumers pin columns by profile.

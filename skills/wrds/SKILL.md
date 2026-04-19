@@ -174,8 +174,8 @@ See **`references/sas-etl.md`** for complete patterns:
 | ISS Incentive Lab | `iss_incentive_lab` | `comppeer`, `sumcomp`, `participantfy` |
 | Capital IQ | `ciq` | `wrds_compensation` |
 | IBES | `tr_ibes` | `det_epsus`, `statsum_epsus` |
-| Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020), `wrds_forms` (index, 2008–present) |
-| SEC EDGAR | `wrdssec` | `wrds_forms`, `wciklink_cusip` |
+| Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020); index: `wrdssec_all.forms` (all CIKs) or `wrds_forms` (filer only) — default to `forms`, see `references/wrds-forms-tables.md` |
+| SEC EDGAR | `wrdssec_all` | `forms` (raw index, all CIKs per filing — default), `wrds_forms` (filer-only view), `wciklink_cusip` |
 | SEC Search | `wrds_sec_search` | `filing_view`, `registrant` |
 | EDGAR | `edgar` | `filings`, `filing_docs` |
 | Fama-French | `ff` | `factors_monthly`, `factors_daily` |
