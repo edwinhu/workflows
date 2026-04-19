@@ -192,8 +192,32 @@ See `postgres-vs-sas.md` for the full decision framework.
 3. **CUSIP is historical** -- map through `crsp.msenames.ncusip`, not the current CUSIP.
 4. **IOR > 1** -- can happen due to timing mismatches between 13-F and CRSP shares outstanding; cap at 1.0 (or filter > 1.2).
 5. **S12 data coverage** -- starts ~2003, drops off in 2024; check year-by-year counts.
-6. **Deduplication** -- after all joins, dedup by `(wficn, crsp_portno, crsp_fundno, rqdate, cusip8)`.
+6. **Deduplication — critical** -- after all joins, dedup by `(wficn, crsp_portno, crsp_fundno, rqdate, cusip8)`. If you dedup by `(fundno, ...)` instead of `(wficn, ...)`, you will inflate shares ~3-4× because one wficn maps to multiple crsp_fundno (share classes). **This bug existed in a stale SAS build and produced MF_TOTAL values ~3.95× higher than correct.**
 7. **CRSP adjustment factors** -- align `cfacshr` at the vintage date (fdate), not the report date.
 8. **mflink2 vs mflink1** -- mflink2 has rdate for date-aligned joins; mflink1 is static mapping with wficn and crsp_fundno.
 9. **portnomap date ranges** -- always filter rdate between begdt and enddt.
 10. **exp_ratio sentinel** -- value of -99 means missing in `crsp.fund_fees`; replace with NULL.
+11. **Cartesian multiplicity risk in mfl3** -- `mfl3 = mfl2 × mflink1` is a cartesian expansion on wficn. `mflink1` has **mean ~3.5 crsp_fundno per wficn (1-101 range)**. Each s12 holding gets multiplied into N rows downstream. The `proc sort nodupkey by wficn rqdate cusip8` MUST run after aggregation or shares inflate.
+12. **Bridge coverage is structurally limited (MFLINKS is US-centric)** -- `mfl.mflink2` only bridges ~**12% of tfn.s12 fundno globally** (e.g., 7,330 of 59,450 at 2022-12-31) because MFLINKS links Thomson S12 ↔ CRSP Mutual Fund Database, which is US-centric. Even filtering s12 by `country='UNITED STATES'` (which in s12 appears to reflect the manager/advisor's country rather than fund domicile — it includes UCITS and global funds run out of US), coverage rates are:
+    - **Pre-2017**: ~77% of US-country funds bridged
+    - **2017 onward**: drops to **~58-66%** (S12 added ~5k more US-country funds from 2016→2017 that MFLINKS did not grow to match)
+
+    The unbridged ~40% post-2017 is **not ETFs specifically** (ETF name-match share is ~2.4% in both bridged and unbridged). The real pattern: **CRSP Mutual Fund Database covers open-end traditional mutual funds; MFLINKS inherits that limit.** Large unbridged US-country funds cluster in categories CRSP does NOT cover:
+    - **Closed-end funds** (e.g., Cohen Steers TaxAdv Pref $110B, Nuveen Quality Pref $69B)
+    - **Variable annuity separate accounts** (CREF Stock Account $104B, VIT products)
+    - **UCITS / Luxembourg-domiciled funds** (Vanguard SP 500 UCITS $33B; `country='UNITED STATES'` reflects manager, not domicile)
+    - **Sub-advised wrapper products** (Fidelity Strategic Advisers family)
+    - **Pension-only products** (JFM Tracker Pension $40B)
+    - **Some ETFs** — mixed (e.g., QQQ unbridged, iShares SP500 bridged; no systematic ETF exclusion)
+
+    Bridge rate is also strongly correlated with fund SIZE:
+    - $10B+ funds: 80% bridged
+    - $100M–$1B: 68%
+    - $10–100M: 56%
+    - <$10M: 30–46% (tiny funds often below CRSP's coverage threshold)
+
+    Implications:
+    - For US MF ownership analysis pre-2017: MFLINKS is reasonably clean
+    - For post-2017 analysis: expect ~40% of "US country" s12 funds unbridged; report coverage alongside MF aggregates
+    - For global analysis: build your own bridge (by fund name, ticker, or manager ID)
+13. **passive_pct 100× scaling in `pass.sas7bdat`** -- `1-make.sas` line 705 multiplies `PASSIVE_PCT` by 100 when merging `index_own` into the panel. If `index_own.PASSIVE_PCT` is already in percent scale (0-100) rather than fraction (0-1), the stored value ends up at 0-10000 scale. Always inspect `describe()` after loading; divide by 100 if max > 100.

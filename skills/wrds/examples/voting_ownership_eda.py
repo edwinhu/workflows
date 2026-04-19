@@ -267,14 +267,24 @@ print(io[['ior', 'num_owners']].describe().round(2))
 # **Note:** Limited to 2020-2024 for this example. Remove the date filter to scale.
 
 # %%
+# IMPORTANT gotchas for this join (see wrds/references/tfn-ownership.md #11-12):
+# 1. mflink2 bridges only ~12% of s12 fundno at a given date — most s12 funds
+#    do not map to wficn. Treat MF aggregates as coverage-limited.
+# 2. Date-align `s.fdate = m.rdate` to avoid cross-quarter fundno aliasing.
+# 3. After the join, deduplicate by (wficn, qtr, cusip6) — NOT (fundno, ...) —
+#    because mflink1 has mean ~3.5 crsp_fundno per wficn (share classes) and
+#    a non-dedup-or-wrong-key dedup inflates shares ~3-4×.
 mf_query = """
 WITH s12_funds AS (
     SELECT s.fundno, s.fdate, s.cusip, s.shares,
            m.wficn
     FROM tfn.s12 s
-    INNER JOIN mfl.mflink2 m ON s.fundno = m.fundno
+    INNER JOIN mfl.mflink2 m
+      ON s.fundno = m.fundno
+     AND s.rdate = m.rdate        -- date-align to avoid cross-quarter aliasing
     WHERE s.fdate BETWEEN '2020-01-01' AND '2024-12-31'
       AND s.shares > 0
+      AND m.wficn IS NOT NULL
 ),
 crsp_style AS (
     SELECT DISTINCT ON (pm.wficn)
@@ -294,6 +304,12 @@ LEFT JOIN crsp_style cs ON sf.wficn = cs.wficn
 """
 mf_raw = pd.read_sql(mf_query, conn, parse_dates=['fdate'])
 print(f"S12 fund-stock holdings (2020-2024): {len(mf_raw):,}")
+
+# Dedup by (wficn, fdate, cusip) BEFORE aggregation. If you skip this, a wficn
+# with 4 crsp_fundno share classes will have shares counted 4× when merging
+# with classification. Match SAS's `proc sort nodupkey by wficn rqdate cusip8`.
+mf_raw = mf_raw.drop_duplicates(subset=["wficn", "fdate", "cusip"]).reset_index(drop=True)
+print(f"After dedup by (wficn, fdate, cusip): {len(mf_raw):,}")
 
 # %%
 # Classify passive/index funds.
