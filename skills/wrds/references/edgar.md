@@ -690,6 +690,104 @@ def extract_10k_section(text: str, section: str) -> str | None:
 5. **Respect SEC rate limits** when downloading documents (10 requests/second)
 6. **Use WRDS file access** for bulk downloads when available
 
+## Self-built SEC index via SGE (fallback for WRDS lag / secondary CIKs)
+
+**When to use:**
+
+1. You need **secondary CIKs** that `wrdssec_all.wrds_forms` drops (it only stores the filer CIK).
+   Examples: Form 4 issuer + reporting owner, SC 13D subject + filer, Form 144 issuer.
+2. WRDS `wrds_forms` is stale or missing recent filings and you want to (re)build the index yourself.
+3. You need a field `wrds_forms` does not expose (e.g. every role block, IRS number, film number).
+
+**What it does:** SGE array, one task per top-level 6-char shard under `/wrds/sec/archives/`
+(there are ~164 shards). Each task reads only the first 4 KB (or up to `</SEC-HEADER>`) of every
+`*.txt` filing and emits one TSV row per role block:
+
+```
+filepath  form_type  filed_date  accession  role  cik
+```
+
+Role values: `FILER`, `REPORTING-OWNER`, `ISSUER`, `SUBJECT COMPANY`, `FILED BY`, `FILED FOR`,
+`SECURITIZER`, `DEPOSITOR`, `SERIAL COMPANY`. (Old 2000-era Form 4s may leak the role `COMPANY DATA`
+— filter post-hoc.)
+
+### Use the Go scanner (recommended)
+
+**26× faster than awk-per-file** (~22 s/shard vs ~583 s), exact parity, identical output
+contract. NFS open latency — not CPU — is the bottleneck; a goroutine pool of 16 workers
+hides the latency that serial `awk FILENAME` cannot.
+
+Scripts live at `skills/wrds/scripts/sec_index_rga/`:
+
+| File | Role |
+|------|------|
+| `scan_shard_go/main.go` + `go.mod` | Cross-compiled Go helper; walks shard, reads first 4 KB of each `.txt` with N workers, emits TSV rows to stdout |
+| `scan_shard_go.sh` | SGE wrapper: gzips stdout of Go binary, same env contract (`SGE_TASK_ID`, `SHARD_LIST`, `OUT_DIR`) as the awk baseline |
+| `submit_array.sh` | `#$ -t 1-N -l m_mem_free=2G` wrapper; `exec`s the scanner |
+| `build_index.py` | Local driver: refresh shard list, qsub, poll qstat, rclone TSVs back, concat to parquet |
+| `scan_shard.sh` | Legacy awk-per-file baseline (kept as fallback) |
+
+**Build & deploy:**
+
+```bash
+# Local cross-compile (macOS/Linux dev → Linux amd64 WRDS node)
+cd skills/wrds/scripts/sec_index_rga/scan_shard_go
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o scan_shard_go
+
+# Upload once (3.0 MB, statically linked)
+scp scan_shard_go wrds:/scratch/nyu/$USER/bin/
+```
+
+**Run full index:**
+
+```bash
+# On WRDS:
+cd /scratch/nyu/$USER/sec_index_rga
+ls -d /wrds/sec/archives/*/ | sed 's|/wrds/sec/archives/||;s|/$||' | sort > shards.txt
+qsub -t 1-$(wc -l < shards.txt) submit_array.sh     # 164 tasks, ~5 min wall
+
+# Locally:
+python scripts/sec_index_rga/build_index.py --all
+```
+
+### Benchmarks (shard `000000`, 219,196 files, WRDS login node)
+
+| Variant | Wall | Rows | Parity |
+|---------|-----:|-----:|--------|
+| awk-per-file baseline (cold) | 675 s | 362,370 | reference |
+| awk-per-file baseline (warm) | 583 s | 362,370 | reference |
+| `rg \| awk` (warm) | 539 s | 409,129 (+12.9%) | **FAIL** — rg scans to EOF; multi-role filings leak header-like blocks past 4 KB |
+| **Go helper (warm)** | **22 s** | **362,370** | **PASS — 0 differing rows** |
+
+Row/file ratio: 1.65× — confirms secondary CIKs captured (single-CIK Form 4 would give 2×).
+Output: 3.0 MB gzipped per shard. Full 164-shard run: ~500 MB / ~60M rows.
+
+**Why the Go helper wins:** 28 s CPU is comparable to awk's 68 s CPU. The wall-time win is
+entirely from concurrent NFS opens — `io.ReadFull` across 16 goroutines overlaps the
+per-file open latency that serial awk pays sequentially. Variant A (rg | awk) is faster
+at opens but loses parity because `rg` has no per-file byte limit equivalent to awk's
+`nextfile` after 4 KB.
+
+**Concurrency:** the wrapper defaults to `$NSLOTS × 8` with a floor of 16. Bump via
+`GO_CONCURRENCY=32` if you request more slots. NFS open is I/O-bound so over-subscribing
+past CPU count helps.
+
+### Correctness traps (hard-earned)
+
+- The header has **multiple** `CENTRAL INDEX KEY:` lines, one per role block. Never use
+  `-m 1` or naive first-match — you'll silently drop secondary CIKs.
+- `rg -U --multiline` can over-match across file boundaries if input isn't `-H`-prefixed.
+  The awk-per-file and Go-per-file approaches sidestep this entirely.
+- Scan only until `</SEC-HEADER>` or 4 KB. Never touch the filing body.
+- **4 KB buffer fill without `</SEC-HEADER>`:** drop the last (possibly truncated) line
+  before parsing, or you'll emit partial CIKs. Go helper does this (`main.go` lines 60-67);
+  first run without it leaked 29 bad rows / 362k.
+- **Skew**: `/wrds/sec/archives/000130/` and similar large prefixes are slow tasks.
+  Do not rebalance — SGE task parallelism absorbs it.
+- Very old (2000-era) Form 4 filings use `<REPORTING-OWNER>` XML tags with `COMPANY DATA:`
+  at column 0 inside. The parser emits a `COMPANY DATA` role for these (~0.5% of rows).
+  Filter to a whitelist post-parse.
+
 ## Rate Limiting for SEC Access
 
 ```python
