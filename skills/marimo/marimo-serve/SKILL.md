@@ -8,7 +8,7 @@ user-invocable: true
 
 Runs one uvicorn process that auto-mounts every `*.py` notebook in a directory under `http://host:port/<mount>/<stem>`. Add or remove files — the URL list updates without restart. This is marimo's closest equivalent to "JupyterLab for many notebooks."
 
-**Default is read-only Run mode.** Pass `--edit` to launch `marimo edit DIRECTORY` instead (full editor, saves on disk).
+**Default is read-only Run mode.** Pass `--edit` to launch `marimo edit DIRECTORY --watch` instead (full editor, saves on disk; picks up external `.py` edits without restart).
 
 ## Quick usage
 
@@ -76,3 +76,5 @@ pixi add marimo uvicorn
 ## Implementation notes
 
 Run mode uses `marimo.create_asgi_app().with_dynamic_directory()` — the officially documented pattern for multi-notebook ASGI serving. Filenames starting with `_` are skipped (treat as private/helper modules). `create_asgi_app()`'s docstring states it "only works for application that are in Run mode" — that's why edit mode delegates to the `marimo edit` CLI (`os.execv`) instead.
+
+Edit mode passes `--watch` by default so that edits made to the `.py` file from outside the browser (e.g. by an agent using Edit/Write) are picked up by the running session without a manual reload. This pairs with the marimo-pair skill: one agent edits the file on disk, the user (or another agent) runs cells in the browser.

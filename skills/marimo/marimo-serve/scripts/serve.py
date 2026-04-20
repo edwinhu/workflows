@@ -52,9 +52,10 @@ def main() -> int:
         if not marimo_bin:
             sys.exit("error: `marimo` not on PATH. pip/pixi add marimo")
         # --no-token makes the server auto-discoverable by the marimo-pair skill.
+        # --watch re-reads the notebook file on disk so external edits show up.
         argv = [marimo_bin, "edit", str(directory),
                 "--host", args.host, "--port", str(args.port),
-                "--headless", "--no-token"]
+                "--headless", "--no-token", "--watch"]
         print(f"Launching edit mode: {' '.join(argv)}")
         os.execv(marimo_bin, argv)
 
