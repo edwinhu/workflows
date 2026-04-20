@@ -32,6 +32,11 @@ section-to-section transitions.
 - [ ] Register appropriate for audience
 - [ ] Citation style correct (if applicable)
 
+## Prose Quality Constraints
+- [ ] No bold-lead paragraph patterns (`**Bold Header.** Text...`)
+- [ ] Topic sentences state substance, not meta-commentary (no "deserves context", "is striking", "is not an overstatement")
+- [ ] No expletive constructions opening paragraphs ("There are...", "It is...")
+
 ## AI Anti-Patterns
 - [ ] No sycophantic patterns
 - [ ] No hollow emphasis ("crucial", "vital", "Moreover")

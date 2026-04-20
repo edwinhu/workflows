@@ -23,10 +23,11 @@ Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence.
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md` (index), then load the phase-specific constraints:
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-requirement-traceability.md` (C5)
+Auto-load all constraints matching `applies-to: dev-verify`:
+
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-verify`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 **Dynamic plan re-read:** Before starting verification, re-read `.planning/SPEC.md` to verify against the latest requirements. Do not rely on cached state from prior phases.
 

@@ -51,11 +51,13 @@ Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
 Profile the data and create an analysis plan based on the spec.
 **Requires `.planning/SPEC.md` from /ds first.**
 
-**Load shared enforcement first:**
+**Load shared enforcement first.**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.md` — governs Step 5b (External Skill Discovery Gate).
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.md` — governs Step 5c (Data Pull Profiling Gate).
+Auto-load all constraints matching `applies-to: ds-plan`:
+
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-plan`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate).
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning

@@ -71,15 +71,13 @@ Final verification with reproducibility checks and user acceptance interview.
 
 **NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION. This is not negotiable.**
 
-**Load shared enforcement first.** Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
+**Load shared enforcement first.**
 
-For verification phase, load these specific constraints:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
+Auto-load all constraints matching `applies-to: ds-verify`:
 
-Load conventions for verification phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-verify`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 Before claiming analysis is complete, you MUST:
 1. RE-RUN - Execute analysis fresh (not cached results)

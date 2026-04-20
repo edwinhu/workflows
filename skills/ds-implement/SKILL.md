@@ -262,19 +262,11 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
+Auto-load all constraints matching `applies-to: ds-implement`:
 
-For implementation phase, load these specific constraints:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-implement`
 
-Load conventions for implementation phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-topic-change-protocol.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-escape-patterns.md`
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 ```
 Read(".planning/PLAN.md")

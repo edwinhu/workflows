@@ -12,20 +12,11 @@ allowed-tools: Read, Grep, Glob, Agent
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
+Auto-load all constraints matching `applies-to: writing-outline-reviewer`:
 
-Then load these reviewer-specific files:
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-outline-reviewer`
 
-**Constraints:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
-
-**Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 ## When to Dispatch
 

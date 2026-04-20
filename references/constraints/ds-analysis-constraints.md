@@ -17,13 +17,14 @@ Deterministic rules for data analysis tasks (statistical analysis, modeling, vis
 | A1 | Robustness Checks | [constraints/ds-robustness-checks.md](constraints/ds-robustness-checks.md) | Beyond spec curves — placebo tests, IV, RDD, bootstrap, leave-one-out |
 | A2 | Standard Error Spec | [constraints/ds-standard-error-spec.md](constraints/ds-standard-error-spec.md) | Match SE type to data structure — wrong SEs invalidate all inference |
 | A3 | Visualization Integrity | [constraints/ds-visualization-integrity.md](constraints/ds-visualization-integrity.md) | Charts must not mislead — no truncated axes, dual-axis tricks, or 3D |
+| A4 | Table-Figure Pairing | [constraints/ds-table-figure-pairing.md](constraints/ds-table-figure-pairing.md) | Every main result table needs a companion figure (the "Hendershott" rule) |
 
 ## Loading Guide
 
-For analysis subagents, load all A1-A3. The most critical for preventing silent errors:
+For analysis subagents, load all A1-A4. The most critical for preventing silent errors:
 
 | Priority | Constraints | Why |
 |----------|-------------|-----|
 | **Always** | A2 (SEs) | Wrong standard errors invalidate all inference |
 | **For regressions** | A1 (robustness) | Prevent specification search |
-| **For reporting** | A3 (visualization) | Prevent misleading output |
+| **For reporting** | A3 (visualization), A4 (table-figure pairing) | Prevent misleading output; ensure every table has a visual companion |

@@ -14,14 +14,11 @@ hooks:
 
 **Load shared enforcement:**
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`
+Auto-load all constraints matching `applies-to: dev-debug`:
 
-Then load the phase-specific constraints:
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/delegation-law.md` (C1)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/real-test-enforcement.md` (C2)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-deviation-rules.md` (C4)
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-debug`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 <EXTREMELY-IMPORTANT>
 ## STEP ZERO — INITIALIZE THE DEBUG LOOP

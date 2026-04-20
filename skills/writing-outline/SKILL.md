@@ -43,28 +43,11 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
+Auto-load all constraints matching `applies-to: writing-outline`:
 
-Then load these phase-specific files:
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-outline`
 
-**Constraints:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/deviation-rules.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
-
-**Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 ## Outline Flowchart (This IS the Spec)
 

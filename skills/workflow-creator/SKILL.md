@@ -1276,7 +1276,7 @@ Step 1: Read All Files ──→ Step 2: Score 20 Principles ──→ Step 3: S
   [auto]                     [auto]                          [auto]
     │                           │                               │
     ▼                           ▼                               ▼
-  File map built              P01-P20 scored                  Patterns scored per phase
+  File map built              P01-P21 scored                  Patterns scored per phase
                                                                   │
                               Step 3b: Path Portability ◄─────────┘
                                 [auto]
@@ -1317,10 +1317,10 @@ affects: [.planning/wc/{name}/STATE.md]
 
 **Proceed to Step 2.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
-### Step 2: Score Against Core Principles (P01-P20)
+### Step 2: Score Against Core Principles (P01-P21)
 <!-- implements: WC-09 -->
 
-Score each principle 0-10. Use the formal ID (P01-P20) in all audit output for traceability.
+Score each principle 0-10. Use the formal ID (P01-P21) in all audit output for traceability.
 
 **P01 — Phased decomposition:**
 - Does each phase have a single responsibility?
@@ -1476,8 +1476,19 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Behavioral/motivational constraints (rationalization tables, drive-aligned framing) should STAY as prompt — hooks can't teach reasoning
 - Score based on: how many mechanical constraints are prompt-only when they could be hooks?
 
+**P21 — Auto-loader usage for constraints:**
+- Do phase skills that load constraint prose use the bang-invoked auto-loader?
+  ```
+  !`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
+  ```
+- Or do they list `Read()` calls for each constraint `.md` file manually?
+- **Why this matters:** The auto-loader + `applies-to` frontmatter is the wiring that makes atomic constraints work. Manual `Read()` lists mean adding a new constraint requires editing every skill that should load it — silent drift is the default failure mode.
+- Check: Run `python3 references/constraints/auto-loader-usage.py`. Every flagged SKILL.md is a violation.
+- Exceptions: router skills that immediately delegate (no constraint evaluation), ad-hoc single-file references (not phase sets), plugins without `scripts/load-constraints.py`.
+- Score: count of phase skills using the loader / count of phase skills that load ≥2 constraints. Below 80% = critical gap.
+
 **Gate: Architecture Scored** `[checkpoint: human-verify, auto-advanceable]`
-- Verify scores for all P01-P20 (+ P19b) principles are present
+- Verify scores for all P01-P21 (+ P19b) principles are present
 - Each principle must have numeric score (0-10) + 1-line justification
 - If any principle ID is missing, score it now
 - Composite = average of scored (non-N/A) principles
@@ -1488,7 +1499,7 @@ step: 2-score
 status: completed
 implements: [WC-09]
 requires: [all workflow skill files]
-provides: [P01-P20 scores with justifications]
+provides: [P01-P21 scores with justifications]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
@@ -1602,7 +1613,7 @@ Format:
 ```
 ## Audit: [Workflow Name]
 
-### Architecture Scores (P01-P20)
+### Architecture Scores (P01-P21)
 | ID | Principle | Score | Notes |
 |----|-----------|-------|-------|
 | P01 | Phased decomposition | [0-10] | [notes] |
@@ -1626,6 +1637,7 @@ Format:
 | P19 | Autonomous phase chaining | [0-10] | [notes] |
 | P19b | Visual output | [0-10] | [notes] |
 | P20 | Hooks over prompt | [0-10] | [notes] |
+| P21 | Auto-loader usage | [0-10] | [notes] (loader skills / phase skills ≥2 constraints) |
 
 ### Gate Enforcement Matrix
 | Transition | Gate | Artifact | Producer Writes? | Consumer Checks? | Hook Enforced? | Status |
@@ -1711,7 +1723,7 @@ During auditing, unplanned issues may arise. Apply these deviation rules:
 | Giving a 9 or 10 without finding specific evidence | High scores require evidence of excellence, not absence of problems | Find the specific line/pattern that earns the score. No evidence = no high score |
 | Skipping the enforcement pattern matrix | "I covered it in prose" — matrices catch asymmetries prose misses | Produce the matrix. Score every pattern × every phase |
 | Scoring structural gate enforcement without producing the Gate Enforcement Matrix | You can't assess gates without mapping every transition | Produce the matrix first, then score from it |
-| Combining two principles into one score | Each principle measures a different quality dimension | Score each P01-P20 independently |
+| Combining two principles into one score | Each principle measures a different quality dimension | Score each P01-P21 independently |
 
 #### Staged Review — Mode 2
 
@@ -1754,7 +1766,7 @@ Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → 
 
 Run Mode 2 on the target workflow. This produces the baseline score.
 
-**Gate:** Mode 2 audit report exists with numeric scores for all P01-P20 principles. `[checkpoint: human-verify, auto-advanceable]`
+**Gate:** Mode 2 audit report exists with numeric scores for all P01-P21 principles. `[checkpoint: human-verify, auto-advanceable]`
 
 ### Step 2: Launch Audit-Fix Loop
 <!-- implements: WC-12 -->
@@ -1786,7 +1798,7 @@ Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
 
 Spawn a fresh audit subagent that:
 1. Reads ALL skill files in the workflow (entry, midpoint, all phases, references, common-constraints)
-2. Scores against the P01-P20 architecture principles (0-10 each)
+2. Scores against the P01-P21 architecture principles (0-10 each)
 3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
 4. Checks path portability
 5. Computes composite score (average of non-N/A principle scores)
@@ -1812,7 +1824,7 @@ Read "${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md"
 Then audit this workflow by reading ALL its skill files:
 [LIST ALL SKILL FILES IN THE WORKFLOW]
 
-Score each of the 20 architecture principles (P01-P20 + P19b) 0-10.
+Score each of the 21 architecture principles (P01-P21 + P19b) 0-10.
 Score each of the 13 enforcement patterns per phase: Present/Weak/Absent.
 Check path portability.
 

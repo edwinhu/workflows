@@ -44,15 +44,13 @@ Before starting, check for an existing handoff:
 Refine vague analysis requests into clear objectives through Socratic questioning.
 **NO data exploration, NO coding** - just questions and objectives.
 
-**Load shared enforcement first:**
+**Load shared enforcement first.**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
+Auto-load all constraints matching `applies-to: ds`:
 
-Load conventions for brainstorm phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-impatience-over-process.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Brainstorming

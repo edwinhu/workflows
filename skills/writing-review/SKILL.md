@@ -24,32 +24,13 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 ## Shared Enforcement
 
-Load the constraint index:
+Auto-load all constraints matching `applies-to: writing-review`:
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-review`
 
-Then load these phase-specific files:
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
-**Constraints:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before reviewing prose**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/post-subagent-enforcement.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-stop-triggers.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
-
-**Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/artifact-review-gates.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
+**CRITICAL:** The `constraint-loading-protocol` above requires loading the domain skill (writing-legal/econ/general) and ai-anti-patterns before reviewing any prose — see Steps 2 and 2b below.
 
 ## Session Resume Detection
 
@@ -164,6 +145,18 @@ Skill(skill="workflows:ai-anti-patterns")
 
 **You MUST load ai-anti-patterns before reviewing.** Domain skills inform domain-specific review criteria; ai-anti-patterns catches AI writing smell (hedging, filler, false balance) that domain skills don't cover. Both layers are required — see `constraints/constraint-loading-protocol.md`.
 
+### Step 2c: Run Constraint Check Scripts (Hard Gate)
+
+Before any review work, run all mechanical constraint checks:
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/check-all.py [project-root]
+```
+
+This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, topic sentences, source-anchored citations, etc.). If any check fails, report violations and fix them before proceeding to Level 1.
+
+Constraint checks are **Leg 1** of two-leg verification. **Leg 2** (convention scoring via reviewer subagents) happens in Level 1.
+
 ### Step 3: Choose Review Strategy
 
 ```
@@ -191,20 +184,35 @@ START (PRECIS + OUTLINE + drafts/ exist)
   │
   ├─ Step 2: Choose strategy (sequential or parallel)
   │
-  └─ LEVEL 1: Section Review (bottom-up)
-     │  For EACH section in document order:
-     │  ├─ Spawn fresh subagent (Iron Law: Structural Independence)
-     │  ├─ Subagent reads outline + draft cold
-     │  ├─ Run section review checklist
-     │  ├─ Produce boundary summary (closing + opening sentences)
-     │  └─ Record issues with severity + location + quoted evidence
+  ├─ Step 2b: Run constraint check scripts (hard gate)
+  │  └─ python3 references/constraints/check-all.py [project-root]
+  │     ├─ FAIL → Report violations. Fix before continuing.
+  │     └─ PASS → Proceed to Level 1.
+  │
+  └─ LEVEL 1: Section Review (bottom-up, 3 parallel reviewers per section)
+     │  For EACH section in document order, dispatch in PARALLEL:
+     │  │
+     │  ├─ (a) Structure reviewer (existing)
+     │  │      Spawn fresh subagent → outline compliance, topic sentence
+     │  │      inventory, boundary summary, PRECIS claim check
+     │  │
+     │  ├─ (b) Prose-quality reviewer (NEW — writing-prose-reviewer agent)
+     │  │      Spawn fresh subagent → grade every paragraph against
+     │  │      domain style rules (Volokh/S&W/McCloskey) + AI anti-patterns
+     │  │      + prose constraints. Read-only, returns scored report.
+     │  │
+     │  └─ (c) Source-fidelity reviewer (NEW — writing-source-fidelity-reviewer)
+     │         Spawn fresh subagent → verify every citation traces to
+     │         references/sources.md. Read-only, returns fidelity report.
+     │
+     │  Merge all three reports per section before moving to next.
      │  Loop until all sections reviewed (NO pause between sections)
      │
      └─ LEVEL 2: Transition Review (boundary analysis) ← IMMEDIATELY after Level 1 (NO pause)
         │  For EACH boundary (Section N → Section N+1):
         │  ├─ Compare Section N closing with Section N+1 opening
         │  ├─ Check planned transition from OUTLINE.md
-        │  ├─ Evaluate bridge: SMOOTH / ABRUPT / DISCONNECTED
+        │  ├─ Evaluate bridge: SMOOTH / ABRUPT | DISCONNECTED
         │  └─ Record transition issues with quoted boundary text
         │  Loop until all boundaries checked
         │
@@ -260,6 +268,44 @@ For each section, in document order:
 After completing each section, IMMEDIATELY start the next. Do NOT pause to ask.
 
 > **Full section review checklist and boundary summary format:** See `references/sequential-checklist.md`
+
+### Dispatching Quality and Fidelity Reviewers
+
+For each section, dispatch three reviewers in parallel (single message, three Agent calls):
+
+**(a) Structure reviewer** — existing section review subagent (see prompt template above)
+
+**(b) Prose-quality reviewer** — `writing-prose-reviewer` agent:
+```
+Agent(
+  subagent_type="workflows:writing-prose-reviewer",
+  prompt="""Grade prose quality for: drafts/[Section] (Draft).md
+  Domain style: [legal/econ/general]
+  Plugin root: [resolved PLUGIN_ROOT path]
+  Project root: [project directory]
+  Read the full domain skill, ai-anti-patterns, and prose constraint files before grading.
+  Grade every paragraph. Report violations with line numbers and quoted text."""
+)
+```
+
+**(c) Source-fidelity reviewer** — `writing-source-fidelity-reviewer` agent:
+```
+Agent(
+  subagent_type="workflows:writing-source-fidelity-reviewer",
+  prompt="""Verify citation fidelity for: drafts/[Section] (Draft).md
+  Project root: [project directory]
+  Read references/sources.md first.
+  Check every citation, footnote, and attributed claim traces to a verified source entry.
+  Report unanchored citations, detail mismatches, and claim fidelity concerns."""
+)
+```
+
+Merge all three reports before recording issues for that section. Prose-quality F/C grades and source-fidelity violations become issues in REVIEW.md with appropriate severity:
+- F-grade prose → critical
+- C-grade prose → major
+- Unanchored citation → critical
+- Detail mismatch → major
+- Claim fidelity concern → minor
 
 ### Agent Team Mode (Parallel)
 

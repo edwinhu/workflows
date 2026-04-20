@@ -27,32 +27,13 @@ The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced
 
 ## Shared Enforcement
 
-Load the constraint index:
+Auto-load all constraints matching `applies-to: writing-revise`:
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-revise`
 
-Then load these phase-specific files:
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
-**Constraints:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before revising prose**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/post-subagent-enforcement.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-stop-triggers.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/deviation-rules.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
-
-**Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
+**CRITICAL:** The `constraint-loading-protocol` above requires loading the domain skill (writing-legal/econ/general) and ai-anti-patterns before revising any prose.
 
 ## Session Resume Detection
 

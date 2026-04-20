@@ -4,14 +4,41 @@
 Discovers from two directories:
   - references/constraints/*.py       — plugin-wide constraints
   - skills/*/references/*.py          — skill-local constraints (co-located with their .md pairs)
+
+Domain filtering: reads {cwd}/.planning/ACTIVE_WORKFLOW.md for `style:` field.
+  - writing-legal (Volokh)  → legal only
+  - writing-econ (McCloskey) → econ only
+  - writing-general (S&W)   → always
+  - ai-anti-patterns         → always
 """
+from __future__ import annotations
+
 import importlib.util
 import json
+import re
 import sys
 from pathlib import Path
 
 _repo_root = Path(__file__).parent.parent.parent  # workflows/
 _plugin_constraints_dir = Path(__file__).parent
+
+DOMAIN_SKILL_MAP = {
+    "writing-legal": {"legal"},
+    "writing-econ": {"econ"},
+}
+
+
+def _detect_domain(cwd: str) -> str | None:
+    """Read style from ACTIVE_WORKFLOW.md frontmatter."""
+    aw = Path(cwd) / ".planning" / "ACTIVE_WORKFLOW.md"
+    if not aw.is_file():
+        return None
+    try:
+        text = aw.read_text(encoding="utf-8")
+        m = re.search(r"^style:\s*(\w+)", text, re.MULTILINE)
+        return m.group(1) if m else None
+    except Exception:
+        return None
 
 
 def import_check(py_path):
@@ -53,7 +80,9 @@ def _run_checks(md_stems, py_paths, directory_label, context, results):
 def main():
     cwd = sys.argv[1] if len(sys.argv) > 1 else "."
     context = {"cwd": cwd}
-    results = {"passed": [], "failed": [], "conventions": [], "errors": []}
+    results = {"passed": [], "failed": [], "conventions": [], "errors": [], "skipped": []}
+
+    domain = _detect_domain(cwd)
 
     # --- Layer 1: plugin-wide constraints ---
     md_stems, py_paths = _discover(_plugin_constraints_dir, exclude_names={"check-all"})
@@ -62,10 +91,16 @@ def main():
     # --- Layer 2: skill-local constraints (prefixed .py files in skills/*/references/) ---
     # Skill reference .md files are long source documents (Strunk, McCloskey, etc.), not
     # constraint definitions — so .py files here run unconditionally, no .md pairing required.
+    # Domain filtering: writing-legal runs only for legal, writing-econ only for econ.
     skills_dir = _repo_root / "skills"
     if skills_dir.is_dir():
         for skill_refs in sorted(skills_dir.glob("*/references")):
             skill_name = skill_refs.parent.name
+            # Domain filter: skip domain-specific skills that don't match
+            if domain and skill_name in DOMAIN_SKILL_MAP:
+                if domain not in DOMAIN_SKILL_MAP[skill_name]:
+                    results["skipped"].append(f"skills/{skill_name} (domain={domain})")
+                    continue
             py_files = sorted(skill_refs.glob("*.py"))
             for py_path in py_files:
                 label = f"skills/{skill_name}/references/{py_path.stem}"
@@ -79,12 +114,13 @@ def main():
                 except Exception as e:
                     results["errors"].append({"name": label, "error": str(e)})
 
-    total = len(results["passed"]) + len(results["failed"]) + len(results["conventions"]) + len(results["errors"])
+    total = len(results["passed"]) + len(results["failed"]) + len(results["conventions"]) + len(results["errors"]) + len(results["skipped"])
     print(json.dumps(results, indent=2))
     print(
         f"\n{len(results['passed'])}/{total} passed, "
         f"{len(results['failed'])} failed, "
         f"{len(results['conventions'])} conventions (judgment-only), "
+        f"{len(results['skipped'])} skipped (domain filter), "
         f"{len(results['errors'])} errors"
     )
     sys.exit(1 if results["failed"] or results["errors"] else 0)

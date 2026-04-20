@@ -385,16 +385,13 @@ Publishing wrong results is worse than slow results. The user experiences your c
 
 ## Shared Enforcement
 
-**Load shared ds constraints before reviewing.** Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md` for the full constraint index.
+**Load shared ds constraints before reviewing.**
 
-For review phase, load these specific constraints:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-quality-checks.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-post-subagent-boundary.md`
+Auto-load all constraints matching `applies-to: ds-review`:
 
-Load conventions for review phase:
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the full convention index.
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-assumption-over-evidence.md`
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deferred-verification.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-review`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 ## Review Focus Areas
 

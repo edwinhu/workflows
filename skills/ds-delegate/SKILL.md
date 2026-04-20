@@ -150,6 +150,7 @@ This task requires:
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-robustness-checks.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-standard-error-spec.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-visualization-integrity.md`
+  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-table-figure-pairing.md`
 - Analysis conventions: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the convention index, then load:
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-statistical-validity.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-p-hacking-prevention.md`

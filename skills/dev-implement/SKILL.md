@@ -25,13 +25,11 @@ hooks:
 
 **Load shared enforcement:**
 
-Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md` (index), then load the phase-specific constraints:
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/delegation-law.md` (C1)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/verification-vs-investigation.md` (C1b)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/real-test-enforcement.md` (C2)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/structural-vs-runtime-verification.md` (C3)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-deviation-rules.md` (C4)
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-requirement-traceability.md` (C5)
+Auto-load all constraints matching `applies-to: dev-implement`:
+
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-implement`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
 **Dynamic plan re-read:** Before starting work, re-read `.planning/PLAN.md` to catch any phases or tasks that were dynamically inserted by earlier phases. Do not rely on cached plan state from a prior phase.
 

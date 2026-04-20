@@ -35,29 +35,13 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 ## Shared Enforcement
 
-Read the constraint index: `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
+Auto-load all constraints matching `applies-to: writing-draft` (includes constraint-loading-protocol, source-anchored-citations, no-bold-lead, topic-sentences, and all shared writing constraints):
 
-Then load these phase-specific files:
+!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-draft`
 
-**Constraints:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progressive-expansion-hierarchy.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/constraint-loading-protocol.md` — **CRITICAL: load domain skill + ai-anti-patterns before writing prose**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/flowchart-authority.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/no-pause-between-phases.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/progress-gating.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/topic-change-protocol.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/writing-stop-triggers.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/drive-aligned-default.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/context-monitoring.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/deviation-rules.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/claim-id-traceability.md`
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
-**Conventions:**
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/gate-function-standard.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/phase-summary-frontmatter.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/checkpoint-type-classification.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/autonomous-phase-chaining.md`
-- Read `${CLAUDE_SKILL_DIR}/../../references/constraints/iteration-topology.md`
+**CRITICAL:** The `constraint-loading-protocol` above requires loading the domain skill (writing-legal/econ/general) and ai-anti-patterns before writing any prose — see Step 2 below.
 
 ## Draft Flowchart (This IS the Spec)
 
