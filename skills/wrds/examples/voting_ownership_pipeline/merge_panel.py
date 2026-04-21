@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Merge voting with institutional and mutual fund ownership.
 
 Reads parquet outputs from build_votes.py, build_inst_own.py, build_mf_own.py.

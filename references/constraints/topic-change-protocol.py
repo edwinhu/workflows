@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: topic-change-protocol — verify workflow skills load this constraint."""
 
 CONSTRAINT = "topic-change-protocol"

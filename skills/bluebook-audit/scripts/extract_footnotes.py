@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Extract footnotes from DOCX, build citation registry, resolve cross-refs,
 and run mechanical Bluebook checks.
 
 Usage:
-    python3 scripts/extract_footnotes.py --docx path/to/file.docx
-    python3 scripts/extract_footnotes.py --docx path/to/file.docx --output results.json
-    python3 scripts/extract_footnotes.py --docx path/to/file.docx --overrides overrides.json
+    uv run python3 scripts/extract_footnotes.py --docx path/to/file.docx
+    uv run python3 scripts/extract_footnotes.py --docx path/to/file.docx --output results.json
+    uv run python3 scripts/extract_footnotes.py --docx path/to/file.docx --overrides overrides.json
 """
 
 import argparse

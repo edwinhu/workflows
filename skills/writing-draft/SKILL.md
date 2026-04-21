@@ -13,18 +13,18 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Outline review"
             GATE_REMEDY="Return to writing-outline and run the outline reviewer before drafting"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-outline-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-outline-guard.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
 ---
 
 # Writing Draft
@@ -37,7 +37,7 @@ Expand detailed section outlines into prose, one section at a time, using domain
 
 Auto-load all constraints matching `applies-to: writing-draft` (includes constraint-loading-protocol, source-anchored-citations, no-bold-lead, topic-sentences, and all shared writing constraints):
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-draft`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-draft`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: wc-checkpoint-classification — all gates must have checkpoint type annotations."""
 
 CONSTRAINT = "wc-checkpoint-classification"

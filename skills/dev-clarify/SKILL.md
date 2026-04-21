@@ -12,7 +12,7 @@ hooks:
             GATE_ARTIFACT=.planning/SPEC.md
             GATE_DESCRIPTION="Spec document"
             GATE_REMEDY="SPEC.md must exist before clarifying. Complete brainstorm first."
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."

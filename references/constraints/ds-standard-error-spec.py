@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-standard-error-spec — match SE type to data structure."""
 import re
 import sys

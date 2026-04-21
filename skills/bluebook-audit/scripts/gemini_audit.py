@@ -1,13 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Audit ALL footnotes via Gemini with formatting-aware text.
 
 Uses the Gemini REST API directly (no SDK dependency).
 Requires GOOGLE_API_KEY environment variable.
 
 Usage:
-    python3 scripts/gemini_audit.py --docx path/to/file.docx
-    python3 scripts/gemini_audit.py --docx path/to/file.docx --output results.json
-    python3 scripts/gemini_audit.py --docx path/to/file.docx --subset 3,11,33,35
+    uv run python3 scripts/gemini_audit.py --docx path/to/file.docx
+    uv run python3 scripts/gemini_audit.py --docx path/to/file.docx --output results.json
+    uv run python3 scripts/gemini_audit.py --docx path/to/file.docx --subset 3,11,33,35
 """
 
 import argparse

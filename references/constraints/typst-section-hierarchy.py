@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-section-hierarchy — === titles must be complete sentences, == outside #slide[]."""
 
 import re

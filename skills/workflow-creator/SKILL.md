@@ -7,16 +7,16 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-constraint-check.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-constraint-check.py"
 ---
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
@@ -283,7 +283,7 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ```
 
 **How it works:**
@@ -655,7 +655,7 @@ hooks:
     - matcher: "Read"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/[phase]/scripts/guard-media-files.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/[phase]/scripts/guard-media-files.py"
 ```
 
 **Design rule:** Hook first. If the hook can't express the constraint (requires judgment, context, or semantics), fall back to prompt enforcement.
@@ -857,7 +857,7 @@ sys.exit(1 if results["failed"] else 0)
 ```
 Verification Phase
     ↓
-Leg 1: python3 check-all.py (auto-discovers constraints/*.py)
+Leg 1: uv run python3 check-all.py (auto-discovers constraints/*.py)
     ↓
     Structured results: {passed: [...], failed: [...], conventions: [...]}
     ↓                              ↓
@@ -880,7 +880,7 @@ Skills use a bang to auto-load all applicable constraints at skill load time:
 
 ```
 # In a skill's SKILL.md:
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
 ```
 
 This mirrors `check-all.py`'s auto-discovery but for `.md` prose:
@@ -1479,11 +1479,11 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 **P21 — Auto-loader usage for constraints:**
 - Do phase skills that load constraint prose use the bang-invoked auto-loader?
   ```
-  !`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
+  !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
   ```
 - Or do they list `Read()` calls for each constraint `.md` file manually?
 - **Why this matters:** The auto-loader + `applies-to` frontmatter is the wiring that makes atomic constraints work. Manual `Read()` lists mean adding a new constraint requires editing every skill that should load it — silent drift is the default failure mode.
-- Check: Run `python3 references/constraints/auto-loader-usage.py`. Every flagged SKILL.md is a violation.
+- Check: Run `uv run python3 references/constraints/auto-loader-usage.py`. Every flagged SKILL.md is a violation.
 - Exceptions: router skills that immediately delegate (no constraint evaluation), ad-hoc single-file references (not phase sets), plugins without `scripts/load-constraints.py`.
 - Score: count of phase skills using the loader / count of phase skills that load ≥2 constraints. Below 80% = critical gap.
 
@@ -1538,15 +1538,15 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 
 **Scan every SKILL.md and references/*.md file in the workflow for these patterns:**
 
-1. **Relative script paths** — `python3 scripts/`, `python3 ../`, `python3 ../../` referencing plugin scripts
+1. **Relative script paths** — `uv run python3 scripts/`, `uv run python3 ../`, `uv run python3 ../../` referencing plugin scripts
    - These break because the agent's CWD is the user's project
    - **Fix:** Use `${CLAUDE_SKILL_DIR}/../..` for absolute paths:
      ```bash
-     python3 "${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py" args
+     uv run python3 "${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py" args
      ```
    - Or use `${CLAUDE_SKILL_DIR}` for files within the same skill directory:
      ```bash
-     python3 "${CLAUDE_SKILL_DIR}/scripts/script.py" args
+     uv run python3 "${CLAUDE_SKILL_DIR}/scripts/script.py" args
      ```
 
 2. **Relative Read() paths** — `Read("../../skills/...")`, `Read("../audit-check/SKILL.md")`
@@ -1580,7 +1580,7 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 grep -rn "command:.*\${CLAUDE_SKILL_DIR}" skills/*/SKILL.md
 
 # All hook commands should match this pattern:
-grep -rn "command:.*python3 \${CLAUDE_PLUGIN_ROOT}" skills/*/SKILL.md
+grep -rn "command:.*uv run python3 \${CLAUDE_PLUGIN_ROOT}" skills/*/SKILL.md
 ```
 
 If the first grep returns anything, flag as a Critical Gap.
@@ -1592,7 +1592,7 @@ If the first grep returns anything, flag as a Critical Gap.
 
 **Gate: Path Portability Scored** `[checkpoint: human-verify, auto-advanceable]`
 - Verify all SKILL.md and references/*.md files were scanned
-- Every `python3 ../` and `Read("../` pattern was flagged
+- Every `uv run python3 ../` and `Read("../` pattern was flagged
 - Score is recorded
 
 Update `.planning/wc/{name}/STATE.md`:
@@ -1653,7 +1653,7 @@ Format:
 ### Path Portability
 | File | Pattern | Status |
 |------|---------|--------|
-| skills/X/SKILL.md | `python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
+| skills/X/SKILL.md | `uv run python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
 | skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
 
 ### Critical Gaps
@@ -1667,7 +1667,7 @@ Format:
 
 **Render score trend** (if SCORES.md exists from a prior audit):
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
 ```
 
 **Persist audit results:** Write the audit report to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`:
@@ -1852,7 +1852,7 @@ The auditor has no context from the fix phase. It reads the files cold. This is 
 Read `.planning/wc/{name}/SCORES.md`. Render the score trend for visual context:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
 ```
 
 Check composite score against threshold:

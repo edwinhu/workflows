@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Check: no-pause-between-phases — verify writing skill files don't contain pause patterns.
 
 Scans writing-* SKILL.md files for patterns that encourage pausing between tasks:

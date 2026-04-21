@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: deviation-rules — every section summary must include deviation tracking."""
 import re
 import sys

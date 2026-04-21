@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 PreToolUse hook: Suggest manual compaction at strategic intervals.
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: mccloskey-economical-writing — detect word choices McCloskey marks as bad economics prose."""
 import re
 import sys

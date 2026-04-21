@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Analyze media files using Gemini 2.5 Flash Lite for fast, cost-effective interpretation.
 
 This script uploads a local file to Google's Gemini API and extracts specific information
@@ -6,17 +6,17 @@ based on the provided goal. It's designed to be used by Claude Code as a tool fo
 files that require interpretation beyond raw text.
 
 Usage:
-    python3 look_at.py --file <path> --goal "<what to extract>" [--model <model_name>]
+    uv run python3 look_at.py --file <path> --goal "<what to extract>" [--model <model_name>]
 
 Examples:
     # Extract title from PDF
-    python3 look_at.py --file report.pdf --goal "Extract the title and date"
+    uv run python3 look_at.py --file report.pdf --goal "Extract the title and date"
 
     # Describe diagram
-    python3 look_at.py --file diagram.png --goal "Explain the architecture shown"
+    uv run python3 look_at.py --file diagram.png --goal "Explain the architecture shown"
 
     # Extract table data
-    python3 look_at.py --file data.pdf --goal "Extract the table as JSON"
+    uv run python3 look_at.py --file data.pdf --goal "Extract the table as JSON"
 
 Environment (checked in order):
     GOOGLE_API_KEY: Google API key for Gemini access.

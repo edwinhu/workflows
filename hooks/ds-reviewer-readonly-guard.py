@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PreToolUse guard: block Write/Edit during review phases.
 
 Review agents should be read-only. This hook blocks Write and Edit

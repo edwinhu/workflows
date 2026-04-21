@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Example: Query company fundamentals from LSEG Data Library."""
 
 import lseg.data as ld

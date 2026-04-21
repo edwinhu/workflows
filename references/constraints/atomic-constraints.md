@@ -32,7 +32,7 @@ The filesystem is the index. `ls constraints/*.md` = all rules. No TOC files. No
 Skills load constraints via the auto-discovery loader:
 
 ```
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
 ```
 
 Each `.md` has `applies-to` frontmatter. The loader filters by skill name. Skills get only the constraints they need — not everything.

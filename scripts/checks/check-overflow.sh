@@ -86,7 +86,7 @@ fi
 
 # Pipe to overflow.py
 if [ -n "$PRES_JSON" ]; then
-  echo "{\"handout\": $HANDOUT_JSON, \"presentation\": $PRES_JSON}" | python3 "$SCRIPT_DIR/overflow.py"
+  echo "{\"handout\": $HANDOUT_JSON, \"presentation\": $PRES_JSON}" | uv run python3 "$SCRIPT_DIR/overflow.py"
 else
-  echo "$HANDOUT_JSON" | python3 "$SCRIPT_DIR/overflow.py"
+  echo "$HANDOUT_JSON" | uv run python3 "$SCRIPT_DIR/overflow.py"
 fi

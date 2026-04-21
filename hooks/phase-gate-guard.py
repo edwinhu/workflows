@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 PreToolUse hook: Block code-modifying tools if a required gate artifact is missing.
 
@@ -25,7 +25,7 @@ Usage in SKILL.md frontmatter:
               GATE_STATUS=APPROVED
               GATE_DESCRIPTION="Plan review"
               GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
-              python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+              uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 
 Grounded in: April 2026 meta-audit — workflow-creator found that advisory gates
 ("you must run X first") were systematically skipped under context pressure.

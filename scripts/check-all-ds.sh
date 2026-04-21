@@ -21,7 +21,7 @@ for check in "$CONSTRAINTS_DIR"/ds-*.py; do
     TOTAL=$((TOTAL + 1))
     check_name=$(basename "$check" .py)
 
-    if output=$(python3 "$check" "$PROJECT_DIR" 2>&1); then
+    if output=$(uv run python3 "$check" "$PROJECT_DIR" 2>&1); then
         echo "  ✓ $check_name"
         PASS=$((PASS + 1))
     else

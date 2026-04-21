@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint check: phase skills must use the auto-loader bang, not manual Read() lists.
 
 A phase skill that references `references/constraints/*.md` via multiple Read() lines
@@ -25,7 +25,7 @@ from pathlib import Path
 
 
 LOADER_BANG_PATTERN = re.compile(
-    r"!\s*`?python3\s+\$\{CLAUDE_SKILL_DIR\}/\.\./\.\./scripts/load-constraints\.py\s+[\w-]+"
+    r"!\s*`?uv run python3\s+\$\{CLAUDE_SKILL_DIR\}/\.\./\.\./scripts/load-constraints\.py\s+[\w-]+"
 )
 CONSTRAINT_REF_PATTERN = re.compile(
     r"\$\{CLAUDE_SKILL_DIR\}/\.\./\.\./references/constraints/[\w-]+\.md"
@@ -79,7 +79,7 @@ def check(context: dict) -> list[dict]:
             "severity": "warning",
             "found": f"{len(ref_hits)} manual references to constraint files, no loader bang",
             "expected": (
-                "!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py "
+                "!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py "
                 f"{skill_md.parent.name}`"
             ),
             "context": (

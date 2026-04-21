@@ -8,7 +8,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
     - matcher: "Agent"
       hooks:
         - type: command
@@ -16,7 +16,7 @@ hooks:
             GATE_ARTIFACT=.planning/VALIDATION.md
             GATE_DESCRIPTION="Test gap validation"
             GATE_REMEDY="Return to dev-implement and run dev-test-gaps (Phase 5.5) before starting review."
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 ## Contents
@@ -39,7 +39,7 @@ hooks:
 
 Auto-load all constraints matching `applies-to: dev-review`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-review`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-review`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

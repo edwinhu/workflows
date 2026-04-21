@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Test LSEG Data Library connectivity."""
 
 import sys

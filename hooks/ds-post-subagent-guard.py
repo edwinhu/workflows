@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PostToolUse guard: after Agent/Task returns, block Read/Grep on non-state files.
 
 Sets a flag file when a subagent completes. A PreToolUse hook then checks

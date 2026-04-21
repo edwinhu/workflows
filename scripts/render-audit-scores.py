@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Render SCORES.md as a text-based score trend for Mode 3 decision checkpoints."""
 
 import re

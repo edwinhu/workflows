@@ -95,7 +95,7 @@ nlm toc <notebook-id> <source-id>           # Structure overview
 Batch import Readwise highlights into a notebook by tag:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/../../skills/readwise/scripts/readwise_to_nlm.py" \
+uv run python3 "${CLAUDE_SKILL_DIR}/../../skills/readwise/scripts/readwise_to_nlm.py" \
   --tag "private markets" --tag "disclosure" \
   --notebook <notebook-id>
 ```

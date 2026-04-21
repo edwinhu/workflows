@@ -26,7 +26,7 @@ check_notebook() {
 
     # 1. Python syntax check
     echo "1. Syntax check..."
-    if python3 -m py_compile "$notebook" 2>&1; then
+    if uv run python3 -m py_compile "$notebook" 2>&1; then
         echo "   OK"
     else
         echo "   FAILED"
@@ -49,7 +49,7 @@ check_notebook() {
     # 3. Cell structure
     echo "3. Cell structure..."
     if [[ -f "$SCRIPT_DIR/get_cell_map.py" ]]; then
-        python3 "$SCRIPT_DIR/get_cell_map.py" "$notebook"
+        uv run python3 "$SCRIPT_DIR/get_cell_map.py" "$notebook"
     else
         echo "   SKIPPED (get_cell_map.py not found)"
     fi

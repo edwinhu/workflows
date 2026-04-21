@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Scan DOCX footnotes for ALL Bluebook formatting issues.
 
 Checks:
@@ -7,8 +7,8 @@ Checks:
 - Author names incorrectly italicized before supra
 
 Usage:
-    python3 scripts/scan_formatting.py --docx path/to/file.docx
-    python3 scripts/scan_formatting.py --docx path/to/file.docx --output results.json
+    uv run python3 scripts/scan_formatting.py --docx path/to/file.docx
+    uv run python3 scripts/scan_formatting.py --docx path/to/file.docx --output results.json
 """
 
 import argparse

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 PostToolUse hook: Verify PRECIS.md has required sections after Write.
 

@@ -8,24 +8,24 @@ hooks:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
   PreToolUse:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
     - matcher: "Read"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
     - matcher: "Grep"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
     - matcher: "Glob"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
 ---
 
 Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
@@ -55,7 +55,7 @@ Profile the data and create an analysis plan based on the spec.
 
 Auto-load all constraints matching `applies-to: ds-plan`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-plan`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-plan`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate).
 
@@ -920,7 +920,7 @@ This file is populated by ds-implement as tasks complete. Initializing it here e
 Before proceeding to ds-implement, execute this gate:
 
 1. **IDENTIFY**: PLAN.md exists at `.planning/PLAN.md`
-2. **RUN**: `Read(".planning/PLAN.md")`, `python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.py .`, and `python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.py .`
+2. **RUN**: `Read(".planning/PLAN.md")`, `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.py .`, and `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.py .`
 3. **READ**: Verify it contains: Data Profile section, Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
 4. **VERIFY**:
    - If any data source > 1M rows, confirm ETL Strategy section exists

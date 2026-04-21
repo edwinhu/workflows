@@ -27,7 +27,7 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/my-hook.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/my-hook.py"
 ```
 
 **For internal skills loaded via Read() (not Skill system):** No substitution occurs — neither `${CLAUDE_PLUGIN_ROOT}` nor `${CLAUDE_SKILL_DIR}` is substituted. Use `${CLAUDE_SKILL_DIR}/../../` as a consistent convention for paths — Claude infers the actual path from context, and consistency with top-level skills makes the codebase easier to maintain.

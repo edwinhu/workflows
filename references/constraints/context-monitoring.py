@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: context-monitoring — no new phase without sufficient context; check handoff exists when needed."""
 import re
 import sys

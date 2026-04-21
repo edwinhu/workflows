@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: wc-fresh-subagent-audit — audit dispatches must use fresh subagents with read-only tools."""
 
 CONSTRAINT = "wc-fresh-subagent-audit"

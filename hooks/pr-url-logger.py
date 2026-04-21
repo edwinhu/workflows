@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 PostToolUse hook: Log PR URL after gh pr create.
 

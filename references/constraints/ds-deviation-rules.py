@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-deviation-rules — every completed task in LEARNINGS.md must have deviation summary."""
 import re
 import sys

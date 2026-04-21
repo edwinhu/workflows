@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-no-subtitle-echo — === title must not repeat as first body line."""
 
 import re

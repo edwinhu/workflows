@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 PreToolUse hook (visual-verify scoped): Auto-inject find-slide-page output
 before any tinymist compile targeting a Touying .typ slide file.
@@ -70,7 +70,7 @@ def run_find_slide_page(scripts_dir: str, target: str, cwd: str) -> str | None:
             return None
 
         extract_result = subprocess.run(
-            ["python3", extract_py],
+            ["uv", "run", "python3", extract_py],
             input=query_result.stdout,
             capture_output=True, text=True, timeout=10,
         )

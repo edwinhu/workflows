@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: wc-traceability — every WC-XX in traceability table has a matching implements annotation in SKILL.md."""
 
 CONSTRAINT = "wc-traceability"

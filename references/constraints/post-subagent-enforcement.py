@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: post-subagent-enforcement — verify skills that use subagents load this constraint."""
 
 CONSTRAINT = "post-subagent-enforcement"

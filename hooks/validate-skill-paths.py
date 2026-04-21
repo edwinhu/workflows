@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 PostToolUse hook: Validate path references in skill files after edits.
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Fix Google Docs footnote formatting damage in law review OOXML.
 
 Google Docs round-trips destroy:
@@ -12,10 +12,10 @@ This script detects whether these issues are present and fixes them.
 It is idempotent — safe to run multiple times.
 
 Usage:
-    python3 fix_gdocs_footnotes.py path/to/file.docx
-    python3 fix_gdocs_footnotes.py path/to/file.docx --output fixed.docx
-    python3 fix_gdocs_footnotes.py path/to/file.docx --dry-run
-    python3 fix_gdocs_footnotes.py path/to/file.docx --crossrefs  # also fix cross-refs
+    uv run python3 fix_gdocs_footnotes.py path/to/file.docx
+    uv run python3 fix_gdocs_footnotes.py path/to/file.docx --output fixed.docx
+    uv run python3 fix_gdocs_footnotes.py path/to/file.docx --dry-run
+    uv run python3 fix_gdocs_footnotes.py path/to/file.docx --crossrefs  # also fix cross-refs
 """
 
 import argparse

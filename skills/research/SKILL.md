@@ -16,7 +16,7 @@ Multi-source academic search with deduplication, DOI resolution, and journal fil
 **NEVER run the sources manually in sequence. ALWAYS use the research script. This is not negotiable.**
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "<query>" [--n 50] [--min-citations N]
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "<query>" [--n 50] [--min-citations N]
 ```
 
 The script parallelizes all sources and DOI resolution automatically. Doing it manually serializes everything and triples wall time.
@@ -75,7 +75,7 @@ Trusted papers first (sorted by citations desc), then non-trusted in a collapsed
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| **Running sources manually instead of using the script** | Serializes work, triples wall time | `python3 research.py "<query>"` |
+| **Running sources manually instead of using the script** | Serializes work, triples wall time | `uv run python3 research.py "<query>"` |
 | **Using `mcp__consensus__search`** | Rate-limited to 3 results | Script uses CLI binary automatically |
 | **Presenting before reading domain-knowledge.local.md** | User expects ★ signals | Read it first, always |
 | **Using `journal` field when `journal_resolved` is present** | SSRN label hides real venue | Always prefer `journal_resolved` |
@@ -84,16 +84,16 @@ Trusted papers first (sorted by citations desc), then non-trusted in a collapsed
 
 ```bash
 # Standard search
-python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "mandatory disclosure"
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "mandatory disclosure"
 
 # With citation floor
-python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "poison pill" --min-citations 50
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "poison pill" --min-citations 50
 
 # More results from Consensus
-python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "corporate governance" --n 100
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "corporate governance" --n 100
 
 # Disable streaming (wait for all sources, output pretty-printed JSON)
-python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "mandatory disclosure" --no-stream
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "mandatory disclosure" --no-stream
 ```
 
 ## Streaming Mode (default)

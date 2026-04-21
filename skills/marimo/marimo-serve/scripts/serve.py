@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Serve every marimo notebook in a directory — read-only Run mode by default.
 
 Run mode (default): `marimo.create_asgi_app().with_dynamic_directory()` — one

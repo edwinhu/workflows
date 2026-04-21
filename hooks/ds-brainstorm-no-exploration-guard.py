@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PreToolUse guard: block data exploration during brainstorm phase.
 
 The Iron Law: NO DATA EXPLORATION BEFORE ASKING QUESTIONS.

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-common-elements — Smart apostrophe, dollar escaping, cetz-plot ban."""
 
 import re

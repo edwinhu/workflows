@@ -1,18 +1,18 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Archive URLs via Perma.cc API and optionally write back to DOCX.
 
 Usage:
     # Archive all URLs (dry run - shows what would be archived)
-    python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --dry-run
+    uv run python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --dry-run
 
     # Archive all URLs
-    python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --api-key YOUR_KEY
+    uv run python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --api-key YOUR_KEY
 
     # Archive and write perma.cc links back to DOCX
-    python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --docx file.docx --api-key YOUR_KEY --write-docx
+    uv run python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --docx file.docx --api-key YOUR_KEY --write-docx
 
     # Use a specific folder (default: uncategorized)
-    python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --api-key YOUR_KEY --folder 12345
+    uv run python3 scripts/permacc_archive.py --data scratch/footnotes_data.json --api-key YOUR_KEY --folder 12345
 """
 
 import argparse

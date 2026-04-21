@@ -209,7 +209,7 @@ Load the appropriate scale-up reference based on the batch operation type:
 Monitor(
   description="ETL: merge_panel.py progress",
   timeout_ms=600000, persistent=false,
-  command="python3 -u src/merge_panel.py 2>&1 | grep --line-buffered -E '(rows|shape|complete|error|warning)'"
+  command="uv run python3 -u src/merge_panel.py 2>&1 | grep --line-buffered -E '(rows|shape|complete|error|warning)'"
 )
 ```
 
@@ -227,14 +227,14 @@ Monitor(
 Monitor(
   description="Gemini batch completion",
   persistent=true, timeout_ms=3600000,
-  command="while true; do state=$(python3 -c \"import google.genai as genai; print(genai.batches.get(name='$JOB').state)\"); echo \"$state\"; [ \"$state\" = 'JOB_STATE_SUCCEEDED' ] || [ \"$state\" = 'JOB_STATE_FAILED' ] && break; sleep 60; done"
+  command="while true; do state=$(uv run python3 -c \"import google.genai as genai; print(genai.batches.get(name='$JOB').state)\"); echo \"$state\"; [ \"$state\" = 'JOB_STATE_SUCCEEDED' ] || [ \"$state\" = 'JOB_STATE_FAILED' ] && break; sleep 60; done"
 )
 ```
 
 ### Key Rules
 
 - **Always use `grep --line-buffered`** in pipes — without it, pipe buffering delays events by minutes
-- **Use `-u` flag for Python** (`python3 -u`) to disable output buffering
+- **Use `-u` flag for Python** (`uv run python3 -u`) to disable output buffering
 - **Filter stdout aggressively** — every line becomes a notification; don't pipe raw logs
 - **Set `persistent: true`** for jobs >10 minutes (SGE pipelines, batch APIs)
 - **Set reasonable `timeout_ms`** — 600000 (10 min) for local scripts, 3600000 (1 hr) for remote jobs

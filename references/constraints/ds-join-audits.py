@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-join-audits — every merge/join must produce diagnostic log."""
 import re
 import sys

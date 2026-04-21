@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ai-chatgpt-artifacts — detect ChatGPT-specific citation and markup artifacts."""
 import re
 import sys

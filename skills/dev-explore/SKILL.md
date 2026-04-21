@@ -12,7 +12,7 @@ hooks:
             GATE_ARTIFACT=.planning/SPEC.md
             GATE_DESCRIPTION="Spec document"
             GATE_REMEDY="Return to dev-brainstorm (Phase 1) to write and review SPEC.md before exploring."
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."

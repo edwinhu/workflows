@@ -276,7 +276,7 @@ POLL_ID=$(curl -s -X POST "${BASE_URL}?key=${APIKEY}" \
     "genericDays":{"booleanValue":false},
     "responses":{"mapValue":{"fields":{}}},
     "createdAt":{"timestampValue":"'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"}
-  }}' | python3 -c "import json,sys; print(json.load(sys.stdin)['name'].split('/')[-1])")
+  }}' | uv run python3 -c "import json,sys; print(json.load(sys.stdin)['name'].split('/')[-1])")
 
 # Submit availability in same script
 RESP_ID="resp_$(date +%s)"

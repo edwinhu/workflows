@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: volokh-academic-legal-writing — detect violations from Volokh's Academic Legal Writing."""
 import re
 import sys

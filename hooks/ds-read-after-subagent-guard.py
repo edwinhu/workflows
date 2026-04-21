@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PreToolUse guard: block Read/Grep on non-.planning/ files after subagent return.
 
 Checks the flag file set by ds-post-subagent-guard.py. If set, blocks

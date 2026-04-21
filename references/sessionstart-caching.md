@@ -6,14 +6,14 @@ Most "path resolution" in skills is handled for free by `${CLAUDE_SKILL_DIR}` �
 
 ```bash
 # ✅ Just use the variable — it's already resolved
-python3 "${CLAUDE_SKILL_DIR}/scripts/my_script.py" --arg value
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/my_script.py" --arg value
 ```
 
 **Do NOT use the `$()` subshell indirection pattern:**
 
 ```bash
 # ❌ BROKEN: Executes the script with no args, captures error output
-SCRIPT=$(${CLAUDE_SKILL_DIR}/scripts/my_script.py) && python3 "$SCRIPT" --arg value
+SCRIPT=$(${CLAUDE_SKILL_DIR}/scripts/my_script.py) && uv run python3 "$SCRIPT" --arg value
 ```
 
 This tries to run the Python script as a command and capture its stdout. Since the script requires `--file` and `--goal` (or similar), it fails with a usage error, leaving the variable empty or garbage.

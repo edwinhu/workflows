@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 research.py - Multi-source academic literature search
 
 Usage:
-    python3 research.py "<query>" [--n 50] [--min-citations N]
+    uv run python3 research.py "<query>" [--n 50] [--min-citations N]
 
 Sources (run in parallel):
     1. scholar lookup  (keyword/citation-ranked)

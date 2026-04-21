@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint check: detect monolithic constraint files.
 
 A constraint file is monolithic if it has 3+ ### headings describing

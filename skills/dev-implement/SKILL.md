@@ -9,7 +9,7 @@ hooks:
     - matcher: “Write|Edit”
       hooks:
         - type: command
-          command: “python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py”
+          command: “uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py”
     - matcher: “Agent”
       hooks:
         - type: command
@@ -18,7 +18,7 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION=”Plan review”
             GATE_REMEDY=”Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval.”
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** “I’m using dev-implement (Phase 5) to orchestrate implementation.”
@@ -27,7 +27,7 @@ hooks:
 
 Auto-load all constraints matching `applies-to: dev-implement`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-implement`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-implement`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

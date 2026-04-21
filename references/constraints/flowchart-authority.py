@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: flowchart-authority — verify writing phase skills have flowcharts marked as spec."""
 
 CONSTRAINT = "flowchart-authority"

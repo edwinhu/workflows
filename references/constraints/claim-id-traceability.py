@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: claim-id-traceability — CLAIM-XX IDs must flow through all writing artifacts."""
 import re
 import sys

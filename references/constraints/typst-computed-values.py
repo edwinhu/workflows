@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-computed-values — No hardcoded calculations; use Typst calc module."""
 
 import re

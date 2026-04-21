@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: writing-no-bold-lead — no bold inline-header paragraph starts in prose drafts."""
 import re
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: progressive-expansion-hierarchy — writing must flow PRECIS → OUTLINE → outlines/ → drafts/."""
 import sys
 from pathlib import Path

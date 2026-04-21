@@ -165,7 +165,7 @@ Director elections use these ISS agenda item codes:
 
 **Recommended approach:** PostgreSQL with server-side filtering. The full `vavoteresults` table for 2003–2024 is ~834K rows and downloads in ~13.5 seconds with a simple `WHERE meetingdate BETWEEN ...` filter. No chunking or SAS needed.
 
-**Use `python3 -u`** when running via `qsub` on WRDS — Python stdout is fully buffered when redirected to a log file, hiding all progress output until the script finishes.
+**Use `uv run python3 -u`** when running via `qsub` on WRDS — Python stdout is fully buffered when redirected to a log file, hiding all progress output until the script finishes.
 
 ## Common Gotchas
 

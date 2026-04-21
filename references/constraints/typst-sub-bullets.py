@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-sub-bullets — Sub-bullets use two-space indent + '- ', never '--'."""
 
 import re

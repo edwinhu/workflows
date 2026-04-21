@@ -6,27 +6,27 @@ hooks:
     - matcher: "Read"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
   PostToolUse:
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
     - matcher: "*"
       hooks:
         - type: command
           command: >-
             COMPACT_THRESHOLD=40
             COMPACT_INTERVAL=20
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
 ---
 
 **Announce:** "I'm using workshop-revise to apply changes to the workshop presentation."
@@ -35,7 +35,7 @@ hooks:
 
 Load ALL Typst conventions before touching any files:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
 
 **You MUST have these constraints loaded before any edits. No claiming you "remember" them.**
 
@@ -47,7 +47,7 @@ This skill may run in a new session. Load ALL needed context before touching any
 
 1. **Read `.planning/SOURCES.md`** — paper metadata (title, authors, affiliations)
 2. **Read `.planning/OUTLINE.md`** — section structure and timing
-3. **Load constraints:** `python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+3. **Load constraints:** `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
 4. **Read existing `slides.typ`** — current slide content
 5. **Read existing `notes.typ`** — current speaker notes
 
@@ -122,10 +122,10 @@ Agent(prompt="""
 You are an independent reviewer. Check edited sections against Typst workshop constraints.
 
 Step 1: Run constraint checks (auto-discovers all .py check scripts):
-  cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+  cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 
 Step 2: Load convention text for judgment review:
-  Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise
+  Run: uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise
 
 Step 3: Review the changed sections in slides.typ and notes.typ against loaded conventions.
 Report violations:
@@ -150,7 +150,7 @@ allowed_tools=["Read", "Grep", "Glob", "Bash"])
 
 2. **Run PDF widow detection** (mandatory after every compile):
    ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && python3 "$DETECT_WIDOWS" slides.pdf
+   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" slides.pdf
    ```
    - Exit code 1 = widows found → fix → recompile → re-run
    - Exit code 0 = clean → proceed
@@ -159,7 +159,7 @@ allowed_tools=["Read", "Grep", "Glob", "Bash"])
 
    **Leg 1 — Constraint checks (hard block):**
    ```bash
-   cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+   cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
    ```
    - If any constraint fails → fix the violation → re-run (max 3 attempts)
    - Hard block: ALL constraints must pass

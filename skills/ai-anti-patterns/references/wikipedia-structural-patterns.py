@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ai-structural-patterns — detect AI structural filler phrases in draft text."""
 import re
 import sys

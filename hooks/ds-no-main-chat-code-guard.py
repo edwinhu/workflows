@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PreToolUse guard: block Write/Edit/Bash on analysis files in main chat during ds-implement.
 
 The Iron Law: YOU MUST NOT WRITE ANALYSIS CODE IN MAIN CHAT.

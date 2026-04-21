@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Generate an interactive drag-and-drop diagram mockup as a standalone HTML file.
 
 Usage:
-    python3 interactive_mockup.py layout.json [--output /tmp/mockup.html] [--open]
-    echo '{"nodes":[...]}' | python3 interactive_mockup.py - [--open]
+    uv run python3 interactive_mockup.py layout.json [--output /tmp/mockup.html] [--open]
+    echo '{"nodes":[...]}' | uv run python3 interactive_mockup.py - [--open]
 
 Input JSON format:
 {

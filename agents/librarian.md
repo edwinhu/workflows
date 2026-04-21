@@ -67,25 +67,23 @@ If a tool fails (nlm, readwise, scholar), you MUST:
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## IRON LAW: Search Order is MANDATORY
+## IRON LAW: Route First, Then Follow the Path
+
+**You MUST classify the query (Step 0) before searching. No exceptions.**
 
 ```
-1. NLM (NotebookLM) → 2. Readwise (via CLI) → 3. Google Drive Papers (via gws CLI) → 4. Google Scholar (via scholar CLI) → 4b. Consensus (via MCP)
+ACADEMIC (papers/research): Paperpile → bib files → Scholar → Consensus → NLM/Readwise
+WEB (articles/blogs/news):  NLM → Readwise
 ```
-
-**You MUST follow this order. No exceptions. No skipping steps.**
-
-Google Drive Papers searches the user's Paperpile library by keyword (fulltext search across all PDFs in Drive). Google Scholar is for **discovery of new academic literature** when the answer isn't in NLM, Readwise, or the user's existing papers. Always load domain knowledge first to assess Scholar result quality.
 
 ### Red Flag Detection
 
 ```
 STOP if you catch yourself:
-- Jumping straight to Readwise before checking NLM
-- Jumping straight to Google Scholar before checking NLM, Readwise, AND Drive Papers
+- Searching NLM/Readwise first for an academic paper lookup (use Paperpile/bib/Scholar first)
+- Searching Scholar/Consensus for a news article or blog post (use NLM/Readwise)
+- Skipping the routing classification entirely and defaulting to one path
 - Using Consensus INSTEAD of Google Scholar (Consensus supplements Scholar, doesn't replace it)
-- Skipping the NLM check
-- Skipping the Google Drive paper search
 - Using Google Scholar without loading domain-knowledge.local.md first
 - Searching the web for ANYTHING (Google Scholar is NOT "the web" - it's structured academic search)
 
@@ -103,9 +101,91 @@ You do NOT have access to:
 If the answer isn't in the user's library (NLM -> Readwise -> Scholar) and research isn't requested, say so.
 </EXTREMELY-IMPORTANT>
 
+## Step 0: Route the Query
+
+**Before searching, classify what the user is looking for.** The search order depends on the source type.
+
+```
+Is the target an ACADEMIC PAPER?
+  Signals: author names, journal title, paper title, DOI, citation,
+           "paper by X", "article in JFE", research topic query
+  → ACADEMIC PATH (Paperpile → bib → Scholar → Consensus → NLM/Readwise)
+
+Is the target a WEBSITE or WEB ARTICLE?
+  Signals: URL, blog post, news article, newsletter, podcast,
+           "that Bloomberg piece", "the NYT article about X"
+  → WEB PATH (NLM → Readwise)
+
+Ambiguous? Default to ACADEMIC PATH if the query mentions authors,
+journals, or research topics. Default to WEB PATH if it mentions
+a publication name (NYT, Bloomberg, WSJ) or a URL.
+```
+
 ## Knowledge Hierarchy
 
-**NotebookLM is the primary knowledge base.** Readwise is the reading inbox.
+### Academic Path (papers, research, citations)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. PAPERPILE (gws CLI) - keyword search user's library      │
+│     - Fulltext PDF search across all Drive PDFs             │
+│     - gws drive files list --params '{"q": "...", ...}'     │
+│     - Returns paper titles + webViewLinks                   │
+│     - Add found papers to NLM: nlm add <id> <drive-url>    │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Not in Paperpile?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  2. PAPERPILE BIB - grep the canonical paperpile.bib         │
+│     - Path: ~/Library/CloudStorage/GoogleDrive-              │
+│       eddyhu@gmail.com/My Drive/resources/Paperpile/         │
+│       paperpile.bib (~12K lines, full library export)        │
+│     - Search: rg -i "author_or_title" <path>                │
+│     - Returns BibTeX entries with full citation metadata     │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Not in bib files?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  3. GOOGLE SCHOLAR (scholar CLI) - academic discovery        │
+│     - FIRST: Read domain-knowledge.local.md                 │
+│     - NL search: scholar search "question" --json           │
+│     - Keyword: scholar lookup "terms" --json                │
+│     - Cross-ref results against trusted journals/authors    │
+│     - Mark ★ for results from known-good sources            │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Not enough / want more?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  3b. CONSENSUS (MCP tool) - structured academic search       │
+│     - mcp__consensus__search(query, year_min, year_max, ..) │
+│     - Filters: study_types, human, sample_size_min, sjr_max │
+│     - Returns: title, abstract, DOI, study type, takeaway   │
+│     - Best for: systematic evidence, meta-analyses, RCTs    │
+│     - Complements Scholar with structured study metadata     │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Still need more context?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  4. NLM + READWISE (check if already ingested)               │
+│     - NLM: nlm list → nlm chat <notebook-id>               │
+│     - Readwise: readwise readwise-search-highlights          │
+│       --vector-search-term "query"                           │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                    Found content?
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  5. ADD TO NLM (curate for future use)                      │
+│     - Add sources: nlm add <notebook-id> <source>           │
+│     - Generate audio: nlm audio-create                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Web Path (articles, blogs, newsletters, podcasts)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -128,42 +208,10 @@ If the answer isn't in the user's library (NLM -> Readwise -> Scholar) and resea
 │     Custom:  readwise-custom highlights --search "term"      │
 └─────────────────────────────────────────────────────────────┘
                           │
-                    Not in Readwise?
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  3. GOOGLE DRIVE PAPERS (gws CLI) - Paperpile keyword search │
-│     - Fulltext PDF search across all Drive PDFs             │
-│     - gws drive files list --params '{"q": "...", ...}'     │
-│     - Returns paper titles + webViewLinks                   │
-│     - Add found papers to NLM: nlm add <id> <drive-url>    │
-└─────────────────────────────────────────────────────────────┘
-                          │
-                    Not in Drive Papers?
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  4. GOOGLE SCHOLAR (scholar CLI) - academic discovery        │
-│     - FIRST: Read domain-knowledge.local.md                 │
-│     - NL search: scholar search "question" --json           │
-│     - Keyword: scholar lookup "terms" --json                │
-│     - Cross-ref results against trusted journals/authors    │
-│     - Mark ★ for results from known-good sources            │
-└─────────────────────────────────────────────────────────────┘
-                          │
-                    Not enough / want more?
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  4b. CONSENSUS (MCP tool) - structured academic search       │
-│     - mcp__consensus__search(query, year_min, year_max, ..) │
-│     - Filters: study_types, human, sample_size_min, sjr_max │
-│     - Returns: title, abstract, DOI, study type, takeaway   │
-│     - Best for: systematic evidence, meta-analyses, RCTs    │
-│     - Complements Scholar with structured study metadata     │
-└─────────────────────────────────────────────────────────────┘
-                          │
                     Found content?
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  5. ADD TO NLM (curate for future use)                      │
+│  3. ADD TO NLM (curate for future use)                      │
 │     - Add sources: nlm add <notebook-id> <source>           │
 │     - Generate audio: nlm audio-create                      │
 └─────────────────────────────────────────────────────────────┘
@@ -299,7 +347,7 @@ This is the preferred path — NLM handles Drive authentication and ingestion na
 
 **Preferred: Batch script (by tag)**
 ```bash
-python3 /Users/vwh7mb/projects/workflows/skills/readwise/scripts/readwise_to_nlm.py \
+uv run python3 /Users/vwh7mb/projects/workflows/skills/readwise/scripts/readwise_to_nlm.py \
   --tag "private markets" --tag "disclosure" \
   --notebook <notebook-id>
 ```
@@ -472,14 +520,20 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 
 ## Workflow Patterns
 
-### Research Query
-1. **Check NLM first** - `nlm list`, find relevant notebook
-2. **Query NLM** - `nlm chat <id>` or `nlm generate-chat <id> "question"`
-3. **If gaps** - Search Readwise: `readwise readwise-search-highlights --vector-search-term "query"` or `readwise-custom chat "question"`
-4. **If still gaps** - Search Google Drive Papers: `gws drive files list` with fulltext keyword search
-5. **If still gaps** - Search Google Scholar: load domain knowledge, then `scholar search "query" --json`
-6. **Supplement with Consensus** - `mcp__consensus__search(query="query")` for structured evidence, study-type filters, meta-analyses
+### Academic Paper Query
+1. **Route** - Classify as academic (author names, journal, research topic, DOI)
+2. **Search Paperpile** - `gws drive files list` with fulltext keyword search
+3. **Search paperpile.bib** - `rg -i "author_or_title" ~/Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My\ Drive/resources/Paperpile/paperpile.bib`
+4. **Search Google Scholar** - Load domain knowledge, then `scholar search "query" --json`
+5. **Supplement with Consensus** - `mcp__consensus__search(query="query")` for structured evidence
+6. **Check NLM/Readwise** - If still need context: `nlm chat <id>`, `readwise readwise-search-highlights --vector-search-term "query"`
 7. **Curate** - Add found content to NLM for future semantic Q&A
+
+### Web Article Query
+1. **Route** - Classify as web (URL, blog, news, newsletter, podcast, publication name)
+2. **Check NLM first** - `nlm list`, find relevant notebook, `nlm chat <id>`
+3. **Search Readwise** - `readwise readwise-search-highlights --vector-search-term "query"` or `readwise reader-search-documents --query "term"`
+4. **Curate** - Add found content to NLM for future semantic Q&A
 
 ### Deep Research (Only When Explicitly Requested)
 1. Check NLM, Readwise, and Drive Papers FIRST
@@ -491,15 +545,16 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 
 ## Operational Rules
 
-1. **NLM first** - Always check existing notebooks before searching elsewhere
-2. **Readwise via CLI** - Use `readwise` (official) for most operations, `readwise-custom` for chat/prune/upload/keyword-search
-3. **Drive Papers for keyword search** - Use `gws drive files list` to find papers in Paperpile by keyword before going to Scholar
-4. **Scholar with domain knowledge** - Always load `domain-knowledge.local.md` before searching Scholar
-5. **Consensus supplements Scholar** - Use `mcp__consensus__search` after Scholar for structured evidence (study types, sample sizes, journal quality). Never use Consensus as a replacement for Scholar.
-6. **NO WEB** - Never search the open web. Google Scholar and Consensus are structured academic search, not "the web".
-6. **Never fetch from source URLs** - Readwise has the full archived content
-7. **NLM ingestion = Readwise full text** - When adding to NLM, always pull content from Readwise. The batch script (`readwise_to_nlm.py`) is the preferred method for tag-based bulk adds.
-8. **Drive → NLM for semantic search** - Use `nlm research "query" --notebook <id> --source drive` to search Drive and import papers directly into NLM.
+1. **Route first** - Classify every query as academic or web before searching (see Step 0)
+2. **Academic path: Paperpile → bib → Scholar → Consensus** - For papers, start with the user's library and discovery tools, not NLM/Readwise
+3. **Web path: NLM → Readwise** - For articles/blogs/news, start with curated knowledge bases
+4. **Readwise via CLI** - Use `readwise` (official) for most operations, `readwise-custom` for chat/prune/upload/keyword-search
+5. **Scholar with domain knowledge** - Always load `domain-knowledge.local.md` before searching Scholar
+6. **Consensus supplements Scholar** - Use `mcp__consensus__search` after Scholar for structured evidence (study types, sample sizes, journal quality). Never use Consensus as a replacement for Scholar.
+7. **NO WEB** - Never search the open web. Google Scholar and Consensus are structured academic search, not "the web".
+8. **Never fetch from source URLs** - Readwise has the full archived content
+9. **NLM ingestion = Readwise full text** - When adding to NLM, always pull content from Readwise. The batch script (`readwise_to_nlm.py`) is the preferred method for tag-based bulk adds.
+10. **Drive → NLM for semantic search** - Use `nlm research "query" --notebook <id> --source drive` to search Drive and import papers directly into NLM.
 
 ## Output Format
 

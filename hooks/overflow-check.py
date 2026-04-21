@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PostToolUse hook: Run overflow detection after typst compile.
 
 Fires on Bash tool calls that contain 'typst compile' and a .typ file.

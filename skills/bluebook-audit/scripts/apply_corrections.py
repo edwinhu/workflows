@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Apply Bluebook formatting corrections to DOCX footnotes.
 
 Corrections applied:
@@ -6,8 +6,8 @@ Corrections applied:
 - (Extensible: signal italic fixes, cross-ref fills, etc.)
 
 Usage:
-    python3 scripts/apply_corrections.py --docx path/to/file.docx
-    python3 scripts/apply_corrections.py --docx path/to/file.docx --output corrected.docx
+    uv run python3 scripts/apply_corrections.py --docx path/to/file.docx
+    uv run python3 scripts/apply_corrections.py --docx path/to/file.docx --output corrected.docx
 """
 
 import argparse

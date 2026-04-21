@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-cetz-diagrams — CeTZ canvas minimum length 2em, no cetz-plot, storytelling comment required."""
 
 import re

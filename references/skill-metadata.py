@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Skill metadata system for dynamic prompt building.
 
 This module provides infrastructure for skills to declare their metadata

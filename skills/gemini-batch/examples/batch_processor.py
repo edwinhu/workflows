@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Complete batch processing pipeline for document extraction using Gemini Batch API.
 
 This module provides a production-ready GeminiBatchProcessor class for end-to-end

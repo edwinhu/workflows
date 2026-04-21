@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-idempotency — running pipeline N times must equal running it once."""
 import re
 import sys

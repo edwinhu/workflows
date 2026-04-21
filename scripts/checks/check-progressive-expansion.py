@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Check: progressive-expansion-hierarchy — verify writing artifacts follow the 4-level hierarchy.
 
 Checks:

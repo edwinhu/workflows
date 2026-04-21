@@ -96,7 +96,7 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ```
 
 **The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks can't express the constraint.

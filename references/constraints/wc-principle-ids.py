@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: wc-principle-ids — Mode 2 principles must have P01-P20 formal IDs."""
 
 CONSTRAINT = "wc-principle-ids"

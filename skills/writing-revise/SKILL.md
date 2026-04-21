@@ -11,14 +11,14 @@ hooks:
             GATE_ARTIFACT=.planning/REVIEW.md
             GATE_DESCRIPTION="Writing review"
             GATE_REMEDY="Run /writing-review first to produce .planning/REVIEW.md before revising"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
 ---
 
 # Writing Revise
@@ -29,7 +29,7 @@ The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced
 
 Auto-load all constraints matching `applies-to: writing-revise`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-revise`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-revise`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

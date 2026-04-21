@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -u
+#!/usr/bin/env -S uv run python3 -u
 """Build 13-F institutional ownership panel from TFN S34.
 
 Server-side aggregation per year: for each year, run a query that joins

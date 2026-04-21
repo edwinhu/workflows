@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: writing-topic-sentences — flag meta-commentary topic sentences in prose drafts."""
 import re
 import sys

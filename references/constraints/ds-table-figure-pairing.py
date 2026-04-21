@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-table-figure-pairing — every main result table needs a companion figure."""
 import re
 import sys

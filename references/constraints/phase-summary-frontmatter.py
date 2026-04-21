@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: phase-summary-frontmatter — every completed phase appends structured YAML to PHASE_SUMMARY.md.
 
 Checks .planning/PHASE_SUMMARY.md for:

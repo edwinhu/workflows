@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Example: Batch vision analysis of icon images using Vertex AI.
 
 This example demonstrates:

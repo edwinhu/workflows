@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-fletcher-diagrams — Fletcher diagram conventions (spacing, storytelling comment, no oversized spacing)."""
 
 import re

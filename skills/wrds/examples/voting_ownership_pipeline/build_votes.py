@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Build ISS vote results panel with CRSP permno.
 
 Replaces the first ~200 lines of 1-make.sas.

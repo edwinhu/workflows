@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ai-template-artifacts — detect unfilled placeholder text in draft files."""
 import re
 import sys

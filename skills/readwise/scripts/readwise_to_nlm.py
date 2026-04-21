@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 Fetch Readwise documents by tag, convert HTML to Markdown, and add to NotebookLM.
 

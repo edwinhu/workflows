@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-data-pull-profile.
 
 If SPEC.md or PLAN.md indicates a data pull from a large external source

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 Inventory all accessible WRDS PostgreSQL schemas, their tables, and row counts.
 Output is markdown suitable for pasting into SKILL.md or a reference doc.

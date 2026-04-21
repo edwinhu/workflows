@@ -13,7 +13,7 @@ hooks:
             GATE_STATUS=validated
             GATE_DESCRIPTION="Claim validation"
             GATE_REMEDY="Run writing-validate first to validate claim coverage before review"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 # Writing Review
@@ -26,7 +26,7 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 Auto-load all constraints matching `applies-to: writing-review`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-review`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-review`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
@@ -150,7 +150,7 @@ Skill(skill="workflows:ai-anti-patterns")
 Before any review work, run all mechanical constraint checks:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/check-all.py [project-root]
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/check-all.py [project-root]
 ```
 
 This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, topic sentences, source-anchored citations, etc.). If any check fails, report violations and fix them before proceeding to Level 1.
@@ -185,7 +185,7 @@ START (PRECIS + OUTLINE + drafts/ exist)
   ├─ Step 2: Choose strategy (sequential or parallel)
   │
   ├─ Step 2b: Run constraint check scripts (hard gate)
-  │  └─ python3 references/constraints/check-all.py [project-root]
+  │  └─ uv run python3 references/constraints/check-all.py [project-root]
   │     ├─ FAIL → Report violations. Fix before continuing.
   │     └─ PASS → Proceed to Level 1.
   │

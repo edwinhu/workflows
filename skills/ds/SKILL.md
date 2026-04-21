@@ -7,7 +7,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-brainstorm-no-exploration-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-brainstorm-no-exploration-guard.py"
 ---
 
 ## Contents
@@ -48,7 +48,7 @@ Refine vague analysis requests into clear objectives through Socratic questionin
 
 Auto-load all constraints matching `applies-to: ds`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

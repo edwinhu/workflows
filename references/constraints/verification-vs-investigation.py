@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: verification-vs-investigation — running tests is verification, reading code is investigation.
 
 Checks .planning/LEARNINGS.md for evidence that the main chat performed

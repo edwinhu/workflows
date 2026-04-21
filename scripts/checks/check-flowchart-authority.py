@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Check: flowchart-authority — verify writing phase skills have flowcharts marked as spec.
 
 Each writing phase skill (setup, outline, draft, validate, review, revise) should have

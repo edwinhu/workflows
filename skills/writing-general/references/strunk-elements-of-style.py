@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: strunk-elements-of-style — detect violations from Strunk's Elements of Style Section V."""
 import re
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: structural-vs-runtime-verification — only runtime evidence counts as verification.
 
 Checks .planning/LEARNINGS.md and .planning/VALIDATION.md for structural-only

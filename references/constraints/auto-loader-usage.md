@@ -11,7 +11,7 @@ applies-to: [workflow-creator]
 Each phase skill that loads constraint prose MUST use:
 
 ```
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
 ```
 
 This is the same architecture as `check-all.py` for constraint `.py` files — auto-discovery from the filesystem, filtered by `applies-to` frontmatter. No skill edits needed when a constraint is added or removed.
@@ -43,7 +43,7 @@ becomes:
 
 Auto-load all constraints matching `applies-to: <skill-name>`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 ```

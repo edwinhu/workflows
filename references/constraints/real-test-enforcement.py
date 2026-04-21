@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: real-test-enforcement — tests must execute code and verify runtime behavior.
 
 Scans test files for patterns that indicate fake tests:

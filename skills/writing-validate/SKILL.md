@@ -14,12 +14,12 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Outline review (required before validation)"
             GATE_REMEDY="Outline must be reviewed before validation can produce artifacts"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
 ---
 
 Announce: "Using writing-validate (Phase 3.5) to validate draft sections against PRECIS.md claims."
@@ -71,7 +71,7 @@ This phase sits between writing-draft and writing-review. It runs the **same con
 
 Auto-load all constraints matching `applies-to: writing-validate`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-validate`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-validate`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

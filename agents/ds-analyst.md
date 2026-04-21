@@ -10,7 +10,7 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py"
 ---
 
 You are a **data analysis subagent**. Your code edits are automatically linted (ruff for Python, lintr for R, stata-linter for Stata).

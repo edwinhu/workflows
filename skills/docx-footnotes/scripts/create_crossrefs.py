@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Convert hardcoded supra/infra note cross-references to NOTEREF field codes.
 
 Scans footnotes.xml for patterns like "supra note 42" and replaces the hardcoded
@@ -6,9 +6,9 @@ number with a NOTEREF field code that auto-updates when footnotes are renumbered
 Also adds bookmarks to target footnotes in document.xml.
 
 Usage:
-    python3 create_crossrefs.py --docx path/to/file.docx --dry-run
-    python3 create_crossrefs.py --docx path/to/file.docx
-    python3 create_crossrefs.py --docx path/to/file.docx --output corrected.docx
+    uv run python3 create_crossrefs.py --docx path/to/file.docx --dry-run
+    uv run python3 create_crossrefs.py --docx path/to/file.docx
+    uv run python3 create_crossrefs.py --docx path/to/file.docx --output corrected.docx
 """
 
 import argparse

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-teleprompter-notes — Notes bullets must have 1-2 sentences, not 3+."""
 
 import re

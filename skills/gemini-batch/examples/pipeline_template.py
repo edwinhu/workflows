@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Template for custom batch processing job.
 
 Copy and modify this template for specific use cases.

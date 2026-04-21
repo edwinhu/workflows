@@ -1,6 +1,6 @@
 # Goal Templates for Visual Verification (v2.0)
 
-Copy-paste templates for context-enriched look-at goals. Replace bracketed placeholders with actual values.
+Copy-paste templates for context-enriched Gemini CLI goals. Replace bracketed placeholders with actual values.
 
 **Domain routing determines which template family to use:**
 - **Python-native** (matplotlib, seaborn, plotly): Gemini can execute code, suggest exact Python fixes
@@ -8,7 +8,7 @@ Copy-paste templates for context-enriched look-at goals. Replace bracketed place
 
 ---
 
-## Python-Native Templates (use with `--agentic`)
+## Python-Native Templates
 
 ### Matplotlib / Seaborn Charts
 
@@ -77,7 +77,7 @@ Issues: list each with severity and specific code fix.
 
 ---
 
-## Non-Python Templates (vision-only, NO `--agentic`)
+## Non-Python Templates
 
 ### Typst Slides
 
@@ -173,7 +173,18 @@ Format: - 'exact text' [FULL | PARTIAL: which characters missing]
 **Step 2 — Claude diffs the transcription against expected elements:**
 Compare Gemini's transcription against the expected node/label texts from the source code. Any mismatch (e.g., Gemini transcribes `'cessary or'` instead of `'Necessary or'`) is objective proof of clipping. Score based on the diff.
 
-**Step 3 — Structural + intent check (run after transcription diff):**
+**Step 2.5 — pdftotext adjacency pre-screen (run before vision):**
+
+```bash
+# Extract the diagram page
+pdftotext -f <page> -l <page> -layout output.pdf -
+
+# Check: does any node label run directly into an edge label without whitespace?
+# e.g., "Republic of1937" = BLOCKING (node "China (Issuer)" fused with edge "1937 war bonds")
+# If ANY fused pair found → fix source, skip vision call, re-render
+```
+
+**Step 3 — Structural + intent check (run after pdftotext is clean):**
 ```
 You are reviewing a rendered diagram image. You CANNOT run Typst/fletcher code.
 
@@ -183,7 +194,10 @@ You are reviewing a rendered diagram image. You CANNOT run Typst/fletcher code.
 ## Expected Elements
 [list all expected node texts and edge label texts from source code]
 
-## Check These Specifically — 9 Defect Categories
+## pdftotext Pre-Screen Result
+[paste the pdftotext output — "CLEAN, no adjacency violations" or note any issues found and fixed]
+
+## Check These Specifically — 10 Defect Categories
 1. Text clipped by or overflowing its container
 2. Text or shapes overlapping other elements
 3. Arrows crossing through elements instead of routing around them
@@ -193,6 +207,7 @@ You are reviewing a rendered diagram image. You CANNOT run Typst/fletcher code.
 7. Uneven spacing (cramped sections next to spacious ones)
 8. Text too small to read at rendered size
 9. Parallel sub-diagrams with inconsistent layout (same elements in different positions across panels)
+10. Edge labels fused with node text (should have been caught by pdftotext pre-screen — flag if vision sees it too)
 
 ## Previous Issues -- iteration [N]
 [feedback from prior iteration, or "First iteration - no prior issues."]
@@ -207,6 +222,10 @@ For EACH issue found, report:
 Do NOT suggest fletcher/CeTZ code changes — you don't know the language.
 Do NOT run Python code to analyze the image — just look at it and report.
 ```
+
+**Step 3b — Multi-model consensus (run in parallel with step 3):**
+
+Send the same image + goal to Claude 4.7 Opus and GPT-5.4 (via copilot CLI) in parallel with Gemini. All models must agree the output is clean. If any model flags a BLOCKING issue the others missed, treat it as real.
 
 **Why describe-first works:** Judgment prompts ("is X visible?") invite yes-man answers. Transcription forces the model to report what it actually sees. When `gemini-2.5-flash-lite` transcribed `'cessary or'` it still marked it `[FULL]` — but `gemini-3.1-flash-lite-preview` correctly flagged it `[PARTIAL: 'ne' missing]`. Always use 3.1+ for diagram verification.
 

@@ -57,7 +57,7 @@ Which constraints are CRITICAL vs contextual in each phase:
 Run all constraint checks:
 
 ```bash
-python3 references/constraints/check-all.py .
+uv run python3 references/constraints/check-all.py .
 ```
 
 Coverage: 6/6 dev constraints have `.py` check scripts = 100%.

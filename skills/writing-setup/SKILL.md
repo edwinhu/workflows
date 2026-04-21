@@ -8,7 +8,7 @@ hooks:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-precis-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-precis-guard.py"
 ---
 
 # Writing Setup
@@ -33,7 +33,7 @@ Before starting, check for an existing handoff:
 
 Auto-load all constraints matching `applies-to: writing-setup`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-setup`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-setup`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

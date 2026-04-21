@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Check for slide overflow in handout and presentation modes.
 
 All detection logic lives here — validation.typ only emits raw data.

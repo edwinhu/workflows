@@ -47,7 +47,7 @@ Headlines and quotes are displayed at large font sizes on a centered card — a 
 1. **Compile the presentation** and visually inspect each headline card
 2. **Run the widow detector** if available:
    ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && python3 "$DETECT_WIDOWS" presentation.pdf
+   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" presentation.pdf
    ```
 3. **Fix widows in the JSON text** (not in Typst source):
    - **Tighten wording** — cut redundant words so the last line has 2+ words

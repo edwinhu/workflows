@@ -13,14 +13,14 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Precis review"
             GATE_REMEDY="Return to writing-setup and run the precis reviewer before outlining"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
 ---
 
 # Writing Outline
@@ -45,7 +45,7 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 Auto-load all constraints matching `applies-to: writing-outline`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-outline`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-outline`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

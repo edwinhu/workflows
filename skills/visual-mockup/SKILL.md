@@ -62,7 +62,7 @@ cat > /tmp/layout.json << 'LAYOUT'
   ]
 }
 LAYOUT
-python3 ${SKILL_DIR}/scripts/interactive_mockup.py /tmp/layout.json --open
+uv run python3 ${SKILL_DIR}/scripts/interactive_mockup.py /tmp/layout.json --open
 ```
 
 `${SKILL_DIR}` resolves to this skill's base directory (e.g., `skills/visual-mockup`).

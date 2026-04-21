@@ -144,7 +144,7 @@ Add `--json` to any command for machine-readable output.
 ## Batch Add to NLM (by tag)
 
 ```bash
-python3 /Users/vwh7mb/projects/workflows/skills/readwise/scripts/readwise_to_nlm.py \
+uv run python3 /Users/vwh7mb/projects/workflows/skills/readwise/scripts/readwise_to_nlm.py \
   --tag "proxy advisors" --tag "disclosure" \
   --notebook <notebook-id>
 ```

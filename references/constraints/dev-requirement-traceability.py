@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: dev-requirement-traceability — CATEGORY-NN IDs must flow through dev artifacts."""
 import re
 import sys

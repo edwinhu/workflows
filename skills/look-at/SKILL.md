@@ -1,13 +1,13 @@
 ---
 name: look-at
-version: 1.1
+version: 2.0
 description: "This skill should be used when the user asks to 'look at', 'analyze', 'describe', 'extract from', or 'what's in' media files like PDFs, images, diagrams, screenshots, or charts. Triggers include: 'what does this image show', 'extract the table from this PDF', 'describe this diagram', 'what's in this screenshot', 'analyze this chart', 'read this image', 'get text from this PDF', 'summarize this document', or requests for specific data extraction from visual or document files. Use when analyzed/interpreted content is needed rather than literal file reading (which uses Read tool)."
 user-invocable: false
 ---
 
 # Look At - Multimodal File Analysis
 
-Fast, cost-effective file analysis using Google's Gemini 2.5 Flash Lite model for PDFs, images, diagrams, and other media files.
+Multi-backend vision tool for PDFs, images, diagrams, and other media files. Routes to Gemini CLI (default), GitHub Copilot (GPT-5.4), or the legacy Python API.
 
 ## Tool Selection Enforcement
 
@@ -59,8 +59,8 @@ Fast, cost-effective file analysis using Google's Gemini 2.5 Flash Lite model fo
 ## How It Works
 
 1. Provide a file path and a specific goal (what to extract)
-2. The helper script uploads the file to Gemini's API
-3. Gemini 2.5 Flash Lite analyzes the file and extracts requested information
+2. `look_at.sh` routes to the selected backend (Gemini CLI by default)
+3. The backend analyzes the file and extracts requested information
 4. Only the relevant extracted information is returned (saves context tokens)
 
 ## Usage Pattern
@@ -71,19 +71,29 @@ Always set the Bash tool `description` parameter to show a clean invocation:
 description: "look-at: [goal text]"
 ```
 
-Never display the full Python command to the user.
-
 ```bash
-# Basic usage
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+# Default (Gemini CLI — uses bundled quota, no API key needed)
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
 
-# With custom model
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+# GPT-5.4 via GitHub Copilot
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/diagram.png" \
-    --goal "Describe the architecture shown in this diagram" \
-    --model "gemini-2.5-flash"
+    --goal "Describe the architecture" \
+    --backend copilot
+
+# Multi-model consensus (gemini + copilot in parallel)
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
+    --file "/path/to/diagram.png" \
+    --goal "Score this diagram 0-10" \
+    --consensus
+
+# Legacy Python API (uses your GOOGLE_API_KEY)
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
+    --file "/path/to/file.pdf" \
+    --goal "Extract the table data" \
+    --backend api
 ```
 
 `${CLAUDE_SKILL_DIR}` is substituted at skill load time, so the full path is already resolved — no per-call discovery needed.
@@ -91,6 +101,20 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 **IMPORTANT:**
 - Always use absolute paths for files
 - Always set Bash tool `description` to `"look-at: [goal]"` for clean UX
+
+## Backends
+
+| Backend | CLI | Model | Cost | Best For |
+|---------|-----|-------|------|----------|
+| `gemini` (default) | `gemini` CLI | Gemini (CLI default) | Bundled quota | General vision, diagrams, documents |
+| `copilot` | GitHub Copilot CLI | GPT-5.4 | Copilot subscription | Second opinions, consensus |
+| `api` | `look_at.py` | Gemini API (configurable) | Your API key | Agentic mode, custom models |
+
+## Consensus Mode
+
+`--consensus` runs gemini and copilot **in parallel** and outputs both results under labeled headers (`=== GEMINI ===`, `=== COPILOT (GPT-5.4) ===`).
+
+**When to use:** Visual verification of diagrams where a single model may miss or underscore defects. Trust the **stricter** score — if any backend flags BLOCKING, treat it as BLOCKING.
 
 ## Response Rules
 
@@ -137,7 +161,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
 
 **Usage:**
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "photo.jpg" \
     --goal "Count the number of people in this image" \
     --agentic
@@ -153,7 +177,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the executive summary section"
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -162,7 +186,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 ```bash
 # Bash tool call with:
 # description: "look-at: List all UI elements and their layout"
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "screenshot.png" \
     --goal "List all UI elements and their layout"
 ```
@@ -171,7 +195,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Explain the data flow and component relationships"
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "architecture.png" \
     --goal "Explain the data flow and component relationships"
 ```
@@ -180,7 +204,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract the table data as JSON"
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "table.pdf" \
     --goal "Extract the table data as JSON with columns: name, value, date"
 ```
@@ -189,7 +213,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Count the number of people in the photo"
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "crowd.jpg" \
     --goal "Count the number of people visible in this image" \
     --agentic
@@ -199,7 +223,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
 ```bash
 # Bash tool call with:
 # description: "look-at: Extract specific data points from the chart"
-python3 "${CLAUDE_SKILL_DIR}/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "quarterly_chart.png" \
     --goal "Extract the exact values for each quarter and calculate the year-over-year change" \
     --agentic

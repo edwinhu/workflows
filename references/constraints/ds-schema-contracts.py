@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-schema-contracts — every transformation has input/output schema contracts."""
 import re
 import sys

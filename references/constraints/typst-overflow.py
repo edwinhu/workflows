@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint check: detect slide overflow in workshop presentations.
 
 Runs the overflow detection pipeline:

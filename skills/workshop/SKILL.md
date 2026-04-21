@@ -6,7 +6,7 @@ hooks:
     - matcher: "Read"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
     - matcher: "Edit|Write"
       hooks:
         - type: command
@@ -15,27 +15,27 @@ hooks:
             GATE_STATUS=VERIFIED
             GATE_DESCRIPTION="Phase 1 sources gate"
             GATE_REMEDY="Return to Phase 1 and complete source gathering before writing any files"
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
     - matcher: "*"
       hooks:
         - type: command
           command: >-
             COMPACT_THRESHOLD=40
             COMPACT_INTERVAL=20
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
 ---
 
 **Announce:** "I'm using workshop to create academic presentation slides and speaker notes."
@@ -44,7 +44,7 @@ hooks:
 
 Load ALL Typst conventions before any slide or notes work:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop`
 
 **You MUST have these constraints loaded before proceeding to Phase 3. No claiming you "remember" them.**
 
@@ -185,7 +185,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 
 2. **Extract metadata** using look-at:
    ```bash
-   python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+   uv run python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
        --file "/path/to/paper.pdf" \
        --goal "Extract: (1) full title, (2) subtitle if any, (3) all author names, (4) each author's affiliation/institution, (5) abstract summary in 2-3 sentences"
    ```
@@ -217,7 +217,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 
 7. **Inventory the paper's figures, tables, and key results:**
    ```bash
-   python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+   uv run python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
        --file "/path/to/paper.pdf" \
        --goal "List ALL: (1) figures with figure numbers and captions, (2) tables with table numbers and captions, (3) key empirical results with specific numbers (coefficients, percentages, sample sizes), (4) main theoretical propositions or hypotheses"
    ```
@@ -331,7 +331,7 @@ Sources gathered and verified. Paper metadata extracted from source document.
 
 2. **Read the paper's structure** — use look-at to get the table of contents / section headings:
    ```bash
-   python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+   uv run python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
        --file "/path/to/paper.pdf" \
        --goal "List all section headings and subheadings in order"
    ```
@@ -612,11 +612,11 @@ Agent(prompt="""
 You are an independent reviewer. Check these files against the Typst workshop constraints.
 
 Step 1 — Constraint checks (hard block):
-Run: cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+Run: cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 Report any failures.
 
 Step 2 — Convention review (judgment):
-Run: python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop
+Run: uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop
 Review slides.typ and notes.typ against loaded conventions.
 
 Step 3 — Cross-check:
@@ -703,7 +703,7 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 
 4. **Run PDF widow detection** (mandatory after every successful compile):
    ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && python3 "$DETECT_WIDOWS" slides.pdf
+   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" slides.pdf
    ```
    - Exit code 1 = widows found → fix using strategies from the typst-widow-detection constraint → recompile → re-run detector
    - Exit code 0 = clean → proceed
@@ -714,7 +714,7 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
    # Compile in handout mode and query for overflow metadata
    cd [presentation directory] && typst compile slides.typ --input handout=true slides-handout.pdf && \
    typst query slides.typ '<val>' --field value --root . 2>/dev/null | \
-   python3 ${CLAUDE_SKILL_DIR}/../../scripts/checks/overflow.py
+   uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/checks/overflow.py
    ```
    - If overflow detected → cut content, split slides, or use columns → recompile
    - If no validation.typ import exists, visually check: page count should ≈ slide count in handout mode
@@ -743,7 +743,7 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 
    **Leg 1 — Constraint checks (hard block):** Run all auto-discovered `.py` check scripts:
    ```bash
-   cd [presentation directory] && python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+   cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
    ```
    - If any constraint fails → fix the violation → re-run check-all.py (max 3 attempts)
    - Hard block: ALL constraints must pass before proceeding

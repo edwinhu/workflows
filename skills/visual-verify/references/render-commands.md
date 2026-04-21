@@ -45,7 +45,7 @@ typst compile --root . output/test-slide.typ /tmp/visual-verify.png --ppi 288
 
 ### Script saves to file
 ```bash
-python3 script.py
+uv run python3 script.py
 # Script must contain: plt.savefig("/tmp/visual-verify.png", dpi=150, bbox_inches="tight")
 ```
 
@@ -92,5 +92,5 @@ npx playwright screenshot --viewport-size="1280,720" http://localhost:3000 /tmp/
 
 Any command that produces a PNG at a known path. The key requirements:
 1. Output path must be known before the command runs
-2. Command must produce a PNG (or JPEG/WebP -- look-at supports these)
+2. Command must produce a PNG (or JPEG/WebP -- Gemini CLI supports these)
 3. Exit code 0 on success, non-zero on failure

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """
 SessionEnd hook: Scan transcript for user correction patterns.
 

@@ -8,7 +8,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
     - matcher: "Agent"
       hooks:
         - type: command
@@ -16,7 +16,7 @@ hooks:
             GATE_ARTIFACT=.planning/REVIEW_STATE.md
             GATE_DESCRIPTION="Code review completion"
             GATE_REMEDY="Return to dev-review (Phase 6). Review must complete and write REVIEW_STATE.md before verification."
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
@@ -25,7 +25,7 @@ Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence.
 
 Auto-load all constraints matching `applies-to: dev-verify`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-verify`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-verify`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 
@@ -296,7 +296,7 @@ npm run build && echo "Exit code: $?"
 Before spawning the goal-backward verifier, run the auto-discovering constraint runner:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 ```
 
 **If any constraint FAILS:** Address the failure before proceeding. Constraint failures are hard blocks — do not proceed to goal-backward verification with failing constraints.

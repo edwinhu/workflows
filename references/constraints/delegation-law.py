@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: delegation-law — main chat must not write code or investigate directly.
 
 Checks .planning/LEARNINGS.md and git history for evidence that main chat wrote

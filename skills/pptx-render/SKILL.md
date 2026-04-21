@@ -98,7 +98,7 @@ Shape positions use inches from top-left corner:
 
 ```python
 # One-liner to dump all shapes from slide N
-python3 -c "
+uv run python3 -c "
 from pptx import Presentation; import json
 prs = Presentation('PPTX_PATH')
 for s in prs.slides[N-1].shapes:

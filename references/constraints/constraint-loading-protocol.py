@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: constraint-loading-protocol — verify prose-writing skills load domain skill + ai-anti-patterns."""
 
 CONSTRAINT = "constraint-loading-protocol"

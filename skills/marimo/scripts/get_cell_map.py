@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Extract cell metadata from a marimo notebook without executing it.
 
 Usage:

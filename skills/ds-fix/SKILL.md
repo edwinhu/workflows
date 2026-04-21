@@ -7,24 +7,24 @@ hooks:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
   PreToolUse:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
     - matcher: "Read"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
     - matcher: "Grep"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
     - matcher: "Glob"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
 ---
 
 **Announce:** "Using ds-fix for mid-analysis course correction."
@@ -101,7 +101,7 @@ Read workflow state, shared enforcement, AND shared check definitions:
 
 As the midpoint, auto-load ALL constraints matching `applies-to: ds-fix` (midpoint can route to any phase):
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-fix`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-fix`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

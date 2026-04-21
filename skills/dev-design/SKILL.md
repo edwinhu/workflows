@@ -12,7 +12,7 @@ hooks:
             GATE_ARTIFACT=.planning/SPEC.md
             GATE_DESCRIPTION="Spec document"
             GATE_REMEDY="SPEC.md must exist before designing. Complete brainstorm and exploration first."
-            python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."

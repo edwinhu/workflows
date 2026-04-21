@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-formatting — escaped dollar signs, smart apostrophes after ) or ]."""
 
 import re

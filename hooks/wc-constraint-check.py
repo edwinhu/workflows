@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PostToolUse hook: runs wc-* constraint checks after edits to workflow-creator files."""
 
 import importlib.util

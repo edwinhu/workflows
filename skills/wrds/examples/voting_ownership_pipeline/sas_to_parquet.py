@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -u
+#!/usr/bin/env -S uv run python3 -u
 """Convert aggregated SAS mf_own datasets to a single parquet file.
 
 The SAS jobs already aggregated to permno-quarter, so these files are small.

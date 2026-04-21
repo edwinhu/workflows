@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: progress-gating — 5+ iterations without progress → STOP and escalate."""
 import re
 import sys

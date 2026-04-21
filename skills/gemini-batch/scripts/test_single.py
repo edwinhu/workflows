@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Test single request before batch submission.
 
 Use this script to validate extraction prompt and file access

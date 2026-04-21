@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-notes-structure — Notes sections must match slide sections, transitions required."""
 
 import re

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-label-bullet-spacing — Blank line required between *Label:* and following bullet list."""
 
 import re

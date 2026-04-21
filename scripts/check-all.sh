@@ -24,7 +24,7 @@ for check in "$CHECKS_DIR"/check-*.py; do
     TOTAL=$((TOTAL + 1))
     check_name=$(basename "$check" .py | sed 's/^check-//')
 
-    if output=$(python3 "$check" 2>&1); then
+    if output=$(uv run python3 "$check" 2>&1); then
         echo "  ✓ $check_name"
         PASS=$((PASS + 1))
     else

@@ -192,7 +192,7 @@ Monitor(
   description="Gemini batch job progress",
   persistent=true,
   timeout_ms=3600000,
-  command="while true; do python3 -c \"import google.genai as genai; j=genai.batches.get(name='$JOB_NAME'); print(f'{j.state} | {j.name}'); exit(0 if j.state in ('JOB_STATE_SUCCEEDED','JOB_STATE_FAILED','JOB_STATE_CANCELLED') else 1)\" && break; sleep 60; done"
+  command="while true; do uv run python3 -c \"import google.genai as genai; j=genai.batches.get(name='$JOB_NAME'); print(f'{j.state} | {j.name}'); exit(0 if j.state in ('JOB_STATE_SUCCEEDED','JOB_STATE_FAILED','JOB_STATE_CANCELLED') else 1)\" && break; sleep 60; done"
 )
 ```
 

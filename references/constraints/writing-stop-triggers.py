@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: writing-stop-triggers — verify prose-producing skills load this constraint."""
 
 CONSTRAINT = "writing-stop-triggers"

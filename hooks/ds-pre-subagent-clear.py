@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PreToolUse guard: clear post-subagent flag before dispatching a new subagent.
 
 When a new Agent/Task is about to be dispatched, clear the flag file so that

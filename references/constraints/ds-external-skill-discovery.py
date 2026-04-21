@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ds-external-skill-discovery.
 
 If PLAN.md references an external plugin skill (WRDS, gemini-batch, lseg-data,

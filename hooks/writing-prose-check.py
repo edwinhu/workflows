@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PostToolUse hook: Run constraint checks after draft edits.
 
 Fires on Edit|Write to drafts/*.md files. Delegates to check-all.py

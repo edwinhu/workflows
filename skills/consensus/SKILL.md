@@ -77,7 +77,7 @@ This file contains the user's curated list of trusted journals and authors. Use 
 **When a paper has an SSRN-label journal AND a non-null `doi`:**
 
 ```bash
-curl -s "https://api.crossref.org/works/<doi>" | python3 -c "
+curl -s "https://api.crossref.org/works/<doi>" | uv run python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 msg = d.get('message', {})

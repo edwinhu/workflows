@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """PostToolUse hook: Guard against monolithic constraint files.
 
 Fires on Write/Edit. Detects two anti-patterns:

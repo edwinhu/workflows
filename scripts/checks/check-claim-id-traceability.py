@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Check: claim-id-traceability — verify CLAIM-XX IDs flow through all writing artifacts.
 
 Checks:

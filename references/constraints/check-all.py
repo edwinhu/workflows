@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """check-all.py — auto-discovers and runs all constraint checks.
 
 Discovers from two directories:

@@ -13,7 +13,7 @@ Source-level checks estimate widow risk; Typst's line-breaking algorithm is the 
 
 After every successful compilation:
 ```bash
-DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && python3 "$DETECT_WIDOWS" slides.pdf
+DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" slides.pdf
 ```
 
 Exit code 1 = widows found. Gate does NOT pass until 0 widows.

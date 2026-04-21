@@ -24,7 +24,7 @@ Archive all non-permanent URLs in footnotes via perma.cc API.
 ## Script
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/permacc_archive.py" --docx <path> --data scratch/footnotes_data.json
+uv run python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/permacc_archive.py" --docx <path> --data scratch/footnotes_data.json
 ```
 
 ## Institutional Account Setup

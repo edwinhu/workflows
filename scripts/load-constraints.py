@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Load constraint .md prose for a skill, filtered by applies-to frontmatter.
 
 Mirrors check-all.py's auto-discovery but for .md context injection.
 Globs references/constraints/*.md, parses applies-to, outputs matching content.
 
 Usage:
-    python3 scripts/load-constraints.py workshop
-    python3 scripts/load-constraints.py workshop-revise
+    uv run python3 scripts/load-constraints.py workshop
+    uv run python3 scripts/load-constraints.py workshop-revise
 
 Designed to be called from a SKILL.md bang line:
-    !`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
+    !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
 """
 
 from __future__ import annotations

@@ -6,9 +6,9 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
 ---
 
 # Skill Creator (with Superpowers Enforcement)
@@ -54,10 +54,10 @@ Use directly in Bash command templates — substituted at skill load time to the
 
 ```bash
 # ✅ CORRECT: Variable substituted at load time, Claude sees literal path
-python3 "${CLAUDE_SKILL_DIR}/scripts/my_script.py" --arg value
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/my_script.py" --arg value
 
 # ❌ WRONG: Broken $() subshell — executes script with no args, captures garbage
-SCRIPT=$(${CLAUDE_SKILL_DIR}/scripts/my_script.py) && python3 "$SCRIPT" --arg value
+SCRIPT=$(${CLAUDE_SKILL_DIR}/scripts/my_script.py) && uv run python3 "$SCRIPT" --arg value
 ```
 
 The `$()` indirection pattern is a common mistake. It tries to execute the script in a subshell and capture its stdout — but scripts require arguments and fail with no args, leaving the variable empty.
@@ -84,12 +84,12 @@ hooks:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/guard.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/guard.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint.py"
 ```
 
 **⚠️ Hook-command variable rule:** use `${CLAUDE_PLUGIN_ROOT}` in hook `command:` fields — **not** `${CLAUDE_SKILL_DIR}`. The latter is for skill content (markdown body, bang-backtick commands). Hook frontmatter is a different substitution context; mixing these up causes silent failures when the hook fires outside an active `Skill()` session. See `workflow-creator` Step 3b for the April 2026 incident.

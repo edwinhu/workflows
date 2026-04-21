@@ -10,7 +10,7 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py"
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py"
 ---
 
 You are a data engineering subagent. Your job is to build reliable, reproducible data pipelines.

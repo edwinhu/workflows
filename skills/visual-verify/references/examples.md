@@ -10,8 +10,8 @@ Skill(skill="ralph-loop:ralph-loop", args="Visual Task 1: Title Slide --max-iter
 # Render
 tinymist compile presentation.typ /tmp/visual-verify.png --pages 1 --ppi 144
 
-# Vision check — NON-PYTHON PATH (no --agentic)
-python3 "${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py" \
+# Vision check — look_at.sh (Gemini CLI default)
+"${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.sh" \
     --file "/tmp/visual-verify.png" \
     --goal "You are reviewing a Typst presentation slide. You CANNOT run Typst.
 
@@ -45,10 +45,10 @@ Skill(skill="ralph-loop:ralph-loop", args="Visual Task 2: Revenue Chart --max-it
 
 # Iteration 1
 [Spawn Task agent -> creates matplotlib chart]
-[Render: python3 charts/revenue.py]
+[Render: uv run python3 charts/revenue.py]
 
-# Vision check — PYTHON-NATIVE PATH (--agentic)
-python3 "${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py" \
+# Vision check — look_at.sh (Gemini CLI default)
+"${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.sh" \
     --file "/tmp/visual-verify.png" \
     --goal "You are reviewing a Python-generated chart.
 You have matplotlib, seaborn, numpy, pandas in your sandbox.
@@ -62,8 +62,7 @@ Bar chart showing quarterly revenue 2020-2024 by product line.
 ## Your Review
 1. Reproduce key elements in your sandbox to verify
 2. For each issue, experiment with a fix and provide EXACT code change
-Rate: PASS or FAIL with verified code fixes." \
-    --agentic
+Rate: PASS or FAIL with verified code fixes."
 
 # Gemini responds: FAIL
 # - Y-axis label missing units → verified fix: ax.set_ylabel("Revenue ($M)")
@@ -84,7 +83,7 @@ Rate: PASS or FAIL with verified code fixes." \
 # After 3 failed iterations on fletcher diagram label overlap...
 
 # Escalate to reference sketch approach
-python3 "${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.py" \
+"${CLAUDE_SKILL_DIR}/../../skills/look-at/scripts/look_at.sh" \
     --file "/tmp/visual-verify.png" \
     --goal "This diagram has persistent label overlap issues after 3 iterations.
 Draw a REFERENCE VERSION using matplotlib/networkx showing ideal positions:
@@ -92,8 +91,7 @@ Draw a REFERENCE VERSION using matplotlib/networkx showing ideal positions:
 - Arranging Bank in middle
 - Banks A, B, C at bottom
 - Labels 'Syndicate $$' and 'Pro rata share' positioned CLEAR of all arrows
-Output the x,y coordinates of each element and label." \
-    --agentic
+Output the x,y coordinates of each element and label."
 
 # Gemini outputs reference coordinates
 # Claude translates to fletcher-diagram spacing and label-pos values

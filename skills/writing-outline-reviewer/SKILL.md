@@ -14,7 +14,7 @@ allowed-tools: Read, Grep, Glob, Agent
 
 Auto-load all constraints matching `applies-to: writing-outline-reviewer`:
 
-!`python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-outline-reviewer`
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-outline-reviewer`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

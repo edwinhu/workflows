@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: ai-puffery — detect puffery and exaggeration phrases in draft text."""
 import re
 import sys

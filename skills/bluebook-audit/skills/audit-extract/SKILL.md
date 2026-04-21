@@ -19,7 +19,7 @@ Parse the DOCX file and build structured data for all subsequent phases.
 ## Script
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/extract_footnotes.py" --docx <path>
+uv run python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/extract_footnotes.py" --docx <path>
 ```
 
 Output: `scratch/footnotes_data.json`

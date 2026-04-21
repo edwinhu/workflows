@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python3
 """Constraint: typst-slide-format — #callout[] + 3+ #pause on same slide = overflow risk."""
 
 import re
