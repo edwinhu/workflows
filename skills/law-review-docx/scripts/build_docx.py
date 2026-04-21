@@ -272,8 +272,8 @@ date: "{meta['date']}"
         fix_script = Path(__file__).resolve().parent.parent.parent / "docx-footnotes" / "scripts" / "fix_gdocs_footnotes.py"
         if fix_script.exists():
             subprocess.run(
-                ["pixi", "exec", "--spec", "python=3.13", "--spec", "lxml", "--",
-                 "python3", str(fix_script), str(output), "--crossrefs"],
+                ["uv", "run", "--with", "lxml", "python3",
+                 str(fix_script), str(output), "--crossrefs"],
                 capture_output=True,
             )
 

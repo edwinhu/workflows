@@ -164,7 +164,7 @@ If the manuscript is DOCX, extract footnotes to structured text first. Use the b
 
 ```bash
 # Quick extraction via python-docx
-pixi exec --spec python-docx -- python3 -c "
+uv run --with python-docx python3 -c "
 import docx, json, sys
 doc = docx.Document(sys.argv[1])
 fns = []

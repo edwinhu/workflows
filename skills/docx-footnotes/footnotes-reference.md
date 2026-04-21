@@ -134,7 +134,7 @@ def detect_issues(fn_xml, doc_xml):
 `fix_gdocs_footnotes.py` (in `scripts/`) handles all damage:
 
 ```bash
-pixi exec --spec python=3.13 --spec lxml -- python3 \
+uv run --with lxml python3 \
   fix_gdocs_footnotes.py path/to/file.docx --crossrefs
 ```
 
@@ -217,7 +217,7 @@ if 'w:type="separator"' not in fn_xml:
 
 ### Python Version
 
-pack.py uses `match` (3.10+). Always use: `pixi exec --spec python=3.13 --spec defusedxml --spec lxml`
+pack.py uses `match` (3.10+). Always use: `uv run --with defusedxml --with lxml python3`
 
 ## 4. Footnote Numbering Offset (customMarkFollows)
 

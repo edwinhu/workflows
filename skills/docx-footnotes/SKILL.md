@@ -14,15 +14,15 @@ Scripts are in this skill's `scripts/` directory. Use `$SKILL_DIR` below as a pl
 
 ```bash
 # Fix all cloud editor damage + convert cross-references
-pixi exec --spec python=3.13 --spec lxml -- python3 \
+uv run --with lxml python3 \
   "$SKILL_DIR/scripts/fix_gdocs_footnotes.py" path/to/file.docx --crossrefs
 
 # Dry run (show what would change)
-pixi exec --spec python=3.13 --spec lxml -- python3 \
+uv run --with lxml python3 \
   "$SKILL_DIR/scripts/fix_gdocs_footnotes.py" path/to/file.docx --dry-run
 
 # Cross-references only
-pixi exec --spec python=3.13 --spec lxml -- python3 \
+uv run --with lxml python3 \
   "$SKILL_DIR/scripts/create_crossrefs.py" --docx path/to/file.docx
 ```
 
