@@ -138,6 +138,68 @@ crsp['me'] = abs(crsp['mthprc']) * crsp['shrout']
 crsp_summe = crsp.groupby(['mthcaldt', 'permco'])['me'].sum().reset_index()
 ```
 
+## Dual-class firms: PERMNO vs PERMCO
+
+**Critical distinction.** In CRSP, each share class is its own `permno`. For company-wide measures (total shares outstanding, total institutional ownership), aggregate to `permco`. Examples:
+
+| Company | permno (A) | permno (B/C) | Shared permco |
+|---|---:|---:|---:|
+| Alphabet | 14542 (GOOGL) | 90319 (GOOG) | 45483 |
+| Berkshire Hathaway | 17778 (BRK.A) | 83443 (BRK.B) | 540 |
+| Constellation Brands | 77730 (STZ) | — | 22133 |
+| Fox Corporation | — | — | — (FOXA/FOX same permco) |
+
+Signal of a dual-class firm: two `permno`s with same `permco` active in the same period.
+
+### When to aggregate to PERMCO
+
+| Use case | Grain | Why |
+|---|---|---|
+| Market equity (firm size) | permco | Summing all classes = company market cap |
+| Institutional ownership ratio | permco | 13F reports per CUSIP (per class); summing gives company-wide IO, matches company-wide TSO |
+| Ownership vs ISS `outstandingshare` | permco | ISS is company-wide — must aggregate CRSP to match |
+| Returns, volatility, individual security analysis | permno | Each class trades separately, has its own returns |
+| Voting analysis | depends | Each class has its own voting rights; item-level analysis often permno-grained |
+
+### PERMCO-level TSO and IOR (the correct dual-class pattern)
+
+```python
+# 1. Get permno -> permco mapping (stable over time for most firms)
+permco_map = pd.read_sql(
+    "SELECT DISTINCT permno, permco FROM crsp.msenames", conn
+)
+
+# 2. CRSP-adjusted shares outstanding per permno, with cfacshr
+crsp_m['tso_permno_adj'] = crsp_m['shrout'] * 1000 * crsp_m['cfacshr']
+
+# 3. Sum across share classes per permco-date
+tso_permco = (crsp_m.merge(permco_map, on='permno')
+                    .groupby(['permco', 'qdate'])['tso_permno_adj']
+                    .sum().reset_index(name='tso_permco'))
+
+# 4. Same for 13F holdings — sum across classes
+holdings['shares_adj'] = holdings['shares'] * holdings['cfacshr']
+io_total_permco = (holdings.merge(permco_map, on='permno')
+                           .groupby(['permco', 'rdate'])['shares_adj']
+                           .sum().reset_index(name='io_total_permco'))
+
+# 5. Company-wide IOR
+# both sides cfacshr-adjusted AND summed across classes
+ior_permco = io_total_permco.merge(tso_permco, left_on=['permco', 'rdate'],
+                                    right_on=['permco', 'qdate'])
+ior_permco['ior'] = ior_permco['io_total_permco'] / ior_permco['tso_permco']
+```
+
+### Anti-patterns
+
+| Anti-pattern | Why wrong |
+|---|---|
+| `IO_TOTAL_permno / ISS_outstandingshare` | Numerator is per-class (one permno's 13F holdings), denominator is company-wide. Understates IOR 2-10× for dual-class firms. |
+| `IO_TOTAL_permno / TSO_crsp_permno` (both per-class) | Internally consistent but CAN exceed 100% for any specific class due to 13F reporting edge cases. Company-wide aggregation smooths these out. |
+| `shrout × 1000 × cfacshr` at permno | Fine for per-class TSO; use permco-aggregated version for company-wide |
+| `shrout × 1000` without cfacshr | As-reported at date, ignores splits — don't mix with cfacshr-adjusted 13F totals (units mismatch → IOR > 100%) |
+| `tso_crsp_inst` from build_inst_own.sas paired with ISS outstandingshare | Different scales: cfacshr-adjusted vs as-reported. Pick one convention and stick to it. |
+
 ## Fama-French Breakpoints
 
 Use NYSE stocks only for breakpoints:

@@ -190,7 +190,12 @@ See `postgres-vs-sas.md` for the full decision framework.
 1. **Vintage dates** -- s34type1 has multiple fdate per rdate (restatements); keep the earliest fdate.
 2. **First/last report flags** -- track gaps in 13-F reporting; useful for clean time-series analysis.
 3. **CUSIP is historical** -- map through `crsp.msenames.ncusip`, not the current CUSIP.
-4. **IOR > 1** -- can happen due to timing mismatches between 13-F and CRSP shares outstanding; cap at 1.0 (or filter > 1.2).
+4. **IOR > 1 — two distinct root causes; treat accordingly.**
+    - **(a) Timing mismatch** (benign, small): 13-F quarter rdate vs CRSP shrout-date offset by a few weeks around splits/issuances. Cap at 1.0 or filter `IOR > 1.2`.
+    - **(b) cfacshr units mismatch** (systematic, can produce 100-2000% IOR): when combining a cfacshr-adjusted numerator with an as-reported denominator. `IO_TOTAL` in the build_inst_own pipeline is `sum(shares × cfacshr)` — cumulatively adjusted to today. If you divide it by ISS `outstandingshare` (as-reported at meeting date, pre-split for split-era meetings), you get impossible values. AAPL 2014: `IO_TOTAL = 15.25B` (cfacshr=28× applied) / `tso_iss = 892M` = 1708%.
+        - **Fix:** use `TSO = shrout × 1000 × cfacshr` as the denominator (matches IO_TOTAL's convention). The standard `IOR_crsp` from build_inst_own.sas is correct.
+        - If you need **company-wide** IOR (across share classes) for dual-class firms, aggregate to `permco` before dividing. See `crsp.md` §Dual-class.
+    - **(c) Dual-class per-class numerator** (systematic): 13F reports per CUSIP. For STZ, BRK.B, GOOGL etc., a single-permno `IO_TOTAL` covers only one share class while ISS `outstandingshare` is company-wide. Fix: sum IO_TOTAL across all permnos sharing a permco before dividing.
 5. **S12 data coverage** -- starts ~2003, drops off in 2024; check year-by-year counts.
 6. **Deduplication — critical** -- after all joins, dedup by `(wficn, crsp_portno, crsp_fundno, rqdate, cusip8)`. If you dedup by `(fundno, ...)` instead of `(wficn, ...)`, you will inflate shares ~3-4× because one wficn maps to multiple crsp_fundno (share classes). **This bug existed in a stale SAS build and produced MF_TOTAL values ~3.95× higher than correct.**
 7. **CRSP adjustment factors** -- align `cfacshr` at the vintage date (fdate), not the report date.

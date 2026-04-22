@@ -34,8 +34,16 @@ One row per agenda item per meeting.
 | `votedwithheld` | Votes withheld |
 | `brokernonvote` | Broker non-votes |
 | `base` | Denominator basis for vote calculation |
-| `outstandingshare` | Total shares outstanding |
-| `voterequirement` | Vote threshold required to pass |
+| `outstandingshare` | Total shares outstanding — **company-wide (aggregates share classes), AS-REPORTED at meeting date (NOT retroactively split-adjusted). See gotchas.** |
+| `voterequirement` | Pass threshold (NOT quorum — quorum is not recorded by ISS; see note below) |
+
+> **Gotchas with `outstandingshare`:**
+>
+> - **Company-wide, not per-class.** Unlike CRSP `shrout` (per-permno = per-class), ISS `outstandingshare` aggregates across share classes. For dual-class firms (STZ, BRK.B, GOOGL, BF.B) it matches the sum of CRSP `shrout` across the company's permnos. This is the correct denominator for company-wide ownership ratios.
+> - **AS-REPORTED, not cfacshr-adjusted.** ISS records the share count at the meeting date, NOT the cumulatively-split-adjusted value. For pre-split-era meetings of firms that later split (e.g., AAPL 2006-2013 pre-2014 7:1 split), `outstandingshare` is ~892M while post-split CRSP-cfacshr-adjusted is ~25B. If you mix it with cfacshr-adjusted numerators, you get impossible ratios. See `tfn-ownership.md` gotcha #4.
+> - **Rare catastrophic data-entry errors.** ~0.02% of meeting-rows have `outstandingshare` reported in completely wrong units (CRBP 2022-12-20 = 62.6 trillion shares). Detect with an absolute-cap sanity filter (`> 50e9` shares).
+>
+> **Quorum threshold is NOT in ISS.** `voterequirement` is the PASS threshold (0.01 = plurality, 0.50 = majority, 0.66/0.75/0.80 = supermajority). The quorum threshold (usually 1/3 or 1/2 per DGCL §216) lives in company bylaws, not ISS Voting Analytics. See any bylaw-quorum extraction pipeline for how to recover it from DEF 14A proxy text.
 
 ### `risk.voteanalysis_npx` -- Fund-Level N-PX Votes
 
