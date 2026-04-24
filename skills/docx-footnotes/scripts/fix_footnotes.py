@@ -1,21 +1,29 @@
 #!/usr/bin/env -S uv run python3
-"""Fix Google Docs footnote formatting damage in law review OOXML.
+"""Fix footnote formatting damage in law review OOXML.
 
-Google Docs round-trips destroy:
-1. Separator/continuation footnotes (id=-1, 0)
-2. Custom marks (customMarkFollows, w:sym) for author bio footnotes
-3. Paragraph styles on ALL footnotes (FootnoteText / FNStyleBest)
-4. Footnote ID numbering (shifts down because system footnotes are missing)
-5. TOC separator paragraph height (causes spillover to second page)
+Two classes of damage, detected and fixed independently:
 
-This script detects whether these issues are present and fixes them.
-It is idempotent — safe to run multiple times.
+A. Google Docs round-trip damage:
+   1. Separator/continuation footnotes (id=-1, 0) lost
+   2. Custom marks (customMarkFollows, w:sym) for author bio footnotes
+   3. Paragraph styles on footnotes (FootnoteText / FNStyleBest)
+   4. Footnote ID numbering (shifts when system footnotes are missing)
+   5. TOC separator paragraph height (causes spillover to second page)
+
+B. Pandoc-citeproc wrap parens:
+   Pandoc-citeproc wraps bracketed citations `[@key]` that appear
+   mid-paragraph inside a footnote in `  (...)` — extra space, open
+   paren, content, close paren. This script strips that wrapper while
+   preserving author-written explanatory parentheticals (which lack the
+   double-space XML signature).
+
+All fixes are idempotent — safe to run multiple times.
 
 Usage:
-    uv run python3 fix_gdocs_footnotes.py path/to/file.docx
-    uv run python3 fix_gdocs_footnotes.py path/to/file.docx --output fixed.docx
-    uv run python3 fix_gdocs_footnotes.py path/to/file.docx --dry-run
-    uv run python3 fix_gdocs_footnotes.py path/to/file.docx --crossrefs  # also fix cross-refs
+    uv run python3 fix_footnotes.py path/to/file.docx
+    uv run python3 fix_footnotes.py path/to/file.docx --output fixed.docx
+    uv run python3 fix_footnotes.py path/to/file.docx --dry-run
+    uv run python3 fix_footnotes.py path/to/file.docx --crossrefs  # also fix cross-refs
 """
 
 import argparse
@@ -48,7 +56,7 @@ def read_zip_member(zf, name):
 
 
 def detect_issues(fn_xml, doc_xml):
-    """Detect which Google Docs damage is present."""
+    """Detect both Google Docs round-trip damage and pandoc wrap parens."""
     issues = []
 
     if 'w:type="separator"' not in fn_xml:
@@ -66,7 +74,117 @@ def detect_issues(fn_xml, doc_xml):
     if missing_style > 0:
         issues.append(f"missing_pstyle({missing_style}/{len(footnotes)})")
 
+    # Pandoc-citeproc wrap parens: count opener signatures.
+    wrap_count = len(_PANDOC_WRAP_OPEN_RE.findall(fn_xml))
+    if wrap_count:
+        issues.append(f"pandoc_cite_wraps({wrap_count})")
+
     return issues
+
+
+# ── Pandoc-citeproc wrap parens ────────────────────────────────────────
+# Pandoc-citeproc wraps mid-footnote bracketed citations in `  (...)`. The
+# docx run structure for a wrap is distinctive:
+#
+#   <w:r><w:t xml:space="preserve"> </w:t></w:r>          # natural trailing space
+#   <w:r><w:t xml:space="preserve"> </w:t></w:r>          # EXTRA space
+#   <w:r>[<w:rPr>…</w:rPr>]<w:t xml:space="preserve">(Griffin,</w:t></w:r>
+#   … content runs …
+#   <w:r>[<w:rPr>…</w:rPr>]<w:t xml:space="preserve">)</w:t></w:r>    # standalone )
+#
+# Author-written explanatory parentheticals appear as a single run
+# `<w:t> (describing X)</w:t>` and therefore do not match this signature.
+
+_WS_RUN = r'<w:r><w:t xml:space="preserve"> </w:t></w:r>'
+_RPR_MAYBE = r'(?:<w:rPr>(?:[^<]|<[^/][^>]*/>|<[^/][^>]*>[^<]*</[^>]+>)*</w:rPr>)?'
+_PANDOC_WRAP_OPEN_RE = re.compile(
+    _WS_RUN + _WS_RUN +
+    r'(<w:r>' + _RPR_MAYBE + r'<w:t[^>]*>)\('
+)
+_T_OPEN_RE = re.compile(r'<w:t[^>]*>')
+
+
+def _find_matching_close(p, start):
+    """Scan p[start:] tracking paren depth only inside `<w:t>…</w:t>` text.
+
+    Assumes depth starts at 1 (we just stripped an opening `(`). Returns the
+    absolute index of the matching `)` char, or -1 if unbalanced within p.
+    """
+    i = start
+    depth = 1
+    in_t = False
+    while i < len(p):
+        if not in_t:
+            m = _T_OPEN_RE.search(p, i)
+            if not m:
+                return -1
+            i = m.end()
+            in_t = True
+            continue
+        close = p.find("</w:t>", i)
+        if close == -1:
+            return -1
+        for j in range(i, close):
+            c = p[j]
+            if c == "(":
+                depth += 1
+            elif c == ")":
+                depth -= 1
+                if depth == 0:
+                    return j
+        i = close + len("</w:t>")
+        in_t = False
+    return -1
+
+
+def fix_pandoc_cite_wraps(fn_xml):
+    """Strip `  (…)` wraps pandoc-citeproc adds around mid-footnote citations.
+
+    Matches the opener (two whitespace-only runs + run starting with `(`),
+    then finds the balanced closing `)` by counting parens inside `<w:t>`
+    text (since the close may be either a standalone run or attached to
+    another string, e.g., `(2025))` where one `)` ends an inline date
+    parenthetical and the trailing `)` closes the wrap).
+
+    Processes paragraph-by-paragraph so a wrap never crosses `<w:p>`.
+    Idempotent: after the fix, the opener signature is gone.
+    """
+    changes = []
+    count = 0
+
+    out_parts = []
+    last_end = 0
+    for pm in re.finditer(r'<w:p(?:\s[^>]*)?>.*?</w:p>', fn_xml, re.DOTALL):
+        out_parts.append(fn_xml[last_end:pm.start()])
+        p = pm.group(0)
+        while True:
+            om = _PANDOC_WRAP_OPEN_RE.search(p)
+            if not om:
+                break
+            close_pos = _find_matching_close(p, om.end())
+            if close_pos == -1:
+                break
+            # Rebuild: drop one whitespace run, the opening `(`, and the
+            # matching close `)` char. The opener's text run keeps its
+            # trailing content (e.g., `Griffin,`), and if the closer was
+            # attached to other text (e.g., `(2025))`) only the final `)`
+            # is removed.
+            p = (
+                p[:om.start()]
+                + _WS_RUN
+                + om.group(1)
+                + p[om.end():close_pos]
+                + p[close_pos + 1:]
+            )
+            count += 1
+        out_parts.append(p)
+        last_end = pm.end()
+    out_parts.append(fn_xml[last_end:])
+    new_fn_xml = ''.join(out_parts)
+
+    if count:
+        changes.append(f"Stripped {count} pandoc-citeproc wrap paren(s)")
+    return new_fn_xml, changes
 
 
 def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
@@ -296,7 +414,9 @@ def fix_numbering_offset(settings_xml, fn_xml, doc_xml, bio_count=3):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fix Google Docs footnote formatting damage")
+    parser = argparse.ArgumentParser(
+        description="Fix footnote damage (Google Docs round-trip, pandoc-citeproc wraps)"
+    )
     parser.add_argument("docx", help="Path to the .docx file")
     parser.add_argument("--output", "-o", help="Output path (default: overwrite input)")
     parser.add_argument("--dry-run", action="store_true", help="Show what would change")
@@ -322,7 +442,7 @@ def main():
 
     issues = detect_issues(fn_xml, doc_xml)
     if not issues and not args.fix_numbering:
-        print("No Google Docs formatting damage detected.")
+        print("No footnote damage detected.")
         return
 
     print(f"Detected issues: {', '.join(issues)}")
@@ -332,6 +452,9 @@ def main():
 
     fn_xml_fixed, fn_changes = fix_footnotes_xml(fn_xml, args.bio_footnotes)
     all_changes.extend(fn_changes)
+
+    fn_xml_fixed, pandoc_changes = fix_pandoc_cite_wraps(fn_xml_fixed)
+    all_changes.extend(pandoc_changes)
 
     doc_xml_fixed, doc_changes = fix_document_xml(doc_xml, args.bio_footnotes)
     all_changes.extend(doc_changes)

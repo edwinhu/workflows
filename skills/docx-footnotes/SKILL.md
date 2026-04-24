@@ -15,11 +15,11 @@ Scripts are in this skill's `scripts/` directory. Use `$SKILL_DIR` below as a pl
 ```bash
 # Fix all cloud editor damage + convert cross-references
 uv run --with lxml python3 \
-  "$SKILL_DIR/scripts/fix_gdocs_footnotes.py" path/to/file.docx --crossrefs
+  "$SKILL_DIR/scripts/fix_footnotes.py" path/to/file.docx --crossrefs
 
 # Dry run (show what would change)
 uv run --with lxml python3 \
-  "$SKILL_DIR/scripts/fix_gdocs_footnotes.py" path/to/file.docx --dry-run
+  "$SKILL_DIR/scripts/fix_footnotes.py" path/to/file.docx --dry-run
 
 # Cross-references only
 uv run --with lxml python3 \
@@ -28,16 +28,21 @@ uv run --with lxml python3 \
 
 ## Scripts
 
-### fix_gdocs_footnotes.py
+### fix_footnotes.py
 
-Detects and repairs OOXML damage from Google Docs / Word Online round-trips. Idempotent.
+Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 
-**What it fixes:**
+**Google Docs / Word Online round-trip damage:**
 - Missing separator/continuation footnotes (id=-1, 0)
 - Custom mark restoration for author bio footnotes (*, dagger, double-dagger)
 - Footnote ID renumbering (shifted by missing system footnotes)
 - Missing paragraph styles (adds configurable pStyle to all footnotes)
 - TOC separator paragraph inflation (shrinks to near-zero height)
+
+**Pandoc-citeproc wrap parens:**
+- Strips the `  (...)` wrapper pandoc adds around mid-footnote bracketed
+  citations while preserving author-written explanatory parentheticals
+  (which lack the double-whitespace XML signature).
 
 **Flags:**
 - `--output` / `-o`: Output path (default: overwrite input)

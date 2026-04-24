@@ -131,11 +131,11 @@ def detect_issues(fn_xml, doc_xml):
 
 ### Fix Script
 
-`fix_gdocs_footnotes.py` (in `scripts/`) handles all damage:
+`fix_footnotes.py` (in `scripts/`) handles all damage:
 
 ```bash
 uv run --with lxml python3 \
-  fix_gdocs_footnotes.py path/to/file.docx --crossrefs
+  fix_footnotes.py path/to/file.docx --crossrefs
 ```
 
 Flags: `--output`, `--dry-run`, `--bio-footnotes N`, `--crossrefs`.

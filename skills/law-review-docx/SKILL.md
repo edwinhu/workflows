@@ -62,6 +62,47 @@ This template defines all styles that pandoc applies:
 
 Report the output path, section count, footnote count, and approximate word count. If the user needs further formatting (NOTEREF cross-references, footnote repair from cloud editing), suggest `--fix-footnotes` or the `docx-footnotes` skill.
 
+## Known Gotcha: Pandoc-Citeproc Paren-Wrap Inside Footnotes
+
+**Symptom.** In the compiled DOCX, some footnotes read with a doubled space
+and wrapping parens around a citation:
+
+```
+see  (Griffin, supra note 12; Macey, supra note 12). For proponents...
+```
+
+(note the two spaces before `(`).
+
+**Root cause.** Pandoc-citeproc wraps any bracketed parenthetical citation
+`[@key]` or `[signal @key]` in parens with a leading space when it appears
+*mid-paragraph inside a footnote body*. At the paragraph start the wrap is
+suppressed; mid-paragraph it is not. This is native pandoc behavior for
+note-style CSLs and cannot be fixed at the CSL level.
+
+**Why the natural-looking fix doesn't work.** Rewriting source to bare
+textual form (`@key` without brackets) renders cleanly *only if* every
+citation has a locator. For bib entries without locators (books, misc,
+many articles), pandoc-citeproc with a note-style CSL emits just a stray
+number (`1.`) because the full cite is supposed to go into a footnote and
+there is no footnote to host it (we're already inside one).
+
+**Fix.** The `docx-footnotes` skill's `fix_footnotes.py` detects and strips
+these wraps post-compile. The detector keys on the distinctive XML
+signature:
+
+```xml
+<w:r><w:t xml:space="preserve"> </w:t></w:r>     <!-- natural space -->
+<w:r><w:t xml:space="preserve"> </w:t></w:r>     <!-- EXTRA space -->
+<w:r>…<w:t>(Author,</w:t></w:r>                  <!-- open paren run -->
+… citation content …
+<w:r>…<w:t>)</w:t></w:r>                         <!-- close paren (standalone or attached) -->
+```
+
+Author-written explanatory parentheticals (`(describing X)`, `(documenting Y)`)
+appear as a single `<w:t> (…)</w:t>` run and lack the double-whitespace
+signature, so they are preserved. `build_docx.py` runs `fix_footnotes.py`
+automatically when `--fix-footnotes` is set (the default).
+
 ## Red Flags
 
 | Action | Why Wrong | Do Instead |

@@ -20,6 +20,9 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "bluebook-audit" / "scripts"))
+from bluebook_signal_linter import lint as bluebook_lint, find_stacked_footnotes  # noqa: E402
+
 TEMPLATE = Path(__file__).resolve().parent.parent.parent / "writing-legal" / "templates" / "law_review_template.docx"
 
 SECTION_ORDER = [
@@ -51,10 +54,13 @@ PREFIXES = {
 
 def sort_key(path: Path) -> int:
     stem = path.stem.replace(" (Draft)", "")
-    for i, section in enumerate(SECTION_ORDER):
-        if stem.startswith(section):
-            return i
-    return 100
+    matches = [
+        (i, section) for i, section in enumerate(SECTION_ORDER)
+        if stem == section or stem.startswith(section + " ") or stem.startswith(section + ".")
+    ]
+    if not matches:
+        return 100
+    return max(matches, key=lambda m: len(m[1]))[0]
 
 
 def strip_frontmatter(text: str) -> str:
@@ -72,6 +78,13 @@ def prefix_footnotes(text: str, prefix: str) -> str:
 
 
 INCLUDE_RE = re.compile(r'<!--\s*include:\s*([^\s][^>]*?)\s*-->')
+# Strip legacy "Table N (body). ..." or "Table IV.A. ..." caption lines at the
+# top of included body files. Pandoc-crossref provides the auto-numbered caption
+# in the draft instead.
+LEGACY_CAPTION_RE = re.compile(
+    r'^Table\s+[A-Z0-9]+(?:\.[A-Z0-9]+)?(?:\s*\(body\))?\.\s+[^\n]*\n\n?',
+    re.MULTILINE,
+)
 
 
 def resolve_includes(text: str) -> str:
@@ -82,15 +95,19 @@ def resolve_includes(text: str) -> str:
             return f'<!-- MISSING (not absolute): {raw} -->'
         if not path.exists():
             return f'<!-- MISSING: {path} -->'
-        return path.read_text()
+        body = path.read_text()
+        # Drop the legacy caption line if present so pandoc-crossref can
+        # attach its own auto-numbered caption to the bare table.
+        body = LEGACY_CAPTION_RE.sub('', body, count=1)
+        return body
     return INCLUDE_RE.sub(repl, text)
 
 
 def get_prefix(path: Path) -> str:
     stem = path.stem.replace(" (Draft)", "")
-    for section, prefix in PREFIXES.items():
-        if stem.startswith(section):
-            return prefix
+    for section in sorted(PREFIXES, key=len, reverse=True):
+        if stem == section or stem.startswith(section + " ") or stem.startswith(section + "."):
+            return PREFIXES[section]
     return stem.lower().replace(" ", "_")[:6]
 
 
@@ -99,8 +116,15 @@ LOREM = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
          "in .planning/ACTIVE_WORKFLOW.md.")
 
 
+DEFAULT_CSL = Path.home() / "projects" / "bluebook-law-review-21e.csl"
+
+
 def parse_metadata(project_dir: Path) -> dict:
-    meta = {"title": "", "short_title": "", "author": "", "date": "", "acknowledgements": ""}
+    meta = {
+        "title": "", "short_title": "", "author": "", "date": "",
+        "acknowledgements": "", "author_acks": [],
+        "csl": "", "bibliography": "",
+    }
     aw = project_dir / ".planning" / "ACTIVE_WORKFLOW.md"
     if aw.exists():
         content = aw.read_text()
@@ -115,6 +139,16 @@ def parse_metadata(project_dir: Path) -> dict:
                 meta["date"] = line.split(":", 1)[1].strip().strip('"')
             elif line.startswith("acknowledgements:"):
                 meta["acknowledgements"] = line.split(":", 1)[1].strip().strip('"')
+            elif line.startswith("csl:"):
+                meta["csl"] = line.split(":", 1)[1].strip().strip('"')
+            elif line.startswith("bibliography:"):
+                meta["bibliography"] = line.split(":", 1)[1].strip().strip('"')
+            elif re.match(r'^author_ack_\d+:', line):
+                idx = int(line.split(":", 1)[0].split("_")[-1]) - 1
+                val = line.split(":", 1)[1].strip().strip('"')
+                while len(meta["author_acks"]) <= idx:
+                    meta["author_acks"].append("")
+                meta["author_acks"][idx] = val
 
     precis = project_dir / ".planning" / "PRECIS.md"
     if precis.exists() and not meta["title"]:
@@ -145,8 +179,29 @@ def parse_metadata(project_dir: Path) -> dict:
     return meta
 
 
-def inject_acknowledgement(docx_path: Path, ack_text: str) -> None:
-    import zipfile, shutil
+_AUTHOR_SYMBOLS = ['*', '†', '‡', '§', '¶', '#']
+_SYMBOL_XML = {
+    '*': '<w:sym w:font="Symbol" w:char="F02A"/>',
+    '†': '<w:t xml:space="preserve">†</w:t>',
+    '‡': '<w:t xml:space="preserve">‡</w:t>',
+    '§': '<w:t xml:space="preserve">§</w:t>',
+    '¶': '<w:t xml:space="preserve">¶</w:t>',
+    '#': '<w:t xml:space="preserve">#</w:t>',
+}
+
+
+def inject_acknowledgement(docx_path: Path, ack_text: str, author_acks: list = None) -> None:
+    """Inject per-author acknowledgement footnotes.
+
+    If `author_acks` is provided, split the Author paragraph at each
+    law-review symbol (*, †, ‡, §, ...) in the author string and insert a
+    footnote reference in place of each symbol. The Nth symbol is tied to
+    `author_acks[N-1]`.
+
+    Fallback: if `author_acks` is empty, append a single `*` footnote with
+    `ack_text` to the end of the Author paragraph (legacy behavior).
+    """
+    import zipfile, shutil, html
     from xml.sax.saxutils import escape
     with zipfile.ZipFile(docx_path, 'r') as z:
         contents = {n: z.read(n) for n in z.namelist()}
@@ -155,37 +210,297 @@ def inject_acknowledgement(docx_path: Path, ack_text: str) -> None:
     fn = contents['word/footnotes.xml'].decode('utf-8')
 
     used_ids = set(int(x) for x in re.findall(r'w:id="(-?\d+)"', fn + doc))
-    ack_id = 2
-    while ack_id in used_ids:
-        ack_id += 1
 
-    star_ref = (
-        f'<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>'
-        f'<w:footnoteReference w:customMarkFollows="1" w:id="{ack_id}"/>'
-        f'<w:sym w:font="Symbol" w:char="F02A"/></w:r>'
-    )
+    def next_id():
+        nid = 2
+        while nid in used_ids:
+            nid += 1
+        used_ids.add(nid)
+        return nid
 
     author_pat = re.compile(
-        r'(<w:p>\s*<w:pPr>\s*<w:pStyle w:val="Author"\s*/>\s*</w:pPr>\s*<w:r>[^<]*<w:t[^>]*>[^<]*</w:t></w:r>)(\s*</w:p>)',
+        r'(<w:p>\s*<w:pPr>\s*<w:pStyle w:val="Author"\s*/>\s*</w:pPr>)'
+        r'(.*?)'
+        r'(\s*</w:p>)',
         re.DOTALL,
     )
-    new_doc, n = author_pat.subn(lambda m: m.group(1) + star_ref + m.group(2), doc)
-    if n == 0:
+    m = author_pat.search(doc)
+    if not m:
         print('WARN: Author paragraph not found; skipping acknowledgement injection', file=sys.stderr)
         return
 
-    star_footnote = (
-        f'<w:footnote w:id="{ack_id}">'
-        f'<w:p><w:pPr><w:pStyle w:val="FootnoteText"/></w:pPr>'
-        f'<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>'
-        f'<w:sym w:font="Symbol" w:char="F02A"/></w:r>'
-        f'<w:r><w:t xml:space="preserve"> {escape(ack_text)}</w:t></w:r>'
-        f'</w:p></w:footnote>'
-    )
-    new_fn = fn.replace('</w:footnotes>', star_footnote + '</w:footnotes>')
+    inner = m.group(2)
+    text_pat = re.compile(r'<w:t(?:\s[^>]*)?>([^<]*)</w:t>')
+    text_m = text_pat.search(inner)
+    if not text_m:
+        print('WARN: Author text run not found', file=sys.stderr)
+        return
+
+    author_text = html.unescape(text_m.group(1))
+    footnotes_xml = ''
+    filtered_acks = [a for a in (author_acks or []) if a]
+
+    if filtered_acks:
+        # Split author_text on each recognized symbol in order of appearance
+        runs = []
+        buf = ''
+        symbol_idx = 0
+        for ch in author_text:
+            if ch in _AUTHOR_SYMBOLS and symbol_idx < len(filtered_acks):
+                if buf:
+                    runs.append(('text', buf))
+                    buf = ''
+                runs.append(('symbol', ch, filtered_acks[symbol_idx]))
+                symbol_idx += 1
+            else:
+                buf += ch
+        if buf:
+            runs.append(('text', buf))
+
+        new_runs_xml = ''
+        for run in runs:
+            if run[0] == 'text':
+                new_runs_xml += (
+                    f'<w:r><w:t xml:space="preserve">{escape(run[1])}</w:t></w:r>'
+                )
+            else:
+                _, sym_char, ack_text_i = run
+                nid = next_id()
+                sym_xml = _SYMBOL_XML.get(sym_char, f'<w:t>{escape(sym_char)}</w:t>')
+                new_runs_xml += (
+                    f'<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>'
+                    f'<w:footnoteReference w:customMarkFollows="1" w:id="{nid}"/>'
+                    f'{sym_xml}</w:r>'
+                )
+                footnotes_xml += (
+                    f'<w:footnote w:id="{nid}">'
+                    f'<w:p><w:pPr><w:pStyle w:val="FootnoteText"/></w:pPr>'
+                    f'<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>'
+                    f'{sym_xml}</w:r>'
+                    f'<w:r><w:t xml:space="preserve"> {escape(ack_text_i)}</w:t></w:r>'
+                    f'</w:p></w:footnote>'
+                )
+
+        new_inner = new_runs_xml
+        new_doc = doc[:m.start()] + m.group(1) + new_inner + m.group(3) + doc[m.end():]
+    else:
+        # Legacy single-star fallback
+        nid = next_id()
+        sym_xml = _SYMBOL_XML['*']
+        ref_xml = (
+            f'<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>'
+            f'<w:footnoteReference w:customMarkFollows="1" w:id="{nid}"/>'
+            f'{sym_xml}</w:r>'
+        )
+        new_doc = doc[:m.start()] + m.group(1) + inner + ref_xml + m.group(3) + doc[m.end():]
+        footnotes_xml = (
+            f'<w:footnote w:id="{nid}">'
+            f'<w:p><w:pPr><w:pStyle w:val="FootnoteText"/></w:pPr>'
+            f'<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>'
+            f'{sym_xml}</w:r>'
+            f'<w:r><w:t xml:space="preserve"> {escape(ack_text)}</w:t></w:r>'
+            f'</w:p></w:footnote>'
+        )
+
+    new_fn = fn.replace('</w:footnotes>', footnotes_xml + '</w:footnotes>')
 
     contents['word/document.xml'] = new_doc.encode('utf-8')
     contents['word/footnotes.xml'] = new_fn.encode('utf-8')
+
+    tmp = docx_path.with_suffix('.docx.tmp')
+    with zipfile.ZipFile(docx_path, 'r') as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            zout.writestr(item, contents[item.filename])
+    shutil.move(tmp, docx_path)
+
+
+_TOC_INSTR = ' TOC \\o "1-3" \\h \\z \\u '
+
+
+def _extract_headings(doc: str) -> list:
+    """Walk document.xml and extract (level, text, anchor) for each Heading1-3.
+
+    Returns a list of (level:int, text:str, anchor:str-or-None) tuples in
+    document order. Anchor is the bookmark name if one precedes the paragraph.
+    """
+    import xml.etree.ElementTree as ET
+    ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+    try:
+        root = ET.fromstring(doc)
+    except ET.ParseError:
+        return []
+    body = root.find('w:body', ns)
+    if body is None:
+        return []
+    style_to_level = {'Heading1': 1, 'Heading2': 2, 'Heading3': 3}
+    headings = []
+    pending_anchor = None
+    for el in body:
+        tag = el.tag.split('}', 1)[-1]
+        if tag == 'bookmarkStart':
+            name = el.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}name')
+            if name and not name.startswith('_'):
+                pending_anchor = name
+            continue
+        if tag != 'p':
+            pending_anchor = None
+            continue
+        pPr = el.find('w:pPr', ns)
+        if pPr is None:
+            pending_anchor = None
+            continue
+        pStyle = pPr.find('w:pStyle', ns)
+        if pStyle is None:
+            continue
+        sid = pStyle.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')
+        lvl = style_to_level.get(sid)
+        if not lvl:
+            pending_anchor = None
+            continue
+        # Collect paragraph text across all w:t descendants
+        text = ''.join(t.text or '' for t in el.iter('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t'))
+        text = text.strip()
+        if not text:
+            continue
+        # Anchor: prefer preceding bookmarkStart; otherwise fall back to any
+        # bookmarkStart inside the paragraph (pandoc may nest them).
+        anchor = pending_anchor
+        if not anchor:
+            inner_bm = el.find('.//w:bookmarkStart', ns)
+            if inner_bm is not None:
+                name = inner_bm.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}name')
+                if name and not name.startswith('_'):
+                    anchor = name
+        headings.append((lvl, text, anchor))
+        pending_anchor = None
+    return headings
+
+
+def _toc_body_xml(headings: list) -> str:
+    """Render the cached TOC body (paragraphs shown before Word updates the field)."""
+    from xml.sax.saxutils import escape
+    paras = []
+    for level, text, anchor in headings:
+        style = f'TOC{level}'
+        indent_xml = ''
+        # Hyperlink the entry when we have an anchor.
+        text_x = escape(text)
+        link_open = f'<w:hyperlink w:anchor="{escape(anchor)}" w:history="1">' if anchor else ''
+        link_close = '</w:hyperlink>' if anchor else ''
+        run_rPr = '<w:rPr><w:rStyle w:val="Hyperlink"/><w:noProof/></w:rPr>' if anchor else '<w:rPr><w:noProof/></w:rPr>'
+        paras.append(
+            f'<w:p><w:pPr><w:pStyle w:val="{style}"/>'
+            '<w:tabs><w:tab w:val="right" w:leader="dot" w:pos="8630"/></w:tabs>'
+            f'</w:pPr>{link_open}'
+            f'<w:r>{run_rPr}<w:t xml:space="preserve">{text_x}</w:t></w:r>'
+            f'{link_close}</w:p>'
+        )
+    if not paras:
+        paras.append(
+            '<w:p><w:r><w:t xml:space="preserve">(Table of Contents will appear after Word updates the field.)</w:t></w:r></w:p>'
+        )
+    return ''.join(paras)
+
+
+def inject_toc(docx_path: Path) -> None:
+    """Insert a dynamic Word TOC before the first Heading 1.
+
+    Generates a pre-populated TOC body (paragraphs styled TOC1/TOC2/TOC3 with
+    hyperlinks to bookmarks) wrapped in a TOC field, so the contents appear
+    immediately on open and stay updatable via right-click > Update Field.
+    """
+    import zipfile, shutil
+    with zipfile.ZipFile(docx_path, 'r') as z:
+        contents = {n: z.read(n) for n in z.namelist()}
+
+    doc = contents['word/document.xml'].decode('utf-8')
+    h1_pat = re.compile(r'<w:pStyle\s+w:val="Heading1"\s*/>')
+    m = h1_pat.search(doc)
+    if not m:
+        print('WARN: no Heading1 found; skipping TOC injection', file=sys.stderr)
+        return
+    p_start = doc.rfind('<w:p ', 0, m.start())
+    if p_start == -1:
+        p_start = doc.rfind('<w:p>', 0, m.start())
+    if p_start == -1:
+        print('WARN: could not locate paragraph wrapping first Heading1; skipping TOC injection', file=sys.stderr)
+        return
+
+    headings = _extract_headings(doc)
+    body_xml = _toc_body_xml(headings)
+
+    # Heading matches OPV law-review format: centered, small caps,
+    # default size (no bold), "Table of Contents".
+    toc_xml = (
+        '<w:p><w:pPr>'
+        '<w:tabs><w:tab w:val="right" w:pos="8630"/></w:tabs>'
+        '<w:spacing w:line="276" w:lineRule="auto"/>'
+        '<w:jc w:val="center"/>'
+        '<w:rPr><w:smallCaps/><w:color w:val="000000"/></w:rPr>'
+        '</w:pPr>'
+        '<w:r><w:rPr><w:smallCaps/><w:color w:val="000000"/></w:rPr>'
+        '<w:t>Table of Contents</w:t></w:r></w:p>'
+        '<w:p>'
+        '<w:r><w:fldChar w:fldCharType="begin" w:dirty="true"/></w:r>'
+        f'<w:r><w:instrText xml:space="preserve">{_TOC_INSTR}</w:instrText></w:r>'
+        '<w:r><w:fldChar w:fldCharType="separate"/></w:r>'
+        '</w:p>'
+        f'{body_xml}'
+        '<w:p>'
+        '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+        '</w:p>'
+        '<w:p><w:pPr><w:pageBreakBefore/></w:pPr></w:p>'
+    )
+    new_doc = doc[:p_start] + toc_xml + doc[p_start:]
+    contents['word/document.xml'] = new_doc.encode('utf-8')
+
+    # Ensure Word updates fields on open.
+    settings_key = 'word/settings.xml'
+    if settings_key in contents:
+        settings = contents[settings_key].decode('utf-8')
+        if 'updateFields' not in settings:
+            settings = settings.replace(
+                '</w:settings>',
+                '<w:updateFields w:val="true"/></w:settings>',
+            )
+            contents[settings_key] = settings.encode('utf-8')
+
+    tmp = docx_path.with_suffix('.docx.tmp')
+    with zipfile.ZipFile(docx_path, 'r') as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            zout.writestr(item, contents[item.filename])
+    shutil.move(tmp, docx_path)
+
+
+def normalize_abstract_heading(docx_path: Path) -> None:
+    """Replace the template's AbstractHeading paragraph with OPV-style direct formatting.
+
+    OPV law-review convention: "Abstract" heading is centered, bold italic, default
+    size, line spacing 276 auto — no paragraph style assigned.
+    """
+    import zipfile, shutil
+    with zipfile.ZipFile(docx_path, 'r') as z:
+        contents = {n: z.read(n) for n in z.namelist()}
+
+    doc = contents['word/document.xml'].decode('utf-8')
+    pat = re.compile(
+        r'<w:p>\s*<w:pPr>\s*<w:pStyle\s+w:val="AbstractHeading"\s*/>\s*</w:pPr>'
+        r'\s*<w:r>\s*<w:t(?:\s[^>]*)?>Abstract</w:t>\s*</w:r>\s*</w:p>',
+    )
+    replacement = (
+        '<w:p><w:pPr>'
+        '<w:spacing w:line="276" w:lineRule="auto"/>'
+        '<w:jc w:val="center"/>'
+        '<w:rPr><w:b/><w:bCs/><w:i/><w:iCs/></w:rPr>'
+        '</w:pPr>'
+        '<w:r><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/></w:rPr>'
+        '<w:t>Abstract</w:t></w:r></w:p>'
+    )
+    new_doc, n = pat.subn(replacement, doc, count=1)
+    if n == 0:
+        print('WARN: AbstractHeading paragraph not found; skipping abstract-heading normalization', file=sys.stderr)
+        return
+    contents['word/document.xml'] = new_doc.encode('utf-8')
 
     tmp = docx_path.with_suffix('.docx.tmp')
     with zipfile.ZipFile(docx_path, 'r') as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
@@ -215,7 +530,7 @@ def replace_short_title(docx_path: Path, short_title: str) -> None:
     shutil.move(tmp, docx_path)
 
 
-def build(project_dir: Path, output: Optional[Path] = None, fix_footnotes: bool = False) -> Path:
+def build(project_dir: Path, output: Optional[Path] = None, fix_footnotes: bool = True) -> Path:
     drafts = sorted(project_dir.glob("drafts/*Draft*.md"), key=sort_key)
     if not drafts:
         print("ERROR: No draft files found in drafts/", file=sys.stderr)
@@ -238,6 +553,13 @@ date: "{meta['date']}"
         combined += text + "\n\n"
 
     combined = resolve_includes(combined)
+    combined = bluebook_lint(combined)
+
+    for lineno, snippet in find_stacked_footnotes(combined):
+        trimmed = snippet.strip()
+        if len(trimmed) > 160:
+            trimmed = trimmed[:157] + "..."
+        print(f"WARN: stacked footnote at combined line {lineno}: {trimmed}", file=sys.stderr)
 
     fn_count = len(re.findall(r'^\[\^[^\]]+\]:', combined, re.MULTILINE))
 
@@ -252,6 +574,10 @@ date: "{meta['date']}"
         print(f"ERROR: Template not found at {TEMPLATE}", file=sys.stderr)
         sys.exit(1)
 
+    # Resolve bibliography and CSL: prefer metadata, fall back to project conventions
+    bib_path = Path(meta["bibliography"]).expanduser() if meta["bibliography"] else (project_dir / "references" / "sources.bib")
+    csl_path = Path(meta["csl"]).expanduser() if meta["csl"] else DEFAULT_CSL
+
     cmd = [
         "pandoc", str(tmp_md),
         "-o", str(output),
@@ -259,7 +585,32 @@ date: "{meta['date']}"
         "--from=markdown+footnotes",
         "--to=docx",
         "--wrap=none",
+        "--filter=pandoc-crossref",
+        "-M", "tblPrefix=Table",
+        "-M", "figPrefix=Figure",
+        "-M", "tableTitle=Table",
+        "-M", "figureTitle=Figure",
     ]
+
+    if bib_path.exists():
+        # Law review style keeps every citation in a footnote; suppress the
+        # auto-generated end-of-document bibliography list.
+        cmd += [
+            "--citeproc",
+            f"--bibliography={bib_path}",
+            "-M", "suppress-bibliography=true",
+        ]
+        if csl_path.exists():
+            cmd += [f"--csl={csl_path}"]
+        else:
+            print(f"WARN: CSL not found at {csl_path}; pandoc will use default style", file=sys.stderr)
+        # Bluebook container-title uses form="short"; wire in the Zotero-style
+        # abbreviations JSON if the project ships one.
+        abbrev_path = project_dir / "references" / "journal-abbreviations.json"
+        if abbrev_path.exists():
+            cmd += [f"--citation-abbreviations={abbrev_path}"]
+    else:
+        print(f"INFO: no bibliography at {bib_path}; skipping citeproc", file=sys.stderr)
 
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
@@ -268,16 +619,28 @@ date: "{meta['date']}"
 
     replace_short_title(output, meta["short_title"])
 
+    inject_acknowledgement(output, meta["acknowledgements"], meta.get("author_acks") or None)
+
+    normalize_abstract_heading(output)
+
+    inject_toc(output)
+
     if fix_footnotes:
-        fix_script = Path(__file__).resolve().parent.parent.parent / "docx-footnotes" / "scripts" / "fix_gdocs_footnotes.py"
+        scripts_dir = Path(__file__).resolve().parent.parent.parent / "docx-footnotes" / "scripts"
+        fix_script = scripts_dir / "fix_footnotes.py"
+        crossrefs_script = scripts_dir / "create_crossrefs.py"
         if fix_script.exists():
             subprocess.run(
                 ["uv", "run", "--with", "lxml", "python3",
-                 str(fix_script), str(output), "--crossrefs"],
+                 str(fix_script), str(output)],
                 capture_output=True,
             )
-
-    inject_acknowledgement(output, meta["acknowledgements"])
+        if crossrefs_script.exists():
+            subprocess.run(
+                ["uv", "run", "--with", "lxml", "python3",
+                 str(crossrefs_script), "--docx", str(output)],
+                capture_output=True,
+            )
 
     print(f"Output: {output}")
     print(f"Sections: {len(drafts)}")
@@ -290,7 +653,9 @@ def main():
     parser = argparse.ArgumentParser(description="Build law review DOCX from markdown drafts")
     parser.add_argument("project_dir", type=Path, help="Project directory containing drafts/")
     parser.add_argument("--output", "-o", type=Path, help="Output DOCX path")
-    parser.add_argument("--fix-footnotes", action="store_true", help="Run docx-footnotes repair")
+    parser.add_argument("--no-fix-footnotes", dest="fix_footnotes", action="store_false",
+                        help="Skip docx-footnotes repair + supra/infra crossrefs (default: on)")
+    parser.set_defaults(fix_footnotes=True)
     args = parser.parse_args()
 
     if not args.project_dir.exists():
