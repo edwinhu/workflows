@@ -1,0 +1,134 @@
+#!/usr/bin/env -S uv run python3
+"""Constraint: writing-ai-smell-em-dash — flag paragraphs with excessive em-dash density."""
+
+import re
+import sys
+from pathlib import Path
+
+CONSTRAINT = "writing-ai-smell-em-dash"
+APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+SEVERITY = "soft"
+
+# Threshold: flag paragraphs with this many or more em-dashes.
+# LLMs overuse em-dashes, inherited from novel training data.
+# Legitimate legal prose rarely exceeds 3 em-dashes per paragraph.
+_DENSITY_THRESHOLD = 4
+
+_EM_DASH = re.compile(r'—')
+# Em-dash immediately adjacent to a colon is a formatting artifact, not standard punctuation.
+_EM_DASH_COLON = re.compile(r'(?:—:|:—)')
+
+_FRONTMATTER_DELIM = re.compile(r'^---\s*$')
+_FENCE = re.compile(r'^(?:```|~~~)')
+_BLOCKQUOTE = re.compile(r'^\s*>')
+_FOOTNOTE_DEF = re.compile(r'^\s*\[\^')
+_HTML_COMMENT_OPEN = re.compile(r'<!--')
+_HTML_COMMENT_CLOSE = re.compile(r'-->')
+
+
+def _prose_paragraphs(text):
+    """Yield (start_line_1indexed, paragraph_text) for each prose paragraph.
+
+    Paragraph boundaries: blank lines, headings, blockquotes, code fences.
+    Skips YAML frontmatter, fenced code blocks, blockquotes, footnote definitions,
+    and HTML comments.
+    """
+    lines = text.splitlines()
+    in_frontmatter = False
+    frontmatter_done = False
+    in_fence = False
+    in_html_comment = False
+
+    paragraphs = []
+    current_lines = []
+    current_start = None
+
+    def flush():
+        if current_lines:
+            paragraphs.append((current_start, '\n'.join(current_lines)))
+            current_lines.clear()
+
+    for i, line in enumerate(lines, 1):
+        if not frontmatter_done and _FRONTMATTER_DELIM.match(line):
+            in_frontmatter = not in_frontmatter
+            if not in_frontmatter:
+                frontmatter_done = True
+            continue
+        if in_frontmatter:
+            continue
+        frontmatter_done = True
+
+        if _HTML_COMMENT_OPEN.search(line):
+            in_html_comment = True
+        if in_html_comment:
+            if _HTML_COMMENT_CLOSE.search(line):
+                in_html_comment = False
+            # Don't flush — just skip the line
+            continue
+
+        stripped = line.strip()
+
+        if _FENCE.match(stripped):
+            in_fence = not in_fence
+            flush()
+            continue
+        if in_fence:
+            continue
+
+        # Blockquotes and footnote defs break the prose paragraph
+        if _BLOCKQUOTE.match(line) or _FOOTNOTE_DEF.match(line):
+            flush()
+            continue
+
+        # Blank line or heading: paragraph boundary
+        if stripped == '' or stripped.startswith('#'):
+            flush()
+            continue
+
+        # Regular prose line
+        if not current_lines:
+            current_start = i
+        current_lines.append(line)
+
+    flush()
+    return paragraphs
+
+
+def check(context):
+    """Returns list of violations. Empty list = pass."""
+    cwd = Path(context.get("cwd", "."))
+    violations = []
+
+    drafts_dir = cwd / "drafts"
+    if not drafts_dir.is_dir():
+        return violations
+
+    for md_file in sorted(drafts_dir.glob("*.md")):
+        text = md_file.read_text(encoding="utf-8", errors="ignore")
+        for start_line, para in _prose_paragraphs(text):
+            dash_count = len(_EM_DASH.findall(para))
+            has_colon_combo = bool(_EM_DASH_COLON.search(para))
+
+            if dash_count >= _DENSITY_THRESHOLD:
+                snippet = para.replace('\n', ' ')[:80]
+                violations.append(
+                    f"drafts/{md_file.name}:{start_line}: [em-dash:density] "
+                    f"{dash_count} em-dashes in paragraph — {snippet!r}"
+                )
+            elif has_colon_combo:
+                snippet = para.replace('\n', ' ')[:80]
+                violations.append(
+                    f"drafts/{md_file.name}:{start_line}: [em-dash:colon-combo] "
+                    f"em-dash adjacent to colon — {snippet!r}"
+                )
+
+    return violations
+
+
+if __name__ == "__main__":
+    violations = check({"cwd": sys.argv[1] if len(sys.argv) > 1 else "."})
+    if violations:
+        for v in violations:
+            print(f"FAIL: {v}")
+        sys.exit(1)
+    print(f"PASS: {CONSTRAINT}")

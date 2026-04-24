@@ -22,9 +22,11 @@ Shared enforcement for ALL writing skills. Each constraint/convention is self-co
 | Context Monitoring | [context-monitoring.md](context-monitoring.md) | `context-monitoring.py` | NO NEW PHASE WITHOUT SUFFICIENT CONTEXT — handoff at ≤25% |
 | Deviation Rules | [deviation-rules.md](deviation-rules.md) | `deviation-rules.py` | R1-R3 auto-fix, R4 STOP for argument restructuring |
 | Claim ID Traceability | [claim-id-traceability.md](claim-id-traceability.md) | `claim-id-traceability.py` | CLAIM-XX IDs must flow from PRECIS through all artifacts |
-| Source-Anchored Citations | [source-anchored-citations.md](source-anchored-citations.md) | `check-source-anchored-citations.py` | NO CITATION FROM MEMORY — all cites must trace to verified `references/sources.md` |
+| Source-Anchored Citations | [source-anchored-citations.md](source-anchored-citations.md) | `check-source-anchored-citations.py` | NO CITATION FROM MEMORY — all cites must trace to verified `references/sources.bib` (pandoc-citeproc with Bluebook CSL) |
 | No Bold-Lead Paragraphs | [writing-no-bold-lead.md](writing-no-bold-lead.md) | `writing-no-bold-lead.py` | No `**Bold Header.** Text...` inline-header patterns in prose drafts |
 | Topic Sentence Quality | [writing-topic-sentences.md](writing-topic-sentences.md) | `writing-topic-sentences.py` | Topic sentences must state substance — no meta-commentary openers |
+| Citation Tense | [writing-citation-tense.md](writing-citation-tense.md) | `writing-citation-tense.py` | Report scholarly arguments in present tense with inline `Author (YEAR) argues that` form |
+| Anchored Numbers | [writing-anchored-numbers.md](writing-anchored-numbers.md) | `writing-anchored-numbers.py` | Empirical numbers must be anchored to a Table/Figure within the paragraph |
 
 ### Test Runner
 
