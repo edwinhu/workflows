@@ -102,7 +102,7 @@ project-name/
 │   ├── Part II (Draft).md
 │   └── ...
 ├── references/                  # Source materials, notes
-│   ├── sources.md               # Bibliography / source list
+│   ├── sources.bib              # BibTeX bibliography (pandoc --citeproc reads this)
 │   └── [topic-notes].md         # Research notes by topic
 └── scratch/                     # Working files (gitignored)
     └── brainstorm-notes.md

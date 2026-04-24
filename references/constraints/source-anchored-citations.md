@@ -8,15 +8,15 @@ applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-rev
 
 **NO CITATION WITHOUT A VERIFIED SOURCE ENTRY. This is not negotiable.**
 
-Every citation in a draft must trace to a verified entry in `references/sources.md`. Drafting subagents cite FROM this file, not from training data. Review verifies every footnote against it.
+Every citation in a draft must trace to a verified entry in `references/sources.bib` (BibTeX). Drafts use pandoc cite-keys (`[@bibkey]` or `@bibkey`) that pandoc-citeproc resolves against this file at build time. Drafting subagents write cite-keys FROM this file, not from training data. Review verifies every cite-key resolves.
 
 | Iron Law | Means |
 |----------|-------|
-| NO DRAFT WITHOUT SOURCES | `references/sources.md` must exist before any `drafts/*.md` is created |
-| NO CITATION FROM MEMORY | Drafting subagents receive `references/sources.md` as context and use its exact author names, titles, journals, years — never training-data recall |
-| NO REVIEW WITHOUT BIB CHECK | Review phase must verify every footnote against `references/sources.md` and flag discrepancies |
+| NO DRAFT WITHOUT SOURCES | `references/sources.bib` must exist before any `drafts/*.md` is created |
+| NO CITATION FROM MEMORY | Drafting subagents receive `references/sources.bib` as context and write `[@bibkey]` cite-keys — never free-form author/year strings that bypass the bib |
+| NO REVIEW WITHOUT BIB CHECK | Review phase must verify every `[@key]` resolves to a bib entry and flag unresolved keys or claim-fidelity mismatches |
 
-`references/sources.md` is built during **writing-setup** from paperpile.bib, Readwise highlights, NLM notebook content, and web-verified non-academic sources (EOs, legislation, SEC releases, blog posts). See the writing-setup skill for the build procedure and format template.
+`references/sources.bib` is built during **writing-setup** from paperpile.bib, Readwise highlights, NLM notebook content, and web-verified non-academic sources (EOs, legislation, SEC releases, blog posts). See the writing-setup skill for the build procedure and the `sources_md_to_bib.py` migration script for projects that have an older `sources.md`.
 
 ## Rationale
 
@@ -29,11 +29,18 @@ AI drafting agents hallucinate citation details when given only short-form refer
 
 These errors are undetectable without mechanical verification against authoritative source records. A single hallucinated cite in a published law review destroys the paper's credibility.
 
+Using `sources.bib` + pandoc-citeproc prevents these failure modes mechanically:
+
+- Every cite in the draft is a `[@bibkey]` cite-key; pandoc errors at build time if the key is not in the bib
+- Author names, titles, journals, volumes, and years come from the single canonical .bib entry — never re-typed by the drafting agent
+- Short form, supra/id., page pinpoints, and ordering are all produced from the CSL style, not hand-written
+
 ## Rationalization Table
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "I know this citation from training data" | Training data conflates authors, titles, and journals across papers | Use sources.md |
-| "The outline has the short cite, that's enough" | "Lund & Robertson 2023" doesn't tell you the coauthor's first name or the journal | Build the full entry from bib |
-| "I'll verify citations during review" | Review catches errors but doesn't prevent them — prevention is cheaper than repair | Anchor citations at draft time |
-| "sources.md is too much setup work" | Building it takes 15 minutes; fixing 16 hallucinated citations takes hours | Build sources.md |
+| "I know this citation from training data" | Training data conflates authors, titles, and journals across papers | Use `[@bibkey]` — let pandoc resolve it |
+| "The outline has the short cite, that's enough" | "Lund & Robertson 2023" doesn't tell you the coauthor's first name or the journal | Look up the bib key in sources.bib |
+| "I'll verify citations during review" | Review catches errors but doesn't prevent them — prevention is cheaper than repair | Anchor citations at draft time via `[@bibkey]` |
+| "sources.bib is too much setup work" | Building it takes 15 minutes; fixing 16 hallucinated citations takes hours | Build `sources.bib` |
+| "I'll just type the citation as prose" | Hand-typed citations skip the bib check entirely | Use `[@bibkey]` — citeproc renders the format |

@@ -89,7 +89,15 @@ Skipping levels produces incoherent documents. Each level expands the previous.
 ```bash
 mkdir -p outlines drafts references scratch .planning
 echo "scratch/" >> .gitignore
+touch references/sources.bib
 ```
+
+The `references/sources.bib` file is the single source of truth for every
+citation. Drafts use pandoc cite-keys (`[@authorYEAR]`) and pandoc-citeproc
+renders them in Bluebook style (via the CSL configured in `ACTIVE_WORKFLOW.md`).
+Populate the .bib during brainstorm/research — see
+`sources_md_to_bib.py` in this skill's `scripts/` directory if you have an
+existing `sources.md` to convert.
 
 ## Step 2: Create PRECIS.md
 
