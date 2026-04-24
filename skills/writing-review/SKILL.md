@@ -202,8 +202,9 @@ START (PRECIS + OUTLINE + drafts/ exist)
      │  │      + prose constraints. Read-only, returns scored report.
      │  │
      │  └─ (c) Source-fidelity reviewer (NEW — writing-source-fidelity-reviewer)
-     │         Spawn fresh subagent → verify every citation traces to
-     │         references/sources.md. Read-only, returns fidelity report.
+     │         Spawn fresh subagent → verify every `[@key]` citation traces
+     │         to an entry in references/sources.bib. Read-only, returns
+     │         fidelity report.
      │
      │  Merge all three reports per section before moving to next.
      │  Loop until all sections reviewed (NO pause between sections)
@@ -294,9 +295,10 @@ Agent(
   subagent_type="workflows:writing-source-fidelity-reviewer",
   prompt="""Verify citation fidelity for: drafts/[Section] (Draft).md
   Project root: [project directory]
-  Read references/sources.md first.
-  Check every citation, footnote, and attributed claim traces to a verified source entry.
-  Report unanchored citations, detail mismatches, and claim fidelity concerns."""
+  Read references/sources.bib first (BibTeX format; each entry is `@type{bibkey, ...}`).
+  Check every pandoc cite-key (`[@key]` / `@key`) in the draft resolves to a bib entry.
+  For hand-written footnotes still in the draft, verify every author/title/journal/year
+  matches a bib entry. Report unanchored citations, detail mismatches, and claim-fidelity concerns."""
 )
 ```
 
@@ -360,10 +362,22 @@ Using all section review data and boundary summaries, check the document as a wh
 
 ### Cross-Section Repetition
 
-1. **Collect argument summaries**: For each section, list the main points made (from Level 1 reviews)
-2. **Compare all pairs**: Does any point appear in more than one section?
-3. **Distinguish**: Intentional callbacks (acceptable) vs. redundant repetition (issue)
-4. **Record duplicates** with both locations and quoted text
+1. **Run the sentence-level detector first** to surface candidate pairs:
+
+   ```bash
+   uv run ${CLAUDE_PLUGIN_ROOT}/skills/writing-review/scripts/bridge_repetition_check.py drafts/*.md
+   ```
+
+   This uses `difflib.SequenceMatcher` (ratio ≥ 0.7) to flag near-duplicate
+   sentences with `file:line` pairs. Common model failure mode: the bridge
+   paragraph into a new section restates the thesis. The detector catches
+   this; a human decides whether each flagged pair is redundancy or an
+   intentional callback (e.g., two sides of a numerical example).
+
+2. **Collect argument summaries**: For each section, list the main points made (from Level 1 reviews)
+3. **Compare all pairs**: Does any point appear in more than one section?
+4. **Distinguish**: Intentional callbacks (acceptable) vs. redundant repetition (issue)
+5. **Record duplicates** with both locations and quoted text
 
 ### Concept Introduction Order
 

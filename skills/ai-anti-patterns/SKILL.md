@@ -84,6 +84,24 @@ These patterns are unambiguous AI artifacts:
 - Em dash overuse (—)
 - Excessive boldface for emphasis
 
+### User-Voice Lint (legal drafting)
+
+Words/phrases the model reaches for that don't match the user's voice:
+
+- **"has bite" / "bites" / "with bite"** — model-reach for "has real
+  effect." User never writes it. Replace with the specific effect: "raises
+  the cost of X," "triggers quorum failure," "deters Y."
+- **Caveat phrasings** (candidates to replace with `To be sure,`):
+  `admittedly`, `granted,`, `of course,`, `that said,`, `to be clear,`,
+  `no doubt,`, `we acknowledge that`. Use `To be sure,` *only* when the
+  next sentence rebuts the concession (concede-then-rebut). If the next
+  sentence extends the disclaimer or frames scope, leave the original
+  phrasing or rewrite without a caveat word at all.
+- **Bridge repetitions** — when writing the first paragraph of a new
+  section, check whether it restates the thesis from the prior section.
+  Rewrite to advance the argument. See
+  `writing-review/scripts/bridge_repetition_check.py` for the detector.
+
 ## How to Revise
 
 ### For Puffery
