@@ -424,9 +424,16 @@ def _find_footnote_marker(text: str, label: str) -> int | None:
     return None
 
 
-def extract_cites_for_file(path: Path) -> list[dict]:
-    """Extract per-cite records: file, line, bibkey, signal, claim, primary, prompt_style."""
-    text = path.read_text()
+def _extract_cite_records_from_text(text: str, filename: str = "<string>") -> list[dict]:
+    """Per-cite records from text — shared logic for file and string inputs.
+
+    HTML comments are stripped once up front so downstream offset-based lookups
+    (parenthetical, footnote markers, sentence walks) skip past triage notes
+    like `<!-- CITE-CHECK: ... -->` that may sit between `[@key]` and the
+    following parenthetical. `_strip_html_comments` preserves byte offsets and
+    line counts, so all stored offsets remain valid against the stripped text.
+    """
+    text = _strip_html_comments(text)
     fn_defs = _parse_footnote_defs(text)
     fn_ranges = [(label, s, e) for label, (s, e) in fn_defs.items()]
     cites = _extract_from_text(text)
@@ -464,7 +471,7 @@ def extract_cites_for_file(path: Path) -> list[dict]:
                 claim = body_sent
                 primary = body_sent
         out.append({
-            "file": path.name,
+            "file": filename,
             "line": _line_of_offset(text, offset),
             "bibkey": bibkey,
             "signal": signal,
@@ -475,6 +482,11 @@ def extract_cites_for_file(path: Path) -> list[dict]:
             "prompt_style": "soft" if signal else "strict",
         })
     return out
+
+
+def extract_cites_for_file(path: Path) -> list[dict]:
+    """Extract per-cite records: file, line, bibkey, signal, claim, primary, prompt_style."""
+    return _extract_cite_records_from_text(path.read_text(), path.name)
 
 
 # ---------------------------------------------------------------------------

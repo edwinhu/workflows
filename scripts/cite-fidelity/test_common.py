@@ -12,7 +12,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import _extract_from_text, _get_sentence_around, _strip_html_comments
+from _common import (
+    _extract_cite_records_from_text,
+    _extract_from_text,
+    _get_sentence_around,
+    _strip_html_comments,
+)
 
 
 def test_sentence_split_with_footnote_markers() -> None:
@@ -109,10 +114,35 @@ def test_html_comment_multiline() -> None:
     print("PASS: multi-line html comments stripped")
 
 
+def test_parenthetical_after_html_comment() -> None:
+    """Bug (4.92.3): parenthetical lookup must skip past HTML comments between `]` and `(`."""
+    text = "[@foo] <!-- CITE-CHECK: drop -->  (parenthetical) and more text."
+    cites = _extract_cite_records_from_text(text)
+    assert len(cites) == 1, f"expected 1 cite; got {cites}"
+    assert cites[0]["bibkey"] == "foo", f"got: {cites[0]}"
+    assert cites[0]["parenthetical"] == "parenthetical", (
+        f"parenthetical should extract through HTML comment; "
+        f"got: {cites[0]['parenthetical']!r}"
+    )
+    print("PASS: parenthetical extraction skips HTML comments")
+
+
+def test_parenthetical_no_comment_unchanged() -> None:
+    """Regression guard: parenthetical extraction without intervening comment still works."""
+    text = "[@foo] (parenthetical) and more text."
+    cites = _extract_cite_records_from_text(text)
+    assert len(cites) == 1 and cites[0]["parenthetical"] == "parenthetical", (
+        f"baseline parenthetical case broken; got: {cites}"
+    )
+    print("PASS: parenthetical without comment still extracts")
+
+
 if __name__ == "__main__":
     test_sentence_split_with_footnote_markers()
     test_sentence_around_regular_cite_unchanged()
     test_html_comments_stripped()
     test_html_comments_preserve_offsets()
     test_html_comment_multiline()
+    test_parenthetical_after_html_comment()
+    test_parenthetical_no_comment_unchanged()
     print("All tests passed.")
