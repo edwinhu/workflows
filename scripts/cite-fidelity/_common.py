@@ -340,10 +340,23 @@ def _find_parenthetical_after(text: str, end_offset: int) -> str | None:
 
 
 def _get_sentence_around(text: str, offset: int) -> str:
+    # When called with the position of a Markdown footnote marker `[^...]`, the
+    # marker anchors the preceding sentence (e.g., "claim.[^a]"). Step the
+    # offset back one char so the walks land inside that sentence.
+    if (
+        offset > 0
+        and text[offset:offset + 2] == "[^"
+        and text[offset - 1] in ".?!"
+    ):
+        offset -= 1
     start = offset
     while start > 0:
         c = text[start - 1]
-        if c in ".?!" and (start >= len(text) or text[start:start + 1] in (" ", "\n", "\t")):
+        if c in ".?!" and (
+            start >= len(text)
+            or text[start:start + 1] in (" ", "\n", "\t")
+            or text[start:start + 2] == "[^"
+        ):
             break
         if c == "\n" and start > 1 and text[start - 2] == "\n":
             break
@@ -351,7 +364,11 @@ def _get_sentence_around(text: str, offset: int) -> str:
     end = offset
     while end < len(text):
         c = text[end]
-        if c in ".?!" and (end + 1 >= len(text) or text[end + 1] in (" ", "\n", "\t", "")):
+        if c in ".?!" and (
+            end + 1 >= len(text)
+            or text[end + 1] in (" ", "\n", "\t", "")
+            or text[end + 1:end + 3] == "[^"
+        ):
             end += 1
             break
         if c == "\n" and end + 1 < len(text) and text[end + 1] == "\n":
