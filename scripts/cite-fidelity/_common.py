@@ -281,8 +281,25 @@ CITE_PATTERN = re.compile(
     r"\[([^\[\]]*?@[^\[\]]+?)\]|(?<![\[\w])@([A-Za-z][A-Za-z0-9_:\-./]+)"
 )
 
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
+def _strip_html_comments(text: str) -> str:
+    """Replace HTML comments with same-length whitespace.
+
+    Newlines are preserved so line numbers stay accurate; other characters
+    become spaces so byte offsets are unchanged. Triage notes such as
+    `<!-- CITE-CHECK: dropped @foo --> ` would otherwise leak commented
+    bibkeys into Stage 1 extraction.
+    """
+    def repl(m: "re.Match[str]") -> str:
+        body = m.group(0)
+        return "".join("\n" if ch == "\n" else " " for ch in body)
+    return _HTML_COMMENT_RE.sub(repl, text)
+
 
 def _extract_from_text(text: str) -> list[tuple[str, str | None, int]]:
+    text = _strip_html_comments(text)
     results: list[tuple[str, str | None, int]] = []
     for m in CITE_PATTERN.finditer(text):
         if m.group(1):
