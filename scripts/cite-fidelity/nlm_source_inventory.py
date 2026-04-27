@@ -15,8 +15,10 @@ Project context comes from `.planning/ACTIVE_WORKFLOW.md` frontmatter
 Usage (run from inside the writing project, or any subdir of it):
   uv run nlm_source_inventory.py            # incremental refresh
   uv run nlm_source_inventory.py --rebuild  # re-query everything
-  uv run nlm_source_inventory.py --bibkey Lund2017-ed   # single key
-  uv run nlm_source_inventory.py --include-uncited      # all bibkey-titled sources
+  uv run nlm_source_inventory.py --bibkey Lund2017-ed         # single key
+  uv run nlm_source_inventory.py --bibkey Lund2017,Choi2010-an  # comma-separated
+  uv run nlm_source_inventory.py --invalidate-errors          # drop error entries
+  uv run nlm_source_inventory.py --include-uncited            # all bibkey-titled sources
 """
 from __future__ import annotations
 
@@ -37,6 +39,42 @@ from _common import (  # noqa: E402
     require_notebook,
     sleep,
 )
+
+RETRY_ATTEMPTS = 3
+RETRY_BASE_DELAY = 4.0  # seconds; doubles on each retry
+TRANSIENT_HINTS = ("timeout", "EOF", "connection", "temporarily", "503",
+                   "502", "504", "reset", "deadline")
+
+
+def is_transient_error(err: str) -> bool:
+    el = err.lower()
+    return any(h.lower() in el for h in TRANSIENT_HINTS)
+
+
+def call_with_retry(notebook: str, sid: str, prompt: str
+                    ) -> tuple[str, str | None, int]:
+    """Wrap call_nlm_scoped with exponential backoff on transient errors.
+
+    Returns (response, error, attempts). Non-transient errors (e.g. parse
+    "couldn't find enough context") return immediately with attempts=1 — re-running
+    the same prompt is unlikely to help; the user should pass --invalidate-errors
+    after fixing the source or prompt.
+    """
+    delay = RETRY_BASE_DELAY
+    last_err: str | None = None
+    for attempt in range(1, RETRY_ATTEMPTS + 1):
+        resp, err = call_nlm_scoped(notebook, sid, PROMPT)
+        if err is None:
+            return resp, None, attempt
+        last_err = err
+        if not is_transient_error(err) or attempt == RETRY_ATTEMPTS:
+            return resp, err, attempt
+        print(f"    transient error (attempt {attempt}/{RETRY_ATTEMPTS}): "
+              f"{err[:80]} — sleeping {delay:.0f}s", file=sys.stderr)
+        sleep(delay)
+        delay *= 2
+    return "", last_err, RETRY_ATTEMPTS
+
 
 PROMPT = """\
 Answer in valid JSON only — no prose before or after, no code fences.
@@ -104,13 +142,25 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--rebuild", action="store_true",
                     help="Discard cache and re-query every source.")
-    ap.add_argument("--bibkey", help="Refresh only this bibkey.")
+    ap.add_argument("--bibkey",
+                    help="Refresh only this bibkey, or comma-separated list "
+                         "(e.g. `Lund2017-ed,Choi2010-an`).")
+    ap.add_argument("--invalidate-errors", action="store_true",
+                    help="Before querying, drop any cache entry currently in "
+                         "an error state (no `thesis` field) so it gets a "
+                         "fresh re-query rather than relying on the existing "
+                         "skip-on-thesis-empty path.")
     ap.add_argument("--limit", type=int, default=0,
                     help="Stop after N new queries (0 = no limit).")
     ap.add_argument("--include-uncited", action="store_true",
                     help="Inventory every NLM source whose title is a bibkey, "
                          "not just those cited in drafts.")
     args = ap.parse_args()
+
+    bibkey_filter: set[str] | None = None
+    if args.bibkey:
+        bibkey_filter = {k.strip() for k in args.bibkey.split(",")
+                         if k.strip()}
 
     try:
         ctx = load_active_workflow()
@@ -130,14 +180,25 @@ def main() -> int:
     if cache_path.exists() and not args.rebuild:
         cache = json.loads(cache_path.read_text())
 
+    if args.invalidate_errors and cache:
+        dropped = [k for k, v in cache.items() if not v.get("thesis")]
+        for k in dropped:
+            del cache[k]
+        if dropped:
+            print(f"--invalidate-errors: dropped {len(dropped)} error "
+                  f"entries from cache: {', '.join(sorted(dropped))}",
+                  file=sys.stderr)
+            cache_path.write_text(json.dumps(cache, indent=2, sort_keys=True))
+
     targets: list[str] = []
     bibkey_re = re.compile(r"^[A-Za-z][A-Za-z0-9_:\-./]+$")
     for title, meta in sources.items():
         if not bibkey_re.match(title):
             continue
-        if args.bibkey and title != args.bibkey:
+        if bibkey_filter is not None and title not in bibkey_filter:
             continue
-        if not args.include_uncited and title not in cited and not args.bibkey:
+        if (not args.include_uncited and title not in cited
+                and bibkey_filter is None):
             continue
         cached = cache.get(title)
         if cached and not args.rebuild:
@@ -157,18 +218,21 @@ def main() -> int:
         meta = sources[bibkey]
         sid = meta["sid"]
         print(f"  · {bibkey}", file=sys.stderr)
-        resp, err = call_nlm_scoped(notebook, sid, PROMPT)
+        resp, err, attempts = call_with_retry(notebook, sid, PROMPT)
         if err:
-            print(f"    ERROR: {err}", file=sys.stderr)
+            print(f"    ERROR after {attempts} attempt(s): {err}",
+                  file=sys.stderr)
             cache[bibkey] = {**(cache.get(bibkey) or {}), "sid": sid,
-                             "last_updated": meta["last_updated"], "error": err}
+                             "last_updated": meta["last_updated"],
+                             "error": err, "attempts": attempts}
             continue
         parsed = parse_json_response(resp)
         if not parsed:
             print(f"    PARSE FAILED — first 200 chars: {resp[:200]}", file=sys.stderr)
             cache[bibkey] = {**(cache.get(bibkey) or {}), "sid": sid,
                              "last_updated": meta["last_updated"],
-                             "error": f"parse_failed: {resp[:300]}"}
+                             "error": f"parse_failed: {resp[:300]}",
+                             "attempts": attempts}
             continue
         cache[bibkey] = {
             "sid": sid,
