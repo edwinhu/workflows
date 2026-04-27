@@ -25,8 +25,6 @@ hooks:
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
-        - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/cite-fidelity-lint.py"
 ---
 
 # Writing Draft
