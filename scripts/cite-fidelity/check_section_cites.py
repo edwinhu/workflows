@@ -180,6 +180,9 @@ def render_report(section: str, results: list[dict], notebook: str) -> str:
              f"unsupported: {unsupported_count}",
              f"partial: {counts.get('PARTIAL', 0)}",
              f"supported: {counts.get('SUPPORTED', 0)}",
+             f"unclear: {counts.get('UNCLEAR', 0)}",
+             f"not_in_notebook: {counts.get('NOT_IN_NOTEBOOK', 0)}",
+             f"error: {counts.get('ERROR', 0)}",
              "---",
              "",
              f"# Cite Check — {section}",
@@ -246,11 +249,26 @@ def render_report(section: str, results: list[dict], notebook: str) -> str:
 
 
 def check_one(file_path: Path, ctx: dict, sids: dict[str, str], bib: dict,
-              batch_size: int) -> int:
+              batch_size: int) -> tuple[str, int]:
+    """Run Stage 3 against one draft. Returns (status_label, unsupported_count).
+
+    Always writes a CITES-{slug}.md, including for cite-free sections
+    (status: PASSED, total_cites: 0) so the writing-revise Step 6a gate's
+    "matching CITES file exists" assertion holds for every draft.
+    """
+    notebook = require_notebook(ctx)
+    slug = section_slug(file_path)
+    out_path = ctx["planning_dir"] / f"CITES-{slug}.md"
+    ctx["planning_dir"].mkdir(parents=True, exist_ok=True)
+
     cites = extract_cites_for_file(file_path)
     if not cites:
-        print(f"  {file_path.name}: no cites found", file=sys.stderr)
-        return 0
+        print(f"  {file_path.name}: no cites found — emitting empty CITES "
+              "with status: PASSED", file=sys.stderr)
+        out_path.write_text(render_report(file_path.stem, [], notebook))
+        print(f"    → {out_path}", file=sys.stderr)
+        return ("PASSED", 0)
+
     print(f"  {file_path.name}: {len(cites)} cite occurrences "
           f"({len({c['bibkey'] for c in cites})} unique bibkeys)",
           file=sys.stderr)
@@ -259,15 +277,11 @@ def check_one(file_path: Path, ctx: dict, sids: dict[str, str], bib: dict,
     pending = list(enumerate(cites, 1))
     bs = max(1, batch_size)
     batches = [pending[i:i + bs] for i in range(0, len(pending), bs)]
-    notebook = require_notebook(ctx)
     for bn, batch in enumerate(batches, 1):
         print(f"    batch {bn}/{len(batches)} ({len(batch)} claims)…",
               file=sys.stderr)
         results.extend(process_batch(notebook, batch, sids, bib))
 
-    slug = section_slug(file_path)
-    out_path = ctx["planning_dir"] / f"CITES-{slug}.md"
-    ctx["planning_dir"].mkdir(parents=True, exist_ok=True)
     out_path.write_text(render_report(file_path.stem, results, notebook))
     print(f"    → {out_path}", file=sys.stderr)
 
@@ -275,7 +289,9 @@ def check_one(file_path: Path, ctx: dict, sids: dict[str, str], bib: dict,
     print("    summary: " +
           ", ".join(f"{k}={v}" for k, v in counts.most_common()),
           file=sys.stderr)
-    return counts.get("UNSUPPORTED", 0)
+    unsupported = counts.get("UNSUPPORTED", 0)
+    status = "FAILED" if unsupported else "PASSED"
+    return (status, unsupported)
 
 
 def main() -> int:
@@ -308,15 +324,30 @@ def main() -> int:
     sids = sid_map(require_notebook(ctx))
 
     total_unsupported = 0
+    failed_sections: list[str] = []
+    processed = 0
     for f in files:
         if not f.exists():
             print(f"  MISSING: {f}", file=sys.stderr)
             continue
-        total_unsupported += check_one(f, ctx, sids, bib, args.batch_size)
+        status, unsupported = check_one(f, ctx, sids, bib, args.batch_size)
+        total_unsupported += unsupported
+        processed += 1
+        if status == "FAILED":
+            failed_sections.append(f.name)
 
-    if total_unsupported and not args.allow_unsupported:
-        print(f"\nFAIL: {total_unsupported} UNSUPPORTED cites — fix before "
-              "advancing the writing-revise step.", file=sys.stderr)
+    print(f"\noverall: processed={processed} failed_sections="
+          f"{len(failed_sections)} total_unsupported={total_unsupported}",
+          file=sys.stderr)
+
+    gate_failed = bool(failed_sections) or total_unsupported > 0
+    if gate_failed and not args.allow_unsupported:
+        if failed_sections:
+            print(f"FAIL: {len(failed_sections)} section(s) FAILED: "
+                  + ", ".join(failed_sections), file=sys.stderr)
+        if total_unsupported:
+            print(f"FAIL: {total_unsupported} UNSUPPORTED cites — fix before "
+                  "advancing the writing-revise step.", file=sys.stderr)
         return 1
     return 0
 

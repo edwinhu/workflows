@@ -16,8 +16,31 @@ uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/check_section_cites.py --all
 ```
 
 The script writes `.planning/CITES-{section}.md` per draft section with
-frontmatter `status: PASSED` (zero UNSUPPORTED) or `status: FAILED` (any
-UNSUPPORTED). It exits 1 on FAILED unless `--allow-unsupported` is passed.
+this frontmatter schema:
+
+```yaml
+status: PASSED | FAILED       # FAILED iff unsupported > 0
+section: <section name>
+total_cites: <int>            # equals the sum of the six count fields
+unsupported: <int>
+partial: <int>
+supported: <int>
+unclear: <int>                # parse failures or unrecognised NLM status
+not_in_notebook: <int>        # bibkey is not an NLM source
+error: <int>                  # NLM call failed after retries
+```
+
+`total_cites = unsupported + partial + supported + unclear + not_in_notebook + error`
+— any frontmatter-keyed gate must read all six count fields, not just the
+first three.
+
+The script exits 1 if any section is FAILED OR the total UNSUPPORTED
+across sections is > 0, unless `--allow-unsupported` is passed.
+
+**Cite-free sections.** Drafts with zero `[@bibkey]` references (e.g.,
+Conclusion, Appendix) still get a CITES file emitted with
+`status: PASSED` and all-zero counts, so the writing-revise Step 6a
+"matching CITES file exists" assertion holds for every draft.
 
 ## Iron Law: NO COMPLETE WITHOUT CITES-PASSED
 
