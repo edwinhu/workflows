@@ -25,6 +25,8 @@ hooks:
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/cite-fidelity-lint.py"
 ---
 
 # Writing Draft
@@ -229,6 +231,17 @@ For each section with a completed outline, in order:
    - Every outline point becomes at least one paragraph
    - Every piece of evidence from the outline appears in prose
    - Transitions between subsections are explicit
+   - **Cite-fidelity (when ACTIVE_WORKFLOW.md has `nlm_notebook`):** before
+     attaching any `[@bibkey]`, run Stage 2 to get the actual supporting
+     passage, paste the emitted `<!-- nlm-quote @key (anchor): "..." -->`
+     comment above the cite, then write the prose around the quote — not
+     around what the source "probably says." See
+     `references/constraints/cite-fidelity-nlm-grounding.md`.
+
+     ```bash
+     uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_footnote_pull.py \
+       --claim "TEXT" --keys k1,k2,k3
+     ```
 4. **Save to drafts/**: `Write("drafts/[Section] (Draft).md", content)`
    - Include frontmatter with `implements: [CLAIM-XX, CLAIM-YY]` matching the outline's claim references
    - This enables mechanical traceability from PRECIS through outlines through drafts

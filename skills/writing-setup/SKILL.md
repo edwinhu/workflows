@@ -247,6 +247,7 @@ workflow: writing
 style: [legal|econ|general]
 phase: outline
 project_root: [current directory]
+bibliography: references/sources.bib
 precis: .planning/PRECIS.md
 outline: .planning/OUTLINE.md
 current_part: [if multi-part document]
@@ -255,8 +256,31 @@ verify_threshold: 10
 skill_stack:
   - writing
   - writing-[domain]
+# Optional — set if the project has an NLM notebook populated with source PDFs
+# titled by their bibkeys. Enables the cite-fidelity pipeline.
+nlm_notebook: [UUID or omit if no notebook]
+nlm_url: [https://notebooklm.google.com/notebook/UUID or omit]
 ---
 ```
+
+## Step 5b: Source Inventory (if NLM notebook is set)
+
+If `nlm_notebook` is populated and the notebook already contains the project
+sources titled by their bibkeys, build the source inventory now so drafting
+can disambiguate same-author works:
+
+```bash
+uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_source_inventory.py
+```
+
+This writes `references/source_summaries.md` — a per-bibkey thesis,
+supports, and does-not-support summary keyed by NLM `LAST UPDATED`
+timestamp. The script is idempotent and safe to re-run after any source
+update. See `references/constraints/cite-fidelity-source-inventory.md` for
+when to run it and when to skip.
+
+**Skip this step if:** the project has no NLM notebook, or the notebook
+is empty / sources aren't yet titled by bibkey.
 
 ## Step 6: Announce Handoff
 

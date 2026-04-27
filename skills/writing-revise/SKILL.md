@@ -19,6 +19,8 @@ hooks:
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/cite-fidelity-lint.py"
 ---
 
 # Writing Revise
@@ -386,8 +388,54 @@ Before claiming completion, check the audit-fix loop state:
 3. Determine verdict based on iteration + issues:
    - iteration < 3 AND issues remain → CONTINUE (re-invoke /writing-review)
    - iteration >= 3 AND issues remain → ESCALATE (report to user)
-   - no issues → COMPLETE
+   - no issues → COMPLETE (but first run Step 6a cite-fidelity gate)
 ```
+
+#### Step 6a: Cite-fidelity hard gate (Stage 3)
+
+<EXTREMELY-IMPORTANT>
+**Iron Law: NO COMPLETE WITHOUT CITES-PASSED. Not negotiable.**
+
+If `.planning/ACTIVE_WORKFLOW.md` declares an `nlm_notebook`, every
+`drafts/*.md` MUST have a corresponding `.planning/CITES-{slug}.md`
+showing `status: PASSED` before the verdict can be COMPLETE.
+</EXTREMELY-IMPORTANT>
+
+Before declaring COMPLETE, run Stage 3:
+
+```bash
+uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/check_section_cites.py --all
+```
+
+Then verify each section:
+
+```python
+# For each drafts/*.md, check the matching CITES file
+# Slug rule: "Part I (Draft).md" → "CITES-Part-I.md"
+import re
+from pathlib import Path
+
+drafts = list(Path("drafts").glob("*.md"))
+failures = []
+for d in drafts:
+    slug = re.sub(r"\s+", "-", re.sub(r"\s*\(Draft\)\s*$", "", d.stem).strip())
+    cites = Path(".planning") / f"CITES-{slug}.md"
+    if not cites.exists():
+        failures.append(f"{d.name}: missing CITES file")
+        continue
+    head = cites.read_text().split("---", 2)
+    if len(head) < 3 or "status: PASSED" not in head[1]:
+        failures.append(f"{d.name}: CITES status not PASSED")
+```
+
+If any failure: return to Step 4 (Fix Issues) addressing the UNSUPPORTED
+cites listed in the failing CITES file. Do NOT mark COMPLETE.
+
+If `ACTIVE_WORKFLOW.md` has no `nlm_notebook`, skip this gate (no notebook
+to verify against) and proceed with the normal verdict.
+
+See `references/constraints/cite-fidelity-section-gate.md` for the full
+doctrine.
 
 Generate report based on verdict:
 
