@@ -586,43 +586,24 @@ function extractResponseText(response: any): string {
 }
 
 /**
- * Heuristic fallback parser for when batch responses return free-text instead
- * of structured JSON. This is needed because the Batch API does not support
- * responseMimeType + tools together (error: "Tool use with a response mime
- * type: 'application/json' is unsupported"). We rely on prompt-based JSON
- * instructions, but the model may still return free-text.
+ * Parse a markdown-template classification response.
+ * Expected format:
+ *   **Status:** SUPPORTED
+ *   **Passage:** "exact quote..."
+ *   **Explanation:** reason
  */
-function heuristicClassify(text: string): ClassifyResult {
-  // 1. Try to find embedded JSON (code fence or bare object)
-  const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) ??
-    text.match(/(\{[\s\S]*"status"\s*:[\s\S]*?\})/);
-  if (jsonMatch) {
-    try {
-      const parsed = JSON.parse(jsonMatch[1]);
-      return {
-        status: parsed.status ?? "ERROR",
-        supporting_passage: parsed.supporting_passage ?? "",
-        explanation: parsed.explanation ?? "",
-      };
-    } catch { /* fall through to keyword extraction */ }
-  }
+export function parseMarkdownClassification(text: string): ClassifyResult {
+  const statusMatch = text.match(/\*\*Status:\*\*\s*(SUPPORTED|PARTIAL|UNSUPPORTED)/i);
+  const passageMatch = text.match(/\*\*Passage:\*\*\s*"?([^]*?)(?:\n\*\*Explanation:|$)/i);
+  const explanationMatch = text.match(/\*\*Explanation:\*\*\s*([^]*?)$/i);
 
-  // 2. Keyword extraction for status
-  const upper = text.toUpperCase();
-  let status: Status = "ERROR";
-  if (upper.includes("UNSUPPORTED") || upper.includes("DOES NOT SUPPORT")) {
-    status = "UNSUPPORTED";
-  } else if (upper.includes("PARTIAL")) {
-    status = "PARTIAL";
-  } else if (upper.includes("SUPPORTED") || upper.includes("SUPPORTS")) {
-    status = "SUPPORTED";
-  }
+  const status = statusMatch
+    ? (statusMatch[1].toUpperCase() as Status)
+    : "ERROR";
+  const passage = passageMatch?.[1]?.trim().replace(/^"|"$/g, "") ?? "";
+  const explanation = explanationMatch?.[1]?.trim() ?? text.slice(0, 300);
 
-  // 3. Extract quoted passage (look for substantial quoted text)
-  const quoteMatch = text.match(/"([^"]{20,})"/);
-  const passage = quoteMatch?.[1] ?? "";
-
-  return { status, supporting_passage: passage, explanation: text.slice(0, 300) };
+  return { status, supporting_passage: passage, explanation };
 }
 
 /**
@@ -647,16 +628,15 @@ export async function submitBatchCiteCheck(
       fileSearchConfig.metadataFilter = req.metadataFilter;
     }
 
-    // IMPORTANT: Batch API does not support responseMimeType + tools together.
-    // Error: "Tool use with a response mime type: 'application/json' is unsupported"
-    // When fileSearch is used in batch, we must rely on prompt-based JSON instructions
-    // and heuristic fallback parsing. Sequential mode (queryCitation) can use
-    // responseJsonSchema since generateContent doesn't have this limitation.
+    // Batch API does not support responseMimeType + tools together
+    // (error: "Tool use with a response mime type: 'application/json' is unsupported").
+    // Instead, we use a markdown template in the prompt and parse the response.
+    // Sequential mode (queryCitation) can still use responseJsonSchema.
     return {
       key: req.key,
       contents: [{
         parts: [{
-          text: req.prompt + `\n\nYou MUST respond with ONLY a JSON object in this exact format, no other text:\n{"status": "SUPPORTED", "supporting_passage": "exact quote from source", "explanation": "brief reason"}\nstatus must be one of: SUPPORTED, PARTIAL, UNSUPPORTED`,
+          text: req.prompt + `\n\nRespond using EXACTLY this template (fill in the values):\n\n**Status:** [SUPPORTED or PARTIAL or UNSUPPORTED]\n**Passage:** [exact quote from the source that supports or contradicts the claim, or "none" if unsupported]\n**Explanation:** [one sentence explaining why]`,
         }],
         role: "user" as const,
       }],
@@ -748,22 +728,20 @@ export async function submitBatchCiteCheck(
       continue;
     }
 
+    // Try JSON first (model sometimes returns it anyway), then markdown template
+    let classification: ClassifyResult;
     try {
       const parsed = JSON.parse(responseText);
-      results.push({
-        key,
-        classification: {
-          status: parsed.status ?? "ERROR",
-          supporting_passage: parsed.supporting_passage ?? "",
-          explanation: parsed.explanation ?? "",
-        },
-      });
+      classification = {
+        status: parsed.status ?? "ERROR",
+        supporting_passage: parsed.supporting_passage ?? "",
+        explanation: parsed.explanation ?? "",
+      };
     } catch {
-      results.push({
-        key,
-        classification: heuristicClassify(responseText),
-      });
+      classification = parseMarkdownClassification(responseText);
     }
+
+    results.push({ key, classification });
   }
 
   return results;

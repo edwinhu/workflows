@@ -14,6 +14,7 @@ import {
   searchReadwise,
   queryCitation,
   submitBatchCiteCheck,
+  parseMarkdownClassification,
   titleSimilarity,
   type StoreConfig,
   type StoreDocument,
@@ -657,8 +658,59 @@ describe("titleSimilarity", () => {
   });
 });
 
+describe("parseMarkdownClassification", () => {
+  it("parses well-formed markdown template response", () => {
+    const text = `**Status:** SUPPORTED
+**Passage:** "The study found significant effects (p < 0.01)"
+**Explanation:** Source directly supports the claim with statistical evidence`;
+
+    const result = parseMarkdownClassification(text);
+    expect(result.status).toBe("SUPPORTED");
+    expect(result.supporting_passage).toContain("significant effects");
+    expect(result.explanation).toContain("statistical evidence");
+  });
+
+  it("parses UNSUPPORTED status", () => {
+    const text = `**Status:** UNSUPPORTED
+**Passage:** none
+**Explanation:** The source does not discuss this topic`;
+
+    const result = parseMarkdownClassification(text);
+    expect(result.status).toBe("UNSUPPORTED");
+    expect(result.supporting_passage).toBe("none");
+    expect(result.explanation).toContain("does not discuss");
+  });
+
+  it("parses PARTIAL status (case-insensitive)", () => {
+    const text = `**Status:** partial
+**Passage:** "some partial quote"
+**Explanation:** Only partially supported`;
+
+    const result = parseMarkdownClassification(text);
+    expect(result.status).toBe("PARTIAL");
+  });
+
+  it("returns ERROR for text without status pattern", () => {
+    const text = "This is just free text without any markdown template.";
+    const result = parseMarkdownClassification(text);
+    expect(result.status).toBe("ERROR");
+    // explanation should contain a snippet of the original text
+    expect(result.explanation).toContain("free text");
+  });
+
+  it("handles passage without quotes", () => {
+    const text = `**Status:** SUPPORTED
+**Passage:** The exact quote from the document
+**Explanation:** Matches claim`;
+
+    const result = parseMarkdownClassification(text);
+    expect(result.status).toBe("SUPPORTED");
+    expect(result.supporting_passage).toBe("The exact quote from the document");
+  });
+});
+
 describe("submitBatchCiteCheck", () => {
-  it("parses raw JSON batch responses (no .text getter)", async () => {
+  it("submits batch with fileSearch tools and markdown template prompt", async () => {
     const createCalls: any[] = [];
     const mockClient = {
       batches: {
@@ -673,11 +725,7 @@ describe("submitBatchCiteCheck", () => {
                   response: {
                     candidates: [{
                       content: {
-                        parts: [{ text: JSON.stringify({
-                          status: "SUPPORTED",
-                          supporting_passage: "Evidence here",
-                          explanation: "Source supports claim",
-                        }) }],
+                        parts: [{ text: `**Status:** SUPPORTED\n**Passage:** "Evidence here"\n**Explanation:** Source supports claim` }],
                       },
                     }],
                   },
@@ -686,11 +734,7 @@ describe("submitBatchCiteCheck", () => {
                   response: {
                     candidates: [{
                       content: {
-                        parts: [{ text: JSON.stringify({
-                          status: "UNSUPPORTED",
-                          supporting_passage: "",
-                          explanation: "Not discussed",
-                        }) }],
+                        parts: [{ text: `**Status:** UNSUPPORTED\n**Passage:** none\n**Explanation:** Not discussed` }],
                       },
                     }],
                   },
@@ -701,7 +745,6 @@ describe("submitBatchCiteCheck", () => {
         },
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
-      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
 
@@ -713,31 +756,139 @@ describe("submitBatchCiteCheck", () => {
       ],
     );
 
+    // Single batch call with fileSearch tools
+    expect(createCalls.length).toBe(1);
+    expect(createCalls[0].src.length).toBe(2);
+
+    // Batch requests should have fileSearch tools
+    expect(createCalls[0].src[0].config.tools[0].fileSearch.fileSearchStoreNames).toEqual(["fileSearchStores/s1"]);
+    // Second request should have metadataFilter
+    expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
+
+    // Batch requests should NOT have responseMimeType or responseSchema
+    expect(createCalls[0].src[0].config.responseMimeType).toBeUndefined();
+    expect(createCalls[0].src[0].config.responseSchema).toBeUndefined();
+
+    // Prompt should contain the markdown template instruction
+    const batchPrompt = createCalls[0].src[0].contents[0].parts[0].text;
+    expect(batchPrompt).toContain("**Status:**");
+    expect(batchPrompt).toContain("Does source support claim 1?");
+
+    // Results should be properly parsed from markdown
     expect(results.length).toBe(2);
     expect(results[0].key).toBe("g1");
     expect(results[0].classification.status).toBe("SUPPORTED");
-    expect(results[0].classification.supporting_passage).toBe("Evidence here");
+    expect(results[0].classification.supporting_passage).toContain("Evidence here");
     expect(results[1].key).toBe("g2");
     expect(results[1].classification.status).toBe("UNSUPPORTED");
+  });
 
-    // Verify batch was created with correct model and inline requests
-    expect(createCalls.length).toBe(1);
-    expect(createCalls[0].src.length).toBe(2);
-    expect(createCalls[0].src[0].key).toBe("g1");
-    expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
+  it("parses JSON response when model returns JSON despite no schema", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/json-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: JSON.stringify({
+                        status: "SUPPORTED",
+                        supporting_passage: "Evidence here",
+                        explanation: "Source supports claim",
+                      }) }],
+                    },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
 
-    // IMPORTANT: Batch API does not support responseMimeType + tools together.
-    // responseSchema and responseMimeType MUST be absent when fileSearch tools are used.
-    expect(createCalls[0].src[0].config.responseSchema).toBeUndefined();
-    expect(createCalls[0].src[1].config.responseSchema).toBeUndefined();
-    expect(createCalls[0].src[0].config.responseMimeType).toBeUndefined();
-    expect(createCalls[0].src[1].config.responseMimeType).toBeUndefined();
-    // responseJsonSchema should NOT be present either
-    expect(createCalls[0].src[0].config.responseJsonSchema).toBeUndefined();
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [{ key: "g1", prompt: "test" }],
+    );
 
-    // Prompt MUST include JSON format instructions as workaround
-    const promptText = createCalls[0].src[0].contents[0].parts[0].text;
-    expect(promptText).toContain("You MUST respond with ONLY a JSON object");
+    expect(results.length).toBe(1);
+    expect(results[0].classification.status).toBe("SUPPORTED");
+    expect(results[0].classification.supporting_passage).toBe("Evidence here");
+  });
+
+  it("falls back to markdown parser for non-JSON free-text with template", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/markdown-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: `**Status:** PARTIAL\n**Passage:** "some evidence"\n**Explanation:** partially supports` }],
+                    },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [{ key: "g1", prompt: "test" }],
+    );
+
+    expect(results.length).toBe(1);
+    expect(results[0].classification.status).toBe("PARTIAL");
+  });
+
+  it("returns ERROR for free-text without markdown template", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/freetext-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: "The source mentions something about this claim." }],
+                    },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [{ key: "g1", prompt: "test" }],
+    );
+
+    expect(results.length).toBe(1);
+    // Without a valid status keyword, should return ERROR
+    expect(results[0].classification.status).toBe("ERROR");
   });
 
   it("parses hydrated class responses with .text string property", async () => {
@@ -762,7 +913,6 @@ describe("submitBatchCiteCheck", () => {
         }),
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
-      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
 
@@ -801,7 +951,6 @@ describe("submitBatchCiteCheck", () => {
         }),
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
-      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
 
@@ -841,70 +990,6 @@ describe("submitBatchCiteCheck", () => {
     expect(results[0].error).toBeDefined();
   });
 
-  it("uses heuristic fallback for free-text responses (non-JSON)", async () => {
-    const mockClient = {
-      batches: {
-        create: async () => ({
-          name: "batches/freetext-batch",
-          state: "JOB_STATE_SUCCEEDED",
-          dest: {
-            inlinedResponses: [
-              {
-                response: {
-                  candidates: [{
-                    content: {
-                      parts: [{ text: "The source SUPPORTED this claim. \"The market showed significant gains in Q3 2024 across all sectors\" is the relevant passage." }],
-                    },
-                  }],
-                },
-              },
-              {
-                response: {
-                  candidates: [{
-                    content: {
-                      parts: [{ text: "This claim is UNSUPPORTED by the source material." }],
-                    },
-                  }],
-                },
-              },
-              {
-                response: {
-                  candidates: [{
-                    content: {
-                      parts: [{ text: '```json\n{"status": "PARTIAL", "supporting_passage": "some quote", "explanation": "partial match"}\n```' }],
-                    },
-                  }],
-                },
-              },
-            ],
-          },
-        }),
-        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
-      },
-      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [
-        { key: "g1", prompt: "test1" },
-        { key: "g2", prompt: "test2" },
-        { key: "g3", prompt: "test3" },
-      ],
-    );
-
-    expect(results.length).toBe(3);
-    // Free-text with "SUPPORTED" keyword
-    expect(results[0].classification.status).toBe("SUPPORTED");
-    expect(results[0].classification.supporting_passage).toContain("significant gains");
-    // Free-text with "UNSUPPORTED" keyword
-    expect(results[1].classification.status).toBe("UNSUPPORTED");
-    // Embedded JSON in code fence
-    expect(results[2].classification.status).toBe("PARTIAL");
-    expect(results[2].classification.supporting_passage).toBe("some quote");
-  });
-
   it("returns ERROR for empty/malformed response", async () => {
     const mockClient = {
       batches: {
@@ -922,7 +1007,6 @@ describe("submitBatchCiteCheck", () => {
         }),
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
-      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
 
