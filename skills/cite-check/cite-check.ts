@@ -574,7 +574,7 @@ export async function cmdCiteCheck(
 
       // List documents to build bibkey set
       const docs = await listDocuments(storeName);
-      sourceBibkeys = new Set(docs.map((d) => d.displayName));
+      sourceBibkeys = new Set(docs.map((d) => d.bibkey));
       process.stderr.write(
         `[cite-check] store has ${docs.length} documents\n`,
       );

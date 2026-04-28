@@ -74,10 +74,10 @@ describe("createStore", () => {
 });
 
 describe("listDocuments", () => {
-  it("returns parsed documents from single page", async () => {
+  it("returns parsed documents with bibkey from customMetadata", async () => {
     const mockDocs = [
-      { name: "fileSearchStores/s1/documents/d1", displayName: "Hirst2022-pq" },
-      { name: "fileSearchStores/s1/documents/d2", displayName: "Bebchuk2017-mm" },
+      { name: "fileSearchStores/s1/documents/d1", displayName: "d98ctytgehwv", customMetadata: [{ key: "bibkey", stringValue: "Hirst2022-pq" }] },
+      { name: "fileSearchStores/s1/documents/d2", displayName: "x7abcdef1234", customMetadata: [{ key: "bibkey", stringValue: "Bebchuk2017-mm" }] },
     ];
     const mockClient = {
       fileSearchStores: {
@@ -94,17 +94,43 @@ describe("listDocuments", () => {
 
     const docs = await listDocuments("fileSearchStores/s1");
     expect(docs.length).toBe(2);
-    expect(docs[0].displayName).toBe("Hirst2022-pq");
-    expect(docs[1].displayName).toBe("Bebchuk2017-mm");
+    expect(docs[0].bibkey).toBe("Hirst2022-pq");
+    expect(docs[1].bibkey).toBe("Bebchuk2017-mm");
+    // displayName is the random ID
+    expect(docs[0].displayName).toBe("d98ctytgehwv");
+    expect(docs[1].displayName).toBe("x7abcdef1234");
+  });
+
+  it("falls back to displayName when customMetadata is missing", async () => {
+    const mockDocs = [
+      { name: "fileSearchStores/s1/documents/d1", displayName: "LegacyDoc2020-xx" },
+    ];
+    const mockClient = {
+      fileSearchStores: {
+        documents: {
+          list: async () => ({
+            page: mockDocs,
+            hasNextPage: () => false,
+            nextPage: async () => [],
+          }),
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const docs = await listDocuments("fileSearchStores/s1");
+    expect(docs.length).toBe(1);
+    expect(docs[0].bibkey).toBe("LegacyDoc2020-xx");
+    expect(docs[0].displayName).toBe("LegacyDoc2020-xx");
   });
 
   it("paginates across multiple pages", async () => {
     const page1 = [
-      { name: "fileSearchStores/s1/documents/d1", displayName: "Doc1" },
-      { name: "fileSearchStores/s1/documents/d2", displayName: "Doc2" },
+      { name: "fileSearchStores/s1/documents/d1", displayName: "rand1", customMetadata: [{ key: "bibkey", stringValue: "Doc1" }] },
+      { name: "fileSearchStores/s1/documents/d2", displayName: "rand2", customMetadata: [{ key: "bibkey", stringValue: "Doc2" }] },
     ];
     const page2 = [
-      { name: "fileSearchStores/s1/documents/d3", displayName: "Doc3" },
+      { name: "fileSearchStores/s1/documents/d3", displayName: "rand3", customMetadata: [{ key: "bibkey", stringValue: "Doc3" }] },
     ];
     let nextPageCalled = false;
     const mockClient = {
@@ -125,8 +151,8 @@ describe("listDocuments", () => {
 
     const docs = await listDocuments("fileSearchStores/s1");
     expect(docs.length).toBe(3);
-    expect(docs[0].displayName).toBe("Doc1");
-    expect(docs[2].displayName).toBe("Doc3");
+    expect(docs[0].bibkey).toBe("Doc1");
+    expect(docs[2].bibkey).toBe("Doc3");
     expect(nextPageCalled).toBe(true);
   });
 });
@@ -195,7 +221,7 @@ describe("uploadPdf", () => {
 });
 
 describe("uploadPdfs", () => {
-  it("skips already-uploaded PDFs", async () => {
+  it("skips already-uploaded PDFs by bibkey not displayName", async () => {
     const uploadCalls: any[] = [];
     const mockClient = {
       files: {
@@ -209,7 +235,8 @@ describe("uploadPdfs", () => {
         documents: {
           list: async () => ({
             page: [
-              { name: "d1", displayName: "Existing2020-xx" },
+              // displayName is random, bibkey in customMetadata matches the PDF filename
+              { name: "d1", displayName: "abc123random", customMetadata: [{ key: "bibkey", stringValue: "Existing2020-xx" }] },
             ],
             hasNextPage: () => false,
             nextPage: async () => [],
@@ -498,7 +525,8 @@ describe("uploadFromBib", () => {
         documents: {
           list: async () => ({
             page: [
-              { name: "d1", displayName: "AlreadyThere2020-xx" },
+              // displayName is random, bibkey in customMetadata
+              { name: "d1", displayName: "xyz789random", customMetadata: [{ key: "bibkey", stringValue: "AlreadyThere2020-xx" }] },
             ],
             hasNextPage: () => false,
             nextPage: async () => [],
@@ -745,7 +773,7 @@ const _queryResult: GeminiQueryResult = {
   groundingChunks: [],
   durationMs: 0,
 };
-const _storeDoc: StoreDocument = { name: "n", displayName: "d" };
+const _storeDoc: StoreDocument = { name: "n", displayName: "d", bibkey: "b" };
 const _storeCfg: StoreConfig = {
   storeId: "id",
   storeName: "name",

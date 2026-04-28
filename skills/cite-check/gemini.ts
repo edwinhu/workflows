@@ -47,6 +47,7 @@ export interface GroundingChunk {
 export interface StoreDocument {
   name: string;
   displayName: string;
+  bibkey: string; // from customMetadata[key=bibkey].stringValue, falls back to displayName
 }
 
 export interface StoreConfig {
@@ -128,9 +129,13 @@ export async function listDocuments(
   let page = pager.page;
   while (true) {
     for (const doc of page) {
+      const bibkeyMeta = (doc as any).customMetadata?.find(
+        (m: any) => m.key === "bibkey",
+      );
       docs.push({
         name: doc.name ?? "",
         displayName: doc.displayName ?? "",
+        bibkey: bibkeyMeta?.stringValue ?? doc.displayName ?? "",
       });
     }
     if (!pager.hasNextPage()) break;
@@ -204,7 +209,7 @@ export async function uploadPdfs(
   pdfsDir: string,
 ): Promise<{ uploaded: number; skipped: number }> {
   const existing = await listDocuments(storeName);
-  const existingBibkeys = new Set(existing.map((d) => d.displayName));
+  const existingBibkeys = new Set(existing.map((d) => d.bibkey));
 
   const entries = readdirSync(pdfsDir, { withFileTypes: true });
   const pdfs = entries
@@ -486,7 +491,7 @@ export async function uploadFromBib(
   opts?: { debug?: boolean; readwiseFallback?: boolean },
 ): Promise<{ uploaded: number; skipped: number; missing: number; fromReadwise: number }> {
   const existing = await listDocuments(storeName);
-  const existingBibkeys = new Set(existing.map((d) => d.displayName));
+  const existingBibkeys = new Set(existing.map((d) => d.bibkey));
 
   let uploaded = 0;
   let skipped = 0;
