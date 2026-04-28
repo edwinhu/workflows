@@ -135,24 +135,58 @@ export async function uploadPdf(
   storeName: string,
   pdfPath: string,
   bibkey: string,
-  opts?: { mimeType?: string },
+  opts?: { mimeType?: string; _pollIntervalMs?: number },
 ): Promise<void> {
   const client = getClient();
+
+  // Step 1: Upload file to File Service (avoids 503 bug with uploadToFileSearchStore for files >10KB)
   const uploadConfig: any = {
     file: pdfPath,
-    fileSearchStoreName: storeName,
     config: {
       displayName: bibkey,
-      customMetadata: [{ key: "bibkey", stringValue: bibkey }],
     },
   };
   if (opts?.mimeType) {
     uploadConfig.config.mimeType = opts.mimeType;
   }
-  let operation = await client.fileSearchStores.uploadToFileSearchStore(uploadConfig);
+  const file = await client.files.upload(uploadConfig);
+  if (!file.name) {
+    throw new Error(`File upload returned no name for ${bibkey}`);
+  }
+
+  // Step 2: Poll until file is ACTIVE (handles STATE_PENDING stuck bug)
+  const maxWaitMs = 120_000; // 2 minutes
+  const pollMs = opts?._pollIntervalMs ?? 3_000;
+  const start = Date.now();
+  let fileState = file.state;
+  while (fileState === "PROCESSING" || fileState === "STATE_UNSPECIFIED") {
+    if (Date.now() - start > maxWaitMs) {
+      throw new Error(`File ${bibkey} stuck in ${fileState} after ${maxWaitMs / 1000}s`);
+    }
+    await new Promise((r) => setTimeout(r, pollMs));
+    const updated = await client.files.get({ name: file.name! });
+    fileState = updated.state;
+  }
+  if (fileState === "FAILED") {
+    throw new Error(`File processing failed for ${bibkey}: ${JSON.stringify(file.error)}`);
+  }
+
+  // Step 3: Import file into FileSearchStore
+  let operation = await client.fileSearchStores.importFile({
+    fileSearchStoreName: storeName,
+    fileName: file.name,
+    config: {
+      customMetadata: [{ key: "bibkey", stringValue: bibkey }],
+    },
+  });
+
+  // Step 4: Poll import operation until done
   while (!operation.done) {
     await new Promise((r) => setTimeout(r, 5000));
-    operation = await client.operations.get({ operation });
+    operation = (await client.operations.get({ operation })) as any;
+  }
+  if (operation.error) {
+    throw new Error(`Import failed for ${bibkey}: ${JSON.stringify(operation.error)}`);
   }
 }
 

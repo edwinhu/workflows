@@ -57,7 +57,11 @@ describe("createStore", () => {
           name: "fileSearchStores/abc123",
         }),
         documents: { list: async () => [] },
-        uploadToFileSearchStore: async () => ({ done: true }),
+        importFile: async () => ({ done: true }),
+      },
+      files: {
+        upload: async () => ({ name: "files/abc123", state: "ACTIVE" }),
+        get: async () => ({ state: "ACTIVE" }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
@@ -92,13 +96,21 @@ describe("listDocuments", () => {
 });
 
 describe("uploadPdf", () => {
-  it("uploads with bibkey metadata and polls until done", async () => {
-    const calls: any[] = [];
+  it("uploads file, imports into store with bibkey metadata", async () => {
+    const uploadCalls: any[] = [];
+    const importCalls: any[] = [];
     const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCalls.push(opts);
+          return { name: "files/abc123", state: "ACTIVE" };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
       fileSearchStores: {
-        uploadToFileSearchStore: async (opts: any) => {
-          calls.push(opts);
-          return { done: true }; // immediately done
+        importFile: async (opts: any) => {
+          importCalls.push(opts);
+          return { done: true };
         },
         documents: { list: async () => [] },
       },
@@ -109,11 +121,40 @@ describe("uploadPdf", () => {
     __setGeminiClientForTesting(mockClient as any);
 
     await uploadPdf("fileSearchStores/s1", "/tmp/test.pdf", "Author2022-ab");
-    expect(calls.length).toBe(1);
-    expect(calls[0].config.displayName).toBe("Author2022-ab");
-    expect(calls[0].config.customMetadata).toEqual([
+    expect(uploadCalls.length).toBe(1);
+    expect(uploadCalls[0].config.displayName).toBe("Author2022-ab");
+    expect(importCalls.length).toBe(1);
+    expect(importCalls[0].fileSearchStoreName).toBe("fileSearchStores/s1");
+    expect(importCalls[0].fileName).toBe("files/abc123");
+    expect(importCalls[0].config.customMetadata).toEqual([
       { key: "bibkey", stringValue: "Author2022-ab" },
     ]);
+  });
+
+  it("polls until file is ACTIVE before importing", async () => {
+    let getCalls = 0;
+    const mockClient = {
+      files: {
+        upload: async () => ({ name: "files/abc456", state: "PROCESSING" }),
+        get: async () => {
+          getCalls++;
+          // Return ACTIVE on the second call
+          return { state: getCalls >= 2 ? "ACTIVE" : "PROCESSING" };
+        },
+      },
+      fileSearchStores: {
+        importFile: async () => ({ done: true }),
+        documents: { list: async () => [] },
+      },
+      operations: {
+        get: async () => ({ done: true }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await uploadPdf("fileSearchStores/s1", "/tmp/test.pdf", "PollTest2024-xx", { _pollIntervalMs: 10 });
+    // files.get should have been called at least twice (once PROCESSING, once ACTIVE)
+    expect(getCalls).toBeGreaterThanOrEqual(2);
   });
 });
 
@@ -121,16 +162,20 @@ describe("uploadPdfs", () => {
   it("skips already-uploaded PDFs", async () => {
     const uploadCalls: any[] = [];
     const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCalls.push(opts);
+          return { name: "files/newpaper123", state: "ACTIVE" };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
       fileSearchStores: {
         documents: {
           list: async () => [
             { name: "d1", displayName: "Existing2020-xx" },
           ],
         },
-        uploadToFileSearchStore: async (opts: any) => {
-          uploadCalls.push(opts);
-          return { done: true };
-        },
+        importFile: async () => ({ done: true }),
       },
       operations: { get: async () => ({ done: true }) },
     };
@@ -148,7 +193,7 @@ describe("uploadPdfs", () => {
       expect(result.uploaded).toBe(1);
       expect(result.skipped).toBe(1);
       expect(uploadCalls.length).toBe(1);
-      expect(uploadCalls[0].config.displayName).toBe("NewPaper2023-yy");
+      expect(uploadCalls[0].config.displayName).toBe("NewPaper2023-yy");  // files.upload config
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -402,16 +447,20 @@ describe("uploadFromBib", () => {
   it("uploads only cited bibkeys that have file mappings and aren't already in store", async () => {
     const uploadCalls: any[] = [];
     const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCalls.push(opts);
+          return { name: "files/haspdf123", state: "ACTIVE" };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
       fileSearchStores: {
         documents: {
           list: async () => [
             { name: "d1", displayName: "AlreadyThere2020-xx" },
           ],
         },
-        uploadToFileSearchStore: async (opts: any) => {
-          uploadCalls.push(opts);
-          return { done: true };
-        },
+        importFile: async () => ({ done: true }),
       },
       operations: { get: async () => ({ done: true }) },
     };
@@ -463,7 +512,7 @@ describe("uploadFromBib", () => {
       expect(result.missing).toBe(2); // NoPdf2024-bb (file not found) + NotInBib2024-cc (not in map)
       expect(result.fromReadwise).toBe(0); // no readwise fallback in mock test
       expect(uploadCalls.length).toBe(1);
-      expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");
+      expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");  // files.upload config
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -484,11 +533,15 @@ describe("uploadText", () => {
   it("writes temp file, uploads via uploadPdf, and cleans up", async () => {
     const uploadCalls: any[] = [];
     const mockClient = {
-      fileSearchStores: {
-        uploadToFileSearchStore: async (opts: any) => {
+      files: {
+        upload: async (opts: any) => {
           uploadCalls.push(opts);
-          return { done: true };
+          return { name: "files/textdoc123", state: "ACTIVE" };
         },
+        get: async () => ({ state: "ACTIVE" }),
+      },
+      fileSearchStores: {
+        importFile: async () => ({ done: true }),
       },
       operations: { get: async () => ({ done: true }) },
     };
