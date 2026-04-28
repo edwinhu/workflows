@@ -1,0 +1,8 @@
+{
+  "name": "cite-check",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^1"
+  }
+}
