@@ -157,8 +157,52 @@ function lineNumberOf(text: string, offset: number): number {
 }
 
 /**
+ * Walk backward from a footnote body-marker position to find the sentence-
+ * terminal punctuation (`.`, `!`, `?`) that ends the sentence containing the
+ * marker, skipping closing quotes along the way. Returns the position of that
+ * punctuation, or 0 if none found.
+ */
+function findSentenceEnd(text: string, markerOffset: number): number {
+  for (let i = markerOffset - 1; i >= 0; i--) {
+    const ch = text[i];
+    if (ch === "." || ch === "!" || ch === "?") return i;
+    // Skip closing quotes and footnote-marker chars.
+    if (ch === '"' || ch === "'" || ch === "\u201D") continue;
+    // Hit a non-quote, non-punctuation char → the period is further back or absent.
+    break;
+  }
+  // Fallback: use a position inside the preceding sentence.
+  return Math.max(0, markerOffset - 1);
+}
+
+/**
+ * Check whether a sentence-terminal punctuation mark at `dotPos` is followed
+ * (possibly after footnote markers like `[^16]`) by whitespace, indicating a
+ * real sentence boundary. Returns the position of the whitespace character if
+ * found, or -1 if this is not a sentence boundary.
+ */
+function isSentenceBoundary(text: string, dotPos: number): number {
+  let j = dotPos + 1;
+  // Skip closing quote marks (." or !" patterns).
+  while (j < text.length && (text[j] === '"' || text[j] === "'" || text[j] === "\u201D")) {
+    j++;
+  }
+  // Skip zero or more footnote markers `[^...]`.
+  while (j < text.length && text[j] === "[" && j + 1 < text.length && text[j + 1] === "^") {
+    const close = text.indexOf("]", j + 2);
+    if (close < 0) break;
+    j = close + 1;
+  }
+  if (j < text.length && (text[j] === " " || text[j] === "\n" || text[j] === "\t")) {
+    return j;
+  }
+  return -1;
+}
+
+/**
  * Find the sentence (or paragraph fragment) containing position `pos`.
- * Sentence boundaries: `. `, `! `, `? `, blank line (`\n\n`), or file edge.
+ * Sentence boundaries: `. `, `! `, `? ` (with optional footnote markers
+ * between the punctuation and whitespace), blank line (`\n\n`), or file edge.
  */
 function sentenceContaining(text: string, pos: number): string {
   // Walk backward from pos to find sentence start.
@@ -171,13 +215,22 @@ function sentenceContaining(text: string, pos: number): string {
       start = i + 1;
       break;
     }
-    // Sentence terminator + whitespace.
-    if (
-      (prev === "." || prev === "!" || prev === "?") &&
-      (cur === " " || cur === "\n" || cur === "\t")
-    ) {
-      start = i + 1;
-      break;
+    // Sentence terminator + optional footnote markers + whitespace.
+    if (prev === "." || prev === "!" || prev === "?") {
+      if (isSentenceBoundary(text, i - 1) >= 0) {
+        start = i;
+        // Advance past any footnote markers to reach the actual whitespace.
+        while (start < text.length && text[start] === "[" && start + 1 < text.length && text[start + 1] === "^") {
+          const close = text.indexOf("]", start + 2);
+          if (close < 0) break;
+          start = close + 1;
+        }
+        // Skip the whitespace itself.
+        if (start < text.length && (text[start] === " " || text[start] === "\n" || text[start] === "\t")) {
+          start++;
+        }
+        break;
+      }
     }
   }
 
@@ -190,21 +243,21 @@ function sentenceContaining(text: string, pos: number): string {
       end = i;
       break;
     }
-    if (
-      (cur === "." || cur === "!" || cur === "?") &&
-      (next === " " || next === "\n" || next === "\t")
-    ) {
-      end = i + 1;
-      break;
+    if (cur === "." || cur === "!" || cur === "?") {
+      if (isSentenceBoundary(text, i) >= 0) {
+        end = i + 1;
+        break;
+      }
     }
   }
 
   return text.slice(start, end).trim();
 }
 
-/** Strip every pandoc cite marker from a string. */
+/** Strip every pandoc cite marker and HTML comment from a string. */
 function stripCitations(s: string): string {
   return s
+    .replace(/<!--[\s\S]*?-->/g, "")
     .replace(BRACKETED_RE, "")
     .replace(INTEXT_RE, "")
     // Collapse double spaces / leading punctuation left behind.
@@ -265,14 +318,28 @@ function findFootnoteMarker(text: string, id: string): number {
   return m ? m.index : -1;
 }
 
+/**
+ * Replace HTML comments with whitespace of the same length, preserving byte
+ * offsets so regex match positions remain valid on the original text.
+ */
+function blankOutHtmlComments(text: string): string {
+  return text.replace(/<!--[\s\S]*?-->/g, (match) => " ".repeat(match.length));
+}
+
 export function extractCitations(
   markdownText: string,
   filePath: string,
 ): Citation[] {
   const out: Citation[] = [];
 
+  // Build a "clean" copy with HTML comments blanked out (same length, so byte
+  // offsets stay valid). Used for sentence extraction and footnote bodies so
+  // CITE-CHECK annotations don't leak into claims.
+  const cleanText = blankOutHtmlComments(markdownText);
+
   // Pre-compute footnote definitions for indirection lookup.
-  const footnoteDefs = findFootnoteDefs(markdownText);
+  // Use cleanText so footnote bodies don't include HTML comments.
+  const footnoteDefs = findFootnoteDefs(cleanText);
 
   // Track [start, end) byte ranges of bracketed cite groups so we can skip
   // in-text matches that fall inside them.
@@ -312,7 +379,7 @@ export function extractCitations(
         // Found a body marker — use that sentence as the claim, and carry
         // the footnote body as auxiliary context.
         bodySentence = stripCitations(
-          sentenceContaining(markdownText, markerOffset),
+          sentenceContaining(cleanText, findSentenceEnd(cleanText, markerOffset)),
         );
         footnoteContext = stripCitations(enclosingFn.body);
       } else {
@@ -322,7 +389,7 @@ export function extractCitations(
         footnoteContext = undefined;
       }
     } else {
-      bodySentence = stripCitations(sentenceContaining(markdownText, matchStart));
+      bodySentence = stripCitations(sentenceContaining(cleanText, matchStart));
       footnoteContext = undefined;
     }
 
@@ -382,7 +449,7 @@ export function extractCitations(
       const markerOffset = findFootnoteMarker(markdownText, enclosingFn.id);
       if (markerOffset >= 0) {
         bodySentence = stripCitations(
-          sentenceContaining(markdownText, markerOffset),
+          sentenceContaining(cleanText, findSentenceEnd(cleanText, markerOffset)),
         );
         footnoteContext = stripCitations(enclosingFn.body);
       } else {
@@ -390,7 +457,7 @@ export function extractCitations(
         footnoteContext = undefined;
       }
     } else {
-      bodySentence = stripCitations(sentenceContaining(markdownText, matchStart));
+      bodySentence = stripCitations(sentenceContaining(cleanText, matchStart));
       footnoteContext = undefined;
     }
 

@@ -496,9 +496,13 @@ export async function cmdCiteCheck(
 
     let res;
     try {
+      // Only scope to specific sources for compound groups (2+ cites).
+      // Single-source queries search the full notebook (matching pre-compound
+      // behavior and avoiding NLM over-scoping regressions).
+      const useSourceIds = inNotebook.length > 1 && sourceIds.length > 0;
       res = await nlmGenerateChat(notebookId, prompt, {
         debug,
-        sourceIds: sourceIds.length > 0 ? sourceIds : undefined,
+        sourceIds: useSourceIds ? sourceIds : undefined,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
