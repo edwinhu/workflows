@@ -13,6 +13,10 @@
 - [Gotcha 9: JSON Response Parsing Requires Careful Handling](#gotcha-9-json-response-parsing-requires-careful-handling)
 - [Gotcha 10: Metadata Must Be Flat Primitives](#gotcha-10-metadata-must-be-flat-primitives)
 - [Gotcha 11: API Parameter Names (dest= not destination=)](#gotcha-11-api-parameter-names-dest-not-destination)
+- [Gotcha 12: File Search Store — uploadToFileSearchStore 503](#gotcha-12-file-search-store--uploadtofilesearchstore-503)
+- [Gotcha 13: SDK Pager auto-pagination is broken for fileSearchStores.documents.list](#gotcha-13-sdk-pager-auto-pagination-is-broken-for-filesearchstoresdocumentslist)
+- [Gotcha 14: Store document displayName is random after importFile](#gotcha-14-store-document-displayname-is-random-after-importfile)
+- [Gotcha 15: Batch inlinedResponse.response is raw JSON, not hydrated class](#gotcha-15-batch-inlinedresponseresponse-is-raw-json-not-hydrated-class)
 
 Production lessons learned from real-world Gemini Batch API deployments.
 
@@ -709,3 +713,117 @@ print(sig.parameters.keys())  # Shows: model, src, dest, config
 - Vertex AI: `examples/icon_batch_vision.py` line 139-166
 
 Both show the same pattern: `dest=` parameter with plain strings and dicts.
+
+---
+
+## Gotcha 12: File Search Store — uploadToFileSearchStore 503
+
+`client.fileSearchStores.uploadToFileSearchStore()` returns 503 for files >10KB. This is a known API bug (as of April 2026).
+
+**Fix:** Two-step upload:
+1. `client.files.upload({file: path, config: {displayName: name}})` — upload to File Service
+2. Poll `client.files.get({name})` until `state === "ACTIVE"` (not PROCESSING)
+3. `client.fileSearchStores.importFile({fileSearchStoreName, fileName, config: {customMetadata}})` — import into store
+4. Poll the import operation until `done`
+
+**Gotcha within the gotcha:** `importFile` does NOT propagate the File's `displayName` to the store document. The store document gets a random ID as displayName. If you need to identify documents by name, use `customMetadata` (see Gotcha 14).
+
+```typescript
+// WRONG — 503 for files >10KB
+await client.fileSearchStores.uploadToFileSearchStore({
+  file: path,
+  fileSearchStoreName: storeName,
+  config: { displayName: bibkey }
+});
+
+// RIGHT — two-step upload
+const file = await client.files.upload({ file: path, config: { displayName: bibkey } });
+// Poll until ACTIVE
+while (file.state === "PROCESSING") {
+  await sleep(3000);
+  file = await client.files.get({ name: file.name });
+}
+await client.fileSearchStores.importFile({
+  fileSearchStoreName: storeName,
+  fileName: file.name,
+  config: { customMetadata: [{ key: "bibkey", stringValue: bibkey }] }
+});
+```
+
+---
+
+## Gotcha 13: SDK Pager auto-pagination is broken for fileSearchStores.documents.list
+
+`for await (const doc of pager)` stops after the first page (~10-20 docs). The async iterator's auto-pagination does not work reliably for this endpoint.
+
+**Fix:** Use the SDK's manual pagination methods:
+
+```typescript
+// WRONG — stops after first page
+const pager = await client.fileSearchStores.documents.list({ parent: storeName });
+for await (const doc of pager) { docs.push(doc); } // only gets ~10 docs!
+
+// ALSO WRONG — pager.params is INPUT config, not response token
+pageToken = (pager.params as any)?.pageToken; // always undefined!
+
+// RIGHT — use hasNextPage() + nextPage()
+const pager = await client.fileSearchStores.documents.list({
+  parent: storeName,
+  config: { pageSize: 20 },
+});
+let page = pager.page;
+while (true) {
+  for (const doc of page) { docs.push(doc); }
+  if (!pager.hasNextPage()) break;
+  page = await pager.nextPage();
+}
+```
+
+---
+
+## Gotcha 14: Store document displayName is random after importFile
+
+When using the two-step upload (Gotcha 12), `importFile` generates a random string as the store document's `displayName` (e.g., "d98ctytgehwv"). The File's `displayName` is NOT propagated.
+
+**Fix:** Store identifying metadata in `customMetadata` during import, and read it back during list:
+
+```typescript
+// During upload — set customMetadata
+await client.fileSearchStores.importFile({
+  fileSearchStoreName: storeName,
+  fileName: file.name,
+  config: {
+    customMetadata: [{ key: "bibkey", stringValue: "Author2024-ab" }]
+  }
+});
+
+// During list — extract bibkey from customMetadata, not displayName
+const bibkey = doc.customMetadata?.find(m => m.key === "bibkey")?.stringValue
+  ?? doc.displayName; // fallback for legacy docs
+```
+
+---
+
+## Gotcha 15: Batch inlinedResponse.response is raw JSON, not hydrated class
+
+When using `batches.create()` with inline requests and polling with `batches.get()`, the `inlinedResponse.response` object is raw JSON — NOT a hydrated `GenerateContentResponse` class instance. The `.text` getter does not exist on raw JSON.
+
+**Fix:** Extract text from the candidates array directly:
+
+```typescript
+// WRONG — .text getter doesn't exist on raw JSON objects
+const text = inlineResponse.response?.text; // undefined!
+
+// RIGHT — extract from candidates array
+function extractResponseText(response: any): string {
+  if (!response) return "";
+  if (typeof response.text === "string") return response.text; // class instance
+  const parts = response.candidates?.[0]?.content?.parts;
+  if (Array.isArray(parts)) {
+    return parts.filter(p => typeof p.text === "string").map(p => p.text).join("");
+  }
+  return "";
+}
+```
+
+This handles both sequential mode (hydrated class with `.text` getter) and batch mode (raw JSON with candidates array).

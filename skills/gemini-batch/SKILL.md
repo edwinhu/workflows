@@ -222,13 +222,18 @@ See the Rationalization Table in the first Iron Law section above — the same g
 | Large PDFs fail | Split at 50 pages / 50MB max |
 | JSON parsing fails | Use robust extraction (see gotchas.md) |
 | Output not found (Vertex) | Output URI is prefix, not file path |
+| **`uploadToFileSearchStore` 503 for files >10KB** | **Use two-step: `files.upload()` then `fileSearchStores.importFile()`** |
+| **File stuck in PROCESSING state** | **Poll `files.get()` until state is ACTIVE before importing** |
+| **SDK Pager stops after first page** | **Use `pager.hasNextPage()` + `pager.nextPage()`, NOT `for await`** |
+| **Batch `inlinedResponse.response.text` is undefined** | **Response is raw JSON, not hydrated class. Use `candidates[0].content.parts[0].text`** |
+| **Store document displayName is random ID after importFile** | **Read bibkey from `customMetadata`, not `displayName`** |
 
 **Top 3 mistakes** (bolded above):
 1. Using nested objects in metadata instead of flat primitives
 2. Mixing Standard API and Vertex AI patterns
 3. Using `destination=` instead of `dest=` (Vertex AI)
 
-See `references/gotchas.md` for detailed solutions (now with Gotchas 10 & 11).
+See `references/gotchas.md` for detailed solutions (now with Gotchas 10-15).
 
 ## Rate Limits
 
