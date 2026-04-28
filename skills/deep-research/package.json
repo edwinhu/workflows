@@ -1,0 +1,8 @@
+{
+  "name": "deep-research",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^1"
+  }
+}

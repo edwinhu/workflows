@@ -517,6 +517,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 | `readwise-chat` | RAG chat reference (fallback — prefer Claude synthesis from search results) |
 | `readwise-prune` | Stale document cleanup reference |
 | `google-scholar` | Academic paper search (Scholar Labs + traditional) |
+| `deep-research` | Gemini Deep Research -- web-grounded synthesis reports (LAST RESORT, ask user first, $1-7/query) |
 
 ## Workflow Patterns
 
@@ -539,9 +540,10 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 1. Check NLM, Readwise, and Drive Papers FIRST
 2. Search Google Scholar for academic literature
 3. If gaps still exist AND user requests broader research:
-   - `nlm research "query" --notebook <id>` to find and import web sources
-   - `nlm research "query" --notebook <id> --deep` for comprehensive investigation
-4. Generate synthesis from imported sources
+   - Load the deep-research skill: `Skill(skill="workflows:deep-research")`
+   - Run: `cd skills/deep-research && bun deep-research.ts "query"`
+   - For faster results: `bun deep-research.ts --fast "query"`
+4. Add deep research findings to NLM for future semantic Q&A
 
 ## Operational Rules
 
