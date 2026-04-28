@@ -1,14 +1,14 @@
 /**
- * Gemini File Search API wrapper for cite-check.
+ * Gemini Files API wrapper for cite-check.
  *
- * Uses Google AI Studio (GOOGLE_API_KEY) for grounded generation with
- * File Search stores. Provides store management, document upload, and
- * citation querying with grounding chunks.
+ * Uses Google AI Studio (GOOGLE_API_KEY) for citation verification.
+ * Uploads PDFs via the Files API and passes file references inline
+ * in generateContent calls so Gemini sees the full document.
  */
 
-import { GoogleGenAI } from "@google/genai";
-import { readFileSync, readdirSync, statSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
-import { join, basename, dirname, extname } from "node:path";
+import { GoogleGenAI, Type } from "@google/genai";
+import { readFileSync, statSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
 import { homedir, tmpdir } from "node:os";
 
 // ---------------------------------------------------------------------------
@@ -28,38 +28,17 @@ export interface ClassifyResult {
   explanation: string;
 }
 
-export interface GeminiQueryResult {
-  classification: ClassifyResult;
-  groundingChunks: GroundingChunk[];
-  durationMs: number;
-}
-
-export interface GroundingChunk {
-  text: string;
-  sourceTitle?: string;
-  customMetadata?: Array<{
-    key: string;
-    stringValue?: string;
-    numericValue?: number;
-  }>;
-}
-
-export interface StoreDocument {
-  name: string;
-  displayName: string;
-  bibkey: string; // from customMetadata[key=bibkey].stringValue, falls back to displayName
-}
-
-export interface StoreConfig {
-  storeId: string;
-  storeName: string;
-  displayName: string;
-}
-
 export interface BibEntry {
   bibkey: string;
   filePath?: string; // absolute path resolved from bib dir + relative file field
   title?: string;    // for Readwise search fallback
+}
+
+/** Cached file upload result */
+export interface FileRef {
+  name: string;   // e.g. "files/abc-123"
+  uri: string;    // e.g. "https://generativelanguage.googleapis.com/..."
+  mimeType: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -94,142 +73,6 @@ export function __setGeminiClientForTesting(
   client: GoogleGenAI | null,
 ): void {
   activeClient = client;
-}
-
-// ---------------------------------------------------------------------------
-// Store management
-// ---------------------------------------------------------------------------
-
-export async function createStore(
-  displayName: string,
-): Promise<StoreConfig> {
-  const client = getClient();
-  const store = await client.fileSearchStores.create({
-    config: { displayName },
-  });
-  const storeId = store.name!.split("/").pop()!;
-  return {
-    storeId,
-    storeName: store.name!,
-    displayName,
-  };
-}
-
-export async function listDocuments(
-  storeName: string,
-): Promise<StoreDocument[]> {
-  const client = getClient();
-  const docs: StoreDocument[] = [];
-
-  const pager = await client.fileSearchStores.documents.list({
-    parent: storeName,
-    config: { pageSize: 20 },
-  });
-
-  let page = pager.page;
-  while (true) {
-    for (const doc of page) {
-      const bibkeyMeta = (doc as any).customMetadata?.find(
-        (m: any) => m.key === "bibkey",
-      );
-      docs.push({
-        name: doc.name ?? "",
-        displayName: doc.displayName ?? "",
-        bibkey: bibkeyMeta?.stringValue ?? doc.displayName ?? "",
-      });
-    }
-    if (!pager.hasNextPage()) break;
-    page = await pager.nextPage();
-  }
-
-  return docs;
-}
-
-export async function uploadPdf(
-  storeName: string,
-  pdfPath: string,
-  bibkey: string,
-  opts?: { mimeType?: string; _pollIntervalMs?: number },
-): Promise<void> {
-  const client = getClient();
-
-  // Step 1: Upload file to File Service (avoids 503 bug with uploadToFileSearchStore for files >10KB)
-  const uploadConfig: any = {
-    file: pdfPath,
-    config: {
-      displayName: bibkey,
-    },
-  };
-  if (opts?.mimeType) {
-    uploadConfig.config.mimeType = opts.mimeType;
-  }
-  const file = await client.files.upload(uploadConfig);
-  if (!file.name) {
-    throw new Error(`File upload returned no name for ${bibkey}`);
-  }
-
-  // Step 2: Poll until file is ACTIVE (handles STATE_PENDING stuck bug)
-  const maxWaitMs = 120_000; // 2 minutes
-  const pollMs = opts?._pollIntervalMs ?? 3_000;
-  const start = Date.now();
-  let fileState = file.state;
-  while (fileState === "PROCESSING" || fileState === "STATE_UNSPECIFIED") {
-    if (Date.now() - start > maxWaitMs) {
-      throw new Error(`File ${bibkey} stuck in ${fileState} after ${maxWaitMs / 1000}s`);
-    }
-    await new Promise((r) => setTimeout(r, pollMs));
-    const updated = await client.files.get({ name: file.name! });
-    fileState = updated.state;
-  }
-  if (fileState === "FAILED") {
-    throw new Error(`File processing failed for ${bibkey}: ${JSON.stringify(file.error)}`);
-  }
-
-  // Step 3: Import file into FileSearchStore
-  let operation = await client.fileSearchStores.importFile({
-    fileSearchStoreName: storeName,
-    fileName: file.name,
-    config: {
-      customMetadata: [{ key: "bibkey", stringValue: bibkey }],
-    },
-  });
-
-  // Step 4: Poll import operation until done
-  while (!operation.done) {
-    await new Promise((r) => setTimeout(r, 5000));
-    operation = (await client.operations.get({ operation })) as any;
-  }
-  if (operation.error) {
-    throw new Error(`Import failed for ${bibkey}: ${JSON.stringify(operation.error)}`);
-  }
-}
-
-export async function uploadPdfs(
-  storeName: string,
-  pdfsDir: string,
-): Promise<{ uploaded: number; skipped: number }> {
-  const existing = await listDocuments(storeName);
-  const existingBibkeys = new Set(existing.map((d) => d.bibkey));
-
-  const entries = readdirSync(pdfsDir, { withFileTypes: true });
-  const pdfs = entries
-    .filter((e) => e.isFile() && e.name.toLowerCase().endsWith(".pdf"))
-    .map((e) => ({
-      path: join(pdfsDir, e.name),
-      bibkey: basename(e.name, extname(e.name)),
-    }));
-
-  let uploaded = 0;
-  let skipped = 0;
-  for (const pdf of pdfs) {
-    if (existingBibkeys.has(pdf.bibkey)) {
-      skipped++;
-      continue;
-    }
-    await uploadPdf(storeName, pdf.path, pdf.bibkey);
-    uploaded++;
-  }
-  return { uploaded, skipped };
 }
 
 // ---------------------------------------------------------------------------
@@ -452,69 +295,90 @@ export async function searchReadwise(
 }
 
 // ---------------------------------------------------------------------------
-// Text upload (for Readwise content)
+// Files API: upload
 // ---------------------------------------------------------------------------
 
-/**
- * Upload text content as a document to the File Search store.
- * Writes to a temp file first since the SDK expects a file path.
- */
-export async function uploadText(
-  storeName: string,
-  content: string,
-  bibkey: string,
-): Promise<void> {
-  const tmpPath = join(tmpdir(), `cite-check-${bibkey}-${Date.now()}.md`);
+/** Upload a file to the Files API. Returns the file ref for use in generateContent. */
+export async function uploadFile(
+  filePath: string,
+  opts?: { displayName?: string; mimeType?: string; _pollIntervalMs?: number },
+): Promise<FileRef> {
+  const client = getClient();
+  const uploadConfig: Record<string, unknown> = {
+    file: filePath,
+    config: {
+      displayName: opts?.displayName,
+      mimeType: opts?.mimeType,
+    },
+  };
+  const file = await client.files.upload(uploadConfig);
+  if (!file.name) throw new Error(`Upload returned no name for ${filePath}`);
 
+  // Poll until ACTIVE
+  const maxWaitMs = 120_000;
+  const pollMs = opts?._pollIntervalMs ?? 3_000;
+  const start = Date.now();
+  let state = file.state;
+  while (state === "PROCESSING" || state === "STATE_UNSPECIFIED") {
+    if (Date.now() - start > maxWaitMs) {
+      throw new Error(`File stuck in ${state} after ${maxWaitMs / 1000}s`);
+    }
+    await new Promise(r => setTimeout(r, pollMs));
+    const updated = await client.files.get({ name: file.name! });
+    state = updated.state;
+  }
+  if (state === "FAILED") {
+    throw new Error(`File processing failed: ${JSON.stringify(file.error)}`);
+  }
+
+  return {
+    name: file.name,
+    uri: file.uri ?? "",
+    mimeType: file.mimeType ?? "application/pdf",
+  };
+}
+
+/** Upload text content as a file. Writes to temp file, uploads, cleans up. */
+export async function uploadTextFile(
+  content: string,
+  displayName: string,
+): Promise<FileRef> {
+  const tmpPath = join(tmpdir(), `cite-check-${displayName}-${Date.now()}.md`);
   try {
     writeFileSync(tmpPath, content, "utf-8");
-    await uploadPdf(storeName, tmpPath, bibkey, { mimeType: "text/markdown" });
+    return await uploadFile(tmpPath, { displayName, mimeType: "text/markdown" });
   } finally {
-    try { unlinkSync(tmpPath); } catch { /* best effort cleanup */ }
+    try { unlinkSync(tmpPath); } catch { /* best effort */ }
   }
 }
 
-// ---------------------------------------------------------------------------
-// Bib-based upload
-// ---------------------------------------------------------------------------
-
 /**
- * Upload PDFs for the given bibkeys, resolving paths from the bib map.
- * Skips bibkeys already in the store and bibkeys without a file mapping.
- * When readwiseFallback is true, attempts to find sources without PDFs
- * in Readwise Reader by title.
+ * Upload all cited PDFs from bib entries. Returns a map of bibkey -> FileRef.
+ * Skips bibkeys already in the cache.
  */
-export async function uploadFromBib(
-  storeName: string,
+export async function uploadCitedFiles(
   bibMap: Map<string, BibEntry>,
-  bibkeys: string[],
+  citedBibkeys: string[],
+  cache: Map<string, FileRef>,
   opts?: { debug?: boolean; readwiseFallback?: boolean },
 ): Promise<{ uploaded: number; skipped: number; missing: number; fromReadwise: number }> {
-  const existing = await listDocuments(storeName);
-  const existingBibkeys = new Set(existing.map((d) => d.bibkey));
+  let uploaded = 0, skipped = 0, missing = 0, fromReadwise = 0;
 
-  let uploaded = 0;
-  let skipped = 0;
-  let missing = 0;
-  let fromReadwise = 0;
-
-  for (const bibkey of bibkeys) {
-    if (existingBibkeys.has(bibkey)) {
-      skipped++;
-      continue;
-    }
+  for (const bibkey of citedBibkeys) {
+    if (cache.has(bibkey)) { skipped++; continue; }
 
     const entry = bibMap.get(bibkey);
 
-    // Try PDF from bib file first
+    // Try PDF file path from bib entry
     if (entry?.filePath) {
       try {
         statSync(entry.filePath);
-        if (opts?.debug) {
-          process.stderr.write(`[gemini] uploading ${bibkey} <- ${entry.filePath}\n`);
-        }
-        await uploadPdf(storeName, entry.filePath, bibkey);
+        const ref = await uploadFile(entry.filePath, { displayName: bibkey });
+        cache.set(bibkey, ref);
         uploaded++;
+        if (opts?.debug) {
+          process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
+        }
         continue;
       } catch {
         if (opts?.debug) {
@@ -523,14 +387,15 @@ export async function uploadFromBib(
       }
     }
 
-    // Readwise fallback: search by title from bib entry
+    // Readwise fallback
     if (opts?.readwiseFallback && entry?.title) {
       if (opts?.debug) {
         process.stderr.write(`[gemini] trying Readwise for ${bibkey} ("${entry.title}")\n`);
       }
       const content = await resolveFromReadwise(entry.title, opts);
       if (content) {
-        await uploadText(storeName, content, bibkey);
+        const ref = await uploadTextFile(content, bibkey);
+        cache.set(bibkey, ref);
         fromReadwise++;
         continue;
       }
@@ -552,7 +417,7 @@ export async function uploadFromBib(
 export interface BatchRequest {
   key: string; // unique key to match results back to cite groups
   prompt: string;
-  metadataFilter?: string;
+  fileRefs: FileRef[];
 }
 
 export interface BatchResult {
@@ -562,7 +427,7 @@ export interface BatchResult {
 }
 
 // ---------------------------------------------------------------------------
-// Batch cite-check
+// Response text extraction (for batch responses)
 // ---------------------------------------------------------------------------
 
 /**
@@ -570,48 +435,35 @@ export interface BatchResult {
  * Handles both hydrated GenerateContentResponse class instances (with .text string)
  * and raw JSON objects from the batch API (with candidates array).
  */
-function extractResponseText(response: any): string {
+export function extractResponseText(response: unknown): string {
   if (!response) return "";
+  const resp = response as Record<string, unknown>;
   // 1. Try .text property (hydrated GenerateContentResponse class)
-  if (typeof response.text === "string") return response.text;
+  if (typeof resp.text === "string") return resp.text;
   // 2. Try candidates path (raw JSON from batch API), joining all text parts
-  const parts = response.candidates?.[0]?.content?.parts;
+  const candidates = resp.candidates as Array<Record<string, unknown>> | undefined;
+  const parts = (candidates?.[0]?.content as Record<string, unknown> | undefined)?.parts;
   if (Array.isArray(parts)) {
     return parts
-      .filter((p: any) => typeof p.text === "string")
-      .map((p: any) => p.text)
+      .filter((p: Record<string, unknown>) => typeof p.text === "string")
+      .map((p: Record<string, unknown>) => p.text as string)
       .join("");
   }
   return "";
 }
 
-/**
- * Parse a markdown-template classification response.
- * Expected format:
- *   **Status:** SUPPORTED
- *   **Passage:** "exact quote..."
- *   **Explanation:** reason
- */
-export function parseMarkdownClassification(text: string): ClassifyResult {
-  const statusMatch = text.match(/\*\*Status:\*\*\s*(SUPPORTED|PARTIAL|UNSUPPORTED)/i);
-  const passageMatch = text.match(/\*\*Passage:\*\*\s*"?([^]*?)(?:\n\*\*Explanation:|$)/i);
-  const explanationMatch = text.match(/\*\*Explanation:\*\*\s*([^]*?)$/i);
-
-  const status = statusMatch
-    ? (statusMatch[1].toUpperCase() as Status)
-    : "ERROR";
-  const passage = passageMatch?.[1]?.trim().replace(/^"|"$/g, "") ?? "";
-  const explanation = explanationMatch?.[1]?.trim() ?? text.slice(0, 300);
-
-  return { status, supporting_passage: passage, explanation };
-}
+// ---------------------------------------------------------------------------
+// Batch cite-check
+// ---------------------------------------------------------------------------
 
 /**
  * Submit all citation queries as a single Gemini Batch API job.
  * Returns results keyed by the request key.
+ *
+ * Now uses inline file references (fileData) instead of fileSearch tools,
+ * which means we can use responseMimeType + responseSchema for structured output.
  */
 export async function submitBatchCiteCheck(
-  storeName: string,
   requests: BatchRequest[],
   opts?: { model?: string; debug?: boolean; pollIntervalMs?: number },
 ): Promise<BatchResult[]> {
@@ -621,27 +473,25 @@ export async function submitBatchCiteCheck(
 
   // Build inline requests array
   const inlineRequests = requests.map((req) => {
-    const fileSearchConfig: any = {
-      fileSearchStoreNames: [storeName],
-    };
-    if (req.metadataFilter) {
-      fileSearchConfig.metadataFilter = req.metadataFilter;
-    }
+    const parts: Array<Record<string, unknown>> = req.fileRefs.map(ref => ({
+      fileData: { fileUri: ref.uri, mimeType: ref.mimeType },
+    }));
+    parts.push({ text: req.prompt });
 
-    // Batch API does not support responseMimeType + tools together
-    // (error: "Tool use with a response mime type: 'application/json' is unsupported").
-    // Instead, we use a markdown template in the prompt and parse the response.
-    // Sequential mode (queryCitation) can still use responseJsonSchema.
     return {
       key: req.key,
-      contents: [{
-        parts: [{
-          text: req.prompt + `\n\nRespond using EXACTLY this template (fill in the values):\n\n**Status:** [SUPPORTED or PARTIAL or UNSUPPORTED]\n**Passage:** [exact quote from the source that supports or contradicts the claim, or "none" if unsupported]\n**Explanation:** [one sentence explaining why]`,
-        }],
-        role: "user" as const,
-      }],
+      contents: [{ parts, role: "user" as const }],
       config: {
-        tools: [{ fileSearch: fileSearchConfig }],
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            status: { type: Type.STRING, enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] },
+            supporting_passage: { type: Type.STRING },
+            explanation: { type: Type.STRING },
+          },
+          required: ["status", "supporting_passage", "explanation"],
+        },
       },
     };
   });
@@ -690,11 +540,11 @@ export async function submitBatchCiteCheck(
 
   // Parse results from inline responses
   const results: BatchResult[] = [];
-  const responses = (job as any).dest?.inlinedResponses ?? [];
+  const responses = (job as Record<string, unknown> & { dest?: { inlinedResponses?: unknown[] } }).dest?.inlinedResponses ?? [];
 
   for (let i = 0; i < responses.length; i++) {
     const key = requests[i]?.key ?? `unknown-${i}`;
-    const inlineResponse = responses[i];
+    const inlineResponse = responses[i] as Record<string, unknown>;
 
     // Raw response debug logging (before any parsing)
     if (opts?.debug) {
@@ -728,7 +578,7 @@ export async function submitBatchCiteCheck(
       continue;
     }
 
-    // Try JSON first (model sometimes returns it anyway), then markdown template
+    // Parse JSON structured output
     let classification: ClassifyResult;
     try {
       const parsed = JSON.parse(responseText);
@@ -738,7 +588,11 @@ export async function submitBatchCiteCheck(
         explanation: parsed.explanation ?? "",
       };
     } catch {
-      classification = parseMarkdownClassification(responseText);
+      classification = {
+        status: "ERROR",
+        supporting_passage: "",
+        explanation: `Failed to parse JSON: ${responseText.slice(0, 200)}`,
+      };
     }
 
     results.push({ key, classification });
@@ -747,39 +601,38 @@ export async function submitBatchCiteCheck(
   return results;
 }
 
+// ---------------------------------------------------------------------------
+// Sequential query
+// ---------------------------------------------------------------------------
+
 export async function queryCitation(
-  storeName: string,
+  fileRefs: FileRef[],
   prompt: string,
   opts?: {
-    metadataFilter?: string;
     model?: string;
     debug?: boolean;
   },
-): Promise<GeminiQueryResult> {
+): Promise<{ classification: ClassifyResult; durationMs: number }> {
   const client = getClient();
   const model = opts?.model ?? DEFAULT_MODEL;
   const t0 = Date.now();
 
-  const fileSearchConfig: any = {
-    fileSearchStoreNames: [storeName],
-  };
-  if (opts?.metadataFilter) {
-    fileSearchConfig.metadataFilter = opts.metadataFilter;
-  }
+  // Build content parts: file refs first, then the prompt
+  const parts: Array<Record<string, unknown>> = fileRefs.map(ref => ({
+    fileData: { fileUri: ref.uri, mimeType: ref.mimeType },
+  }));
+  parts.push({ text: prompt });
 
   if (opts?.debug) {
     process.stderr.write(
-      `[gemini] query model=${model} store=${storeName} filter=${opts?.metadataFilter ?? "none"}\n`,
+      `[gemini] query model=${model} fileRefs=${fileRefs.length}\n`,
     );
   }
 
-  // Structured output with File Search: uses responseJsonSchema (Gemini 3+).
-  // Heuristic fallback in catch block handles edge cases.
   const response = await client.models.generateContent({
     model,
-    contents: prompt,
+    contents: [{ parts, role: "user" }],
     config: {
-      tools: [{ fileSearch: fileSearchConfig }],
       responseMimeType: "application/json",
       responseJsonSchema: {
         type: "object",
@@ -821,20 +674,5 @@ export async function queryCitation(
     };
   }
 
-  // Extract grounding chunks
-  const groundingChunks: GroundingChunk[] = [];
-  const metadata = response.candidates?.[0]?.groundingMetadata;
-  if (metadata?.groundingChunks) {
-    for (const chunk of metadata.groundingChunks) {
-      if (chunk.retrievedContext) {
-        groundingChunks.push({
-          text: chunk.retrievedContext.text ?? "",
-          sourceTitle: chunk.retrievedContext.title ?? undefined,
-          customMetadata: (chunk.retrievedContext as any).customMetadata,
-        });
-      }
-    }
-  }
-
-  return { classification, groundingChunks, durationMs };
+  return { classification, durationMs };
 }

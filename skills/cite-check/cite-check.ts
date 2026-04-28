@@ -1,20 +1,20 @@
 #!/usr/bin/env bun
 /**
- * cite-check -- scan markdown drafts for pandoc citations, query Gemini File
- * Search to verify each cite is grounded in the cited source, and write a
- * structured REVIEW-CITES.md report.
+ * cite-check -- scan markdown drafts for pandoc citations, query Gemini with
+ * inline file references to verify each cite is grounded in the cited source,
+ * and write a structured REVIEW-CITES.md report.
  *
  * Pipeline:
  *   1. Walk drafts dir -> read .md files -> extractCitations.
- *   2. Set up Gemini store and upload PDFs (or use existing store).
- *   3. For cites whose bibkey IS in the store, build a verify-prompt and
+ *   2. Upload cited PDFs via Files API (cached per session).
+ *   3. For cites whose bibkey IS uploaded, build a verify-prompt and
  *      query Gemini with structured output. Tag SUPPORTED / PARTIAL / UNSUPPORTED.
- *   4. For cites whose bibkey is NOT in the store, tag NOT_IN_STORE
+ *   4. For cites whose bibkey is NOT uploaded, tag NOT_IN_STORE
  *      (no query).
  *   5. Write a markdown report and print a one-line summary to stdout.
  *
  * Usage:
- *   bun cite-check.ts --bib <path> [--bib <path2>] [--store <id>]
+ *   bun cite-check.ts --bib <path> [--bib <path2>]
  *                     [--drafts <dir>] [--out <path>] [--limit N]
  *                     [--dry-run] [--batch] [--debug]
  *
@@ -30,17 +30,15 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import {
-  createStore,
-  listDocuments,
-  uploadFromBib,
+  uploadCitedFiles,
   parseBibFile,
   queryCitation,
   searchReadwise,
   submitBatchCiteCheck,
   type Status,
-  type StoreConfig,
   type BibEntry,
   type BatchRequest,
+  type FileRef,
 } from "./gemini.js";
 import { extractCitations, type Citation } from "./cite-extract.js";
 
@@ -98,7 +96,6 @@ function parseFlags(argv: string[]): {
 
 export interface CiteCheckFlags {
   drafts?: string | boolean;
-  store?: string | boolean;
   out?: string | boolean;
   "dry-run"?: string | boolean;
   limit?: string | boolean;
@@ -229,7 +226,6 @@ function relPath(absPath: string, draftsDir: string): string {
 function renderReport(
   results: CiteResult[],
   meta: {
-    storeName: string;
     fileCount: number;
     citationCount: number;
     draftsDir: string;
@@ -259,7 +255,6 @@ function renderReport(
   lines.push(
     `Drafts scanned: ${meta.fileCount} files, ${meta.citationCount} citations`,
   );
-  lines.push(`Gemini store: ${meta.storeName}`);
   lines.push("");
   lines.push("## Summary");
   lines.push(`- \u2713 Supported: ${counts.SUPPORTED}`);
@@ -311,12 +306,9 @@ export async function cmdCiteCheck(
         return paths;
       })();
 
-  const storeId =
-    typeof flags.store === "string" ? flags.store : undefined;
-
-  if (resolvedBibPaths.length === 0 && !storeId) {
+  if (resolvedBibPaths.length === 0) {
     printError(
-      "Usage: cite-check --bib <path> [--bib <path2>] [--store <id>] [--drafts <dir>] [--out <path>] [--dry-run] [--batch] [--audit] [--limit <n>] [--debug]",
+      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--batch] [--audit] [--limit <n>] [--debug]",
     );
     return 1;
   }
@@ -523,70 +515,40 @@ export async function cmdCiteCheck(
     }
 
     const total = hasPdf.length + hasReadwise.length;
-    const missing =
+    const missingCount =
       missingPaperpile.length + missingReadwise.length + noInfo.length;
     process.stderr.write(
-      `\nCoverage: ${total}/${citedBibkeys.length} (${missing} missing)\n`,
+      `\nCoverage: ${total}/${citedBibkeys.length} (${missingCount} missing)\n`,
     );
 
-    return missing > 0 ? 1 : 0;
+    return missingCount > 0 ? 1 : 0;
   }
 
-  // 2. Set up Gemini store and upload PDFs for cited bibkeys.
-  let storeName: string;
-  let sourceBibkeys = new Set<string>();
+  // 2. Upload cited PDFs via Files API (cached per session).
+  const fileCache = new Map<string, FileRef>();
 
   if (!dryRun) {
     try {
-      if (storeId) {
-        storeName = `fileSearchStores/${storeId}`;
-        process.stderr.write(
-          `[cite-check] using existing store ${storeName}\n`,
-        );
-      } else {
-        // Auto-create store named after first bib file
-        const bibName = resolvedBibPaths.length > 0
-          ? (resolvedBibPaths[0].split("/").pop()?.replace(/\.bib$/, "") ?? "cite-check")
-          : "cite-check";
-        const config: StoreConfig = await createStore(
-          `cite-check-${bibName}`,
-        );
-        storeName = config.storeName;
-        process.stderr.write(`[cite-check] created store ${storeName}\n`);
-      }
-
-      // Upload PDFs for cited bibkeys only (with Readwise fallback)
-      if (resolvedBibPaths.length > 0 && bibMap.size > 0) {
+      // Upload PDFs for cited bibkeys
+      if (bibMap.size > 0) {
         const citedBibkeys = [...new Set(cites.map((c) => c.bibkey))];
         process.stderr.write(
-          `[cite-check] uploading PDFs for ${citedBibkeys.length} cited bibkeys...\n`,
+          `[cite-check] uploading ${citedBibkeys.length} cited sources...\n`,
         );
-        const { uploaded, skipped, missing, fromReadwise } = await uploadFromBib(
-          storeName,
+        const { uploaded, skipped, missing, fromReadwise } = await uploadCitedFiles(
           bibMap,
           citedBibkeys,
+          fileCache,
           { debug, readwiseFallback: true },
         );
         process.stderr.write(
-          `[cite-check] uploaded ${uploaded} PDFs + ${fromReadwise} from Readwise, skipped ${skipped} (already indexed), ${missing} missing\n`,
+          `[cite-check] uploaded ${uploaded} + ${fromReadwise} from Readwise, ${skipped} cached, ${missing} missing\n`,
         );
       }
-
-      // List documents to build bibkey set
-      const docs = await listDocuments(storeName);
-      sourceBibkeys = new Set(docs.map((d) => d.bibkey));
-      process.stderr.write(
-        `[cite-check] store has ${docs.length} documents\n`,
-      );
     } catch (err) {
-      printError(
-        `Gemini store setup failed: ${err instanceof Error ? err.message : String(err)}`,
-      );
+      printError(`File upload failed: ${err instanceof Error ? err.message : String(err)}`);
       return 1;
     }
-  } else {
-    // In dry-run mode, storeName is only used for display.
-    storeName = storeId ? `fileSearchStores/${storeId}` : "(dry-run)";
   }
 
   // 2b. Group citations that share the same (file, line, claim) -- these are
@@ -636,27 +598,22 @@ export async function cmdCiteCheck(
     const batchRequests: BatchRequest[] = [];
 
     for (const g of groups) {
-      const inStore = g.cites.filter((c) => sourceBibkeys.has(c.bibkey));
-      const notInStore = g.cites.filter((c) => !sourceBibkeys.has(c.bibkey));
+      const inStore = g.cites.filter((c) => fileCache.has(c.bibkey));
+      const notInStore = g.cites.filter((c) => !fileCache.has(c.bibkey));
 
       for (const c of notInStore) {
         results.push({
           cite: c,
           status: "NOT_IN_STORE",
-          response: `Bibkey \`${c.bibkey}\` not in Gemini store.`,
+          response: `Bibkey \`${c.bibkey}\` not uploaded.`,
         });
       }
 
       if (inStore.length === 0) continue;
 
-      const bibkeys = inStore.map((c) => c.bibkey);
-      const metadataFilter =
-        bibkeys.length > 1
-          ? bibkeys.map((k) => `bibkey="${k}"`).join(" OR ")
-          : undefined;
-
+      const refs = inStore.map(c => fileCache.get(c.bibkey)!);
       const prompt = buildGroupPrompt(inStore);
-      batchRequests.push({ key: g.key, prompt, metadataFilter });
+      batchRequests.push({ key: g.key, prompt, fileRefs: refs });
     }
 
     if (batchRequests.length > 0) {
@@ -664,13 +621,13 @@ export async function cmdCiteCheck(
         `[cite-check] batch mode: submitting ${batchRequests.length} queries...\n`,
       );
 
-      const batchResults = await submitBatchCiteCheck(storeName, batchRequests, { debug });
+      const batchResults = await submitBatchCiteCheck(batchRequests, { debug });
 
       // Map results back to cite groups by key
       const resultByKey = new Map(batchResults.map((r) => [r.key, r]));
 
       for (const g of groups) {
-        const inStore = g.cites.filter((c) => sourceBibkeys.has(c.bibkey));
+        const inStore = g.cites.filter((c) => fileCache.has(c.bibkey));
         if (inStore.length === 0) continue;
 
         const batchResult = resultByKey.get(g.key);
@@ -697,30 +654,26 @@ export async function cmdCiteCheck(
     for (const g of groups) {
       const c0 = g.cites[0];
 
-      // 3a. Partition: which bibkeys are in the store vs not?
-      const inStore = g.cites.filter((c) => sourceBibkeys.has(c.bibkey));
-      const notInStore = g.cites.filter((c) => !sourceBibkeys.has(c.bibkey));
+      // 3a. Partition: which bibkeys are uploaded vs not?
+      const inStore = g.cites.filter((c) => fileCache.has(c.bibkey));
+      const notInStore = g.cites.filter((c) => !fileCache.has(c.bibkey));
 
       // Tag NOT_IN_STORE cites immediately.
       for (const c of notInStore) {
         results.push({
           cite: c,
           status: "NOT_IN_STORE",
-          response: `Bibkey \`${c.bibkey}\` not in Gemini store.`,
+          response: `Bibkey \`${c.bibkey}\` not uploaded.`,
         });
       }
 
-      // If no cites in the store, nothing to query.
+      // If no cites have files, nothing to query.
       if (inStore.length === 0) continue;
 
       queryIdx++;
 
-      // Build metadata filter for compound cites.
-      const bibkeys = inStore.map((c) => c.bibkey);
-      const metadataFilter =
-        bibkeys.length > 1
-          ? bibkeys.map((k) => `bibkey="${k}"`).join(" OR ")
-          : undefined; // single-source: search full store
+      // Collect file refs for this group's bibkeys
+      const refs = inStore.map(c => fileCache.get(c.bibkey)!);
 
       const prompt = buildGroupPrompt(inStore);
       const label = inStore.map((c) => c.bibkey).join("+");
@@ -732,8 +685,7 @@ export async function cmdCiteCheck(
       );
 
       try {
-        const geminiResult = await queryCitation(storeName, prompt, {
-          metadataFilter,
+        const geminiResult = await queryCitation(refs, prompt, {
           debug,
         });
 
@@ -764,7 +716,6 @@ export async function cmdCiteCheck(
 
   // 4. Write the report.
   const report = renderReport(results, {
-    storeName,
     fileCount: files.length,
     citationCount: allCites.length,
     draftsDir,

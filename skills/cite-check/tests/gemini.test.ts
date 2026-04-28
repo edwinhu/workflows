@@ -3,26 +3,21 @@ import { join } from "node:path";
 import {
   __setGeminiClientForTesting,
   __setReadwisePathForTesting,
-  createStore,
-  listDocuments,
-  uploadPdf,
-  uploadPdfs,
-  uploadFromBib,
-  uploadText,
+  uploadFile,
+  uploadTextFile,
+  uploadCitedFiles,
   parseBibFile,
   resolveFromReadwise,
   searchReadwise,
   queryCitation,
   submitBatchCiteCheck,
-  parseMarkdownClassification,
+  extractResponseText,
   titleSimilarity,
-  type StoreConfig,
-  type StoreDocument,
-  type GeminiQueryResult,
   type ClassifyResult,
   type Status,
   type BibEntry,
   type BatchRequest,
+  type FileRef,
 } from "../gemini";
 
 afterEach(() => {
@@ -32,11 +27,12 @@ afterEach(() => {
 
 describe("gemini.ts module", () => {
   it("exports all required types and functions", () => {
-    expect(typeof createStore).toBe("function");
-    expect(typeof listDocuments).toBe("function");
-    expect(typeof uploadPdf).toBe("function");
-    expect(typeof uploadPdfs).toBe("function");
+    expect(typeof uploadFile).toBe("function");
+    expect(typeof uploadTextFile).toBe("function");
+    expect(typeof uploadCitedFiles).toBe("function");
     expect(typeof queryCitation).toBe("function");
+    expect(typeof submitBatchCiteCheck).toBe("function");
+    expect(typeof extractResponseText).toBe("function");
     expect(typeof __setGeminiClientForTesting).toBe("function");
   });
 
@@ -45,223 +41,183 @@ describe("gemini.ts module", () => {
     __setGeminiClientForTesting({} as any);
 
     await expect(
-      queryCitation("stores/123", "test prompt"),
+      queryCitation([], "test prompt"),
     ).rejects.toThrow();
   });
 });
 
-describe("createStore", () => {
-  it("calls fileSearchStores.create and returns parsed config", async () => {
-    const mockClient = {
-      fileSearchStores: {
-        create: async (_opts: any) => ({
-          name: "fileSearchStores/abc123",
-        }),
-        documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) },
-        importFile: async () => ({ done: true }),
-      },
-      files: {
-        upload: async () => ({ name: "files/abc123", state: "ACTIVE" }),
-        get: async () => ({ state: "ACTIVE" }),
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const result = await createStore("my-project");
-    expect(result.storeId).toBe("abc123");
-    expect(result.storeName).toBe("fileSearchStores/abc123");
-    expect(result.displayName).toBe("my-project");
-  });
-});
-
-describe("listDocuments", () => {
-  it("returns parsed documents with bibkey from customMetadata", async () => {
-    const mockDocs = [
-      { name: "fileSearchStores/s1/documents/d1", displayName: "d98ctytgehwv", customMetadata: [{ key: "bibkey", stringValue: "Hirst2022-pq" }] },
-      { name: "fileSearchStores/s1/documents/d2", displayName: "x7abcdef1234", customMetadata: [{ key: "bibkey", stringValue: "Bebchuk2017-mm" }] },
-    ];
-    const mockClient = {
-      fileSearchStores: {
-        documents: {
-          list: async () => ({
-            page: mockDocs,
-            hasNextPage: () => false,
-            nextPage: async () => [],
-          }),
-        },
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const docs = await listDocuments("fileSearchStores/s1");
-    expect(docs.length).toBe(2);
-    expect(docs[0].bibkey).toBe("Hirst2022-pq");
-    expect(docs[1].bibkey).toBe("Bebchuk2017-mm");
-    // displayName is the random ID
-    expect(docs[0].displayName).toBe("d98ctytgehwv");
-    expect(docs[1].displayName).toBe("x7abcdef1234");
-  });
-
-  it("falls back to displayName when customMetadata is missing", async () => {
-    const mockDocs = [
-      { name: "fileSearchStores/s1/documents/d1", displayName: "LegacyDoc2020-xx" },
-    ];
-    const mockClient = {
-      fileSearchStores: {
-        documents: {
-          list: async () => ({
-            page: mockDocs,
-            hasNextPage: () => false,
-            nextPage: async () => [],
-          }),
-        },
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const docs = await listDocuments("fileSearchStores/s1");
-    expect(docs.length).toBe(1);
-    expect(docs[0].bibkey).toBe("LegacyDoc2020-xx");
-    expect(docs[0].displayName).toBe("LegacyDoc2020-xx");
-  });
-
-  it("paginates across multiple pages", async () => {
-    const page1 = [
-      { name: "fileSearchStores/s1/documents/d1", displayName: "rand1", customMetadata: [{ key: "bibkey", stringValue: "Doc1" }] },
-      { name: "fileSearchStores/s1/documents/d2", displayName: "rand2", customMetadata: [{ key: "bibkey", stringValue: "Doc2" }] },
-    ];
-    const page2 = [
-      { name: "fileSearchStores/s1/documents/d3", displayName: "rand3", customMetadata: [{ key: "bibkey", stringValue: "Doc3" }] },
-    ];
-    let nextPageCalled = false;
-    const mockClient = {
-      fileSearchStores: {
-        documents: {
-          list: async () => ({
-            page: page1,
-            hasNextPage: () => !nextPageCalled,
-            nextPage: async () => {
-              nextPageCalled = true;
-              return page2;
-            },
-          }),
-        },
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const docs = await listDocuments("fileSearchStores/s1");
-    expect(docs.length).toBe(3);
-    expect(docs[0].bibkey).toBe("Doc1");
-    expect(docs[2].bibkey).toBe("Doc3");
-    expect(nextPageCalled).toBe(true);
-  });
-});
-
-describe("uploadPdf", () => {
-  it("uploads file, imports into store with bibkey metadata", async () => {
+describe("uploadFile", () => {
+  it("uploads file and returns FileRef with name, uri, mimeType", async () => {
     const uploadCalls: any[] = [];
-    const importCalls: any[] = [];
     const mockClient = {
       files: {
         upload: async (opts: any) => {
           uploadCalls.push(opts);
-          return { name: "files/abc123", state: "ACTIVE" };
+          return {
+            name: "files/abc123",
+            uri: "https://generativelanguage.googleapis.com/v1beta/files/abc123",
+            mimeType: "application/pdf",
+            state: "ACTIVE",
+          };
         },
         get: async () => ({ state: "ACTIVE" }),
-      },
-      fileSearchStores: {
-        importFile: async (opts: any) => {
-          importCalls.push(opts);
-          return { done: true };
-        },
-        documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) },
-      },
-      operations: {
-        get: async () => ({ done: true }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    await uploadPdf("fileSearchStores/s1", "/tmp/test.pdf", "Author2022-ab");
+    const ref = await uploadFile("/tmp/test.pdf", { displayName: "Author2022-ab" });
+    expect(ref.name).toBe("files/abc123");
+    expect(ref.uri).toBe("https://generativelanguage.googleapis.com/v1beta/files/abc123");
+    expect(ref.mimeType).toBe("application/pdf");
     expect(uploadCalls.length).toBe(1);
     expect(uploadCalls[0].config.displayName).toBe("Author2022-ab");
-    expect(importCalls.length).toBe(1);
-    expect(importCalls[0].fileSearchStoreName).toBe("fileSearchStores/s1");
-    expect(importCalls[0].fileName).toBe("files/abc123");
-    expect(importCalls[0].config.customMetadata).toEqual([
-      { key: "bibkey", stringValue: "Author2022-ab" },
-    ]);
   });
 
-  it("polls until file is ACTIVE before importing", async () => {
+  it("polls until file is ACTIVE before returning", async () => {
     let getCalls = 0;
     const mockClient = {
       files: {
-        upload: async () => ({ name: "files/abc456", state: "PROCESSING" }),
+        upload: async () => ({
+          name: "files/abc456",
+          uri: "https://example.com/files/abc456",
+          mimeType: "application/pdf",
+          state: "PROCESSING",
+        }),
         get: async () => {
           getCalls++;
-          // Return ACTIVE on the second call
-          return { state: getCalls >= 2 ? "ACTIVE" : "PROCESSING" };
+          return {
+            state: getCalls >= 2 ? "ACTIVE" : "PROCESSING",
+            uri: "https://example.com/files/abc456",
+            mimeType: "application/pdf",
+          };
         },
-      },
-      fileSearchStores: {
-        importFile: async () => ({ done: true }),
-        documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) },
-      },
-      operations: {
-        get: async () => ({ done: true }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    await uploadPdf("fileSearchStores/s1", "/tmp/test.pdf", "PollTest2024-xx", { _pollIntervalMs: 10 });
-    // files.get should have been called at least twice (once PROCESSING, once ACTIVE)
+    const ref = await uploadFile("/tmp/test.pdf", { _pollIntervalMs: 10 });
+    expect(ref.name).toBe("files/abc456");
     expect(getCalls).toBeGreaterThanOrEqual(2);
+  });
+
+  it("throws when upload returns no name", async () => {
+    const mockClient = {
+      files: {
+        upload: async () => ({ state: "ACTIVE" }),
+        get: async () => ({ state: "ACTIVE" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await expect(uploadFile("/tmp/test.pdf")).rejects.toThrow("Upload returned no name");
+  });
+
+  it("throws when file processing fails", async () => {
+    const mockClient = {
+      files: {
+        upload: async () => ({
+          name: "files/fail123",
+          state: "FAILED",
+          error: { message: "corrupt file" },
+        }),
+        get: async () => ({ state: "FAILED" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await expect(uploadFile("/tmp/test.pdf")).rejects.toThrow("File processing failed");
   });
 });
 
-describe("uploadPdfs", () => {
-  it("skips already-uploaded PDFs by bibkey not displayName", async () => {
+describe("uploadTextFile", () => {
+  it("writes temp file, uploads, and returns FileRef", async () => {
     const uploadCalls: any[] = [];
     const mockClient = {
       files: {
         upload: async (opts: any) => {
           uploadCalls.push(opts);
-          return { name: "files/newpaper123", state: "ACTIVE" };
+          return {
+            name: "files/textdoc123",
+            uri: "https://example.com/files/textdoc123",
+            mimeType: "text/markdown",
+            state: "ACTIVE",
+          };
         },
         get: async () => ({ state: "ACTIVE" }),
       },
-      fileSearchStores: {
-        documents: {
-          list: async () => ({
-            page: [
-              // displayName is random, bibkey in customMetadata matches the PDF filename
-              { name: "d1", displayName: "abc123random", customMetadata: [{ key: "bibkey", stringValue: "Existing2020-xx" }] },
-            ],
-            hasNextPage: () => false,
-            nextPage: async () => [],
-          }),
-        },
-        importFile: async () => ({ done: true }),
-      },
-      operations: { get: async () => ({ done: true }) },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    // Create a temp dir with 2 PDFs: one that exists in store, one that doesn't
-    const tmpDir = "/tmp/cite-check-test-pdfs";
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(join(tmpDir, "Existing2020-xx.pdf"), "fake-pdf");
-      writeFileSync(join(tmpDir, "NewPaper2023-yy.pdf"), "fake-pdf");
+    const ref = await uploadTextFile(
+      "# Some Markdown Content\n\nThis is a test document.",
+      "TestDoc2024-ab",
+    );
 
-      const result = await uploadPdfs("fileSearchStores/s1", tmpDir);
-      expect(result.uploaded).toBe(1);
-      expect(result.skipped).toBe(1);
+    expect(ref.name).toBe("files/textdoc123");
+    expect(ref.mimeType).toBe("text/markdown");
+    expect(uploadCalls.length).toBe(1);
+    expect(uploadCalls[0].config.displayName).toBe("TestDoc2024-ab");
+    expect(uploadCalls[0].config.mimeType).toBe("text/markdown");
+    // The temp file should have been cleaned up (best effort)
+    const { existsSync } = await import("node:fs");
+    const tmpFile = uploadCalls[0].file as string;
+    expect(existsSync(tmpFile)).toBe(false);
+  });
+});
+
+describe("uploadCitedFiles", () => {
+  it("uploads PDFs, skips cached, tracks missing", async () => {
+    const uploadCalls: any[] = [];
+    const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCalls.push(opts);
+          return {
+            name: `files/${opts.config.displayName}`,
+            uri: `https://example.com/files/${opts.config.displayName}`,
+            mimeType: "application/pdf",
+            state: "ACTIVE",
+          };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-upload-cited-test";
+    try {
+      mkdirSync(join(tmpDir, "pdfs"), { recursive: true });
+      writeFileSync(join(tmpDir, "pdfs/real.pdf"), "fake-pdf");
+
+      const bibMap = new Map<string, BibEntry>([
+        ["HasPdf2024-aa", { bibkey: "HasPdf2024-aa", filePath: join(tmpDir, "pdfs/real.pdf") }],
+        ["NoPdf2024-bb", { bibkey: "NoPdf2024-bb", filePath: join(tmpDir, "pdfs/nonexistent.pdf") }],
+        ["AlreadyCached2020-xx", { bibkey: "AlreadyCached2020-xx", filePath: join(tmpDir, "pdfs/real.pdf") }],
+      ]);
+
+      // Pre-populate cache with one entry
+      const cache = new Map<string, FileRef>([
+        ["AlreadyCached2020-xx", { name: "files/cached", uri: "https://example.com/cached", mimeType: "application/pdf" }],
+      ]);
+
+      const result = await uploadCitedFiles(
+        bibMap,
+        ["HasPdf2024-aa", "NoPdf2024-bb", "AlreadyCached2020-xx", "NotInBib2024-cc"],
+        cache,
+      );
+
+      expect(result.uploaded).toBe(1);  // HasPdf2024-aa
+      expect(result.skipped).toBe(1);   // AlreadyCached2020-xx
+      expect(result.missing).toBe(2);   // NoPdf2024-bb (file not found) + NotInBib2024-cc (not in map)
+      expect(result.fromReadwise).toBe(0);
       expect(uploadCalls.length).toBe(1);
-      expect(uploadCalls[0].config.displayName).toBe("NewPaper2023-yy");  // files.upload config
+      expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");
+
+      // Cache should now have both entries
+      expect(cache.has("HasPdf2024-aa")).toBe(true);
+      expect(cache.has("AlreadyCached2020-xx")).toBe(true);
+      expect(cache.size).toBe(2);
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -269,7 +225,7 @@ describe("uploadPdfs", () => {
 });
 
 describe("queryCitation", () => {
-  it("sends prompt with file search tool and parses structured SUPPORTED response", async () => {
+  it("sends prompt with inline file refs and parses structured SUPPORTED response", async () => {
     const generateCalls: any[] = [];
     const mockClient = {
       models: {
@@ -281,41 +237,69 @@ describe("queryCitation", () => {
               supporting_passage: "The study found significant effects (p < 0.01)",
               explanation: "Source directly supports the claim with statistical evidence",
             }),
-            candidates: [{
-              groundingMetadata: {
-                groundingChunks: [{
-                  retrievedContext: {
-                    text: "The study found significant effects (p < 0.01) on corporate governance outcomes.",
-                    title: "Hirst2022-pq",
-                    customMetadata: [{ key: "bibkey", stringValue: "Hirst2022-pq" }],
-                  },
-                }],
-              },
-            }],
           };
         },
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
+    const fileRefs: FileRef[] = [
+      { name: "files/abc123", uri: "https://example.com/files/abc123", mimeType: "application/pdf" },
+    ];
+
     const result = await queryCitation(
-      "fileSearchStores/s1",
+      fileRefs,
       "Does Hirst2022-pq support this claim?",
-      { metadataFilter: 'bibkey="Hirst2022-pq"' },
     );
 
     expect(result.classification.status).toBe("SUPPORTED");
     expect(result.classification.supporting_passage).toContain("significant effects");
-    expect(result.groundingChunks.length).toBe(1);
-    expect(result.groundingChunks[0].sourceTitle).toBe("Hirst2022-pq");
     expect(result.durationMs).toBeGreaterThanOrEqual(0);
 
-    // Verify the SDK call included file search config and structured output
+    // Verify the SDK call included file data parts and structured output
     expect(generateCalls.length).toBe(1);
-    expect(generateCalls[0].config.tools[0].fileSearch.fileSearchStoreNames).toEqual(["fileSearchStores/s1"]);
-    expect(generateCalls[0].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="Hirst2022-pq"');
-    expect(generateCalls[0].config.responseMimeType).toBe("application/json");
-    expect(generateCalls[0].config.responseJsonSchema).toBeDefined();
+    const call = generateCalls[0];
+    expect(call.contents[0].parts.length).toBe(2); // 1 file + 1 text
+    expect(call.contents[0].parts[0].fileData.fileUri).toBe("https://example.com/files/abc123");
+    expect(call.contents[0].parts[0].fileData.mimeType).toBe("application/pdf");
+    expect(call.contents[0].parts[1].text).toBe("Does Hirst2022-pq support this claim?");
+    expect(call.config.responseMimeType).toBe("application/json");
+    expect(call.config.responseJsonSchema).toBeDefined();
+    // No tools (no fileSearch)
+    expect(call.config.tools).toBeUndefined();
+  });
+
+  it("sends multiple file refs for compound citations", async () => {
+    const generateCalls: any[] = [];
+    const mockClient = {
+      models: {
+        generateContent: async (opts: any) => {
+          generateCalls.push(opts);
+          return {
+            text: JSON.stringify({
+              status: "SUPPORTED",
+              supporting_passage: "Evidence from both sources",
+              explanation: "Both sources support the claim",
+            }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const fileRefs: FileRef[] = [
+      { name: "files/a", uri: "https://example.com/files/a", mimeType: "application/pdf" },
+      { name: "files/b", uri: "https://example.com/files/b", mimeType: "text/markdown" },
+    ];
+
+    const result = await queryCitation(fileRefs, "Do both support this?");
+    expect(result.classification.status).toBe("SUPPORTED");
+
+    // Should have 3 parts: 2 files + 1 text
+    expect(generateCalls[0].contents[0].parts.length).toBe(3);
+    expect(generateCalls[0].contents[0].parts[0].fileData.fileUri).toBe("https://example.com/files/a");
+    expect(generateCalls[0].contents[0].parts[1].fileData.fileUri).toBe("https://example.com/files/b");
+    expect(generateCalls[0].contents[0].parts[2].text).toBe("Do both support this?");
   });
 
   it("classifies UNSUPPORTED from structured output", async () => {
@@ -327,13 +311,12 @@ describe("queryCitation", () => {
             supporting_passage: "",
             explanation: "The source does not discuss this topic",
           }),
-          candidates: [{ groundingMetadata: { groundingChunks: [] } }],
         }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation("fileSearchStores/s1", "test prompt");
+    const result = await queryCitation([], "test prompt");
     expect(result.classification.status).toBe("UNSUPPORTED");
     expect(result.classification.supporting_passage).toBe("");
   });
@@ -343,13 +326,12 @@ describe("queryCitation", () => {
       models: {
         generateContent: async () => ({
           text: "The source supports this claim but is not JSON.",
-          candidates: [{}],
         }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation("fileSearchStores/s1", "test prompt");
+    const result = await queryCitation([], "test prompt");
     expect(result.classification.status).toBe("ERROR");
     expect(result.classification.explanation).toContain("Failed to parse");
   });
@@ -359,13 +341,12 @@ describe("queryCitation", () => {
       models: {
         generateContent: async () => ({
           text: "",
-          candidates: [{}],
         }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation("fileSearchStores/s1", "test prompt");
+    const result = await queryCitation([], "test prompt");
     expect(result.classification.status).toBe("ERROR");
   });
 
@@ -377,31 +358,35 @@ describe("queryCitation", () => {
           calls.push(opts);
           return {
             text: JSON.stringify({ status: "PARTIAL", supporting_passage: "", explanation: "" }),
-            candidates: [{}],
           };
         },
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    await queryCitation("fileSearchStores/s1", "test");
+    await queryCitation([], "test");
     expect(calls[0].model).toBe("gemini-3.1-flash-lite-preview");
   });
 
-  it("handles missing grounding metadata gracefully", async () => {
+  it("works with empty fileRefs array", async () => {
+    const generateCalls: any[] = [];
     const mockClient = {
       models: {
-        generateContent: async () => ({
-          text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "quote", explanation: "ok" }),
-          candidates: [{}],  // no groundingMetadata
-        }),
+        generateContent: async (opts: any) => {
+          generateCalls.push(opts);
+          return {
+            text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "quote", explanation: "ok" }),
+          };
+        },
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation("fileSearchStores/s1", "test");
+    const result = await queryCitation([], "test");
     expect(result.classification.status).toBe("SUPPORTED");
-    expect(result.groundingChunks).toEqual([]);
+    // Should have only 1 part (the text prompt)
+    expect(generateCalls[0].contents[0].parts.length).toBe(1);
+    expect(generateCalls[0].contents[0].parts[0].text).toBe("test");
   });
 });
 
@@ -511,127 +496,46 @@ describe("parseBibFile", () => {
   });
 });
 
-describe("uploadFromBib", () => {
-  it("uploads only cited bibkeys that have file mappings and aren't already in store", async () => {
-    const uploadCalls: any[] = [];
-    const mockClient = {
-      files: {
-        upload: async (opts: any) => {
-          uploadCalls.push(opts);
-          return { name: "files/haspdf123", state: "ACTIVE" };
-        },
-        get: async () => ({ state: "ACTIVE" }),
-      },
-      fileSearchStores: {
-        documents: {
-          list: async () => ({
-            page: [
-              // displayName is random, bibkey in customMetadata
-              { name: "d1", displayName: "xyz789random", customMetadata: [{ key: "bibkey", stringValue: "AlreadyThere2020-xx" }] },
-            ],
-            hasNextPage: () => false,
-            nextPage: async () => [],
-          }),
-        },
-        importFile: async () => ({ done: true }),
-      },
-      operations: { get: async () => ({ done: true }) },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-upload-bib-test";
-    try {
-      mkdirSync(join(tmpDir, "pdfs"), { recursive: true });
-      writeFileSync(join(tmpDir, "pdfs/real.pdf"), "fake-pdf");
-
-      const bibMap = new Map<string, BibEntry>([
-        [
-          "HasPdf2024-aa",
-          {
-            bibkey: "HasPdf2024-aa",
-            filePath: join(tmpDir, "pdfs/real.pdf"),
-          },
-        ],
-        [
-          "NoPdf2024-bb",
-          {
-            bibkey: "NoPdf2024-bb",
-            filePath: join(tmpDir, "pdfs/nonexistent.pdf"),
-          },
-        ],
-        [
-          "AlreadyThere2020-xx",
-          {
-            bibkey: "AlreadyThere2020-xx",
-            filePath: join(tmpDir, "pdfs/real.pdf"),
-          },
-        ],
-      ]);
-
-      const result = await uploadFromBib(
-        "fileSearchStores/s1",
-        bibMap,
-        [
-          "HasPdf2024-aa",
-          "NoPdf2024-bb",
-          "AlreadyThere2020-xx",
-          "NotInBib2024-cc",
-        ],
-      );
-
-      expect(result.uploaded).toBe(1); // HasPdf2024-aa
-      expect(result.skipped).toBe(1); // AlreadyThere2020-xx
-      expect(result.missing).toBe(2); // NoPdf2024-bb (file not found) + NotInBib2024-cc (not in map)
-      expect(result.fromReadwise).toBe(0); // no readwise fallback in mock test
-      expect(uploadCalls.length).toBe(1);
-      expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");  // files.upload config
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
-  });
-});
-
-describe("resolveFromReadwise", () => {
-  it("exports resolveFromReadwise as a function", () => {
-    expect(typeof resolveFromReadwise).toBe("function");
-  });
-});
-
-describe("uploadText", () => {
-  it("exports uploadText as a function", () => {
-    expect(typeof uploadText).toBe("function");
+describe("extractResponseText", () => {
+  it("extracts text from hydrated response with .text string", () => {
+    const result = extractResponseText({ text: '{"status":"SUPPORTED"}' });
+    expect(result).toBe('{"status":"SUPPORTED"}');
   });
 
-  it("writes temp file, uploads via uploadPdf, and cleans up", async () => {
-    const uploadCalls: any[] = [];
-    const mockClient = {
-      files: {
-        upload: async (opts: any) => {
-          uploadCalls.push(opts);
-          return { name: "files/textdoc123", state: "ACTIVE" };
+  it("extracts text from raw candidates array", () => {
+    const result = extractResponseText({
+      candidates: [{
+        content: {
+          parts: [{ text: '{"status":"PARTIAL"}' }],
         },
-        get: async () => ({ state: "ACTIVE" }),
-      },
-      fileSearchStores: {
-        importFile: async () => ({ done: true }),
-      },
-      operations: { get: async () => ({ done: true }) },
-    };
-    __setGeminiClientForTesting(mockClient as any);
+      }],
+    });
+    expect(result).toBe('{"status":"PARTIAL"}');
+  });
 
-    await uploadText(
-      "fileSearchStores/s1",
-      "# Some Markdown Content\n\nThis is a test document.",
-      "TestDoc2024-ab",
-    );
+  it("joins multiple text parts", () => {
+    const result = extractResponseText({
+      candidates: [{
+        content: {
+          parts: [
+            { text: '{"status":' },
+            { text: '"SUPPORTED"}' },
+          ],
+        },
+      }],
+    });
+    expect(result).toBe('{"status":"SUPPORTED"}');
+  });
 
-    expect(uploadCalls.length).toBe(1);
-    expect(uploadCalls[0].config.displayName).toBe("TestDoc2024-ab");
-    // The temp file should have been cleaned up (best effort)
-    const { existsSync } = await import("node:fs");
-    const tmpFile = uploadCalls[0].file as string;
-    expect(existsSync(tmpFile)).toBe(false);
+  it("returns empty string for null/undefined", () => {
+    expect(extractResponseText(null)).toBe("");
+    expect(extractResponseText(undefined)).toBe("");
+    expect(extractResponseText({})).toBe("");
+  });
+
+  it("returns empty string for empty candidates", () => {
+    expect(extractResponseText({ candidates: [] })).toBe("");
+    expect(extractResponseText({ candidates: [{ content: { parts: [] } }] })).toBe("");
   });
 });
 
@@ -658,59 +562,8 @@ describe("titleSimilarity", () => {
   });
 });
 
-describe("parseMarkdownClassification", () => {
-  it("parses well-formed markdown template response", () => {
-    const text = `**Status:** SUPPORTED
-**Passage:** "The study found significant effects (p < 0.01)"
-**Explanation:** Source directly supports the claim with statistical evidence`;
-
-    const result = parseMarkdownClassification(text);
-    expect(result.status).toBe("SUPPORTED");
-    expect(result.supporting_passage).toContain("significant effects");
-    expect(result.explanation).toContain("statistical evidence");
-  });
-
-  it("parses UNSUPPORTED status", () => {
-    const text = `**Status:** UNSUPPORTED
-**Passage:** none
-**Explanation:** The source does not discuss this topic`;
-
-    const result = parseMarkdownClassification(text);
-    expect(result.status).toBe("UNSUPPORTED");
-    expect(result.supporting_passage).toBe("none");
-    expect(result.explanation).toContain("does not discuss");
-  });
-
-  it("parses PARTIAL status (case-insensitive)", () => {
-    const text = `**Status:** partial
-**Passage:** "some partial quote"
-**Explanation:** Only partially supported`;
-
-    const result = parseMarkdownClassification(text);
-    expect(result.status).toBe("PARTIAL");
-  });
-
-  it("returns ERROR for text without status pattern", () => {
-    const text = "This is just free text without any markdown template.";
-    const result = parseMarkdownClassification(text);
-    expect(result.status).toBe("ERROR");
-    // explanation should contain a snippet of the original text
-    expect(result.explanation).toContain("free text");
-  });
-
-  it("handles passage without quotes", () => {
-    const text = `**Status:** SUPPORTED
-**Passage:** The exact quote from the document
-**Explanation:** Matches claim`;
-
-    const result = parseMarkdownClassification(text);
-    expect(result.status).toBe("SUPPORTED");
-    expect(result.supporting_passage).toBe("The exact quote from the document");
-  });
-});
-
 describe("submitBatchCiteCheck", () => {
-  it("submits batch with fileSearch tools and markdown template prompt", async () => {
+  it("submits batch with inline fileData parts and responseSchema", async () => {
     const createCalls: any[] = [];
     const mockClient = {
       batches: {
@@ -725,7 +578,11 @@ describe("submitBatchCiteCheck", () => {
                   response: {
                     candidates: [{
                       content: {
-                        parts: [{ text: `**Status:** SUPPORTED\n**Passage:** "Evidence here"\n**Explanation:** Source supports claim` }],
+                        parts: [{ text: JSON.stringify({
+                          status: "SUPPORTED",
+                          supporting_passage: "Evidence here",
+                          explanation: "Source supports claim",
+                        }) }],
                       },
                     }],
                   },
@@ -734,7 +591,11 @@ describe("submitBatchCiteCheck", () => {
                   response: {
                     candidates: [{
                       content: {
-                        parts: [{ text: `**Status:** UNSUPPORTED\n**Passage:** none\n**Explanation:** Not discussed` }],
+                        parts: [{ text: JSON.stringify({
+                          status: "UNSUPPORTED",
+                          supporting_passage: "",
+                          explanation: "Not discussed",
+                        }) }],
                       },
                     }],
                   },
@@ -748,147 +609,84 @@ describe("submitBatchCiteCheck", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [
-        { key: "g1", prompt: "Does source support claim 1?" },
-        { key: "g2", prompt: "Does source support claim 2?", metadataFilter: 'bibkey="X"' },
-      ],
-    );
+    const fileRef1: FileRef = { name: "files/a", uri: "https://example.com/a", mimeType: "application/pdf" };
+    const fileRef2: FileRef = { name: "files/b", uri: "https://example.com/b", mimeType: "application/pdf" };
 
-    // Single batch call with fileSearch tools
+    const results = await submitBatchCiteCheck([
+      { key: "g1", prompt: "Does source support claim 1?", fileRefs: [fileRef1] },
+      { key: "g2", prompt: "Does source support claim 2?", fileRefs: [fileRef2] },
+    ]);
+
+    // Single batch call
     expect(createCalls.length).toBe(1);
     expect(createCalls[0].src.length).toBe(2);
 
-    // Batch requests should have fileSearch tools
-    expect(createCalls[0].src[0].config.tools[0].fileSearch.fileSearchStoreNames).toEqual(["fileSearchStores/s1"]);
-    // Second request should have metadataFilter
-    expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
+    // Batch requests should have fileData parts (not fileSearch tools)
+    const req1 = createCalls[0].src[0];
+    expect(req1.contents[0].parts[0].fileData.fileUri).toBe("https://example.com/a");
+    expect(req1.contents[0].parts[0].fileData.mimeType).toBe("application/pdf");
+    expect(req1.contents[0].parts[1].text).toBe("Does source support claim 1?");
 
-    // Batch requests should NOT have responseMimeType or responseSchema
-    expect(createCalls[0].src[0].config.responseMimeType).toBeUndefined();
-    expect(createCalls[0].src[0].config.responseSchema).toBeUndefined();
+    // Should have responseMimeType and responseSchema (no tools = structured output works)
+    expect(req1.config.responseMimeType).toBe("application/json");
+    expect(req1.config.responseSchema).toBeDefined();
+    expect(req1.config.responseSchema.type).toBeDefined();
+    // No tools
+    expect(req1.config.tools).toBeUndefined();
 
-    // Prompt should contain the markdown template instruction
-    const batchPrompt = createCalls[0].src[0].contents[0].parts[0].text;
-    expect(batchPrompt).toContain("**Status:**");
-    expect(batchPrompt).toContain("Does source support claim 1?");
-
-    // Results should be properly parsed from markdown
+    // Results should be properly parsed from JSON
     expect(results.length).toBe(2);
     expect(results[0].key).toBe("g1");
     expect(results[0].classification.status).toBe("SUPPORTED");
-    expect(results[0].classification.supporting_passage).toContain("Evidence here");
+    expect(results[0].classification.supporting_passage).toBe("Evidence here");
     expect(results[1].key).toBe("g2");
     expect(results[1].classification.status).toBe("UNSUPPORTED");
   });
 
-  it("parses JSON response when model returns JSON despite no schema", async () => {
+  it("handles multiple file refs in a single batch request", async () => {
+    const createCalls: any[] = [];
     const mockClient = {
       batches: {
-        create: async () => ({
-          name: "batches/json-batch",
-          state: "JOB_STATE_SUCCEEDED",
-          dest: {
-            inlinedResponses: [
-              {
+        create: async (opts: any) => {
+          createCalls.push(opts);
+          return {
+            name: "batches/compound-batch",
+            state: "JOB_STATE_SUCCEEDED",
+            dest: {
+              inlinedResponses: [{
                 response: {
-                  candidates: [{
-                    content: {
-                      parts: [{ text: JSON.stringify({
-                        status: "SUPPORTED",
-                        supporting_passage: "Evidence here",
-                        explanation: "Source supports claim",
-                      }) }],
-                    },
-                  }],
+                  text: JSON.stringify({
+                    status: "SUPPORTED",
+                    supporting_passage: "combined evidence",
+                    explanation: "both sources agree",
+                  }),
                 },
-              },
-            ],
-          },
-        }),
+              }],
+            },
+          };
+        },
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
+    const refs: FileRef[] = [
+      { name: "files/a", uri: "https://example.com/a", mimeType: "application/pdf" },
+      { name: "files/b", uri: "https://example.com/b", mimeType: "text/markdown" },
+    ];
 
-    expect(results.length).toBe(1);
+    const results = await submitBatchCiteCheck([
+      { key: "compound", prompt: "Do both support this?", fileRefs: refs },
+    ]);
+
+    // Should have 3 parts: 2 file refs + 1 text prompt
+    const parts = createCalls[0].src[0].contents[0].parts;
+    expect(parts.length).toBe(3);
+    expect(parts[0].fileData.fileUri).toBe("https://example.com/a");
+    expect(parts[1].fileData.fileUri).toBe("https://example.com/b");
+    expect(parts[2].text).toBe("Do both support this?");
+
     expect(results[0].classification.status).toBe("SUPPORTED");
-    expect(results[0].classification.supporting_passage).toBe("Evidence here");
-  });
-
-  it("falls back to markdown parser for non-JSON free-text with template", async () => {
-    const mockClient = {
-      batches: {
-        create: async () => ({
-          name: "batches/markdown-batch",
-          state: "JOB_STATE_SUCCEEDED",
-          dest: {
-            inlinedResponses: [
-              {
-                response: {
-                  candidates: [{
-                    content: {
-                      parts: [{ text: `**Status:** PARTIAL\n**Passage:** "some evidence"\n**Explanation:** partially supports` }],
-                    },
-                  }],
-                },
-              },
-            ],
-          },
-        }),
-        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
-
-    expect(results.length).toBe(1);
-    expect(results[0].classification.status).toBe("PARTIAL");
-  });
-
-  it("returns ERROR for free-text without markdown template", async () => {
-    const mockClient = {
-      batches: {
-        create: async () => ({
-          name: "batches/freetext-batch",
-          state: "JOB_STATE_SUCCEEDED",
-          dest: {
-            inlinedResponses: [
-              {
-                response: {
-                  candidates: [{
-                    content: {
-                      parts: [{ text: "The source mentions something about this claim." }],
-                    },
-                  }],
-                },
-              },
-            ],
-          },
-        }),
-        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
-
-    expect(results.length).toBe(1);
-    // Without a valid status keyword, should return ERROR
-    expect(results[0].classification.status).toBe("ERROR");
   });
 
   it("parses hydrated class responses with .text string property", async () => {
@@ -916,10 +714,9 @@ describe("submitBatchCiteCheck", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
+    const results = await submitBatchCiteCheck([
+      { key: "g1", prompt: "test", fileRefs: [] },
+    ]);
 
     expect(results.length).toBe(1);
     expect(results[0].classification.status).toBe("SUPPORTED");
@@ -954,10 +751,9 @@ describe("submitBatchCiteCheck", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
+    const results = await submitBatchCiteCheck([
+      { key: "g1", prompt: "test", fileRefs: [] },
+    ]);
 
     expect(results.length).toBe(1);
     expect(results[0].classification.status).toBe("PARTIAL");
@@ -980,14 +776,41 @@ describe("submitBatchCiteCheck", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
+    const results = await submitBatchCiteCheck([
+      { key: "g1", prompt: "test", fileRefs: [] },
+    ]);
 
     expect(results.length).toBe(1);
     expect(results[0].classification.status).toBe("ERROR");
     expect(results[0].error).toBeDefined();
+  });
+
+  it("returns ERROR for non-JSON response text", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/nonjson-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [{
+              response: {
+                text: "This is not JSON at all",
+              },
+            }],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck([
+      { key: "g1", prompt: "test", fileRefs: [] },
+    ]);
+
+    expect(results.length).toBe(1);
+    expect(results[0].classification.status).toBe("ERROR");
+    expect(results[0].classification.explanation).toContain("Failed to parse JSON");
   });
 
   it("returns ERROR for empty/malformed response", async () => {
@@ -1010,21 +833,41 @@ describe("submitBatchCiteCheck", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [
-        { key: "g1", prompt: "test1" },
-        { key: "g2", prompt: "test2" },
-        { key: "g3", prompt: "test3" },
-        { key: "g4", prompt: "test4" },
-      ],
-    );
+    const results = await submitBatchCiteCheck([
+      { key: "g1", prompt: "test1", fileRefs: [] },
+      { key: "g2", prompt: "test2", fileRefs: [] },
+      { key: "g3", prompt: "test3", fileRefs: [] },
+      { key: "g4", prompt: "test4", fileRefs: [] },
+    ]);
 
     expect(results.length).toBe(4);
     // All should return ERROR status since there's no valid text
     for (const r of results) {
       expect(r.classification.status).toBe("ERROR");
     }
+  });
+
+  it("throws for failed batch job", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/failed",
+          state: "JOB_STATE_FAILED",
+        }),
+        get: async () => ({ state: "JOB_STATE_FAILED" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await expect(
+      submitBatchCiteCheck([{ key: "g1", prompt: "test", fileRefs: [] }]),
+    ).rejects.toThrow("Batch job failed");
+  });
+});
+
+describe("resolveFromReadwise", () => {
+  it("exports resolveFromReadwise as a function", () => {
+    expect(typeof resolveFromReadwise).toBe("function");
   });
 });
 
@@ -1049,32 +892,20 @@ const _classify: ClassifyResult = {
   supporting_passage: "p",
   explanation: "e",
 };
-const _queryResult: GeminiQueryResult = {
-  classification: _classify,
-  groundingChunks: [],
-  durationMs: 0,
-};
-const _storeDoc: StoreDocument = { name: "n", displayName: "d", bibkey: "b" };
-const _storeCfg: StoreConfig = {
-  storeId: "id",
-  storeName: "name",
-  displayName: "d",
-};
+const _fileRef: FileRef = { name: "files/x", uri: "https://example.com/x", mimeType: "application/pdf" };
 
 // BibEntry now has optional filePath and title
 const _bibEntry: BibEntry = { bibkey: "k" };
 const _bibEntryFull: BibEntry = { bibkey: "k", filePath: "/p", title: "T" };
 
-// BatchRequest type check
-const _batchReq: BatchRequest = { key: "k", prompt: "p" };
-const _batchReqFull: BatchRequest = { key: "k", prompt: "p", metadataFilter: "f" };
+// BatchRequest type check -- now uses fileRefs instead of metadataFilter
+const _batchReq: BatchRequest = { key: "k", prompt: "p", fileRefs: [] };
+const _batchReqFull: BatchRequest = { key: "k", prompt: "p", fileRefs: [_fileRef] };
 
 // Suppress unused-variable warnings -- these are compile-time type checks
 void _status;
 void _classify;
-void _queryResult;
-void _storeDoc;
-void _storeCfg;
+void _fileRef;
 void _bibEntry;
 void _bibEntryFull;
 void _batchReq;
