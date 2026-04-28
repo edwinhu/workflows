@@ -6,7 +6,7 @@
  * citation querying with grounding chunks.
  */
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { readFileSync, readdirSync, statSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
 import { join, basename, dirname, extname } from "node:path";
 import { homedir, tmpdir } from "node:os";
@@ -657,13 +657,32 @@ export async function submitBatchCiteCheck(
       key: req.key,
       contents: [{
         parts: [{
-          text: req.prompt + `\n\nYou MUST respond with ONLY a JSON object in this exact format, no other text:\n{"status": "SUPPORTED", "supporting_passage": "exact quote from source", "explanation": "brief reason"}\nstatus must be one of: SUPPORTED, PARTIAL, UNSUPPORTED`,
+          text: req.prompt,
         }],
         role: "user" as const,
       }],
       config: {
         tools: [{ fileSearch: fileSearchConfig }],
         responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            status: {
+              type: Type.STRING,
+              enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"],
+              description: "Whether the source(s) support the claim",
+            },
+            supporting_passage: {
+              type: Type.STRING,
+              description: "Quote from the source that supports the claim, or empty string if unsupported",
+            },
+            explanation: {
+              type: Type.STRING,
+              description: "Brief explanation of the classification",
+            },
+          },
+          required: ["status", "supporting_passage", "explanation"],
+        },
       },
     };
   });

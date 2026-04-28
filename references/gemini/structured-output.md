@@ -15,27 +15,32 @@ The SDK has two schema fields — they are NOT interchangeable:
 
 | Field | Format | Sequential | Batch | Notes |
 |-------|--------|-----------|-------|-------|
-| `responseSchema` | OpenAPI 3.0 Schema (`type: "OBJECT"`, uppercase) | Works | Should work | Native Gemini format |
-| `responseJsonSchema` | JSON Schema (`type: "object"`, lowercase) | Works | **Silently ignored** | Alternative format |
+| `responseSchema` | OpenAPI Schema (`type: Type.OBJECT`, uppercase) | Works | **Works** | Use this for batch mode |
+| `responseJsonSchema` | JSON Schema (`type: "object"`, lowercase) | Works | **Not supported** | Sequential only |
 
-**For batch mode, do NOT use `responseJsonSchema`.** Use one of:
-1. `responseSchema` with OpenAPI types (untested in batch but matches API docs)
-2. `responseMimeType: "application/json"` + prompt-based instructions (proven pattern)
+**For batch mode, use `responseSchema` with OpenAPI types.** `responseJsonSchema` only works in sequential mode. This is the most common batch structured output bug — using the wrong schema field causes the batch API to silently return free-text instead of JSON.
 
 ### Proven Batch Pattern (from production)
 
 ```typescript
-// Batch inline request — NO schema field, prompt instructs JSON format
+import { Type } from "@google/genai";
+
+// Batch inline request — use responseSchema (OpenAPI), NOT responseJsonSchema
 {
   contents: [{
-    parts: [{
-      text: prompt + `\n\nYou MUST respond with ONLY a JSON object in this exact format, no other text:\n{"status": "SUPPORTED", "supporting_passage": "exact quote", "explanation": "reason"}\nstatus must be one of: SUPPORTED, PARTIAL, UNSUPPORTED`
-    }],
+    parts: [{ text: prompt }],
     role: "user",
   }],
   config: {
     responseMimeType: "application/json",
-    // NO responseJsonSchema — batch API ignores it
+    responseSchema: {
+      type: Type.OBJECT,
+      properties: {
+        status: { type: Type.STRING, enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] },
+        explanation: { type: Type.STRING },
+      },
+      required: ["status", "explanation"],
+    },
   },
 }
 ```
@@ -110,14 +115,14 @@ Structured output works with: File Search, Google Search, URL Context, Code Exec
 
 ### Schema Enforcement
 
-| Mode | `responseJsonSchema` | `responseMimeType` + prompt | Result |
-|------|---------------------|----------------------------|--------|
-| Sequential (`generateContent`) | Enforced | Also works | Guaranteed JSON |
-| Batch (`batches.create`) | **Silently ignored** | Works | JSON if prompt is explicit |
+| Mode | `responseJsonSchema` | `responseSchema` | `responseMimeType` + prompt |
+|------|---------------------|------------------|----------------------------|
+| Sequential (`generateContent`) | Works | Works | Also works |
+| Batch (`batches.create`) | **Not supported** | **Works** | Fallback option |
 
-**Sequential mode:** Use `responseJsonSchema` freely — the API enforces it.
+**Sequential mode:** Use either `responseJsonSchema` or `responseSchema` — the API enforces both.
 
-**Batch mode:** Use `responseMimeType: "application/json"` + explicit prompt instructions. Add a heuristic fallback parser for edge cases where the model still returns free-text.
+**Batch mode:** Use `responseSchema` with OpenAPI `Type` enum values. `responseJsonSchema` is not supported in batch and will silently fall back to free-text.
 
 ### Response Extraction
 
@@ -170,6 +175,6 @@ Streamed chunks produce valid partial JSON strings that concatenate to form the 
 - Guarantees syntactic correctness only -- values may be semantically wrong
 - Available only for Gemini 3 series models
 - Schema must use supported type subset (no $ref, no oneOf, etc.)
-- `responseJsonSchema` is silently ignored in batch mode — use `responseMimeType` + prompt instructions
+- `responseJsonSchema` is not supported in batch mode — use `responseSchema` with OpenAPI `Type` enum instead
 - Batch responses are raw JSON objects, not hydrated class instances (no `.text` getter)
 - Combining fileSearch tool + structured output in batch mode may not enforce the schema

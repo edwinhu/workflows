@@ -727,19 +727,22 @@ describe("submitBatchCiteCheck", () => {
     expect(createCalls[0].src[0].key).toBe("g1");
     expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
 
-    // Batch config should NOT include responseJsonSchema (batch API ignores it)
+    // Batch config MUST include responseSchema with OpenAPI Type values
+    expect(createCalls[0].src[0].config.responseSchema).toBeDefined();
+    expect(createCalls[0].src[0].config.responseSchema.type).toBe("OBJECT"); // Type.OBJECT = "OBJECT"
+    expect(createCalls[0].src[0].config.responseSchema.properties.status.enum).toEqual(
+      ["SUPPORTED", "PARTIAL", "UNSUPPORTED"]
+    );
+    expect(createCalls[0].src[1].config.responseSchema).toBeDefined();
+    // responseJsonSchema should NOT be present (batch API ignores it)
     expect(createCalls[0].src[0].config.responseJsonSchema).toBeUndefined();
-    expect(createCalls[0].src[1].config.responseJsonSchema).toBeUndefined();
     // But MUST include responseMimeType
     expect(createCalls[0].src[0].config.responseMimeType).toBe("application/json");
     expect(createCalls[0].src[1].config.responseMimeType).toBe("application/json");
 
-    // Prompt should include explicit JSON schema instruction for batch mode
+    // Prompt should NOT include the workaround JSON instruction (schema handles it)
     const promptText = createCalls[0].src[0].contents[0].parts[0].text;
-    expect(promptText).toContain("You MUST respond with ONLY a JSON object");
-    expect(promptText).toContain("SUPPORTED");
-    expect(promptText).toContain("UNSUPPORTED");
-    expect(promptText).toContain("PARTIAL");
+    expect(promptText).not.toContain("You MUST respond with ONLY a JSON object");
   });
 
   it("parses hydrated class responses with .text string property", async () => {
