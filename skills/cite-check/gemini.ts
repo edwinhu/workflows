@@ -6,7 +6,7 @@
  * citation querying with grounding chunks.
  */
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { readFileSync, readdirSync, statSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
 import { join, basename, dirname, extname } from "node:path";
 import { homedir, tmpdir } from "node:os";
@@ -586,6 +586,46 @@ function extractResponseText(response: any): string {
 }
 
 /**
+ * Heuristic fallback parser for when batch responses return free-text instead
+ * of structured JSON. This is needed because the Batch API does not support
+ * responseMimeType + tools together (error: "Tool use with a response mime
+ * type: 'application/json' is unsupported"). We rely on prompt-based JSON
+ * instructions, but the model may still return free-text.
+ */
+function heuristicClassify(text: string): ClassifyResult {
+  // 1. Try to find embedded JSON (code fence or bare object)
+  const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) ??
+    text.match(/(\{[\s\S]*"status"\s*:[\s\S]*?\})/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1]);
+      return {
+        status: parsed.status ?? "ERROR",
+        supporting_passage: parsed.supporting_passage ?? "",
+        explanation: parsed.explanation ?? "",
+      };
+    } catch { /* fall through to keyword extraction */ }
+  }
+
+  // 2. Keyword extraction for status
+  const upper = text.toUpperCase();
+  let status: Status = "ERROR";
+  if (upper.includes("UNSUPPORTED") || upper.includes("DOES NOT SUPPORT")) {
+    status = "UNSUPPORTED";
+  } else if (upper.includes("PARTIAL")) {
+    status = "PARTIAL";
+  } else if (upper.includes("SUPPORTED") || upper.includes("SUPPORTS")) {
+    status = "SUPPORTED";
+  }
+
+  // 3. Extract quoted passage (look for substantial quoted text)
+  const quoteMatch = text.match(/"([^"]{20,})"/);
+  const passage = quoteMatch?.[1] ?? "";
+
+  return { status, supporting_passage: passage, explanation: text.slice(0, 300) };
+}
+
+/**
  * Submit all citation queries as a single Gemini Batch API job.
  * Returns results keyed by the request key.
  */
@@ -607,36 +647,21 @@ export async function submitBatchCiteCheck(
       fileSearchConfig.metadataFilter = req.metadataFilter;
     }
 
+    // IMPORTANT: Batch API does not support responseMimeType + tools together.
+    // Error: "Tool use with a response mime type: 'application/json' is unsupported"
+    // When fileSearch is used in batch, we must rely on prompt-based JSON instructions
+    // and heuristic fallback parsing. Sequential mode (queryCitation) can use
+    // responseJsonSchema since generateContent doesn't have this limitation.
     return {
       key: req.key,
       contents: [{
         parts: [{
-          text: req.prompt,
+          text: req.prompt + `\n\nYou MUST respond with ONLY a JSON object in this exact format, no other text:\n{"status": "SUPPORTED", "supporting_passage": "exact quote from source", "explanation": "brief reason"}\nstatus must be one of: SUPPORTED, PARTIAL, UNSUPPORTED`,
         }],
         role: "user" as const,
       }],
       config: {
         tools: [{ fileSearch: fileSearchConfig }],
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            status: {
-              type: Type.STRING,
-              enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"],
-              description: "Whether the source(s) support the claim",
-            },
-            supporting_passage: {
-              type: Type.STRING,
-              description: "Quote from the source that supports the claim, or empty string if unsupported",
-            },
-            explanation: {
-              type: Type.STRING,
-              description: "Brief explanation of the classification",
-            },
-          },
-          required: ["status", "supporting_passage", "explanation"],
-        },
       },
     };
   });
@@ -736,11 +761,7 @@ export async function submitBatchCiteCheck(
     } catch {
       results.push({
         key,
-        classification: {
-          status: "ERROR",
-          supporting_passage: "",
-          explanation: `Failed to parse JSON: ${responseText.slice(0, 200)}`,
-        },
+        classification: heuristicClassify(responseText),
       });
     }
   }

@@ -17,6 +17,7 @@
 - [Gotcha 13: SDK Pager auto-pagination is broken for fileSearchStores.documents.list](#gotcha-13-sdk-pager-auto-pagination-is-broken-for-filesearchstoresdocumentslist)
 - [Gotcha 14: Store document displayName is random after importFile](#gotcha-14-store-document-displayname-is-random-after-importfile)
 - [Gotcha 15: Batch inlinedResponse.response is raw JSON, not hydrated class](#gotcha-15-batch-inlinedresponseresponse-is-raw-json-not-hydrated-class)
+- [Gotcha 16: Batch API rejects responseMimeType + tools together](#gotcha-16-batch-api-rejects-responsemimetype--tools-together)
 
 Production lessons learned from real-world Gemini Batch API deployments.
 
@@ -827,3 +828,40 @@ function extractResponseText(response: any): string {
 ```
 
 This handles both sequential mode (hydrated class with `.text` getter) and batch mode (raw JSON with candidates array).
+
+---
+
+## Gotcha 16: Batch API rejects responseMimeType + tools together
+
+When a batch inline request includes both `responseMimeType: "application/json"` (or `responseSchema`) AND `tools` (like `fileSearch`, `google_search`), every individual response returns error code 3:
+
+> "Tool use with a response mime type: 'application/json' is unsupported"
+
+The batch job itself reports JOB_STATE_SUCCEEDED, but every `inlinedResponse` has `error` set.
+
+**Fix:** When using tools in batch, omit `responseMimeType` and `responseSchema`. Use prompt-based JSON instructions:
+
+```typescript
+// WRONG -- error code 3 for every response
+config: {
+  tools: [{ fileSearch: { fileSearchStoreNames: [store] } }],
+  responseMimeType: "application/json",  // INCOMPATIBLE with tools in batch
+  responseSchema: { ... },
+}
+
+// RIGHT -- prompt instructs JSON format
+contents: [{
+  parts: [{
+    text: prompt + '\n\nRespond with ONLY a JSON object: {"status": "SUPPORTED", ...}'
+  }],
+  role: "user",
+}],
+config: {
+  tools: [{ fileSearch: { fileSearchStoreNames: [store] } }],
+  // NO responseMimeType, NO responseSchema
+}
+```
+
+Add a heuristic fallback parser to extract classification from free-text responses when the model doesn't return pure JSON.
+
+**This does NOT affect sequential mode** -- `generateContent` supports tools + structured output together.

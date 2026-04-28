@@ -726,22 +726,18 @@ describe("submitBatchCiteCheck", () => {
     expect(createCalls[0].src[0].key).toBe("g1");
     expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
 
-    // Batch config MUST include responseSchema with OpenAPI Type values
-    expect(createCalls[0].src[0].config.responseSchema).toBeDefined();
-    expect(createCalls[0].src[0].config.responseSchema.type).toBe("OBJECT"); // Type.OBJECT = "OBJECT"
-    expect(createCalls[0].src[0].config.responseSchema.properties.status.enum).toEqual(
-      ["SUPPORTED", "PARTIAL", "UNSUPPORTED"]
-    );
-    expect(createCalls[0].src[1].config.responseSchema).toBeDefined();
-    // responseJsonSchema should NOT be present (batch API ignores it)
+    // IMPORTANT: Batch API does not support responseMimeType + tools together.
+    // responseSchema and responseMimeType MUST be absent when fileSearch tools are used.
+    expect(createCalls[0].src[0].config.responseSchema).toBeUndefined();
+    expect(createCalls[0].src[1].config.responseSchema).toBeUndefined();
+    expect(createCalls[0].src[0].config.responseMimeType).toBeUndefined();
+    expect(createCalls[0].src[1].config.responseMimeType).toBeUndefined();
+    // responseJsonSchema should NOT be present either
     expect(createCalls[0].src[0].config.responseJsonSchema).toBeUndefined();
-    // But MUST include responseMimeType
-    expect(createCalls[0].src[0].config.responseMimeType).toBe("application/json");
-    expect(createCalls[0].src[1].config.responseMimeType).toBe("application/json");
 
-    // Prompt should NOT include the workaround JSON instruction (schema handles it)
+    // Prompt MUST include JSON format instructions as workaround
     const promptText = createCalls[0].src[0].contents[0].parts[0].text;
-    expect(promptText).not.toContain("You MUST respond with ONLY a JSON object");
+    expect(promptText).toContain("You MUST respond with ONLY a JSON object");
   });
 
   it("parses hydrated class responses with .text string property", async () => {
@@ -843,6 +839,70 @@ describe("submitBatchCiteCheck", () => {
     expect(results.length).toBe(1);
     expect(results[0].classification.status).toBe("ERROR");
     expect(results[0].error).toBeDefined();
+  });
+
+  it("uses heuristic fallback for free-text responses (non-JSON)", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/freetext-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: "The source SUPPORTED this claim. \"The market showed significant gains in Q3 2024 across all sectors\" is the relevant passage." }],
+                    },
+                  }],
+                },
+              },
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: "This claim is UNSUPPORTED by the source material." }],
+                    },
+                  }],
+                },
+              },
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: '```json\n{"status": "PARTIAL", "supporting_passage": "some quote", "explanation": "partial match"}\n```' }],
+                    },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [
+        { key: "g1", prompt: "test1" },
+        { key: "g2", prompt: "test2" },
+        { key: "g3", prompt: "test3" },
+      ],
+    );
+
+    expect(results.length).toBe(3);
+    // Free-text with "SUPPORTED" keyword
+    expect(results[0].classification.status).toBe("SUPPORTED");
+    expect(results[0].classification.supporting_passage).toContain("significant gains");
+    // Free-text with "UNSUPPORTED" keyword
+    expect(results[1].classification.status).toBe("UNSUPPORTED");
+    // Embedded JSON in code fence
+    expect(results[2].classification.status).toBe("PARTIAL");
+    expect(results[2].classification.supporting_passage).toBe("some quote");
   });
 
   it("returns ERROR for empty/malformed response", async () => {

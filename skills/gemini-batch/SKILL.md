@@ -227,13 +227,14 @@ See the Rationalization Table in the first Iron Law section above — the same g
 | **SDK Pager stops after first page** | **Use `pager.hasNextPage()` + `pager.nextPage()`, NOT `for await`** |
 | **Batch `inlinedResponse.response.text` is undefined** | **Response is raw JSON, not hydrated class. Use `candidates[0].content.parts[0].text`** |
 | **Store document displayName is random ID after importFile** | **Read bibkey from `customMetadata`, not `displayName`** |
+| **`responseMimeType` + tools in batch = error code 3** | **Omit responseMimeType when using tools; use prompt-based JSON instructions** |
 
 **Top 3 mistakes** (bolded above):
 1. Using nested objects in metadata instead of flat primitives
 2. Mixing Standard API and Vertex AI patterns
 3. Using `destination=` instead of `dest=` (Vertex AI)
 
-See `references/gotchas.md` for detailed solutions (now with Gotchas 10-15).
+See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 
 ## Rate Limits
 

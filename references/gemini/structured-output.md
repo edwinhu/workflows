@@ -124,6 +124,19 @@ Structured output works with: File Search, Google Search, URL Context, Code Exec
 
 **Batch mode:** Use `responseSchema` with OpenAPI `Type` enum values. `responseJsonSchema` is not supported in batch and will silently fall back to free-text.
 
+### Batch + Tools Incompatibility
+
+**CRITICAL: `responseMimeType: "application/json"` cannot be combined with `tools` (fileSearch, google_search, etc.) in batch mode.**
+
+The batch API returns per-request error code 3:
+> "Tool use with a response mime type: 'application/json' is unsupported"
+
+The batch job itself succeeds (JOB_STATE_SUCCEEDED) but every individual `inlinedResponse` has `error` set instead of `response`.
+
+**Workaround:** When using tools in batch mode, omit `responseMimeType` and `responseSchema`. Use prompt-based JSON instructions instead, with a heuristic fallback parser for free-text responses.
+
+This limitation does NOT apply to sequential `generateContent` -- tools + structured output work fine there.
+
 ### Response Extraction
 
 **CRITICAL: Batch API returns raw JSON objects, not hydrated class instances.**
@@ -177,4 +190,4 @@ Streamed chunks produce valid partial JSON strings that concatenate to form the 
 - Schema must use supported type subset (no $ref, no oneOf, etc.)
 - `responseJsonSchema` is not supported in batch mode — use `responseSchema` with OpenAPI `Type` enum instead
 - Batch responses are raw JSON objects, not hydrated class instances (no `.text` getter)
-- Combining fileSearch tool + structured output in batch mode may not enforce the schema
+- Combining `tools` (fileSearch, google_search, etc.) + `responseMimeType: "application/json"` in batch mode returns error code 3 for every response -- omit responseMimeType and use prompt-based JSON instead
