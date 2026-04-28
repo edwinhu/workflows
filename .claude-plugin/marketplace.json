@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Development, data science, and writing workflows for Claude Code",
-    "version": "4.94.5"
+    "version": "4.94.6"
   },
   "plugins": [
     {
       "name": "workflows",
       "source": "./",
       "description": "Unified development, data science, and writing workflows with TDD enforcement, output-first verification, GSD-style deviation rules, test gap validation, and session handoff",
-      "version": "4.94.5",
+      "version": "4.94.6",
       "category": "development",
       "tags": ["development", "data-science", "writing", "tdd", "workflows"]
     }

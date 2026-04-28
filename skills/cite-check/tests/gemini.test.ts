@@ -658,7 +658,7 @@ describe("titleSimilarity", () => {
 });
 
 describe("submitBatchCiteCheck", () => {
-  it("submits batch job and parses inline responses", async () => {
+  it("parses raw JSON batch responses (no .text getter)", async () => {
     const createCalls: any[] = [];
     const mockClient = {
       batches: {
@@ -671,20 +671,28 @@ describe("submitBatchCiteCheck", () => {
               inlinedResponses: [
                 {
                   response: {
-                    text: JSON.stringify({
-                      status: "SUPPORTED",
-                      supporting_passage: "Evidence here",
-                      explanation: "Source supports claim",
-                    }),
+                    candidates: [{
+                      content: {
+                        parts: [{ text: JSON.stringify({
+                          status: "SUPPORTED",
+                          supporting_passage: "Evidence here",
+                          explanation: "Source supports claim",
+                        }) }],
+                      },
+                    }],
                   },
                 },
                 {
                   response: {
-                    text: JSON.stringify({
-                      status: "UNSUPPORTED",
-                      supporting_passage: "",
-                      explanation: "Not discussed",
-                    }),
+                    candidates: [{
+                      content: {
+                        parts: [{ text: JSON.stringify({
+                          status: "UNSUPPORTED",
+                          supporting_passage: "",
+                          explanation: "Not discussed",
+                        }) }],
+                      },
+                    }],
                   },
                 },
               ],
@@ -693,7 +701,6 @@ describe("submitBatchCiteCheck", () => {
         },
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
-      // Include fileSearchStores for any transitive calls
       fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
@@ -709,6 +716,7 @@ describe("submitBatchCiteCheck", () => {
     expect(results.length).toBe(2);
     expect(results[0].key).toBe("g1");
     expect(results[0].classification.status).toBe("SUPPORTED");
+    expect(results[0].classification.supporting_passage).toBe("Evidence here");
     expect(results[1].key).toBe("g2");
     expect(results[1].classification.status).toBe("UNSUPPORTED");
 
@@ -717,6 +725,80 @@ describe("submitBatchCiteCheck", () => {
     expect(createCalls[0].src.length).toBe(2);
     expect(createCalls[0].src[0].key).toBe("g1");
     expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
+  });
+
+  it("parses hydrated class responses with .text string property", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/hydrated-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                response: {
+                  text: JSON.stringify({
+                    status: "SUPPORTED",
+                    supporting_passage: "quote from source",
+                    explanation: "directly supports",
+                  }),
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [{ key: "g1", prompt: "test" }],
+    );
+
+    expect(results.length).toBe(1);
+    expect(results[0].classification.status).toBe("SUPPORTED");
+    expect(results[0].classification.supporting_passage).toBe("quote from source");
+  });
+
+  it("parses multi-part responses by joining all text parts", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/multipart-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [
+                        { text: '{"status":"PARTIAL",' },
+                        { text: '"supporting_passage":"p","explanation":"e"}' },
+                      ],
+                    },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [{ key: "g1", prompt: "test" }],
+    );
+
+    expect(results.length).toBe(1);
+    expect(results[0].classification.status).toBe("PARTIAL");
   });
 
   it("handles batch errors gracefully", async () => {
@@ -744,6 +826,44 @@ describe("submitBatchCiteCheck", () => {
     expect(results.length).toBe(1);
     expect(results[0].classification.status).toBe("ERROR");
     expect(results[0].error).toBeDefined();
+  });
+
+  it("returns ERROR for empty/malformed response", async () => {
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/empty-batch",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              { response: {} },
+              { response: null },
+              { response: { candidates: [] } },
+              { response: { candidates: [{ content: { parts: [] } }] } },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchCiteCheck(
+      "fileSearchStores/s1",
+      [
+        { key: "g1", prompt: "test1" },
+        { key: "g2", prompt: "test2" },
+        { key: "g3", prompt: "test3" },
+        { key: "g4", prompt: "test4" },
+      ],
+    );
+
+    expect(results.length).toBe(4);
+    // All should return ERROR status since there's no valid text
+    for (const r of results) {
+      expect(r.classification.status).toBe("ERROR");
+    }
   });
 });
 

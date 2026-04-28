@@ -566,6 +566,27 @@ export interface BatchResult {
 // ---------------------------------------------------------------------------
 
 /**
+/**
+ * Extract response text from a Gemini batch response object.
+ * Handles both hydrated GenerateContentResponse class instances (with .text string)
+ * and raw JSON objects from the batch API (with candidates array).
+ */
+function extractResponseText(response: any): string {
+  if (!response) return "";
+  // 1. Try .text property (hydrated GenerateContentResponse class)
+  if (typeof response.text === "string") return response.text;
+  // 2. Try candidates path (raw JSON from batch API), joining all text parts
+  const parts = response.candidates?.[0]?.content?.parts;
+  if (Array.isArray(parts)) {
+    return parts
+      .filter((p: any) => typeof p.text === "string")
+      .map((p: any) => p.text)
+      .join("");
+  }
+  return "";
+}
+
+/**
  * Submit all citation queries as a single Gemini Batch API job.
  * Returns results keyed by the request key.
  */
@@ -679,8 +700,11 @@ export async function submitBatchCiteCheck(
       continue;
     }
 
-    const responseText = inlineResponse.response?.text ??
-      inlineResponse.response?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const responseText = extractResponseText(inlineResponse.response);
+
+    if (opts?.debug) {
+      process.stderr.write(`[gemini-batch] response ${i} (${key}): ${responseText.slice(0, 200)}\n`);
+    }
 
     try {
       const parsed = JSON.parse(responseText || "{}");
