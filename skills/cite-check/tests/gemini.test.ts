@@ -726,6 +726,20 @@ describe("submitBatchCiteCheck", () => {
     expect(createCalls[0].src.length).toBe(2);
     expect(createCalls[0].src[0].key).toBe("g1");
     expect(createCalls[0].src[1].config.tools[0].fileSearch.metadataFilter).toBe('bibkey="X"');
+
+    // Batch config should NOT include responseJsonSchema (batch API ignores it)
+    expect(createCalls[0].src[0].config.responseJsonSchema).toBeUndefined();
+    expect(createCalls[0].src[1].config.responseJsonSchema).toBeUndefined();
+    // But MUST include responseMimeType
+    expect(createCalls[0].src[0].config.responseMimeType).toBe("application/json");
+    expect(createCalls[0].src[1].config.responseMimeType).toBe("application/json");
+
+    // Prompt should include explicit JSON schema instruction for batch mode
+    const promptText = createCalls[0].src[0].contents[0].parts[0].text;
+    expect(promptText).toContain("You MUST respond with ONLY a JSON object");
+    expect(promptText).toContain("SUPPORTED");
+    expect(promptText).toContain("UNSUPPORTED");
+    expect(promptText).toContain("PARTIAL");
   });
 
   it("parses hydrated class responses with .text string property", async () => {

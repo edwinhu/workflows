@@ -657,32 +657,13 @@ export async function submitBatchCiteCheck(
       key: req.key,
       contents: [{
         parts: [{
-          text: req.prompt + `\n\nRespond with a JSON object: {"status": "SUPPORTED"|"PARTIAL"|"UNSUPPORTED", "supporting_passage": "exact quote from source", "explanation": "brief reason"}`,
+          text: req.prompt + `\n\nYou MUST respond with ONLY a JSON object in this exact format, no other text:\n{"status": "SUPPORTED", "supporting_passage": "exact quote from source", "explanation": "brief reason"}\nstatus must be one of: SUPPORTED, PARTIAL, UNSUPPORTED`,
         }],
         role: "user" as const,
       }],
       config: {
         tools: [{ fileSearch: fileSearchConfig }],
         responseMimeType: "application/json",
-        responseJsonSchema: {
-          type: "object",
-          properties: {
-            status: {
-              type: "string",
-              enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"],
-              description: "Whether the source(s) support the claim",
-            },
-            supporting_passage: {
-              type: "string",
-              description: "Quote from the source that supports the claim, or empty string if unsupported",
-            },
-            explanation: {
-              type: "string",
-              description: "Brief explanation of the classification",
-            },
-          },
-          required: ["status", "supporting_passage", "explanation"],
-        },
       },
     };
   });
