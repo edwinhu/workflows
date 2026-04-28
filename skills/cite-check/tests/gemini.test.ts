@@ -56,7 +56,7 @@ describe("createStore", () => {
         create: async (_opts: any) => ({
           name: "fileSearchStores/abc123",
         }),
-        documents: { list: async () => ({ page: [], params: {} }) },
+        documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) },
         importFile: async () => ({ done: true }),
       },
       files: {
@@ -84,7 +84,8 @@ describe("listDocuments", () => {
         documents: {
           list: async () => ({
             page: mockDocs,
-            params: {},  // no pageToken = single page
+            hasNextPage: () => false,
+            nextPage: async () => [],
           }),
         },
       },
@@ -105,17 +106,18 @@ describe("listDocuments", () => {
     const page2 = [
       { name: "fileSearchStores/s1/documents/d3", displayName: "Doc3" },
     ];
-    let callCount = 0;
+    let nextPageCalled = false;
     const mockClient = {
       fileSearchStores: {
         documents: {
-          list: async (_opts: any) => {
-            callCount++;
-            if (callCount === 1) {
-              return { page: page1, params: { pageToken: "token-2" } };
-            }
-            return { page: page2, params: {} };
-          },
+          list: async () => ({
+            page: page1,
+            hasNextPage: () => !nextPageCalled,
+            nextPage: async () => {
+              nextPageCalled = true;
+              return page2;
+            },
+          }),
         },
       },
     };
@@ -125,7 +127,7 @@ describe("listDocuments", () => {
     expect(docs.length).toBe(3);
     expect(docs[0].displayName).toBe("Doc1");
     expect(docs[2].displayName).toBe("Doc3");
-    expect(callCount).toBe(2);
+    expect(nextPageCalled).toBe(true);
   });
 });
 
@@ -146,7 +148,7 @@ describe("uploadPdf", () => {
           importCalls.push(opts);
           return { done: true };
         },
-        documents: { list: async () => ({ page: [], params: {} }) },
+        documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) },
       },
       operations: {
         get: async () => ({ done: true }),
@@ -178,7 +180,7 @@ describe("uploadPdf", () => {
       },
       fileSearchStores: {
         importFile: async () => ({ done: true }),
-        documents: { list: async () => ({ page: [], params: {} }) },
+        documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) },
       },
       operations: {
         get: async () => ({ done: true }),
@@ -209,7 +211,8 @@ describe("uploadPdfs", () => {
             page: [
               { name: "d1", displayName: "Existing2020-xx" },
             ],
-            params: {},
+            hasNextPage: () => false,
+            nextPage: async () => [],
           }),
         },
         importFile: async () => ({ done: true }),
@@ -497,7 +500,8 @@ describe("uploadFromBib", () => {
             page: [
               { name: "d1", displayName: "AlreadyThere2020-xx" },
             ],
-            params: {},
+            hasNextPage: () => false,
+            nextPage: async () => [],
           }),
         },
         importFile: async () => ({ done: true }),
@@ -662,7 +666,7 @@ describe("submitBatchCiteCheck", () => {
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
       // Include fileSearchStores for any transitive calls
-      fileSearchStores: { documents: { list: async () => ({ page: [], params: {} }) } },
+      fileSearchStores: { documents: { list: async () => ({ page: [], hasNextPage: () => false, nextPage: async () => [] }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
 
