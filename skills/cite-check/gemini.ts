@@ -546,52 +546,6 @@ export async function uploadFromBib(
 }
 
 // ---------------------------------------------------------------------------
-// Heuristic fallback parser for free-text batch responses
-// ---------------------------------------------------------------------------
-
-/**
- * Heuristic fallback: extract classification from free-text response
- * when the batch API doesn't return structured JSON.
- */
-export function heuristicClassify(text: string): ClassifyResult {
-  // 1. Try to find embedded JSON (```json ... ``` or bare {...})
-  const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) ??
-    text.match(/(\{[\s\S]*"status"\s*:[\s\S]*\})/);
-  if (jsonMatch) {
-    try {
-      const parsed = JSON.parse(jsonMatch[1]);
-      return {
-        status: parsed.status ?? "ERROR",
-        supporting_passage: parsed.supporting_passage ?? "",
-        explanation: parsed.explanation ?? "",
-      };
-    } catch { /* fall through to keyword matching */ }
-  }
-
-  // 2. Keyword extraction for status
-  const upper = text.toUpperCase();
-  let status: Status = "ERROR";
-  if (upper.includes("UNSUPPORTED") || upper.includes("NOT SUPPORT") || upper.includes("DOES NOT SUPPORT")) {
-    status = "UNSUPPORTED";
-  } else if (upper.includes("PARTIAL")) {
-    status = "PARTIAL";
-  } else if (upper.includes("SUPPORTED") || upper.includes("SUPPORTS") || upper.includes("DOES SUPPORT")) {
-    status = "SUPPORTED";
-  }
-
-  // 3. Extract quoted passages (text between quotes or after "passage:" etc.)
-  const quoteMatch = text.match(/["']([^"']{20,})["']/) ??
-    text.match(/passage[:\s]*["']?([^"'\n]{20,})/i);
-  const passage = quoteMatch?.[1] ?? "";
-
-  return {
-    status,
-    supporting_passage: passage,
-    explanation: text.slice(0, 300),
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Batch API types
 // ---------------------------------------------------------------------------
 
@@ -780,13 +734,13 @@ export async function submitBatchCiteCheck(
         },
       });
     } catch {
-      // Batch API may not enforce structured output — use heuristic fallback
-      if (opts?.debug) {
-        process.stderr.write(`[gemini-batch] JSON parse failed for ${key}, using heuristic fallback\n`);
-      }
       results.push({
         key,
-        classification: heuristicClassify(responseText),
+        classification: {
+          status: "ERROR",
+          supporting_passage: "",
+          explanation: `Failed to parse JSON: ${responseText.slice(0, 200)}`,
+        },
       });
     }
   }

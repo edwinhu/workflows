@@ -15,7 +15,6 @@ import {
   queryCitation,
   submitBatchCiteCheck,
   titleSimilarity,
-  heuristicClassify,
   type StoreConfig,
   type StoreDocument,
   type GeminiQueryResult,
@@ -882,86 +881,6 @@ describe("submitBatchCiteCheck", () => {
     for (const r of results) {
       expect(r.classification.status).toBe("ERROR");
     }
-  });
-});
-
-describe("heuristicClassify", () => {
-  it("extracts SUPPORTED from free text containing 'SUPPORTED' and a quote", () => {
-    const text = `Based on the source, this claim is SUPPORTED. The author states "corporate governance reforms led to measurable improvements in board accountability" which directly addresses the claim.`;
-    const result = heuristicClassify(text);
-    expect(result.status).toBe("SUPPORTED");
-    expect(result.supporting_passage).toContain("corporate governance reforms");
-  });
-
-  it("extracts UNSUPPORTED from text saying 'does not support'", () => {
-    const text = `The source does not support this claim. The paper discusses executive compensation but never mentions board diversity requirements.`;
-    const result = heuristicClassify(text);
-    expect(result.status).toBe("UNSUPPORTED");
-  });
-
-  it("extracts JSON from markdown code block", () => {
-    const text = `Here is the analysis:
-\`\`\`json
-{"status": "PARTIAL", "supporting_passage": "some evidence exists", "explanation": "only partially addressed"}
-\`\`\`
-The source partially supports the claim.`;
-    const result = heuristicClassify(text);
-    expect(result.status).toBe("PARTIAL");
-    expect(result.supporting_passage).toBe("some evidence exists");
-    expect(result.explanation).toBe("only partially addressed");
-  });
-
-  it("extracts embedded JSON from prose", () => {
-    const text = `After analyzing the grounding text, I conclude: {"status": "SUPPORTED", "supporting_passage": "the data shows clear correlation", "explanation": "direct evidence found"}`;
-    const result = heuristicClassify(text);
-    expect(result.status).toBe("SUPPORTED");
-    expect(result.supporting_passage).toBe("the data shows clear correlation");
-  });
-
-  it("returns ERROR when text has no signals", () => {
-    const text = `I was unable to process this request due to an internal issue.`;
-    const result = heuristicClassify(text);
-    expect(result.status).toBe("ERROR");
-  });
-});
-
-describe("submitBatchCiteCheck heuristic fallback", () => {
-  it("uses heuristic fallback when batch returns plain text instead of JSON", async () => {
-    const mockClient = {
-      batches: {
-        create: async () => ({
-          name: "batches/freetext-batch",
-          state: "JOB_STATE_SUCCEEDED",
-          dest: {
-            inlinedResponses: [
-              {
-                response: {
-                  candidates: [{
-                    content: {
-                      parts: [{
-                        text: `The source is SUPPORTED. The author writes "proxy advisors play a key role in governance" which directly addresses this claim.`,
-                      }],
-                    },
-                  }],
-                },
-              },
-            ],
-          },
-        }),
-        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const results = await submitBatchCiteCheck(
-      "fileSearchStores/s1",
-      [{ key: "g1", prompt: "test" }],
-    );
-
-    expect(results.length).toBe(1);
-    // Should NOT be ERROR - should have fallen through to heuristic
-    expect(results[0].classification.status).toBe("SUPPORTED");
-    expect(results[0].classification.supporting_passage).toContain("proxy advisors");
   });
 });
 
