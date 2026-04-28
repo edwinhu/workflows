@@ -312,7 +312,7 @@ nlm generate-chat <notebook-id> "The manuscript claims: '[claim from text]' and 
 2. Add papers: download from Drive, then `nlm add <notebook-id> /tmp/source.pdf`
 3. Or bulk import: `nlm research "[topic]" --notebook <notebook-id> --source drive`
 
-**Cross-source claims:** When a claim synthesizes multiple papers, add all cited sources to the same notebook. NLM can then cross-reference them in a single query.
+**Cross-source claims:** When a claim synthesizes multiple papers, add all cited sources to the same notebook. NLM can then cross-reference them in a single query. For synthesized claims that draw on web-accessible sources (news, reports, public data), the `deep-research` skill is available as a supplementary check -- use it after NLM grounding to verify claims against broader web evidence. NLM remains the primary tool for source-specific grounding.
 
 ### Classification
 
