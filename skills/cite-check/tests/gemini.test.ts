@@ -56,7 +56,7 @@ describe("createStore", () => {
         create: async (_opts: any) => ({
           name: "fileSearchStores/abc123",
         }),
-        documents: { list: async () => [] },
+        documents: { list: async () => ({ page: [], params: {} }) },
         importFile: async () => ({ done: true }),
       },
       files: {
@@ -74,7 +74,7 @@ describe("createStore", () => {
 });
 
 describe("listDocuments", () => {
-  it("returns parsed documents from async iterator", async () => {
+  it("returns parsed documents from single page", async () => {
     const mockDocs = [
       { name: "fileSearchStores/s1/documents/d1", displayName: "Hirst2022-pq" },
       { name: "fileSearchStores/s1/documents/d2", displayName: "Bebchuk2017-mm" },
@@ -82,7 +82,10 @@ describe("listDocuments", () => {
     const mockClient = {
       fileSearchStores: {
         documents: {
-          list: async () => mockDocs, // array is iterable with for-await
+          list: async () => ({
+            page: mockDocs,
+            params: {},  // no pageToken = single page
+          }),
         },
       },
     };
@@ -92,6 +95,37 @@ describe("listDocuments", () => {
     expect(docs.length).toBe(2);
     expect(docs[0].displayName).toBe("Hirst2022-pq");
     expect(docs[1].displayName).toBe("Bebchuk2017-mm");
+  });
+
+  it("paginates across multiple pages", async () => {
+    const page1 = [
+      { name: "fileSearchStores/s1/documents/d1", displayName: "Doc1" },
+      { name: "fileSearchStores/s1/documents/d2", displayName: "Doc2" },
+    ];
+    const page2 = [
+      { name: "fileSearchStores/s1/documents/d3", displayName: "Doc3" },
+    ];
+    let callCount = 0;
+    const mockClient = {
+      fileSearchStores: {
+        documents: {
+          list: async (_opts: any) => {
+            callCount++;
+            if (callCount === 1) {
+              return { page: page1, params: { pageToken: "token-2" } };
+            }
+            return { page: page2, params: {} };
+          },
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const docs = await listDocuments("fileSearchStores/s1");
+    expect(docs.length).toBe(3);
+    expect(docs[0].displayName).toBe("Doc1");
+    expect(docs[2].displayName).toBe("Doc3");
+    expect(callCount).toBe(2);
   });
 });
 
@@ -112,7 +146,7 @@ describe("uploadPdf", () => {
           importCalls.push(opts);
           return { done: true };
         },
-        documents: { list: async () => [] },
+        documents: { list: async () => ({ page: [], params: {} }) },
       },
       operations: {
         get: async () => ({ done: true }),
@@ -144,7 +178,7 @@ describe("uploadPdf", () => {
       },
       fileSearchStores: {
         importFile: async () => ({ done: true }),
-        documents: { list: async () => [] },
+        documents: { list: async () => ({ page: [], params: {} }) },
       },
       operations: {
         get: async () => ({ done: true }),
@@ -171,9 +205,12 @@ describe("uploadPdfs", () => {
       },
       fileSearchStores: {
         documents: {
-          list: async () => [
-            { name: "d1", displayName: "Existing2020-xx" },
-          ],
+          list: async () => ({
+            page: [
+              { name: "d1", displayName: "Existing2020-xx" },
+            ],
+            params: {},
+          }),
         },
         importFile: async () => ({ done: true }),
       },
@@ -456,9 +493,12 @@ describe("uploadFromBib", () => {
       },
       fileSearchStores: {
         documents: {
-          list: async () => [
-            { name: "d1", displayName: "AlreadyThere2020-xx" },
-          ],
+          list: async () => ({
+            page: [
+              { name: "d1", displayName: "AlreadyThere2020-xx" },
+            ],
+            params: {},
+          }),
         },
         importFile: async () => ({ done: true }),
       },
@@ -622,7 +662,7 @@ describe("submitBatchCiteCheck", () => {
         get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
       },
       // Include fileSearchStores for any transitive calls
-      fileSearchStores: { documents: { list: async () => [] } },
+      fileSearchStores: { documents: { list: async () => ({ page: [], params: {} }) } },
     };
     __setGeminiClientForTesting(mockClient as any);
 

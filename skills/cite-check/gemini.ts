@@ -119,15 +119,22 @@ export async function listDocuments(
 ): Promise<StoreDocument[]> {
   const client = getClient();
   const docs: StoreDocument[] = [];
-  const pager = await client.fileSearchStores.documents.list({
-    parent: storeName,
-  });
-  for await (const doc of pager) {
-    docs.push({
-      name: doc.name ?? "",
-      displayName: doc.displayName ?? "",
+  let pageToken: string | undefined;
+
+  do {
+    const pager = await client.fileSearchStores.documents.list({
+      parent: storeName,
+      config: { pageSize: 20, ...(pageToken ? { pageToken } : {}) },
     });
-  }
+    for (const doc of pager.page) {
+      docs.push({
+        name: doc.name ?? "",
+        displayName: doc.displayName ?? "",
+      });
+    }
+    pageToken = (pager.params as any)?.pageToken;
+  } while (pageToken);
+
   return docs;
 }
 
