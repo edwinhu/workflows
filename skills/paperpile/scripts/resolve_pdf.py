@@ -884,6 +884,7 @@ DOMAINS_OF_INTEREST = (
     "libkey.io",
     "thirdiron.com",
     "shibboleth.virginia.edu",
+    "shibidp.its.virginia.edu",
     "netbadge.virginia.edu",
     "shibboleth.nyu.edu",
     "papers.ssrn.com",

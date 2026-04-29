@@ -81,26 +81,26 @@ Unified library management and PDF resolution.
 
 ### find-and-add
 
-`"${CLAUDE_SKILL_DIR}/scripts/find_and_add.py" "<citation>" [--doi DOI] [--ssrn ID] [--no-pdf]`
+`paperpile find-and-add "<citation>" [--doi DOI] [--ssrn ID] [--title T] [--author A] [--year Y] [--journal J] [--volume V] [--page P] [--json] [--no-pdf]`
 
 End-to-end: citation string → paper in Paperpile with PDF.
 
 ```bash
 # Law review (HeinOnline)
-find_and_add.py "Robertson, Passive in Name Only, 36 Yale J. on Reg. 795 (2019)"
+paperpile find-and-add "Robertson, Passive in Name Only, 36 Yale J. on Reg. 795 (2019)"
 
 # SSRN paper
-find_and_add.py --ssrn 5093097
+paperpile find-and-add --ssrn 5093097
 
 # Paper with known DOI
-find_and_add.py --doi 10.1016/j.jfineco.2024.01.001
+paperpile find-and-add --doi 10.1016/j.jfineco.2024.01.001
 ```
 
-**Discovery chain**: DOI/SSRN provided → CrossRef API → OpenAlex API → HeinOnline URL construction (for law reviews with volume/page).
+**Discovery chain**: DOI/SSRN provided → Guru title search → CrossRef → OpenAlex → HeinOnline URL construction (for law reviews with volume/page).
 
-**Law review citations** with volume+page+known journal handle skip CrossRef entirely (unreliable for HeinOnline-only journals) and construct proxied HeinOnline URLs directly.
+**Law review citations** with volume+page+known journal handle skip CrossRef entirely (unreliable for HeinOnline-only journals) and construct metadata from parsed citation fields.
 
-**Supported journals**: UCLA L. Rev., Yale J. on Reg., Yale L.J., Harv. L. Rev., Stan. L. Rev., Colum. L. Rev., Mich. L. Rev., Va. L. Rev., U. Pa. L. Rev., and 15+ more (see `HEIN_JOURNAL_MAP` in script).
+**Supported journals**: UCLA L. Rev., Yale J. on Reg., Yale L.J., Harv. L. Rev., Stan. L. Rev., Colum. L. Rev., Mich. L. Rev., Va. L. Rev., U. Pa. L. Rev., and 15+ more (see `heinonline.ts` in paperpile-cli).
 
 ### resolve (last resort)
 
