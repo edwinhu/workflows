@@ -1,21 +1,22 @@
 ---
 name: paperpile
-description: This skill should be used when the user asks to "add paper", "paperpile add", "fetch PDF for", "search paperpile", "find in paperpile", "paperpile search", "label paper", "trash paper", "download paper", "paperpile index", "find PDF online", "search google for PDF", "browse PDF", or any request to manage their Paperpile library.
-version: 0.2.0
+description: This skill should be used when the user asks to "add paper", "paperpile add", "fetch PDF for", "search paperpile", "find in paperpile", "paperpile search", "label paper", "trash paper", "download paper", "paperpile index", "find PDF online", "search google for PDF", "browse PDF", "resolve PDF", "fetch PDF for citation", "institutional access", "proxy", "get full-text for DOI", "resolve cite to PDF", or any request to manage their Paperpile library or resolve a citation to a local PDF.
+version: 0.3.0
 user-invocable: false
 ---
 
-# Paperpile CLI
+# Paperpile
 
-Manage your Paperpile library via the `paperpile` CLI.
+Unified library management and PDF resolution.
 
 ## Prerequisites
 
-1. `paperpile` binary installed at `~/.local/bin/paperpile`
-2. Cookies imported via `paperpile auth import <path>` (exported from Cookie-Editor in JSON format)
-3. Run `paperpile auth` to verify authentication is working
+- `paperpile` binary at `~/.local/bin/paperpile`
+- Cookies imported via `paperpile auth import <path>` (exported from Cookie-Editor in JSON format)
+- For browser commands: Dia running with CDP on port 9222
+- For resolve: `uv` installed, proxy config at `${CLAUDE_SKILL_DIR}/references/proxy_urls.md`
 
-## Quick Reference
+## Subcommands: Library Management
 
 | Need | Command |
 |------|---------|
@@ -34,107 +35,113 @@ Manage your Paperpile library via the `paperpile` CLI.
 | Delete label | `paperpile label delete "My Label" --confirm` |
 | Trash item | `paperpile trash Smith2024-ab --confirm` |
 | Restore from trash | `paperpile trash Smith2024-ab --restore --confirm` |
-| Find PDF via Paperpile UI | Select paper > Add PDF > Find PDF online (see Workflow A below) |
-| Google search for PDF | Select paper > Add PDF > Search Google for PDF (see Workflow B below) |
-| Poll for PDF attachment | `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>` |
 
-## Key Behaviors
+**Key behaviors:**
 
-- **`add`** requires a DOI. Refuses to add stubs without the `--force` flag (Guru metadata required by default).
-- **`fetch`** resolves a bibkey to a PDF via the Paperpile API + Google Drive download. Output is the path to the downloaded PDF.
+- **`add`** requires a DOI. Refuses stubs without `--force` (Guru metadata required by default).
+- **`fetch`** resolves a bibkey to PDF via Paperpile API + Google Drive download. Output is the path to the downloaded PDF.
 - **`search`** scores against a local index cache. Run `paperpile index` first to populate/refresh.
 - **`trash`** and **`label delete`** are dry-run by default -- pass `--confirm` to execute.
 
-## Integration with Librarian Workflow
+## Subcommands: PDF Resolution
 
-```
-Paperpile (this skill) -- manage library items, fetch PDFs, search
-  |
-  v
-librarian-fetch -- resolve bibkey to PDF (uses Paperpile as step 0a/0b)
-  |
-  v
-cite-check -- upload PDFs to Gemini File Search store
-```
+### find-pdf
 
-## Auth Notes
-
-- Cookies stored at `~/.claude-work/skills/librarian-fetch/cookies/<domain>.json`
-- Shared with librarian-fetch skill (same cookie store)
-- Re-import when cookies expire (Paperpile sessions last ~30 days)
-
-## Red Flags -- STOP If You Catch Yourself:
-
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| Using `--force` without user approval | Adds stubs without metadata -- clutters library | Ask user before adding without Guru data |
-| Running `trash --confirm` without showing what will be trashed | Destructive, cannot be undone | Run without `--confirm` first (dry run) |
-| Skipping `paperpile index` before search | Search uses cached index -- stale results | Run `paperpile index --refresh` first |
-| Calling Paperpile API directly | Skips auth, cookies, error handling | Always use the CLI |
-
----
-
-## Browser Automation: Find PDFs via Paperpile UI
-
-When the CLI's `paperpile fetch` fails (no PDF attachment in library), use Paperpile's webapp UI to find PDFs through browser automation.
-
-### Prerequisites
-
-1. **Dia running with CDP on port 9222**: `curl -sf http://localhost:9222/json/version`
-   - If not running: `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.dia.cdp.plist`
-2. **Paperpile open** at `https://app.paperpile.com/my-library/all` in Dia
-3. **MCP chrome-devtools tools** available (`mcp__chrome-devtools__*`)
-
-### Quick Reference (Browser)
-
-| Need | Method |
-|------|--------|
-| Auto-find PDF for selected paper | Add PDF > **Find PDF online** (shortcut `D`) |
-| Google search for PDF | Add PDF > **Search Google for PDF...** |
-| Browse local file | Add PDF > Browse for PDF... (opens OS file picker) |
-| Poll for PDF arrival | `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>` |
-
-### Workflow A: Find PDF Online
-
-**When**: Paper is in library, no PDF. This is fire-and-forget -- Paperpile's server-side auto-finder does the work.
+**When**: Paper is in library but has no PDF (add didn't auto-fetch, or paper was added without DOI). Fire-and-forget -- Paperpile's server-side auto-finder does the work.
 
 1. `list_pages` -- find the Paperpile tab, `select_page`
 2. `take_snapshot` -- find the paper row (papers without PDFs show NO "PDF" button)
-3. `click` the paper row to select it -- the row expands to show "Website", "Cited by", **"Add PDF"** buttons
-4. `click` the **"Add PDF"** button -- a menu appears with 4 options
+3. `click` the paper row to select it -- row expands to show "Website", "Cited by", **"Add PDF"** buttons
+4. `click` **"Add PDF"** -- menu appears with 4 options
 5. `click` **"Find PDF online"** (first menuitem, shortcut D)
-6. Paperpile searches in the background. The row status changes:
+6. Paperpile searches in background. Row status changes:
    - Success: "PDF" button and attachment count appear
-   - Failure: "Not signed in to proxy" or similar message
+   - Failure: "Not signed in to proxy" or similar
 7. **Verify**: `take_snapshot` after ~10s to check row status
-8. **Confirm via API**: Run `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id> --timeout 60`
+8. **Confirm via API**: `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id> --timeout 60`
 
-**If "Not signed in to proxy"**: The institutional proxy session expired. Fall back to `librarian-fetch` skill which handles proxy authentication.
+**If "Not signed in to proxy"**: Try `search-pdf` or `resolve --via-dia` instead.
 
-### Workflow B: Search Google for PDF
+### search-pdf
 
-**When**: "Find PDF online" failed, OR you want to manually pick the best PDF source.
+**When**: You want to manually pick the best PDF source from Google.
 
-1. Select the paper in Paperpile (same as Workflow A steps 1-3)
+1. Select the paper in Paperpile (same as find-pdf steps 1-3)
 2. `click` **"Add PDF"** > `click` **"Search Google for PDF..."** (last menuitem)
 3. A **new tab** opens with Google search: `filetype:pdf <paper title>`
 4. At the bottom of the Google page, a **Paperpile banner** appears:
    > "Browse for PDF -- Find the PDF link in the search results and click **Select PDF** to attach it automatically to [Author Year]."
-   > [Close and cancel] button
 5. **DECISION POINT** -- `select_page` to the new Google tab, `take_snapshot`:
-   - Evaluate the search results (JSTOR, publisher site, SSRN, university repos)
    - **Prefer**: Publisher/JSTOR > university repos > SSRN > random PDFs
    - **Avoid**: Non-matching papers, suspicious domains
 6. `click` the chosen PDF link -- Paperpile intercepts and attaches the PDF
-7. **Verify**: Switch back to Paperpile tab, `take_snapshot` to confirm PDF badge appeared
+7. **Verify**: Switch back to Paperpile tab, `take_snapshot` to confirm PDF badge
 8. **Confirm via API**: `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>`
 9. **Cleanup**: Close the Google search tab
 
-### Workflow C: Google Scholar Search (Discover New Papers)
+### resolve (last resort)
+
+## IRON LAW: Always Use the Script
+
+**NEVER hand-walk the resolver chain. ALWAYS call `resolve_pdf.py`. This is non-negotiable.**
+
+```bash
+"${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py" <BIBKEY> [--bib PATH] [--doi DOI] [--out PATH] [--via-dia] [--manual-hop] [--login-only]
+```
+
+Seven-tier chain:
+
+| # | Method | Triggered when | Auth needed |
+|---|--------|----------------|-------------|
+| 0a | Paperpile API + Drive | Library has matching item with PDF | `plack_session` cookie |
+| 0b | Paperpile local cache | API miss; Drive-synced filename match in `~/Google Drive/.../Paperpile/All Papers/<Letter>/` | None |
+| 1 | LibKey / Third Iron | DOI present | LibKey institution cookie (UVA) |
+| 2 | UVA EZproxy | LibKey misses or returns HTML | UVA NetBadge cookie |
+| 3 | OpenAthens / publisher SSO | UVA returns "Not Authorized" for OpenAthens publisher (Elsevier, Wiley, Springer, OUP, T&F, Cambridge) | Publisher cookies + UVA SSO (`--via-dia` only) |
+| 4 | NYU EZproxy | UVA + OpenAthens both fail | NYU NetID cookie |
+| 5 | SSRN direct download | Working paper, `ssrn = {id}`, or DOI is `10.2139/ssrn.<id>` | SSRN session cookie (optional) |
+| 6 | Virgo article search | No DOI available (e.g. older law reviews not in CrossRef) | UVA SSO (`--via-dia` only) |
+
+**Flags:**
+
+| Flag | Purpose |
+|------|---------|
+| `--bib PATH` | Path to `.bib` file for DOI/metadata extraction |
+| `--doi DOI` | Override DOI when bib entry is missing one |
+| `--out PATH` | Output directory (default: `/tmp/paperpile-resolve/`) |
+| `--via-dia` | Use Dia browser cookies for proxy auth |
+| `--manual-hop` | Open URL in Dia, poll for user to click Download (for Cloudflare-walled sources like SSRN) |
+| `--login-only` | Warm up proxy session without resolving a paper |
+
+**Exit codes:** 0=success, 1=config error, 2=no identifier, 3=all resolvers exhausted
+
+**Output:** Absolute path to PDF on stdout. On failure, diagnostic line per resolver attempted.
+
+**`--manual-hop` escape hatch**: For Cloudflare-walled sources (SSRN, Bloomberg, WSJ), opens the abstract URL in Dia and polls 120s for the PDF. User clicks "Download PDF" once; script auto-copies and returns the path.
+
+**Examples:**
+
+```bash
+# Resolve from bib
+"${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py" Brav2022-ht \
+  --bib ~/Documents/Notes/Writing/mirror_voting/references/sources.bib
+
+# Override DOI
+"${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py" Brav2022-ht \
+  --bib /path/to/sources.bib --doi 10.1016/j.jfineco.2022.01.005
+
+# Raw DOI (no bib)
+"${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py" --doi 10.1016/j.jfineco.2022.01.005
+
+# Custom output directory
+"${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py" Brav2022-ht --out ~/Downloads/nlm-feed/
+```
+
+## Subcommands: Discovery
+
+### scholar-search
 
 **When**: User wants to find and add new papers by keywords (not by DOI).
-
-Paperpile's Google Scholar search is already open in Dia (page 3 in tabs). Alternatively:
 
 1. Navigate to `https://scholar.google.com` in Dia
 2. `fill` the search box with the query, `press_key` Enter
@@ -150,7 +157,28 @@ Paperpile's Google Scholar search is already open in Dia (page 3 in tabs). Alter
    - `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>` to confirm PDF
 6. Run `paperpile index --refresh` to sync local cache
 
-### Paperpile UI Patterns (A11y Tree Reference)
+## Subcommands: Utilities
+
+| Need | Command |
+|------|---------|
+| Poll for PDF attachment | `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>` |
+| Warm up proxy session | `${CLAUDE_SKILL_DIR}/scripts/warmup.sh` |
+
+## Integration
+
+```
+Paperpile (this skill) → cite-check (upload PDFs to Gemini)
+                       → nlm (upload to NotebookLM)
+```
+
+## Auth & Data
+
+- Cookies: `~/.claude-work/skills/paperpile/cookies/<domain>.json`
+- Cache: `~/.claude-work/skills/paperpile/cache/paperpile-index.json`
+- Proxy config: `${CLAUDE_SKILL_DIR}/references/proxy_urls.md`
+- Re-import when cookies expire (~30 days)
+
+## Paperpile UI Patterns (A11y Tree Reference)
 
 **Paper row without PDF** (selected):
 ```
@@ -186,12 +214,18 @@ StaticText " to attach it automatically to <Author Year>."
 button "Close and cancel"
 ```
 
-## Browser Automation Red Flags -- STOP If You Catch Yourself:
+## Red Flags -- STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
+| Hand-walking the resolver chain manually | Triples wall time, forgets cookie refresh, misses fallbacks | Call `resolve_pdf.py` -- it parallelizes + falls through automatically |
+| Hitting `https://doi.org/<doi>` directly with `curl` | Publisher returns HTML paywall, not PDF | Use `resolve_pdf.py` -- it wraps with proxy + cookies |
+| Using `scholar download` without going through resolve | Skips bib parsing and the LibKey/proxy chain | Call `resolve_pdf.py` |
+| Using `--force` without user approval | Adds stubs without metadata -- clutters library | Ask user before adding without Guru data |
+| Running `trash --confirm` without showing what will be trashed | Destructive, cannot be undone | Run without `--confirm` first (dry run) |
+| Skipping `paperpile index` before search | Search uses cached index -- stale results | Run `paperpile index --refresh` first |
+| Calling Paperpile API directly | Skips auth, cookies, error handling | Always use the CLI |
 | Clicking "Add PDF" without selecting a paper first | Menu items will be disabled/missing | Click the paper row first, verify checkbox is checked |
-| Using "Find PDF online" when proxy session is expired | Will fail with "Not signed in to proxy" | Fall back to librarian-fetch skill for proxy auth |
 | Clicking random Google results without evaluating source | May attach wrong PDF or corrupted file | Prefer publisher/JSTOR/SSRN, verify title matches |
 | Adding papers from Google Scholar without checking for duplicates | Creates duplicate library entries | Run `paperpile search` first |
 | Forgetting to close the Google search tab after workflow | Tab accumulation clutters browser | Close tab after PDF is attached |

@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-CACHE="$HOME/.claude-work/skills/librarian-fetch/cache/paperpile-index.json"
+CACHE="$HOME/.claude-work/skills/paperpile/cache/paperpile-index.json"
 DEADLINE=$((SECONDS + TIMEOUT))
 
 while [[ $SECONDS -lt $DEADLINE ]]; do
