@@ -30,9 +30,10 @@ export interface ClassifyResult {
 
 export interface BibEntry {
   bibkey: string;
-  filePath?: string;    // absolute path resolved from bib dir + relative file field
-  fileRelPath?: string; // raw relative path from bib file (for cross-directory resolution)
-  title?: string;       // for Readwise search fallback
+  filePath?: string;       // absolute path resolved from bib dir + first file field path
+  fileRelPath?: string;    // raw relative path from bib file (for cross-directory resolution)
+  fileAltRelPaths?: string[]; // additional paths from semicolon-separated file fields
+  title?: string;          // for Readwise search fallback
 }
 
 /** Cached file upload result */
@@ -194,12 +195,20 @@ export function parseBibFile(bibPath: string): Map<string, BibEntry> {
 
     const bibEntry: BibEntry = { bibkey };
 
-    // Find file field in this entry -- take the first one
+    // Find file field in this entry.
+    // Paperpile uses semicolon-separated paths when a paper has multiple PDF
+    // copies: file = {path/a.pdf;path/b.pdf}. Store the first path as primary
+    // and all paths for cross-directory resolution.
     const fileMatch = entry.match(/^\s*file\s*=\s*\{([^}]+)\}/m);
     if (fileMatch) {
-      const relPath = fileMatch[1].trim();
-      bibEntry.fileRelPath = relPath;
-      bibEntry.filePath = join(bibDir, relPath);
+      const rawField = fileMatch[1].trim();
+      const paths = rawField.split(";").map((p) => p.trim()).filter(Boolean);
+      const firstPath = paths[0];
+      bibEntry.fileRelPath = firstPath;
+      bibEntry.filePath = join(bibDir, firstPath);
+      if (paths.length > 1) {
+        bibEntry.fileAltRelPaths = paths.slice(1);
+      }
     }
 
     // Extract title field: handles both title = {{Double}} and title = {Single}
@@ -281,7 +290,7 @@ export async function resolveFromReadwise(
 
     const docTitle = docs[0].title ?? "";
     const similarity = titleSimilarity(title, docTitle);
-    if (similarity < 0.3) {
+    if (similarity < 0.6) {
       if (opts?.debug) {
         process.stderr.write(
           `[readwise] rejected "${docTitle}" (similarity ${similarity.toFixed(2)}) for "${title}"\n`,
@@ -376,7 +385,7 @@ export async function searchReadwise(
 
     const docTitle = docs[0].title ?? "";
     const similarity = titleSimilarity(title, docTitle);
-    if (similarity < 0.3) {
+    if (similarity < 0.6) {
       if (opts?.debug) {
         process.stderr.write(
           `[readwise] rejected "${docTitle}" (similarity ${similarity.toFixed(2)}) for "${title}"\n`,
@@ -458,6 +467,11 @@ export function resolveFileAcrossDirs(
   bibDirs: string[],
   debug?: boolean,
 ): string | null {
+  // Collect all relative paths to try (primary + alternates from semicolon-separated fields)
+  const relPaths: string[] = [];
+  if (entry.fileRelPath) relPaths.push(entry.fileRelPath);
+  if (entry.fileAltRelPaths) relPaths.push(...entry.fileAltRelPaths);
+
   // 1. Try primary resolved path first
   if (entry.filePath) {
     try {
@@ -470,10 +484,10 @@ export function resolveFileAcrossDirs(
     }
   }
 
-  // 2. Try resolving the raw relative path against each bib directory
-  if (entry.fileRelPath) {
+  // 2. Try resolving each relative path against each bib directory
+  for (const relPath of relPaths) {
     for (const dir of bibDirs) {
-      const candidate = join(dir, entry.fileRelPath);
+      const candidate = join(dir, relPath);
       if (candidate === entry.filePath) continue; // already tried
       try {
         statSync(candidate);

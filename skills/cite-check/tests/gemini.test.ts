@@ -336,6 +336,28 @@ describe("resolveFileAcrossDirs", () => {
       rmSync(altDir, { recursive: true, force: true });
     }
   });
+
+  it("tries alternate paths from semicolon-separated file fields", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const bibDir = "/tmp/cite-check-resolve-alt-paths";
+    try {
+      mkdirSync(join(bibDir, "Papers"), { recursive: true });
+      // Only the second (alt) path exists on disk
+      writeFileSync(join(bibDir, "Papers/readable-name.pdf"), "fake");
+
+      const entry: BibEntry = {
+        bibkey: "k",
+        filePath: join(bibDir, "Papers/1-s2.0-hash.pdf"), // doesn't exist
+        fileRelPath: "Papers/1-s2.0-hash.pdf",
+        fileAltRelPaths: ["Papers/readable-name.pdf"],
+      };
+      expect(resolveFileAcrossDirs(entry, [bibDir])).toBe(
+        join(bibDir, "Papers/readable-name.pdf"),
+      );
+    } finally {
+      rmSync(bibDir, { recursive: true, force: true });
+    }
+  });
 });
 
 describe("parseBibFile stores fileRelPath", () => {
@@ -356,6 +378,54 @@ describe("parseBibFile stores fileRelPath", () => {
       const entry = map.get("Hu2024-bm")!;
       expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
       expect(entry.filePath).toBe(join(tmpDir, "All Papers/H/Hu 2024.pdf"));
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("splits semicolon-separated file fields and stores alt paths", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-semicolon-test";
+    const bibPath = join(tmpDir, "test.bib");
+    try {
+      mkdirSync(tmpDir, { recursive: true });
+      writeFileSync(bibPath, `
+@article{Brav2022-aa,
+  title = {{Retail shareholder participation in the proxy process}},
+  file = {All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf;All Papers/B/Brav et al. 2022 - Retail shareholder.pdf},
+  year = {2022}
+}
+`);
+      const map = parseBibFile(bibPath);
+      const entry = map.get("Brav2022-aa")!;
+      // Primary path is the first one
+      expect(entry.fileRelPath).toBe("All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf");
+      expect(entry.filePath).toBe(join(tmpDir, "All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf"));
+      // Alt paths stored separately
+      expect(entry.fileAltRelPaths).toEqual([
+        "All Papers/B/Brav et al. 2022 - Retail shareholder.pdf",
+      ]);
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("handles single file field without semicolons (no alt paths)", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-nosemicolon-test";
+    const bibPath = join(tmpDir, "test.bib");
+    try {
+      mkdirSync(tmpDir, { recursive: true });
+      writeFileSync(bibPath, `
+@article{Hu2024-bm,
+  file = {All Papers/H/Hu 2024.pdf},
+  year = {2024}
+}
+`);
+      const map = parseBibFile(bibPath);
+      const entry = map.get("Hu2024-bm")!;
+      expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
+      expect(entry.fileAltRelPaths).toBeUndefined();
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -884,6 +954,23 @@ describe("titleSimilarity", () => {
       "In re Toews Corporation",
       "Toews Corporation"
     )).toBeGreaterThan(0.3);
+  });
+
+  it("rejects topically similar but wrong documents (below 0.6 threshold)", () => {
+    // This is the real false-positive: "proxy" overlap caused a GAO report
+    // to match Brav et al.'s retail shareholder paper
+    const score = titleSimilarity(
+      "Retail shareholder participation in the proxy process",
+      "GAO proxy advisory report on institutional shareholder services"
+    );
+    expect(score).toBeLessThan(0.6);
+  });
+
+  it("accepts correct matches above 0.6 threshold", () => {
+    expect(titleSimilarity(
+      "Retail shareholder participation in the proxy process",
+      "Retail Shareholder Participation in the Proxy Process: Monitoring, Engagement, and Voting"
+    )).toBeGreaterThan(0.6);
   });
 });
 
