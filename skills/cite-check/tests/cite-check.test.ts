@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from "bun:test";
 import { join } from "node:path";
-import { mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { cmdCiteCheck, cmdAsk } from "../cite-check";
 import type { CiteCheckFlags, AskFlags } from "../cite-check";
 import { __setGeminiClientForTesting, __setReadwisePathForTesting } from "../gemini";
@@ -610,5 +610,157 @@ describe("cmdCiteCheck cross-directory audit", () => {
 
     // Should find PDF via cross-directory resolution (paperpile dir)
     expect(code).toBe(0);
+  });
+});
+
+describe("cmdCiteCheck manifest persistence", () => {
+  const tmpBase = "/tmp/cite-check-manifest-integ-test";
+
+  afterEach(() => {
+    __setGeminiClientForTesting(null);
+    try {
+      rmSync(tmpBase, { recursive: true, force: true });
+    } catch {}
+  });
+
+  it("creates .cite-check-store.json in drafts dir after sequential run", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    const mockClient = {
+      files: {
+        upload: async (opts: any) => ({
+          name: `files/${opts.config.displayName}`,
+          uri: `https://example.com/files/${opts.config.displayName}`,
+          mimeType: "application/pdf",
+          state: "ACTIVE",
+        }),
+        get: async () => ({ state: "ACTIVE" }),
+      },
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({
+            status: "SUPPORTED",
+            supporting_passage: "quote",
+            explanation: "ok",
+          }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+
+    // Manifest should exist
+    const manifestPath = join(tmpBase, "drafts", ".cite-check-store.json");
+    expect(existsSync(manifestPath)).toBe(true);
+
+    // Manifest should contain the uploaded bibkey
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+    expect(manifest["Hu2024-bm"]).toBeDefined();
+    expect(manifest["Hu2024-bm"].name).toBe("files/Hu2024-bm");
+    expect(manifest["Hu2024-bm"].uploadedAt).toBeGreaterThan(0);
+  });
+
+  it("skips upload on second run using manifest cache", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    let uploadCount = 0;
+    const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCount++;
+          return {
+            name: `files/${opts.config.displayName}`,
+            uri: `https://example.com/files/${opts.config.displayName}`,
+            mimeType: "application/pdf",
+            state: "ACTIVE",
+          };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({
+            status: "SUPPORTED",
+            supporting_passage: "quote",
+            explanation: "ok",
+          }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    // First run: should upload
+    await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+    expect(uploadCount).toBe(1);
+
+    // Second run: should skip upload (cached in manifest)
+    uploadCount = 0;
+    await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+    expect(uploadCount).toBe(0);
+  });
+
+  it("does not create manifest in dry-run mode", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm, title={{Test}}, year={2024}}`,
+    );
+    writeFileSync(join(tmpBase, "drafts", "draft.md"), "X [@Hu2024-bm].");
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts"), "dry-run": true } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+    expect(existsSync(join(tmpBase, "drafts", ".cite-check-store.json"))).toBe(false);
   });
 });

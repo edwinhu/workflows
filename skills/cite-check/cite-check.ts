@@ -36,10 +36,16 @@ import {
   searchReadwise,
   resolveFileAcrossDirs,
   submitBatchCiteCheck,
+  loadManifest,
+  saveManifest,
+  restoreFromManifest,
+  updateManifest,
+  verifyFileRef,
   type Status,
   type BibEntry,
   type BatchRequest,
   type FileRef,
+  type Manifest,
 } from "./gemini.js";
 import { extractCitations, type Citation } from "./cite-extract.js";
 
@@ -524,7 +530,9 @@ export async function cmdCiteCheck(
     return missingCount > 0 ? 1 : 0;
   }
 
-  // 2. Upload cited PDFs via Files API (cached per session).
+  // 2. Upload cited PDFs via Files API (with persistent manifest).
+  const manifestPath = join(draftsDir, ".cite-check-store.json");
+  const manifest = loadManifest(manifestPath);
   const fileCache = new Map<string, FileRef>();
   const bibDirs = resolvedBibPaths.map((p) => dirname(p));
 
@@ -533,18 +541,32 @@ export async function cmdCiteCheck(
       // Upload PDFs for cited bibkeys
       if (bibMap.size > 0) {
         const citedBibkeys = [...new Set(cites.map((c) => c.bibkey))];
+
+        // Restore valid entries from manifest (skip re-upload for files within 48h TTL)
+        const restored = restoreFromManifest(manifest, fileCache, citedBibkeys);
+        if (restored > 0) {
+          process.stderr.write(
+            `[cite-check] restored ${restored} files from manifest (within 48h TTL)\n`,
+          );
+        }
+
+        const remaining = citedBibkeys.filter((k) => !fileCache.has(k));
         process.stderr.write(
-          `[cite-check] uploading ${citedBibkeys.length} cited sources...\n`,
+          `[cite-check] uploading ${remaining.length} of ${citedBibkeys.length} cited sources (${restored} cached)...\n`,
         );
         const { uploaded, skipped, missing, fromReadwise } = await uploadCitedFiles(
           bibMap,
-          citedBibkeys,
+          remaining,
           fileCache,
           { debug, readwiseFallback: true, bibDirs },
         );
         process.stderr.write(
-          `[cite-check] uploaded ${uploaded} + ${fromReadwise} from Readwise, ${skipped} cached, ${missing} missing\n`,
+          `[cite-check] uploaded ${uploaded} + ${fromReadwise} from Readwise, ${skipped + restored} cached, ${missing} missing\n`,
         );
+
+        // Persist updated manifest
+        const updatedManifest = updateManifest(manifest, fileCache);
+        saveManifest(manifestPath, updatedManifest);
       }
     } catch (err) {
       printError(`File upload failed: ${err instanceof Error ? err.message : String(err)}`);
@@ -826,21 +848,36 @@ export async function cmdAsk(
     return 1;
   }
 
-  // Upload the source
+  // Upload the source (with manifest caching)
+  const manifestPath = join(dirname(resolvedBibPaths[0]), ".cite-check-store.json");
+  const manifest = loadManifest(manifestPath);
   const fileCache = new Map<string, FileRef>();
   const bibDirs = resolvedBibPaths.map((p) => dirname(p));
-  const { uploaded, fromReadwise, missing } = await uploadCitedFiles(
-    bibMap,
-    [bibkey],
-    fileCache,
-    { debug, readwiseFallback: true, bibDirs },
-  );
 
-  if (missing > 0) {
-    printError(
-      `source for '${bibkey}' not found (no PDF on disk, no Readwise match)`,
+  // Try manifest first
+  const restored = restoreFromManifest(manifest, fileCache, [bibkey]);
+
+  let sourceType = "cached";
+  if (restored === 0) {
+    const { uploaded, fromReadwise, missing } = await uploadCitedFiles(
+      bibMap,
+      [bibkey],
+      fileCache,
+      { debug, readwiseFallback: true, bibDirs },
     );
-    return 1;
+
+    if (missing > 0) {
+      printError(
+        `source for '${bibkey}' not found (no PDF on disk, no Readwise match)`,
+      );
+      return 1;
+    }
+
+    sourceType = uploaded > 0 ? "PDF" : "Readwise";
+
+    // Persist updated manifest
+    const updatedManifest = updateManifest(manifest, fileCache);
+    saveManifest(manifestPath, updatedManifest);
   }
 
   const ref = fileCache.get(bibkey);
@@ -850,7 +887,7 @@ export async function cmdAsk(
   }
 
   process.stderr.write(
-    `[ask] querying ${bibkey} (${uploaded > 0 ? "PDF" : "Readwise"})...\n`,
+    `[ask] querying ${bibkey} (${sourceType})...\n`,
   );
 
   // Query Gemini with the question

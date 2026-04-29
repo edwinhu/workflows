@@ -43,6 +43,101 @@ export interface FileRef {
 }
 
 // ---------------------------------------------------------------------------
+// Manifest: persistent file upload cache
+// ---------------------------------------------------------------------------
+
+/** A manifest entry tracks an uploaded file and when it was uploaded. */
+export interface ManifestEntry extends FileRef {
+  uploadedAt: number; // epoch ms
+}
+
+/** On-disk manifest mapping bibkey -> ManifestEntry. */
+export interface Manifest {
+  [bibkey: string]: ManifestEntry;
+}
+
+/** Gemini Files API retains uploads for 48 hours. */
+const MANIFEST_TTL_MS = 48 * 60 * 60 * 1000;
+
+/** Load a manifest from disk. Returns empty object if file doesn't exist or is invalid. */
+export function loadManifest(path: string): Manifest {
+  try {
+    if (!existsSync(path)) return {};
+    const raw = readFileSync(path, "utf-8");
+    return JSON.parse(raw) as Manifest;
+  } catch {
+    return {};
+  }
+}
+
+/** Save a manifest to disk. */
+export function saveManifest(path: string, manifest: Manifest): void {
+  writeFileSync(path, JSON.stringify(manifest, null, 2) + "\n", "utf-8");
+}
+
+/**
+ * Verify that a file ref is still alive on the Gemini Files API.
+ * Returns true if the file exists and is ACTIVE, false otherwise.
+ */
+export async function verifyFileRef(ref: FileRef): Promise<boolean> {
+  try {
+    const client = getClient();
+    const file = await client.files.get({ name: ref.name });
+    return file.state === "ACTIVE";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Pre-populate a cache from a manifest, filtering out expired entries.
+ * Entries within TTL are added to the cache without verification (fast path).
+ * Returns the number of entries restored.
+ */
+export function restoreFromManifest(
+  manifest: Manifest,
+  cache: Map<string, FileRef>,
+  bibkeys: string[],
+): number {
+  const now = Date.now();
+  let restored = 0;
+  for (const bibkey of bibkeys) {
+    if (cache.has(bibkey)) continue;
+    const entry = manifest[bibkey];
+    if (!entry) continue;
+    if (now - entry.uploadedAt > MANIFEST_TTL_MS) continue;
+    cache.set(bibkey, { name: entry.name, uri: entry.uri, mimeType: entry.mimeType });
+    restored++;
+  }
+  return restored;
+}
+
+/**
+ * Update manifest from cache after uploads. Preserves existing entries that
+ * are still within TTL; adds/refreshes entries from the cache.
+ */
+export function updateManifest(
+  manifest: Manifest,
+  cache: Map<string, FileRef>,
+): Manifest {
+  const now = Date.now();
+  // Prune expired entries
+  const updated: Manifest = {};
+  for (const [key, entry] of Object.entries(manifest)) {
+    if (now - entry.uploadedAt <= MANIFEST_TTL_MS) {
+      updated[key] = entry;
+    }
+  }
+  // Add/refresh from cache
+  for (const [bibkey, ref] of cache) {
+    if (!updated[bibkey]) {
+      updated[bibkey] = { ...ref, uploadedAt: now };
+    }
+  }
+  return updated;
+}
+
+// ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 

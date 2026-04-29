@@ -14,11 +14,18 @@ import {
   submitBatchCiteCheck,
   extractResponseText,
   titleSimilarity,
+  loadManifest,
+  saveManifest,
+  restoreFromManifest,
+  updateManifest,
+  verifyFileRef,
   type ClassifyResult,
   type Status,
   type BibEntry,
   type BatchRequest,
   type FileRef,
+  type Manifest,
+  type ManifestEntry,
 } from "../gemini";
 
 afterEach(() => {
@@ -351,6 +358,193 @@ describe("parseBibFile stores fileRelPath", () => {
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("manifest persistence", () => {
+  const tmpDir = "/tmp/cite-check-manifest-test";
+
+  afterEach(async () => {
+    const { rmSync } = await import("node:fs");
+    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+  });
+
+  it("loadManifest returns empty object for missing file", () => {
+    expect(loadManifest("/tmp/nonexistent-manifest.json")).toEqual({});
+  });
+
+  it("loadManifest returns empty object for invalid JSON", async () => {
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    mkdirSync(tmpDir, { recursive: true });
+    const p = join(tmpDir, "bad.json");
+    writeFileSync(p, "not json!");
+    expect(loadManifest(p)).toEqual({});
+  });
+
+  it("saveManifest + loadManifest round-trips", async () => {
+    const { mkdirSync } = await import("node:fs");
+    mkdirSync(tmpDir, { recursive: true });
+    const p = join(tmpDir, "store.json");
+
+    const manifest: Manifest = {
+      "Key2024-aa": {
+        name: "files/abc",
+        uri: "https://example.com/abc",
+        mimeType: "application/pdf",
+        uploadedAt: Date.now(),
+      },
+    };
+    saveManifest(p, manifest);
+    const loaded = loadManifest(p);
+    expect(loaded["Key2024-aa"].name).toBe("files/abc");
+    expect(loaded["Key2024-aa"].uri).toBe("https://example.com/abc");
+  });
+
+  it("restoreFromManifest restores entries within TTL", () => {
+    const now = Date.now();
+    const manifest: Manifest = {
+      "Fresh2024-aa": {
+        name: "files/fresh",
+        uri: "https://example.com/fresh",
+        mimeType: "application/pdf",
+        uploadedAt: now - 1000, // 1 second ago
+      },
+      "Expired2024-bb": {
+        name: "files/old",
+        uri: "https://example.com/old",
+        mimeType: "application/pdf",
+        uploadedAt: now - 49 * 60 * 60 * 1000, // 49 hours ago (expired)
+      },
+    };
+
+    const cache = new Map<string, FileRef>();
+    const restored = restoreFromManifest(manifest, cache, [
+      "Fresh2024-aa",
+      "Expired2024-bb",
+      "Missing2024-cc",
+    ]);
+
+    expect(restored).toBe(1);
+    expect(cache.has("Fresh2024-aa")).toBe(true);
+    expect(cache.has("Expired2024-bb")).toBe(false);
+    expect(cache.has("Missing2024-cc")).toBe(false);
+  });
+
+  it("restoreFromManifest skips keys already in cache", () => {
+    const manifest: Manifest = {
+      "Key2024-aa": {
+        name: "files/manifest-ver",
+        uri: "https://example.com/manifest-ver",
+        mimeType: "application/pdf",
+        uploadedAt: Date.now(),
+      },
+    };
+
+    const cache = new Map<string, FileRef>([
+      ["Key2024-aa", { name: "files/already", uri: "https://example.com/already", mimeType: "application/pdf" }],
+    ]);
+    const restored = restoreFromManifest(manifest, cache, ["Key2024-aa"]);
+
+    expect(restored).toBe(0);
+    // Cache should keep the original value, not the manifest value
+    expect(cache.get("Key2024-aa")!.name).toBe("files/already");
+  });
+
+  it("updateManifest adds new entries and prunes expired", () => {
+    const now = Date.now();
+    const manifest: Manifest = {
+      "Fresh2024-aa": {
+        name: "files/fresh",
+        uri: "https://example.com/fresh",
+        mimeType: "application/pdf",
+        uploadedAt: now - 1000,
+      },
+      "Expired2024-bb": {
+        name: "files/old",
+        uri: "https://example.com/old",
+        mimeType: "application/pdf",
+        uploadedAt: now - 49 * 60 * 60 * 1000,
+      },
+    };
+
+    const cache = new Map<string, FileRef>([
+      ["New2024-cc", { name: "files/new", uri: "https://example.com/new", mimeType: "application/pdf" }],
+    ]);
+
+    const updated = updateManifest(manifest, cache);
+
+    expect(updated["Fresh2024-aa"]).toBeDefined();
+    expect(updated["Expired2024-bb"]).toBeUndefined(); // pruned
+    expect(updated["New2024-cc"]).toBeDefined();
+    expect(updated["New2024-cc"].uploadedAt).toBeGreaterThan(0);
+  });
+
+  it("updateManifest does not overwrite existing manifest entries from cache", () => {
+    const earlier = Date.now() - 60_000;
+    const manifest: Manifest = {
+      "Key2024-aa": {
+        name: "files/original",
+        uri: "https://example.com/original",
+        mimeType: "application/pdf",
+        uploadedAt: earlier,
+      },
+    };
+
+    // Cache has the same key (restored from manifest earlier)
+    const cache = new Map<string, FileRef>([
+      ["Key2024-aa", { name: "files/original", uri: "https://example.com/original", mimeType: "application/pdf" }],
+    ]);
+
+    const updated = updateManifest(manifest, cache);
+    // Should keep the original uploadedAt, not create a new timestamp
+    expect(updated["Key2024-aa"].uploadedAt).toBe(earlier);
+  });
+});
+
+describe("verifyFileRef", () => {
+  it("returns true when file is ACTIVE", async () => {
+    __setGeminiClientForTesting({
+      files: {
+        get: async () => ({ state: "ACTIVE" }),
+      },
+    } as any);
+
+    const result = await verifyFileRef({
+      name: "files/test",
+      uri: "https://example.com/test",
+      mimeType: "application/pdf",
+    });
+    expect(result).toBe(true);
+  });
+
+  it("returns false when file is not ACTIVE", async () => {
+    __setGeminiClientForTesting({
+      files: {
+        get: async () => ({ state: "EXPIRED" }),
+      },
+    } as any);
+
+    const result = await verifyFileRef({
+      name: "files/test",
+      uri: "https://example.com/test",
+      mimeType: "application/pdf",
+    });
+    expect(result).toBe(false);
+  });
+
+  it("returns false when API throws", async () => {
+    __setGeminiClientForTesting({
+      files: {
+        get: async () => { throw new Error("not found"); },
+      },
+    } as any);
+
+    const result = await verifyFileRef({
+      name: "files/gone",
+      uri: "https://example.com/gone",
+      mimeType: "application/pdf",
+    });
+    expect(result).toBe(false);
   });
 });
 
