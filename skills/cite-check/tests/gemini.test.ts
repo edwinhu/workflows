@@ -784,7 +784,7 @@ describe("queryCitation", () => {
     expect(generateCalls[0].contents[0].parts[0].text).toBe("test");
   });
 
-  it("sets temperature=0 for deterministic output", async () => {
+  it("does not set temperature (Gemini 3 optimized for default=1.0)", async () => {
     const calls: any[] = [];
     const mockClient = {
       models: {
@@ -799,7 +799,7 @@ describe("queryCitation", () => {
     __setGeminiClientForTesting(mockClient as any);
 
     await queryCitation([], "test");
-    expect(calls[0].config.temperature).toBe(0);
+    expect(calls[0].config.temperature).toBeUndefined();
   });
 
   it("retries UNSUPPORTED with retryModel and overturns on SUPPORTED", async () => {

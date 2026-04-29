@@ -831,7 +831,6 @@ export async function queryCitation(
     model,
     contents: [{ parts, role: "user" }],
     config: {
-      temperature: 0,
       responseMimeType: "application/json",
       responseJsonSchema: CITE_CHECK_SCHEMA,
     },
