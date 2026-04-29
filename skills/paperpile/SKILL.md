@@ -79,6 +79,29 @@ Unified library management and PDF resolution.
 8. **Confirm via API**: `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>`
 9. **Cleanup**: Close the Google search tab
 
+### find-and-add
+
+`"${CLAUDE_SKILL_DIR}/scripts/find_and_add.py" "<citation>" [--doi DOI] [--ssrn ID] [--no-pdf]`
+
+End-to-end: citation string → paper in Paperpile with PDF.
+
+```bash
+# Law review (HeinOnline)
+find_and_add.py "Robertson, Passive in Name Only, 36 Yale J. on Reg. 795 (2019)"
+
+# SSRN paper
+find_and_add.py --ssrn 5093097
+
+# Paper with known DOI
+find_and_add.py --doi 10.1016/j.jfineco.2024.01.001
+```
+
+**Discovery chain**: DOI/SSRN provided → CrossRef API → OpenAlex API → HeinOnline URL construction (for law reviews with volume/page).
+
+**Law review citations** with volume+page+known journal handle skip CrossRef entirely (unreliable for HeinOnline-only journals) and construct proxied HeinOnline URLs directly.
+
+**Supported journals**: UCLA L. Rev., Yale J. on Reg., Yale L.J., Harv. L. Rev., Stan. L. Rev., Colum. L. Rev., Mich. L. Rev., Va. L. Rev., U. Pa. L. Rev., and 15+ more (see `HEIN_JOURNAL_MAP` in script).
+
 ### resolve (last resort)
 
 ## IRON LAW: Always Use the Script
