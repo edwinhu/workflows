@@ -816,3 +816,52 @@ export async function queryCitation(
 
   return { classification, durationMs };
 }
+
+// ---------------------------------------------------------------------------
+// Concurrent batch query (isolated per-request, no cross-contamination)
+// ---------------------------------------------------------------------------
+
+/**
+ * Run multiple citation queries concurrently using isolated generateContent
+ * calls. Each request gets its own HTTP call, so file references cannot leak
+ * across queries (unlike the Batch API which shares file context within a job).
+ *
+ * Concurrency is capped to avoid rate limits.
+ */
+export async function queryCitationsConcurrently(
+  requests: BatchRequest[],
+  opts?: { model?: string; debug?: boolean; concurrency?: number },
+): Promise<BatchResult[]> {
+  const concurrency = opts?.concurrency ?? 5;
+  const results: BatchResult[] = new Array(requests.length);
+
+  // Process in chunks of `concurrency`
+  for (let i = 0; i < requests.length; i += concurrency) {
+    const chunk = requests.slice(i, i + concurrency);
+    const promises = chunk.map(async (req, j) => {
+      try {
+        const result = await queryCitation(req.fileRefs, req.prompt, opts);
+        results[i + j] = { key: req.key, classification: result.classification };
+      } catch (err) {
+        results[i + j] = {
+          key: req.key,
+          classification: {
+            status: "ERROR",
+            supporting_passage: "",
+            explanation: `Query error: ${err instanceof Error ? err.message : String(err)}`,
+          },
+          error: err instanceof Error ? err.message : String(err),
+        };
+      }
+    });
+    await Promise.all(promises);
+
+    if (opts?.debug && i + concurrency < requests.length) {
+      process.stderr.write(
+        `[gemini] completed ${Math.min(i + concurrency, requests.length)}/${requests.length} queries\n`,
+      );
+    }
+  }
+
+  return results;
+}

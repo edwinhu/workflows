@@ -33,9 +33,9 @@ import {
   uploadCitedFiles,
   parseBibFile,
   queryCitation,
+  queryCitationsConcurrently,
   searchReadwise,
   resolveFileAcrossDirs,
-  submitBatchCiteCheck,
   loadManifest,
   saveManifest,
   restoreFromManifest,
@@ -617,7 +617,10 @@ export async function cmdCiteCheck(
     }
     return 0;
   } else if (batchMode) {
-    // BATCH MODE: Submit all queries as a single Gemini Batch API job
+    // BATCH MODE: concurrent isolated queries (5 at a time).
+    // Uses separate generateContent calls per query to prevent file reference
+    // cross-contamination (the Gemini Batch API shares file context across
+    // requests within a single job, causing wrong-source passage retrieval).
     const batchRequests: BatchRequest[] = [];
 
     for (const g of groups) {
@@ -641,10 +644,10 @@ export async function cmdCiteCheck(
 
     if (batchRequests.length > 0) {
       process.stderr.write(
-        `[cite-check] batch mode: submitting ${batchRequests.length} queries...\n`,
+        `[cite-check] batch mode: querying ${batchRequests.length} groups concurrently...\n`,
       );
 
-      const batchResults = await submitBatchCiteCheck(batchRequests, { debug });
+      const batchResults = await queryCitationsConcurrently(batchRequests, { debug });
 
       // Map results back to cite groups by key
       const resultByKey = new Map(batchResults.map((r) => [r.key, r]));

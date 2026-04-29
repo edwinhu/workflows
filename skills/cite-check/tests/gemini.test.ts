@@ -12,6 +12,7 @@ import {
   searchReadwise,
   queryCitation,
   submitBatchCiteCheck,
+  queryCitationsConcurrently,
   extractResponseText,
   titleSimilarity,
   loadManifest,
@@ -1186,6 +1187,111 @@ describe("submitBatchCiteCheck", () => {
     await expect(
       submitBatchCiteCheck([{ key: "g1", prompt: "test", fileRefs: [] }]),
     ).rejects.toThrow("Batch job failed");
+  });
+});
+
+describe("queryCitationsConcurrently", () => {
+  it("runs queries concurrently and returns results keyed by request key", async () => {
+    const calls: any[] = [];
+    const mockClient = {
+      models: {
+        generateContent: async (opts: any) => {
+          calls.push(opts);
+          return {
+            text: JSON.stringify({
+              status: "SUPPORTED",
+              supporting_passage: "evidence",
+              explanation: "supports claim",
+            }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const fileRefA: FileRef = { name: "files/a", uri: "https://example.com/a", mimeType: "application/pdf" };
+    const fileRefB: FileRef = { name: "files/b", uri: "https://example.com/b", mimeType: "application/pdf" };
+
+    const results = await queryCitationsConcurrently([
+      { key: "g1", prompt: "Does A support claim 1?", fileRefs: [fileRefA] },
+      { key: "g2", prompt: "Does B support claim 2?", fileRefs: [fileRefB] },
+    ]);
+
+    // Each query gets its own isolated generateContent call
+    expect(calls.length).toBe(2);
+
+    // First call should only have fileRef A
+    expect(calls[0].contents[0].parts.length).toBe(2); // 1 file + 1 text
+    expect(calls[0].contents[0].parts[0].fileData.fileUri).toBe("https://example.com/a");
+
+    // Second call should only have fileRef B
+    expect(calls[1].contents[0].parts.length).toBe(2);
+    expect(calls[1].contents[0].parts[0].fileData.fileUri).toBe("https://example.com/b");
+
+    expect(results.length).toBe(2);
+    expect(results[0].key).toBe("g1");
+    expect(results[0].classification.status).toBe("SUPPORTED");
+    expect(results[1].key).toBe("g2");
+  });
+
+  it("handles errors gracefully without failing other queries", async () => {
+    let callIdx = 0;
+    const mockClient = {
+      models: {
+        generateContent: async () => {
+          callIdx++;
+          if (callIdx === 1) throw new Error("rate limited");
+          return {
+            text: JSON.stringify({
+              status: "SUPPORTED",
+              supporting_passage: "ok",
+              explanation: "fine",
+            }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await queryCitationsConcurrently([
+      { key: "g1", prompt: "fail", fileRefs: [] },
+      { key: "g2", prompt: "succeed", fileRefs: [] },
+    ]);
+
+    expect(results.length).toBe(2);
+    expect(results[0].classification.status).toBe("ERROR");
+    expect(results[0].error).toContain("rate limited");
+    expect(results[1].classification.status).toBe("SUPPORTED");
+  });
+
+  it("respects concurrency limit", async () => {
+    let concurrent = 0;
+    let maxConcurrent = 0;
+    const mockClient = {
+      models: {
+        generateContent: async () => {
+          concurrent++;
+          maxConcurrent = Math.max(maxConcurrent, concurrent);
+          await new Promise(r => setTimeout(r, 20));
+          concurrent--;
+          return {
+            text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "", explanation: "" }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    // Submit 8 requests with concurrency=3
+    const requests = Array.from({ length: 8 }, (_, i) => ({
+      key: `g${i}`, prompt: "test", fileRefs: [] as FileRef[],
+    }));
+
+    const results = await queryCitationsConcurrently(requests, { concurrency: 3 });
+
+    expect(results.length).toBe(8);
+    expect(maxConcurrent).toBeLessThanOrEqual(3);
+    expect(maxConcurrent).toBeGreaterThan(1); // actually ran concurrently
   });
 });
 

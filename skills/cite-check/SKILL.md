@@ -40,7 +40,7 @@ bun cite-check.ts \
 | `--out <path>` | No | `<drafts>/REVIEW-CITES.md` | Output report path |
 | `--limit <n>` | No | all | Check only first N citations (smoke test) |
 | `--dry-run` | No | false | Print prompts without querying |
-| `--batch` | No | false | Submit all queries as a single batch job (50% cheaper, slower turnaround) |
+| `--batch` | No | false | Run queries concurrently (5 at a time) instead of one-at-a-time |
 | `--audit` | No | false | Audit source availability without querying (checks Paperpile + Readwise) |
 | `--debug` | No | false | Verbose logging |
 
@@ -115,20 +115,15 @@ uploads it to the Gemini store.
 
 ## Batch Mode
 
-Use `--batch` to submit all citation queries as a single Gemini Batch API job instead of querying sequentially.
+Use `--batch` to run all citation queries concurrently (5 at a time) instead of one-at-a-time sequential mode.
 
 ```bash
 bun cite-check.ts --bib paperpile.bib --drafts ./drafts --batch
 ```
 
-**Trade-offs:**
+**How it works:** Each query runs as an isolated `generateContent` call with only the relevant source file(s) attached. Queries run 5 at a time for speed while preserving file isolation.
 
-- **50% cheaper** than sequential queries (Batch API pricing)
-- Handles up to **10,000 requests** per job
-- Results may take **minutes** (vs seconds per query in sequential mode)
-- Good for **full-paper verification runs** where turnaround time is not critical
-
-The batch job polls for completion automatically. Results are mapped back to citation groups and the same REVIEW-CITES.md report is produced.
+**Why not the Batch API?** The Gemini Batch API shares file context across requests within a single job, causing cross-contamination (e.g., querying source A returns passages from source B). Concurrent isolated calls avoid this.
 
 ## Audit Mode
 
