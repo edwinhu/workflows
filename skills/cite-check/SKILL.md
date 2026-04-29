@@ -1,6 +1,6 @@
 ---
 name: cite-check
-description: "Verify academic citations against source PDFs using Gemini File Search API. Use when 'check citations', 'verify cites', 'cite-check', 'run citation review', 'are my citations grounded', or validating that pandoc citations in markdown drafts are supported by their source documents."
+description: "Verify academic citations against source PDFs using Gemini File Search API. Use when 'check citations', 'verify cites', 'cite-check', 'run citation review', 'are my citations grounded', 'does source X support claim Y', 'what does source X say about Y', or validating that pandoc citations in markdown drafts are supported by their source documents."
 user-invocable: true
 ---
 
@@ -45,6 +45,24 @@ bun cite-check.ts \
 | `--debug` | No | false | Verbose logging |
 
 *Either `--bib` or `--store` is required.
+
+### Ask Mode: Targeted Source Queries
+
+Ask a specific question about a single source:
+
+```bash
+# Does Bebchuk2019 support a specific claim?
+bun cite-check.ts ask @Bebchuk2019-uq "do expense ratios fall since 2010?" --bib paperpile.bib
+
+# What does a source say about a topic?
+bun cite-check.ts ask @Brav2022-ht "what are retail turnout rates?" --bib paperpile.bib --bib sources.bib
+```
+
+The `ask` mode uploads the single source (PDF or Readwise fallback), queries Gemini with your question, and prints the answer with supporting passages to stdout. No report is generated.
+
+### Cross-Directory File Resolution
+
+When multiple `--bib` files are provided, file paths are resolved across all bib directories. This handles the common case where a project-local `sources.bib` has `file = {All Papers/...}` paths that are relative to the Paperpile folder rather than the project's `references/` directory. The tool tries each bib directory as a fallback when the primary path doesn't exist on disk.
 
 ## How It Works
 

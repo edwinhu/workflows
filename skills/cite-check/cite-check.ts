@@ -28,12 +28,13 @@
 
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { isAbsolute, join, resolve } from "node:path";
+import { isAbsolute, dirname, join, resolve } from "node:path";
 import {
   uploadCitedFiles,
   parseBibFile,
   queryCitation,
   searchReadwise,
+  resolveFileAcrossDirs,
   submitBatchCiteCheck,
   type Status,
   type BibEntry,
@@ -398,6 +399,7 @@ export async function cmdCiteCheck(
 
   if (auditMode) {
     const citedBibkeys = [...new Set(cites.map((c) => c.bibkey))];
+    const bibDirsForAudit = resolvedBibPaths.map((p) => dirname(p));
 
     const hasPdf: string[] = [];
     const hasReadwise: Array<{ bibkey: string; matchedTitle: string }> = [];
@@ -427,14 +429,12 @@ export async function cmdCiteCheck(
         continue;
       }
 
-      // Check if PDF exists on disk
-      if (entry.filePath) {
-        try {
-          statSync(entry.filePath);
+      // Check if PDF exists on disk (with cross-directory resolution)
+      if (entry.filePath || entry.fileRelPath) {
+        const resolved = resolveFileAcrossDirs(entry, bibDirsForAudit, debug);
+        if (resolved) {
           hasPdf.push(bibkey);
           continue;
-        } catch {
-          // file field exists but file missing on disk -- fall through
         }
       }
 
@@ -526,6 +526,7 @@ export async function cmdCiteCheck(
 
   // 2. Upload cited PDFs via Files API (cached per session).
   const fileCache = new Map<string, FileRef>();
+  const bibDirs = resolvedBibPaths.map((p) => dirname(p));
 
   if (!dryRun) {
     try {
@@ -539,7 +540,7 @@ export async function cmdCiteCheck(
           bibMap,
           citedBibkeys,
           fileCache,
-          { debug, readwiseFallback: true },
+          { debug, readwiseFallback: true, bibDirs },
         );
         process.stderr.write(
           `[cite-check] uploaded ${uploaded} + ${fromReadwise} from Readwise, ${skipped} cached, ${missing} missing\n`,
@@ -749,13 +750,144 @@ export async function cmdCiteCheck(
 }
 
 // ---------------------------------------------------------------------------
+// Ask mode: targeted query against a specific source.
+// ---------------------------------------------------------------------------
+
+export interface AskFlags {
+  debug?: string | boolean;
+}
+
+/**
+ * Ask a targeted question about a specific source.
+ *
+ * Usage: bun cite-check.ts ask @Bibkey "question" --bib <path> [--bib <path2>]
+ *
+ * Uploads the source PDF (or fetches from Readwise), sends the question to
+ * Gemini, and prints the answer to stdout.
+ */
+export async function cmdAsk(
+  args: string[],
+  flags: AskFlags,
+  bibPaths?: string[],
+): Promise<number> {
+  const debug = !!flags.debug;
+
+  // Collect --bib paths
+  const resolvedBibPaths: string[] = bibPaths
+    ? bibPaths.map(expandPath)
+    : (() => {
+        const raw = Bun.argv.slice(2);
+        const paths: string[] = [];
+        for (let i = 0; i < raw.length; i++) {
+          if (raw[i] === "--bib" && i + 1 < raw.length) {
+            paths.push(expandPath(raw[i + 1]));
+            i++;
+          }
+        }
+        return paths;
+      })();
+
+  if (resolvedBibPaths.length === 0) {
+    printError("ask mode requires --bib <path>");
+    return 1;
+  }
+
+  // Parse positional args: first is bibkey (with or without @), rest is the question
+  const filteredArgs = args.filter((a) => a !== "ask");
+  if (filteredArgs.length < 2) {
+    printError(
+      "Usage: cite-check ask @Bibkey \"question\" --bib <path>",
+    );
+    return 1;
+  }
+
+  const bibkey = filteredArgs[0].replace(/^@/, "");
+  const question = filteredArgs.slice(1).join(" ");
+
+  // Parse bib files
+  const bibMap = new Map<string, BibEntry>();
+  for (const bp of resolvedBibPaths) {
+    try {
+      const entries = parseBibFile(bp);
+      for (const [key, entry] of entries) {
+        if (!bibMap.has(key)) bibMap.set(key, entry);
+      }
+    } catch (err) {
+      printError(
+        `failed to parse bib file ${bp}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return 1;
+    }
+  }
+
+  const entry = bibMap.get(bibkey);
+  if (!entry) {
+    printError(`bibkey '${bibkey}' not found in any bib file`);
+    return 1;
+  }
+
+  // Upload the source
+  const fileCache = new Map<string, FileRef>();
+  const bibDirs = resolvedBibPaths.map((p) => dirname(p));
+  const { uploaded, fromReadwise, missing } = await uploadCitedFiles(
+    bibMap,
+    [bibkey],
+    fileCache,
+    { debug, readwiseFallback: true, bibDirs },
+  );
+
+  if (missing > 0) {
+    printError(
+      `source for '${bibkey}' not found (no PDF on disk, no Readwise match)`,
+    );
+    return 1;
+  }
+
+  const ref = fileCache.get(bibkey);
+  if (!ref) {
+    printError(`failed to upload source for '${bibkey}'`);
+    return 1;
+  }
+
+  process.stderr.write(
+    `[ask] querying ${bibkey} (${uploaded > 0 ? "PDF" : "Readwise"})...\n`,
+  );
+
+  // Query Gemini with the question
+  const prompt = `Based on the source document titled '${bibkey}'${entry.title ? ` ("${entry.title}")` : ""}, answer this question:\n\n${question}\n\nQuote relevant passages from the source to support your answer. If the source does not address this question, say so clearly.`;
+
+  try {
+    const result = await queryCitation([ref], prompt, { debug });
+    // Print the answer -- for ask mode, show explanation + passage
+    const cls = result.classification;
+    if (cls.supporting_passage) {
+      console.log(`**Passage:** "${cls.supporting_passage}"\n`);
+    }
+    console.log(`**Answer:** ${cls.explanation}`);
+    console.log(`\n_Status: ${cls.status} (${result.durationMs}ms)_`);
+    return 0;
+  } catch (err) {
+    printError(
+      `Gemini error: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return 1;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Standalone entrypoint.
 // ---------------------------------------------------------------------------
 
 if (import.meta.main) {
   const rawArgs = Bun.argv.slice(2);
   const { args, flags } = parseFlags(rawArgs);
-  cmdCiteCheck(args, flags as CiteCheckFlags).then((code) =>
-    process.exit(code),
-  );
+
+  // Dispatch: "ask" subcommand vs default cite-check
+  if (args[0] === "ask") {
+    cmdAsk(args, flags as AskFlags).then((code) => process.exit(code));
+  } else {
+    cmdCiteCheck(args, flags as CiteCheckFlags).then((code) =>
+      process.exit(code),
+    );
+  }
 }

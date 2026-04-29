@@ -1,8 +1,8 @@
 import { describe, expect, it, afterEach } from "bun:test";
 import { join } from "node:path";
 import { mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { cmdCiteCheck } from "../cite-check";
-import type { CiteCheckFlags } from "../cite-check";
+import { cmdCiteCheck, cmdAsk } from "../cite-check";
+import type { CiteCheckFlags, AskFlags } from "../cite-check";
 import { __setGeminiClientForTesting, __setReadwisePathForTesting } from "../gemini";
 
 afterEach(() => {
@@ -384,5 +384,231 @@ describe("cmdCiteCheck --audit mode", () => {
 
     // Blog2024-cc is @misc with no PDF and no Readwise => missing => exit 1
     expect(code).toBe(1);
+  });
+});
+
+describe("cmdAsk", () => {
+  const tmpBase = "/tmp/cite-check-ask-test";
+
+  afterEach(() => {
+    __setGeminiClientForTesting(null);
+    __setReadwisePathForTesting(null);
+    try {
+      rmSync(tmpBase, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+  });
+
+  it("returns 1 when no --bib provided", async () => {
+    const code = await cmdAsk(["ask", "@Foo", "question"], {}, []);
+    expect(code).toBe(1);
+  });
+
+  it("returns 1 when bibkey not found", async () => {
+    mkdirSync(tmpBase, { recursive: true });
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Other2024-aa,
+  title = {{Other Paper}},
+  year = {2024}
+}`,
+    );
+
+    const code = await cmdAsk(
+      ["ask", "@Missing2024-zz", "some question"],
+      {},
+      [join(tmpBase, "test.bib")],
+    );
+    expect(code).toBe(1);
+  });
+
+  it("returns 1 when source PDF not found and no Readwise", async () => {
+    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+    mkdirSync(tmpBase, { recursive: true });
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{NoPdf2024-aa,
+  title = {{Missing Paper}},
+  year = {2024}
+}`,
+    );
+
+    const code = await cmdAsk(
+      ["ask", "@NoPdf2024-aa", "what does it say?"],
+      {},
+      [join(tmpBase, "test.bib")],
+    );
+    expect(code).toBe(1);
+  });
+
+  it("queries Gemini and returns 0 on success", async () => {
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    // Mock both files API (upload) and models API (query)
+    const mockClient = {
+      files: {
+        upload: async (opts: any) => ({
+          name: `files/${opts.config.displayName}`,
+          uri: `https://example.com/files/${opts.config.displayName}`,
+          mimeType: "application/pdf",
+          state: "ACTIVE",
+        }),
+        get: async () => ({ state: "ACTIVE" }),
+      },
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({
+            status: "SUPPORTED",
+            supporting_passage: "expense ratios declined by 40%",
+            explanation: "The source directly supports this claim with data.",
+          }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdAsk(
+      ["ask", "@Hu2024-bm", "do expense ratios fall?"],
+      {},
+      [join(tmpBase, "test.bib")],
+    );
+    expect(code).toBe(0);
+  });
+
+  it("strips @ prefix from bibkey", async () => {
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Test}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    const mockClient = {
+      files: {
+        upload: async () => ({
+          name: "files/test",
+          uri: "https://example.com/files/test",
+          mimeType: "application/pdf",
+          state: "ACTIVE",
+        }),
+        get: async () => ({ state: "ACTIVE" }),
+      },
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({
+            status: "SUPPORTED",
+            supporting_passage: "quote",
+            explanation: "ok",
+          }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    // With @ prefix
+    const code1 = await cmdAsk(
+      ["ask", "@Hu2024-bm", "question"],
+      {},
+      [join(tmpBase, "test.bib")],
+    );
+    expect(code1).toBe(0);
+
+    // Without @ prefix
+    const code2 = await cmdAsk(
+      ["ask", "Hu2024-bm", "question"],
+      {},
+      [join(tmpBase, "test.bib")],
+    );
+    expect(code2).toBe(0);
+  });
+
+  it("returns 1 with too few args", async () => {
+    mkdirSync(tmpBase, { recursive: true });
+    writeFileSync(join(tmpBase, "test.bib"), `@article{k, year={2024}}`);
+
+    // Only bibkey, no question
+    const code = await cmdAsk(
+      ["ask", "@Hu2024-bm"],
+      {},
+      [join(tmpBase, "test.bib")],
+    );
+    expect(code).toBe(1);
+  });
+});
+
+describe("cmdCiteCheck cross-directory audit", () => {
+  const tmpBase = "/tmp/cite-check-crossdir-audit-test";
+
+  afterEach(() => {
+    __setReadwisePathForTesting(null);
+    try {
+      rmSync(tmpBase, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+  });
+
+  it("finds PDF via cross-directory resolution in audit mode", async () => {
+    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
+    // Simulate: sources.bib in project/references/ with file = {All Papers/Author.pdf}
+    // PDF actually at paperpile/All Papers/Author.pdf
+    const projectDir = join(tmpBase, "project", "references");
+    const paperpileDir = join(tmpBase, "paperpile");
+    mkdirSync(projectDir, { recursive: true });
+    mkdirSync(join(projectDir, "..", "drafts"), { recursive: true });
+    mkdirSync(join(paperpileDir, "All Papers"), { recursive: true });
+    writeFileSync(join(paperpileDir, "All Papers/Author.pdf"), "fake-pdf");
+
+    // sources.bib: file field relative to paperpile dir, NOT project dir
+    writeFileSync(
+      join(projectDir, "sources.bib"),
+      `@article{Author2024-aa,
+  title = {{Author Paper}},
+  file = {All Papers/Author.pdf},
+  year = {2024}
+}`,
+    );
+
+    // paperpile.bib: doesn't have this entry (that's why it's in sources.bib)
+    writeFileSync(
+      join(paperpileDir, "paperpile.bib"),
+      `@article{Other2024-bb,
+  title = {{Other Paper}},
+  file = {All Papers/Other.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(projectDir, "..", "drafts", "draft.md"),
+      "Author says X [@Author2024-aa].",
+    );
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(projectDir, "..", "drafts"), audit: true } as CiteCheckFlags,
+      // paperpile.bib first (as in real usage), then sources.bib
+      [join(paperpileDir, "paperpile.bib"), join(projectDir, "sources.bib")],
+    );
+
+    // Should find PDF via cross-directory resolution (paperpile dir)
+    expect(code).toBe(0);
   });
 });

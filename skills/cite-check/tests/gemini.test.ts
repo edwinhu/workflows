@@ -7,6 +7,7 @@ import {
   uploadTextFile,
   uploadCitedFiles,
   parseBibFile,
+  resolveFileAcrossDirs,
   resolveFromReadwise,
   searchReadwise,
   queryCitation,
@@ -218,6 +219,135 @@ describe("uploadCitedFiles", () => {
       expect(cache.has("HasPdf2024-aa")).toBe(true);
       expect(cache.has("AlreadyCached2020-xx")).toBe(true);
       expect(cache.size).toBe(2);
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("resolves file via cross-directory fallback when primary path fails", async () => {
+    const uploadCalls: any[] = [];
+    const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCalls.push(opts);
+          return {
+            name: `files/${opts.config.displayName}`,
+            uri: `https://example.com/files/${opts.config.displayName}`,
+            mimeType: "application/pdf",
+            state: "ACTIVE",
+          };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    // Simulate: sources.bib in /tmp/project/references/
+    //           paperpile.bib in /tmp/paperpile/
+    //           PDF at /tmp/paperpile/All Papers/Author.pdf
+    const projectDir = "/tmp/cite-check-crossdir-test/project/references";
+    const paperpileDir = "/tmp/cite-check-crossdir-test/paperpile";
+    try {
+      mkdirSync(join(paperpileDir, "All Papers"), { recursive: true });
+      mkdirSync(projectDir, { recursive: true });
+      writeFileSync(join(paperpileDir, "All Papers/Author.pdf"), "fake-pdf");
+
+      // Entry from sources.bib: filePath resolves to project/references/All Papers/Author.pdf (wrong)
+      // fileRelPath is the raw relative path from the bib
+      const bibMap = new Map<string, BibEntry>([
+        ["Author2024-aa", {
+          bibkey: "Author2024-aa",
+          filePath: join(projectDir, "All Papers/Author.pdf"), // wrong dir
+          fileRelPath: "All Papers/Author.pdf",
+        }],
+      ]);
+
+      const cache = new Map<string, FileRef>();
+      const result = await uploadCitedFiles(
+        bibMap,
+        ["Author2024-aa"],
+        cache,
+        { bibDirs: [projectDir, paperpileDir] },
+      );
+
+      expect(result.uploaded).toBe(1);
+      expect(result.missing).toBe(0);
+      expect(cache.has("Author2024-aa")).toBe(true);
+      // Should have uploaded from the paperpile dir
+      expect(uploadCalls.length).toBe(1);
+    } finally {
+      rmSync("/tmp/cite-check-crossdir-test", { recursive: true, force: true });
+    }
+  });
+});
+
+describe("resolveFileAcrossDirs", () => {
+  it("returns primary path when it exists", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-resolve-primary";
+    try {
+      mkdirSync(tmpDir, { recursive: true });
+      writeFileSync(join(tmpDir, "test.pdf"), "fake");
+      const entry: BibEntry = {
+        bibkey: "k",
+        filePath: join(tmpDir, "test.pdf"),
+        fileRelPath: "test.pdf",
+      };
+      expect(resolveFileAcrossDirs(entry, [])).toBe(join(tmpDir, "test.pdf"));
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("returns null when no path resolves", () => {
+    const entry: BibEntry = {
+      bibkey: "k",
+      filePath: "/nonexistent/path.pdf",
+      fileRelPath: "path.pdf",
+    };
+    expect(resolveFileAcrossDirs(entry, ["/also/nonexistent"])).toBeNull();
+  });
+
+  it("falls back to alternative bib dir when primary fails", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const altDir = "/tmp/cite-check-resolve-fallback";
+    try {
+      mkdirSync(join(altDir, "Papers"), { recursive: true });
+      writeFileSync(join(altDir, "Papers/doc.pdf"), "fake");
+
+      const entry: BibEntry = {
+        bibkey: "k",
+        filePath: "/wrong/dir/Papers/doc.pdf", // doesn't exist
+        fileRelPath: "Papers/doc.pdf",
+      };
+      expect(resolveFileAcrossDirs(entry, [altDir])).toBe(
+        join(altDir, "Papers/doc.pdf"),
+      );
+    } finally {
+      rmSync(altDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("parseBibFile stores fileRelPath", () => {
+  it("preserves raw relative path alongside resolved absolute path", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-relpath-test";
+    const bibPath = join(tmpDir, "test.bib");
+    try {
+      mkdirSync(tmpDir, { recursive: true });
+      writeFileSync(bibPath, `
+@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {All Papers/H/Hu 2024.pdf},
+  year = {2024}
+}
+`);
+      const map = parseBibFile(bibPath);
+      const entry = map.get("Hu2024-bm")!;
+      expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
+      expect(entry.filePath).toBe(join(tmpDir, "All Papers/H/Hu 2024.pdf"));
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }

@@ -30,8 +30,9 @@ export interface ClassifyResult {
 
 export interface BibEntry {
   bibkey: string;
-  filePath?: string; // absolute path resolved from bib dir + relative file field
-  title?: string;    // for Readwise search fallback
+  filePath?: string;    // absolute path resolved from bib dir + relative file field
+  fileRelPath?: string; // raw relative path from bib file (for cross-directory resolution)
+  title?: string;       // for Readwise search fallback
 }
 
 /** Cached file upload result */
@@ -102,6 +103,7 @@ export function parseBibFile(bibPath: string): Map<string, BibEntry> {
     const fileMatch = entry.match(/^\s*file\s*=\s*\{([^}]+)\}/m);
     if (fileMatch) {
       const relPath = fileMatch[1].trim();
+      bibEntry.fileRelPath = relPath;
       bibEntry.filePath = join(bibDir, relPath);
     }
 
@@ -353,37 +355,80 @@ export async function uploadTextFile(
 }
 
 /**
+ * Try to find a PDF on disk by resolving a relative file path against multiple
+ * directories. Returns the first path that exists, or null.
+ */
+export function resolveFileAcrossDirs(
+  entry: BibEntry,
+  bibDirs: string[],
+  debug?: boolean,
+): string | null {
+  // 1. Try primary resolved path first
+  if (entry.filePath) {
+    try {
+      statSync(entry.filePath);
+      return entry.filePath;
+    } catch {
+      if (debug) {
+        process.stderr.write(`[gemini] file not found at primary path: ${entry.filePath}\n`);
+      }
+    }
+  }
+
+  // 2. Try resolving the raw relative path against each bib directory
+  if (entry.fileRelPath) {
+    for (const dir of bibDirs) {
+      const candidate = join(dir, entry.fileRelPath);
+      if (candidate === entry.filePath) continue; // already tried
+      try {
+        statSync(candidate);
+        if (debug) {
+          process.stderr.write(`[gemini] found via fallback dir: ${candidate}\n`);
+        }
+        return candidate;
+      } catch {
+        // not in this dir, try next
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Upload all cited PDFs from bib entries. Returns a map of bibkey -> FileRef.
  * Skips bibkeys already in the cache.
+ *
+ * When bibDirs is provided, file paths that don't resolve from the entry's own
+ * bib directory are tried against each directory in bibDirs. This handles the
+ * common case where sources.bib has `file = {All Papers/...}` paths that are
+ * relative to the Paperpile folder, not the project's references/ directory.
  */
 export async function uploadCitedFiles(
   bibMap: Map<string, BibEntry>,
   citedBibkeys: string[],
   cache: Map<string, FileRef>,
-  opts?: { debug?: boolean; readwiseFallback?: boolean },
+  opts?: { debug?: boolean; readwiseFallback?: boolean; bibDirs?: string[] },
 ): Promise<{ uploaded: number; skipped: number; missing: number; fromReadwise: number }> {
   let uploaded = 0, skipped = 0, missing = 0, fromReadwise = 0;
+  const dirs = opts?.bibDirs ?? [];
 
   for (const bibkey of citedBibkeys) {
     if (cache.has(bibkey)) { skipped++; continue; }
 
     const entry = bibMap.get(bibkey);
 
-    // Try PDF file path from bib entry
-    if (entry?.filePath) {
-      try {
-        statSync(entry.filePath);
-        const ref = await uploadFile(entry.filePath, { displayName: bibkey });
+    // Try PDF file path from bib entry (with cross-directory fallback)
+    if (entry?.filePath || entry?.fileRelPath) {
+      const resolvedPath = entry ? resolveFileAcrossDirs(entry, dirs, opts?.debug) : null;
+      if (resolvedPath) {
+        const ref = await uploadFile(resolvedPath, { displayName: bibkey });
         cache.set(bibkey, ref);
         uploaded++;
         if (opts?.debug) {
           process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
         }
         continue;
-      } catch {
-        if (opts?.debug) {
-          process.stderr.write(`[gemini] file not found: ${entry.filePath}\n`);
-        }
       }
     }
 
