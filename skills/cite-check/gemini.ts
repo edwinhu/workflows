@@ -759,12 +759,56 @@ export async function submitBatchCiteCheck(
 // Sequential query
 // ---------------------------------------------------------------------------
 
+/**
+ * JSON schema for structured citation verification output.
+ * Shared between queryCitation and retry logic.
+ */
+const CITE_CHECK_SCHEMA = {
+  type: "object" as const,
+  properties: {
+    status: {
+      type: "string" as const,
+      enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"],
+      description: "Whether the source(s) support the claim",
+    },
+    supporting_passage: {
+      type: "string" as const,
+      description: "Quote from the source that supports the claim, or empty string if unsupported",
+    },
+    explanation: {
+      type: "string" as const,
+      description: "Brief explanation of the classification",
+    },
+  },
+  required: ["status", "supporting_passage", "explanation"],
+};
+
+function parseClassification(text: string | null | undefined): ClassifyResult {
+  try {
+    const parsed = JSON.parse(text ?? "{}");
+    return {
+      status: parsed.status ?? "ERROR",
+      supporting_passage: parsed.supporting_passage ?? "",
+      explanation: parsed.explanation ?? "",
+    };
+  } catch {
+    return {
+      status: "ERROR",
+      supporting_passage: "",
+      explanation: `Failed to parse: ${(text ?? "").slice(0, 200)}`,
+    };
+  }
+}
+
 export async function queryCitation(
   fileRefs: FileRef[],
   prompt: string,
   opts?: {
     model?: string;
     debug?: boolean;
+    /** Model to use when retrying UNSUPPORTED results. If set, UNSUPPORTED
+     *  results from the primary model are retried once with this model. */
+    retryModel?: string;
   },
 ): Promise<{ classification: ClassifyResult; durationMs: number }> {
   const client = getClient();
@@ -787,45 +831,46 @@ export async function queryCitation(
     model,
     contents: [{ parts, role: "user" }],
     config: {
+      temperature: 0,
       responseMimeType: "application/json",
-      responseJsonSchema: {
-        type: "object",
-        properties: {
-          status: {
-            type: "string",
-            enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"],
-            description: "Whether the source(s) support the claim",
-          },
-          supporting_passage: {
-            type: "string",
-            description: "Quote from the source that supports the claim, or empty string if unsupported",
-          },
-          explanation: {
-            type: "string",
-            description: "Brief explanation of the classification",
-          },
-        },
-        required: ["status", "supporting_passage", "explanation"],
-      },
+      responseJsonSchema: CITE_CHECK_SCHEMA,
     },
   });
 
   const durationMs = Date.now() - t0;
+  let classification = parseClassification(response.text);
 
-  let classification: ClassifyResult;
-  try {
-    const parsed = JSON.parse(response.text ?? "{}");
-    classification = {
-      status: parsed.status ?? "ERROR",
-      supporting_passage: parsed.supporting_passage ?? "",
-      explanation: parsed.explanation ?? "",
-    };
-  } catch {
-    classification = {
-      status: "ERROR",
-      supporting_passage: "",
-      explanation: `Failed to parse: ${(response.text ?? "").slice(0, 200)}`,
-    };
+  // Retry UNSUPPORTED with a stronger model if configured
+  if (classification.status === "UNSUPPORTED" && opts?.retryModel) {
+    if (opts?.debug) {
+      process.stderr.write(
+        `[gemini] UNSUPPORTED → retrying with ${opts.retryModel}\n`,
+      );
+    }
+    const retryT0 = Date.now();
+    const retryResponse = await client.models.generateContent({
+      model: opts.retryModel,
+      contents: [{ parts, role: "user" }],
+      config: {
+        temperature: 0,
+        responseMimeType: "application/json",
+        responseJsonSchema: CITE_CHECK_SCHEMA,
+      },
+    });
+    const retryClassification = parseClassification(retryResponse.text);
+    const totalMs = Date.now() - t0;
+
+    if (retryClassification.status !== "UNSUPPORTED") {
+      // Retry found support — use the retry result
+      if (opts?.debug) {
+        process.stderr.write(
+          `[gemini] retry overturned → ${retryClassification.status} (${Date.now() - retryT0}ms)\n`,
+        );
+      }
+      return { classification: retryClassification, durationMs: totalMs };
+    }
+    // Both said UNSUPPORTED — confirmed
+    return { classification, durationMs: totalMs };
   }
 
   return { classification, durationMs };
@@ -844,7 +889,7 @@ export async function queryCitation(
  */
 export async function queryCitationsConcurrently(
   requests: BatchRequest[],
-  opts?: { model?: string; debug?: boolean; concurrency?: number },
+  opts?: { model?: string; debug?: boolean; concurrency?: number; retryModel?: string },
 ): Promise<BatchResult[]> {
   const concurrency = opts?.concurrency ?? 5;
   const results: BatchResult[] = new Array(requests.length);

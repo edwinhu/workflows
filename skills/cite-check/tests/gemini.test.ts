@@ -783,6 +783,107 @@ describe("queryCitation", () => {
     expect(generateCalls[0].contents[0].parts.length).toBe(1);
     expect(generateCalls[0].contents[0].parts[0].text).toBe("test");
   });
+
+  it("sets temperature=0 for deterministic output", async () => {
+    const calls: any[] = [];
+    const mockClient = {
+      models: {
+        generateContent: async (opts: any) => {
+          calls.push(opts);
+          return {
+            text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "", explanation: "" }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await queryCitation([], "test");
+    expect(calls[0].config.temperature).toBe(0);
+  });
+
+  it("retries UNSUPPORTED with retryModel and overturns on SUPPORTED", async () => {
+    let callIdx = 0;
+    const calls: any[] = [];
+    const mockClient = {
+      models: {
+        generateContent: async (opts: any) => {
+          calls.push(opts);
+          callIdx++;
+          if (callIdx === 1) {
+            // Primary model says UNSUPPORTED
+            return {
+              text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "not found" }),
+            };
+          }
+          // Retry model finds support
+          return {
+            text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "found it", explanation: "ok" }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const result = await queryCitation([], "test", { retryModel: "gemini-2.5-flash" });
+
+    expect(calls.length).toBe(2);
+    expect(calls[0].model).toBe("gemini-3.1-flash-lite-preview"); // primary
+    expect(calls[1].model).toBe("gemini-2.5-flash"); // retry
+    expect(result.classification.status).toBe("SUPPORTED");
+    expect(result.classification.supporting_passage).toBe("found it");
+  });
+
+  it("confirms UNSUPPORTED when retry also returns UNSUPPORTED", async () => {
+    const mockClient = {
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "not found" }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const result = await queryCitation([], "test", { retryModel: "gemini-2.5-flash" });
+    expect(result.classification.status).toBe("UNSUPPORTED");
+  });
+
+  it("does not retry when retryModel is not set", async () => {
+    let callCount = 0;
+    const mockClient = {
+      models: {
+        generateContent: async () => {
+          callCount++;
+          return {
+            text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "nope" }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await queryCitation([], "test"); // no retryModel
+    expect(callCount).toBe(1); // no retry
+  });
+
+  it("does not retry SUPPORTED results even with retryModel set", async () => {
+    let callCount = 0;
+    const mockClient = {
+      models: {
+        generateContent: async () => {
+          callCount++;
+          return {
+            text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "quote", explanation: "ok" }),
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const result = await queryCitation([], "test", { retryModel: "gemini-2.5-flash" });
+    expect(callCount).toBe(1); // no retry for SUPPORTED
+    expect(result.classification.status).toBe("SUPPORTED");
+  });
 });
 
 describe("parseBibFile", () => {

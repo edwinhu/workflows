@@ -109,6 +109,7 @@ export interface CiteCheckFlags {
   debug?: string | boolean;
   batch?: string | boolean;
   audit?: string | boolean;
+  "retry-model"?: string | boolean;
 }
 
 interface CiteResult {
@@ -184,6 +185,18 @@ function buildGroupPrompt(cites: Citation[]): string {
 
   // Shared context (same across the group since they share the same claim).
   const c = cites[0];
+
+  // When the claim is a parenthetical (thematic description of the source),
+  // add explicit guidance that this is a topic-level check, not a passage search.
+  if (c.parenthetical) {
+    lines.push(
+      "The claim above is a parenthetical description of what the source is about.",
+    );
+    lines.push(
+      "You only need to confirm the source is generally about this topic -- a matching abstract, introduction, or thesis statement is sufficient.",
+    );
+  }
+
   if (c.bodyContext) {
     lines.push(`Body context: ${c.bodyContext}`);
   }
@@ -200,7 +213,7 @@ function buildGroupPrompt(cites: Citation[]): string {
     lines.push(`Locators: ${locators.join("; ")}.`);
   }
 
-  if (signal) {
+  if (signal || c.parenthetical) {
     lines.push(
       "Quote the closest supporting passage from each source if any; respond UNSUPPORTED only if completely unrelated.",
     );
@@ -315,7 +328,7 @@ export async function cmdCiteCheck(
 
   if (resolvedBibPaths.length === 0) {
     printError(
-      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--batch] [--audit] [--limit <n>] [--debug]",
+      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--batch] [--audit] [--retry-model <model>] [--limit <n>] [--debug]",
     );
     return 1;
   }
@@ -330,6 +343,7 @@ export async function cmdCiteCheck(
   );
   const dryRun = !!flags["dry-run"];
   const debug = !!flags.debug;
+  const retryModel = typeof flags["retry-model"] === "string" ? flags["retry-model"] : undefined;
   const limit = (() => {
     const v = flags.limit;
     if (typeof v === "string") {
@@ -647,7 +661,7 @@ export async function cmdCiteCheck(
         `[cite-check] batch mode: querying ${batchRequests.length} groups concurrently...\n`,
       );
 
-      const batchResults = await queryCitationsConcurrently(batchRequests, { debug });
+      const batchResults = await queryCitationsConcurrently(batchRequests, { debug, retryModel });
 
       // Map results back to cite groups by key
       const resultByKey = new Map(batchResults.map((r) => [r.key, r]));
@@ -713,6 +727,7 @@ export async function cmdCiteCheck(
       try {
         const geminiResult = await queryCitation(refs, prompt, {
           debug,
+          retryModel,
         });
 
         const cls = geminiResult.classification;

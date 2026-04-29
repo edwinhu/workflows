@@ -41,6 +41,7 @@ bun cite-check.ts \
 | `--limit <n>` | No | all | Check only first N citations (smoke test) |
 | `--dry-run` | No | false | Print prompts without querying |
 | `--batch` | No | false | Run queries concurrently (5 at a time) instead of one-at-a-time |
+| `--retry-model <model>` | No | none | Retry UNSUPPORTED results with a stronger model (e.g., `gemini-2.5-flash`) |
 | `--audit` | No | false | Audit source availability without querying (checks Paperpile + Readwise) |
 | `--debug` | No | false | Verbose logging |
 
