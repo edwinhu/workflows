@@ -3,11 +3,10 @@ import { join } from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { cmdCiteCheck, cmdAsk } from "../cite-check";
 import type { CiteCheckFlags, AskFlags } from "../cite-check";
-import { __setGeminiClientForTesting, __setReadwisePathForTesting } from "../gemini";
+import { __setGeminiClientForTesting } from "../gemini";
 
 afterEach(() => {
   __setGeminiClientForTesting(null);
-  __setReadwisePathForTesting(null);
 });
 
 /**
@@ -180,7 +179,6 @@ describe("cmdCiteCheck --audit mode", () => {
   const tmpBase = "/tmp/cite-check-audit-test";
 
   afterEach(() => {
-    __setReadwisePathForTesting(null);
     try {
       rmSync(tmpBase, { recursive: true, force: true });
     } catch {
@@ -189,7 +187,7 @@ describe("cmdCiteCheck --audit mode", () => {
   });
 
   it("returns 0 when all cited sources have PDFs on disk", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
     mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
     writeFileSync(join(tmpBase, "pdfs", "real.pdf"), "fake-pdf");
@@ -220,7 +218,7 @@ describe("cmdCiteCheck --audit mode", () => {
   });
 
   it("returns 1 when a cited bibkey is not in any bib file", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
 
     writeFileSync(
@@ -249,7 +247,7 @@ describe("cmdCiteCheck --audit mode", () => {
   });
 
   it("classifies missing academic sources as Paperpile targets", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
 
     writeFileSync(
@@ -273,12 +271,12 @@ describe("cmdCiteCheck --audit mode", () => {
       [join(tmpBase, "test.bib")],
     );
 
-    // NoPdf2024-aa has no PDF and no Readwise match => missing => exit 1
+    // NoPdf2024-aa has no PDF => missing => exit 1
     expect(code).toBe(1);
   });
 
-  it("classifies missing misc/book sources as Readwise targets", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+  it("classifies missing misc/book sources as Paperpile targets", async () => {
+
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
 
     writeFileSync(
@@ -302,12 +300,12 @@ describe("cmdCiteCheck --audit mode", () => {
       [join(tmpBase, "test.bib")],
     );
 
-    // misc type goes to Readwise bucket, not Paperpile => still missing => exit 1
+    // misc type with no PDF => missing => exit 1
     expect(code).toBe(1);
   });
 
   it("does not create a Gemini store or write a report", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
     mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
     writeFileSync(join(tmpBase, "pdfs", "real.pdf"), "fake-pdf");
@@ -345,7 +343,7 @@ describe("cmdCiteCheck --audit mode", () => {
   });
 
   it("handles multiple bib files in audit mode", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
     mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
     writeFileSync(join(tmpBase, "pdfs", "real.pdf"), "fake-pdf");
@@ -382,7 +380,7 @@ describe("cmdCiteCheck --audit mode", () => {
       [join(tmpBase, "bib1.bib"), join(tmpBase, "bib2.bib")],
     );
 
-    // Blog2024-cc is @misc with no PDF and no Readwise => missing => exit 1
+    // Blog2024-cc is @misc with no PDF => missing => exit 1
     expect(code).toBe(1);
   });
 });
@@ -392,7 +390,7 @@ describe("cmdAsk", () => {
 
   afterEach(() => {
     __setGeminiClientForTesting(null);
-    __setReadwisePathForTesting(null);
+
     try {
       rmSync(tmpBase, { recursive: true, force: true });
     } catch {
@@ -423,8 +421,8 @@ describe("cmdAsk", () => {
     expect(code).toBe(1);
   });
 
-  it("returns 1 when source PDF not found and no Readwise", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+  it("returns 1 when source PDF not found", async () => {
+
     mkdirSync(tmpBase, { recursive: true });
     writeFileSync(
       join(tmpBase, "test.bib"),
@@ -556,7 +554,6 @@ describe("cmdCiteCheck cross-directory audit", () => {
   const tmpBase = "/tmp/cite-check-crossdir-audit-test";
 
   afterEach(() => {
-    __setReadwisePathForTesting(null);
     try {
       rmSync(tmpBase, { recursive: true, force: true });
     } catch {
@@ -565,7 +562,7 @@ describe("cmdCiteCheck cross-directory audit", () => {
   });
 
   it("finds PDF via cross-directory resolution in audit mode", async () => {
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
+
 
     // Simulate: sources.bib in project/references/ with file = {All Papers/Author.pdf}
     // PDF actually at paperpile/All Papers/Author.pdf

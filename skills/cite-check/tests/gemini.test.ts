@@ -2,21 +2,14 @@ import { describe, expect, it, afterEach } from "bun:test";
 import { join } from "node:path";
 import {
   __setGeminiClientForTesting,
-  __setReadwisePathForTesting,
   uploadFile,
-  uploadTextFile,
   uploadCitedFiles,
   parseBibFile,
   resolveFileAcrossDirs,
-  resolveFromReadwise,
-  searchReadwise,
   queryCitation,
   submitBatchCiteCheck,
   queryCitationsConcurrently,
   extractResponseText,
-  titleSimilarity,
-  urlsMatch,
-  validateContent,
   loadManifest,
   saveManifest,
   restoreFromManifest,
@@ -33,13 +26,11 @@ import {
 
 afterEach(() => {
   __setGeminiClientForTesting(null);
-  __setReadwisePathForTesting(null);
 });
 
 describe("gemini.ts module", () => {
   it("exports all required types and functions", () => {
     expect(typeof uploadFile).toBe("function");
-    expect(typeof uploadTextFile).toBe("function");
     expect(typeof uploadCitedFiles).toBe("function");
     expect(typeof queryCitation).toBe("function");
     expect(typeof submitBatchCiteCheck).toBe("function");
@@ -140,42 +131,6 @@ describe("uploadFile", () => {
   });
 });
 
-describe("uploadTextFile", () => {
-  it("writes temp file, uploads, and returns FileRef", async () => {
-    const uploadCalls: any[] = [];
-    const mockClient = {
-      files: {
-        upload: async (opts: any) => {
-          uploadCalls.push(opts);
-          return {
-            name: "files/textdoc123",
-            uri: "https://example.com/files/textdoc123",
-            mimeType: "text/markdown",
-            state: "ACTIVE",
-          };
-        },
-        get: async () => ({ state: "ACTIVE" }),
-      },
-    };
-    __setGeminiClientForTesting(mockClient as any);
-
-    const ref = await uploadTextFile(
-      "# Some Markdown Content\n\nThis is a test document.",
-      "TestDoc2024-ab",
-    );
-
-    expect(ref.name).toBe("files/textdoc123");
-    expect(ref.mimeType).toBe("text/markdown");
-    expect(uploadCalls.length).toBe(1);
-    expect(uploadCalls[0].config.displayName).toBe("TestDoc2024-ab");
-    expect(uploadCalls[0].config.mimeType).toBe("text/markdown");
-    // The temp file should have been cleaned up (best effort)
-    const { existsSync } = await import("node:fs");
-    const tmpFile = uploadCalls[0].file as string;
-    expect(existsSync(tmpFile)).toBe(false);
-  });
-});
-
 describe("uploadCitedFiles", () => {
   it("uploads PDFs, skips cached, tracks missing", async () => {
     const uploadCalls: any[] = [];
@@ -221,7 +176,6 @@ describe("uploadCitedFiles", () => {
       expect(result.uploaded).toBe(1);  // HasPdf2024-aa
       expect(result.skipped).toBe(1);   // AlreadyCached2020-xx
       expect(result.missing).toBe(2);   // NoPdf2024-bb (file not found) + NotInBib2024-cc (not in map)
-      expect(result.fromReadwise).toBe(0);
       expect(uploadCalls.length).toBe(1);
       expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");
 
@@ -573,69 +527,6 @@ describe("manifest persistence", () => {
     expect(updated["Key2024-aa"].uploadedAt).toBe(earlier);
   });
 
-  it("updateManifest stores source from sourceMap", () => {
-    const cache = new Map<string, FileRef>([
-      ["Pdf2024-aa", { name: "files/pdf", uri: "https://example.com/pdf", mimeType: "application/pdf" }],
-      ["Rw2024-bb", { name: "files/rw", uri: "https://example.com/rw", mimeType: "text/markdown" }],
-    ]);
-    const sourceMap = new Map<string, "pdf" | "readwise">([
-      ["Pdf2024-aa", "pdf"],
-      ["Rw2024-bb", "readwise"],
-    ]);
-
-    const updated = updateManifest({}, cache, sourceMap);
-    expect(updated["Pdf2024-aa"].source).toBe("pdf");
-    expect(updated["Rw2024-bb"].source).toBe("readwise");
-  });
-
-  it("restoreFromManifest skips Readwise entries when PDF is now available", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-manifest-prefer-pdf";
-    try {
-      mkdirSync(join(tmpDir, "pdfs"), { recursive: true });
-      writeFileSync(join(tmpDir, "pdfs/paper.pdf"), "fake");
-
-      const manifest: Manifest = {
-        "Key2024-aa": {
-          name: "files/stale-readwise",
-          uri: "https://example.com/stale",
-          mimeType: "text/markdown",
-          uploadedAt: Date.now() - 1000,
-          source: "readwise",
-        },
-      };
-
-      const bibMap = new Map<string, BibEntry>([
-        ["Key2024-aa", { bibkey: "Key2024-aa", filePath: join(tmpDir, "pdfs/paper.pdf"), fileRelPath: "pdfs/paper.pdf" }],
-      ]);
-
-      const cache = new Map<string, FileRef>();
-      const restored = restoreFromManifest(manifest, cache, ["Key2024-aa"], { bibMap, bibDirs: [tmpDir] });
-
-      // Should NOT restore Readwise entry — PDF is available now
-      expect(restored).toBe(0);
-      expect(cache.has("Key2024-aa")).toBe(false);
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
-  });
-
-  it("restoreFromManifest keeps PDF-sourced entries", () => {
-    const manifest: Manifest = {
-      "Key2024-aa": {
-        name: "files/pdf",
-        uri: "https://example.com/pdf",
-        mimeType: "application/pdf",
-        uploadedAt: Date.now() - 1000,
-        source: "pdf",
-      },
-    };
-
-    const cache = new Map<string, FileRef>();
-    const restored = restoreFromManifest(manifest, cache, ["Key2024-aa"]);
-    expect(restored).toBe(1);
-    expect(cache.has("Key2024-aa")).toBe(true);
-  });
 });
 
 describe("verifyFileRef", () => {
@@ -1101,110 +992,6 @@ describe("extractResponseText", () => {
   });
 });
 
-describe("titleSimilarity", () => {
-  it("returns high score for matching titles", () => {
-    expect(titleSimilarity(
-      "Custom proxy voting advice",
-      "Custom proxy voting advice"
-    )).toBeGreaterThan(0.9);
-  });
-
-  it("returns low score for unrelated titles", () => {
-    expect(titleSimilarity(
-      "Imputed Proxy Advisor Recommendations for ISS Voting Analytics",
-      "Form ADV Part 2 Brochures"
-    )).toBeLessThan(0.3);
-  });
-
-  it("handles partial matches", () => {
-    expect(titleSimilarity(
-      "In re Toews Corporation",
-      "Toews Corporation"
-    )).toBeGreaterThan(0.3);
-  });
-
-  it("rejects topically similar but wrong documents (below 0.6 threshold)", () => {
-    // This is the real false-positive: "proxy" overlap caused a GAO report
-    // to match Brav et al.'s retail shareholder paper
-    const score = titleSimilarity(
-      "Retail shareholder participation in the proxy process",
-      "GAO proxy advisory report on institutional shareholder services"
-    );
-    expect(score).toBeLessThan(0.6);
-  });
-
-  it("accepts correct matches above 0.6 threshold", () => {
-    expect(titleSimilarity(
-      "Retail shareholder participation in the proxy process",
-      "Retail Shareholder Participation in the Proxy Process: Monitoring, Engagement, and Voting"
-    )).toBeGreaterThan(0.6);
-  });
-
-  it("matches when Readwise title is a substring of bib title", () => {
-    // Real case: bib has long prefix, Readwise has the core title
-    expect(titleSimilarity(
-      "Remarks at the N.Y.C. Bar Ass'n: (Re)Empowering Fiduciaries in Proxy Voting",
-      "(Re)Empowering Fiduciaries in Proxy Voting"
-    )).toBe(1.0);
-  });
-
-  it("matches when bib title is a substring of Readwise title", () => {
-    expect(titleSimilarity(
-      "Index Funds and Corporate Governance",
-      "Index Funds and Corporate Governance: Theory and Evidence"
-    )).toBe(1.0);
-  });
-
-  it("does not substring-match on very short strings", () => {
-    // "Tax" is contained in "Taxation of...", but 3 chars is too short
-    expect(titleSimilarity("Tax", "Taxation of Corporate Distributions")).toBeLessThan(1.0);
-  });
-});
-
-describe("urlsMatch", () => {
-  it("matches identical URLs", () => {
-    expect(urlsMatch(
-      "https://www.sec.gov/news/speech/daly-remarks-2026",
-      "https://www.sec.gov/news/speech/daly-remarks-2026",
-    )).toBe(true);
-  });
-
-  it("matches ignoring protocol and www", () => {
-    expect(urlsMatch(
-      "https://www.sec.gov/news/speech/daly-remarks",
-      "http://sec.gov/news/speech/daly-remarks",
-    )).toBe(true);
-  });
-
-  it("matches ignoring trailing slash", () => {
-    expect(urlsMatch(
-      "https://sec.gov/news/speech/",
-      "https://sec.gov/news/speech",
-    )).toBe(true);
-  });
-
-  it("rejects different paths", () => {
-    expect(urlsMatch(
-      "https://sec.gov/news/speech/daly-remarks",
-      "https://sec.gov/news/speech/gensler-remarks",
-    )).toBe(false);
-  });
-
-  it("rejects different domains", () => {
-    expect(urlsMatch(
-      "https://sec.gov/news",
-      "https://manhattan-institute.org/news",
-    )).toBe(false);
-  });
-
-  it("fuzzy matches SEC URLs with different slug variants (Daly case)", () => {
-    expect(urlsMatch(
-      "https://www.sec.gov/newsroom/speeches-statements/daly-remarks-nyc-bar-010826",
-      "https://www.sec.gov/newsroom/speeches-statements/daly-remarks-nycba-proxy-010826",
-    )).toBe(true);
-  });
-});
-
 describe("parseBibFile url field", () => {
   it("extracts url field from bib entries", async () => {
     const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
@@ -1265,35 +1052,6 @@ describe("parseBibFile url field", () => {
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
-  });
-});
-
-describe("validateContent", () => {
-  // Helper: generate filler that won't trigger garbage markers
-  const filler = (n: number) => Array.from({ length: n }, (_, i) => `word${i}`).join(" ");
-
-  it("accepts real document content (200+ words, no markers)", () => {
-    expect(validateContent(filler(250))).toBeNull();
-  });
-
-  it("rejects content under 200 words", () => {
-    expect(validateContent(filler(50))).toContain("too short");
-  });
-
-  it("rejects 404 pages", () => {
-    expect(validateContent(filler(250) + " 404 page not found")).toContain("404");
-  });
-
-  it("rejects maintenance pages", () => {
-    expect(validateContent(filler(250) + " undergoing maintenance")).toContain("maintenance");
-  });
-
-  it("rejects 'nothing here' pages", () => {
-    expect(validateContent(filler(250) + " nothing here")).toContain("nothing here");
-  });
-
-  it("rejects 'access denied' pages", () => {
-    expect(validateContent(filler(250) + " access denied")).toContain("access denied");
   });
 });
 
@@ -1702,26 +1460,6 @@ describe("queryCitationsConcurrently", () => {
     expect(results.length).toBe(8);
     expect(maxConcurrent).toBeLessThanOrEqual(3);
     expect(maxConcurrent).toBeGreaterThan(1); // actually ran concurrently
-  });
-});
-
-describe("resolveFromReadwise", () => {
-  it("exports resolveFromReadwise as a function", () => {
-    expect(typeof resolveFromReadwise).toBe("function");
-  });
-});
-
-describe("searchReadwise", () => {
-  it("exports searchReadwise as a function", () => {
-    expect(typeof searchReadwise).toBe("function");
-  });
-
-  it("returns null when readwise binary does not exist", async () => {
-    // Point to a nonexistent binary so we don't make real network calls
-    __setReadwisePathForTesting("/tmp/nonexistent-readwise-binary");
-    const result = await searchReadwise("Some Title That Won't Match");
-    // Should gracefully return null, not throw
-    expect(result).toBeNull();
   });
 });
 

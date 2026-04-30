@@ -34,7 +34,6 @@ import {
   parseBibFile,
   queryCitation,
   queryCitationsConcurrently,
-  searchReadwise,
   resolveFileAcrossDirs,
   loadManifest,
   saveManifest,
@@ -424,24 +423,8 @@ export async function cmdCiteCheck(
     const bibDirsForAudit = resolvedBibPaths.map((p) => dirname(p));
 
     const hasPdf: string[] = [];
-    const hasReadwise: Array<{ bibkey: string; matchedTitle: string }> = [];
-    const missingPaperpile: Array<{ bibkey: string; title: string }> = [];
-    const missingReadwise: Array<{
-      bibkey: string;
-      title: string;
-      bibType: string;
-    }> = [];
+    const missingPdf: Array<{ bibkey: string; title: string }> = [];
     const noInfo: string[] = [];
-
-    // Bib entry types that belong in Paperpile (academic sources)
-    const paperpileTypes = new Set([
-      "article",
-      "unpublished",
-      "techreport",
-      "inproceedings",
-      "phdthesis",
-      "mastersthesis",
-    ]);
 
     for (const bibkey of citedBibkeys) {
       const entry = bibMap.get(bibkey);
@@ -460,42 +443,9 @@ export async function cmdCiteCheck(
         }
       }
 
-      // Check Readwise (URL match first, title fallback)
-      if (entry.title || entry.url) {
-        const matchedTitle = await searchReadwise(entry.title ?? "", { debug, url: entry.url, author: entry.author, year: entry.year });
-        if (matchedTitle) {
-          hasReadwise.push({ bibkey, matchedTitle });
-          continue;
-        }
-      }
-
-      // Missing -- classify where it should go
+      // Missing -- needs PDF added to Paperpile
       const title = entry.title ?? "(no title)";
-
-      // Determine bib entry type from source bib files
-      let bibType = "unknown";
-      for (const bp of resolvedBibPaths) {
-        try {
-          const content = readFileSync(bp, "utf-8");
-          const typeMatch = content.match(
-            new RegExp(
-              `@(\\w+)\\{${bibkey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`,
-            ),
-          );
-          if (typeMatch) {
-            bibType = typeMatch[1].toLowerCase();
-            break;
-          }
-        } catch {
-          /* skip */
-        }
-      }
-
-      if (paperpileTypes.has(bibType)) {
-        missingPaperpile.push({ bibkey, title });
-      } else {
-        missingReadwise.push({ bibkey, title, bibType });
-      }
+      missingPdf.push({ bibkey, title });
     }
 
     // Print audit report
@@ -505,25 +455,13 @@ export async function cmdCiteCheck(
     );
 
     process.stderr.write(`PDF on disk: ${hasPdf.length}\n`);
-    process.stderr.write(`Readwise found: ${hasReadwise.length}\n`);
 
-    if (missingPaperpile.length > 0) {
+    if (missingPdf.length > 0) {
       process.stderr.write(
-        `\nMissing -- add to Paperpile (${missingPaperpile.length}):\n`,
+        `\nMissing -- add to Paperpile (${missingPdf.length}):\n`,
       );
-      for (const m of missingPaperpile) {
+      for (const m of missingPdf) {
         process.stderr.write(`  ${m.bibkey.padEnd(40)} "${m.title}"\n`);
-      }
-    }
-
-    if (missingReadwise.length > 0) {
-      process.stderr.write(
-        `\nMissing -- add to Readwise (${missingReadwise.length}):\n`,
-      );
-      for (const m of missingReadwise) {
-        process.stderr.write(
-          `  ${m.bibkey.padEnd(40)} "${m.title}" [${m.bibType}]\n`,
-        );
       }
     }
 
@@ -536,11 +474,9 @@ export async function cmdCiteCheck(
       }
     }
 
-    const total = hasPdf.length + hasReadwise.length;
-    const missingCount =
-      missingPaperpile.length + missingReadwise.length + noInfo.length;
+    const missingCount = missingPdf.length + noInfo.length;
     process.stderr.write(
-      `\nCoverage: ${total}/${citedBibkeys.length} (${missingCount} missing)\n`,
+      `\nCoverage: ${hasPdf.length}/${citedBibkeys.length} (${missingCount} missing)\n`,
     );
 
     return missingCount > 0 ? 1 : 0;
@@ -559,8 +495,7 @@ export async function cmdCiteCheck(
         const citedBibkeys = [...new Set(cites.map((c) => c.bibkey))];
 
         // Restore valid entries from manifest (skip re-upload for files within 48h TTL).
-        // Skips Readwise-sourced entries when a PDF is now available on disk.
-        const restored = restoreFromManifest(manifest, fileCache, citedBibkeys, { bibMap, bibDirs });
+        const restored = restoreFromManifest(manifest, fileCache, citedBibkeys);
         if (restored > 0) {
           process.stderr.write(
             `[cite-check] restored ${restored} files from manifest (within 48h TTL)\n`,
@@ -571,18 +506,18 @@ export async function cmdCiteCheck(
         process.stderr.write(
           `[cite-check] uploading ${remaining.length} of ${citedBibkeys.length} cited sources (${restored} cached)...\n`,
         );
-        const { uploaded, skipped, missing, fromReadwise, sourceMap } = await uploadCitedFiles(
+        const { uploaded, skipped, missing } = await uploadCitedFiles(
           bibMap,
           remaining,
           fileCache,
-          { debug, readwiseFallback: true, bibDirs },
+          { debug, bibDirs },
         );
         process.stderr.write(
-          `[cite-check] uploaded ${uploaded} + ${fromReadwise} from Readwise, ${skipped + restored} cached, ${missing} missing\n`,
+          `[cite-check] uploaded ${uploaded}, ${skipped + restored} cached, ${missing} missing\n`,
         );
 
-        // Persist updated manifest (with source tracking)
-        const updatedManifest = updateManifest(manifest, fileCache, sourceMap);
+        // Persist updated manifest
+        const updatedManifest = updateManifest(manifest, fileCache);
         saveManifest(manifestPath, updatedManifest);
       }
     } catch (err) {
@@ -805,8 +740,8 @@ export interface AskFlags {
  *
  * Usage: bun cite-check.ts ask @Bibkey "question" --bib <path> [--bib <path2>]
  *
- * Uploads the source PDF (or fetches from Readwise), sends the question to
- * Gemini, and prints the answer to stdout.
+ * Uploads the source PDF, sends the question to Gemini, and prints the
+ * answer to stdout.
  */
 export async function cmdAsk(
   args: string[],
@@ -880,21 +815,21 @@ export async function cmdAsk(
 
   let sourceType = "cached";
   if (restored === 0) {
-    const { uploaded, fromReadwise, missing } = await uploadCitedFiles(
+    const { uploaded, missing } = await uploadCitedFiles(
       bibMap,
       [bibkey],
       fileCache,
-      { debug, readwiseFallback: true, bibDirs },
+      { debug, bibDirs },
     );
 
     if (missing > 0) {
       printError(
-        `source for '${bibkey}' not found (no PDF on disk, no Readwise match)`,
+        `source for '${bibkey}' not found (no PDF on disk)`,
       );
       return 1;
     }
 
-    sourceType = uploaded > 0 ? "PDF" : "Readwise";
+    sourceType = uploaded > 0 ? "PDF" : "cached";
 
     // Persist updated manifest
     const updatedManifest = updateManifest(manifest, fileCache);

@@ -42,7 +42,7 @@ bun cite-check.ts \
 | `--dry-run` | No | false | Print prompts without querying |
 | `--batch` | No | false | Run queries concurrently (5 at a time) instead of one-at-a-time |
 | `--retry-model <model>` | No | `gemini-3.1-pro-preview` | Retry UNSUPPORTED results with a stronger model |
-| `--audit` | No | false | Audit source availability without querying (checks Paperpile + Readwise) |
+| `--audit` | No | false | Audit source availability without querying (checks Paperpile PDFs) |
 | `--debug` | No | false | Verbose logging |
 
 *Either `--bib` or `--store` is required.
@@ -59,7 +59,7 @@ bun cite-check.ts ask @Bebchuk2019-uq "do expense ratios fall since 2010?" --bib
 bun cite-check.ts ask @Brav2022-ht "what are retail turnout rates?" --bib paperpile.bib --bib sources.bib
 ```
 
-The `ask` mode uploads the single source (PDF or Readwise fallback), queries Gemini with your question, and prints the answer with supporting passages to stdout. No report is generated.
+The `ask` mode uploads the single source PDF, queries Gemini with your question, and prints the answer with supporting passages to stdout. No report is generated.
 
 ### Cross-Directory File Resolution
 
@@ -87,7 +87,7 @@ The `--bib` flag expects a `.bib` file where entries have a `file` field with a 
 }
 ```
 
-All bib entries are parsed. Entries with a `file` field (~95% of Paperpile entries) use PDF upload. Entries without a file but with a `title` can be resolved via Readwise Reader fallback. Only sources for bibkeys that are actually cited in the drafts are uploaded.
+All bib entries are parsed. Entries with a `file` field (~95% of Paperpile entries) use PDF upload. Only sources for bibkeys that are actually cited in the drafts are uploaded.
 
 ### Citation Features
 
@@ -103,16 +103,6 @@ All bib entries are parsed. Entries with a `file` field (~95% of Paperpile entri
 REVIEW-CITES.md with:
 - Summary counts (supported/partial/unsupported/not in store/error)
 - Details table: status, file:line, bibkey, claim, response
-
-### Readwise Reader Fallback
-
-For sources not in Paperpile (blog posts, working papers, government documents), cite-check
-automatically searches Readwise Reader by title. If found, it fetches the full text and
-uploads it to the Gemini store.
-
-**Requirements:** `readwise` CLI installed at `~/.local/bin/readwise` and authenticated.
-
-**Workflow:** Save non-Paperpile sources to Readwise Reader -- cite-check finds them automatically.
 
 ## Batch Mode
 
@@ -134,14 +124,7 @@ Run `--audit` before checking citations to see which sources are available and w
 bun cite-check.ts --bib paperpile.bib --bib sources.bib --drafts ./drafts --audit
 ```
 
-The audit checks each cited bibkey for source availability:
-1. Does it have a PDF on disk (via bib `file` field)?
-2. If not, is it findable in Readwise Reader (by title)?
-3. If neither, classifies where it should be added based on bib entry type
-
-The audit classifies missing sources by where they should be added:
-- **Add to Paperpile:** academic papers (`@article`), working papers (`@unpublished`), tech reports, conference proceedings, theses
-- **Add to Readwise:** SEC filings, government documents, blog posts, news, books, misc (`@misc`, `@book`, etc.)
+The audit checks each cited bibkey for PDF availability on disk (via bib `file` field with cross-directory resolution). Missing sources should be added to Paperpile.
 
 Exit code is 1 if any sources are missing, 0 if all sources are available. No Gemini store is created and no queries are sent.
 
@@ -149,6 +132,6 @@ Exit code is 1 if any sources are missing, 0 if all sources are available. No Ge
 
 ```
 cite-extract.ts  -- Pure citation extraction (no I/O)
-gemini.ts        -- Gemini File Search API wrapper (store CRUD, upload, query, batch, Readwise fallback)
+gemini.ts        -- Gemini File Search API wrapper (store CRUD, upload, query, batch)
 cite-check.ts    -- CLI orchestrator (extract -> upload -> query -> report)
 ```

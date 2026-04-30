@@ -7,9 +7,8 @@
  */
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { readFileSync, statSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
+import { readFileSync, statSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { homedir, tmpdir } from "node:os";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,10 +32,10 @@ export interface BibEntry {
   filePath?: string;       // absolute path resolved from bib dir + first file field path
   fileRelPath?: string;    // raw relative path from bib file (for cross-directory resolution)
   fileAltRelPaths?: string[]; // additional paths from semicolon-separated file fields
-  title?: string;          // for Readwise search fallback
-  url?: string;            // URL field from bib entry (for Readwise URL matching)
-  author?: string;         // first author surname (for Readwise author+year fallback)
-  year?: string;           // publication year
+  title?: string;
+  url?: string;
+  author?: string;         // first author surname
+  year?: string;
 }
 
 /** Cached file upload result */
@@ -53,7 +52,6 @@ export interface FileRef {
 /** A manifest entry tracks an uploaded file and when it was uploaded. */
 export interface ManifestEntry extends FileRef {
   uploadedAt: number; // epoch ms
-  source?: "pdf" | "readwise"; // how the file was sourced
 }
 
 /** On-disk manifest mapping bibkey -> ManifestEntry. */
@@ -98,17 +96,12 @@ export async function verifyFileRef(ref: FileRef): Promise<boolean> {
  * Pre-populate a cache from a manifest, filtering out expired entries.
  * Entries within TTL are added to the cache without verification (fast path).
  *
- * When bibMap is provided, Readwise-sourced manifest entries are skipped if
- * the bib entry now has a PDF on disk (prefer fresh PDF over stale Readwise).
- * bibDirs enables cross-directory resolution for this check.
- *
  * Returns the number of entries restored.
  */
 export function restoreFromManifest(
   manifest: Manifest,
   cache: Map<string, FileRef>,
   bibkeys: string[],
-  opts?: { bibMap?: Map<string, BibEntry>; bibDirs?: string[] },
 ): number {
   const now = Date.now();
   let restored = 0;
@@ -117,19 +110,6 @@ export function restoreFromManifest(
     const entry = manifest[bibkey];
     if (!entry) continue;
     if (now - entry.uploadedAt > MANIFEST_TTL_MS) continue;
-
-    // Skip stale Readwise entries when a PDF is now available on disk
-    if (entry.source === "readwise" && opts?.bibMap) {
-      const bibEntry = opts.bibMap.get(bibkey);
-      if (bibEntry && (bibEntry.filePath || bibEntry.fileRelPath)) {
-        const resolved = resolveFileAcrossDirs(bibEntry, opts.bibDirs ?? []);
-        if (resolved) {
-          // PDF available — skip manifest entry, let upload flow re-upload from PDF
-          continue;
-        }
-      }
-    }
-
     cache.set(bibkey, { name: entry.name, uri: entry.uri, mimeType: entry.mimeType });
     restored++;
   }
@@ -139,12 +119,10 @@ export function restoreFromManifest(
 /**
  * Update manifest from cache after uploads. Preserves existing entries that
  * are still within TTL; adds/refreshes entries from the cache.
- * sourceMap tracks whether each cached entry came from PDF or Readwise.
  */
 export function updateManifest(
   manifest: Manifest,
   cache: Map<string, FileRef>,
-  sourceMap?: Map<string, "pdf" | "readwise">,
 ): Manifest {
   const now = Date.now();
   // Prune expired entries
@@ -157,8 +135,7 @@ export function updateManifest(
   // Add/refresh from cache
   for (const [bibkey, ref] of cache) {
     if (!updated[bibkey]) {
-      const source = sourceMap?.get(bibkey);
-      updated[bibkey] = { ...ref, uploadedAt: now, ...(source ? { source } : {}) };
+      updated[bibkey] = { ...ref, uploadedAt: now };
     }
   }
   return updated;
@@ -277,335 +254,6 @@ export function parseBibFile(bibPath: string): Map<string, BibEntry> {
 }
 
 // ---------------------------------------------------------------------------
-// Title similarity (for Readwise result validation)
-// ---------------------------------------------------------------------------
-
-/**
- * Title similarity between two titles. Uses word-overlap plus substring
- * matching to handle cases where one title is a subset of the other
- * (e.g., bib has "Remarks at the N.Y.C. Bar: (Re)Empowering Fiduciaries"
- * but Readwise has just "(Re)Empowering Fiduciaries").
- *
- * Returns a score 0-1. A substring containment returns 1.0.
- */
-export function titleSimilarity(query: string, candidate: string): number {
-  const normStr = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
-  const nq = normStr(query);
-  const nc = normStr(candidate);
-
-  // Substring match: one title contains the other (after normalization)
-  if (nq.length >= 4 && nc.length >= 4 && (nq.includes(nc) || nc.includes(nq))) {
-    return 1.0;
-  }
-
-  // Word-overlap fallback
-  const toWords = (s: string) => s.split(" ").filter(w => w.length > 2);
-  const queryWords = toWords(nq);
-  const candidateWords = new Set(toWords(nc));
-  if (queryWords.length === 0) return 0;
-  const matches = queryWords.filter(w => candidateWords.has(w)).length;
-  return matches / queryWords.length;
-}
-
-// ---------------------------------------------------------------------------
-// Readwise Reader fallback
-// ---------------------------------------------------------------------------
-
-/**
- * Compare two URLs. First tries exact domain+path match (normalized).
- * If that fails, tries fuzzy match: same domain + the last path component
- * (slug) shares significant word overlap. This handles URL variants like
- * sec.gov/.../daly-remarks-nyc-bar-010826 vs daly-remarks-nycba-proxy-010826.
- */
-export function urlsMatch(a: string, b: string): boolean {
-  const normalize = (u: string) =>
-    u.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "").toLowerCase();
-  const na = normalize(a);
-  const nb = normalize(b);
-
-  // Exact match
-  if (na === nb) return true;
-
-  // Fuzzy: same domain + overlapping slug words
-  const domainA = na.split("/")[0];
-  const domainB = nb.split("/")[0];
-  if (domainA !== domainB) return false;
-
-  // Compare the slug (last path component, split on hyphens)
-  const slug = (u: string) => {
-    const parts = u.split("/").filter(Boolean);
-    const last = parts[parts.length - 1] ?? "";
-    return last.split("-").filter(s => s.length > 2);
-  };
-  const slugA = slug(na);
-  const slugB = new Set(slug(nb));
-  if (slugA.length === 0 || slugB.size === 0) return false;
-  const overlap = slugA.filter(s => slugB.has(s)).length;
-  // Require >=60% overlap on the slug AND at least 3 matching words
-  return overlap >= 3 && overlap / Math.max(slugA.length, slugB.size) >= 0.5;
-}
-
-/**
- * Search Readwise by URL. Returns the matched document or null.
- */
-async function searchReadwiseByUrl(
-  url: string,
-  readwiseBin: string,
-  opts?: { debug?: boolean },
-): Promise<{ docId: string; title: string } | null> {
-  const searchProc = Bun.spawn([
-    readwiseBin, "reader-search-documents",
-    "--query", url,
-    "--limit", "5",
-    "--json",
-  ], { stdout: "pipe", stderr: "ignore" });
-
-  const searchOut = await new Response(searchProc.stdout).text();
-  await searchProc.exited;
-  if (searchProc.exitCode !== 0) return null;
-
-  const results = JSON.parse(searchOut);
-  const docs = Array.isArray(results) ? results : results.results ?? [];
-
-  // Find doc whose source_url matches
-  for (const doc of docs) {
-    const sourceUrl = doc.source_url ?? doc.url ?? "";
-    if (sourceUrl && urlsMatch(url, sourceUrl)) {
-      const docId = doc.document_id ?? doc.id;
-      if (docId) {
-        if (opts?.debug) {
-          process.stderr.write(`[readwise] URL match: "${doc.title}" (${docId}) for ${url}\n`);
-        }
-        return { docId, title: doc.title ?? "" };
-      }
-    }
-  }
-
-  if (opts?.debug) {
-    process.stderr.write(`[readwise] no URL match in ${docs.length} results for ${url}\n`);
-  }
-  return null;
-}
-
-/**
- * Search Readwise by title. Returns the matched document or null.
- */
-async function searchReadwiseByTitle(
-  title: string,
-  readwiseBin: string,
-  opts?: { debug?: boolean },
-): Promise<{ docId: string; title: string } | null> {
-  const searchProc = Bun.spawn([
-    readwiseBin, "reader-search-documents",
-    "--query", title,
-    "--title-search", title,
-    "--limit", "1",
-    "--json",
-  ], { stdout: "pipe", stderr: "ignore" });
-
-  const searchOut = await new Response(searchProc.stdout).text();
-  await searchProc.exited;
-  if (searchProc.exitCode !== 0) return null;
-
-  const results = JSON.parse(searchOut);
-  const docs = Array.isArray(results) ? results : results.results ?? [];
-  if (docs.length === 0) return null;
-
-  const docTitle = docs[0].title ?? "";
-  const similarity = titleSimilarity(title, docTitle);
-  if (similarity < 0.6) {
-    if (opts?.debug) {
-      process.stderr.write(
-        `[readwise] rejected "${docTitle}" (similarity ${similarity.toFixed(2)}) for "${title}"\n`,
-      );
-    }
-    return null;
-  }
-
-  const docId = docs[0].document_id ?? docs[0].id;
-  if (!docId) return null;
-
-  if (opts?.debug) {
-    process.stderr.write(`[readwise] title match: "${docTitle}" (${docId}) for "${title}"\n`);
-  }
-  return { docId, title: docTitle };
-}
-
-const GARBAGE_MARKERS = [
-  "404", "not found", "page not found", "nothing here",
-  "maintenance", "undergoing maintenance", "temporarily unavailable",
-  "access denied", "forbidden", "login required",
-];
-
-/**
- * Check if fetched content is a real document vs a 404/maintenance page.
- * Returns a rejection reason or null if content looks valid.
- */
-export function validateContent(content: string): string | null {
-  const wordCount = content.split(/\s+/).filter(Boolean).length;
-  if (wordCount < 200) {
-    return `too short (${wordCount} words)`;
-  }
-  const lower = content.toLowerCase();
-  for (const marker of GARBAGE_MARKERS) {
-    if (lower.includes(marker)) {
-      return `contains '${marker}'`;
-    }
-  }
-  return null;
-}
-
-/**
- * Fetch full document content from Readwise by document ID.
- * Validates content quality — rejects 404 pages, maintenance pages, etc.
- */
-async function fetchReadwiseContent(
-  docId: string,
-  readwiseBin: string,
-  opts?: { debug?: boolean },
-): Promise<string | null> {
-  const detailProc = Bun.spawn([
-    readwiseBin, "reader-get-document-details",
-    "--document-id", docId,
-    "--json",
-  ], { stdout: "pipe", stderr: "ignore" });
-
-  const detailOut = await new Response(detailProc.stdout).text();
-  await detailProc.exited;
-  if (detailProc.exitCode !== 0) return null;
-
-  const detail = JSON.parse(detailOut);
-  const content = detail.content ?? detail.markdown ?? "";
-  if (!content || content.length < 50) return null;
-
-  // Quality gate: reject garbage content
-  const rejection = validateContent(content);
-  if (rejection) {
-    process.stderr.write(
-      `[readwise] WARNING: rejected content for ${docId}: ${rejection}\n`,
-    );
-    return null;
-  }
-
-  if (opts?.debug) {
-    process.stderr.write(`[readwise] fetched ${content.length} chars for ${docId}\n`);
-  }
-  return content;
-}
-
-/**
- * Search Readwise Reader for a document, return its full text content.
- * Strategy: URL match → title match → author+year fallback.
- * Returns null if not found or on error.
- */
-export async function resolveFromReadwise(
-  title: string,
-  opts?: { debug?: boolean; url?: string; author?: string; year?: string },
-): Promise<string | null> {
-  const readwiseBin = getReadwiseBinPath();
-
-  try {
-    if (!existsSync(readwiseBin)) {
-      if (opts?.debug) {
-        process.stderr.write(`[readwise] binary not found at ${readwiseBin}\n`);
-      }
-      return null;
-    }
-
-    // 1. Try URL match first (most reliable)
-    let match: { docId: string; title: string } | null = null;
-    if (opts?.url) {
-      match = await searchReadwiseByUrl(opts.url, readwiseBin, opts);
-    }
-
-    // 2. Fall back to title match
-    if (!match && title) {
-      match = await searchReadwiseByTitle(title, readwiseBin, opts);
-    }
-
-    // 3. Fall back to author+year search (for renamed docs with dead URLs)
-    if (!match && opts?.author) {
-      const query = opts.year ? `${opts.author} ${opts.year}` : opts.author;
-      if (opts?.debug) {
-        process.stderr.write(`[readwise] trying author+year fallback: "${query}"\n`);
-      }
-      match = await searchReadwiseByTitle(query, readwiseBin, opts);
-    }
-
-    if (!match) return null;
-
-    return await fetchReadwiseContent(match.docId, readwiseBin, opts);
-  } catch {
-    return null;
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Readwise Reader search (lightweight, no content fetch)
-// ---------------------------------------------------------------------------
-
-let readwiseBinOverride: string | null = null;
-
-/**
- * Test seam: override the readwise binary path.
- * Pass null to restore default behavior.
- */
-export function __setReadwisePathForTesting(path: string | null): void {
-  readwiseBinOverride = path;
-}
-
-function getReadwiseBinPath(): string {
-  return readwiseBinOverride ?? join(homedir(), ".local", "bin", "readwise");
-}
-
-/**
- * Check if Readwise Reader has a document matching this entry.
- * Tries URL match → title match → author+year fallback.
- * Returns the matched title or null. Does NOT fetch full content.
- */
-export async function searchReadwise(
-  title: string,
-  opts?: { debug?: boolean; url?: string; author?: string; year?: string },
-): Promise<string | null> {
-  const readwiseBin = getReadwiseBinPath();
-
-  try {
-    if (!existsSync(readwiseBin)) {
-      if (opts?.debug) {
-        process.stderr.write(`[readwise] binary not found at ${readwiseBin}\n`);
-      }
-      return null;
-    }
-
-    // 1. Try URL match first
-    if (opts?.url) {
-      const match = await searchReadwiseByUrl(opts.url, readwiseBin, opts);
-      if (match) return match.title;
-    }
-
-    // 2. Fall back to title match
-    if (title) {
-      const match = await searchReadwiseByTitle(title, readwiseBin, opts);
-      if (match) return match.title;
-    }
-
-    // 3. Fall back to author+year search
-    if (opts?.author) {
-      const query = opts.year ? `${opts.author} ${opts.year}` : opts.author;
-      if (opts?.debug) {
-        process.stderr.write(`[readwise] trying author+year fallback: "${query}"\n`);
-      }
-      const match = await searchReadwiseByTitle(query, readwiseBin, opts);
-      if (match) return match.title;
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Files API: upload
 // ---------------------------------------------------------------------------
 
@@ -647,20 +295,6 @@ export async function uploadFile(
     uri: file.uri ?? "",
     mimeType: file.mimeType ?? "application/pdf",
   };
-}
-
-/** Upload text content as a file. Writes to temp file, uploads, cleans up. */
-export async function uploadTextFile(
-  content: string,
-  displayName: string,
-): Promise<FileRef> {
-  const tmpPath = join(tmpdir(), `cite-check-${displayName}-${Date.now()}.md`);
-  try {
-    writeFileSync(tmpPath, content, "utf-8");
-    return await uploadFile(tmpPath, { displayName, mimeType: "text/markdown" });
-  } finally {
-    try { unlinkSync(tmpPath); } catch { /* best effort */ }
-  }
 }
 
 /**
@@ -722,10 +356,9 @@ export async function uploadCitedFiles(
   bibMap: Map<string, BibEntry>,
   citedBibkeys: string[],
   cache: Map<string, FileRef>,
-  opts?: { debug?: boolean; readwiseFallback?: boolean; bibDirs?: string[] },
-): Promise<{ uploaded: number; skipped: number; missing: number; fromReadwise: number; sourceMap: Map<string, "pdf" | "readwise"> }> {
-  let uploaded = 0, skipped = 0, missing = 0, fromReadwise = 0;
-  const sourceMap = new Map<string, "pdf" | "readwise">();
+  opts?: { debug?: boolean; bibDirs?: string[] },
+): Promise<{ uploaded: number; skipped: number; missing: number }> {
+  let uploaded = 0, skipped = 0, missing = 0;
   const dirs = opts?.bibDirs ?? [];
 
   for (const bibkey of citedBibkeys) {
@@ -735,14 +368,13 @@ export async function uploadCitedFiles(
 
     // Try PDF file path from bib entry (with cross-directory fallback).
     // Wraps statSync/uploadFile in try-catch to handle Google Drive FUSE
-    // errors (EDEADLK) gracefully — skip and fall through to Readwise.
+    // errors (EDEADLK) gracefully.
     if (entry?.filePath || entry?.fileRelPath) {
       try {
         const resolvedPath = entry ? resolveFileAcrossDirs(entry, dirs, opts?.debug) : null;
         if (resolvedPath) {
           const ref = await uploadFile(resolvedPath, { displayName: bibkey });
           cache.set(bibkey, ref);
-          sourceMap.set(bibkey, "pdf");
           uploaded++;
           if (opts?.debug) {
             process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
@@ -750,26 +382,10 @@ export async function uploadCitedFiles(
           continue;
         }
       } catch (err) {
-        // Handle EDEADLK and other filesystem errors gracefully
         const msg = err instanceof Error ? err.message : String(err);
         process.stderr.write(
-          `[gemini] WARNING: failed to read/upload PDF for ${bibkey}: ${msg} — trying Readwise fallback\n`,
+          `[gemini] WARNING: failed to read/upload PDF for ${bibkey}: ${msg}\n`,
         );
-      }
-    }
-
-    // Readwise fallback (URL → title → author+year)
-    if (opts?.readwiseFallback && (entry?.title || entry?.url || entry?.author)) {
-      if (opts?.debug) {
-        process.stderr.write(`[gemini] trying Readwise for ${bibkey} (${entry?.url ? "URL: " + entry.url : "title: " + entry?.title})\n`);
-      }
-      const content = await resolveFromReadwise(entry?.title ?? "", { ...opts, url: entry?.url, author: entry?.author, year: entry?.year });
-      if (content) {
-        const ref = await uploadTextFile(content, bibkey);
-        cache.set(bibkey, ref);
-        sourceMap.set(bibkey, "readwise");
-        fromReadwise++;
-        continue;
       }
     }
 
@@ -779,7 +395,7 @@ export async function uploadCitedFiles(
     }
   }
 
-  return { uploaded, skipped, missing, fromReadwise, sourceMap };
+  return { uploaded, skipped, missing };
 }
 
 // ---------------------------------------------------------------------------
