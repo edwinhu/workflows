@@ -234,14 +234,27 @@ export function parseBibFile(bibPath: string): Map<string, BibEntry> {
 // ---------------------------------------------------------------------------
 
 /**
- * Simple word-overlap similarity between two titles.
- * Returns a score 0-1 based on what fraction of query words appear in the candidate.
+ * Title similarity between two titles. Uses word-overlap plus substring
+ * matching to handle cases where one title is a subset of the other
+ * (e.g., bib has "Remarks at the N.Y.C. Bar: (Re)Empowering Fiduciaries"
+ * but Readwise has just "(Re)Empowering Fiduciaries").
+ *
+ * Returns a score 0-1. A substring containment returns 1.0.
  */
 export function titleSimilarity(query: string, candidate: string): number {
-  const normalize = (s: string) =>
-    s.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(w => w.length > 2);
-  const queryWords = normalize(query);
-  const candidateWords = new Set(normalize(candidate));
+  const normStr = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+  const nq = normStr(query);
+  const nc = normStr(candidate);
+
+  // Substring match: one title contains the other (after normalization)
+  if (nq.length >= 4 && nc.length >= 4 && (nq.includes(nc) || nc.includes(nq))) {
+    return 1.0;
+  }
+
+  // Word-overlap fallback
+  const toWords = (s: string) => s.split(" ").filter(w => w.length > 2);
+  const queryWords = toWords(nq);
+  const candidateWords = new Set(toWords(nc));
   if (queryWords.length === 0) return 0;
   const matches = queryWords.filter(w => candidateWords.has(w)).length;
   return matches / queryWords.length;

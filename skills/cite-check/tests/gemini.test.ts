@@ -1073,6 +1073,26 @@ describe("titleSimilarity", () => {
       "Retail Shareholder Participation in the Proxy Process: Monitoring, Engagement, and Voting"
     )).toBeGreaterThan(0.6);
   });
+
+  it("matches when Readwise title is a substring of bib title", () => {
+    // Real case: bib has long prefix, Readwise has the core title
+    expect(titleSimilarity(
+      "Remarks at the N.Y.C. Bar Ass'n: (Re)Empowering Fiduciaries in Proxy Voting",
+      "(Re)Empowering Fiduciaries in Proxy Voting"
+    )).toBe(1.0);
+  });
+
+  it("matches when bib title is a substring of Readwise title", () => {
+    expect(titleSimilarity(
+      "Index Funds and Corporate Governance",
+      "Index Funds and Corporate Governance: Theory and Evidence"
+    )).toBe(1.0);
+  });
+
+  it("does not substring-match on very short strings", () => {
+    // "Tax" is contained in "Taxation of...", but 3 chars is too short
+    expect(titleSimilarity("Tax", "Taxation of Corporate Distributions")).toBeLessThan(1.0);
+  });
 });
 
 describe("submitBatchCiteCheck", () => {
