@@ -367,8 +367,33 @@ async function searchReadwiseByTitle(
   return { docId, title: docTitle };
 }
 
+const GARBAGE_MARKERS = [
+  "404", "not found", "page not found", "nothing here",
+  "maintenance", "undergoing maintenance", "temporarily unavailable",
+  "access denied", "forbidden", "login required",
+];
+
+/**
+ * Check if fetched content is a real document vs a 404/maintenance page.
+ * Returns a rejection reason or null if content looks valid.
+ */
+export function validateContent(content: string): string | null {
+  const wordCount = content.split(/\s+/).filter(Boolean).length;
+  if (wordCount < 200) {
+    return `too short (${wordCount} words)`;
+  }
+  const lower = content.toLowerCase();
+  for (const marker of GARBAGE_MARKERS) {
+    if (lower.includes(marker)) {
+      return `contains '${marker}'`;
+    }
+  }
+  return null;
+}
+
 /**
  * Fetch full document content from Readwise by document ID.
+ * Validates content quality — rejects 404 pages, maintenance pages, etc.
  */
 async function fetchReadwiseContent(
   docId: string,
@@ -388,6 +413,15 @@ async function fetchReadwiseContent(
   const detail = JSON.parse(detailOut);
   const content = detail.content ?? detail.markdown ?? "";
   if (!content || content.length < 50) return null;
+
+  // Quality gate: reject garbage content
+  const rejection = validateContent(content);
+  if (rejection) {
+    process.stderr.write(
+      `[readwise] WARNING: rejected content for ${docId}: ${rejection}\n`,
+    );
+    return null;
+  }
 
   if (opts?.debug) {
     process.stderr.write(`[readwise] fetched ${content.length} chars for ${docId}\n`);

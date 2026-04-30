@@ -16,6 +16,7 @@ import {
   extractResponseText,
   titleSimilarity,
   urlsMatch,
+  validateContent,
   loadManifest,
   saveManifest,
   restoreFromManifest,
@@ -1158,6 +1159,35 @@ describe("parseBibFile url field", () => {
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("validateContent", () => {
+  // Helper: generate filler that won't trigger garbage markers
+  const filler = (n: number) => Array.from({ length: n }, (_, i) => `word${i}`).join(" ");
+
+  it("accepts real document content (200+ words, no markers)", () => {
+    expect(validateContent(filler(250))).toBeNull();
+  });
+
+  it("rejects content under 200 words", () => {
+    expect(validateContent(filler(50))).toContain("too short");
+  });
+
+  it("rejects 404 pages", () => {
+    expect(validateContent(filler(250) + " 404 page not found")).toContain("404");
+  });
+
+  it("rejects maintenance pages", () => {
+    expect(validateContent(filler(250) + " undergoing maintenance")).toContain("maintenance");
+  });
+
+  it("rejects 'nothing here' pages", () => {
+    expect(validateContent(filler(250) + " nothing here")).toContain("nothing here");
+  });
+
+  it("rejects 'access denied' pages", () => {
+    expect(validateContent(filler(250) + " access denied")).toContain("access denied");
   });
 });
 
