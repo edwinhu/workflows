@@ -35,6 +35,8 @@ export interface BibEntry {
   fileAltRelPaths?: string[]; // additional paths from semicolon-separated file fields
   title?: string;          // for Readwise search fallback
   url?: string;            // URL field from bib entry (for Readwise URL matching)
+  author?: string;         // first author surname (for Readwise author+year fallback)
+  year?: string;           // publication year
 }
 
 /** Cached file upload result */
@@ -51,6 +53,7 @@ export interface FileRef {
 /** A manifest entry tracks an uploaded file and when it was uploaded. */
 export interface ManifestEntry extends FileRef {
   uploadedAt: number; // epoch ms
+  source?: "pdf" | "readwise"; // how the file was sourced
 }
 
 /** On-disk manifest mapping bibkey -> ManifestEntry. */
@@ -94,12 +97,18 @@ export async function verifyFileRef(ref: FileRef): Promise<boolean> {
 /**
  * Pre-populate a cache from a manifest, filtering out expired entries.
  * Entries within TTL are added to the cache without verification (fast path).
+ *
+ * When bibMap is provided, Readwise-sourced manifest entries are skipped if
+ * the bib entry now has a PDF on disk (prefer fresh PDF over stale Readwise).
+ * bibDirs enables cross-directory resolution for this check.
+ *
  * Returns the number of entries restored.
  */
 export function restoreFromManifest(
   manifest: Manifest,
   cache: Map<string, FileRef>,
   bibkeys: string[],
+  opts?: { bibMap?: Map<string, BibEntry>; bibDirs?: string[] },
 ): number {
   const now = Date.now();
   let restored = 0;
@@ -108,6 +117,19 @@ export function restoreFromManifest(
     const entry = manifest[bibkey];
     if (!entry) continue;
     if (now - entry.uploadedAt > MANIFEST_TTL_MS) continue;
+
+    // Skip stale Readwise entries when a PDF is now available on disk
+    if (entry.source === "readwise" && opts?.bibMap) {
+      const bibEntry = opts.bibMap.get(bibkey);
+      if (bibEntry && (bibEntry.filePath || bibEntry.fileRelPath)) {
+        const resolved = resolveFileAcrossDirs(bibEntry, opts.bibDirs ?? []);
+        if (resolved) {
+          // PDF available — skip manifest entry, let upload flow re-upload from PDF
+          continue;
+        }
+      }
+    }
+
     cache.set(bibkey, { name: entry.name, uri: entry.uri, mimeType: entry.mimeType });
     restored++;
   }
@@ -117,10 +139,12 @@ export function restoreFromManifest(
 /**
  * Update manifest from cache after uploads. Preserves existing entries that
  * are still within TTL; adds/refreshes entries from the cache.
+ * sourceMap tracks whether each cached entry came from PDF or Readwise.
  */
 export function updateManifest(
   manifest: Manifest,
   cache: Map<string, FileRef>,
+  sourceMap?: Map<string, "pdf" | "readwise">,
 ): Manifest {
   const now = Date.now();
   // Prune expired entries
@@ -133,7 +157,8 @@ export function updateManifest(
   // Add/refresh from cache
   for (const [bibkey, ref] of cache) {
     if (!updated[bibkey]) {
-      updated[bibkey] = { ...ref, uploadedAt: now };
+      const source = sourceMap?.get(bibkey);
+      updated[bibkey] = { ...ref, uploadedAt: now, ...(source ? { source } : {}) };
     }
   }
   return updated;
@@ -230,6 +255,21 @@ export function parseBibFile(bibPath: string): Map<string, BibEntry> {
       bibEntry.url = urlMatch[1].trim();
     }
 
+    // Extract author field (first author surname for Readwise fallback)
+    const authorMatch = entry.match(/^\s*author\s*=\s*\{([^}]+)\}/m);
+    if (authorMatch) {
+      // Take first surname: "Hu, Edwin and Smith, John" → "Hu"
+      const raw = authorMatch[1].trim();
+      const firstAuthor = raw.split(/\s+and\s+/i)[0].split(",")[0].trim();
+      bibEntry.author = firstAuthor;
+    }
+
+    // Extract year/date field
+    const yearMatch = entry.match(/^\s*(?:year|date)\s*=\s*\{(\d{4})/m);
+    if (yearMatch) {
+      bibEntry.year = yearMatch[1];
+    }
+
     map.set(bibkey, bibEntry);
   }
 
@@ -272,13 +312,37 @@ export function titleSimilarity(query: string, candidate: string): number {
 // ---------------------------------------------------------------------------
 
 /**
- * Compare two URLs for equivalence. Strips protocol, www prefix, and trailing
- * slash for a domain+path match.
+ * Compare two URLs. First tries exact domain+path match (normalized).
+ * If that fails, tries fuzzy match: same domain + the last path component
+ * (slug) shares significant word overlap. This handles URL variants like
+ * sec.gov/.../daly-remarks-nyc-bar-010826 vs daly-remarks-nycba-proxy-010826.
  */
 export function urlsMatch(a: string, b: string): boolean {
   const normalize = (u: string) =>
     u.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "").toLowerCase();
-  return normalize(a) === normalize(b);
+  const na = normalize(a);
+  const nb = normalize(b);
+
+  // Exact match
+  if (na === nb) return true;
+
+  // Fuzzy: same domain + overlapping slug words
+  const domainA = na.split("/")[0];
+  const domainB = nb.split("/")[0];
+  if (domainA !== domainB) return false;
+
+  // Compare the slug (last path component, split on hyphens)
+  const slug = (u: string) => {
+    const parts = u.split("/").filter(Boolean);
+    const last = parts[parts.length - 1] ?? "";
+    return last.split("-").filter(s => s.length > 2);
+  };
+  const slugA = slug(na);
+  const slugB = new Set(slug(nb));
+  if (slugA.length === 0 || slugB.size === 0) return false;
+  const overlap = slugA.filter(s => slugB.has(s)).length;
+  // Require >=60% overlap on the slug AND at least 3 matching words
+  return overlap >= 3 && overlap / Math.max(slugA.length, slugB.size) >= 0.5;
 }
 
 /**
@@ -431,12 +495,12 @@ async function fetchReadwiseContent(
 
 /**
  * Search Readwise Reader for a document, return its full text content.
- * Strategy: try URL match first (exact), fall back to title match.
+ * Strategy: URL match → title match → author+year fallback.
  * Returns null if not found or on error.
  */
 export async function resolveFromReadwise(
   title: string,
-  opts?: { debug?: boolean; url?: string },
+  opts?: { debug?: boolean; url?: string; author?: string; year?: string },
 ): Promise<string | null> {
   const readwiseBin = getReadwiseBinPath();
 
@@ -457,6 +521,15 @@ export async function resolveFromReadwise(
     // 2. Fall back to title match
     if (!match && title) {
       match = await searchReadwiseByTitle(title, readwiseBin, opts);
+    }
+
+    // 3. Fall back to author+year search (for renamed docs with dead URLs)
+    if (!match && opts?.author) {
+      const query = opts.year ? `${opts.author} ${opts.year}` : opts.author;
+      if (opts?.debug) {
+        process.stderr.write(`[readwise] trying author+year fallback: "${query}"\n`);
+      }
+      match = await searchReadwiseByTitle(query, readwiseBin, opts);
     }
 
     if (!match) return null;
@@ -487,12 +560,12 @@ function getReadwiseBinPath(): string {
 
 /**
  * Check if Readwise Reader has a document matching this entry.
- * Tries URL match first, falls back to title match.
+ * Tries URL match → title match → author+year fallback.
  * Returns the matched title or null. Does NOT fetch full content.
  */
 export async function searchReadwise(
   title: string,
-  opts?: { debug?: boolean; url?: string },
+  opts?: { debug?: boolean; url?: string; author?: string; year?: string },
 ): Promise<string | null> {
   const readwiseBin = getReadwiseBinPath();
 
@@ -513,6 +586,16 @@ export async function searchReadwise(
     // 2. Fall back to title match
     if (title) {
       const match = await searchReadwiseByTitle(title, readwiseBin, opts);
+      if (match) return match.title;
+    }
+
+    // 3. Fall back to author+year search
+    if (opts?.author) {
+      const query = opts.year ? `${opts.author} ${opts.year}` : opts.author;
+      if (opts?.debug) {
+        process.stderr.write(`[readwise] trying author+year fallback: "${query}"\n`);
+      }
+      const match = await searchReadwiseByTitle(query, readwiseBin, opts);
       if (match) return match.title;
     }
 
@@ -640,8 +723,9 @@ export async function uploadCitedFiles(
   citedBibkeys: string[],
   cache: Map<string, FileRef>,
   opts?: { debug?: boolean; readwiseFallback?: boolean; bibDirs?: string[] },
-): Promise<{ uploaded: number; skipped: number; missing: number; fromReadwise: number }> {
+): Promise<{ uploaded: number; skipped: number; missing: number; fromReadwise: number; sourceMap: Map<string, "pdf" | "readwise"> }> {
   let uploaded = 0, skipped = 0, missing = 0, fromReadwise = 0;
+  const sourceMap = new Map<string, "pdf" | "readwise">();
   const dirs = opts?.bibDirs ?? [];
 
   for (const bibkey of citedBibkeys) {
@@ -649,29 +733,41 @@ export async function uploadCitedFiles(
 
     const entry = bibMap.get(bibkey);
 
-    // Try PDF file path from bib entry (with cross-directory fallback)
+    // Try PDF file path from bib entry (with cross-directory fallback).
+    // Wraps statSync/uploadFile in try-catch to handle Google Drive FUSE
+    // errors (EDEADLK) gracefully — skip and fall through to Readwise.
     if (entry?.filePath || entry?.fileRelPath) {
-      const resolvedPath = entry ? resolveFileAcrossDirs(entry, dirs, opts?.debug) : null;
-      if (resolvedPath) {
-        const ref = await uploadFile(resolvedPath, { displayName: bibkey });
-        cache.set(bibkey, ref);
-        uploaded++;
-        if (opts?.debug) {
-          process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
+      try {
+        const resolvedPath = entry ? resolveFileAcrossDirs(entry, dirs, opts?.debug) : null;
+        if (resolvedPath) {
+          const ref = await uploadFile(resolvedPath, { displayName: bibkey });
+          cache.set(bibkey, ref);
+          sourceMap.set(bibkey, "pdf");
+          uploaded++;
+          if (opts?.debug) {
+            process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
+          }
+          continue;
         }
-        continue;
+      } catch (err) {
+        // Handle EDEADLK and other filesystem errors gracefully
+        const msg = err instanceof Error ? err.message : String(err);
+        process.stderr.write(
+          `[gemini] WARNING: failed to read/upload PDF for ${bibkey}: ${msg} — trying Readwise fallback\n`,
+        );
       }
     }
 
-    // Readwise fallback (URL match first, title fallback)
-    if (opts?.readwiseFallback && (entry?.title || entry?.url)) {
+    // Readwise fallback (URL → title → author+year)
+    if (opts?.readwiseFallback && (entry?.title || entry?.url || entry?.author)) {
       if (opts?.debug) {
         process.stderr.write(`[gemini] trying Readwise for ${bibkey} (${entry?.url ? "URL: " + entry.url : "title: " + entry?.title})\n`);
       }
-      const content = await resolveFromReadwise(entry?.title ?? "", { ...opts, url: entry?.url });
+      const content = await resolveFromReadwise(entry?.title ?? "", { ...opts, url: entry?.url, author: entry?.author, year: entry?.year });
       if (content) {
         const ref = await uploadTextFile(content, bibkey);
         cache.set(bibkey, ref);
+        sourceMap.set(bibkey, "readwise");
         fromReadwise++;
         continue;
       }
@@ -683,7 +779,7 @@ export async function uploadCitedFiles(
     }
   }
 
-  return { uploaded, skipped, missing, fromReadwise };
+  return { uploaded, skipped, missing, fromReadwise, sourceMap };
 }
 
 // ---------------------------------------------------------------------------

@@ -572,6 +572,70 @@ describe("manifest persistence", () => {
     // Should keep the original uploadedAt, not create a new timestamp
     expect(updated["Key2024-aa"].uploadedAt).toBe(earlier);
   });
+
+  it("updateManifest stores source from sourceMap", () => {
+    const cache = new Map<string, FileRef>([
+      ["Pdf2024-aa", { name: "files/pdf", uri: "https://example.com/pdf", mimeType: "application/pdf" }],
+      ["Rw2024-bb", { name: "files/rw", uri: "https://example.com/rw", mimeType: "text/markdown" }],
+    ]);
+    const sourceMap = new Map<string, "pdf" | "readwise">([
+      ["Pdf2024-aa", "pdf"],
+      ["Rw2024-bb", "readwise"],
+    ]);
+
+    const updated = updateManifest({}, cache, sourceMap);
+    expect(updated["Pdf2024-aa"].source).toBe("pdf");
+    expect(updated["Rw2024-bb"].source).toBe("readwise");
+  });
+
+  it("restoreFromManifest skips Readwise entries when PDF is now available", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-manifest-prefer-pdf";
+    try {
+      mkdirSync(join(tmpDir, "pdfs"), { recursive: true });
+      writeFileSync(join(tmpDir, "pdfs/paper.pdf"), "fake");
+
+      const manifest: Manifest = {
+        "Key2024-aa": {
+          name: "files/stale-readwise",
+          uri: "https://example.com/stale",
+          mimeType: "text/markdown",
+          uploadedAt: Date.now() - 1000,
+          source: "readwise",
+        },
+      };
+
+      const bibMap = new Map<string, BibEntry>([
+        ["Key2024-aa", { bibkey: "Key2024-aa", filePath: join(tmpDir, "pdfs/paper.pdf"), fileRelPath: "pdfs/paper.pdf" }],
+      ]);
+
+      const cache = new Map<string, FileRef>();
+      const restored = restoreFromManifest(manifest, cache, ["Key2024-aa"], { bibMap, bibDirs: [tmpDir] });
+
+      // Should NOT restore Readwise entry — PDF is available now
+      expect(restored).toBe(0);
+      expect(cache.has("Key2024-aa")).toBe(false);
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("restoreFromManifest keeps PDF-sourced entries", () => {
+    const manifest: Manifest = {
+      "Key2024-aa": {
+        name: "files/pdf",
+        uri: "https://example.com/pdf",
+        mimeType: "application/pdf",
+        uploadedAt: Date.now() - 1000,
+        source: "pdf",
+      },
+    };
+
+    const cache = new Map<string, FileRef>();
+    const restored = restoreFromManifest(manifest, cache, ["Key2024-aa"]);
+    expect(restored).toBe(1);
+    expect(cache.has("Key2024-aa")).toBe(true);
+  });
 });
 
 describe("verifyFileRef", () => {
@@ -1132,6 +1196,13 @@ describe("urlsMatch", () => {
       "https://manhattan-institute.org/news",
     )).toBe(false);
   });
+
+  it("fuzzy matches SEC URLs with different slug variants (Daly case)", () => {
+    expect(urlsMatch(
+      "https://www.sec.gov/newsroom/speeches-statements/daly-remarks-nyc-bar-010826",
+      "https://www.sec.gov/newsroom/speeches-statements/daly-remarks-nycba-proxy-010826",
+    )).toBe(true);
+  });
 });
 
 describe("parseBibFile url field", () => {
@@ -1156,6 +1227,41 @@ describe("parseBibFile url field", () => {
       const map = parseBibFile(bibPath);
       expect(map.get("Daly2026-sc")!.url).toBe("https://www.sec.gov/news/speech/daly-remarks-2026");
       expect(map.get("NoUrl2024-aa")!.url).toBeUndefined();
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("extracts author and year fields", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-author-parse-test";
+    const bibPath = join(tmpDir, "test.bib");
+    try {
+      mkdirSync(tmpDir, { recursive: true });
+      writeFileSync(bibPath, `
+@article{Hu2024-bm,
+  author = {Hu, Edwin and Smith, John},
+  title = {{Custom proxy voting advice}},
+  year = {2024}
+}
+
+@misc{Copland2024-mi,
+  author = {Copland, James R.},
+  title = {{Index Funds Have Too Much Voting Power}},
+  date = {2024-03-15}
+}
+
+@article{NoAuthor2024-aa,
+  title = {{No author}},
+  year = {2024}
+}
+`);
+      const map = parseBibFile(bibPath);
+      expect(map.get("Hu2024-bm")!.author).toBe("Hu");
+      expect(map.get("Hu2024-bm")!.year).toBe("2024");
+      expect(map.get("Copland2024-mi")!.author).toBe("Copland");
+      expect(map.get("Copland2024-mi")!.year).toBe("2024"); // from date field
+      expect(map.get("NoAuthor2024-aa")!.author).toBeUndefined();
     } finally {
       rmSync(tmpDir, { recursive: true, force: true });
     }

@@ -462,7 +462,7 @@ export async function cmdCiteCheck(
 
       // Check Readwise (URL match first, title fallback)
       if (entry.title || entry.url) {
-        const matchedTitle = await searchReadwise(entry.title ?? "", { debug, url: entry.url });
+        const matchedTitle = await searchReadwise(entry.title ?? "", { debug, url: entry.url, author: entry.author, year: entry.year });
         if (matchedTitle) {
           hasReadwise.push({ bibkey, matchedTitle });
           continue;
@@ -558,8 +558,9 @@ export async function cmdCiteCheck(
       if (bibMap.size > 0) {
         const citedBibkeys = [...new Set(cites.map((c) => c.bibkey))];
 
-        // Restore valid entries from manifest (skip re-upload for files within 48h TTL)
-        const restored = restoreFromManifest(manifest, fileCache, citedBibkeys);
+        // Restore valid entries from manifest (skip re-upload for files within 48h TTL).
+        // Skips Readwise-sourced entries when a PDF is now available on disk.
+        const restored = restoreFromManifest(manifest, fileCache, citedBibkeys, { bibMap, bibDirs });
         if (restored > 0) {
           process.stderr.write(
             `[cite-check] restored ${restored} files from manifest (within 48h TTL)\n`,
@@ -570,7 +571,7 @@ export async function cmdCiteCheck(
         process.stderr.write(
           `[cite-check] uploading ${remaining.length} of ${citedBibkeys.length} cited sources (${restored} cached)...\n`,
         );
-        const { uploaded, skipped, missing, fromReadwise } = await uploadCitedFiles(
+        const { uploaded, skipped, missing, fromReadwise, sourceMap } = await uploadCitedFiles(
           bibMap,
           remaining,
           fileCache,
@@ -580,8 +581,8 @@ export async function cmdCiteCheck(
           `[cite-check] uploaded ${uploaded} + ${fromReadwise} from Readwise, ${skipped + restored} cached, ${missing} missing\n`,
         );
 
-        // Persist updated manifest
-        const updatedManifest = updateManifest(manifest, fileCache);
+        // Persist updated manifest (with source tracking)
+        const updatedManifest = updateManifest(manifest, fileCache, sourceMap);
         saveManifest(manifestPath, updatedManifest);
       }
     } catch (err) {
