@@ -343,7 +343,9 @@ export async function cmdCiteCheck(
   );
   const dryRun = !!flags["dry-run"];
   const debug = !!flags.debug;
-  const retryModel = typeof flags["retry-model"] === "string" ? flags["retry-model"] : undefined;
+  const retryModel = typeof flags["retry-model"] === "string"
+    ? flags["retry-model"]
+    : "gemini-3.1-pro-preview";
   const limit = (() => {
     const v = flags.limit;
     if (typeof v === "string") {
