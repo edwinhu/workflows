@@ -34,6 +34,7 @@ export interface BibEntry {
   fileRelPath?: string;    // raw relative path from bib file (for cross-directory resolution)
   fileAltRelPaths?: string[]; // additional paths from semicolon-separated file fields
   title?: string;          // for Readwise search fallback
+  url?: string;            // URL field from bib entry (for Readwise URL matching)
 }
 
 /** Cached file upload result */
@@ -223,6 +224,12 @@ export function parseBibFile(bibPath: string): Map<string, BibEntry> {
       bibEntry.title = title;
     }
 
+    // Extract url field
+    const urlMatch = entry.match(/^\s*url\s*=\s*\{([^}]+)\}/m);
+    if (urlMatch) {
+      bibEntry.url = urlMatch[1].trim();
+    }
+
     map.set(bibkey, bibEntry);
   }
 
@@ -265,17 +272,141 @@ export function titleSimilarity(query: string, candidate: string): number {
 // ---------------------------------------------------------------------------
 
 /**
- * Search Readwise Reader for a document by title, return its full text content.
+ * Compare two URLs for equivalence. Strips protocol, www prefix, and trailing
+ * slash for a domain+path match.
+ */
+export function urlsMatch(a: string, b: string): boolean {
+  const normalize = (u: string) =>
+    u.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "").toLowerCase();
+  return normalize(a) === normalize(b);
+}
+
+/**
+ * Search Readwise by URL. Returns the matched document or null.
+ */
+async function searchReadwiseByUrl(
+  url: string,
+  readwiseBin: string,
+  opts?: { debug?: boolean },
+): Promise<{ docId: string; title: string } | null> {
+  const searchProc = Bun.spawn([
+    readwiseBin, "reader-search-documents",
+    "--query", url,
+    "--limit", "5",
+    "--json",
+  ], { stdout: "pipe", stderr: "ignore" });
+
+  const searchOut = await new Response(searchProc.stdout).text();
+  await searchProc.exited;
+  if (searchProc.exitCode !== 0) return null;
+
+  const results = JSON.parse(searchOut);
+  const docs = Array.isArray(results) ? results : results.results ?? [];
+
+  // Find doc whose source_url matches
+  for (const doc of docs) {
+    const sourceUrl = doc.source_url ?? doc.url ?? "";
+    if (sourceUrl && urlsMatch(url, sourceUrl)) {
+      const docId = doc.document_id ?? doc.id;
+      if (docId) {
+        if (opts?.debug) {
+          process.stderr.write(`[readwise] URL match: "${doc.title}" (${docId}) for ${url}\n`);
+        }
+        return { docId, title: doc.title ?? "" };
+      }
+    }
+  }
+
+  if (opts?.debug) {
+    process.stderr.write(`[readwise] no URL match in ${docs.length} results for ${url}\n`);
+  }
+  return null;
+}
+
+/**
+ * Search Readwise by title. Returns the matched document or null.
+ */
+async function searchReadwiseByTitle(
+  title: string,
+  readwiseBin: string,
+  opts?: { debug?: boolean },
+): Promise<{ docId: string; title: string } | null> {
+  const searchProc = Bun.spawn([
+    readwiseBin, "reader-search-documents",
+    "--query", title,
+    "--title-search", title,
+    "--limit", "1",
+    "--json",
+  ], { stdout: "pipe", stderr: "ignore" });
+
+  const searchOut = await new Response(searchProc.stdout).text();
+  await searchProc.exited;
+  if (searchProc.exitCode !== 0) return null;
+
+  const results = JSON.parse(searchOut);
+  const docs = Array.isArray(results) ? results : results.results ?? [];
+  if (docs.length === 0) return null;
+
+  const docTitle = docs[0].title ?? "";
+  const similarity = titleSimilarity(title, docTitle);
+  if (similarity < 0.6) {
+    if (opts?.debug) {
+      process.stderr.write(
+        `[readwise] rejected "${docTitle}" (similarity ${similarity.toFixed(2)}) for "${title}"\n`,
+      );
+    }
+    return null;
+  }
+
+  const docId = docs[0].document_id ?? docs[0].id;
+  if (!docId) return null;
+
+  if (opts?.debug) {
+    process.stderr.write(`[readwise] title match: "${docTitle}" (${docId}) for "${title}"\n`);
+  }
+  return { docId, title: docTitle };
+}
+
+/**
+ * Fetch full document content from Readwise by document ID.
+ */
+async function fetchReadwiseContent(
+  docId: string,
+  readwiseBin: string,
+  opts?: { debug?: boolean },
+): Promise<string | null> {
+  const detailProc = Bun.spawn([
+    readwiseBin, "reader-get-document-details",
+    "--document-id", docId,
+    "--json",
+  ], { stdout: "pipe", stderr: "ignore" });
+
+  const detailOut = await new Response(detailProc.stdout).text();
+  await detailProc.exited;
+  if (detailProc.exitCode !== 0) return null;
+
+  const detail = JSON.parse(detailOut);
+  const content = detail.content ?? detail.markdown ?? "";
+  if (!content || content.length < 50) return null;
+
+  if (opts?.debug) {
+    process.stderr.write(`[readwise] fetched ${content.length} chars for ${docId}\n`);
+  }
+  return content;
+}
+
+/**
+ * Search Readwise Reader for a document, return its full text content.
+ * Strategy: try URL match first (exact), fall back to title match.
  * Returns null if not found or on error.
  */
 export async function resolveFromReadwise(
   title: string,
-  opts?: { debug?: boolean },
+  opts?: { debug?: boolean; url?: string },
 ): Promise<string | null> {
   const readwiseBin = getReadwiseBinPath();
 
   try {
-    // Check binary exists before spawning
     if (!existsSync(readwiseBin)) {
       if (opts?.debug) {
         process.stderr.write(`[readwise] binary not found at ${readwiseBin}\n`);
@@ -283,62 +414,20 @@ export async function resolveFromReadwise(
       return null;
     }
 
-    // Search by title
-    const searchProc = Bun.spawn([
-      readwiseBin, "reader-search-documents",
-      "--query", title,
-      "--title-search", title,
-      "--limit", "1",
-      "--json",
-    ], { stdout: "pipe", stderr: "ignore" });
-
-    const searchOut = await new Response(searchProc.stdout).text();
-    await searchProc.exited;
-    if (searchProc.exitCode !== 0) return null;
-
-    const results = JSON.parse(searchOut);
-    // Handle both array and {results: [...]} formats
-    const docs = Array.isArray(results) ? results : results.results ?? [];
-    if (docs.length === 0) return null;
-
-    const docTitle = docs[0].title ?? "";
-    const similarity = titleSimilarity(title, docTitle);
-    if (similarity < 0.6) {
-      if (opts?.debug) {
-        process.stderr.write(
-          `[readwise] rejected "${docTitle}" (similarity ${similarity.toFixed(2)}) for "${title}"\n`,
-        );
-      }
-      return null;
+    // 1. Try URL match first (most reliable)
+    let match: { docId: string; title: string } | null = null;
+    if (opts?.url) {
+      match = await searchReadwiseByUrl(opts.url, readwiseBin, opts);
     }
 
-    const docId = docs[0].document_id ?? docs[0].id;
-    if (!docId) return null;
-
-    if (opts?.debug) {
-      process.stderr.write(`[readwise] found "${docTitle}" (${docId}) for search "${title}"\n`);
+    // 2. Fall back to title match
+    if (!match && title) {
+      match = await searchReadwiseByTitle(title, readwiseBin, opts);
     }
 
-    // Get full document content
-    const detailProc = Bun.spawn([
-      readwiseBin, "reader-get-document-details",
-      "--document-id", docId,
-      "--json",
-    ], { stdout: "pipe", stderr: "ignore" });
+    if (!match) return null;
 
-    const detailOut = await new Response(detailProc.stdout).text();
-    await detailProc.exited;
-    if (detailProc.exitCode !== 0) return null;
-
-    const detail = JSON.parse(detailOut);
-    const content = detail.content ?? detail.markdown ?? "";
-    if (!content || content.length < 50) return null;
-
-    if (opts?.debug) {
-      process.stderr.write(`[readwise] fetched ${content.length} chars for ${docId}\n`);
-    }
-
-    return content;
+    return await fetchReadwiseContent(match.docId, readwiseBin, opts);
   } catch {
     return null;
   }
@@ -363,12 +452,13 @@ function getReadwiseBinPath(): string {
 }
 
 /**
- * Check if Readwise Reader has a document matching this title.
+ * Check if Readwise Reader has a document matching this entry.
+ * Tries URL match first, falls back to title match.
  * Returns the matched title or null. Does NOT fetch full content.
  */
 export async function searchReadwise(
   title: string,
-  opts?: { debug?: boolean },
+  opts?: { debug?: boolean; url?: string },
 ): Promise<string | null> {
   const readwiseBin = getReadwiseBinPath();
 
@@ -380,34 +470,19 @@ export async function searchReadwise(
       return null;
     }
 
-    const searchProc = Bun.spawn([
-      readwiseBin, "reader-search-documents",
-      "--query", title,
-      "--title-search", title,
-      "--limit", "1",
-      "--json",
-    ], { stdout: "pipe", stderr: "ignore" });
-
-    const searchOut = await new Response(searchProc.stdout).text();
-    await searchProc.exited;
-    if (searchProc.exitCode !== 0) return null;
-
-    const results = JSON.parse(searchOut);
-    const docs = Array.isArray(results) ? results : results.results ?? [];
-    if (docs.length === 0) return null;
-
-    const docTitle = docs[0].title ?? "";
-    const similarity = titleSimilarity(title, docTitle);
-    if (similarity < 0.6) {
-      if (opts?.debug) {
-        process.stderr.write(
-          `[readwise] rejected "${docTitle}" (similarity ${similarity.toFixed(2)}) for "${title}"\n`,
-        );
-      }
-      return null;
+    // 1. Try URL match first
+    if (opts?.url) {
+      const match = await searchReadwiseByUrl(opts.url, readwiseBin, opts);
+      if (match) return match.title;
     }
 
-    return docTitle;
+    // 2. Fall back to title match
+    if (title) {
+      const match = await searchReadwiseByTitle(title, readwiseBin, opts);
+      if (match) return match.title;
+    }
+
+    return null;
   } catch {
     return null;
   }
@@ -554,12 +629,12 @@ export async function uploadCitedFiles(
       }
     }
 
-    // Readwise fallback
-    if (opts?.readwiseFallback && entry?.title) {
+    // Readwise fallback (URL match first, title fallback)
+    if (opts?.readwiseFallback && (entry?.title || entry?.url)) {
       if (opts?.debug) {
-        process.stderr.write(`[gemini] trying Readwise for ${bibkey} ("${entry.title}")\n`);
+        process.stderr.write(`[gemini] trying Readwise for ${bibkey} (${entry?.url ? "URL: " + entry.url : "title: " + entry?.title})\n`);
       }
-      const content = await resolveFromReadwise(entry.title, opts);
+      const content = await resolveFromReadwise(entry?.title ?? "", { ...opts, url: entry?.url });
       if (content) {
         const ref = await uploadTextFile(content, bibkey);
         cache.set(bibkey, ref);

@@ -15,6 +15,7 @@ import {
   queryCitationsConcurrently,
   extractResponseText,
   titleSimilarity,
+  urlsMatch,
   loadManifest,
   saveManifest,
   restoreFromManifest,
@@ -1095,6 +1096,71 @@ describe("titleSimilarity", () => {
   });
 });
 
+describe("urlsMatch", () => {
+  it("matches identical URLs", () => {
+    expect(urlsMatch(
+      "https://www.sec.gov/news/speech/daly-remarks-2026",
+      "https://www.sec.gov/news/speech/daly-remarks-2026",
+    )).toBe(true);
+  });
+
+  it("matches ignoring protocol and www", () => {
+    expect(urlsMatch(
+      "https://www.sec.gov/news/speech/daly-remarks",
+      "http://sec.gov/news/speech/daly-remarks",
+    )).toBe(true);
+  });
+
+  it("matches ignoring trailing slash", () => {
+    expect(urlsMatch(
+      "https://sec.gov/news/speech/",
+      "https://sec.gov/news/speech",
+    )).toBe(true);
+  });
+
+  it("rejects different paths", () => {
+    expect(urlsMatch(
+      "https://sec.gov/news/speech/daly-remarks",
+      "https://sec.gov/news/speech/gensler-remarks",
+    )).toBe(false);
+  });
+
+  it("rejects different domains", () => {
+    expect(urlsMatch(
+      "https://sec.gov/news",
+      "https://manhattan-institute.org/news",
+    )).toBe(false);
+  });
+});
+
+describe("parseBibFile url field", () => {
+  it("extracts url field from bib entries", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const tmpDir = "/tmp/cite-check-url-parse-test";
+    const bibPath = join(tmpDir, "test.bib");
+    try {
+      mkdirSync(tmpDir, { recursive: true });
+      writeFileSync(bibPath, `
+@misc{Daly2026-sc,
+  title = {{Remarks at the N.Y.C. Bar}},
+  url = {https://www.sec.gov/news/speech/daly-remarks-2026},
+  year = {2026}
+}
+
+@article{NoUrl2024-aa,
+  title = {{No URL here}},
+  year = {2024}
+}
+`);
+      const map = parseBibFile(bibPath);
+      expect(map.get("Daly2026-sc")!.url).toBe("https://www.sec.gov/news/speech/daly-remarks-2026");
+      expect(map.get("NoUrl2024-aa")!.url).toBeUndefined();
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+});
+
 describe("submitBatchCiteCheck", () => {
   it("submits batch with inline fileData parts and responseSchema", async () => {
     const createCalls: any[] = [];
@@ -1534,7 +1600,7 @@ const _fileRef: FileRef = { name: "files/x", uri: "https://example.com/x", mimeT
 
 // BibEntry now has optional filePath and title
 const _bibEntry: BibEntry = { bibkey: "k" };
-const _bibEntryFull: BibEntry = { bibkey: "k", filePath: "/p", title: "T" };
+const _bibEntryFull: BibEntry = { bibkey: "k", filePath: "/p", title: "T", url: "https://example.com" };
 
 // BatchRequest type check -- now uses fileRefs instead of metadataFilter
 const _batchReq: BatchRequest = { key: "k", prompt: "p", fileRefs: [] };

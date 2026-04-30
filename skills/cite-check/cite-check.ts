@@ -460,9 +460,9 @@ export async function cmdCiteCheck(
         }
       }
 
-      // Check Readwise
-      if (entry.title) {
-        const matchedTitle = await searchReadwise(entry.title, { debug });
+      // Check Readwise (URL match first, title fallback)
+      if (entry.title || entry.url) {
+        const matchedTitle = await searchReadwise(entry.title ?? "", { debug, url: entry.url });
         if (matchedTitle) {
           hasReadwise.push({ bibkey, matchedTitle });
           continue;
