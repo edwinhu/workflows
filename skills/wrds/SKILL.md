@@ -336,6 +336,7 @@ Detailed query patterns and table documentation:
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
 - **`references/formd.md`** - Form D / Reg D: denormalization gotcha, dedup pattern, exemption codes, post-2020 gap, SEC TSV download
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
+- **`references/form-d.md`** - SEC Form D private placement filings, industry categories, exemption types
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/taq.md`** - TAQ: master files, IID, raw tick processing (NBBO, VWAP, closing auctions), CRSP–TAQ merge, era transition (legacy vs millisecond)
 - **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
