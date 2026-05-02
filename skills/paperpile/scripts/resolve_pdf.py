@@ -20,9 +20,9 @@ Resolver chain (each step tried in order, first valid PDF wins):
     6. Virgo article search       — last-ditch fallback when no DOI is known
                                     (e.g. older law reviews; --via-dia only)
 
-`--via-dia` drives Dia (Chrome-based) over CDP at port 9222 for the
+`--via-dia` drives Chrome over CDP at port 9250 for the
 institutional steps, automatically handling JS challenges and SSO redirects
-that block headless HTTP clients. After a successful Dia fetch the script
+that block headless HTTP clients. After a successful Chrome fetch the script
 snapshots the relevant cookies into ~/.claude-work/skills/paperpile/cookies/
 so subsequent runs in the session can re-use them without re-driving the
 browser.
@@ -466,7 +466,7 @@ def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_dia: bool) ->
     # Drive a navigation to the URL; the browser will save to ~/Downloads/
     # Use a similar pattern to manual_hop — navigate then poll ~/Downloads.
     if not cdp_alive():
-        return False, "Dia CDP not on :9222"
+        return False, "Chrome CDP not on :9250"
 
     # Open + navigate
     new_tab = subprocess.run(
@@ -544,7 +544,7 @@ def scholar_download(url: str, out: Path) -> tuple[bool, str]:
 # CDP / Dia driving (--via-dia)
 # ---------------------------------------------------------------------------
 
-CDP_URL = "http://localhost:9222"
+CDP_URL = "http://localhost:9250"
 
 
 def cdp_alive() -> bool:
@@ -820,7 +820,7 @@ async def _dia_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool
 
 def dia_fetch_pdf(url: str, out: Path) -> tuple[bool, str]:
     if not cdp_alive():
-        return False, "Dia CDP not reachable on :9222 — open Dia with --remote-debugging-port=9222"
+        return False, "Chrome CDP not reachable on :9250"
     try:
         return asyncio.run(_dia_fetch_pdf(url, out))
     except Exception as e:
@@ -830,7 +830,7 @@ def dia_fetch_pdf(url: str, out: Path) -> tuple[bool, str]:
 def manual_hop(url: str, out: Path, timeout_s: int = 120) -> tuple[bool, str]:
     """Open URL in Dia, wait for user to drop the PDF at `out`."""
     if not cdp_alive():
-        return False, "Dia CDP not on :9222"
+        return False, "Chrome CDP not on :9250"
     # Open the URL in a fresh tab
     r = subprocess.run(
         ["curl", "-sf", "-X", "PUT", f"{CDP_URL}/json/new"],
@@ -1120,7 +1120,7 @@ def main() -> int:
 
     if args.login_only:
         if not cdp_alive():
-            die("Dia CDP not on :9222 — start Dia with --remote-debugging-port=9222", code=1)
+            die("Chrome CDP not on :9250", code=1)
         warmup_urls = [
             f"https://{cfg.get('uva_ezproxy_host', '')}/login?url=https://www.virginia.edu/",
             f"https://{cfg.get('nyu_ezproxy_host', '')}/login?url=https://www.nyu.edu/",

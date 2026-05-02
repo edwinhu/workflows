@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Refresh UVA institutional sessions by hitting proxied URLs via Dia CDP.
+# Refresh UVA institutional sessions by hitting proxied URLs via Chrome CDP (:9250).
 # Warms up: EZproxy + HeinOnline (via WAYFless SSO).
 # If SSO expired, auto-clicks "Log in with your digital certificate".
 # Hammerspoon cert-autoaccept handles the macOS keychain dialog.
@@ -8,23 +8,42 @@
 
 set -euo pipefail
 
-CDP=http://localhost:9222
+CDP=http://localhost:9250
 
-if ! curl -sf --connect-timeout 2 "$CDP/json/version" >/dev/null; then
-  echo "[warmup] Dia CDP not on :9222" >&2
+BROWSER_WS=$(curl -sf --connect-timeout 2 "$CDP/json/version" | python3 -c "import json,sys; print(json.load(sys.stdin)['webSocketDebuggerUrl'])" 2>/dev/null) || true
+if [ -z "$BROWSER_WS" ]; then
+  echo "[warmup] Chrome CDP not on :9250" >&2
   exit 1
 fi
 
-# Helper: open tab, navigate, handle SSO if needed, close tab
+# Create a background tab via browser WS (PUT /json/new steals focus)
+create_bg_tab() {
+  bun -e "
+const ws = new WebSocket('$BROWSER_WS');
+ws.onopen = () => {
+  ws.send(JSON.stringify({ id: 1, method: 'Target.createTarget', params: { url: 'about:blank', background: true } }));
+};
+ws.onmessage = (ev) => {
+  const msg = JSON.parse(ev.data);
+  if (msg.id === 1) {
+    const tid = msg.result?.targetId;
+    if (tid) console.log(tid);
+    else { console.error('no targetId'); process.exit(1); }
+    ws.close();
+  }
+};
+ws.onerror = () => { console.error('ws error'); process.exit(1); };
+" 2>/dev/null
+}
+
+# Helper: open background tab, navigate, handle SSO if needed, close tab
 warmup_url() {
   local label="$1"
   local url="$2"
 
-  local TAB
-  TAB=$(curl -sf -X PUT "$CDP/json/new" 2>/dev/null) || { echo "[$label] failed to open tab"; return 1; }
-  local WS_URL TAB_ID
-  WS_URL=$(echo "$TAB" | python3 -c "import json,sys; print(json.load(sys.stdin)['webSocketDebuggerUrl'])")
-  TAB_ID=$(echo "$TAB" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])")
+  local TAB_ID
+  TAB_ID=$(create_bg_tab) || { echo "[$label] failed to open tab"; return 1; }
+  local WS_URL="ws://localhost:${CDP_PORT:-9250}/devtools/page/$TAB_ID"
 
   bun -e "
 const ws = new WebSocket('$WS_URL');
@@ -80,10 +99,9 @@ warmup_url "ezproxy" "https://proxy1.library.virginia.edu/login?url=https://www.
 
 # 2. Clear stale OpenAthens state_ cookies (they accumulate and cause HTTP 431)
 echo "[warmup] === Clear OpenAthens cookies ==="
-OA_TAB=$(curl -sf -X PUT "$CDP/json/new" 2>/dev/null) || true
-OA_TAB_ID=$(echo "$OA_TAB" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])" 2>/dev/null) || true
-OA_WS=$(echo "$OA_TAB" | python3 -c "import json,sys; print(json.load(sys.stdin)['webSocketDebuggerUrl'])" 2>/dev/null) || true
-if [ -n "$OA_WS" ]; then
+OA_TAB_ID=$(create_bg_tab 2>/dev/null) || true
+OA_WS="ws://localhost:${CDP_PORT:-9250}/devtools/page/$OA_TAB_ID"
+if [ -n "$OA_TAB_ID" ]; then
   bun -e "
 const ws = new WebSocket('$OA_WS');
 let id = 0;

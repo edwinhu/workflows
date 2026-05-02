@@ -24,9 +24,9 @@ EZproxy first). Cookies needed at each hop:
 ### Discovering the library ID
 
 The Third Iron public discovery API requires a static API key the user
-doesn't have, so use the Dia/CDP path:
+doesn't have, so use the Chrome/CDP path:
 
-1. Make sure Dia is running with CDP on port 9222.
+1. Make sure Chrome is running with CDP on port 9250.
 2. Navigate to: `https://search.lib.virginia.edu/?q=any+search`
 3. Open any article result. The "View full text" button (LibKey) has an href
    like `https://libkey.io/libraries/NNNN/openurl?...`.
@@ -159,8 +159,8 @@ default_output_dir = /tmp/paperpile-resolve
 Three pieces keep the institutional session warm across Dia restarts and the
 30-min EZproxy idle timeout:
 
-1. **launchd KeepAlive for Dia** — `~/Library/LaunchAgents/com.dia.cdp.plist`
-   respawns Dia with `--remote-debugging-port=9222 --remote-allow-origins=*`
+1. **launchd KeepAlive for Chrome CDP** — dedicated Chrome instance at `~/.config/chrome-cdp`
+   with `--remote-debugging-port=9250 --remote-allow-origins=*`
    if it exits. The plist is *not* auto-bootstrapped; explicit boot:
 
    ```bash
