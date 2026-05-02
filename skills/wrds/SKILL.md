@@ -7,6 +7,7 @@ user-invocable: false
 
 ## Contents
 
+- [WRDS Login Node Enforcement](#wrds-login-node-enforcement)
 - [Query Enforcement](#query-enforcement)
 - [SAS ETL Enforcement](#sas-etl-enforcement)
 - [Quick Reference: Table Names](#quick-reference-table-names)
@@ -14,6 +15,57 @@ user-invocable: false
 - [Critical Filters](#critical-filters)
 - [Parameterized Queries](#parameterized-queries)
 - [Additional Resources](#additional-resources)
+
+## WRDS Login Node Enforcement
+
+### IRON LAW: NEVER RUN COMPUTE ON THE WRDS LOGIN NODE
+
+<EXTREMELY-IMPORTANT>
+The WRDS login node is shared infrastructure. Running parsers, bulk file reads, SAS jobs, or any process taking >30 seconds on the login node will get the account flagged.
+
+**ALWAYS** write an SGE submission script and submit via `qsub`. No exceptions.
+
+- `ssh wrds 'cat files.tsv | ./parser > output.tsv'` → **WRONG. Use qsub.**
+- `ssh wrds 'nohup ./process &'` → **WRONG. Still the login node. Use qsub.**
+- `ssh wrds 'python3 bulk_process.py'` → **WRONG. Use qsub.**
+- `qsub -t 1-20 submit.sh` → **CORRECT.**
+
+The login node is for: `qsub`, `qstat`, `qdel`, `scp`, `ls`, `head`, short `psql` queries.
+
+See `references/constraints/wrds-sge-enforcement.md` for the full pattern and existing examples (quorum parser, state-of-incorp parser, SAS pipeline).
+</EXTREMELY-IMPORTANT>
+
+**Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
+
+### Rationalization Table — Login Node
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "It's a quick test, just one file" | One file becomes 100K when you forget to change the command | Write the SGE script first, test with `-t 1-1` |
+| "nohup makes it background, so it's fine" | nohup is still the login node — same shared CPU | qsub, not nohup |
+| "I'll run the real job via qsub later" | You'll forget. The 'test' run is the one that flags the account | qsub from the start |
+| "It only takes 30 seconds" | You don't know that until it runs. 173K filings over NFS is not 30 seconds | If in doubt, qsub |
+| "The quorum parser ran fine on the login node last time" | It didn't — you got lucky, or it was killed silently | Look at how the quorum parser ACTUALLY runs: submit_quorum.sh |
+
+### Red Flags — STOP Immediately If You're About To:
+
+- **Write `ssh wrds '... | ./binary > output'`** → STOP. That's login-node compute. Write a submit script.
+- **Write `ssh wrds 'nohup ... &'`** → STOP. nohup doesn't change the node. Use qsub.
+- **Write `ssh wrds 'python3 ...'` for anything that reads >10 files** → STOP. Use qsub.
+- **Skip reading `references/edgar.md` before building a new WRDS file parser** → STOP. The path conventions, SGE patterns, and existing parsers are already documented. Read them first.
+- **Build a new Go/Python parser without checking existing ones in the same project** → STOP. The bylaw quorum parser (`scripts/bylaw_quorum/`) and state-of-incorp parser (`scripts/state_incorp_go/`) have solved SGE sharding, path construction, panel building, and shard merging. Copy the pattern.
+
+### IRON LAW: READ EXISTING PATTERNS BEFORE WRITING NEW CODE
+
+<EXTREMELY-IMPORTANT>
+Before writing ANY new WRDS-side code (Go parsers, SAS jobs, filing index builders):
+
+1. **Read `references/edgar.md`** — path conventions for `wrds_clean_filings` (`cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt`)
+2. **Read existing parsers** in the same project — SGE submission scripts, index builders, panel builders
+3. **Copy the pattern** — don't reinvent sharding, path construction, or shard merging
+
+**Reinventing solved patterns is NOT HELPFUL — it ships bugs that were already fixed in the existing code.** The `wrds_clean_filings` path convention was documented in three places and implemented in two existing parsers. Getting it wrong wasted a full run cycle.
+</EXTREMELY-IMPORTANT>
 
 # WRDS Data Access
 

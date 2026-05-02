@@ -821,3 +821,56 @@ def fetch_filing_from_sec(url: str) -> str:
     response.raise_for_status()
     return response.text
 ```
+
+## Go-Based Filing Parsers
+
+For large-scale extraction from SEC filings (100K+ documents), Go parsers running
+on WRDS compute nodes via SGE are dramatically faster than Python. Pattern:
+
+1. **Build filing index** (Python, local): query `wrdssec_all.forms` for filing paths
+2. **Go parser** (compiled binary): reads TSV from stdin, opens each filing on WRDS
+   NFS, extracts target field via regex, emits TSV to stdout
+3. **SGE array job**: shards the filing list across N workers for parallelism
+4. **Build panel** (Python, local): deduplicates and writes parquet
+
+### Path Convention for `wrds_clean_filings`
+
+```
+/wrds/sec/wrds_clean_filings/{cik_zfill10[:6]}/{cik_int}/{accession}.txt
+```
+
+Example: CIK 34088, accession 0001193125-25-073986 ->
+`/wrds/sec/wrds_clean_filings/000034/34088/0001193125-25-073986.txt`
+
+Python helper:
+```python
+def fname_to_clean_path(fname: str) -> str:
+    """Convert WRDS fname to wrds_clean_filings path.
+    fname: 'edgar/data/34088/0001193125-25-073986.txt'
+    """
+    parts = fname.split("/")
+    cik_int = parts[2]
+    filename = parts[3]
+    parent = cik_int.zfill(10)[:6]
+    return f"{parent}/{cik_int}/{filename}"
+```
+
+### SGE Submission Pattern
+
+```bash
+# Upload binary and filing list
+scp parse_my_thing_linux wrds:/scratch/nyu/$USER/bin/parse_my_thing
+scp filings.tsv wrds:~/my_project/filings.tsv
+
+# Submit array job (20 shards)
+qsub -t 1-20 \
+  -v FILES_FROM=$HOME/my_project/filings.tsv,OUT_DIR=$HOME/my_project/out,NSHARDS=20,ARCHIVE=/wrds/sec/wrds_clean_filings \
+  submit.sh
+```
+
+### Existing Parsers
+
+| Parser | Source | Extracts | Input |
+|--------|--------|----------|-------|
+| `parse_quorum` | `mirror/scripts/bylaw_quorum/parse_quorum_go/` | Quorum threshold from DEF 14A | DEF 14A filings |
+| `parse_state_incorp` | `mirror/scripts/state_incorp_go/` | State of incorporation from 10-K cover page | 10-K filings |
