@@ -441,7 +441,7 @@ def inject_toc(docx_path: Path) -> None:
         '<w:r><w:rPr><w:smallCaps/><w:color w:val="000000"/></w:rPr>'
         '<w:t>Table of Contents</w:t></w:r></w:p>'
         '<w:p>'
-        '<w:r><w:fldChar w:fldCharType="begin" w:dirty="true"/></w:r>'
+        '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'
         f'<w:r><w:instrText xml:space="preserve">{_TOC_INSTR}</w:instrText></w:r>'
         '<w:r><w:fldChar w:fldCharType="separate"/></w:r>'
         '</w:p>'
@@ -454,16 +454,13 @@ def inject_toc(docx_path: Path) -> None:
     new_doc = doc[:p_start] + toc_xml + doc[p_start:]
     contents['word/document.xml'] = new_doc.encode('utf-8')
 
-    # Ensure Word updates fields on open.
-    settings_key = 'word/settings.xml'
-    if settings_key in contents:
-        settings = contents[settings_key].decode('utf-8')
-        if 'updateFields' not in settings:
-            settings = settings.replace(
-                '</w:settings>',
-                '<w:updateFields w:val="true"/></w:settings>',
-            )
-            contents[settings_key] = settings.encode('utf-8')
+    # Note: we deliberately do NOT set w:updateFields on settings.xml. Setting
+    # it to true makes Word prompt "Update the table of contents?" every time
+    # the document opens, which breaks the headless build→PDF loop via
+    # osascript. The TOC body we injected above is already current at build
+    # time, so users who open the DOCX see the correct TOC immediately.
+    # Anyone who edits the document and wants to refresh can right-click the
+    # TOC and choose Update Field.
 
     tmp = docx_path.with_suffix('.docx.tmp')
     with zipfile.ZipFile(docx_path, 'r') as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
@@ -530,7 +527,117 @@ def replace_short_title(docx_path: Path, short_title: str) -> None:
     shutil.move(tmp, docx_path)
 
 
-def build(project_dir: Path, output: Optional[Path] = None, fix_footnotes: bool = True) -> Path:
+def convert_to_pdf_via_word(docx_path: Path) -> Optional[Path]:
+    """Convert DOCX to PDF via Microsoft Word on macOS (osascript).
+
+    Uses Word's actual layout engine — line breaks, font substitution, and
+    pagination match what law-review editors and submission platforms see
+    when they open the DOCX. Much more accurate than LibreOffice for widow
+    detection and final-pass layout checks.
+    """
+    pdf_path = docx_path.with_suffix(".pdf")
+    # Word needs activation to execute AppleScript, but we hide its windows
+    # immediately via System Events so the interruption is minimal (~1-2s).
+    # Leave Word running across builds to skip cold-start cost.
+    script = f'''
+    tell application "Microsoft Word"
+        activate
+        open POSIX file "{docx_path}"
+        delay 1
+        save as active document file format format PDF file name "{pdf_path}"
+        close active document saving no
+    end tell
+    tell application "System Events"
+        set visible of application process "Microsoft Word" to false
+    end tell
+    '''
+    result = subprocess.run(
+        ["osascript", "-e", script],
+        capture_output=True, text=True, timeout=120,
+    )
+    if result.returncode != 0:
+        print(f"WARN: Word PDF export failed:\n{result.stderr}", file=sys.stderr)
+        return None
+    if not pdf_path.exists():
+        print(f"WARN: expected PDF at {pdf_path} but not found", file=sys.stderr)
+        return None
+    return pdf_path
+
+
+def convert_to_pdf(docx_path: Path) -> Optional[Path]:
+    """Convert DOCX to PDF. Prefers Word via osascript on macOS (accurate layout),
+    falls back to LibreOffice headless (approximate layout, font-substituted)."""
+    import shutil, sys as _sys
+    # On macOS with Word installed, prefer osascript for layout accuracy.
+    if _sys.platform == "darwin" and Path("/Applications/Microsoft Word.app").exists():
+        pdf = convert_to_pdf_via_word(docx_path)
+        if pdf:
+            return pdf
+        print("INFO: Word PDF export failed; falling back to LibreOffice", file=sys.stderr)
+    # Fallback: LibreOffice headless.
+    soffice = shutil.which("soffice") or shutil.which("libreoffice")
+    if not soffice:
+        print("WARN: no PDF renderer available (Word not installed and soffice not on PATH)", file=sys.stderr)
+        return None
+    outdir = docx_path.parent
+    result = subprocess.run(
+        [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(outdir), str(docx_path)],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        print(f"WARN: LibreOffice PDF conversion failed:\n{result.stderr}", file=sys.stderr)
+        return None
+    pdf_path = outdir / (docx_path.stem + ".pdf")
+    if not pdf_path.exists():
+        print(f"WARN: expected PDF at {pdf_path} but not found", file=sys.stderr)
+        return None
+    return pdf_path
+
+
+def force_widow_control(docx_path: Path) -> None:
+    """Insert <w:widowControl/> into every paragraph's pPr in document.xml and
+    footnotes.xml. Word's page-level widow/orphan control only activates when
+    the property is present on the paragraph (document-default isn't always
+    respected for pandoc-emitted paragraphs). This forces it everywhere so
+    Word pulls a second line forward rather than stranding a single line at
+    the top of a page.
+    """
+    import zipfile, shutil
+    with zipfile.ZipFile(docx_path, 'r') as z:
+        contents = {n: z.read(n) for n in z.namelist()}
+
+    # Pattern: find every <w:pPr>...</w:pPr> that lacks <w:widowControl; add it.
+    # Also: for <w:p> paragraphs without any <w:pPr>, inject <w:pPr><w:widowControl/></w:pPr>.
+    def add_widow_control(xml: str) -> str:
+        # Add to existing pPr blocks that don't already have widowControl
+        def add_to_pPr(m: re.Match) -> str:
+            block = m.group(0)
+            if 'widowControl' in block:
+                return block
+            # insert right after the opening <w:pPr> tag
+            return re.sub(r'(<w:pPr(?:\s+[^>]*)?>)', r'\1<w:widowControl/>', block, count=1)
+        xml = re.sub(r'<w:pPr(?:\s+[^>]*)?>.*?</w:pPr>', add_to_pPr, xml, flags=re.DOTALL)
+        # For paragraphs without pPr, inject one
+        xml = re.sub(
+            r'<w:p(\s+[^>]*)?>(\s*<w:r)',
+            lambda m: f'<w:p{m.group(1) or ""}><w:pPr><w:widowControl/></w:pPr>{m.group(2)}',
+            xml,
+        )
+        return xml
+
+    for key in ('word/document.xml', 'word/footnotes.xml'):
+        if key in contents:
+            xml = contents[key].decode('utf-8')
+            contents[key] = add_widow_control(xml).encode('utf-8')
+
+    tmp = docx_path.with_suffix('.docx.tmp')
+    with zipfile.ZipFile(docx_path, 'r') as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            zout.writestr(item, contents[item.filename])
+    shutil.move(tmp, docx_path)
+
+
+def build(project_dir: Path, output: Optional[Path] = None, fix_footnotes: bool = True, pdf: bool = False) -> Path:
     drafts = sorted(project_dir.glob("drafts/*Draft*.md"), key=sort_key)
     if not drafts:
         print("ERROR: No draft files found in drafts/", file=sys.stderr)
@@ -625,6 +732,8 @@ date: "{meta['date']}"
 
     inject_toc(output)
 
+    force_widow_control(output)
+
     if fix_footnotes:
         scripts_dir = Path(__file__).resolve().parent.parent.parent / "docx-footnotes" / "scripts"
         fix_script = scripts_dir / "fix_footnotes.py"
@@ -646,6 +755,12 @@ date: "{meta['date']}"
     print(f"Sections: {len(drafts)}")
     print(f"Footnotes: {fn_count}")
     print(f"Words: ~{len(combined.split())}")
+
+    if pdf:
+        pdf_path = convert_to_pdf(output)
+        if pdf_path:
+            print(f"PDF: {pdf_path}")
+
     return output
 
 
@@ -655,6 +770,8 @@ def main():
     parser.add_argument("--output", "-o", type=Path, help="Output DOCX path")
     parser.add_argument("--no-fix-footnotes", dest="fix_footnotes", action="store_false",
                         help="Skip docx-footnotes repair + supra/infra crossrefs (default: on)")
+    parser.add_argument("--pdf", action="store_true",
+                        help="After building the DOCX, also render to PDF via LibreOffice headless")
     parser.set_defaults(fix_footnotes=True)
     args = parser.parse_args()
 
@@ -662,7 +779,7 @@ def main():
         print(f"ERROR: {args.project_dir} does not exist", file=sys.stderr)
         sys.exit(1)
 
-    build(args.project_dir, args.output, args.fix_footnotes)
+    build(args.project_dir, args.output, args.fix_footnotes, args.pdf)
 
 
 if __name__ == "__main__":
