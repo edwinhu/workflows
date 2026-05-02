@@ -870,7 +870,10 @@ qsub -t 1-20 \
 
 ### Existing Parsers
 
-| Parser | Source | Extracts | Input |
-|--------|--------|----------|-------|
-| `parse_quorum` | `mirror/scripts/bylaw_quorum/parse_quorum_go/` | Quorum threshold from DEF 14A | DEF 14A filings |
-| `parse_state_incorp` | `mirror/scripts/state_incorp_go/` | State of incorporation from 10-K cover page | 10-K filings |
+| Parser | Source | Extracts | Input | Accuracy |
+|--------|--------|----------|-------|----------|
+| `parse_quorum` | `mirror/scripts/bylaw_quorum/parse_quorum_go/` | Quorum threshold from DEF 14A | DEF 14A filings | Per-firm bylaw thresholds |
+| `state_incorp` (profile) | `workflows/wrds/scripts/scan_covers/profiles_state_incorp.go` | State of incorp + HQ state from 10-K SGML header | 10-K filings | 98.4% vs Barzuza et al. |
+| `parse_state_incorp` (standalone) | `mirror/scripts/state_incorp_go/` | Same as above (original version) | 10-K filings | 98.4% vs Barzuza et al. |
+
+**Prefer `scan_covers -profile state_incorp`** over the standalone parser. The scan_covers framework handles SGE sharding, path construction, and concurrency generically.

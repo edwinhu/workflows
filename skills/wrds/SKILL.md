@@ -37,7 +37,7 @@ See `references/constraints/wrds-sge-enforcement.md` for the full pattern and ex
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
 
-### Rationalization Table — Login Node
+### Rationalization Table — Login Node & Existing Infrastructure
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
@@ -46,6 +46,9 @@ See `references/constraints/wrds-sge-enforcement.md` for the full pattern and ex
 | "I'll run the real job via qsub later" | You'll forget. The 'test' run is the one that flags the account | qsub from the start |
 | "It only takes 30 seconds" | You don't know that until it runs. 173K filings over NFS is not 30 seconds | If in doubt, qsub |
 | "The quorum parser ran fine on the login node last time" | It didn't — you got lucky, or it was killed silently | Look at how the quorum parser ACTUALLY runs: submit_quorum.sh |
+| "I need a new Go binary for this extraction" | `scan_covers` already has a profile-based framework with SGE, concurrency, and path handling | Add a profile to `scripts/scan_covers/`, don't create a standalone binary |
+| "I'll build the path logic myself" | You'll get the `wrds_clean_filings` directory structure wrong | Read `references/edgar.md` — `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` |
+| "This parser is different enough to need its own binary" | It isn't. `scan_covers` profiles handle header extraction, body parsing, and custom extractors | Add a `profiles_*.go` file. If you need custom logic, use the `Custom` field type |
 
 ### Red Flags — STOP Immediately If You're About To:
 
@@ -53,18 +56,21 @@ See `references/constraints/wrds-sge-enforcement.md` for the full pattern and ex
 - **Write `ssh wrds 'nohup ... &'`** → STOP. nohup doesn't change the node. Use qsub.
 - **Write `ssh wrds 'python3 ...'` for anything that reads >10 files** → STOP. Use qsub.
 - **Skip reading `references/edgar.md` before building a new WRDS file parser** → STOP. The path conventions, SGE patterns, and existing parsers are already documented. Read them first.
-- **Build a new Go/Python parser without checking existing ones in the same project** → STOP. The bylaw quorum parser (`scripts/bylaw_quorum/`) and state-of-incorp parser (`scripts/state_incorp_go/`) have solved SGE sharding, path construction, panel building, and shard merging. Copy the pattern.
+- **Create a new standalone Go binary for EDGAR extraction** → STOP. `scripts/scan_covers/` is a generic profile-based framework. Add a `profiles_*.go` file, not a new binary. The framework handles SGE sharding, path construction, concurrency, and form-type filtering.
+- **Build a new Go/Python parser without checking `scripts/scan_covers/`** → STOP. This framework exists precisely so you don't reinvent extraction infrastructure. Every standalone parser is technical debt that should have been a profile.
 
-### IRON LAW: READ EXISTING PATTERNS BEFORE WRITING NEW CODE
+### IRON LAW: USE SCAN_COVERS, NOT STANDALONE BINARIES
 
 <EXTREMELY-IMPORTANT>
-Before writing ANY new WRDS-side code (Go parsers, SAS jobs, filing index builders):
+Before writing ANY new EDGAR filing extractor:
 
-1. **Read `references/edgar.md`** — path conventions for `wrds_clean_filings` (`cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt`)
-2. **Read existing parsers** in the same project — SGE submission scripts, index builders, panel builders
-3. **Copy the pattern** — don't reinvent sharding, path construction, or shard merging
+1. **Read `scripts/scan_covers/`** — generic profile-based Go framework with SGE, concurrency, path handling
+2. **Add a `profiles_*.go` file** — not a standalone binary. The Profile struct supports pattern-based fields AND custom extractors
+3. **Read `references/edgar.md`** — path conventions, existing profiles, SGE submission patterns
 
-**Reinventing solved patterns is NOT HELPFUL — it ships bugs that were already fixed in the existing code.** The `wrds_clean_filings` path convention was documented in three places and implemented in two existing parsers. Getting it wrong wasted a full run cycle.
+**Building a standalone parser when `scan_covers` exists is NOT HELPFUL — it reinvents infrastructure that already handles SGE sharding, NFS concurrency, path construction, form-type filtering, and error handling.** You built a 300-line standalone Go binary, ran it on the login node, got the path convention wrong, and spent 5 iterations fixing it. Adding a 60-line profile to `scan_covers` would have worked on the first try.
+
+Every standalone EDGAR parser is technical debt. The `scan_covers` framework exists to eliminate this class of mistake.
 </EXTREMELY-IMPORTANT>
 
 # WRDS Data Access
