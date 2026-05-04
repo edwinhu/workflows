@@ -26,9 +26,10 @@
  * cite-check.ts (CLI). No project-internal imports.
  */
 
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, dirname, join, resolve } from "node:path";
+import { spawnSync } from "node:child_process";
 import {
   uploadCitedFiles,
   parseBibFile,
@@ -47,6 +48,7 @@ import {
   type Manifest,
 } from "./gemini.js";
 import { extractCitations, type Citation } from "./cite-extract.js";
+import { verifyGrounding } from "./grounding.js";
 
 // ---------------------------------------------------------------------------
 // Helpers (formerly imported from librarian-cli internals).
@@ -115,6 +117,110 @@ interface CiteResult {
   cite: Citation;
   status: Status;
   response: string;
+  grounded?: boolean; // true = passage verified in source text, false = passage not found
+}
+
+// ---------------------------------------------------------------------------
+// PDF text extraction (pymupdf4llm) + cache
+// ---------------------------------------------------------------------------
+
+const EXTRACT_SCRIPT = join(import.meta.dir, "extract-pdf-text.py");
+
+/**
+ * Extract markdown text from a PDF using pymupdf4llm.
+ * Results are cached in a .cite-check-text/ directory alongside the drafts.
+ */
+function extractPdfText(
+  pdfPath: string,
+  cacheDir: string,
+  bibkey: string,
+  debug?: boolean,
+): string | null {
+  // Check cache first
+  if (!existsSync(cacheDir)) mkdirSync(cacheDir, { recursive: true });
+  const safeBibkey = bibkey.replace(/[^a-zA-Z0-9_\-\.]/g, "_");
+  const cachePath = join(cacheDir, `${safeBibkey}.md`);
+  if (existsSync(cachePath)) {
+    const cached = readFileSync(cachePath, "utf-8");
+    if (cached.length > 0) {
+      if (debug) process.stderr.write(`[grounding] text cache hit: ${bibkey}\n`);
+      return cached;
+    }
+  }
+
+  if (debug) process.stderr.write(`[grounding] extracting text: ${pdfPath}\n`);
+  const result = spawnSync("python3", [EXTRACT_SCRIPT, pdfPath], {
+    encoding: "utf-8",
+    timeout: 60_000,
+  });
+
+  if (result.status !== 0 || !result.stdout) {
+    process.stderr.write(
+      `[grounding] WARNING: text extraction failed for ${bibkey}: ${result.stderr?.slice(0, 200) ?? "unknown error"}\n`,
+    );
+    return null;
+  }
+
+  // Cache the result
+  writeFileSync(cachePath, result.stdout, "utf-8");
+  return result.stdout;
+}
+
+/**
+ * Verify grounding for a group of citations that share a Gemini result.
+ * Extracts source text for each bibkey and checks whether the supporting
+ * passage actually appears in the source.
+ *
+ * Returns true if grounded, false if not, undefined if verification was
+ * not possible (e.g., text extraction failed or no passage returned).
+ */
+function checkGrounding(
+  cls: { status: string; supporting_passage: string },
+  bibkeys: string[],
+  bibMap: Map<string, BibEntry>,
+  bibDirs: string[],
+  textCacheDir: string,
+  debug?: boolean,
+  signal?: string,
+): boolean | undefined {
+  // Only verify SUPPORTED/PARTIAL results that have a passage
+  if (cls.status !== "SUPPORTED" && cls.status !== "PARTIAL") return undefined;
+  if (!cls.supporting_passage || cls.supporting_passage.length < 10) return undefined;
+
+  // Signal cites (see, cf., etc.) use relaxed thresholds
+  const opts = signal
+    ? { coverageThreshold: 0.5, densityThreshold: 0.2 }
+    : undefined;
+
+  // Track whether we successfully extracted text from any source
+  let anySourceExtracted = false;
+
+  // Try to verify against any source in the group
+  for (const bibkey of bibkeys) {
+    const entry = bibMap.get(bibkey);
+    if (!entry) continue;
+
+    const pdfPath = entry.filePath
+      ? resolveFileAcrossDirs(entry, bibDirs, debug) ?? undefined
+      : undefined;
+    if (!pdfPath) continue;
+
+    const sourceText = extractPdfText(pdfPath, textCacheDir, bibkey, debug);
+    if (!sourceText) continue;
+
+    anySourceExtracted = true;
+
+    const result = verifyGrounding(cls.supporting_passage, sourceText, opts);
+    if (debug) {
+      process.stderr.write(
+        `[grounding] ${bibkey}: grounded=${result.grounded} coverage=${result.coverage.toFixed(2)} density=${result.density.toFixed(2)}\n`,
+      );
+    }
+    if (result.grounded) return true;
+  }
+
+  // If no source text was available for any bibkey, we can't judge
+  return anySourceExtracted ? false : undefined;
 }
 
 const STATUS_GLYPH: Record<Status, string> = {
@@ -275,12 +381,20 @@ function renderReport(
     `Drafts scanned: ${meta.fileCount} files, ${meta.citationCount} citations`,
   );
   lines.push("");
+  // Intentional strict equality: false = verified ungrounded, undefined = not checked
+  const ungroundedCount = results.filter(
+    (r) => r.grounded === false && (r.status === "SUPPORTED" || r.status === "PARTIAL"),
+  ).length;
+
   lines.push("## Summary");
   lines.push(`- \u2713 Supported: ${counts.SUPPORTED}`);
   lines.push(`- \u26A0 Partial: ${counts.PARTIAL}`);
   lines.push(`- \u2717 Unsupported: ${counts.UNSUPPORTED}`);
   lines.push(`- \u2298 Not in store: ${counts.NOT_IN_STORE}`);
   lines.push(`- \uD83D\uDCA5 Error: ${counts.ERROR}`);
+  if (ungroundedCount > 0) {
+    lines.push(`- \u2757 Ungrounded passages: ${ungroundedCount} (model-reported passage not found in source text)`);
+  }
   lines.push("");
   lines.push("## Details");
   lines.push("");
@@ -292,8 +406,13 @@ function renderReport(
     const signalTag = r.cite.signal ? `[${r.cite.signal}] ` : "";
     const claim = signalTag + truncate(r.cite.claim, 100) + fnTag;
     const resp = truncate(r.response, 200);
+    // Intentional strict equality: false = verified ungrounded, undefined = not checked
+    const groundingFlag =
+      r.grounded === false && (r.status === "SUPPORTED" || r.status === "PARTIAL")
+        ? " [UNGROUNDED]"
+        : "";
     lines.push(
-      `| ${STATUS_GLYPH[r.status]} | ${escapeCell(fileLine)} | ${escapeCell(
+      `| ${STATUS_GLYPH[r.status]}${groundingFlag} | ${escapeCell(fileLine)} | ${escapeCell(
         r.cite.bibkey,
       )} | ${escapeCell(claim)} | ${escapeCell(resp)} |`,
     );
@@ -554,6 +673,7 @@ export async function cmdCiteCheck(
   // 3. Iterate cite groups, classify each.
   const results: CiteResult[] = [];
   const batchMode = !!flags.batch;
+  const textCacheDir = join(draftsDir, ".cite-check-text");
 
   if (dryRun) {
     process.stderr.write(
@@ -621,8 +741,19 @@ export async function cmdCiteCheck(
           ? `"${cls.supporting_passage.slice(0, 280)}"`
           : cls.explanation.slice(0, 300);
 
+        // Post-hoc grounding: verify the passage exists in source text
+        const grounded = checkGrounding(
+          cls,
+          inStore.map((c) => c.bibkey),
+          bibMap,
+          bibDirs,
+          textCacheDir,
+          debug,
+          g.cites[0]?.signal,
+        );
+
         for (const c of inStore) {
-          results.push({ cite: c, status: cls.status, response: snippet });
+          results.push({ cite: c, status: cls.status, response: snippet, grounded });
         }
       }
     }
@@ -673,10 +804,23 @@ export async function cmdCiteCheck(
           ? `"${cls.supporting_passage.slice(0, 280)}"`
           : cls.explanation.slice(0, 300);
 
-        process.stderr.write(` ${cls.status} (${geminiResult.durationMs}ms)\n`);
+        // Post-hoc grounding: verify the passage exists in source text
+        const grounded = checkGrounding(
+          cls,
+          inStore.map((c) => c.bibkey),
+          bibMap,
+          bibDirs,
+          textCacheDir,
+          debug,
+          inStore[0]?.signal,
+        );
+
+        // Intentional strict equality: false = verified ungrounded, undefined = not checked
+        const groundingTag = grounded === false ? " [UNGROUNDED]" : "";
+        process.stderr.write(` ${cls.status}${groundingTag} (${geminiResult.durationMs}ms)\n`);
         // All cites in the group share the joint verdict and response.
         for (const c of inStore) {
-          results.push({ cite: c, status: cls.status, response: snippet });
+          results.push({ cite: c, status: cls.status, response: snippet, grounded });
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -720,8 +864,13 @@ export async function cmdCiteCheck(
     ERROR: 0,
   };
   for (const r of results) counts[r.status]++;
+  // Intentional strict equality: false = verified ungrounded, undefined = not checked
+  const ungrounded = results.filter(
+    (r) => r.grounded === false && (r.status === "SUPPORTED" || r.status === "PARTIAL"),
+  ).length;
+  const groundingSuffix = ungrounded > 0 ? ` \u2757${ungrounded} ungrounded` : "";
   process.stderr.write(
-    `[cite-check] ${results.length} cites checked: \u2713${counts.SUPPORTED} \u26A0${counts.PARTIAL} \u2717${counts.UNSUPPORTED} \uD83D\uDCA5${counts.ERROR} \u2298${counts.NOT_IN_STORE} \u2192 wrote ${outPath}\n`,
+    `[cite-check] ${results.length} cites checked: \u2713${counts.SUPPORTED} \u26A0${counts.PARTIAL} \u2717${counts.UNSUPPORTED} \uD83D\uDCA5${counts.ERROR} \u2298${counts.NOT_IN_STORE}${groundingSuffix} \u2192 wrote ${outPath}\n`,
   );
   console.log(outPath);
   return 0;
