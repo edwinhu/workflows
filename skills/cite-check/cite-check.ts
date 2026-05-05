@@ -37,6 +37,7 @@ import {
   queryCitationsConcurrently,
   resolveFileAcrossDirs,
   ensureLocal,
+  ensureLocalBatch,
   loadManifest,
   saveManifest,
   restoreFromManifest,

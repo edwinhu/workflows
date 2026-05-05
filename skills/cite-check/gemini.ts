@@ -417,48 +417,12 @@ export function ensureLocal(
 }
 
 /**
- * Check if a file exists, using rclone for Google Drive FUSE paths
- * (statSync on FUSE paths can deadlock with EDEADLK).
- * Resolves symlinks to detect paths that indirectly point to the FUSE mount.
- */
-function fileExists(filePath: string, debug?: boolean): boolean {
-  const gdrivePath = resolveGdrivePath(filePath);
-  if (gdrivePath) {
-    // For Google Drive paths, check via rclone instead of statSync
-    const relativePath = extractDriveRelativePath(gdrivePath)!;
-    const remote = `${RCLONE_REMOTE}${relativePath}`;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const result = spawnSync("rclone", ["lsf", remote], {
-        timeout: 30_000,
-      });
-      if (result.status === 0 && (result.stdout?.toString().trim().length ?? 0) > 0) {
-        return true;
-      }
-      if (result.status === null) {
-        // Timed out — retry once
-        if (debug) {
-          process.stderr.write(`[rclone] lsf timed out for ${basename(filePath)} (attempt ${attempt + 1})\n`);
-        }
-        continue;
-      }
-      break; // Non-timeout failure, don't retry
-    }
-    return false;
-  }
-  try {
-    statSync(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Try to find a PDF on disk by resolving a relative file path against multiple
  * directories. Returns the first path that exists, or null.
  *
- * For Google Drive FUSE paths, uses rclone to check existence (avoids EDEADLK).
- * Callers should pass the returned path through ensureLocal() before reading.
+ * For local (non-FUSE) paths, uses statSync. For paths that resolve into
+ * Google Drive, returns the path without checking existence — the caller
+ * should use ensureLocalBatch() or ensureLocal() to copy via rclone.
  */
 export function resolveFileAcrossDirs(
   entry: BibEntry,
@@ -472,11 +436,15 @@ export function resolveFileAcrossDirs(
 
   // 1. Try primary resolved path first
   if (entry.filePath) {
-    if (fileExists(entry.filePath, debug)) {
+    // If it resolves to Google Drive, trust the bib — don't stat the FUSE mount
+    if (resolveGdrivePath(entry.filePath)) return entry.filePath;
+    try {
+      statSync(entry.filePath);
       return entry.filePath;
-    }
-    if (debug) {
-      process.stderr.write(`[gemini] file not found at primary path: ${entry.filePath}\n`);
+    } catch {
+      if (debug) {
+        process.stderr.write(`[gemini] file not found at primary path: ${entry.filePath}\n`);
+      }
     }
   }
 
@@ -485,11 +453,15 @@ export function resolveFileAcrossDirs(
     for (const dir of bibDirs) {
       const candidate = join(dir, relPath);
       if (candidate === entry.filePath) continue; // already tried
-      if (fileExists(candidate, debug)) {
+      if (resolveGdrivePath(candidate)) return candidate;
+      try {
+        statSync(candidate);
         if (debug) {
           process.stderr.write(`[gemini] found via fallback dir: ${candidate}\n`);
         }
         return candidate;
+      } catch {
+        // not in this dir, try next
       }
     }
   }
@@ -498,13 +470,105 @@ export function resolveFileAcrossDirs(
 }
 
 /**
+ * Batch-copy all Google Drive files to the local cache in a single rclone call.
+ * Uses `rclone copy --files-from` which is much faster than individual copyto calls.
+ *
+ * Returns a map of relative Drive path → local cache path for files that landed.
+ */
+export function ensureLocalBatch(
+  entries: Array<{ bibkey: string; resolvedPath: string }>,
+  debug?: boolean,
+): Map<string, string> {
+  const result = new Map<string, string>();
+  const driveFiles: Array<{ bibkey: string; relativePath: string; cachedPath: string }> = [];
+  const localFiles: Array<{ bibkey: string; path: string }> = [];
+
+  if (!existsSync(LOCAL_PDF_CACHE)) mkdirSync(LOCAL_PDF_CACHE, { recursive: true });
+
+  for (const { bibkey, resolvedPath } of entries) {
+    const gdrivePath = resolveGdrivePath(resolvedPath);
+    if (!gdrivePath) {
+      // Local file — use directly
+      localFiles.push({ bibkey, path: resolvedPath });
+      continue;
+    }
+    const relativePath = extractDriveRelativePath(gdrivePath)!;
+    const cachedPath = join(LOCAL_PDF_CACHE, basename(gdrivePath));
+
+    // Already cached locally with content?
+    if (existsSync(cachedPath)) {
+      try {
+        if (statSync(cachedPath).size > 0) {
+          result.set(bibkey, cachedPath);
+          continue;
+        }
+      } catch { /* re-download */ }
+    }
+
+    driveFiles.push({ bibkey, relativePath, cachedPath });
+  }
+
+  // Local files: just map them through
+  for (const { bibkey, path } of localFiles) {
+    result.set(bibkey, path);
+  }
+
+  // Batch rclone copy for all Drive files in one call
+  if (driveFiles.length > 0) {
+    // Write a files-from list (one relative path per line)
+    const filesList = driveFiles.map((f) => f.relativePath).join("\n") + "\n";
+    const filesFromPath = join(LOCAL_PDF_CACHE, ".files-from.txt");
+    writeFileSync(filesFromPath, filesList, "utf-8");
+
+    if (debug) {
+      process.stderr.write(
+        `[rclone] batch copying ${driveFiles.length} PDFs from Google Drive...\n`,
+      );
+    }
+
+    const rcloneResult = spawnSync("rclone", [
+      "copy",
+      "--files-from", filesFromPath,
+      `${RCLONE_REMOTE}`,
+      LOCAL_PDF_CACHE,
+      "--no-traverse",
+    ], { timeout: 120_000 });
+
+    if (rcloneResult.status !== 0 && debug) {
+      process.stderr.write(
+        `[rclone] batch copy exited ${rcloneResult.status}: ${rcloneResult.stderr?.toString().slice(0, 300) ?? ""}\n`,
+      );
+    }
+
+    // Check which files actually landed
+    for (const f of driveFiles) {
+      // rclone copy --files-from preserves directory structure, so the file
+      // lands at LOCAL_PDF_CACHE/<relativePath> not LOCAL_PDF_CACHE/<basename>
+      const landedPath = join(LOCAL_PDF_CACHE, f.relativePath);
+      if (existsSync(landedPath)) {
+        try {
+          if (statSync(landedPath).size > 0) {
+            result.set(f.bibkey, landedPath);
+            continue;
+          }
+        } catch { /* fall through to missing */ }
+      }
+      if (debug) {
+        process.stderr.write(`[rclone] missing after batch copy: ${f.relativePath}\n`);
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
  * Upload all cited PDFs from bib entries. Returns a map of bibkey -> FileRef.
  * Skips bibkeys already in the cache.
  *
- * When bibDirs is provided, file paths that don't resolve from the entry's own
- * bib directory are tried against each directory in bibDirs. This handles the
- * common case where sources.bib has `file = {All Papers/...}` paths that are
- * relative to the Paperpile folder, not the project's references/ directory.
+ * For Google Drive paths, uses a single rclone batch copy instead of
+ * per-file existence checks. Trust the bib file — copy everything, then
+ * see what landed.
  */
 export async function uploadCitedFiles(
   bibMap: Map<string, BibEntry>,
@@ -515,39 +579,60 @@ export async function uploadCitedFiles(
   let uploaded = 0, skipped = 0, missing = 0;
   const dirs = opts?.bibDirs ?? [];
 
+  // 1. Resolve all paths (no I/O for Drive paths — just trust the bib)
+  const toResolve: Array<{ bibkey: string; resolvedPath: string }> = [];
+  const noPath: string[] = [];
+
   for (const bibkey of citedBibkeys) {
     if (cache.has(bibkey)) { skipped++; continue; }
-
     const entry = bibMap.get(bibkey);
+    if (!entry?.filePath && !entry?.fileRelPath) {
+      noPath.push(bibkey);
+      continue;
+    }
+    const resolvedPath = resolveFileAcrossDirs(entry, dirs, opts?.debug);
+    if (resolvedPath) {
+      toResolve.push({ bibkey, resolvedPath });
+    } else {
+      noPath.push(bibkey);
+    }
+  }
 
-    // Try PDF file path from bib entry (with cross-directory fallback).
-    // Wraps statSync/uploadFile in try-catch to handle Google Drive FUSE
-    // errors (EDEADLK) gracefully.
-    if (entry?.filePath || entry?.fileRelPath) {
-      try {
-        const resolvedPath = entry ? resolveFileAcrossDirs(entry, dirs, opts?.debug) : null;
-        if (resolvedPath) {
-          const localPath = ensureLocal(resolvedPath, opts?.debug);
-          const ref = await uploadFile(localPath, { displayName: bibkey });
-          cache.set(bibkey, ref);
-          uploaded++;
-          if (opts?.debug) {
-            process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
-          }
-          continue;
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        process.stderr.write(
-          `[gemini] WARNING: failed to read/upload PDF for ${bibkey}: ${msg}\n`,
-        );
+  // 2. Batch-copy Drive files locally (one rclone call)
+  const localPaths = ensureLocalBatch(toResolve, opts?.debug);
+
+  // 3. Upload each local file to Gemini
+  for (const { bibkey } of toResolve) {
+    const localPath = localPaths.get(bibkey);
+    if (!localPath) {
+      missing++;
+      if (opts?.debug) {
+        process.stderr.write(`[gemini] no local file for ${bibkey} after batch copy\n`);
       }
+      continue;
     }
+    try {
+      const ref = await uploadFile(localPath, { displayName: bibkey });
+      cache.set(bibkey, ref);
+      uploaded++;
+      if (opts?.debug) {
+        process.stderr.write(`[gemini] uploaded ${bibkey}: ${ref.name}\n`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      process.stderr.write(
+        `[gemini] WARNING: failed to upload ${bibkey}: ${msg}\n`,
+      );
+      missing++;
+    }
+  }
 
-    missing++;
-    if (opts?.debug) {
-      process.stderr.write(`[gemini] no source found for ${bibkey}\n`);
-    }
+  // 4. Count entries with no file path at all
+  missing += noPath.length;
+  if (opts?.debug && noPath.length > 0) {
+    process.stderr.write(
+      `[gemini] ${noPath.length} bibkeys have no file path: ${noPath.slice(0, 5).join(", ")}${noPath.length > 5 ? "..." : ""}\n`,
+    );
   }
 
   return { uploaded, skipped, missing };
