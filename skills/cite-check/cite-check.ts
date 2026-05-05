@@ -34,8 +34,6 @@ import {
   uploadCitedFiles,
   parseBibFile,
   queryCitation,
-  submitBatchCiteCheck,
-  queryCitationsConcurrently,
   resolveFileAcrossDirs,
   ensureLocal,
   ensureLocalBatch,
@@ -43,15 +41,23 @@ import {
   saveManifest,
   restoreFromManifest,
   updateManifest,
-  verifyFileRef,
+  createOrReuseStore,
+  importToStore,
+  computeSourceHash,
+  queryCitationFileSearch,
+  submitBatchFileSearch,
+  buildMetadataFilter,
+  saveStoreState,
+  loadStoreState,
   type Status,
   type BibEntry,
-  type BatchRequest,
   type FileRef,
   type Manifest,
+  type StoreState,
+  type FileSearchBatchRequest,
 } from "./gemini.js";
 import { extractCitations, type Citation } from "./cite-extract.js";
-import { verifyGrounding } from "./grounding.js";
+import { verifyGrounding, verifyGroundingWithFallback } from "./grounding.js";
 
 // ---------------------------------------------------------------------------
 // Helpers (formerly imported from librarian-cli internals).
@@ -609,46 +615,67 @@ export async function cmdCiteCheck(
     return missingCount > 0 ? 1 : 0;
   }
 
-  // 2. Upload cited PDFs via Files API (with persistent manifest).
-  const manifestPath = join(draftsDir, ".cite-check-store.json");
-  const manifest = loadManifest(manifestPath);
-  const fileCache = new Map<string, FileRef>();
+  // 2. Create or reuse File Search store, import cited files.
+  const storeStatePath = join(draftsDir, ".cite-check-store.json");
+  let storeName = "";
   const bibDirs = resolvedBibPaths.map((p) => dirname(p));
+  // Track which bibkeys are importable (have file paths) for NOT_IN_STORE logic
+  const importableBibkeys = new Set<string>();
 
   if (!dryRun) {
     try {
-      // Upload PDFs for cited bibkeys
       if (bibMap.size > 0) {
         const citedBibkeys = [...new Set(cites.map((c) => c.bibkey))];
 
-        // Restore valid entries from manifest (skip re-upload for files within 48h TTL).
-        const restored = restoreFromManifest(manifest, fileCache, citedBibkeys);
-        if (restored > 0) {
-          process.stderr.write(
-            `[cite-check] restored ${restored} files from manifest (within 48h TTL)\n`,
-          );
+        // Determine which bibkeys have importable files
+        for (const bibkey of citedBibkeys) {
+          const entry = bibMap.get(bibkey);
+          if (entry && (entry.filePath || entry.fileRelPath)) {
+            const resolved = resolveFileAcrossDirs(entry, bibDirs, debug);
+            if (resolved) {
+              importableBibkeys.add(bibkey);
+            }
+          }
         }
 
-        const remaining = citedBibkeys.filter((k) => !fileCache.has(k));
-        process.stderr.write(
-          `[cite-check] uploading ${remaining.length} of ${citedBibkeys.length} cited sources (${restored} cached)...\n`,
-        );
-        const { uploaded, skipped, missing } = await uploadCitedFiles(
+        const storeResult = await createOrReuseStore({
+          statePath: storeStatePath,
           bibMap,
-          remaining,
-          fileCache,
-          { debug, bibDirs },
-        );
-        process.stderr.write(
-          `[cite-check] uploaded ${uploaded}, ${skipped + restored} cached, ${missing} missing\n`,
-        );
+          citedBibkeys,
+          debug,
+        });
+        storeName = storeResult.storeName;
 
-        // Persist updated manifest
-        const updatedManifest = updateManifest(manifest, fileCache);
-        saveManifest(manifestPath, updatedManifest);
+        if (storeResult.isNew) {
+          // Import all cited files to the new store
+          process.stderr.write(
+            `[cite-check] importing ${citedBibkeys.length} sources to store...\n`,
+          );
+          const importResult = await importToStore({
+            storeName,
+            bibMap,
+            citedBibkeys,
+            bibDirs,
+            debug,
+          });
+          process.stderr.write(
+            `[cite-check] imported ${importResult.imported}, ${importResult.skipped} skipped, ${importResult.missing} missing\n`,
+          );
+
+          // Update store state with imported bibkeys
+          const currentState = loadStoreState(storeStatePath);
+          if (currentState) {
+            currentState.importedBibkeys = [...importableBibkeys];
+            saveStoreState(storeStatePath, currentState);
+          }
+        } else {
+          process.stderr.write(
+            `[cite-check] reusing existing store (sources unchanged)\n`,
+          );
+        }
       }
     } catch (err) {
-      printError(`File upload failed: ${err instanceof Error ? err.message : String(err)}`);
+      printError(`Store setup failed: ${err instanceof Error ? err.message : String(err)}`);
       return 1;
     }
   }
@@ -700,14 +727,12 @@ export async function cmdCiteCheck(
     }
     return 0;
   } else if (batchMode) {
-    // BATCH MODE: single Gemini Batch API job for all citation queries.
-    // Each request has inline fileData references — no cross-contamination
-    // since files are per-request, not shared across the batch job.
-    const batchRequests: BatchRequest[] = [];
+    // BATCH MODE: File Search Batch API job for all citation queries.
+    const batchRequests: FileSearchBatchRequest[] = [];
 
     for (const g of groups) {
-      const inStore = g.cites.filter((c) => fileCache.has(c.bibkey));
-      const notInStore = g.cites.filter((c) => !fileCache.has(c.bibkey));
+      const inStore = g.cites.filter((c) => importableBibkeys.has(c.bibkey));
+      const notInStore = g.cites.filter((c) => !importableBibkeys.has(c.bibkey));
 
       for (const c of notInStore) {
         results.push({
@@ -719,23 +744,26 @@ export async function cmdCiteCheck(
 
       if (inStore.length === 0) continue;
 
-      const refs = inStore.map(c => fileCache.get(c.bibkey)!);
+      const bibkeys = inStore.map((c) => c.bibkey);
       const prompt = buildGroupPrompt(inStore);
-      batchRequests.push({ key: g.key, prompt, fileRefs: refs });
+      batchRequests.push({ key: g.key, bibkeys, prompt });
     }
 
     if (batchRequests.length > 0) {
       process.stderr.write(
-        `[cite-check] batch mode: submitting ${batchRequests.length} queries as Batch API job...\n`,
+        `[cite-check] batch mode: submitting ${batchRequests.length} queries as File Search Batch job...\n`,
       );
 
-      const batchResults = await submitBatchCiteCheck(batchRequests, { debug });
+      const batchResults = await submitBatchFileSearch(batchRequests, {
+        storeName,
+        debug,
+      });
 
       // Map results back to cite groups by key
       const resultByKey = new Map(batchResults.map((r) => [r.key, r]));
 
       for (const g of groups) {
-        const inStore = g.cites.filter((c) => fileCache.has(c.bibkey));
+        const inStore = g.cites.filter((c) => importableBibkeys.has(c.bibkey));
         if (inStore.length === 0) continue;
 
         const batchResult = resultByKey.get(g.key);
@@ -751,16 +779,25 @@ export async function cmdCiteCheck(
           ? `"${cls.supporting_passage.slice(0, 280)}"`
           : cls.explanation.slice(0, 300);
 
-        // Post-hoc grounding: verify the passage exists in source text
-        const grounded = checkGrounding(
-          cls,
-          inStore.map((c) => c.bibkey),
-          bibMap,
-          bibDirs,
-          textCacheDir,
-          debug,
-          g.cites[0]?.signal,
-        );
+        // Post-hoc grounding: use verifyGroundingWithFallback (primary: groundingChunks)
+        const groundingResult = verifyGroundingWithFallback({
+          passage: cls.supporting_passage,
+          groundingChunks: batchResult.groundingChunks,
+          expectedBibkeys: inStore.map((c) => c.bibkey),
+          signal: g.cites[0]?.signal,
+        });
+
+        // Map grounding result to boolean | undefined for backward compat
+        let grounded: boolean | undefined;
+        if (cls.status !== "SUPPORTED" && cls.status !== "PARTIAL") {
+          grounded = undefined;
+        } else if (!cls.supporting_passage || cls.supporting_passage.length < 10) {
+          grounded = undefined;
+        } else if (groundingResult.method === "none") {
+          grounded = undefined;
+        } else {
+          grounded = groundingResult.grounded;
+        }
 
         for (const c of inStore) {
           results.push({ cite: c, status: cls.status, response: snippet, grounded });
@@ -768,14 +805,14 @@ export async function cmdCiteCheck(
       }
     }
   } else if (sequentialMode) {
-    // SEQUENTIAL MODE: query Gemini one group at a time
+    // SEQUENTIAL MODE: query Gemini one group at a time via File Search
     let queryIdx = 0;
     for (const g of groups) {
       const c0 = g.cites[0];
 
-      // 3a. Partition: which bibkeys are uploaded vs not?
-      const inStore = g.cites.filter((c) => fileCache.has(c.bibkey));
-      const notInStore = g.cites.filter((c) => !fileCache.has(c.bibkey));
+      // 3a. Partition: which bibkeys are importable vs not?
+      const inStore = g.cites.filter((c) => importableBibkeys.has(c.bibkey));
+      const notInStore = g.cites.filter((c) => !importableBibkeys.has(c.bibkey));
 
       // Tag NOT_IN_STORE cites immediately.
       for (const c of notInStore) {
@@ -791,11 +828,9 @@ export async function cmdCiteCheck(
 
       queryIdx++;
 
-      // Collect file refs for this group's bibkeys
-      const refs = inStore.map(c => fileCache.get(c.bibkey)!);
-
+      const bibkeys = inStore.map((c) => c.bibkey);
       const prompt = buildGroupPrompt(inStore);
-      const label = inStore.map((c) => c.bibkey).join("+");
+      const label = bibkeys.join("+");
       process.stderr.write(
         `[cite-check] ${queryIdx}/${groups.length} ${label} @ ${relPath(
           c0.file,
@@ -804,7 +839,10 @@ export async function cmdCiteCheck(
       );
 
       try {
-        const geminiResult = await queryCitation(refs, prompt, {
+        const geminiResult = await queryCitationFileSearch({
+          storeName,
+          bibkeys,
+          prompt,
           debug,
           retryModel,
         });
@@ -814,16 +852,25 @@ export async function cmdCiteCheck(
           ? `"${cls.supporting_passage.slice(0, 280)}"`
           : cls.explanation.slice(0, 300);
 
-        // Post-hoc grounding: verify the passage exists in source text
-        const grounded = checkGrounding(
-          cls,
-          inStore.map((c) => c.bibkey),
-          bibMap,
-          bibDirs,
-          textCacheDir,
-          debug,
-          inStore[0]?.signal,
-        );
+        // Post-hoc grounding using verifyGroundingWithFallback
+        const groundingResult = verifyGroundingWithFallback({
+          passage: cls.supporting_passage,
+          groundingChunks: geminiResult.groundingChunks as unknown[],
+          expectedBibkeys: bibkeys,
+          signal: inStore[0]?.signal,
+        });
+
+        // Map grounding result to boolean | undefined for backward compat
+        let grounded: boolean | undefined;
+        if (cls.status !== "SUPPORTED" && cls.status !== "PARTIAL") {
+          grounded = undefined;
+        } else if (!cls.supporting_passage || cls.supporting_passage.length < 10) {
+          grounded = undefined;
+        } else if (groundingResult.method === "none") {
+          grounded = undefined;
+        } else {
+          grounded = groundingResult.grounded;
+        }
 
         // Intentional strict equality: false = verified ungrounded, undefined = not checked
         const groundingTag = grounded === false ? " [UNGROUNDED]" : "";

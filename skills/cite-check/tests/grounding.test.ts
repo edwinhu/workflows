@@ -4,8 +4,11 @@ import {
   normalize,
   bestLcsSpan,
   verifyGrounding,
+  parseGroundingMetadata,
+  verifyGroundingWithFallback,
   type Token,
   type GroundingResult,
+  type FileSearchGroundingResult,
 } from "../grounding";
 
 // ---------------------------------------------------------------------------
@@ -249,5 +252,264 @@ describe("normalize - accent stripping", () => {
     expect(normalize("résumé")).toBe("resume");
     expect(normalize("café")).toBe("cafe");
     expect(normalize("naïve")).toBe("naive");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// File Search grounding metadata parsing
+// ---------------------------------------------------------------------------
+
+describe("parseGroundingMetadata", () => {
+  it("returns not grounded for undefined chunks", () => {
+    const result = parseGroundingMetadata(undefined);
+    expect(result.grounded).toBe(false);
+    expect(result.chunks).toEqual([]);
+    expect(result.supportingText).toBeUndefined();
+    expect(result.sourceBibkey).toBeUndefined();
+  });
+
+  it("returns not grounded for empty array", () => {
+    const result = parseGroundingMetadata([]);
+    expect(result.grounded).toBe(false);
+    expect(result.chunks).toEqual([]);
+  });
+
+  it("extracts text from a single chunk", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Securities fraud requires scienter.",
+          title: "Hu2024-bm.pdf",
+          uri: "gs://bucket/Hu2024-bm.pdf",
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks);
+    expect(result.grounded).toBe(true);
+    expect(result.supportingText).toBe("Securities fraud requires scienter.");
+    expect(result.chunks).toHaveLength(1);
+  });
+
+  it("picks the longest text from multiple chunks", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Short passage.",
+        },
+      },
+      {
+        retrievedContext: {
+          text: "This is a much longer passage that should be selected as the supporting text.",
+        },
+      },
+      {
+        retrievedContext: {
+          text: "Medium length passage here.",
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks);
+    expect(result.grounded).toBe(true);
+    expect(result.supportingText).toBe(
+      "This is a much longer passage that should be selected as the supporting text.",
+    );
+  });
+
+  it("extracts bibkey from customMetadata", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Some passage text.",
+          customMetadata: [
+            { key: "bibkey", stringValue: "Hu2024-bm" },
+            { key: "author", stringValue: "Hu" },
+            { key: "year", numericValue: 2024 },
+          ],
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks);
+    expect(result.grounded).toBe(true);
+    expect(result.sourceBibkey).toBe("Hu2024-bm");
+  });
+
+  it("filters by expected bibkeys", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Passage from source A.",
+          customMetadata: [{ key: "bibkey", stringValue: "SourceA2020" }],
+        },
+      },
+      {
+        retrievedContext: {
+          text: "Passage from source B which is longer than A.",
+          customMetadata: [{ key: "bibkey", stringValue: "SourceB2021" }],
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks, ["SourceA2020"]);
+    expect(result.grounded).toBe(true);
+    expect(result.sourceBibkey).toBe("SourceA2020");
+    // supportingText should come from the matching chunk only
+    expect(result.supportingText).toBe("Passage from source A.");
+  });
+
+  it("returns grounded false when no chunks match expected bibkeys", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Some text from an unrelated source.",
+          customMetadata: [{ key: "bibkey", stringValue: "UnrelatedSource" }],
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks, ["ExpectedBibkey2024"]);
+    expect(result.grounded).toBe(false);
+    expect(result.sourceBibkey).toBeUndefined();
+  });
+
+  it("handles chunks without customMetadata", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "A passage without any metadata.",
+          title: "some-doc.pdf",
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks);
+    expect(result.grounded).toBe(true);
+    expect(result.supportingText).toBe("A passage without any metadata.");
+    expect(result.sourceBibkey).toBeUndefined();
+  });
+
+  it("extracts page number from customMetadata", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Content from page 42.",
+          customMetadata: [
+            { key: "bibkey", stringValue: "Smith2023" },
+            { key: "page", numericValue: 42 },
+          ],
+        },
+      },
+    ];
+    const result = parseGroundingMetadata(chunks);
+    expect(result.pageNumber).toBe(42);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Unified grounding with fallback
+// ---------------------------------------------------------------------------
+
+describe("verifyGroundingWithFallback", () => {
+  const sourceText = `
+    Securities fraud liability under Section 10(b) requires proof of
+    scienter, which the Supreme Court has defined as a mental state
+    embracing intent to deceive, manipulate, or defraud. In Tellabs v.
+    Makor Issues & Rights, the Court held that a securities fraud
+    complaint must state with particularity facts giving rise to a strong
+    inference of scienter.
+  `.trim();
+
+  it("uses file search when chunks present", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Securities fraud requires proof of scienter.",
+          customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+        },
+      },
+    ];
+    const result = verifyGroundingWithFallback({
+      passage: "Securities fraud requires proof of scienter.",
+      groundingChunks: chunks,
+      expectedBibkeys: ["Hu2024-bm"],
+    });
+    expect(result.grounded).toBe(true);
+    expect(result.method).toBe("file-search");
+    expect(result.supportingText).toBe("Securities fraud requires proof of scienter.");
+    expect(result.sourceBibkey).toBe("Hu2024-bm");
+  });
+
+  it("falls back to LCS when no chunks", () => {
+    const passage = "a mental state embracing intent to deceive, manipulate, or defraud";
+    const result = verifyGroundingWithFallback({
+      passage,
+      groundingChunks: [],
+      sourceText,
+    });
+    expect(result.grounded).toBe(true);
+    expect(result.method).toBe("lcs");
+    expect(result.coverage).toBeGreaterThanOrEqual(0.75);
+    expect(result.supportingText).toBeTruthy();
+  });
+
+  it("returns none when no chunks and no source", () => {
+    const result = verifyGroundingWithFallback({
+      passage: "Some claim about something.",
+      groundingChunks: [],
+    });
+    expect(result.grounded).toBe(false);
+    expect(result.method).toBe("none");
+  });
+
+  it("LCS with signal uses relaxed thresholds", () => {
+    // A passage that partially overlaps with source — enough to pass at 0.5 coverage
+    // but would fail at the default 0.75 coverage threshold
+    const passage = "the Supreme Court has defined scienter as intent to deceive in securities wrongdoing cases";
+    const result = verifyGroundingWithFallback({
+      passage,
+      groundingChunks: [],
+      sourceText,
+      signal: "see",
+    });
+    // With relaxed thresholds (0.5 coverage), this should pass
+    expect(result.grounded).toBe(true);
+    expect(result.method).toBe("lcs");
+  });
+
+  it("file search takes priority over LCS", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Securities fraud requires proof of scienter.",
+          customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+        },
+      },
+    ];
+    const result = verifyGroundingWithFallback({
+      passage: "a mental state embracing intent to deceive",
+      groundingChunks: chunks,
+      expectedBibkeys: ["Hu2024-bm"],
+      sourceText, // also provide sourceText — should NOT use LCS
+    });
+    expect(result.grounded).toBe(true);
+    expect(result.method).toBe("file-search");
+  });
+
+  it("falls back when chunks don't match bibkeys", () => {
+    const chunks = [
+      {
+        retrievedContext: {
+          text: "Unrelated text from wrong source.",
+          customMetadata: [{ key: "bibkey", stringValue: "WrongSource2020" }],
+        },
+      },
+    ];
+    const passage = "a mental state embracing intent to deceive, manipulate, or defraud";
+    const result = verifyGroundingWithFallback({
+      passage,
+      groundingChunks: chunks,
+      expectedBibkeys: ["Hu2024-bm"],
+      sourceText,
+    });
+    // chunks exist but don't match expected bibkeys → fall through to LCS
+    expect(result.grounded).toBe(true);
+    expect(result.method).toBe("lcs");
+    expect(result.coverage).toBeGreaterThanOrEqual(0.75);
   });
 });

@@ -83,7 +83,7 @@ bun cite-check.ts ask @Bebchuk2019-uq "do expense ratios fall since 2010?" --bib
 bun cite-check.ts ask @Brav2022-ht "what are retail turnout rates?" --bib paperpile.bib --bib sources.bib
 ```
 
-The `ask` mode uploads the single source PDF, queries Gemini with your question, and prints the answer with supporting passages to stdout. No report is generated.
+The `ask` mode uploads the single source PDF via the legacy Files API (with manifest caching, 48h TTL), queries Gemini with inline file references, and prints the answer with supporting passages to stdout. No File Search store is created and no report is generated.
 
 ### Cross-Directory File Resolution
 
@@ -93,8 +93,8 @@ When multiple `--bib` files are provided, file paths are resolved across all bib
 
 1. **Extract citations** from markdown using pandoc `[@bibkey]` syntax
 2. **Parse bib file** to map bibkeys to PDF file paths via `file` fields
-3. **Upload PDFs** for cited bibkeys only via Gemini Files API (with manifest caching, 48h TTL). Google Drive FUSE paths are copied locally via `rclone` to avoid EDEADLK deadlocks.
-4. **Query Gemini** with structured prompts for each citation, using inline file references
+3. **Create or reuse a File Search Store** — PDFs for cited bibkeys are imported into a persistent Gemini File Search store with bibkey metadata. Google Drive FUSE paths are copied locally via `rclone` to avoid EDEADLK deadlocks. Stores persist across runs (no 48h TTL); if cited sources have not changed, the existing store is reused without re-uploading.
+4. **Query Gemini** with structured prompts for each citation, using the `fileSearch` tool with metadata filtering to scope each query to the relevant source documents
 5. **Classify** each citation as SUPPORTED / PARTIAL / UNSUPPORTED / NOT_IN_STORE / ERROR
 6. **Verify grounding** — for SUPPORTED/PARTIAL results, extract source PDF text via `pymupdf4llm` and run token-level LCS alignment to confirm the passage Gemini quoted actually exists in the source. Ungrounded passages are flagged `[UNGROUNDED]` in the report.
 7. **Write report** to REVIEW-CITES.md
@@ -112,7 +112,7 @@ The `--bib` flag expects a `.bib` file where entries have a `file` field with a 
 }
 ```
 
-All bib entries are parsed. Entries with a `file` field (~95% of Paperpile entries) use PDF upload. Only sources for bibkeys that are actually cited in the drafts are uploaded.
+All bib entries are parsed. Entries with a `file` field (~95% of Paperpile entries) are imported into the File Search store. Only sources for bibkeys that are actually cited in the drafts are imported.
 
 ### Citation Features
 
@@ -132,7 +132,7 @@ REVIEW-CITES.md with:
 
 ## Batch Mode (Default)
 
-By default, all citation queries are submitted as a single Gemini Batch API job. Each request uses inline file references (fileData), so there is no cross-contamination between queries.
+By default, all citation queries are submitted as a single Gemini Batch API job using the File Search tool with metadata filtering. Each query is scoped to the relevant source documents via bibkey metadata, so there is no cross-contamination between queries.
 
 ```bash
 # Default (batch)
@@ -141,6 +141,8 @@ bun cite-check.ts --bib paperpile.bib --drafts ./drafts
 # Sequential (one query at a time, useful for debugging)
 bun cite-check.ts --bib paperpile.bib --drafts ./drafts --sequential
 ```
+
+The `--sequential` flag runs each query as an individual `generateContent` call instead of a batch job. This is useful for debugging or when batch jobs hit rate limits.
 
 ## Audit Mode
 
@@ -173,9 +175,9 @@ PDF files stored on Google Drive Desktop's FUSE mount (`~/Google Drive/My Drive/
 
 ```
 cite-extract.ts          -- Pure citation extraction (no I/O)
-gemini.ts                -- Gemini Files API wrapper (upload, query, rclone FUSE bypass)
+gemini.ts                -- Gemini API wrapper (File Search store CRUD, query, legacy upload for ask mode, rclone FUSE bypass)
 grounding.ts             -- Post-hoc passage grounding (tokenizer, LCS aligner)
 extract-pdf-text.py      -- PDF text extraction via pymupdf4llm
 materialize-sources.ts   -- Copy Paperpile PDFs + Readwise articles to references/
-cite-check.ts            -- CLI orchestrator (extract -> upload -> query -> ground -> report)
+cite-check.ts            -- CLI orchestrator (extract -> import -> query -> ground -> report)
 ```

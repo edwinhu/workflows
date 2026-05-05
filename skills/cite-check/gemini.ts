@@ -6,11 +6,12 @@
  * in generateContent calls so Gemini sees the full document.
  */
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { readFileSync, statSync, writeFileSync, existsSync, mkdirSync, realpathSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
+import { createHash } from "node:crypto";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -141,6 +142,247 @@ export function updateManifest(
     }
   }
   return updated;
+}
+
+// ---------------------------------------------------------------------------
+// File Search Store CRUD (replaces manifest/TTL system)
+// ---------------------------------------------------------------------------
+
+/** On-disk store state file (replaces Manifest). */
+export interface StoreState {
+  storeName: string;       // e.g. "fileSearchStores/abc-123"
+  sourceHash: string;      // SHA-256 of sorted bibkeys + file mtimes
+  importedBibkeys: string[]; // bibkeys successfully imported
+  createdAt: number;       // epoch ms
+}
+
+/**
+ * Compute a SHA-256 hash of the cited sources to detect when they change.
+ * Sorts bibkeys alphabetically and includes bibkey + filePath for each.
+ */
+export function computeSourceHash(bibMap: Map<string, BibEntry>, citedBibkeys: string[]): string {
+  const sorted = [...citedBibkeys].sort();
+  const parts: string[] = [];
+  for (const bibkey of sorted) {
+    const entry = bibMap.get(bibkey);
+    const filePath = entry?.filePath ?? "";
+    parts.push(`${bibkey}:${filePath}`);
+  }
+  return createHash("sha256").update(parts.join("\n")).digest("hex");
+}
+
+/** Load store state from disk. Returns null if missing or invalid. */
+export function loadStoreState(path: string): StoreState | null {
+  try {
+    if (!existsSync(path)) return null;
+    const raw = readFileSync(path, "utf-8");
+    const parsed = JSON.parse(raw);
+    // Validate required fields
+    if (
+      typeof parsed.storeName !== "string" ||
+      typeof parsed.sourceHash !== "string" ||
+      !Array.isArray(parsed.importedBibkeys) ||
+      typeof parsed.createdAt !== "number"
+    ) {
+      return null;
+    }
+    return parsed as StoreState;
+  } catch {
+    return null;
+  }
+}
+
+/** Save store state to disk. */
+export function saveStoreState(path: string, state: StoreState): void {
+  writeFileSync(path, JSON.stringify(state, null, 2) + "\n", "utf-8");
+}
+
+/**
+ * Create a new file search store or reuse an existing one if sources haven't changed.
+ *
+ * - If existing state matches current hash → reuse (no API calls)
+ * - If existing state has different hash → delete old store, create new
+ * - If no state → create new store
+ */
+export async function createOrReuseStore(opts: {
+  statePath: string;
+  bibMap: Map<string, BibEntry>;
+  citedBibkeys: string[];
+  debug?: boolean;
+}): Promise<{ storeName: string; isNew: boolean }> {
+  const { statePath, bibMap, citedBibkeys, debug } = opts;
+  const currentHash = computeSourceHash(bibMap, citedBibkeys);
+  const existing = loadStoreState(statePath);
+
+  // Reuse if hash matches
+  if (existing && existing.sourceHash === currentHash) {
+    if (debug) {
+      process.stderr.write(`[store] reusing existing store: ${existing.storeName}\n`);
+    }
+    return { storeName: existing.storeName, isNew: false };
+  }
+
+  // Delete old store if hash differs
+  if (existing) {
+    if (debug) {
+      process.stderr.write(`[store] hash changed, deleting old store: ${existing.storeName}\n`);
+    }
+    await deleteStore(existing.storeName);
+  }
+
+  // Create new store
+  const client = getClient() as unknown as ClientWithStores;
+  const store = await client.fileSearchStores.create({
+    config: { displayName: `cite-check-${Date.now()}` },
+  });
+
+  const storeName = store.name;
+  if (debug) {
+    process.stderr.write(`[store] created new store: ${storeName}\n`);
+  }
+
+  // Save state
+  const newState: StoreState = {
+    storeName,
+    sourceHash: currentHash,
+    importedBibkeys: [],
+    createdAt: Date.now(),
+  };
+  saveStoreState(statePath, newState);
+
+  return { storeName, isNew: true };
+}
+
+/** Internal type for the fileSearchStores API surface. */
+interface ClientWithStores {
+  fileSearchStores: {
+    create: (opts: Record<string, unknown>) => Promise<{ name: string }>;
+    delete: (opts: Record<string, unknown>) => Promise<void>;
+  };
+}
+
+/**
+ * Delete a file search store. Swallows errors (store may already be gone).
+ */
+export async function deleteStore(storeName: string): Promise<void> {
+  try {
+    const client = getClient() as unknown as ClientWithStores;
+    await client.fileSearchStores.delete({
+      name: storeName,
+      config: { force: true },
+    });
+  } catch {
+    // Swallow — store may already be deleted
+  }
+}
+
+// ---------------------------------------------------------------------------
+// File Search Store: import files
+// ---------------------------------------------------------------------------
+
+/** Internal type for the fileSearchStores upload API surface. */
+interface ClientWithStoreUpload {
+  fileSearchStores: {
+    uploadToFileSearchStore: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
+  };
+  operations: {
+    get: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
+  };
+}
+
+/**
+ * Import files into a File Search Store with custom bibkey metadata.
+ * Resolves file paths using existing cross-directory logic and ensures
+ * Google Drive files are local before uploading.
+ */
+export async function importToStore(opts: {
+  storeName: string;
+  bibMap: Map<string, BibEntry>;
+  citedBibkeys: string[];
+  alreadyImported?: string[];
+  bibDirs?: string[];
+  debug?: boolean;
+  _pollIntervalMs?: number;
+}): Promise<{ imported: number; skipped: number; missing: number }> {
+  const { storeName, bibMap, citedBibkeys, debug, _pollIntervalMs = 3000 } = opts;
+  const alreadyImported = new Set(opts.alreadyImported ?? []);
+  const dirs = opts.bibDirs ?? [];
+
+  let imported = 0;
+  let skipped = 0;
+  let missing = 0;
+
+  // 1. Filter out already-imported bibkeys
+  const toProcess: string[] = [];
+  for (const bibkey of citedBibkeys) {
+    if (alreadyImported.has(bibkey)) {
+      skipped++;
+    } else {
+      toProcess.push(bibkey);
+    }
+  }
+
+  // 2. Resolve file paths
+  const toResolve: Array<{ bibkey: string; resolvedPath: string }> = [];
+  for (const bibkey of toProcess) {
+    const entry = bibMap.get(bibkey);
+    if (!entry) {
+      missing++;
+      continue;
+    }
+    const resolved = resolveFileAcrossDirs(entry, dirs, debug);
+    if (!resolved) {
+      missing++;
+      continue;
+    }
+    toResolve.push({ bibkey, resolvedPath: resolved });
+  }
+
+  // 3. Ensure Google Drive files are local
+  const localPaths = ensureLocalBatch(toResolve, debug);
+
+  // 4. Upload each file to the store
+  const client = getClient() as unknown as ClientWithStoreUpload;
+
+  for (const { bibkey } of toResolve) {
+    const localPath = localPaths.get(bibkey);
+    if (!localPath) {
+      missing++;
+      continue;
+    }
+
+    const entry = bibMap.get(bibkey)!;
+    const ext = localPath.split(".").pop()?.toLowerCase();
+    const mimeType = ext === "md" ? "text/markdown" : "application/pdf";
+
+    let operation = await client.fileSearchStores.uploadToFileSearchStore({
+      fileSearchStoreName: storeName,
+      file: localPath,
+      config: {
+        displayName: bibkey,
+        mimeType,
+        customMetadata: [
+          { key: "bibkey", stringValue: bibkey },
+          { key: "author", stringValue: entry.author ?? "" },
+          { key: "year", numericValue: entry.year ? parseInt(entry.year) : 0 },
+        ],
+      },
+    });
+
+    // 5. Wait for operation to complete
+    while (!operation.done) {
+      await new Promise(r => setTimeout(r, _pollIntervalMs));
+      operation = await client.operations.get({ name: operation.name });
+    }
+
+    imported++;
+
+    if (debug) {
+      process.stderr.write(`[store] imported ${bibkey} → ${storeName}\n`);
+    }
+  }
+
+  return { imported, skipped, missing };
 }
 
 // ---------------------------------------------------------------------------
@@ -648,15 +890,16 @@ export async function uploadCitedFiles(
 // Batch API types
 // ---------------------------------------------------------------------------
 
-export interface BatchRequest {
-  key: string; // unique key to match results back to cite groups
+export interface FileSearchBatchRequest {
+  key: string;           // unique key to match results
+  bibkeys: string[];     // bibkeys to filter against
   prompt: string;
-  fileRefs: FileRef[];
 }
 
-export interface BatchResult {
+export interface FileSearchBatchResult {
   key: string;
   classification: ClassifyResult;
+  groundingChunks?: any[];
   error?: string;
 }
 
@@ -684,185 +927,6 @@ export function extractResponseText(response: unknown): string {
       .join("");
   }
   return "";
-}
-
-// ---------------------------------------------------------------------------
-// Batch cite-check
-// ---------------------------------------------------------------------------
-
-/**
- * Submit all citation queries as a single Gemini Batch API job.
- * Returns results keyed by the request key.
- *
- * Now uses inline file references (fileData) instead of fileSearch tools,
- * which means we can use responseMimeType + responseSchema for structured output.
- */
-export async function submitBatchCiteCheck(
-  requests: BatchRequest[],
-  opts?: { model?: string; debug?: boolean; pollIntervalMs?: number },
-): Promise<BatchResult[]> {
-  const client = getClient();
-  const model = opts?.model ?? DEFAULT_MODEL;
-  const pollInterval = opts?.pollIntervalMs ?? 30_000;
-
-  // Build inline requests array
-  const inlineRequests = requests.map((req) => {
-    const parts: Array<Record<string, unknown>> = req.fileRefs.map(ref => ({
-      fileData: { fileUri: ref.uri, mimeType: ref.mimeType },
-    }));
-    parts.push({ text: req.prompt });
-
-    return {
-      metadata: { key: req.key },
-      contents: [{ parts, role: "user" as const }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            status: { type: Type.STRING, enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] },
-            supporting_passage: { type: Type.STRING },
-            explanation: { type: Type.STRING },
-          },
-          required: ["status", "supporting_passage", "explanation"],
-        },
-      },
-    };
-  });
-
-  if (opts?.debug) {
-    process.stderr.write(`[gemini-batch] submitting ${inlineRequests.length} requests as batch job\n`);
-  }
-
-  // Submit batch job
-  const batchJob = await client.batches.create({
-    model,
-    src: inlineRequests,
-    config: {
-      displayName: `cite-check-batch-${Date.now()}`,
-    },
-  });
-
-  if (opts?.debug) {
-    process.stderr.write(`[gemini-batch] job created: ${batchJob.name}\n`);
-  }
-
-  // Poll for completion
-  const completedStates = new Set([
-    "JOB_STATE_SUCCEEDED",
-    "JOB_STATE_FAILED",
-    "JOB_STATE_CANCELLED",
-    "JOB_STATE_EXPIRED",
-  ]);
-
-  let job = batchJob;
-  while (!completedStates.has(job.state as string)) {
-    if (opts?.debug) {
-      process.stderr.write(`[gemini-batch] state: ${job.state}, waiting ${pollInterval / 1000}s...\n`);
-    }
-    await new Promise((r) => setTimeout(r, pollInterval));
-    job = await client.batches.get({ name: job.name! });
-  }
-
-  if (opts?.debug) {
-    process.stderr.write(`[gemini-batch] job finished: ${job.state}\n`);
-  }
-
-  if (job.state !== "JOB_STATE_SUCCEEDED") {
-    throw new Error(`Batch job failed with state: ${job.state}`);
-  }
-
-  // Parse results from inline responses
-  const results: BatchResult[] = [];
-  const responses = (job as Record<string, unknown> & { dest?: { inlinedResponses?: unknown[] } }).dest?.inlinedResponses ?? [];
-
-  for (let i = 0; i < responses.length; i++) {
-    const inlineResponse = responses[i] as Record<string, unknown>;
-    // Use metadata.key echoed back by the API for order-independent matching.
-    // Fall back to positional requests[i] only as a last resort (should not happen).
-    const key = (inlineResponse.metadata as Record<string, string> | undefined)?.key
-      ?? requests[i]?.key
-      ?? `unknown-${i}`;
-
-    // Raw response debug logging (before any parsing)
-    if (opts?.debug) {
-      process.stderr.write(`[gemini-batch] raw response ${i} (${key}): ${JSON.stringify(inlineResponse, null, 2).slice(0, 500)}\n`);
-    }
-
-    if (inlineResponse.error) {
-      results.push({
-        key,
-        classification: {
-          status: "ERROR",
-          supporting_passage: "",
-          explanation: `Batch error: ${JSON.stringify(inlineResponse.error)}`,
-        },
-        error: JSON.stringify(inlineResponse.error),
-      });
-      continue;
-    }
-
-    const responseText = extractResponseText(inlineResponse.response);
-
-    if (opts?.debug) {
-      process.stderr.write(`[gemini-batch] response ${i} (${key}): ${responseText.slice(0, 300)}\n`);
-    }
-
-    if (!responseText) {
-      results.push({
-        key,
-        classification: { status: "ERROR", supporting_passage: "", explanation: "Empty response" },
-      });
-      continue;
-    }
-
-    // Parse JSON structured output
-    let classification: ClassifyResult;
-    try {
-      const parsed = JSON.parse(responseText);
-      classification = {
-        status: parsed.status ?? "ERROR",
-        supporting_passage: parsed.supporting_passage ?? "",
-        explanation: parsed.explanation ?? "",
-      };
-    } catch {
-      classification = {
-        status: "ERROR",
-        supporting_passage: "",
-        explanation: `Failed to parse JSON: ${responseText.slice(0, 200)}`,
-      };
-    }
-
-    results.push({ key, classification });
-  }
-
-  // Retry deadline errors via individual generateContent calls
-  const deadlineRetries: Array<{ index: number; request: BatchRequest }> = [];
-  for (let i = 0; i < results.length; i++) {
-    if (results[i].classification.status === "ERROR" &&
-        results[i].classification.explanation.includes("Deadline")) {
-      deadlineRetries.push({ index: i, request: requests[i] });
-    }
-  }
-
-  if (deadlineRetries.length > 0) {
-    if (opts?.debug) {
-      process.stderr.write(`[gemini-batch] retrying ${deadlineRetries.length} deadline errors via generateContent...\n`);
-    }
-    for (const { index, request } of deadlineRetries) {
-      try {
-        const retryResult = await queryCitation(request.fileRefs, request.prompt, { model: opts?.model, debug: opts?.debug });
-        results[index] = {
-          key: request.key,
-          classification: retryResult.classification,
-        };
-      } catch {
-        // Keep the original ERROR result
-      }
-    }
-  }
-
-  return results;
 }
 
 // ---------------------------------------------------------------------------
@@ -986,49 +1050,268 @@ export async function queryCitation(
 }
 
 // ---------------------------------------------------------------------------
-// Concurrent batch query (isolated per-request, no cross-contamination)
+// File Search query (replaces inline fileData queries)
 // ---------------------------------------------------------------------------
 
 /**
- * Run multiple citation queries concurrently using isolated generateContent
- * calls. Each request gets its own HTTP call, so file references cannot leak
- * across queries (unlike the Batch API which shares file context within a job).
- *
- * Concurrency is capped to avoid rate limits.
+ * Build a metadata filter string for the fileSearch tool.
+ * Single bibkey: 'bibkey="Hu2024-bm"'
+ * Multiple bibkeys: 'bibkey="A" OR bibkey="B"'
  */
-export async function queryCitationsConcurrently(
-  requests: BatchRequest[],
-  opts?: { model?: string; debug?: boolean; concurrency?: number; retryModel?: string },
-): Promise<BatchResult[]> {
-  const concurrency = opts?.concurrency ?? 5;
-  const results: BatchResult[] = new Array(requests.length);
+export function buildMetadataFilter(bibkeys: string[]): string {
+  return bibkeys.map(k => `bibkey="${k}"`).join(" OR ");
+}
 
-  // Process in chunks of `concurrency`
-  for (let i = 0; i < requests.length; i += concurrency) {
-    const chunk = requests.slice(i, i + concurrency);
-    const promises = chunk.map(async (req, j) => {
-      try {
-        const result = await queryCitation(req.fileRefs, req.prompt, opts);
-        results[i + j] = { key: req.key, classification: result.classification };
-      } catch (err) {
-        results[i + j] = {
-          key: req.key,
-          classification: {
-            status: "ERROR",
-            supporting_passage: "",
-            explanation: `Query error: ${err instanceof Error ? err.message : String(err)}`,
-          },
-          error: err instanceof Error ? err.message : String(err),
-        };
-      }
-    });
-    await Promise.all(promises);
+/**
+ * Query a citation using the fileSearch tool with metadata filtering,
+ * instead of inline fileData parts. The store must already contain
+ * the relevant documents with bibkey metadata.
+ */
+export async function queryCitationFileSearch(opts: {
+  storeName: string;
+  bibkeys: string[];
+  prompt: string;
+  model?: string;
+  debug?: boolean;
+  retryModel?: string;
+}): Promise<{ classification: ClassifyResult; durationMs: number; groundingChunks?: unknown[] }> {
+  const client = getClient();
+  const model = opts.model ?? DEFAULT_MODEL;
+  const t0 = Date.now();
+  const metadataFilter = buildMetadataFilter(opts.bibkeys);
 
-    if (opts?.debug && i + concurrency < requests.length) {
+  if (opts.debug) {
+    process.stderr.write(
+      `[gemini-filesearch] query model=${model} store=${opts.storeName} filter=${metadataFilter}\n`,
+    );
+  }
+
+  const response = await client.models.generateContent({
+    model,
+    contents: [{ parts: [{ text: opts.prompt }], role: "user" }],
+    config: {
+      tools: [{
+        fileSearch: {
+          fileSearchStoreNames: [opts.storeName],
+          metadataFilter,
+        },
+      }],
+      responseMimeType: "application/json",
+      responseJsonSchema: CITE_CHECK_SCHEMA,
+    },
+  });
+
+  const durationMs = Date.now() - t0;
+  const classification = parseClassification(response.text);
+  const groundingChunks = (response as Record<string, unknown> & {
+    candidates?: Array<{ groundingMetadata?: { groundingChunks?: unknown[] } }>;
+  }).candidates?.[0]?.groundingMetadata?.groundingChunks;
+
+  // Retry UNSUPPORTED with a stronger model if configured
+  if (classification.status === "UNSUPPORTED" && opts.retryModel) {
+    if (opts.debug) {
       process.stderr.write(
-        `[gemini] completed ${Math.min(i + concurrency, requests.length)}/${requests.length} queries\n`,
+        `[gemini-filesearch] UNSUPPORTED → retrying with ${opts.retryModel}\n`,
       );
     }
+    const retryResponse = await client.models.generateContent({
+      model: opts.retryModel,
+      contents: [{ parts: [{ text: opts.prompt }], role: "user" }],
+      config: {
+        tools: [{
+          fileSearch: {
+            fileSearchStoreNames: [opts.storeName],
+            metadataFilter,
+          },
+        }],
+        temperature: 0,
+        responseMimeType: "application/json",
+        responseJsonSchema: CITE_CHECK_SCHEMA,
+      },
+    });
+
+    const retryClassification = parseClassification(retryResponse.text);
+    const retryGroundingChunks = (retryResponse as Record<string, unknown> & {
+      candidates?: Array<{ groundingMetadata?: { groundingChunks?: unknown[] } }>;
+    }).candidates?.[0]?.groundingMetadata?.groundingChunks;
+    const totalMs = Date.now() - t0;
+
+    if (retryClassification.status !== "UNSUPPORTED") {
+      if (opts.debug) {
+        process.stderr.write(
+          `[gemini-filesearch] retry overturned → ${retryClassification.status} (${totalMs - durationMs}ms)\n`,
+        );
+      }
+      return { classification: retryClassification, durationMs: totalMs, groundingChunks: retryGroundingChunks };
+    }
+    // Both said UNSUPPORTED — confirmed
+    return { classification, durationMs: totalMs, groundingChunks };
+  }
+
+  return { classification, durationMs, groundingChunks };
+}
+
+// ---------------------------------------------------------------------------
+// Batch File Search query
+// ---------------------------------------------------------------------------
+
+/**
+ * Submit citation queries as a batch job using the fileSearch tool.
+ * Each request uses metadata filtering to scope the search to specific bibkeys.
+ * Falls back to concurrent queryCitationFileSearch() for individual parse failures.
+ */
+export async function submitBatchFileSearch(
+  requests: FileSearchBatchRequest[],
+  opts: { storeName: string; model?: string; debug?: boolean; pollIntervalMs?: number },
+): Promise<FileSearchBatchResult[]> {
+  const client = getClient();
+  const model = opts.model ?? DEFAULT_MODEL;
+  const pollInterval = opts.pollIntervalMs ?? 30_000;
+
+  // Build inline requests array with fileSearch tool config
+  const inlineRequests = requests.map((req) => ({
+    metadata: { key: req.key },
+    contents: [{ parts: [{ text: req.prompt }], role: "user" as const }],
+    config: {
+      tools: [{
+        fileSearch: {
+          fileSearchStoreNames: [opts.storeName],
+          metadataFilter: buildMetadataFilter(req.bibkeys),
+        },
+      }],
+      responseMimeType: "application/json",
+      responseJsonSchema: CITE_CHECK_SCHEMA,
+    },
+  }));
+
+  if (opts.debug) {
+    process.stderr.write(`[gemini-batch-filesearch] submitting ${inlineRequests.length} requests as batch job\n`);
+  }
+
+  // Submit batch job
+  const batchJob = await client.batches.create({
+    model,
+    src: inlineRequests,
+    config: {
+      displayName: `cite-check-filesearch-batch-${Date.now()}`,
+    },
+  });
+
+  if (opts.debug) {
+    process.stderr.write(`[gemini-batch-filesearch] job created: ${batchJob.name}\n`);
+  }
+
+  // Poll for completion
+  const completedStates = new Set([
+    "JOB_STATE_SUCCEEDED",
+    "JOB_STATE_FAILED",
+    "JOB_STATE_CANCELLED",
+    "JOB_STATE_EXPIRED",
+  ]);
+
+  let job = batchJob;
+  while (!completedStates.has(job.state as string)) {
+    if (opts.debug) {
+      process.stderr.write(`[gemini-batch-filesearch] state: ${job.state}, waiting ${pollInterval / 1000}s...\n`);
+    }
+    await new Promise((r) => setTimeout(r, pollInterval));
+    job = await client.batches.get({ name: job.name! });
+  }
+
+  if (opts.debug) {
+    process.stderr.write(`[gemini-batch-filesearch] job finished: ${job.state}\n`);
+  }
+
+  if (job.state !== "JOB_STATE_SUCCEEDED") {
+    throw new Error(`Batch file search job failed with state: ${job.state}`);
+  }
+
+  // Parse results from inline responses
+  const results: FileSearchBatchResult[] = [];
+  const responses = (job as Record<string, unknown> & { dest?: { inlinedResponses?: unknown[] } }).dest?.inlinedResponses ?? [];
+
+  for (let i = 0; i < responses.length; i++) {
+    const inlineResponse = responses[i] as Record<string, unknown>;
+    const key = (inlineResponse.metadata as Record<string, string> | undefined)?.key
+      ?? requests[i]?.key
+      ?? `unknown-${i}`;
+
+    if (opts.debug) {
+      process.stderr.write(`[gemini-batch-filesearch] raw response ${i} (${key}): ${JSON.stringify(inlineResponse, null, 2).slice(0, 500)}\n`);
+    }
+
+    if (inlineResponse.error) {
+      results.push({
+        key,
+        classification: {
+          status: "ERROR",
+          supporting_passage: "",
+          explanation: `Batch error: ${JSON.stringify(inlineResponse.error)}`,
+        },
+        error: JSON.stringify(inlineResponse.error),
+      });
+      continue;
+    }
+
+    const response = inlineResponse.response as Record<string, unknown> | undefined;
+    const responseText = extractResponseText(response);
+
+    if (opts.debug) {
+      process.stderr.write(`[gemini-batch-filesearch] response ${i} (${key}): ${responseText.slice(0, 300)}\n`);
+    }
+
+    // Extract grounding chunks
+    const candidates = (response as Record<string, unknown> & {
+      candidates?: Array<{ groundingMetadata?: { groundingChunks?: unknown[] } }>;
+    })?.candidates;
+    const groundingChunks = candidates?.[0]?.groundingMetadata?.groundingChunks;
+
+    if (!responseText) {
+      results.push({
+        key,
+        classification: { status: "ERROR", supporting_passage: "", explanation: "Empty response" },
+        groundingChunks,
+      });
+      continue;
+    }
+
+    // Parse JSON structured output
+    const classification = parseClassification(responseText);
+    results.push({ key, classification, groundingChunks });
+  }
+
+  // Retry parse failures via concurrent queryCitationFileSearch
+  const parseRetries: Array<{ index: number; request: FileSearchBatchRequest }> = [];
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].classification.status === "ERROR" &&
+        results[i].classification.explanation.startsWith("Failed to parse")) {
+      parseRetries.push({ index: i, request: requests[i] });
+    }
+  }
+
+  if (parseRetries.length > 0) {
+    if (opts.debug) {
+      process.stderr.write(`[gemini-batch-filesearch] retrying ${parseRetries.length} parse failures via queryCitationFileSearch...\n`);
+    }
+    const retryPromises = parseRetries.map(async ({ index, request }) => {
+      try {
+        const retryResult = await queryCitationFileSearch({
+          storeName: opts.storeName,
+          bibkeys: request.bibkeys,
+          prompt: request.prompt,
+          model: opts.model,
+          debug: opts.debug,
+        });
+        results[index] = {
+          key: request.key,
+          classification: retryResult.classification,
+          groundingChunks: retryResult.groundingChunks as any[],
+        };
+      } catch {
+        // Keep the original ERROR result
+      }
+    });
+    await Promise.all(retryPromises);
   }
 
   return results;

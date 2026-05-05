@@ -610,7 +610,463 @@ describe("cmdCiteCheck cross-directory audit", () => {
   });
 });
 
-describe("cmdCiteCheck manifest persistence", () => {
+describe("cmdCiteCheck File Search Store pipeline", () => {
+  const tmpBase = "/tmp/cite-check-filesearch-integ-test";
+
+  afterEach(() => {
+    __setGeminiClientForTesting(null);
+    try {
+      rmSync(tmpBase, { recursive: true, force: true });
+    } catch {}
+  });
+
+  /**
+   * Build a mock client that supports File Search Store operations:
+   * - fileSearchStores.create / delete / uploadToFileSearchStore
+   * - operations.get
+   * - models.generateContent (returns fileSearch response with grounding)
+   * - batches.create / get (batch fileSearch mode)
+   */
+  function buildFileSearchMockClient(opts?: {
+    onStoreCreate?: () => void;
+    onStoreUpload?: (bibkey: string) => void;
+    batchResponses?: Array<{ key: string; status: string; passage: string; explanation: string }>;
+    sequentialResponse?: { status: string; passage: string; explanation: string };
+  }) {
+    return {
+      fileSearchStores: {
+        create: async () => {
+          opts?.onStoreCreate?.();
+          return { name: "fileSearchStores/test-store-123" };
+        },
+        delete: async () => {},
+        uploadToFileSearchStore: async (uploadOpts: any) => {
+          const displayName = uploadOpts.config?.displayName ?? "unknown";
+          opts?.onStoreUpload?.(displayName);
+          return { done: true, name: "operations/upload-done" };
+        },
+      },
+      operations: {
+        get: async () => ({ done: true }),
+      },
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify(opts?.sequentialResponse ?? {
+            status: "SUPPORTED",
+            supporting_passage: "expense ratios declined by 40%",
+            explanation: "The source directly supports this claim.",
+          }),
+          candidates: [{
+            groundingMetadata: {
+              groundingChunks: [{
+                retrievedContext: {
+                  text: "expense ratios declined by 40% over the decade",
+                  title: "paper.pdf",
+                  customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+                },
+              }],
+            },
+          }],
+        }),
+      },
+      batches: {
+        create: async () => ({
+          name: "batches/test-batch-123",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: (opts?.batchResponses ?? [{
+              key: "",
+              status: "SUPPORTED",
+              passage: "expense ratios declined by 40%",
+              explanation: "The source supports this claim.",
+            }]).map((r) => ({
+              metadata: { key: r.key },
+              response: {
+                text: JSON.stringify({
+                  status: r.status,
+                  supporting_passage: r.passage,
+                  explanation: r.explanation,
+                }),
+                candidates: [{
+                  content: {
+                    parts: [{ text: JSON.stringify({
+                      status: r.status,
+                      supporting_passage: r.passage,
+                      explanation: r.explanation,
+                    }) }],
+                  },
+                  groundingMetadata: {
+                    groundingChunks: [{
+                      retrievedContext: {
+                        text: r.passage,
+                        title: "paper.pdf",
+                        customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+                      },
+                    }],
+                  },
+                }],
+              },
+            })),
+          },
+        }),
+        get: async () => ({
+          name: "batches/test-batch-123",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: (opts?.batchResponses ?? [{
+              key: "",
+              status: "SUPPORTED",
+              passage: "expense ratios declined by 40%",
+              explanation: "The source supports this claim.",
+            }]).map((r) => ({
+              metadata: { key: r.key },
+              response: {
+                text: JSON.stringify({
+                  status: r.status,
+                  supporting_passage: r.passage,
+                  explanation: r.explanation,
+                }),
+                candidates: [{
+                  content: {
+                    parts: [{ text: JSON.stringify({
+                      status: r.status,
+                      supporting_passage: r.passage,
+                      explanation: r.explanation,
+                    }) }],
+                  },
+                  groundingMetadata: {
+                    groundingChunks: [{
+                      retrievedContext: {
+                        text: r.passage,
+                        title: "paper.pdf",
+                        customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+                      },
+                    }],
+                  },
+                }],
+              },
+            })),
+          },
+        }),
+      },
+      // Keep files API for cmdAsk backward compat
+      files: {
+        upload: async (uploadOpts: any) => ({
+          name: `files/${uploadOpts.config.displayName}`,
+          uri: `https://example.com/files/${uploadOpts.config.displayName}`,
+          mimeType: "application/pdf",
+          state: "ACTIVE",
+        }),
+        get: async () => ({ state: "ACTIVE" }),
+      },
+    };
+  }
+
+  it("creates store and imports files on first run (batch mode)", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    let storeCreated = false;
+    const importedBibkeys: string[] = [];
+
+    const groupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Hu says X.`;
+    const mockClient = buildFileSearchMockClient({
+      onStoreCreate: () => { storeCreated = true; },
+      onStoreUpload: (bibkey) => { importedBibkeys.push(bibkey); },
+      batchResponses: [{
+        key: groupKey,
+        status: "SUPPORTED",
+        passage: "expense ratios declined by 40%",
+        explanation: "The source supports this claim.",
+      }],
+    });
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+    expect(storeCreated).toBe(true);
+    expect(importedBibkeys).toContain("Hu2024-bm");
+
+    // Store state file should exist
+    const storeStatePath = join(tmpBase, "drafts", ".cite-check-store.json");
+    expect(existsSync(storeStatePath)).toBe(true);
+
+    const storeState = JSON.parse(readFileSync(storeStatePath, "utf-8"));
+    expect(storeState.storeName).toBe("fileSearchStores/test-store-123");
+    expect(storeState.importedBibkeys).toContain("Hu2024-bm");
+
+    // Report should be written
+    const reportPath = join(tmpBase, "drafts", "REVIEW-CITES.md");
+    expect(existsSync(reportPath)).toBe(true);
+    const report = readFileSync(reportPath, "utf-8");
+    expect(report).toContain("SUPPORTED");
+  });
+
+  it("reuses existing store when sources unchanged (no importToStore call)", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    // Pre-populate store state with matching hash
+    const { computeSourceHash } = await import("../gemini");
+    const bibMap = new Map([["Hu2024-bm", {
+      bibkey: "Hu2024-bm",
+      filePath: join(tmpBase, "pdfs/paper.pdf"),
+      title: "Custom proxy voting advice",
+    }]]);
+    const hash = computeSourceHash(bibMap, ["Hu2024-bm"]);
+
+    const storeStatePath = join(tmpBase, "drafts", ".cite-check-store.json");
+    writeFileSync(storeStatePath, JSON.stringify({
+      storeName: "fileSearchStores/existing-store-456",
+      sourceHash: hash,
+      importedBibkeys: ["Hu2024-bm"],
+      createdAt: Date.now(),
+    }));
+
+    let storeCreated = false;
+    const importedBibkeys: string[] = [];
+
+    const groupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Hu says X.`;
+    const mockClient = buildFileSearchMockClient({
+      onStoreCreate: () => { storeCreated = true; },
+      onStoreUpload: (bibkey) => { importedBibkeys.push(bibkey); },
+      batchResponses: [{
+        key: groupKey,
+        status: "SUPPORTED",
+        passage: "quote from the paper",
+        explanation: "supported",
+      }],
+    });
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+    // Store should NOT be created again (reused)
+    expect(storeCreated).toBe(false);
+    // No files should be imported (already in store)
+    expect(importedBibkeys).toHaveLength(0);
+  });
+
+  it("uses queryCitationFileSearch in sequential mode", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    let generateContentCalled = false;
+    const mockClient = buildFileSearchMockClient({
+      sequentialResponse: {
+        status: "SUPPORTED",
+        passage: "expense ratios fell",
+        explanation: "confirmed",
+      },
+    });
+    // Override generateContent to track the call and check for fileSearch tool
+    mockClient.models.generateContent = async (req: any) => {
+      generateContentCalled = true;
+      // Verify fileSearch tool is passed (not fileData)
+      expect(req.config?.tools).toBeDefined();
+      expect(req.config.tools[0]?.fileSearch).toBeDefined();
+      expect(req.config.tools[0].fileSearch.fileSearchStoreNames).toContain("fileSearchStores/test-store-123");
+      return {
+        text: JSON.stringify({
+          status: "SUPPORTED",
+          supporting_passage: "expense ratios fell",
+          explanation: "confirmed",
+        }),
+        candidates: [{
+          groundingMetadata: {
+            groundingChunks: [{
+              retrievedContext: {
+                text: "expense ratios fell over the period",
+                customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+              },
+            }],
+          },
+        }],
+      };
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts"), sequential: true } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+    expect(generateContentCalled).toBe(true);
+
+    // Report should be written
+    const report = readFileSync(join(tmpBase, "drafts", "REVIEW-CITES.md"), "utf-8");
+    expect(report).toContain("SUPPORTED");
+  });
+
+  it("uses verifyGroundingWithFallback with groundingChunks from query results", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    // Mock returns grounding chunks that confirm the source
+    const groupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Hu says X.`;
+    const mockClient = buildFileSearchMockClient({
+      batchResponses: [{
+        key: groupKey,
+        status: "SUPPORTED",
+        passage: "expense ratios declined by 40%",
+        explanation: "Directly supported.",
+      }],
+    });
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+
+    // The report should NOT contain [UNGROUNDED] since grounding chunks confirm the passage
+    const report = readFileSync(join(tmpBase, "drafts", "REVIEW-CITES.md"), "utf-8");
+    expect(report).not.toContain("UNGROUNDED");
+    expect(report).toContain("SUPPORTED");
+  });
+
+  it("marks NOT_IN_STORE for bibkeys without file paths", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{NoPdf2024-aa,
+  title = {{A paper without PDF}},
+  year = {2024}
+}
+@article{Hu2024-bm,
+  title = {{Has PDF}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "No pdf says Y [@NoPdf2024-aa]. Hu says X [@Hu2024-bm].",
+    );
+
+    const groupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Hu says X.`;
+    const mockClient = buildFileSearchMockClient({
+      batchResponses: [{
+        key: groupKey,
+        status: "SUPPORTED",
+        passage: "quote",
+        explanation: "supported",
+      }],
+    });
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+
+    const report = readFileSync(join(tmpBase, "drafts", "REVIEW-CITES.md"), "utf-8");
+    expect(report).toContain("NOT IN STORE");
+    expect(report).toContain("NoPdf2024-aa");
+  });
+
+  it("does not create store in dry-run mode", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm, title={{Test}}, year={2024}}`,
+    );
+    writeFileSync(join(tmpBase, "drafts", "draft.md"), "X [@Hu2024-bm].");
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts"), "dry-run": true } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+    expect(existsSync(join(tmpBase, "drafts", ".cite-check-store.json"))).toBe(false);
+  });
+});
+
+describe("cmdCiteCheck manifest persistence (legacy)", () => {
   const tmpBase = "/tmp/cite-check-manifest-integ-test";
 
   afterEach(() => {
@@ -640,6 +1096,14 @@ describe("cmdCiteCheck manifest persistence", () => {
     );
 
     const mockClient = {
+      fileSearchStores: {
+        create: async () => ({ name: "fileSearchStores/test-store-123" }),
+        delete: async () => {},
+        uploadToFileSearchStore: async () => ({ done: true, name: "operations/done" }),
+      },
+      operations: {
+        get: async () => ({ done: true }),
+      },
       files: {
         upload: async (opts: any) => ({
           name: `files/${opts.config.displayName}`,
@@ -656,7 +1120,21 @@ describe("cmdCiteCheck manifest persistence", () => {
             supporting_passage: "quote",
             explanation: "ok",
           }),
+          candidates: [{
+            groundingMetadata: {
+              groundingChunks: [{
+                retrievedContext: {
+                  text: "quote from the source",
+                  customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+                },
+              }],
+            },
+          }],
         }),
+      },
+      batches: {
+        create: async () => ({ name: "batches/b", state: "JOB_STATE_SUCCEEDED", dest: { inlinedResponses: [] } }),
+        get: async () => ({ name: "batches/b", state: "JOB_STATE_SUCCEEDED", dest: { inlinedResponses: [] } }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
@@ -669,18 +1147,17 @@ describe("cmdCiteCheck manifest persistence", () => {
 
     expect(code).toBe(0);
 
-    // Manifest should exist
+    // Store state file should exist
     const manifestPath = join(tmpBase, "drafts", ".cite-check-store.json");
     expect(existsSync(manifestPath)).toBe(true);
 
-    // Manifest should contain the uploaded bibkey
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
-    expect(manifest["Hu2024-bm"]).toBeDefined();
-    expect(manifest["Hu2024-bm"].name).toBe("files/Hu2024-bm");
-    expect(manifest["Hu2024-bm"].uploadedAt).toBeGreaterThan(0);
+    // Store state should have storeName and importedBibkeys
+    const storeState = JSON.parse(readFileSync(manifestPath, "utf-8"));
+    expect(storeState.storeName).toBeDefined();
+    expect(storeState.importedBibkeys).toContain("Hu2024-bm");
   });
 
-  it("skips upload on second run using manifest cache", async () => {
+  it("skips import on second run using store state cache", async () => {
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
     mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
     writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
@@ -699,18 +1176,24 @@ describe("cmdCiteCheck manifest persistence", () => {
       "Hu says X [@Hu2024-bm].",
     );
 
-    let uploadCount = 0;
+    let storeCreateCount = 0;
+    let importCount = 0;
     const mockClient = {
+      fileSearchStores: {
+        create: async () => { storeCreateCount++; return { name: "fileSearchStores/test-store-123" }; },
+        delete: async () => {},
+        uploadToFileSearchStore: async () => { importCount++; return { done: true, name: "operations/done" }; },
+      },
+      operations: {
+        get: async () => ({ done: true }),
+      },
       files: {
-        upload: async (opts: any) => {
-          uploadCount++;
-          return {
-            name: `files/${opts.config.displayName}`,
-            uri: `https://example.com/files/${opts.config.displayName}`,
-            mimeType: "application/pdf",
-            state: "ACTIVE",
-          };
-        },
+        upload: async (opts: any) => ({
+          name: `files/${opts.config.displayName}`,
+          uri: `https://example.com/files/${opts.config.displayName}`,
+          mimeType: "application/pdf",
+          state: "ACTIVE",
+        }),
         get: async () => ({ state: "ACTIVE" }),
       },
       models: {
@@ -720,27 +1203,44 @@ describe("cmdCiteCheck manifest persistence", () => {
             supporting_passage: "quote",
             explanation: "ok",
           }),
+          candidates: [{
+            groundingMetadata: {
+              groundingChunks: [{
+                retrievedContext: {
+                  text: "quote from source",
+                  customMetadata: [{ key: "bibkey", stringValue: "Hu2024-bm" }],
+                },
+              }],
+            },
+          }],
         }),
+      },
+      batches: {
+        create: async () => ({ name: "batches/b", state: "JOB_STATE_SUCCEEDED", dest: { inlinedResponses: [] } }),
+        get: async () => ({ name: "batches/b", state: "JOB_STATE_SUCCEEDED", dest: { inlinedResponses: [] } }),
       },
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    // First run: should upload
+    // First run: should create store and import
     await cmdCiteCheck(
       [],
       { drafts: join(tmpBase, "drafts"), sequential: true } as CiteCheckFlags,
       [join(tmpBase, "test.bib")],
     );
-    expect(uploadCount).toBe(1);
+    expect(storeCreateCount).toBe(1);
+    expect(importCount).toBe(1);
 
-    // Second run: should skip upload (cached in manifest)
-    uploadCount = 0;
+    // Second run: should skip store creation and import (cached)
+    storeCreateCount = 0;
+    importCount = 0;
     await cmdCiteCheck(
       [],
       { drafts: join(tmpBase, "drafts"), sequential: true } as CiteCheckFlags,
       [join(tmpBase, "test.bib")],
     );
-    expect(uploadCount).toBe(0);
+    expect(storeCreateCount).toBe(0);
+    expect(importCount).toBe(0);
   });
 
   it("does not create manifest in dry-run mode", async () => {

@@ -233,6 +233,9 @@ export function bestLcsSpan(
  *
  * Tokenizes both texts, normalizes for matching, runs LCS alignment,
  * and applies coverage + density gates.
+ *
+ * NOTE: This is the LCS-based fallback. The primary grounding signal is
+ * parseGroundingMetadata() below, which uses Gemini File Search metadata.
  */
 export function verifyGrounding(
   passage: string,
@@ -321,5 +324,219 @@ export function verifyGrounding(
     charStart,
     charEnd,
     matchedText,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// File Search grounding metadata parsing (primary grounding signal)
+// ---------------------------------------------------------------------------
+
+/** A single grounding chunk from Gemini File Search response */
+export interface GroundingChunk {
+  retrievedContext?: {
+    text?: string;
+    title?: string;
+    uri?: string;
+    customMetadata?: Array<{ key: string; stringValue?: string; numericValue?: number }>;
+  };
+}
+
+/** Result of parsing grounding metadata from a File Search response */
+export interface FileSearchGroundingResult {
+  grounded: boolean;
+  chunks: GroundingChunk[];
+  /** Best supporting passage text from chunks (longest or most relevant) */
+  supportingText?: string;
+  /** Bibkey extracted from chunk customMetadata (confirms source) */
+  sourceBibkey?: string;
+  /** Page number if available from chunk metadata */
+  pageNumber?: number;
+}
+
+/** Result from the unified grounding verification with fallback */
+export interface UnifiedGroundingResult {
+  grounded: boolean;
+  method: "file-search" | "lcs" | "none";
+  coverage?: number;
+  supportingText?: string;
+  sourceBibkey?: string;
+}
+
+/** Options for verifyGroundingWithFallback */
+export interface UnifiedGroundingOptions {
+  passage: string;
+  groundingChunks?: unknown[];
+  expectedBibkeys?: string[];
+  sourceText?: string;
+  signal?: string;
+}
+
+/**
+ * Parse Gemini File Search grounding metadata into a structured result.
+ *
+ * This is the PRIMARY grounding signal for cite-check. The LCS-based
+ * verifyGrounding() above serves as the fallback when File Search metadata
+ * is unavailable.
+ *
+ * @param groundingChunks - Raw chunks from response.candidates[0].groundingMetadata.groundingChunks
+ * @param expectedBibkeys - If provided, only chunks whose customMetadata bibkey matches are considered relevant
+ */
+export function parseGroundingMetadata(
+  groundingChunks: unknown[] | undefined,
+  expectedBibkeys?: string[],
+): FileSearchGroundingResult {
+  if (!groundingChunks || groundingChunks.length === 0) {
+    return { grounded: false, chunks: [] };
+  }
+
+  // Parse raw chunks into typed GroundingChunk[]
+  const chunks: GroundingChunk[] = groundingChunks.map((raw) => {
+    const chunk = raw as GroundingChunk;
+    return {
+      retrievedContext: chunk.retrievedContext
+        ? {
+            text: chunk.retrievedContext.text,
+            title: chunk.retrievedContext.title,
+            uri: chunk.retrievedContext.uri,
+            customMetadata: chunk.retrievedContext.customMetadata,
+          }
+        : undefined,
+    };
+  });
+
+  // Helper: extract bibkey from a chunk's customMetadata
+  function getBibkey(chunk: GroundingChunk): string | undefined {
+    const meta = chunk.retrievedContext?.customMetadata;
+    if (!meta) return undefined;
+    const entry = meta.find((m) => m.key === "bibkey");
+    return entry?.stringValue;
+  }
+
+  // Helper: extract page number from a chunk's customMetadata
+  function getPageNumber(chunk: GroundingChunk): number | undefined {
+    const meta = chunk.retrievedContext?.customMetadata;
+    if (!meta) return undefined;
+    const entry = meta.find((m) => m.key === "page");
+    return entry?.numericValue;
+  }
+
+  // Filter to relevant chunks based on expectedBibkeys
+  let relevantChunks: GroundingChunk[];
+  if (expectedBibkeys && expectedBibkeys.length > 0) {
+    const bibkeySet = new Set(expectedBibkeys);
+    relevantChunks = chunks.filter((chunk) => {
+      const bk = getBibkey(chunk);
+      return bk !== undefined && bibkeySet.has(bk);
+    });
+  } else {
+    relevantChunks = chunks;
+  }
+
+  // Filter to chunks that have non-empty text
+  const chunksWithText = relevantChunks.filter(
+    (chunk) => chunk.retrievedContext?.text && chunk.retrievedContext.text.trim().length > 0,
+  );
+
+  if (chunksWithText.length === 0) {
+    return { grounded: false, chunks };
+  }
+
+  // Find the longest chunk text as supportingText
+  let longestText = "";
+  for (const chunk of chunksWithText) {
+    const text = chunk.retrievedContext!.text!;
+    if (text.length > longestText.length) {
+      longestText = text;
+    }
+  }
+
+  // Extract bibkey from the first relevant chunk that has one
+  let sourceBibkey: string | undefined;
+  for (const chunk of chunksWithText) {
+    const bk = getBibkey(chunk);
+    if (bk) {
+      sourceBibkey = bk;
+      break;
+    }
+  }
+
+  // Extract page number from the first relevant chunk that has one
+  let pageNumber: number | undefined;
+  for (const chunk of chunksWithText) {
+    const pn = getPageNumber(chunk);
+    if (pn !== undefined) {
+      pageNumber = pn;
+      break;
+    }
+  }
+
+  return {
+    grounded: true,
+    chunks,
+    supportingText: longestText,
+    sourceBibkey,
+    pageNumber,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Unified grounding: File Search primary, LCS fallback
+// ---------------------------------------------------------------------------
+
+/**
+ * Unified grounding verification that uses File Search grounding metadata as
+ * the PRIMARY signal and falls back to the existing LCS verifyGrounding() when
+ * grounding chunks are sparse or don't match.
+ *
+ * Logic:
+ * 1. Try File Search grounding first (parseGroundingMetadata)
+ * 2. Fall back to LCS (verifyGrounding) if sourceText is provided
+ * 3. Return method: "none" if neither is available
+ */
+export function verifyGroundingWithFallback(
+  opts: UnifiedGroundingOptions,
+): UnifiedGroundingResult {
+  const { passage, groundingChunks, expectedBibkeys, sourceText, signal } = opts;
+
+  // 1. Try File Search grounding first (primary)
+  const fileSearchResult = parseGroundingMetadata(groundingChunks, expectedBibkeys);
+  if (fileSearchResult.grounded) {
+    return {
+      grounded: true,
+      method: "file-search",
+      supportingText: fileSearchResult.supportingText,
+      sourceBibkey: fileSearchResult.sourceBibkey,
+    };
+  }
+
+  // 2. Fall back to LCS (secondary) — only if sourceText is provided
+  if (sourceText) {
+    // Signal cites (see, cf., etc.) get relaxed thresholds
+    const lcsOpts: GroundingOptions | undefined = signal
+      ? { coverageThreshold: 0.5, densityThreshold: 0.2 }
+      : undefined;
+
+    const lcsResult = verifyGrounding(passage, sourceText, lcsOpts);
+    if (lcsResult.grounded) {
+      return {
+        grounded: true,
+        method: "lcs",
+        coverage: lcsResult.coverage,
+        supportingText: lcsResult.matchedText,
+      };
+    }
+
+    // Both failed — report LCS coverage for debugging
+    return {
+      grounded: false,
+      method: "lcs",
+      coverage: lcsResult.coverage,
+    };
+  }
+
+  // 3. Neither works — no chunks AND no sourceText
+  return {
+    grounded: false,
+    method: "none",
   };
 }
