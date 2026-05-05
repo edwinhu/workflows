@@ -210,6 +210,56 @@ function saveUrlToReadwise(
 }
 
 // ---------------------------------------------------------------------------
+// Bibkey generation (Paperpile-style: Author2024-xx)
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate a bibkey from author + year in Paperpile style: Author2024-xx
+ * where xx is a random two-char suffix to avoid collisions.
+ */
+function generateBibkey(author?: string, year?: string): string {
+  // Extract first author surname
+  let surname = "Unknown";
+  if (author) {
+    // Handle "First Last", "Last, First", "Organization Name"
+    const parts = author.split(/[,;]| and /i)[0].trim().split(/\s+/);
+    surname = parts[parts.length - 1] // last word = surname
+      .replace(/[^a-zA-Z]/g, "");
+    if (!surname) surname = parts[0]?.replace(/[^a-zA-Z]/g, "") || "Unknown";
+  }
+  // Capitalize first letter
+  surname = surname.charAt(0).toUpperCase() + surname.slice(1).toLowerCase();
+
+  const yr = year || new Date().getFullYear().toString();
+
+  // Random two-char suffix (lowercase letters)
+  const chars = "abcdefghijklmnopqrstuvwxyz";
+  const suffix = chars[Math.floor(Math.random() * 26)] + chars[Math.floor(Math.random() * 26)];
+
+  return `${surname}${yr}-${suffix}`;
+}
+
+/**
+ * Generate a BibTeX entry from metadata.
+ */
+function generateBibEntry(bibkey: string, meta: {
+  title: string;
+  author?: string;
+  year?: string;
+  url?: string;
+  filePath?: string;
+}): string {
+  const lines = [`@misc{${bibkey},`];
+  lines.push(`  title = {${meta.title}},`);
+  if (meta.author) lines.push(`  author = {${meta.author}},`);
+  if (meta.year) lines.push(`  year = {${meta.year}},`);
+  if (meta.url) lines.push(`  url = {${meta.url}},`);
+  if (meta.filePath) lines.push(`  file = {${meta.filePath}},`);
+  lines.push("}");
+  return lines.join("\n");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -366,16 +416,25 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  // Save-URLs mode: save URLs to Readwise Reader, then export to references/
-  // Usage: materialize-sources --save-urls <file> --refs <dir> [--tag <tag>] [--debug]
-  // File format: one URL per line, optionally "URL | Title | Author"
+  // Save-URLs mode: save URLs to Readwise Reader, generate bibkeys, export to references/
+  // Usage: materialize-sources --save-urls <file> --refs <dir> [--bib <path>] [--tag <tag>] [--debug]
+  // File format: one URL per line, optionally "URL | Title | Author | Year"
   const saveUrlsFile = flags["save-urls"];
   if (typeof saveUrlsFile === "string") {
     const refsDir = expandPath(typeof flags.refs === "string" ? flags.refs : "./references");
     const tag = typeof flags.tag === "string" ? flags.tag : undefined;
     const debug = !!flags.debug;
+    // Optional: append generated bib entries to a .bib file
+    const bibOutPath = bibPaths.length > 0 ? bibPaths[bibPaths.length - 1] : join(refsDir, "sources.bib");
 
     if (!existsSync(refsDir)) mkdirSync(refsDir, { recursive: true });
+
+    // Load existing bib to check for duplicate bibkeys and URL matches
+    const existingBib = existsSync(bibOutPath) ? readFileSync(bibOutPath, "utf-8") : "";
+    const existingUrls = new Set<string>();
+    for (const m of existingBib.matchAll(/url\s*=\s*\{([^}]+)\}/g)) {
+      existingUrls.add(m[1].trim());
+    }
 
     const lines = readFileSync(expandPath(saveUrlsFile), "utf-8")
       .split("\n")
@@ -387,16 +446,24 @@ async function main(): Promise<number> {
     let saved = 0;
     let exported = 0;
     let failed = 0;
+    const newBibEntries: string[] = [];
 
     for (const line of lines) {
-      // Parse "URL | Title | Author" or just "URL"
+      // Parse "URL | Title | Author | Year" or just "URL"
       const parts = line.split("|").map((p) => p.trim());
       const url = parts[0];
-      const title = parts[1] || undefined;
-      const author = parts[2] || undefined;
+      let title = parts[1] || undefined;
+      let author = parts[2] || undefined;
+      const year = parts[3] || undefined;
 
       if (!url.startsWith("http")) {
         process.stderr.write(`  [skip] not a URL: ${url.slice(0, 60)}\n`);
+        continue;
+      }
+
+      // Skip if URL already in bib
+      if (existingUrls.has(url)) {
+        if (debug) process.stderr.write(`  [in bib] ${title ?? url.slice(0, 50)}\n`);
         continue;
       }
 
@@ -409,12 +476,16 @@ async function main(): Promise<number> {
       ], { encoding: "utf-8", timeout: 15_000 });
 
       let docId: string | null = null;
+      let docTitle = title;
+      let docAuthor = author;
       if (existing.status === 0 && existing.stdout) {
         try {
           const docs = JSON.parse(existing.stdout);
           if (docs.length > 0) {
             docId = docs[0].document_id;
-            if (debug) process.stderr.write(`  [exists] ${title ?? url.slice(0, 50)} already in Readwise\n`);
+            docTitle = docTitle ?? docs[0].title;
+            docAuthor = docAuthor ?? docs[0].author;
+            if (debug) process.stderr.write(`  [exists] ${docTitle ?? url.slice(0, 50)} already in Readwise\n`);
           }
         } catch { /* save fresh */ }
       }
@@ -426,7 +497,7 @@ async function main(): Promise<number> {
         if (docId) {
           saved++;
           process.stderr.write(`  [saved] ${title ?? url.slice(0, 50)} → ${docId}\n`);
-          // Wait a moment for Readwise to scrape the page
+          // Wait for Readwise to scrape
           Bun.sleepSync(2000);
         } else {
           failed++;
@@ -435,26 +506,43 @@ async function main(): Promise<number> {
         }
       }
 
-      // Export markdown to references/
-      const safeName = (title ?? url)
-        .replace(/[{}\\\/:"*?<>|]/g, "_")
-        .replace(/\s+/g, "_")
-        .slice(0, 80);
-      const destPath = join(refsDir, `${safeName}.md`);
+      // Resolve title/author from Readwise if not provided
+      if (!docTitle || !docAuthor) {
+        const details = spawnSync("readwise", [
+          "reader-get-document-details",
+          "--document-id", docId,
+          "--json",
+        ], { encoding: "utf-8", timeout: 30_000 });
+        if (details.status === 0 && details.stdout) {
+          try {
+            const doc = JSON.parse(details.stdout);
+            docTitle = docTitle ?? doc.title;
+            docAuthor = docAuthor ?? doc.author;
+          } catch { /* use what we have */ }
+        }
+      }
+
+      // Generate bibkey
+      const bibkey = generateBibkey(docAuthor, year);
+      const fileName = `${bibkey}.md`;
+      const destPath = join(refsDir, fileName);
 
       if (existsSync(destPath) && statSync(destPath).size > 100) {
-        if (debug) process.stderr.write(`  [cached] ${safeName}.md\n`);
+        if (debug) process.stderr.write(`  [cached] ${fileName}\n`);
         exported++;
         continue;
       }
 
+      // Export markdown
       const markdown = exportReadwiseMarkdown(docId, debug);
       if (markdown && markdown.length > 50) {
         const header = [
           "---",
-          `title: "${(title ?? safeName).replace(/"/g, '\\"')}"`,
-          `author: "${(author ?? "").replace(/"/g, '\\"')}"`,
+          `bibkey: ${bibkey}`,
+          `title: "${(docTitle ?? "Untitled").replace(/"/g, '\\"')}"`,
+          `author: "${(docAuthor ?? "").replace(/"/g, '\\"')}"`,
           `url: "${url}"`,
+          `year: "${year ?? ""}"`,
           `source: readwise`,
           `readwise_id: "${docId}"`,
           "---",
@@ -462,15 +550,46 @@ async function main(): Promise<number> {
         ].join("\n");
         writeFileSync(destPath, header + markdown, "utf-8");
         exported++;
-        process.stderr.write(`  [exported] ${safeName}.md (${(markdown.length / 1024).toFixed(0)}KB)\n`);
+        process.stderr.write(`  [exported] ${bibkey}: "${(docTitle ?? "").slice(0, 50)}" → ${fileName}\n`);
+
+        // Generate bib entry
+        const bibEntry = generateBibEntry(bibkey, {
+          title: docTitle ?? "Untitled",
+          author: docAuthor,
+          year,
+          url,
+          filePath: fileName,
+        });
+        newBibEntries.push(bibEntry);
       } else {
-        process.stderr.write(`  [no content] ${safeName} — Readwise may still be scraping\n`);
+        process.stderr.write(`  [no content] ${bibkey} — Readwise may still be scraping\n`);
       }
     }
 
+    // Append new bib entries to sources.bib
+    if (newBibEntries.length > 0) {
+      const bibAppend = "\n" + newBibEntries.join("\n\n") + "\n";
+      const existingContent = existsSync(bibOutPath) ? readFileSync(bibOutPath, "utf-8") : "";
+      writeFileSync(bibOutPath, existingContent + bibAppend, "utf-8");
+      process.stderr.write(`\n[save-urls] appended ${newBibEntries.length} bib entries to ${bibOutPath}\n`);
+    }
+
     process.stderr.write(
-      `\n[save-urls] ${saved} saved to Readwise, ${exported} exported to references/, ${failed} failed\n`,
+      `[save-urls] ${saved} saved to Readwise, ${exported} exported to references/, ${failed} failed\n`,
     );
+
+    // Print generated bibkeys for the user
+    if (newBibEntries.length > 0) {
+      process.stderr.write(`\nGenerated bibkeys (use these in your draft as [@bibkey]):\n`);
+      for (const entry of newBibEntries) {
+        const keyMatch = entry.match(/@misc\{(\S+),/);
+        const titleMatch = entry.match(/title = \{(.+?)\}/);
+        if (keyMatch) {
+          process.stderr.write(`  @${keyMatch[1]}  ${titleMatch?.[1] ?? ""}\n`);
+        }
+      }
+    }
+
     return failed > 0 ? 1 : 0;
   }
 
