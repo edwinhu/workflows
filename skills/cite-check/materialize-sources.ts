@@ -43,31 +43,105 @@ interface ReadwiseDoc {
   category?: string;
 }
 
+interface ReadwiseHighlight {
+  id: number;
+  score: number;
+  attributes: {
+    document_title: string;
+    document_author: string;
+    document_category: string;
+    document_tags: string[];
+    highlight_plaintext: string;
+    highlight_note: string;
+    highlight_tags: string[];
+  };
+  url: string;
+}
+
 /**
- * Search Readwise Reader for a document by title.
- * Returns the best match or null.
+ * Search Readwise highlights using vector search.
+ * Returns highlights grouped by source document — the stuff the user
+ * actually marked as important while reading.
  */
-function searchReadwise(title: string, debug?: boolean): ReadwiseDoc | null {
-  // Truncate very long titles for search
-  const query = title.slice(0, 100);
+function searchReadwiseHighlights(
+  query: string,
+  debug?: boolean,
+  limit = 30,
+): ReadwiseHighlight[] | null {
   const result = spawnSync("readwise", [
-    "reader-search-documents",
-    "--query", query,
+    "readwise-search-highlights",
+    "--vector-search-term", query.slice(0, 200),
+    "--limit", String(limit),
     "--json",
   ], { encoding: "utf-8", timeout: 30_000 });
 
   if (result.status !== 0 || !result.stdout) {
     if (debug) {
-      process.stderr.write(`[readwise] search failed for "${query.slice(0, 40)}": ${result.stderr?.slice(0, 100) ?? "no output"}\n`);
+      process.stderr.write(`[readwise] highlight search failed: ${result.stderr?.slice(0, 100) ?? "no output"}\n`);
+    }
+    return null;
+  }
+
+  try {
+    const highlights: ReadwiseHighlight[] = JSON.parse(result.stdout);
+    return highlights.length > 0 ? highlights : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Search Readwise Reader for a document by title (exact match).
+ * Used when matching known bib entries to Readwise documents.
+ * Falls back to semantic search if title search returns nothing.
+ */
+function searchReadwiseByTitle(title: string, author?: string, debug?: boolean): ReadwiseDoc | null {
+  // Strip BibTeX braces and escape chars before searching
+  const cleanTitle = title.replace(/[{}\\]/g, "").slice(0, 100);
+
+  // Try title search first (precise)
+  const titleArgs = ["reader-search-documents", "--title-search", cleanTitle, "--json"];
+  if (author) titleArgs.splice(2, 0, "--author-search", author);
+  const titleResult = spawnSync("readwise", titleArgs, { encoding: "utf-8", timeout: 30_000 });
+
+  if (titleResult.status === 0 && titleResult.stdout) {
+    try {
+      const docs: ReadwiseDoc[] = JSON.parse(titleResult.stdout);
+      if (docs.length > 0) return docs[0];
+    } catch { /* fall through to semantic */ }
+  }
+
+  // Fall back to semantic search with author + title (broader)
+  const semanticQuery = author ? `${author} ${cleanTitle}` : cleanTitle;
+  if (debug) {
+    process.stderr.write(`[readwise] title search miss, trying semantic: "${semanticQuery.slice(0, 50)}"\n`);
+  }
+  const results = searchReadwiseSemantic(semanticQuery, debug);
+  return results ? results[0] : null;
+}
+
+/**
+ * Search Readwise Reader using semantic/hybrid search.
+ * Used for discovery (lit review) — finds documents by content relevance.
+ */
+function searchReadwiseSemantic(query: string, debug?: boolean, limit = 10): ReadwiseDoc[] | null {
+  const result = spawnSync("readwise", [
+    "reader-search-documents",
+    "--query", query.slice(0, 200),
+    "--limit", String(limit),
+    "--json",
+  ], { encoding: "utf-8", timeout: 30_000 });
+
+  if (result.status !== 0 || !result.stdout) {
+    if (debug) {
+      process.stderr.write(`[readwise] semantic search failed for "${query.slice(0, 40)}": ${result.stderr?.slice(0, 100) ?? "no output"}\n`);
     }
     return null;
   }
 
   try {
     const docs: ReadwiseDoc[] = JSON.parse(result.stdout);
-    if (!docs.length) return null;
-    // Return first result — readwise search is ranked by relevance
-    return docs[0];
+    return docs.length > 0 ? docs : null;
   } catch {
     return null;
   }
@@ -153,8 +227,52 @@ async function main(): Promise<number> {
       ? [expandPath(rawBibPaths)]
       : [];
 
+  // Discovery mode: semantic search Readwise highlights for themes (lit review)
+  const discoverQuery = flags.discover;
+  if (typeof discoverQuery === "string") {
+    process.stderr.write(`[discover] searching Readwise highlights for: "${discoverQuery}"\n`);
+    const highlights = searchReadwiseHighlights(discoverQuery, true, 30);
+    if (!highlights || highlights.length === 0) {
+      process.stderr.write(`[discover] no highlights found\n`);
+      return 0;
+    }
+
+    // Group highlights by document
+    const byDoc = new Map<string, { title: string; author: string; category: string; highlights: string[] }>();
+    for (const h of highlights) {
+      const key = h.attributes.document_title;
+      let group = byDoc.get(key);
+      if (!group) {
+        group = {
+          title: h.attributes.document_title,
+          author: h.attributes.document_author,
+          category: h.attributes.document_category,
+          highlights: [],
+        };
+        byDoc.set(key, group);
+      }
+      if (h.attributes.highlight_plaintext) {
+        group.highlights.push(h.attributes.highlight_plaintext.slice(0, 200));
+      }
+    }
+
+    process.stderr.write(`[discover] ${highlights.length} highlights across ${byDoc.size} documents:\n\n`);
+    for (const [, doc] of byDoc) {
+      const author = doc.author ? ` by ${doc.author}` : "";
+      console.log(`## ${doc.title}${author} [${doc.category}]`);
+      for (const hl of doc.highlights.slice(0, 3)) {
+        console.log(`  > ${hl.replace(/\n/g, " ").trim()}`);
+      }
+      if (doc.highlights.length > 3) {
+        console.log(`  ... and ${doc.highlights.length - 3} more highlights`);
+      }
+      console.log();
+    }
+    return 0;
+  }
+
   if (bibPaths.length === 0) {
-    console.error("Usage: materialize-sources --bib <path> [--bib <path2>] --refs <dir> [--drafts <dir>] [--debug]");
+    console.error("Usage: materialize-sources --bib <path> [--bib <path2>] --refs <dir> [--drafts <dir>] [--debug]\n       materialize-sources --discover \"<semantic query>\"");
     return 1;
   }
 
@@ -298,7 +416,7 @@ async function main(): Promise<number> {
       }
 
       const title = entry.title ?? bibkey;
-      const doc = searchReadwise(title, debug);
+      const doc = searchReadwiseByTitle(title, debug);
 
       if (!doc || !doc.document_id) {
         readwiseMissing++;
