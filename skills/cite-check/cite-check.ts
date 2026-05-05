@@ -16,7 +16,7 @@
  * Usage:
  *   bun cite-check.ts --bib <path> [--bib <path2>]
  *                     [--drafts <dir>] [--out <path>] [--limit N]
- *                     [--dry-run] [--batch] [--debug]
+ *                     [--dry-run] [--sequential] [--debug]
  *
  * Multiple --bib flags are supported. Entries from earlier files take
  * priority when bibkeys collide (e.g., Paperpile first, project-local second).
@@ -110,7 +110,7 @@ export interface CiteCheckFlags {
   "dry-run"?: string | boolean;
   limit?: string | boolean;
   debug?: string | boolean;
-  batch?: string | boolean;
+  sequential?: string | boolean;
   audit?: string | boolean;
   "retry-model"?: string | boolean;
 }
@@ -449,7 +449,7 @@ export async function cmdCiteCheck(
 
   if (resolvedBibPaths.length === 0) {
     printError(
-      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--batch] [--audit] [--retry-model <model>] [--limit <n>] [--debug]",
+      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--sequential] [--audit] [--retry-model <model>] [--limit <n>] [--debug]",
     );
     return 1;
   }
@@ -675,7 +675,8 @@ export async function cmdCiteCheck(
 
   // 3. Iterate cite groups, classify each.
   const results: CiteResult[] = [];
-  const batchMode = !!flags.batch;
+  // Batch mode is the default; use --sequential to disable
+  const batchMode = !flags.sequential;
   const textCacheDir = join(draftsDir, ".cite-check-text");
 
   if (dryRun) {

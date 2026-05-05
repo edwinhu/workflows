@@ -64,7 +64,7 @@ bun cite-check.ts \
 | `--out <path>` | No | `<drafts>/REVIEW-CITES.md` | Output report path |
 | `--limit <n>` | No | all | Check only first N citations (smoke test) |
 | `--dry-run` | No | false | Print prompts without querying |
-| `--batch` | No | false | Run queries concurrently (5 at a time) instead of one-at-a-time |
+| `--sequential` | No | false | Run queries one-at-a-time instead of Batch API (default: batch) |
 | `--retry-model <model>` | No | `gemini-3.1-pro-preview` | Retry UNSUPPORTED results with a stronger model |
 | `--audit` | No | false | Audit source availability without querying (checks Paperpile PDFs) |
 | `--debug` | No | false | Verbose logging |
@@ -130,17 +130,17 @@ REVIEW-CITES.md with:
 - Details table: status, file:line, bibkey, claim, response
 - `[UNGROUNDED]` flag on any SUPPORTED/PARTIAL result whose passage failed grounding verification
 
-## Batch Mode
+## Batch Mode (Default)
 
-Use `--batch` to run all citation queries concurrently (5 at a time) instead of one-at-a-time sequential mode.
+By default, all citation queries are submitted as a single Gemini Batch API job. Each request uses inline file references (fileData), so there is no cross-contamination between queries.
 
 ```bash
-bun cite-check.ts --bib paperpile.bib --drafts ./drafts --batch
+# Default (batch)
+bun cite-check.ts --bib paperpile.bib --drafts ./drafts
+
+# Sequential (one query at a time, useful for debugging)
+bun cite-check.ts --bib paperpile.bib --drafts ./drafts --sequential
 ```
-
-**How it works:** Each query runs as an isolated `generateContent` call with only the relevant source file(s) attached. Queries run 5 at a time for speed while preserving file isolation.
-
-**Why not the Batch API?** The Gemini Batch API shares file context across requests within a single job, causing cross-contamination (e.g., querying source A returns passages from source B). Concurrent isolated calls avoid this.
 
 ## Audit Mode
 

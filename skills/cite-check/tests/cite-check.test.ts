@@ -663,7 +663,7 @@ describe("cmdCiteCheck manifest persistence", () => {
 
     const code = await cmdCiteCheck(
       [],
-      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      { drafts: join(tmpBase, "drafts"), sequential: true } as CiteCheckFlags,
       [join(tmpBase, "test.bib")],
     );
 
@@ -728,7 +728,7 @@ describe("cmdCiteCheck manifest persistence", () => {
     // First run: should upload
     await cmdCiteCheck(
       [],
-      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      { drafts: join(tmpBase, "drafts"), sequential: true } as CiteCheckFlags,
       [join(tmpBase, "test.bib")],
     );
     expect(uploadCount).toBe(1);
@@ -737,7 +737,7 @@ describe("cmdCiteCheck manifest persistence", () => {
     uploadCount = 0;
     await cmdCiteCheck(
       [],
-      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      { drafts: join(tmpBase, "drafts"), sequential: true } as CiteCheckFlags,
       [join(tmpBase, "test.bib")],
     );
     expect(uploadCount).toBe(0);

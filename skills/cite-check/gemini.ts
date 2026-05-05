@@ -612,7 +612,9 @@ export async function uploadCitedFiles(
       continue;
     }
     try {
-      const ref = await uploadFile(localPath, { displayName: bibkey });
+      const ext = localPath.split(".").pop()?.toLowerCase();
+      const mimeType = ext === "md" ? "text/markdown" : ext === "pdf" ? "application/pdf" : undefined;
+      const ref = await uploadFile(localPath, { displayName: bibkey, mimeType });
       cache.set(bibkey, ref);
       uploaded++;
       if (opts?.debug) {
