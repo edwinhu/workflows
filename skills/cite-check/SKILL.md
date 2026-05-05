@@ -14,7 +14,29 @@ Scan pandoc-flavored markdown drafts for citations, upload source PDFs to a Gemi
 - Bun runtime
 - `rclone` with a `google-drive:` remote configured (used to bypass Google Drive FUSE deadlocks)
 - `python3` with `pymupdf4llm` installed (used for PDF text extraction in passage grounding)
+- `readwise` CLI installed and authenticated (for Readwise article export in source materialization)
 - One or more `.bib` files with `file` fields mapping bibkeys to PDF paths (e.g., Paperpile's `paperpile.bib`)
+
+## Source Materialization
+
+Before running cite-check, materialize all sources locally:
+
+```bash
+cd ${CLAUDE_SKILL_DIR}
+bun materialize-sources.ts \
+  --bib ~/Google\ Drive/My\ Drive/resources/Paperpile/paperpile.bib \
+  --bib ./references/sources.bib \
+  --refs ./references \
+  --drafts ./drafts \
+  --debug
+```
+
+This populates `references/` with local copies of all cited sources:
+- **Paperpile PDFs** → batch `rclone copy` from Google Drive → `references/<bibkey>.pdf`
+- **Readwise articles** (reports, news, speeches without PDFs) → search by title, export markdown → `references/<bibkey>.md`
+- **Gaps** → printed at the end for manual action (Obsidian web clipper or manual sourcing)
+
+After materialization, cite-check operates purely locally.
 
 ## Usage
 
@@ -150,9 +172,10 @@ PDF files stored on Google Drive Desktop's FUSE mount (`~/Google Drive/My Drive/
 ## Architecture
 
 ```
-cite-extract.ts       -- Pure citation extraction (no I/O)
-gemini.ts             -- Gemini Files API wrapper (upload, query, rclone FUSE bypass)
-grounding.ts          -- Post-hoc passage grounding (tokenizer, LCS aligner)
-extract-pdf-text.py   -- PDF text extraction via pymupdf4llm
-cite-check.ts         -- CLI orchestrator (extract -> upload -> query -> ground -> report)
+cite-extract.ts          -- Pure citation extraction (no I/O)
+gemini.ts                -- Gemini Files API wrapper (upload, query, rclone FUSE bypass)
+grounding.ts             -- Post-hoc passage grounding (tokenizer, LCS aligner)
+extract-pdf-text.py      -- PDF text extraction via pymupdf4llm
+materialize-sources.ts   -- Copy Paperpile PDFs + Readwise articles to references/
+cite-check.ts            -- CLI orchestrator (extract -> upload -> query -> ground -> report)
 ```
