@@ -6,7 +6,7 @@
  * in generateContent calls so Gemini sees the full document.
  */
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { readFileSync, statSync, writeFileSync, existsSync, mkdirSync, realpathSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -713,15 +713,7 @@ export async function submitBatchCiteCheck(
       contents: [{ parts, role: "user" as const }],
       config: {
         responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            status: { type: Type.STRING, enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] },
-            supporting_passage: { type: Type.STRING },
-            explanation: { type: Type.STRING },
-          },
-          required: ["status", "supporting_passage", "explanation"],
-        },
+        responseJsonSchema: CITE_CHECK_SCHEMA,
       },
     };
   });

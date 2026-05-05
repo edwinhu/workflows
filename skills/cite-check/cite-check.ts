@@ -35,6 +35,7 @@ import {
   parseBibFile,
   queryCitation,
   submitBatchCiteCheck,
+  queryCitationsConcurrently,
   resolveFileAcrossDirs,
   ensureLocal,
   ensureLocalBatch,
@@ -110,6 +111,7 @@ export interface CiteCheckFlags {
   "dry-run"?: string | boolean;
   limit?: string | boolean;
   debug?: string | boolean;
+  batch?: string | boolean;
   sequential?: string | boolean;
   audit?: string | boolean;
   "retry-model"?: string | boolean;
@@ -675,8 +677,10 @@ export async function cmdCiteCheck(
 
   // 3. Iterate cite groups, classify each.
   const results: CiteResult[] = [];
-  // Batch mode is the default; use --sequential to disable
+  // Batch mode (Gemini Batch API) is the default.
+  // --sequential: one query at a time (useful for debugging)
   const batchMode = !flags.sequential;
+  const sequentialMode = !!flags.sequential;
   const textCacheDir = join(draftsDir, ".cite-check-text");
 
   if (dryRun) {
@@ -760,7 +764,7 @@ export async function cmdCiteCheck(
         }
       }
     }
-  } else {
+  } else if (sequentialMode) {
     // SEQUENTIAL MODE: query Gemini one group at a time
     let queryIdx = 0;
     for (const g of groups) {
