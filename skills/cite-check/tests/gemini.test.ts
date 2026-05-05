@@ -114,6 +114,34 @@ describe("uploadFile", () => {
     await expect(uploadFile("/tmp/test.pdf")).rejects.toThrow("Upload returned no name");
   });
 
+  it("sanitizes non-ASCII characters in displayName before upload", async () => {
+    const uploadCalls: any[] = [];
+    const mockClient = {
+      files: {
+        upload: async (opts: any) => {
+          uploadCalls.push(opts);
+          return {
+            name: "files/xyz",
+            uri: "https://generativelanguage.googleapis.com/v1beta/files/xyz",
+            mimeType: "application/pdf",
+            state: "ACTIVE",
+          };
+        },
+        get: async () => ({ state: "ACTIVE" }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    // Unicode hyphen U+2010 in display name (common in Paperpile filenames)
+    const unicodeName = "Author 2024 \u2010 Title Fragment";
+    const ref = await uploadFile("/tmp/test.pdf", { displayName: unicodeName });
+    expect(ref.name).toBe("files/xyz");
+    // The displayName passed to the API should have non-ASCII replaced with "-"
+    const sentName = uploadCalls[0].config.displayName;
+    expect(sentName).not.toContain("\u2010");
+    expect(sentName).toBe("Author 2024 - Title Fragment");
+  });
+
   it("throws when file processing fails", async () => {
     const mockClient = {
       files: {

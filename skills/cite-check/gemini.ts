@@ -265,10 +265,14 @@ export async function uploadFile(
   opts?: { displayName?: string; mimeType?: string; _pollIntervalMs?: number },
 ): Promise<FileRef> {
   const client = getClient();
+  // Sanitize displayName to ASCII for Gemini upload headers —
+  // Paperpile filenames can have Unicode (e.g. U+2010 HYPHEN) that
+  // the Gemini API rejects in HTTP headers.
+  const safeDisplayName = (opts?.displayName ?? "").replace(/[^\x20-\x7E]/g, "-") || undefined;
   const uploadConfig: Record<string, unknown> = {
     file: filePath,
     config: {
-      displayName: opts?.displayName,
+      displayName: safeDisplayName,
       mimeType: opts?.mimeType,
     },
   };

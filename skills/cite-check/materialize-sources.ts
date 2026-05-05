@@ -782,6 +782,27 @@ async function main(): Promise<number> {
     );
   }
 
+  // 4b. Collect bibkeys where a PDF now exists but bib still points to .md
+  //     This happens when a Readwise .md was exported first, then the PDF
+  //     became available via Paperpile. The bib file field should be updated.
+  const bibPdfOverrides: Array<{ bibkey: string }> = [];
+  if (bibPaths.length > 0) {
+    const bibToCheck = bibPaths[bibPaths.length - 1];
+    const bibContent = readFileSync(bibToCheck, "utf-8");
+    for (const { bibkey } of withFile) {
+      const pdfDest = join(refsDir, `${bibkey}.pdf`);
+      if (!existsSync(pdfDest)) continue;
+      // Check if the bib entry has file = {<bibkey>.md}
+      const hasMdFile = new RegExp(
+        `file\\s*=\\s*\\{${bibkey}\\.md\\}`,
+      ).test(bibContent);
+      if (hasMdFile) {
+        bibPdfOverrides.push({ bibkey });
+        if (debug) process.stderr.write(`  [override] ${bibkey}: .md → .pdf in bib\n`);
+      }
+    }
+  }
+
   // 5. Readwise: search by title, export markdown, update bib with file fields
   let readwiseFound = 0;
   let readwiseMissing = 0;
@@ -797,12 +818,18 @@ async function main(): Promise<number> {
       const fileName = `${bibkey}.md`;
       const destPath = join(refsDir, fileName);
 
-      // Skip if already materialized
-      if (existsSync(destPath) && statSync(destPath).size > 0) {
-        if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
-        readwiseFound++;
-        bibFileUpdates.push({ bibkey, fileName });
-        continue;
+      // Skip if already materialized with real content (not a YAML-only stub)
+      if (existsSync(destPath)) {
+        const fileSize = statSync(destPath).size;
+        if (fileSize > 500) {
+          // Real content, not just a YAML stub
+          if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
+          readwiseFound++;
+          bibFileUpdates.push({ bibkey, fileName });
+          continue;
+        }
+        // Small file — likely a stub, re-export
+        if (debug) process.stderr.write(`  [stub] ${bibkey} (${fileSize}B) — re-exporting\n`);
       }
 
       const title = entry.title ?? bibkey;
@@ -852,10 +879,16 @@ async function main(): Promise<number> {
       const fileName = `${bibkey}.md`;
       const destPath = join(refsDir, fileName);
 
-      if (existsSync(destPath) && statSync(destPath).size > 0) {
-        if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
-        readwiseFound++;
-        continue;
+      if (existsSync(destPath)) {
+        const fileSize = statSync(destPath).size;
+        if (fileSize > 500) {
+          // Real content, not just a YAML stub
+          if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
+          readwiseFound++;
+          continue;
+        }
+        // Small file — likely a stub, re-export
+        if (debug) process.stderr.write(`  [stub] ${bibkey} (${fileSize}B) — re-exporting\n`);
       }
 
       // Try to find in Readwise — use bibkey as search hint (e.g., "Daly2026" → "Daly 2026")
@@ -910,7 +943,9 @@ async function main(): Promise<number> {
 
   // 6. Update bib files
   // 6a. Add file fields to existing bib entries that got Readwise exports
-  if (bibFileUpdates.length > 0 && bibPaths.length > 0) {
+  //     Also update .md → .pdf for entries where a PDF was copied (Fix 1).
+  const hasBibUpdates = bibFileUpdates.length > 0 || bibPdfOverrides.length > 0;
+  if (hasBibUpdates && bibPaths.length > 0) {
     // Update the last bib file (project-local sources.bib)
     const bibToUpdate = bibPaths[bibPaths.length - 1];
     let bibContent = readFileSync(bibToUpdate, "utf-8");
@@ -926,9 +961,20 @@ async function main(): Promise<number> {
         updated++;
       }
     }
+    // Update .md → .pdf for entries where a Paperpile PDF was copied
+    for (const { bibkey } of bibPdfOverrides) {
+      const fileFieldPattern = new RegExp(
+        `(file\\s*=\\s*\\{)${bibkey}\\.md(\\})`,
+      );
+      if (fileFieldPattern.test(bibContent)) {
+        bibContent = bibContent.replace(fileFieldPattern, `$1${bibkey}.pdf$2`);
+        updated++;
+        if (debug) process.stderr.write(`[materialize] updated ${bibkey}: file .md → .pdf\n`);
+      }
+    }
     if (updated > 0) {
       writeFileSync(bibToUpdate, bibContent, "utf-8");
-      process.stderr.write(`[materialize] updated ${updated} bib entries with file fields in ${bibToUpdate}\n`);
+      process.stderr.write(`[materialize] updated ${updated} bib entries in ${bibToUpdate}\n`);
     }
   }
 
