@@ -331,6 +331,9 @@ function buildGroupPrompt(cites: Citation[]): string {
     lines.push(
       "Quote the supporting passage from each source if yes; respond UNSUPPORTED if no.",
     );
+    lines.push(
+      "Quote the EXACT text from the source — copy verbatim, do not paraphrase or summarize. The supporting_passage must be a direct quote.",
+    );
   }
   return lines.join(" ").trim();
 }
