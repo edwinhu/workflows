@@ -426,10 +426,24 @@ function fileExists(filePath: string, debug?: boolean): boolean {
   if (gdrivePath) {
     // For Google Drive paths, check via rclone instead of statSync
     const relativePath = extractDriveRelativePath(gdrivePath)!;
-    const result = spawnSync("rclone", ["lsf", `${RCLONE_REMOTE}${relativePath}`], {
-      timeout: 10_000,
-    });
-    return result.status === 0 && (result.stdout?.toString().trim().length ?? 0) > 0;
+    const remote = `${RCLONE_REMOTE}${relativePath}`;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = spawnSync("rclone", ["lsf", remote], {
+        timeout: 30_000,
+      });
+      if (result.status === 0 && (result.stdout?.toString().trim().length ?? 0) > 0) {
+        return true;
+      }
+      if (result.status === null) {
+        // Timed out — retry once
+        if (debug) {
+          process.stderr.write(`[rclone] lsf timed out for ${basename(filePath)} (attempt ${attempt + 1})\n`);
+        }
+        continue;
+      }
+      break; // Non-timeout failure, don't retry
+    }
+    return false;
   }
   try {
     statSync(filePath);
