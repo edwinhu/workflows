@@ -227,39 +227,98 @@ async function main(): Promise<number> {
       ? [expandPath(rawBibPaths)]
       : [];
 
-  // Discovery mode: semantic search Readwise highlights for themes (lit review)
+  // Discovery mode: search both highlights AND documents, merge by title
   const discoverQuery = flags.discover;
   if (typeof discoverQuery === "string") {
-    process.stderr.write(`[discover] searching Readwise highlights for: "${discoverQuery}"\n`);
+    process.stderr.write(`[discover] searching Readwise for: "${discoverQuery}"\n`);
+
+    // Run both searches in parallel (sequential here but fast enough)
     const highlights = searchReadwiseHighlights(discoverQuery, true, 30);
-    if (!highlights || highlights.length === 0) {
-      process.stderr.write(`[discover] no highlights found\n`);
+    const docs = searchReadwiseSemantic(discoverQuery, true, 20);
+
+    // Merge into a unified map keyed by document title
+    const byDoc = new Map<string, {
+      title: string;
+      author: string;
+      category: string;
+      document_id?: string;
+      highlights: string[];
+      fromHighlights: boolean;
+      fromDocSearch: boolean;
+    }>();
+
+    // Add highlight results (user actually marked these)
+    if (highlights) {
+      for (const h of highlights) {
+        const key = h.attributes.document_title;
+        let group = byDoc.get(key);
+        if (!group) {
+          group = {
+            title: h.attributes.document_title,
+            author: h.attributes.document_author,
+            category: h.attributes.document_category,
+            highlights: [],
+            fromHighlights: true,
+            fromDocSearch: false,
+          };
+          byDoc.set(key, group);
+        }
+        group.fromHighlights = true;
+        if (h.attributes.highlight_plaintext) {
+          group.highlights.push(h.attributes.highlight_plaintext.slice(0, 200));
+        }
+      }
+    }
+
+    // Add document search results (may include unread/unhighlighted docs)
+    if (docs) {
+      for (const d of docs) {
+        const key = d.title;
+        let group = byDoc.get(key);
+        if (!group) {
+          group = {
+            title: d.title,
+            author: d.author ?? "",
+            category: d.category ?? "",
+            document_id: d.document_id,
+            highlights: [],
+            fromHighlights: false,
+            fromDocSearch: true,
+          };
+          byDoc.set(key, group);
+        } else {
+          group.fromDocSearch = true;
+          if (d.document_id) group.document_id = d.document_id;
+        }
+      }
+    }
+
+    if (byDoc.size === 0) {
+      process.stderr.write(`[discover] no results\n`);
       return 0;
     }
 
-    // Group highlights by document
-    const byDoc = new Map<string, { title: string; author: string; category: string; highlights: string[] }>();
-    for (const h of highlights) {
-      const key = h.attributes.document_title;
-      let group = byDoc.get(key);
-      if (!group) {
-        group = {
-          title: h.attributes.document_title,
-          author: h.attributes.document_author,
-          category: h.attributes.document_category,
-          highlights: [],
-        };
-        byDoc.set(key, group);
-      }
-      if (h.attributes.highlight_plaintext) {
-        group.highlights.push(h.attributes.highlight_plaintext.slice(0, 200));
-      }
-    }
+    // Sort: highlighted docs first (user engaged with these), then doc-only
+    const sorted = [...byDoc.values()].sort((a, b) => {
+      if (a.fromHighlights && !b.fromHighlights) return -1;
+      if (!a.fromHighlights && b.fromHighlights) return 1;
+      return b.highlights.length - a.highlights.length;
+    });
 
-    process.stderr.write(`[discover] ${highlights.length} highlights across ${byDoc.size} documents:\n\n`);
-    for (const [, doc] of byDoc) {
+    const hlCount = sorted.filter((d) => d.fromHighlights).length;
+    const docOnly = sorted.filter((d) => !d.fromHighlights).length;
+    process.stderr.write(
+      `[discover] ${byDoc.size} documents (${hlCount} with highlights, ${docOnly} from doc search only)\n\n`,
+    );
+
+    for (const doc of sorted) {
       const author = doc.author ? ` by ${doc.author}` : "";
-      console.log(`## ${doc.title}${author} [${doc.category}]`);
+      const source = doc.fromHighlights && doc.fromDocSearch
+        ? " [highlights + doc]"
+        : doc.fromHighlights
+          ? " [highlighted]"
+          : " [saved, no highlights]";
+      console.log(`## ${doc.title}${author} [${doc.category}]${source}`);
       for (const hl of doc.highlights.slice(0, 3)) {
         console.log(`  > ${hl.replace(/\n/g, " ").trim()}`);
       }
