@@ -709,7 +709,7 @@ export async function submitBatchCiteCheck(
     parts.push({ text: req.prompt });
 
     return {
-      key: req.key,
+      metadata: { key: req.key },
       contents: [{ parts, role: "user" as const }],
       config: {
         responseMimeType: "application/json",
@@ -773,8 +773,12 @@ export async function submitBatchCiteCheck(
   const responses = (job as Record<string, unknown> & { dest?: { inlinedResponses?: unknown[] } }).dest?.inlinedResponses ?? [];
 
   for (let i = 0; i < responses.length; i++) {
-    const key = requests[i]?.key ?? `unknown-${i}`;
     const inlineResponse = responses[i] as Record<string, unknown>;
+    // Use metadata.key echoed back by the API for order-independent matching.
+    // Fall back to positional requests[i] only as a last resort (should not happen).
+    const key = (inlineResponse.metadata as Record<string, string> | undefined)?.key
+      ?? requests[i]?.key
+      ?? `unknown-${i}`;
 
     // Raw response debug logging (before any parsing)
     if (opts?.debug) {
