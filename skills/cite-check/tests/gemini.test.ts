@@ -1056,7 +1056,7 @@ describe("parseBibFile url field", () => {
 });
 
 describe("submitBatchCiteCheck", () => {
-  it("submits batch with inline fileData parts and responseJsonSchema", async () => {
+  it("submits batch with inline fileData parts and responseSchema", async () => {
     const createCalls: any[] = [];
     const mockClient = {
       batches: {
@@ -1120,10 +1120,10 @@ describe("submitBatchCiteCheck", () => {
     expect(req1.contents[0].parts[0].fileData.mimeType).toBe("application/pdf");
     expect(req1.contents[0].parts[1].text).toBe("Does source support claim 1?");
 
-    // Should have responseMimeType and responseJsonSchema (no tools = structured output works)
+    // Should have responseMimeType and responseSchema
     expect(req1.config.responseMimeType).toBe("application/json");
-    expect(req1.config.responseJsonSchema).toBeDefined();
-    expect(req1.config.responseJsonSchema.type).toBeDefined();
+    expect(req1.config.responseSchema).toBeDefined();
+    expect(req1.config.responseSchema.type).toBeDefined();
     // No tools
     expect(req1.config.tools).toBeUndefined();
 
