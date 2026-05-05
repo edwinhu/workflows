@@ -719,26 +719,31 @@ async function main(): Promise<number> {
     );
   }
 
-  // 5. Readwise: search by title, export markdown
+  // 5. Readwise: search by title, export markdown, update bib with file fields
   let readwiseFound = 0;
   let readwiseMissing = 0;
   const readwiseGaps: Array<{ bibkey: string; title: string; url?: string }> = [];
+  const newBibEntries: string[] = [];
+  const bibFileUpdates: Array<{ bibkey: string; fileName: string }> = [];
 
+  // 5a. Entries IN bib but without file field — search Readwise by title
   if (withoutFile.length > 0) {
     process.stderr.write(`[materialize] searching Readwise for ${withoutFile.length} non-PDF sources...\n`);
 
     for (const { bibkey, entry } of withoutFile) {
-      const destPath = join(refsDir, `${bibkey}.md`);
+      const fileName = `${bibkey}.md`;
+      const destPath = join(refsDir, fileName);
 
       // Skip if already materialized
       if (existsSync(destPath) && statSync(destPath).size > 0) {
         if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
         readwiseFound++;
+        bibFileUpdates.push({ bibkey, fileName });
         continue;
       }
 
       const title = entry.title ?? bibkey;
-      const doc = searchReadwiseByTitle(title, debug);
+      const doc = searchReadwiseByTitle(title, entry.author, debug);
 
       if (!doc || !doc.document_id) {
         readwiseMissing++;
@@ -771,24 +776,121 @@ async function main(): Promise<number> {
 
       writeFileSync(destPath, header + markdown, "utf-8");
       readwiseFound++;
+      bibFileUpdates.push({ bibkey, fileName });
       process.stderr.write(`  [exported] ${bibkey}: "${title.slice(0, 50)}" (${doc.category})\n`);
     }
-
-    process.stderr.write(
-      `[materialize] Readwise: ${readwiseFound} exported, ${readwiseMissing} not found\n`,
-    );
   }
 
-  // 6. Summary
+  // 5b. Entries NOT in any bib — search Readwise, generate bibkey + bib entry
+  if (notInBib.length > 0) {
+    process.stderr.write(`[materialize] searching Readwise for ${notInBib.length} bibkeys not in any bib file...\n`);
+
+    for (const bibkey of notInBib) {
+      const fileName = `${bibkey}.md`;
+      const destPath = join(refsDir, fileName);
+
+      if (existsSync(destPath) && statSync(destPath).size > 0) {
+        if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
+        readwiseFound++;
+        continue;
+      }
+
+      // Try to find in Readwise — use bibkey as search hint (e.g., "Daly2026" → "Daly 2026")
+      const searchHint = bibkey.replace(/(\d{4}).*$/, " $1").replace(/([a-z])([A-Z])/g, "$1 $2");
+      const doc = searchReadwiseByTitle(searchHint, undefined, debug);
+
+      if (!doc || !doc.document_id) {
+        readwiseMissing++;
+        readwiseGaps.push({ bibkey, title: bibkey, url: undefined });
+        if (debug) process.stderr.write(`  [not found] ${bibkey}\n`);
+        continue;
+      }
+
+      const markdown = exportReadwiseMarkdown(doc.document_id, debug);
+      if (!markdown) {
+        readwiseMissing++;
+        readwiseGaps.push({ bibkey, title: bibkey });
+        continue;
+      }
+
+      const header = [
+        "---",
+        `bibkey: ${bibkey}`,
+        `title: "${(doc.title ?? "Untitled").replace(/"/g, '\\"')}"`,
+        `author: "${(doc.author ?? "").replace(/"/g, '\\"')}"`,
+        `source: readwise`,
+        `readwise_id: "${doc.document_id}"`,
+        `category: ${doc.category ?? "unknown"}`,
+        "---",
+        "",
+      ].join("\n");
+
+      writeFileSync(destPath, header + markdown, "utf-8");
+      readwiseFound++;
+
+      // Generate a bib entry for this new source
+      const yearMatch = bibkey.match(/(\d{4})/);
+      const bibEntry = generateBibEntry(bibkey, {
+        title: doc.title ?? "Untitled",
+        author: doc.author,
+        year: yearMatch?.[1],
+        filePath: fileName,
+      });
+      newBibEntries.push(bibEntry);
+      process.stderr.write(`  [exported+bib] ${bibkey}: "${(doc.title ?? "").slice(0, 50)}" (${doc.category})\n`);
+    }
+  }
+
+  process.stderr.write(
+    `[materialize] Readwise: ${readwiseFound} exported, ${readwiseMissing} not found\n`,
+  );
+
+  // 6. Update bib files
+  // 6a. Add file fields to existing bib entries that got Readwise exports
+  if (bibFileUpdates.length > 0 && bibPaths.length > 0) {
+    // Update the last bib file (project-local sources.bib)
+    const bibToUpdate = bibPaths[bibPaths.length - 1];
+    let bibContent = readFileSync(bibToUpdate, "utf-8");
+    let updated = 0;
+    for (const { bibkey, fileName } of bibFileUpdates) {
+      // Only add file field if entry exists but has no file field
+      const entryPattern = new RegExp(`(@\\w+\\{${bibkey},)`, "m");
+      if (entryPattern.test(bibContent) && !new RegExp(`@\\w+\\{${bibkey},[^}]*file\\s*=`, "s").test(bibContent)) {
+        bibContent = bibContent.replace(
+          entryPattern,
+          `$1\n  file = {${fileName}},`,
+        );
+        updated++;
+      }
+    }
+    if (updated > 0) {
+      writeFileSync(bibToUpdate, bibContent, "utf-8");
+      process.stderr.write(`[materialize] updated ${updated} bib entries with file fields in ${bibToUpdate}\n`);
+    }
+  }
+
+  // 6b. Append new bib entries for sources not in any bib
+  if (newBibEntries.length > 0 && bibPaths.length > 0) {
+    const bibToAppend = bibPaths[bibPaths.length - 1];
+    const bibAppend = "\n" + newBibEntries.join("\n\n") + "\n";
+    const existingContent = existsSync(bibToAppend) ? readFileSync(bibToAppend, "utf-8") : "";
+    writeFileSync(bibToAppend, existingContent + bibAppend, "utf-8");
+    process.stderr.write(`[materialize] appended ${newBibEntries.length} new bib entries to ${bibToAppend}\n`);
+  }
+
+  // 7. Summary
   process.stderr.write("\n=== Source Materialization Summary ===\n");
   process.stderr.write(`Target: ${refsDir}\n`);
   process.stderr.write(`Paperpile PDFs: ${paperpileCopied} copied, ${paperpileMissing} missing\n`);
   process.stderr.write(`Readwise articles: ${readwiseFound} exported, ${readwiseMissing} not found\n`);
-  if (notInBib.length > 0) {
-    process.stderr.write(`Not in any bib: ${notInBib.length} (${notInBib.slice(0, 5).join(", ")}${notInBib.length > 5 ? "..." : ""})\n`);
+  if (newBibEntries.length > 0) {
+    process.stderr.write(`New bib entries: ${newBibEntries.length}\n`);
+  }
+  if (bibFileUpdates.length > 0) {
+    process.stderr.write(`Bib file fields added: ${bibFileUpdates.length}\n`);
   }
 
-  const totalMissing = paperpileMissing + readwiseMissing + notInBib.length;
+  const totalMissing = paperpileMissing + readwiseMissing;
   const totalFound = paperpileCopied + readwiseFound;
   process.stderr.write(`\nTotal: ${totalFound}/${targetBibkeys.length} materialized`);
   if (totalMissing > 0) {
@@ -797,7 +899,7 @@ async function main(): Promise<number> {
     process.stderr.write(` — all sources available\n`);
   }
 
-  // 7. Print gaps for manual action
+  // 8. Print gaps for manual action
   if (readwiseGaps.length > 0) {
     process.stderr.write("\n=== Gaps (need Obsidian web clipper or manual sourcing) ===\n");
     for (const g of readwiseGaps) {
