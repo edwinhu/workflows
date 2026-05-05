@@ -36,6 +36,7 @@ import {
   queryCitation,
   queryCitationsConcurrently,
   resolveFileAcrossDirs,
+  ensureLocal,
   loadManifest,
   saveManifest,
   restoreFromManifest,
@@ -200,10 +201,11 @@ function checkGrounding(
     const entry = bibMap.get(bibkey);
     if (!entry) continue;
 
-    const pdfPath = entry.filePath
+    const resolved = entry.filePath
       ? resolveFileAcrossDirs(entry, bibDirs, debug) ?? undefined
       : undefined;
-    if (!pdfPath) continue;
+    if (!resolved) continue;
+    const pdfPath = ensureLocal(resolved, debug);
 
     const sourceText = extractPdfText(pdfPath, textCacheDir, bibkey, debug);
     if (!sourceText) continue;

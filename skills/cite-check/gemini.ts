@@ -7,8 +7,10 @@
  */
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { readFileSync, statSync, writeFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readFileSync, statSync, writeFileSync, existsSync, mkdirSync, realpathSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
+import { spawnSync } from "node:child_process";
+import { homedir } from "node:os";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -297,9 +299,152 @@ export async function uploadFile(
   };
 }
 
+// ---------------------------------------------------------------------------
+// Google Drive FUSE bypass via rclone
+// ---------------------------------------------------------------------------
+
+const GDRIVE_FUSE_PREFIXES = [
+  join(homedir(), "Google Drive/My Drive/"),
+  join(homedir(), "Library/CloudStorage/") // macOS resolved symlink path
+];
+const RCLONE_REMOTE = "google-drive:";
+const LOCAL_PDF_CACHE = join(homedir(), ".cache/cite-check-pdfs");
+
+/**
+ * Detect the Google Drive relative path from either the symlink or resolved path.
+ * Google Drive Desktop mounts at ~/Library/CloudStorage/GoogleDrive-<email>/My Drive/
+ * and symlinks ~/Google Drive/My Drive/ → there.
+ *
+ * Returns the path relative to "My Drive/" root, or null if not a Drive path.
+ */
+function extractDriveRelativePath(absPath: string): string | null {
+  // Check ~/Google Drive/My Drive/ prefix
+  const symlinkPrefix = GDRIVE_FUSE_PREFIXES[0];
+  if (absPath.startsWith(symlinkPrefix)) {
+    return absPath.slice(symlinkPrefix.length);
+  }
+  // Check ~/Library/CloudStorage/GoogleDrive-*/My Drive/ prefix
+  const csPrefix = GDRIVE_FUSE_PREFIXES[1];
+  if (absPath.startsWith(csPrefix)) {
+    // Path is like: .../CloudStorage/GoogleDrive-user@gmail.com/My Drive/resources/...
+    const afterCs = absPath.slice(csPrefix.length);
+    const myDriveIdx = afterCs.indexOf("/My Drive/");
+    if (myDriveIdx !== -1) {
+      return afterCs.slice(myDriveIdx + "/My Drive/".length);
+    }
+  }
+  return null;
+}
+
+function isDrivePath(absPath: string): boolean {
+  return extractDriveRelativePath(absPath) !== null;
+}
+
+/**
+ * Check if a path (or its symlink target) points into the Google Drive FUSE mount.
+ * Returns the fully resolved path if it does, null otherwise.
+ * Handles both the symlink (~/Google Drive/) and the real mount
+ * (~/Library/CloudStorage/GoogleDrive-<email>/My Drive/).
+ */
+function resolveGdrivePath(filePath: string): string | null {
+  // Check the path itself first
+  if (isDrivePath(filePath)) return filePath;
+  // Resolve symlinks: references/All Papers -> ~/Library/CloudStorage/.../All Papers
+  try {
+    const resolved = realpathSync(filePath);
+    if (isDrivePath(resolved)) return resolved;
+  } catch {
+    // File doesn't exist yet; walk up to find first resolvable ancestor
+    let dir = dirname(filePath);
+    while (dir !== dirname(dir)) {
+      try {
+        const resolvedDir = realpathSync(dir);
+        if (isDrivePath(resolvedDir)) {
+          return join(resolvedDir, filePath.slice(dir.length + 1));
+        }
+        break;
+      } catch {
+        dir = dirname(dir);
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * If a path is on the Google Drive FUSE mount (directly or via symlink),
+ * copy it locally via rclone to avoid EDEADLK deadlocks.
+ * Returns the local path (original or cached).
+ */
+export function ensureLocal(
+  filePath: string,
+  debug?: boolean,
+): string {
+  const gdrivePath = resolveGdrivePath(filePath);
+  if (!gdrivePath) return filePath;
+
+  // Convert FUSE path to rclone remote path
+  const relativePath = extractDriveRelativePath(gdrivePath)!;
+  const cachedPath = join(LOCAL_PDF_CACHE, basename(gdrivePath));
+
+  // Return cached copy if it exists and has content
+  if (existsSync(cachedPath)) {
+    try {
+      const st = statSync(cachedPath);
+      if (st.size > 0) return cachedPath;
+    } catch { /* re-download */ }
+  }
+
+  if (!existsSync(LOCAL_PDF_CACHE)) mkdirSync(LOCAL_PDF_CACHE, { recursive: true });
+
+  if (debug) {
+    process.stderr.write(`[rclone] copying ${basename(filePath)} from Google Drive...\n`);
+  }
+
+  const result = spawnSync("rclone", [
+    "copyto",
+    `${RCLONE_REMOTE}${relativePath}`,
+    cachedPath,
+  ], { timeout: 30_000 });
+
+  if (result.status !== 0) {
+    const err = result.stderr?.toString().slice(0, 200) ?? "unknown error";
+    process.stderr.write(`[rclone] WARNING: copy failed: ${err}\n`);
+    return filePath; // fall back to FUSE path
+  }
+
+  return cachedPath;
+}
+
+/**
+ * Check if a file exists, using rclone for Google Drive FUSE paths
+ * (statSync on FUSE paths can deadlock with EDEADLK).
+ * Resolves symlinks to detect paths that indirectly point to the FUSE mount.
+ */
+function fileExists(filePath: string, debug?: boolean): boolean {
+  const gdrivePath = resolveGdrivePath(filePath);
+  if (gdrivePath) {
+    // For Google Drive paths, check via rclone instead of statSync
+    const relativePath = extractDriveRelativePath(gdrivePath)!;
+    const result = spawnSync("rclone", ["lsf", `${RCLONE_REMOTE}${relativePath}`], {
+      timeout: 10_000,
+    });
+    return result.status === 0 && (result.stdout?.toString().trim().length ?? 0) > 0;
+  }
+  try {
+    statSync(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Try to find a PDF on disk by resolving a relative file path against multiple
  * directories. Returns the first path that exists, or null.
+ *
+ * For Google Drive FUSE paths, uses rclone to check existence (avoids EDEADLK).
+ * Callers should pass the returned path through ensureLocal() before reading.
  */
 export function resolveFileAcrossDirs(
   entry: BibEntry,
@@ -313,13 +458,11 @@ export function resolveFileAcrossDirs(
 
   // 1. Try primary resolved path first
   if (entry.filePath) {
-    try {
-      statSync(entry.filePath);
+    if (fileExists(entry.filePath, debug)) {
       return entry.filePath;
-    } catch {
-      if (debug) {
-        process.stderr.write(`[gemini] file not found at primary path: ${entry.filePath}\n`);
-      }
+    }
+    if (debug) {
+      process.stderr.write(`[gemini] file not found at primary path: ${entry.filePath}\n`);
     }
   }
 
@@ -328,14 +471,11 @@ export function resolveFileAcrossDirs(
     for (const dir of bibDirs) {
       const candidate = join(dir, relPath);
       if (candidate === entry.filePath) continue; // already tried
-      try {
-        statSync(candidate);
+      if (fileExists(candidate, debug)) {
         if (debug) {
           process.stderr.write(`[gemini] found via fallback dir: ${candidate}\n`);
         }
         return candidate;
-      } catch {
-        // not in this dir, try next
       }
     }
   }
@@ -373,7 +513,8 @@ export async function uploadCitedFiles(
       try {
         const resolvedPath = entry ? resolveFileAcrossDirs(entry, dirs, opts?.debug) : null;
         if (resolvedPath) {
-          const ref = await uploadFile(resolvedPath, { displayName: bibkey });
+          const localPath = ensureLocal(resolvedPath, opts?.debug);
+          const ref = await uploadFile(localPath, { displayName: bibkey });
           cache.set(bibkey, ref);
           uploaded++;
           if (opts?.debug) {
