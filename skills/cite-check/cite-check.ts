@@ -34,7 +34,7 @@ import {
   uploadCitedFiles,
   parseBibFile,
   queryCitation,
-  queryCitationsConcurrently,
+  submitBatchCiteCheck,
   resolveFileAcrossDirs,
   ensureLocal,
   ensureLocalBatch,
@@ -692,10 +692,9 @@ export async function cmdCiteCheck(
     }
     return 0;
   } else if (batchMode) {
-    // BATCH MODE: concurrent isolated queries (5 at a time).
-    // Uses separate generateContent calls per query to prevent file reference
-    // cross-contamination (the Gemini Batch API shares file context across
-    // requests within a single job, causing wrong-source passage retrieval).
+    // BATCH MODE: single Gemini Batch API job for all citation queries.
+    // Each request has inline fileData references — no cross-contamination
+    // since files are per-request, not shared across the batch job.
     const batchRequests: BatchRequest[] = [];
 
     for (const g of groups) {
@@ -719,10 +718,10 @@ export async function cmdCiteCheck(
 
     if (batchRequests.length > 0) {
       process.stderr.write(
-        `[cite-check] batch mode: querying ${batchRequests.length} groups concurrently...\n`,
+        `[cite-check] batch mode: submitting ${batchRequests.length} queries as Batch API job...\n`,
       );
 
-      const batchResults = await queryCitationsConcurrently(batchRequests, { debug, retryModel });
+      const batchResults = await submitBatchCiteCheck(batchRequests, { debug });
 
       // Map results back to cite groups by key
       const resultByKey = new Map(batchResults.map((r) => [r.key, r]));
