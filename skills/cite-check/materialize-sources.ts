@@ -173,6 +173,42 @@ function exportReadwiseMarkdown(docId: string, debug?: boolean): string | null {
   }
 }
 
+/**
+ * Save a URL to Readwise Reader. Reader scrapes the page and converts
+ * to its internal format. After saving, the document can be exported
+ * as markdown via reader-get-document-details.
+ *
+ * Returns the document_id if saved, or null on failure.
+ */
+function saveUrlToReadwise(
+  url: string,
+  opts?: { title?: string; author?: string; tags?: string[]; debug?: boolean },
+): string | null {
+  const args = ["reader-create-document", "--url", url, "--json"];
+  if (opts?.title) args.push("--title", opts.title);
+  if (opts?.author) args.push("--author", opts.author);
+  if (opts?.tags?.length) args.push("--tags", opts.tags.join(","));
+
+  const result = spawnSync("readwise", args, {
+    encoding: "utf-8",
+    timeout: 30_000,
+  });
+
+  if (result.status !== 0 || !result.stdout) {
+    if (opts?.debug) {
+      process.stderr.write(`[readwise] save URL failed: ${result.stderr?.slice(0, 200) ?? "no output"}\n`);
+    }
+    return null;
+  }
+
+  try {
+    const doc = JSON.parse(result.stdout);
+    return doc.id ?? doc.document_id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -330,8 +366,116 @@ async function main(): Promise<number> {
     return 0;
   }
 
+  // Save-URLs mode: save URLs to Readwise Reader, then export to references/
+  // Usage: materialize-sources --save-urls <file> --refs <dir> [--tag <tag>] [--debug]
+  // File format: one URL per line, optionally "URL | Title | Author"
+  const saveUrlsFile = flags["save-urls"];
+  if (typeof saveUrlsFile === "string") {
+    const refsDir = expandPath(typeof flags.refs === "string" ? flags.refs : "./references");
+    const tag = typeof flags.tag === "string" ? flags.tag : undefined;
+    const debug = !!flags.debug;
+
+    if (!existsSync(refsDir)) mkdirSync(refsDir, { recursive: true });
+
+    const lines = readFileSync(expandPath(saveUrlsFile), "utf-8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l && !l.startsWith("#"));
+
+    process.stderr.write(`[save-urls] processing ${lines.length} URLs → Readwise → ${refsDir}\n`);
+
+    let saved = 0;
+    let exported = 0;
+    let failed = 0;
+
+    for (const line of lines) {
+      // Parse "URL | Title | Author" or just "URL"
+      const parts = line.split("|").map((p) => p.trim());
+      const url = parts[0];
+      const title = parts[1] || undefined;
+      const author = parts[2] || undefined;
+
+      if (!url.startsWith("http")) {
+        process.stderr.write(`  [skip] not a URL: ${url.slice(0, 60)}\n`);
+        continue;
+      }
+
+      // Check if already in Readwise by URL
+      const existing = spawnSync("readwise", [
+        "reader-search-documents",
+        "--url-search", url,
+        "--limit", "1",
+        "--json",
+      ], { encoding: "utf-8", timeout: 15_000 });
+
+      let docId: string | null = null;
+      if (existing.status === 0 && existing.stdout) {
+        try {
+          const docs = JSON.parse(existing.stdout);
+          if (docs.length > 0) {
+            docId = docs[0].document_id;
+            if (debug) process.stderr.write(`  [exists] ${title ?? url.slice(0, 50)} already in Readwise\n`);
+          }
+        } catch { /* save fresh */ }
+      }
+
+      // Save to Readwise if not already there
+      if (!docId) {
+        const tags = tag ? [tag] : undefined;
+        docId = saveUrlToReadwise(url, { title, author, tags, debug });
+        if (docId) {
+          saved++;
+          process.stderr.write(`  [saved] ${title ?? url.slice(0, 50)} → ${docId}\n`);
+          // Wait a moment for Readwise to scrape the page
+          Bun.sleepSync(2000);
+        } else {
+          failed++;
+          process.stderr.write(`  [failed] ${title ?? url.slice(0, 50)}\n`);
+          continue;
+        }
+      }
+
+      // Export markdown to references/
+      const safeName = (title ?? url)
+        .replace(/[{}\\\/:"*?<>|]/g, "_")
+        .replace(/\s+/g, "_")
+        .slice(0, 80);
+      const destPath = join(refsDir, `${safeName}.md`);
+
+      if (existsSync(destPath) && statSync(destPath).size > 100) {
+        if (debug) process.stderr.write(`  [cached] ${safeName}.md\n`);
+        exported++;
+        continue;
+      }
+
+      const markdown = exportReadwiseMarkdown(docId, debug);
+      if (markdown && markdown.length > 50) {
+        const header = [
+          "---",
+          `title: "${(title ?? safeName).replace(/"/g, '\\"')}"`,
+          `author: "${(author ?? "").replace(/"/g, '\\"')}"`,
+          `url: "${url}"`,
+          `source: readwise`,
+          `readwise_id: "${docId}"`,
+          "---",
+          "",
+        ].join("\n");
+        writeFileSync(destPath, header + markdown, "utf-8");
+        exported++;
+        process.stderr.write(`  [exported] ${safeName}.md (${(markdown.length / 1024).toFixed(0)}KB)\n`);
+      } else {
+        process.stderr.write(`  [no content] ${safeName} — Readwise may still be scraping\n`);
+      }
+    }
+
+    process.stderr.write(
+      `\n[save-urls] ${saved} saved to Readwise, ${exported} exported to references/, ${failed} failed\n`,
+    );
+    return failed > 0 ? 1 : 0;
+  }
+
   if (bibPaths.length === 0) {
-    console.error("Usage: materialize-sources --bib <path> [--bib <path2>] --refs <dir> [--drafts <dir>] [--debug]\n       materialize-sources --discover \"<semantic query>\"");
+    console.error("Usage: materialize-sources --bib <path> [--bib <path2>] --refs <dir> [--drafts <dir>] [--debug]\n       materialize-sources --discover \"<semantic query>\"\n       materialize-sources --save-urls <file> --refs <dir> [--tag <tag>] [--debug]");
     return 1;
   }
 

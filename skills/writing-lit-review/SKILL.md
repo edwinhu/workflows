@@ -124,25 +124,40 @@ Agent(
 
 After results return, `materialize-sources.ts` handles Readwise export automatically — entries without `file` fields in the bib are searched in Readwise by title and exported as markdown.
 
-### Step 4: Web Sources — Obsidian Channel (User-Driven)
+### Step 4: Web Sources — NLM Deep Research Channel
 
-For web sources discovered during NLM deep research or brainstorm that aren't in Paperpile or Readwise:
+For web sources not in Paperpile or Readwise, use NLM to discover them:
 
 1. **Create NLM notebook** for the project (if not already created):
-   - Use `/workflows:nlm` to create notebook
-   - Add key source PDFs and URLs
-   - NLM can discover related web sources
-
-2. **Present URLs to user** for Obsidian web clipping:
+   ```bash
+   nlm create "<project title>"
    ```
-   These web sources need to be saved locally. Please clip them to Obsidian:
+   Add key source PDFs and URLs to the notebook.
+
+2. **Discover related sources** via NLM:
+   ```bash
+   nlm discover-sources <notebook-id> "<research theme>"
+   nlm research <notebook-id> "<broader research question>"
+   ```
+
+3. **Save discovered URLs to Readwise Reader** for scraping and export:
+   Write discovered URLs to a file (one per line, format: `URL | Title | Author`), then:
+   ```bash
+   cd ${CLAUDE_SKILL_DIR}/../cite-check
+   bun materialize-sources.ts \
+     --save-urls <url-file> \
+     --refs <project>/references \
+     --tag <project-tag> \
+     --debug
+   ```
+   This saves each URL to Readwise Reader (which scrapes and converts to markdown), then exports the content to `references/`.
+
+4. **Fallback: Obsidian web clipper** (manual, for sites Readwise can't scrape):
+   ```
+   These web sources need manual clipping via Obsidian web clipper:
    - [Title 1]: [URL 1]
-   - [Title 2]: [URL 2]
    ```
-
-3. **After user clips**, the sources are in the Obsidian vault. Add references to `sources.bib`.
-
-**This step is user-driven.** The skill identifies what needs clipping and presents the list. The user does the actual clipping.
+   The Writing vault IS the project directory, so clipped files land directly in `references/`.
 
 ### Step 5: Build/Update sources.bib
 
