@@ -15,7 +15,6 @@ import {
   saveManifest,
   restoreFromManifest,
   updateManifest,
-  verifyFileRef,
   computeSourceHash,
   loadStoreState,
   saveStoreState,
@@ -563,53 +562,6 @@ describe("manifest persistence", () => {
     expect(updated["Key2024-aa"].uploadedAt).toBe(earlier);
   });
 
-});
-
-describe("verifyFileRef", () => {
-  it("returns true when file is ACTIVE", async () => {
-    __setGeminiClientForTesting({
-      files: {
-        get: async () => ({ state: "ACTIVE" }),
-      },
-    } as any);
-
-    const result = await verifyFileRef({
-      name: "files/test",
-      uri: "https://example.com/test",
-      mimeType: "application/pdf",
-    });
-    expect(result).toBe(true);
-  });
-
-  it("returns false when file is not ACTIVE", async () => {
-    __setGeminiClientForTesting({
-      files: {
-        get: async () => ({ state: "EXPIRED" }),
-      },
-    } as any);
-
-    const result = await verifyFileRef({
-      name: "files/test",
-      uri: "https://example.com/test",
-      mimeType: "application/pdf",
-    });
-    expect(result).toBe(false);
-  });
-
-  it("returns false when API throws", async () => {
-    __setGeminiClientForTesting({
-      files: {
-        get: async () => { throw new Error("not found"); },
-      },
-    } as any);
-
-    const result = await verifyFileRef({
-      name: "files/gone",
-      uri: "https://example.com/gone",
-      mimeType: "application/pdf",
-    });
-    expect(result).toBe(false);
-  });
 });
 
 describe("queryCitation", () => {

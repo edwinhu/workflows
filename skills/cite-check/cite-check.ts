@@ -26,38 +26,31 @@
  * cite-check.ts (CLI). No project-internal imports.
  */
 
-import { readdirSync, readFileSync, statSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, dirname, join, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
 import {
   uploadCitedFiles,
   parseBibFile,
   queryCitation,
   resolveFileAcrossDirs,
-  ensureLocal,
-  ensureLocalBatch,
   loadManifest,
   saveManifest,
   restoreFromManifest,
   updateManifest,
   createOrReuseStore,
   importToStore,
-  computeSourceHash,
   queryCitationFileSearch,
   submitBatchFileSearch,
-  buildMetadataFilter,
   saveStoreState,
   loadStoreState,
   type Status,
   type BibEntry,
   type FileRef,
-  type Manifest,
-  type StoreState,
   type FileSearchBatchRequest,
 } from "./gemini.js";
 import { extractCitations, type Citation } from "./cite-extract.js";
-import { verifyGrounding, verifyGroundingWithFallback } from "./grounding.js";
+import { verifyGroundingWithFallback } from "./grounding.js";
 
 // ---------------------------------------------------------------------------
 // Helpers (formerly imported from librarian-cli internals).
@@ -130,108 +123,19 @@ interface CiteResult {
   grounded?: boolean; // true = passage verified in source text, false = passage not found
 }
 
-// ---------------------------------------------------------------------------
-// PDF text extraction (pymupdf4llm) + cache
-// ---------------------------------------------------------------------------
-
-const EXTRACT_SCRIPT = join(import.meta.dir, "extract-pdf-text.py");
-
 /**
- * Extract markdown text from a PDF using pymupdf4llm.
- * Results are cached in a .cite-check-text/ directory alongside the drafts.
+ * Map a grounding verification result to a boolean | undefined for the report.
+ * Returns undefined when grounding cannot be determined (non-supported status,
+ * no passage, or no grounding method available).
  */
-function extractPdfText(
-  pdfPath: string,
-  cacheDir: string,
-  bibkey: string,
-  debug?: boolean,
-): string | null {
-  // Check cache first
-  if (!existsSync(cacheDir)) mkdirSync(cacheDir, { recursive: true });
-  const safeBibkey = bibkey.replace(/[^a-zA-Z0-9_\-\.]/g, "_");
-  const cachePath = join(cacheDir, `${safeBibkey}.md`);
-  if (existsSync(cachePath)) {
-    const cached = readFileSync(cachePath, "utf-8");
-    if (cached.length > 0) {
-      if (debug) process.stderr.write(`[grounding] text cache hit: ${bibkey}\n`);
-      return cached;
-    }
-  }
-
-  if (debug) process.stderr.write(`[grounding] extracting text: ${pdfPath}\n`);
-  const result = spawnSync("python3", [EXTRACT_SCRIPT, pdfPath], {
-    encoding: "utf-8",
-    timeout: 60_000,
-  });
-
-  if (result.status !== 0 || !result.stdout) {
-    process.stderr.write(
-      `[grounding] WARNING: text extraction failed for ${bibkey}: ${result.stderr?.slice(0, 200) ?? "unknown error"}\n`,
-    );
-    return null;
-  }
-
-  // Cache the result
-  writeFileSync(cachePath, result.stdout, "utf-8");
-  return result.stdout;
-}
-
-/**
- * Verify grounding for a group of citations that share a Gemini result.
- * Extracts source text for each bibkey and checks whether the supporting
- * passage actually appears in the source.
- *
- * Returns true if grounded, false if not, undefined if verification was
- * not possible (e.g., text extraction failed or no passage returned).
- */
-function checkGrounding(
+function mapGroundingToBool(
   cls: { status: string; supporting_passage: string },
-  bibkeys: string[],
-  bibMap: Map<string, BibEntry>,
-  bibDirs: string[],
-  textCacheDir: string,
-  debug?: boolean,
-  signal?: string,
+  result: { grounded: boolean; method: string },
 ): boolean | undefined {
-  // Only verify SUPPORTED/PARTIAL results that have a passage
   if (cls.status !== "SUPPORTED" && cls.status !== "PARTIAL") return undefined;
   if (!cls.supporting_passage || cls.supporting_passage.length < 10) return undefined;
-
-  // Signal cites (see, cf., etc.) use relaxed thresholds
-  const opts = signal
-    ? { coverageThreshold: 0.5, densityThreshold: 0.2 }
-    : undefined;
-
-  // Track whether we successfully extracted text from any source
-  let anySourceExtracted = false;
-
-  // Try to verify against any source in the group
-  for (const bibkey of bibkeys) {
-    const entry = bibMap.get(bibkey);
-    if (!entry) continue;
-
-    const resolved = entry.filePath
-      ? resolveFileAcrossDirs(entry, bibDirs, debug) ?? undefined
-      : undefined;
-    if (!resolved) continue;
-    const pdfPath = ensureLocal(resolved, debug);
-
-    const sourceText = extractPdfText(pdfPath, textCacheDir, bibkey, debug);
-    if (!sourceText) continue;
-
-    anySourceExtracted = true;
-
-    const result = verifyGrounding(cls.supporting_passage, sourceText, opts);
-    if (debug) {
-      process.stderr.write(
-        `[grounding] ${bibkey}: grounded=${result.grounded} coverage=${result.coverage.toFixed(2)} density=${result.density.toFixed(2)}\n`,
-      );
-    }
-    if (result.grounded) return true;
-  }
-
-  // If no source text was available for any bibkey, we can't judge
-  return anySourceExtracted ? false : undefined;
+  if (result.method === "none") return undefined;
+  return result.grounded;
 }
 
 const STATUS_GLYPH: Record<Status, string> = {
@@ -621,6 +525,8 @@ export async function cmdCiteCheck(
   const bibDirs = resolvedBibPaths.map((p) => dirname(p));
   // Track which bibkeys are importable (have file paths) for NOT_IN_STORE logic
   const importableBibkeys = new Set<string>();
+  // Cache resolved paths so importToStore does not re-resolve them
+  const resolvedPathsMap = new Map<string, string>();
 
   if (!dryRun) {
     try {
@@ -634,6 +540,7 @@ export async function cmdCiteCheck(
             const resolved = resolveFileAcrossDirs(entry, bibDirs, debug);
             if (resolved) {
               importableBibkeys.add(bibkey);
+              resolvedPathsMap.set(bibkey, resolved);
             }
           }
         }
@@ -656,6 +563,7 @@ export async function cmdCiteCheck(
             bibMap,
             citedBibkeys,
             bibDirs,
+            resolvedPaths: resolvedPathsMap,
             debug,
           });
           process.stderr.write(
@@ -708,11 +616,6 @@ export async function cmdCiteCheck(
   // 3. Iterate cite groups, classify each.
   const results: CiteResult[] = [];
   // Batch mode (Gemini Batch API) is the default.
-  // --sequential: one query at a time (useful for debugging)
-  const batchMode = !flags.sequential;
-  const sequentialMode = !!flags.sequential;
-  const textCacheDir = join(draftsDir, ".cite-check-text");
-
   if (dryRun) {
     process.stderr.write(
       `[cite-check] dry-run: would query Gemini for ${groups.length} groups (${cites.length} citations)\n`,
@@ -726,7 +629,7 @@ export async function cmdCiteCheck(
       );
     }
     return 0;
-  } else if (batchMode) {
+  } else if (!flags.sequential) {
     // BATCH MODE: File Search Batch API job for all citation queries.
     const batchRequests: FileSearchBatchRequest[] = [];
 
@@ -786,25 +689,14 @@ export async function cmdCiteCheck(
           expectedBibkeys: inStore.map((c) => c.bibkey),
           signal: g.cites[0]?.signal,
         });
-
-        // Map grounding result to boolean | undefined for backward compat
-        let grounded: boolean | undefined;
-        if (cls.status !== "SUPPORTED" && cls.status !== "PARTIAL") {
-          grounded = undefined;
-        } else if (!cls.supporting_passage || cls.supporting_passage.length < 10) {
-          grounded = undefined;
-        } else if (groundingResult.method === "none") {
-          grounded = undefined;
-        } else {
-          grounded = groundingResult.grounded;
-        }
+        const grounded = mapGroundingToBool(cls, groundingResult);
 
         for (const c of inStore) {
           results.push({ cite: c, status: cls.status, response: snippet, grounded });
         }
       }
     }
-  } else if (sequentialMode) {
+  } else {
     // SEQUENTIAL MODE: query Gemini one group at a time via File Search
     let queryIdx = 0;
     for (const g of groups) {
@@ -855,22 +747,11 @@ export async function cmdCiteCheck(
         // Post-hoc grounding using verifyGroundingWithFallback
         const groundingResult = verifyGroundingWithFallback({
           passage: cls.supporting_passage,
-          groundingChunks: geminiResult.groundingChunks as unknown[],
+          groundingChunks: geminiResult.groundingChunks,
           expectedBibkeys: bibkeys,
           signal: inStore[0]?.signal,
         });
-
-        // Map grounding result to boolean | undefined for backward compat
-        let grounded: boolean | undefined;
-        if (cls.status !== "SUPPORTED" && cls.status !== "PARTIAL") {
-          grounded = undefined;
-        } else if (!cls.supporting_passage || cls.supporting_passage.length < 10) {
-          grounded = undefined;
-        } else if (groundingResult.method === "none") {
-          grounded = undefined;
-        } else {
-          grounded = groundingResult.grounded;
-        }
+        const grounded = mapGroundingToBool(cls, groundingResult);
 
         // Intentional strict equality: false = verified ungrounded, undefined = not checked
         const groundingTag = grounded === false ? " [UNGROUNDED]" : "";

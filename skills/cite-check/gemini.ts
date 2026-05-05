@@ -12,6 +12,7 @@ import { join, dirname, basename } from "node:path";
 import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { createHash } from "node:crypto";
+import type { GroundingChunk } from "./grounding.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,20 +83,6 @@ export function saveManifest(path: string, manifest: Manifest): void {
 }
 
 /**
- * Verify that a file ref is still alive on the Gemini Files API.
- * Returns true if the file exists and is ACTIVE, false otherwise.
- */
-export async function verifyFileRef(ref: FileRef): Promise<boolean> {
-  try {
-    const client = getClient();
-    const file = await client.files.get({ name: ref.name });
-    return file.state === "ACTIVE";
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Pre-populate a cache from a manifest, filtering out expired entries.
  * Entries within TTL are added to the cache without verification (fast path).
  *
@@ -151,15 +138,13 @@ export function updateManifest(
 /** On-disk store state file (replaces Manifest). */
 export interface StoreState {
   storeName: string;       // e.g. "fileSearchStores/abc-123"
-  sourceHash: string;      // SHA-256 of sorted bibkeys + file mtimes
+  sourceHash: string;      // SHA-256 of sorted bibkeys + file paths
   importedBibkeys: string[]; // bibkeys successfully imported
   createdAt: number;       // epoch ms
 }
 
-/**
- * Compute a SHA-256 hash of the cited sources to detect when they change.
- * Sorts bibkeys alphabetically and includes bibkey + filePath for each.
- */
+/** Compute a hash of the cited sources for store invalidation.
+ * Hash includes sorted bibkeys and their file paths. */
 export function computeSourceHash(bibMap: Map<string, BibEntry>, citedBibkeys: string[]): string {
   const sorted = [...citedBibkeys].sort();
   const parts: string[] = [];
@@ -174,19 +159,12 @@ export function computeSourceHash(bibMap: Map<string, BibEntry>, citedBibkeys: s
 /** Load store state from disk. Returns null if missing or invalid. */
 export function loadStoreState(path: string): StoreState | null {
   try {
-    if (!existsSync(path)) return null;
     const raw = readFileSync(path, "utf-8");
     const parsed = JSON.parse(raw);
-    // Validate required fields
-    if (
-      typeof parsed.storeName !== "string" ||
-      typeof parsed.sourceHash !== "string" ||
-      !Array.isArray(parsed.importedBibkeys) ||
-      typeof parsed.createdAt !== "number"
-    ) {
-      return null;
+    if (parsed && typeof parsed.storeName === "string" && typeof parsed.sourceHash === "string") {
+      return parsed as StoreState;
     }
-    return parsed as StoreState;
+    return null;
   } catch {
     return null;
   }
@@ -301,6 +279,7 @@ export async function importToStore(opts: {
   citedBibkeys: string[];
   alreadyImported?: string[];
   bibDirs?: string[];
+  resolvedPaths?: Map<string, string>;
   debug?: boolean;
   _pollIntervalMs?: number;
 }): Promise<{ imported: number; skipped: number; missing: number }> {
@@ -322,9 +301,14 @@ export async function importToStore(opts: {
     }
   }
 
-  // 2. Resolve file paths
+  // 2. Resolve file paths (skip if caller already resolved)
   const toResolve: Array<{ bibkey: string; resolvedPath: string }> = [];
   for (const bibkey of toProcess) {
+    const preResolved = opts.resolvedPaths?.get(bibkey);
+    if (preResolved) {
+      toResolve.push({ bibkey, resolvedPath: preResolved });
+      continue;
+    }
     const entry = bibMap.get(bibkey);
     if (!entry) {
       missing++;
@@ -341,45 +325,60 @@ export async function importToStore(opts: {
   // 3. Ensure Google Drive files are local
   const localPaths = ensureLocalBatch(toResolve, debug);
 
-  // 4. Upload each file to the store
+  // 4. Upload files to the store with bounded concurrency and timeout
   const client = getClient() as unknown as ClientWithStoreUpload;
+  const UPLOAD_CONCURRENCY = 5;
+  const UPLOAD_TIMEOUT_MS = 120_000;
 
-  for (const { bibkey } of toResolve) {
-    const localPath = localPaths.get(bibkey);
-    if (!localPath) {
-      missing++;
-      continue;
-    }
+  for (let i = 0; i < toResolve.length; i += UPLOAD_CONCURRENCY) {
+    const chunk = toResolve.slice(i, i + UPLOAD_CONCURRENCY);
+    await Promise.all(chunk.map(async ({ bibkey }) => {
+      const localPath = localPaths.get(bibkey);
+      if (!localPath) {
+        missing++;
+        return;
+      }
 
-    const entry = bibMap.get(bibkey)!;
-    const ext = localPath.split(".").pop()?.toLowerCase();
-    const mimeType = ext === "md" ? "text/markdown" : "application/pdf";
+      try {
+        const entry = bibMap.get(bibkey)!;
+        const ext = localPath.split(".").pop()?.toLowerCase();
+        const mimeType = ext === "md" ? "text/markdown" : "application/pdf";
 
-    let operation = await client.fileSearchStores.uploadToFileSearchStore({
-      fileSearchStoreName: storeName,
-      file: localPath,
-      config: {
-        displayName: bibkey,
-        mimeType,
-        customMetadata: [
-          { key: "bibkey", stringValue: bibkey },
-          { key: "author", stringValue: entry.author ?? "" },
-          { key: "year", numericValue: entry.year ? parseInt(entry.year) : 0 },
-        ],
-      },
-    });
+        let operation = await client.fileSearchStores.uploadToFileSearchStore({
+          fileSearchStoreName: storeName,
+          file: localPath,
+          config: {
+            displayName: bibkey,
+            mimeType,
+            customMetadata: [
+              { key: "bibkey", stringValue: bibkey },
+              { key: "author", stringValue: entry.author ?? "" },
+              { key: "year", numericValue: entry.year ? parseInt(entry.year) : 0 },
+            ],
+          },
+        });
 
-    // 5. Wait for operation to complete
-    while (!operation.done) {
-      await new Promise(r => setTimeout(r, _pollIntervalMs));
-      operation = await client.operations.get({ name: operation.name });
-    }
+        // 5. Wait for operation to complete (with timeout)
+        const start = Date.now();
+        while (!operation.done) {
+          if (Date.now() - start > UPLOAD_TIMEOUT_MS) {
+            throw new Error(`Import stuck for ${bibkey} after ${UPLOAD_TIMEOUT_MS / 1000}s`);
+          }
+          await new Promise(r => setTimeout(r, _pollIntervalMs));
+          operation = await client.operations.get({ name: operation.name });
+        }
 
-    imported++;
+        imported++;
 
-    if (debug) {
-      process.stderr.write(`[store] imported ${bibkey} → ${storeName}\n`);
-    }
+        if (debug) {
+          process.stderr.write(`[store] imported ${bibkey}\n`);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`[store] WARNING: import failed for ${bibkey}: ${msg}\n`);
+        missing++;
+      }
+    }));
   }
 
   return { imported, skipped, missing };
@@ -899,7 +898,7 @@ export interface FileSearchBatchRequest {
 export interface FileSearchBatchResult {
   key: string;
   classification: ClassifyResult;
-  groundingChunks?: any[];
+  groundingChunks?: GroundingChunk[];
   error?: string;
 }
 
@@ -1074,7 +1073,7 @@ export async function queryCitationFileSearch(opts: {
   model?: string;
   debug?: boolean;
   retryModel?: string;
-}): Promise<{ classification: ClassifyResult; durationMs: number; groundingChunks?: unknown[] }> {
+}): Promise<{ classification: ClassifyResult; durationMs: number; groundingChunks?: GroundingChunk[] }> {
   const client = getClient();
   const model = opts.model ?? DEFAULT_MODEL;
   const t0 = Date.now();
@@ -1104,7 +1103,7 @@ export async function queryCitationFileSearch(opts: {
   const durationMs = Date.now() - t0;
   const classification = parseClassification(response.text);
   const groundingChunks = (response as Record<string, unknown> & {
-    candidates?: Array<{ groundingMetadata?: { groundingChunks?: unknown[] } }>;
+    candidates?: Array<{ groundingMetadata?: { groundingChunks?: GroundingChunk[] } }>;
   }).candidates?.[0]?.groundingMetadata?.groundingChunks;
 
   // Retry UNSUPPORTED with a stronger model if configured
@@ -1132,7 +1131,7 @@ export async function queryCitationFileSearch(opts: {
 
     const retryClassification = parseClassification(retryResponse.text);
     const retryGroundingChunks = (retryResponse as Record<string, unknown> & {
-      candidates?: Array<{ groundingMetadata?: { groundingChunks?: unknown[] } }>;
+      candidates?: Array<{ groundingMetadata?: { groundingChunks?: GroundingChunk[] } }>;
     }).candidates?.[0]?.groundingMetadata?.groundingChunks;
     const totalMs = Date.now() - t0;
 
@@ -1262,7 +1261,7 @@ export async function submitBatchFileSearch(
 
     // Extract grounding chunks
     const candidates = (response as Record<string, unknown> & {
-      candidates?: Array<{ groundingMetadata?: { groundingChunks?: unknown[] } }>;
+      candidates?: Array<{ groundingMetadata?: { groundingChunks?: GroundingChunk[] } }>;
     })?.candidates;
     const groundingChunks = candidates?.[0]?.groundingMetadata?.groundingChunks;
 
@@ -1305,7 +1304,7 @@ export async function submitBatchFileSearch(
         results[index] = {
           key: request.key,
           classification: retryResult.classification,
-          groundingChunks: retryResult.groundingChunks as any[],
+          groundingChunks: retryResult.groundingChunks,
         };
       } catch {
         // Keep the original ERROR result
