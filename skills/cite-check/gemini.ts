@@ -209,7 +209,7 @@ export async function createOrReuseStore(opts: {
   }
 
   // Create new store
-  const client = getClient() as unknown as ClientWithStores;
+  const client = getClient() as unknown as FileSearchClient;
   const store = await client.fileSearchStores.create({
     config: { displayName: `cite-check-${Date.now()}` },
   });
@@ -231,11 +231,15 @@ export async function createOrReuseStore(opts: {
   return { storeName, isNew: true };
 }
 
-/** Internal type for the fileSearchStores API surface. */
-interface ClientWithStores {
+/** Internal type for the fileSearchStores API surface (create/delete/upload). */
+interface FileSearchClient {
   fileSearchStores: {
     create: (opts: Record<string, unknown>) => Promise<{ name: string }>;
     delete: (opts: Record<string, unknown>) => Promise<void>;
+    uploadToFileSearchStore: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
+  };
+  operations: {
+    get: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
   };
 }
 
@@ -244,7 +248,7 @@ interface ClientWithStores {
  */
 export async function deleteStore(storeName: string): Promise<void> {
   try {
-    const client = getClient() as unknown as ClientWithStores;
+    const client = getClient() as unknown as FileSearchClient;
     await client.fileSearchStores.delete({
       name: storeName,
       config: { force: true },
@@ -258,15 +262,6 @@ export async function deleteStore(storeName: string): Promise<void> {
 // File Search Store: import files
 // ---------------------------------------------------------------------------
 
-/** Internal type for the fileSearchStores upload API surface. */
-interface ClientWithStoreUpload {
-  fileSearchStores: {
-    uploadToFileSearchStore: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
-  };
-  operations: {
-    get: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
-  };
-}
 
 /**
  * Import files into a File Search Store with custom bibkey metadata.
@@ -326,7 +321,7 @@ export async function importToStore(opts: {
   const localPaths = ensureLocalBatch(toResolve, debug);
 
   // 4. Upload files to the store with bounded concurrency and timeout
-  const client = getClient() as unknown as ClientWithStoreUpload;
+  const client = getClient() as unknown as FileSearchClient;
   const UPLOAD_CONCURRENCY = 5;
   const UPLOAD_TIMEOUT_MS = 120_000;
 
