@@ -288,9 +288,7 @@ export function verifyGrounding(
     // If still no span but token-set-coverage is very high (>=0.85),
     // the passage is real — tokens exist in the source but are scattered
     // (paraphrased or spread across page breaks). Accept as grounded.
-    // Only apply this fallback when using default thresholds — callers who
-    // pass explicit custom thresholds want strict contiguous-span verification.
-    if (!span && setCoverage >= 0.85 && !opts) {
+    if (!span && setCoverage >= 0.85) {
       return {
         grounded: true,
         coverage: setCoverage,

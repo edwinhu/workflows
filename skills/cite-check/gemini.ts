@@ -828,6 +828,32 @@ export async function submitBatchCiteCheck(
     results.push({ key, classification });
   }
 
+  // Retry deadline errors via individual generateContent calls
+  const deadlineRetries: Array<{ index: number; request: BatchRequest }> = [];
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].classification.status === "ERROR" &&
+        results[i].classification.explanation.includes("Deadline")) {
+      deadlineRetries.push({ index: i, request: requests[i] });
+    }
+  }
+
+  if (deadlineRetries.length > 0) {
+    if (opts?.debug) {
+      process.stderr.write(`[gemini-batch] retrying ${deadlineRetries.length} deadline errors via generateContent...\n`);
+    }
+    for (const { index, request } of deadlineRetries) {
+      try {
+        const retryResult = await queryCitation(request.fileRefs, request.prompt, { model: opts?.model, debug: opts?.debug });
+        results[index] = {
+          key: request.key,
+          classification: retryResult.classification,
+        };
+      } catch {
+        // Keep the original ERROR result
+      }
+    }
+  }
+
   return results;
 }
 
