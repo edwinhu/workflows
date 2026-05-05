@@ -15,7 +15,7 @@ hooks:
 
 Create the project foundation: PRECIS.md (thesis, audience, claims), OUTLINE.md (document structure), and ACTIVE_WORKFLOW.md (state tracking).
 
-**Prerequisites:** Brainstorm complete. User has confirmed topic, angle, and audience.
+**Prerequisites:** Brainstorm and lit review complete. User has confirmed topic, angle, and audience. Sources materialized in `references/` (PDFs + markdown).
 
 ## Session Resume Detection
 

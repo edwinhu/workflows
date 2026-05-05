@@ -453,9 +453,17 @@ Before proceeding to project setup:
    - Source results contain specific titles, authors, and quoted text (not summaries from training data)
    - Domain indicators come from actual source material characteristics
 4. **VERIFY**: All three conditions met: (a) real sources gathered, (b) user confirmed via AskUserQuestion, (c) domain detected from evidence
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-setup
+5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-lit-review
 
 **"User seemed to agree" is not confirmation. AskUserQuestion response or explicit typed confirmation is confirmation.** Inferring agreement from silence or topic continuation is rubber-stamping the gate.
+
+## Phase Complete → Proceed to Lit Review
+
+After brainstorm gate passes, immediately proceed to literature review and source materialization:
+
+Read `${CLAUDE_SKILL_DIR}/../writing-lit-review/SKILL.md` and follow its instructions.
+
+The lit review phase gathers academic papers (Scholar → Paperpile), personal reading (Readwise), and web sources (NLM → Obsidian), then materializes everything into `references/`. Only after sources are materialized does setup (PRECIS + OUTLINE) begin.
 
 ## Rationalization Table
 
