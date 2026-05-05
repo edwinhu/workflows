@@ -121,7 +121,27 @@ function titleOverlaps(bibTitle: string, rwTitle: string, threshold = 0.5): bool
  * After the semantic fallback, verifies the returned document's title
  * overlaps sufficiently with the queried bib title — rejects mismatches.
  */
-function searchReadwiseByTitle(title: string, author?: string, debug?: boolean): ReadwiseDoc | null {
+function searchReadwiseByTitle(title: string, author?: string, debug?: boolean, url?: string): ReadwiseDoc | null {
+  // Try URL search first (most precise — exact URL match)
+  if (url) {
+    const urlResult = spawnSync("readwise", [
+      "reader-search-documents",
+      "--url-search", url,
+      "--limit", "1",
+      "--json",
+    ], { encoding: "utf-8", timeout: 15_000 });
+
+    if (urlResult.status === 0 && urlResult.stdout) {
+      try {
+        const docs: ReadwiseDoc[] = JSON.parse(urlResult.stdout);
+        if (docs.length > 0) {
+          if (debug) process.stderr.write(`[readwise] found by URL: ${url.slice(0, 60)}\n`);
+          return docs[0];
+        }
+      } catch { /* fall through to title search */ }
+    }
+  }
+
   // Strip BibTeX braces and escape chars before searching
   const cleanTitle = title.replace(/[{}\\]/g, "").slice(0, 100);
 
@@ -786,7 +806,7 @@ async function main(): Promise<number> {
       }
 
       const title = entry.title ?? bibkey;
-      const doc = searchReadwiseByTitle(title, entry.author, debug);
+      const doc = searchReadwiseByTitle(title, entry.author, debug, entry.url);
 
       if (!doc || !doc.document_id) {
         readwiseMissing++;
