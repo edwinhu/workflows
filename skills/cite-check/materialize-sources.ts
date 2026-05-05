@@ -91,9 +91,35 @@ function searchReadwiseHighlights(
 }
 
 /**
+ * Tokenize a title into significant words (lowercase, >3 chars, letters only).
+ * Used to verify that a Readwise search result actually matches the queried title.
+ */
+function significantWords(title: string): string[] {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 3);
+}
+
+/**
+ * Return true if at least `threshold` fraction of `bibWords` appear in `rwTitle`.
+ * Prevents semantic search from returning completely unrelated documents.
+ */
+function titleOverlaps(bibTitle: string, rwTitle: string, threshold = 0.5): boolean {
+  const bibWords = significantWords(bibTitle);
+  if (bibWords.length === 0) return true; // Can't reject if there's nothing to check
+  const rwLower = rwTitle.toLowerCase();
+  const matched = bibWords.filter((w) => rwLower.includes(w)).length;
+  return matched / bibWords.length >= threshold;
+}
+
+/**
  * Search Readwise Reader for a document by title (exact match).
  * Used when matching known bib entries to Readwise documents.
  * Falls back to semantic search if title search returns nothing.
+ * After the semantic fallback, verifies the returned document's title
+ * overlaps sufficiently with the queried bib title — rejects mismatches.
  */
 function searchReadwiseByTitle(title: string, author?: string, debug?: boolean): ReadwiseDoc | null {
   // Strip BibTeX braces and escape chars before searching
@@ -117,7 +143,24 @@ function searchReadwiseByTitle(title: string, author?: string, debug?: boolean):
     process.stderr.write(`[readwise] title search miss, trying semantic: "${semanticQuery.slice(0, 50)}"\n`);
   }
   const results = searchReadwiseSemantic(semanticQuery, debug);
-  return results ? results[0] : null;
+  if (!results || results.length === 0) return null;
+
+  // Verify the top semantic result actually matches the queried title.
+  // Semantic search is broad — it can return completely unrelated documents
+  // (e.g., searching "White & Case INDEX Act" returns "Robo-Voting" because
+  // they share thematic keywords). Require ≥50% of significant bib title words
+  // to appear in the Readwise document title.
+  const topDoc = results[0];
+  if (!titleOverlaps(cleanTitle, topDoc.title ?? "")) {
+    if (debug) {
+      process.stderr.write(
+        `[readwise] semantic match rejected (title mismatch): bib="${cleanTitle.slice(0, 50)}" ≠ rw="${(topDoc.title ?? "").slice(0, 50)}"\n`,
+      );
+    }
+    return null;
+  }
+
+  return topDoc;
 }
 
 /**

@@ -262,7 +262,7 @@ export function verifyGrounding(
   const sourceNorm = sourceTokens.map((t) => normalize(t.text));
   const passageNorm = passageTokens.map((t) => normalize(t.text));
 
-  const span = bestLcsSpan(
+  let span = bestLcsSpan(
     sourceNorm,
     passageNorm,
     coverageThreshold,
@@ -270,15 +270,28 @@ export function verifyGrounding(
   );
 
   if (!span) {
-    // Compute best-effort coverage for reporting
+    // Compute best-effort coverage for reporting.
     // Quick check: how many passage tokens appear anywhere in source?
     const sourceSet = new Set(sourceNorm);
     const found = passageNorm.filter((t) => sourceSet.has(t)).length;
-    return {
-      grounded: false,
-      coverage: found / passageNorm.length,
-      density: 0,
-    };
+    const setCoverage = found / passageNorm.length;
+
+    // High-coverage retry: when ≥90% of passage tokens exist in the source
+    // but the density gate rejected the span (tokens spread across page breaks
+    // or formatting noise), retry with a relaxed density threshold (0.25).
+    // This handles real supporting passages that straddle page/section breaks.
+    if (setCoverage >= 0.90) {
+      const relaxedDensity = 0.25;
+      span = bestLcsSpan(sourceNorm, passageNorm, coverageThreshold, relaxedDensity);
+    }
+
+    if (!span) {
+      return {
+        grounded: false,
+        coverage: setCoverage,
+        density: 0,
+      };
+    }
   }
 
   const coverage = span.matches / passageNorm.length;
