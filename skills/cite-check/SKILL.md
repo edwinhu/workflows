@@ -10,8 +10,10 @@ Scan pandoc-flavored markdown drafts for citations, upload source PDFs to a Gemi
 
 ## Prerequisites
 
-- `GOOGLE_API_KEY` env var set (Google AI Studio)
+- `GOOGLE_API_KEY` env var set (Google AI Studio; on this machine: `export GOOGLE_API_KEY="$(cat $GEMINI_API_KEY_FILE)"`)
 - Bun runtime
+- `rclone` with a `google-drive:` remote configured (used to bypass Google Drive FUSE deadlocks)
+- `python3` with `pymupdf4llm` installed (used for PDF text extraction in passage grounding)
 - One or more `.bib` files with `file` fields mapping bibkeys to PDF paths (e.g., Paperpile's `paperpile.bib`)
 
 ## Usage
@@ -69,10 +71,11 @@ When multiple `--bib` files are provided, file paths are resolved across all bib
 
 1. **Extract citations** from markdown using pandoc `[@bibkey]` syntax
 2. **Parse bib file** to map bibkeys to PDF file paths via `file` fields
-3. **Upload PDFs** for cited bibkeys only to a Gemini File Search store (with bibkey metadata, dedup on re-runs)
-4. **Query Gemini** with structured prompts for each citation, using File Search grounding
+3. **Upload PDFs** for cited bibkeys only via Gemini Files API (with manifest caching, 48h TTL). Google Drive FUSE paths are copied locally via `rclone` to avoid EDEADLK deadlocks.
+4. **Query Gemini** with structured prompts for each citation, using inline file references
 5. **Classify** each citation as SUPPORTED / PARTIAL / UNSUPPORTED / NOT_IN_STORE / ERROR
-6. **Write report** to REVIEW-CITES.md
+6. **Verify grounding** — for SUPPORTED/PARTIAL results, extract source PDF text via `pymupdf4llm` and run token-level LCS alignment to confirm the passage Gemini quoted actually exists in the source. Ungrounded passages are flagged `[UNGROUNDED]` in the report.
+7. **Write report** to REVIEW-CITES.md
 
 ### Bib File Format
 
@@ -101,8 +104,9 @@ All bib entries are parsed. Entries with a `file` field (~95% of Paperpile entri
 ## Output
 
 REVIEW-CITES.md with:
-- Summary counts (supported/partial/unsupported/not in store/error)
+- Summary counts (supported/partial/unsupported/not in store/error/ungrounded)
 - Details table: status, file:line, bibkey, claim, response
+- `[UNGROUNDED]` flag on any SUPPORTED/PARTIAL result whose passage failed grounding verification
 
 ## Batch Mode
 
@@ -128,10 +132,27 @@ The audit checks each cited bibkey for PDF availability on disk (via bib `file` 
 
 Exit code is 1 if any sources are missing, 0 if all sources are available. No Gemini store is created and no queries are sent.
 
+## Passage Grounding
+
+After Gemini returns a SUPPORTED/PARTIAL result with a `supporting_passage`, the tool verifies the passage actually exists in the source PDF text using token-level LCS alignment (ported from [langextract](https://github.com/google/langextract)'s WordAligner). Two gates reject bad matches:
+
+- **Coverage gate** (default 0.75): at least 75% of passage tokens must appear in the matched source span
+- **Density gate** (default 0.33): matched tokens must be at least 33% of the source span length (rejects scattered matches)
+
+Signal cites (`see`, `cf.`, etc.) use relaxed thresholds (0.5 coverage / 0.2 density) since they only need conceptual alignment.
+
+Grounding requires extracting text from the source PDF. This uses `pymupdf4llm` (via `extract-pdf-text.py`) which preserves document structure, footnotes, and tables as clean markdown. Extracted text is cached in `<drafts>/.cite-check-text/`.
+
+## Google Drive FUSE Bypass
+
+PDF files stored on Google Drive Desktop's FUSE mount (`~/Google Drive/My Drive/`) are subject to EDEADLK deadlocks when accessed concurrently or when not locally cached. The tool detects Google Drive paths — including through symlinks (e.g., `references/All Papers → ~/Google Drive/.../Paperpile/All Papers`) — and uses `rclone copyto` to fetch them to a local cache (`~/.cache/cite-check-pdfs/`) before upload or text extraction. Requires `rclone` with a `google-drive:` remote configured.
+
 ## Architecture
 
 ```
-cite-extract.ts  -- Pure citation extraction (no I/O)
-gemini.ts        -- Gemini File Search API wrapper (store CRUD, upload, query, batch)
-cite-check.ts    -- CLI orchestrator (extract -> upload -> query -> report)
+cite-extract.ts       -- Pure citation extraction (no I/O)
+gemini.ts             -- Gemini Files API wrapper (upload, query, rclone FUSE bypass)
+grounding.ts          -- Post-hoc passage grounding (tokenizer, LCS aligner)
+extract-pdf-text.py   -- PDF text extraction via pymupdf4llm
+cite-check.ts         -- CLI orchestrator (extract -> upload -> query -> ground -> report)
 ```
