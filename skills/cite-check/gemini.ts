@@ -277,7 +277,7 @@ export async function importToStore(opts: {
   resolvedPaths?: Map<string, string>;
   debug?: boolean;
   _pollIntervalMs?: number;
-}): Promise<{ imported: number; skipped: number; missing: number }> {
+}): Promise<{ imported: number; skipped: number; missing: number; importedBibkeys: string[] }> {
   const { storeName, bibMap, citedBibkeys, debug, _pollIntervalMs = 3000 } = opts;
   const alreadyImported = new Set(opts.alreadyImported ?? []);
   const dirs = opts.bibDirs ?? [];
@@ -285,12 +285,14 @@ export async function importToStore(opts: {
   let imported = 0;
   let skipped = 0;
   let missing = 0;
+  const successfulBibkeys: string[] = [];
 
   // 1. Filter out already-imported bibkeys
   const toProcess: string[] = [];
   for (const bibkey of citedBibkeys) {
     if (alreadyImported.has(bibkey)) {
       skipped++;
+      successfulBibkeys.push(bibkey);
     } else {
       toProcess.push(bibkey);
     }
@@ -364,6 +366,7 @@ export async function importToStore(opts: {
         }
 
         imported++;
+        successfulBibkeys.push(bibkey);
 
         if (debug) {
           process.stderr.write(`[store] imported ${bibkey}\n`);
@@ -376,7 +379,7 @@ export async function importToStore(opts: {
     }));
   }
 
-  return { imported, skipped, missing };
+  return { imported, skipped, missing, importedBibkeys: successfulBibkeys };
 }
 
 // ---------------------------------------------------------------------------

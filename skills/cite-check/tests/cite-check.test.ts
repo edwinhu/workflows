@@ -1103,6 +1103,158 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
     expect(report).toContain("NoPdf2024-aa");
   });
 
+  it("marks NOT_IN_STORE for bibkeys whose import failed (timeout)", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/success.pdf"), "fake-pdf");
+    // Note: no failure.pdf exists on disk, but we simulate a file that resolves
+    // but fails during import (e.g., timeout uploading to store)
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{SuccessKey2024-aa,
+  title = {{Successful Import}},
+  file = {pdfs/success.pdf},
+  year = {2024}
+}
+@article{FailedKey2024-bb,
+  title = {{Failed Import}},
+  file = {pdfs/failure.pdf},
+  year = {2024}
+}`,
+    );
+    // Create the failure.pdf so it resolves (importableBibkeys would include it)
+    // but mock the import to fail for it
+    writeFileSync(join(tmpBase, "pdfs/failure.pdf"), "fake-pdf-will-timeout");
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Success claim [@SuccessKey2024-aa]. Failure claim [@FailedKey2024-bb].",
+    );
+
+    const successGroupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Success claim.`;
+    const mockClient = buildFileSearchMockClient({
+      onStoreUpload: (bibkey) => {
+        // Simulate timeout for FailedKey2024-bb
+        if (bibkey === "FailedKey2024-bb") {
+          throw new Error("Import stuck for FailedKey2024-bb after 300s");
+        }
+      },
+      batchResponses: [{
+        key: successGroupKey,
+        status: "SUPPORTED",
+        passage: "evidence from the paper",
+        explanation: "Directly supported.",
+      }],
+    });
+
+    // Override uploadToFileSearchStore to throw for failed bibkeys
+    mockClient.fileSearchStores.uploadToFileSearchStore = async (uploadOpts: Record<string, unknown>) => {
+      const displayName = (uploadOpts.config as Record<string, unknown>)?.displayName as string ?? "unknown";
+      if (displayName === "FailedKey2024-bb") {
+        throw new Error("Import stuck for FailedKey2024-bb after 300s");
+      }
+      return { done: true, name: "operations/upload-done" };
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+
+    // Read the report
+    const report = readFileSync(join(tmpBase, "drafts", "REVIEW-CITES.md"), "utf-8");
+
+    // SuccessKey should be SUPPORTED (queried normally)
+    expect(report).toContain("SUPPORTED");
+    expect(report).toContain("SuccessKey2024-aa");
+
+    // FailedKey should be NOT_IN_STORE (import failed, should NOT be queried)
+    expect(report).toContain("NOT IN STORE");
+    expect(report).toContain("FailedKey2024-bb");
+  });
+
+  it("loads importedBibkeys from store state on reuse (failed imports stay NOT_IN_STORE)", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/success.pdf"), "fake-pdf");
+    writeFileSync(join(tmpBase, "pdfs/failure.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{SuccessKey2024-aa,
+  title = {{Successful Import}},
+  file = {pdfs/success.pdf},
+  year = {2024}
+}
+@article{FailedKey2024-bb,
+  title = {{Failed Import}},
+  file = {pdfs/failure.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Success claim [@SuccessKey2024-aa]. Failure claim [@FailedKey2024-bb].",
+    );
+
+    // Pre-populate store state: only SuccessKey was actually imported
+    // (FailedKey timed out on previous run)
+    const { computeSourceHash } = await import("../gemini");
+    const bibMap = new Map([
+      ["SuccessKey2024-aa", {
+        bibkey: "SuccessKey2024-aa",
+        filePath: join(tmpBase, "pdfs/success.pdf"),
+        title: "Successful Import",
+      }],
+      ["FailedKey2024-bb", {
+        bibkey: "FailedKey2024-bb",
+        filePath: join(tmpBase, "pdfs/failure.pdf"),
+        title: "Failed Import",
+      }],
+    ]);
+    const hash = computeSourceHash(bibMap, ["SuccessKey2024-aa", "FailedKey2024-bb"]);
+
+    const storeStatePath = join(tmpBase, "drafts", ".cite-check-store.json");
+    writeFileSync(storeStatePath, JSON.stringify({
+      storeName: "fileSearchStores/existing-store-789",
+      sourceHash: hash,
+      importedBibkeys: ["SuccessKey2024-aa"], // Only success - failed not included
+      createdAt: Date.now(),
+    }));
+
+    const successGroupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Success claim.`;
+    const mockClient = buildFileSearchMockClient({
+      batchResponses: [{
+        key: successGroupKey,
+        status: "SUPPORTED",
+        passage: "evidence from success paper",
+        explanation: "Supported.",
+      }],
+    });
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts") } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+
+    const report = readFileSync(join(tmpBase, "drafts", "REVIEW-CITES.md"), "utf-8");
+    // SuccessKey should be SUPPORTED
+    expect(report).toContain("SUPPORTED");
+    // FailedKey should be NOT_IN_STORE (not in importedBibkeys from state)
+    expect(report).toContain("NOT IN STORE");
+    expect(report).toContain("FailedKey2024-bb");
+  });
+
   it("does not create store in dry-run mode", async () => {
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
     writeFileSync(

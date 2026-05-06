@@ -571,16 +571,30 @@ export async function cmdCiteCheck(
             `[cite-check] imported ${importResult.imported}, ${importResult.skipped} skipped, ${importResult.missing} missing\n`,
           );
 
-          // Update store state with imported bibkeys
+          // Replace importableBibkeys with ACTUAL imported bibkeys
+          importableBibkeys.clear();
+          for (const bk of importResult.importedBibkeys) {
+            importableBibkeys.add(bk);
+          }
+
+          // Update store state with actual imported bibkeys
           const currentState = loadStoreState(storeStatePath);
           if (currentState) {
-            currentState.importedBibkeys = [...importableBibkeys];
+            currentState.importedBibkeys = importResult.importedBibkeys;
             saveStoreState(storeStatePath, currentState);
           }
         } else {
           process.stderr.write(
             `[cite-check] reusing existing store (sources unchanged)\n`,
           );
+          // Reusing existing store -- load imported bibkeys from state
+          const state = loadStoreState(storeStatePath);
+          if (state?.importedBibkeys) {
+            importableBibkeys.clear();
+            for (const bk of state.importedBibkeys) {
+              importableBibkeys.add(bk);
+            }
+          }
         }
       }
     } catch (err) {
