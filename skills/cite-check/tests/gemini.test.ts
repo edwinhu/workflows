@@ -676,6 +676,44 @@ describe("queryCitation", () => {
     expect(result.classification.explanation).toContain("Failed to parse");
   });
 
+  it("handles schema deviations from batch+fileSearch (supported/passage instead of status/supporting_passage)", async () => {
+    const mockClient = {
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({
+            supported: true,
+            passage: "The study found significant effects",
+            reason: "Source directly supports the claim",
+          }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const result = await queryCitation([], "test prompt");
+    expect(result.classification.status).toBe("SUPPORTED");
+    expect(result.classification.supporting_passage).toBe("The study found significant effects");
+    expect(result.classification.explanation).toBe("Source directly supports the claim");
+  });
+
+  it("handles schema deviation with supported=false", async () => {
+    const mockClient = {
+      models: {
+        generateContent: async () => ({
+          text: JSON.stringify({
+            supported: false,
+            passage: "",
+            reason: "Not found in source",
+          }),
+        }),
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const result = await queryCitation([], "test prompt");
+    expect(result.classification.status).toBe("UNSUPPORTED");
+  });
+
   it("returns ERROR for empty response", async () => {
     const mockClient = {
       models: {

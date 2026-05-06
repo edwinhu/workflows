@@ -236,10 +236,10 @@ interface FileSearchClient {
   fileSearchStores: {
     create: (opts: Record<string, unknown>) => Promise<{ name: string }>;
     delete: (opts: Record<string, unknown>) => Promise<void>;
-    uploadToFileSearchStore: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
+    uploadToFileSearchStore: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string; [k: string]: unknown }>;
   };
   operations: {
-    get: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string }>;
+    get: (opts: { operation: unknown; config?: unknown }) => Promise<{ done?: boolean; name?: string; [k: string]: unknown }>;
   };
 }
 
@@ -360,7 +360,7 @@ export async function importToStore(opts: {
             throw new Error(`Import stuck for ${bibkey} after ${UPLOAD_TIMEOUT_MS / 1000}s`);
           }
           await new Promise(r => setTimeout(r, _pollIntervalMs));
-          operation = await client.operations.get({ name: operation.name });
+          operation = await client.operations.get({ operation });
         }
 
         imported++;
@@ -954,10 +954,21 @@ const CITE_CHECK_SCHEMA = {
 function parseClassification(text: string | null | undefined): ClassifyResult {
   try {
     const parsed = JSON.parse(text ?? "{}");
+    // Handle schema deviations from batch+fileSearch responses:
+    // The model sometimes returns { supported: true, passage: "..." }
+    // instead of { status: "SUPPORTED", supporting_passage: "...", explanation: "..." }
+    let status: string = parsed.status;
+    if (!status && parsed.supported !== undefined) {
+      status = parsed.supported ? "SUPPORTED" : "UNSUPPORTED";
+    }
+    const supporting_passage =
+      parsed.supporting_passage ?? parsed.passage ?? parsed.quote ?? "";
+    const explanation =
+      parsed.explanation ?? parsed.reason ?? parsed.summary ?? "";
     return {
-      status: parsed.status ?? "ERROR",
-      supporting_passage: parsed.supporting_passage ?? "",
-      explanation: parsed.explanation ?? "",
+      status: (status as Status) ?? "ERROR",
+      supporting_passage,
+      explanation,
     };
   } catch {
     return {
