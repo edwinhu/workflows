@@ -6,7 +6,7 @@
  * in generateContent calls so Gemini sees the full document.
  */
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { readFileSync, statSync, writeFileSync, existsSync, mkdirSync, realpathSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -953,7 +953,11 @@ const CITE_CHECK_SCHEMA = {
 
 function parseClassification(text: string | null | undefined): ClassifyResult {
   try {
-    const parsed = JSON.parse(text ?? "{}");
+    let parsed = JSON.parse(text ?? "{}");
+    // Unwrap array responses — batch API sometimes returns [{...}] instead of {...}
+    if (Array.isArray(parsed)) {
+      parsed = parsed[0] ?? {};
+    }
     return {
       status: parsed.status ?? "ERROR",
       supporting_passage: parsed.supporting_passage ?? "",
@@ -1174,7 +1178,19 @@ export async function submitBatchFileSearch(
         },
       }],
       responseMimeType: "application/json",
-      responseJsonSchema: CITE_CHECK_SCHEMA,
+      // Use responseSchema (Type-enum form) instead of responseJsonSchema — the Gemini backend
+      // silently ignores responseJsonSchema when fileSearch tool is active in batch context,
+      // returning arrays [{...}] instead of the required object shape. The Type-enum form
+      // goes through the SDK's tSchema() serialization path which the backend does enforce.
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          status: { type: Type.STRING, enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] },
+          supporting_passage: { type: Type.STRING },
+          explanation: { type: Type.STRING },
+        },
+        required: ["status", "supporting_passage", "explanation"],
+      },
     },
   }));
 

@@ -1771,7 +1771,7 @@ describe("submitBatchFileSearch", () => {
     expect(src[0].contents[0].parts[0].text).toBe("check claim");
   });
 
-  it("passes responseJsonSchema and responseMimeType in per-request config", async () => {
+  it("passes responseSchema (Type-enum form) and responseMimeType in per-request config", async () => {
     const createCalls: any[] = [];
     const mockClient = {
       batches: {
@@ -1812,15 +1812,19 @@ describe("submitBatchFileSearch", () => {
     // Schema enforcement must be on the per-request config (not just the top-level batch config)
     // so Gemini enforces structured output on each individual request.
     expect(src[0].config.responseMimeType).toBe("application/json");
-    expect(src[0].config.responseJsonSchema).toBeDefined();
-    expect(src[0].config.responseJsonSchema.properties.status).toBeDefined();
-    expect(src[0].config.responseJsonSchema.properties.supporting_passage).toBeDefined();
-    expect(src[0].config.responseJsonSchema.properties.explanation).toBeDefined();
-    expect(src[0].config.responseJsonSchema.required).toContain("status");
-    expect(src[0].config.responseJsonSchema.required).toContain("supporting_passage");
-    expect(src[0].config.responseJsonSchema.required).toContain("explanation");
-    // Must NOT use responseSchema (Type-enum form) — batch path must use responseJsonSchema
-    expect(src[0].config.responseSchema).toBeUndefined();
+    // Batch + fileSearch requires responseSchema (Type-enum form), NOT responseJsonSchema.
+    // The Gemini backend silently ignores responseJsonSchema when fileSearch tool is active in
+    // batch context, returning arrays [{...}] instead of the required object shape.
+    expect(src[0].config.responseSchema).toBeDefined();
+    expect(src[0].config.responseSchema.type).toBe("OBJECT");
+    expect(src[0].config.responseSchema.properties.status).toBeDefined();
+    expect(src[0].config.responseSchema.properties.supporting_passage).toBeDefined();
+    expect(src[0].config.responseSchema.properties.explanation).toBeDefined();
+    expect(src[0].config.responseSchema.required).toContain("status");
+    expect(src[0].config.responseSchema.required).toContain("supporting_passage");
+    expect(src[0].config.responseSchema.required).toContain("explanation");
+    // Must NOT use responseJsonSchema — backend ignores it in batch+fileSearch context
+    expect(src[0].config.responseJsonSchema).toBeUndefined();
   });
 
   it("uses different metadataFilter per request", async () => {
@@ -2062,6 +2066,50 @@ describe("submitBatchFileSearch", () => {
     expect(results[0].key).toBe("q1");
     expect(results[0].classification.status).toBe("ERROR");
     expect(results[0].error).toBeDefined();
+  });
+
+  it("unwraps array responses [{...}] to object — defensive against batch schema non-enforcement", async () => {
+    // Regression: Gemini batch API ignores responseJsonSchema when fileSearch tool is active,
+    // returning [{status:"SUPPORTED",...}] instead of {status:"SUPPORTED",...}.
+    // parseClassification must unwrap the array so results are not all ERROR.
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/test-array-unwrap",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                metadata: { key: "q1" },
+                response: {
+                  candidates: [{
+                    content: {
+                      parts: [{ text: JSON.stringify([{ status: "SUPPORTED", supporting_passage: "found it", explanation: "matches" }]) }],
+                    },
+                    groundingMetadata: { groundingChunks: [] },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      models: { generateContent: async () => ({}) },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchFileSearch(
+      [{ key: "q1", bibkeys: ["A"], prompt: "p" }],
+      { storeName: "fileSearchStores/store-array-unwrap" },
+    );
+
+    expect(results.length).toBe(1);
+    expect(results[0].key).toBe("q1");
+    // Must not be ERROR — array was unwrapped correctly
+    expect(results[0].classification.status).toBe("SUPPORTED");
+    expect(results[0].classification.supporting_passage).toBe("found it");
+    expect(results[0].classification.explanation).toBe("matches");
   });
 });
 
