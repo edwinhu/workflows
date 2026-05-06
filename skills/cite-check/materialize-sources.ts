@@ -751,16 +751,28 @@ async function main(): Promise<number> {
     const localPaths = ensureLocalBatch(toResolve, debug);
 
     // Copy from local cache to references/
+    // Track bibkeys that fail Paperpile PDF copy — they fall through to Readwise
+    const paperpileFailed = new Set<string>();
+
     for (const { bibkey } of withFile) {
       const localPath = localPaths.get(bibkey);
       if (!localPath || !existsSync(localPath)) {
         paperpileMissing++;
+        paperpileFailed.add(bibkey);
         if (debug) process.stderr.write(`  [missing] ${bibkey}\n`);
         continue;
       }
 
       const destPath = join(refsDir, `${bibkey}.pdf`);
       if (existsSync(destPath) && statSync(destPath).size > 0) {
+        // Validate cached file is actually a PDF
+        const cachedHeader = readFileSync(destPath, { encoding: null }).slice(0, 5).toString("utf-8");
+        if (cachedHeader !== "%PDF-") {
+          if (debug) process.stderr.write(`  [not-pdf] ${bibkey}: cached .pdf is not a real PDF, will try Readwise\n`);
+          paperpileMissing++;
+          paperpileFailed.add(bibkey);
+          continue;
+        }
         if (debug) process.stderr.write(`  [cached] ${bibkey}\n`);
         paperpileCopied++;
         continue;
@@ -768,11 +780,20 @@ async function main(): Promise<number> {
 
       try {
         const content = readFileSync(localPath);
+        // Validate the file is actually a PDF before writing as .pdf
+        const isPdf = content.length >= 5 && content.slice(0, 5).toString("utf-8") === "%PDF-";
+        if (!isPdf) {
+          if (debug) process.stderr.write(`  [not-pdf] ${bibkey}: source is not a real PDF, will try Readwise\n`);
+          paperpileMissing++;
+          paperpileFailed.add(bibkey);
+          continue;
+        }
         writeFileSync(destPath, content);
         paperpileCopied++;
         if (debug) process.stderr.write(`  [copied] ${bibkey} → ${basename(destPath)}\n`);
       } catch (err) {
         paperpileMissing++;
+        paperpileFailed.add(bibkey);
         if (debug) process.stderr.write(`  [error] ${bibkey}: ${err instanceof Error ? err.message : String(err)}\n`);
       }
     }
@@ -780,11 +801,26 @@ async function main(): Promise<number> {
     process.stderr.write(
       `[materialize] Paperpile: ${paperpileCopied} copied, ${paperpileMissing} missing\n`,
     );
+
+    // Move failed Paperpile bibkeys to withoutFile so Readwise step picks them up
+    if (paperpileFailed.size > 0) {
+      for (const { bibkey, entry } of withFile) {
+        if (paperpileFailed.has(bibkey)) {
+          withoutFile.push({ bibkey, entry });
+        }
+      }
+      if (debug) {
+        process.stderr.write(
+          `[materialize] ${paperpileFailed.size} bibkeys falling through to Readwise: ${[...paperpileFailed].join(", ")}\n`,
+        );
+      }
+    }
   }
 
-  // 4b. Collect bibkeys where a PDF now exists but bib still points to .md
+  // 4b. Collect bibkeys where a real PDF now exists but bib still points to .md
   //     This happens when a Readwise .md was exported first, then the PDF
   //     became available via Paperpile. The bib file field should be updated.
+  //     Guard: only override if the file is actually a PDF (check %PDF- magic).
   const bibPdfOverrides: Array<{ bibkey: string }> = [];
   if (bibPaths.length > 0) {
     const bibToCheck = bibPaths[bibPaths.length - 1];
@@ -792,6 +828,13 @@ async function main(): Promise<number> {
     for (const { bibkey } of withFile) {
       const pdfDest = join(refsDir, `${bibkey}.pdf`);
       if (!existsSync(pdfDest)) continue;
+      // Validate it's actually a PDF, not a renamed markdown file
+      const fd = Bun.file(pdfDest);
+      const header = Buffer.from(await fd.slice(0, 5).arrayBuffer());
+      if (header.toString("utf-8") !== "%PDF-") {
+        if (debug) process.stderr.write(`  [skip-override] ${bibkey}: .pdf is not a real PDF, keeping .md\n`);
+        continue;
+      }
       // Check if the bib entry has file = {<bibkey>.md}
       const hasMdFile = new RegExp(
         `file\\s*=\\s*\\{${bibkey}\\.md\\}`,

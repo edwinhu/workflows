@@ -439,14 +439,18 @@ export async function cmdCiteCheck(
     );
   }
 
-  // Parse bib files for PDF mappings (merge all; first bib wins for duplicate keys).
+  // Parse bib files for PDF mappings (merge all; entry with file wins over entry without).
   const bibMap = new Map<string, BibEntry>();
   for (const bp of resolvedBibPaths) {
     try {
       const entries = parseBibFile(bp);
-      // Merge -- first bib wins for duplicate keys (e.g., Paperpile takes priority).
+      // Merge: prefer entries with file fields over entries without.
+      // Among entries that both have (or both lack) file fields, first bib wins.
       for (const [key, entry] of entries) {
-        if (!bibMap.has(key)) {
+        const existing = bibMap.get(key);
+        if (!existing) {
+          bibMap.set(key, entry);
+        } else if (!existing.filePath && !existing.fileRelPath && (entry.filePath || entry.fileRelPath)) {
           bibMap.set(key, entry);
         }
       }
@@ -873,6 +877,74 @@ export async function cmdCiteCheck(
     }
   }
 
+  // 3b. Retry ERROR results sequentially (batch flakiness recovery).
+  const errorIndices = results
+    .map((r, i) => r.status === "ERROR" ? i : -1)
+    .filter((i) => i >= 0);
+  if (errorIndices.length > 0) {
+    // Deduplicate by group key so compound cites retry once
+    const errorGroups = new Map<string, { groupKey: string; indices: number[] }>();
+    for (const idx of errorIndices) {
+      const r = results[idx];
+      const gKey = `${r.cite.file}:${r.cite.line}:${r.cite.claim}`;
+      let entry = errorGroups.get(gKey);
+      if (!entry) {
+        entry = { groupKey: gKey, indices: [] };
+        errorGroups.set(gKey, entry);
+      }
+      entry.indices.push(idx);
+    }
+
+    process.stderr.write(
+      `[cite-check] retrying ${errorIndices.length} ERROR results (${errorGroups.size} groups) sequentially...\n`,
+    );
+
+    for (const [gKey, { indices }] of errorGroups) {
+      const cites = indices.map((i) => results[i].cite);
+      const inStore = cites.filter((c) => importableBibkeys.has(c.bibkey));
+      if (inStore.length === 0) continue;
+
+      const bibkeys = inStore.map((c) => c.bibkey);
+      const prompt = buildGroupPrompt(inStore);
+      const label = bibkeys.join("+");
+      process.stderr.write(`[cite-check] retry ${label} ...`);
+
+      try {
+        const geminiResult = await queryCitationFileSearch({
+          storeName,
+          bibkeys,
+          prompt,
+          debug,
+          retryModel,
+        });
+
+        const cls = geminiResult.classification;
+        const snippet = cls.supporting_passage
+          ? `"${cls.supporting_passage.slice(0, 280)}"`
+          : cls.explanation.slice(0, 300);
+
+        const groundingResult = verifyGroundingWithFallback({
+          passage: cls.supporting_passage,
+          groundingChunks: geminiResult.groundingChunks,
+          expectedBibkeys: bibkeys,
+          signal: inStore[0]?.signal,
+        });
+        const grounded = mapGroundingToBool(cls, groundingResult);
+
+        const groundingTag = grounded === false ? " [UNGROUNDED]" : "";
+        process.stderr.write(` ${cls.status}${groundingTag} (${geminiResult.durationMs}ms)\n`);
+
+        // Replace ERROR entries in-place
+        for (const idx of indices) {
+          results[idx] = { cite: results[idx].cite, status: cls.status, response: snippet, grounded };
+        }
+      } catch (err) {
+        process.stderr.write(` error (retry failed)\n`);
+        // Leave original ERROR entries
+      }
+    }
+  }
+
   // 4. Write the report.
   const report = renderReport(results, {
     fileCount: files.length,
@@ -973,7 +1045,12 @@ export async function cmdAsk(
     try {
       const entries = parseBibFile(bp);
       for (const [key, entry] of entries) {
-        if (!bibMap.has(key)) bibMap.set(key, entry);
+        const existing = bibMap.get(key);
+        if (!existing) {
+          bibMap.set(key, entry);
+        } else if (!existing.filePath && !existing.fileRelPath && (entry.filePath || entry.fileRelPath)) {
+          bibMap.set(key, entry);
+        }
       }
     } catch (err) {
       printError(
