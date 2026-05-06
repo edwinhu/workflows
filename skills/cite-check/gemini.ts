@@ -323,7 +323,7 @@ export async function importToStore(opts: {
   // 4. Upload files to the store with bounded concurrency and timeout
   const client = getClient() as unknown as FileSearchClient;
   const UPLOAD_CONCURRENCY = 5;
-  const UPLOAD_TIMEOUT_MS = 120_000;
+  const UPLOAD_TIMEOUT_MS = 300_000;
 
   for (let i = 0; i < toResolve.length; i += UPLOAD_CONCURRENCY) {
     const chunk = toResolve.slice(i, i + UPLOAD_CONCURRENCY);
@@ -516,7 +516,7 @@ export async function uploadFile(
   if (!file.name) throw new Error(`Upload returned no name for ${filePath}`);
 
   // Poll until ACTIVE
-  const maxWaitMs = 120_000;
+  const maxWaitMs = 300_000;
   const pollMs = opts?._pollIntervalMs ?? 3_000;
   const start = Date.now();
   let state = file.state;
@@ -772,7 +772,7 @@ export function ensureLocalBatch(
       `${RCLONE_REMOTE}`,
       LOCAL_PDF_CACHE,
       "--no-traverse",
-    ], { timeout: 120_000 });
+    ], { timeout: 300_000 });
 
     if (rcloneResult.status !== 0 && debug) {
       process.stderr.write(
