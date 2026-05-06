@@ -2111,6 +2111,145 @@ describe("submitBatchFileSearch", () => {
     expect(results[0].classification.supporting_passage).toBe("found it");
     expect(results[0].classification.explanation).toBe("matches");
   });
+
+  it("retries UNSUPPORTED results with retryModel and overturns to SUPPORTED", async () => {
+    const generateCalls: any[] = [];
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/test-unsupported-retry",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                metadata: { key: "q1" },
+                response: {
+                  candidates: [{
+                    content: { parts: [{ text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "ok", explanation: "good" }) }] },
+                    groundingMetadata: { groundingChunks: [] },
+                  }],
+                },
+              },
+              {
+                metadata: { key: "q2" },
+                response: {
+                  candidates: [{
+                    content: { parts: [{ text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "not found" }) }] },
+                    groundingMetadata: { groundingChunks: [] },
+                  }],
+                },
+              },
+              {
+                metadata: { key: "q3" },
+                response: {
+                  candidates: [{
+                    content: { parts: [{ text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "also not found" }) }] },
+                    groundingMetadata: { groundingChunks: [] },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      models: {
+        generateContent: async (opts: any) => {
+          generateCalls.push(opts);
+          // Simulate: q2 gets overturned to SUPPORTED, q3 stays UNSUPPORTED
+          const prompt = opts.contents[0].parts[0].text;
+          if (prompt === "claim 2") {
+            return {
+              text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "retry found it", explanation: "retry ok" }),
+              candidates: [{ groundingMetadata: { groundingChunks: [{ retrievedContext: { text: "retry-chunk" } }] } }],
+            };
+          }
+          // q3: still UNSUPPORTED on retry
+          return {
+            text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "still not found" }),
+            candidates: [{ groundingMetadata: { groundingChunks: [] } }],
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchFileSearch(
+      [
+        { key: "q1", bibkeys: ["A"], prompt: "claim 1" },
+        { key: "q2", bibkeys: ["B"], prompt: "claim 2" },
+        { key: "q3", bibkeys: ["C"], prompt: "claim 3" },
+      ],
+      { storeName: "fileSearchStores/store-retry-unsupported", retryModel: "gemini-2.5-pro" },
+    );
+
+    // q1: SUPPORTED from batch (no retry needed)
+    expect(results[0].key).toBe("q1");
+    expect(results[0].classification.status).toBe("SUPPORTED");
+
+    // q2: UNSUPPORTED from batch -> retry overturned to SUPPORTED
+    expect(results[1].key).toBe("q2");
+    expect(results[1].classification.status).toBe("SUPPORTED");
+    expect(results[1].classification.supporting_passage).toBe("retry found it");
+    expect(results[1].groundingChunks).toHaveLength(1);
+
+    // q3: UNSUPPORTED from batch -> retry also UNSUPPORTED -> stays UNSUPPORTED
+    expect(results[2].key).toBe("q3");
+    expect(results[2].classification.status).toBe("UNSUPPORTED");
+
+    // Only 2 retry calls (for q2 and q3, not q1)
+    expect(generateCalls.length).toBe(2);
+    // Retry calls should use the retry model
+    expect(generateCalls[0].model).toBe("gemini-2.5-pro");
+    expect(generateCalls[1].model).toBe("gemini-2.5-pro");
+  });
+
+  it("does not retry UNSUPPORTED when retryModel is not set", async () => {
+    let generateCallCount = 0;
+    const mockClient = {
+      batches: {
+        create: async () => ({
+          name: "batches/test-no-retry",
+          state: "JOB_STATE_SUCCEEDED",
+          dest: {
+            inlinedResponses: [
+              {
+                metadata: { key: "q1" },
+                response: {
+                  candidates: [{
+                    content: { parts: [{ text: JSON.stringify({ status: "UNSUPPORTED", supporting_passage: "", explanation: "not found" }) }] },
+                    groundingMetadata: { groundingChunks: [] },
+                  }],
+                },
+              },
+            ],
+          },
+        }),
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      models: {
+        generateContent: async () => {
+          generateCallCount++;
+          return {
+            text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "found", explanation: "ok" }),
+            candidates: [{ groundingMetadata: { groundingChunks: [] } }],
+          };
+        },
+      },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const results = await submitBatchFileSearch(
+      [{ key: "q1", bibkeys: ["A"], prompt: "claim" }],
+      { storeName: "fileSearchStores/store-no-retry" },
+      // NO retryModel
+    );
+
+    // Should stay UNSUPPORTED (no retry)
+    expect(results[0].classification.status).toBe("UNSUPPORTED");
+    // No generateContent calls (no retries)
+    expect(generateCallCount).toBe(0);
+  });
 });
 
 // Type-level checks: ensure exported types are usable

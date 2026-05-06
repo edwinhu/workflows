@@ -164,7 +164,7 @@ function readMarkdownFiles(draftsDir: string): { path: string; text: string }[] 
  * When bibkeys.length > 1, the prompt asks Gemini to evaluate the claim against
  * all sources together (compound-cite mode).
  */
-function buildGroupPrompt(cites: Citation[]): string {
+export function buildGroupPrompt(cites: Citation[]): string {
   const lines: string[] = [];
   const bibkeys = cites.map((c) => c.bibkey);
   const claim = cites[0].claim;
@@ -189,17 +189,17 @@ function buildGroupPrompt(cites: Citation[]): string {
     const nameList = bibkeys.map((k) => `'${k}'`).join(" and ");
     if (signal) {
       lines.push(
-        `Do the cited sources ${nameList}, taken together, generally support or relate to this proposition: ${claim}?`,
+        `Do the cited sources ${nameList}, considered as a set, generally support or relate to this proposition: ${claim}?`,
       );
       lines.push(
-        "Each source may cover a different part of the claim. Conceptual alignment is sufficient.",
+        "IMPORTANT: this is a compound citation. Each source may only cover a fragment of the proposition. Return SUPPORTED if ANY source is topically related to ANY part of the proposition.",
       );
     } else {
       lines.push(
-        `Do the sources ${nameList}, taken together, support this claim: ${claim}?`,
+        `Do the sources ${nameList}, considered as a set, provide collective support for this claim: ${claim}?`,
       );
       lines.push(
-        "Each source may cover a different part of the claim -- that is expected for a compound citation.",
+        "IMPORTANT: this is a compound citation. The claim is an authorial synthesis across multiple sources. No single source is expected to contain the full claim verbatim. Return SUPPORTED if the sources TOGETHER cover the key factual assertions in the claim. Return PARTIAL if they cover some but not all key assertions. Return UNSUPPORTED only if NO source is even topically related to any part of the claim.",
       );
     }
   }
@@ -234,17 +234,31 @@ function buildGroupPrompt(cites: Citation[]): string {
     lines.push(`Locators: ${locators.join("; ")}.`);
   }
 
-  if (signal || c.parenthetical) {
-    lines.push(
-      "Quote the closest supporting passage from each source if any; respond UNSUPPORTED only if completely unrelated.",
-    );
+  if (bibkeys.length > 1) {
+    // Compound cites: ask for one best passage (aligns with single supporting_passage field)
+    if (signal || c.parenthetical) {
+      lines.push(
+        "Quote the closest supporting passage from whichever source provides the best match; respond UNSUPPORTED only if completely unrelated.",
+      );
+    } else {
+      lines.push(
+        "Quote the most relevant passage from whichever source provides the strongest support.",
+      );
+    }
   } else {
-    lines.push(
-      "Quote the supporting passage from each source if yes; respond UNSUPPORTED if no.",
-    );
-    lines.push(
-      "Quote the EXACT text from the source — copy verbatim, do not paraphrase or summarize. The supporting_passage must be a direct quote.",
-    );
+    // Single-source cites: original behavior
+    if (signal || c.parenthetical) {
+      lines.push(
+        "Quote the closest supporting passage from each source if any; respond UNSUPPORTED only if completely unrelated.",
+      );
+    } else {
+      lines.push(
+        "Quote the supporting passage from each source if yes; respond UNSUPPORTED if no.",
+      );
+      lines.push(
+        "Quote the EXACT text from the source — copy verbatim, do not paraphrase or summarize. The supporting_passage must be a direct quote.",
+      );
+    }
   }
   return lines.join(" ").trim();
 }
@@ -744,6 +758,7 @@ export async function cmdCiteCheck(
       const batchResults = await submitBatchFileSearch(batchRequests, {
         storeName,
         debug,
+        retryModel,
       });
 
       // Map results back to cite groups by key

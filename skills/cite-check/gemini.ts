@@ -1163,7 +1163,7 @@ export async function queryCitationFileSearch(opts: {
  */
 export async function submitBatchFileSearch(
   requests: FileSearchBatchRequest[],
-  opts: { storeName: string; model?: string; debug?: boolean; pollIntervalMs?: number },
+  opts: { storeName: string; model?: string; debug?: boolean; pollIntervalMs?: number; retryModel?: string },
 ): Promise<FileSearchBatchResult[]> {
   const client = getClient();
   const model = opts.model ?? DEFAULT_MODEL;
@@ -1325,6 +1325,54 @@ export async function submitBatchFileSearch(
       }
     });
     await Promise.all(retryPromises);
+  }
+
+  // Retry UNSUPPORTED results with stronger model (mirrors sequential retry path)
+  if (opts.retryModel) {
+    const unsupportedIndices: number[] = [];
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].classification.status === "UNSUPPORTED") {
+        unsupportedIndices.push(i);
+      }
+    }
+
+    if (unsupportedIndices.length > 0 && opts.debug) {
+      process.stderr.write(
+        `[gemini-batch] retrying ${unsupportedIndices.length} UNSUPPORTED results with ${opts.retryModel}...\n`,
+      );
+    }
+
+    // Retry concurrently with bounded concurrency
+    const RETRY_CONCURRENCY = 5;
+    for (let i = 0; i < unsupportedIndices.length; i += RETRY_CONCURRENCY) {
+      const chunk = unsupportedIndices.slice(i, i + RETRY_CONCURRENCY);
+      await Promise.all(chunk.map(async (idx) => {
+        const req = requests[idx];
+        try {
+          const retryResult = await queryCitationFileSearch({
+            storeName: opts.storeName,
+            bibkeys: req.bibkeys,
+            prompt: req.prompt,
+            model: opts.retryModel,
+            debug: opts.debug,
+          });
+          if (retryResult.classification.status !== "UNSUPPORTED") {
+            if (opts.debug) {
+              process.stderr.write(
+                `[gemini-batch] retry overturned ${req.key}: ${retryResult.classification.status}\n`,
+              );
+            }
+            results[idx] = {
+              key: req.key,
+              classification: retryResult.classification,
+              groundingChunks: retryResult.groundingChunks,
+            };
+          }
+        } catch {
+          // Keep original UNSUPPORTED result
+        }
+      }));
+    }
   }
 
   return results;

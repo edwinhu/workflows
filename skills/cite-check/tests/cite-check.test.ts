@@ -1,7 +1,7 @@
 import { describe, expect, it, afterEach } from "bun:test";
 import { join } from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
-import { cmdCiteCheck, cmdAsk } from "../cite-check";
+import { cmdCiteCheck, cmdAsk, buildGroupPrompt } from "../cite-check";
 import type { CiteCheckFlags, AskFlags } from "../cite-check";
 import { __setGeminiClientForTesting } from "../gemini";
 
@@ -1467,5 +1467,68 @@ describe("cmdCiteCheck manifest persistence (legacy)", () => {
 
     expect(code).toBe(0);
     expect(existsSync(join(tmpBase, "drafts", ".cite-check-store.json"))).toBe(false);
+  });
+});
+
+describe("buildGroupPrompt compound cite improvements", () => {
+  it("uses 'compound citation' and 'authorial synthesis' for non-signal compound cites", () => {
+    const cites = [
+      { bibkey: "AuthorA2020-xx", claim: "Both sources show X", file: "draft.md", line: 1, signal: "" },
+      { bibkey: "AuthorB2021-yy", claim: "Both sources show X", file: "draft.md", line: 1, signal: "" },
+    ];
+    const prompt = buildGroupPrompt(cites as any);
+
+    expect(prompt).toContain("compound citation");
+    expect(prompt).toContain("authorial synthesis");
+    expect(prompt).toContain("considered as a set");
+    expect(prompt).not.toContain("taken together");
+  });
+
+  it("uses 'compound citation' for signal compound cites", () => {
+    const cites = [
+      { bibkey: "AuthorA2020-xx", claim: "Both sources relate to X", file: "draft.md", line: 1, signal: "see" },
+      { bibkey: "AuthorB2021-yy", claim: "Both sources relate to X", file: "draft.md", line: 1, signal: "see" },
+    ];
+    const prompt = buildGroupPrompt(cites as any);
+
+    expect(prompt).toContain("compound citation");
+    expect(prompt).toContain("considered as a set");
+    expect(prompt).not.toContain("taken together");
+  });
+
+  it("asks for passage from 'whichever source' not 'each source' for non-signal compound", () => {
+    const cites = [
+      { bibkey: "A2020-aa", claim: "Claim text", file: "draft.md", line: 1, signal: "" },
+      { bibkey: "B2020-bb", claim: "Claim text", file: "draft.md", line: 1, signal: "" },
+    ];
+    const prompt = buildGroupPrompt(cites as any);
+
+    expect(prompt).toContain("whichever source");
+    expect(prompt).not.toContain("from each source");
+  });
+
+  it("asks for passage from 'whichever source' not 'each source' for signal compound", () => {
+    const cites = [
+      { bibkey: "A2020-aa", claim: "Claim text", file: "draft.md", line: 1, signal: "see" },
+      { bibkey: "B2020-bb", claim: "Claim text", file: "draft.md", line: 1, signal: "see" },
+    ];
+    const prompt = buildGroupPrompt(cites as any);
+
+    expect(prompt).toContain("whichever source");
+    expect(prompt).not.toContain("from each source");
+  });
+
+  it("does not change single-source prompts", () => {
+    const cites = [
+      { bibkey: "Solo2024-aa", claim: "Single source claim", file: "draft.md", line: 1, signal: "" },
+    ];
+    const prompt = buildGroupPrompt(cites as any);
+
+    // Single-source prompt should NOT contain compound language
+    expect(prompt).not.toContain("compound citation");
+    expect(prompt).not.toContain("authorial synthesis");
+    expect(prompt).not.toContain("considered as a set");
+    // Single-source prompt should keep "each source" pattern (existing behavior)
+    expect(prompt).toContain("from each source");
   });
 });
