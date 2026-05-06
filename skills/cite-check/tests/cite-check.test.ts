@@ -955,6 +955,62 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
     expect(report).toContain("SUPPORTED");
   });
 
+  it("uses concurrent queryCitationFileSearch in fast mode", async () => {
+    mkdirSync(join(tmpBase, "drafts"), { recursive: true });
+    mkdirSync(join(tmpBase, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpBase, "pdfs/paper.pdf"), "fake-pdf");
+
+    writeFileSync(
+      join(tmpBase, "test.bib"),
+      `@article{Hu2024-bm,
+  title = {{Custom proxy voting advice}},
+  file = {pdfs/paper.pdf},
+  year = {2024}
+}`,
+    );
+
+    writeFileSync(
+      join(tmpBase, "drafts", "draft.md"),
+      "Hu says X [@Hu2024-bm].",
+    );
+
+    let generateContentCallCount = 0;
+    let batchCreateCalled = false;
+    const mockClient = buildFileSearchMockClient({
+      sequentialResponse: {
+        status: "SUPPORTED",
+        passage: "expense ratios fell",
+        explanation: "confirmed",
+      },
+    });
+    // Track generateContent calls (should be used in fast mode, NOT batches.create)
+    const origGenerateContent = mockClient.models.generateContent;
+    mockClient.models.generateContent = async (req: any) => {
+      generateContentCallCount++;
+      return origGenerateContent(req);
+    };
+    mockClient.batches.create = async () => {
+      batchCreateCalled = true;
+      return { name: "batches/b", state: "JOB_STATE_SUCCEEDED", dest: { inlinedResponses: [] } };
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    const code = await cmdCiteCheck(
+      [],
+      { drafts: join(tmpBase, "drafts"), fast: true } as CiteCheckFlags,
+      [join(tmpBase, "test.bib")],
+    );
+
+    expect(code).toBe(0);
+    // Fast mode should use generateContent (queryCitationFileSearch), not batches.create
+    expect(generateContentCallCount).toBeGreaterThanOrEqual(1);
+    expect(batchCreateCalled).toBe(false);
+
+    // Report should be written with correct results
+    const report = readFileSync(join(tmpBase, "drafts", "REVIEW-CITES.md"), "utf-8");
+    expect(report).toContain("SUPPORTED");
+  });
+
   it("uses verifyGroundingWithFallback with groundingChunks from query results", async () => {
     mkdirSync(join(tmpBase, "drafts"), { recursive: true });
     mkdirSync(join(tmpBase, "pdfs"), { recursive: true });

@@ -112,6 +112,7 @@ export interface CiteCheckFlags {
   debug?: string | boolean;
   batch?: string | boolean;
   sequential?: string | boolean;
+  fast?: string | boolean;
   audit?: string | boolean;
   "retry-model"?: string | boolean;
 }
@@ -364,7 +365,7 @@ export async function cmdCiteCheck(
 
   if (resolvedBibPaths.length === 0) {
     printError(
-      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--sequential] [--audit] [--retry-model <model>] [--limit <n>] [--debug]",
+      "Usage: cite-check --bib <path> [--bib <path2>] [--drafts <dir>] [--out <path>] [--dry-run] [--sequential] [--fast] [--audit] [--retry-model <model>] [--limit <n>] [--debug]",
     );
     return 1;
   }
@@ -629,6 +630,75 @@ export async function cmdCiteCheck(
       );
     }
     return 0;
+  } else if (!!flags.fast) {
+    // FAST MODE: concurrent queryCitationFileSearch calls (10x faster, 2x cost)
+    const QUERY_CONCURRENCY = 10;
+
+    // Build task list (same NOT_IN_STORE logic as batch)
+    const queryTasks: Array<{ group: typeof groups[0]; inStore: Citation[] }> = [];
+    for (const g of groups) {
+      const inStore = g.cites.filter((c) => importableBibkeys.has(c.bibkey));
+      const notInStore = g.cites.filter((c) => !importableBibkeys.has(c.bibkey));
+      for (const c of notInStore) {
+        results.push({ cite: c, status: "NOT_IN_STORE", response: `Bibkey \`${c.bibkey}\` not uploaded.` });
+      }
+      if (inStore.length === 0) continue;
+      queryTasks.push({ group: g, inStore });
+    }
+
+    if (queryTasks.length > 0) {
+      process.stderr.write(
+        `[cite-check] fast mode: querying ${queryTasks.length} groups (concurrency=${QUERY_CONCURRENCY})...\n`,
+      );
+
+      let completed = 0;
+      for (let i = 0; i < queryTasks.length; i += QUERY_CONCURRENCY) {
+        const chunk = queryTasks.slice(i, i + QUERY_CONCURRENCY);
+        const chunkResults = await Promise.all(chunk.map(async ({ group: g, inStore }) => {
+          const bibkeys = inStore.map((c) => c.bibkey);
+          const prompt = buildGroupPrompt(inStore);
+          try {
+            const geminiResult = await queryCitationFileSearch({
+              storeName,
+              bibkeys,
+              prompt,
+              debug,
+              retryModel,
+            });
+            completed++;
+            return { group: g, inStore, result: geminiResult, error: undefined as string | undefined };
+          } catch (err) {
+            completed++;
+            return { group: g, inStore, result: null, error: err instanceof Error ? err.message : String(err) };
+          }
+        }));
+
+        for (const { group: g, inStore, result, error } of chunkResults) {
+          if (!result) {
+            for (const c of inStore) {
+              results.push({ cite: c, status: "ERROR", response: `Gemini error: ${error}` });
+            }
+            continue;
+          }
+          const cls = result.classification;
+          const snippet = cls.supporting_passage
+            ? `"${cls.supporting_passage.slice(0, 280)}"`
+            : cls.explanation.slice(0, 300);
+          const groundingResult = verifyGroundingWithFallback({
+            passage: cls.supporting_passage,
+            groundingChunks: result.groundingChunks,
+            expectedBibkeys: inStore.map((c) => c.bibkey),
+            signal: g.cites[0]?.signal,
+          });
+          const grounded = mapGroundingToBool(cls, groundingResult);
+          for (const c of inStore) {
+            results.push({ cite: c, status: cls.status, response: snippet, grounded });
+          }
+        }
+
+        process.stderr.write(`[cite-check] ${completed}/${queryTasks.length} queries done\n`);
+      }
+    }
   } else if (!flags.sequential) {
     // BATCH MODE: File Search Batch API job for all citation queries.
     const batchRequests: FileSearchBatchRequest[] = [];
