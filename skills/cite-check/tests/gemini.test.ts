@@ -1771,6 +1771,58 @@ describe("submitBatchFileSearch", () => {
     expect(src[0].contents[0].parts[0].text).toBe("check claim");
   });
 
+  it("passes responseJsonSchema and responseMimeType in per-request config", async () => {
+    const createCalls: any[] = [];
+    const mockClient = {
+      batches: {
+        create: async (opts: any) => {
+          createCalls.push(opts);
+          return {
+            name: "batches/test-schema",
+            state: "JOB_STATE_SUCCEEDED",
+            dest: {
+              inlinedResponses: [
+                {
+                  metadata: { key: "q1" },
+                  response: {
+                    candidates: [{
+                      content: { parts: [{ text: JSON.stringify({ status: "SUPPORTED", supporting_passage: "p", explanation: "e" }) }] },
+                      groundingMetadata: { groundingChunks: [] },
+                    }],
+                  },
+                },
+              ],
+            },
+          };
+        },
+        get: async () => ({ state: "JOB_STATE_SUCCEEDED" }),
+      },
+      models: { generateContent: async () => ({}) },
+    };
+    __setGeminiClientForTesting(mockClient as any);
+
+    await submitBatchFileSearch(
+      [{ key: "q1", bibkeys: ["Hu2024-bm"], prompt: "check claim" }],
+      { storeName: "fileSearchStores/store-schema-check" },
+    );
+
+    expect(createCalls.length).toBe(1);
+    const src = createCalls[0].src;
+    expect(src.length).toBe(1);
+    // Schema enforcement must be on the per-request config (not just the top-level batch config)
+    // so Gemini enforces structured output on each individual request.
+    expect(src[0].config.responseMimeType).toBe("application/json");
+    expect(src[0].config.responseJsonSchema).toBeDefined();
+    expect(src[0].config.responseJsonSchema.properties.status).toBeDefined();
+    expect(src[0].config.responseJsonSchema.properties.supporting_passage).toBeDefined();
+    expect(src[0].config.responseJsonSchema.properties.explanation).toBeDefined();
+    expect(src[0].config.responseJsonSchema.required).toContain("status");
+    expect(src[0].config.responseJsonSchema.required).toContain("supporting_passage");
+    expect(src[0].config.responseJsonSchema.required).toContain("explanation");
+    // Must NOT use responseSchema (Type-enum form) — batch path must use responseJsonSchema
+    expect(src[0].config.responseSchema).toBeUndefined();
+  });
+
   it("uses different metadataFilter per request", async () => {
     const createCalls: any[] = [];
     const mockClient = {
