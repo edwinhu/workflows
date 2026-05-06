@@ -1,6 +1,6 @@
 ---
 name: audit-fix-loop
-description: "This skill should be used when the user asks to 'iteratively improve', 'audit and fix', 'hill-climb quality', 'grade and improve', 'score and fix', 'audit loop', 'quality loop', or needs structured iterative improvement of an artifact using scored independent audits. Also use when the user invokes a ralph loop for quality improvement rather than task completion."
+description: "Use when 'iteratively improve', 'audit and fix', 'hill-climb quality', 'grade and improve', 'score and fix', 'audit loop', 'quality loop', or 'ralph loop for quality'."
 user-invocable: false
 ---
 

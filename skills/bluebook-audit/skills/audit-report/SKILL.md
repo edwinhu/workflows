@@ -1,6 +1,8 @@
 ---
 name: audit-report
 description: "Phase 3: Generate and present audit report for user review"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 3: Report

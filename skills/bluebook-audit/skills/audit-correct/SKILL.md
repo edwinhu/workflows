@@ -1,6 +1,8 @@
 ---
 name: audit-correct
 description: "Phase 4: Apply corrections to DOCX"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 4: Correct

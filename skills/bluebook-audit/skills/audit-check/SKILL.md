@@ -1,6 +1,8 @@
 ---
 name: audit-check
 description: "Phase 2: Run mechanical checks and Gemini formatted audit"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 2: Check (Mechanical + AI Audit)

@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: This skill should be used when the user asks to "query WRDS", "access Compustat", "get CRSP data", "pull Form 4 insider data", "query ISS compensation", "download SEC EDGAR filings", "get ExecuComp data", "access Capital IQ", "write SAS code for WRDS", "SAS ETL", "SAS hash merge", "SGE array job", "qsas", "qsub SAS", "TAQ data", "trades and quotes", "NBBO", "intraday data", "millisecond data", "closing auction", "VWAP TAQ", "order imbalance", "FJC database", "federal court cases", "securities litigation data", "Form D data", "Reg D data", "private placements data", "private offering data", "Regulation D filings", "IPO data", "SEO data", "new issues", "equity offerings", "SDC new issues", "SDC Platinum", "SDC M&A", "mergers acquisitions data", "M&A database", "FISD", "bond issuances", "144A offerings", "high yield bonds", "investment grade bonds", "Mergent bond data", "fund formation data", "hedge fund registrations", "private equity fund data", "closed-end fund filings", "Form ADV data", "investment adviser registrations", or needs WRDS PostgreSQL query patterns or SAS ETL performance patterns.
+description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "ISS governance/compensation", "TAQ intraday/NBBO", "SDC M&A or new issues", "FISD bonds", "Form D/ADV", "FJC court data", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
 user-invocable: false
 ---
 

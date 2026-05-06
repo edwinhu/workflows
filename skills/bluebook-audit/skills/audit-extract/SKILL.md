@@ -1,6 +1,8 @@
 ---
 name: audit-extract
 description: "Phase 1: Extract footnotes from DOCX with formatting annotations"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 1: Extract Footnotes

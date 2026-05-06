@@ -1,7 +1,7 @@
 ---
 name: lseg-data
 version: 1.0
-description: This skill should be used when the user asks to “access LSEG data”, “query Refinitiv”, “get market data from Refinitiv”, “download fundamentals from LSEG”, “access ESG scores”, “convert RIC to ISIN”, “get shareholder activism data”, “query poison pills”, “access corporate governance data”, “find activist campaigns”, “get syndicated loans data”, “query loan deals”, “get infrastructure projects”, “query project finance data”, “get private equity data”, “query VC investments”, “find PE-backed companies”, “get M&A data”, “query mergers and acquisitions”, “find acquisition deals”, “get IPO data”, “query equity offerings”, “find new issues”, “get joint venture data”, “query strategic alliances”, “get news headlines”, “query news data”, “fetch news articles”, or needs the LSEG Data Library Python API.
+description: Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "Refinitiv news", or any use of the `lseg.data` Python API.
 user-invocable: false
 ---
 

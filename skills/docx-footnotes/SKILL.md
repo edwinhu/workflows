@@ -1,12 +1,23 @@
 ---
 name: docx-footnotes
-description: "Repair DOCX footnote damage from Google Docs or Word Online round-trips, and convert hardcoded supra/infra note references to auto-updating NOTEREF field codes. Use this skill whenever a user's .docx footnotes are broken after editing in a cloud editor — common symptoms include missing footnote separator lines, stripped paragraph styles (pStyle), author bio custom marks (*, †, ‡) replaced with numbers, footnote numbering starting at the wrong number, or TOC separator paragraphs that inflate to fill a whole page. Also use this skill when the user wants to convert 'supra note N' cross-references to NOTEREF fields, fix footnote numbering offsets caused by customMarkFollows bio footnotes, or perform any OOXML-level footnote surgery on a Word document. Even if the user doesn't mention OOXML or XML directly — if they describe footnote formatting problems in a .docx that was edited in Google Docs or Word Online, this is the right skill."
+description: "Use when DOCX footnotes are broken after Google Docs or Word Online round-trips, when converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields, or for any OOXML-level footnote surgery on a Word document — even if the user doesn't say 'OOXML' but describes footnote formatting problems in a .docx edited in a cloud editor."
 user-invocable: false
 ---
 
 # DOCX Footnote Repair & Cross-References
 
 Fix footnote formatting damage caused by Google Docs and Word Online, and convert hardcoded supra note references to NOTEREF field codes.
+
+## When This Applies
+
+Common symptoms in `.docx` files round-tripped through Google Docs or Word Online:
+
+- Missing footnote separator lines
+- Stripped paragraph styles (pStyle) on footnote bodies
+- Author bio custom marks (`*`, `†`, `‡`) replaced with numbers
+- Footnote numbering starting at the wrong number (offset from `customMarkFollows` bio footnotes)
+- TOC separator paragraphs that inflate to fill a whole page
+- Hardcoded "supra note N" / "infra note N" references that need to become auto-updating NOTEREF fields
 
 ## Quick Start
 

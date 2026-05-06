@@ -1,7 +1,7 @@
 ---
 name: dev-debug
 version: 5.0
-description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic debugging with fresh-context subagent iterations and progress-gated escalation."
+description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic debugging."
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"

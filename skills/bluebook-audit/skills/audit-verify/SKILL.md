@@ -1,6 +1,8 @@
 ---
 name: audit-verify
 description: "Phase 5: Verify all corrections were applied correctly"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 5: Verify

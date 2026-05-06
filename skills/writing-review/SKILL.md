@@ -2,6 +2,7 @@
 name: writing-review
 description: "Internal skill for hierarchical document review. Called by writing-validate after claim validation passes."
 user-invocable: false
+disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Agent, Skill
 hooks:
   PreToolUse:

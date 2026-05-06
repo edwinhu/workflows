@@ -1,6 +1,6 @@
 ---
 name: ds-verify
-description: "This skill should be used when the user asks to 'verify analysis results', 'check reproducibility', 'validate data science output', 'confirm completion', or as Phase 5 of the /ds workflow."
+description: "This skill should be used when the user asks to 'verify analysis results', 'check reproducibility', 'validate data science output', or 'confirm completion'."
 user-invocable: false
 disable-model-invocation: true
 hooks:

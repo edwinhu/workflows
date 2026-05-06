@@ -1,6 +1,6 @@
 ---
 name: bluebook
-description: This skill should be used when the user asks to “cite a case”, “format a citation”, “check Bluebook format”, “cite a statute”, “use id. or supra”, “format footnotes”, “cite a law review article”, or needs Bluebook 21st Edition citation guidance. Covers cases, statutes, secondary sources, signals, and short forms.
+description: This skill should be used when the user asks to “cite a case”, “format a citation”, “check Bluebook format”, “cite a statute”, “use id. or supra”, “format footnotes”, “cite a law review article”, or needs Bluebook 21st Edition citation guidance.
 user-invocable: false
 ---
 

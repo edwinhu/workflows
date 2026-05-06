@@ -1,6 +1,8 @@
 ---
 name: audit-archive
 description: "Phase 6: Archive URLs via perma.cc"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 6: Archive

@@ -1,6 +1,8 @@
 ---
 name: audit-crossrefs
 description: "Phase 7: Convert hardcoded cross-references to auto-updating NOTEREF fields"
+user-invocable: false
+disable-model-invocation: true
 ---
 
 # Phase 7: Cross-References

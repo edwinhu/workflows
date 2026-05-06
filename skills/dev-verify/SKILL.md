@@ -1,6 +1,6 @@
 ---
 name: dev-verify
-description: "This skill should be used when the user asks to 'verify completion', 'check that tests pass', 'confirm feature works', or REQUIRED Phase 7 of /dev workflow (final). Enforces fresh runtime evidence before claiming completion."
+description: "This skill should be used when the user asks to 'verify completion', 'check that tests pass', 'confirm feature works', or 'verify the feature is done'."
 user-invocable: false
 disable-model-invocation: true
 hooks:

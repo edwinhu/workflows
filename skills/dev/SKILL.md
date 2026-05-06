@@ -1,6 +1,6 @@
 ---
 name: dev
-description: "This skill should be used when the user asks to 'start a feature', 'build a feature', 'implement a feature', 'develop', 'new feature', or needs the full 7-phase development workflow with TDD enforcement."
+description: "This skill should be used when the user asks to 'start a feature', 'build a feature', 'implement a feature', 'develop', or 'new feature'."
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 hooks:
   PreToolUse:
