@@ -953,84 +953,11 @@ const CITE_CHECK_SCHEMA = {
 
 function parseClassification(text: string | null | undefined): ClassifyResult {
   try {
-    let parsed = JSON.parse(text ?? "{}");
-
-    // Unwrap array-wrapped responses: model sometimes returns [{ ... }]
-    if (Array.isArray(parsed)) {
-      parsed = parsed[0] ?? {};
-    }
-
-    // Handle schema deviations from batch+fileSearch responses.
-    // The model varies its output schema across responses — normalize all known variants.
-
-    // 1. Extract status from variant field names
-    let status: string | undefined = parsed.status;
-    if (!status && parsed.supported !== undefined) {
-      status = parsed.supported ? "SUPPORTED" : "UNSUPPORTED";
-    }
-    if (!status && parsed.is_supported !== undefined) {
-      // "SUPPORTED" / "UNSUPPORTED" as string, or true/false
-      const v = parsed.is_supported;
-      if (typeof v === "boolean") {
-        status = v ? "SUPPORTED" : "UNSUPPORTED";
-      } else if (typeof v === "string") {
-        status = v.toUpperCase();
-      }
-    }
-    if (!status && parsed.claim_supported !== undefined) {
-      // { claim_supported: true/false }
-      status = parsed.claim_supported ? "SUPPORTED" : "UNSUPPORTED";
-    }
-    if (!status && parsed.support !== undefined) {
-      // "yes" / "no" / "partial" / "SUPPORTED"
-      const v = String(parsed.support).toLowerCase();
-      if (v === "yes" || v === "true" || v === "supported") status = "SUPPORTED";
-      else if (v === "partial") status = "PARTIAL";
-      else if (v === "unsupported" || v === "no" || v === "false") status = "UNSUPPORTED";
-      else status = "UNSUPPORTED";
-    }
-    if (!status && parsed.supporting !== undefined) {
-      // { supporting: "Yes" / "No" }
-      const v = String(parsed.supporting).toLowerCase();
-      if (v === "yes" || v === "true" || v === "supported") status = "SUPPORTED";
-      else if (v === "partial") status = "PARTIAL";
-      else status = "UNSUPPORTED";
-    }
-    // Some responses embed status as a value in a bibkey-named field: { "Lund2017-ed": "UNSUPPORTED" }
-    if (!status) {
-      for (const [k, v] of Object.entries(parsed)) {
-        if (typeof v === "string" && /^(SUPPORTED|UNSUPPORTED|PARTIAL)$/i.test(v) && k !== "supporting_passage") {
-          status = (v as string).toUpperCase();
-          break;
-        }
-      }
-    }
-
-    // 2. Extract supporting passage from variant field names
-    let supporting_passage: string =
-      parsed.supporting_passage ?? parsed.passage ?? parsed.quote ??
-      parsed.closest_supporting_passage ?? parsed.relevant_passage ?? "";
-
-    // Edge case: model puts verdict string in supporting_passage field
-    if (typeof supporting_passage === "string" && /^(SUPPORTED|UNSUPPORTED|PARTIAL)$/i.test(supporting_passage.trim())) {
-      if (!status) status = supporting_passage.trim().toUpperCase();
-      supporting_passage = "";
-    }
-
-    // 3. Infer SUPPORTED when model returns a substantive passage with no explicit status
-    // (model gave a real quote but forgot to include a status field)
-    if (!status && supporting_passage && supporting_passage.length > 20) {
-      status = "SUPPORTED";
-    }
-
-    // 4. Extract explanation from variant field names
-    const explanation =
-      parsed.explanation ?? parsed.reason ?? parsed.summary ?? "";
-
+    const parsed = JSON.parse(text ?? "{}");
     return {
-      status: (status as Status) ?? "ERROR",
-      supporting_passage,
-      explanation,
+      status: parsed.status ?? "ERROR",
+      supporting_passage: parsed.supporting_passage ?? "",
+      explanation: parsed.explanation ?? "",
     };
   } catch {
     return {

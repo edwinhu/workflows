@@ -630,15 +630,9 @@ export async function cmdCiteCheck(
     }
     return 0;
   } else if (!flags.sequential) {
-    // CONCURRENT MODE: parallel queryCitationFileSearch calls with bounded concurrency.
-    const QUERY_CONCURRENCY = 10;
+    // BATCH MODE: File Search Batch API job for all citation queries.
+    const batchRequests: FileSearchBatchRequest[] = [];
 
-    interface GroupTask {
-      group: typeof groups[0];
-      inStore: typeof allCites;
-    }
-
-    const tasks: GroupTask[] = [];
     for (const g of groups) {
       const inStore = g.cites.filter((c) => importableBibkeys.has(c.bibkey));
       const notInStore = g.cites.filter((c) => !importableBibkeys.has(c.bibkey));
@@ -652,63 +646,51 @@ export async function cmdCiteCheck(
       }
 
       if (inStore.length === 0) continue;
-      tasks.push({ group: g, inStore });
+
+      const bibkeys = inStore.map((c) => c.bibkey);
+      const prompt = buildGroupPrompt(inStore);
+      batchRequests.push({ key: g.key, bibkeys, prompt });
     }
 
-    if (tasks.length > 0) {
+    if (batchRequests.length > 0) {
       process.stderr.write(
-        `[cite-check] concurrent mode: querying ${tasks.length} groups (concurrency=${QUERY_CONCURRENCY})...\n`,
+        `[cite-check] batch mode: submitting ${batchRequests.length} queries as File Search Batch job...\n`,
       );
 
-      let completed = 0;
-      const taskResults: Array<{ task: GroupTask; result: Awaited<ReturnType<typeof queryCitationFileSearch>> | null; error?: string }> = [];
+      const batchResults = await submitBatchFileSearch(batchRequests, {
+        storeName,
+        debug,
+      });
 
-      for (let i = 0; i < tasks.length; i += QUERY_CONCURRENCY) {
-        const chunk = tasks.slice(i, i + QUERY_CONCURRENCY);
-        const chunkResults = await Promise.all(chunk.map(async (t) => {
-          const bibkeys = t.inStore.map((c) => c.bibkey);
-          const prompt = buildGroupPrompt(t.inStore);
-          try {
-            const r = await queryCitationFileSearch({
-              storeName,
-              bibkeys,
-              prompt,
-              debug,
-              retryModel,
-            });
-            completed++;
-            return { task: t, result: r };
-          } catch (err) {
-            completed++;
-            return { task: t, result: null, error: err instanceof Error ? err.message : String(err) };
-          }
-        }));
-        taskResults.push(...chunkResults);
-        process.stderr.write(`[cite-check] ${completed}/${tasks.length} queries done\n`);
-      }
+      // Map results back to cite groups by key
+      const resultByKey = new Map(batchResults.map((r) => [r.key, r]));
 
-      for (const { task, result, error } of taskResults) {
-        if (!result) {
-          for (const c of task.inStore) {
-            results.push({ cite: c, status: "ERROR", response: `Gemini error: ${error}` });
+      for (const g of groups) {
+        const inStore = g.cites.filter((c) => importableBibkeys.has(c.bibkey));
+        if (inStore.length === 0) continue;
+
+        const batchResult = resultByKey.get(g.key);
+        if (!batchResult) {
+          for (const c of inStore) {
+            results.push({ cite: c, status: "ERROR", response: "No batch result returned" });
           }
           continue;
         }
 
-        const cls = result.classification;
+        const cls = batchResult.classification;
         const snippet = cls.supporting_passage
           ? `"${cls.supporting_passage.slice(0, 280)}"`
           : cls.explanation.slice(0, 300);
 
         const groundingResult = verifyGroundingWithFallback({
           passage: cls.supporting_passage,
-          groundingChunks: result.groundingChunks,
-          expectedBibkeys: task.inStore.map((c) => c.bibkey),
-          signal: task.group.cites[0]?.signal,
+          groundingChunks: batchResult.groundingChunks,
+          expectedBibkeys: inStore.map((c) => c.bibkey),
+          signal: g.cites[0]?.signal,
         });
         const grounded = mapGroundingToBool(cls, groundingResult);
 
-        for (const c of task.inStore) {
+        for (const c of inStore) {
           results.push({ cite: c, status: cls.status, response: snippet, grounded });
         }
       }
