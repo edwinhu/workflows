@@ -19,13 +19,11 @@ ARCHIVE_ROOT="${ARCHIVE_ROOT:-/wrds/sec/archives}"
 TASK_ID="${SGE_TASK_ID:?SGE_TASK_ID must be set}"
 GO_BIN="${GO_BIN:-/scratch/nyu/eddyhu/bin/scan_shard_go}"
 
-# Go uses threads not multiprocessing — pin to 1 core per SGE slot.
-# I/O concurrency (goroutine NFS reads) still works with GOMAXPROCS=1.
-export GOMAXPROCS="${NSLOTS:-1}"
+# Go regex parsing is CPU-bound: GOMAXPROCS scales linearly.
+# Goroutine count barely matters (NFS is not the bottleneck).
+export GOMAXPROCS="${NSLOTS:-2}"
 
-# Default: 16 goroutines per slot — NFS opens are I/O-bound so
-# over-subscription is desirable.
-_default_concurrency=$(( ${NSLOTS:-1} * 16 ))
+_default_concurrency=$(( ${NSLOTS:-2} * 8 ))
 if (( _default_concurrency < 16 )); then _default_concurrency=16; fi
 GO_CONCURRENCY="${GO_CONCURRENCY:-$_default_concurrency}"
 

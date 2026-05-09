@@ -24,10 +24,10 @@ BIN="${BIN:-/scratch/nyu/eddyhu/bin/scan_covers}"
 PROFILE="${PROFILE:-blockholders_13dg}"
 TASK_ID="${SGE_TASK_ID:?SGE_TASK_ID must be set}"
 
-# Go uses threads not multiprocessing — pin to 1 core per SGE slot.
-export GOMAXPROCS="${NSLOTS:-1}"
+# Go regex parsing is CPU-bound: GOMAXPROCS scales linearly.
+export GOMAXPROCS="${NSLOTS:-2}"
 
-_default_concurrency=$(( ${NSLOTS:-1} * 16 ))
+_default_concurrency=$(( ${NSLOTS:-2} * 8 ))
 if (( _default_concurrency < 16 )); then _default_concurrency=16; fi
 CONCURRENCY="${CONCURRENCY:-$_default_concurrency}"
 
