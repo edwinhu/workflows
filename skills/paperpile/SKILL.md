@@ -141,9 +141,26 @@ paperpile edit abc123 --author "Jack Pitcher, Emily Glazer" --confirm
 
 `warmup.sh` auto-clicks the NetBadge cert login via CDP. Runs every 25 min via launchd (`com.paperpile.warmup.plist`).
 
+## WRDS SOCKS Tunnel (preferred for PDF acquisition)
+
+If the `/fetch-paper` skill is available (lives in dotfiles, not this plugin), prefer it
+for downloading paywalled PDFs. It uses a WRDS SOCKS tunnel to present a Penn IP — which
+is registered with publishers for IP-based access — and bypasses EZproxy entirely.
+
+**Check availability:**
+```bash
+which wrds-tunnel && which fetch-paper-browser && echo "fetch-paper available" || echo "fetch-paper not available — falling back to EZproxy/CDP"
+```
+
+If available: use `/fetch-paper` for PDF acquisition, then `paperpile add <local.pdf>` to add to library.
+If not available: use the EZproxy/CDP pipeline in `find-and-add` as before.
+
+See `${CLAUDE_SKILL_DIR}/references/institutional_access.md` for technical details.
+
 ## Integration
 
 ```
+fetch-paper (dotfiles) → download PDF via WRDS SOCKS
 Paperpile (this skill) → cite-check (upload PDFs to Gemini)
                        → nlm (upload to NotebookLM)
 ```
