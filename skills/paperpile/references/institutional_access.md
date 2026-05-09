@@ -86,5 +86,6 @@ entire IP range with broad publisher access — no per-school disambiguation.
   with shadow DOM; must click `shadowRoot.querySelector('button')`
 - **Headless Chrome is detected** by JSTOR (Access Check / reCAPTCHA) — use headed mode
 - **Dia ignores system SOCKS proxy** — must launch Chrome separately with `--proxy-server`
-- **UVA VPN IPs not registered** — UVA has per-school subscriptions (Law, Business, A&S),
-  so publishers require EZproxy/Shibboleth to authenticate affiliation, not just IP
+- **Only Penn/WRDS has IP-based publisher access** — both UVA (`128.143.x.x`) and
+  NYU (`128.122.x.x` via rjds) require EZproxy/Shibboleth. Penn registers its
+  entire IP range; most universities don't
