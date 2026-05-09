@@ -24,7 +24,10 @@ BIN="${BIN:-/scratch/nyu/eddyhu/bin/scan_covers}"
 PROFILE="${PROFILE:-blockholders_13dg}"
 TASK_ID="${SGE_TASK_ID:?SGE_TASK_ID must be set}"
 
-_default_concurrency=$(( ${NSLOTS:-2} * 8 ))
+# Go uses threads not multiprocessing — pin to 1 core per SGE slot.
+export GOMAXPROCS="${NSLOTS:-1}"
+
+_default_concurrency=$(( ${NSLOTS:-1} * 16 ))
 if (( _default_concurrency < 16 )); then _default_concurrency=16; fi
 CONCURRENCY="${CONCURRENCY:-$_default_concurrency}"
 
