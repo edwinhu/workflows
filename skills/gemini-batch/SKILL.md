@@ -247,17 +247,27 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 
 ## Recommended Models
 
-| Model | Use Case | Cost |
-|-------|----------|------|
-| `gemini-2.5-flash-lite` | Most batch jobs | Lowest |
-| `gemini-2.5-flash` | Complex extraction | Medium |
-| `gemini-2.5-pro` | Highest accuracy | Highest |
+| Model | Use Case | Cost | Location | Thinking default |
+|-------|----------|------|----------|------------------|
+| `gemini-2.5-flash-lite` | Most batch jobs | Lowest | us-central1 | OFF |
+| `gemini-2.5-flash` | Complex extraction | Medium | us-central1 | OFF |
+| `gemini-2.5-pro` | Highest accuracy | Highest | us-central1 | ON (cannot disable) |
+| `gemini-3-flash-preview` | New gen, larger context | 5× flash-lite | **global** | **HIGH (set MINIMAL!)** |
+| `gemini-3.1-flash-lite-preview` | Cheapest gen-3 | ~2× 2.5 flash-lite | **global** | **HIGH (set MINIMAL!)** |
+| `gemini-embedding-001` | **Default for text-only** (short titles, classification, retrieval over text) | Low | Standard API | n/a |
+| `gemini-embedding-2` | Multimodal (text+image) inputs | Low | Standard API | n/a |
+| `text-embedding-005` | Need Vertex Batch console visibility (legacy) | Low | us-central1 | n/a |
+
+**Critical for Gemini 3.x:** Always set `thinkingConfig: {thinkingLevel: "MINIMAL"}` in `generationConfig` or batch responses will silently fail with `MAX_TOKENS` and empty content. See `references/gotchas.md` Gotcha 12.
+
+**Critical for embedding batches:** Embedding work has its own rules and failure modes — use **file-based JSONL with per-row `key`** on the Standard API; never `inlined_requests` (scrambles order at scale). Default to `gemini-embedding-001` for text-only tasks. **See [`references/embeddings.md`](references/embeddings.md) and [`examples/embeddings_batch.py`](examples/embeddings_batch.py).**
 
 ## Additional Resources
 
 ### References
-- `references/gcs-setup.md` - **NEW:** Complete GCS and Vertex AI setup guide
-- `references/gotchas.md` - 9 critical production gotchas (updated auth section)
+- `references/embeddings.md` - **NEW:** Dedicated reference for embedding batches (model choice, file-based + keyed pattern, sentinel verification)
+- `references/gcs-setup.md` - Complete GCS and Vertex AI setup guide
+- `references/gotchas.md` - 14 critical production gotchas (Gemini 3.x thinking, location='global'; embedding gotcha now lives in embeddings.md)
 - `references/best-practices.md` - Idempotent IDs, state tracking, validation
 - `references/scale-up-testing.md` - Incremental scale-up testing (LangExtract prototyping, LLM-as-judge, Vertex AI batch)
 - `references/troubleshooting.md` - Common errors and debugging
@@ -267,6 +277,7 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 ### Examples
 - `examples/icon_batch_vision.py` - **NEW:** Batch vision analysis with Vertex AI
 - `examples/batch_processor.py` - Complete GeminiBatchProcessor class
+- `examples/embeddings_batch.py` - **NEW:** `gemini-embedding-2` via `client.batches.create_embeddings()` (the only supported production path; Vertex Batch rejects this model)
 - `examples/pipeline_template.py` - Customizable pipeline template
 
 ### Scripts

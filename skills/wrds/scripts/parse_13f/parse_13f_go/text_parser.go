@@ -504,6 +504,34 @@ func parseLine(line string) *holdingLine {
 			h.votingSole = nums[len(nums)-3]
 			h.votingShared = nums[len(nums)-2]
 			h.votingNone = nums[len(nums)-1]
+		} else if len(nums) >= 4 {
+			// Fewer numbers than expected — try last 3 as voting.
+			h.votingSole = nums[len(nums)-3]
+			h.votingShared = nums[len(nums)-2]
+			h.votingNone = nums[len(nums)-1]
+		} else if len(nums) >= 3 {
+			h.votingSole = nums[len(nums)-1]
+		}
+
+		// F6: If BCS captured a concatenated value+shares as one
+		// number (P3b), try to split using any other number on the
+		// right that is a suffix of the huge shares number.
+		if bcsVal == 0 && bcsShr > 1_000_000_000 && len(nums) >= 2 {
+			sharesStr := strconv.FormatInt(bcsShr, 10)
+			for i := 1; i < len(nums); i++ {
+				cand := nums[i]
+				if cand > 0 && cand < bcsShr {
+					candStr := strconv.FormatInt(cand, 10)
+					if strings.HasSuffix(sharesStr, candStr) && len(sharesStr) > len(candStr) {
+						valStr := sharesStr[:len(sharesStr)-len(candStr)]
+						if v, err := strconv.ParseInt(valStr, 10, 64); err == nil {
+							h.value = v
+							h.shares = cand
+							break
+						}
+					}
+				}
+			}
 		}
 		return h
 	}

@@ -1235,6 +1235,54 @@ ABR Information     | COMMON STOCK  |00077R108  |         8,024|     461,800| SH
 	}
 }
 
+// F6: Concatenated value+shares repair using voting authority
+func TestParseTextConcatenatedValueShares(t *testing.T) {
+	filing := `<SEC-DOCUMENT>
+<SEC-HEADER>
+ACCESSION NUMBER:		0000000000-16-000001
+CONFORMED SUBMISSION TYPE:	13F-HR
+FILED AS OF DATE:		20160401
+CONFORMED PERIOD OF REPORT:	20160331
+FILER:
+	COMPANY DATA:
+		COMPANY CONFORMED NAME:			CONCAT TEST FUND
+		CENTRAL INDEX KEY:			0008888888
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>13F-HR
+<TABLE>
+NAME OF ISSUER         TITLE OF CLASS    CUSIP       VALUE   SHARES  SH/PRN  INVDISC  SOLE    SHARED  NONE
+LUCENT TECHNOLOGIES    COM               549463107   4861710278500 SH       SOLE                10278500        0      0
+NORMAL CORP            COM               037833100   50000   100000  SH      SOLE     100000  0       0
+</TABLE>
+</DOCUMENT>
+</SEC-DOCUMENT>
+`
+	result, err := parseText([]byte(filing), "/test/concat.txt")
+	if err != nil {
+		t.Fatalf("parseText returned error: %v", err)
+	}
+	if len(result.Rows) != 2 {
+		t.Fatalf("got %d rows, want 2", len(result.Rows))
+	}
+	// LUCENT: concatenated 48617+10278500 → should be repaired via voting_sole
+	lucent := result.Rows[0]
+	if lucent.Value != 48617 {
+		t.Errorf("LUCENT Value = %d, want 48617", lucent.Value)
+	}
+	if lucent.Shares != 10278500 {
+		t.Errorf("LUCENT Shares = %d, want 10278500", lucent.Shares)
+	}
+	// NORMAL: should be unaffected
+	normal := result.Rows[1]
+	if normal.Value != 50000 {
+		t.Errorf("NORMAL Value = %d, want 50000", normal.Value)
+	}
+	if normal.Shares != 100000 {
+		t.Errorf("NORMAL Shares = %d, want 100000", normal.Shares)
+	}
+}
+
 // Integration test: standard line uses BCS P3 (standard pattern)
 func TestParseLineBCSStandardPattern(t *testing.T) {
 	line := "APPLE INC              COM                    037833100   50000   100000  SH      SOLE     100000  0       0"
