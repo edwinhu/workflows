@@ -1,0 +1,4 @@
+# colswap_list.txt — accessions where value/shares columns are reversed.
+# Format: one accession number per line (e.g., 0000000000-01-000001).
+# Lines starting with # are comments. Blank lines are ignored.
+# Add entries here as they are discovered during benchmarking.
