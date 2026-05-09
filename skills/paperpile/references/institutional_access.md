@@ -39,10 +39,12 @@ uva-vpn --library        # split tunnel: HPC + publisher sites
 uva-vpn --full           # all traffic through UVA
 ```
 
-**Important:** UVA VPN gives a UVA IP (`128.143.x.x`) but publishers do NOT
-recognize VPN IP ranges for institutional access. UVA requires EZproxy or
-Shibboleth for off-campus access. The VPN is primarily useful for HPC, not
-paper downloads.
+**Important:** UVA VPN gives a generic UVA IP (`128.143.x.x`) but publishers
+cannot determine school affiliation (Law, Business, A&S) from IP alone.
+Different schools have different subscriptions, so UVA requires EZproxy or
+Shibboleth to authenticate school-level entitlements. The VPN is useful for
+HPC, not paper downloads. WRDS/Wharton works because Penn registers the
+entire IP range with broad publisher access — no per-school disambiguation.
 
 ### 3. Shell helpers
 
@@ -84,4 +86,5 @@ paper downloads.
   with shadow DOM; must click `shadowRoot.querySelector('button')`
 - **Headless Chrome is detected** by JSTOR (Access Check / reCAPTCHA) — use headed mode
 - **Dia ignores system SOCKS proxy** — must launch Chrome separately with `--proxy-server`
-- **UVA VPN IPs not registered** with publishers — EZproxy/Shibboleth still needed for UVA
+- **UVA VPN IPs not registered** — UVA has per-school subscriptions (Law, Business, A&S),
+  so publishers require EZproxy/Shibboleth to authenticate affiliation, not just IP
