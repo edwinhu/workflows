@@ -126,7 +126,7 @@ Before proceeding to [next phase]:
 ```
 
 **Example** (dev-implement):
-> Main Chat → ralph-loop → delegate per task → Task agent → verify → next task
+> Main Chat → set `/goal` for phase → delegate per task → Task agent → verify → next task (turns refire under the active goal)
 
 **Key insight:** The flowchart IS the spec. If the text and diagram disagree, the diagram wins.
 
@@ -152,7 +152,7 @@ Before proceeding to [next phase]:
 ```
 
 **Example** (dev-implement):
-> Per-task ralph loops: implement → test → review → fix → re-test (max 3 iterations per task)
+> Per-task review under one phase-level `/goal`: implement → test → review → fix → re-test (max 3 iterations per task; turn budget encoded in the goal condition)
 
 **Key insight:** Loops need iteration limits. Without limits, the agent can loop forever on edge cases.
 

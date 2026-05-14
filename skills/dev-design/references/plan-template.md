@@ -8,7 +8,7 @@ Use this template when writing `.planning/PLAN.md` after user approves an approa
 
 > **For Claude:** REQUIRED SUB-SKILL: Discover and read `skills/dev-implement/SKILL.md` via cache lookup to implement this plan.
 >
-> **Per-Task Ralph Loops:** Assign each task its OWN ralph loop. Do NOT combine multiple tasks into one loop.
+> **Cross-Turn Iteration via `/goal`:** Set one `/goal` for the implementation phase whose condition covers all tasks in PLAN.md plus the Testing Strategy command. Work through tasks sequentially across turns under that active goal.
 >
 > **Delegation:** Main chat orchestrates, Task agents implement. Discover and read `skills/dev-delegate/SKILL.md` via cache lookup for subagent templates.
 >
@@ -125,18 +125,18 @@ See `references/constraints/real-test-enforcement.md` for fake test detection re
 >
 > **If your plan has ≤15 tasks:** Skip chunking. Use a single implementation order section.
 
-## Implementation Order (with Per-Task Ralph Loops)
+## Implementation Order (Tasks Run Across Turns Under One `/goal`)
 
-> **For Claude:** Each task = one ralph loop. Complete task N before starting task N+1.
+> **For Claude:** Complete task N before starting task N+1. The phase-level `/goal` evaluator decides when all tasks are done.
 >
 > **TDD ENFORCEMENT:** Every task with code MUST have a failing test written BEFORE implementation.
 >
-> Pattern: `Skill(skill="ralph-loop:ralph-loop", args="Task N: [name] --max-iterations 10 --completion-promise TASKN_DONE")`
+> Phase goal pattern: `/goal All tasks in PLAN.md marked [x], [TEST COMMAND] exits 0, VALIDATION.md status = validated. Stop after [N] turns.`
 >
 > **Task Dependencies:** Mark each task's `Deps` column: `---` = no dependencies (parallelizable), `after N` = must follow task N. Tasks with `---` or the same dependency can run in parallel when using agent team mode in dev-implement.
 
-| Task | Deps | Implements | Ralph Loop | Failing Test (write FIRST) | Verify Command |
-|------|------|------------|------------|----------------------------|----------------|
+| Task | Deps | Implements | Turn Budget | Failing Test (write FIRST) | Verify Command |
+|------|------|------------|-------------|----------------------------|----------------|
 | 0. Test infrastructure (if needed) | --- | --- | `"Task 0: Test setup" -> TASK0_DONE` | N/A (meta-task) | `pytest --version` or `npm test -- --version` |
 | 1. Add types | after 0 | `AUTH-01` | `"Task 1: Add types" -> TASK1_DONE` | N/A (types only) | `tsc --noEmit` |
 | 2. Service method | after 1 | `AUTH-01, AUTH-02` | `"Task 2: Service method" -> TASK2_DONE` | `test_validate_session()` - write test, see RED, then implement | `pytest tests/test_auth.py -v` |

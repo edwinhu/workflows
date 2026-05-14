@@ -10,7 +10,7 @@ code files directly (instead of delegating to subagents). Detects:
 CONSTRAINT = "delegation-law"
 APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-review", "dev-verify", "dev-debug",
               "dev-delegate", "dev-design", "dev-explore", "dev-handoff", "dev-test",
-              "dev-test-gaps", "dev-spec-reviewer", "dev-plan-reviewer", "dev-ralph-loop"]
+              "dev-test-gaps", "dev-spec-reviewer", "dev-plan-reviewer"]
 SEVERITY = "hard"
 
 import re

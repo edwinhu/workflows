@@ -135,10 +135,9 @@ DO NOT:
 3. "Take a look" without structure
 
 INSTEAD:
-1. Start ralph loop:
-   ralph-loop: Start Ralph Loop in current session with bug debugging
-   Skill(skill="ralph-loop:ralph-loop", args="Debug: [symptom] --max-iterations 15 --completion-promise FIXED")
-2. Inside loop, follow /dev-debug protocol
+1. Invoke dev-debug — it runs its own progress-gated subagent loop
+   (no /goal needed; dev-debug uses main-chat-runs-the-test gating instead of an evaluator)
+2. Follow the /dev-debug protocol
 ```
 
 **Any code reading before starting the workflow is a violation.**
@@ -166,12 +165,13 @@ Skill(skill="dev")
 Skill(skill="ds")
 ```
 
-Or start ralph loop first for implementation/debug phases:
+For implementation phases, set a `/goal` at the top of the phase (dev-implement walks you through writing the condition):
 
-```bash
-# ralph-loop: Per-task ralph loop pattern for implementation and debugging
-Skill(skill="ralph-loop:ralph-loop", args="Task description --max-iterations 15")
 ```
+/goal All tasks in PLAN.md marked [x], [test command] exits 0, VALIDATION.md status = validated. Stop after [N] turns.
+```
+
+For debugging, invoke `dev-debug` directly; it runs its own progress-gated loop.
 
 ## IRON LAW: Multimodal File Analysis
 

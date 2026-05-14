@@ -88,7 +88,7 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `audit-fix-loop`, `plugin-creator`
 
 ### Internal Workflow Phases
-Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-ralph-loop`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*`
+Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`)
 
 DS: `ds-plan`, `ds-delegate`, `ds-implement`, `ds-review`, `ds-validate`, `ds-verify`, `ds-handoff`, `ds-spec-reviewer`, `ds-plan-reviewer`
 

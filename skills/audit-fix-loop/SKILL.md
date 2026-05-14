@@ -1,6 +1,6 @@
 ---
 name: audit-fix-loop
-description: "Use when 'iteratively improve', 'audit and fix', 'hill-climb quality', 'grade and improve', 'score and fix', 'audit loop', 'quality loop', or 'ralph loop for quality'."
+description: "Use when 'iteratively improve', 'audit and fix', 'hill-climb quality', 'grade and improve', 'score and fix', 'audit loop', or 'quality loop'."
 user-invocable: false
 ---
 
@@ -21,24 +21,26 @@ If the same agent that wrote the fix also scores it, you get rubber-stamping. Th
 ```
 PLAN (this skill)
   ↓
-  AskUserQuestion → identify artifact, scorers, termination
+  AskUserQuestion → identify artifact, scorers, threshold, turn budget
   ↓
-LOOP (ralph-loop infrastructure)
+/goal <condition pinned to SCORES.md threshold>  (separate-model evaluator)
   ↓
   ┌─────────────────────────────────────────────┐
-  │ AUDIT: Fresh subagent scores artifact            │
-  │   → Produces scored findings in .planning/AUDIT.md     │
-  │   → Records score (0-10) in .planning/SCORES.md       │
+  │ AUDIT: Fresh subagent scores artifact        │
+  │   → Findings written to .planning/AUDIT.md   │
+  │   → Score (0-10) appended to .planning/SCORES.md │
   │                                              │
   │ DECIDE: Check score against threshold        │
-  │   → Score >= 9.5? → DONE (output promise)   │
-  │   → Score < 9.5?  → continue to FIX         │
+  │   → Score >= 9.5? → end turn; /goal evaluator  │
+  │                     reads SCORES.md and marks    │
+  │                     the condition met            │
+  │   → Score < 9.5?  → continue to FIX             │
   │                                              │
   │ FIX: Apply targeted improvements             │
   │   → Address highest-severity findings first  │
   │   → Minimal changes (don't rewrite)          │
   │                                              │
-  │ → next iteration (re-audit)                  │
+  │ → end turn; /goal refires for re-audit       │
   └─────────────────────────────────────────────┘
 ```
 
@@ -47,15 +49,15 @@ LOOP (ralph-loop infrastructure)
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Planning
 
-**NO RALPH LOOP WITHOUT A PLAN. This is not negotiable.**
+**NO `/goal` WITHOUT A PLAN. This is not negotiable.**
 
-Before starting any audit-fix loop, you MUST identify:
+Before setting the `/goal` for an audit-fix loop, you MUST identify:
 1. What artifact you are improving
 2. Which scoring surfaces apply
 3. How the audit will be independent
 4. What the score threshold is (default: 9.5/10)
 
-A ralph loop with `--completion-promise FIXED` and no audit structure is a naive loop. It provides zero enforcement because the agent decides when it's "fixed." The score decides — not the fixer.
+A `/goal` condition like "fix all issues" is a naive condition. It provides little enforcement because the evaluator can only judge what's surfaced in the transcript. The condition must pin completion to an external state the auditor writes — typically `SCORES.md` reaching the threshold. The score decides — not the fixer.
 </EXTREMELY-IMPORTANT>
 
 ## Step 1: Plan the Loop
@@ -102,14 +104,15 @@ Based on selections, determine:
 |-----------|--------------|
 | **Audit method** | See scorer table below |
 | **Fix method** | Self-edit for small artifacts, parallel subagents for large ones |
-| **Max iterations** | 10 (default), adjustable |
+| **Turn budget** | 10 (default), encoded as `Stop after N turns` in the `/goal` condition |
 | **Score threshold** | 9.5/10 (default), adjustable |
-| **Completion promise** | `[ARTIFACT_NAME]_9_5` — descriptive, includes threshold |
+| **Goal condition** | Pin to `SCORES.md` reaching threshold — see template below |
 
-**Promise naming convention:** Use a descriptive name that encodes what must be true. Examples:
-- `ALL_FAMILIES_9_5` — all workflow families score >= 9.5
-- `DRAFT_AI_CHECK_9_5` — draft passes AI anti-patterns at >= 9.5
-- `SKILL_ENFORCEMENT_9_5` — skill scores >= 9.5 on enforcement audit
+**Goal condition template:** The condition must reference the artifact AND the score state file. Examples:
+
+- `All workflow families score >= 9.5 in .planning/SCORES.md across all selected scorers. Stop after 10 turns.`
+- `Draft .planning/REVIEW.md shows 0 CRITICAL and 0 HIGH AI anti-pattern findings and SCORES.md latest row >= 9.5. Stop after 10 turns.`
+- `SKILL.md scores >= 9.5 on the enforcement-checklist audit (12 patterns). Stop after 10 turns.`
 
 ### Scorer Reference
 
@@ -159,18 +162,17 @@ mkdir -p .planning
 
 ## Step 3: Start the Loop
 
-Generate the structured ralph-loop prompt and invoke:
-
-```
-Skill(skill="ralph-loop:ralph-loop", args="Audit-fix loop: [ARTIFACT DESCRIPTION]. Audit then fix in parallel. --max-iterations [N] --completion-promise [PROMISE_NAME]")
-```
+Hand the user the literal `/goal` condition (or run `claude -p "/goal …"`). The condition must reference both the artifact and the score file, so the evaluator can check the threshold from the transcript.
 
 Example:
+
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Bring all three workflow families to 9.5 enforcement score. Audit then fix in parallel. --max-iterations 10 --completion-promise ALL_FAMILIES_9_5")
+/goal All three workflow families score >= 9.5 in .planning/SCORES.md across the
+selected scorers, with zero CRITICAL and zero HIGH findings outstanding. Audit then
+fix in parallel inside each turn. Stop after 10 turns.
 ```
 
-The prompt fed to each ralph iteration must enforce this exact sequence:
+Each turn under the active goal must enforce this exact sequence:
 
 ### Iteration Protocol
 
@@ -221,9 +223,9 @@ Read `.planning/SCORES.md`. Check against threshold:
 
 | Condition | Action |
 |-----------|--------|
-| Score >= threshold (default 9.5) | Output `<promise>[PROMISE_NAME]</promise>` — artifact meets quality bar |
+| Score >= threshold (default 9.5) | End the turn — the `/goal` evaluator reads `.planning/SCORES.md` and marks the condition met |
 | Score < threshold | Continue to Phase C |
-| Max iterations reached | Escalate to user with current score and remaining findings |
+| Turn budget reached | Escalate to user with current score and remaining findings |
 
 **Phase C: Fix**
 
@@ -238,20 +240,20 @@ Address findings from `.planning/AUDIT.md`, prioritized by severity:
 - Each fix should address ONE finding
 - After fixing, do NOT self-assess — the next iteration's audit will judge
 
-**Then end your turn** (the ralph loop will feed you back for re-audit).
+**Then end your turn** (the active `/goal` refires the next turn for re-audit).
 
-**After fixing, do NOT pause to summarize or ask "should I continue?" — end your turn immediately so the loop feeds you back for re-audit. The score decides when to stop, not you.**
+**After fixing, do NOT pause to summarize or ask "should I continue?" — end your turn immediately so the goal refires for re-audit. The evaluator decides when to stop, not you.**
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Score Threshold
 
-**You may ONLY output the completion promise when the independent audit scores >= the threshold.**
+**The `/goal` condition must be pinned to the auditor's score, not your judgment.**
 
-Not when you "feel" the artifact is good enough. Not when you're tired of iterating. Not when the remaining findings seem minor. The auditor's score decides — you don't.
+Not when you "feel" the artifact is good enough. Not when you're tired of iterating. Not when the remaining findings seem minor. The auditor's score in `.planning/SCORES.md` decides — you don't.
 
-Read `.planning/SCORES.md`, check the number against the threshold, output promise only if the score meets or exceeds it.
+Write the auditor's score into `.planning/SCORES.md` every turn. The `/goal` evaluator reads it from the transcript and marks the condition met only when the threshold is crossed. Do not paraphrase the score, do not summarize as "looks good" — surface the literal number.
 
-**Outputting the completion promise when the score is below threshold is NOT HELPFUL — the user receives a substandard artifact that fails its quality bar.**
+**Asserting completion when the score is below threshold is NOT HELPFUL — the user receives a substandard artifact that fails its quality bar.**
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Table
@@ -264,12 +266,12 @@ Read `.planning/SCORES.md`, check the number against the threshold, output promi
 | "The audit is too harsh" | Harsh audits produce quality. Soft audits produce complacency. | Keep the standard. Lower scores, not standards |
 | "I'll batch all the fixes" | Batching makes it impossible to trace which fix helped | Fix by severity priority, let re-audit measure impact |
 | "Bluebook checking is overkill for this draft" | If the document has footnotes, they must be correct. Wrong citations undermine credibility. | Run the Bluebook check |
-| "FIXED is basically the same as meeting the threshold" | FIXED is honor system. Threshold requires an independent auditor score >= 9.5. | Use descriptive promise names that encode the threshold |
-| "I'll skip the AskUserQuestion planning" | Unplanned loops are naive loops. | Plan first, loop second |
+| "'all issues addressed' is basically the same as meeting the threshold" | That phrasing is honor-system. The threshold requires `.planning/SCORES.md` to show >= 9.5. | Pin the `/goal` condition to the score file, not to "issues addressed" |
+| "I'll skip the AskUserQuestion planning" | Unplanned `/goal`s are naive — the evaluator has nothing concrete to check. | Plan first, set the goal second |
 
 ## Delete & Restart
 
-**If you started a ralph loop without planning (no AskUserQuestion, no scorer selection), CANCEL the loop and START OVER with Step 1.** No patching a naive loop mid-flight — cancel it (`/cancel-ralph`), plan properly, then restart.
+**If you set a `/goal` without planning (no AskUserQuestion, no scorer selection, no condition pinned to SCORES.md), CANCEL the goal and START OVER with Step 1.** No patching a naive condition mid-flight — run `/goal clear`, plan properly, then set a new goal.
 
 **If you ran an audit with the fixer agent instead of a fresh subagent, DELETE the audit findings and RE-RUN with a fresh subagent.** Tainted audit results are worse than no audit — they give false confidence.
 
@@ -277,10 +279,10 @@ Read `.planning/SCORES.md`, check the number against the threshold, output promi
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| Starting a ralph loop without running Step 1 | Naive loop — no audit structure | Plan the loop first |
-| Using `--completion-promise FIXED` | Honor system — agent decides when done | Use descriptive promise with threshold (e.g., `DRAFT_9_5`) |
+| Setting a `/goal` without running Step 1 | Naive condition — no audit structure | Plan the loop first |
+| Goal condition like "all issues addressed" | Honor system — evaluator has nothing concrete to check | Pin condition to `.planning/SCORES.md` >= threshold |
 | Auditing your own fixes in the same context | Rubber-stamping — no independence | Spawn fresh audit subagent |
-| Outputting promise when score < threshold | Lying about quality | Read `.planning/SCORES.md`, check score >= threshold |
+| Claiming complete when score < threshold | Lying about quality | Read `.planning/SCORES.md`, check score >= threshold |
 | Rewriting the entire artifact instead of targeted fixes | Introduces new issues, loses original voice | Fix one finding at a time |
 | Skipping a selected scorer "to save time" | Partial audit misses entire failure categories | Run all selected scorers every iteration |
 

@@ -339,18 +339,20 @@ Items with any finding (FIELD_ERROR, QUOTE_NOT_FOUND, UNVERIFIED, etc.) count ag
 
 ## Audit-Fix Loop Integration
 
-This skill is a domain-specific scorer for the audit-fix-loop pattern. To run iteratively:
+This skill is a domain-specific scorer for the audit-fix pattern. To run iteratively, set a `/goal` whose condition pins completion to the source-verify score; the evaluator reads the score from the transcript and refires turns until the threshold is met.
 
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Source-verify [manuscript]. Check all citations against paperpile.bib, verify quotes against source PDFs. --max-iterations 5 --completion-promise SOURCES_9_5")
+/goal Source-verify [manuscript] is complete when SCORES.md shows >= 9.5/10 with
+all citations resolved against paperpile.bib, all quotes verified via Readwise/rga/NLM,
+and zero UNVERIFIED or QUOTE_NOT_FOUND findings remaining. Stop after 5 turns.
 ```
 
 ### Iteration Protocol
 
-Each iteration:
+Each turn under the active goal:
 1. **Audit**: Run Checks 1-3 on all footnotes (Check 4 only if requested)
-2. **Score**: Compute score, record in SCORES.md
-3. **Decide**: Score >= 9.5? → output promise. Score < 9.5? → fix.
+2. **Score**: Compute score, record in SCORES.md (the evaluator reads this)
+3. **Decide**: Score >= 9.5? → end the turn; the `/goal` evaluator will mark the condition met. Score < 9.5? → fix and end the turn so the next iteration fires.
 4. **Fix**: For each finding:
    - `FIELD_ERROR` → correct the volume/pages/year in the manuscript
    - `QUOTE_MISMATCH` → fix the quote to match the source text

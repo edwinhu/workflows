@@ -27,11 +27,11 @@ Task 3: Route handler (Deps: after 1) → Teammate C (Task 2 + 3 if they share f
 Task 4: CLI command (Deps: —)      → Teammate D (independent, parallel with B/C)
 ```
 
-**Foundation tasks** (like test infra or shared types) that everything depends on must complete BEFORE spawning parallel teammates. Run these sequentially first using normal ralph loops.
+**Foundation tasks** (like test infra or shared types) that everything depends on must complete BEFORE spawning parallel teammates. Run these sequentially first under the phase's active `/goal`.
 
 ### 2. Create Shared Task List and Enter Delegate Mode
 
-1. **Run foundation tasks first** (any task that all others depend on) using normal sequential ralph loops
+1. **Run foundation tasks first** (any task that all others depend on) sequentially under the phase's active `/goal`
 2. After foundation tasks complete, create one `TaskCreate` per independent task/group:
    - Subject: `Implement: [Task Name(s)]`
    - Description: task details, file scope, test command

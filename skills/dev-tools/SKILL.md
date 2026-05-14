@@ -22,11 +22,12 @@ Plugins and skills for development workflows. For data science tools (WRDS, LSEG
 |--------|-------------|----------------|
 | `playwright` | Browser automation, E2E testing, screenshots | `claude --enable-plugin playwright@claude-plugins-official` |
 
-## Workflow Plugins (Already Enabled)
+## Built-in Iteration Primitives
 
-| Plugin | Description |
-|--------|-------------|
-| `ralph-loop` | Self-referential iteration loops |
+| Command | Description |
+|---------|-------------|
+| `/goal` | Native cross-turn iteration with a separate small-fast-model evaluator. See `https://code.claude.com/docs/en/goal`. |
+| `/loop` | Re-fire a prompt on a time interval (use for polling, not for goal-driven iteration). |
 
 ## When to Enable
 

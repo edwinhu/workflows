@@ -41,4 +41,4 @@ Maps workflow-creator's functional requirements to implementation steps and cons
 | WC-03 | Convention | Script checking "Responsibility:" fields in DESIGN.md | When 3+ workflows have been created |
 | WC-05 | Convention | Script checking enforcement density per phase | When enforcement density metric is defined |
 | WC-07 | Convention | Script checking deviation rules in generated files | When output format stabilizes |
-| WC-12 | Iron Law | Already structurally enforced via ralph-loop | Graduated (structural) |
+| WC-12 | Iron Law | Already structurally enforced via Claude Code's `/goal` command (separate-model evaluator after each turn) | Graduated (structural) |

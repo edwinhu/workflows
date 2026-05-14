@@ -54,7 +54,7 @@ description: "REQUIRED Phase 2 of /dev workflow after dev-brainstorm. This skill
 
 **Examples:** dev-delegate, ds-delegate
 
-**Invocation:** Called ONLY by other skills (dev-ralph-loop → dev-delegate), never by users or even orchestrators directly.
+**Invocation:** Called ONLY by other skills (e.g., dev-implement → dev-delegate inside each turn under an active `/goal`), never by users or even orchestrators directly.
 
 **Description Pattern:** Explicit internal-only designation
 
@@ -65,7 +65,7 @@ description: "Internal skill used by [parent-skill] during [phase/context]. NOT 
 
 **Example (dev-delegate):**
 ```yaml
-description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - should only be invoked by dev-ralph-loop inside each implementation iteration. Handles Task agent spawning with TDD enforcement and two-stage review (spec compliance + code quality)."
+description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - invoked inside each turn under the implementation phase's active /goal. Handles Task agent spawning with TDD enforcement and two-stage review (spec compliance + code quality)."
 ```
 
 **Why:** These skills are implementation details of the workflow machinery. Making this explicit prevents:

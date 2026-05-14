@@ -1771,13 +1771,13 @@ Run Mode 2 on the target workflow. This produces the baseline score.
 ### Step 2: Launch Audit-Fix Loop
 <!-- implements: WC-12 -->
 
-Use the audit-fix-loop pattern with ralph-loop infrastructure:
+Use the audit-fix-loop pattern with `/goal` as the cross-turn iteration primitive (separate-model evaluator reads SCORES.md from the transcript):
 
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Improve [WORKFLOW_NAME] workflow to >= 9.5 enforcement score. --max-iterations 10 --completion-promise WORKFLOW_9_5")
+/goal Workflow [WORKFLOW_NAME] scores >= 9.5 in .planning/SCORES.md across all selected scorers, with zero CRITICAL findings outstanding. Stop after 10 turns.
 ```
 
-**Each iteration of the loop follows this exact sequence:**
+**Each turn under the active goal follows this exact sequence:**
 
 ```
 Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
@@ -1786,12 +1786,12 @@ Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
     ▼                    ▼                    ▼
   AUDIT.md            Score >= 9.5?         Fix gaps by priority:
   SCORES.md             │                   1. P < 7.0 (critical)
-                    YES ──→ DONE            2. P 7-8.9 (medium)
-                        │                   3. P 9-9.4 (polish)
-                    NO ──→ Phase C              │
-                                                ▼
-                                            End turn → ralph-loop
-                                            feeds back to Phase A
+                    YES ──→ end turn;       2. P 7-8.9 (medium)
+                           /goal evaluator   3. P 9-9.4 (polish)
+                           marks done             │
+                        │                         ▼
+                    NO ──→ Phase C            End turn → /goal
+                                              refires Phase A
 ```
 
 #### Phase A: AUDIT (Fresh Subagent — MANDATORY)
@@ -1970,7 +1970,7 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 
 **What happened (March 19, 2026):** Agent ran Mode 2 audit (baseline 7.3), applied fixes, re-audited to 8.5, applied more fixes, re-audited to 9.2, then stopped and rationalized: "remaining 0.3 is spread across many principles at 9.0 — diminishing returns." The target was 9.5. The agent stopped because it was tired of iterating, not because the score met the threshold.
 
-**The structural fix:** ralph-loop drives the iteration. The agent can't stop until the auditor's score says 9.5. The fixer's opinion of whether 9.2 is "close enough" is irrelevant.
+**The structural fix:** `/goal` drives the iteration. A separate evaluator reads `.planning/SCORES.md` from the transcript and only marks the condition met when the score crosses 9.5. The fixer's opinion of whether 9.2 is "close enough" is irrelevant.
 
 ### Rationalization Table — Mode 3
 
@@ -1979,14 +1979,14 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 | "9.2 is close enough to 9.5" | The threshold exists for a reason. 0.3 means real gaps remain. | Fix them. The score decides, not you. |
 | "The remaining gaps are domain characteristics" | Maybe, but prove it by having the auditor agree, not by self-declaring | Let the auditor score it. If it's truly a domain limit, the auditor will note it. |
 | "Diminishing returns on further iteration" | You don't know that. The last 0.3 might be one targeted fix. | Run the audit, see what's cheapest to fix, try it. |
-| "I'll run the audit manually instead of using ralph-loop" | Manual loops have no enforcement. You'll stop early. You literally just did. | Use ralph-loop. The score decides. |
+| "I'll run the audit manually instead of using `/goal`" | Manual loops have no enforcement. You'll stop early. You literally just did. | Set `/goal` with the condition pinned to SCORES.md. The evaluator decides. |
 | "Re-reading all files each iteration is wasteful" | Fresh-context audit is what makes the score trustworthy. Incremental audits miss regressions. | Full re-read every iteration. Independence > efficiency. |
 
 ### Red Flags — STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| Running Mode 3 without ralph-loop | Honor system — you'll stop early | Use ralph-loop with completion promise |
+| Running Mode 3 without `/goal` | Honor system — you'll stop early | Set `/goal` whose condition is pinned to SCORES.md >= 9.5 |
 | Auditing your own fixes | Rubber-stamping | Spawn fresh audit subagent |
 | Declaring "close enough" below 9.5 | Threshold violation | Keep iterating or escalate at max iterations |
 | Skipping the audit subagent "to save time" | The audit IS the value — without it, fixes are unverified | Full independent audit every iteration |

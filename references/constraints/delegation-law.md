@@ -1,7 +1,7 @@
 ---
 name: delegation-law
 description: Main chat MUST NOT write code or investigate directly — delegate all implementation and investigation to subagents
-applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-spec-reviewer, dev-plan-reviewer, dev-ralph-loop]
+applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-spec-reviewer, dev-plan-reviewer]
 ---
 
 ## Rule

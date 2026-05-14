@@ -11,13 +11,13 @@ disable-model-invocation: true
 ```
 Main Chat                          Task Agent
 ─────────────────────────────────────────────────────
-dev-implement
-  → dev-ralph-loop (loads dev-tdd)
-    → dev-delegate
-      → Task agent ──────────────→ uses dev-test (this skill)
-                                     ↓ loads dev-tdd again
-                                   has TDD protocol + gates
-                                     → routes to specific tool
+/goal <condition> (set at phase entry; refires turns)
+dev-implement (loads dev-tdd)
+  → dev-delegate
+    → Task agent ──────────────────→ uses dev-test (this skill)
+                                       ↓ loads dev-tdd again
+                                     has TDD protocol + gates
+                                       → routes to specific tool
 ```
 
 <EXTREMELY-IMPORTANT>

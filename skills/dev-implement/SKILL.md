@@ -38,14 +38,14 @@ Auto-load all constraints matching `applies-to: dev-implement`:
 ```
 Main Chat (you)                    Task Agent
 ─────────────────────────────────────────────────────
+/goal <condition>  ← user sets once at phase entry
 dev-implement (this skill)
-  → dev-ralph-loop (per-task loops)
-    → dev-delegate (spawn agents)
-      → Task agent ──────────────→ follows dev-tdd
-                                   uses dev-test tools
+  → dev-delegate (spawn agents per task)
+    → Task agent ──────────────→ follows dev-tdd
+                                 uses dev-test tools
 ```
 
-**Main chat orchestrates.** Task agents implement.
+**Main chat orchestrates.** Task agents implement. `/goal` keeps the session firing across turns until the condition is met — the evaluator is a separate model, so completion is not honor-system.
 
 ## Contents
 
@@ -129,7 +129,7 @@ AskUserQuestion(questions=[{
   "question": "How should we implement the tasks in PLAN.md?",
   "header": "Strategy",
   "options": [
-    {"label": "Sequential (Default)", "description": "One ralph loop per task, complete N before N+1. Safest, no merge conflicts."},
+    {"label": "Sequential (Default)", "description": "Work through tasks under one /goal, complete N before N+1. Safest, no merge conflicts."},
     {"label": "Agent team (parallel)", "description": "Spawn teammate per independent task group. Faster for 4+ independent tasks. Requires reconciliation."}
   ],
   "multiSelect": false
@@ -185,7 +185,7 @@ Main chat orchestrates. Subagents implement. If you catch yourself about to use 
 | Review Task agent output | Direct implementation |
 | Write to .planning/*.md files | “Quick fixes” |
 | Run git commands | Any code editing |
-| Start ralph loops | Bypassing delegation |
+| Set/clear `/goal` for the phase | Bypassing delegation |
 
 **If you’re about to edit code directly, STOP and spawn a Task agent instead.**
 
@@ -260,44 +260,61 @@ Monitor(
 ## The Process
 
 ```
-For each task N in PLAN.md:
-    1. Determine loop type:
-       - Visual task? → discover and read skills/visual-verify/SKILL.md via cache lookup
-       - Standard task? → discover and read skills/dev-ralph-loop/SKILL.md via cache lookup
+0. Set the goal (once, at phase entry):
+   /goal All tasks in PLAN.md are marked [x] AND [test command] exits 0
+         AND .planning/VALIDATION.md status is `validated`.
+         Stop after [N total turns across all tasks].
 
-    2. Inside loop: spawn Task agent
+   (See "Setting the goal" below for the full condition template.)
+
+For each task N in PLAN.md (across turns under the active /goal):
+    1. Determine task type:
+       - Visual task? → discover and read skills/visual-verify/SKILL.md via cache lookup
+       - Standard task? → proceed to step 2
+
+    2. Spawn Task agent
        → discover and read skills/dev-delegate/SKILL.md via cache lookup
 
     3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
        Visual tasks: also render output and vision-check with look-at
 
-    4. Verify tests pass (+ visual check passes for visual tasks), output promise
+    4. Personally verify tests pass (+ visual check for visual tasks)
 
-    5. Move to task N+1, start NEW loop
+    5. Mark task [x] in PLAN.md, log to LEARNINGS.md, move to task N+1
+       — same response, no pause. The /goal evaluator decides when to stop.
 ```
 
-**Cache lookup pattern for all paths above:**Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
+**Cache lookup pattern for all paths above:** Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
 
 ### Visual Task Detection
 
-If a PLAN.md task involves rendered visual output, use **visual-verify** instead of plain ralph-loop. Visual-verify adds render → look-at → fix steps inside each iteration.
+If a PLAN.md task involves rendered visual output, use **visual-verify** for the render → look-at → fix steps inside the task. Visual-verify is part of what happens *inside* a turn — `/goal` still drives the outer loop.
 
 **Signals a task is visual:** task mentions "render", "slide", "chart", "figure", "layout", "UI", "screenshot", "visual", "diagram", or produces any file meant to be seen by humans (PNG, PDF, SVG).
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/visual-verify/SKILL.md` and follow its instructions.
 
-### Step 1: Start Ralph Loop for Each Task
+### Step 1: Set the Goal for the Phase
 
-**REQUIRED SUB-SKILL:**
+Before working through PLAN.md, set a `/goal` whose condition encodes the full phase exit criteria. The user runs this once; subsequent turns fire automatically until the evaluator says the condition holds.
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-ralph-loop/SKILL.md` and follow its instructions.
+**Condition template (copy, fill in brackets, hand to the user):**
 
-Key points from dev-ralph-loop:
-- ONE loop PER TASK (not one loop for feature)
-- Each task gets its own completion promise
-- Don’t move to task N+1 until task N’s loop completes
+```
+/goal All tasks in .planning/PLAN.md are marked [x] complete, [TEST COMMAND] exits 0
+on the full suite, .planning/VALIDATION.md exists with status `validated`,
+and no Task agent reports unresolved blockers. Stop after [N] turns or if the
+same test fails 3 turns in a row (trigger Failure Recovery Protocol).
+```
 
-### Step 2: Inside Loop - Spawn Task Agent
+Key constraints baked into the condition:
+- **Test command must be runnable from PLAN.md's Testing Strategy** — encode the literal command (e.g., `pixi run pytest`, `npm test && npm run lint`) so the evaluator can read the exit code from the transcript.
+- **VALIDATION.md gate** — covered by Test Gap Validation Gate below.
+- **Turn limit** — pick a budget that covers every task. Rough rule: 3–5 turns per task for routine work, more for debugging-heavy tasks.
+
+If the user prefers to drive `/goal` themselves, hand them the literal condition string instead of setting it for them.
+
+### Step 2: Delegate Each Task
 
 **REQUIRED SUB-SKILL:**
 
@@ -361,7 +378,7 @@ you MUST verify it works against the real system, not just mocks.
 | “Integration test is skipped but unit tests pass” | Unit tests don’t prove integration works. | Require real integration test. |
 | “External system isn’t running, but code is correct” | Untested code is broken code. | Start the system and test. |
 
-**If ALL pass → output the promise.** If ANY fail → iterate.
+**If ALL pass → mark the task [x] in PLAN.md and move on.** If ANY fail → iterate within the active `/goal`; the next turn will fire automatically.
 
 ### Task Summary (MANDATORY after each task)
 
@@ -447,7 +464,7 @@ End each task summary with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3
 
 | Skill | Purpose | Used By |
 |-------|---------|---------|
-| `dev-ralph-loop` | Per-task loop pattern | Main chat |
+| `/goal` (built-in) | Cross-turn iteration with separate-model evaluation | Set by user/main chat at phase entry |
 | `dev-delegate` | Task agent templates | Main chat |
 | `dev-tdd` | TDD protocol (RED-GREEN-REFACTOR) | Task agent |
 | `dev-test` | Testing tools (pytest, Playwright, etc.) | Task agent |
@@ -558,15 +575,15 @@ Trigger after 3 failures when:
 
 Don’t wait for max iterations - trigger early when pattern emerges.
 
-## If Max Iterations Reached
+## If the Goal's Turn Budget Is Reached
 
-Ralph exits after max iterations. **Still do NOT ask user to manually test.**
+The `/goal` condition's `Stop after N turns` clause causes the evaluator to return done with reason "turn budget exhausted." **Still do NOT ask user to manually test.**
 
 Main chat should:
 1. **Summarize** what’s failing (from LEARNINGS.md)
 2. **Report** which automated tests fail and why
 3. **Ask user** for direction:
-   - A) Start new loop with different approach
+   - A) Set a new `/goal` with a different approach
    - B) Add more logging to debug
    - C) User provides guidance
    - D) User explicitly requests manual testing
@@ -578,11 +595,11 @@ Main chat should:
 <EXTREMELY-IMPORTANT>
 **After completing task N, IMMEDIATELY start task N+1 in the SAME RESPONSE. Do NOT pause.**
 
-### Post-Promise Checklist (mandatory, same response)
+### Post-Task Checklist (mandatory, same response)
 
 1. **Update PLAN.md** - Mark task `[x]` complete
 2. **Log to LEARNINGS.md** - What was done
-3. **Start next task’s ralph loop** - No waiting
+3. **Start next task** - No waiting. The active `/goal` keeps firing turns until the condition holds.
 
 | Thought | Reality |
 |---------|---------|
@@ -600,19 +617,19 @@ Main chat should:
 2. You hit a blocker requiring user input (state exactly what you need)
 3. User explicitly interrupted
 
-The promise signals task completion. After outputting promise, update PLAN.md, then IMMEDIATELY start next task’s loop.
+A `[x]` mark in PLAN.md + a passing test command in the transcript signals task completion. After verifying, update PLAN.md, then IMMEDIATELY start the next task — the `/goal` evaluator reads the transcript and decides when the whole phase is done.
 
 **Pausing between tasks is procrastination disguised as courtesy.**
 
 ### Task Transition Gate (MANDATORY)
 
-After each task’s ralph loop completes:
+After each task's verification completes:
 
 1. Update PLAN.md — mark completed task `[x]`
 2. Append to LEARNINGS.md — what was accomplished, test command, exit code
 3. Check for blockers — dependencies from task N needed for N+1?
-4. If clear → IMMEDIATELY spawn ralph loop for task N+1
-5. If blocked → Ask user EXACTLY what’s missing (not "I’m blocked")
+4. If clear → IMMEDIATELY dispatch the implementer for task N+1
+5. If blocked → Ask user EXACTLY what's missing (not "I'm blocked")
 
 **Violations to catch:**
 - "Let me check with user if they want me to continue" → NO, continue automatically
@@ -659,14 +676,14 @@ Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-gaps/SKILL.md` and follow its in
 |---------------------|--------|
 | `validated` | Proceed to review phase |
 | `gaps_found` (gaps filled, no escalations) | Re-run full test suite. If all pass, proceed. |
-| `gaps_found` (with escalations) | Address escalated implementation bugs: spawn targeted ralph loops for failing requirements, then re-run test gap validation |
+| `gaps_found` (with escalations) | Address escalated implementation bugs: dispatch targeted Task agents for failing requirements (the active `/goal` keeps firing turns), then re-run test gap validation |
 | Missing | STOP. Run test gap validation. |
 
 ### Re-validation After Gap Fixes
 
 If test gap reports implementation bugs (escalations):
 
-1. Spawn ralph loops ONLY for the specific failing requirements
+1. Dispatch Task agents ONLY for the specific failing requirements (the active `/goal` keeps firing turns until VALIDATION.md is `validated`)
 2. After fixes, re-invoke dev-test-gaps to re-validate
 3. Repeat until VALIDATION.md status is `validated`
 4. Max 2 re-validation cycles. After that, escalate to user.

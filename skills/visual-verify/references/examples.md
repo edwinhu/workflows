@@ -3,7 +3,8 @@
 ## Example 1: Typst Slide (Non-Python Path)
 
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Visual Task 1: Title Slide --max-iterations 5 --completion-promise VTASK1_DONE")
+/goal Visual Task 1: Title Slide is complete when /tmp/visual-verify.png scores >= 9.5
+from look-at and pdftotext shows no fused labels. Stop after 5 turns.
 
 [Spawn Task agent -> creates title slide in Typst]
 
@@ -34,14 +35,15 @@ First iteration - no prior issues.
 For EACH issue: Element, Problem, Location, Severity, Direction.
 Rate PASS or FAIL."
 
-# Gemini responds: PASS
-<promise>VTASK1_DONE</promise>
+# Gemini responds: PASS — score 9.7, /goal evaluator marks condition met
 ```
 
 ## Example 2: Matplotlib Chart (Python-Native Path)
 
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Visual Task 2: Revenue Chart --max-iterations 5 --completion-promise VTASK2_DONE")
+/goal Visual Task 2: Revenue Chart is complete when /tmp/visual-verify.png scores >= 9.5
+from look-at with all axis labels present, no legend overlap, and the verified
+code fixes applied. Stop after 5 turns.
 
 # Iteration 1
 [Spawn Task agent -> creates matplotlib chart]
@@ -73,8 +75,7 @@ Rate: PASS or FAIL with verified code fixes."
 [Re-render]
 [Vision check with updated feedback]
 
-# Gemini responds: PASS
-<promise>VTASK2_DONE</promise>
+# Gemini responds: PASS — score 9.6, /goal evaluator marks condition met
 ```
 
 ## Example 3: Complex Typst Diagram (Reference Sketch Escalation)

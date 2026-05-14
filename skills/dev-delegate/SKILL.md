@@ -1,6 +1,6 @@
 ---
 name: dev-delegate
-description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - should only be invoked by dev-ralph-loop inside each implementation iteration."
+description: "Internal skill used by dev-implement during Phase 5 of /dev workflow. NOT user-facing - invoked inside each turn under an active /goal for the implementation phase."
 user-invocable: false
 disable-model-invocation: true
 ---
@@ -34,11 +34,11 @@ Main chat MUST NOT:
 ```
 Main Chat                          Task Agent
 ─────────────────────────────────────────────────────
+/goal <condition>  (set once at phase entry)
 dev-implement (orchestrates)
-  → dev-ralph-loop (per-task loops)
-    → dev-delegate (this skill)
-      → spawns Task agent ──────→ follows dev-tdd
-                                  uses dev-test tools
+  → dev-delegate (this skill — once per task)
+    → spawns Task agent ──────────→ follows dev-tdd
+                                    uses dev-test tools
 ```
 
 **Main chat** uses this skill to spawn Task agents.
@@ -55,7 +55,7 @@ dev-implement (orchestrates)
 
 ## When to Use
 
-Called by `dev-implement` inside each ralph loop iteration. Don't invoke directly.
+Called by `dev-implement` once per task while the implementation phase's `/goal` is active. Don't invoke directly.
 
 ## The Process
 
@@ -416,7 +416,7 @@ When dispatching subagents, match model capability to task complexity. This is *
 ## Integration
 
 **Main chat invokes:**
-- `dev-implement` → `dev-ralph-loop` → `dev-delegate` (this skill)
+- `/goal` (active for the phase) → `dev-implement` → `dev-delegate` (this skill)
 
 **Task agents follow:**
 - `dev-tdd` - TDD protocol (RED-GREEN-REFACTOR)

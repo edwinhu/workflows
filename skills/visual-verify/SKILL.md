@@ -98,9 +98,16 @@ The loop is done when ALL of these hold:
 
 ### Invocation
 
+Set a `/goal` whose condition pins completion to the rendered-output score, then run the loop body (render → vision → fix) inside each turn. The evaluator is a separate model that reads the look-at score from the transcript.
+
 ```
-Skill(skill="ralph-loop:ralph-loop", args="Visual Task N: [TASK NAME] --max-iterations 5 --completion-promise VTASKN_9_5")
+/goal Visual Task N [TASK NAME] is complete when the rendered output at
+[OUTPUT PATH] scores >= 9.5 from look-at (Gemini, or consensus mode for
+diagrams), pdftotext pre-screen finds no fused labels (diagrams only), and
+no BLOCKING defects remain in SCORES.md. Stop after 5 turns.
 ```
+
+Hand the literal condition to the user (or run via `claude -p "/goal …"`). Each subsequent turn fires automatically until the score crosses the threshold.
 
 ### Score Tracking
 

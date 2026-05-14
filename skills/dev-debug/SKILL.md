@@ -40,7 +40,7 @@ On March 6-7, 2026, an agent loaded dev-debug TWICE and both times rationalized 
 
 ## Architecture: Fresh Subagent Loop With Progress Gating
 
-**No ralph-loop. No promises. No honor system.** The main chat runs its own loop. Each iteration is a fresh subagent. The loop runs autonomously as long as subagents make meaningful progress. The user is only pulled in when the loop stalls.
+**No `/goal`. No promises. No honor system.** The main chat runs its own progress-gated loop directly. Each iteration is a fresh subagent. The loop runs autonomously as long as subagents make meaningful progress. The user is only pulled in when the loop stalls. (Debugging doesn't fit `/goal`'s evaluator model because the completion condition is "test passes," which is what the subagent itself is trying to make true — the main chat needs to run the test, not a separate evaluator reading the transcript.)
 
 ```
 Main chat (thin orchestrator)
@@ -67,7 +67,7 @@ Main chat (thin orchestrator)
 ### Why This Design
 
 - **Fresh subagent per iteration**: No context pollution. Each subagent reads state from .planning/HYPOTHESES.md, not from 15K lines of prior conversation.
-- **No ralph-loop dependency**: The exit condition is progress, not a promise the agent can fake.
+- **No `/goal` dependency**: The exit condition is progress, gated by main chat running the test command itself — not a separate evaluator reading the transcript.
 - **User only involved when needed**: Autonomous when making progress, escalates when stuck.
 - **Test as structural gate**: When the subagent claims FIXED, main chat runs the test. The agent can't lie about test output.
 
