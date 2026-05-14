@@ -157,12 +157,19 @@ def submit_vertex_batch_job(
     print(f"Input URI: {input_uri}")
     print(f"Output URI: {output_uri}")
 
-    # Submit batch job
+    # Submit batch job.
+    # NOTE: In current google-genai SDK, `dest` is a FIELD of CreateBatchJobConfig,
+    # NOT a top-level kwarg. Older versions accepted `dest=` directly; the new
+    # signature is `create(model, src, config)`. Putting `dest` inside `config`
+    # is the only correct pattern. Use `inspect.signature(client.batches.create)`
+    # to verify your SDK before changing.
     job = client.batches.create(
         model=model,
         src=input_uri,
-        dest=output_uri,
-        config={"display_name": f"vision-batch-{timestamp}"}
+        config={
+            "display_name": f"vision-batch-{timestamp}",
+            "dest": output_uri,
+        },
     )
 
     print(f"Submitted job: {job.name}")

@@ -37,7 +37,7 @@ DO NOT improvise API calls
 
 The Batch API has non-obvious requirements that will fail silently:
 1. **Metadata must be flat primitives** - Nested objects cause cryptic errors
-2. **Parameter is `dest=` not `destination=`** - Wrong name → TypeError
+2. **`dest` is a config field, not a kwarg** - Pass via `config={"dest": "gs://..."}`. Older SDKs accepted `dest=` directly; newer ones raise TypeError.
 3. **Config is plain dict** - Not a wrapper type
 4. **Examples are authoritative** - Working code beats assumptions
 
@@ -56,7 +56,7 @@ The Batch API has non-obvious requirements that will fail silently:
 
 ### Red Flags - STOP If You Catch Yourself Thinking:
 
-- **"Let me try `destination=` instead of `dest=`"** → You're about to cause a TypeError. Read examples.
+- **"Let me pass `dest=` as a kwarg"** → Works on older SDKs only. Current SDK puts `dest` inside `config={}`. Read examples.
 - **"I'll create a `CreateBatchJobConfig` object"** → You're instantiating a type instead of using a plain dict. Stop.
 - **"I'll nest metadata like a normal API"** → You'll trigger BigQuery type errors. Flatten your data.
 - **"This should work like other Google APIs"** → Your assumption is wrong; this API is different.
@@ -144,7 +144,9 @@ job = client.batches.create(
 
 ### Vertex AI (Recommended for GCS workflows)
 
-Uses GCS URIs directly. Supports `dest=` parameter for output location.
+Uses GCS URIs directly. `dest` is a **field of the `config` dict** in the
+current SDK (older SDKs accepted `dest=` as a kwarg — that now raises
+`TypeError: Batches.create() got an unexpected keyword argument 'dest'`).
 
 ```python
 from google import genai
@@ -156,15 +158,22 @@ client = genai.Client(
     location="us-central1"
 )
 
-# Submit batch job with GCS paths
+# Submit batch job with GCS paths.
+# Current SDK signature: create(*, model, src, config)
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
-    src="gs://bucket/requests.jsonl",   # GCS input
-    dest="gs://bucket/outputs/"          # GCS output (Vertex AI only!)
+    src="gs://bucket/requests.jsonl",     # GCS input
+    config={
+        "display_name": "my-job",
+        "dest": "gs://bucket/outputs/",   # GCS output (Vertex AI only!)
+    },
 )
 ```
 
-**Key difference:** Standard API uses File API (`files/...`), Vertex AI uses GCS (`gs://...`) with explicit `dest=` parameter.
+Verify your SDK before changing: `inspect.signature(client.batches.create)`.
+If `dest` is in the kwargs, the kwarg form works; otherwise use config.
+
+**Key difference:** Standard API uses File API (`files/...`), Vertex AI uses GCS (`gs://...`) with `dest` (now a config field).
 
 ## Core Workflow
 
@@ -178,7 +187,7 @@ job = client.batches.create(
 **Vertex AI:**
 1. **Upload files** to GCS bucket (us-central1 region required)
 2. **Create JSONL** request file with document URIs and prompts
-3. **Submit batch job** via `client.batches.create(src=..., dest=...)`
+3. **Submit batch job** via `client.batches.create(src=..., config={"dest": ...})`
 4. **Monitor for completion** — use Monitor tool (jobs expire after 24 hours)
 5. **Download and parse** results from GCS output URI
 6. **Handle failures** gracefully (partial failures are common)
@@ -200,7 +209,7 @@ This frees the conversation to continue working while the batch runs. You get no
 
 ## Key Gotchas (API Structure)
 
-**Metadata must be flat primitives** (no nested objects — BigQuery-backed storage). **Parameter is `dest=` not `destination=`** (Vertex AI only). **Config is a plain dict** (not a wrapper type).
+**Metadata must be flat primitives** (no nested objects — BigQuery-backed storage). **`dest` is a config field, not a top-level kwarg** in the current SDK (Vertex AI only). **Config is a plain dict** (not a wrapper type).
 
 See the Rationalization Table in the first Iron Law section above — the same gotchas apply here. The Key Gotchas table below summarizes all critical issues.
 
@@ -209,7 +218,7 @@ See the Rationalization Table in the first Iron Law section above — the same g
 | Issue | Solution |
 |-------|----------|
 | **Nested metadata fails** | **Use flat primitives or `json.dumps()` for complex data** |
-| **TypeError: unexpected keyword** | **Use `dest=` not `destination=` (Vertex AI only)** |
+| **TypeError: unexpected keyword `dest`** | **Move `dest` inside `config={}` (Vertex AI; current SDK)** |
 | **Mixing API patterns** | **Standard API: File API + no dest. Vertex AI: GCS + dest** |
 | Auth errors with Vertex AI | Run `gcloud auth application-default login` |
 | vertexai=True requires ADC | API key is ignored with vertexai=True |
@@ -232,7 +241,7 @@ See the Rationalization Table in the first Iron Law section above — the same g
 **Top 3 mistakes** (bolded above):
 1. Using nested objects in metadata instead of flat primitives
 2. Mixing Standard API and Vertex AI patterns
-3. Using `destination=` instead of `dest=` (Vertex AI)
+3. Passing `dest=` as a kwarg instead of inside `config={}` (Vertex AI; current SDK)
 
 See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 

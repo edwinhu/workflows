@@ -238,7 +238,7 @@ def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
                 r'(?:<w:vertAlign w:val="superscript"/>\s*)?</w:rPr>\s*'
                 r'<w:footnoteRef/>\s*</w:r>\s*'
                 r'<w:r[^>]*>\s*<w:rPr>.*?</w:rPr>\s*'
-                rf'<w:t[^>]*>{mark["detect_re"]}</w:t>\s*</w:r>'
+                rf'<w:t[^>]*>(?:{mark["detect_re"]})</w:t>\s*</w:r>'
             )
             fn_xml_new = re.sub(pattern, rf'\1{repl}', fn_xml, count=1, flags=re.DOTALL)
             if fn_xml_new != fn_xml:
@@ -294,7 +294,7 @@ def fix_document_xml(doc_xml, num_bio_footnotes=3):
                 rf'<w:footnoteReference w:customMarkFollows="0" w:id="{fn_id}"/>\s*</w:r>\s*'
                 r'<w:r[^>]*>\s*<w:rPr>\s*<w:vertAlign w:val="superscript"/>\s*'
                 r'(?:<w:rtl w:val="0"/>\s*)?</w:rPr>\s*'
-                rf'<w:t[^>]*>{mark["detect_re"]}</w:t>\s*</w:r>'
+                rf'<w:t[^>]*>(?:{mark["detect_re"]})</w:t>\s*</w:r>'
             )
             doc_xml_new = re.sub(pattern, repl, doc_xml, count=1, flags=re.DOTALL)
             if doc_xml_new != doc_xml:

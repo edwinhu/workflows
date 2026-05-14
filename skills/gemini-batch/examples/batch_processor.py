@@ -226,11 +226,17 @@ class GeminiBatchProcessor:
 
         output_uri = f"gs://{self.bucket_name}/batch_outputs/{job_name}/"
 
+        # `dest` lives inside `config` in the current google-genai SDK.
+        # Signature: create(model, src, config). Older SDKs accepted `dest=`
+        # as a kwarg; the new SDK raises TypeError. Verify with
+        # `inspect.signature(client.batches.create)` before changing.
         job = genai.batches.create(
             model=self.model,
             src=input_uri,
-            dest=output_uri,
-            config={"display_name": job_name}
+            config={
+                "display_name": job_name,
+                "dest": output_uri,
+            },
         )
 
         print(f"Submitted job: {job.name}")

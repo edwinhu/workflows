@@ -12,7 +12,7 @@
 - [Gotcha 8: Rate Limits and Quotas](#gotcha-8-rate-limits-and-quotas)
 - [Gotcha 9: JSON Response Parsing Requires Careful Handling](#gotcha-9-json-response-parsing-requires-careful-handling)
 - [Gotcha 10: Metadata Must Be Flat Primitives](#gotcha-10-metadata-must-be-flat-primitives)
-- [Gotcha 11: API Parameter Names (dest= not destination=)](#gotcha-11-api-parameter-names-dest-not-destination)
+- [Gotcha 11: `dest` is a config field, not a top-level kwarg (SDK changed)](#gotcha-11-dest-is-a-config-field-not-a-top-level-kwarg-sdk-changed)
 - [Gotcha 12: File Search Store — uploadToFileSearchStore 503](#gotcha-12-file-search-store--uploadtofilesearchstore-503)
 - [Gotcha 13: SDK Pager auto-pagination is broken for fileSearchStores.documents.list](#gotcha-13-sdk-pager-auto-pagination-is-broken-for-filesearchstoresdocumentslist)
 - [Gotcha 14: Store document displayName is random after importFile](#gotcha-14-store-document-displayname-is-random-after-importfile)
@@ -632,88 +632,82 @@ def validate_metadata(metadata: dict) -> bool:
 
 ---
 
-## Gotcha 11: API Parameter Names (dest= not destination=)
+## Gotcha 11: `dest` is a config field, not a top-level kwarg (SDK changed)
 
-**Problem:** The Batch API parameter for output location is `dest=`, not `destination=`. Additionally, you pass plain strings/dicts, not wrapper types.
+**Problem:** The Batch API output location is `dest`, and in the **current**
+google-genai SDK it lives inside the `config` dict — NOT as a top-level
+keyword argument. Older SDK versions accepted `dest=` as a kwarg; the
+current signature does not. Old code (and old docs/examples) crash with
+`TypeError: Batches.create() got an unexpected keyword argument 'dest'`.
 
-**Symptom:** TypeError about unexpected keyword arguments
+**Verify your SDK first:**
+```python
+import inspect
+from google import genai
+client = genai.Client(vertexai=True, project="...", location="us-central1")
+print(inspect.signature(client.batches.create))
+# Current SDK: (*, model, src, config)
+# Older SDK:   (*, model, src, dest, config)
+```
+
+**Symptoms:**
+- `TypeError: Batches.create() got an unexpected keyword argument 'dest'` (current SDK, kwarg form)
+- `TypeError: ... unexpected keyword argument 'destination'` (always — that name never existed)
 
 **Wrong Attempts:**
 ```python
-# ❌ WRONG: destination= doesn't exist
+# ❌ WRONG: destination= never existed
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
     src="gs://bucket/input.jsonl",
-    destination="gs://bucket/output/"  # This parameter doesn't exist!
+    destination="gs://bucket/output/",
 )
 
-# ❌ WRONG: Overly complex with wrapper types
+# ❌ WRONG on current SDK: kwarg form (worked on older SDK)
+job = client.batches.create(
+    model="gemini-2.5-flash-lite",
+    src="gs://bucket/input.jsonl",
+    dest="gs://bucket/output/",       # TypeError on current SDK
+    config={"display_name": "my-job"},
+)
+
+# ❌ WRONG: instantiating the wrapper type manually
 from google.genai import types
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
     src="gs://bucket/input.jsonl",
-    config=types.CreateBatchJobConfig(  # Don't instantiate this manually!
-        dest="gs://bucket/output/"
-    )
+    config=types.CreateBatchJobConfig(dest="gs://bucket/output/"),
 )
 ```
 
-**Correct:**
+**Correct (current SDK):**
 ```python
-# ✓ CORRECT: Use dest= parameter with plain string
+# ✓ CORRECT: dest inside the config dict
 job = client.batches.create(
     model="gemini-2.5-flash-lite",
     src="gs://bucket/input.jsonl",
-    dest="gs://bucket/output/",         # Plain string!
-    config={"display_name": "my-job"}   # Plain dict (optional)
+    config={
+        "display_name": "my-job",
+        "dest": "gs://bucket/output/",
+    },
 )
 ```
 
-**API Signature:**
-```python
-def create(
-    *,
-    model: str,                    # Model name
-    src: str,                      # Input GCS/BigQuery URI or file name
-    dest: str = None,              # Output GCS URI prefix (optional)
-    config: dict = None            # Optional config as plain dict
-) -> BatchJob:
-    ...
-```
+**Field reference:**
+`CreateBatchJobConfig` fields = `http_options, display_name, dest, webhook_config`.
+Always pass as a plain dict; the SDK converts it internally.
 
 **Key Points:**
-1. **Parameter is `dest=`** (not destination, output, or output_uri)
-2. **Pass plain string** (not a URI object or wrapper type)
-3. **Config is plain dict** (not CreateBatchJobConfig instance)
-4. **SDK handles conversion** internally to proper types
-
-**Why the Confusion:**
-- `CreateBatchJobConfig` exists in SDK types for internal use
-- You see it in type hints/autocomplete
-- But you **don't instantiate it yourself**
-- Just pass a plain dict to `config=`
-
-**Think of it like:**
-- Type hints show `config: CreateBatchJobConfig`
-- But you pass `config={"display_name": "job"}`
-- SDK converts dict → CreateBatchJobConfig internally
-
-**Verification:**
-```python
-# Check parameter names without executing
-import inspect
-from google import genai
-
-client = genai.Client(vertexai=True, project="...", location="us-central1")
-sig = inspect.signature(client.batches.create)
-print(sig.parameters.keys())  # Shows: model, src, dest, config
-```
+1. **`dest` is a config field** in the current SDK (was a kwarg historically)
+2. **`destination` does not exist** — it never did
+3. **Pass `config` as a plain dict** (not the wrapper class)
+4. **Run `inspect.signature` first** if you suspect SDK drift
 
 **Examples from Skill:**
-- Standard API: `examples/batch_processor.py` line 229-234
-- Vertex AI: `examples/icon_batch_vision.py` line 139-166
+- Standard API: `examples/batch_processor.py`
+- Vertex AI: `examples/icon_batch_vision.py`
 
-Both show the same pattern: `dest=` parameter with plain strings and dicts.
+Both pass `dest` via `config={"dest": "gs://..."}`.
 
 ---
 
