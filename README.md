@@ -22,8 +22,8 @@ This downloads pre-built binaries for your platform (macOS arm64, Linux x64, Win
 | [readwise-custom](https://github.com/edwinhu/readwise-cli) | Readwise RAG/chat/upload | `librarian` agent, `/readwise-chat` |
 | [scholar](https://github.com/edwinhu/google-scholar-cli) | Google Scholar search | `librarian` agent, `/google-scholar` |
 | [consensus](https://github.com/edwinhu/consensus-cli) | Academic paper search | `librarian` agent, `/consensus` |
-| [morgen](https://github.com/edwinhu/morgen-cli) | Calendar & tasks | `assistant` agent |
-| [superhuman](https://github.com/edwinhu/superhuman-cli) | Email | `assistant` agent |
+| [morgen](https://github.com/edwinhu/morgen-cli) | Calendar & tasks | Direct Bash, or session in `~/areas/assistant/` |
+| [superhuman](https://github.com/edwinhu/superhuman-cli) | Email | `email-handling` skill (via Bash) |
 
 Requires `gh` (GitHub CLI). Tools already on your `$PATH` are skipped.
 
@@ -98,13 +98,12 @@ Workshop: (no internal phase skills — `workshop` and `workshop-revise` are bot
 
 ---
 
-## Agents (19)
+## Agents (20)
 
 Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 | Agent | Role |
 |-------|------|
-| `assistant` | Personal productivity (email, calendar, tasks, notes, Google Workspace) |
 | `planner` | Implementation planning for complex features |
 | `architect` | System design and technical decisions |
 | `tdd-guide` | TDD workflow enforcement |

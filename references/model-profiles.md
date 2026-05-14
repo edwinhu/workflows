@@ -23,7 +23,6 @@ Model profiles control which Claude model each agent uses, balancing quality vs 
 | data-explorer | sonnet | haiku | haiku | Data exploration (read-only) |
 | doc-updater | sonnet | haiku | haiku | Documentation updates |
 | librarian | sonnet | haiku | haiku | Knowledge search (read-only) |
-| assistant | inherit | inherit | inherit | Personal assistant (follows session) |
 
 ## Profile Philosophy
 
@@ -83,6 +82,3 @@ Verification agents (dev-verifier, dev-plan-checker) have no Write/Edit tools. T
 
 **Why Haiku for explorers?**
 data-explorer, doc-updater, and librarian do read-only exploration and structured output extraction. No reasoning required, just pattern matching from file contents.
-
-**Why inherit for assistant?**
-The assistant agent wraps external tools (email, calendar, notes). Model choice should follow user preference, not be dictated by the profile.
