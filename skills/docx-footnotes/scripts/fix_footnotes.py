@@ -55,15 +55,31 @@ def read_zip_member(zf, name):
     return zf.read(name).decode("utf-8")
 
 
-def detect_issues(fn_xml, doc_xml):
+def detect_issues(fn_xml, doc_xml, settings_xml=None):
     """Detect both Google Docs round-trip damage and pandoc wrap parens."""
     issues = []
+
+    # Google Docs export sets <w:evenAndOddHeaders/> in settings.xml even when
+    # the document does not actually use different even/odd headers. When Word
+    # opens such a file, the setting interacts with section breaks and
+    # title-page properties to insert a phantom blank page (most often between
+    # the cover/abstract and the table of contents). LibreOffice ignores it,
+    # so the artifact is invisible until you print from Word.
+    if settings_xml is not None and '<w:evenAndOddHeaders/>' in settings_xml:
+        issues.append("even_odd_headers_phantom_page")
 
     if 'w:type="separator"' not in fn_xml:
         issues.append("missing_separators")
 
     if 'customMarkFollows="0"' in doc_xml and 'customMarkFollows="1"' not in doc_xml:
         issues.append("custom_marks_broken")
+
+    # Half-fixed state: customMarkFollows="1" is already present, but the
+    # bio reference runs lack any superscript formatting (no vertAlign and
+    # no FootnoteReference rStyle). Symptom: bio marks render at baseline.
+    bio_unsuperscripted = _count_unsuperscripted_bio_refs(doc_xml)
+    if bio_unsuperscripted:
+        issues.append(f"bio_marks_not_superscript({bio_unsuperscripted})")
 
     if re.search(r'<w:footnote\s+w:id="0">', fn_xml) and 'w:type="separator"' not in fn_xml:
         issues.append("ids_shifted")
@@ -73,6 +89,12 @@ def detect_issues(fn_xml, doc_xml):
     missing_style = sum(1 for fid, body in footnotes if 'w:pStyle' not in body)
     if missing_style > 0:
         issues.append(f"missing_pstyle({missing_style}/{len(footnotes)})")
+
+    # Half-fixed state inside footnotes.xml: the leading mark glyph in each
+    # bio footnote body lacks superscript formatting.
+    bio_body_unsup = _count_unsuperscripted_bio_bodies(fn_xml)
+    if bio_body_unsup:
+        issues.append(f"bio_body_marks_not_superscript({bio_body_unsup})")
 
     # Pandoc-citeproc wrap parens: count opener signatures.
     wrap_count = len(_PANDOC_WRAP_OPEN_RE.findall(fn_xml))
@@ -265,6 +287,209 @@ def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
     return fn_xml, changes
 
 
+def _find_bio_footnote_first_run(fn_xml, fn_id):
+    """Return (match, body_start, run_match) for the first <w:r>...</w:r> inside
+    footnote fn_id's body, or (None, None, None) if not found."""
+    fn_m = re.search(
+        rf'<w:footnote\s+w:id="{fn_id}">(.*?)</w:footnote>',
+        fn_xml, re.DOTALL,
+    )
+    if not fn_m:
+        return None, None, None
+    body = fn_m.group(1)
+    run_m = re.search(r'<w:r(\s[^>]*)?>((?:(?!</?w:r\b).)*?)</w:r>', body, re.DOTALL)
+    return fn_m, body, run_m
+
+
+def _count_unsuperscripted_bio_bodies(fn_xml, num_bio_footnotes=3):
+    n = 0
+    for i, mark in enumerate(AUTHOR_BIO_MARKS[:num_bio_footnotes]):
+        fn_id = str(i + 1)
+        fn_m, body, run_m = _find_bio_footnote_first_run(fn_xml, fn_id)
+        if not run_m:
+            continue
+        inner = run_m.group(0)
+        # Does this run carry the mark glyph?
+        if mark["mark_type"] == "sym":
+            if f'w:char="{mark["char"]}"' not in inner:
+                continue
+        else:
+            if mark["detect_text"] not in inner:
+                continue
+        if _run_has_superscript(inner):
+            continue
+        n += 1
+    return n
+
+
+def fix_bio_superscript_in_footnotes(fn_xml, num_bio_footnotes=3):
+    """Add superscript formatting to the leading mark glyph inside each bio
+    footnote body (in footnotes.xml). Idempotent."""
+    changes = []
+    sup_rpr = '<w:rPr><w:vertAlign w:val="superscript"/></w:rPr>'
+
+    for i, mark in enumerate(AUTHOR_BIO_MARKS[:num_bio_footnotes]):
+        fn_id = str(i + 1)
+        fn_m, body, run_m = _find_bio_footnote_first_run(fn_xml, fn_id)
+        if not run_m:
+            continue
+        run_full = run_m.group(0)
+        run_attrs = run_m.group(1) or ''
+        run_inner = run_m.group(2)
+
+        # Confirm this run actually contains the expected mark glyph.
+        if mark["mark_type"] == "sym":
+            if f'w:char="{mark["char"]}"' not in run_inner:
+                continue
+        else:
+            if mark["detect_text"] not in run_inner:
+                continue
+
+        if _run_has_superscript(run_inner):
+            continue
+
+        # Merge or insert rPr at start of run inner content.
+        rpr_m = re.match(r'\s*<w:rPr>(.*?)</w:rPr>', run_inner, re.DOTALL)
+        if rpr_m:
+            new_inner = run_inner.replace(
+                rpr_m.group(0),
+                f'<w:rPr>{rpr_m.group(1)}<w:vertAlign w:val="superscript"/></w:rPr>',
+                1,
+            )
+        else:
+            new_inner = sup_rpr + run_inner
+
+        new_run = f'<w:r{run_attrs}>{new_inner}</w:r>'
+        # Replace within the footnote body to avoid colliding with identical
+        # runs in other footnotes.
+        new_body = body.replace(run_full, new_run, 1)
+        fn_xml = fn_xml.replace(body, new_body, 1)
+        changes.append(f"Superscripted leading mark in footnote {fn_id}")
+
+    return fn_xml, changes
+
+
+def fix_settings_xml(settings_xml):
+    """Remove Google Docs export artifacts from settings.xml that cause Word
+    to render phantom blank pages. Idempotent."""
+    changes = []
+    if settings_xml is None:
+        return None, changes
+    if '<w:evenAndOddHeaders/>' in settings_xml:
+        settings_xml = settings_xml.replace('<w:evenAndOddHeaders/>', '')
+        changes.append("Removed <w:evenAndOddHeaders/> (phantom blank page)")
+    return settings_xml, changes
+
+
+def _iter_bio_ref_runs(doc_xml, num_bio_footnotes):
+    """Yield (match, fn_id, mark) for each bio footnoteReference run with
+    customMarkFollows="1". The match captures the full <w:r>...</w:r>, with
+    groups: 1=run attrs, 2=content before footnoteReference, 3=content after."""
+    for i, mark in enumerate(AUTHOR_BIO_MARKS[:num_bio_footnotes]):
+        fn_id = str(i + 1)
+        fn_ref = f'<w:footnoteReference w:customMarkFollows="1" w:id="{fn_id}"/>'
+        pattern = re.compile(
+            r'<w:r(\s[^>]*)?>((?:(?!</?w:r\b).)*?)' + re.escape(fn_ref) +
+            r'((?:(?!</w:r>).)*?)</w:r>',
+            re.DOTALL,
+        )
+        m = pattern.search(doc_xml)
+        if m:
+            yield m, fn_id, mark
+
+
+def _run_has_superscript(run_before):
+    """Does the rPr (if any) before the footnoteReference confer superscript?"""
+    if re.search(r'<w:vertAlign\s+w:val="superscript"', run_before):
+        return True
+    if re.search(r'<w:rStyle\s+w:val="FootnoteReference"', run_before):
+        return True
+    return False
+
+
+def _count_unsuperscripted_bio_refs(doc_xml, num_bio_footnotes=3):
+    """Count bio references that have customMarkFollows="1" but no superscript."""
+    n = 0
+    for m, fn_id, mark in _iter_bio_ref_runs(doc_xml, num_bio_footnotes):
+        if not _run_has_superscript(m.group(2)):
+            n += 1
+    return n
+
+
+def fix_bio_superscript(doc_xml, num_bio_footnotes=3):
+    """Half-fixed-state repair: bio refs already have customMarkFollows="1",
+    but the run lacks superscript formatting. Add inline <w:vertAlign> and,
+    if the mark glyph is welded to trailing text in the same <w:t>, split
+    the run so only the mark is superscripted."""
+    changes = []
+    for _, fn_id, mark in list(_iter_bio_ref_runs(doc_xml, num_bio_footnotes)):
+        # Re-search every iteration since doc_xml may have changed.
+        fn_ref = f'<w:footnoteReference w:customMarkFollows="1" w:id="{fn_id}"/>'
+        pattern = re.compile(
+            r'<w:r(\s[^>]*)?>((?:(?!</?w:r\b).)*?)' + re.escape(fn_ref) +
+            r'((?:(?!</w:r>).)*?)</w:r>',
+            re.DOTALL,
+        )
+        m = pattern.search(doc_xml)
+        if not m:
+            continue
+
+        attrs = m.group(1) or ''
+        before = m.group(2)
+        after = m.group(3)
+        full = m.group(0)
+
+        if _run_has_superscript(before):
+            continue
+
+        sup_rpr = '<w:rPr><w:vertAlign w:val="superscript"/></w:rPr>'
+
+        # Merge or insert rPr.
+        rpr_m = re.search(r'<w:rPr>(.*?)</w:rPr>', before, re.DOTALL)
+        if rpr_m:
+            new_before = before.replace(
+                rpr_m.group(0),
+                f'<w:rPr>{rpr_m.group(1)}<w:vertAlign w:val="superscript"/></w:rPr>',
+                1,
+            )
+        else:
+            new_before = sup_rpr + before
+
+        # Inspect glyph after footnoteReference.
+        sym_m = re.match(
+            r'\s*(<w:sym\s+w:font="[^"]+"\s+w:char="[^"]+"/>)\s*$',
+            after, re.DOTALL,
+        )
+        t_m = re.match(
+            r'\s*<w:t(\s[^>]*)?>([^<]*)</w:t>\s*$',
+            after, re.DOTALL,
+        )
+
+        if sym_m:
+            new_run = f'<w:r{attrs}>{new_before}{fn_ref}{sym_m.group(1)}</w:r>'
+        elif t_m:
+            text = t_m.group(2)
+            mark_char = mark["detect_text"]
+            if not text.startswith(mark_char):
+                continue
+            if text == mark_char:
+                new_run = (f'<w:r{attrs}>{new_before}{fn_ref}'
+                           f'<w:t>{mark_char}</w:t></w:r>')
+            else:
+                trail = text[len(mark_char):]
+                trail_attr = ' xml:space="preserve"' if (trail != trail.strip()) else ''
+                new_run = (f'<w:r{attrs}>{new_before}{fn_ref}'
+                           f'<w:t>{mark_char}</w:t></w:r>'
+                           f'<w:r><w:t{trail_attr}>{trail}</w:t></w:r>')
+        else:
+            continue
+
+        doc_xml = doc_xml.replace(full, new_run, 1)
+        changes.append(f"Superscripted bio reference {fn_id}")
+
+    return doc_xml, changes
+
+
 def fix_document_xml(doc_xml, num_bio_footnotes=3):
     """Fix document.xml footnote references."""
     changes = []
@@ -438,9 +663,11 @@ def main():
     with zipfile.ZipFile(docx_path, 'r') as zf:
         fn_xml = read_zip_member(zf, 'word/footnotes.xml')
         doc_xml = read_zip_member(zf, 'word/document.xml')
-        settings_xml = read_zip_member(zf, 'word/settings.xml') if args.fix_numbering else None
+        # settings.xml is always read so we can detect/fix the GDocs
+        # evenAndOddHeaders artifact; fix_numbering uses it too.
+        settings_xml = read_zip_member(zf, 'word/settings.xml')
 
-    issues = detect_issues(fn_xml, doc_xml)
+    issues = detect_issues(fn_xml, doc_xml, settings_xml)
     if not issues and not args.fix_numbering:
         print("No footnote damage detected.")
         return
@@ -456,16 +683,26 @@ def main():
     fn_xml_fixed, pandoc_changes = fix_pandoc_cite_wraps(fn_xml_fixed)
     all_changes.extend(pandoc_changes)
 
+    fn_xml_fixed, bio_body_changes = fix_bio_superscript_in_footnotes(
+        fn_xml_fixed, args.bio_footnotes)
+    all_changes.extend(bio_body_changes)
+
     doc_xml_fixed, doc_changes = fix_document_xml(doc_xml, args.bio_footnotes)
     all_changes.extend(doc_changes)
+
+    doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
+        doc_xml_fixed, args.bio_footnotes)
+    all_changes.extend(bio_ref_changes)
 
     doc_xml_fixed, toc_changes = fix_toc_separator(doc_xml_fixed)
     all_changes.extend(toc_changes)
 
-    settings_xml_fixed = settings_xml
+    settings_xml_fixed, settings_changes = fix_settings_xml(settings_xml)
+    all_changes.extend(settings_changes)
+
     if args.fix_numbering:
         settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, num_changes = fix_numbering_offset(
-            settings_xml, fn_xml_fixed, doc_xml_fixed, args.bio_footnotes)
+            settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, args.bio_footnotes)
         all_changes.extend(num_changes)
 
     print(f"Changes ({len(all_changes)}):")
