@@ -140,15 +140,17 @@ Before proceeding to [next phase]:
 
 **Template:**
 ```markdown
-## Review Loop
+## Review Loop (`/goal`-driven)
 
 1. Complete work unit
-2. Self-review against [criteria]
-3. If issues found:
-   a. Fix issues
-   b. Re-review (max [N] iterations)
-   c. If still failing after [N], escalate to user
-4. If clean, proceed
+2. Independent review against [criteria] (fresh subagent — not self-review)
+3. If issues found, drive convergence via:
+
+   `/goal <reviewer returns APPROVED on [ARTIFACT]>. Stop after [N] turns.`
+
+   Each turn under the active goal: fix issues, re-dispatch reviewer, end turn — the evaluator gates exit.
+4. If turn budget elapses without APPROVED, escalate to user.
+5. If clean, proceed.
 ```
 
 **Example** (dev-implement):
@@ -323,9 +325,9 @@ After writing [ARTIFACT]:
 
 1. Dispatch reviewer subagent (fresh context, no implementation knowledge)
 2. Reviewer checks: completeness, consistency, clarity, YAGNI, spec alignment
-3. If ISSUES_FOUND → fix artifact → re-dispatch reviewer (max 5 iterations)
+3. If ISSUES_FOUND → drive convergence via `/goal Reviewer returns APPROVED on [ARTIFACT]. Stop after 5 turns.` Each turn: fix artifact, re-dispatch reviewer, end turn
 4. If APPROVED → proceed to next phase
-5. If 5 iterations without approval → escalate to user
+5. If 5-turn budget elapses without APPROVED → escalate to user
 
 **Iron Law:** NO DOWNSTREAM PHASE WITHOUT REVIEWED ARTIFACT.
 A bad spec that survives into exploration means exploring the wrong areas.

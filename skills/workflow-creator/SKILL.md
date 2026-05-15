@@ -216,7 +216,7 @@ Do NOT edit the file — report only."""
 
 **Gate: Interview Reviewed** `[checkpoint: human-verify, auto-advanceable]`
 - If reviewer reports APPROVED → proceed
-- If reviewer reports gaps → ask remaining questions, update INTERVIEW.md, re-review (max 3 iterations)
+- If reviewer reports gaps → drive convergence via `/goal Interview reviewer returns APPROVED on .planning/wc/{name}/INTERVIEW.md. Stop after 3 turns.` Each turn: ask remaining questions, update INTERVIEW.md, re-dispatch the reviewer, end turn
 
 **Proceed to Step 3.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
@@ -538,7 +538,7 @@ For every phase that produces an artifact consumed by downstream phases, add an 
 Phase N produces ARTIFACT.md
   → Dispatch independent reviewer subagent
   → Reviewer checks: completeness, consistency, clarity, YAGNI, spec alignment
-  → If ISSUES_FOUND → fix → re-dispatch (max 5 iterations)
+  → If ISSUES_FOUND → drive convergence via /goal pinned to reviewer APPROVED, 5-turn budget
   → If APPROVED → Phase N+1 consumes the artifact
 ```
 
@@ -563,7 +563,7 @@ Phase N produces ARTIFACT.md
 **Gate: Artifact Review Gates Designed** `[checkpoint: human-verify, auto-advanceable]`
 - Every artifact-producing phase has a review gate before the consuming phase
 - Reviewer is a fresh subagent (not self-review)
-- Fix-and-re-review loop with max 5 iterations
+- Fix-and-re-review loop is `/goal`-driven (5-turn budget; evaluator gates exit on reviewer APPROVED)
 - Chunking specified for large artifacts
 
 **After verifying Artifact Review Gates are designed, persist design decisions:**
@@ -607,7 +607,7 @@ Do NOT edit the file — report only."""
 
 **Gate: Design Reviewed** `[checkpoint: human-verify, auto-advanceable]`
 - If reviewer reports APPROVED → proceed
-- If reviewer reports gaps → fix DESIGN.md, re-review (max 3 iterations)
+- If reviewer reports gaps → drive convergence via `/goal Design reviewer returns APPROVED on .planning/wc/{name}/DESIGN.md. Stop after 3 turns.` Each turn: fix DESIGN.md, re-dispatch the reviewer, end turn
 
 **Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
@@ -1222,7 +1222,16 @@ After generating workflow files in Step 6:
    )
    ```
 
-2. **Check score:** If composite score < 8.0, fix the generated files and re-dispatch a fresh audit subagent (max 3 iterations). Each iteration gets a NEW subagent — no resume, no context carryover.
+2. **Check score:** If composite score < 8.0, drive convergence via the native `/goal` primitive — a separate evaluator gates exit by reading SCORES.md from the transcript, so the agent that generated the files isn't also the judge.
+
+   Invoke:
+
+   ```
+   /goal Generated workflow scores >= 8.0 in .planning/wc/{name}/SCORES.md from a fresh audit subagent. Stop after 3 turns.
+   ```
+
+   Each turn under the active goal: fix the generated files based on the latest AUDIT.md findings, re-dispatch a NEW audit subagent (no resume, no context carryover), append the new score row to SCORES.md, end turn.
+
 3. **Present to user** `[checkpoint: decision — user approves or requests changes]` with the audit report attached — the user sees both the workflow AND its quality score
 
 ```
@@ -1234,9 +1243,9 @@ Score >= 8.0? ──YES──→ Present files + audit report to user
     │
     NO
     ↓
-Fix gaps (max 3 iterations) → Re-audit
+/goal-driven fix loop (3-turn budget) → fresh audit subagent re-scores each turn
     │
-    ↓ (after 3 iterations)
+    ↓ (after 3-turn budget elapses)
 Present files + audit report + remaining gaps to user
 ```
 
@@ -1479,7 +1488,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 **P21 — Auto-loader usage for constraints:**
 - Do phase skills that load constraint prose use the bang-invoked auto-loader?
   ```
-  !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py <skill-name>`
+  !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
   ```
 - Or do they list `Read()` calls for each constraint `.md` file manually?
 - **Why this matters:** The auto-loader + `applies-to` frontmatter is the wiring that makes atomic constraints work. Manual `Read()` lists mean adding a new constraint requires editing every skill that should load it — silent drift is the default failure mode.
@@ -1895,7 +1904,7 @@ Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 | Index/TOC files manually listing constraints | Remove — the filesystem IS the index. `ls constraints/*.md` = all rules, `ls constraints/*.py` = all tests |
 | Hooks inconsistent across skill family | Produce Hook Coverage Matrix (skills × hooks); add missing hooks to skill frontmatter; justify intentional gaps |
 | Constraint added to individual skill but applies to family | Move to `references/constraints/` with `applies-to` frontmatter; remove from individual skill |
-| Missing artifact review gate | Add reviewer subagent dispatch between producing/consuming phases, max 5 iterations |
+| Missing artifact review gate | Add reviewer subagent dispatch between producing/consuming phases, `/goal`-driven (5-turn budget; evaluator gates exit on reviewer APPROVED) |
 | Nested agent dispatch (agent spawns sub-agents) | Flatten: orchestrator spawns all agents directly in parallel. Move "dispatcher" logic into the skill definition. |
 | Broken paths (script) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL/scripts/script.py` |
 | Broken paths (Read) | Use `${CLAUDE_SKILL_DIR}/../../skills/SKILL-NAME/SKILL.md` |
