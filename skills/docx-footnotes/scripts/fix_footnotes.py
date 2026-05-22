@@ -9,6 +9,8 @@ A. Google Docs round-trip damage:
    3. Paragraph styles on footnotes (FootnoteText / FNStyleBest)
    4. Footnote ID numbering (shifts when system footnotes are missing)
    5. TOC separator paragraph height (causes spillover to second page)
+   6. Footnote style *definitions* (FNStyleBest etc.) stripped from
+      styles.xml — restored from the law-review reference template
 
 B. Pandoc-citeproc wrap parens:
    Pandoc-citeproc wraps bracketed citations `[@key]` that appear
@@ -50,12 +52,19 @@ AUTHOR_BIO_MARKS = [
 # The preferred footnote paragraph style
 FN_PSTYLE = "FNStyleBest"
 
+# Canonical law-review reference template — the same .docx build_docx.py feeds
+# to pandoc as --reference-doc. Used to restore footnote style *definitions*
+# (FNStyleBest etc.) when a Google Docs round-trip has stripped them from
+# styles.xml, leaving the pStyle reference dangling at an undefined style.
+TEMPLATE = (Path(__file__).resolve().parent.parent.parent
+            / "writing-legal" / "templates" / "law_review_template.docx")
+
 
 def read_zip_member(zf, name):
     return zf.read(name).decode("utf-8")
 
 
-def detect_issues(fn_xml, doc_xml, settings_xml=None):
+def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     """Detect both Google Docs round-trip damage and pandoc wrap parens."""
     issues = []
 
@@ -89,6 +98,16 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None):
     missing_style = sum(1 for fid, body in footnotes if 'w:pStyle' not in body)
     if missing_style > 0:
         issues.append(f"missing_pstyle({missing_style}/{len(footnotes)})")
+
+    # FNStyleBest applied to footnotes (or about to be, via missing_pstyle)
+    # but the style itself is not defined in styles.xml. A Google Docs
+    # round-trip can strip the style *definition* while the pStyle reference
+    # survives — Word then silently falls back to Normal.
+    if styles_xml is not None:
+        will_reference = (f'w:pStyle w:val="{FN_PSTYLE}"' in fn_xml
+                          or missing_style > 0)
+        if will_reference and not _style_present(styles_xml, FN_PSTYLE):
+            issues.append("fnstylebest_style_undefined")
 
     # Half-fixed state inside footnotes.xml: the leading mark glyph in each
     # bio footnote body lacks superscript formatting.
@@ -638,6 +657,77 @@ def fix_numbering_offset(settings_xml, fn_xml, doc_xml, bio_count=3):
     return settings_xml, fn_xml, doc_xml, changes
 
 
+# ── Footnote style definitions ─────────────────────────────────────────
+def _style_present(styles_xml, style_id):
+    """Is a <w:style> with this styleId defined in styles.xml?"""
+    return re.search(
+        rf'<w:style\b[^>]*\bw:styleId="{re.escape(style_id)}"', styles_xml
+    ) is not None
+
+
+def _extract_style(styles_xml, style_id):
+    """Return the full <w:style …>…</w:style> block for style_id, or None."""
+    m = re.search(
+        rf'<w:style\b[^>]*\bw:styleId="{re.escape(style_id)}".*?</w:style>',
+        styles_xml, re.DOTALL,
+    )
+    return m.group(0) if m else None
+
+
+def _style_deps(style_block):
+    """styleIds referenced via basedOn / link / next inside a style block."""
+    return set(re.findall(
+        r'<w:(?:basedOn|link|next)\s+w:val="([^"]+)"', style_block))
+
+
+def ensure_footnote_styles(styles_xml, template_path, needed=(FN_PSTYLE,)):
+    """Ensure `needed` styles — and the basedOn/link/next styles they depend
+    on — are defined in styles.xml. Missing definitions are copied verbatim
+    from the law-review reference template. Add-only: a style already present
+    is never modified. Idempotent.
+
+    Returns (styles_xml, changes).
+    """
+    changes = []
+    if styles_xml is None:
+        return styles_xml, changes
+
+    try:
+        with zipfile.ZipFile(template_path) as tz:
+            tpl_styles = tz.read('word/styles.xml').decode('utf-8')
+    except (FileNotFoundError, KeyError, zipfile.BadZipFile):
+        changes.append(
+            f"WARNING: template not readable at {template_path} — cannot "
+            f"verify {'/'.join(needed)} style definition(s)")
+        return styles_xml, changes
+
+    queue = list(needed)
+    seen = set()
+    added = []
+    while queue:
+        sid = queue.pop(0)
+        if sid in seen:
+            continue
+        seen.add(sid)
+        if _style_present(styles_xml, sid):
+            continue
+        block = _extract_style(tpl_styles, sid)
+        if block is None:
+            changes.append(
+                f"WARNING: style '{sid}' missing from both document and template")
+            continue
+        styles_xml = styles_xml.replace(
+            '</w:styles>', block + '</w:styles>', 1)
+        added.append(sid)
+        queue.extend(_style_deps(block))  # pull in basedOn/link/next deps
+
+    if added:
+        changes.append(
+            f"Restored {len(added)} style definition(s) from template: "
+            + ", ".join(added))
+    return styles_xml, changes
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Fix footnote damage (Google Docs round-trip, pandoc-citeproc wraps)"
@@ -651,6 +741,10 @@ def main():
                         help="Also run create_crossrefs.py after fixing")
     parser.add_argument("--fix-numbering", action="store_true",
                         help="Fix numbering offset from customMarkFollows bio footnotes")
+    parser.add_argument("--template", default=str(TEMPLATE),
+                        help="Law-review reference template (.docx) to restore "
+                             "missing footnote style definitions from "
+                             "(default: bundled writing-legal template)")
     args = parser.parse_args()
 
     docx_path = Path(args.docx).resolve()
@@ -666,8 +760,10 @@ def main():
         # settings.xml is always read so we can detect/fix the GDocs
         # evenAndOddHeaders artifact; fix_numbering uses it too.
         settings_xml = read_zip_member(zf, 'word/settings.xml')
+        # styles.xml is read to verify the FNStyleBest definition survives.
+        styles_xml = read_zip_member(zf, 'word/styles.xml')
 
-    issues = detect_issues(fn_xml, doc_xml, settings_xml)
+    issues = detect_issues(fn_xml, doc_xml, settings_xml, styles_xml)
     if not issues and not args.fix_numbering:
         print("No footnote damage detected.")
         return
@@ -700,6 +796,12 @@ def main():
     settings_xml_fixed, settings_changes = fix_settings_xml(settings_xml)
     all_changes.extend(settings_changes)
 
+    # Restore the FNStyleBest style definition (and its dependencies) from the
+    # reference template if a Google Docs round-trip stripped it out.
+    styles_xml_fixed, styles_changes = ensure_footnote_styles(
+        styles_xml, args.template)
+    all_changes.extend(styles_changes)
+
     if args.fix_numbering:
         settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, num_changes = fix_numbering_offset(
             settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, args.bio_footnotes)
@@ -726,6 +828,8 @@ def main():
                         zout.writestr(item, doc_xml_fixed.encode('utf-8'))
                     elif item.filename == 'word/settings.xml' and settings_xml_fixed is not None:
                         zout.writestr(item, settings_xml_fixed.encode('utf-8'))
+                    elif item.filename == 'word/styles.xml' and styles_xml_fixed is not None:
+                        zout.writestr(item, styles_xml_fixed.encode('utf-8'))
                     else:
                         zout.writestr(item, zin.read(item.filename))
 

@@ -14,6 +14,7 @@ Common symptoms in `.docx` files round-tripped through Google Docs or Word Onlin
 
 - Missing footnote separator lines
 - Stripped paragraph styles (pStyle) on footnote bodies
+- Stripped style *definitions* (`FNStyleBest` etc.) — the pStyle reference points at an undefined style and Word silently falls back to Normal
 - Author bio custom marks (`*`, `†`, `‡`) replaced with numbers
 - Footnote numbering starting at the wrong number (offset from `customMarkFollows` bio footnotes)
 - TOC separator paragraphs that inflate to fill a whole page
@@ -48,6 +49,11 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - Custom mark restoration for author bio footnotes (*, dagger, double-dagger)
 - Footnote ID renumbering (shifted by missing system footnotes)
 - Missing paragraph styles (adds configurable pStyle to all footnotes)
+- Missing style *definitions* — restores `FNStyleBest` (and the basedOn/link
+  styles it depends on) from the canonical law-review reference template when
+  a round-trip stripped them from `styles.xml`. The template is the same
+  `writing-legal/templates/law_review_template.docx` that `law-review-docx`'s
+  `build_docx.py` feeds to pandoc, so style definitions stay consistent.
 - TOC separator paragraph inflation (shrinks to near-zero height)
 
 **Pandoc-citeproc wrap parens:**
@@ -61,6 +67,7 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - `--bio-footnotes N`: Number of author bio footnotes (default: 3)
 - `--crossrefs`: Chain to create_crossrefs.py after fixing
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
+- `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `writing-legal/templates/law_review_template.docx`)
 
 ### create_crossrefs.py
 

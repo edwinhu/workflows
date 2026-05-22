@@ -123,7 +123,7 @@ def parse_metadata(project_dir: Path) -> dict:
     meta = {
         "title": "", "short_title": "", "author": "", "date": "",
         "acknowledgements": "", "author_acks": [],
-        "csl": "", "bibliography": "",
+        "csl": "", "bibliography": "", "journal_cite": "",
     }
     aw = project_dir / ".planning" / "ACTIVE_WORKFLOW.md"
     if aw.exists():
@@ -133,6 +133,8 @@ def parse_metadata(project_dir: Path) -> dict:
                 meta["title"] = line.split(":", 1)[1].strip().strip('"')
             elif line.startswith("short_title:"):
                 meta["short_title"] = line.split(":", 1)[1].strip().strip('"')
+            elif line.startswith("journal_cite:"):
+                meta["journal_cite"] = line.split(":", 1)[1].strip().strip('"')
             elif line.startswith("author:"):
                 meta["author"] = line.split(":", 1)[1].strip().strip('"')
             elif line.startswith("date:"):
@@ -506,7 +508,17 @@ def normalize_abstract_heading(docx_path: Path) -> None:
     shutil.move(tmp, docx_path)
 
 
-def replace_short_title(docx_path: Path, short_title: str) -> None:
+def replace_header_placeholders(docx_path: Path, short_title: str,
+                                journal_cite: str = "") -> None:
+    """Fill running-header placeholders in every header part.
+
+    {{SHORT_TITLE}} -> short title (recto running head)
+    {{JOURNAL_CITE}} -> journal citation, e.g. "115 Geo. L.J. ___ (2026)"
+                        (centered, every page incl. the title page)
+
+    An unset journal_cite collapses to empty so the header degrades to the
+    short title alone rather than showing a literal placeholder.
+    """
     import zipfile, shutil
     with zipfile.ZipFile(docx_path, 'r') as z:
         names = z.namelist()
@@ -515,8 +527,10 @@ def replace_short_title(docx_path: Path, short_title: str) -> None:
     for name in list(contents):
         if name.startswith('word/header') and name.endswith('.xml'):
             text = contents[name].decode('utf-8')
-            if '{{SHORT_TITLE}}' in text:
-                contents[name] = text.replace('{{SHORT_TITLE}}', short_title).encode('utf-8')
+            new = (text.replace('{{SHORT_TITLE}}', short_title)
+                       .replace('{{JOURNAL_CITE}}', journal_cite))
+            if new != text:
+                contents[name] = new.encode('utf-8')
                 replaced = True
     if not replaced:
         return
@@ -724,7 +738,7 @@ date: "{meta['date']}"
         print(f"ERROR: pandoc failed:\n{result.stderr}", file=sys.stderr)
         sys.exit(1)
 
-    replace_short_title(output, meta["short_title"])
+    replace_header_placeholders(output, meta["short_title"], meta["journal_cite"])
 
     inject_acknowledgement(output, meta["acknowledgements"], meta.get("author_acks") or None)
 
