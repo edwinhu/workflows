@@ -101,6 +101,15 @@ func cleanField(s string) string {
 	return strings.TrimSpace(strings.Trim(s, " \t\r\n"))
 }
 
+func hasAnyHit(vals []string, fields []Field) bool {
+	for i, f := range fields {
+		if f.IsHit && i < len(vals) && vals[i] == "1" {
+			return true
+		}
+	}
+	return false
+}
+
 func formAllowed(form string, allowed []string) bool {
 	if len(allowed) == 0 {
 		return true
@@ -128,7 +137,7 @@ func processFile(path string, prof *Profile) []string {
 	}
 	buf = buf[:n]
 
-	// Form-type whitelist check happens on the raw buffer (cheap regex).
+	// Form-type whitelist check happens on the head buffer (cheap regex).
 	if len(prof.Forms) > 0 {
 		m := reFormType.FindSubmatch(buf)
 		if m == nil {
@@ -139,8 +148,71 @@ func processFile(path string, prof *Profile) []string {
 		}
 	}
 
-	// Truncate at last newline if buffer filled (avoid partial-line regex
-	// false matches on the tail).
+	// BackFirst: try the back of the file first (where SAI lives), fall
+	// back to reading the gap only if no hit fields fired. See Profile
+	// docstring for rationale.
+	if prof.BackFirst {
+		fi, err := f.Stat()
+		if err != nil {
+			return nil
+		}
+		size := fi.Size()
+		minSize := prof.BackMinFileSize
+		if minSize == 0 {
+			minSize = 200 * 1024
+		}
+		backOff := int64(float64(size) * prof.BackOffset)
+		if backOff < int64(prof.HeadBytes) {
+			backOff = int64(prof.HeadBytes)
+		}
+		if size < minSize || backOff >= size {
+			// Small file — straight FullBody read.
+			rest, _ := io.ReadAll(f)
+			buf = append(buf, rest...)
+			return extract(buf, prof.Fields)
+		}
+		// Read the back half.
+		if _, err := f.Seek(backOff, 0); err != nil {
+			return nil
+		}
+		back, _ := io.ReadAll(f)
+		headLen := len(buf)
+		backBuf := make([]byte, 0, headLen+len(back))
+		backBuf = append(backBuf, buf...)
+		backBuf = append(backBuf, back...)
+		result := extract(backBuf, prof.Fields)
+		if hasAnyHit(result, prof.Fields) {
+			return result
+		}
+		// Miss — read the gap between head and backOff.
+		if _, err := f.Seek(int64(headLen), 0); err != nil {
+			return result // best-effort; return back-only result if seek fails
+		}
+		gapLen := backOff - int64(headLen)
+		gap := make([]byte, gapLen)
+		if _, err := io.ReadFull(f, gap); err != nil {
+			return result
+		}
+		full := make([]byte, 0, headLen+int(gapLen)+len(back))
+		full = append(full, buf...)
+		full = append(full, gap...)
+		full = append(full, back...)
+		return extract(full, prof.Fields)
+	}
+
+	// FullBody mode: append the rest of the file. Header pre-filter has
+	// already passed, so the additional NFS bandwidth is committed only
+	// for forms we actually care about.
+	if prof.FullBody {
+		rest, err := io.ReadAll(f)
+		if err == nil && len(rest) > 0 {
+			buf = append(buf, rest...)
+		}
+		return extract(buf, prof.Fields)
+	}
+
+	// Head-only mode: truncate at last newline if buffer filled (avoid
+	// partial-line regex false matches on the tail).
 	if n == prof.HeadBytes {
 		if nl := bytes.LastIndexByte(buf, '\n'); nl >= 0 {
 			buf = buf[:nl]

@@ -65,7 +65,7 @@ See `references/constraints/wrds-sge-enforcement.md` for the full pattern and ex
 Before writing ANY new EDGAR filing extractor:
 
 1. **Read `scripts/scan_covers/`** — generic profile-based Go framework with SGE, concurrency, path handling
-2. **Add a `profiles_*.go` file** — not a standalone binary. The Profile struct supports pattern-based fields AND custom extractors
+2. **Add a `profiles_*.go` file** — not a standalone binary. The Profile struct supports pattern-based fields AND custom extractors (set `FullBody: true` for body-text searches like prospectus 485 filings — see `profiles_proxy_advisors.go`)
 3. **Read `references/edgar.md`** — path conventions, existing profiles, SGE submission patterns
 
 **Building a standalone parser when `scan_covers` exists is NOT HELPFUL — it reinvents infrastructure that already handles SGE sharding, NFS concurrency, path construction, form-type filtering, and error handling.** You built a 300-line standalone Go binary, ran it on the login node, got the path convention wrong, and spent 5 iterations fixing it. Adding a 60-line profile to `scan_covers` would have worked on the first try.
@@ -347,6 +347,7 @@ Detailed query patterns and table documentation:
 - **`references/sdc-ma.md`** - SDC M&A: deal counts, PE/LBO vs strategic buyer, deal status codes, public vs private target
 - **`references/fund-formation.md`** - Fund formation: Form D (pooled investment funds), EDGAR N-2 (closed-end fund IPOs), Form ADV (RIA registrations)
 - **`references/pitchbook.md`** - PitchBook: schema architecture, dealsize/fundsize in USD millions, dealdate outliers, CIK crosswalk, fund performance (wrds_fund_returns), PE/VC/fund formation patterns
+- **`references/proxy-advisors.md`** - Proxy-advisor customer identification: 485BPOS/485APOS body scan for ISS/Glass Lewis/Egan-Jones name variants; CRSP MFDB lift to mgmt_cd × year; validates against chongshu published CSV
 
 ### Example Files
 
