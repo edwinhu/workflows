@@ -4,6 +4,14 @@ import re
 import sys
 from pathlib import Path
 
+# ── Shared draft extractor ─────────────────────────────────────────────
+# Path traversal: <workflows>/skills/<skill>/references/<this file>
+# We want         <workflows>/scripts/prose_extract.py
+_SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "scripts"
+if (_SCRIPTS_DIR / "prose_extract.py").exists():
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+import prose_extract  # noqa: E402
+
 CONSTRAINT = "wikipedia-chatgpt-artifacts"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise", "writing-validate"]
 SEVERITY = "hard"  # These artifacts must be removed — they expose AI provenance unambiguously
@@ -31,15 +39,19 @@ _ARTIFACT_PATTERNS = [
 
 
 def _find_all_writing_files(cwd):
-    """Check all writing output files including planning artifacts."""
-    paths = []
-    for subdir in ("drafts", "outlines", "revisions"):
-        d = cwd / subdir
-        if d.is_dir():
-            paths.extend(d.glob("*.md"))
+    """Check all writing output files including planning artifacts. ChatGPT
+    artifacts (``turn0search0`` etc.) can leak into any stage, so this widens
+    the discovery to revisions/ and .planning/ on top of drafts/+outlines/."""
+    paths = list(prose_extract.find_draft_files(cwd))
+    # Extras beyond the standard {drafts,outlines}/{*.md,*.docx,*.txt} surface
+    revisions = cwd / "revisions"
+    if revisions.is_dir():
+        for g in prose_extract.DRAFT_GLOBS:
+            paths.extend(revisions.glob(g))
     planning = cwd / ".planning"
     if planning.is_dir():
-        paths.extend(planning.glob("*.md"))
+        for g in prose_extract.DRAFT_GLOBS:
+            paths.extend(planning.glob(g))
     return paths
 
 
@@ -54,11 +66,14 @@ def check(context):
 
     for path in files:
         try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
+
+            line_iter = list(prose_extract.iter_lines(path))
+
         except OSError:
+
             continue
         rel = path.relative_to(cwd)
-        for i, line in enumerate(text.splitlines(), start=1):
+        for i, line in line_iter:
             for pattern, label in _ARTIFACT_PATTERNS:
                 if re.search(pattern, line):
                     violations.append(f"{rel}:{i}: {label}")

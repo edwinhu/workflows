@@ -39,3 +39,6 @@ docs/investigations/
 .claude/SPEC.md
 .claude/LEARNINGS.md
 .planning/
+
+# WRDS SGE runtime staging
+.staging_proxy/

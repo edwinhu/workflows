@@ -376,6 +376,53 @@ For each minor issue:
 - [ ] Footnotes properly numbered (if applicable)
 - [ ] No orphaned references
 
+### Step 5a (optional): Rhythm-and-flow pass
+
+After REVIEW.md issues are resolved AND the regex sweep (`workflows:ai-anti-patterns` + Strunk + McCloskey + Volokh via `prose-lint.py`) is clean, consider a sentence-level rhythm-and-flow pass for prose-quality issues regex cannot catch — choppy rhythm, weak topic sentences, paragraph closures that trail into roadmaps, sentence-variety deficits.
+
+**When to run:**
+- Regex sweep returns 0 hits OR only documented false positives
+- User reports the draft "reads choppy" or asks for rhythm review
+- Recent edits removed paragraph-closing sentences (roadmap deletions, sentence merges) — rhythm regressions are common after structural edits
+- Final pre-circulation polish on a `.docx`
+
+**When NOT to run:**
+- Regex sweep has unresolved hits — fix those first (cheaper, mechanical)
+- Draft is pre-structural (outline-stage rewrites pending) — rhythm fixes get undone
+
+**Pass infrastructure** (in this skill's directory):
+- `references/rhythm-rubric.md` — 5-dimension scoring rubric (rhythm, flow, topic, closure, variety) with geometric-mean overall
+- `references/rhythm-auditor-brief.md` — validated agent prompt template
+- `references/rhythm-lessons.md` — the 7 design lessons that govern correct execution (read this BEFORE running the pass)
+- `scripts/transactional_fix.py` — fix engine with iron-law-of-transactional-save + footnote-pin-respect + structured-fix-targeting enforcement
+
+**Iron Laws** (from `rhythm-lessons.md` — read it; do not run the pass without):
+1. Fresh `workflows:writing-prose-reviewer` subagent per iteration (read-only tools)
+2. Validate ALL fix needles → apply ALL → save once (no partial saves)
+3. Pre-flight footnote/bookmark pin scan; refuse fixes that would orphan citations
+4. Structured (paragraph, sentence, dimension, target_text, new_text) fix tuples — no natural-language descriptions
+5. Threshold default **8.5** (not 9.5; retrofit work has structural ceilings)
+6. Regression alarm distinguishes recalibration (no targeted fix) from collateral damage (targeted fix → drop)
+7. Geometric mean for overall score (penalizes worst dimension)
+
+**Invocation pattern:**
+
+```
+1. Read rhythm-lessons.md (mandatory — do not skip)
+2. Copy rhythm-rubric.md and rhythm-auditor-brief.md to <project>/.planning/prose-rhythm/
+3. Run setup: extract draft → CURRENT.md, scan pins → PINS.md, seed SCORES.md + AUDIT.md + CHANGELOG.md
+4. Set /goal pinned to "latest row in .planning/prose-rhythm/SCORES.md shows overall ≥ <threshold>. Stop after <max_iter> turns."
+5. Loop body (one turn each):
+   a. Dispatch fresh workflows:writing-prose-reviewer (read-only Read/Grep/Glob)
+   b. Read SCORES.md latest row → check threshold + iter + regression alarm
+   c. If CONTINUE: uv run --with pyyaml --with lxml python3 scripts/transactional_fix.py \\
+        --draft <path> --state-dir .planning/prose-rhythm --iteration N
+   d. End turn (/goal refires)
+6. Exit on COMPLETE (overall ≥ threshold) or ESCALATE (iter ≥ max_iter)
+```
+
+**Do NOT invoke as `/prose-rhythm` standalone — it's a subroutine of /writing-revise.** Future work may promote it to a standalone skill if usage demands.
+
 ### Step 6: Check Iteration State and Generate Report
 
 Before claiming completion, check the audit-fix loop state:

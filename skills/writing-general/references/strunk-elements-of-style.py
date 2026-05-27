@@ -4,6 +4,14 @@ import re
 import sys
 from pathlib import Path
 
+# ── Shared draft extractor ─────────────────────────────────────────────
+# Path traversal: <workflows>/skills/<skill>/references/<this file>
+# We want         <workflows>/scripts/prose_extract.py
+_SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "scripts"
+if (_SCRIPTS_DIR / "prose_extract.py").exists():
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+import prose_extract  # noqa: E402
+
 CONSTRAINT = "strunk-elements-of-style"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"
@@ -79,12 +87,9 @@ _SOFT_VIOLATIONS = [
 
 
 def _find_draft_files(cwd):
-    paths = []
-    for subdir in ("drafts", "outlines"):
-        d = cwd / subdir
-        if d.is_dir():
-            paths.extend(d.glob("*.md"))
-    return paths
+    # Shared discovery — picks up .md, .markdown, .docx, .txt under
+    # drafts/ and outlines/. See workflows/scripts/prose_extract.py.
+    return prose_extract.find_draft_files(cwd)
 
 
 def check(context):
@@ -98,11 +103,14 @@ def check(context):
 
     for path in draft_files:
         try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
+
+            line_iter = list(prose_extract.iter_lines(path))
+
         except OSError:
+
             continue
         rel = path.relative_to(cwd)
-        for i, line in enumerate(text.splitlines(), start=1):
+        for i, line in line_iter:
             # Skip markdown heading lines for passive voice check (they're not prose)
             is_heading = line.strip().startswith("#")
             for pattern, label in _HARD_VIOLATIONS:

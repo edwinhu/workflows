@@ -99,15 +99,31 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     if missing_style > 0:
         issues.append(f"missing_pstyle({missing_style}/{len(footnotes)})")
 
+    # Count footnote paragraphs using FootnoteText (the Google Docs default)
+    # instead of the canonical FNStyleBest. A round-trip swaps the pStyle
+    # silently; the visual difference is usually small but it desyncs the
+    # doc from the reference template.
+    wrong_pstyle = fn_xml.count('<w:pStyle w:val="FootnoteText"/>')
+    if wrong_pstyle:
+        issues.append(f"wrong_pstyle({wrong_pstyle} FootnoteText)")
+
     # FNStyleBest applied to footnotes (or about to be, via missing_pstyle)
     # but the style itself is not defined in styles.xml. A Google Docs
     # round-trip can strip the style *definition* while the pStyle reference
     # survives — Word then silently falls back to Normal.
     if styles_xml is not None:
         will_reference = (f'w:pStyle w:val="{FN_PSTYLE}"' in fn_xml
-                          or missing_style > 0)
+                          or missing_style > 0
+                          or wrong_pstyle > 0)
         if will_reference and not _style_present(styles_xml, FN_PSTYLE):
             issues.append("fnstylebest_style_undefined")
+
+        # Google Docs sometimes preserves the FNStyleBest *block* but injects
+        # link-blue underline color and white shading from its hyperlink
+        # renderer. The fingerprints are unique to GDocs residue — authors
+        # don't write `<w:u w:color="0077CC"/>` into their footnote styles.
+        if _has_gdocs_style_residue(styles_xml):
+            issues.append("fnstylebest_gdocs_residue")
 
     # Half-fixed state inside footnotes.xml: the leading mark glyph in each
     # bio footnote body lacks superscript formatting.
@@ -302,6 +318,22 @@ def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
     )
     if count:
         changes.append(f"Added {FN_PSTYLE} pStyle to {count} footnotes")
+
+    # 5. Reassign any existing FootnoteText pStyle inside footnotes to
+    # FNStyleBest. Google Docs round-trips swap the canonical law-review
+    # style for its own default; we want all footnote paragraphs on the
+    # same style so the template's tabs/indent/sz=20 are picked up
+    # consistently. Safe within footnotes.xml — pStyle only appears as
+    # a paragraph-style reference here, never as a styleId definition.
+    fn_xml, reassign_count = re.subn(
+        r'<w:pStyle w:val="FootnoteText"/>',
+        f'<w:pStyle w:val="{FN_PSTYLE}"/>',
+        fn_xml,
+    )
+    if reassign_count:
+        changes.append(
+            f"Reassigned {reassign_count} FootnoteText pStyles to {FN_PSTYLE}"
+        )
 
     return fn_xml, changes
 
@@ -680,6 +712,72 @@ def _style_deps(style_block):
         r'<w:(?:basedOn|link|next)\s+w:val="([^"]+)"', style_block))
 
 
+# Google Docs hyperlink-renderer residue inside footnote style definitions.
+# Authors do not hand-author these values; their presence inside the FNStyleBest
+# or FNStyleBestChar block is a reliable signal that GDocs mutated the style.
+_GDOCS_RESIDUE_RE = re.compile(
+    r'(?:<w:u\s+w:color="0077CC"/?>|'
+    r'<w:shd\s+w:val="clear"\s+w:color="auto"\s+w:fill="FFFFFF"/?>)'
+)
+_FN_STYLES_TO_CHECK = ('FNStyleBest', 'FNStyleBestChar')
+
+
+def _has_gdocs_style_residue(styles_xml):
+    """True if FNStyleBest/FNStyleBestChar contain GDocs hyperlink residue."""
+    if styles_xml is None:
+        return False
+    for sid in _FN_STYLES_TO_CHECK:
+        block = _extract_style(styles_xml, sid)
+        if block and _GDOCS_RESIDUE_RE.search(block):
+            return True
+    return False
+
+
+def replace_mutated_footnote_styles(styles_xml, template_path,
+                                    ids=_FN_STYLES_TO_CHECK):
+    """Replace footnote style definitions that show Google Docs residue
+    (link-blue underline color, white paragraph shading) with the canonical
+    definitions from the law-review reference template. Add-only counterpart
+    of ensure_footnote_styles handles the *missing* case; this handles the
+    *present-but-mutated* case. Idempotent: a clean style is left untouched.
+
+    Returns (styles_xml, changes).
+    """
+    changes = []
+    if styles_xml is None:
+        return styles_xml, changes
+
+    try:
+        with zipfile.ZipFile(template_path) as tz:
+            tpl_styles = tz.read('word/styles.xml').decode('utf-8')
+    except (FileNotFoundError, KeyError, zipfile.BadZipFile):
+        changes.append(
+            f"WARNING: template not readable at {template_path} — cannot "
+            f"replace mutated footnote style definition(s)")
+        return styles_xml, changes
+
+    replaced = []
+    for sid in ids:
+        doc_block = _extract_style(styles_xml, sid)
+        if doc_block is None:
+            continue
+        if not _GDOCS_RESIDUE_RE.search(doc_block):
+            continue
+        tpl_block = _extract_style(tpl_styles, sid)
+        if tpl_block is None:
+            changes.append(
+                f"WARNING: cannot replace '{sid}' — missing from template")
+            continue
+        styles_xml = styles_xml.replace(doc_block, tpl_block, 1)
+        replaced.append(sid)
+
+    if replaced:
+        changes.append(
+            f"Replaced {len(replaced)} GDocs-mutated style definition(s) "
+            f"from template: " + ", ".join(replaced))
+    return styles_xml, changes
+
+
 def ensure_footnote_styles(styles_xml, template_path, needed=(FN_PSTYLE,)):
     """Ensure `needed` styles — and the basedOn/link/next styles they depend
     on — are defined in styles.xml. Missing definitions are copied verbatim
@@ -801,6 +899,13 @@ def main():
     styles_xml_fixed, styles_changes = ensure_footnote_styles(
         styles_xml, args.template)
     all_changes.extend(styles_changes)
+
+    # And replace any FNStyleBest/FNStyleBestChar block that survived the
+    # round-trip but picked up GDocs hyperlink residue (link-blue underline
+    # color, white paragraph shading) with the clean template version.
+    styles_xml_fixed, mutation_changes = replace_mutated_footnote_styles(
+        styles_xml_fixed, args.template)
+    all_changes.extend(mutation_changes)
 
     if args.fix_numbering:
         settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, num_changes = fix_numbering_offset(

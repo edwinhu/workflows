@@ -49,11 +49,18 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - Custom mark restoration for author bio footnotes (*, dagger, double-dagger)
 - Footnote ID renumbering (shifted by missing system footnotes)
 - Missing paragraph styles (adds configurable pStyle to all footnotes)
+- Wrong paragraph styles — reassigns `pStyle="FootnoteText"` (the Google Docs
+  default) to `FNStyleBest` on every footnote paragraph so the whole doc
+  uses the canonical law-review style.
 - Missing style *definitions* — restores `FNStyleBest` (and the basedOn/link
   styles it depends on) from the canonical law-review reference template when
   a round-trip stripped them from `styles.xml`. The template is the same
   `writing-legal/templates/law_review_template.docx` that `law-review-docx`'s
   `build_docx.py` feeds to pandoc, so style definitions stay consistent.
+- Mutated style *definitions* — when the `FNStyleBest` /
+  `FNStyleBestChar` block survives the round-trip but picks up Google Docs
+  hyperlink-renderer residue (link-blue underline color `<w:u w:color="0077CC"/>`
+  or white paragraph shading), the whole block is replaced from the template.
 - TOC separator paragraph inflation (shrinks to near-zero height)
 
 **Pandoc-citeproc wrap parens:**

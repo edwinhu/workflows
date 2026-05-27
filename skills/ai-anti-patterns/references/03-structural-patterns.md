@@ -60,6 +60,14 @@ Parallel constructions involving "not", "but", or "however" such as " Not only..
 
 — From [this revision](https://en.wikipedia.org/wiki/Special:Diff/1291259591 "Special:Diff/1291259591") to [Draft:Critikal! The Rapper](https://en.wikipedia.org/wiki/Draft:Critikal!_The_Rapper "Draft:Critikal! The Rapper")
 
+The uncontracted form (`it is`) is just as much of a tell as the contracted form (`it's`) — published examples cluster on the contraction, but the cadence is the same either way. Regex screeners and reviewers should match both. The flourish also gets stronger, not weaker, when the antithesis stacks twice in one sentence:
+
+> The gap ==is not== carelessness, ==it is== the arithmetic of a business model that generates revenue through fee compression and asset gathering, ==not through== governance outcomes at any particular firm.
+
+The first half ("is not carelessness, it is…") is a strawman flourish — no one argued carelessness; the negation invents an opponent to reject. The second half ("X through Y, not through Z") is a substantive parallel that can ride alone. Cut the strawman, keep the substantive contrast:
+
+> The gap reflects the arithmetic of a business model that earns revenue from fee compression and asset gathering, ==not from== governance outcomes at any particular firm.
+
 Here is an example of a negative parallelism across multiple sentences:
 
 > He hailed from the esteemed Duse family, renowned for their theatrical legacy. Eugenio's life, however, took a path that intertwined both personal ambition and familial complexities.
