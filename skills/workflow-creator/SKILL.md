@@ -1,7 +1,7 @@
 ---
 name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow', 'convert fan-out to a workflow script', or needs to substantially create or edit any multi-phase workflow."
-version: 0.3.1
+version: 0.4.0
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"
@@ -36,8 +36,12 @@ workflow-creator is a **meta-tool** that CREATES workflows. It is exempt from ce
 
 - **Two entry points:** workflow-creator has one entry with mode detection (not a multi-phase workflow). Workflows it creates MUST have two entry points.
 - **Single responsibility per phase:** workflow-creator has 3 modes (toolkit, not workflow). Workflows it creates MUST have single-responsibility phases.
+- **Skill Dependencies (cross-file phase chaining):** workflow-creator is a single SKILL.md, so it has no next-phase `Read()` chain. Its structural equivalent is **stronger**: the `wc-step-gate-guard.py` hook + the STATE.md step-chain enforce step ordering at the tool-call layer (a skipped step is blocked, not merely un-chained). Workflows it creates with multiple phase files MUST still wire phase-to-phase `Read()` transitions.
+- **Iteration topology labels (P09):** workflow-creator's own steps are a fixed sequence, not a per-phase topology menu, so they carry no `[one-shot|serial|parallel]` label. Workflows it creates MUST assign a topology per phase.
 
 This document defines the PROCESS for creating workflows. The workflows created by this process must follow all principles from PHILOSOPHY.md.
+
+**The mode flowcharts below ARE the authoritative spec.** Each mode (Create, Audit, Improve) opens with an ASCII step/phase diagram. If the prose for a step ever conflicts with its mode's flowchart, **the flowchart wins** — treat a diagram-violating shortcut as a process error, not a "minor deviation from documentation."
 
 ---
 
@@ -86,6 +90,28 @@ For Mode 1 (create), use the proposed workflow name: `.planning/wc/{new-workflow
 | `.planning/wc/{name}/LEARNINGS.md` | Log of what the user attended to / changed at present-to-user checkpoints (Step 6/7) — the observe→record→offer loop wc prescribes for created workflows, applied to itself | Mode 1 Step 6-7 |
 | `.planning/wc/{name}/HANDOFF.md` | Session resume context | Any mode on context exhaustion |
 
+**wc HANDOFF.md template** (workflow-creator's own handoff — the same structured format it mandates for the workflows it creates, applied to itself, so a resuming session starts immediately without re-discovery):
+```yaml
+---
+mode: create | audit | improve
+step: <current step or phase>
+status: paused
+target: <workflow name>
+context_remaining: <e.g. 24%>
+last_updated: <ISO8601 — pass in via args; do not invent>
+---
+## Current State
+<what is in progress right now>
+## Completed Work
+<steps done + key artifacts written>
+## Remaining Work
+<steps/phases left>
+## Decisions Made / Rejected Approaches
+<so the resume doesn't relitigate>
+## Next Action
+<specific enough to start immediately — not "continue">
+```
+
 ---
 
 ## Mode 1: Create New Workflow
@@ -109,7 +135,9 @@ Step 7: Self-Audit ◄── Step 6: Generate ◄── Step 5: Entry Points ◄
   Present to user
 ```
 
-**IMPORTANT:** After completing each step, proceed to the next step. Do not pause for user approval except where explicitly required (Step 6: present files, Step 7: present audit results).
+<EXTREMELY-IMPORTANT>
+**NO PAUSE BETWEEN STEPS.** After completing each step, immediately start the next. Do NOT ask "should I continue?", do NOT summarize what you just did, do NOT wait for confirmation — pause ONLY where explicitly required (Step 6: present files; Step 7: present audit results). Pausing between steps is procrastination disguised as courtesy: it strands the workflow and hands the user a management burden they should never have to carry.
+</EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
 **Enforcement architecture:** Step transitions are hook-enforced via `wc-step-gate-guard.py`:
@@ -142,6 +170,8 @@ implements: [WC-01]
 requires: [PHILOSOPHY.md]
 provides: []
 affects: [.planning/wc/{name}/STATE.md]
+key-files: {read: [PHILOSOPHY.md]}
+one-liner: "Philosophy grounded — phased decomposition, gates, independent verification, artifact review, iteration, two entry points confirmed."
 ---
 Philosophy loaded. Proceeding to interview.
 EOF
@@ -155,6 +185,8 @@ EOF
 **Context check:** The interview is interactive and may require multiple exchanges. Before proceeding:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with philosophy status and current progress. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately.
+
+**Red Flags — STOP:** inferring the domain from context instead of asking · skipping questions because they "seem obvious" or the user "seems busy" · closing the interview before all 6 answers are concrete (a shallow interview makes every downstream phase wrong — you'll design for an imagined domain, not the real one). Batch all 6 into one AskUserQuestion; don't drip them.
 
 Use AskUserQuestion to understand the domain:
 
@@ -224,13 +256,15 @@ Do NOT edit the file — report only."""
 ```
 
 **Gate: Interview Reviewed** `[checkpoint: human-verify, auto-advanceable]`
-- If reviewer reports APPROVED → proceed
-- If reviewer reports gaps → drive convergence via `/goal Interview reviewer returns APPROVED on .planning/wc/{name}/INTERVIEW.md. Stop after 3 turns.` Each turn: ask remaining questions, update INTERVIEW.md, re-dispatch the reviewer, end turn
+- If reviewer reports APPROVED → **write the structural marker `.planning/wc/{name}/INTERVIEW_REVIEWED.md`** (frontmatter `status: APPROVED`, timestamp, 1-line summary of what was verified), then proceed. This is **hook-enforced**: `wc-step-gate-guard.py` (Layer 3) BLOCKS the STATE.md write for `step: 3-decomposition` unless this marker exists with `status: APPROVED` — the same structural-gate-artifact pattern this skill mandates for the workflows it creates, applied to itself, not advisory trust.
+- If reviewer reports gaps → drive convergence via `/goal Interview reviewer returns APPROVED on .planning/wc/{name}/INTERVIEW.md. Stop after 5 turns.` Each turn: ask remaining questions, update INTERVIEW.md, re-dispatch the reviewer, end turn
 
 **Proceed to Step 3.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 3: Propose Phase Decomposition
 <!-- implements: WC-03 -->
+
+**Gate prerequisite (structural):** Refuse to start Step 3 unless `.planning/wc/{name}/INTERVIEW_REVIEWED.md` exists with `status: APPROVED`. If it is missing, return to the INTERVIEW.md Review Gate — decomposition built on an unreviewed interview inherits its gaps.
 
 **Context check:** Decomposition and artifact gate design (Steps 3-3b) produce DESIGN.md — the recoverable artifact for enforcement generation. Before proceeding:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with interview answers (from INTERVIEW.md) and current progress. Pause.
@@ -523,6 +557,12 @@ Workflows should support autonomous execution — chaining phases automatically 
 
 **Why:** Without autonomous chaining, the user must manually invoke each phase. A 7-phase workflow requires 7 manual interventions. With autonomous mode, the user kicks off the workflow and returns to find it complete (or paused at a genuine decision point).
 
+**Gate: Decomposition Complete** `[checkpoint: human-verify, auto-advanceable]`
+- Every proposed phase has a single responsibility, a verifiable gate condition, a named gate artifact, and an iteration topology
+- The topology choice (linear/branching/iterative) presented to the user is recorded `[checkpoint: decision]`
+- The fan-out / dynamic-workflow check was applied to every phase
+- If any phase lacks a gate or has >1 responsibility, split/fix it before advancing
+
 Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 3-decomposition
@@ -542,6 +582,8 @@ one-liner: "Phases decomposed with single responsibilities, gate conditions, and
 **Context check:** Step 3b produces DESIGN.md — the recoverable artifact for enforcement generation. Before proceeding:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with decomposition progress and current DESIGN.md draft. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately.
+
+**Red Flags — STOP:** marking an inter-phase gate "advisory-only" to move faster (advisory gates are the #1 audit gap — P03 — and you are designing the exact transition that will later fail) · designing a gate the consuming phase never structurally checks · assuming "the SKILL.md says *must*, so it will be followed" (the agent that skips the gate is the one reading that prose). Prefer hook-enforced gate artifacts; advisory is never acceptable for a mandatory gate.
 
 For every phase that produces an artifact consumed by downstream phases, add an **artifact review gate** between the producing phase and the consuming phase.
 
@@ -617,8 +659,8 @@ Do NOT edit the file — report only."""
 ```
 
 **Gate: Design Reviewed** `[checkpoint: human-verify, auto-advanceable]`
-- If reviewer reports APPROVED → proceed
-- If reviewer reports gaps → drive convergence via `/goal Design reviewer returns APPROVED on .planning/wc/{name}/DESIGN.md. Stop after 3 turns.` Each turn: fix DESIGN.md, re-dispatch the reviewer, end turn
+- If reviewer reports APPROVED → **write the structural marker `.planning/wc/{name}/DESIGN_REVIEWED.md`** (frontmatter `status: APPROVED`, timestamp, summary of what was verified), then proceed. This is **hook-enforced**: `wc-step-gate-guard.py` (Layer 3) BLOCKS the STATE.md write for `step: 4-enforcement` unless this marker exists with `status: APPROVED` — the same structural-gate-artifact pattern this skill mandates for created workflows, applied to itself.
+- If reviewer reports gaps → drive convergence via `/goal Design reviewer returns APPROVED on .planning/wc/{name}/DESIGN.md. Stop after 5 turns.` Each turn: fix DESIGN.md, re-dispatch the reviewer, end turn
 
 **Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
@@ -630,6 +672,16 @@ Do NOT edit the file — report only."""
 - If context is critical (≤25% remaining), write HANDOFF.md immediately — do not start enforcement generation.
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md` **You MUST read this file before proceeding. No claiming you "remember" the patterns.**
+
+Step 4 is high-drift: you decide how much enforcement each generated phase carries, and the cheapest shortcut is to under-enforce.
+
+| Excuse (Step 4) | Reality | Do Instead |
+|--------|---------|------------|
+| "This medium-drift phase doesn't really need an Iron Law" | Drift risk is a spectrum; the phase you under-enforce is the one that fails in production. | Assign enforcement by the tier table below, then write the actual content. |
+| "Listing the pattern names is enough" | The gate fails at Level 4: naming ≠ generating. A phase with "Iron Laws: yes" but no Iron Law text has none. | Draft the actual Iron Law / table / Red Flags per phase, not a checklist of names. |
+| "I'll make the mechanical rule a prompt line, faster than a hook" | Prompt rules drift and cost context; mechanical rules belong in hooks/`.py`. | Hook-or-`.py` for anything checkable; prose only for judgment. |
+
+**Drive check:** under-enforcing here to "move faster to generation" is **anti-helpful** (the user inherits a workflow that drifts), **incompetent** (you skipped the drift-risk scoring that beats intuition), and **anti-efficient** (a missing gate costs 10× to fix during implementation). Enforce proportional to drift — that IS the deliverable.
 
 For each phase, score which of the 13 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Artifact Review Gates
@@ -1001,6 +1053,8 @@ one-liner: "Hook coverage and script wiring matrices produced across the skill f
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with enforcement plan and current progress. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
+**Red Flags — STOP:** designing only one entry point (the fresh-start one) and skipping the midpoint · writing a midpoint that loads a *summary* of constraints instead of `Read()`-ing the actual `.md` files (summaries enable reward-hacking — the agent checks a 4-item digest, finds nothing, reports "all clear") · a midpoint that depends on prior-phase context instead of being self-contained.
+
 Every workflow exposes exactly **two** user-facing commands. Everything else is internal.
 
 | Entry Point | Purpose | Example |
@@ -1337,9 +1391,24 @@ Step 1: Read All Files ──→ Step 2: Score 20 Principles ──→ Step 3: S
                               AUDIT.md written
 ```
 
-**IMPORTANT:** After completing each step, IMMEDIATELY proceed to the next step. Do not pause or wait for user input between steps.
+<EXTREMELY-IMPORTANT>
+**NO PAUSE BETWEEN AUDIT STEPS.** Complete Step 1 → 2 → 3 → 3b → 4 without stopping. Do NOT pause or wait for user input between steps. Pausing mid-audit resets working memory, anchors scores on the last principle read, and produces scores that reflect reading order rather than the evidence — the exact failure Mode 2's Delete & Restart exists to undo.
+</EXTREMELY-IMPORTANT>
 
-**State initialization:** Create `.planning/wc/{name}/STATE.md` with `mode: audit, step: 1-read, status: in_progress, target: [workflow name]`.
+**State initialization:** Create `.planning/wc/{name}/STATE.md` with this YAML template (the `wc-state-frontmatter` constraint requires requires/provides/affects):
+```yaml
+---
+mode: audit
+step: 1-read
+status: in_progress
+target: [workflow name]
+implements: [WC-09]
+requires: [all target workflow skill files]
+provides: [file map]
+affects: [.planning/wc/{name}/STATE.md]
+one-liner: "Audit started on {target} — discovering skill files via wc-audit."
+---
+```
 
 **Context monitoring:** Mode 2 audits complex multi-file workflows. Check context availability:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` and pause — the audit will degrade if context is exhausted mid-scoring.
@@ -1372,7 +1441,7 @@ It returns `{ overallPass, composite, verdict, threshold, isMetaTool, scoreTable
 
 **Post-workflow boundary (verification, not investigation):** after the workflow returns you may Read AUDIT.md/`result.*`, render the report, and fix gaps — you may NOT recompute or rationalize `result.composite`/`result.overallPass` (the JS owns the arithmetic), nor re-score a principle the reviewers scored.
 
-The STATE.md step-chain (1-read → 2-score → 3-enforcement → 3b-portability → 4-report) is **preserved** — the workflow performs the work each step describes; you still write each STATE.md transition so the hook chain holds.
+The STATE.md step-chain (1-read → 2-score → 3-enforcement → 3b-portability → 4-report) is **preserved** — the workflow performs the work each step describes; you still write each STATE.md transition so the hook chain holds. **This step-chain IS Mode 2's structural gate enforcement (P03):** `wc-step-gate-guard.py` Layer 2 BLOCKS writing `step: N` to STATE.md unless `step: N-1` shows `status: completed` — a tool-call-layer block, not advisory prose, and the reason a separate per-step marker file is unnecessary for Mode 2's linear chain (the same Layer-2 enforcement governs Mode 3's `1-initial-audit → 1-audit-loop`).
 </EXTREMELY-IMPORTANT>
 
 ### Step 1: Read the Workflow
@@ -1398,6 +1467,18 @@ one-liner: "wc-audit Discover enumerated the target's entry/midpoint/phase skill
 
 ### Step 2: Score Against Core Principles (P01-P21)
 <!-- implements: WC-09 -->
+
+<EXTREMELY-IMPORTANT>
+**Scoring is the highest-drift step in this skill.** You are about to score 22 principles across multiple files and the pull is to skim, anchor to a first impression, and award generous round numbers. A generous score here is the most damaging error wc makes: it ships an improvement plan built on a false baseline.
+</EXTREMELY-IMPORTANT>
+
+| Excuse (while scoring) | Reality | Do Instead |
+|--------|---------|------------|
+| "This principle is obviously a 9, I can tell from the structure" | "Can tell from structure" is the anchoring that produced a generous 6.5 where the careful tally was 5.2 (Apr 2026). | Cite the specific file:line that earns the score. No line → the score is a guess. |
+| "It's mostly there, call it 8" | "Mostly" means a gap exists; an honest score reflects the gap, not the vibe. | Find the gap, score to it, write the one-line justification. |
+| "I'll reuse my impression from the last principle" | Adjacent-principle anchoring makes scores reflect reading order, not evidence. | Score each principle from its own evidence; reset between principles. |
+
+**Red Flags — STOP:** awarding a 9-10 without a cited line · scoring before reading the relevant file section · rounding a 7-ish up to 8 to "move on" · trusting a self-reported composite (the JS gate owns it). **Drive check:** a fast generous audit is **anti-helpful** — the user acts on a false baseline and the workflow fails where you said it was fine.
 
 Score each principle 0-10. Use the formal ID (P01-P21) in all audit output for traceability.
 
@@ -1615,6 +1696,8 @@ one-liner: "13 enforcement patterns scored Present/Weak/Absent per phase; weakes
 
 ### Step 3b: Audit Path Portability
 
+**Red Flags — STOP:** declaring portability "Clean" without actually running the mandatory grep commands below · treating a non-zero `${CLAUDE_SKILL_DIR}`-in-hook-command hit as a warning instead of a defect · assuming a path resolves because it "looks right" rather than tracing it from the user's CWD. (The April 2026 incident — 9 days of silently-broken hooks — was exactly a path that "looked right" and was never grep-audited.)
+
 Skills run in the user's project CWD, not the plugin directory. Every path in a SKILL.md that references plugin-internal files must resolve regardless of CWD.
 
 **Scan every SKILL.md and references/*.md file in the workflow for these patterns:**
@@ -1783,7 +1866,13 @@ uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .plannin
 
 **Traceability (self-applied P18):** write or update `.planning/wc/{name}/VALIDATION.md` mapping each `WC-NN` requirement to the audit evidence that verifies it (the gate/principle that confirms it) + its scope tag — the same closure Mode 1 Step 7 performs, applied to an audit-only run.
 
-**Persist audit results:** Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`:
+**Gate: Audit Reported** `[checkpoint: human-verify, auto-advanceable]`
+- `.planning/wc/{name}/AUDIT.md` exists and contains `result.reportMarkdown` (P01-P21 table, enforcement coverage, path portability, candidacy table, critical gaps)
+- `result.composite` was appended to `.planning/wc/{name}/SCORES.md`
+- `.planning/wc/{name}/VALIDATION.md` maps the WC-NN evidence (P18 self-application)
+- The gate verdict presented to the user is `result.overallPass` verbatim — not recomputed
+
+**Persist audit results:** Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Append `result.composite` to `.planning/wc/{name}/SCORES.md`. **Review-pattern logging (self-applied P19b):** append to `.planning/wc/{name}/LEARNINGS.md` what the user attended to in the audit results (which findings they prioritized or overrode) — the same observe→record→offer loop Mode 1 Step 7 performs. Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 4-report
 status: completed
@@ -1841,11 +1930,13 @@ During auditing, unplanned issues may arise. Apply these deviation rules:
 
 #### Staged Review — Mode 2
 
-If the audit report composite is below 5.0 on first pass, STOP and re-read all workflow files from scratch before finalizing scores. Audits below 5.0 usually indicate the auditor missed a section or misunderstood the workflow structure — not that the workflow is truly that weak. Re-reading costs 5 minutes; a wrong baseline wastes the entire improvement cycle.
+If the audit report composite is below 7.0 on first pass, STOP and re-read all workflow files from scratch before finalizing scores. Audits this low usually indicate the auditor missed a section or misunderstood the workflow structure — not that the workflow is truly that weak. Re-reading costs 5 minutes; a wrong baseline wastes the entire improvement cycle.
 
 #### Delete & Restart — Mode 2
 
-If you discover mid-audit that you scored Steps 1-2 without reading all phase skill files: delete your partial scores and restart from Step 1. Partial-read audits produce anchored scores that resist correction. Starting fresh is faster than debiasing.
+<EXTREMELY-IMPORTANT>
+**If you scored ANY principle before its evidence was available, DELETE all scores and restart from Step 1. No exceptions.** This fires in three cases: (1) you scored before reading the relevant file section; (2) you scored before the wc-audit workflow returned `result`; (3) you carried a score for a principle the reviewers did not actually cover this run. A partial-read or pre-result audit produces anchored scores that resist correction — starting fresh is faster than debiasing.
+</EXTREMELY-IMPORTANT>
 
 #### Drive-Aligned Framing — Mode 2
 
@@ -1854,6 +1945,7 @@ If you discover mid-audit that you scored Steps 1-2 without reading all phase sk
 | **Helpfulness** | "Quick audit so user gets results faster" | Generous audit ships broken workflow. User discovers gaps in production. | **Anti-helpful** |
 | **Competence** | "I can tell from the structure this is fine" | Without line-by-line reading, you miss the gap buried at line 285 of a 500-line file. | **Incompetent** |
 | **Efficiency** | "Matrices are overhead, prose covers it" | Prose catches narrative gaps. Matrices catch structural gaps. You shipped an asymmetric hook coverage. | **Anti-efficient** |
+| **Approval** | "The user wants the audit done quickly" | A fast, generous audit they later catch wrong costs you more trust than a slow honest one. They stop trusting your scores. | **Lost approval** |
 | **Honesty** | "I'll score this 8 because it's mostly there" | "Mostly there" means gaps exist. An honest score reflects the gaps. | **Dishonest** |
 
 ---
@@ -1874,7 +1966,20 @@ Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → 
 
 ### Step 1: Run Initial Audit (Mode 2)
 
-**State initialization:** Create `.planning/wc/{name}/STATE.md` with `mode: improve, step: 1-initial-audit, status: in_progress, target: [workflow name]`.
+**State initialization:** Create `.planning/wc/{name}/STATE.md` with this YAML template:
+```yaml
+---
+mode: improve
+step: 1-initial-audit
+status: in_progress
+target: [workflow name]
+implements: [WC-12]
+requires: [target workflow files]
+provides: [baseline composite]
+affects: [.planning/wc/{name}/STATE.md, .planning/wc/{name}/SCORES.md]
+one-liner: "Improve loop started on {target} — running baseline wc-audit before the /goal climb."
+---
+```
 
 **Context monitoring:** Mode 3 runs multi-iteration audit-fix loops. Each iteration consumes significant context. Check availability:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with current iteration, score, and remaining gaps before starting the next iteration.
@@ -1964,11 +2069,28 @@ Check composite score against threshold:
 
 **You may ONLY output the completion promise when the auditor's score >= 9.5. Not when you "feel" it's good enough. Not when the remaining gaps seem minor. The score decides.**
 
+**Review-pattern logging (self-applied P19b):** append to `.planning/wc/{name}/LEARNINGS.md` after each DECIDE: which principle moved this iteration, the cheapest fix that moved it, and (if the user interjected) what they attended to. After 3+ iterations with a recurring drag-principle, propose encoding its fix as a default in the skill.
+
 #### Phase C: FIX
 
 <EXTREMELY-IMPORTANT>
 **NO FIX WITHOUT A SPECIFIC AUDIT FINDING. Targeted changes only — never rewrite a phase file wholesale.** Each edit must close ONE gap the wc-audit workflow named. Editing files the audit did not flag is unverified change that the next audit cannot attribute — and risks regressing a principle that was passing.
+
+**Delete & Restart (Phase C):** if you have already edited a target file WITHOUT a corresponding AUDIT.md finding — revert that edit, find the finding that actually justifies the change (or drop it), then re-apply as a targeted fix. Fixes applied outside the audit are unverified and routinely regress a passing principle. (This run's own lesson: labeling the review markers "structural" without the enforcing hook regressed P03 and P20 — the hook had to follow the prose.)
 </EXTREMELY-IMPORTANT>
+
+**Post-subagent boundary (after `wc-audit` returns).** The audit is the wc-audit workflow's job; fixing is yours. Keep the two separate:
+
+| Main chat CAN do (fixing) | Main chat CANNOT do (re-auditing / investigation) |
+|----------------------------|-----------------------------------------------------|
+| Read AUDIT.md / SCORES.md and the specific files a finding cites | Re-score a principle by hand (the JS gate + reviewers own the composite) |
+| Edit the target files to close a named finding | Override `result.composite` / `result.overallPass` ("the auditor was wrong") |
+| Re-run the `wc-audit` workflow (full or `onlyChecks`) | Declare "close enough" below threshold |
+| `git`/`ls`/`node --check` to confirm an edit landed | Bash/Grep-spelunk the workflow to form your own score instead of re-running the audit |
+
+After fixing, you re-run the workflow — you do NOT substitute your own read for the auditor's verdict.
+
+**Topic-change protocol (the `/goal` loop is iterative — an off-topic message must not silently kill it).** If the user interjects mid-loop: (1) **announce** "Pausing the wc audit-fix loop at iteration N (composite X) to handle your request"; (2) **handle** the request; (3) **announce-resume** "Resuming the loop from iteration N" and re-fire Phase A. Never abandon the loop without saying so.
 
 Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 
@@ -2102,6 +2224,7 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 | **Helpfulness** | "Ship the fixes faster, skip the re-audit" | Unverified fixes ship broken enforcement. User discovers gaps when the workflow fails. | **Anti-helpful** |
 | **Competence** | "I can tell from the diff this fixes the gap" | Self-assessment is rubber-stamping. The auditor exists because you can't see your own blind spots. | **Incompetent** |
 | **Efficiency** | "Re-reading all files each iteration is wasteful" | Fresh-context audit catches regressions that incremental review misses. One regression undoes 3 fixes. | **Anti-efficient** |
+| **Approval** | "The user told me to keep climbing — I'll just ask whether to stop" | Asking each iteration IS the honor-system stop you were told to remove. The score decides; asking offloads the decision you were told to own. | **Lost approval** |
 | **Honesty** | "9.2 is close enough to 9.5" | The threshold exists for a reason. Declaring "close enough" below threshold is fabricating completion. | **Dishonest** |
 
 ---

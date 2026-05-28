@@ -20,12 +20,28 @@ Layer 2 — STATE.md step-chain validation (all modes):
   Mode audit:   1-read → 2-score → 3-enforcement → 3b-portability → 4-report
 
   Mode improve: 1-initial-audit → 1-audit-loop
+
+Layer 3 — Structural review-marker gates (mode: create only):
+  Advancing to 3-decomposition requires INTERVIEW_REVIEWED.md (status: APPROVED).
+  Advancing to 4-enforcement   requires DESIGN_REVIEWED.md   (status: APPROVED).
+  This makes the artifact-review gates hook-enforced, not advisory prose.
 """
 
 import json
 import re
 import sys
 from pathlib import Path
+
+# Structural review-marker gates (create mode): advancing to the keyed step
+# requires the marker file to exist with `status: APPROVED`. This makes the
+# INTERVIEW.md / DESIGN.md review gates genuinely structural (hook-enforced),
+# not advisory prose claiming to be structural.
+MARKER_GATES = {
+    "create": {
+        "3-decomposition": "INTERVIEW_REVIEWED.md",
+        "4-enforcement": "DESIGN_REVIEWED.md",
+    },
+}
 
 STEP_CHAINS = {
     "create": [
@@ -120,7 +136,15 @@ def match_file_to_gate(file_path, mode):
     return None
 
 
-def check_state_chain(tool_input, completed_steps, mode):
+def marker_approved(state_dir, marker):
+    """True iff the review marker exists in the wc state dir with status: APPROVED."""
+    try:
+        return bool(re.search(r'status:\s*APPROVED', (Path(state_dir) / marker).read_text()))
+    except Exception:
+        return False
+
+
+def check_state_chain(tool_input, completed_steps, mode, state_dir):
     content = tool_input.get("content", "")
     new_string = tool_input.get("new_string", "")
     text = content or new_string
@@ -151,6 +175,18 @@ def check_state_chain(tool_input, completed_steps, mode):
             f"Required: STATE.md must show `step: {predecessor}, status: completed` "
             f"before advancing to {new_step}.\n\n"
             f"**Remedy:** Complete step {predecessor} first."
+        )
+
+    # Structural review-marker gate: the artifact-review marker must be APPROVED
+    # before advancing past the review gate.
+    marker = MARKER_GATES.get(mode, {}).get(new_step)
+    if marker and not marker_approved(state_dir, marker):
+        return (
+            f"REVIEW-GATE BLOCKED: Cannot write step '{new_step}' — "
+            f"the artifact review marker '{marker}' is missing or not APPROVED.\n\n"
+            f"Required: `{marker}` must exist in {state_dir} with `status: APPROVED` "
+            f"(written by the upstream review gate once the reviewer returns APPROVED).\n\n"
+            f"**Remedy:** Run the review gate to convergence and write the marker before advancing."
         )
 
     return None
@@ -186,7 +222,7 @@ def main():
         sys.exit(0)
 
     if gate == "STATE_CHAIN":
-        reason = check_state_chain(tool_input, completed_steps, mode)
+        reason = check_state_chain(tool_input, completed_steps, mode, state_path.parent)
         if reason:
             result = {
                 "hookSpecificOutput": {

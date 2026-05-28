@@ -20,7 +20,7 @@ Maps workflow-creator's functional requirements to implementation steps and cons
 | WC-06 | Design two entry points per workflow | M1 | Step 5 | — (convention) | v1 |
 | WC-07 | Generate files with deviation rules | M1 | Step 6 | — (convention) | v1 |
 | WC-08 | Self-audit via fresh subagent with read-only tools | M1 | Step 7 | wc-fresh-subagent-audit | v1 |
-| WC-09 | Score P01-P20 principles with formal IDs | M2 | Step 2 | wc-principle-ids | v1 |
+| WC-09 | Score P01-P21 (+ P19b) principles with formal IDs | M2 | Step 2 | wc-principle-ids | v1 |
 | WC-10 | Classify all gates with checkpoint types | M1-M3 | All | wc-checkpoint-classification | v1 |
 | WC-11 | Include summary frontmatter in STATE.md | M1-M3 | All | wc-state-frontmatter | v1 |
 | WC-12 | Audit-fix loop terminates on score, not feeling | M3 | Step 2 | — (Iron Law) | v1 |

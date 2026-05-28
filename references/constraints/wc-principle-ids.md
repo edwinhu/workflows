@@ -1,12 +1,12 @@
 ---
 name: wc-principle-ids
-description: Mode 2 architecture principles must have formal P01-P20 IDs for traceability
+description: Mode 2 architecture principles must have formal P01-P21 (+ P19b) IDs for traceability
 applies-to: [workflow-creator]
 ---
 
 ## Rule
 
-The Mode 2 Step 2 scoring section MUST label each architecture principle with a formal ID (P01-P20). Audit output MUST reference these IDs. The IDs enable mechanical verification that all principles were scored.
+The Mode 2 Step 2 scoring section MUST label each architecture principle with a formal ID (P01-P21 (+ P19b)). Audit output MUST reference these IDs. The IDs enable mechanical verification that all principles were scored.
 
 ## Rationale
 

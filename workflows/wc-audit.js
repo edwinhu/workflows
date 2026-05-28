@@ -220,7 +220,11 @@ Add a findings[] entry (severity critical for score<7, major for 7-8.9, minor fo
 Set dimension="enforcement-checklist" verbatim.
 ${groundIn}
 Read the 13 enforcement patterns from ${disc.enforcementChecklistPath || `${disc.wcSkillPath} (enforcement-checklist reference)`}.
-For EACH of the 13 patterns, determine its worst status (Present / Weak / Absent) across the high-drift phases that need it, list the phases where it is Weak/Absent, and give a 1-line note with file:line. A high-drift phase (implementation, verification, fix) missing Iron Laws / Rationalization Tables / Gate Functions / Drive-Aligned Framing is a critical finding. Add findings[] for each Weak/Absent pattern in a phase that needs it. Return ENFORCEMENT_SCHEMA.`,
+For EACH of the 13 patterns, determine its worst status (Present / Weak / Absent) — but ONLY across the phases whose DRIFT TIER actually requires that pattern. Apply the rubric's own drift-tiering (the target's Step-4 guidance), do not demand every pattern on every phase:
+- HIGH-drift phases (implementation, scoring/auditing, fixing, file-generation): require Iron Laws + Rationalization Tables + Gate Functions + Drive-Aligned Framing. Missing any of these here is a critical finding.
+- MEDIUM-drift phases (design, artifact-review-gate design, entry-point design, verification): require Gate Functions + Red Flags + Staged Review where applicable.
+- LOW-drift CREATIVE/planning phases (brainstorm, interview, decomposition): correctly need **Red Flags only** — "creative phases need freedom." A creative/low-drift phase that has Red Flags but NO Rationalization Table and NO Drive-Aligned table is **Present/correct, NOT Weak** — do NOT flag it for lacking patterns its tier does not require (that would be speculative over-enforcement, itself an anti-pattern).
+Mark a pattern Weak/Absent ONLY when a phase whose tier REQUIRES it is missing it or has it in soft form. Add findings[] only for those genuine gaps. List the phases where Weak/Absent. 1-line note with file:line. Return ENFORCEMENT_SCHEMA.`,
   },
   {
     key: 'path-portability', schema: PORTABILITY_SCHEMA,

@@ -1,5 +1,5 @@
 #!/usr/bin/env -S uv run python3
-"""Constraint: wc-principle-ids — Mode 2 principles must have P01-P20 formal IDs."""
+"""Constraint: wc-principle-ids — Mode 2 principles must have P01-P21 (+ P19b) formal IDs."""
 
 CONSTRAINT = "wc-principle-ids"
 APPLIES_TO = ["workflow-creator"]
@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def check(context):
-    """Check that Mode 2 Step 2 has formal P01-P20 principle IDs."""
+    """Check that Mode 2 Step 2 has formal P01-P21 (+ P19b) principle IDs."""
     violations = []
     cwd = Path(context.get("cwd", "."))
 
@@ -29,10 +29,10 @@ def check(context):
 
     mode2_content = content[mode2_match.start():]
 
-    # Check for P01 through P20 (or at least P01 through the expected count)
-    expected_ids = [f"P{i:02d}" for i in range(1, 21)]
-    found_ids = set(re.findall(r'\bP(\d{2})\b', mode2_content))
-    found_ids = {f"P{pid}" for pid in found_ids}
+    # Check for P01 through P21 plus the half-step P19b (matches the SKILL.md scoring set).
+    expected_ids = [f"P{i:02d}" for i in range(1, 22)] + ["P19b"]
+    # Capture both P\d\d and the P19b half-step token.
+    found_ids = set(re.findall(r'\bP\d{2}b?\b', mode2_content))
 
     missing = [pid for pid in expected_ids if pid not in found_ids]
     if missing:

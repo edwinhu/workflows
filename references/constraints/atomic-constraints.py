@@ -23,7 +23,10 @@ def _count_rule_headings(text: str) -> int:
     """
     structural_patterns = re.compile(
         r"^###\s+(correct|incorrect|example|red flag|rationalization|"
-        r"rationale|protocol|rule|why|when|how|the )",
+        r"rationale|protocol|rule|why|when|how|the |summary|coverage|"
+        r"graduation|index|template|format|interface|architecture|"
+        r"checklist|anti-pattern|good|bad|before|after|fix|verification|"
+        r"exception|note|scope|definition)",
         re.IGNORECASE,
     )
     h3_lines = re.findall(r"^###\s+.+", text, re.MULTILINE)
