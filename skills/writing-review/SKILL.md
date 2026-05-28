@@ -57,6 +57,8 @@ If you find yourself writing a review comment without quoting the draft text it 
 4. QUOTE the specific text, THEN write your diagnosis
 
 A review that says "transitions could be improved" without citing the actual transition text is useless. A review that says "Section III ends with 'The market has spoken.' and Section IV opens with 'Turning to regulatory concerns...' — no bridge connects the market conclusion to the regulatory pivot" is actionable.
+
+**The writing-review workflow now enforces this structurally:** every reviewer it dispatches must attach a verbatim `quote` + `file:line` to each issue, so a review without reading cannot be produced.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -72,6 +74,18 @@ If you find yourself marking something as "OK" or "no issues found":
 "Transitions are smooth" is a lie unless you can quote adjacent section boundaries and explain why they connect. "No repetition found" is a lie unless you compared the argument summaries across all sections.
 
 **Reporting "all checks pass" without evidence for every checkmark is NOT HELPFUL — undetected issues survive into the published document.**
+
+**The writing-review workflow now enforces this structurally:** its reviewers return quoted evidence per finding, and a mechanical Verify stage confirms each quote resolves to the draft — fabricated or misattributed quotes are dropped before they reach REVIEW.md. Evidence-grounding is no longer honor-system; it is built into the workflow.
+</EXTREMELY-IMPORTANT>
+
+<EXTREMELY-IMPORTANT>
+## Iron Law: Structural Independence
+
+**REVIEW MUST BE PERFORMED BY FRESH SUBAGENTS THAT DO NOT SHARE CONTEXT WITH THE DRAFTER. This is not negotiable.**
+
+The drafter's context contains intent, shortcuts, and assumptions that bias review. A fresh reader catches what the author cannot see. Reviewing your own draft in the same context is rubber-stamping, not reviewing.
+
+**The writing-review workflow now guarantees this by construction:** it always dispatches fresh reviewer subagents (structure, prose, fidelity) that read each draft cold. You do not — and must not — review draft prose in the main conversation yourself.
 </EXTREMELY-IMPORTANT>
 
 ## Rationalization Table
@@ -158,254 +172,74 @@ This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, t
 
 Constraint checks are **Leg 1** of two-leg verification. **Leg 2** (convention scoring via reviewer subagents) happens in Level 1.
 
-### Step 3: Choose Review Strategy
+---
+
+## Run the writing-review workflow
+
+The review is **always parallel** and is owned by a dynamic workflow script — you do NOT choose a strategy and you do NOT dispatch reviewers yourself. The workflow runs all three levels (per-section structure + prose + fidelity fan-out, mechanical quote-verification, transition analysis, and whole-document checks) in the background and returns structured findings.
+
+**1. Resolve the cached workflow path:**
+
+```bash
+WF=$(command ls -d ~/.claude/plugins/cache/*/workflows/*/workflows/writing-review.js 2>/dev/null | sort -V | tail -1)
+# Fall back to the in-repo path when running from the plugin source (cache glob empty):
+[ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/writing-review.js"
+```
+
+**2. Invoke the workflow:**
 
 ```
-AskUserQuestion(questions=[
-  {
-    "question": "How should we review the document?",
-    "header": "Strategy",
-    "options": [
-      {"label": "Sequential (Recommended)", "description": "Review sections one at a time. Best for most documents."},
-      {"label": "Agent team (parallel)", "description": "Spawn one reviewer per section for parallel review. Best for long documents (5+ sections). Requires reconciliation."}
-    ],
-    "multiSelect": false
+Workflow({
+  scriptPath: "<WF>",
+  args: {
+    projectDir: "<abs project dir>",          // holds .planning/, outlines/, drafts/, references/sources.bib
+    pluginRoot: "${CLAUDE_SKILL_DIR}/../.."    // resolves domain skill + bridge_repetition_check.py
   }
-])
+})
 ```
+
+The workflow runs Levels 1-3 and returns:
+- `overallPass`, `verdict` (CLEAN | ISSUES FOUND)
+- `summary` (`{ critical, major, minor, total }`)
+- `style`
+- `sections[]` — per-section `issues` (each tagged `source: structure | prose | fidelity`), `boundary`, `argumentSummary`, `unreliable`
+- `transitions[]` — adjacent boundary verdicts
+- `documentLevel` — `{ conceptOrderIssues, repetition, thesisIssues, completeness }`
+- `unreliableSections` — sections where a reviewer returned nothing
+- `sectionsThatFlagged` — sections to pass as `onlyChecks` on a re-review
+
+**Re-review (when `/writing-revise` re-invokes after edits):** pass only the changed sections so the workflow re-reviews them and carries the rest forward:
+
+```
+Workflow({
+  scriptPath: "<WF>",
+  args: {
+    projectDir: "<abs project dir>",
+    pluginRoot: "${CLAUDE_SKILL_DIR}/../..",
+    onlyChecks: [<changed section names>],     // re-review only these
+    priorReviews: <previous result.sections>   // carry the rest forward
+  }
+})
+```
+
+> **Note:** `references/agent-team-workflow.md` and `references/reviewer-agent-prompt.md` are SUPERSEDED by `workflows/writing-review.js` — the script replaces the hand-rolled agent-team orchestration, and `references/sequential-checklist.md`'s content now lives in the workflow's structure-reviewer prompt. Those reference files are retained for provenance only; do not follow them to dispatch reviewers.
 
 ---
 
-## Review Flowchart — Sequential Path (This IS the Spec)
+## Render REVIEW.md
 
-```
-START (PRECIS + OUTLINE + drafts/ exist)
-  │
-  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW, domain skill)
-  │
-  ├─ Step 2: Choose strategy (sequential or parallel)
-  │
-  ├─ Step 2b: Run constraint check scripts (hard gate)
-  │  └─ uv run python3 references/constraints/check-all.py [project-root]
-  │     ├─ FAIL → Report violations. Fix before continuing.
-  │     └─ PASS → Proceed to Level 1.
-  │
-  └─ LEVEL 1: Section Review (bottom-up, 3 parallel reviewers per section)
-     │  For EACH section in document order, dispatch in PARALLEL:
-     │  │
-     │  ├─ (a) Structure reviewer (existing)
-     │  │      Spawn fresh subagent → outline compliance, topic sentence
-     │  │      inventory, boundary summary, PRECIS claim check
-     │  │
-     │  ├─ (b) Prose-quality reviewer (NEW — writing-prose-reviewer agent)
-     │  │      Spawn fresh subagent → grade every paragraph against
-     │  │      domain style rules (Volokh/S&W/McCloskey) + AI anti-patterns
-     │  │      + prose constraints. Read-only, returns scored report.
-     │  │
-     │  └─ (c) Source-fidelity reviewer (NEW — writing-source-fidelity-reviewer)
-     │         Spawn fresh subagent → verify every `[@key]` citation traces
-     │         to an entry in references/sources.bib. Read-only, returns
-     │         fidelity report.
-     │
-     │  Merge all three reports per section before moving to next.
-     │  Loop until all sections reviewed (NO pause between sections)
-     │
-     └─ LEVEL 2: Transition Review (boundary analysis) ← IMMEDIATELY after Level 1 (NO pause)
-        │  For EACH boundary (Section N → Section N+1):
-        │  ├─ Compare Section N closing with Section N+1 opening
-        │  ├─ Check planned transition from OUTLINE.md
-        │  ├─ Evaluate bridge: SMOOTH / ABRUPT | DISCONNECTED
-        │  └─ Record transition issues with quoted boundary text
-        │  Loop until all boundaries checked
-        │
-        └─ LEVEL 3: Document Review (whole-document) ← IMMEDIATELY after Level 2 (NO pause)
-           │  ├─ Cross-section repetition: compare argument summaries
-           │  ├─ Concept introduction order: first-appearance map
-           │  ├─ Thesis threading: does each section advance thesis?
-           │  └─ Structural completeness: all PRECIS claims addressed?
-           │
-           └─ GATE: All 3 levels complete? Every section reviewed?
-              ├─ NO → Go back, complete missing level
-              └─ YES → Write .planning/REVIEW.md → Announce → Suggest /writing-revise
-```
+Write `.planning/REVIEW.md` from `result.*` using the template in `references/review-template.md`:
 
-If text and flowchart disagree, the flowchart wins.
+- **Summary counts** ← `result.summary` (`critical`, `major`, `minor`, `total`)
+- **Verdict** ← `result.verdict`
+- **Document-Level Issues** ← `result.documentLevel` (`conceptOrderIssues`, `repetition`, `thesisIssues`, `completeness`)
+- **Transition Issues** ← `result.transitions` (one block per non-SMOOTH boundary; quote `closes`/`opens`)
+- **Section-Level Issues** ← `result.sections` — list each section's `issues` sorted by severity; each issue carries `source` (structure / prose / fidelity), `location` (file:line), `quote`, `detail`, and `fix`
+- **Boundary Summaries** ← `result.sections[].boundary`
 
----
+If `result.unreliableSections` is non-empty, mark those sections **UNRELIABLE** in REVIEW.md (a reviewer returned nothing for them) — do NOT fabricate findings or a clean verdict for them.
 
-## Level 1: Section Review
-
-Review each section individually against its outline and PRECIS claims.
-
-### Iteration Topology
-
-| Level | Strategy | Exit Gate | Escalate When |
-|-------|----------|-----------|---------------|
-| Level 1 (Section) | One-shot + verify per section | Subagent returns structured review with quoted evidence | Subagent returns empty/fabricated review — re-dispatch once, then escalate |
-| Level 2 (Transition) | One-shot (orchestrator) | All boundary pairs evaluated | N/A — orchestrator runs this directly |
-| Level 3 (Document) | One-shot (orchestrator) | Cross-section checks complete | Contradictory findings across levels — present to user |
-| Overall loop | Consumed by writing-revise (max 3 iterations) | writing-revise declares COMPLETE | iteration >= 3 with remaining issues → ESCALATE |
-
-### Sequential Mode (Default)
-
-<EXTREMELY-IMPORTANT>
-#### Iron Law: Structural Independence
-
-**REVIEW MUST BE DELEGATED TO A FRESH SUBAGENT. The reviewer must not share context with the drafter. This is not negotiable.**
-
-Even in sequential mode, the review must be performed by a fresh subagent that reads the draft cold — the way a real reviewer would. If you drafted the text, you CANNOT review it in the same context. Spawn a subagent via Task tool for the review work.
-
-Why: The drafter's context contains intent, shortcuts, and assumptions that bias review. A fresh reader catches what the author cannot see. Reviewing your own draft in the same context is rubber-stamping, not reviewing.
-</EXTREMELY-IMPORTANT>
-
-For each section, in document order:
-
-1. **Read the section outline**: `Read("outlines/[Section] (Outline).md")`
-2. **Read the section draft**: `Read("drafts/[Section] (Draft).md")`
-3. **Identify the PRECIS claim** this section advances
-4. **Run the section review checklist** (see reference below)
-5. **Produce the boundary summary** (see reference below)
-6. **Record all issues** with severity, location, and suggested fix
-
-After completing each section, IMMEDIATELY start the next. Do NOT pause to ask.
-
-> **Full section review checklist and boundary summary format:** See `references/sequential-checklist.md`
-
-### Dispatching Quality and Fidelity Reviewers
-
-For each section, dispatch three reviewers in parallel (single message, three Agent calls):
-
-**(a) Structure reviewer** — existing section review subagent (see prompt template above)
-
-**(b) Prose-quality reviewer** — `writing-prose-reviewer` agent:
-```
-Agent(
-  subagent_type="workflows:writing-prose-reviewer",
-  prompt="""Grade prose quality for: drafts/[Section] (Draft).md
-  Domain style: [legal/econ/general]
-  Plugin root: [resolved PLUGIN_ROOT path]
-  Project root: [project directory]
-  Read the full domain skill, ai-anti-patterns, and prose constraint files before grading.
-  Grade every paragraph. Report violations with line numbers and quoted text."""
-)
-```
-
-**(c) Source-fidelity reviewer** — `writing-source-fidelity-reviewer` agent:
-```
-Agent(
-  subagent_type="workflows:writing-source-fidelity-reviewer",
-  prompt="""Verify citation fidelity for: drafts/[Section] (Draft).md
-  Project root: [project directory]
-  Read references/sources.bib first (BibTeX format; each entry is `@type{bibkey, ...}`).
-  Check every pandoc cite-key (`[@key]` / `@key`) in the draft resolves to a bib entry.
-  For hand-written footnotes still in the draft, verify every author/title/journal/year
-  matches a bib entry. Report unanchored citations, detail mismatches, and claim-fidelity concerns."""
-)
-```
-
-Merge all three reports before recording issues for that section. Prose-quality F/C grades and source-fidelity violations become issues in REVIEW.md with appropriate severity:
-- F-grade prose → critical
-- C-grade prose → major
-- Unanchored citation → critical
-- Detail mismatch → major
-- Claim fidelity concern → minor
-
-### Agent Team Mode (Parallel)
-
-> **Full agent team workflow (section mapping, task creation, monitoring, verification gate):** See `references/agent-team-workflow.md`
->
-> **Reviewer agent spawn prompt:** See `references/reviewer-agent-prompt.md`
-
-Key points kept inline for the lead:
-- Build a Section Map with line ranges before spawning agents — this is non-negotiable
-- The lead coordinates and aggregates only — does NOT review sections
-- Run the Verification Gate (spot-check 3+ quotes per agent) before compiling results
-- The Iron Law of Verification applies: unverified subagent quotes are worse than no review
-
----
-
-## Level 2: Transition Review
-
-After all sections are reviewed (sequential or parallel), compare adjacent boundary pairs.
-
-For each boundary (Section N → Section N+1):
-
-1. **Read Section N's closing** from its boundary summary
-2. **Read Section N+1's opening** from its boundary summary
-3. **Check planned transition**: Does OUTLINE.md specify how these sections connect? Does the draft deliver it?
-4. **Evaluate the bridge**:
-   - Does Section N+1's opening acknowledge what Section N established?
-   - Is there a logical bridge, or does the reader have to make a leap?
-   - Is there a tone/register shift at the boundary?
-5. **Check terminology**: Do both sections use the same terms for the same concepts? (Cross-reference the "Core terms" lists)
-6. **Verdict**: SMOOTH, ABRUPT, or DISCONNECTED
-   - **SMOOTH**: Opening picks up closing naturally; reader doesn't notice the section break
-   - **ABRUPT**: Related but the connection is jarring or rushed
-   - **DISCONNECTED**: No bridge; reader must infer the connection
-
-Record each transition issue:
-
-```markdown
-### Transition: [Section N] → [Section N+1]
-- **Verdict**: [SMOOTH | ABRUPT | DISCONNECTED]
-- **Section N closes with**: "[last sentence]"
-- **Section N+1 opens with**: "[first sentence]"
-- **Problem**: [what's missing or jarring]
-- **Planned transition** (from outline): [what OUTLINE.md says should happen here]
-- **Suggestion**: [specific bridge text or restructuring]
-```
-
----
-
-## Level 3: Document Review
-
-Using all section review data and boundary summaries, check the document as a whole.
-
-### Cross-Section Repetition
-
-1. **Run the sentence-level detector first** to surface candidate pairs:
-
-   ```bash
-   uv run ${CLAUDE_PLUGIN_ROOT}/skills/writing-review/scripts/bridge_repetition_check.py drafts/*.md
-   ```
-
-   This uses `difflib.SequenceMatcher` (ratio ≥ 0.7) to flag near-duplicate
-   sentences with `file:line` pairs. Common model failure mode: the bridge
-   paragraph into a new section restates the thesis. The detector catches
-   this; a human decides whether each flagged pair is redundancy or an
-   intentional callback (e.g., two sides of a numerical example).
-
-2. **Collect argument summaries**: For each section, list the main points made (from Level 1 reviews)
-3. **Compare all pairs**: Does any point appear in more than one section?
-4. **Distinguish**: Intentional callbacks (acceptable) vs. redundant repetition (issue)
-5. **Record duplicates** with both locations and quoted text
-
-### Concept Introduction Order
-
-1. **Build a concept map**: For each key concept, record its first appearance (section + paragraph)
-2. **Check introduction order**: Are concepts introduced before they're used?
-3. **Flag late introductions**: Any concept that appears in the conclusion or late sections without setup earlier
-
-### Thesis Threading
-
-1. **Extract thesis** from PRECIS.md
-2. **For each section**: Does it advance the thesis? (Use Level 1 PRECIS claim checks)
-3. **Check progression**: Do sections build on each other, or do some repeat the same ground?
-4. **Flag drift**: Any section that doesn't connect back to the thesis
-
-### Structural Completeness
-
-1. **All PRECIS claims addressed**: Cross-reference claims list against section reviews
-2. **All counterarguments confronted**: Check that each counterargument from PRECIS appears in the draft
-3. **Scope honored**: Check that the draft doesn't stray outside PRECIS scope (IN/OUT boundaries)
-4. **Hook delivered**: Does the Introduction deliver the hook specified in PRECIS?
-5. **Conclusion follows**: Does the Conclusion follow from the argument built across sections?
-
----
-
-## Step 4: Generate REVIEW.md
-
-Write the complete review to `.planning/REVIEW.md`.
+> The workflow's reviewers already cite verbatim quotes with file:line and a mechanical Verify stage drops any quote that does not resolve to the draft, so the findings you render are evidence-grounded by construction. Render them faithfully — do not add, invent, or soften.
 
 > **Full REVIEW.md template:** See `references/review-template.md`
 
