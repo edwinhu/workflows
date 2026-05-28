@@ -10,16 +10,22 @@ This connects directly to the **Iron Law of Flat Dispatch**: "an agent that spaw
 
 ## 1. Decision rubric — MIGRATE vs LEAVE
 
-**Migrate a phase to a dynamic workflow when ALL of these hold:**
+**Migrate a phase when the SHAPE qualifies AND it gets a meaningful win from at least ONE value driver:**
 
 | Test | Migrate | Leave conversational |
 |------|---------|----------------------|
-| Shape | Fan-out: "one agent per X" (section, lecture, question, source, footnote) | Single pass, or a few dependent steps |
-| Output | A **computed gate** (numeric threshold, binary pass/fail, composite) + structured findings | Prose judgment, a creative artifact, a routing decision |
+| Shape (required) | Fan-out: "one agent per X" (section, lecture, question, source, footnote) over a list, whose **aggregated results the skill consumes** | Single pass / single agent, or a few dependent steps |
+| Output | A **computed gate** (numeric threshold, pass/fail, composite) **OR structured findings** the skill renders/acts on (e.g. a per-section REVIEW.md diagnosis) | Prose judgment with no structure, a creative artifact, a routing decision |
 | Reviewers | **Read-only** verification/audit/diagnosis | Generation, drafting, brainstorming |
-| User input | None needed mid-fan-out | Needs approval/clarification/interview mid-run |
 
-**Strong "migrate" smell:** the phase tells the model to **self-report a score and then "recompute it yourself"** or "verify the arithmetic." That honor-system gate is exactly what a JS gate eliminates — the auditor returns *raw counts*, the script computes the score. If you see a manual-recompute step, migrating is a correctness win, not just a context win.
+**The three value drivers — a qualifying fan-out needs a real win from AT LEAST ONE:**
+1. **Parallelism** — many items reviewed concurrently (wall-clock).
+2. **Context isolation** — the fan-out's transcripts would otherwise blow the main conversation's context (e.g. a 40-section paper, a 100-item chapter). *This alone justifies migration even with no numeric gate* — the workflow returns structured findings, the skill renders the artifact.
+3. **Deterministic gate** — eliminates honor-system score inflation. **Strongest/cleanest** signal, but NOT required.
+
+**Strong "migrate" smell (driver 3):** the phase tells the model to **self-report a score and then "recompute it yourself"** or "verify the arithmetic." That honor-system gate is exactly what a JS gate eliminates — the auditor returns *raw counts*, the script computes the score. If you see a manual-recompute step, migrating is a correctness win, not just a context win.
+
+**A mid-run user *strategy* choice is NOT a disqualifier.** If the phase asks the user "review sequentially or in parallel?", that decision stays in the skill — the skill makes the call, then invokes the always-parallel workflow. Only a user *approval/judgment* gate on the phase's *content* (does this draft pass? is this issue real?) keeps the phase conversational. Don't reject a fan-out just because the skill currently wraps it in an AskUserQuestion about *how* to run it.
 
 **Hard "leave" cases** (these stay in the skill): brainstorm, drafting/creative prose, style application, user interviews, approval gates, lookup/reference skills, and the `/goal` fix loop itself.
 

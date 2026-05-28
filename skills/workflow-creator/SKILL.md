@@ -1625,6 +1625,17 @@ provides: [path portability score]
 affects: [.planning/wc/{name}/STATE.md]
 ```
 
+#### Dynamic-Workflow Candidacy Scan (feeds Step 4 Recommendations — no separate gate)
+
+Before writing the report, scan every phase for **dynamic-workflow migration candidates** — fan-out review/diagnosis phases that should be Claude Code dynamic workflows rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §1 for the rubric. Flag a phase when the SHAPE qualifies AND it wins on ≥1 value driver:
+
+1. **Shape (required):** the phase dispatches N read-only agents "one per X" (per section/lecture/question/source/footnote) over a list, and the skill consumes their aggregated results — as a **computed gate OR structured findings** (e.g. a per-section REVIEW.md diagnosis). A *numeric* gate is NOT required.
+2. **At least one value driver:** (a) **parallelism**, (b) **context isolation** — the fan-out's transcripts would otherwise blow the main conversation (this alone justifies migration, no numeric gate needed), or (c) a **deterministic gate** replacing a model-reported score the skill "recomputes by hand" (strongest signal).
+
+**Not disqualifiers:** a mid-run user *strategy* choice ("review sequentially or in parallel?") stays in the skill, which then calls the always-parallel workflow — do NOT reject a real fan-out for this. A diagnosis output (REVIEW.md) instead of a numeric score does NOT disqualify (driver b still applies).
+
+For each flagged phase, classify **strong** (driver c present) or **moderate** (only a/b) and add a Recommendation: *"Migrate <phase> to a dynamic workflow (`workflows/<name>.js`) — fan-out returns gate/findings; keep drafting/`/goal`/R4 in the skill. Mode 3 improvement; see the migration playbook."* Do NOT flag single-agent phases (no fan-out), drafting/brainstorm/approval-on-content phases, routing, or fan-outs whose agents are external (e.g. a Batch API / CLI, not Claude subagents). If a phase has a real fan-out but no value-driver win, note it as "fan-out present, no migration win" rather than recommending. If nothing qualifies, state "no dynamic-workflow candidates" — silence is ambiguous.
+
 **Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 4: Output Audit Report
@@ -1676,6 +1687,13 @@ Format:
 |------|---------|--------|
 | skills/X/SKILL.md | `uv run python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
 | skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
+
+### Dynamic-Workflow Migration Candidates
+| Phase | Fan-out? | Honor-system score? | Recommend migrate? | Note |
+|-------|----------|---------------------|--------------------|------|
+| [phase] | ✅/❌ (one per X) | ✅/❌ (recompute-by-hand) | ✅ Mode 3 / ❌ leave | [why] |
+
+(From the Dynamic-Workflow Candidacy Scan. "no dynamic-workflow candidates" if none qualify.)
 
 ### Critical Gaps
 1. [Highest priority gap + recommendation]
