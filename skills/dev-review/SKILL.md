@@ -14,10 +14,24 @@ hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/VALIDATION.md
+            GATE_STATUS=validated
+            GATE_BLOCKED_TOOLS=Agent
             GATE_DESCRIPTION="Test gap validation"
-            GATE_REMEDY="Return to dev-implement and run dev-test-gaps (Phase 5.5) before starting review."
+            GATE_REMEDY="Return to dev-implement and run dev-test-gaps (Phase 5.5). VALIDATION.md must have status: validated (not gaps_found) before review starts."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
+
+### Context Check
+
+Before starting this phase, check remaining context:
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Proceed |
+| Warning | 25-35% | Finish the current step, then invoke dev-handoff |
+| Critical | ≤25% | Invoke dev-handoff immediately — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
 
 ## Contents
 
@@ -359,6 +373,16 @@ While reviewers work, the lead:
 - **When all 3 reviewers complete:** Proceed to reconciliation
 
 ### 5. Reconciliation Protocol (3 Passes)
+
+**Post-subagent boundary (the highest-risk moment).** During reconciliation the lead *consolidates findings* — it does NOT re-review the code or fix anything:
+
+| Lead CAN (verification/coordination) | Lead CANNOT (investigation/fixing) |
+|--------------------------------------|------------------------------------|
+| Read reviewer findings, dedup, prioritize | Re-read source to second-guess a finding |
+| Record verdict in REVIEW_STATE.md | Edit code to fix an issue a reviewer raised |
+| Route CHANGES_REQUIRED back to dev-implement | Grep the codebase to build a new finding the reviewers missed |
+
+Fixes are dev-implement's job, never the review lead's. (Full rule: auto-loaded `verification-vs-investigation` / `delegation-law` constraints.)
 
 After ALL reviewers message completion, the lead performs three passes:
 
@@ -798,8 +822,10 @@ Before claiming review is complete (APPROVED or ESCALATE):
 ---
 phase: review
 status: completed
+implements: []          # review verifies; implements no new requirement IDs
 requires: [VALIDATION.md, LEARNINGS.md]
 provides: [REVIEW_STATE.md, review-verdict]
+affects: []             # read-only review; fixes happen in dev-implement
 verdict: APPROVED | CHANGES_REQUIRED | ESCALATE | BLOCKED
 iterations: N
 issues-found: X (Y critical, Z important)
@@ -814,6 +840,7 @@ Mark review complete in `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
+status: APPROVED
 iteration: [N]
 max_iterations: 3
 last_review_date: [date]
@@ -821,6 +848,8 @@ issues_found_count: 0
 verdict: APPROVED
 ---
 ```
+
+The `status: APPROVED` line is the structural gate dev-verify checks — only an APPROVED review admits verification. On non-approved paths (CHANGES_REQUIRED / ESCALATE / BLOCKED) set `status:` to that verdict so the gate correctly blocks.
 
 Immediately invoke dev-verify:
 
@@ -832,6 +861,7 @@ Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
+status: CHANGES_REQUIRED
 iteration: [N+1]
 max_iterations: 3
 last_review_date: [date]
@@ -850,6 +880,7 @@ Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
+status: ESCALATE
 iteration: 3
 max_iterations: 3
 last_review_date: [date]

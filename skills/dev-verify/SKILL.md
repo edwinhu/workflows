@@ -14,12 +14,26 @@ hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/REVIEW_STATE.md
-            GATE_DESCRIPTION="Code review completion"
-            GATE_REMEDY="Return to dev-review (Phase 6). Review must complete and write REVIEW_STATE.md before verification."
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Agent
+            GATE_DESCRIPTION="Code review approved"
+            GATE_REMEDY="Return to dev-review (Phase 6). Review must complete with verdict APPROVED (REVIEW_STATE.md status: APPROVED) before verification. A CHANGES_REQUIRED/ESCALATE/BLOCKED review does not admit verify."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
+
+### Context Check
+
+Before starting this phase, check remaining context:
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Proceed |
+| Warning | 25-35% | Finish the current step, then invoke dev-handoff |
+| Critical | ≤25% | Invoke dev-handoff immediately — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
 
 **Load shared enforcement:**
 
@@ -303,6 +317,8 @@ uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 
 **If all constraints PASS:** Proceed to goal-backward verification below.
 
+**Record the evidence (do not assert coverage from memory):** copy the runner's summary line — e.g. `N/M passed, K failed, J conventions` — into `.planning/LEARNINGS.md` as the verification record. Coverage is proven by the runner's actual output, not by a count documented elsewhere.
+
 ## Goal-Backward Verification (Subagent — Leg 2)
 
 After technical tests pass, spawn the dev-verifier agent to check that phase GOALS were achieved, not just tasks completed:
@@ -340,6 +356,16 @@ If ANY goal is NOT_MET, list the specific gaps.
 **If dev-verifier finds gaps:** Return to dev-implement to address them before proceeding to user acceptance.
 **If all goals MET:** Proceed to user acceptance below.
 
+**Post-subagent boundary (the highest-risk moment).** After the verifier returns, main chat is *verifying*, not *investigating* — stay inside this line:
+
+| Main chat CAN (verification) | Main chat CANNOT (investigation) |
+|------------------------------|----------------------------------|
+| Read the verifier's report + LEARNINGS.md | Re-read source files to "double-check" the finding |
+| Re-run the test command / `check-all.py` | Grep/explore the codebase to form a new theory |
+| Route gaps back to dev-implement | Edit code to "quickly fix" what the verifier flagged |
+
+If you catch yourself opening source files to re-litigate the verifier's verdict, STOP — that is investigation. Route the gap to dev-implement. (Full rule: auto-loaded `verification-vs-investigation` constraint, C1b.)
+
 ## User Acceptance (Final Step)
 
 **Checkpoint type:** decision (user confirms completion — cannot auto-advance)
@@ -360,6 +386,19 @@ options:
 ```
 
 Reference `.planning/SPEC.md` when asking—remind user of the success criteria they defined.
+
+**Log the review pattern (observe → record → offer):** after the user answers this acceptance `decision`, append one line to `.planning/LEARNINGS.md` recording what the user inspected before deciding — e.g. "ran the app and watched the GUI", "read the test summary only", "asked for a before/after diff", "checked specific acceptance criteria". If the same artifact is requested 3+ times across episodes, offer to bundle a generator script under `skills/dev-verify/scripts/`. Observe first, automate after the 3rd occurrence — never build speculatively.
+
+When the offer triggers, map the observed request to a concrete artifact:
+
+| If the user keeps asking to… | Consider building |
+|------------------------------|-------------------|
+| "see it actually run" | a launch/screenshot script (use visual-verify) |
+| "see a before/after diff" | tracked-changes / redline view |
+| "confirm all criteria are met" | acceptance-criteria → evidence coverage table |
+| "see the test results" | test-summary renderer from the suite output |
+
+The phase offers to run the script — it never forces it.
 
 If user responds "Partially" or "No":
 1. Ask which specific requirement is not met
@@ -413,8 +452,10 @@ Both must pass. No shortcuts exist.
 ---
 phase: verify
 status: completed
+implements: [<all v1 REQ-IDs traced to passing evidence>]
 requires: [REVIEW_STATE.md, all-tests-passing]
 provides: [user-acceptance, workflow-complete]
+affects: []             # verification is read-only; no files modified
 constraint-check: PASS
 goal-backward-verification: all-goals-met
 user-verdict: "Yes, requirements met"

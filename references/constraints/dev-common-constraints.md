@@ -52,6 +52,36 @@ Which constraints are CRITICAL vs contextual in each phase:
 - **Named context** = Constraint applies in this specific way for this phase.
 - **-** = Constraint does not apply to this phase.
 
+## Hook Coverage Matrix
+
+Structural enforcement (Layer 2). Two PreToolUse guards are declared in skill frontmatter; one PostToolUse guard fires globally via `hooks/hooks.json`. Coverage is intentionally uneven — each gap is justified below.
+
+| Skill | `dev-delegation-guard` (PreToolUse Write\|Edit) | `phase-gate-guard` (PreToolUse, artifact gate) | Gate artifact |
+|-------|:---:|:---:|---|
+| dev (brainstorm) | ✅ | ➖ | — (entry phase; no upstream gate). Writes `SPEC_REVIEWED.md` (status: APPROVED) on spec-review pass. |
+| dev-explore | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
+| dev-clarify | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
+| dev-design | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
+| dev-implement | ✅ | ✅ | `.planning/PLAN_REVIEWED.md` (status: APPROVED) |
+| dev-test-gaps | ✅ | ➖ | — (intra-implement; no phase gate) |
+| dev-review | ✅ | ✅ | `.planning/VALIDATION.md` (status: validated) |
+| dev-verify | ✅ | ✅ | `.planning/REVIEW_STATE.md` (status: APPROVED) |
+| dev-debug | ✅ | ➖ | — (midpoint re-entry; no linear upstream gate) |
+| dev-handoff | ✅ | ➖ | — (pause/resume; no phase gate) |
+| dev-delegate, dev-tdd, dev-test*, dev-tools, dev-worktree | ➖ | ➖ | run inside Task agents / are reference skills (see below) |
+| dev-spec-reviewer, dev-plan-reviewer | ➖ | ➖ | dispatched AS read-only subagents (`allowed-tools`); restriction is at dispatch |
+
+**Global (all skills, via `hooks/hooks.json`):** `atomic-constraint-guard.py` (PostToolUse Edit/Write — non-blocking monolith-constraint guard), plus `lint-check`, `image-read-guard`, `pattern-scan`, session hooks. These do not need per-skill declaration.
+
+**Justified gaps (intentional, not drift):**
+- **`phase-gate-guard` only on artifact-consuming phases.** explore/clarify/design gate on the upstream `SPEC.md`; implement on `PLAN_REVIEWED.md`; review on `VALIDATION.md`; verify on `REVIEW_STATE.md`. Brainstorm/debug/handoff have no linear upstream artifact to gate, so they declare no phase gate.
+- **`dev-delegation-guard` only on main-chat orchestration phases** (dev, implement, test-gaps, review, verify, debug, handoff) where main chat must delegate code-writing to subagents. explore/clarify/design are read-only or `.planning/`-writing planning phases — main chat legitimately writes SPEC.md/PLAN.md there (the guard allows `.planning/` writes), so the guard is unnecessary.
+- **Reviewer/tool/test sub-skills declare no hooks** because they execute inside dispatched Task agents (whose tools are restricted at dispatch via `allowed-tools`) or are reference skills, not main-chat orchestration phases. The enforcing hook fires in the parent orchestrating skill.
+
+**Maintenance rule:** when adding a new dev phase that orchestrates code-writing, add `dev-delegation-guard`. When it consumes an upstream artifact, add `phase-gate-guard` with the correct `GATE_ARTIFACT`, `GATE_STATUS`, **and `GATE_BLOCKED_TOOLS`**. Update this matrix in the same edit.
+
+> **Load-bearing detail — `GATE_BLOCKED_TOOLS` is mandatory.** `phase-gate-guard.py` defaults `blocked_tools={Write,Edit}` and `exit(0)`s for any tool not in that set. A phase whose first action is `Agent` (subagent dispatch) MUST set `GATE_BLOCKED_TOOLS=Agent` (dev-explore, which also greps/globs, sets `Grep,Glob,Agent`) or the hook fires on the `Agent` call, finds it un-blocked, and silently allows it — the gate becomes a no-op. Verify every gate with: `echo '{"tool_name":"Agent","tool_input":{}}' | GATE_ARTIFACT=.planning/MISSING.md GATE_BLOCKED_TOOLS=Agent uv run python3 hooks/phase-gate-guard.py` → must emit a `deny`.
+
 ## Verification
 
 Run all constraint checks:

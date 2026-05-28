@@ -1,27 +1,28 @@
 ---
 name: dev-implement
-description: “This skill should be used when the user asks to 'implement the plan', 'start building', or 'execute the tasks'.”
+description: "This skill should be used when the user asks to 'implement the plan', 'start building', or 'execute the tasks'."
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent
 hooks:
   PreToolUse:
-    - matcher: “Write|Edit”
+    - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: “uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py”
-    - matcher: “Agent”
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+    - matcher: "Agent"
       hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
             GATE_STATUS=APPROVED
-            GATE_DESCRIPTION=”Plan review”
-            GATE_REMEDY=”Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval.”
+            GATE_BLOCKED_TOOLS=Agent
+            GATE_DESCRIPTION="Plan review"
+            GATE_REMEDY="Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
-**Announce:** “I’m using dev-implement (Phase 5) to orchestrate implementation.”
+**Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
 
 **Load shared enforcement:**
 
@@ -90,10 +91,10 @@ This file is written by dev-plan-reviewer when it approves the plan. Its absence
 
 | Thought | Reality |
 |---------|---------|
-| “I can see the plan looks complete” | Self-assessment is not review. The reviewer catches what you miss. |
-| “Plan reviewer would have approved anyway” | Then it takes 30 seconds. Run it. |
-| “User approved the plan directly” | User approves the approach. Reviewer checks spec coverage. Different gates. |
-| “I'll review it myself as I implement” | You won't. You'll be focused on code. That's why the gate exists. |
+| "I can see the plan looks complete" | Self-assessment is not review. The reviewer catches what you miss. |
+| "Plan reviewer would have approved anyway" | Then it takes 30 seconds. Run it. |
+| "User approved the plan directly" | User approves the approach. Reviewer checks spec coverage. Different gates. |
+| "I'll review it myself as I implement" | You won't. You'll be focused on code. That's why the gate exists. |
 
 **Check `.planning/PLAN.md` for:** files to modify, implementation order, testing strategy.
 
@@ -102,7 +103,7 @@ This file is written by dev-plan-reviewer when it approves the plan. Its absence
 Before starting ANY task, verify `.planning/PLAN.md` Testing Strategy:
 
 ```
-[ ] Framework specified (not empty, not “TBD”)
+[ ] Framework specified (not empty, not "TBD")
 [ ] Test Command specified (runnable command)
 [ ] First Failing Test described (specific test name)
 [ ] Test File Location specified (actual path)
@@ -161,13 +162,13 @@ If you catch yourself thinking these, STOP IMMEDIATELY:
 
 | Thought | Reality | Action |
 |---------|---------|--------|
-| “No test infra, I’ll just implement” | You should have caught this in explore/clarify | STOP. Go back. Add Task 0. |
-| “SPEC.md says manual testing” | SPEC.md is wrong | STOP. Fix SPEC.md. Ask user. |
-| “This task is too simple for tests” | Simple tasks benefit MOST from tests | Write the test anyway. |
-| “I’ll add tests after this works” | That’s not TDD. That’s anti-helpful — untested code ships bugs. | DELETE your code. Write test first. |
-| “User is waiting, I’ll be quick” | User wants WORKING code, not fast code | Take time. Write test first. |
-| “The subagent skipped tests” | Your job is to catch that | REJECT the work. Redo with tests. |
-| “Just this one exception” | No exceptions. Ever. | Write the test. |
+| "No test infra, I'll just implement" | You should have caught this in explore/clarify | STOP. Go back. Add Task 0. |
+| "SPEC.md says manual testing" | SPEC.md is wrong | STOP. Fix SPEC.md. Ask user. |
+| "This task is too simple for tests" | Simple tasks benefit MOST from tests | Write the test anyway. |
+| "I'll add tests after this works" | That's not TDD. That's anti-helpful — untested code ships bugs. | DELETE your code. Write test first. |
+| "User is waiting, I'll be quick" | User wants WORKING code, not fast code | Take time. Write test first. |
+| "The subagent skipped tests" | Your job is to catch that | REJECT the work. Redo with tests. |
+| "Just this one exception" | No exceptions. Ever. | Write the test. |
 
 **If you wrote code without a failing test first, DELETE IT and start over.**
 </EXTREMELY-IMPORTANT>
@@ -183,38 +184,38 @@ Main chat orchestrates. Subagents implement. If you catch yourself about to use 
 |---------------------|--------------------------|
 | Spawn Task agents | Write/Edit code files |
 | Review Task agent output | Direct implementation |
-| Write to .planning/*.md files | “Quick fixes” |
+| Write to .planning/*.md files | "Quick fixes" |
 | Run git commands | Any code editing |
 | Set/clear `/goal` for the phase | Bypassing delegation |
 
-**If you’re about to edit code directly, STOP and spawn a Task agent instead.**
+**If you're about to edit code directly, STOP and spawn a Task agent instead.**
 
 ### Rationalization Prevention
 
-These thoughts mean STOP—you’re rationalizing:
+These thoughts mean STOP—you're rationalizing:
 
 | Thought | Reality |
 |---------|---------|
-| “It’s just a small fix” | Small fixes become big mistakes. Delegate. |
-| “I’ll be quick” | Quick means sloppy. Delegate. |
-| “The subagent will take too long” | Subagent time is cheap. Your context is expensive. |
-| “I already know what to do” | Knowing ≠ doing it well. Delegate. |
-| “Let me just do this one thing” | One thing leads to another. Delegate. |
-| “This is too simple for a subagent” | Simple is exactly when delegation works best. |
-| “I’m already here in the code” | Being there ≠ writing there. Delegate. |
-| “The user is waiting” | User wants DONE, not fast. They won’t debug your shortcuts. |
-| “This is just porting/adapting code” | Porting = writing = code. Delegate. |
-| “I already have context loaded” | Fresh context per task is the point. Delegate. |
-| “It’s config, not real code” | JSON/YAML/TOML = code. Delegate. |
-| “I need to set things up first” | Setup IS implementation. Delegate. |
-| “This is boilerplate” | Boilerplate = code = delegate. |
-| “PLAN.md is detailed, just executing” | Execution IS implementation. Delegate. |
+| "It's just a small fix" | Small fixes become big mistakes. Delegate. |
+| "I'll be quick" | Quick means sloppy. Delegate. |
+| "The subagent will take too long" | Subagent time is cheap. Your context is expensive. |
+| "I already know what to do" | Knowing ≠ doing it well. Delegate. |
+| "Let me just do this one thing" | One thing leads to another. Delegate. |
+| "This is too simple for a subagent" | Simple is exactly when delegation works best. |
+| "I'm already here in the code" | Being there ≠ writing there. Delegate. |
+| "The user is waiting" | User wants DONE, not fast. They won't debug your shortcuts. |
+| "This is just porting/adapting code" | Porting = writing = code. Delegate. |
+| "I already have context loaded" | Fresh context per task is the point. Delegate. |
+| "It's config, not real code" | JSON/YAML/TOML = code. Delegate. |
+| "I need to set things up first" | Setup IS implementation. Delegate. |
+| "This is boilerplate" | Boilerplate = code = delegate. |
+| "PLAN.md is detailed, just executing" | Execution IS implementation. Delegate. |
 
 ### The Meta-Rationalization
 
-**If you’re treating these rules as “guidelines for complex work” rather than “invariants for ALL work”, you’ve already failed.**
+**If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've already failed.**
 
-Simple work is EXACTLY when discipline matters most—because that’s when you’re most tempted to skip it.
+Simple work is EXACTLY when discipline matters most—because that's when you're most tempted to skip it.
 </EXTREMELY-IMPORTANT>
 
 ### Context Monitoring
@@ -328,9 +329,9 @@ Key points from dev-delegate:
 ### Step 3: Verify and Complete (MANDATORY - DO NOT SKIP)
 
 <EXTREMELY-IMPORTANT>
-**YOU MUST VERIFY EACH OF THESE. “Task complete” without verification is NOT HELPFUL — you're shipping broken code the user will have to debug.**
+**YOU MUST VERIFY EACH OF THESE. "Task complete" without verification is NOT HELPFUL — you're shipping broken code the user will have to debug.**
 
-After Task agent returns, **you must personally verify** (not trust the agent’s report):
+After Task agent returns, **you must personally verify** (not trust the agent's report):
 
 #### 3a. Read the Actual Code
 ```
@@ -342,7 +343,7 @@ Compare to SPEC.md requirements line by line.
 
 #### 3b. Check Test Reality
 ```
-Read the test file(s). Look for .skip(), mock-only tests, or tests that don’t call real code.
+Read the test file(s). Look for .skip(), mock-only tests, or tests that don't call real code.
 ```
 - [ ] Tests EXECUTE code (not grep/mock-only)
 - [ ] Tests are NOT skipped (SKIP ≠ PASS)
@@ -353,8 +354,8 @@ Read the test file(s). Look for .skip(), mock-only tests, or tests that don’t 
 Actually run the test command. Read the output.
 ```
 - [ ] Test command runs without error
-- [ ] Tests actually pass (not “66 pass, 0 fail” with 50 skipped)
-- [ ] Test output shows real assertions (not just “test exists”)
+- [ ] Tests actually pass (not "66 pass, 0 fail" with 50 skipped)
+- [ ] Test output shows real assertions (not just "test exists")
 
 #### 3d. Verify Real Integration (FOR EXTERNAL SYSTEMS)
 ```
@@ -362,7 +363,7 @@ If the feature integrates with an external system (Electron app, API, database),
 you MUST verify it works against the real system, not just mocks.
 ```
 - [ ] External system is actually running
-- [ ] Feature actually works (not just “code runs without error”)
+- [ ] Feature actually works (not just "code runs without error")
 - [ ] Output is visible in the external system
 
 **If ANY check fails → REJECT the work. Do NOT mark task complete.**
@@ -371,12 +372,12 @@ you MUST verify it works against the real system, not just mocks.
 
 | Thought | Reality | Action |
 |---------|---------|--------|
-| “The agent said tests pass” | Agents lie. Verify yourself. | Run the tests. |
-| “66 tests passing is enough” | Count skipped tests. Read test code. | Check for fake tests. |
-| “I’ll verify at the end” | You’ll forget. Bugs compound. | Verify NOW. |
-| “The spec said X, code does Y, but Y is close enough” | Close enough = wrong. | Reject and redo. |
-| “Integration test is skipped but unit tests pass” | Unit tests don’t prove integration works. | Require real integration test. |
-| “External system isn’t running, but code is correct” | Untested code is broken code. | Start the system and test. |
+| "The agent said tests pass" | Agents lie. Verify yourself. | Run the tests. |
+| "66 tests passing is enough" | Count skipped tests. Read test code. | Check for fake tests. |
+| "I'll verify at the end" | You'll forget. Bugs compound. | Verify NOW. |
+| "The spec said X, code does Y, but Y is close enough" | Close enough = wrong. | Reject and redo. |
+| "Integration test is skipped but unit tests pass" | Unit tests don't prove integration works. | Require real integration test. |
+| "External system isn't running, but code is correct" | Untested code is broken code. | Start the system and test. |
 
 **If ALL pass → mark the task [x] in PLAN.md and move on.** If ANY fail → iterate within the active `/goal`; the next turn will fire automatically.
 
@@ -471,6 +472,18 @@ End each task summary with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3
 
 ## Failure Recovery Protocol
 
+### Blocker Handling (retry / skip / stop)
+
+When a task is **blocked** by something other than a failing test — a missing dependency, an unavailable service, an environment/config gap, an upstream task not yet done — do NOT silently spin. Classify and act:
+
+| Option | When | Action |
+|--------|------|--------|
+| **Retry** | Transient (flaky network, race, first-run setup) | Re-run once. If it clears, continue. Log the retry in LEARNINGS.md. |
+| **Skip** | The blocked task is independent of the remaining tasks | Mark the task `[blocked]` in PLAN.md with the reason, proceed to the next independent task, and surface the skipped task at phase end. Never skip a task others depend on. |
+| **Stop** | The blocker prevents all forward progress, or is architectural (R4) | STOP, write `.planning/RECOVERY.md` with the blocker, and consult the user. |
+
+Default when unsure → **Stop** and ask. A blocker is not a test failure — the 3-failure trigger below is for tasks that *run* but fail tests.
+
 **Pattern from oh-my-opencode: After 3 consecutive implementation failures, escalate.**
 
 ### 3-Failure Trigger
@@ -487,7 +500,7 @@ Iteration 3: Implement approach C → tests fail
 ### Recovery Steps
 
 1. **STOP** all further implementation attempts
-   - No more “let me try a different approach”
+   - No more "let me try a different approach"
    - No guessing or throwing code at the problem
 
 2. **REVERT** to last known working state
@@ -502,7 +515,7 @@ Iteration 3: Implement approach C → tests fail
    - What this reveals about the problem
 
 4. **CONSULT** with user BEFORE continuing
-   - “I’ve tried 3 approaches. All fail tests. Here’s what I’ve learned...”
+   - "I've tried 3 approaches. All fail tests. Here's what I've learned..."
    - Present test failure patterns
    - Request: requirements clarification, design input, or different strategy
 
@@ -526,12 +539,12 @@ Before continuing after multiple failures:
 
 ### Anti-Patterns After Failures
 
-**DON’T:**
-- Keep trying “just one more thing”
+**DON'T:**
+- Keep trying "just one more thing"
 - Make larger and larger changes
-- Skip TDD “to get it working first”
-- Suppress test failures (“I’ll fix them later”)
-- Blame the tests (“tests are wrong”)
+- Skip TDD "to get it working first"
+- Suppress test failures ("I'll fix them later")
+- Blame the tests ("tests are wrong")
 
 **DO:**
 - Stop and analyze the failure pattern
@@ -553,16 +566,16 @@ Loop 3: Implement with promises → Tests fail assertion
 3. DOCUMENT in .planning/RECOVERY.md:
    - Pattern: All async implementations cause timing issues
    - Tests expect synchronous behavior
-   - Hypothesis: Requirements may need async, tests don’t handle it
+   - Hypothesis: Requirements may need async, tests don't handle it
 4. ASK USER:
-   “I’ve tried 3 async implementations. All cause timing issues.
+   "I've tried 3 async implementations. All cause timing issues.
     Tests expect synchronous behavior.
 
     This suggests either:
     A) Feature should actually be synchronous (simpler)
     B) Tests need updating for async behavior
 
-    Which direction should I take?”
+    Which direction should I take?"
 ```
 
 ### When to Trigger Recovery
@@ -573,14 +586,14 @@ Trigger after 3 failures when:
 - Tests pass locally but fail in CI
 - Implementation works but breaks unrelated tests
 
-Don’t wait for max iterations - trigger early when pattern emerges.
+Don't wait for max iterations - trigger early when pattern emerges.
 
 ## If the Goal's Turn Budget Is Reached
 
 The `/goal` condition's `Stop after N turns` clause causes the evaluator to return done with reason "turn budget exhausted." **Still do NOT ask user to manually test.**
 
 Main chat should:
-1. **Summarize** what’s failing (from LEARNINGS.md)
+1. **Summarize** what's failing (from LEARNINGS.md)
 2. **Report** which automated tests fail and why
 3. **Ask user** for direction:
    - A) Set a new `/goal` with a different approach
@@ -588,7 +601,7 @@ Main chat should:
    - C) User provides guidance
    - D) User explicitly requests manual testing
 
-**Never default to “please test manually”.** Always exhaust automation first.
+**Never default to "please test manually".** Always exhaust automation first.
 
 ## No Pause Between Tasks
 
@@ -603,13 +616,13 @@ Main chat should:
 
 | Thought | Reality |
 |---------|---------|
-| “Task done, let me check in with user” | NO. User wants ALL tasks done. Keep going. |
-| “User might want to review” | User will review at the END. Continue. |
-| “Natural pause point” | Only pause when ALL tasks complete or blocked. |
-| “Let me summarize progress” | Summarize AFTER all tasks. Keep moving. |
-| “User has been waiting” | User is waiting for COMPLETION, not updates. |
-| “Should I continue?” | YES. Never ask. Just continue. |
-| “I’ll update PLAN.md later” | NO. Update it NOW before next task. |
+| "Task done, let me check in with user" | NO. User wants ALL tasks done. Keep going. |
+| "User might want to review" | User will review at the END. Continue. |
+| "Natural pause point" | Only pause when ALL tasks complete or blocked. |
+| "Let me summarize progress" | Summarize AFTER all tasks. Keep moving. |
+| "User has been waiting" | User is waiting for COMPLETION, not updates. |
+| "Should I continue?" | YES. Never ask. Just continue. |
+| "I'll update PLAN.md later" | NO. Update it NOW before next task. |
 
 ### Valid Stopping Points (only these three)
 
@@ -633,10 +646,10 @@ After each task's verification completes:
 
 **Violations to catch:**
 - "Let me check with user if they want me to continue" → NO, continue automatically
-- "Should I move to task N+1?" → NO, you’re supposed to move
+- "Should I move to task N+1?" → NO, you're supposed to move
 - "Let me summarize what we learned" → NO, move to task N+1
 
-Pausing > 30 seconds between tasks means you’ve stopped. You shouldn’t have.
+Pausing > 30 seconds between tasks means you've stopped. You shouldn't have.
 </EXTREMELY-IMPORTANT>
 
 ## Agent Team Implementation (Parallel)
