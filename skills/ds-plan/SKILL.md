@@ -26,6 +26,28 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write|Edit|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SPEC_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Spec review"
+            GATE_REMEDY="Run /ds (brainstorm), which dispatches ds-spec-reviewer; planning is gated until SPEC.md is APPROVED."
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
 ---
 
 Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
@@ -774,25 +796,29 @@ See: docs/investigations/YYYY-MM-DD_pull_profile.md
 
 ## Task Breakdown
 
-### Task 1: Data Cleaning (required first)
+**Every task header MUST carry the `CATEGORY-NN` requirement IDs it implements** (from SPEC.md). This makes coverage ID-keyed, not free-text — ds-validate maps each ID to a DQ result and ds-plan-reviewer's Spec Coverage Check verifies every v1 requirement has ≥1 task.
+
+### Task 1: Data Cleaning (required first) — implements: [DATA-01]
 - Handle missing values in col2
 - Remove duplicates
 - Fix data types
 - Output: Clean DataFrame, log of rows removed
 
-### Task 2: [Analysis Step]
+### Task 2: [Analysis Step] — implements: [STAT-01, VIZ-02]
 - Input: Clean DataFrame
 - Process: [description]
 - Output: [specific output to verify]
 - Dependencies: Task 1
 
-### Task 3: [Next Step]
+### Task 3: [Next Step] — implements: [CAT-NN]
 [Same structure]
 
 ## Output Verification Plan
-For each task, define what output proves completion:
-- Task 1: "X rows cleaned, Y rows dropped"
-- Task 2: "Visualization showing [pattern]"
+For each task, define what output proves completion, keyed to its requirement ID:
+- Task 1 (DATA-01): "X rows cleaned, Y rows dropped"
+- Task 2 (STAT-01, VIZ-02): "Visualization showing [pattern]"
+
+**Coverage invariant:** every `v1` requirement ID in SPEC.md appears in at least one task's `implements:` list. ds-plan-reviewer rejects a plan that drops a v1 ID.
 - Task 3: "Model accuracy >= 0.8"
 
 ## ETL Strategy

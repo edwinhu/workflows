@@ -124,13 +124,28 @@ Read the spec file, then evaluate against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 2 (ds-plan). Discover and load:
+
+**1. Write the structural gate sentinel** (ds-plan refuses to start without it — a PreToolUse `phase-gate-guard.py` hook checks this file):
+
+```
+Write(".planning/SPEC_REVIEWED.md", """---
+status: APPROVED
+reviewed: spec
+date: [ISO 8601]
+---
+Spec reviewed and APPROVED by ds-spec-reviewer. ds-plan may proceed.
+""")
+```
+
+**2. Proceed immediately to Phase 2 (ds-plan).** Discover and load:
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.planning/SPEC.md`
-2. Re-dispatch the reviewer (same template)
-3. Repeat until APPROVED or max 5 iterations
+1. **Clear any stale sentinel** so the gate cannot pass on an old approval:
+   `Write(".planning/SPEC_REVIEWED.md", "---\nstatus: ISSUES_FOUND\nreviewed: spec\n---\nSpec has open issues; ds-plan is gated.")`
+2. Fix the specific issues in `.planning/SPEC.md`
+3. Re-dispatch the reviewer (same template)
+4. Repeat until APPROVED or max 5 iterations
 
 ### If 5 Iterations Without Approval
 Escalate to user:
@@ -157,5 +172,7 @@ You know the spec has gaps. Profiling built on a bad spec profiles the wrong dat
 2. DISPATCH: Send to reviewer subagent
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)
-5. CLAIM: Only proceed to ds-plan when APPROVED
+5. CLAIM: On APPROVED, write `.planning/SPEC_REVIEWED.md` (`status: APPROVED`), THEN proceed to ds-plan
+
+**This gate is hook-enforced, not advisory:** ds-plan declares a PreToolUse `phase-gate-guard.py` hook that blocks Write/Edit/Agent until `.planning/SPEC_REVIEWED.md` exists with `status: APPROVED`. A user who invokes `/ds-plan` directly without a reviewed spec is structurally blocked.
 ```

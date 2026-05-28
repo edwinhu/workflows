@@ -39,6 +39,16 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Write|Edit|Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Plan review"
+            GATE_REMEDY="Return to ds-plan and run ds-plan-reviewer; implementation is gated until PLAN.md is APPROVED."
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 ## Overview
@@ -420,6 +430,19 @@ Three stages: Test (~10 items, always required) -> Intermediate (~100, if total 
 **Your pausing between tasks is procrastination disguised as courtesy.**
 </EXTREMELY-IMPORTANT>
 
+## Autonomous Execution: Re-Read & Blocker Handling
+
+**Dynamic plan re-read.** After each task completes, RE-READ `.planning/PLAN.md` before starting the next task. A prior task (or a Rule-2/Rule-3 deviation) may have inserted, reordered, or removed tasks. Trusting a stale in-memory task list silently skips dynamically-added work. The on-disk PLAN.md is the source of truth.
+
+**Blocker handling.** When a task cannot proceed (subagent reports failure it cannot auto-fix under R1-R3, missing dependency, environment error), do NOT silently stop. Present the blocker with three options and act on the choice:
+
+| Option | When | Action |
+|--------|------|--------|
+| **Retry** | Transient / fixable cause | Re-dispatch the task subagent with the blocker context added |
+| **Skip** | Task is non-blocking for downstream work | Mark the task `blocked` in PLAN.md, log to LEARNINGS.md, continue to the next independent task |
+| **Stop** | Blocker invalidates the plan (R4-class) | Invoke ds-handoff, escalate to the user |
+
+In autonomous/auto-advance mode, default to **Retry once**, then **Skip** if still blocked and the task is non-critical, then **Stop**. Record the chosen path in LEARNINGS.md.
 
 ## Deviation Rules
 
@@ -480,14 +503,26 @@ Before proceeding to validation, execute this gate:
 
 **Stale LEARNINGS.md = false gate pass = unverified work = the user gets results no one actually checked.**
 
-5. **CLAIM**: Only if all tasks accounted for, proceed to review
+5. **CLAIM**: Only if all tasks accounted for, write the completion sentinel, then proceed to validation:
 
-**If ANY task is missing from LEARNINGS.md, implement it before proceeding.**
+```
+Write(".planning/IMPLEMENT_COMPLETE.md", """---
+status: COMPLETE
+tasks_total: [N]
+date: [ISO 8601]
+---
+All PLAN.md tasks complete and verified in LEARNINGS.md. ds-validate may proceed.
+""")
+```
+
+**If ANY task is missing from LEARNINGS.md, implement it before proceeding.** Do NOT write the sentinel until the task counts match.
 
 **Claiming all tasks are done without checking LEARNINGS.md against PLAN.md is NOT HELPFUL — missing tasks mean incomplete analysis the user relies on.**
 </EXTREMELY-IMPORTANT>
 
 ## Phase Complete
 
-After passing the exit gate, IMMEDIATELY discover and read the validation phase:
+After passing the exit gate (sentinel written), IMMEDIATELY discover and read the validation phase:
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-validate/SKILL.md` and follow its instructions. Follow its instructions to validate outputs before review.
+
+**This gate is hook-enforced:** ds-validate declares a PreToolUse `phase-gate-guard.py` hook that blocks its validator dispatch until `.planning/IMPLEMENT_COMPLETE.md` exists with `status: COMPLETE`.

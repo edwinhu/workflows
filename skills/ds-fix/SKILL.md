@@ -25,6 +25,18 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
 ---
 
 **Announce:** "Using ds-fix for mid-analysis course correction."
@@ -286,7 +298,7 @@ When 3+ plausible explanations exist, sequential investigation failed, or contra
 
 **MANDATORY:** Before proceeding, load the protocol:
 ```
-Read("references/competing-hypothesis.md")
+Read("${CLAUDE_SKILL_DIR}/references/competing-hypothesis.md")
 ```
 
 Key steps:

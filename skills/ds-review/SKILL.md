@@ -38,6 +38,15 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/VALIDATION.md
+            GATE_DESCRIPTION="Output validation"
+            GATE_REMEDY="Run ds-validate first; review is gated until .planning/VALIDATION.md exists (status validated, or gaps_found that the user has accepted)."
+            GATE_BLOCKED_TOOLS=Agent
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 Announce: "Using ds-review (Phase 4) to check methodology and quality."
@@ -712,6 +721,8 @@ When presenting review findings to the user (especially at CHANGES REQUIRED verd
 
 **When to generate:** Only at `decision` checkpoints where the user must choose between accepting or fixing. Do not generate plots for clean review passes (no decision needed).
 
+**Observe → record → offer (learn-by-doing):** After each review decision checkpoint, append one line to `.planning/LEARNINGS.md` recording **which diagnostic the user actually looked at** to make the call (e.g. `review-view: row-count waterfall (join explosion)` or `review-view: read verdict summary only — no plot`). Do NOT build visualizations speculatively. After the **same** view is requested 3+ times across reviews, offer to bundle a script in `skills/ds-review/scripts/` that generates it automatically. Until then, the table above is an offer menu, not a mandate.
+
 ## Quality Standards
 
 - **You must NOT report methodology preferences not backed by statistical principles.** Your opinion about how code should be written is not a review issue.
@@ -758,6 +769,7 @@ Mark review complete in `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
+status: APPROVED
 iteration: [N]
 max_iterations: 3
 last_review_date: [date]
@@ -765,6 +777,8 @@ issues_found_count: 0
 verdict: APPROVED
 ---
 ```
+
+**`status: APPROVED` is the structural gate field** — ds-verify declares a PreToolUse `phase-gate-guard.py` hook that blocks Agent dispatch until `.planning/REVIEW_STATE.md` shows `status: APPROVED`. While the review loop is unresolved (CHANGES_REQUIRED / ESCALATE), `status` is NOT `APPROVED`, so verification is structurally blocked.
 
 Immediately discover and load ds-verify:
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/SKILL.md` and follow its instructions.
@@ -775,6 +789,7 @@ Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
+status: CHANGES_REQUIRED
 iteration: [N+1]
 max_iterations: 3
 last_review_date: [date]
@@ -793,6 +808,7 @@ Update `.planning/REVIEW_STATE.md`:
 
 ```yaml
 ---
+status: ESCALATE
 iteration: 3
 max_iterations: 3
 last_review_date: [date]

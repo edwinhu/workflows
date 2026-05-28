@@ -38,6 +38,16 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/REVIEW_STATE.md
+            GATE_STATUS=APPROVED
+            GATE_DESCRIPTION="Review verdict"
+            GATE_REMEDY="Complete ds-review until REVIEW_STATE.md verdict is APPROVED; verification is gated until then."
+            GATE_BLOCKED_TOOLS=Agent
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."

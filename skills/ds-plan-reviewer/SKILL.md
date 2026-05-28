@@ -139,13 +139,28 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 ## Handling Reviewer Output
 
 ### If APPROVED
-Proceed immediately to Phase 3 (ds-implement). Discover and load:
+
+**1. Write the structural gate sentinel** (ds-implement refuses to start without it — a PreToolUse `phase-gate-guard.py` hook checks this file):
+
+```
+Write(".planning/PLAN_REVIEWED.md", """---
+status: APPROVED
+reviewed: plan
+date: [ISO 8601]
+---
+Plan reviewed and APPROVED by ds-plan-reviewer. ds-implement may proceed.
+""")
+```
+
+**2. Proceed immediately to Phase 3 (ds-implement).** Discover and load:
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
 
 ### If ISSUES_FOUND
-1. Fix the specific issues in `.planning/PLAN.md`
-2. Re-dispatch the reviewer (same template)
-3. Repeat until APPROVED or max 5 iterations
+1. **Clear any stale sentinel** so the gate cannot pass on an old approval:
+   `Write(".planning/PLAN_REVIEWED.md", "---\nstatus: ISSUES_FOUND\nreviewed: plan\n---\nPlan has open issues; ds-implement is gated.")`
+2. Fix the specific issues in `.planning/PLAN.md`
+3. Re-dispatch the reviewer (same template)
+4. Repeat until APPROVED or max 5 iterations
 
 ### If 5 Iterations Without Approval
 Escalate to user:
@@ -184,5 +199,7 @@ You know the plan has gaps. Implementation subagents will struggle with tasks th
 2. DISPATCH: Send to reviewer subagent (per-chunk if >15 tasks)
 3. READ: Reviewer returns APPROVED or ISSUES_FOUND
 4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)
-5. CLAIM: Only proceed to ds-implement when ALL chunks APPROVED
+5. CLAIM: When ALL chunks APPROVED, write `.planning/PLAN_REVIEWED.md` (`status: APPROVED`), THEN proceed to ds-implement
+
+**This gate is hook-enforced, not advisory:** ds-implement declares a PreToolUse `phase-gate-guard.py` hook that blocks Write/Edit/Agent until `.planning/PLAN_REVIEWED.md` exists with `status: APPROVED`. A user who invokes `/ds-implement` directly without a reviewed plan is structurally blocked.
 ```

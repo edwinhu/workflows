@@ -144,8 +144,8 @@ This task requires:
 - [Statistical method]: [Why needed]
 - [Programming language]: Data manipulation
 - Output-first verification (mandatory)
-- SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
-- Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
+- SQL reference: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/references/sql-patterns.md` for dialect-specific patterns
+- Data quality checks: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
 - Analysis constraints: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md` for the constraint index, then load:
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-robustness-checks.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-standard-error-spec.md`
@@ -244,8 +244,8 @@ This task requires:
 - [Engineering method]: [Why needed]
 - [Programming language]: Data manipulation
 - Output-first verification (mandatory)
-- SQL reference: Read `../ds-delegate/references/sql-patterns.md` for dialect-specific patterns
-- Data quality checks: Read `../ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
+- SQL reference: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/references/sql-patterns.md` for dialect-specific patterns
+- Data quality checks: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
 - Engineering constraints: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-engineering-constraints.md` for the constraint index, then load:
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-determinism.md`
   Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-schema-contracts.md`

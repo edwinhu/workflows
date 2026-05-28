@@ -12,9 +12,18 @@ def main():
     tool_name = tool_input.get("tool_name", "")
 
     if tool_name in ("Write", "Edit"):
+        # Allow workflow-state writes (verdict sentinels under .planning/.claude).
+        # The guard's intent is to stop reviewers "fixing" the artifact under review
+        # or project code \u2014 NOT to block writing a verdict sentinel like
+        # .planning/SPEC_REVIEWED.md. Mirrors phase-gate-guard's allowlist.
+        path = tool_input.get("tool_input", {}).get("file_path", "")
+        parts = [p for p in path.replace("\\", "/").split("/") if p and p != "."]
+        if parts and parts[0] in (".planning", ".claude"):
+            print(json.dumps({"decision": "allow"}))
+            return
         print(json.dumps({
             "decision": "block",
-            "message": "\ud83d\uded1 Reviewer read-only enforcement: Review/verification agents must NOT modify files. Report findings back to the orchestrator for planned fixes."
+            "message": "\ud83d\uded1 Reviewer read-only enforcement: Review/verification agents must NOT modify files. Report findings back to the orchestrator for planned fixes. (Writes to .planning/ verdict sentinels are allowed.)"
         }))
     else:
         print(json.dumps({"decision": "allow"}))

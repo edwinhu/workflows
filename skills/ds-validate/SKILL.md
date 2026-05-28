@@ -26,6 +26,28 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+    - matcher: "Write"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Edit"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+    - matcher: "Agent|Workflow"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/IMPLEMENT_COMPLETE.md
+            GATE_STATUS=COMPLETE
+            GATE_DESCRIPTION="Implementation complete"
+            GATE_REMEDY="Finish ds-implement (all PLAN.md tasks verified in LEARNINGS.md) before validating outputs."
+            GATE_BLOCKED_TOOLS=Agent,Workflow
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 Announce: "Using ds-validate (Phase 3.5) to validate analysis outputs against SPEC.md requirements."
@@ -94,9 +116,11 @@ This runs all DS constraint check scripts (determinism, join audits, idempotency
 2. READ .planning/PLAN.md task breakdown
 3. READ .planning/LEARNINGS.md for pipeline row counts (DQ4 needs these)
 4. DISCOVER and READ ds-checks.md via cache lookup
-5. For each requirement: DISPATCH subagent to run DQ1-DQ5 + M1 on the output
-6. WRITE .planning/VALIDATION.md
+5. RUN the ds-validate-coverage workflow — fans out one read-only validator per requirement (DQ1-DQ5 + M1) and computes the COVERED/PARTIAL/MISSING + validated|gaps_found gate in JS
+6. RENDER .planning/VALIDATION.md from the workflow result (status + scoreTable + findings)
 ```
+
+> **Note:** Steps 1-4 stay in this skill as the reading/discovery preamble — the workflow's own Discover phase re-resolves them authoritatively, but reading them here lets the skill present context and decide scope before invoking the workflow.
 
 ### Step 1: Read Requirements
 
@@ -127,42 +151,39 @@ Read `.planning/LEARNINGS.md` and extract:
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` and follow its instructions.
 
-### Step 5: Dispatch Validation Subagents
+### Step 5: Run the ds-validate-coverage workflow (per-requirement fan-out + JS gate)
 
-For each SPEC.md requirement, spawn a subagent:
+The per-requirement DQ fan-out and the COVERED/PARTIAL/MISSING + `validated|gaps_found` gate are owned by a **dynamic workflow** — a script, not hand-dispatched agents. This is why: the validators return RAW DQ statuses and the **gate is computed in pure JS from those statuses**, so the model can no longer tally the composite by hand (the old honor-system gate). The workflow also isolates one validation transcript per requirement out of main context.
 
-**Agent prompt template:**
+**1. Resolve the cached workflow path:**
 
-```
-You are a data quality validator. Your job is to verify that an analysis output
-meets a specific requirement from SPEC.md.
-
-REQUIREMENT: [requirement description from SPEC.md]
-SUCCESS CRITERIA: [from SPEC.md]
-EXPECTED OUTPUT: [file path or variable]
-PIPELINE ROW COUNTS: [from LEARNINGS.md]
-
-Run the following checks on the output:
-
-DQ1: Empty/constant columns — flag columns with nunique() <= 1
-DQ2: High-null columns — flag columns with >50% null values
-DQ3: Duplicate rows — check for duplicates on key columns
-DQ4: Row count traceability — verify final count matches LEARNINGS.md pipeline
-DQ5: Cardinality check — flag categoricals with suspicious cardinality
-M1: Spec compliance — does this output address the requirement?
-
-For each check, report: PASS / WARN / FAIL with details.
-
-RULES:
-1. Do NOT modify any code or data files
-2. Read and inspect outputs only
-3. If an output file does not exist, report MISSING immediately
-4. If checks reveal issues, report them — do NOT fix them
+```bash
+WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/ds-validate-coverage.js 2>/dev/null | sort -V | tail -1)
+# Local-plugin fallback (running from source, cache empty):
+[ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/ds-validate-coverage.js"
+echo "$WF"
 ```
 
-### Step 6: Write VALIDATION.md
+**2. Run it** (full pass first; on a re-run after fixes, pass `onlyChecks` + `priorReviews` from the prior result):
 
-Compile all subagent results into `.planning/VALIDATION.md` using the template below.
+```
+Workflow({ scriptPath: "<WF>", args: { projectDir: "<abs project dir>", pluginRoot: "<abs .../workflows dir>" } })
+```
+
+The workflow fans out one **read-only** validator per in-scope SPEC requirement (running DQ1-DQ5 + M1 from `ds-checks.md`), then computes — in JS, from raw statuses — each requirement's classification and the overall `status`. It returns `{ overallPass, status, counts, scoreTable, findings, reviews, reviewersThatFlagged }`.
+
+### Step 6: Render VALIDATION.md from the workflow result
+
+**Do NOT recompute or rationalize the gate** — `result.status` and `result.overallPass` are computed in JS. Write `.planning/VALIDATION.md` using `result.scoreTable` as the Requirements Map, `result.counts` for the frontmatter totals, and `result.findings` under DQ Details:
+
+```
+status: <result.status>           # validated | gaps_found — verbatim from the workflow
+requirements_total / covered / partial / missing: <result.counts>
+Requirements Map: <result.scoreTable>
+DQ Details: <result.findings>
+```
+
+**The `/goal` fix loop stays in this skill:** if `status: gaps_found`, present gaps (Step "Gate" below) and let the **user** decide fix vs accept. On a fix-and-re-validate cycle, re-run the workflow with `onlyChecks: <prev result.reviewersThatFlagged>` and `priorReviews: <prev result.reviews>` so unflagged requirements carry forward and only the gaps re-run live.
 
 ## Validation Levels
 
@@ -244,8 +265,8 @@ When presenting validation results to the user (especially gaps), generate diagn
 
 `.planning/VALIDATION.md` must exist before proceeding.
 
-- If status is `validated`: proceed to ds-review.
-- If status is `gaps_found`: present gaps to user before proceeding.
+- If status is `validated`: **human-verify** checkpoint — auto-advanceable; proceed to ds-review.
+- If status is `gaps_found`: **decision** checkpoint — present gaps to user before proceeding.
   - User decides: **fix** (return to ds-implement) or **accept** (proceed to ds-review with known gaps).
 
 <EXTREMELY-IMPORTANT>
