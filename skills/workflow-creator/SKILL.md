@@ -1,7 +1,7 @@
 ---
 name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow', 'convert fan-out to a workflow script', or needs to substantially create or edit any multi-phase workflow."
-version: 0.2.0
+version: 0.3.0
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"
@@ -985,6 +985,7 @@ implements: [WC-05]
 requires: [DESIGN.md, enforcement-checklist.md]
 provides: [enforcement plan, hook coverage matrix]
 affects: [.planning/wc/{name}/STATE.md]
+one-liner: "Hook coverage and script wiring matrices produced across the skill family; intentional gaps justified."
 ```
 
 **Proceed to Step 5.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
@@ -1086,6 +1087,18 @@ one-liner: "Entry point (start fresh) and midpoint (re-enter with constraint loa
 ### Step 6: Generate Workflow Files
 <!-- implements: WC-07 -->
 
+<EXTREMELY-IMPORTANT>
+**NO GENERATED PHASE FILE WITHOUT THE ENFORCEMENT DENSITY ITS DRIFT TIER DEMANDS.** Step 6 is the highest-drift phase of Mode 1 — you are now WRITING, and the temptation is to emit a clean-looking SKILL.md that silently drops the gate, the Iron Law, or the co-located `.py` that DESIGN assigned. A generated file that looks complete but omits its enforcement ships the gap to every user of that workflow.
+</EXTREMELY-IMPORTANT>
+
+| Excuse (Step 6) | Reality | Do Instead |
+|--------|---------|------------|
+| "The design looks complete, I'll skip enforcement on the medium-drift phase" | Medium-drift phases still drift. The omission is invisible until the workflow fails. | Generate the enforcement DESIGN assigned to EVERY phase, by tier. |
+| "I'll write the constraint `.md` now and the `.py` later" | Later never comes; the runner auto-discovers nothing. | Write the `.md` + `.py` together — same stem, same dir. |
+| "Transitions as prose are fine" | Prose transitions are advisory; users invoke phases directly and bypass them. | Wire hook-enforced gate artifacts where DESIGN marked them mandatory. |
+
+**Red Flags — STOP if you catch yourself:** about to write a phase SKILL.md without the gate DESIGN specified · about to skip the co-located `.py` for a testable rule · about to write a verifier/reviewer agent without read-only `allowed-tools` · about to emit a hook `command:` with `${CLAUDE_SKILL_DIR}` instead of `${CLAUDE_PLUGIN_ROOT}`. **Drive check:** skipping enforcement to "ship the files faster" is anti-helpful — the user inherits every gap you dropped.
+
 Create the following artifacts:
 1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
 2. **Midpoint command** (`skills/[name]-fix/SKILL.md` or `skills/[name]-debug/SKILL.md`) — self-contained re-entry
@@ -1152,6 +1165,26 @@ Visual artifacts *can* make `decision` checkpoints faster — but what helps dep
 
 Present complete file list for user approval before writing. `[checkpoint: decision — user chooses which files to generate]`
 
+#### Optional: generate the files with the wc-generate transform workflow
+
+Once the user has approved the file list, the per-file *creation* from the approved DESIGN.md is a textbook **transform/generate fan-out** — a fixed spec (DESIGN.md) drives one independent write per file, with no creative latitude. workflow-creator eats its own cooking here too: prefer the **wc-generate dynamic workflow** over hand-writing each file in main chat. (The interview, decomposition, enforcement design, and the user file-approval gate above stay CONVERSATIONAL — only the mechanical per-file write moves into the workflow.)
+
+```bash
+WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-generate.js 2>/dev/null | sort -V | tail -1)
+[ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/wc-generate.js"
+```
+```
+Workflow({ scriptPath: "<WF>", args: {
+  workflowName: "{name}",
+  projectDir: "<abs plugin repo root>",
+  designPath: "<abs .planning/wc/{name}/DESIGN.md>"   // optional; defaults to that path
+} })
+```
+
+It fans out one **worktree-isolated write-agent per file** (each phase SKILL.md + each constraint `.md`/`.py` pair + `check-all.py`), each creating its file from the **pinned DESIGN spec** (the workflow refuses if DESIGN.md is missing/unapproved — Delete & Restart). A read-only **verify** stage then confirms each file matches its spec and the co-located `.md`/`.py` pairing holds. It returns `{ overallPass, scoreTable, files, findings, filesThatFailed }`.
+
+**Ground-truth before claiming done (self-reports are not ground truth):** the write-agents run in isolated worktrees, so after the workflow returns you MUST (1) merge the surfaced worktrees, then (2) `ls` each file at its **expected** path (watch for doubled `skills/skills/` or `workflows/workflows/` typo paths) and `node --check` / lint the generated files yourself. On a re-run after fixing gaps, pass `onlyChecks: <prev result.filesThatFailed>` + `priorReviews: <prev result.reviews>`. If `wc-generate` is unavailable, fall back to writing the files directly per the list above. **Whichever path you take, Step 7's wc-audit self-audit still runs on the result.**
+
 Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 6-generate
@@ -1209,31 +1242,22 @@ workflow-creator mandates audit-fix loops, independent verification, and artifac
 After generating workflow files in Step 6:
 
 <EXTREMELY-IMPORTANT>
-**The audit MUST be run by a fresh subagent with read-only tools — not by you.** If you run the audit yourself, you are self-reviewing your own work; see the Iron Law above. The same agent that wrote the files cannot score them independently.
+**The audit MUST be run by the wc-audit workflow (read-only reviewers, JS gate) — not by you.** If you score the files yourself, you are self-reviewing your own work; see the Iron Law above. The same agent that wrote the files cannot score them independently.
 </EXTREMELY-IMPORTANT>
 
-1. **Dispatch fresh audit subagent** (same pattern as Mode 3 Phase A):
+1. **Run the wc-audit workflow on the newly generated workflow** (same workflow Mode 2/Mode 3 use — read-only reviewers, JS-computed composite, so generation and judgment are structurally separate). First drafts clear **8.0**, not 9.5:
 
-   ```python
-   Agent(
-     subagent_type="general-purpose",
-     description="Self-audit generated workflow",
-     allowed_tools=["Read", "Grep", "Glob"],  # REQUIRED — no Write/Edit
-     prompt="""You are an independent workflow auditor with no knowledge of how
-     these files were written. Read Mode 2 criteria in
-     ${CLAUDE_SKILL_DIR}/SKILL.md, then
-     read ALL generated skill files: [LIST THEM].
-
-     Score the 20 architecture principles (0-10 each) and 13 enforcement
-     patterns (Present/Weak/Absent per phase). Compute composite (average of
-     non-exempt principles).
-
-     Return findings as text output (you have read-only tools — the caller writes AUDIT.md). Do NOT soften.
-     """
-   )
+   ```bash
+   WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-audit.js 2>/dev/null | sort -V | tail -1)
+   [ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/wc-audit.js"
+   ```
+   ```
+   Workflow({ scriptPath: "<WF>", args: { targetWorkflow: "{name}", projectDir: "<abs repo root>", pluginRoot: "<abs .../workflows dir>", threshold: 8.0 } })
    ```
 
-2. **Check score:** If composite score < 8.0, drive convergence via the native `/goal` primitive — a separate evaluator gates exit by reading SCORES.md from the transcript, so the agent that generated the files isn't also the judge.
+   Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` and append `result.composite` to `.planning/wc/{name}/SCORES.md`.
+
+2. **Check score:** If `result.composite < 8.0`, drive convergence via the native `/goal` primitive — a separate evaluator gates exit by reading SCORES.md from the transcript, so the agent that generated the files isn't also the judge.
 
    Invoke:
 
@@ -1241,7 +1265,7 @@ After generating workflow files in Step 6:
    /goal Generated workflow scores >= 8.0 in .planning/wc/{name}/SCORES.md from a fresh audit subagent. Stop after 3 turns.
    ```
 
-   Each turn under the active goal: fix the generated files based on the latest AUDIT.md findings, re-dispatch a NEW audit subagent (no resume, no context carryover), append the new score row to SCORES.md, end turn.
+   Each turn under the active goal: fix the generated files based on the latest AUDIT.md findings, re-run the wc-audit workflow (full pass, or `onlyChecks: <prev result.reviewersThatFlagged>` + `priorReviews: <prev result.reviews>`), append the new composite to SCORES.md, end turn.
 
 3. **Present to user** `[checkpoint: decision — user approves or requests changes]` with the audit report attached — the user sees both the workflow AND its quality score
 
@@ -1317,9 +1341,39 @@ Step 1: Read All Files ──→ Step 2: Score 20 Principles ──→ Step 3: S
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` and pause — the audit will degrade if context is exhausted mid-scoring.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
+<EXTREMELY-IMPORTANT>
+### How Mode 2 runs: the wc-audit dynamic workflow (eat your own cooking)
+
+**The audit fan-out is owned by a dynamic workflow — a script, not hand-dispatched agents in main chat.** workflow-creator tells every other workflow to migrate its review fan-out to a Claude Code dynamic workflow; it MUST do the same for its own audit. `workflows/wc-audit.js` fans out one **read-only** reviewer per audit dimension (4 architecture clusters covering P01-P21, the 13-pattern enforcement checklist, path portability, the Dynamic-Workflow Candidacy Scan), adversarially **verifies** each critical/major gap against the actual files, and computes the **composite + verdict in pure JS** — so the model can no longer self-report a generous composite (the exact honor-system smell this skill flags in others). Steps 1-3b below are the **criteria the workflow's reviewers read** (they Read this SKILL.md's Mode 2 section for the P01-P21 definitions); Step 4 is how you **render AUDIT.md from the result** — you do NOT score by hand.
+
+**Run it:**
+
+1. Resolve the cached workflow path (local-plugin fallback when running from source):
+```bash
+WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-audit.js 2>/dev/null | sort -V | tail -1)
+[ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/wc-audit.js"
+echo "$WF"
+```
+
+2. Run it (full audit first; on a Mode 3 re-audit pass `onlyChecks` + `priorReviews` from the prior result):
+```
+Workflow({ scriptPath: "<WF>", args: {
+  targetWorkflow: "{name}",
+  projectDir: "<abs plugin repo root>",
+  pluginRoot: "<abs .../workflows dir>"   // optional; helps resolve enforcement-checklist.md + the migration playbook
+} })
+```
+
+It returns `{ overallPass, composite, verdict, threshold, isMetaTool, scoreTable, reportMarkdown, candidacyTable, findings, reviews, reviewersThatFlagged }`. The reviewers ground in the criteria in Steps 1-3b; the **JS gate** computes the composite as the mean of non-exempt, non-domain-ceiling principle scores and honors the **meta-tool exemptions** (when auditing workflow-creator itself, P01 and P06 are excluded from the composite — see the structure note at the top of this skill).
+
+**Post-workflow boundary (verification, not investigation):** after the workflow returns you may Read AUDIT.md/`result.*`, render the report, and fix gaps — you may NOT recompute or rationalize `result.composite`/`result.overallPass` (the JS owns the arithmetic), nor re-score a principle the reviewers scored.
+
+The STATE.md step-chain (1-read → 2-score → 3-enforcement → 3b-portability → 4-report) is **preserved** — the workflow performs the work each step describes; you still write each STATE.md transition so the hook chain holds.
+</EXTREMELY-IMPORTANT>
+
 ### Step 1: Read the Workflow
 
-Read the workflow's entry command and ALL phase skills. Build a map of phases, transitions, and enforcement.
+The wc-audit workflow's **Discover phase** reads the target workflow's entry command, midpoint, and ALL phase skills (plus references/constraints) and returns the file map — you do not need to read them all into main context. Confirm the workflow's discovery enumerated the full file set (the workflow `throw`s if it found none). Build/Read the phase map only as needed to interpret the result.
 
 **Gate: Workflow Fully Read** `[checkpoint: human-verify, auto-advanceable]`
 - Verify entry command was read
@@ -1333,6 +1387,7 @@ status: completed
 requires: [all workflow skill files]
 provides: [file map, phase/transition inventory]
 affects: [.planning/wc/{name}/STATE.md]
+one-liner: "wc-audit Discover enumerated the target's entry/midpoint/phase skills + references — full file map built."
 ```
 
 **Proceed to Step 2.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
@@ -1521,6 +1576,7 @@ implements: [WC-09]
 requires: [all workflow skill files]
 provides: [P01-P21 scores with justifications]
 affects: [.planning/wc/{name}/STATE.md]
+one-liner: "P01-P21 scored with line-number evidence by the wc-audit reviewers; composite computed in JS."
 ```
 
 **Proceed to Step 3.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
@@ -1548,6 +1604,7 @@ status: completed
 requires: [enforcement-checklist.md, all workflow skill files]
 provides: [13-pattern scores per phase]
 affects: [.planning/wc/{name}/STATE.md]
+one-liner: "13 enforcement patterns scored Present/Weak/Absent per phase; weakest high-drift phases flagged."
 ```
 
 **Proceed to Step 3b.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
@@ -1623,6 +1680,7 @@ status: completed
 requires: [all SKILL.md and references/*.md files]
 provides: [path portability score]
 affects: [.planning/wc/{name}/STATE.md]
+one-liner: "Path portability scored Clean/Partial/Broken; hook-command variable audit run; candidacy scan fed into Step 4."
 ```
 
 #### Dynamic-Workflow Candidacy Scan (feeds Step 4 Recommendations — no separate gate)
@@ -1645,6 +1703,10 @@ For each flagged phase, classify **strong** / **moderate**, note worker-mode (re
 **Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
 ### Step 4: Output Audit Report
+
+**Render AUDIT.md from the workflow result — do NOT re-score by hand.** The wc-audit workflow already produced `result.reportMarkdown` (the full AUDIT.md body: P01-P21 table, enforcement coverage, path portability, candidacy table, critical gaps), `result.scoreTable` (the dimension-level gate), `result.candidacyTable`, `result.composite`, and `result.verdict`. Write `result.reportMarkdown` verbatim to `.planning/wc/{name}/AUDIT.md` and present `result.scoreTable` + `result.composite` to the user. **The gate is `result.overallPass`/`result.composite`, computed in JS — do not recompute or rationalize it.** Append the composite row to `.planning/wc/{name}/SCORES.md` for the Mode 3 trend.
+
+The format below documents what `result.reportMarkdown` contains (so you can sanity-check the workflow's output) — it is the spec the workflow renders to, not a worksheet to fill in yourself.
 
 Format:
 
@@ -1715,14 +1777,17 @@ Format:
 uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
 ```
 
-**Persist audit results:** Write the audit report to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`:
+**Traceability (self-applied P18):** write or update `.planning/wc/{name}/VALIDATION.md` mapping each `WC-NN` requirement to the audit evidence that verifies it (the gate/principle that confirms it) + its scope tag — the same closure Mode 1 Step 7 performs, applied to an audit-only run.
+
+**Persist audit results:** Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` in addition to displaying it. Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 4-report
 status: completed
 implements: [WC-09]
 requires: [all workflow skill files]
-provides: [AUDIT.md]
-affects: [.planning/wc/{name}/AUDIT.md]
+provides: [AUDIT.md, VALIDATION.md]
+affects: [.planning/wc/{name}/AUDIT.md, .planning/wc/{name}/VALIDATION.md]
+one-liner: "AUDIT.md rendered from the wc-audit result (composite + matrices + candidacy); VALIDATION.md maps WC-NN evidence."
 ```
 
 <EXTREMELY-IMPORTANT>
@@ -1831,6 +1896,7 @@ status: in_progress
 requires: [Mode 2 audit report]
 provides: [score-gated fix iterations]
 affects: [.planning/wc/{name}/STATE.md, .planning/wc/{name}/SCORES.md, target workflow files]
+one-liner: "/goal audit-fix loop launched (threshold 9.5); each turn re-runs wc-audit and appends the composite to SCORES.md."
 ```
 
 **Each turn under the active goal follows this exact sequence:**
@@ -1850,57 +1916,30 @@ Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
                                               refires Phase A
 ```
 
-#### Phase A: AUDIT (Fresh Subagent — MANDATORY)
+#### Phase A: AUDIT (the wc-audit workflow — MANDATORY, independent by construction)
 
-Spawn a fresh audit subagent that:
-1. Reads ALL skill files in the workflow (entry, midpoint, all phases, references, common-constraints)
-2. Scores against the P01-P21 architecture principles (0-10 each)
-3. Scores against the 13 enforcement patterns (Present/Weak/Absent per phase)
-4. Checks path portability
-5. Computes composite score (average of non-N/A principle scores)
-6. Returns findings as text output (read-only tools — caller writes AUDIT.md and SCORES.md)
+**Run the Mode 2 wc-audit dynamic workflow** (see "How Mode 2 runs" above) — it IS the fresh, independent audit. Each dimension reviewer reads the files cold with NO knowledge of your fixes, and the **composite is computed in JS**, so a fixer cannot rubber-stamp its own work:
 
+```bash
+WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-audit.js 2>/dev/null | sort -V | tail -1)
+[ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/wc-audit.js"
 ```
-Agent(
-  subagent_type="general-purpose",
-  description="Audit workflow enforcement",
-  allowed_tools=["Read", "Grep", "Glob"],  # REQUIRED — verifier MUST NOT Write/Edit
-  prompt="""You are an independent workflow auditor. You have NO knowledge of any prior fixes.
-
-You have Read/Grep/Glob ONLY. If you find a violation, REPORT it — do not
-silently fix it. A verifier that edits bypasses the plan-execute-verify cycle
-(see Iron Law of Read-Only Verifiers).
-
-Read the workflow-creator Mode 2 audit criteria:
-Read "${CLAUDE_SKILL_DIR}/SKILL.md" — Mode 2 section only.
-
-Read the enforcement checklist:
-Read "${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md"
-
-Then audit this workflow by reading ALL its skill files:
-[LIST ALL SKILL FILES IN THE WORKFLOW]
-
-Score each of the 21 architecture principles (P01-P21 + P19b) 0-10.
-Score each of the 13 enforcement patterns per phase: Present/Weak/Absent.
-Check path portability.
-
-Compute composite score = average of non-N/A principle scores (exclude any principle marked N/A from both numerator and denominator).
-
-Output to .planning/wc/{name}/AUDIT.md with this format:
-- Composite score (single number)
-- Per-principle scores with 1-line justification
-- Critical gaps (principle score < target composite, i.e. < 9.5) with specific fix recommendations
-- Enforcement matrix (13 patterns × N phases)
-
-Be thorough. A generous audit that misses gaps is worse than a harsh one.
-Do NOT soften findings. Do NOT say 'overall good.'
-""")
 ```
+# Full audit on iteration 1; selective re-audit thereafter:
+Workflow({ scriptPath: "<WF>", args: {
+  targetWorkflow: "{name}", projectDir: "<abs repo root>", pluginRoot: "<abs .../workflows dir>",
+  threshold: 9.5,
+  onlyChecks: <prev result.reviewersThatFlagged>,   // omit on iteration 1
+  priorReviews: <prev result.reviews>               // omit on iteration 1
+} })
+```
+
+Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` and append `result.composite` as a new row in `.planning/wc/{name}/SCORES.md`. The workflow's reviewers are read-only (they REPORT, never fix) and the gate is JS — that is what makes the score trustworthy.
 
 <EXTREMELY-IMPORTANT>
-**THE AUDITOR MUST BE A FRESH SUBAGENT. If you audit your own fixes, you are rubber-stamping.**
+**THE AUDIT IS THE wc-audit WORKFLOW, NOT YOUR OWN RE-READ. If you score your own fixes by hand, you are rubber-stamping.**
 
-The auditor has no context from the fix phase. It reads the files cold. This is what makes the score trustworthy.
+The workflow's reviewers have no context from the fix phase — they read the files cold and the composite is computed in JS from raw scores. This is what makes the score trustworthy. Do not substitute a hand audit; do not recompute `result.composite`.
 </EXTREMELY-IMPORTANT>
 
 #### Phase B: DECIDE `[checkpoint: decision]`
@@ -1922,6 +1961,10 @@ Check composite score against threshold:
 **You may ONLY output the completion promise when the auditor's score >= 9.5. Not when you "feel" it's good enough. Not when the remaining gaps seem minor. The score decides.**
 
 #### Phase C: FIX
+
+<EXTREMELY-IMPORTANT>
+**NO FIX WITHOUT A SPECIFIC AUDIT FINDING. Targeted changes only — never rewrite a phase file wholesale.** Each edit must close ONE gap the wc-audit workflow named. Editing files the audit did not flag is unverified change that the next audit cannot attribute — and risks regressing a principle that was passing.
+</EXTREMELY-IMPORTANT>
 
 Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 
@@ -1987,7 +2030,7 @@ During fix application, unplanned issues may arise. Apply these deviation rules:
 - Targeted changes only — do NOT rewrite entire skill files
 - Each fix addresses ONE gap from the audit
 - After fixing, do NOT self-assess — the next iteration's audit will judge
-- **End your turn immediately** so the loop feeds you back for re-audit
+- **End your turn immediately** so the loop feeds you back for re-audit. Do NOT ask "should I continue?", do NOT summarize the fixes you just made, do NOT wait for confirmation — the `/goal` evaluator re-fires Phase A on its own. Pausing between fix iterations is procrastination disguised as courtesy; it strands the loop.
 
 ### Efficiency Optimizations
 

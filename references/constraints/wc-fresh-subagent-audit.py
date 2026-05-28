@@ -22,23 +22,29 @@ def check(context):
 
     import re
 
-    # Check Mode 1 Step 7 has fresh subagent dispatch (use heading pattern)
+    # An audit dispatch is fresh + read-only if EITHER:
+    #  (a) it dispatches a fresh Agent() with an allowed_tools restriction (the original pattern), OR
+    #  (b) it invokes the wc-audit dynamic workflow (whose dimension reviewers are READ-ONLY
+    #      subagents by construction and whose composite is computed in JS — the migrated pattern).
+    def fresh_readonly(section):
+        agent_form = ("Agent(" in section or "subagent" in section.lower()) and (
+            "allowed_tools" in section or "allowed-tools" in section)
+        workflow_form = "wc-audit" in section
+        return agent_form or workflow_form
+
+    # Check Mode 1 Step 7 has a fresh, read-only audit dispatch (use heading pattern)
     step7_match = re.search(r'^### Step 7:', content, re.MULTILINE)
     if step7_match:
         step7_section = content[step7_match.start():step7_match.start() + 3000]
-        if "Agent(" not in step7_section and "subagent" not in step7_section.lower():
-            violations.append("Step 7 does not contain Agent() dispatch for self-audit")
-        if 'allowed_tools' not in step7_section and 'allowed-tools' not in step7_section:
-            violations.append("Step 7 audit dispatch missing allowed_tools restriction")
+        if not fresh_readonly(step7_section):
+            violations.append("Step 7 audit dispatch is neither a read-only Agent() nor a wc-audit workflow call")
 
-    # Check Mode 3 Phase A has fresh subagent dispatch (use heading pattern)
+    # Check Mode 3 Phase A has a fresh, read-only audit dispatch (use heading pattern)
     phase_a_match = re.search(r'^#### Phase A:', content, re.MULTILINE)
     if phase_a_match:
         phase_a_section = content[phase_a_match.start():phase_a_match.start() + 3000]
-        if "Agent(" not in phase_a_section and "subagent" not in phase_a_section.lower():
-            violations.append("Phase A does not contain Agent() dispatch for audit")
-        if 'allowed_tools' not in phase_a_section and 'allowed-tools' not in phase_a_section:
-            violations.append("Phase A audit dispatch missing allowed_tools restriction")
+        if not fresh_readonly(phase_a_section):
+            violations.append("Phase A audit dispatch is neither a read-only Agent() nor a wc-audit workflow call")
 
     return violations
 
