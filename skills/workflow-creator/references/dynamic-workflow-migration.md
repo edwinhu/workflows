@@ -1,8 +1,8 @@
 # Dynamic-Workflow Migration Playbook
 
-> **For Claude:** Load this when migrating a fan-out review/diagnosis phase into a Claude Code **dynamic workflow** (a JavaScript script the `Workflow` tool runs, orchestrating subagents in the background). This is workflow-creator's migration capability — applied during **Mode 1** decomposition (decide workflow-vs-dispatch) or as a **Mode 3** improvement (migrate an existing fan-out phase). It is grounded in a shipped migration (teaching plugin: `lecture-verify` + 5 siblings).
+> **For Claude:** Load this when migrating a fan-out phase into a Claude Code **dynamic workflow** (a JavaScript script the `Workflow` tool runs, orchestrating subagents in the background). Two kinds of fan-out qualify: **read-only review/diagnosis** AND **write/transform/generate** (migrations, codemods, spec-driven per-item creation). This is workflow-creator's migration capability — applied during **Mode 1** decomposition (decide workflow-vs-dispatch) or as a **Mode 3** improvement (migrate an existing fan-out phase). Grounded in a shipped migration (teaching plugin: `lecture-verify` + siblings).
 
-A **dynamic workflow** is a JS script that orchestrates subagents at scale: it holds the loop, the fan-out, and the intermediate results in *script variables*, computes the gate in *code*, runs in the background, and is resumable. It is NOT a SKILL-based multi-phase workflow (those are what Modes 1-3 create). The two compose: a skill stays the conversational shell and *calls* a dynamic workflow for the deterministic fan-out stage.
+A **dynamic workflow** is a JS script that orchestrates subagents at scale: it holds the loop, the fan-out, and the intermediate results in *script variables*, computes gates in *code*, runs in the background, and is resumable. **Workflows are NOT read-only** — the docs' flagship examples are *write* workflows: a 500-file migration, a codemod, "make the change." Subagents run in `acceptEdits` mode and file edits are auto-approved; parallel mutation uses `isolation:'worktree'`. It is NOT a SKILL-based multi-phase workflow (those are what Modes 1-3 create). The two compose: a skill stays the conversational shell and *calls* a dynamic workflow for the deterministic fan-out stage (read OR write).
 
 This connects directly to the **Iron Law of Flat Dispatch**: "an agent that spawns other agents is a dispatcher — and dispatchers fail." A dynamic workflow is the structural answer — it is a *script*, not a middle dispatcher agent, so reviewer results land in variables and can never be lost to a sub-sub-agent.
 
@@ -10,26 +10,32 @@ This connects directly to the **Iron Law of Flat Dispatch**: "an agent that spaw
 
 ## 1. Decision rubric — MIGRATE vs LEAVE
 
-**Migrate a phase when the SHAPE qualifies AND it gets a meaningful win from at least ONE value driver:**
+**Migrate a phase when the SHAPE qualifies AND it gets a meaningful win from at least ONE value driver. The dividing line is `deterministic + parallelizable over a list` (→ workflow, read OR write) vs `judgment + user-input + cross-cutting` (→ skill) — NOT `read-only vs writes`.**
 
 | Test | Migrate | Leave conversational |
 |------|---------|----------------------|
-| Shape (required) | Fan-out: "one agent per X" (section, lecture, question, source, footnote) over a list, whose **aggregated results the skill consumes** | Single pass / single agent, or a few dependent steps |
-| Output | A **computed gate** (numeric threshold, pass/fail, composite) **OR structured findings** the skill renders/acts on (e.g. a per-section REVIEW.md diagnosis) | Prose judgment with no structure, a creative artifact, a routing decision |
-| Reviewers | **Read-only** verification/audit/diagnosis | Generation, drafting, brainstorming |
+| Shape (required) | Fan-out: "one agent per X" over a known list (section, lecture, question, source, footnote, **file, call-site**), whose results the skill consumes OR whose per-item **mutations are independent** | Single pass / single agent, or a few dependent steps |
+| Worker mode | **Read-only reviewer** (verify/audit/diagnose) **OR write/transform agent** (migration, codemod, spec-driven generation). Write agents pass `isolation:'worktree'` so parallel mutations don't collide. | n/a — mode doesn't decide migrate-vs-leave |
+| Output | A computed gate / structured findings (review) **OR** transformed/generated artifacts + a verify pass (write) | Prose judgment with no structure, a *creative* artifact, a routing decision |
 
-**The three value drivers — a qualifying fan-out needs a real win from AT LEAST ONE:**
-1. **Parallelism** — many items reviewed concurrently (wall-clock).
-2. **Context isolation** — the fan-out's transcripts would otherwise blow the main conversation's context (e.g. a 40-section paper, a 100-item chapter). *This alone justifies migration even with no numeric gate* — the workflow returns structured findings, the skill renders the artifact.
-3. **Deterministic gate** — eliminates honor-system score inflation. **Strongest/cleanest** signal, but NOT required.
+**Value drivers — a qualifying fan-out needs a real win from AT LEAST ONE:**
+1. **Parallelism** — many items processed concurrently (wall-clock).
+2. **Context isolation** — the fan-out's transcripts would otherwise blow the main conversation's context (e.g. a 40-section paper, a 100-item chapter). *This alone justifies migration even with no numeric gate.*
+3. **Deterministic gate** — eliminates honor-system score inflation. **Strongest review signal**, but NOT required.
+4. **Independent per-item mutation at scale** — N files/items each transformed in isolation (worktree), then verified. The docs' flagship case: a **500-file migration**, a **codemod**, **"make the change."** This is *write* fan-out, not review — do not overlook it.
 
-**Strong "migrate" smell (driver 3):** the phase tells the model to **self-report a score and then "recompute it yourself"** or "verify the arithmetic." That honor-system gate is exactly what a JS gate eliminates — the auditor returns *raw counts*, the script computes the score. If you see a manual-recompute step, migrating is a correctness win, not just a context win.
+**Strong "migrate" smell (driver 3):** the phase tells the model to **self-report a score and then "recompute it yourself"** / "verify the arithmetic." A JS gate eliminates it — the reviewer returns *raw counts*, the script computes the score.
 
-**A mid-run user *strategy* choice is NOT a disqualifier.** If the phase asks the user "review sequentially or in parallel?", that decision stays in the skill — the skill makes the call, then invokes the always-parallel workflow. Only a user *approval/judgment* gate on the phase's *content* (does this draft pass? is this issue real?) keeps the phase conversational. Don't reject a fan-out just because the skill currently wraps it in an AskUserQuestion about *how* to run it.
+**The generation/drafting line — SPLIT it, do not blanket-leave:**
+- **Mechanical / spec-driven generation or transformation over a known list → MIGRATE** (write workflow, worktree). The "what each item should contain" is already pinned (an inventory, an outline, a transform rule), so per-item work is deterministic. Examples: per-lecture slide/notes creation from a 15–20-item inventory, per-section assembly from an outline, codemods, file migrations, regenerating N artifacts from a spec.
+- **Creative / judgment generation → LEAVE.** Brainstorming a thesis, choosing an argument, drafting novel prose where voice/judgment *is* the work, with no fixed per-item spec. Conversational.
 
-**Hard "leave" cases** (these stay in the skill): brainstorm, drafting/creative prose, style application, user interviews, approval gates, lookup/reference skills, and the `/goal` fix loop itself.
+**A mid-run user *strategy* choice is NOT a disqualifier.** "Review sequentially or in parallel?" stays in the skill (it decides, then invokes the always-parallel workflow). Only a user *approval/judgment* gate on the phase's *content* keeps it conversational.
 
-**Anti-pattern:** do NOT migrate a "fan-out" that is actually a *single* agent — wrapping one agent in a workflow adds a script + path resolution for no parallelism or gate win. **Read the actual phase file to count the fan-out** — never decide from a one-line summary. (A real incident: a phase summarized as "single coverage agent" actually fanned out one auditor *per lecture* AND carried a self-reported composite — it was the best candidate, nearly skipped.)
+**Anti-patterns — STOP if you catch yourself:**
+1. Migrating a "fan-out" that is actually a *single* agent (no parallelism/gate win).
+2. Deciding migrate-vs-leave from a one-line summary — **read the actual phase file** (a phase summarized "single coverage agent" actually fanned out one auditor *per lecture* — nearly skipped).
+3. **Assuming workflows are read-only.** They are NOT. The *strongest* candidates are often write/transform fan-outs (migrations, codemods, per-item spec-driven generation) — the read-only lens wrongly dumps these into "leave." If a phase fans out per-item *creation/transformation* from a fixed spec, that's a prime workflow, not a skill-only phase.
 
 ---
 
@@ -37,12 +43,16 @@ This connects directly to the **Iron Law of Flat Dispatch**: "an agent that spaw
 
 | The WORKFLOW owns | The SKILL keeps |
 |-------------------|-----------------|
-| Deterministic fan-out (one read-only reviewer per item × check) | DRAFTING / creation / brainstorming |
-| Result collection in script variables | The `/goal`-driven fix loop |
-| The scored gate, computed in **pure JS** | R4 / user escalation, approval gates |
-| Returning structured findings + score table | Rendering prose artifacts (e.g. REVIEW.md) from the findings |
+| Deterministic fan-out over a list — read-only review OR write/transform (worktree-isolated) | **Creative/judgment** drafting, brainstorming, argument choice |
+| Result collection / per-item mutation in script variables or worktrees | The `/goal`-driven fix loop |
+| The computed gate (review) or the verify pass (transform), in code | R4 / user escalation, approval gates, user interviews |
+| Returning structured findings the skill renders | Cross-cutting synthesis needing whole-context judgment |
 
-A workflow **cannot host `/goal`** (no mid-run user input; the evaluator lives in the session). So the workflow is review/diagnosis + gate ONLY — it never drafts and never fixes. Name it `*-verify`, `*-diagnose`, `*-audit` — never `*-draft-*`. The skill wraps it: run workflow → read gate → (if fail) `/goal` fix loop → re-run workflow selectively → repeat.
+A workflow **cannot host `/goal`** (no mid-run user input; the evaluator lives in the session), and never does *creative* drafting. Two workflow shapes:
+- **Review workflow** — fan out read-only reviewers → computed gate / structured findings. Name `*-verify` / `*-diagnose` / `*-audit`.
+- **Transform workflow** — fan out write-agents (one per item, `isolation:'worktree'`) → **discover → transform → verify** (a read-only verify stage confirms each mutation). Name `*-migrate` / `*-transform` / `*-generate`. The skill keeps only the creative/judgment "what" (the inventory/outline/spec) and the approval.
+
+Either shape: the skill wraps it — run workflow → read gate/verify → (if fail) `/goal` fix loop → re-run selectively → repeat.
 
 ---
 
@@ -59,7 +69,10 @@ A workflow **cannot host `/goal`** (no mid-run user input; the evaluator lives i
    ```
 3. **Selective re-run** — accept `cfg.onlyChecks` (array of `"ID:check"`) + `cfg.priorReviews` (array of prior REVIEW objects). On a selective run, re-run only flagged pairs live; carry the rest forward from priorReviews so the gate still sees every check.
 4. **Discovery agent** (`model:'sonnet'`) — resolves check/agent files and **enumerates the items** to review. Never hardcode a count.
-5. **Read-only reviewers** — `model:'sonnet'`, schema-validated structured output, prompts open with: *"You are a READ-ONLY reviewer. Do NOT create, edit, or overwrite any files."* Optional `cfg.useTeachingAgents`-style flag routes to a real `agentType`.
+5. **Workers** — `model:'sonnet'`, schema-validated structured output. Two kinds:
+   - **Read-only reviewer** (review workflow): prompt opens *"You are a READ-ONLY reviewer. Do NOT create, edit, or overwrite any files."*
+   - **Write/transform agent** (transform workflow): edits/creates files per a fixed spec; pass `isolation:'worktree'` on the `agent()` call so parallel mutations don't collide, and return a structured summary of what it changed (files touched, status) for the verify stage. NEVER give write agents creative latitude — the "what" comes from the discovered spec, not the agent's judgment.
+   Optional `cfg.use*Agents`-style flag routes to a real `agentType`.
 6. **Fan-out via `parallel()`** (barrier — the gate needs all results); flatten `(item × check)` into a task list.
 7. **Gate in pure JS** — the script computes every score/threshold from the **raw counts** the reviewers return. Reviewers MUST return counts, not scores. Reliability flag: a check is unreliable only if `itemsChecked === 0` (NEVER a findings/items ratio — a clean check has few findings and would false-positive). *(Divergence note: the shipped `lecture-verify.js` schema still carries a per-check `score` field for display, but the gate recomputes the composite from counts regardless. If you copy that example, drop or ignore the reviewer-supplied score — never let it feed the gate. This skeleton's counts-only contract is the stricter, preferred form.)*
 8. **Return shape:** `{ overallPass, scoreTable (markdown w/ Gate column), findings (non-pass, severity-ordered), reviews (raw, for priorReviews), reviewersThatFlagged ("ID:check" pairs, for onlyChecks) }`.
@@ -131,6 +144,15 @@ return {
 }
 ```
 
+### Transform-workflow variant (write fan-out)
+
+For a *write* migration (codemod / file migration / spec-driven per-item generation), keep the same skeleton spine but:
+- **Discover** enumerates the work-list AND the per-item spec (the call-sites to change + the rule; the lectures + their inventories; the sections + their outlines).
+- **Transform stage** dispatches one write-agent per item with `isolation:'worktree'` — the agent edits/creates files per the spec and returns `{item, filesTouched[], status}`. Because each runs in its own worktree, parallel writes don't collide. Worktrees that the runtime sees unchanged are auto-cleaned; changed ones are surfaced for the skill to merge.
+- **Verify stage** (read-only, parallel) confirms each transform did what the spec required — this is the gate. A transform without a verify stage is unsafe; the docs' migrate pattern is literally `discover → transform → verify`.
+- The gate is "all items transformed AND all verifies pass"; `findings` = items that failed transform/verify; selective re-run keyed by item (re-transform only the failures).
+- Name it `*-migrate` / `*-transform` / `*-generate`. The skill keeps the creative "what" (writing the spec/inventory) and final approval; the workflow owns the mechanical per-item execution.
+
 ---
 
 ## 4. Packaging & invocation
@@ -169,6 +191,7 @@ In the target phase/SKILL file, **replace** (a) the section that hand-dispatches
 | "The reviewer reports a composite, I'll trust it." | Self-reported scores inflate — that's the smell that justified migrating. | Reviewer returns counts; the JS computes the score. |
 | "I'll return only the final verify stage." | You lose the generate stage's wiring guide / artifacts. | Thread every stage's output through the pipeline return. |
 | "Wrapping this one agent in a workflow is cleaner." | One agent = no fan-out, no win. | Leave it conversational. |
+| "This phase *writes* files, so it must stay in the skill." | FALSE — workflows do write work (500-file migrations, codemods, "make the change"); write agents use `isolation:'worktree'`. | Migrate it as a transform workflow if the per-item "what" is spec-driven. Only *creative* generation stays. |
 
 ---
 

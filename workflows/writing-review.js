@@ -123,7 +123,7 @@ phase('Discover')
 const disc = await agent(
   `Enumerate the document's sections and resolve the review inputs. Working directory: ${PROJECT}
 
-1. Read .planning/ACTIVE_WORKFLOW.md to get \`style\` (legal|econ|general).
+1. Determine \`style\` (legal|econ|general): read .planning/ACTIVE_WORKFLOW.md if it exists; if it does NOT exist, infer from .planning/PRECIS.md's "Domain" line — pure law → legal, pure empirical → econ, and a **hybrid/mixed domain → general** (the safe baseline). ${cfg.style ? `Caller override: use style="${cfg.style}".` : ''}
 2. Resolve absolute paths: .planning/PRECIS.md, .planning/OUTLINE.md, references/sources.bib (or "" if absent).
 3. domainSkillPath = the writing-{style}/SKILL.md under the plugin. ${cfg.pluginRoot ? `Plugin root: ${cfg.pluginRoot}` : 'Resolve via: command ls -d ~/.claude/plugins/cache/*/workflows/*/skills/writing-{style}/SKILL.md or the in-repo skills/ dir.'}
 4. repetitionScript = the bridge_repetition_check.py under skills/writing-review/scripts/.

@@ -239,7 +239,7 @@ Design phases where each phase has:
 - **Gate artifact** - the concrete file the producing phase writes and the consuming phase checks (see Structural Gate Artifacts below)
 - **Enforcement needs** - high/medium/low based on drift risk
 
-**Dynamic-workflow check:** For any phase that is a **fan-out over a list** (one read-only reviewer per item × check) producing a **computed gate**, decide whether to implement it as a Claude Code **dynamic workflow** (a JS script the skill calls) rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = fan-out + JS gate; skill keeps drafting + `/goal` + R4 + user input), and the script conventions. Strong signal: if the gate would otherwise rely on a model-reported score the skill must "recompute by hand," a JS gate eliminates the inflation. Keep drafting, brainstorming, user-approval, and `/goal` loops conversational in the skill.
+**Dynamic-workflow check:** For any phase that is a **fan-out over a known list** — either *read-only review* (one reviewer per item → gate/findings) OR *write/transform* (one write-agent per item that creates/transforms from a fixed spec — codemod, migration, per-item spec-driven generation, worktree-isolated) — decide whether to implement it as a Claude Code **dynamic workflow** rather than in-skill agent dispatch. Workflows are NOT read-only; the docs' flagship case is a 500-file write migration. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = deterministic fan-out read-or-write; skill keeps *creative* drafting + `/goal` + R4 + user input), and script conventions. Keep only *creative/judgment* generation, user-approval, and `/goal` loops conversational — mechanical/spec-driven per-item creation belongs in a transform workflow.
 
 ### Structural Gate Artifacts
 
@@ -1627,14 +1627,20 @@ affects: [.planning/wc/{name}/STATE.md]
 
 #### Dynamic-Workflow Candidacy Scan (feeds Step 4 Recommendations — no separate gate)
 
-Before writing the report, scan every phase for **dynamic-workflow migration candidates** — fan-out review/diagnosis phases that should be Claude Code dynamic workflows rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §1 for the rubric. Flag a phase when the SHAPE qualifies AND it wins on ≥1 value driver:
+Before writing the report, scan every phase for **dynamic-workflow migration candidates** — fan-out phases that should be Claude Code dynamic workflows rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §1 for the rubric. **Scan for BOTH worker modes — workflows are NOT read-only:**
+- **Review fan-out** — N read-only agents (per section/lecture/question/source/footnote) → computed gate / structured findings.
+- **Write/transform fan-out** — N write-agents (per file/site/lecture/section) that *create or transform* artifacts from a fixed spec (codemod, migration, per-item spec-driven generation), worktree-isolated. The docs' flagship case: 500-file migration, "make the change." **Do not skip these — they are often the strongest candidates.**
 
-1. **Shape (required):** the phase dispatches N read-only agents "one per X" (per section/lecture/question/source/footnote) over a list, and the skill consumes their aggregated results — as a **computed gate OR structured findings** (e.g. a per-section REVIEW.md diagnosis). A *numeric* gate is NOT required.
-2. **At least one value driver:** (a) **parallelism**, (b) **context isolation** — the fan-out's transcripts would otherwise blow the main conversation (this alone justifies migration, no numeric gate needed), or (c) a **deterministic gate** replacing a model-reported score the skill "recomputes by hand" (strongest signal).
+Flag a phase when the SHAPE qualifies AND it wins on ≥1 value driver:
 
-**Not disqualifiers:** a mid-run user *strategy* choice ("review sequentially or in parallel?") stays in the skill, which then calls the always-parallel workflow — do NOT reject a real fan-out for this. A diagnosis output (REVIEW.md) instead of a numeric score does NOT disqualify (driver b still applies).
+1. **Shape (required):** the phase dispatches N agents "one per X" over a known list, and either the skill consumes their aggregated results (review) OR each does an **independent per-item mutation** (write). A *numeric* gate is NOT required.
+2. **At least one value driver:** (a) **parallelism**, (b) **context isolation**, (c) a **deterministic gate** replacing a model-reported "recompute by hand" score (strongest review signal), or (d) **independent per-item mutation at scale** (write fan-out — migrations, codemods, per-item generation).
 
-For each flagged phase, classify **strong** (driver c present) or **moderate** (only a/b) and add a Recommendation: *"Migrate <phase> to a dynamic workflow (`workflows/<name>.js`) — fan-out returns gate/findings; keep drafting/`/goal`/R4 in the skill. Mode 3 improvement; see the migration playbook."* Do NOT flag single-agent phases (no fan-out), drafting/brainstorm/approval-on-content phases, routing, or fan-outs whose agents are external (e.g. a Batch API / CLI, not Claude subagents). If a phase has a real fan-out but no value-driver win, note it as "fan-out present, no migration win" rather than recommending. If nothing qualifies, state "no dynamic-workflow candidates" — silence is ambiguous.
+**The generation line — SPLIT it (do NOT blanket-leave generation):** *mechanical/spec-driven* per-item creation/transformation (the "what" is pinned by an inventory/outline/rule — e.g. per-lecture slide creation from a 15-20-item inventory, per-section assembly from an outline, a codemod) → **FLAG as a transform-workflow candidate.** Only *creative/judgment* generation (brainstorm a thesis, draft novel prose where voice IS the work) stays conversational.
+
+**Not disqualifiers:** a mid-run user *strategy* choice ("sequential or parallel?") stays in the skill. A diagnosis output (REVIEW.md) instead of a numeric score is fine (driver b). The phase *writing files* is NOT a disqualifier (that's exactly driver d).
+
+For each flagged phase, classify **strong** / **moderate**, note worker-mode (review vs transform), and add a Recommendation: *"Migrate <phase> to a dynamic workflow — review→gate/findings, or transform→worktree write + verify; keep the creative 'what' + `/goal` + R4 in the skill. Mode 3 improvement; see the migration playbook."* Do NOT flag: single-agent phases (no fan-out), *creative*-judgment drafting/brainstorm, content-approval gates, routing, or fan-outs whose agents are external (Batch API / CLI, not Claude subagents). If a phase has a real fan-out but no value-driver win, note "fan-out present, no migration win". If nothing qualifies, state "no dynamic-workflow candidates" — silence is ambiguous.
 
 **Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
@@ -1689,9 +1695,9 @@ Format:
 | skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
 
 ### Dynamic-Workflow Migration Candidates
-| Phase | Fan-out? | Honor-system score? | Recommend migrate? | Note |
-|-------|----------|---------------------|--------------------|------|
-| [phase] | ✅/❌ (one per X) | ✅/❌ (recompute-by-hand) | ✅ Mode 3 / ❌ leave | [why] |
+| Phase | Fan-out? | Worker mode (review/transform) | Value driver | Recommend migrate? (strong/moderate) | Note |
+|-------|----------|--------------------------------|--------------|--------------------------------------|------|
+| [phase] | ✅/❌ (one per X) | review / transform / — | parallelism / context / gate / per-item-mutation | ✅ Mode 3 (strong\|moderate) / ❌ leave | [why] |
 
 (From the Dynamic-Workflow Candidacy Scan. "no dynamic-workflow candidates" if none qualify.)
 
@@ -1785,7 +1791,7 @@ If you discover mid-audit that you scored Steps 1-2 without reading all phase sk
 
 ## Mode 3: Improve Workflow
 
-**Migrating a fan-out phase to a dynamic workflow is a Mode 3 improvement.** If the user asks to "migrate a phase to a dynamic workflow" / "convert fan-out to a workflow script," or the audit finds a fan-out review/diagnosis phase with a model-reported score the skill recomputes by hand, treat the migration as the fix: read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` (decision rubric, script conventions, packaging, wiring, exit gate), confirm the candidate from the ACTUAL phase file (not a summary), write `workflows/<name>.js`, `node --check` it, verify the artifact lands at the expected path, then wire the skill (keep drafting + `/goal` + R4). For migrating an existing *backlog* of several phases at once, prefer a one-off migration workflow script (fan out over all candidates) rather than one-at-a-time.
+**Migrating a fan-out phase to a dynamic workflow is a Mode 3 improvement.** If the user asks to "migrate a phase to a dynamic workflow" / "convert fan-out to a workflow script," or the audit's candidacy scan flags a fan-out phase — *review* (read-only → gate/findings) OR *transform* (write-agents creating/transforming from a fixed spec, worktree-isolated; e.g. a codemod, a migration, per-item spec-driven generation) — treat the migration as the fix: read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` (decision rubric, both worker modes, the `discover→transform→verify` pattern for writes, script conventions, packaging, wiring, exit gate), confirm the candidate from the ACTUAL phase file (not a summary), write `workflows/<name>.js`, `node --check` it, verify the artifact lands at the expected path, then wire the skill (keep the creative "what" + `/goal` + R4). For migrating a *backlog* of several phases at once, prefer a one-off migration workflow (fan out over all candidates) rather than one-at-a-time.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Workflow Improvement
