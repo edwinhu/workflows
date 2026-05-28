@@ -1,7 +1,7 @@
 ---
 name: workflow-creator
-description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', or needs to substantially create or edit any multi-phase workflow."
-version: 0.1.0
+description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow', 'convert fan-out to a workflow script', or needs to substantially create or edit any multi-phase workflow."
+version: 0.2.0
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"
@@ -21,7 +21,10 @@ hooks:
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
 
-Detect mode from user request, then follow the corresponding process below.
+Detect mode from user request, then follow the corresponding process below:
+- **Mode 1 (Create)** — "create/design a workflow", "break a task into phases"
+- **Mode 2 (Audit)** — "audit/score a workflow"
+- **Mode 3 (Improve)** — "improve a workflow", audit-fix loop, **"migrate a fan-out phase to a dynamic workflow"** (a migration is an improvement — see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`)
 
 **Note on workflow-creator's Structure:**
 
@@ -75,6 +78,8 @@ For Mode 1 (create), use the proposed workflow name: `.planning/wc/{new-workflow
 | `.planning/wc/{name}/DESIGN.md` | Phase decomposition decisions | Mode 1 Step 3 |
 | `.planning/wc/{name}/AUDIT.md` | Audit findings and scores | Mode 2 Step 4, Mode 3 Phase A |
 | `.planning/wc/{name}/SCORES.md` | Score history across iterations | Mode 3 Phase A |
+| `.planning/wc/{name}/VALIDATION.md` | Maps each WC-NN requirement → verification evidence (which gate/audit confirms it) + scope tag (v1/v2/out-of-scope) | Mode 1 Step 7, Mode 2 Step 4 |
+| `.planning/wc/{name}/LEARNINGS.md` | Log of what the user attended to / changed at present-to-user checkpoints (Step 6/7) — the observe→record→offer loop wc prescribes for created workflows, applied to itself | Mode 1 Step 6-7 |
 | `.planning/wc/{name}/HANDOFF.md` | Session resume context | Any mode on context exhaustion |
 
 ---
@@ -233,6 +238,8 @@ Design phases where each phase has:
 - **Gate condition** - verifiable exit criterion (file exists, test passes, artifact contains X)
 - **Gate artifact** - the concrete file the producing phase writes and the consuming phase checks (see Structural Gate Artifacts below)
 - **Enforcement needs** - high/medium/low based on drift risk
+
+**Dynamic-workflow check:** For any phase that is a **fan-out over a list** (one read-only reviewer per item × check) producing a **computed gate**, decide whether to implement it as a Claude Code **dynamic workflow** (a JS script the skill calls) rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = fan-out + JS gate; skill keeps drafting + `/goal` + R4 + user input), and the script conventions. Strong signal: if the gate would otherwise rely on a model-reported score the skill must "recompute by hand," a JS gate eliminates the inflation. Keep drafting, brainstorming, user-approval, and `/goal` loops conversational in the skill.
 
 ### Structural Gate Artifacts
 
@@ -1181,6 +1188,10 @@ Patching files generated without proper investigation, interview, decomposition,
 ### Step 7: Self-Audit the Generated Workflow
 <!-- implements: WC-08 -->
 
+**Traceability (self-applied P18):** Before/with the self-audit, write `.planning/wc/{name}/VALIDATION.md` mapping each `WC-NN` requirement (from the `<!-- implements: WC-NN -->` tags in the generated skills) to the concrete evidence that verifies it — the gate, hook, or audit check that confirms it — and tag each requirement's scope (`v1` / `v2` / `out-of-scope`). This closes the loop from requirement → verification evidence, not just requirement → spec.
+
+**Review-pattern logging (self-applied P19b):** At each present-to-user checkpoint (Step 6 file presentation, Step 7 audit results), append to `.planning/wc/{name}/LEARNINGS.md` what the user attended to or changed (which findings they prioritized, what they overrode). This is the observe→record→offer loop wc prescribes for the workflows it creates, applied to wc itself — after 3+ recurring patterns, propose encoding them as defaults.
+
 **Context check:** Step 7 dispatches a subagent with a large prompt containing all generated file paths and audit criteria. This is one of the most context-intensive operations. Before proceeding:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with generated file list, current step, and note that self-audit is pending. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately — do not attempt the subagent dispatch.
@@ -1492,7 +1503,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
   ```
 - Or do they list `Read()` calls for each constraint `.md` file manually?
 - **Why this matters:** The auto-loader + `applies-to` frontmatter is the wiring that makes atomic constraints work. Manual `Read()` lists mean adding a new constraint requires editing every skill that should load it — silent drift is the default failure mode.
-- Check: Run `uv run python3 references/constraints/auto-loader-usage.py`. Every flagged SKILL.md is a violation.
+- Check: Run `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/auto-loader-usage.py`. Every flagged SKILL.md is a violation. (Bare relative path won't resolve from the auditor's CWD — always prefix with `${CLAUDE_SKILL_DIR}/../../`.)
 - Exceptions: router skills that immediately delegate (no constraint evaluation), ad-hoc single-file references (not phase sets), plugins without `scripts/load-constraints.py`.
 - Score: count of phase skills using the loader / count of phase skills that load ≥2 constraints. Below 80% = critical gap.
 
@@ -1574,6 +1585,7 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 | **Hook `command:` fields in YAML frontmatter** | `${CLAUDE_PLUGIN_ROOT}` | [hooks.md](https://code.claude.com/docs/en/hooks.md) |
 | **Skill content body (markdown + bash injection)** | `${CLAUDE_SKILL_DIR}` | [skills.md](https://code.claude.com/docs/en/skills.md) |
 | **Internal skills (loaded via Read)** | Neither substitutes. Use `${CLAUDE_SKILL_DIR}/../../` as a convention so a consistent style is preserved — the agent infers the actual path from context. | — |
+| **`${CLAUDE_SKILL_DIR}` inside an `Agent()` prompt string** | SAFE — it is skill-content body, so it is substituted to the literal absolute path at skill-load, *before* the orchestrator constructs the `Agent()` call. The spawned subagent receives the resolved path, never the token. No need to pre-resolve and pass it in. | — |
 
    **The hook/content variables ARE NOT INTERCHANGEABLE.** `${CLAUDE_SKILL_DIR}` is bound in the shell environment only when a skill is actively loaded via `Skill()`. When a hook fires for a tool call *outside* that active session — e.g., a `matcher: "*"` hook, or an `Agent` matcher spawned from main chat — the env var is empty and the path resolves to garbage like `/../../hooks/foo.py`.
 
@@ -1755,6 +1767,8 @@ If you discover mid-audit that you scored Steps 1-2 without reading all phase sk
 
 ## Mode 3: Improve Workflow
 
+**Migrating a fan-out phase to a dynamic workflow is a Mode 3 improvement.** If the user asks to "migrate a phase to a dynamic workflow" / "convert fan-out to a workflow script," or the audit finds a fan-out review/diagnosis phase with a model-reported score the skill recomputes by hand, treat the migration as the fix: read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` (decision rubric, script conventions, packaging, wiring, exit gate), confirm the candidate from the ACTUAL phase file (not a summary), write `workflows/<name>.js`, `node --check` it, verify the artifact lands at the expected path, then wire the skill (keep drafting + `/goal` + R4). For migrating an existing *backlog* of several phases at once, prefer a one-off migration workflow script (fan out over all candidates) rather than one-at-a-time.
+
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Workflow Improvement
 
@@ -1784,6 +1798,15 @@ Use the audit-fix-loop pattern with `/goal` as the cross-turn iteration primitiv
 
 ```
 /goal Workflow [WORKFLOW_NAME] scores >= 9.5 in .planning/SCORES.md across all selected scorers, with zero CRITICAL findings outstanding. Stop after 10 turns.
+```
+
+**Before launching the goal, persist the second link of the improve chain** (the hook's improve chain is `1-initial-audit → 1-audit-loop`):
+```yaml
+step: 1-audit-loop
+status: in_progress
+requires: [Mode 2 audit report]
+provides: [score-gated fix iterations]
+affects: [.planning/wc/{name}/STATE.md, .planning/wc/{name}/SCORES.md, target workflow files]
 ```
 
 **Each turn under the active goal follows this exact sequence:**
@@ -2055,6 +2078,8 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 ```
 
 **When an agent needs multiple checks:** The orchestrator reads the check list and spawns each check as a direct parallel agent. The "dispatcher" logic lives in the skill/phase definition, not in a middle agent.
+
+**The structural fix — dynamic workflows:** For a genuine fan-out (one reviewer per item × check) producing a computed gate, migrate the dispatch into a Claude Code **dynamic workflow** (see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`; build it during Mode 1 decomposition or migrate an existing phase via Mode 3). A dynamic workflow is a *script*, not a dispatcher agent: reviewer results land in script variables and the gate is computed in JS, so result loss is impossible by construction — and the model can no longer inflate a self-reported score. Use it when a phase fans out + gates; keep drafting, `/goal`, and user-input phases conversational in the skill.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:
