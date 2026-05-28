@@ -16,6 +16,8 @@ hooks:
             GATE_DESCRIPTION="Phase 1 sources gate"
             GATE_REMEDY="Return to Phase 1 and complete source gathering before writing any files"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
   PostToolUse:
     - matcher: "Edit"
       hooks:
@@ -603,71 +605,77 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 
 If convention violations persist after 3 fix-and-recheck cycles, escalate to user.
 
-### Artifact Review Gate: Slides & Notes
+### Artifact Review Gate: Slides & Notes (dynamic workflow)
 
-**Before proceeding to Phase 4, dispatch an independent reviewer subagent:**
+**Before proceeding to Phase 4, the slides and notes are reviewed by the `workshop-verify` dynamic workflow — a per-slide fan-out (one read-only reviewer per slide × {convention, notes-coverage, source-fidelity}) plus a global mechanical leg (compile + `check-all.py` + widow + overflow) and per-diagram visual-verify, with the CLEAN/ISSUES gate computed in pure JS from raw counts.** This replaces the former single monolithic reviewer: per-slide isolation keeps each slide's paper-reading in its own subagent transcript (the deck-review would otherwise blow the main conversation's context on a long deck), and the JS gate removes honor-system score inflation. It satisfies the Iron Law of Flat Dispatch — reviewer results land in script variables, never a middle dispatcher agent.
 
-```
-Agent(prompt="""
-You are an independent reviewer. Check these files against the Typst workshop constraints.
+1. **Compile first** so `slides.pdf` exists (the workflow's widow/visual legs need it):
+   ```bash
+   cd [presentation directory] && typst compile slides.typ && typst compile notes.typ
+   ```
 
-Step 1 — Constraint checks (hard block):
-Run: cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
-Report any failures.
+2. **Invoke the workflow** (read-only; never drafts, never fixes):
+   ```
+   Workflow(name="workshop-verify", args={
+     "projectDir": "[absolute project root]",
+     "pluginRoot": "${CLAUDE_SKILL_DIR}/../.."
+   })
+   ```
+   It returns `{ overallPass, verdict, scoreTable, findings, reviews, slidesThatFlagged, inventoryCoverage }`.
 
-Step 2 — Convention review (judgment):
-Run: uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop
-Review slides.typ and notes.typ against loaded conventions.
+3. **Read the gate.** If `overallPass` is true → write the gate artifact and proceed. If false → drive convergence with the native `/goal` primitive, pinned to the workflow's gate:
 
-Step 3 — Cross-check:
-- Every slide in slides.typ has corresponding coverage in notes.typ
-- Slide titles are complete sentences
-- Notes are flowing prose, not bullet recaps
-- Every factual claim traces to a paper inventory ID (F/T/R/A)
+   ```
+   /goal workshop-verify returns overallPass=true. Stop after 3 turns.
+   ```
 
-Report violations:
-| # | Severity | Constraint | Location | Issue |
+   Each turn under the active goal: dispatch a fresh subagent to FIX the `findings` (the skill — not a reviewer — owns fixing), recompile, then re-invoke `workshop-verify` **selectively** carrying state forward:
+   ```
+   Workflow(name="workshop-verify", args={
+     "projectDir": "[abs]", "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "onlyChecks": [<slidesThatFlagged from the prior run>],
+     "priorReviews": [<reviews from the prior run>]
+   })
+   ```
+   End the turn so the `/goal` evaluator re-checks the gate. If the 3-turn budget elapses without `overallPass`, escalate to the user with the outstanding `findings`.
 
-Be thorough. Do NOT soften findings.
-""", subagent_type="general-purpose",
-allowed_tools=["Read", "Grep", "Glob", "Bash"])
-```
-
-**The reviewer MUST NOT have Write or Edit access.** A reviewer that "fixes" issues it finds bypasses the plan-execute-verify cycle. Issues go back to the generator for fixing.
+**The workflow's reviewers are read-only by construction** (each prompt opens "You are a READ-ONLY reviewer; do NOT create, edit, or overwrite any files"). The skill owns fixing; the workflow owns review + the computed gate. This is the non-negotiable hybrid split.
 
 ### Post-Subagent Enforcement
 
-After the reviewer subagent returns, main chat follows these boundaries:
+After `workshop-verify` returns, main chat follows these boundaries:
 
 | Verification (main chat CAN do) | Investigation (main chat CANNOT do) |
 |----------------------------------|--------------------------------------|
-| Read reviewer's violation report | Read slides.typ/notes.typ directly |
-| Check compilation (typst compile) | Grep through .typ files |
-| Check gate artifact exists | Edit slides.typ/notes.typ directly |
-| Run convention check scripts | "Quick fix" a reported issue |
+| Read the workflow's `findings` / `scoreTable` | Re-read slides.typ/notes.typ to "double-check" the gate |
+| Re-invoke the workflow (selectively) | Override the JS gate ("the workflow was too strict") |
+| Check the gate artifact exists | Edit slides.typ/notes.typ directly |
+| Dispatch a fix subagent for reported `findings` | "Quick fix" an issue the workflow did not report |
 
-**If fixes are needed, dispatch a new subagent to make the fixes, then re-dispatch the reviewer.**
+**The JS gate (`overallPass`) is authoritative.** If you disagree, fix a finding and let the next workflow run recompute — never hand-wave the gate to true.
 
-- If reviewer finds CRITICAL/HIGH issues → fix via subagent → re-dispatch reviewer (max 3 iterations)
-- If reviewer approves or only LOW issues remain → write gate artifact and proceed to Phase 4
+- If `overallPass` is false → fix `findings` via subagent → re-invoke workflow (max 3 turns under `/goal`)
+- If `overallPass` is true → write the gate artifact and proceed to Phase 4
 
-**Structural gate artifact:** After reviewer approves, write `.planning/SLIDES_REVIEWED.md`:
+**Structural gate artifact:** After the workflow returns `overallPass=true`, write `.planning/SLIDES_REVIEWED.md`:
 ```yaml
 ---
 status: APPROVED
 phase: generate
 reviewed_at: [timestamp]
-reviewer: independent subagent
-implements: "Phase 3 — slide and notes generation with independent review"
+reviewer: workshop-verify dynamic workflow (per-slide fan-out + JS gate)
+implements: "Phase 3 — slide and notes generation with per-slide dynamic-workflow review"
 requires: "OUTLINE_APPROVED.md, SOURCES_VERIFIED.md"
-provides: "slides.typ, notes.typ (reviewed and convention-compliant)"
+provides: "slides.typ, notes.typ (reviewed, overallPass=true)"
 affects: "presentation/slides.typ, presentation/notes.typ"
-iterations: [N]
+workflow_turns: [N]
 slides_count: [N]
 notes_sections: [N]
+gate: {overallPass: true, critical: 0, major: 0, minor: 0}
+inventory_coverage: {claimsChecked: [N], claimsGrounded: [N]}
 deviations: {r1: [X], r2: [Y], r3: [Z], r4: [W]}
 ---
-Slides and notes reviewed by independent subagent. [Summary of review outcome].
+Slides and notes reviewed by the workshop-verify dynamic workflow — overallPass=true. [Score-table summary].
 ```
 
 **Phase 4 will refuse to start without this file.**
@@ -676,9 +684,11 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 
 ---
 
-## Phase 4: Verify & Compile
+## Phase 4: Verify & Finalize
 
-**Responsibility:** Compile both files, run widow detection, and verify correctness.
+**Responsibility:** Run the final end-to-end `workshop-verify` gate, map inventory coverage, cross-check metadata, and present.
+
+The heavy verification — compile, `check-all.py`, widow, overflow, per-slide convention/notes/fidelity, per-diagram visual-verify — is executed by the **`workshop-verify` dynamic workflow** (introduced in Phase 3's review gate). Phase 4 runs it ONE final time as a full, non-selective end-to-end gate, then records coverage and presents. This is not redundant: Phase 3's last run may have been selective (`onlyChecks`); the final full run confirms the whole deck is clean together.
 
 ### Prerequisites
 - [ ] `.planning/SLIDES_REVIEWED.md` exists with `status: APPROVED`
@@ -689,73 +699,42 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 
 ### Steps
 
-1. **Compile slides:**
-   ```bash
-   cd [presentation directory] && typst compile slides.typ
+1. **Final full verification gate** — re-invoke the workflow over the whole deck (no `onlyChecks`):
    ```
-
-2. **Compile notes:**
-   ```bash
-   cd [presentation directory] && typst compile notes.typ
+   Workflow(name="workshop-verify", args={
+     "projectDir": "[absolute project root]",
+     "pluginRoot": "${CLAUDE_SKILL_DIR}/../.."
+   })
    ```
+   - If `overallPass` is false → drive the `/goal workshop-verify returns overallPass=true. Stop after 3 turns.` loop (fix `findings` via subagent → recompile → re-invoke). The JS gate is authoritative.
+   - If `overallPass` is true → proceed. The returned `scoreTable` is the verification record (compile / constraints / widows / overflow / fidelity / notes-coverage / visual, all with their Gate column).
 
-3. **If compilation fails:** Read the error, fix the issue, recompile (max 3 attempts per file).
-
-4. **Run PDF widow detection** (mandatory after every successful compile):
-   ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" slides.pdf
-   ```
-   - Exit code 1 = widows found → fix using strategies from the typst-widow-detection constraint → recompile → re-run detector
-   - Exit code 0 = clean → proceed
-   - **This is a binary gate: 0 widows or phase incomplete.**
-
-5. **Run overflow detection** (after successful compile):
-   ```bash
-   # Compile in handout mode and query for overflow metadata
-   cd [presentation directory] && typst compile slides.typ --input handout=true slides-handout.pdf && \
-   typst query slides.typ '<val>' --field value --root . 2>/dev/null | \
-   uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/checks/overflow.py
-   ```
-   - If overflow detected → cut content, split slides, or use columns → recompile
-   - If no validation.typ import exists, visually check: page count should ≈ slide count in handout mode
-
-6. **Visual-verify all diagrams** (if any CeTZ or Fletcher diagrams exist):
-   ```bash
-   # Check if diagrams exist
-   rg -c 'cetz.canvas\|fletcher-diagram' slides.typ
-   ```
-   If diagrams found, run visual-verify loop for each:
-   - Render relevant PDF page via look-at with goal targeting the diagram
-   - Score against defect checklist (clipped text, overlapping, arrow routing, label anchoring, spacing, text size)
-   - Fix if score < 9.5 → recompile → re-render → re-score (max 5 iterations per diagram)
-
-7. **Verify source fidelity:**
-   - List all factual claims in slides (empirical results, statistics, case holdings, author conclusions)
-   - For each claim, verify against the source paper (via look-at or rga on the paper PDF)
-   - Flag any ungrounded claims to user: "Could not verify: [claim]"
-
-8. **Verify metadata:**
+2. **Verify metadata** (the one check outside the workflow):
    - Title in slides.typ matches SOURCES.md
-   - Authors in slides.typ match SOURCES.md
-   - Affiliations match
+   - Authors and affiliations in slides.typ match SOURCES.md
 
-9. **Two-leg verification:**
+3. **Write the inventory-coverage map** (`.planning/VALIDATION.md`) — render it **directly from the workflow's returned `coverageMap`** (each entry is `{slide, title, inventoryRefs, ungroundedClaims, status}`, already classified COVERED/PARTIAL in JS — no hand-inference). Requirement traceability:
+   ```markdown
+   ---
+   phase: verify
+   status: validated
+   claims_checked: [from inventoryCoverage.claimsChecked]
+   claims_grounded: [from inventoryCoverage.claimsGrounded]
+   ---
+   ## Inventory Coverage (every slide → F/T/R/A IDs)
 
-   **Leg 1 — Constraint checks (hard block):** Run all auto-discovered `.py` check scripts:
-   ```bash
-   cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+   | Slide | Title | Inventory IDs cited | Status |
+   |-------|-------|---------------------|--------|
+   | S1 | [title] | F1, R2 | COVERED |
+   | S2 | [title] | (none) | PARTIAL — no inventory ref |
+   | ... | ... | ... | ... |
+
+   ## Inventory items NOT yet on any slide
+   - [F3, T2, ...] — list inventory IDs from SOURCES.md that no slide references (MISSING), or "none — full coverage"
    ```
-   - If any constraint fails → fix the violation → re-run check-all.py (max 3 attempts)
-   - Hard block: ALL constraints must pass before proceeding
+   Classify each slide COVERED (cites ≥1 inventory ID, all claims grounded), PARTIAL (no inventory ref OR some claims ungrounded), or — for the reverse map — MISSING (an inventory item no slide uses). This closes requirement→evidence traceability: SOURCES inventory IDs → slides → grounded claims.
 
-   **Leg 2 — Convention review (judgment):** For each convention listed by check-all.py (`.md` without `.py`), manually verify:
-   - Source fidelity (claims match paper)
-   - Verbatim quotes preserved
-   - Visual-verify results (if diagrams exist)
-   - Teleprompter-style notes quality
-   - Section transitions present
-
-**Skipping verification steps to "finish faster" is anti-helpful — the presenter discovers widows, overflow, or wrong numbers at the podium. Every skipped check is a defect you shipped instead of caught. Verification is the service, not overhead.**
+**Skipping the final gate to "finish faster" is anti-helpful — the presenter discovers widows, overflow, or wrong numbers at the podium. The workflow already does the work; reading its gate is the service, not overhead.**
 
 ### Red Flags — STOP If You Catch Yourself:
 
@@ -766,6 +745,8 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 - **Skipping visual-verify on diagrams** → STOP. Compilation proves syntax, not readability.
 
 ### Gate: Verified (final)
+
+**These checks are computed by the `workshop-verify` workflow's JS gate — `overallPass=true` means every row below passed. The checklist is the gate spec; the workflow is its enforcement.**
 
 - [ ] slides.typ compiles without errors
 - [ ] notes.typ compiles without errors
@@ -796,12 +777,27 @@ Slides and notes reviewed by independent subagent. [Summary of review outcome].
 Workshop presentation complete:
 - slides.typ: [N] slides across [M] sections
 - notes.typ: speaker notes with timing targets
-- Both files compile cleanly
-- PDF widow detection: 0 widows
+- workshop-verify gate: overallPass ✓ ([critical]/[major]/[minor])
+- Inventory coverage: [claimsGrounded]/[claimsChecked] claims grounded; [N] slides COVERED
+
+[paste the workflow's scoreTable here]
 
 Files: [presentation directory]/slides.typ, notes.typ
 PDFs: [presentation directory]/slides.pdf, notes.pdf
 ```
+
+### Review-pattern logging (observe → record → offer)
+
+This is a `decision`-class hand-off: the user reviews the rendered deck and decides what to change. **Do not pre-build visualizations.** Instead:
+
+1. **Observe** what the user actually inspects at this checkpoint — do they open `slides.pdf` and eyeball layout? ask for a specific slide rendered? request a coverage table? compare against the paper?
+2. **Record** it in `.planning/LEARNINGS.md`:
+   ```markdown
+   ## Review pattern — [date]
+   - User reviewed by: [e.g. "opened slides.pdf, flagged slide 7 overflow by eye"]
+   - Artifact they asked for: [e.g. "rendered PNG of the results slide" / "none — read summary"]
+   ```
+3. **Offer** to automate only after the **same** review request recurs 3+ times across sessions (e.g. "you've asked for a per-slide PNG contact sheet three times — want me to bundle a script that generates it?"). The rendered `slides.pdf` is already the natural visual artifact for "does it look right"; add tooling only when the user's behavior proves the need.
 
 ---
 

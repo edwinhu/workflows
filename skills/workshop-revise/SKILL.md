@@ -7,6 +7,10 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
   PostToolUse:
     - matcher: "Edit"
       hooks:
@@ -113,33 +117,36 @@ These apply to EVERY edit, no matter how small:
 | "Sub-bullet spacing is cosmetic" | Tight sub-bullets are unreadable when projected | Add blank lines between sub-bullets |
 | "Table inset 5pt saves space" | 5pt is illegible at 16:9 projection | Use 10pt minimum |
 
-### Artifact Review Gate (for content/structure changes)
+### Deviation Rules (revision edits)
 
-For content changes or structural changes (NOT simple formatting fixes), dispatch an independent reviewer before verification:
+Unplanned issues surface mid-revision. Apply the same 4-rule system as the workshop generate phase, adapted to revision:
 
-```
-Agent(prompt="""
-You are an independent reviewer. Check edited sections against Typst workshop constraints.
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Bug** | Typst compile error, syntax error, broken import introduced by the edit | Fix → recompile → verify → track `[R1]` | Auto |
+| **R2: Missing Critical** | Edit leaves notes out of sync, drops a `qr: none`, removes a required `#align(center)`, breaks bullet spacing | Add/restore → recompile → verify → track `[R2]` | Auto |
+| **R3: Blocking** | Missing asset/template the edit depends on, font/package conflict surfaced by recompile | Fix blocker → verify proceeds → track `[R3]` | Auto |
+| **R4: Structural** | The request implies reordering sections, changing proportions, or regenerating a whole part | STOP → present to user → on approval, re-enter workshop Phase 3 (which re-runs `workshop-verify`) → track `[R4]` | Ask user |
 
-Step 1: Run constraint checks (auto-discovers all .py check scripts):
-  cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+**Priority:** R4 (STOP) > R1-R3 (auto) > unsure = R4. After applying changes, report: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z).
 
-Step 2: Load convention text for judgment review:
-  Run: uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise
+### Artifact Review Gate (for content/structure changes — dynamic workflow)
 
-Step 3: Review the changed sections in slides.typ and notes.typ against loaded conventions.
-Report violations:
-| # | Severity | Constraint | Location | Issue |
+For content or structural changes (NOT simple formatting fixes), the edited deck is reviewed by the **`workshop-verify` dynamic workflow** — the same per-slide fan-out + JS gate the workshop skill uses — scoped to the slides you touched:
 
-Be thorough. Do NOT soften findings.
-""", subagent_type="general-purpose",
-allowed_tools=["Read", "Grep", "Glob", "Bash"])
-```
+1. **Compile** so `slides.pdf` reflects the edits: `cd [presentation directory] && typst compile slides.typ && typst compile notes.typ`
+2. **Invoke selectively** (review only the changed slides; carry the rest forward):
+   ```
+   Workflow(name="workshop-verify", args={
+     "projectDir": "[absolute project root]",
+     "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "onlyChecks": [<IDs of the slides you edited, e.g. "S4", "S5">]
+   })
+   ```
+   (Omit `onlyChecks` to review the whole deck after a large change.)
+3. **Read the gate.** If `overallPass` is false → `/goal workshop-verify returns overallPass=true. Stop after 3 turns.`; each turn fix the reported `findings` (main chat owns fixing — the workflow is read-only), recompile, re-invoke selectively, end the turn. If true → proceed to Step 4.
 
-**The reviewer MUST NOT have Write or Edit access.** Issues go back to main chat for fixing.
-
-- If reviewer finds CRITICAL/HIGH issues → fix → re-dispatch (max 3 iterations)
-- If approved → proceed to Step 4
+**The workflow's reviewers are read-only by construction; the JS gate (`overallPass`) is authoritative.** Do not hand-wave the gate to true — fix a finding and let the next run recompute.
 
 ### Step 4: Verify
 
