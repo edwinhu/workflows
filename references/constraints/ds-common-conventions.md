@@ -1,3 +1,9 @@
+---
+name: ds-common-conventions
+description: Common judgment-based conventions index for the ds skill family
+applies-to: [ds, ds-fix, ds-plan, ds-implement, ds-review, ds-verify, ds-validate, ds-delegate]
+---
+
 # DS Workflow: Common Conventions
 
 Behavioral guidance for the DS skill family. Loaded ex-ante for prompt context, scored by LLM/human judgment during review.

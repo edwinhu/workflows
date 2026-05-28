@@ -1,3 +1,9 @@
+---
+name: wrds-sge-enforcement
+description: WRDS SGE grid job-submission enforcement for the wrds skill
+applies-to: [wrds]
+---
+
 # WRDS SGE Enforcement
 
 ## Rule

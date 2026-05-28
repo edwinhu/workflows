@@ -1,3 +1,9 @@
+---
+name: writing-ai-smell-puffery
+description: AI-writing-smell check for puffery and empty intensifiers in prose
+applies-to: [writing-draft, writing-review, writing-revise, workshop, workshop-revise]
+---
+
 # Constraint: writing-ai-smell-puffery
 
 **Severity:** soft  

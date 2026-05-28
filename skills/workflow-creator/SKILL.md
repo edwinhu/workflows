@@ -1,7 +1,7 @@
 ---
 name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow', 'convert fan-out to a workflow script', or needs to substantially create or edit any multi-phase workflow."
-version: 0.3.0
+version: 0.3.1
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"
@@ -20,6 +20,10 @@ hooks:
 ---
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
+
+**Load workflow-creator's own constraints** (auto-discovered + `applies-to`-filtered — surfaces the `wc-*` behavioral rules at load time, complementing the `wc-constraint-check.py` post-edit hook):
+
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workflow-creator`
 
 Detect mode from user request, then follow the corresponding process below:
 - **Mode 1 (Create)** — "create/design a workflow", "break a task into phases"

@@ -1,3 +1,9 @@
+---
+name: ds-analysis-constraints
+description: Data-analysis constraints for ds analysis phases
+applies-to: [ds, ds-fix, ds-plan, ds-implement, ds-review, ds-verify, ds-validate, ds-delegate]
+---
+
 # DS Analysis Constraints
 
 Deterministic rules for data analysis tasks (statistical analysis, modeling, visualization). Each constraint can be verified by a script returning pass/fail. Self-contained files under `constraints/`.

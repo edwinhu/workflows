@@ -1,3 +1,9 @@
+---
+name: writing-ai-smell-em-dash
+description: AI-writing-smell check for em-dash overuse in prose
+applies-to: [writing-draft, writing-review, writing-revise, workshop, workshop-revise]
+---
+
 # Constraint: writing-ai-smell-em-dash
 
 **Severity:** soft  

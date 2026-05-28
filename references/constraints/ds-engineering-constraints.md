@@ -1,3 +1,9 @@
+---
+name: ds-engineering-constraints
+description: Data-engineering (pipeline/ETL) constraints for ds engineering phases
+applies-to: [ds, ds-fix, ds-plan, ds-implement, ds-review, ds-verify, ds-validate, ds-delegate]
+---
+
 # DS Engineering Constraints
 
 Role-specific behavioral rules for data engineering tasks (pipelines, ETL, transformations). Each constraint is self-contained in its own file under `constraints/`.

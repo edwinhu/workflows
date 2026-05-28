@@ -1,3 +1,9 @@
+---
+name: dev-common-constraints
+description: Common deterministic constraints index for the dev skill family
+applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-spec-reviewer, dev-plan-reviewer]
+---
+
 # Dev Workflow: Common Constraints
 
 Deterministic rules for the dev skill family. Each constraint can be verified by a co-located `.py` check script returning pass/fail. Self-contained files under `constraints/`.

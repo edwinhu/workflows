@@ -1,3 +1,9 @@
+---
+name: hpc-slurm-enforcement
+description: Slurm job-submission enforcement for the hpc skill
+applies-to: [hpc]
+---
+
 # HPC Slurm Enforcement
 
 ## Rule

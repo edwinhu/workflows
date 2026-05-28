@@ -1,3 +1,9 @@
+---
+name: writing-ai-smell-structure
+description: AI-writing-smell check for formulaic AI structure in prose
+applies-to: [writing-draft, writing-review, writing-revise, workshop, workshop-revise]
+---
+
 # Constraint: writing-ai-smell-structure
 
 **Severity:** soft  

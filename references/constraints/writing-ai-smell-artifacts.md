@@ -1,3 +1,9 @@
+---
+name: writing-ai-smell-artifacts
+description: AI-writing-smell check for leftover generation artifacts in prose
+applies-to: [writing-draft, writing-review, writing-revise, workshop, workshop-revise]
+---
+
 # Constraint: writing-ai-smell-artifacts
 
 **Severity:** hard  

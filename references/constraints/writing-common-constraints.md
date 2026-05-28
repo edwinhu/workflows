@@ -1,3 +1,9 @@
+---
+name: writing-common-constraints
+description: Common constraints index for the writing skill family
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+---
+
 # Writing Workflow: Common Constraints
 
 Shared enforcement for ALL writing skills. Each constraint/convention is self-contained in its own file. Skills load the index + specific atomic files relevant to their phase.

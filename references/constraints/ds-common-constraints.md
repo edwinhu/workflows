@@ -1,3 +1,9 @@
+---
+name: ds-common-constraints
+description: Common deterministic constraints index for the ds skill family
+applies-to: [ds, ds-fix, ds-plan, ds-implement, ds-review, ds-verify, ds-validate, ds-delegate]
+---
+
 # DS Workflow: Common Constraints
 
 Deterministic rules for the DS skill family. Each constraint can be verified by a script returning pass/fail. Self-contained files under `constraints/`.
