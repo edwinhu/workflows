@@ -462,12 +462,15 @@ After fixing, re-run ALL gate checks (not just the one that failed).
 ---
 phase: brainstorm
 status: completed
+implements: []          # brainstorm DEFINES requirement IDs; it implements none yet
 requires: []
 provides: [SPEC.md, ACTIVE_WORKFLOW.md]
+affects: [.planning/SPEC.md, .planning/ACTIVE_WORKFLOW.md]
 requirements-count: N
 success-criteria-count: M
 ---
 ```
+One-liner: must be substantive — e.g. "Defined 7 requirements (AUTH-01..04, DATA-01..03) and 4 success criteria for JWT refresh-rotation." Not "brainstorm complete."
 
 **REQUIRED SUB-SKILL:** After completing brainstorm, dispatch the spec reviewer before exploring:
 
@@ -478,8 +481,21 @@ Read `${CLAUDE_SKILL_DIR}/../../skills/dev-spec-reviewer/SKILL.md` and follow it
 Follow the spec reviewer's instructions:
 1. Dispatch reviewer subagent
 2. If ISSUES_FOUND → fix SPEC.md → re-dispatch (max 5 iterations)
-3. If APPROVED → proceed to explore
+3. If APPROVED → write the review marker, then proceed to explore
 
-**After spec review APPROVED, start explore phase - Phase 2:**
+**On APPROVED, write the spec-review marker** (the reviewer is read-only and cannot write it — main chat does, mirroring `PLAN_REVIEWED.md`). This is the structural gate dev-explore checks:
+
+```bash
+cat > .planning/SPEC_REVIEWED.md << 'EOF'
+---
+status: APPROVED
+reviewed_date: [today]
+reviewer: dev-spec-reviewer
+---
+SPEC.md approved by dev-spec-reviewer. Exploration may begin.
+EOF
+```
+
+**After spec review APPROVED and SPEC_REVIEWED.md written, start explore phase - Phase 2:**
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/dev-explore/SKILL.md` and follow its instructions.

@@ -9,13 +9,27 @@ hooks:
       hooks:
         - type: command
           command: >-
-            GATE_ARTIFACT=.planning/SPEC.md
-            GATE_DESCRIPTION="Spec document"
-            GATE_REMEDY="Return to dev-brainstorm (Phase 1) to write and review SPEC.md before exploring."
+            GATE_ARTIFACT=.planning/SPEC_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Grep,Glob,Agent
+            GATE_DESCRIPTION="Spec reviewed"
+            GATE_REMEDY="Return to /dev (Phase 1 brainstorm). Run dev-spec-reviewer; on APPROVED it writes SPEC_REVIEWED.md. Existence of SPEC.md alone is not enough — the review must have passed."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
+
+### Context Check
+
+Before starting this phase, check remaining context:
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Proceed |
+| Warning | 25-35% | Finish the current step, then invoke dev-handoff |
+| Critical | ≤25% | Invoke dev-handoff immediately — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions. A clean handoff beats degraded exploration.
 
 ## Contents
 
@@ -501,8 +515,10 @@ This is not optional. Fake tests are worse than no tests because they create fal
 ---
 phase: explore
 status: completed
+implements: []          # exploration produces findings, implements no requirement IDs
 requires: [SPEC.md]
 provides: [codebase-map, testing-infra-discovery, dependency-audit]
+affects: []             # read-only phase; no files modified
 key-findings:
   - [one-liner per significant discovery]
 ---

@@ -9,13 +9,27 @@ hooks:
       hooks:
         - type: command
           command: >-
-            GATE_ARTIFACT=.planning/SPEC.md
-            GATE_DESCRIPTION="Spec document"
-            GATE_REMEDY="SPEC.md must exist before designing. Complete brainstorm and exploration first."
+            GATE_ARTIFACT=.planning/SPEC_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Agent
+            GATE_DESCRIPTION="Spec reviewed"
+            GATE_REMEDY="SPEC.md must exist AND have passed dev-spec-reviewer (SPEC_REVIEWED.md status: APPROVED) before designing. Complete brainstorm, spec review, and exploration first."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
+
+### Context Check
+
+Before starting this phase, check remaining context:
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Proceed |
+| Warning | 25-35% | Finish the current step, then invoke dev-handoff |
+| Critical | ≤25% | Invoke dev-handoff immediately — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
 
 ## Contents
 
@@ -137,6 +151,23 @@ AskUserQuestion(questions=[{
 - Concrete numbers (lines changed, files affected)
 - Clear trade-offs for each
 - Reference specific files from exploration
+
+#### Log the review pattern (observe → record → offer)
+
+After the user makes this `decision` selection, append one line to `.planning/LEARNINGS.md` recording **what the user attended to** before choosing — e.g. "compared lines-changed across options", "asked for the dependency graph", "approved on the recommendation without detail", "wanted to see affected files". Do NOT build any visualization speculatively.
+
+**Offer rule:** if `.planning/LEARNINGS.md` shows the **same review artifact requested 3+ times** across episodes (e.g. the user keeps asking for a dependency graph or a diff summary before approving), offer to bundle a script under `skills/dev-design/scripts/` that generates that view automatically. Build it only after the 3rd occurrence — observed behavior first, automation after.
+
+When the offer triggers, map the observed request to a concrete artifact:
+
+| If the user keeps asking for… | Consider building |
+|-------------------------------|-------------------|
+| "show me what changed / a diff" | Interactive diff explorer (self-contained HTML) |
+| "what's the architecture / dependencies?" | Dependency graph or codebase tree |
+| "which files does this touch?" | Affected-files map from PLAN.md `affects:` |
+| "how big is each approach?" | Lines-changed / files-touched comparison table |
+
+Bundle the script in `skills/dev-design/scripts/`; the phase offers to run it — it never forces it.
 
 ### 4. Feature Decomposition Check
 

@@ -1,6 +1,6 @@
 ---
 name: dev-spec-reviewer
-description: "Internal skill used by dev-brainstorm at Phase 1 exit gate. Dispatches a reviewer subagent to verify SPEC.md completeness before exploration. NOT user-facing."
+description: "Internal skill used by /dev at the Phase 1 (brainstorm) exit gate. Dispatches a reviewer subagent to verify SPEC.md completeness before exploration. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
 ---

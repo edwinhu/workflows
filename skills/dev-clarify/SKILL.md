@@ -9,13 +9,27 @@ hooks:
       hooks:
         - type: command
           command: >-
-            GATE_ARTIFACT=.planning/SPEC.md
-            GATE_DESCRIPTION="Spec document"
-            GATE_REMEDY="SPEC.md must exist before clarifying. Complete brainstorm first."
+            GATE_ARTIFACT=.planning/SPEC_REVIEWED.md
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Agent
+            GATE_DESCRIPTION="Spec reviewed"
+            GATE_REMEDY="SPEC.md must exist AND have passed dev-spec-reviewer (which writes SPEC_REVIEWED.md status: APPROVED) before clarifying. Complete brainstorm + spec review first."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 **Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."
+
+### Context Check
+
+Before starting this phase, check remaining context:
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Proceed |
+| Warning | 25-35% | Finish the current step, then invoke dev-handoff |
+| Critical | ≤25% | Invoke dev-handoff immediately — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
 
 ## Contents
 
@@ -123,6 +137,8 @@ Common areas needing clarification after exploration:
 - "I found two patterns in the codebase for this. Pattern A in `file.ts:23` and Pattern B in `other.ts:45`. Which should we follow?"
 
 ### 3. Ask Questions with AskUserQuestion
+
+**Smart Discuss (autonomous-chaining requirement):** batch ALL open ambiguities into ONE AskUserQuestion call — never ask sequentially across turns. Sequential asks stall autonomous/overnight runs at every question. See [Smart-Discuss: Batch Ambiguities](#smart-discuss-batch-ambiguities) below for the batch/don't-batch rule.
 
 Present questions with context from exploration:
 
@@ -395,8 +411,10 @@ This is the last checkpoint before implementation planning. Fake tests caught he
 ---
 phase: clarify
 status: completed
+implements: []          # clarification refines requirements; implements no IDs
 requires: [SPEC.md, codebase-map]
 provides: [clarified-requirements, testing-strategy-validated]
+affects: [.planning/SPEC.md]   # may update SPEC.md with resolved ambiguities
 questions-resolved:
   - [one-liner per clarification]
 ---
