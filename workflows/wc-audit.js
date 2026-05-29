@@ -15,6 +15,11 @@ export const meta = {
 //   targetWorkflow: "dev" | "ds" | "writing" | "workflow-creator" | ...,  // REQUIRED — the workflow to audit
 //   projectDir: "/abs/plugin-repo-root",        // REQUIRED — holds skills/, references/
 //   pluginRoot: "/abs/.../workflows",            // optional — for resolving enforcement-checklist.md / migration playbook
+//   rubricPath?: "/abs/.../workflow-creator/SKILL.md",  // optional — the Mode 2 rubric source. Defaults to the
+//                                                //   workflows repo. Set for a CROSS-PLUGIN audit where the audited
+//                                                //   PROJECT has no workflow-creator skill (e.g. the teaching plugin).
+//   workflowsRepo?: "/abs/.../workflows",        // optional — cross-repo fallback root for the rubric + enforcement
+//                                                //   checklist + migration playbook when PROJECT lacks them.
 //   threshold?: 9.5,                             // optional — composite gate (default 9.5; Step 7 self-audit uses 8.0)
 //   onlyChecks?: ["arch-decomp-gates", ...],     // re-audit loop: re-run only these dimension keys; carry the rest
 //   priorReviews?: [<dimension objects>],        // re-audit loop: prior per-dimension results to carry forward
@@ -28,6 +33,13 @@ const TARGET = cfg.targetWorkflow
 if (!TARGET) throw new Error(`wc-audit requires args.targetWorkflow. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const THRESHOLD = typeof cfg.threshold === 'number' ? cfg.threshold : 9.5
 const PLUGIN = cfg.pluginRoot || ''
+// Cross-repo fallback root: where workflow-creator's rubric + enforcement checklist + migration playbook live when the
+// audited PROJECT has none of its own (cross-plugin audit). Defaults to the audited PROJECT; a cross-plugin caller MUST pass workflowsRepo (or rubricPath) so the rubric resolves.
+const WF_REPO = cfg.workflowsRepo || PROJECT
+// The Mode 2 rubric source. A CROSS-PLUGIN target's PROJECT has no skills/workflow-creator, so resolve the rubric from
+// the workflows repo by default; an explicit rubricPath wins.
+const RUBRIC = cfg.rubricPath || `${WF_REPO}/skills/workflow-creator/SKILL.md`
+const RUBRIC_IS_CROSS_REPO = !RUBRIC.startsWith(PROJECT)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(d => [String(d.dimension), d]))
 
@@ -171,17 +183,20 @@ const ARCH_CLUSTERS = [
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
 phase('Discover')
+// Cross-repo fallbacks: when the audited PROJECT has no enforcement checklist / migration playbook of its own (e.g. a
+// cross-plugin audit of the teaching plugin), resolve them from the workflows repo. Prefer an in-PROJECT copy if one
+// exists; otherwise fall back to ${WF_REPO}.
 const checklistHint = PLUGIN
   ? `${PLUGIN}/../references/enforcement-checklist.md (or ${PLUGIN}/references/enforcement-checklist.md)`
-  : 'command ls -d ~/.claude/plugins/cache/*/workflows/*/references/enforcement-checklist.md | sort -V | tail -1 (or the in-repo references/enforcement-checklist.md)'
+  : `${PROJECT}/references/enforcement-checklist.md if it exists, ELSE the cross-repo fallback ${WF_REPO}/references/enforcement-checklist.md (use whichever Read succeeds)`
 const playbookHint = PLUGIN
   ? `${PLUGIN}/../skills/workflow-creator/references/dynamic-workflow-migration.md`
-  : 'command ls -d ~/.claude/plugins/cache/*/workflows/*/skills/workflow-creator/references/dynamic-workflow-migration.md | sort -V | tail -1 (or the in-repo path)'
+  : `${PROJECT}/skills/workflow-creator/references/dynamic-workflow-migration.md if it exists, ELSE the cross-repo fallback ${WF_REPO}/skills/workflow-creator/references/dynamic-workflow-migration.md`
 const disc = await agent(
   `Enumerate the "${TARGET}" workflow's skill files and resolve the audit inputs. Working directory: ${PROJECT}
 
 1. isMetaTool = true iff "${TARGET}" === "workflow-creator".
-2. wcSkillPath = absolute path to ${PROJECT}/skills/workflow-creator/SKILL.md (the Mode 2 rubric — reviewers read it for principle definitions).
+2. wcSkillPath = ${RUBRIC} — the Mode 2 rubric source reviewers read for principle definitions. ${RUBRIC_IS_CROSS_REPO ? `This is a CROSS-PLUGIN audit: the rubric lives in a DIFFERENT repo (${WF_REPO}) than the audited target (${PROJECT}). Use this absolute path verbatim — do NOT look for skills/workflow-creator inside ${PROJECT}, it does not exist there.` : ''} Verify the path is readable; if not, report it in wcSkillPath anyway and note the failure.
 3. enforcementChecklistPath = ${checklistHint}.
 4. migrationPlaybookPath = ${playbookHint} (or "" if not found).
 5. Enumerate the target's skill files via Glob(${PROJECT}/skills/${TARGET}*/SKILL.md): classify the entry skill (skills/${TARGET}/SKILL.md → role "entry"), the midpoint (skills/${TARGET}-fix|−debug|−revise/SKILL.md → role "midpoint"), and every other phase skill (role "phase"). Also list the target's references/*.md (role "reference") and references/constraints/* files (role "constraint") if a constraints dir exists for this workflow. Use ABSOLUTE paths. For workflow-creator specifically there is one entry skill + its references/ — list them all.
@@ -197,8 +212,10 @@ log(`Target: ${TARGET} (${disc.isMetaTool ? 'META-TOOL — P01/P06 exempt' : 'st
 
 // ── Phase 2: Review (per-dimension, parallel, read-only) ───────────────────────
 phase('Review')
-const READONLY = 'You are a READ-ONLY workflow auditor. You have Read/Grep/Glob only. Do NOT create, edit, or overwrite any files. If you find a violation, REPORT it — never silently fix it.'
-const groundIn = `Read the authoritative Mode 2 audit criteria from ${disc.wcSkillPath} (the P01-P21 + P19b definitions), then audit "${TARGET}" by reading ALL its files:\n${fileList}\nPhases/columns: ${phaseList}.`
+const READONLY = 'You are a READ-ONLY workflow auditor. You have Read/Grep/Glob only. Do NOT create, edit, or overwrite any files. If you find a violation, REPORT it — never silently fix it.\nHARD REQUIREMENT: your turn MUST end with a single call to the StructuredOutput tool carrying your full record. Do NOT write your findings as a prose message — a prose answer is a FAILED run. Budget your reads so you have room to emit the structured record. If you are running low on turn budget, STOP reading and emit StructuredOutput with what you have.'
+// The Mode 2 rubric can be very large (the workflow-creator SKILL.md is ~160KB). Reading it end-to-end starves the
+// reviewer's turn budget and it never emits StructuredOutput. Read it SURGICALLY — grep the specific principle sections.
+const groundIn = `First, read the authoritative Mode 2 audit criteria from ${disc.wcSkillPath}. This file is LARGE — do NOT read it end to end. Instead grep it for the specific principle IDs you are scoring (e.g. \`grep -n "P03\\|P09" ${disc.wcSkillPath}\`) and Read only those line windows (the "Mode 2 Step 2" principle definitions). Then audit "${TARGET}" by reading its files (these are small — read them fully):\n${fileList}\nPhases/columns: ${phaseList}.`
 
 const DIMENSIONS = [
   ...ARCH_CLUSTERS.map(c => ({
