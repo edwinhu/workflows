@@ -76,6 +76,8 @@ Check if `.planning/HANDOFF.md` exists:
 | Step 3 (formatting-only fast path) | `one-shot` edit | edit applied → Step 4 |
 | Step 4 (verify) | `serial` (compile → widow → check-all.py) | all pass; else fix (max 3 cycles) then escalate |
 
+**The flow diagram above IS the authoritative spec for step order and gating. If prose below conflicts with it, the diagram wins.**
+
 **After completing each step, IMMEDIATELY proceed to the next step.** Do NOT ask "should I continue?" between steps 1–4. Pausing between steps is procrastination: you lose context, the user loses momentum, and the verification gate gets skipped. Pause only at the explicit checkpoints below.
 
 ### Checkpoint types
@@ -109,6 +111,12 @@ last_updated: [timestamp]
 - [Edits applied so far, files touched]
 ## Remaining Work
 - [Edits left + verification not yet run]
+## Decisions Made
+[User decisions captured during this revision]
+## Rejected Approaches
+[Edits tried and reverted, with reasons — so the resume does not retry them]
+## Blockers
+[Any unresolved blocker the next session must address, or "none"]
 ## Next Action
 [Specific enough to resume immediately]
 ```

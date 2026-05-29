@@ -71,7 +71,7 @@ gather       → structure     → generate      → verify
   created
 ```
 
-**Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.**
+**This diagram IS the authoritative spec for phase order and gating. If any prose below conflicts with it, the diagram wins.** Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.
 
 ### Iteration topology (per phase)
 
@@ -128,6 +128,12 @@ last_updated: [timestamp]
 
 ## Decisions Made
 [Any user decisions captured — structure proportions, venue, etc.]
+
+## Rejected Approaches
+[Approaches tried and discarded, with reasons — so the resume does not relitigate dead ends]
+
+## Blockers
+[Any unresolved blocker the next session must address before proceeding, or "none"]
 
 ## Next Action
 [Specific enough to start immediately — e.g., "Write notes.typ sections 3-5 following OUTLINE.md"]
@@ -304,7 +310,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
      Return: VERDICT (APPROVED | ISSUES), then a bullet list of any mismatches or
      missing inventory items with paper page refs.")
    ```
-   If the reviewer returns ISSUES → fix SOURCES.md → re-dispatch. Only write the gate artifact once it returns APPROVED. **Main chat owns fixing; the subagent only reviews** (verification ≠ investigation — do not re-extract the whole paper yourself, fix the specific gaps the reviewer names).
+   If the reviewer returns ISSUES → fix SOURCES.md → re-dispatch. Only write the gate artifact once it returns APPROVED. **Main chat owns fixing; the subagent only reviews** (verification ≠ investigation — do not re-extract the whole paper yourself, fix the specific gaps the reviewer names). The `Explore` subagent type is **structurally read-only** (its tool set excludes Edit/Write/NotebookEdit), so read-only here is enforced by construction, not just by the prompt.
 
 ### Gate: Sources Gathered
 
@@ -398,7 +404,7 @@ Sources gathered and verified. Paper metadata extracted from source document.
      exist in .planning/SOURCES.md. Return: VERDICT (APPROVED | ISSUES) then a bullet
      list of any slide missing an ID, any timing mismatch, or any unknown ID.")
    ```
-   If ISSUES → fix OUTLINE.md → re-dispatch until APPROVED. Then proceed to user approval. This is a completeness check, not a content judgment — the user still owns the creative call on structure.
+   If ISSUES → fix OUTLINE.md → re-dispatch until APPROVED. Then proceed to user approval. This is a completeness check, not a content judgment — the user still owns the creative call on structure. The `Explore` subagent type is **structurally read-only** (no Edit/Write/NotebookEdit in its tool set) — read-only by construction, not just by prompt.
 
 6. **Present outline to user for approval.**
 
@@ -758,6 +764,14 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
 
 **If `.planning/SLIDES_REVIEWED.md` is missing, STOP. Return to Phase 3 and complete the artifact review gate.** This gate is hook-enforced: `workshop-phase-gate-guard.py` denies writing `.planning/VALIDATION.md` (the Phase 4 deliverable) until `SLIDES_REVIEWED.md` has `status: APPROVED`. Instructional text alone is not the enforcement — the hook is.
 
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Final Verification
+
+**`overallPass=false` MEANS THE DECK IS NOT VERIFIED. THE JS GATE IS NOT NEGOTIABLE.**
+
+Do not declare the presentation ready, do not present to the user, do not skip the loop, and do not "interpret" a near-pass as a pass. The `workshop-verify` workflow's gate is authoritative — not your read of the `scoreTable`, not the compiler's exit code, not the presenter's time pressure. Rubber-stamping a failing gate is the canonical verification failure: it ships widows, overflow, and ungrounded numbers to the podium, where the cost of the bug is highest. Verification you hand-wave is anti-helpful — it manufactures the exact rework you were supposed to prevent.
+</EXTREMELY-IMPORTANT>
+
 ### Steps
 
 1. **Final full verification gate** — re-invoke the workflow over the whole deck (no `onlyChecks`):
@@ -779,8 +793,17 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
    ---
    phase: verify
    status: validated
+   implements: "Phase 4 — final verification, inventory coverage, metadata cross-check"
+   requires: "SLIDES_REVIEWED.md, slides.typ, notes.typ"
+   provides: "VALIDATION.md with inventory coverage map (slide → F/T/R/A)"
+   affects: "presentation/slides.pdf, presentation/notes.pdf"
    claims_checked: [from inventoryCoverage.claimsChecked]
    claims_grounded: [from inventoryCoverage.claimsGrounded]
+   key_files:
+     created: [.planning/VALIDATION.md]
+     modified: []
+   deviations: {r1: 0, r2: 0, r3: 0, r4: 0}
+   one_liner: "Deck verified end-to-end (workshop-verify overallPass), inventory coverage mapped, metadata cross-checked."
    ---
    ## Inventory Coverage (every slide → F/T/R/A IDs)
 
@@ -796,6 +819,17 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
    Classify each slide COVERED (cites ≥1 inventory ID, all claims grounded), PARTIAL (no inventory ref OR some claims ungrounded), or — for the reverse map — MISSING (an inventory item no slide uses). This closes requirement→evidence traceability: SOURCES inventory IDs → slides → grounded claims.
 
 **Skipping the final gate to "finish faster" is anti-helpful — the presenter discovers widows, overflow, or wrong numbers at the podium. The workflow already does the work; reading its gate is the service, not overhead.**
+
+### Deviation Rules (Phase 4)
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Bug** | Compilation error surfaces in the final full run | Fix → recompile → re-invoke gate | Auto |
+| **R2: Missing Critical** | Widow/overflow found by the final gate that Phase 3's selective run missed | Fix → recompile → re-invoke gate → track `[R2]` | Auto |
+| **R3: Blocking** | A `workshop-verify` finding cannot be auto-resolved after the 3-turn `/goal` budget | STOP → present the user retry/skip/stop options → track `[R3]` | Ask user |
+| **R4: Structural** | User requests a section reorder or proportion change during verify | STOP → re-enter Phase 3 (re-runs the review gate) → track `[R4]` | Ask user |
+
+**Priority:** R4 (STOP) > R1-R2 (auto) > R3 (escalate after budget). After Phase 4, report deviations alongside the gate result.
 
 ### Rationalization Table — Final Verification
 
