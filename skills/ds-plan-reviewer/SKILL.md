@@ -95,6 +95,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 
 | Category | What to Look For |
 |----------|------------------|
+| **Executable table (BLOCKING)** | The Task Breakdown MUST be the machine-executable table `Task \| Deps \| Outputs \| Expected Output \| Verify \| Implements`, one row per task, every column filled. Tasks recorded as prose `### Task N` headers, or any row missing Deps/Outputs/Expected Output/Verify/Implements, is **BLOCKING** — ds-implement can't parse a data-flow DAG or per-task verify gate from it. (`ds-plan-executable-guard.py` also blocks the approval write; flag it here so it's fixed first.) |
 | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
 | Spec Alignment | Plan covers ALL spec requirements, no scope creep, no requirements silently dropped |
 | Data Profiling | Data profile section present with shape, types, quality issues documented |

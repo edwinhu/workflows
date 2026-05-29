@@ -36,6 +36,10 @@ hooks:
             GATE_REMEDY="Run /ds (brainstorm), which dispatches ds-spec-reviewer; planning is gated until SPEC.md is APPROVED."
             GATE_BLOCKED_TOOLS=Write,Edit,Agent
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-plan-executable-guard.py"
     - matcher: "Write"
       hooks:
         - type: command
@@ -830,32 +834,28 @@ See: docs/investigations/YYYY-MM-DD_pull_profile.md
 - **source1:** Ratio 89x favors aggregate, BUT aggregate drops `fundid` required by Task 5 block classification. pull-raw despite ratio.
 - **source2:** Ratio 540x; aggregate preserves (permno, rqdate) — everything downstream needs. SAS-on-WRDS pipeline ships 18 MB result instead of 2.5 GB raw.
 
-## Task Breakdown
+## Task Breakdown — MANDATORY EXECUTABLE TABLE
 
-**Every task header MUST carry the `CATEGORY-NN` requirement IDs it implements** (from SPEC.md). This makes coverage ID-keyed, not free-text — ds-validate maps each ID to a DQ result and ds-plan-reviewer's Spec Coverage Check verifies every v1 requirement has ≥1 task.
+> **This table is the machine-executable spec.** `ds-implement` reads it directly: it topologically sorts `Deps` (the data-flow DAG — which intermediates a task consumes) into levels, runs each level's tasks output-first (produce the `Outputs`, then run the `Verify` assertion), and gates each task on its `Verify` exit code. **A plan without a complete table is not executable — `ds-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until every row is filled.** (ds is output-first, not TDD: the `Verify` command is the per-task mechanical gate; `Expected Output` is the human-readable claim that `ds-validate-coverage` reviews per requirement.)
+>
+> **Every task MUST be one table row** (no prose `### Task N` headers carrying the work). Every column is REQUIRED:
+>
+> | Column | Rule |
+> |--------|------|
+> | **Task** | `N. <name>` — N a unique integer, referenced by `Deps`. Add a `[engineer]`/`[analyst]` tag if the role matters (pipeline/ETL vs analysis). |
+> | **Deps** | the data-flow DAG: `---` (reads only raw sources) or `after N` / `after N,M` (consumes task N's `Outputs`). Must reference real task numbers; no cycles |
+> | **Outputs** | the artifact(s) this task produces (intermediate parquet / result table / figure / model file), repo- or DATA_DIR-relative. Drives the DAG (downstream `Deps` consume these) |
+> | **Expected Output** | the verifiable claim that proves completion (`~1.2M rows, 0 nulls in id`; `accuracy ≥ 0.8`; `12 cols incl {a,b,c}`). Specific numbers, not "looks right" |
+> | **Verify** | the deterministic command whose exit-0 IS the per-task gate — an assertion of Expected Output (`uv run python -c "import pandas as pd; df=pd.read_parquet('out.parquet'); assert len(df)>1_000_000 and df.id.notna().all()"`). For inherently-visual outputs, assert the mechanical floor (file exists, expected shape) and let `ds-validate`/look-at judge the rest. NEVER empty |
+> | **Implements** | SPEC.md `CATEGORY-NN` requirement ID(s). Must trace to a real ID; every v1 requirement appears in ≥1 task's Implements (coverage invariant — ds-plan-reviewer rejects a dropped v1 ID) |
 
-### Task 1: Data Cleaning (required first) — implements: [DATA-01]
-- Handle missing values in col2
-- Remove duplicates
-- Fix data types
-- Output: Clean DataFrame, log of rows removed
+| Task | Deps | Outputs | Expected Output | Verify | Implements |
+|------|------|---------|-----------------|--------|------------|
+| 1. clean source [engineer] | `---` | `clean_source1.parquet` | ~1.2M rows, 0 nulls in `id`, log of rows dropped | `uv run python -c "import pandas as pd; df=pd.read_parquet('data/clean_source1.parquet'); assert len(df)>1_000_000 and df.id.notna().all()"` | `DATA-01` |
+| 2. merge panel [engineer] | `after 1` | `panel.parquet` | 1 row per firm-year, 12 cols incl {gvkey,year,roa} | `uv run python -c "import pandas as pd; df=pd.read_parquet('data/panel.parquet'); assert {'gvkey','year','roa'}<=set(df.columns) and not df.duplicated(['gvkey','year']).any()"` | `DATA-02` |
+| 3. regression [analyst] | `after 2` | `results/model.json` | coef on X significant, R² ≥ 0.3 | `uv run python -c "import json; r=json.load(open('results/model.json')); assert r['r2']>=0.3 and r['p_X']<0.05"` | `STAT-01` |
 
-### Task 2: [Analysis Step] — implements: [STAT-01, VIZ-02]
-- Input: Clean DataFrame
-- Process: [description]
-- Output: [specific output to verify]
-- Dependencies: Task 1
-
-### Task 3: [Next Step] — implements: [CAT-NN]
-[Same structure]
-
-## Output Verification Plan
-For each task, define what output proves completion, keyed to its requirement ID:
-- Task 1 (DATA-01): "X rows cleaned, Y rows dropped"
-- Task 2 (STAT-01, VIZ-02): "Visualization showing [pattern]"
-
-**Coverage invariant:** every `v1` requirement ID in SPEC.md appears in at least one task's `implements:` list. ds-plan-reviewer rejects a plan that drops a v1 ID.
-- Task 3: "Model accuracy >= 0.8"
+> Coverage invariant holds: every `v1` SPEC requirement ID appears in at least one row's Implements; ds-plan-reviewer rejects a plan that drops one.
 
 ## ETL Strategy
 <!-- Include when any source > 1M rows or multiple sources require joins -->

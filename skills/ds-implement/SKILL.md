@@ -39,7 +39,7 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
-    - matcher: "Write|Edit|Agent"
+    - matcher: "Write|Edit|Agent|Workflow"
       hooks:
         - type: command
           command: >-
@@ -47,7 +47,7 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to ds-plan and run ds-plan-reviewer; implementation is gated until PLAN.md is APPROVED."
-            GATE_BLOCKED_TOOLS=Write,Edit,Agent
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent,Workflow
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
@@ -98,15 +98,30 @@ This applies even when YOU think:
 <EXTREMELY-IMPORTANT>
 **YOU MUST NOT WRITE ANALYSIS CODE IN MAIN CHAT. This is not negotiable.**
 
-You orchestrate. Subagents analyze. For every task in PLAN.md, use the delegation skill:
+You orchestrate the **`ds-implement` dynamic workflow**, which reads the hardened PLAN.md Task Breakdown table, builds the data-flow DAG, and runs each dependency level's tasks output-first (one ds-analyst/ds-engineer per task, writing directly to the project). You drive the level loop; the workflow's implementers do the analysis/ETL.
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
+```
+0. Set the goal (once): /goal All tasks in PLAN.md are marked [x], each task's Verify
+   assertion exits 0, and .planning/VALIDATION.md status is `validated`. Stop after [N] turns.
 
-This is MANDATORY. ds-delegate contains the Task agent templates, output-first protocol details, methodology review patterns, and rationalization prevention. Do not attempt to summarize or shortcut it.
+LOOP (one turn per level, under the active /goal):
+  1. Workflow(name="ds-implement", args={
+       "projectDir": "<absolute project root (cwd)>",
+       "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>"
+     })
+     → runs the lowest level's pending tasks output-first, returns { overallPass, level,
+       tasksRemaining, tasks, findings, tasksThatFailed, reviews }. Outputs are already on disk.
+  2. GROUND-TRUTH: run ds-validate-coverage (or the full pipeline) on the level's outputs —
+     per-task Verify ran in isolation; this confirms requirement coverage / no regression.
+  3. If result.overallPass AND coverage clean: mark this level's PLAN rows [x], log to
+     LEARNINGS.md, END THE TURN (the /goal re-fires for the next level, or closes if
+     tasksRemaining=0). No pause.
+  4. If result.overallPass is false: read result.findings, fix the cause, re-invoke with
+     onlyChecks=result.tasksThatFailed + priorReviews=result.reviews. An R4 (schema change,
+     new data source, methodology pivot) is critical — STOP and escalate to the user.
+```
 
-**If you're about to write analysis code directly, STOP and read ds-delegate.**
-
-If you wrote analysis code in main chat, DELETE it immediately and dispatch a Task agent instead. Code written in main chat is contaminated by orchestrator context and must not be kept.
+The legacy per-task `ds-delegate` template is now embedded in the workflow's implementer prompt; `ds-delegate` remains for ad-hoc single-task dispatch outside this phase. **If you're about to write analysis code directly, STOP — the workflow's implementers do that, and `ds-no-main-chat-code-guard` forbids you (you may only touch `.planning/`).**
 
 ### Delete & Restart Protocol
 
