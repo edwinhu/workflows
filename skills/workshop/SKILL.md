@@ -18,6 +18,8 @@ hooks:
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.py"
   PostToolUse:
     - matcher: "Edit"
       hooks:
@@ -378,20 +380,27 @@ Sources gathered and verified. Paper metadata extracted from source document.
 
 3. **Map paper sections to presentation structure.** Distribute content according to user's proportions.
 
-4. **Write OUTLINE.md** in `.planning/`:
+4. **Write OUTLINE.md** in `.planning/`. The per-slide **executable content table** is the spec `workshop-generate` consumes — one row per slide, every column filled. Generation fans out one fragment-agent per row; an under-specified row forces the agent to invent content/visuals (the failure mode the spec exists to prevent).
    ```markdown
    ## Presentation Outline
 
    Total time: [X] minutes
 
-   ### Part 1: [Section Name] (~[Y] minutes, [N] slides)
-   = [Touying section heading]
-   == [Subsection 1]
-   - Slide: [slide title] — [content source: paper §X / teaching material / predecessor] → [F1, R2, A1]
-   - Slide: [slide title] — [content source] → [T1, R3]
+   ## Slide Spec (MANDATORY EXECUTABLE TABLE)
 
-   ### Part 2: [Section Name] (~[Y] minutes, [N] slides)
-   ...
+   | Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |
+   |-------|---------|----------|---------|-----------|--------|-------|
+   | 1. Title | Part 1: Motivation `==` The Rise of Proxy Advisors | Proxy advisors emerged to fill a monitoring gap. | ERISA made voting a fiduciary duty; institutions lacked capacity; ISS/Glass Lewis arose | A1, R1 | none | Open with the puzzle: why does a $X industry exist? ~2 min |
+   | 2. Mechanism | Part 1: Motivation `==` The Rise of Proxy Advisors | One recommendation moves many votes. | Robo-voting share; concentration | F1, R2 | F1 (influence chart) | Walk the figure left-to-right; the takeaway is the slope ~3 min |
+
+   ### Column rules (every column REQUIRED per row)
+   - **Slide** — `N. <short label>`, N a unique integer (assembly order within its Section).
+   - **Section** — the Touying `=` Part + `==` subsection this slide sits under (drives assembly grouping). Slides sharing a Section are emitted together in order.
+   - **Takeaway** — the `===` takeaway-sentence title (a full sentence, not a topic label).
+   - **Bullets** — the body content as `;`-separated points (the agent expands each to a bullet; NOT prose).
+   - **Inventory** — ≥1 F/T/R/A ID from SOURCES.md (the coverage invariant; the fragment-agent may cite ONLY these).
+   - **Visual** — the figure/diagram to render (`F1`, `a fletcher pipeline of X→Y→Z`, or `none`). The agent builds no visual not named here.
+   - **Notes** — the speaker-notes talking points + a `~N min` timing target.
    ```
 
 5. **Independent OUTLINE.md review (read-only subagent) — before showing the user.** Don't make the user catch structural gaps. Dispatch ONE fresh read-only subagent (Read/Grep only) to check OUTLINE.md against its spec:
@@ -639,11 +648,25 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 
 ### Steps
 
-1. **Read SOURCES.md** for metadata, **OUTLINE.md** for structure
-2. **Read the paper** section by section using look-at, extracting key content for each slide
-3. **Write slides.typ** following all conventions above
-4. **Write notes.typ** following notes conventions
-5. **Cross-check:** Every slide in slides.typ should have corresponding coverage in notes.typ
+Generation is the **`workshop-generate` dynamic workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, fans out one fragment-agent per slide (each builds its `#slide[]` block + notes from the pinned Takeaway/Bullets/Inventory/Visual, citing only its inventory ids), then an assembly agent stitches the fragments under their Section headers into slides.typ + notes.typ and compiles the deck.
+
+```
+1. Workflow(name="workshop-generate", args={
+     "projectDir": "<absolute presentation project root (cwd)>",
+     "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>"
+   })
+   → returns { overallPass, slides, compiled, findings, slidesThatFailed, assembledPaths }.
+2. Read the gate:
+   - overallPass=true (every slide fragment produced + deck compiles) → proceed to the review fan-out below.
+   - overallPass=false → fix the cause (a missing fragment / a compile error / an out-of-inventory citation),
+     re-invoke with onlyChecks=result.slidesThatFailed. If a Slide Spec row is itself under-specified,
+     that's an R4 — return to Phase 2, fix the row, re-approve (the outline guard re-checks).
+3. The Typst conventions above are what the fragment-agents follow; the assembly agent owns the file header
+   (theme import + config-info incl qr:none) and the section headings. The deck COMPILING is the workflow's
+   mechanical gate — do not hand-edit slides.typ to force a pass; fix the spec/fragment and re-invoke.
+```
+
+Then run the per-slide REVIEW fan-out (`workshop-verify` — already the Phase-3 review gate below) under `/goal`, which checks convention/notes-coverage/source-fidelity/visual and writes `SLIDES_REVIEWED.md` on `overallPass`.
 
 ### Gate: Files Generated
 
