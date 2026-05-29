@@ -353,6 +353,8 @@ Required sections:
 
 ## The Gate Function
 
+This is the canonical IDENTIFY → RUN → READ → VERIFY → CLAIM gate, expanded into 12 ordered steps. The phases map as: **IDENTIFY/RUN** = steps 1-2 (read SPEC.md + exploration), **READ/VERIFY** = steps 6b, 8 (prose audit + testing-table checks), **CLAIM** = step 12 (start /dev-implement). CLAIM is reachable ONLY if every prior step passed — the PLAN_REVIEWED.md hook downstream blocks implement if it did not.
+
 Complete all steps before starting implementation:
 
 ```

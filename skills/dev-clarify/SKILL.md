@@ -359,6 +359,18 @@ Clarification complete when:
 
 **Checkpoint type:** human-verify
 
+Run the canonical 5-step gate before chaining to dev-design — the sub-checks below are its READ/VERIFY content:
+
+```
+1. IDENTIFY: `.planning/SPEC.md` exists and was updated with resolved ambiguities.
+2. RUN:      Read(".planning/SPEC.md").
+3. READ:     inspect the Testing Strategy + REAL Test Definition sections (the three gate checks below).
+4. VERIFY:   every box in all three gate checks is checked; no TBD / placeholder values remain.
+5. CLAIM:    only if 1-4 hold, chain to dev-design.
+```
+
+**If any sub-check box is unchecked → do NOT proceed; resolve it first.**
+
 ### Testing Strategy Gate Check
 
 **Checkpoint type:** decision (user chooses testing approach — cannot auto-advance)

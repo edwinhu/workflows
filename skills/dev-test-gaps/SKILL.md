@@ -300,6 +300,24 @@ Before setting status to `validated`, run the FULL test suite one final time:
 
 **Only set status to `validated` after the full suite passes.**
 
+## Gate: Exit Test-Gap Validation (MANDATORY)
+
+<EXTREMELY-IMPORTANT>
+**`status: validated` is a RUNTIME claim. Writing it without executing the suite this turn is a fabricated gate.** dev-review trusts VALIDATION.md as a structural marker; an unexecuted `validated` ships untested requirements behind a green light.
+
+Run the canonical 5-step gate before chaining to dev-review:
+
+```
+1. IDENTIFY: `.planning/VALIDATION.md` exists; every requirement classified COVERED; no escalations.
+2. RUN:      execute the full test command from Phase 2 THIS turn (not "tests passed earlier").
+3. READ:     read the suite output — total / passed / failed / skipped counts.
+4. VERIFY:   zero failures, zero unexpected skips, all requirements COVERED.
+5. CLAIM:    only if 1-4 hold, write status: validated and chain to dev-review.
+```
+
+**If any step fails, status stays `gaps_found` (or `draft`). A structural check (`grep status: validated`) is NOT the same as runtime evidence — see C3 (Structural vs Runtime Verification).**
+</EXTREMELY-IMPORTANT>
+
 ## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
@@ -310,6 +328,7 @@ Before setting status to `validated`, run the FULL test suite one final time:
 | **Helpfulness** | "Tests passed, coverage must be fine" | Passing tests prove what IS tested, not what ISN'T. User finds untested bugs. | **Anti-helpful** |
 | **Competence** | "I wrote good tests during implementation" | Good tests per task != full requirement coverage. Gaps hide between tasks. | **Incompetent** |
 | **Efficiency** | "Validation is redundant after TDD" | TDD ensures task-level coverage. Test gap validation ensures requirement-level coverage. Different. | **Inefficient** |
+| **Honesty** | "I'll write `validated`, the suite passed last turn" | A `validated` marker with no run THIS turn is a structural claim with no runtime evidence — a fabricated gate. dev-review proceeds on a lie. | **Dishonest** |
 
 **The protocol is not overhead you pay. It is the safety net you provide.**
 </EXTREMELY-IMPORTANT>

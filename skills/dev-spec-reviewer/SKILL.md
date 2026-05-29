@@ -3,6 +3,7 @@ name: dev-spec-reviewer
 description: "Internal skill used by /dev at the Phase 1 (brainstorm) exit gate. Dispatches a reviewer subagent to verify SPEC.md completeness before exploration. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Spec Document Reviewer
