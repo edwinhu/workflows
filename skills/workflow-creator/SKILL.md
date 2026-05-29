@@ -2004,7 +2004,7 @@ Run Mode 2 on the target workflow. This produces the baseline score.
 ### Step 2: Launch Audit-Fix Loop
 <!-- implements: WC-12 -->
 
-Use the audit-fix-loop pattern with `/goal` as the cross-turn iteration primitive (separate-model evaluator reads SCORES.md from the transcript):
+Use the audit-fix-loop pattern with `/goal` as the cross-turn iteration primitive (separate-model evaluator reads SCORES.md from the transcript). The **canonical doctrine** — auditor≠fixer, substrate-gate-not-bare-score, and the anti-grind rationale — lives in the `audit-fix-loop` skill; what follows is the wc-specific instantiation (wc-audit's `substratePass` / `composite` fields):
 
 ```
 /goal Workflow [WORKFLOW_NAME] reaches result.substratePass=true (0 critical, no enforcement Absent, portability Clean) AND composite >= 9.0 AND composite flat (within ±0.2 of the prior SCORES.md row). Stop after 10 turns. Do NOT keep iterating to lift the composite once the substrate gate is clean and the composite is flat — that is the treadmill.

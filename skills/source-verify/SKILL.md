@@ -6,7 +6,7 @@ user-invocable: false
 
 # Source Verification
 
-Verify that citations in a manuscript are real, accurate, and that quoted text actually appears in the source. Operates as a domain-specific audit-fix-loop: extract citations, run checks, score, fix, re-check.
+Verify that citations in a manuscript are real, accurate, and that quoted text actually appears in the source. Operates as a domain-specific audit-fix-loop: extract citations, run checks, score, fix, re-check. (See the `audit-fix-loop` skill for the canonical doctrine — auditor≠fixer, substrate-gate, anti-grind; this skill's substrate is citation/quote resolution.)
 
 **Announce:** "Using source-verify to check citations against Paperpile and source documents."
 
