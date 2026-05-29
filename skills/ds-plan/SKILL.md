@@ -1,6 +1,6 @@
 ---
 name: ds-plan
-description: "Phase 2 of the /ds workflow — used when ds-brainstorm chains to data profiling and task breakdown, or when the user asks to profile data sources for an approved spec. Read the full body before acting; the process is not summarized here."
+description: "Phase 2 of the /ds workflow — data profiling and task breakdown. Invoked by the ds-brainstorm chain; not user-invocable."
 user-invocable: false
 disable-model-invocation: true
 hooks:
