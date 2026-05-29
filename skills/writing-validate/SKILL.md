@@ -338,6 +338,8 @@ Coverage: 1/3 COVERED, 1/3 PARTIAL, 1/3 MISSING
 
 This table is generated from VALIDATION.md and presented inline. No separate script needed unless the user asks for the same view 3+ times.
 
+**Observe → record → offer:** record in `.planning/LEARNINGS.md` what the user attends to here (e.g., "user re-checked CLAIM-02 evidence"). Only after the *same* view is requested 3+ times, *offer* (do not impose) to script it — e.g., a coverage heatmap. Text is the default; visual output is never a hard requirement. See `references/constraints/writing-learnings-log.md`.
+
 ## Phase Transition
 
 After validation is complete, discover and read the writing-review skill:

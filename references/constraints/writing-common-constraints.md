@@ -50,3 +50,4 @@ Verification phases MUST run `check-all.sh` as the first leg of verification (ha
 | Phase Summary Frontmatter | [constraints/phase-summary-frontmatter.md](phase-summary-frontmatter.md) | YAML template for .planning/PHASE_SUMMARY.md |
 | Iteration Topology | [constraints/iteration-topology.md](iteration-topology.md) | Per-phase iteration strategy, exit gates, and escalation triggers |
 | Autonomous Phase Chaining | [constraints/autonomous-phase-chaining.md](autonomous-phase-chaining.md) | How phases auto-chain at human-verify checkpoints |
+| Learnings Log | [writing-learnings-log.md](writing-learnings-log.md) | `.planning/LEARNINGS.md` append-only decision log + soft observe-record-offer loop (visual output is offered after 3+ requests, never required) |

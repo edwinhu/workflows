@@ -92,7 +92,8 @@ project-name/
 ├── .planning/
 │   ├── ACTIVE_WORKFLOW.md      # Workflow state (auto-created)
 │   ├── PRECIS.md               # Thesis, audience, claims, counterarguments
-│   └── OUTLINE.md              # Master document structure
+│   ├── OUTLINE.md              # Master document structure
+│   └── LEARNINGS.md            # Append-only decision log (angle, rejected framings, R4s) — see writing-learnings-log.md
 ├── outlines/                    # Detailed section/part outlines
 │   ├── Part I (Outline).md
 │   ├── Part II (Outline).md

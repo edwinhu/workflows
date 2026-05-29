@@ -101,7 +101,11 @@ Skipping levels produces incoherent documents. Each level expands the previous.
 mkdir -p outlines drafts references scratch .planning
 echo "scratch/" >> .gitignore
 touch references/sources.bib
+# Seed the append-only decision log (standard state file — see writing-learnings-log.md)
+[ -f .planning/LEARNINGS.md ] || printf '# Learnings — decision log\n\nAppend-only. One terse dated bullet per notable decision (angle, rejected framings, R4 restructurings, accepted gaps). Never rewrite.\n\n' > .planning/LEARNINGS.md
 ```
+
+After writing PRECIS.md, append the scope decisions (claims cut, In/Out boundary) to `.planning/LEARNINGS.md` — these are the choices a resuming session cannot reconstruct from PRECIS alone.
 
 The `references/sources.bib` file is the single source of truth for every
 citation. Drafts use pandoc cite-keys (`[@authorYEAR]`) and pandoc-citeproc
