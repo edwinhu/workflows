@@ -6,12 +6,13 @@ disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Agent, Skill
 hooks:
   PreToolUse:
-    - matcher: "Agent"
+    - matcher: "Write|Edit|Agent"
       hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/VALIDATION.md
             GATE_STATUS=validated
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Claim validation"
             GATE_REMEDY="Run writing-validate first to validate claim coverage before review"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
@@ -165,7 +166,7 @@ Skill(skill="workflows:ai-anti-patterns")
 Before any review work, run all mechanical constraint checks:
 
 ```bash
-uv run python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/check-all.py [project-root]
+uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py [project-root]
 ```
 
 This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, topic sentences, source-anchored citations, etc.). If any check fails, report violations and fix them before proceeding to Level 1.

@@ -4,6 +4,17 @@ description: Internal skill for creating PRECIS.md, OUTLINE.md, and ACTIVE_WORKF
 user-invocable: false
 disable-model-invocation: true
 hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Agent|Bash"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/LIT_REVIEW_COMPLETE.md
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent,Bash
+            GATE_DESCRIPTION="Lit review completion"
+            GATE_REMEDY="Return to writing-lit-review: materialize sources into references/, run gap analysis, then write .planning/LIT_REVIEW_COMPLETE.md"
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Write"
       hooks:
@@ -90,7 +101,11 @@ Skipping levels produces incoherent documents. Each level expands the previous.
 mkdir -p outlines drafts references scratch .planning
 echo "scratch/" >> .gitignore
 touch references/sources.bib
+# Seed the append-only decision log (standard state file — see writing-learnings-log.md)
+[ -f .planning/LEARNINGS.md ] || printf '# Learnings — decision log\n\nAppend-only. One terse dated bullet per notable decision (angle, rejected framings, R4 restructurings, accepted gaps). Never rewrite.\n\n' > .planning/LEARNINGS.md
 ```
+
+After writing PRECIS.md, append the scope decisions (claims cut, In/Out boundary) to `.planning/LEARNINGS.md` — these are the choices a resuming session cannot reconstruct from PRECIS alone.
 
 The `references/sources.bib` file is the single source of truth for every
 citation. Drafts use pandoc cite-keys (`[@authorYEAR]`) and pandoc-citeproc
@@ -270,7 +285,7 @@ sources titled by their bibkeys, build the source inventory now so drafting
 can disambiguate same-author works:
 
 ```bash
-uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_source_inventory.py
+uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/nlm_source_inventory.py
 ```
 
 This writes `references/source_summaries.md` — a per-bibkey thesis,

@@ -92,7 +92,8 @@ project-name/
 ├── .planning/
 │   ├── ACTIVE_WORKFLOW.md      # Workflow state (auto-created)
 │   ├── PRECIS.md               # Thesis, audience, claims, counterarguments
-│   └── OUTLINE.md              # Master document structure
+│   ├── OUTLINE.md              # Master document structure
+│   └── LEARNINGS.md            # Append-only decision log (angle, rejected framings, R4s) — see writing-learnings-log.md
 ├── outlines/                    # Detailed section/part outlines
 │   ├── Part I (Outline).md
 │   ├── Part II (Outline).md
@@ -453,9 +454,21 @@ Before proceeding to project setup:
    - Source results contain specific titles, authors, and quoted text (not summaries from training data)
    - Domain indicators come from actual source material characteristics
 4. **VERIFY**: All three conditions met: (a) real sources gathered, (b) user confirmed via AskUserQuestion, (c) domain detected from evidence
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-lit-review
+5. **CLAIM**: Only if steps 1-4 pass, write the gate artifact, THEN proceed to writing-lit-review. The artifact is what proves the gate ran — instructional text alone is not enforcement, and writing-lit-review's PreToolUse hook blocks until this file exists:
+
+   ```bash
+   mkdir -p .planning && cat > .planning/BRAINSTORM_COMPLETE.md <<'EOF'
+   ---
+   status: APPROVED
+   gate: brainstorm
+   ---
+   Brainstorm gate passed: sources gathered, angle/audience confirmed via AskUserQuestion, domain detected from source evidence.
+   EOF
+   ```
 
 **"User seemed to agree" is not confirmation. AskUserQuestion response or explicit typed confirmation is confirmation.** Inferring agreement from silence or topic continuation is rubber-stamping the gate.
+
+**Do not hand-write `status: APPROVED` to satisfy the hook when the gate did not actually pass.** The artifact certifies real sources + real user confirmation. Forging it produces a downstream lit review built on nothing.
 
 ## Phase Complete → Proceed to Lit Review
 

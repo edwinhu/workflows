@@ -6,14 +6,15 @@ disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash
 hooks:
   PreToolUse:
-    - matcher: "Write"
+    - matcher: "Write|Edit|Bash"
       hooks:
         - type: command
           command: >-
-            GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
+            GATE_ARTIFACT=.planning/DRAFT_COMPLETE.md
             GATE_STATUS=APPROVED
-            GATE_DESCRIPTION="Outline review (required before validation)"
-            GATE_REMEDY="Outline must be reviewed before validation can produce artifacts"
+            GATE_BLOCKED_TOOLS=Write,Edit,Bash
+            GATE_DESCRIPTION="Draft completion (required before validation)"
+            GATE_REMEDY="All sections must be drafted before validation runs. Return to writing-draft and write .planning/DRAFT_COMPLETE.md after every OUTLINE section has a substantive draft."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Write"
@@ -336,6 +337,8 @@ Coverage: 1/3 COVERED, 1/3 PARTIAL, 1/3 MISSING
 ```
 
 This table is generated from VALIDATION.md and presented inline. No separate script needed unless the user asks for the same view 3+ times.
+
+**Observe → record → offer:** record in `.planning/LEARNINGS.md` what the user attends to here (e.g., "user re-checked CLAIM-02 evidence"). Only after the *same* view is requested 3+ times, *offer* (do not impose) to script it — e.g., a coverage heatmap. Text is the default; visual output is never a hard requirement. See `references/constraints/writing-learnings-log.md`.
 
 ## Phase Transition
 
