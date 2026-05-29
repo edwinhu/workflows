@@ -117,28 +117,30 @@ See `references/constraints/real-test-enforcement.md` for fake test detection re
 |------|---------|
 | `src/auth/types.ts` | Session type definitions |
 
-## Chunking (for plans with >15 tasks)
+## Implementation Order — MANDATORY EXECUTABLE TABLE
 
-> **If your plan has >15 tasks:** Break the implementation order into chunks using `## Chunk N: <name>` headings.
-> Each chunk should be logically self-contained (e.g., "infrastructure", "core logic", "tests", "integration").
-> The plan reviewer will review each chunk separately.
+> **This table is the machine-executable spec.** `dev-implement` reads it directly: it topologically sorts `Deps` into dependency levels, runs each level's tasks in parallel (one worktree-isolated implementer per task), merges, and gates each task on its `Verify Command` exit code. **A plan without a complete table is not executable — `dev-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until every row is filled.**
 >
-> **If your plan has ≤15 tasks:** Skip chunking. Use a single implementation order section.
+> **Every task MUST be one table row** — do NOT carry the work in prose `### Phase` headings (a phase label, if useful, lives in the task name). Every column is REQUIRED for every code task:
+>
+> | Column | Rule |
+> |--------|------|
+> | **Task** | `N. <name>` — N is a unique integer, referenced by `Deps` |
+> | **Deps** | the DAG: `---` (no deps, parallelizable) or `after N` / `after N,M` (fan-in). Must reference real task numbers; no cycles |
+> | **Files** | every file the task creates/edits (comma-separated, repo-relative). Drives conflict detection + worktree merge — same-level tasks with disjoint Files run in parallel; overlapping Files serialize |
+> | **Failing Test** | the test written FIRST (TDD RED). `N/A` only for types-only / meta tasks |
+> | **Verify Command** | the deterministic command whose exit-0 IS the per-task gate (`pytest tests/test_x.py -v`, `tsc --noEmit`). NEVER empty for a code task |
+> | **Implements** | SPEC.md requirement ID(s). Must trace to a real ID in the Requirements table |
+>
+> **TDD:** every code task writes its Failing Test before implementation. **`/goal` pattern:** `/goal All tasks in PLAN.md pass their Verify Command, full suite green, VALIDATION.md status = validated. Stop after [N] turns.`
+> **>15 tasks:** group with a `Phase`/`Chunk` prefix in the task name (e.g. `3. [core] route handler`); the reviewer reviews per group. The table stays single + flat so `Deps` remains the one source of ordering truth.
 
-## Implementation Order (Tasks Run Across Turns Under One `/goal`)
+| Task | Deps | Files | Failing Test (write FIRST) | Verify Command | Implements |
+|------|------|-------|----------------------------|----------------|------------|
+| 0. Test infrastructure | `---` | `package.json, vitest.config.ts` | N/A (meta) | `npm test -- --version` | `INFRA-01` |
+| 1. Add types | `after 0` | `src/auth/types.ts` | N/A (types only) | `tsc --noEmit` | `AUTH-01` |
+| 2. Service method | `after 1` | `src/auth/service.ts, src/auth/service.test.ts` | `test_validate_session()` | `pytest tests/test_auth.py -v` | `AUTH-01, AUTH-02` |
+| 3. Route handler | `after 1` | `src/routes/api.ts, src/routes/api.test.ts` | `test_api_endpoint()` | `pytest tests/test_api.py -v` | `API-01` |
 
-> **For Claude:** Complete task N before starting task N+1. The phase-level `/goal` evaluator decides when all tasks are done.
->
-> **TDD ENFORCEMENT:** Every task with code MUST have a failing test written BEFORE implementation.
->
-> Phase goal pattern: `/goal All tasks in PLAN.md marked [x], [TEST COMMAND] exits 0, VALIDATION.md status = validated. Stop after [N] turns.`
->
-> **Task Dependencies:** Mark each task's `Deps` column: `---` = no dependencies (parallelizable), `after N` = must follow task N. Tasks with `---` or the same dependency can run in parallel when using agent team mode in dev-implement.
-
-| Task | Deps | Implements | Turn Budget | Failing Test (write FIRST) | Verify Command |
-|------|------|------------|-------------|----------------------------|----------------|
-| 0. Test infrastructure (if needed) | --- | --- | `"Task 0: Test setup" -> TASK0_DONE` | N/A (meta-task) | `pytest --version` or `npm test -- --version` |
-| 1. Add types | after 0 | `AUTH-01` | `"Task 1: Add types" -> TASK1_DONE` | N/A (types only) | `tsc --noEmit` |
-| 2. Service method | after 1 | `AUTH-01, AUTH-02` | `"Task 2: Service method" -> TASK2_DONE` | `test_validate_session()` - write test, see RED, then implement | `pytest tests/test_auth.py -v` |
-| 3. Route handler | after 1 | `API-01` | `"Task 3: Route handler" -> TASK3_DONE` | `test_api_endpoint()` - write test, see RED, then implement | `pytest tests/test_api.py -v` |
+> Tasks 2 and 3 share `Deps: after 1` and touch disjoint Files → `dev-implement` runs them **in parallel** (same level), merges, then runs the full suite.
 ```

@@ -77,6 +77,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 
 | Category | What to Look For |
 |----------|------------------|
+| **Executable table (BLOCKING)** | The Implementation Order MUST be the machine-executable table `Task \| Deps \| Files \| Failing Test \| Verify Command \| Implements`, one row per task, every column filled. Work recorded as prose `### Phase` headings, or any row missing Deps/Files/Verify Command/Implements, is **BLOCKING** — `dev-implement` cannot parse a DAG or per-task gate from it. (`dev-plan-executable-guard.py` also blocks the approval write, but flag it here so it's fixed before the guard fires.) |
 | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
 | Spec Alignment | Plan covers ALL spec requirements, no scope creep, no requirements silently dropped |
 | Prose Section Audit | Scan SPEC.md Design Decisions, Discovered Protocol, Clarified Requirements, and any other prose sections for behavioral requirements missing CATEGORY-NN IDs — **BLOCKING if found** |

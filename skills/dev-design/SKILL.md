@@ -15,6 +15,10 @@ hooks:
             GATE_DESCRIPTION="Spec reviewed"
             GATE_REMEDY="SPEC.md must exist AND have passed dev-spec-reviewer (SPEC_REVIEWED.md status: APPROVED) before designing. Complete brainstorm, spec review, and exploration first."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-plan-executable-guard.py
 ---
 
 **Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
@@ -351,7 +355,7 @@ Required sections:
 - **REAL Test Criteria** - User workflow, protocol, UI elements, what user sees
 - **Files to Modify** - Specific paths with change descriptions
 - **New Files** - If any, with purposes
-- **Implementation Order** - Ordered task list with dependencies and `implements` column mapping tasks to requirement IDs from SPEC.md
+- **Implementation Order** - the MANDATORY machine-executable table: `Task | Deps | Files | Failing Test | Verify Command | Implements`, one row per task, every column filled (see `references/plan-template.md`). `dev-implement` reads this table to build the dependency DAG and the per-task verify gates — record tasks as table ROWS, never as prose `### Phase` headings. **Enforced:** `dev-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until the table is complete and the `Deps` graph is an acyclic, resolvable DAG. Self-check before approving: `uv run python3 ${CLAUDE_SKILL_DIR}/../../hooks/dev-plan-executable-guard.py .planning/PLAN.md`.
 
 ## The Gate Function
 
