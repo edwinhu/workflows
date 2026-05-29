@@ -42,3 +42,4 @@ docs/investigations/
 
 # WRDS SGE runtime staging
 .staging_proxy/
+.claude/worktrees/
