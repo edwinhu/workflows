@@ -3,6 +3,18 @@ name: writing-lit-review
 description: "Internal skill for literature review and source materialization. Called after brainstorm, before setup. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Agent|Bash"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/BRAINSTORM_COMPLETE.md
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent,Bash
+            GATE_DESCRIPTION="Brainstorm completion"
+            GATE_REMEDY="Return to the /writing brainstorm phase: gather sources, confirm angle/audience via AskUserQuestion, then write .planning/BRAINSTORM_COMPLETE.md"
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
 # Literature Review & Source Materialization
@@ -212,9 +224,22 @@ Before proceeding to writing-setup:
    - (a) At least 80% of brainstorm sources have local copies in `references/`
    - (b) Any gaps are explicitly flagged and acknowledged by user
    - (c) `references/sources.bib` exists with `file` fields pointing to local copies
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-setup
+5. **CLAIM**: Only if steps 1-4 pass, write the gate artifact, THEN proceed to writing-setup. writing-setup's PreToolUse hook blocks until this file exists — the artifact is what proves materialization actually happened:
+
+   ```bash
+   mkdir -p .planning && cat > .planning/LIT_REVIEW_COMPLETE.md <<EOF
+   ---
+   status: APPROVED
+   gate: lit-review
+   gap_rate: ${GAP_RATE:-unknown}
+   ---
+   Lit review gate passed: sources materialized to references/, sources.bib has file fields, gap rate within 20% (or gaps acknowledged by user).
+   EOF
+   ```
 
 **A gap rate above 20% is a BLOCKER.** Ask the user: "20% of sources are missing. Should we search more, or proceed with known gaps?"
+
+**Do not write `status: APPROVED` until sources are genuinely materialized.** The artifact certifies local copies in `references/` — forging it sends setup into a PRECIS built on sources that cite-check cannot verify.
 
 ## Why Skipping Hurts the Thing You Care About Most
 
