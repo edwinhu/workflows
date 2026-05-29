@@ -101,13 +101,13 @@ When the rhythm pass is invoked as a `/writing-revise` subroutine:
 
 ```
 1. Setup: extract draft → CURRENT.md, scan pins → PINS.md, copy rubric+brief to .planning/prose-rhythm/
-2. Set /goal pinned to "latest SCORES.md overall ≥ threshold. Stop after max_iter turns."
+2. Set /goal pinned to "rhythm CONVERGED — latest SCORES.md shows zero blocking findings AND overall improved <0.2 vs prior (flat) — OR iter ≥ max_iter. Stop after max_iter turns." (Pure judgment, no hard substrate → gate on convergence, not a fixed threshold.)
 3. Loop:
    a. Dispatch fresh writing-prose-reviewer (read-only, structured fix tuples)
-   b. Read latest SCORES.md, check threshold + iter + regression alarm
+   b. Read latest SCORES.md, check convergence (flat ±0.2) + blocking findings + iter + regression alarm
    c. If CONTINUE: apply fixes transactionally (validate-all → apply-all → save-once); cross-check PINS.md; log to CHANGELOG.md; re-extract → CURRENT.md
    d. End turn — /goal refires
-4. Exit on COMPLETE (overall ≥ threshold) or ESCALATE (iter ≥ max_iter < threshold)
+4. Exit on COMPLETE (zero blocking + overall flat — converged) or ESCALATE (iter ≥ max_iter)
 ```
 
 ## What this is NOT

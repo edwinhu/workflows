@@ -420,14 +420,14 @@ After REVIEW.md issues are resolved AND the regex sweep (`workflows:ai-anti-patt
 1. Read rhythm-lessons.md (mandatory — do not skip)
 2. Copy rhythm-rubric.md and rhythm-auditor-brief.md to <project>/.planning/prose-rhythm/
 3. Run setup: extract draft → CURRENT.md, scan pins → PINS.md, seed SCORES.md + AUDIT.md + CHANGELOG.md
-4. Set /goal pinned to "latest row in .planning/prose-rhythm/SCORES.md shows overall ≥ <threshold>. Stop after <max_iter> turns."
+4. Set /goal pinned to "the prose-rhythm pass has CONVERGED — latest .planning/prose-rhythm/SCORES.md row shows ZERO blocking rhythm findings AND overall improved <0.2 vs the prior row (flat) — OR iter ≥ <max_iter>. Stop after <max_iter> turns." (Rhythm is pure judgment with no hard substrate; gate on convergence/flat + zero blocking, NOT on chasing overall ≥ a fixed threshold.)
 5. Loop body (one turn each):
    a. Dispatch fresh workflows:writing-prose-reviewer (read-only Read/Grep/Glob)
-   b. Read SCORES.md latest row → check threshold + iter + regression alarm
+   b. Read SCORES.md latest row → check convergence (flat ±0.2) + blocking findings + iter + regression alarm
    c. If CONTINUE: uv run --with pyyaml --with lxml python3 ${CLAUDE_SKILL_DIR}/scripts/transactional_fix.py \\
         --draft <path> --state-dir .planning/prose-rhythm --iteration N
    d. End turn (/goal refires)
-6. Exit on COMPLETE (overall ≥ threshold) or ESCALATE (iter ≥ max_iter)
+6. Exit on COMPLETE (zero blocking findings AND overall flat — converged) or ESCALATE (iter ≥ max_iter)
 ```
 
 **Do NOT invoke as `/prose-rhythm` standalone — it's a subroutine of /writing-revise.** Future work may promote it to a standalone skill if usage demands.

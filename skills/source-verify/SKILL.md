@@ -339,12 +339,13 @@ Items with any finding (FIELD_ERROR, QUOTE_NOT_FOUND, UNVERIFIED, etc.) count ag
 
 ## Audit-Fix Loop Integration
 
-This skill is a domain-specific scorer for the audit-fix pattern. To run iteratively, set a `/goal` whose condition pins completion to the source-verify score; the evaluator reads the score from the transcript and refires turns until the threshold is met.
+This skill is a domain-specific scorer for the audit-fix pattern. Its substrate is **deterministic and binary** — every citation either resolves against the bib or it doesn't; every quote either verifies against its source or it doesn't. So gate on the substrate directly, not a 0-10 composite (which here is just a noisy restatement of the same counts). The evaluator reads the finding counts from the transcript and refires until they hit zero.
 
 ```
-/goal Source-verify [manuscript] is complete when SCORES.md shows >= 9.5/10 with
-all citations resolved against paperpile.bib, all quotes verified via Readwise/rga/NLM,
-and zero UNVERIFIED or QUOTE_NOT_FOUND findings remaining. Stop after 5 turns.
+/goal Source-verify [manuscript] is complete when .planning/SCORES.md shows ALL citations
+resolved against paperpile.bib, ALL quotes verified via Readwise/rga/NLM, and ZERO UNVERIFIED
+or QUOTE_NOT_FOUND findings remaining. (The 0-10 score is advisory — the zero-count substrate is
+the gate.) Stop after 5 turns.
 ```
 
 ### Iteration Protocol

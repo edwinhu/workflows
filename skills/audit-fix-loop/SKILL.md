@@ -30,11 +30,12 @@ PLAN (this skill)
   │   → Findings written to .planning/AUDIT.md   │
   │   → Score (0-10) appended to .planning/SCORES.md │
   │                                              │
-  │ DECIDE: Check score against threshold        │
-  │   → Score >= 9.5? → end turn; /goal evaluator  │
-  │                     reads SCORES.md and marks    │
-  │                     the condition met            │
-  │   → Score < 9.5?  → continue to FIX             │
+  │ DECIDE: substrate gate first, score advisory │
+  │   → substrate clean (0 CRITICAL/0 HIGH) AND  │
+  │     score FLAT at its ceiling? → end turn;   │
+  │     /goal evaluator marks condition met      │
+  │   → substrate dirty, OR score still climbing │
+  │     run-to-run? → continue to FIX            │
   │                                              │
   │ FIX: Apply targeted improvements             │
   │   → Address highest-severity findings first  │
@@ -44,7 +45,11 @@ PLAN (this skill)
   └─────────────────────────────────────────────┘
 ```
 
-**This is hill-climbing.** Each iteration audits, scores out of 10, fixes the worst findings, and re-audits. The loop terminates when the score crosses the threshold (default: >= 9.5/10).
+**This is hill-climbing — on the substrate, not the score.** Each iteration audits, fixes the worst findings, and re-audits. The loop terminates on the **substrate gate** — zero CRITICAL and zero HIGH findings outstanding (the deterministic, convergent signal) — once the 0-10 score has gone **flat** at its ceiling.
+
+<EXTREMELY-IMPORTANT>
+**Do NOT make a bare composite ≥ 9.5 the termination condition.** The 0-10 score is a noisy LLM proxy: it re-rolls ±0.2 each run and regenerates new minor findings every pass, so it asymptotes (empirically ~9.0) and never stably crosses 9.5 — chasing it is a treadmill where each fix surfaces a new nit and the last 0.5 is only buyable by over-engineering (see project_wc_mode3_asymptote). Gate on the substrate (0 CRITICAL/HIGH) + score-flat; treat the number as an advisory thermometer, not the summit. The threshold you pick in Step 1 is a *floor the substrate must clear*, not a bar to grind toward.
+</EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Planning
@@ -162,14 +167,15 @@ mkdir -p .planning
 
 ## Step 3: Start the Loop
 
-Hand the user the literal `/goal` condition (or run `claude -p "/goal …"`). The condition must reference both the artifact and the score file, so the evaluator can check the threshold from the transcript.
+Hand the user the literal `/goal` condition (or run `claude -p "/goal …"`). The condition's gate is the **substrate** (CRITICAL/HIGH counts) plus score-flatness — pin it to `.planning/SCORES.md` so the evaluator can read both the finding counts and the score trend from the transcript.
 
 Example:
 
 ```
-/goal All three workflow families score >= 9.5 in .planning/SCORES.md across the
-selected scorers, with zero CRITICAL and zero HIGH findings outstanding. Audit then
-fix in parallel inside each turn. Stop after 10 turns.
+/goal All three workflow families are substrate-clean — zero CRITICAL and zero HIGH findings
+outstanding in .planning/SCORES.md across the selected scorers — AND their composite scores have
+gone flat (within ±0.2 of the prior turn, at or above the chosen floor). Audit then fix in parallel
+inside each turn. Stop after 10 turns. Do NOT keep iterating to lift a flat score once substrate-clean.
 ```
 
 Each turn under the active goal must enforce this exact sequence:

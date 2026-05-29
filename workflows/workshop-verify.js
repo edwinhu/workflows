@@ -276,8 +276,17 @@ for (const d of diagramReviews) {
 }
 
 const total = sev.critical + sev.major + sev.minor
-const overallPass = total === 0
-const verdict = overallPass ? 'CLEAN' : 'ISSUES FOUND'
+// Substrate split: compile / constraints / widows / overflow / source-fidelity / notes-coverage / visual-defects
+// are deterministic or categorical gates → critical+major are BLOCKING. Per-slide convention/style minors are
+// advisory polish notes — they do NOT block the gate (chasing them is the over-enforcement treadmill).
+const blocking = sev.critical + sev.major
+const substratePass = blocking === 0
+const overallPass = substratePass
+const verdict = total === 0
+  ? 'CLEAN'
+  : substratePass
+    ? 'CLEAN (advisory minor notes)'
+    : 'ISSUES FOUND'
 const unreliableSlides = allSlides.filter(s => s.unreliable).map(s => s.slide)
 const claimsChecked = allSlides.reduce((a, s) => a + (s.claimsChecked || 0), 0)
 const claimsGrounded = allSlides.reduce((a, s) => a + (s.claimsGrounded || 0), 0)
@@ -303,15 +312,18 @@ const scoreTable = [
   `| Source fidelity | claims grounded | ${claimsGrounded}/${claimsChecked} | ${claimsGrounded === claimsChecked ? '✅' : '❌'} |`,
   `| Notes coverage | slides with notes | ${allSlides.filter(s => s.notesSectionFound !== false).length}/${allSlides.length} | ${allSlides.every(s => s.notesSectionFound !== false) ? '✅' : '❌'} |`,
   `| Visual | diagram defects | ${diagramReviews.reduce((a, d) => a + (d.defectsFound || 0), 0)} | ${diagramReviews.every(d => (d.defectsFound || 0) === 0) ? '✅' : '❌'} |`,
-  `| **Overall** | crit/major/minor | ${sev.critical}/${sev.major}/${sev.minor} | ${overallPass ? '✅ CLEAN' : '❌ ISSUES'} |`,
+  `| **Overall** | blocking (crit+major) / advisory minor | ${blocking} / ${sev.minor} | ${substratePass ? (total === 0 ? '✅ CLEAN' : '✅ CLEAN (minors advisory)') : '❌ ISSUES'} |`,
 ].join('\n')
 
-log(overallPass ? '✅ Workshop verify CLEAN — no issues' : `Workshop verify: ISSUES FOUND — ${sev.critical} critical / ${sev.major} major / ${sev.minor} minor`)
+log(substratePass
+  ? (total === 0 ? '✅ Workshop verify CLEAN — no issues' : `✅ Workshop verify CLEAN — substrate clean; ${sev.minor} advisory minor note(s) (non-blocking)`)
+  : `Workshop verify: ISSUES FOUND — ${sev.critical} critical / ${sev.major} major (blocking) + ${sev.minor} minor (advisory)`)
 
 return {
   overallPass,
+  substratePass,
   verdict,
-  summary: { ...sev, total },
+  summary: { ...sev, total, blocking, advisoryMinors: sev.minor },
   scoreTable,
   findings: findings.sort((a, b) => ({ critical: 0, major: 1, minor: 2 }[a.severity] - { critical: 0, major: 1, minor: 2 }[b.severity])),
   reviews: allSlides,                 // raw per-slide objects — pass back as priorReviews on a selective re-run

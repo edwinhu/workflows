@@ -3,8 +3,8 @@
 ## Example 1: Typst Slide (Non-Python Path)
 
 ```
-/goal Visual Task 1: Title Slide is complete when /tmp/visual-verify.png scores >= 9.5
-from look-at and pdftotext shows no fused labels. Stop after 5 turns.
+/goal Visual Task 1: Title Slide is complete when /tmp/visual-verify.png has ZERO BLOCKING
+defects from look-at and pdftotext shows no fused labels (score advisory). Stop after 5 turns.
 
 [Spawn Task agent -> creates title slide in Typst]
 
@@ -41,9 +41,9 @@ Rate PASS or FAIL."
 ## Example 2: Matplotlib Chart (Python-Native Path)
 
 ```
-/goal Visual Task 2: Revenue Chart is complete when /tmp/visual-verify.png scores >= 9.5
-from look-at with all axis labels present, no legend overlap, and the verified
-code fixes applied. Stop after 5 turns.
+/goal Visual Task 2: Revenue Chart is complete when /tmp/visual-verify.png has ZERO BLOCKING
+defects from look-at — all axis labels present, no legend overlap — and the verified
+code fixes applied (score advisory). Stop after 5 turns.
 
 # Iteration 1
 [Spawn Task agent -> creates matplotlib chart]

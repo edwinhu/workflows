@@ -1315,12 +1315,12 @@ After generating workflow files in Step 6:
 
    Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` and append `result.composite` to `.planning/wc/{name}/SCORES.md`.
 
-2. **Check score:** If `result.composite < 8.0`, drive convergence via the native `/goal` primitive — a separate evaluator gates exit by reading SCORES.md from the transcript, so the agent that generated the files isn't also the judge.
+2. **Check score:** If `result.substratePass` is false OR `result.composite < 8.0`, drive convergence via the native `/goal` primitive — a separate evaluator gates exit by reading SCORES.md from the transcript, so the agent that generated the files isn't also the judge.
 
    Invoke:
 
    ```
-   /goal Generated workflow scores >= 8.0 in .planning/wc/{name}/SCORES.md from a fresh audit subagent. Stop after 3 turns.
+   /goal Generated workflow reaches result.substratePass=true (0 critical, no enforcement Absent, portability Clean) AND composite >= 8.0 in .planning/wc/{name}/SCORES.md from a fresh audit subagent. Stop after 3 turns.
    ```
 
    Each turn under the active goal: fix the generated files based on the latest AUDIT.md findings, re-run the wc-audit workflow (full pass, or `onlyChecks: <prev result.reviewersThatFlagged>` + `priorReviews: <prev result.reviews>`), append the new composite to SCORES.md, end turn.

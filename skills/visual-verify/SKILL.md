@@ -98,16 +98,17 @@ The loop is done when ALL of these hold:
 
 ### Invocation
 
-Set a `/goal` whose condition pins completion to the rendered-output score, then run the loop body (render → vision → fix) inside each turn. The evaluator is a separate model that reads the look-at score from the transcript.
+Set a `/goal` whose condition gates on the **enumerable defect substrate** — fused labels and BLOCKING visual defects — not the 0-10 aesthetic score (an LLM vision score is noisy and won't stably hit 9.5; chasing it is a treadmill). Run the loop body (render → vision → fix) inside each turn. The evaluator reads the defect findings from the transcript.
 
 ```
 /goal Visual Task N [TASK NAME] is complete when the rendered output at
-[OUTPUT PATH] scores >= 9.5 from look-at (Gemini, or consensus mode for
-diagrams), pdftotext pre-screen finds no fused labels (diagrams only), and
-no BLOCKING defects remain in SCORES.md. Stop after 5 turns.
+[OUTPUT PATH] has ZERO BLOCKING defects (clipping, overlap, illegible text,
+wrong connections) and the pdftotext pre-screen finds no fused labels
+(diagrams only), per SCORES.md. The look-at 0-10 score is advisory, not the
+gate. Stop after 5 turns.
 ```
 
-Hand the literal condition to the user (or run via `claude -p "/goal …"`). Each subsequent turn fires automatically until the score crosses the threshold.
+Hand the literal condition to the user (or run via `claude -p "/goal …"`). Each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar).
 
 ### Score Tracking
 

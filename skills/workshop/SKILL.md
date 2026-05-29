@@ -738,12 +738,14 @@ affects: "presentation/slides.typ, presentation/notes.typ"
 workflow_turns: [N]
 slides_count: [N]
 notes_sections: [N]
-gate: {overallPass: true, critical: 0, major: 0, minor: 0}
+gate: {overallPass: true, substratePass: true, critical: 0, major: 0, minor: [N advisory]}
 inventory_coverage: {claimsChecked: [N], claimsGrounded: [N]}
 deviations: {r1: [X], r2: [Y], r3: [Z], r4: [W]}
 ---
-Slides and notes reviewed by the workshop-verify dynamic workflow — overallPass=true. [Score-table summary].
+Slides and notes reviewed by the workshop-verify dynamic workflow — overallPass=true (substrate clean: 0 critical, 0 major; any remaining minors are advisory convention/style notes, non-blocking). [Score-table summary].
 ```
+
+**Gate semantics (substrate split):** `overallPass` is `substratePass` — true when **0 critical AND 0 major** (compile, constraints, widows, overflow, source-fidelity, notes-coverage, visual defects are all deterministic or categorical gates). Per-slide **minor** convention/style findings are **advisory** — they do NOT block the gate. Record them in the artifact and surface them to the user as optional polish, but do NOT spin the `/goal` loop trying to drive minors to zero (that is the over-enforcement treadmill). The loop CONTINUES only while a critical or major remains.
 
 **Phase 4 will refuse to start without this file.**
 
