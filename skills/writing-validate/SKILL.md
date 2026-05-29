@@ -6,13 +6,13 @@ disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash
 hooks:
   PreToolUse:
-    - matcher: "Write|Bash"
+    - matcher: "Write|Edit|Bash"
       hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/DRAFT_COMPLETE.md
             GATE_STATUS=APPROVED
-            GATE_BLOCKED_TOOLS=Write,Bash
+            GATE_BLOCKED_TOOLS=Write,Edit,Bash
             GATE_DESCRIPTION="Draft completion (required before validation)"
             GATE_REMEDY="All sections must be drafted before validation runs. Return to writing-draft and write .planning/DRAFT_COMPLETE.md after every OUTLINE section has a substantive draft."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
