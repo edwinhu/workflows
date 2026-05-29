@@ -5,13 +5,13 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
-    - matcher: "Write|Edit|Agent"
+    - matcher: "Write|Edit|Agent|Workflow"
       hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
             GATE_STATUS=APPROVED
-            GATE_BLOCKED_TOOLS=Write,Edit,Agent
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent,Workflow
             GATE_DESCRIPTION="Outline review"
             GATE_REMEDY="Return to writing-outline and run the outline reviewer before drafting"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
@@ -30,7 +30,7 @@ hooks:
 
 # Writing Draft
 
-Expand detailed section outlines into prose, one section at a time, using domain-specific style rules.
+Expand detailed section outlines into prose via the `writing-draft` dynamic workflow — one write-agent per section, in parallel — applying domain-specific style rules. The skill owns the gate, the `/goal` loop, and the mandatory source-verify; the workflow owns the per-section fan-out + JS gate.
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and at least one section outline in `outlines/` must exist.
 
@@ -46,31 +46,31 @@ Auto-load all constraints matching `applies-to: writing-draft` (includes constra
 
 ## Draft Flowchart (This IS the Spec)
 
+Drafting is a **dynamic TRANSFORM workflow**, not hand-drafting. The skill keeps the gate, the `/goal` loop, and the mandatory source-verify; the `writing-draft` workflow owns the per-section fan-out (one write-agent per section, in parallel) and computes the gate in JS. The outline is the spec; each write-agent EXPANDS its section's outline into prose — adding only local prose craft, citations from real sources, and the bridges to neighbors.
+
 ```
-START (all section outlines in outlines/ exist)
+START (all section outlines in outlines/ exist, OUTLINE_REVIEWED.md APPROVED)
   │
-  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW)
+  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW) + constraints
   │
-  ├─ Step 2: Load domain skill (legal/econ/general)
+  ├─ Step 2: Run the writing-draft WORKFLOW (discover → transform → verify → gate)
+  │  ├─ Discover: enumerate sections; STRUCTURE gate (paragraph-granular? else bounce to outline)
+  │  ├─ Transform: one write-agent per section — expands outline → prose, cites REAL sources
+  │  │             (never fabricates; honest [CITE-NEEDED] when unsourceable), writes bridges from
+  │  │             the adjacent OUTLINES (no dependency on sibling drafts)
+  │  ├─ Verify (read-only): coverage (every point) + fidelity (every cite resolves) + transitions
+  │  └─ Gate (JS): result.overallPass = every section drafted + substrate clean
   │
-  ├─ Step 3: Choose strategy (sequential/parallel/key-first)
+  ├─ Step 3: Read the gate, drive the /goal loop
+  │  ├─ underGranular non-empty → STOP, bounce those outlines to writing-outline
+  │  ├─ overallPass=false → /goal loop: re-invoke (onlyChecks=sectionsThatFailed) + fix findings
+  │  └─ overallPass=true → proceed
   │
-  ├─ Step 4: For each section with outline:
-  │  ├─ Read outline from outlines/[Section].md
-  │  ├─ Cross-reference with PRECIS claim
-  │  ├─ Expand ALL outline points into prose
-  │  │  └─ Every POINT → paragraph(s)
-  │  │  └─ Every EVIDENCE → cited in prose
-  │  │  └─ Every TRANSITION → explicit bridge
-  │  ├─ Save to drafts/[Section] (Draft).md
-  │  ├─ Self-check: covers all outline points? cursory or developed?
-  │  └─ 5+ iterations same section? → ESCALATE to user
+  ├─ Step 4: MANDATORY full source-verify (deep quote-fidelity; resolve every [CITE-NEEDED])
   │
-  ├─ Step 5: Update ACTIVE_WORKFLOW.md
-  │
-  └─ GATE: All OUTLINE sections have drafts/ files with substance?
-     ├─ NO → Identify gap, re-draft (no pause)
-     └─ YES → Load writing-validate → Validate claim coverage → Then /writing-review
+  └─ GATE: workflow overallPass=true AND source-verify clean?
+     ├─ NO → keep the /goal loop running (no pause)
+     └─ YES → write DRAFT_COMPLETE.md → Load writing-validate → /writing-review
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -143,7 +143,7 @@ Read(".planning/OUTLINE.md")
 
 ### Step 2: Load Domain Skill
 
-Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill that governs prose style (relative to this skill's base directory):
+The workflow's write-agents apply the domain style rules per-section (the workflow resolves the domain skill itself). Load it here too so you can judge the `/goal` loop's output and enforce the export template (legal `.docx`). Based on `style` in ACTIVE_WORKFLOW.md, load the domain skill (relative to this skill's base directory):
 
 | Style | Action |
 |---|---|
@@ -201,84 +201,47 @@ Skill(skill="workflows:ai-anti-patterns")
 
 **You MUST load ai-anti-patterns before drafting.** Domain skills catch domain-specific issues; ai-anti-patterns catches AI writing smell (hedging, filler, false balance, weasel words). Both layers are required — see `constraints/constraint-loading-protocol.md` for why.
 
-### Step 3: Choose Drafting Strategy
+### Step 3: Run the writing-draft workflow + drive the /goal loop
 
-Use `AskUserQuestion` to determine approach:
+Drafting is the `writing-draft` **dynamic workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents. Invoke it once over the whole document:
 
 ```
-AskUserQuestion(questions=[
-  {
-    "question": "How should we draft the sections?",
-    "header": "Strategy",
-    "options": [
-      {"label": "Sequential (Recommended)", "description": "Draft sections one at a time in order. Best for maintaining argument flow."},
-      {"label": "Agent team (parallel)", "description": "Spawn teammate per section for parallel drafting. Best for long documents with independent sections. Requires reconciliation pass afterward."},
-      {"label": "Key section first", "description": "Start with the core argument section, then build outward. Best when the central claim needs to be strongest."}
-    ],
-    "multiSelect": false
-  }
-])
+Workflow(name="writing-draft", args={
+  "projectDir": "<absolute path to the writing project root (cwd)>",
+  "pluginRoot": "<absolute path to this plugin's workflows/ dir — resolve ${CLAUDE_SKILL_DIR}/../../workflows>",
+  "outputSubdir": "drafts"
+})
 ```
 
-#### Sequential Drafting (Default)
+It discovers the sections, asserts each outline is paragraph-structured, fans out one write-agent per section (each EXPANDS its outline → prose, cites real sources, writes bridges from the adjacent outlines), verifies coverage + citation-resolvability + transitions, and returns `{ overallPass, substratePass, verdict, scoreTable, sections, findings, underGranular, sectionsThatFailed, reviews }`. **The gate is computed in JS from raw counts — never self-report it.**
 
-For each section with a completed outline, in order:
+**Read the result and act:**
 
-1. **Read the section outline**: `Read("outlines/[Section] (Outline).md")`
-2. **Cross-reference with PRECIS**: Which claim does this section advance?
-3. **Write prose**: Expand the outline into full paragraphs, following domain style rules
-   - Every outline point becomes at least one paragraph
-   - Every piece of evidence from the outline appears in prose
-   - Transitions between subsections are explicit
-   - **Cite-fidelity (when ACTIVE_WORKFLOW.md has `nlm_notebook`):** before
-     attaching any `[@bibkey]`, run Stage 2 to get the actual supporting
-     passage, paste the emitted `<!-- nlm-quote @key (anchor): "..." -->`
-     comment above the cite, then write the prose around the quote — not
-     around what the source "probably says." See
-     `references/constraints/cite-fidelity-nlm-grounding.md`.
+1. **`underGranular` non-empty** → STOP. Those outlines lack paragraph-level structure (or are placeholders like "TBA"). Do NOT draft them conversationally as a workaround — return to `writing-outline`, deepen them to paragraph level, re-run the outline reviewer, then re-invoke this workflow. *(This is the executable-spec gate: an under-detailed outline is fixed in outlining, not papered over at draft time.)*
 
-     ```bash
-     uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/nlm_footnote_pull.py \
-       --claim "TEXT" --keys k1,k2,k3
-     ```
-4. **Save to drafts/**: `Write("drafts/[Section] (Draft).md", content)`
-   - Include frontmatter with `implements: [CLAIM-XX, CLAIM-YY]` matching the outline's claim references
-   - This enables mechanical traceability from PRECIS through outlines through drafts
-5. **Self-check**: Does the draft cover every point in the outline? Is it cursory or developed?
+2. **`overallPass=false`** (sections drafted but failing coverage / citation-resolvability / transitions) → drive convergence with the native `/goal` primitive. A separate evaluator gates exit on `result.overallPass`, so the agent that drafts isn't the one that judges:
 
-After completing each section, IMMEDIATELY start the next section. Do NOT:
-- Ask "should I continue?"
-- Summarize what you just wrote
-- Wait for confirmation
+   ```
+   /goal The writing-draft workflow returns result.overallPass=true (every OUTLINE section drafted, coverage clean, every citation resolves to a real source with no [CITE-NEEDED] left, transitions connect) AND source-verify is clean. Stop after 8 turns.
+   ```
 
-**Pausing between sections is procrastination disguised as courtesy.**
+   Each turn under the active goal: read the latest `findings`, fix them (resolve a `[CITE-NEEDED]` by finding the real source or cutting the claim; expand a cursory section; repair a seam), then re-invoke the workflow with `onlyChecks: result.sectionsThatFailed` + `priorReviews: result.reviews` (re-drafts only the failed sections, carries the rest). End the turn so the evaluator re-checks. Do NOT pause to ask "continue?" — the evaluator decides.
 
-#### Agent Team Drafting (Parallel)
+3. **`overallPass=true`** → proceed to Step 4.
 
-For parallel drafting using agent teams, read the full protocol:
+**The JS gate is authoritative.** Do not hand-wave it to true; fix a finding and let the next run recompute. Per-section minor prose nits are advisory here — document-quality polish is `/writing-review`'s job, not the draft gate's.
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/writing-draft/references/parallel-drafting.md` and follow its instructions.
+### Step 4: Mandatory source-verify (the citation gate)
 
-**When to use:** Document has 5+ substantive sections, sections are relatively independent, and `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is enabled. Falls back to Sequential if unavailable.
+The workflow's verify stage confirms each citation *resolves* (the source exists / the cite is well-formed). It does NOT confirm the quoted text actually appears in the source. Before declaring the draft complete, run the deep check:
 
-#### Key Section First
-
-1. Identify the core argument section (usually the "Proof" or main claim section)
-2. Draft it first with full attention
-3. Then draft surrounding sections that support it
-4. Introduction and conclusion last (they frame the core)
-
-### Step 4: Update Workflow State
-
-After each section, update `.planning/ACTIVE_WORKFLOW.md`:
-
-```yaml
-phase: draft
-current_section: [section name]
-sections_drafted:
-  - [list of completed sections]
-edits_since_verify: 0
 ```
+Skill(skill="workflows:source-verify")
+```
+
+source-verify checks every citation against the bibliography and verifies quotes against the source documents — resolving any remaining `[CITE-NEEDED]`, catching mis-attribution and quote drift. **A draft is not complete until BOTH `result.overallPass=true` AND source-verify is clean.** If source-verify surfaces an unresolved or mis-attributed citation, feed it back into the Step-3 `/goal` loop (re-draft that section with the correct source) — never write `DRAFT_COMPLETE.md` with an unverified citation.
+
+After the workflow returns `overallPass=true`, record state in `.planning/ACTIVE_WORKFLOW.md` (`phase: draft`, `sections_drafted: [...]`, `edits_since_verify: 0`).
 
 ---
 
@@ -286,11 +249,11 @@ edits_since_verify: 0
 
 Before proceeding to edit/verify (see `constraints/gate-function-standard.md` for the full 6-step gate including SUMMARY):
 
-1. **IDENTIFY**: Draft files in `drafts/` for all sections listed in OUTLINE.md
-2. **RUN**: List files in `drafts/`, compare against OUTLINE.md sections
-3. **READ**: Check each draft exists and has substantial content (not cursory stubs)
-4. **VERIFY**: All sections have drafts, each draft covers all outline points
-5. **CLAIM**: Only if steps 1-4 pass, write the gate artifact, THEN proceed to writing-validate. writing-validate's PreToolUse hook blocks until this file exists — the artifact certifies every OUTLINE section has a substantive draft:
+1. **IDENTIFY**: The `writing-draft` workflow result (Step 3) + the source-verify result (Step 4)
+2. **RUN**: Re-read `result.overallPass` and the source-verify outcome — do not re-derive by hand; the workflow already listed `drafts/`, checked coverage, and resolved citations in JS
+3. **READ**: Confirm `result.underGranular` is empty (no outline bounced) and `result.findings` has no unresolved blocking entry
+4. **VERIFY**: `result.overallPass === true` (every section drafted, coverage + citation-resolvability + transitions clean) AND source-verify is clean (quotes match sources, no `[CITE-NEEDED]` left)
+5. **CLAIM**: Only if steps 1-4 pass, write the gate artifact, THEN proceed to writing-validate. writing-validate's PreToolUse hook blocks until this file exists — the artifact certifies every OUTLINE section has a substantive, citation-verified draft:
 
    ```bash
    mkdir -p .planning && cat > .planning/DRAFT_COMPLETE.md <<EOF
@@ -313,34 +276,20 @@ Before proceeding to edit/verify (see `constraints/gate-function-standard.md` fo
 
 **Reporting "all sections drafted" without checking each file is NOT HELPFUL — the user moves to review with missing sections that force a return to drafting.** You must verify every draft exists and has real content.
 
-### Staged Draft Verification (If Gate Fails)
+### Handling failed sections (inside the /goal loop)
 
-If a section fails the gate:
+These govern how the **Step-3 `/goal` loop** responds to the workflow's per-section `findings` — the workflow drafts and verifies; this loop fixes and re-invokes. Map each finding to an action, then re-invoke with `onlyChecks: result.sectionsThatFailed`:
 
-| Failure Type | Action |
-|-------------|--------|
-| **Structural** (missing outline points) | REJECT section. Re-read outline. Re-draft with ALL points. |
-| **Depth** (points present but cursory) | RETURN to agent with expanded outline and word-count target. |
-| **Logic** (draft doesn't match outline logic) | REJECT. Diagnose where outline logic broke down. |
+| Finding type | Action on re-invoke |
+|-------------|---------------------|
+| **Coverage** (missing/cursory outline points) | The outline point wasn't expanded. Re-invoke that section; if it keeps coming back cursory, the outline point may lack substance → R2/R4. |
+| **Fidelity** (`[CITE-NEEDED]` / unresolvable cite) | Find the real source (bib / Paperpile / a search) and supply it, or cut the claim. NEVER let the loop "resolve" it by inventing a cite. |
+| **Transition** (seam, dangling reference) | The adjacent-outline bridge broke. Re-invoke the section; if two sections genuinely don't connect, that's an outline-order issue → R4. |
+| **Structureless** (`underGranular`) | Not fixable in the loop — STOP and bounce the outline to `writing-outline`. |
 
-Re-draft WITHOUT pausing. Agent re-opens outline, re-reads PRECIS.md, expands section with full depth.
+Re-invoke WITHOUT pausing — the `/goal` evaluator re-checks `result.overallPass` and refires until clean or the turn budget elapses.
 
-### Staged Section Quality Loop
-
-After drafting each section, run a quick self-verification loop before moving to the next section:
-
-```
-Draft section → Self-check (outline coverage + depth + evidence) →
-  ├─ PASS → Next section (no pause)
-  └─ FAIL → Re-read outline → Fix gaps → Self-check again (max 3 per section)
-             └─ Still failing after 3 → Flag for later, move on
-```
-
-This catches depth and coverage issues WITHIN each section before they accumulate. The gate at phase exit catches cross-section issues.
-
-**No iteration limit at draft stage overall, but 3 iterations per section for the quality loop.** Cheap iterations here prevent expensive rework later.
-
-**Skipping the subsection expansion check is NOT HELPFUL — the user publishes a stub where a full section should be.** A 2-paragraph section with a 5-subsection outline is a stub, not a draft.
+**The workflow's coverage check enforces depth mechanically** — a 2-paragraph section under a 5-subsection outline fails coverage and the gate won't pass. You do not need a separate per-section self-check; the JS gate is the check.
 
 ---
 
