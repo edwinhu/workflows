@@ -21,6 +21,8 @@ hooks:
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
 
+**Iteration topology:** parallel multi-reviewer fan-out (fresh read-only subagents; main chat reconciles)
+
 ### Context Check
 
 Before starting this phase, check remaining context:

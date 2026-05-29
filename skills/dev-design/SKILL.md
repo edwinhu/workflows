@@ -19,6 +19,8 @@ hooks:
 
 **Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
 
+**Iteration topology:** one-shot + fresh-subagent plan review (dev-plan-reviewer)
+
 ### Context Check
 
 Before starting this phase, check remaining context:

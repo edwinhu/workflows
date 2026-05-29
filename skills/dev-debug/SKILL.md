@@ -12,6 +12,8 @@ hooks:
 
 **Announce:** "I'm using dev-debug for systematic debugging."
 
+**Iteration topology:** serial fresh-subagent hypothesis loop (one investigator per cycle)
+
 **Load shared enforcement:**
 
 Auto-load all constraints matching `applies-to: dev-debug`:

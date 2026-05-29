@@ -13,6 +13,8 @@ hooks:
 
 Announce: "Using dev-test-gaps (Phase 5.5) to validate test coverage against requirements."
 
+**Iteration topology:** parallel fan-out (one test-gap-auditor per MISSING requirement)
+
 **Load shared enforcement:**
 
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
@@ -157,7 +159,13 @@ These do NOT count as COVERED:
 
 For each MISSING requirement, spawn a test-gap-auditor agent using `subagent_type="workflows:test-gap-auditor"`:
 
-**Tool Restrictions:** The auditor can Write/Edit test files ONLY. It MUST NOT modify implementation source code. If it discovers an implementation bug, it escalates — it does not fix.
+**Tool Restrictions (pass structurally, not just in prose):** dispatch with an explicit allowed-tools list so the restriction is enforced by the harness, not honor-system —
+
+```
+allowed_tools=["Read", "Glob", "Grep", "Bash", "Write", "Edit"]
+```
+
+The auditor can Write/Edit **test files ONLY**. It MUST NOT modify implementation source code. If it discovers an implementation bug, it escalates — it does not fix. (Write/Edit are granted because tests are its deliverable; the test-files-only scope is enforced by the agent's own system prompt + the Auditor Constraints below.)
 
 **Agent prompt template:**
 

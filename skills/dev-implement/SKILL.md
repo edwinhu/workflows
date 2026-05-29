@@ -24,6 +24,8 @@ hooks:
 
 **Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
 
+**Iteration topology:** serial /goal loop (agent-team parallel for 4+ independent tasks)
+
 **Load shared enforcement:**
 
 Auto-load all constraints matching `applies-to: dev-implement`:

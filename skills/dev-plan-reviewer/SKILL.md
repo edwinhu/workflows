@@ -3,7 +3,7 @@ name: dev-plan-reviewer
 description: "Internal skill used by dev-design at Phase 4 exit gate. Dispatches a reviewer subagent to verify PLAN.md quality before implementation. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob
 ---
 
 # Plan Document Reviewer

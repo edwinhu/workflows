@@ -19,6 +19,8 @@ hooks:
 
 **Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."
 
+**Iteration topology:** one-shot (conversational)
+
 ### Context Check
 
 Before starting this phase, check remaining context:

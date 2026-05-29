@@ -19,6 +19,8 @@ hooks:
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."
 
+**Iteration topology:** parallel (background explore subagents fan out over subsystems)
+
 ### Context Check
 
 Before starting this phase, check remaining context:
@@ -475,6 +477,18 @@ Exploration complete when:
 ### Exit Gate
 
 **Checkpoint type:** human-verify
+
+Run the canonical 5-step gate before chaining to dev-clarify — the two gate checks below are its READ/VERIFY content:
+
+```
+1. IDENTIFY: exploration findings captured (codebase map, test infra, code paths) for the SPEC.md requirements.
+2. RUN:      Read SPEC.md and the exploration notes; run the detected test command once to confirm the harness exists.
+3. READ:     inspect the Test Infrastructure + Code Path gate checks below.
+4. VERIFY:   every required box is checked; protocol/transport and testing skill are identified (no "TBD").
+5. CLAIM:    only if 1-4 hold, chain to dev-clarify.
+```
+
+**If any sub-check box is unchecked → do NOT proceed; complete discovery first.**
 
 ### Test Infrastructure Gate Check (MANDATORY)
 

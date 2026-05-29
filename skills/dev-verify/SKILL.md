@@ -23,6 +23,8 @@ hooks:
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
 
+**Iteration topology:** one-shot fresh-subagent verifier (read-only)
+
 ### Context Check
 
 Before starting this phase, check remaining context:
