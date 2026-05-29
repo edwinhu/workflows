@@ -280,11 +280,25 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
    - [list or "none found"]
    ```
 
+9. **Independent SOURCES.md review (read-only subagent).** SOURCES.md is the authoritative evidence artifact for the whole presentation — do not self-certify it. Dispatch ONE fresh read-only subagent (Read/Grep/look-at only) to check it against the paper:
+   ```
+   Task(subagent_type="Explore", prompt="READ-ONLY review. Do NOT edit any file.
+     Compare .planning/SOURCES.md against the source paper at [paper path].
+     Verify: (1) title/subtitle/authors/affiliations match the paper's title page
+     exactly (flag any that look inferred from the filename); (2) every figure,
+     table, and key numeric result in the paper is enumerated with an F/T/R/A ID;
+     (3) no inventory item cites a figure/table/number absent from the paper.
+     Return: VERDICT (APPROVED | ISSUES), then a bullet list of any mismatches or
+     missing inventory items with paper page refs.")
+   ```
+   If the reviewer returns ISSUES → fix SOURCES.md → re-dispatch. Only write the gate artifact once it returns APPROVED. **Main chat owns fixing; the subagent only reviews** (verification ≠ investigation — do not re-extract the whole paper yourself, fix the specific gaps the reviewer names).
+
 ### Gate: Sources Gathered
 
 - [ ] Paper metadata extracted via look-at (NOT inferred)
 - [ ] Paper inventory completed (figures, tables, key results, arguments)
 - [ ] SOURCES.md written with title, authors, affiliations, AND full inventory
+- [ ] Independent read-only subagent reviewed SOURCES.md → APPROVED
 - [ ] Theme symlinks created (templates/, assets/)
 - [ ] Related materials searched (~/areas/, notes, gdrive)
 
@@ -356,7 +370,19 @@ Sources gathered and verified. Paper metadata extracted from source document.
    ...
    ```
 
-5. **Present outline to user for approval.**
+5. **Independent OUTLINE.md review (read-only subagent) — before showing the user.** Don't make the user catch structural gaps. Dispatch ONE fresh read-only subagent (Read/Grep only) to check OUTLINE.md against its spec:
+   ```
+   Task(subagent_type="Explore", prompt="READ-ONLY review. Do NOT edit any file.
+     Check .planning/OUTLINE.md for: (1) every slide line cites at least one F/T/R/A
+     inventory ID; (2) per-part minute allocations sum to the stated total time;
+     (3) every slide names a content source; (4) the part structure reflects the
+     user's requested proportions (stated in OUTLINE.md). Cross-check inventory IDs
+     exist in .planning/SOURCES.md. Return: VERDICT (APPROVED | ISSUES) then a bullet
+     list of any slide missing an ID, any timing mismatch, or any unknown ID.")
+   ```
+   If ISSUES → fix OUTLINE.md → re-dispatch until APPROVED. Then proceed to user approval. This is a completeness check, not a content judgment — the user still owns the creative call on structure.
+
+6. **Present outline to user for approval.**
 
 **Producing an outline from memory instead of the paper's structure means the presentation won't match the paper. The user discovers misaligned sections during Phase 3, requiring rework of both the outline AND the slides. Getting the structure right here saves hours downstream.**
 
@@ -657,6 +683,16 @@ After `workshop-verify` returns, main chat follows these boundaries:
 - If `overallPass` is false → fix `findings` via subagent → re-invoke workflow (max 3 turns under `/goal`)
 - If `overallPass` is true → write the gate artifact and proceed to Phase 4
 
+#### Topic-Change Protocol (mid-`/goal` loop)
+
+If the user interjects with an off-topic request while the `/goal workshop-verify` loop is active (Phase 3 review gate or Phase 4 final gate):
+
+1. **Announce the pause:** "Pausing the workshop-verify loop (turn N) to handle your request."
+2. **Handle** the request.
+3. **Announce the resume:** "Resuming the workshop-verify loop from turn N" and re-fire the `/goal`.
+
+Never silently abandon the loop. An off-topic message is not permission to stop verifying — the gate still has to reach `overallPass=true`.
+
 **Structural gate artifact:** After the workflow returns `overallPass=true`, write `.planning/SLIDES_REVIEWED.md`:
 ```yaml
 ---
@@ -695,7 +731,7 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
 - [ ] `slides.typ` exists in presentation directory
 - [ ] `notes.typ` exists in presentation directory
 
-**If `.planning/SLIDES_REVIEWED.md` is missing, STOP. Return to Phase 3 and complete the artifact review gate.**
+**If `.planning/SLIDES_REVIEWED.md` is missing, STOP. Return to Phase 3 and complete the artifact review gate.** This gate is hook-enforced: `workshop-phase-gate-guard.py` denies writing `.planning/VALIDATION.md` (the Phase 4 deliverable) until `SLIDES_REVIEWED.md` has `status: APPROVED`. Instructional text alone is not the enforcement — the hook is.
 
 ### Steps
 

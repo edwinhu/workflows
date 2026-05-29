@@ -10,6 +10,16 @@ export const meta = {
   ],
 }
 
+// ── Read-only enforcement (P17) ───────────────────────────────────────────────
+// Every reviewer agent() below opens with a "You are a READ-ONLY reviewer; do NOT
+// create, edit, or overwrite any files" instruction. This is PROMPT-level, not
+// structural: the workflow agent() API exposes {label, phase, schema, model,
+// isolation, agentType} — there is no allowed_tools parameter to mechanically
+// withhold Write/Edit. Prompt-level read-only is therefore the platform ceiling
+// here, not a fixable gap. If/when agent() gains an allowed-tools hook, wire it
+// in; the gate's authoritativeness does not depend on it because the gate
+// (overallPass) is computed in JS from raw counts, never self-reported.
+
 // ── Inputs ──────────────────────────────────────────────────────────────────
 // args = {
 //   projectDir:  "/abs/project-root",         // REQUIRED — holds .planning/ and presentation/

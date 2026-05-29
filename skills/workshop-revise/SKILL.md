@@ -10,6 +10,13 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SOURCES_VERIFIED.md
+            GATE_STATUS=VERIFIED
+            GATE_DESCRIPTION="Phase 1 sources gate"
+            GATE_REMEDY="Return to Phase 1 (workshop skill) and complete source gathering before editing any files"
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+        - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
   PostToolUse:
     - matcher: "Edit"
@@ -51,7 +58,7 @@ This skill may run in a new session. Load ALL needed context before touching any
 
 1. **Read `.planning/SOURCES.md`** — paper metadata (title, authors, affiliations)
 2. **Read `.planning/OUTLINE.md`** — section structure and timing
-3. **Load constraints:** `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+3. **Constraints are already loaded** — the bang-invoked auto-loader at the top of this skill fires at skill-load time (no separate load needed). If you are resuming in a fresh session and skipped that, re-run it: `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
 4. **Read existing `slides.typ`** — current slide content
 5. **Read existing `notes.typ`** — current speaker notes
 
@@ -148,6 +155,29 @@ For content or structural changes (NOT simple formatting fixes), the edited deck
 
 **The workflow's reviewers are read-only by construction; the JS gate (`overallPass`) is authoritative.** Do not hand-wave the gate to true — fix a finding and let the next run recompute.
 
+### Post-Subagent Enforcement
+
+After `workshop-verify` returns, main chat stays on the verification side of this boundary:
+
+| Verification (main chat CAN do) | Investigation (main chat CANNOT do) |
+|----------------------------------|--------------------------------------|
+| Read the workflow's `findings` / `scoreTable` | Re-read slides.typ/notes.typ to "double-check" the gate |
+| Re-invoke the workflow (selectively, `onlyChecks`) | Override the JS gate ("the workflow was too strict") |
+| Dispatch a fix subagent for reported `findings` | "Quick fix" an issue the workflow did not report |
+| Proceed to Step 4 once `overallPass=true` | Declare the revision clean without a passing gate |
+
+**The JS gate (`overallPass`) is authoritative.** If you disagree with a result, fix a finding and let the next run recompute — never hand-wave the gate to true.
+
+#### Topic-Change Protocol (mid-`/goal` loop)
+
+If the user interjects with an off-topic request while the `/goal workshop-verify` loop is active:
+
+1. **Announce the pause:** "Pausing the workshop-verify loop (turn N) to handle your request."
+2. **Handle** the request.
+3. **Announce the resume:** "Resuming the workshop-verify loop from turn N" and re-fire the `/goal`.
+
+Never silently abandon the loop. An off-topic message is not permission to stop verifying.
+
 ### Step 4: Verify
 
 1. **Compile both files:**
@@ -157,7 +187,7 @@ For content or structural changes (NOT simple formatting fixes), the edited deck
 
 2. **Run PDF widow detection** (mandatory after every compile):
    ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" slides.pdf
+   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" "[presentation directory]/slides.pdf"
    ```
    - Exit code 1 = widows found → fix → recompile → re-run
    - Exit code 0 = clean → proceed
