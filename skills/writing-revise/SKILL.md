@@ -9,9 +9,14 @@ hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/REVIEW.md
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Writing review"
             GATE_REMEDY="Run /writing-review first to produce .planning/REVIEW.md before revising"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+          # GATE_STATUS intentionally omitted: REVIEW.md carries no status frontmatter,
+          # and revise must run whenever REVIEW.md exists (it consumes both CLEAN and
+          # ISSUES-FOUND reviews). Existence is the correct trigger; a status gate would
+          # deadlock the phase. GATE_BLOCKED_TOOLS closes the Agent-dispatch bypass.
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:

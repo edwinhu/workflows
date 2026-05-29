@@ -11,6 +11,7 @@ hooks:
           command: >-
             GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
             GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Outline review"
             GATE_REMEDY="Return to writing-outline and run the outline reviewer before drafting"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py

@@ -6,12 +6,13 @@ disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Agent, Skill
 hooks:
   PreToolUse:
-    - matcher: "Agent"
+    - matcher: "Write|Edit|Agent"
       hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/VALIDATION.md
             GATE_STATUS=validated
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Claim validation"
             GATE_REMEDY="Run writing-validate first to validate claim coverage before review"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
