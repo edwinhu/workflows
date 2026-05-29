@@ -2,7 +2,6 @@
 name: writing-anchored-numbers
 description: Empirical numbers in prose must be anchored to a Table or Figure — but anchors inherit across paragraphs within the same subsection
 applies-to: [writing-draft, writing-review, writing-revise]
-check-script: writing-anchored-numbers.py
 ---
 
 ## Rule

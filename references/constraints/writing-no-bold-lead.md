@@ -2,7 +2,6 @@
 name: writing-no-bold-lead
 description: No bold-lead paragraph patterns in prose drafts — inline-header lists are AI tells
 applies-to: [writing-draft, writing-review, writing-revise]
-check-script: writing-no-bold-lead.py
 ---
 
 ## Rule

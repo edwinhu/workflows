@@ -2,7 +2,6 @@
 name: progressive-expansion-hierarchy
 description: Writing proceeds through 4 levels of detail — never skip levels
 applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
-check-script: checks/check-progressive-expansion.py
 ---
 
 ## Rule

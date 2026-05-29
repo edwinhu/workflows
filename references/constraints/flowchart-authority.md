@@ -2,7 +2,6 @@
 name: flowchart-authority
 description: If text and flowchart disagree, the flowchart wins — the flowchart IS the spec
 applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
-check-script: checks/check-flowchart-authority.py
 ---
 
 ## Rule

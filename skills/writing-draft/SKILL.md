@@ -161,7 +161,7 @@ When `style: legal` is detected:
 
 2. **MUST use template for .docx export:**
    ```
-   ../writing-legal/templates/law_review_template.docx
+   ${CLAUDE_SKILL_DIR}/../../skills/writing-legal/templates/law_review_template.docx
    ```
 
 3. **Iron Laws from writing-legal:**
