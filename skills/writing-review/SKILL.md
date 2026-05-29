@@ -200,8 +200,8 @@ Workflow({
 ```
 
 The workflow runs Levels 1-3 and returns:
-- `overallPass`, `verdict` (CLEAN | ISSUES FOUND)
-- `summary` (`{ critical, major, minor, total }`)
+- `overallPass` / `substratePass` (== `critical===0 && major===0` — the blocking gate; **minors are advisory, not blocking**), `verdict` (CLEAN | CLEAN (advisory polish notes) | ISSUES FOUND)
+- `summary` (`{ critical, major, minor, total, blocking, advisoryMinors }`)
 - `style`
 - `sections[]` — per-section `issues` (each tagged `source: structure | prose | fidelity`), `boundary`, `argumentSummary`, `unreliable`
 - `transitions[]` — adjacent boundary verdicts

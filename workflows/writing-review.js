@@ -245,16 +245,26 @@ for (const d of docIssues) sev[d.severity]++
 for (const t of transIssues) sev.major++
 
 const total = sev.critical + sev.major + sev.minor
-const verdict = total === 0 ? 'CLEAN' : 'ISSUES FOUND'
-const overallPass = total === 0
+// Substrate gate (the convergence signal): argument-breaking (critical) + structural (major) findings must be 0.
+// These are real and they converge as you fix them. MINOR findings are advisory prose polish — the per-section
+// prose reviewers (LLM) regenerate subjective minors run-to-run, so requiring minor===0 is a treadmill (the
+// writing analog of chasing composite 9.5; see project_wc_mode3_asymptote). The /writing-revise loop drives
+// criticals+majors to 0 HARD, then treats residual minors as best-effort polish the writer accepts at the cap.
+// (Mechanical fabrication/citation/constraint checks are the SEPARATE Leg-1 hard gate that runs before this workflow.)
+const substratePass = sev.critical === 0 && sev.major === 0
+const verdict = !substratePass ? 'ISSUES FOUND' : (sev.minor === 0 ? 'CLEAN' : 'CLEAN (advisory polish notes)')
+const overallPass = substratePass
 const unreliableSections = allSections.filter(s => s.unreliable).map(s => s.section)
 
-log(overallPass ? '✅ Review CLEAN — no issues' : `Review: ISSUES FOUND — ${sev.critical} critical / ${sev.major} major / ${sev.minor} minor`)
+log(substratePass
+  ? (sev.minor === 0 ? '✅ Review CLEAN — no issues' : `✅ Review CLEAN — 0 critical / 0 major; ${sev.minor} advisory minor polish note(s)`)
+  : `Review: ISSUES FOUND — ${sev.critical} critical / ${sev.major} major (blocking) / ${sev.minor} minor (advisory)`)
 
 return {
-  overallPass,
+  overallPass,                      // == substratePass: critical===0 && major===0 (minors are advisory, NOT blocking)
+  substratePass,
   verdict,
-  summary: { ...sev, total },
+  summary: { ...sev, total, blocking: sev.critical + sev.major, advisoryMinors: sev.minor },
   style: disc.style,
   sections: allSections,            // per-section issues + boundary + argumentSummary (skill renders REVIEW.md from this)
   transitions: l2?.transitions || [],

@@ -28,7 +28,7 @@ hooks:
 
 # Writing Revise
 
-The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes the workflow when all issues are resolved.
+The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes when the **blocking** issues (critical + major) are resolved — residual minor polish notes are advisory and the writer accepts them at the iteration cap (they do not block completion).
 
 ## Shared Enforcement
 
@@ -76,14 +76,16 @@ START
   │
   └─ Step 6: Check iteration state (.planning/REVIEW_STATE.md)
      │
-     ├─ No issues remain → COMPLETE
-     │  └─ Archive workflow → Generate summary → EXIT
+     ├─ result.substratePass (0 critical, 0 major) → COMPLETE
+     │  └─ Residual MINORS are advisory polish — fix the cheap ones, then Archive → summary → EXIT.
+     │     Do NOT loop to drive minors to literal 0 (the prose-reviewer regenerates subjective minors — treadmill).
      │
-     ├─ iteration < 3 AND issues remain → CONTINUE
-     │  └─ Increment iteration → Re-invoke /writing-review → Loop
+     ├─ iteration < 3 AND BLOCKING issues remain (critical/major) → CONTINUE
+     │  └─ Increment iteration → fix the criticals/majors → Re-invoke /writing-review → Loop
      │
-     └─ iteration >= 3 AND issues remain → ESCALATE
-        └─ Report to user with options → EXIT
+     └─ ESCALATE (decision: user) when EITHER
+        ├─ iteration >= 3 AND blocking issues still remain, OR
+        └─ substrate clean but minors remain → present them as "accept as-is OR one more polish pass?"
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -156,10 +158,12 @@ issues_found_count: 5
 ---
 ```
 
-**Exit criteria:**
-- **COMPLETE**: Zero issues found in REVIEW.md. **Gate type: `human-verify` — auto-advance to archive.**
-- **ESCALATE**: iteration >= 3 AND issues remain. **Gate type: `decision` — present options, wait for user.**
-- **CONTINUE**: iteration < 3 AND issues remain → re-invoke /writing-review. **Gate type: `human-verify` — auto-advance to next iteration.**
+**Exit criteria** (gate on the SUBSTRATE — critical + major — not on driving subjective minors to zero):
+- **COMPLETE**: `result.substratePass` (0 critical, 0 major) in REVIEW.md. Apply any cheap residual minors, then archive. **Gate type: `human-verify` — auto-advance to archive.** Residual minor polish notes do NOT block completion.
+- **CONTINUE**: iteration < 3 AND **blocking** issues remain (critical/major) → fix them, re-invoke /writing-review. **Gate type: `human-verify` — auto-advance.**
+- **ESCALATE** `[decision — wait for user]`: iteration >= 3 AND blocking issues still remain (present options); OR substrate is clean but minor polish notes remain — present "accept as-is OR one more polish pass?" The writer decides; do NOT auto-loop on minors.
+
+**Note:** the review still FLAGS every severity (including minors — see the rationalization table; flagging is the reviewer's job). What changed is the loop *exit*: only critical+major **block**; minors are advisory. This is the writing analog of the wc substrate gate — drive the real, convergent findings to zero; don't treadmill on an LLM panel's inexhaustible subjective minors.
 
 **Before claiming "all fixed", check iteration count:**
 1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
