@@ -4,6 +4,17 @@ description: Internal skill for creating PRECIS.md, OUTLINE.md, and ACTIVE_WORKF
 user-invocable: false
 disable-model-invocation: true
 hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Agent|Bash"
+      hooks:
+        - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/LIT_REVIEW_COMPLETE.md
+            GATE_STATUS=APPROVED
+            GATE_BLOCKED_TOOLS=Write,Edit,Agent,Bash
+            GATE_DESCRIPTION="Lit review completion"
+            GATE_REMEDY="Return to writing-lit-review: materialize sources into references/, run gap analysis, then write .planning/LIT_REVIEW_COMPLETE.md"
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Write"
       hooks:
