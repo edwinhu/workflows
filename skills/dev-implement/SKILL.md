@@ -24,6 +24,8 @@ hooks:
 
 **Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
 
+**Iteration topology:** serial /goal loop (agent-team parallel for 4+ independent tasks)
+
 **Load shared enforcement:**
 
 Auto-load all constraints matching `applies-to: dev-implement`:
@@ -333,6 +335,17 @@ Key points from dev-delegate:
 
 After Task agent returns, **you must personally verify** (not trust the agent's report):
 
+**Orchestrator-role boundary (deliberate, scoped exception to C1b).** dev-debug's C1b classifies reading source after a subagent as *investigation*. dev-implement is the **orchestrator** of a known PLAN.md task, so a narrow read is *verification* — but only within these lines:
+
+| Orchestrator CAN (spec-compliance verification) | Orchestrator CANNOT (investigation — delegate it) |
+|--------------------------------------------------|----------------------------------------------------|
+| Read the file(s) the agent claims it wrote, to compare against the SPEC.md requirement for THIS task | Form hypotheses about why something is broken |
+| Read the test file(s) and run the test command | `grep`/`rg` source to hunt for unrelated patterns |
+| Check exit codes, diff `*.test.*` | Debug the logic yourself or fix it in main chat |
+| | Read files beyond the task's claimed deliverables |
+
+**If verification surfaces a defect, you do NOT debug it in main chat — you REJECT the task and re-dispatch the implementer (or dev-debug).** Reading widens past the claimed deliverables = you've crossed into investigation; stop and delegate.
+
 #### 3a. Read the Actual Code
 ```
 Read the implementation file(s) the agent claims to have written.
@@ -633,6 +646,22 @@ Main chat should:
 A `[x]` mark in PLAN.md + a passing test command in the transcript signals task completion. After verifying, update PLAN.md, then IMMEDIATELY start the next task — the `/goal` evaluator reads the transcript and decides when the whole phase is done.
 
 **Pausing between tasks is procrastination disguised as courtesy.**
+
+### The Iron Law of Topic Changes
+
+**If the user sends a message that is NOT about the current implementation, you MUST announce the loop pause before responding — then resume.** (Stopping point #3, made explicit.)
+
+This mirrors dev-debug's protocol: silent loop abandonment is how a structured `/goal` loop gets dropped and never resumed.
+
+**Protocol:**
+1. Announce: "Pausing the implement `/goal` loop at task N to address your request."
+2. Handle the off-topic request (normal tools allowed — you're outside the loop).
+3. Announce: "Resuming the implement loop. Re-reading .planning/PLAN.md for current state."
+4. Re-read `.planning/PLAN.md` (and LEARNINGS.md) and dispatch the next task's implementer.
+
+**If the message could be EITHER a new topic OR part of the current task:** ask "Is this part of the current task, or a separate request?" — do NOT assume separate and silently abandon the loop.
+
+**Silently dropping the loop is NOT HELPFUL — the user set `/goal` because they want all tasks driven to completion. Abandoning it discards their explicit request.**
 
 ### Task Transition Gate (MANDATORY)
 

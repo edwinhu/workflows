@@ -12,6 +12,8 @@ hooks:
 
 **Announce:** "I'm using dev (Phase 1) to gather requirements."
 
+**Iteration topology:** one-shot (conversational Q&A — no fan-out)
+
 ## Resume Detection
 
 **BEFORE creating any new state, check for a previous session handoff.**

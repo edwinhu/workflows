@@ -13,9 +13,23 @@ hooks:
 
 Announce: "Using dev-test-gaps (Phase 5.5) to validate test coverage against requirements."
 
+**Iteration topology:** parallel fan-out (one test-gap-auditor per MISSING requirement)
+
 **Load shared enforcement:**
 
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
+
+### Context Monitoring
+
+Before spawning each batch of test-gap-auditors, check remaining context (a large requirement set + parallel auditors can exhaust it):
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Spawn next auditor(s) |
+| Warning | 25-35% | Finish the current auditor, write VALIDATION.md (status: draft), then invoke dev-handoff |
+| Critical | ≤25% | Write VALIDATION.md immediately, invoke dev-handoff — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
 
 ## Contents
 
@@ -157,7 +171,13 @@ These do NOT count as COVERED:
 
 For each MISSING requirement, spawn a test-gap-auditor agent using `subagent_type="workflows:test-gap-auditor"`:
 
-**Tool Restrictions:** The auditor can Write/Edit test files ONLY. It MUST NOT modify implementation source code. If it discovers an implementation bug, it escalates — it does not fix.
+**Tool Restrictions (pass structurally, not just in prose):** dispatch with an explicit allowed-tools list so the restriction is enforced by the harness, not honor-system —
+
+```
+allowed_tools=["Read", "Glob", "Grep", "Bash", "Write", "Edit"]
+```
+
+The auditor can Write/Edit **test files ONLY**. It MUST NOT modify implementation source code. If it discovers an implementation bug, it escalates — it does not fix. (Write/Edit are granted because tests are its deliverable; the test-files-only scope is enforced by the agent's own system prompt + the Auditor Constraints below.)
 
 **Agent prompt template:**
 
@@ -222,6 +242,20 @@ Attempt 3: Fixed test → Run
   PASS → Done (record as gap filled)
   FAIL → Escalate (max iterations)
 ```
+
+### Post-Subagent Boundary (after auditors return)
+
+<EXTREMELY-IMPORTANT>
+**When the test-gap-auditors return, you VERIFY their work — you do not investigate or re-debug it.** (Mirrors dev-implement's orchestrator boundary and C1b.)
+
+| Orchestrator CAN (verification) | Orchestrator CANNOT (investigation — delegate it) |
+|----------------------------------|----------------------------------------------------|
+| Read the test file(s) the auditor wrote; run the test command | Debug a failing test's logic yourself |
+| Record PASS / FAIL(escalated) into the coverage map | `grep`/`rg` implementation source to chase the bug |
+| Re-dispatch an auditor for a still-MISSING requirement | Fix implementation code (that is dev-implement's job) |
+
+**If an auditor escalated an impl bug, record FAIL(escalated) — do NOT investigate or fix it here.**
+</EXTREMELY-IMPORTANT>
 
 ## Phase 6: Produce VALIDATION.md
 
@@ -300,6 +334,24 @@ Before setting status to `validated`, run the FULL test suite one final time:
 
 **Only set status to `validated` after the full suite passes.**
 
+## Gate: Exit Test-Gap Validation (MANDATORY)
+
+<EXTREMELY-IMPORTANT>
+**`status: validated` is a RUNTIME claim. Writing it without executing the suite this turn is a fabricated gate.** dev-review trusts VALIDATION.md as a structural marker; an unexecuted `validated` ships untested requirements behind a green light.
+
+Run the canonical 5-step gate before chaining to dev-review:
+
+```
+1. IDENTIFY: `.planning/VALIDATION.md` exists; every requirement classified COVERED; no escalations.
+2. RUN:      execute the full test command from Phase 2 THIS turn (not "tests passed earlier").
+3. READ:     read the suite output — total / passed / failed / skipped counts.
+4. VERIFY:   zero failures, zero unexpected skips, all requirements COVERED.
+5. CLAIM:    only if 1-4 hold, write status: validated and chain to dev-review.
+```
+
+**If any step fails, status stays `gaps_found` (or `draft`). A structural check (`grep status: validated`) is NOT the same as runtime evidence — see C3 (Structural vs Runtime Verification).**
+</EXTREMELY-IMPORTANT>
+
 ## Drive-Aligned Framing
 
 <EXTREMELY-IMPORTANT>
@@ -310,6 +362,7 @@ Before setting status to `validated`, run the FULL test suite one final time:
 | **Helpfulness** | "Tests passed, coverage must be fine" | Passing tests prove what IS tested, not what ISN'T. User finds untested bugs. | **Anti-helpful** |
 | **Competence** | "I wrote good tests during implementation" | Good tests per task != full requirement coverage. Gaps hide between tasks. | **Incompetent** |
 | **Efficiency** | "Validation is redundant after TDD" | TDD ensures task-level coverage. Test gap validation ensures requirement-level coverage. Different. | **Inefficient** |
+| **Honesty** | "I'll write `validated`, the suite passed last turn" | A `validated` marker with no run THIS turn is a structural claim with no runtime evidence — a fabricated gate. dev-review proceeds on a lie. | **Dishonest** |
 
 **The protocol is not overhead you pay. It is the safety net you provide.**
 </EXTREMELY-IMPORTANT>

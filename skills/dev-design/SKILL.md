@@ -19,6 +19,8 @@ hooks:
 
 **Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
 
+**Iteration topology:** one-shot + fresh-subagent plan review (dev-plan-reviewer)
+
 ### Context Check
 
 Before starting this phase, check remaining context:
@@ -352,6 +354,8 @@ Required sections:
 - **Implementation Order** - Ordered task list with dependencies and `implements` column mapping tasks to requirement IDs from SPEC.md
 
 ## The Gate Function
+
+This is the canonical IDENTIFY → RUN → READ → VERIFY → CLAIM gate, expanded into 12 ordered steps. The phases map as: **IDENTIFY/RUN** = steps 1-2 (read SPEC.md + exploration), **READ/VERIFY** = steps 6b, 8 (prose audit + testing-table checks), **CLAIM** = step 12 (start /dev-implement). CLAIM is reachable ONLY if every prior step passed — the PLAN_REVIEWED.md hook downstream blocks implement if it did not.
 
 Complete all steps before starting implementation:
 
