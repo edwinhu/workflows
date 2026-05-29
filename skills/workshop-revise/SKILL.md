@@ -54,6 +54,67 @@ Load ALL Typst conventions before touching any files:
 
 This skill may run in a new session. Load ALL needed context before touching any files.
 
+### Session Resume Detection
+
+Check if `.planning/HANDOFF.md` exists:
+1. **If found:** Read it, show status, ask: "Resume from the recorded revision state, or start fresh?"
+2. **If not found:** Proceed to Step 1.
+
+### Iteration topology & flow
+
+```
+[Step 1: Load Context] → [Step 2: Diagnose]
+        → [Step 3: Apply edits  (+ workshop-verify /goal loop, max 3 turns, for content/structure)]
+        → [Step 4: Verify (compile + widow + check-all.py)]
+              ├─ pass → report to user
+              └─ unresolved after 3 cycles → ESCALATE to user
+```
+
+| Step | Topology | Exit condition |
+|------|----------|----------------|
+| Step 3 (content/structure change) | `serial` edit → `parallel` review (workshop-verify under `/goal`, **max 3 turns**) | `overallPass=true` → Step 4; else escalate |
+| Step 3 (formatting-only fast path) | `one-shot` edit | edit applied → Step 4 |
+| Step 4 (verify) | `serial` (compile → widow → check-all.py) | all pass; else fix (max 3 cycles) then escalate |
+
+**After completing each step, IMMEDIATELY proceed to the next step.** Do NOT ask "should I continue?" between steps 1–4. Pausing between steps is procrastination: you lose context, the user loses momentum, and the verification gate gets skipped. Pause only at the explicit checkpoints below.
+
+### Checkpoint types
+
+| Point | Type | Behavior |
+|-------|------|----------|
+| R4 structural change detected | decision | STOP — present to user, get approval before re-entering Phase 3 |
+| Step 3 artifact-review gate (content/structure) | human-verify | Auto-advanceable (independent workshop-verify reviewer) |
+| Step 4 revision verified | human-verify | Auto-advanceable; report to user at end |
+
+### Context Monitoring
+
+A revision can itself be multi-turn and context-intensive (especially a content/structure change driving a `/goal` loop). Before starting Step 3 edits or any `/goal` loop, check context availability:
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25–35% | Complete the current edit, then write `.planning/HANDOFF.md` and pause |
+| Critical | ≤25% | Write `.planning/HANDOFF.md` immediately — do not start a new edit or `/goal` loop |
+
+`HANDOFF.md` template (same schema as the workshop entry skill):
+```yaml
+---
+workflow: workshop-revise
+status: context_exhaustion
+last_updated: [timestamp]
+---
+## Current State
+[Which step; what edit is in progress]
+## Completed Work
+- [Edits applied so far, files touched]
+## Remaining Work
+- [Edits left + verification not yet run]
+## Next Action
+[Specific enough to resume immediately]
+```
+
+**Pushing through context exhaustion to "finish the revision" ships degraded edits the presenter debugs at the podium. Writing the handoff is the helpful move, not the slow one.**
+
 ### Step 1: Load Context
 
 1. **Read `.planning/SOURCES.md`** — paper metadata (title, authors, affiliations)
@@ -123,6 +184,9 @@ These apply to EVERY edit, no matter how small:
 | "Notes don't need updating for this slide change" | Out-of-sync notes cause confusion at the podium | Update notes to match slide changes |
 | "Sub-bullet spacing is cosmetic" | Tight sub-bullets are unreadable when projected | Add blank lines between sub-bullets |
 | "Table inset 5pt saves space" | 5pt is illegible at 16:9 projection | Use 10pt minimum |
+| "Only text changed — skip widow detection" | Widow positions shift with any content reflow | Re-run widow detection after every compile |
+| "It's formatting-only — skip the workshop-verify loop" | Formatting edits cascade into spacing/overflow violations only the checker catches | Run the gate; the JS verdict decides |
+| "User only asked about slides — notes can stay" | Out-of-sync notes confuse the presenter at the podium | Update notes to match the slide change |
 
 ### Deviation Rules (revision edits)
 
@@ -243,6 +307,21 @@ Changes applied:
 - Visual-verify: [N diagrams verified / N/A]
 - Source fidelity: [verified / N claims flagged]
 ```
+
+### Record the revision (state + review pattern)
+
+The midpoint leaves a durable record so a later session can see what changed and so recurring preferences accumulate:
+
+1. **Append a revision record to `.planning/LEARNINGS.md`** (create it if absent):
+   ```markdown
+   ## Revision — [date]
+   - Request: [what the user asked to change]
+   - Files touched: [slides.typ / notes.typ / SOURCES.md / OUTLINE.md]
+   - Deviations: [R1: X, R2: Y, R3: Z]
+   - Gate: [overallPass / formatting-only fast path]
+   - Reviewed by: [how the user inspected the result — observe, don't infer]
+   ```
+2. **Observe → record → offer:** if the **same** kind of revision request recurs 3+ times across sessions (e.g. "shrink the results table" every time), offer to encode it as a default — but only after the pattern proves itself. Do NOT pre-build automation for a one-off.
 
 ### Red Flags — STOP If You Catch Yourself:
 

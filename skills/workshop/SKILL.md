@@ -73,6 +73,17 @@ gather       → structure     → generate      → verify
 
 **Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.**
 
+### Iteration topology (per phase)
+
+| Phase | Topology | Exit condition |
+|-------|----------|----------------|
+| Phase 1 (gather) | `one-shot` (sequential extraction + 1 read-only review subagent) | SOURCES.md reviewer returns APPROVED → SOURCES_VERIFIED.md written |
+| Phase 2 (structure) | `one-shot` + decision gate (1 review subagent, then user approval) | OUTLINE reviewer APPROVED **and** user approves → OUTLINE_APPROVED.md written |
+| Phase 3 (generate) | `serial` drafting → `parallel` review (workshop-verify fan-out under `/goal`, **max 3 turns**) | `overallPass=true` → SLIDES_REVIEWED.md written; else escalate after 3 turns |
+| Phase 4 (verify) | `parallel` review (full workshop-verify under `/goal`, **max 3 turns**) | `overallPass=true` → VALIDATION.md written; else escalate after 3 turns |
+
+`team` topology is not used — no phase needs concurrent role-specialized agents sharing state.
+
 After completing each phase, IMMEDIATELY proceed to the next phase. Do not pause for user approval except where explicitly required (Phase 2: user approves outline).
 
 **Smart Discuss:** If multiple questions arise in Phase 1 (e.g., paper path unclear, venue unknown, desired structure), batch them into a SINGLE user interaction. Do NOT ask one question, wait, ask another, wait. Present all ambiguities at once:
@@ -149,6 +160,8 @@ provides: "slides.typ, notes.typ, slides.pdf, notes.pdf"
 affects: "presentation/ directory"
 ---
 ```
+
+**`.planning/ACTIVE_WORKFLOW.md` is the live state file** — update its `phase`/`phase_name` at every gate transition (Phase 1→2→3→4), not just at startup. A stale `phase: 1` after Phase 3 means a resuming session restarts from the wrong place. The per-phase gate artifacts (SOURCES_VERIFIED / OUTLINE_APPROVED / SLIDES_REVIEWED / VALIDATION) are the immutable completion records; ACTIVE_WORKFLOW.md is the moving cursor.
 
 ---
 
@@ -318,6 +331,11 @@ inventory_count:
   tables: [N]
   results: [N]
   arguments: [N]
+key_files:
+  created: [.planning/SOURCES.md, .planning/SOURCES_VERIFIED.md]
+  modified: [presentation/templates/]
+deviations: {r1: 0, r2: 0, r3: 0}
+one_liner: "Sources gathered, inventory built, independently reviewed → APPROVED."
 ---
 Sources gathered and verified. Paper metadata extracted from source document.
 ```
@@ -413,6 +431,11 @@ affects: ".planning/OUTLINE.md"
 total_time: [N] minutes
 section_count: [N]
 slide_count: [N]
+key_files:
+  created: [.planning/OUTLINE.md, .planning/OUTLINE_APPROVED.md]
+  modified: []
+deviations: {r1: 0, r2: 0, r3: 0, r4: 0}
+one_liner: "Outline reviewed (subagent APPROVED) and user-approved → ready for generation."
 ---
 Outline approved by user. Structure: [brief summary of proportions].
 ```
@@ -544,6 +567,8 @@ If you wrote slides.typ or notes.typ WITHOUT having read the paper (Phase 1), DE
 | **R4: Structural** | Outline restructuring, section reordering, changing presentation proportions | STOP → present to user → track `[R4]` | Ask user |
 
 **Priority:** R4 (STOP) > R1-R3 (auto) > unsure = R4
+
+**Blocker escalation:** if an R3 blocker (font/package conflict, version incompatibility) cannot be resolved in **one** auto-fix attempt, STOP and present the user three options: **(1) retry** with a different approach, **(2) skip** the blocked element and note it in the gate artifact, or **(3) stop** and await user action. Do not silently loop on an unresolvable blocker.
 
 After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
 
@@ -771,6 +796,15 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
    Classify each slide COVERED (cites ≥1 inventory ID, all claims grounded), PARTIAL (no inventory ref OR some claims ungrounded), or — for the reverse map — MISSING (an inventory item no slide uses). This closes requirement→evidence traceability: SOURCES inventory IDs → slides → grounded claims.
 
 **Skipping the final gate to "finish faster" is anti-helpful — the presenter discovers widows, overflow, or wrong numbers at the podium. The workflow already does the work; reading its gate is the service, not overhead.**
+
+### Rationalization Table — Final Verification
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "Phase 3 already verified this — Phase 4 is redundant" | Phase 3's last run may have been selective (`onlyChecks`); the deck was never confirmed clean *together* | Run the full non-selective workshop-verify |
+| "`overallPass` was almost true — good enough" | The JS gate is binary; "almost" means a real finding is still open | Fix the finding, let the next run recompute |
+| "No new diagrams, so skip visual-verify" | Existing diagrams shift when surrounding slides change | Let the full gate run visual-verify on all diagrams |
+| "It compiled, so it's verified" | Compilation proves syntax, not widows/overflow/fidelity | Read the JS gate, not the compiler exit code |
 
 ### Red Flags — STOP If You Catch Yourself:
 
