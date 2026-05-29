@@ -43,8 +43,9 @@ hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/VALIDATION.md
+            GATE_STATUS=validated
             GATE_DESCRIPTION="Output validation"
-            GATE_REMEDY="Run ds-validate first; review is gated until .planning/VALIDATION.md exists (status validated, or gaps_found that the user has accepted)."
+            GATE_REMEDY="Run ds-validate first; review is gated until .planning/VALIDATION.md has status: validated. A clean validation is validated. If gaps were found, ds-validate flips status to validated ONLY after the user explicitly accepts them (recorded in an Accepted Gaps section). An undispositioned gaps_found means the user has not yet decided fix-vs-accept — go back to ds-validate's gate."
             GATE_BLOCKED_TOOLS=Agent
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ---
@@ -167,7 +168,43 @@ While reviewers work, the lead:
 
 ### 5. Reconciliation Protocol (3 Passes)
 
-After ALL reviewers message completion, the lead performs three passes:
+After ALL reviewers message completion, the lead performs three passes.
+
+**This flowchart IS the specification. If the prose below and this diagram disagree, the diagram wins.**
+
+```
+   3 reviewer findings sets (Methodology, Reproducibility, Code Quality)
+                              │
+                              ▼
+        ┌─────────────────────────────────────────┐
+        │ Pass 1 — DEDUPLICATE                     │
+        │ group by file:location + root cause,     │
+        │ merge dups (keep highest confidence)     │
+        └───────────────────┬─────────────────────┘
+                            ▼
+        ┌─────────────────────────────────────────┐
+        │ Pass 2 — PRIORITIZE                      │
+        │ rank critical / important / minor        │
+        └───────────────────┬─────────────────────┘
+                            ▼
+        ┌─────────────────────────────────────────┐
+        │ Pass 3 — INTEGRATION CHECK               │
+        │ do findings conflict / interact?         │
+        └───────────────────┬─────────────────────┘
+                  conflict?  │
+            ┌──── yes ───────┴────── no ──────┐
+            ▼                                  ▼
+   ┌──────────────────┐         ┌──────────────────────────┐
+   │ escalate to user │         │ any critical/important?   │
+   │ with the conflict│         └────────────┬─────────────┘
+   └──────────────────┘            ┌── yes ──┴── no ──┐
+                                   ▼                  ▼
+                          ┌────────────────┐ ┌────────────────┐
+                          │ CHANGES REQ'D →│ │ APPROVED →     │
+                          │ /ds-implement  │ │ ds-verify      │
+                          │ (max 3 cycles) │ └────────────────┘
+                          └────────────────┘
+```
 
 <EXTREMELY-IMPORTANT>
 **Pass 1 — Deduplication:**

@@ -328,7 +328,7 @@ Report: what you did, key outputs observed, any data quality or schema issues fo
 ## Step 2: Verify Outputs (Post-Subagent Boundary)
 
 <EXTREMELY-IMPORTANT>
-**After analyst returns, you are at the post-subagent boundary. Constraints C5 from ds-common-constraints.md apply.**
+**After analyst returns, you are at the post-subagent boundary. Constraint C2 (Post-Subagent Boundary) from ds-common-constraints.md applies.**
 
 **ALLOWED (Verification):**
 - [ ] Read the analyst's returned report/summary
@@ -345,7 +345,7 @@ Report: what you did, key outputs observed, any data quality or schema issues fo
 **If the analyst's report shows problems, re-dispatch a Task agent. Do NOT investigate yourself.**
 </EXTREMELY-IMPORTANT>
 
-Upon verification failure, re-dispatch analyst with specific fix instructions.
+Upon verification failure, re-dispatch analyst with specific fix instructions. **Bound this loop: at most 3 fix-and-re-dispatch cycles per task.** If the reviewer still returns ISSUES after 3 cycles, STOP and escalate to the user (the task is harder than the plan assumed — a 4th identical re-dispatch rarely converges). This mirrors ds-review's max-3 cycle cap; a per-task loop with no limit can spin or be silently abandoned.
 
 ## Step 3: Dispatch Methodology Reviewer (Complex Tasks)
 

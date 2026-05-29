@@ -333,10 +333,24 @@ Before claiming any fix is done, execute this gate:
 
 **Skipping this gate means your fix is unverified. An unverified fix is not a fix — it's a guess.**
 
+### No Pause Between Fixes
+
+<EXTREMELY-IMPORTANT>
+**After a fix passes the verification gate, IMMEDIATELY proceed to the next issue from Step 2's diagnosis. Do NOT pause to ask "should I continue?"**
+
+| Thought | Reality |
+|---------|---------|
+| "Should I check if they want the next fix?" | Step 2 already enumerated the issues. Asking again is stalling. |
+| "Let me summarize what I just fixed" | LEARNINGS.md is the summary. Repeating it in chat wastes context. |
+| "Natural stopping point between categories" | The diagnosis is the work-list. A verified fix means start the next one. |
+
+**The fix loop runs until every issue in Step 2's diagnosis is resolved OR a STOP escalation (R4 / rethink) is required. Your pause is procrastination disguised as courtesy.**
+</EXTREMELY-IMPORTANT>
+
 ## Post-Subagent Boundary
 
 <EXTREMELY-IMPORTANT>
-**After a fix agent returns, constraints C5 from ds-common-constraints.md apply.**
+**After a fix agent returns, constraint C2 (Post-Subagent Boundary) from ds-common-constraints.md applies.**
 
 **ALLOWED:** Read the agent's returned report. Check LEARNINGS.md. Confirm file existence with `ls`.
 **FORBIDDEN:** Read project source code, run analysis code, inspect data files, Grep/Glob project files.
@@ -346,7 +360,7 @@ Before claiming any fix is done, execute this gate:
 
 ## Topic Change Protocol
 
-**If user sends an off-topic message during ds-fix, follow C6 from ds-common-constraints.md:**
+**If user sends an off-topic message during ds-fix, follow the Topic Change Protocol (constraints/ds-topic-change-protocol.md):**
 
 1. Announce: "Pausing ds-fix to address your request."
 2. Handle the request.
@@ -377,6 +391,21 @@ Fix Protocol:
 Report: what was wrong, what was fixed, verification output.
 """)
 ```
+
+### Delete & Restart Protocol
+
+<EXTREMELY-IMPORTANT>
+Fixing is delegation, not main-chat work. The same contamination rule as ds-implement applies — a fix written in the orchestrator's context skips output-first verification and must not be kept.
+
+| Scenario | Action |
+|----------|--------|
+| You wrote fix code (> 3 lines) directly in main chat | DELETE immediately. Re-dispatch a Task agent with the diagnosis. |
+| You partially applied a fix in main chat before catching yourself | DELETE the changes. Re-dispatch with full context (don't leave a half-fix). |
+| You ran a "quick" patch cell in the orchestrator notebook | DELETE the cell + output. Re-do via Task agent. |
+| "It's a one-line fix, delegating is overkill" | STOP — a one-line fix is one line for the agent too. Delete and delegate. |
+
+**Helpfulness Check:** A fix that "works" but was written in the wrong place skipped verification and review. Working code in the wrong place is anti-helpful — delete it and re-dispatch.
+</EXTREMELY-IMPORTANT>
 
 ## When Fix Requires Rethinking
 

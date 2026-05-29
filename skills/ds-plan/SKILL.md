@@ -1,6 +1,6 @@
 ---
 name: ds-plan
-description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
+description: "Phase 2 of the /ds workflow — data profiling and task breakdown. Invoked by the ds-brainstorm chain; not user-invocable."
 user-invocable: false
 disable-model-invocation: true
 hooks:
@@ -153,6 +153,37 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 
 ## Process
 
+**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.** The two sub-gates (5b External Skill Discovery, 5c Data Pull Profiling) and the exit Plan Review are mandatory when their triggers fire — they are not optional steps a fast path can skip.
+
+```
+ 1. Verify SPEC.md exists ──(missing)──▶ STOP, run /ds first
+            │
+            ▼
+ 2. Profile data ──(2+ sources)──▶ parallel read-only profiler per source
+            │
+            ▼
+ 3. Identify DQ issues (nulls, dups, row counts)
+            │
+            ▼
+ 4. ETL strategy ──(heavy ETL trigger)──▶ server-side / chunked plan
+            │
+            ▼
+ 5b. External Skill Discovery ──(SPEC names wrds/gemini-batch/etc.)──▶ Glob refs/examples, ADOPT/PATCH
+            │
+            ▼
+ 5c. Data Pull Profiling gate ──(source ≥50M rows / ≥500MB / "large")──▶ read-only size profile → decision table
+            │
+            ▼
+ 6. Task breakdown (each task carries implements: [REQ-ID])
+            │
+            ▼
+ 7. Write .planning/PLAN.md
+            │
+            ▼
+ Exit gate ──▶ dispatch ds-plan-reviewer ──(ISSUES)──▶ fix PLAN.md, re-dispatch (max 5)
+                                          └──(APPROVED)──▶ ds-implement
+```
+
 ### 1. Verify Spec Exists
 
 ```bash
@@ -210,6 +241,11 @@ Task(
     subagent_type="general-purpose",
     description="Profile dataset 1",
     run_in_background=true,
+    # STRUCTURAL read-only enforcement — not advisory prose. Profiling is a
+    # read-only verification step; Write/Edit/NotebookEdit are withheld at the
+    # tool layer so a profiler CANNOT mutate pipeline files even if the prompt
+    # is ignored (P17 — agent tool restrictions are structural, never prose).
+    allowed_tools=["Read", "Glob", "Grep", "Bash"],
     prompt="""
 Profile this dataset and return a data quality report.
 
@@ -230,7 +266,7 @@ Output format:
 - List of data quality issues found
 - Recommendations for cleaning
 
-Tools denied: Write, Edit, NotebookEdit (read-only profiling)
+Read-only profiling: you have Read/Glob/Grep/Bash only (enforced via allowed_tools).
 """)
 
 Task(

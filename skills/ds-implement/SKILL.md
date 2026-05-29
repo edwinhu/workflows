@@ -1,6 +1,6 @@
 ---
 name: ds-implement
-description: "Phase 3 of /ds workflow. Execute analysis tasks with output-first verification."
+description: "Phase 3 of the /ds workflow — analysis task execution. Invoked by the ds-plan chain; not user-invocable."
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite, Agent

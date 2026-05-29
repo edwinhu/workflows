@@ -110,14 +110,40 @@ This runs all DS constraint check scripts (determinism, join audits, idempotency
 
 ## The Process
 
+**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.**
+
 ```
-0. RUN static analysis check suite (check-all-ds.sh) — fix any failures first
-1. READ .planning/SPEC.md requirements
-2. READ .planning/PLAN.md task breakdown
-3. READ .planning/LEARNINGS.md for pipeline row counts (DQ4 needs these)
-4. DISCOVER and READ ds-checks.md via cache lookup
-5. RUN the ds-validate-coverage workflow — fans out one read-only validator per requirement (DQ1-DQ5 + M1) and computes the COVERED/PARTIAL/MISSING + validated|gaps_found gate in JS
-6. RENDER .planning/VALIDATION.md from the workflow result (status + scoreTable + findings)
+   ┌──────────────────────────────────────────────┐
+   │ 0. RUN static analysis suite (check-all-ds.sh)│
+   └───────────────────┬──────────────────────────┘
+              all pass? │
+        ┌──── no ───────┴────── yes ──────┐
+        ▼                                  ▼
+ ┌──────────────────┐   ┌───────────────────────────────────┐
+ │ log to LEARNINGS │   │ 1-4. READ SPEC / PLAN / LEARNINGS, │
+ │ + dispatch fix   │   │ DISCOVER ds-checks.md              │
+ │ subagent, re-run │   └─────────────────┬─────────────────┘
+ └────────┬─────────┘                     ▼
+          │              ┌────────────────────────────────────┐
+          │              │ 5. RUN ds-validate-coverage workflow│
+          │              │ (one read-only validator/requirement│
+          │              │  → JS gate, NOT a hand-tallied score)│
+          │              └─────────────────┬──────────────────┘
+          │                                ▼
+          │              ┌────────────────────────────────────┐
+          │              │ 6. RENDER .planning/VALIDATION.md   │
+          │              │ from the workflow result            │
+          │              └─────────────────┬──────────────────┘
+          │                       JS gate   │
+          │            ┌── gaps_found ───────┴── validated ──┐
+          │            ▼                                     ▼
+          │   ┌──────────────────────┐         ┌──────────────────────┐
+          └──▶│ decision checkpoint: │         │ proceed to ds-review  │
+              │ user fix-vs-accept   │         │ (gate: status=        │
+              │ (see Gate section);  │         │  validated)           │
+              │ accept ⇒ flip status │         └──────────────────────┘
+              │ to validated         │
+              └──────────────────────┘
 ```
 
 > **Note:** Steps 1-4 stay in this skill as the reading/discovery preamble — the workflow's own Discover phase re-resolves them authoritatively, but reading them here lets the skill present context and decide scope before invoking the workflow.
@@ -241,7 +267,18 @@ missing: N
 | Condition | Status |
 |-----------|--------|
 | All requirements COVERED | `validated` |
-| Any PARTIAL or MISSING remain | `gaps_found` |
+| Any PARTIAL or MISSING remain, user has NOT yet decided | `gaps_found` |
+| Gaps remain BUT the user explicitly accepted them | `validated` (+ `## Accepted Gaps` section) |
+
+**Status `validated` means "dispositioned and cleared to proceed" — either clean, OR gaps the user explicitly accepted.** The downstream ds-review gate (`GATE_STATUS=validated`) blocks on `gaps_found`, so an undispositioned `gaps_found` cannot silently pass into review. This is the structural backstop for the decision checkpoint below — do not rely on the prose alone.
+
+When the user accepts gaps, rewrite VALIDATION.md frontmatter `status: gaps_found` → `status: validated` and append:
+
+```markdown
+## Accepted Gaps
+The user reviewed and accepted these gaps on proceeding to review:
+- [REQ-ID] [PARTIAL/MISSING]: [what is incomplete and why the user accepted it]
+```
 
 ## Visual Diagnostics for Decision Checkpoints
 
@@ -267,7 +304,24 @@ When presenting validation results to the user (especially gaps), generate diagn
 
 - If status is `validated`: **human-verify** checkpoint — auto-advanceable; proceed to ds-review.
 - If status is `gaps_found`: **decision** checkpoint — present gaps to user before proceeding.
-  - User decides: **fix** (return to ds-implement) or **accept** (proceed to ds-review with known gaps).
+  - User decides: **fix** (return to ds-implement) or **accept**.
+  - On **accept**: rewrite VALIDATION.md to `status: validated` and append the `## Accepted Gaps` section (see Status Rules) BEFORE proceeding. The ds-review gate hooks on `status: validated` — leaving it at `gaps_found` will (correctly) block review, because an undispositioned `gaps_found` is indistinguishable from "user never decided."
+
+### Re-validation Loop Cap
+
+When the user chooses **fix**, the cycle ds-validate → ds-implement → ds-validate repeats. This loop is bounded — it does not cycle indefinitely. Track it in `.planning/VALIDATE_STATE.md` (analogous to ds-review's REVIEW_STATE.md):
+
+```yaml
+---
+iteration: 1
+max_iterations: 3
+status: gaps_found        # gaps_found | validated
+last_gaps: [REQ-ID, ...]  # requirement IDs still PARTIAL/MISSING
+---
+```
+
+- On each re-validate, increment `iteration`.
+- **After 3 cycles still in `gaps_found`, STOP looping.** Escalate to the user with a structured choice (AskUserQuestion): **fix again** (override the cap with explicit instruction), **accept remaining gaps** (flip to validated + Accepted Gaps), or **rethink** (return to /ds for re-planning). Do not silently start a 4th fix cycle — repeated failure to close the same gap is a signal the plan or data is wrong, not that one more pass will help.
 
 <EXTREMELY-IMPORTANT>
 **Do NOT auto-fill gaps. Do NOT silently proceed past gaps. Present them and wait for user decision.**
