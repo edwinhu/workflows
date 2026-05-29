@@ -1,6 +1,6 @@
 ---
 name: ds-plan
-description: "REQUIRED Phase 2 of /ds workflow. Profiles data and creates analysis task breakdown."
+description: "Phase 2 of the /ds workflow — used when ds-brainstorm chains to data profiling and task breakdown, or when the user asks to profile data sources for an approved spec. Read the full body before acting; the process is not summarized here."
 user-invocable: false
 disable-model-invocation: true
 hooks:
@@ -152,6 +152,37 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 **Plan answers: HOW and DATA QUALITY**
 
 ## Process
+
+**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.** The two sub-gates (5b External Skill Discovery, 5c Data Pull Profiling) and the exit Plan Review are mandatory when their triggers fire — they are not optional steps a fast path can skip.
+
+```
+ 1. Verify SPEC.md exists ──(missing)──▶ STOP, run /ds first
+            │
+            ▼
+ 2. Profile data ──(2+ sources)──▶ parallel read-only profiler per source
+            │
+            ▼
+ 3. Identify DQ issues (nulls, dups, row counts)
+            │
+            ▼
+ 4. ETL strategy ──(heavy ETL trigger)──▶ server-side / chunked plan
+            │
+            ▼
+ 5b. External Skill Discovery ──(SPEC names wrds/gemini-batch/etc.)──▶ Glob refs/examples, ADOPT/PATCH
+            │
+            ▼
+ 5c. Data Pull Profiling gate ──(source ≥50M rows / ≥500MB / "large")──▶ read-only size profile → decision table
+            │
+            ▼
+ 6. Task breakdown (each task carries implements: [REQ-ID])
+            │
+            ▼
+ 7. Write .planning/PLAN.md
+            │
+            ▼
+ Exit gate ──▶ dispatch ds-plan-reviewer ──(ISSUES)──▶ fix PLAN.md, re-dispatch (max 5)
+                                          └──(APPROVED)──▶ ds-implement
+```
 
 ### 1. Verify Spec Exists
 

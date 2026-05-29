@@ -307,6 +307,22 @@ When presenting validation results to the user (especially gaps), generate diagn
   - User decides: **fix** (return to ds-implement) or **accept**.
   - On **accept**: rewrite VALIDATION.md to `status: validated` and append the `## Accepted Gaps` section (see Status Rules) BEFORE proceeding. The ds-review gate hooks on `status: validated` — leaving it at `gaps_found` will (correctly) block review, because an undispositioned `gaps_found` is indistinguishable from "user never decided."
 
+### Re-validation Loop Cap
+
+When the user chooses **fix**, the cycle ds-validate → ds-implement → ds-validate repeats. This loop is bounded — it does not cycle indefinitely. Track it in `.planning/VALIDATE_STATE.md` (analogous to ds-review's REVIEW_STATE.md):
+
+```yaml
+---
+iteration: 1
+max_iterations: 3
+status: gaps_found        # gaps_found | validated
+last_gaps: [REQ-ID, ...]  # requirement IDs still PARTIAL/MISSING
+---
+```
+
+- On each re-validate, increment `iteration`.
+- **After 3 cycles still in `gaps_found`, STOP looping.** Escalate to the user with a structured choice (AskUserQuestion): **fix again** (override the cap with explicit instruction), **accept remaining gaps** (flip to validated + Accepted Gaps), or **rethink** (return to /ds for re-planning). Do not silently start a 4th fix cycle — repeated failure to close the same gap is a signal the plan or data is wrong, not that one more pass will help.
+
 <EXTREMELY-IMPORTANT>
 **Do NOT auto-fill gaps. Do NOT silently proceed past gaps. Present them and wait for user decision.**
 

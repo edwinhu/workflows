@@ -121,6 +121,8 @@ phase_name: [brainstorm|plan|implement|validate|review|verify]
 task: [current task number, 0 if between tasks]
 total_tasks: [N from PLAN.md]
 status: paused
+context_remaining: [approx % context left when handing off — lets a resuming session triage scope]
+decisions_count: [N — number of entries in the Decisions Made section below]
 last_updated: [ISO 8601]
 ---
 # Session Handoff
