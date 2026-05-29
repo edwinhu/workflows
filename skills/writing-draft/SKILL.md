@@ -289,7 +289,20 @@ Before proceeding to edit/verify (see `constraints/gate-function-standard.md` fo
 2. **RUN**: List files in `drafts/`, compare against OUTLINE.md sections
 3. **READ**: Check each draft exists and has substantial content (not cursory stubs)
 4. **VERIFY**: All sections have drafts, each draft covers all outline points
-5. **CLAIM**: Only if steps 1-4 pass, proceed to writing-validate. **Gate type: `human-verify` — auto-advance to writing-validate.**
+5. **CLAIM**: Only if steps 1-4 pass, write the gate artifact, THEN proceed to writing-validate. writing-validate's PreToolUse hook blocks until this file exists — the artifact certifies every OUTLINE section has a substantive draft:
+
+   ```bash
+   mkdir -p .planning && cat > .planning/DRAFT_COMPLETE.md <<EOF
+   ---
+   status: APPROVED
+   gate: draft
+   sections: ${SECTION_COUNT:-all}
+   ---
+   Draft gate passed: every OUTLINE.md section has a drafts/ file with substantive content covering all outline points (not cursory stubs).
+   EOF
+   ```
+
+   **Gate type: `human-verify` — auto-advance to writing-validate.** Do not write `status: APPROVED` while any section is a cursory stub — the artifact is the contract that drafting is genuinely complete.
 6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
    - phase: draft
    - artifacts_produced: [list all drafts/*.md files created]

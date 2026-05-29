@@ -6,14 +6,15 @@ disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash
 hooks:
   PreToolUse:
-    - matcher: "Write"
+    - matcher: "Write|Bash"
       hooks:
         - type: command
           command: >-
-            GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
+            GATE_ARTIFACT=.planning/DRAFT_COMPLETE.md
             GATE_STATUS=APPROVED
-            GATE_DESCRIPTION="Outline review (required before validation)"
-            GATE_REMEDY="Outline must be reviewed before validation can produce artifacts"
+            GATE_BLOCKED_TOOLS=Write,Bash
+            GATE_DESCRIPTION="Draft completion (required before validation)"
+            GATE_REMEDY="All sections must be drafted before validation runs. Return to writing-draft and write .planning/DRAFT_COMPLETE.md after every OUTLINE section has a substantive draft."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
   PostToolUse:
     - matcher: "Write"
