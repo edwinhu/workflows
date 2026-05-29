@@ -1,7 +1,7 @@
 ---
 name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow', 'convert fan-out to a workflow script', or needs to substantially create or edit any multi-phase workflow."
-version: 0.4.0
+version: 0.5.0
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"
@@ -1303,7 +1303,7 @@ After generating workflow files in Step 6:
 **The audit MUST be run by the wc-audit workflow (read-only reviewers, JS gate) — not by you.** If you score the files yourself, you are self-reviewing your own work; see the Iron Law above. The same agent that wrote the files cannot score them independently.
 </EXTREMELY-IMPORTANT>
 
-1. **Run the wc-audit workflow on the newly generated workflow** (same workflow Mode 2/Mode 3 use — read-only reviewers, JS-computed composite, so generation and judgment are structurally separate). First drafts clear **8.0**, not 9.5:
+1. **Run the wc-audit workflow on the newly generated workflow** (same workflow Mode 2/Mode 3 use — read-only reviewers, JS-computed gate, so generation and judgment are structurally separate). First drafts clear **8.0** (composite), not the calibrated ceiling — but they still must reach **`substratePass`** (0 critical, no enforcement Absent, portability Clean) before presenting:
 
    ```bash
    WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-audit.js 2>/dev/null | sort -V | tail -1)
@@ -1342,7 +1342,7 @@ Score >= 8.0? ──YES──→ Present files + audit report to user
 Present files + audit report + remaining gaps to user
 ```
 
-**Why 8.0 not 9.5:** Generated workflows are first drafts. They need real-world usage to reach 9.5. But they should clear 8.0 — no missing gates, no broken paths, no ungated phase transitions. Mode 3 exists for the 8.0 → 9.5 climb.
+**Why an 8.0 composite floor (not the ceiling) at Step 7:** Generated workflows are first drafts; the composite needs real-world iteration to approach the calibrated ceiling (~9.0). But a first draft must already be structurally sound — `substratePass` true (no missing gates, no broken paths, no ungated transitions) and composite ≥ 8.0. Mode 3 then drives the 8.0 → substrate-clean-at-ceiling climb (NOT a chase to 9.5 — see the Iron Law of Workflow Improvement).
 
 #### Post-Subagent Enforcement (Step 7)
 
@@ -1957,12 +1957,24 @@ If the audit report composite is below 7.0 on first pass, STOP and re-read all w
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Workflow Improvement
 
-**MODE 3 IS AN AUDIT-FIX LOOP. THE SCORE DECIDES WHEN TO STOP, NOT YOU. This is not negotiable.**
+**MODE 3 IS AN AUDIT-FIX LOOP. THE SUBSTRATE GATE DECIDES WHEN TO STOP, NOT YOU AND NOT A BARE COMPOSITE NUMBER. This is not negotiable.**
 
-Mode 3 uses the audit-fix-loop pattern: independent audit → score → fix → re-audit. The loop terminates when the **auditor's score** crosses the threshold (default: 9.5/10), NOT when you "feel" the workflow is good enough.
+Mode 3 terminates when **`result.substratePass` is true AND the composite has gone FLAT** (within ±0.2 of the prior iteration) — NOT when a noisy composite crosses an arbitrary 9.5. The substrate gate is the deterministic, monotonic signal: **0 critical findings · no enforcement pattern Absent where a phase needs it · path portability Clean.** Those converge; the 0-10 composite does not.
 
-**The structural problem Mode 3 solves:** Without a loop, the agent audits once, applies some fixes, and stops — rationalizing that the remaining gaps are "domain characteristics" or "diminishing returns." March 19, 2026: agent stopped at 8.5/10 and said "close enough." It wasn't.
+**The structural problem Mode 3 solves** (two failure modes, opposite directions):
+1. **Stopping too early** by self-declaring "diminishing returns" before the substrate is clean. The loop + `/goal` evaluator prevents this — you cannot stop while a critical or an Absent enforcement pattern remains.
+2. **Chasing a noisy proxy forever.** The composite is an LLM panel: it re-rolls ±0.2 each run, its domain-ceiling denominator drifts, and it regenerates new minor findings every pass. Targeting `composite ≥ 9.5` sends the loop onto a treadmill where fixing 4 findings surfaces 4 new ones and the number never converges (empirically every workflow asymptotes ~9.0; see project_wc_mode3_asymptote). The last 0.5 to 9.5 can only be bought by over-enforcing creative/low-drift phases — which **violates** the Step-4 drift tiering and the no-speculative-enforcement rule. So 9.5 rewards making the workflow *worse*.
 </EXTREMELY-IMPORTANT>
+
+### Why the gate is the substrate, not 9.5 (calibrated ceiling)
+
+| | Composite (0-10) | Substrate gate |
+|---|---|---|
+| Stationary across runs? | No — ±0.2 LLM noise, drifting denominator | **Yes** — deterministic |
+| Converges as you fix? | No — regenerates findings (treadmill) | **Yes** — criticals 5→0, enforcement Weak→Present are monotonic |
+| Last-mile incentive | Push to 9.5 ⇒ over-enforce creative steps (anti-pattern) | Close real structural gaps only |
+
+**Doctrine:** drive the loop to **`substratePass` + composite ≥ 9.0 (calibrated ceiling) + composite flat across 2 iterations**, then STOP. Do not iterate further to lift the composite — that is the treadmill. If `substratePass` is true but the composite sits at, say, 8.6 and is flat, the workflow is **at its ceiling and sound**: ship it and note the composite as the honest harsh-auditor reading, not a defect.
 
 ### Step 1: Run Initial Audit (Mode 2)
 
@@ -1995,7 +2007,7 @@ Run Mode 2 on the target workflow. This produces the baseline score.
 Use the audit-fix-loop pattern with `/goal` as the cross-turn iteration primitive (separate-model evaluator reads SCORES.md from the transcript):
 
 ```
-/goal Workflow [WORKFLOW_NAME] scores >= 9.5 in .planning/SCORES.md across all selected scorers, with zero CRITICAL findings outstanding. Stop after 10 turns.
+/goal Workflow [WORKFLOW_NAME] reaches result.substratePass=true (0 critical, no enforcement Absent, portability Clean) AND composite >= 9.0 AND composite flat (within ±0.2 of the prior SCORES.md row). Stop after 10 turns. Do NOT keep iterating to lift the composite once the substrate gate is clean and the composite is flat — that is the treadmill.
 ```
 
 **Before launching the goal, persist the second link of the improve chain** (the hook's improve chain is `1-initial-audit → 1-audit-loop`):
@@ -2005,7 +2017,7 @@ status: in_progress
 requires: [Mode 2 audit report]
 provides: [score-gated fix iterations]
 affects: [.planning/wc/{name}/STATE.md, .planning/wc/{name}/SCORES.md, target workflow files]
-one-liner: "/goal audit-fix loop launched (threshold 9.5); each turn re-runs wc-audit and appends the composite to SCORES.md."
+one-liner: "/goal audit-fix loop launched (gate: substratePass + composite≥9.0 + flat); each turn re-runs wc-audit and appends composite + substratePass to SCORES.md."
 ```
 
 **Each turn under the active goal follows this exact sequence:**
@@ -2015,14 +2027,15 @@ Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
   [fresh subagent]   [check score]       [targeted edits]
     │                    │                    │
     ▼                    ▼                    ▼
-  AUDIT.md            Score >= 9.5?         Fix gaps by priority:
-  SCORES.md             │                   1. P < 7.0 (critical)
-                    YES ──→ end turn;       2. P 7-8.9 (medium)
-                           /goal evaluator   3. P 9-9.4 (polish)
-                           marks done             │
-                        │                         ▼
-                    NO ──→ Phase C            End turn → /goal
-                                              refires Phase A
+  AUDIT.md         substratePass &&      Fix gaps by priority:
+  SCORES.md        composite≥9.0 &&       1. criticals (any severity:critical)
+                   flat(±0.2)?            2. enforcement Absent → Present
+                        │                 3. portability → Clean
+                    YES ──→ end turn;      4. then P<9 medium gaps
+                           /goal evaluator      │
+                           marks done           ▼
+                        │                   End turn → /goal
+                    NO ──→ Phase C          refires Phase A
 ```
 
 #### Phase A: AUDIT (the wc-audit workflow — MANDATORY, independent by construction)
@@ -2037,13 +2050,13 @@ WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows
 # Full audit on iteration 1; selective re-audit thereafter:
 Workflow({ scriptPath: "<WF>", args: {
   targetWorkflow: "{name}", projectDir: "<abs repo root>", pluginRoot: "<abs .../workflows dir>",
-  threshold: 9.5,
+  threshold: 9.0,                                   // calibrated ceiling, NOT 9.5 — composite is advisory; substratePass is the gate
   onlyChecks: <prev result.reviewersThatFlagged>,   // omit on iteration 1
   priorReviews: <prev result.reviews>               // omit on iteration 1
 } })
 ```
 
-Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` and append `result.composite` as a new row in `.planning/wc/{name}/SCORES.md`. The workflow's reviewers are read-only (they REPORT, never fix) and the gate is JS — that is what makes the score trustworthy.
+Write `result.reportMarkdown` to `.planning/wc/{name}/AUDIT.md` and append a row to `.planning/wc/{name}/SCORES.md` recording **`result.composite`, `result.substratePass`, `result.substrate` (criticals / enforcementAbsent / portability)**. The workflow's reviewers are read-only (they REPORT, never fix) and the gate is computed in JS. **`result.substratePass` is the trustworthy convergence signal; `result.composite` is an advisory ±0.2 LLM proxy — record it, but the gate keys on substratePass + flatness, not the bare number.**
 
 <EXTREMELY-IMPORTANT>
 **THE AUDIT IS THE wc-audit WORKFLOW, NOT YOUR OWN RE-READ. If you score your own fixes by hand, you are rubber-stamping.**
@@ -2059,15 +2072,17 @@ Read `.planning/wc/{name}/SCORES.md`. Render the score trend for visual context:
 uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
 ```
 
-Check composite score against threshold:
+Check the **substrate gate**, then the calibrated composite + flatness. "Flat" = this iteration's composite is within ±0.2 of the prior SCORES.md row.
 
 | Condition | Action |
 |-----------|--------|
-| Score >= 9.5 | Output `<promise>WORKFLOW_9_5</promise>` — workflow meets quality bar |
-| Score < 9.5 AND iteration < 10 | Continue to Phase C |
-| Score < 9.5 AND iteration >= 10 | Escalate to user with current score and remaining gaps |
+| `result.substratePass` AND composite ≥ 9.0 AND flat | Output `<promise>WORKFLOW_DONE</promise>` — substrate clean at the calibrated ceiling; STOP (do not iterate to lift the composite) |
+| `result.substratePass` AND composite ≥ 9.0 but NOT yet flat | Continue to Phase C **only** for any remaining sub-9 medium gaps; if none are cheap/real, treat as flat and STOP |
+| NOT `result.substratePass` (a critical, an enforcement Absent, or portability not Clean) AND iteration < 10 | Continue to Phase C — fix the substrate blocker (this is the non-negotiable part) |
+| NOT `result.substratePass` AND iteration ≥ 10 | Escalate to user with the substrate blockers and scoreTable |
+| `result.substratePass` but composite < 9.0 AND flat across 2 iterations | Escalate to user: substrate is clean but the composite sits below the ceiling and won't climb — likely a genuine domain ceiling or a judge artifact; present it, don't grind |
 
-**You may ONLY output the completion promise when the auditor's score >= 9.5. Not when you "feel" it's good enough. Not when the remaining gaps seem minor. The score decides.**
+**You may output the completion promise once `result.substratePass` is true and the composite is at/above the calibrated ceiling and flat. You may NOT keep iterating to push a flat composite toward 9.5 — that is the treadmill the Iron Law forbids. You may NOT declare done while `substratePass` is false (a critical / Absent enforcement / dirty portability remains) — the substrate is non-negotiable.**
 
 **Review-pattern logging (self-applied P19b):** append to `.planning/wc/{name}/LEARNINGS.md` after each DECIDE: which principle moved this iteration, the cheapest fix that moved it, and (if the user interjected) what they attended to. After 3+ iterations with a recurring drag-principle, propose encoding its fix as a default in the skill.
 
@@ -2193,39 +2208,39 @@ The auditor should note when a score reflects a **domain ceiling** vs a **fixabl
 
 The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It relied on the agent manually deciding to continue iterating. This is an honor system — the exact failure mode that audit-fix-loop was built to prevent.
 
-**What happened (March 19, 2026):** Agent ran Mode 2 audit (baseline 7.3), applied fixes, re-audited to 8.5, applied more fixes, re-audited to 9.2, then stopped and rationalized: "remaining 0.3 is spread across many principles at 9.0 — diminishing returns." The target was 9.5. The agent stopped because it was tired of iterating, not because the score met the threshold.
+**What happened (March 19, 2026):** Agent stopped at 8.5 with a critical still open, self-rationalizing "diminishing returns." The failure wasn't "stopped below a magic number" — it was **stopping while the substrate gate was still failing** (a critical outstanding) and without a `/goal` loop forcing a re-audit. The `/goal` loop + `substratePass` gate prevent exactly that: you cannot stop while a critical / Absent enforcement / dirty portability remains.
 
-**The structural fix:** `/goal` drives the iteration. A separate evaluator reads `.planning/SCORES.md` from the transcript and only marks the condition met when the score crosses 9.5. The fixer's opinion of whether 9.2 is "close enough" is irrelevant.
+**The structural fix:** `/goal` drives the iteration; a separate evaluator reads `.planning/SCORES.md` and marks done only when **`substratePass` is true AND the composite is flat at/above the calibrated ceiling**. This cuts BOTH failure modes: it won't let you stop with a substrate blocker, and it won't make you grind a flat composite toward an unreachable 9.5.
 
 ### Rationalization Table — Mode 3
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "9.2 is close enough to 9.5" | The threshold exists for a reason. 0.3 means real gaps remain. | Fix them. The score decides, not you. |
-| "The remaining gaps are domain characteristics" | Maybe, but prove it by having the auditor agree, not by self-declaring | Let the auditor score it. If it's truly a domain limit, the auditor will note it. |
-| "Diminishing returns on further iteration" | You don't know that. The last 0.3 might be one targeted fix. | Run the audit, see what's cheapest to fix, try it. |
-| "I'll run the audit manually instead of using `/goal`" | Manual loops have no enforcement. You'll stop early. You literally just did. | Set `/goal` with the condition pinned to SCORES.md. The evaluator decides. |
-| "Re-reading all files each iteration is wasteful" | Fresh-context audit is what makes the score trustworthy. Incremental audits miss regressions. | Full re-read every iteration. Independence > efficiency. |
+| "8.6 is below 9.5, keep grinding" | If `substratePass` is true and the composite is FLAT, 9.5 is unreachable noise — grinding it forces over-enforcement of creative steps (the anti-pattern). | Stop. Ship at the calibrated ceiling. Record the composite as the honest harsh reading. |
+| "substratePass is true so I'm done" (composite still climbing, not flat) | Not yet — a non-flat composite means cheap real gaps may remain. | One more pass on sub-9 medium gaps; stop once flat or no cheap real fix remains. |
+| "The critical is a domain characteristic / measurement artifact" | A critical keeps `substratePass` false — you cannot stop on it. But verify it first: a worktree's ambient `.planning/` SPEC can make traceability checks fire spuriously (see asymptote memory). | Confirm the critical is real against the actual files; fix it or, if it's a confirmed measurement artifact, neutralize the artifact — don't just ignore it. |
+| "I'll run the audit manually instead of using `/goal`" | Manual loops have no enforcement; you'll stop early. | Set `/goal` pinned to substratePass + flat. The evaluator decides. |
+| "Re-reading all files each iteration is wasteful" | Fresh-context audit is what makes the substrate trustworthy. | Full re-read every iteration (selective via onlyChecks after iter 1). |
 
 ### Red Flags — STOP If You Catch Yourself:
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| Running Mode 3 without `/goal` | Honor system — you'll stop early | Set `/goal` whose condition is pinned to SCORES.md >= 9.5 |
-| Auditing your own fixes | Rubber-stamping | Spawn fresh audit subagent |
-| Declaring "close enough" below 9.5 | Threshold violation | Keep iterating or escalate at max iterations |
-| Skipping the audit subagent "to save time" | The audit IS the value — without it, fixes are unverified | Full independent audit every iteration |
-| Stopping after 1-2 iterations without checking score | You don't know if you're done | Read SCORES.md, check against 9.5 |
+| Iterating to push a FLAT composite from ~9.0 toward 9.5 | The treadmill — the judge regenerates findings and the last mile rewards over-enforcement. | Stop once substratePass + flat. The composite ceiling is ~9.0, not 9.5. |
+| Declaring done with `substratePass` false | A critical / Absent enforcement / dirty portability is a real structural gap, not noise. | Keep iterating or escalate at the budget. |
+| Running Mode 3 without `/goal` | Honor system — you'll stop early. | Set `/goal` pinned to substratePass + composite≥9.0 + flat. |
+| Auditing your own fixes by hand | Rubber-stamping. | Re-run the wc-audit workflow (read-only reviewers, JS gate). |
+| Treating the composite as the gate | It's a ±0.2 LLM proxy with a drifting denominator. | The gate is `substratePass`; the composite is advisory + the flatness check. |
 
 #### Drive-Aligned Framing — Mode 3
 
 | Your Drive | Why You Cut Corners | What Actually Happens | The Drive You Failed |
 |------------|--------------------|-----------------------|---------------------|
-| **Helpfulness** | "Ship the fixes faster, skip the re-audit" | Unverified fixes ship broken enforcement. User discovers gaps when the workflow fails. | **Anti-helpful** |
-| **Competence** | "I can tell from the diff this fixes the gap" | Self-assessment is rubber-stamping. The auditor exists because you can't see your own blind spots. | **Incompetent** |
-| **Efficiency** | "Re-reading all files each iteration is wasteful" | Fresh-context audit catches regressions that incremental review misses. One regression undoes 3 fixes. | **Anti-efficient** |
-| **Approval** | "The user told me to keep climbing — I'll just ask whether to stop" | Asking each iteration IS the honor-system stop you were told to remove. The score decides; asking offloads the decision you were told to own. | **Lost approval** |
-| **Honesty** | "9.2 is close enough to 9.5" | The threshold exists for a reason. Declaring "close enough" below threshold is fabricating completion. | **Dishonest** |
+| **Helpfulness** | "Ship the fixes faster, skip the re-audit" | Unverified fixes ship broken enforcement; the user discovers a substrate gap in production. | **Anti-helpful** |
+| **Competence** | "I can tell from the diff this fixes the gap" | Self-assessment is rubber-stamping; the auditor exists because you can't see your blind spots. | **Incompetent** |
+| **Efficiency** | "Re-reading all files each iteration is wasteful" | Fresh-context audit catches regressions incremental review misses. | **Anti-efficient** |
+| **Approval** | "I'll grind to 9.5 because a bigger number looks better to the user" | You burn tokens on a treadmill and over-enforce creative steps, making the workflow worse. A flat 8.7 with substratePass beats a gamed 9.5. | **Lost approval** |
+| **Honesty** | "I'll call it 9.5-equivalent" or "I'll ignore the open critical" | Misrepresenting a noisy proxy, or shipping with a real substrate blocker, is fabricating completion. | **Dishonest** |
 
 ---
 

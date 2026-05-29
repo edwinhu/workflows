@@ -329,9 +329,14 @@ for (const c of ARCH_CLUSTERS) {
   }
 }
 
-// Composite = mean of scores for principles that are neither EXEMPT nor a justified domain ceiling (Mode 3 §4).
-const counted = ALL_IDS.filter(id => !EXEMPT.has(id) && !scoreById[id].domainCeiling)
-const excluded = ALL_IDS.filter(id => EXEMPT.has(id) || scoreById[id].domainCeiling)
+// Composite = mean over ALL non-EXEMPT scored principles. We intentionally do NOT drop LLM-flagged
+// `domainCeiling` principles from the DENOMINATOR — that let the denominator drift run-to-run (a top cause of
+// composite noise; see project_wc_mode3_asymptote). Only the DETERMINISTIC EXEMPT set (meta-tool P01/P06) is
+// excluded. domainCeiling is now display-only annotation. The composite is advisory anyway — the substrate gate
+// below (criticals/enforcement/portability) is the real convergence signal.
+const counted = ALL_IDS.filter(id => !EXEMPT.has(id))
+const excluded = ALL_IDS.filter(id => EXEMPT.has(id))
+const ceilingNoted = ALL_IDS.filter(id => !EXEMPT.has(id) && scoreById[id].domainCeiling)
 const composite = counted.length ? Math.round((counted.reduce((a, id) => a + scoreById[id].score, 0) / counted.length) * 100) / 100 : 0
 
 // Findings: dimension findings + confirmed principle gaps (refuted ones already dropped via gap="").
@@ -352,7 +357,17 @@ for (const hv of (port?.hookCommandViolations || [])) findings.push({ severity: 
 findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])
 const criticalCount = findings.filter(f => f.severity === 'critical').length
 
-const overallPass = counted.length > 0 && composite >= THRESHOLD && criticalCount === 0
+// ── Substrate gate (deterministic — the real convergence signal per the Mode-3 doctrine) ─────────────
+// The composite is a noisy LLM proxy (±0.2, regenerating findings). The trustworthy, MONOTONIC signals are:
+// zero criticals, no enforcement pattern Absent where a phase needs it, and clean path portability. overallPass
+// keys on this substrate AND composite >= THRESHOLD (calibrated ceiling, default 9.0 — NOT 9.5). The skill's Mode 3
+// loop additionally requires the composite to be FLAT across iterations before declaring done (the workflow can't
+// see prior runs). Weak enforcement is advisory (soft) — only Absent (a missing required pattern) blocks.
+const enfDim = byDim['enforcement-checklist']
+const enfAbsent = (enfDim?.patterns || []).filter(p => p.status === 'Absent').map(p => p.pattern)
+const portStatus = port ? port.status : 'n/a'
+const substratePass = criticalCount === 0 && enfAbsent.length === 0 && (portStatus === 'Clean' || portStatus === 'n/a')
+const overallPass = substratePass && counted.length > 0 && composite >= THRESHOLD
 const verdict = overallPass ? 'PASS' : 'NEEDS WORK'
 
 // ── Render the AUDIT.md-format report ──────────────────────────────────────────
@@ -368,7 +383,7 @@ const PRINCIPLE_NAMES = {
 const PRINCIPLE_ORDER = ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P19b', 'P20', 'P21']
 const archRows = PRINCIPLE_ORDER.filter(id => scoreById[id]).map(id => {
   const p = scoreById[id]
-  const ex = EXEMPT.has(id) ? ' (EXEMPT — meta-tool)' : (p.domainCeiling ? ' (domain ceiling — excluded)' : '')
+  const ex = EXEMPT.has(id) ? ' (EXEMPT — meta-tool)' : (p.domainCeiling ? ' (domain ceiling — noted, kept in composite)' : '')
   const note = (p.gap || p.evidence || '').replace(/\|/g, '\\|').slice(0, 140)
   return `| ${id} | ${PRINCIPLE_NAMES[id] || id} | ${p.score}${ex} | ${note} |`
 })
@@ -408,14 +423,17 @@ const scoreTable = [
   `| Path portability | ${port ? port.status : 'n/a'} | ${port && port.status === 'Clean' ? '✅' : '❌'} |`,
   `| Dynamic-workflow candidacy | ${cand ? `${(cand.candidates || []).filter(c => c.recommend === 'strong' || c.recommend === 'moderate').length} open` : 'n/a'} | ${cand && !(cand.candidates || []).some(c => c.recommend === 'strong') ? '✅' : '⚠️'} |`,
   `| Critical findings | ${criticalCount} | ${criticalCount === 0 ? '✅' : '❌'} |`,
-  `| **Overall** | composite ${composite} vs ${THRESHOLD}; ${criticalCount} critical | ${overallPass ? '✅ PASS' : '❌ NEEDS WORK'} |`,
+  `| **Substrate gate** | 0 crit / ${enfAbsent.length} enf-Absent / portability ${portStatus} | ${substratePass ? '✅' : '❌'} |`,
+  `| **Overall** | substrate ${substratePass ? 'clean' : 'FAILED'} + composite ${composite} vs ${THRESHOLD} | ${overallPass ? '✅ PASS' : '❌ NEEDS WORK'} |`,
 ].join('\n')
 
 const reportMarkdown = [
   `## Audit: ${TARGET}${disc.isMetaTool ? ' (meta-tool — P01/P06 exempt)' : ''}`,
   ``,
-  `**Composite:** ${composite} / 10 &nbsp;·&nbsp; **Verdict:** ${verdict} &nbsp;·&nbsp; **Threshold:** ${THRESHOLD} &nbsp;·&nbsp; **Critical findings:** ${criticalCount}`,
-  excluded.length ? `\n_Excluded from composite (${excluded.length}): ${excluded.join(', ')}._` : '',
+  `**Verdict:** ${verdict} &nbsp;·&nbsp; **Substrate gate:** ${substratePass ? '✅ clean' : '❌ ' + criticalCount + ' crit / ' + enfAbsent.length + ' enf-Absent / portability ' + portStatus} &nbsp;·&nbsp; **Composite:** ${composite} / 10 (advisory; threshold ${THRESHOLD}) &nbsp;·&nbsp; **Critical:** ${criticalCount}`,
+  `\n_The substrate gate (0 critical · no enforcement Absent · portability Clean) is the convergence signal. The composite is an advisory ±0.2 LLM proxy — see project_wc_mode3_asymptote; do not chase it past the substrate gate._`,
+  excluded.length ? `\n_Excluded from composite (deterministic meta-tool exemptions): ${excluded.join(', ')}._` : '',
+  ceilingNoted.length ? `_Domain-ceiling-flagged (kept in composite, not penalized as gaps): ${ceilingNoted.join(', ')}._` : '',
   ``,
   `### Architecture Scores (P01-P21)`,
   archTable,
@@ -438,12 +456,14 @@ log(overallPass
   : `❌ ${TARGET} NEEDS WORK — composite ${composite}/10, ${criticalCount} critical / ${findings.length} total finding(s)`)
 
 return {
-  overallPass,
-  composite,
+  overallPass,                // substratePass AND composite >= THRESHOLD
+  substratePass,              // the deterministic convergence gate — the skill's Mode 3 loop keys on this + flatness
+  substrate: { criticalCount, enforcementAbsent: enfAbsent, portability: portStatus },
+  composite,                  // advisory ±0.2 LLM proxy — do NOT chase past the substrate gate
   verdict,
   threshold: THRESHOLD,
   isMetaTool: disc.isMetaTool,
-  summary: { composite, criticalCount, totalFindings: findings.length, scored: counted.length, excluded: excluded.length },
+  summary: { composite, substratePass, criticalCount, enfAbsent: enfAbsent.length, totalFindings: findings.length, scored: counted.length, ceilingNoted: ceilingNoted.length },
   scoreTable,                 // dimension-level gate table
   reportMarkdown,             // full AUDIT.md body the skill writes verbatim
   candidacyTable,             // the Dynamic-Workflow Migration Candidates table
