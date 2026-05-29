@@ -328,7 +328,7 @@ Report: what you did, key outputs observed, any data quality or schema issues fo
 ## Step 2: Verify Outputs (Post-Subagent Boundary)
 
 <EXTREMELY-IMPORTANT>
-**After analyst returns, you are at the post-subagent boundary. Constraints C5 from ds-common-constraints.md apply.**
+**After analyst returns, you are at the post-subagent boundary. Constraint C2 (Post-Subagent Boundary) from ds-common-constraints.md applies.**
 
 **ALLOWED (Verification):**
 - [ ] Read the analyst's returned report/summary

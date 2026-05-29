@@ -336,7 +336,7 @@ Before claiming any fix is done, execute this gate:
 ## Post-Subagent Boundary
 
 <EXTREMELY-IMPORTANT>
-**After a fix agent returns, constraints C5 from ds-common-constraints.md apply.**
+**After a fix agent returns, constraint C2 (Post-Subagent Boundary) from ds-common-constraints.md applies.**
 
 **ALLOWED:** Read the agent's returned report. Check LEARNINGS.md. Confirm file existence with `ls`.
 **FORBIDDEN:** Read project source code, run analysis code, inspect data files, Grep/Glob project files.
@@ -346,7 +346,7 @@ Before claiming any fix is done, execute this gate:
 
 ## Topic Change Protocol
 
-**If user sends an off-topic message during ds-fix, follow C6 from ds-common-constraints.md:**
+**If user sends an off-topic message during ds-fix, follow the Topic Change Protocol (constraints/ds-topic-change-protocol.md):**
 
 1. Announce: "Pausing ds-fix to address your request."
 2. Handle the request.

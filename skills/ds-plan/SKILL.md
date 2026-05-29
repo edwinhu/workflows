@@ -210,6 +210,11 @@ Task(
     subagent_type="general-purpose",
     description="Profile dataset 1",
     run_in_background=true,
+    # STRUCTURAL read-only enforcement — not advisory prose. Profiling is a
+    # read-only verification step; Write/Edit/NotebookEdit are withheld at the
+    # tool layer so a profiler CANNOT mutate pipeline files even if the prompt
+    # is ignored (P17 — agent tool restrictions are structural, never prose).
+    allowed_tools=["Read", "Glob", "Grep", "Bash"],
     prompt="""
 Profile this dataset and return a data quality report.
 
@@ -230,7 +235,7 @@ Output format:
 - List of data quality issues found
 - Recommendations for cleaning
 
-Tools denied: Write, Edit, NotebookEdit (read-only profiling)
+Read-only profiling: you have Read/Glob/Grep/Bash only (enforced via allowed_tools).
 """)
 
 Task(

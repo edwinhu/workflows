@@ -153,17 +153,43 @@ This runs all DS constraint check scripts (determinism, join audits, idempotency
 
 **Checkpoint type:** decision (user confirms results — cannot auto-advance)
 
-Before making ANY completion claim:
+Before making ANY completion claim, follow this flowchart.
+
+**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.**
 
 ```
-1. RE-RUN    → Execute fresh, not from cache
-2. CHECK     → Compare outputs to success criteria
-3. REPRODUCE → Same inputs → same outputs
-4. ASK       → User acceptance interview
-5. CLAIM     → Only after steps 1-4
+        ┌──────────────────────────────┐
+        │ 1. RE-RUN (fresh, not cached) │
+        └──────────────┬───────────────┘
+                       ▼
+        ┌──────────────────────────────┐
+        │ 2. CHECK vs success criteria  │
+        └──────────────┬───────────────┘
+                  pass? │
+            ┌───── no ──┴── yes ─────┐
+            ▼                        ▼
+   ┌─────────────────┐   ┌──────────────────────────┐
+   │ NEEDS WORK →    │   │ 3. REPRODUCE             │
+   │ log + dispatch  │   │ (same inputs→same outputs)│
+   │ fix subagent    │   └────────────┬─────────────┘
+   └────────┬────────┘        match?  │
+            │           ┌──── no ──────┴── yes ───┐
+            │           ▼                         ▼
+            │  ┌─────────────────┐   ┌─────────────────────────┐
+            │  │ NEEDS WORK →    │   │ 4. ASK — user           │
+            │  │ non-determinism │   │ acceptance interview    │
+            │  │ is a defect     │   └───────────┬─────────────┘
+            │  └────────┬────────┘    accept?     │
+            │           │      ┌── no/partial ────┴── yes ──┐
+            │           │      ▼                            ▼
+            │           │  ┌──────────────────┐  ┌────────────────────┐
+            └───────────┴─▶│ loop: ds-fix /   │  │ 5. CLAIM COMPLETE  │
+                           │ ds-implement,    │  │ (only after 1-4)   │
+                           │ then re-verify   │  └────────────────────┘
+                           └──────────────────┘
 ```
 
-**Skipping any step is not verification.**
+**Skipping any step is not verification.** Reaching step 5 without passing 1-4 is a false completion claim.
 
 ## Visual Diagnostics for Verification
 
