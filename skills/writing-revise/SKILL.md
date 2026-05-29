@@ -415,7 +415,7 @@ After REVIEW.md issues are resolved AND the regex sweep (`workflows:ai-anti-patt
 5. Loop body (one turn each):
    a. Dispatch fresh workflows:writing-prose-reviewer (read-only Read/Grep/Glob)
    b. Read SCORES.md latest row → check threshold + iter + regression alarm
-   c. If CONTINUE: uv run --with pyyaml --with lxml python3 scripts/transactional_fix.py \\
+   c. If CONTINUE: uv run --with pyyaml --with lxml python3 ${CLAUDE_SKILL_DIR}/scripts/transactional_fix.py \\
         --draft <path> --state-dir .planning/prose-rhythm --iteration N
    d. End turn (/goal refires)
 6. Exit on COMPLETE (overall ≥ threshold) or ESCALATE (iter ≥ max_iter)
@@ -449,7 +449,7 @@ showing `status: PASSED` before the verdict can be COMPLETE.
 Before declaring COMPLETE, run Stage 3:
 
 ```bash
-uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/check_section_cites.py --all
+uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/check_section_cites.py --all
 ```
 
 Then verify each section:

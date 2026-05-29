@@ -281,7 +281,7 @@ sources titled by their bibkeys, build the source inventory now so drafting
 can disambiguate same-author works:
 
 ```bash
-uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_source_inventory.py
+uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/nlm_source_inventory.py
 ```
 
 This writes `references/source_summaries.md` — a per-bibkey thesis,

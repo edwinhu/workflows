@@ -237,7 +237,7 @@ For each section with a completed outline, in order:
      `references/constraints/cite-fidelity-nlm-grounding.md`.
 
      ```bash
-     uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_footnote_pull.py \
+     uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/nlm_footnote_pull.py \
        --claim "TEXT" --keys k1,k2,k3
      ```
 4. **Save to drafts/**: `Write("drafts/[Section] (Draft).md", content)`
