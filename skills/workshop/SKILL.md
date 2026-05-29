@@ -310,7 +310,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
      Return: VERDICT (APPROVED | ISSUES), then a bullet list of any mismatches or
      missing inventory items with paper page refs.")
    ```
-   If the reviewer returns ISSUES → fix SOURCES.md → re-dispatch. Only write the gate artifact once it returns APPROVED. **Main chat owns fixing; the subagent only reviews** (verification ≠ investigation — do not re-extract the whole paper yourself, fix the specific gaps the reviewer names). The `Explore` subagent type is **structurally read-only** (its tool set excludes Edit/Write/NotebookEdit), so read-only here is enforced by construction, not just by the prompt.
+   If the reviewer returns ISSUES → fix SOURCES.md → re-dispatch. Only write the gate artifact once it returns APPROVED. **Bound the loop:** stop after 3 fix-and-re-dispatch turns; if it still returns ISSUES, escalate to the user with the outstanding gaps rather than looping indefinitely. **Main chat owns fixing; the subagent only reviews** (verification ≠ investigation — do not re-extract the whole paper yourself, fix the specific gaps the reviewer names). The `Explore` subagent type is **structurally read-only** (its tool set excludes Edit/Write/NotebookEdit), so read-only here is enforced by construction, not just by the prompt.
 
 ### Gate: Sources Gathered
 
@@ -404,7 +404,7 @@ Sources gathered and verified. Paper metadata extracted from source document.
      exist in .planning/SOURCES.md. Return: VERDICT (APPROVED | ISSUES) then a bullet
      list of any slide missing an ID, any timing mismatch, or any unknown ID.")
    ```
-   If ISSUES → fix OUTLINE.md → re-dispatch until APPROVED. Then proceed to user approval. This is a completeness check, not a content judgment — the user still owns the creative call on structure. The `Explore` subagent type is **structurally read-only** (no Edit/Write/NotebookEdit in its tool set) — read-only by construction, not just by prompt.
+   If ISSUES → fix OUTLINE.md → re-dispatch. **Bound the loop:** stop after 3 fix-and-re-dispatch turns; if still ISSUES, present the outstanding gaps to the user alongside the outline rather than looping indefinitely. Then proceed to user approval. This is a completeness check, not a content judgment — the user still owns the creative call on structure. The `Explore` subagent type is **structurally read-only** (no Edit/Write/NotebookEdit in its tool set) — read-only by construction, not just by prompt.
 
 6. **Present outline to user for approval.**
 
