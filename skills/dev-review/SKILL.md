@@ -35,6 +35,18 @@ Before starting this phase, check remaining context:
 
 At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
 
+### The Iron Law of Topic Changes
+
+**If the user sends a message NOT about the current review, announce the loop pause before responding — then resume.** dev-review runs a REVIEW_STATE.md fix-and-re-review loop; silently abandoning it (as dev-debug:121-139 documents) drops the structure the user invoked.
+
+**Protocol:**
+1. Announce: "Pausing the dev-review loop to address your request."
+2. Handle the off-topic request (normal tools allowed — you're outside the loop).
+3. Announce: "Resuming dev-review. Re-reading .planning/REVIEW_STATE.md for current state."
+4. Re-read `.planning/REVIEW_STATE.md` and continue the review/fix iteration.
+
+If the message could be EITHER a new topic OR part of the review, ask before assuming — do NOT silently abandon the loop.
+
 ## Contents
 
 - [Prerequisites - Test Output Gate](#prerequisites---test-output-gate)

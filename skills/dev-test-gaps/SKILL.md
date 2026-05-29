@@ -19,6 +19,18 @@ Announce: "Using dev-test-gaps (Phase 5.5) to validate test coverage against req
 
 Read `${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`.
 
+### Context Monitoring
+
+Before spawning each batch of test-gap-auditors, check remaining context (a large requirement set + parallel auditors can exhaust it):
+
+| Level | Remaining | Action |
+|-------|-----------|--------|
+| Normal | >35% | Spawn next auditor(s) |
+| Warning | 25-35% | Finish the current auditor, write VALIDATION.md (status: draft), then invoke dev-handoff |
+| Critical | ≤25% | Write VALIDATION.md immediately, invoke dev-handoff — resume fresh |
+
+At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
+
 ## Contents
 
 - [The Iron Law of Test-Only](#the-iron-law-of-test-only)
@@ -230,6 +242,20 @@ Attempt 3: Fixed test → Run
   PASS → Done (record as gap filled)
   FAIL → Escalate (max iterations)
 ```
+
+### Post-Subagent Boundary (after auditors return)
+
+<EXTREMELY-IMPORTANT>
+**When the test-gap-auditors return, you VERIFY their work — you do not investigate or re-debug it.** (Mirrors dev-implement's orchestrator boundary and C1b.)
+
+| Orchestrator CAN (verification) | Orchestrator CANNOT (investigation — delegate it) |
+|----------------------------------|----------------------------------------------------|
+| Read the test file(s) the auditor wrote; run the test command | Debug a failing test's logic yourself |
+| Record PASS / FAIL(escalated) into the coverage map | `grep`/`rg` implementation source to chase the bug |
+| Re-dispatch an auditor for a still-MISSING requirement | Fix implementation code (that is dev-implement's job) |
+
+**If an auditor escalated an impl bug, record FAIL(escalated) — do NOT investigate or fix it here.**
+</EXTREMELY-IMPORTANT>
 
 ## Phase 6: Produce VALIDATION.md
 

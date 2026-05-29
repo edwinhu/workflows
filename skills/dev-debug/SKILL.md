@@ -154,6 +154,14 @@ Started: [timestamp]
 (subagents will append here)
 ```
 
+**Cross-session re-entry check (FIRST).** Before initializing, check for a prior handoff:
+
+```bash
+test -f .planning/HANDOFF.md && echo "HANDOFF_EXISTS" || echo "NO_HANDOFF"
+```
+
+If `HANDOFF_EXISTS`: read `.planning/HANDOFF.md`, summarize the recorded debug state to the user, and resume from it (then delete the consumed HANDOFF.md). This mirrors the entry-skill resume detection (dev/SKILL.md:17-67) so a `/dev-debug` re-entry after a handoff does not silently start a fresh loop.
+
 If .planning/HYPOTHESES.md already exists (resumed session), read it to understand current state.
 
 ### Context Monitoring
