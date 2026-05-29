@@ -10,6 +10,13 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
+          command: >-
+            GATE_ARTIFACT=.planning/SOURCES_VERIFIED.md
+            GATE_STATUS=VERIFIED
+            GATE_DESCRIPTION="Phase 1 sources gate"
+            GATE_REMEDY="Return to Phase 1 (workshop skill) and complete source gathering before editing any files"
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+        - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
   PostToolUse:
     - matcher: "Edit"
@@ -47,11 +54,80 @@ Load ALL Typst conventions before touching any files:
 
 This skill may run in a new session. Load ALL needed context before touching any files.
 
+### Session Resume Detection
+
+Check if `.planning/HANDOFF.md` exists:
+1. **If found:** Read it, show status, ask: "Resume from the recorded revision state, or start fresh?"
+2. **If not found:** Proceed to Step 1.
+
+### Iteration topology & flow
+
+```
+[Step 1: Load Context] → [Step 2: Diagnose]
+        → [Step 3: Apply edits  (+ workshop-verify /goal loop, max 3 turns, for content/structure)]
+        → [Step 4: Verify (compile + widow + check-all.py)]
+              ├─ pass → report to user
+              └─ unresolved after 3 cycles → ESCALATE to user
+```
+
+| Step | Topology | Exit condition |
+|------|----------|----------------|
+| Step 3 (content/structure change) | `serial` edit → `parallel` review (workshop-verify under `/goal`, **max 3 turns**) | `overallPass=true` → Step 4; else escalate |
+| Step 3 (formatting-only fast path) | `one-shot` edit | edit applied → Step 4 |
+| Step 4 (verify) | `serial` (compile → widow → check-all.py) | all pass; else fix (max 3 cycles) then escalate |
+
+**The flow diagram above IS the authoritative spec for step order and gating. If prose below conflicts with it, the diagram wins.**
+
+**After completing each step, IMMEDIATELY proceed to the next step.** Do NOT ask "should I continue?" between steps 1–4. Pausing between steps is procrastination: you lose context, the user loses momentum, and the verification gate gets skipped. Pause only at the explicit checkpoints below.
+
+### Checkpoint types
+
+| Point | Type | Behavior |
+|-------|------|----------|
+| R4 structural change detected | decision | STOP — present to user, get approval before re-entering Phase 3 |
+| Step 3 artifact-review gate (content/structure) | human-verify | Auto-advanceable (independent workshop-verify reviewer) |
+| Step 4 revision verified | human-verify | Auto-advanceable; report to user at end |
+
+### Context Monitoring
+
+A revision can itself be multi-turn and context-intensive (especially a content/structure change driving a `/goal` loop). Before starting Step 3 edits or any `/goal` loop, check context availability:
+
+| Level | Remaining Context | Action |
+|-------|------------------|--------|
+| Normal | >35% | Proceed normally |
+| Warning | 25–35% | Complete the current edit, then write `.planning/HANDOFF.md` and pause |
+| Critical | ≤25% | Write `.planning/HANDOFF.md` immediately — do not start a new edit or `/goal` loop |
+
+`HANDOFF.md` template (same schema as the workshop entry skill):
+```yaml
+---
+workflow: workshop-revise
+status: context_exhaustion
+last_updated: [timestamp]
+---
+## Current State
+[Which step; what edit is in progress]
+## Completed Work
+- [Edits applied so far, files touched]
+## Remaining Work
+- [Edits left + verification not yet run]
+## Decisions Made
+[User decisions captured during this revision]
+## Rejected Approaches
+[Edits tried and reverted, with reasons — so the resume does not retry them]
+## Blockers
+[Any unresolved blocker the next session must address, or "none"]
+## Next Action
+[Specific enough to resume immediately]
+```
+
+**Pushing through context exhaustion to "finish the revision" ships degraded edits the presenter debugs at the podium. Writing the handoff is the helpful move, not the slow one.**
+
 ### Step 1: Load Context
 
 1. **Read `.planning/SOURCES.md`** — paper metadata (title, authors, affiliations)
 2. **Read `.planning/OUTLINE.md`** — section structure and timing
-3. **Load constraints:** `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+3. **Constraints are already loaded** — the bang-invoked auto-loader at the top of this skill fires at skill-load time (no separate load needed). If you are resuming in a fresh session and skipped that, re-run it: `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
 4. **Read existing `slides.typ`** — current slide content
 5. **Read existing `notes.typ`** — current speaker notes
 
@@ -116,6 +192,9 @@ These apply to EVERY edit, no matter how small:
 | "Notes don't need updating for this slide change" | Out-of-sync notes cause confusion at the podium | Update notes to match slide changes |
 | "Sub-bullet spacing is cosmetic" | Tight sub-bullets are unreadable when projected | Add blank lines between sub-bullets |
 | "Table inset 5pt saves space" | 5pt is illegible at 16:9 projection | Use 10pt minimum |
+| "Only text changed — skip widow detection" | Widow positions shift with any content reflow | Re-run widow detection after every compile |
+| "It's formatting-only — skip the workshop-verify loop" | Formatting edits cascade into spacing/overflow violations only the checker catches | Run the gate; the JS verdict decides |
+| "User only asked about slides — notes can stay" | Out-of-sync notes confuse the presenter at the podium | Update notes to match the slide change |
 
 ### Deviation Rules (revision edits)
 
@@ -148,6 +227,29 @@ For content or structural changes (NOT simple formatting fixes), the edited deck
 
 **The workflow's reviewers are read-only by construction; the JS gate (`overallPass`) is authoritative.** Do not hand-wave the gate to true — fix a finding and let the next run recompute.
 
+### Post-Subagent Enforcement
+
+After `workshop-verify` returns, main chat stays on the verification side of this boundary:
+
+| Verification (main chat CAN do) | Investigation (main chat CANNOT do) |
+|----------------------------------|--------------------------------------|
+| Read the workflow's `findings` / `scoreTable` | Re-read slides.typ/notes.typ to "double-check" the gate |
+| Re-invoke the workflow (selectively, `onlyChecks`) | Override the JS gate ("the workflow was too strict") |
+| Dispatch a fix subagent for reported `findings` | "Quick fix" an issue the workflow did not report |
+| Proceed to Step 4 once `overallPass=true` | Declare the revision clean without a passing gate |
+
+**The JS gate (`overallPass`) is authoritative.** If you disagree with a result, fix a finding and let the next run recompute — never hand-wave the gate to true.
+
+#### Topic-Change Protocol (mid-`/goal` loop)
+
+If the user interjects with an off-topic request while the `/goal workshop-verify` loop is active:
+
+1. **Announce the pause:** "Pausing the workshop-verify loop (turn N) to handle your request."
+2. **Handle** the request.
+3. **Announce the resume:** "Resuming the workshop-verify loop from turn N" and re-fire the `/goal`.
+
+Never silently abandon the loop. An off-topic message is not permission to stop verifying.
+
 ### Step 4: Verify
 
 1. **Compile both files:**
@@ -157,7 +259,7 @@ For content or structural changes (NOT simple formatting fixes), the edited deck
 
 2. **Run PDF widow detection** (mandatory after every compile):
    ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" slides.pdf
+   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" "[presentation directory]/slides.pdf"
    ```
    - Exit code 1 = widows found → fix → recompile → re-run
    - Exit code 0 = clean → proceed
@@ -213,6 +315,21 @@ Changes applied:
 - Visual-verify: [N diagrams verified / N/A]
 - Source fidelity: [verified / N claims flagged]
 ```
+
+### Record the revision (state + review pattern)
+
+The midpoint leaves a durable record so a later session can see what changed and so recurring preferences accumulate:
+
+1. **Append a revision record to `.planning/LEARNINGS.md`** (create it if absent):
+   ```markdown
+   ## Revision — [date]
+   - Request: [what the user asked to change]
+   - Files touched: [slides.typ / notes.typ / SOURCES.md / OUTLINE.md]
+   - Deviations: [R1: X, R2: Y, R3: Z]
+   - Gate: [overallPass / formatting-only fast path]
+   - Reviewed by: [how the user inspected the result — observe, don't infer]
+   ```
+2. **Observe → record → offer:** if the **same** kind of revision request recurs 3+ times across sessions (e.g. "shrink the results table" every time), offer to encode it as a default — but only after the pattern proves itself. Do NOT pre-build automation for a one-off.
 
 ### Red Flags — STOP If You Catch Yourself:
 

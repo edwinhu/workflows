@@ -71,7 +71,18 @@ gather       → structure     → generate      → verify
   created
 ```
 
-**Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.**
+**This diagram IS the authoritative spec for phase order and gating. If any prose below conflicts with it, the diagram wins.** Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.
+
+### Iteration topology (per phase)
+
+| Phase | Topology | Exit condition |
+|-------|----------|----------------|
+| Phase 1 (gather) | `one-shot` (sequential extraction + 1 read-only review subagent) | SOURCES.md reviewer returns APPROVED → SOURCES_VERIFIED.md written |
+| Phase 2 (structure) | `one-shot` + decision gate (1 review subagent, then user approval) | OUTLINE reviewer APPROVED **and** user approves → OUTLINE_APPROVED.md written |
+| Phase 3 (generate) | `serial` drafting → `parallel` review (workshop-verify fan-out under `/goal`, **max 3 turns**) | `overallPass=true` → SLIDES_REVIEWED.md written; else escalate after 3 turns |
+| Phase 4 (verify) | `parallel` review (full workshop-verify under `/goal`, **max 3 turns**) | `overallPass=true` → VALIDATION.md written; else escalate after 3 turns |
+
+`team` topology is not used — no phase needs concurrent role-specialized agents sharing state.
 
 After completing each phase, IMMEDIATELY proceed to the next phase. Do not pause for user approval except where explicitly required (Phase 2: user approves outline).
 
@@ -118,6 +129,12 @@ last_updated: [timestamp]
 ## Decisions Made
 [Any user decisions captured — structure proportions, venue, etc.]
 
+## Rejected Approaches
+[Approaches tried and discarded, with reasons — so the resume does not relitigate dead ends]
+
+## Blockers
+[Any unresolved blocker the next session must address before proceeding, or "none"]
+
 ## Next Action
 [Specific enough to start immediately — e.g., "Write notes.typ sections 3-5 following OUTLINE.md"]
 ```
@@ -149,6 +166,8 @@ provides: "slides.typ, notes.typ, slides.pdf, notes.pdf"
 affects: "presentation/ directory"
 ---
 ```
+
+**`.planning/ACTIVE_WORKFLOW.md` is the live state file** — update its `phase`/`phase_name` at every gate transition (Phase 1→2→3→4), not just at startup. A stale `phase: 1` after Phase 3 means a resuming session restarts from the wrong place. The per-phase gate artifacts (SOURCES_VERIFIED / OUTLINE_APPROVED / SLIDES_REVIEWED / VALIDATION) are the immutable completion records; ACTIVE_WORKFLOW.md is the moving cursor.
 
 ---
 
@@ -280,11 +299,25 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
    - [list or "none found"]
    ```
 
+9. **Independent SOURCES.md review (read-only subagent).** SOURCES.md is the authoritative evidence artifact for the whole presentation — do not self-certify it. Dispatch ONE fresh read-only subagent (Read/Grep/look-at only) to check it against the paper:
+   ```
+   Task(subagent_type="Explore", prompt="READ-ONLY review. Do NOT edit any file.
+     Compare .planning/SOURCES.md against the source paper at [paper path].
+     Verify: (1) title/subtitle/authors/affiliations match the paper's title page
+     exactly (flag any that look inferred from the filename); (2) every figure,
+     table, and key numeric result in the paper is enumerated with an F/T/R/A ID;
+     (3) no inventory item cites a figure/table/number absent from the paper.
+     Return: VERDICT (APPROVED | ISSUES), then a bullet list of any mismatches or
+     missing inventory items with paper page refs.")
+   ```
+   If the reviewer returns ISSUES → fix SOURCES.md → re-dispatch. Only write the gate artifact once it returns APPROVED. **Bound the loop:** stop after 3 fix-and-re-dispatch turns; if it still returns ISSUES, escalate to the user with the outstanding gaps rather than looping indefinitely. **Main chat owns fixing; the subagent only reviews** (verification ≠ investigation — do not re-extract the whole paper yourself, fix the specific gaps the reviewer names). The `Explore` subagent type is **structurally read-only** (its tool set excludes Edit/Write/NotebookEdit), so read-only here is enforced by construction, not just by the prompt.
+
 ### Gate: Sources Gathered
 
 - [ ] Paper metadata extracted via look-at (NOT inferred)
 - [ ] Paper inventory completed (figures, tables, key results, arguments)
 - [ ] SOURCES.md written with title, authors, affiliations, AND full inventory
+- [ ] Independent read-only subagent reviewed SOURCES.md → APPROVED
 - [ ] Theme symlinks created (templates/, assets/)
 - [ ] Related materials searched (~/areas/, notes, gdrive)
 
@@ -304,6 +337,11 @@ inventory_count:
   tables: [N]
   results: [N]
   arguments: [N]
+key_files:
+  created: [.planning/SOURCES.md, .planning/SOURCES_VERIFIED.md]
+  modified: [presentation/templates/]
+deviations: {r1: 0, r2: 0, r3: 0}
+one_liner: "Sources gathered, inventory built, independently reviewed → APPROVED."
 ---
 Sources gathered and verified. Paper metadata extracted from source document.
 ```
@@ -356,7 +394,19 @@ Sources gathered and verified. Paper metadata extracted from source document.
    ...
    ```
 
-5. **Present outline to user for approval.**
+5. **Independent OUTLINE.md review (read-only subagent) — before showing the user.** Don't make the user catch structural gaps. Dispatch ONE fresh read-only subagent (Read/Grep only) to check OUTLINE.md against its spec:
+   ```
+   Task(subagent_type="Explore", prompt="READ-ONLY review. Do NOT edit any file.
+     Check .planning/OUTLINE.md for: (1) every slide line cites at least one F/T/R/A
+     inventory ID; (2) per-part minute allocations sum to the stated total time;
+     (3) every slide names a content source; (4) the part structure reflects the
+     user's requested proportions (stated in OUTLINE.md). Cross-check inventory IDs
+     exist in .planning/SOURCES.md. Return: VERDICT (APPROVED | ISSUES) then a bullet
+     list of any slide missing an ID, any timing mismatch, or any unknown ID.")
+   ```
+   If ISSUES → fix OUTLINE.md → re-dispatch. **Bound the loop:** stop after 3 fix-and-re-dispatch turns; if still ISSUES, present the outstanding gaps to the user alongside the outline rather than looping indefinitely. Then proceed to user approval. This is a completeness check, not a content judgment — the user still owns the creative call on structure. The `Explore` subagent type is **structurally read-only** (no Edit/Write/NotebookEdit in its tool set) — read-only by construction, not just by prompt.
+
+6. **Present outline to user for approval.**
 
 **Producing an outline from memory instead of the paper's structure means the presentation won't match the paper. The user discovers misaligned sections during Phase 3, requiring rework of both the outline AND the slides. Getting the structure right here saves hours downstream.**
 
@@ -387,6 +437,11 @@ affects: ".planning/OUTLINE.md"
 total_time: [N] minutes
 section_count: [N]
 slide_count: [N]
+key_files:
+  created: [.planning/OUTLINE.md, .planning/OUTLINE_APPROVED.md]
+  modified: []
+deviations: {r1: 0, r2: 0, r3: 0, r4: 0}
+one_liner: "Outline reviewed (subagent APPROVED) and user-approved → ready for generation."
 ---
 Outline approved by user. Structure: [brief summary of proportions].
 ```
@@ -518,6 +573,8 @@ If you wrote slides.typ or notes.typ WITHOUT having read the paper (Phase 1), DE
 | **R4: Structural** | Outline restructuring, section reordering, changing presentation proportions | STOP → present to user → track `[R4]` | Ask user |
 
 **Priority:** R4 (STOP) > R1-R3 (auto) > unsure = R4
+
+**Blocker escalation:** if an R3 blocker (font/package conflict, version incompatibility) cannot be resolved in **one** auto-fix attempt, STOP and present the user three options: **(1) retry** with a different approach, **(2) skip** the blocked element and note it in the gate artifact, or **(3) stop** and await user action. Do not silently loop on an unresolvable blocker.
 
 After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
 
@@ -657,6 +714,16 @@ After `workshop-verify` returns, main chat follows these boundaries:
 - If `overallPass` is false → fix `findings` via subagent → re-invoke workflow (max 3 turns under `/goal`)
 - If `overallPass` is true → write the gate artifact and proceed to Phase 4
 
+#### Topic-Change Protocol (mid-`/goal` loop)
+
+If the user interjects with an off-topic request while the `/goal workshop-verify` loop is active (Phase 3 review gate or Phase 4 final gate):
+
+1. **Announce the pause:** "Pausing the workshop-verify loop (turn N) to handle your request."
+2. **Handle** the request.
+3. **Announce the resume:** "Resuming the workshop-verify loop from turn N" and re-fire the `/goal`.
+
+Never silently abandon the loop. An off-topic message is not permission to stop verifying — the gate still has to reach `overallPass=true`.
+
 **Structural gate artifact:** After the workflow returns `overallPass=true`, write `.planning/SLIDES_REVIEWED.md`:
 ```yaml
 ---
@@ -695,7 +762,15 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
 - [ ] `slides.typ` exists in presentation directory
 - [ ] `notes.typ` exists in presentation directory
 
-**If `.planning/SLIDES_REVIEWED.md` is missing, STOP. Return to Phase 3 and complete the artifact review gate.**
+**If `.planning/SLIDES_REVIEWED.md` is missing, STOP. Return to Phase 3 and complete the artifact review gate.** This gate is hook-enforced: `workshop-phase-gate-guard.py` denies writing `.planning/VALIDATION.md` (the Phase 4 deliverable) until `SLIDES_REVIEWED.md` has `status: APPROVED`. Instructional text alone is not the enforcement — the hook is.
+
+<EXTREMELY-IMPORTANT>
+## The Iron Law of Final Verification
+
+**`overallPass=false` MEANS THE DECK IS NOT VERIFIED. THE JS GATE IS NOT NEGOTIABLE.**
+
+Do not declare the presentation ready, do not present to the user, do not skip the loop, and do not "interpret" a near-pass as a pass. The `workshop-verify` workflow's gate is authoritative — not your read of the `scoreTable`, not the compiler's exit code, not the presenter's time pressure. Rubber-stamping a failing gate is the canonical verification failure: it ships widows, overflow, and ungrounded numbers to the podium, where the cost of the bug is highest. Verification you hand-wave is anti-helpful — it manufactures the exact rework you were supposed to prevent.
+</EXTREMELY-IMPORTANT>
 
 ### Steps
 
@@ -718,8 +793,17 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
    ---
    phase: verify
    status: validated
+   implements: "Phase 4 — final verification, inventory coverage, metadata cross-check"
+   requires: "SLIDES_REVIEWED.md, slides.typ, notes.typ"
+   provides: "VALIDATION.md with inventory coverage map (slide → F/T/R/A)"
+   affects: "presentation/slides.pdf, presentation/notes.pdf"
    claims_checked: [from inventoryCoverage.claimsChecked]
    claims_grounded: [from inventoryCoverage.claimsGrounded]
+   key_files:
+     created: [.planning/VALIDATION.md]
+     modified: []
+   deviations: {r1: 0, r2: 0, r3: 0, r4: 0}
+   one_liner: "Deck verified end-to-end (workshop-verify overallPass), inventory coverage mapped, metadata cross-checked."
    ---
    ## Inventory Coverage (every slide → F/T/R/A IDs)
 
@@ -735,6 +819,26 @@ The heavy verification — compile, `check-all.py`, widow, overflow, per-slide c
    Classify each slide COVERED (cites ≥1 inventory ID, all claims grounded), PARTIAL (no inventory ref OR some claims ungrounded), or — for the reverse map — MISSING (an inventory item no slide uses). This closes requirement→evidence traceability: SOURCES inventory IDs → slides → grounded claims.
 
 **Skipping the final gate to "finish faster" is anti-helpful — the presenter discovers widows, overflow, or wrong numbers at the podium. The workflow already does the work; reading its gate is the service, not overhead.**
+
+### Deviation Rules (Phase 4)
+
+| Rule | Trigger | Action | Permission |
+|------|---------|--------|------------|
+| **R1: Bug** | Compilation error surfaces in the final full run | Fix → recompile → re-invoke gate | Auto |
+| **R2: Missing Critical** | Widow/overflow found by the final gate that Phase 3's selective run missed | Fix → recompile → re-invoke gate → track `[R2]` | Auto |
+| **R3: Blocking** | A `workshop-verify` finding cannot be auto-resolved after the 3-turn `/goal` budget | STOP → present the user retry/skip/stop options → track `[R3]` | Ask user |
+| **R4: Structural** | User requests a section reorder or proportion change during verify | STOP → re-enter Phase 3 (re-runs the review gate) → track `[R4]` | Ask user |
+
+**Priority:** R4 (STOP) > R1-R2 (auto) > R3 (escalate after budget). After Phase 4, report deviations alongside the gate result.
+
+### Rationalization Table — Final Verification
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "Phase 3 already verified this — Phase 4 is redundant" | Phase 3's last run may have been selective (`onlyChecks`); the deck was never confirmed clean *together* | Run the full non-selective workshop-verify |
+| "`overallPass` was almost true — good enough" | The JS gate is binary; "almost" means a real finding is still open | Fix the finding, let the next run recompute |
+| "No new diagrams, so skip visual-verify" | Existing diagrams shift when surrounding slides change | Let the full gate run visual-verify on all diagrams |
+| "It compiled, so it's verified" | Compilation proves syntax, not widows/overflow/fidelity | Read the JS gate, not the compiler exit code |
 
 ### Red Flags — STOP If You Catch Yourself:
 
