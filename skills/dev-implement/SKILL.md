@@ -10,13 +10,13 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
-    - matcher: "Agent"
+    - matcher: "Agent|Workflow"
       hooks:
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
             GATE_STATUS=APPROVED
-            GATE_BLOCKED_TOOLS=Agent
+            GATE_BLOCKED_TOOLS=Agent,Workflow
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
@@ -39,16 +39,17 @@ Auto-load all constraints matching `applies-to: dev-implement`:
 ## Where This Fits
 
 ```
-Main Chat (you)                    Task Agent
-─────────────────────────────────────────────────────
+Main Chat (you)                         dev-implement workflow (per level)
+──────────────────────────────────────────────────────────────────────────
 /goal <condition>  ← user sets once at phase entry
 dev-implement (this skill)
-  → dev-delegate (spawn agents per task)
-    → Task agent ──────────────→ follows dev-tdd
-                                 uses dev-test tools
+  └─ per level: Workflow(name="dev-implement") ─→ parse PLAN table → DAG
+                                                   sequential TDD implementer
+                                                   per task → Verify Cmd → JS gate
+  ← run FULL suite, mark [x], re-invoke next level
 ```
 
-**Main chat orchestrates.** Task agents implement. `/goal` keeps the session firing across turns until the condition is met — the evaluator is a separate model, so completion is not honor-system.
+**Main chat orchestrates the level loop + the full-suite ground-truth + the `/goal`.** The workflow's implementers write the code (TDD) and the JS gate keys on real Verify Command exit codes — completion is not honor-system, and the dev-delegation-guard still forbids you from writing project code yourself.
 
 ## Contents
 
@@ -58,7 +59,6 @@ dev-implement (this skill)
 - [The Process](#the-process) (Sequential)
 - [Sub-Skills Reference](#sub-skills-reference)
 - [If Max Iterations Reached](#if-max-iterations-reached)
-- [Agent Team Implementation (Parallel)](#agent-team-implementation-parallel)
 - [Test Gap Validation Gate (MANDATORY)](#test-gap-validation-gate-mandatory)
 - [Phase Complete](#phase-complete)
 
@@ -116,32 +116,9 @@ Before starting ANY task, verify `.planning/PLAN.md` Testing Strategy:
 This is your LAST CHANCE to catch missing test strategy before writing code.
 </EXTREMELY-IMPORTANT>
 
-## Implementation Strategy Choice
+## Implementation Strategy: the dev-implement workflow
 
-After prerequisites pass, check PLAN.md for parallelization potential:
-
-**Skip this choice when:**
-- PLAN.md has fewer than 4 tasks
-- All tasks are dependent (every task is `after N` with no independent groups)
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is not available
-
-**Otherwise, ask the user:**
-
-```python
-AskUserQuestion(questions=[{
-  "question": "How should we implement the tasks in PLAN.md?",
-  "header": "Strategy",
-  "options": [
-    {"label": "Sequential (Default)", "description": "Work through tasks under one /goal, complete N before N+1. Safest, no merge conflicts."},
-    {"label": "Agent team (parallel)", "description": "Spawn teammate per independent task group. Faster for 4+ independent tasks. Requires reconciliation."}
-  ],
-  "multiSelect": false
-}])
-```
-
-**If Sequential:** Proceed to [The Process](#the-process) below (current behavior).
-
-**If Agent team:** Skip to [Agent Team Implementation (Parallel)](#agent-team-implementation-parallel).
+You do NOT choose sequential-vs-parallel and you do NOT hand-dispatch tasks. Implementation is the **`dev-implement` dynamic workflow**, which reads the hardened PLAN.md table, builds the `Deps` DAG, and **auto-parallelizes within each dependency level** (one worktree-isolated implementer per task, all TDD). You drive the level loop: invoke the workflow per level, integrate the level's returned file contents, run the full suite, mark the rows `[x]`, advance — all under one `/goal`. See [The Process](#the-process).
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of TDD (Final Enforcement)
@@ -262,32 +239,47 @@ Monitor(
 
 ## The Process
 
+The workflow implements ONE dependency level per invocation; you loop across levels under the active `/goal`.
+
 ```
 0. Set the goal (once, at phase entry):
-   /goal All tasks in PLAN.md are marked [x] AND [test command] exits 0
-         AND .planning/VALIDATION.md status is `validated`.
-         Stop after [N total turns across all tasks].
+   /goal All tasks in .planning/PLAN.md are marked [x] AND [full-suite test command] exits 0
+         AND .planning/VALIDATION.md status is `validated`. Stop after [N] turns.
 
-   (See "Setting the goal" below for the full condition template.)
+LOOP (one turn per level, under the active /goal):
+  1. Invoke the workflow:
+       Workflow(name="dev-implement", args={
+         "projectDir": "<absolute path to the dev project (cwd)>",
+         "pluginRoot": "<absolute path to this plugin's workflows/ dir — resolve ${CLAUDE_SKILL_DIR}/../../workflows>"
+       })
+     It picks the lowest level with pending tasks, runs its tasks SEQUENTIALLY (one
+     TDD implementer each, writing directly into the project tree), verifies each
+     (Verify Command exit 0 + read-only corroboration), and returns { overallPass,
+     level, tasksRemaining, tasks, findings, tasksThatFailed, reviews }. The code is
+     ALREADY in the tree when it returns — there is no merge step for you to do.
 
-For each task N in PLAN.md (across turns under the active /goal):
-    1. Determine task type:
-       - Visual task? → discover and read skills/visual-verify/SKILL.md via cache lookup
-       - Standard task? → proceed to step 2
+  2. GROUND-TRUTH (self-reports are not truth): run the FULL suite + lint on the
+     tree (the PLAN.md Testing Strategy command — e.g. `pixi run pytest`,
+     `npm test && npm run lint`). The per-task Verify Commands ran in isolation;
+     this confirms the level integrates without regressions.
 
-    2. Spawn Task agent
-       → discover and read skills/dev-delegate/SKILL.md via cache lookup
+  3. If result.overallPass AND the full suite is green:
+     mark this level's PLAN.md rows [x], log to LEARNINGS.md, END THE TURN —
+     the /goal evaluator re-fires for the next level (or closes if tasksRemaining=0).
+     No pause, no "should I continue?".
 
-    3. Task agent follows TDD (dev-tdd) using testing tools (dev-test)
-       Visual tasks: also render output and vision-check with look-at
-
-    4. Personally verify tests pass (+ visual check for visual tasks)
-
-    5. Mark task [x] in PLAN.md, log to LEARNINGS.md, move to task N+1
-       — same response, no pause. The /goal evaluator decides when to stop.
+  4. If result.overallPass is false (a task failed TDD/verify) OR the full suite
+     regressed: read result.findings, fix the cause, then re-invoke with
+     onlyChecks=result.tasksThatFailed + priorReviews=result.reviews. An R4 block
+     (architectural — new schema, lib swap, breaking API) is a critical finding —
+     STOP and escalate it to the user; do not invent the architectural fix.
 ```
 
-**Cache lookup pattern for all paths above:** Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
+**A blocked task (R4 — new schema, lib swap, breaking API) is in `findings` as critical and `overallPass=false`. STOP and present the R4 to the user; do not invent an architectural fix.**
+
+**The JS gate (`result.overallPass`) + your full-suite run are authoritative.** Do not hand-wave a level done; the Verify Command exit codes decide, not your read of the output.
+
+**Cache lookup pattern for skill paths:** Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
 
 ### Visual Task Detection
 
@@ -317,16 +309,9 @@ Key constraints baked into the condition:
 
 If the user prefers to drive `/goal` themselves, hand them the literal condition string instead of setting it for them.
 
-### Step 2: Delegate Each Task
+### Step 2: Run the level loop (the dev-implement workflow)
 
-**REQUIRED SUB-SKILL:**
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-delegate/SKILL.md` and follow its instructions.
-
-Key points from dev-delegate:
-- Implementer → Spec reviewer → Quality reviewer
-- Task agent follows dev-tdd protocol
-- Task agent uses dev-test tools
+Implementation is the `dev-implement` workflow, looped per dependency level — see [The Process](#the-process). You do NOT hand-dispatch tasks; the workflow's implementers follow dev-tdd and run each task's Verify Command, and the JS gate keys on the real exit codes. (The legacy per-task `dev-delegate` template is now embedded in the workflow's implementer prompt; `dev-delegate` remains only for ad-hoc single-task dispatch outside this phase.)
 
 ### Step 3: Verify and Complete (MANDATORY - DO NOT SKIP)
 
@@ -680,24 +665,6 @@ After each task's verification completes:
 
 Pausing > 30 seconds between tasks means you've stopped. You shouldn't have.
 </EXTREMELY-IMPORTANT>
-
-## Agent Team Implementation (Parallel)
-
-For parallel implementation using agent teams, read the full protocol:
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-implement/references/agent-team-protocol.md` and follow its instructions.
-
-**When to use:** User explicitly requests parallel implementation, OR 4+ independent tasks in PLAN.md.
-
-**Key rules:**
-- Each teammate gets a self-contained prompt with full context
-- Main agent coordinates, does NOT implement directly
-- Reconcile results after all teammates complete
-- Fall back to sequential if fewer than 3 tasks
-
-### Exit Gate
-
-**Checkpoint type:** human-verify (all tasks pass tests — machine-verifiable)
 
 ## Test Gap Validation Gate (MANDATORY)
 
