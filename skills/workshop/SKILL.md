@@ -648,7 +648,7 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 
 ### Steps
 
-Generation is the **`workshop-generate` dynamic workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, fans out one fragment-agent per slide (each builds its `#slide[]` block + notes from the pinned Takeaway/Bullets/Inventory/Visual, citing only its inventory ids), then an assembly agent stitches the fragments under their Section headers into slides.typ + notes.typ and compiles the deck.
+Generation is the **`workshop-generate` dynamic workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, groups slides by **Section**, and fans out one agent per section (each writes that subsection's whole run of `#slide[]` blocks + notes to a section fragment file, from the pinned rows, citing only the allowed inventory ids — section is the coherent unit, keeping intra-section flow), then an assembly agent concatenates the section files under their headers into slides.typ + notes.typ and compiles the deck.
 
 ```
 1. Workflow(name="workshop-generate", args={
