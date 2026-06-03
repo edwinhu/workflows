@@ -648,7 +648,7 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 
 ### Steps
 
-Generation is the **`workshop-generate` dynamic workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, groups slides by **Section**, and fans out one agent per section (each writes that subsection's whole run of `#slide[]` blocks + notes to a section fragment file, from the pinned rows, citing only the allowed inventory ids — section is the coherent unit, keeping intra-section flow), then an assembly agent concatenates the section files under their headers into slides.typ + notes.typ and compiles the deck.
+Generation is the **`workshop-generate` ultracode workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, groups slides by **Section**, and fans out one agent per section (each writes that subsection's whole run of `#slide[]` blocks + notes to a section fragment file, from the pinned rows, citing only the allowed inventory ids — section is the coherent unit, keeping intra-section flow), then an assembly agent concatenates the section files under their headers into slides.typ + notes.typ and compiles the deck.
 
 ```
 1. Workflow(name="workshop-generate", args={
@@ -685,9 +685,9 @@ Then run the per-slide REVIEW fan-out (`workshop-verify` — already the Phase-3
 
 If convention violations persist after 3 fix-and-recheck cycles, escalate to user.
 
-### Artifact Review Gate: Slides & Notes (dynamic workflow)
+### Artifact Review Gate: Slides & Notes (ultracode workflow)
 
-**Before proceeding to Phase 4, the slides and notes are reviewed by the `workshop-verify` dynamic workflow — a per-slide fan-out (one read-only reviewer per slide × {convention, notes-coverage, source-fidelity}) plus a global mechanical leg (compile + `check-all.py` + widow + overflow) and per-diagram visual-verify, with the CLEAN/ISSUES gate computed in pure JS from raw counts.** This replaces the former single monolithic reviewer: per-slide isolation keeps each slide's paper-reading in its own subagent transcript (the deck-review would otherwise blow the main conversation's context on a long deck), and the JS gate removes honor-system score inflation. It satisfies the Iron Law of Flat Dispatch — reviewer results land in script variables, never a middle dispatcher agent.
+**Before proceeding to Phase 4, the slides and notes are reviewed by the `workshop-verify` ultracode workflow — a per-slide fan-out (one read-only reviewer per slide × {convention, notes-coverage, source-fidelity}) plus a global mechanical leg (compile + `check-all.py` + widow + overflow) and per-diagram visual-verify, with the CLEAN/ISSUES gate computed in pure JS from raw counts.** This replaces the former single monolithic reviewer: per-slide isolation keeps each slide's paper-reading in its own subagent transcript (the deck-review would otherwise blow the main conversation's context on a long deck), and the JS gate removes honor-system score inflation. It satisfies the Iron Law of Flat Dispatch — reviewer results land in script variables, never a middle dispatcher agent.
 
 1. **Compile first** so `slides.pdf` exists (the workflow's widow/visual legs need it):
    ```bash
@@ -753,8 +753,8 @@ Never silently abandon the loop. An off-topic message is not permission to stop 
 status: APPROVED
 phase: generate
 reviewed_at: [timestamp]
-reviewer: workshop-verify dynamic workflow (per-slide fan-out + JS gate)
-implements: "Phase 3 — slide and notes generation with per-slide dynamic-workflow review"
+reviewer: workshop-verify ultracode workflow (per-slide fan-out + JS gate)
+implements: "Phase 3 — slide and notes generation with per-slide ultracode-workflow review"
 requires: "OUTLINE_APPROVED.md, SOURCES_VERIFIED.md"
 provides: "slides.typ, notes.typ (reviewed, overallPass=true)"
 affects: "presentation/slides.typ, presentation/notes.typ"
@@ -765,7 +765,7 @@ gate: {overallPass: true, substratePass: true, critical: 0, major: 0, minor: [N 
 inventory_coverage: {claimsChecked: [N], claimsGrounded: [N]}
 deviations: {r1: [X], r2: [Y], r3: [Z], r4: [W]}
 ---
-Slides and notes reviewed by the workshop-verify dynamic workflow — overallPass=true (substrate clean: 0 critical, 0 major; any remaining minors are advisory convention/style notes, non-blocking). [Score-table summary].
+Slides and notes reviewed by the workshop-verify ultracode workflow — overallPass=true (substrate clean: 0 critical, 0 major; any remaining minors are advisory convention/style notes, non-blocking). [Score-table summary].
 ```
 
 **Gate semantics (substrate split):** `overallPass` is `substratePass` — true when **0 critical AND 0 major** (compile, constraints, widows, overflow, source-fidelity, notes-coverage, visual defects are all deterministic or categorical gates). Per-slide **minor** convention/style findings are **advisory** — they do NOT block the gate. Record them in the artifact and surface them to the user as optional polish, but do NOT spin the `/goal` loop trying to drive minors to zero (that is the over-enforcement treadmill). The loop CONTINUES only while a critical or major remains.
@@ -780,7 +780,7 @@ Slides and notes reviewed by the workshop-verify dynamic workflow — overallPas
 
 **Responsibility:** Run the final end-to-end `workshop-verify` gate, map inventory coverage, cross-check metadata, and present.
 
-The heavy verification — compile, `check-all.py`, widow, overflow, per-slide convention/notes/fidelity, per-diagram visual-verify — is executed by the **`workshop-verify` dynamic workflow** (introduced in Phase 3's review gate). Phase 4 runs it ONE final time as a full, non-selective end-to-end gate, then records coverage and presents. This is not redundant: Phase 3's last run may have been selective (`onlyChecks`); the final full run confirms the whole deck is clean together.
+The heavy verification — compile, `check-all.py`, widow, overflow, per-slide convention/notes/fidelity, per-diagram visual-verify — is executed by the **`workshop-verify` ultracode workflow** (introduced in Phase 3's review gate). Phase 4 runs it ONE final time as a full, non-selective end-to-end gate, then records coverage and presents. This is not redundant: Phase 3's last run may have been selective (`onlyChecks`); the final full run confirms the whole deck is clean together.
 
 ### Prerequisites
 - [ ] `.planning/SLIDES_REVIEWED.md` exists with `status: APPROVED`

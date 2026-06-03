@@ -177,7 +177,7 @@ Constraint checks are **Leg 1** of two-leg verification. **Leg 2** (convention s
 
 ## Run the writing-review workflow
 
-The review is **always parallel** and is owned by a dynamic workflow script — you do NOT choose a strategy and you do NOT dispatch reviewers yourself. The workflow runs all three levels (per-section structure + prose + fidelity fan-out, mechanical quote-verification, transition analysis, and whole-document checks) in the background and returns structured findings.
+The review is **always parallel** and is owned by an ultracode workflow script — you do NOT choose a strategy and you do NOT dispatch reviewers yourself. The workflow runs all three levels (per-section structure + prose + fidelity fan-out, mechanical quote-verification, transition analysis, and whole-document checks) in the background and returns structured findings.
 
 **1. Resolve the cached workflow path:**
 

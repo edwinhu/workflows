@@ -8,7 +8,7 @@ applies-to: [workflow-creator]
 
 Mode 1 Step 7 and Mode 3 Phase A MUST dispatch audit work to fresh, read-only auditors — the same agent that wrote/fixed workflow files MUST NOT score them. Two acceptable forms:
 1. A fresh `Agent(allowed_tools=["Read", "Grep", "Glob"], ...)` dispatch, OR
-2. A call to the **wc-audit dynamic workflow** (`Workflow({ scriptPath: ".../wc-audit.js" })`) — its per-dimension reviewers are read-only subagents by construction and the composite is computed in JS, so a fixer cannot rubber-stamp its own work.
+2. A call to the **wc-audit ultracode workflow** (`Workflow({ scriptPath: ".../wc-audit.js" })`) — its per-dimension reviewers are read-only subagents by construction and the composite is computed in JS, so a fixer cannot rubber-stamp its own work.
 
 ## Rationale
 

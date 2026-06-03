@@ -209,9 +209,9 @@ Unplanned issues surface mid-revision. Apply the same 4-rule system as the works
 
 **Priority:** R4 (STOP) > R1-R3 (auto) > unsure = R4. After applying changes, report: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z).
 
-### Artifact Review Gate (for content/structure changes — dynamic workflow)
+### Artifact Review Gate (for content/structure changes — ultracode workflow)
 
-For content or structural changes (NOT simple formatting fixes), the edited deck is reviewed by the **`workshop-verify` dynamic workflow** — the same per-slide fan-out + JS gate the workshop skill uses — scoped to the slides you touched:
+For content or structural changes (NOT simple formatting fixes), the edited deck is reviewed by the **`workshop-verify` ultracode workflow** — the same per-slide fan-out + JS gate the workshop skill uses — scoped to the slides you touched:
 
 1. **Compile** so `slides.pdf` reflects the edits: `cd [presentation directory] && typst compile slides.typ && typst compile notes.typ`
 2. **Invoke selectively** (review only the changed slides; carry the rest forward):

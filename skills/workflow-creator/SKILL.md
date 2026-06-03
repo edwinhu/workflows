@@ -1,6 +1,6 @@
 ---
 name: workflow-creator
-description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow', 'convert fan-out to a workflow script', or needs to substantially create or edit any multi-phase workflow."
+description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow (ultracode)', 'convert fan-out to a workflow script / ultracode', or needs to substantially create or edit any multi-phase workflow."
 version: 0.5.0
 hooks:
   PreToolUse:
@@ -28,7 +28,7 @@ hooks:
 Detect mode from user request, then follow the corresponding process below:
 - **Mode 1 (Create)** — "create/design a workflow", "break a task into phases"
 - **Mode 2 (Audit)** — "audit/score a workflow"
-- **Mode 3 (Improve)** — "improve a workflow", audit-fix loop, **"migrate a fan-out phase to a dynamic workflow"** (a migration is an improvement — see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`)
+- **Mode 3 (Improve)** — "improve a workflow", audit-fix loop, **"migrate a fan-out phase to an ultracode workflow"** (a migration is an improvement — see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`)
 
 **Note on workflow-creator's Structure:**
 
@@ -277,7 +277,7 @@ Design phases where each phase has:
 - **Gate artifact** - the concrete file the producing phase writes and the consuming phase checks (see Structural Gate Artifacts below)
 - **Enforcement needs** - high/medium/low based on drift risk
 
-**Dynamic-workflow check:** For any phase that is a **fan-out over a known list** — either *read-only review* (one reviewer per item → gate/findings) OR *write/transform* (one write-agent per item that creates/transforms from a fixed spec — codemod, migration, per-item spec-driven generation, worktree-isolated) — decide whether to implement it as a Claude Code **dynamic workflow** rather than in-skill agent dispatch. Workflows are NOT read-only; the docs' flagship case is a 500-file write migration. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = deterministic fan-out read-or-write; skill keeps *creative* drafting + `/goal` + R4 + user input), and script conventions. Keep only *creative/judgment* generation, user-approval, and `/goal` loops conversational — mechanical/spec-driven per-item creation belongs in a transform workflow.
+**Ultracode-workflow check:** For any phase that is a **fan-out over a known list** — either *read-only review* (one reviewer per item → gate/findings) OR *write/transform* (one write-agent per item that creates/transforms from a fixed spec — codemod, migration, per-item spec-driven generation, worktree-isolated) — decide whether to implement it as a Claude Code **ultracode workflow** rather than in-skill agent dispatch. Workflows are NOT read-only; the docs' flagship case is a 500-file write migration. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = deterministic fan-out read-or-write; skill keeps *creative* drafting + `/goal` + R4 + user input), and script conventions. Keep only *creative/judgment* generation, user-approval, and `/goal` loops conversational — mechanical/spec-driven per-item creation belongs in a transform workflow.
 
 ### Structural Gate Artifacts
 
@@ -560,7 +560,7 @@ Workflows should support autonomous execution — chaining phases automatically 
 **Gate: Decomposition Complete** `[checkpoint: human-verify, auto-advanceable]`
 - Every proposed phase has a single responsibility, a verifiable gate condition, a named gate artifact, and an iteration topology
 - The topology choice (linear/branching/iterative) presented to the user is recorded `[checkpoint: decision]`
-- The fan-out / dynamic-workflow check was applied to every phase
+- The fan-out / ultracode-workflow check was applied to every phase
 - If any phase lacks a gate or has >1 responsibility, split/fix it before advancing
 
 Update `.planning/wc/{name}/STATE.md`:
@@ -1225,7 +1225,7 @@ Present complete file list for user approval before writing. `[checkpoint: decis
 
 #### Optional: generate the files with the wc-generate transform workflow
 
-Once the user has approved the file list, the per-file *creation* from the approved DESIGN.md is a textbook **transform/generate fan-out** — a fixed spec (DESIGN.md) drives one independent write per file, with no creative latitude. workflow-creator eats its own cooking here too: prefer the **wc-generate dynamic workflow** over hand-writing each file in main chat. (The interview, decomposition, enforcement design, and the user file-approval gate above stay CONVERSATIONAL — only the mechanical per-file write moves into the workflow.)
+Once the user has approved the file list, the per-file *creation* from the approved DESIGN.md is a textbook **transform/generate fan-out** — a fixed spec (DESIGN.md) drives one independent write per file, with no creative latitude. workflow-creator eats its own cooking here too: prefer the **wc-generate ultracode workflow** over hand-writing each file in main chat. (The interview, decomposition, enforcement design, and the user file-approval gate above stay CONVERSATIONAL — only the mechanical per-file write moves into the workflow.)
 
 ```bash
 WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-generate.js 2>/dev/null | sort -V | tail -1)
@@ -1415,9 +1415,9 @@ one-liner: "Audit started on {target} — discovering skill files via wc-audit."
 - If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
 <EXTREMELY-IMPORTANT>
-### How Mode 2 runs: the wc-audit dynamic workflow (eat your own cooking)
+### How Mode 2 runs: the wc-audit ultracode workflow (eat your own cooking)
 
-**The audit fan-out is owned by a dynamic workflow — a script, not hand-dispatched agents in main chat.** workflow-creator tells every other workflow to migrate its review fan-out to a Claude Code dynamic workflow; it MUST do the same for its own audit. `workflows/wc-audit.js` fans out one **read-only** reviewer per audit dimension (4 architecture clusters covering P01-P21, the 13-pattern enforcement checklist, path portability, the Dynamic-Workflow Candidacy Scan), adversarially **verifies** each critical/major gap against the actual files, and computes the **composite + verdict in pure JS** — so the model can no longer self-report a generous composite (the exact honor-system smell this skill flags in others). Steps 1-3b below are the **criteria the workflow's reviewers read** (they Read this SKILL.md's Mode 2 section for the P01-P21 definitions); Step 4 is how you **render AUDIT.md from the result** — you do NOT score by hand.
+**The audit fan-out is owned by an ultracode workflow — a script, not hand-dispatched agents in main chat.** workflow-creator tells every other workflow to migrate its review fan-out to a Claude Code ultracode workflow; it MUST do the same for its own audit. `workflows/wc-audit.js` fans out one **read-only** reviewer per audit dimension (4 architecture clusters covering P01-P21, the 13-pattern enforcement checklist, path portability, the Ultracode-Workflow Candidacy Scan), adversarially **verifies** each critical/major gap against the actual files, and computes the **composite + verdict in pure JS** — so the model can no longer self-report a generous composite (the exact honor-system smell this skill flags in others). Steps 1-3b below are the **criteria the workflow's reviewers read** (they Read this SKILL.md's Mode 2 section for the P01-P21 definitions); Step 4 is how you **render AUDIT.md from the result** — you do NOT score by hand.
 
 **Run it:**
 
@@ -1770,9 +1770,9 @@ affects: [.planning/wc/{name}/STATE.md]
 one-liner: "Path portability scored Clean/Partial/Broken; hook-command variable audit run; candidacy scan fed into Step 4."
 ```
 
-#### Dynamic-Workflow Candidacy Scan (feeds Step 4 Recommendations — no separate gate)
+#### Ultracode-Workflow Candidacy Scan (feeds Step 4 Recommendations — no separate gate)
 
-Before writing the report, scan every phase for **dynamic-workflow migration candidates** — fan-out phases that should be Claude Code dynamic workflows rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §1 for the rubric. **Scan for BOTH worker modes — workflows are NOT read-only:**
+Before writing the report, scan every phase for **ultracode-workflow migration candidates** — fan-out phases that should be Claude Code ultracode workflows rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §1 for the rubric. **Scan for BOTH worker modes — workflows are NOT read-only:**
 - **Review fan-out** — N read-only agents (per section/lecture/question/source/footnote) → computed gate / structured findings.
 - **Write/transform fan-out** — N write-agents (per file/site/lecture/section) that *create or transform* artifacts from a fixed spec (codemod, migration, per-item spec-driven generation), worktree-isolated. The docs' flagship case: 500-file migration, "make the change." **Do not skip these — they are often the strongest candidates.**
 
@@ -1785,7 +1785,7 @@ Flag a phase when the SHAPE qualifies AND it wins on ≥1 value driver:
 
 **Not disqualifiers:** a mid-run user *strategy* choice ("sequential or parallel?") stays in the skill. A diagnosis output (REVIEW.md) instead of a numeric score is fine (driver b). The phase *writing files* is NOT a disqualifier (that's exactly driver d).
 
-For each flagged phase, classify **strong** / **moderate**, note worker-mode (review vs transform), and add a Recommendation: *"Migrate <phase> to a dynamic workflow — review→gate/findings, or transform→worktree write + verify; keep the creative 'what' + `/goal` + R4 in the skill. Mode 3 improvement; see the migration playbook."* Do NOT flag: single-agent phases (no fan-out), *creative*-judgment drafting/brainstorm, content-approval gates, routing, or fan-outs whose agents are external (Batch API / CLI, not Claude subagents). If a phase has a real fan-out but no value-driver win, note "fan-out present, no migration win". If nothing qualifies, state "no dynamic-workflow candidates" — silence is ambiguous.
+For each flagged phase, classify **strong** / **moderate**, note worker-mode (review vs transform), and add a Recommendation: *"Migrate <phase> to an ultracode workflow — review→gate/findings, or transform→worktree write + verify; keep the creative 'what' + `/goal` + R4 in the skill. Mode 3 improvement; see the migration playbook."* Do NOT flag: single-agent phases (no fan-out), *creative*-judgment drafting/brainstorm, content-approval gates, routing, or fan-outs whose agents are external (Batch API / CLI, not Claude subagents). If a phase has a real fan-out but no value-driver win, note "fan-out present, no migration win". If nothing qualifies, state "no ultracode-workflow candidates" — silence is ambiguous.
 
 **Proceed to Step 4.** (STATE.md step-chain hook enforces this transition — update STATE.md before advancing.)
 
@@ -1843,12 +1843,12 @@ Format:
 | skills/X/SKILL.md | `uv run python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
 | skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
 
-### Dynamic-Workflow Migration Candidates
+### Ultracode-Workflow Migration Candidates
 | Phase | Fan-out? | Worker mode (review/transform) | Value driver | Recommend migrate? (strong/moderate) | Note |
 |-------|----------|--------------------------------|--------------|--------------------------------------|------|
 | [phase] | ✅/❌ (one per X) | review / transform / — | parallelism / context / gate / per-item-mutation | ✅ Mode 3 (strong\|moderate) / ❌ leave | [why] |
 
-(From the Dynamic-Workflow Candidacy Scan. "no dynamic-workflow candidates" if none qualify.)
+(From the Ultracode-Workflow Candidacy Scan. "no ultracode-workflow candidates" if none qualify.)
 
 ### Critical Gaps
 1. [Highest priority gap + recommendation]
@@ -1952,7 +1952,7 @@ If the audit report composite is below 7.0 on first pass, STOP and re-read all w
 
 ## Mode 3: Improve Workflow
 
-**Migrating a fan-out phase to a dynamic workflow is a Mode 3 improvement.** If the user asks to "migrate a phase to a dynamic workflow" / "convert fan-out to a workflow script," or the audit's candidacy scan flags a fan-out phase — *review* (read-only → gate/findings) OR *transform* (write-agents creating/transforming from a fixed spec, worktree-isolated; e.g. a codemod, a migration, per-item spec-driven generation) — treat the migration as the fix: read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` (decision rubric, both worker modes, the `discover→transform→verify` pattern for writes, script conventions, packaging, wiring, exit gate), confirm the candidate from the ACTUAL phase file (not a summary), write `workflows/<name>.js`, `node --check` it, verify the artifact lands at the expected path, then wire the skill (keep the creative "what" + `/goal` + R4). For migrating a *backlog* of several phases at once, prefer a one-off migration workflow (fan out over all candidates) rather than one-at-a-time.
+**Migrating a fan-out phase to an ultracode workflow is a Mode 3 improvement.** If the user asks to "migrate a phase to an ultracode workflow" / "convert fan-out to a workflow script," or the audit's candidacy scan flags a fan-out phase — *review* (read-only → gate/findings) OR *transform* (write-agents creating/transforming from a fixed spec, worktree-isolated; e.g. a codemod, a migration, per-item spec-driven generation) — treat the migration as the fix: read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` (decision rubric, both worker modes, the `discover→transform→verify` pattern for writes, script conventions, packaging, wiring, exit gate), confirm the candidate from the ACTUAL phase file (not a summary), write `workflows/<name>.js`, `node --check` it, verify the artifact lands at the expected path, then wire the skill (keep the creative "what" + `/goal` + R4). For migrating a *backlog* of several phases at once, prefer a one-off migration workflow (fan out over all candidates) rather than one-at-a-time.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Workflow Improvement
@@ -2040,7 +2040,7 @@ Phase A: AUDIT ──→ Phase B: DECIDE ──→ Phase C: FIX
 
 #### Phase A: AUDIT (the wc-audit workflow — MANDATORY, independent by construction)
 
-**Run the Mode 2 wc-audit dynamic workflow** (see "How Mode 2 runs" above) — it IS the fresh, independent audit. Each dimension reviewer reads the files cold with NO knowledge of your fixes, and the **composite is computed in JS**, so a fixer cannot rubber-stamp its own work:
+**Run the Mode 2 wc-audit ultracode workflow** (see "How Mode 2 runs" above) — it IS the fresh, independent audit. Each dimension reviewer reads the files cold with NO knowledge of your fixes, and the **composite is computed in JS**, so a fixer cannot rubber-stamp its own work:
 
 ```bash
 WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/workflows/wc-audit.js 2>/dev/null | sort -V | tail -1)
@@ -2288,7 +2288,7 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 
 **When an agent needs multiple checks:** The orchestrator reads the check list and spawns each check as a direct parallel agent. The "dispatcher" logic lives in the skill/phase definition, not in a middle agent.
 
-**The structural fix — dynamic workflows:** For a genuine fan-out (one reviewer per item × check) producing a computed gate, migrate the dispatch into a Claude Code **dynamic workflow** (see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`; build it during Mode 1 decomposition or migrate an existing phase via Mode 3). A dynamic workflow is a *script*, not a dispatcher agent: reviewer results land in script variables and the gate is computed in JS, so result loss is impossible by construction — and the model can no longer inflate a self-reported score. Use it when a phase fans out + gates; keep drafting, `/goal`, and user-input phases conversational in the skill.
+**The structural fix — ultracode workflows:** For a genuine fan-out (one reviewer per item × check) producing a computed gate, migrate the dispatch into a Claude Code **ultracode workflow** (see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`; build it during Mode 1 decomposition or migrate an existing phase via Mode 3). An ultracode workflow is a *script*, not a dispatcher agent: reviewer results land in script variables and the gate is computed in JS, so result loss is impossible by construction — and the model can no longer inflate a self-reported score. Use it when a phase fans out + gates; keep drafting, `/goal`, and user-input phases conversational in the skill.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:

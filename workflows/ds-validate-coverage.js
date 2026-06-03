@@ -1,6 +1,6 @@
 export const meta = {
   name: 'ds-validate-coverage',
-  description: 'Per-requirement output-coverage validation as a dynamic workflow: one read-only validator per SPEC.md requirement runs DQ1-DQ5 + M1 on the output, returns RAW per-check statuses, and the script computes COVERED/PARTIAL/MISSING + the validated|gaps_found gate in pure JS. Read-only; does NOT fix.',
+  description: 'Per-requirement output-coverage validation as an ultracode workflow: one read-only validator per SPEC.md requirement runs DQ1-DQ5 + M1 on the output, returns RAW per-check statuses, and the script computes COVERED/PARTIAL/MISSING + the validated|gaps_found gate in pure JS. Read-only; does NOT fix.',
   whenToUse: 'Called by the ds-validate skill (Phase 3.5) after implement and before review. Returns the requirements coverage matrix + a validated|gaps_found status the skill renders into VALIDATION.md. The skill keeps the user fix/accept decision and the /goal loop; on a re-run it passes onlyChecks (changed requirement IDs) + priorReviews.',
   phases: [
     { title: 'Discover', detail: 'enumerate SPEC requirements + resolve outputs, ds-checks.md, pipeline row counts' },

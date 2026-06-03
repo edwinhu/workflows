@@ -1,6 +1,6 @@
 export const meta = {
   name: 'workshop-verify',
-  description: 'Workshop slide-deck verification as a dynamic workflow: a global mechanical leg (compile + constraint check-all.py + PDF widow + overflow) then a per-slide fan-out (convention + notes-coverage + source-fidelity) and per-diagram visual-verify. Returns structured findings + a computed CLEAN/ISSUES gate from raw counts. Read-only; does NOT fix.',
+  description: 'Workshop slide-deck verification as an ultracode workflow: a global mechanical leg (compile + constraint check-all.py + PDF widow + overflow) then a per-slide fan-out (convention + notes-coverage + source-fidelity) and per-diagram visual-verify. Returns structured findings + a computed CLEAN/ISSUES gate from raw counts. Read-only; does NOT fix.',
   whenToUse: 'Called by the workshop skill at the Phase 3->4 boundary (artifact review gate) and as Phase 4 verification, and by workshop-revise after edits. Returns {overallPass, verdict, scoreTable, findings, reviews, slidesThatFlagged}. The skill renders the gate, drives the /goal fix loop, and on a re-review passes onlyChecks (flagged slide IDs) + priorReviews. The workflow never drafts and never fixes.',
   phases: [
     { title: 'Discover', detail: 'enumerate slides + diagrams; resolve SOURCES/OUTLINE/check-all/detect_widows' },

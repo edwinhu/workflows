@@ -179,7 +179,7 @@ Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` and
 
 ### Step 5: Run the ds-validate-coverage workflow (per-requirement fan-out + JS gate)
 
-The per-requirement DQ fan-out and the COVERED/PARTIAL/MISSING + `validated|gaps_found` gate are owned by a **dynamic workflow** — a script, not hand-dispatched agents. This is why: the validators return RAW DQ statuses and the **gate is computed in pure JS from those statuses**, so the model can no longer tally the composite by hand (the old honor-system gate). The workflow also isolates one validation transcript per requirement out of main context.
+The per-requirement DQ fan-out and the COVERED/PARTIAL/MISSING + `validated|gaps_found` gate are owned by a **ultracode workflow** — a script, not hand-dispatched agents. This is why: the validators return RAW DQ statuses and the **gate is computed in pure JS from those statuses**, so the model can no longer tally the composite by hand (the old honor-system gate). The workflow also isolates one validation transcript per requirement out of main context.
 
 **1. Resolve the cached workflow path:**
 

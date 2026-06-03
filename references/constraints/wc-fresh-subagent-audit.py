@@ -24,7 +24,7 @@ def check(context):
 
     # An audit dispatch is fresh + read-only if EITHER:
     #  (a) it dispatches a fresh Agent() with an allowed_tools restriction (the original pattern), OR
-    #  (b) it invokes the wc-audit dynamic workflow (whose dimension reviewers are READ-ONLY
+    #  (b) it invokes the wc-audit ultracode workflow (whose dimension reviewers are READ-ONLY
     #      subagents by construction and whose composite is computed in JS — the migrated pattern).
     def fresh_readonly(section):
         agent_form = ("Agent(" in section or "subagent" in section.lower()) and (

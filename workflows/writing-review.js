@@ -1,6 +1,6 @@
 export const meta = {
   name: 'writing-review',
-  description: 'Hierarchical document review (Levels 1-3) as a dynamic workflow: per-section fan-out (structure + prose-quality + source-fidelity), mechanical quote-verification, transition analysis, and whole-document checks. Returns structured findings the skill renders into REVIEW.md. Read-only; does NOT fix.',
+  description: 'Hierarchical document review (Levels 1-3) as an ultracode workflow: per-section fan-out (structure + prose-quality + source-fidelity), mechanical quote-verification, transition analysis, and whole-document checks. Returns structured findings the skill renders into REVIEW.md. Read-only; does NOT fix.',
   whenToUse: 'Called by the writing-review skill after setup + the Leg-1 constraint hard gate. Returns structured findings (sections/transitions/document-level) + a CLEAN/ISSUES-FOUND verdict. The skill renders REVIEW.md and drives the /writing-revise /goal loop; on a re-review it passes onlyChecks (changed section names) + priorReviews.',
   phases: [
     { title: 'Discover', detail: 'enumerate sections + resolve PRECIS/OUTLINE/domain/bib' },

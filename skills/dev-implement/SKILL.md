@@ -118,7 +118,7 @@ This is your LAST CHANCE to catch missing test strategy before writing code.
 
 ## Implementation Strategy: the dev-implement workflow
 
-You do NOT choose sequential-vs-parallel and you do NOT hand-dispatch tasks. Implementation is the **`dev-implement` dynamic workflow**, which reads the hardened PLAN.md table, builds the `Deps` DAG, and **auto-parallelizes within each dependency level** (one worktree-isolated implementer per task, all TDD). You drive the level loop: invoke the workflow per level, integrate the level's returned file contents, run the full suite, mark the rows `[x]`, advance — all under one `/goal`. See [The Process](#the-process).
+You do NOT choose sequential-vs-parallel and you do NOT hand-dispatch tasks. Implementation is the **`dev-implement` ultracode workflow**, which reads the hardened PLAN.md table, builds the `Deps` DAG, and **auto-parallelizes within each dependency level** (one worktree-isolated implementer per task, all TDD). You drive the level loop: invoke the workflow per level, integrate the level's returned file contents, run the full suite, mark the rows `[x]`, advance — all under one `/goal`. See [The Process](#the-process).
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of TDD (Final Enforcement)

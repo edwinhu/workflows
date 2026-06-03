@@ -1,6 +1,6 @@
 export const meta = {
   name: 'wc-audit',
-  description: "workflow-creator's Mode 2 audit as a dynamic workflow: discover the target workflow's skill files, fan out one read-only reviewer per audit dimension (P01-P21 architecture, the 13-pattern enforcement checklist, path portability, the Dynamic-Workflow Candidacy Scan), adversarially verify critical/major gaps against the actual files, then compute the composite + verdict in pure JS. Honors workflow-creator's meta-tool exemptions. Read-only; does NOT fix.",
+  description: "workflow-creator's Mode 2 audit as an ultracode workflow: discover the target workflow's skill files, fan out one read-only reviewer per audit dimension (P01-P21 architecture, the 13-pattern enforcement checklist, path portability, the Ultracode-Workflow Candidacy Scan), adversarially verify critical/major gaps against the actual files, then compute the composite + verdict in pure JS. Honors workflow-creator's meta-tool exemptions. Read-only; does NOT fix.",
   whenToUse: "Called by workflow-creator Mode 2 (Steps 1-4) and Mode 3 Phase A. Returns { overallPass, composite, verdict, scoreTable, reportMarkdown, candidacyTable, findings, reviews, reviewersThatFlagged }. The skill renders AUDIT.md from the result and drives the Mode 3 /goal fix loop; on a re-audit it passes onlyChecks (flagged dimension keys) + priorReviews. The workflow never fixes and the gate is computed in JS — never trust a self-reported composite.",
   phases: [
     { title: 'Discover', detail: "enumerate the target workflow's entry/midpoint/phase skills + references; resolve Mode 2 criteria, enforcement-checklist, migration playbook; detect the meta-tool" },
@@ -137,7 +137,7 @@ const PORTABILITY_SCHEMA = {
   },
 }
 
-// Dynamic-workflow candidacy reviewer — scans BOTH worker modes (review + write/transform).
+// Ultracode-workflow candidacy reviewer — scans BOTH worker modes (review + write/transform).
 const CANDIDACY_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['dimension', 'candidates', 'summary'],
   properties: {
@@ -156,7 +156,7 @@ const CANDIDACY_SCHEMA = {
         },
       },
     },
-    summary: { type: 'string', description: '"no dynamic-workflow candidates" if none qualify — silence is ambiguous' },
+    summary: { type: 'string', description: '"no ultracode-workflow candidates" if none qualify — silence is ambiguous' },
   },
 }
 
@@ -261,11 +261,11 @@ status: Clean (no broken paths AND no \${CLAUDE_SKILL_DIR} in hook commands), Pa
 `${READONLY}
 Set dimension="candidacy-scan" verbatim.
 ${groundIn}
-Run the Dynamic-Workflow Candidacy Scan (read ${disc.migrationPlaybookPath || `${disc.wcSkillPath} migration reference`} §1). Scan EVERY phase for dynamic-workflow migration candidates in BOTH worker modes — workflows are NOT read-only:
+Run the Ultracode-Workflow Candidacy Scan (read ${disc.migrationPlaybookPath || `${disc.wcSkillPath} migration reference`} §1). Scan EVERY phase for ultracode-workflow migration candidates in BOTH worker modes — workflows are NOT read-only:
 - REVIEW fan-out: N read-only agents (one per section/lecture/question/source/footnote/file) whose aggregated results feed a gate/findings.
 - WRITE/TRANSFORM fan-out: N write-agents that create or transform artifacts from a FIXED spec (codemod, migration, per-item spec-driven generation) — worktree-isolated. These are often the STRONGEST candidates; do not dump them into "leave".
 Flag a phase when the SHAPE qualifies (N agents "one per X" over a known list) AND it wins ≥1 value driver: parallelism, context isolation, a deterministic gate replacing a model-reported "recompute by hand" score, or independent per-item mutation at scale. SPLIT the generation line: mechanical/spec-driven per-item creation → flag as transform candidate; only CREATIVE/judgment generation (brainstorm, novel prose) stays conversational. A mid-run user STRATEGY choice and a phase WRITING files are NOT disqualifiers.
-For each candidate set: phase, fanOut, workerMode (review/transform/none), valueDriver, recommend (strong/moderate/leave/already-migrated — use "already-migrated" if the phase already calls a Workflow({scriptPath}) dynamic workflow), note. If the target is workflow-creator, check whether Mode 2's audit fan-out and Mode 1 Step 6's file-generation fan-out call dynamic workflows (wc-audit.js / wc-generate.js) — mark them already-migrated if so. summary = "no dynamic-workflow candidates" if none qualify. Return CANDIDACY_SCHEMA.`,
+For each candidate set: phase, fanOut, workerMode (review/transform/none), valueDriver, recommend (strong/moderate/leave/already-migrated — use "already-migrated" if the phase already calls a Workflow({scriptPath}) ultracode workflow), note. If the target is workflow-creator, check whether Mode 2's audit fan-out and Mode 1 Step 6's file-generation fan-out call ultracode workflows (wc-audit.js / wc-generate.js) — mark them already-migrated if so. summary = "no ultracode-workflow candidates" if none qualify. Return CANDIDACY_SCHEMA.`,
   },
 ]
 
@@ -409,7 +409,7 @@ const candidacyTable = cand
   ? ['| Phase | Fan-out? | Worker mode | Value driver | Recommend | Note |', '|-------|----------|-------------|--------------|-----------|------|',
      ...((cand.candidates || []).length
         ? (cand.candidates || []).map(c => `| ${c.phase} | ${c.fanOut ? '✅' : '❌'} | ${c.workerMode} | ${c.valueDriver} | ${c.recommend} | ${(c.note || '').replace(/\|/g, '\\|').slice(0, 100)} |`)
-        : [`| — | — | — | — | — | ${cand.summary || 'no dynamic-workflow candidates'} |`])].join('\n')
+        : [`| — | — | — | — | — | ${cand.summary || 'no ultracode-workflow candidates'} |`])].join('\n')
   : '(candidacy scan not run this run)'
 
 const criticalGaps = findings.filter(f => f.severity === 'critical').slice(0, 12)
@@ -421,7 +421,7 @@ const scoreTable = [
   `| Architecture composite | ${composite} / 10 (${counted.length} scored${excluded.length ? `, ${excluded.length} excluded` : ''}) | ${composite >= THRESHOLD ? '✅' : '❌'} |`,
   `| Enforcement checklist | ${enf ? `${(enf.patterns || []).filter(p => p.status === 'Present').length}/${(enf.patterns || []).length} Present` : 'n/a'} | ${enf && (enf.patterns || []).every(p => p.status !== 'Absent') ? '✅' : '⚠️'} |`,
   `| Path portability | ${port ? port.status : 'n/a'} | ${port && port.status === 'Clean' ? '✅' : '❌'} |`,
-  `| Dynamic-workflow candidacy | ${cand ? `${(cand.candidates || []).filter(c => c.recommend === 'strong' || c.recommend === 'moderate').length} open` : 'n/a'} | ${cand && !(cand.candidates || []).some(c => c.recommend === 'strong') ? '✅' : '⚠️'} |`,
+  `| Ultracode-workflow candidacy | ${cand ? `${(cand.candidates || []).filter(c => c.recommend === 'strong' || c.recommend === 'moderate').length} open` : 'n/a'} | ${cand && !(cand.candidates || []).some(c => c.recommend === 'strong') ? '✅' : '⚠️'} |`,
   `| Critical findings | ${criticalCount} | ${criticalCount === 0 ? '✅' : '❌'} |`,
   `| **Substrate gate** | 0 crit / ${enfAbsent.length} enf-Absent / portability ${portStatus} | ${substratePass ? '✅' : '❌'} |`,
   `| **Overall** | substrate ${substratePass ? 'clean' : 'FAILED'} + composite ${composite} vs ${THRESHOLD} | ${overallPass ? '✅ PASS' : '❌ NEEDS WORK'} |`,
@@ -444,7 +444,7 @@ const reportMarkdown = [
   `### Path Portability`,
   portTable,
   ``,
-  `### Dynamic-Workflow Migration Candidates`,
+  `### Ultracode-Workflow Migration Candidates`,
   candidacyTable,
   ``,
   `### Critical Gaps`,
@@ -466,7 +466,7 @@ return {
   summary: { composite, substratePass, criticalCount, enfAbsent: enfAbsent.length, totalFindings: findings.length, scored: counted.length, ceilingNoted: ceilingNoted.length },
   scoreTable,                 // dimension-level gate table
   reportMarkdown,             // full AUDIT.md body the skill writes verbatim
-  candidacyTable,             // the Dynamic-Workflow Migration Candidates table
+  candidacyTable,             // the Ultracode-Workflow Migration Candidates table
   findings,                   // severity-ordered, verified
   reviews,                    // raw per-dimension records — pass back as priorReviews on a selective re-audit
   reviewersThatFlagged: reviews

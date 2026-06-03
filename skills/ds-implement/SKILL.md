@@ -98,7 +98,7 @@ This applies even when YOU think:
 <EXTREMELY-IMPORTANT>
 **YOU MUST NOT WRITE ANALYSIS CODE IN MAIN CHAT. This is not negotiable.**
 
-You orchestrate the **`ds-implement` dynamic workflow**, which reads the hardened PLAN.md Task Breakdown table, builds the data-flow DAG, and runs each dependency level's tasks output-first (one ds-analyst/ds-engineer per task, writing directly to the project). You drive the level loop; the workflow's implementers do the analysis/ETL.
+You orchestrate the **`ds-implement` ultracode workflow**, which reads the hardened PLAN.md Task Breakdown table, builds the data-flow DAG, and runs each dependency level's tasks output-first (one ds-analyst/ds-engineer per task, writing directly to the project). You drive the level loop; the workflow's implementers do the analysis/ETL.
 
 ```
 0. Set the goal (once): /goal All tasks in PLAN.md are marked [x], each task's Verify

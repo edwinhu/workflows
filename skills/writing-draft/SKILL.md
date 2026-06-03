@@ -30,7 +30,7 @@ hooks:
 
 # Writing Draft
 
-Expand detailed section outlines into prose via the `writing-draft` dynamic workflow — one write-agent per section, in parallel — applying domain-specific style rules. The skill owns the gate, the `/goal` loop, and the mandatory source-verify; the workflow owns the per-section fan-out + JS gate.
+Expand detailed section outlines into prose via the `writing-draft` ultracode workflow — one write-agent per section, in parallel — applying domain-specific style rules. The skill owns the gate, the `/goal` loop, and the mandatory source-verify; the workflow owns the per-section fan-out + JS gate.
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and at least one section outline in `outlines/` must exist.
 
@@ -46,7 +46,7 @@ Auto-load all constraints matching `applies-to: writing-draft` (includes constra
 
 ## Draft Flowchart (This IS the Spec)
 
-Drafting is a **dynamic TRANSFORM workflow**, not hand-drafting. The skill keeps the gate, the `/goal` loop, and the mandatory source-verify; the `writing-draft` workflow owns the per-section fan-out (one write-agent per section, in parallel) and computes the gate in JS. The outline is the spec; each write-agent EXPANDS its section's outline into prose — adding only local prose craft, citations from real sources, and the bridges to neighbors.
+Drafting is a **ultracode TRANSFORM workflow**, not hand-drafting. The skill keeps the gate, the `/goal` loop, and the mandatory source-verify; the `writing-draft` workflow owns the per-section fan-out (one write-agent per section, in parallel) and computes the gate in JS. The outline is the spec; each write-agent EXPANDS its section's outline into prose — adding only local prose craft, citations from real sources, and the bridges to neighbors.
 
 ```
 START (all section outlines in outlines/ exist, OUTLINE_REVIEWED.md APPROVED)
@@ -203,7 +203,7 @@ Skill(skill="workflows:ai-anti-patterns")
 
 ### Step 3: Run the writing-draft workflow + drive the /goal loop
 
-Drafting is the `writing-draft` **dynamic workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents. Invoke it once over the whole document:
+Drafting is the `writing-draft` **ultracode workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents. Invoke it once over the whole document:
 
 ```
 Workflow(name="writing-draft", args={
