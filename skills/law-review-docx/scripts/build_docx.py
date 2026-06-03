@@ -651,6 +651,616 @@ def force_widow_control(docx_path: Path) -> None:
     shutil.move(tmp, docx_path)
 
 
+# ---------------------------------------------------------------------------
+# great_tables / booktabs table styling (post-build pass)
+# ---------------------------------------------------------------------------
+#
+# pandoc emits tables with equal-width columns, full grid borders, and no
+# real style. This pass restyles every native Word table to mimic the
+# great_tables (booktabs) look the law-review draft targets, and — crucially —
+# makes that styling durable: it runs on every build, so manual docx fixes
+# that would otherwise be wiped no longer have to be made by hand.
+#
+# Per table it:
+#   - content-fits column widths (body label cells sized to the full phrase so
+#     multi-word labels stay on one line; headers sized to the longest WORD so
+#     multi-word headers may wrap; every column floored at its longest token so
+#     numbers/words never split mid-token);
+#   - centers the table (tblPr jc=center, fixed layout);
+#   - applies booktabs borders (table top+bottom rule, header-row midrule, no
+#     interior/vertical rules) and removes cell shading;
+#   - bolds the header row, right-aligns numeric columns (auto-detected),
+#     left-aligns text columns;
+#   - adds cell padding, marks rows cantSplit, and gives the caption keepNext;
+#   - if a table's natural width exceeds the usable text width, shrinks THAT
+#     table's font (floor 8pt) and scales widths by the same factor so nothing
+#     wraps;
+#   - for tables too wide to fit even at 8pt portrait, moves the table onto its
+#     own LANDSCAPE section with the caption and trailing Note travelling with
+#     it (no stranded caption/note, no blank portrait page around it).
+#
+# Standard PostScript Times-Roman advance widths (per 1000 em). Used to
+# estimate rendered text width without a font-metrics dependency. The law
+# review body font is a Times clone, so these track Word's layout closely
+# enough for content-fitting.
+_TIMES_ROMAN_W = {
+    ' ': 250, '!': 333, '"': 408, '#': 500, '$': 500, '%': 833, '&': 778,
+    "'": 180, '(': 333, ')': 333, '*': 500, '+': 564, ',': 250, '-': 333,
+    '.': 250, '/': 278, '0': 500, '1': 500, '2': 500, '3': 500, '4': 500,
+    '5': 500, '6': 500, '7': 500, '8': 500, '9': 500, ':': 278, ';': 278,
+    '<': 564, '=': 564, '>': 564, '?': 444, '@': 921, 'A': 722, 'B': 667,
+    'C': 667, 'D': 722, 'E': 611, 'F': 556, 'G': 722, 'H': 722, 'I': 333,
+    'J': 389, 'K': 722, 'L': 611, 'M': 889, 'N': 722, 'O': 722, 'P': 556,
+    'Q': 722, 'R': 667, 'S': 556, 'T': 611, 'U': 722, 'V': 722, 'W': 944,
+    'X': 722, 'Y': 722, 'Z': 611, '[': 333, '\\': 278, ']': 333, '^': 469,
+    '_': 500, '`': 333, 'a': 444, 'b': 500, 'c': 444, 'd': 500, 'e': 444,
+    'f': 333, 'g': 500, 'h': 500, 'i': 278, 'j': 278, 'k': 500, 'l': 278,
+    'm': 778, 'n': 500, 'o': 500, 'p': 500, 'q': 500, 'r': 333, 's': 389,
+    't': 278, 'u': 500, 'v': 500, 'w': 722, 'x': 500, 'y': 500, 'z': 444,
+    '{': 480, '|': 200, '}': 480, '~': 541,
+    # common unicode the drafts use
+    '–': 500, '—': 1000, '‘': 333, '’': 333,
+    '“': 444, '”': 444, '…': 1000, '×': 564, '−': 564,
+}
+_TIMES_DEFAULT_W = 500
+# Bold runs render a little wider than the regular metrics; pad header-derived
+# widths so bolded header words don't wrap unexpectedly.
+_BOLD_FACTOR = 1.14
+# General slack on every estimated width. The body font is a Times clone but
+# not exactly Times, and Word rounds column widths; a few percent of headroom
+# guarantees the longest token never splits at the column boundary.
+_WIDTH_SLACK = 1.06
+_FONT_FLOOR_PT = 8.0
+# Cell padding (twips) added inside every column width.
+_CELL_MAR_LR = 100  # left + right each
+_CELL_MAR_TB = 40   # top + bottom each
+
+
+def _text_twips(s: str, font_pt: float) -> float:
+    """Approximate rendered width of `s` in twips at `font_pt` (Times-Roman)."""
+    units = sum(_TIMES_ROMAN_W.get(c, _TIMES_DEFAULT_W) for c in s)
+    return units / 1000.0 * font_pt * 20.0
+
+
+def style_tables(docx_path: Path) -> None:
+    """Restyle every native Word table to the great_tables (booktabs) look.
+
+    Idempotent: re-running on an already-styled document reproduces the same
+    result (borders/shading/alignment/widths are overwritten, not appended;
+    cantSplit/keepNext/sectPr insertions are guarded against duplication).
+    """
+    import zipfile, shutil
+    import xml.etree.ElementTree as ET
+
+    W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    ns = f"{{{W}}}"
+
+    with zipfile.ZipFile(docx_path, 'r') as z:
+        contents = {n: z.read(n) for n in z.namelist()}
+    raw = contents['word/document.xml'].decode('utf-8')
+
+    # Register EVERY namespace declared anywhere in the document so ET round-trips
+    # prefixes (w, r, m, a, pic, wp, ...) verbatim — otherwise r:id / drawing
+    # references for figures get rewritten to ns0: and break.
+    for prefix, uri in re.findall(r'xmlns:(\w+)="([^"]+)"', raw):
+        try:
+            ET.register_namespace(prefix, uri)
+        except ValueError:
+            pass
+
+    root = ET.fromstring(raw)
+    body = root.find(f"{ns}body")
+    if body is None:
+        return
+
+    def el(tag, **a):
+        e = ET.Element(f"{ns}{tag}")
+        for k, v in a.items():
+            e.set(f"{ns}{k}", str(v))
+        return e
+
+    def border(tag, val, sz):
+        return el(tag, val=val, sz=sz, space=0, color="000000")
+
+    def ctext(tc):
+        return "".join(t.text or "" for t in tc.iter(f"{ns}t")).strip()
+
+    NUM = re.compile(r'^[\(\-–]?[\d,]+\.?\d*%?\)?$|^[–-]$|^\$')
+
+    def is_num(s):
+        s = s.strip()
+        return bool(s) and bool(NUM.match(s))
+
+    def get_or_make(parent, child_tag, index=0):
+        c = parent.find(f"{ns}{child_tag}")
+        if c is None:
+            c = ET.Element(f"{ns}{child_tag}")
+            parent.insert(index, c)
+        return c
+
+    def set_align(tc, val):
+        for p in tc.findall(f"{ns}p"):
+            pPr = get_or_make(p, "pPr")
+            jc = pPr.find(f"{ns}jc")
+            if jc is None:
+                jc = ET.SubElement(pPr, f"{ns}jc")
+            jc.set(f"{ns}val", val)
+
+    def set_run_font(tc, half_pt, bold):
+        for r in tc.iter(f"{ns}r"):
+            rPr = r.find(f"{ns}rPr")
+            if rPr is None:
+                rPr = ET.Element(f"{ns}rPr")
+                r.insert(0, rPr)
+            for tag in ("sz", "szCs"):
+                e = rPr.find(f"{ns}{tag}")
+                if e is None:
+                    e = ET.SubElement(rPr, f"{ns}{tag}")
+                e.set(f"{ns}val", str(half_pt))
+            if bold and rPr.find(f"{ns}b") is None:
+                rPr.append(el("b"))
+
+    # --- usable text width from the body's final sectPr -------------------
+    final_sect = None
+    for ch in list(body):
+        if ch.tag == f"{ns}sectPr":
+            final_sect = ch
+    pg_w, marg_l, marg_r = 12240, 1800, 1800
+    if final_sect is not None:
+        pgsz = final_sect.find(f"{ns}pgSz")
+        if pgsz is not None:
+            pg_w = int(pgsz.get(f"{ns}w", pg_w))
+            pg_h = int(pgsz.get(f"{ns}h", 15840))
+            # Normalize to PORTRAIT base dims. A previous run may have rotated the
+            # body-final sectPr to landscape (end-of-doc landscape table); without
+            # this, re-runs would read the rotated dims and mis-size everything.
+            if pgsz.get(f"{ns}orient") == "landscape" or pg_w > pg_h:
+                pg_w, pg_h = min(pg_w, pg_h), max(pg_w, pg_h)
+        else:
+            pg_h = 15840
+        pgmar = final_sect.find(f"{ns}pgMar")
+        if pgmar is not None:
+            marg_l = int(pgmar.get(f"{ns}left", marg_l))
+            marg_r = int(pgmar.get(f"{ns}right", marg_r))
+    else:
+        pg_h = 15840
+    usable_portrait = pg_w - marg_l - marg_r
+    usable_landscape = pg_h - marg_l - marg_r  # rotated: portrait height becomes width
+
+    base_half = _doc_default_half(contents.get('word/styles.xml', b'').decode('utf-8', 'ignore'))
+    base_pt = base_half / 2.0
+
+    tables = list(body.iter(f"{ns}tbl"))
+    landscape_tables = []  # (tbl_element,) needing landscape section
+
+    for t in tables:
+        grid = t.find(f"{ns}tblGrid")
+        if grid is None:
+            continue
+        gridcols = grid.findall(f"{ns}gridCol")
+        ncol = len(gridcols)
+        if ncol == 0:
+            continue
+        rows = t.findall(f"{ns}tr")
+        if not rows:
+            continue
+
+        # Base font is ALWAYS the document default — never an explicit run size,
+        # which on a re-run would be the size WE applied (compounding shrink and
+        # breaking idempotency). pandoc never emits w:sz on table runs, so the
+        # default is the true starting point.
+        tbl_base_half = base_half
+        tbl_base_pt = tbl_base_half / 2.0
+
+        # --- content-fit column widths (in twips, at base font) -----------
+        content_w = [0.0] * ncol
+        min_w = _text_twips("00", tbl_base_pt)
+        for ri, tr in enumerate(rows):
+            pos = 0
+            for tc in tr.findall(f"{ns}tc"):
+                tcPr = tc.find(f"{ns}tcPr")
+                gs = tcPr.find(f"{ns}gridSpan") if tcPr is not None else None
+                span = int(gs.get(f"{ns}val")) if gs is not None else 1
+                text = ctext(tc)
+                if span == 1 and pos < ncol:
+                    is_header = (ri == 0)
+                    pad = _BOLD_FACTOR if is_header else 1.0
+                    # floor: longest single token never splits
+                    for tok in text.split():
+                        content_w[pos] = max(content_w[pos], _text_twips(tok, tbl_base_pt) * pad)
+                    # body label cells: keep the full phrase on one line
+                    if not is_header and text:
+                        content_w[pos] = max(content_w[pos], _text_twips(text, tbl_base_pt))
+                pos += span
+        content_w = [max(w * _WIDTH_SLACK, min_w) for w in content_w]
+        sum_content = sum(content_w)
+        margins_total = ncol * (2 * _CELL_MAR_LR)
+
+        # --- fit to usable width; shrink font + scale widths if needed ----
+        def fit_ratio(avail):
+            if sum_content <= 0:
+                return 1.0
+            return (avail - margins_total) / sum_content
+
+        orient = "portrait"
+        ratio = 1.0
+        natural_total = sum_content + margins_total
+        if natural_total <= usable_portrait:
+            ratio = 1.0
+        else:
+            r_p = fit_ratio(usable_portrait)
+            if tbl_base_pt * r_p >= _FONT_FLOOR_PT:
+                ratio = r_p
+            else:
+                orient = "landscape"
+                r_l = fit_ratio(usable_landscape)
+                if r_l >= 1.0:
+                    ratio = 1.0
+                elif tbl_base_pt * r_l >= _FONT_FLOOR_PT:
+                    ratio = r_l
+                else:
+                    # floor font at 8pt; size widths to the content at 8pt so
+                    # nothing wraps (table may marginally overflow, but the
+                    # alternative is split tokens).
+                    ratio = _FONT_FLOOR_PT / tbl_base_pt
+        font_pt = max(_FONT_FLOOR_PT, tbl_base_pt * ratio)
+        half_pt = max(int(round(_FONT_FLOOR_PT * 2)), int(round(font_pt * 2)))
+
+        final_total = [int(round(content_w[c] * ratio)) + 2 * _CELL_MAR_LR for c in range(ncol)]
+        tbl_total = sum(final_total)
+
+        # --- tblPr: width, centering, fixed layout, borders, padding ------
+        tblPr = get_or_make(t, "tblPr", 0)
+        # Drop pandoc's tblStyle reference (it points at a "Table" style absent
+        # from this template; a missing/grid style can reintroduce borders) and
+        # neutralize conditional formatting so only our explicit borders show.
+        for e in tblPr.findall(f"{ns}tblStyle"):
+            tblPr.remove(e)
+        for e in tblPr.findall(f"{ns}tblLook"):
+            tblPr.remove(e)
+        # tblW
+        for e in tblPr.findall(f"{ns}tblW"):
+            tblPr.remove(e)
+        tblPr.append(el("tblW", w=tbl_total, type="dxa"))
+        # jc center (remove + re-append so element order is a fixed point)
+        for e in tblPr.findall(f"{ns}jc"):
+            tblPr.remove(e)
+        tblPr.append(el("jc", val="center"))
+        # small indent matching the GT target
+        for e in tblPr.findall(f"{ns}tblInd"):
+            tblPr.remove(e)
+        tblPr.append(el("tblInd", w=108, type="dxa"))
+        # fixed layout so our widths are honoured
+        for e in tblPr.findall(f"{ns}tblLayout"):
+            tblPr.remove(e)
+        tblPr.append(el("tblLayout", type="fixed"))
+        # booktabs borders: outer top+bottom only
+        for e in tblPr.findall(f"{ns}tblBorders"):
+            tblPr.remove(e)
+        tb = el("tblBorders")
+        tb.append(border("top", "single", 8))
+        tb.append(border("bottom", "single", 8))
+        for z in ("left", "right", "insideH", "insideV"):
+            tb.append(el(z, val="nil"))
+        tblPr.append(tb)
+        # cell padding
+        for e in tblPr.findall(f"{ns}tblCellMar"):
+            tblPr.remove(e)
+        cm = el("tblCellMar")
+        cm.append(el("top", w=_CELL_MAR_TB, type="dxa"))
+        cm.append(el("bottom", w=_CELL_MAR_TB, type="dxa"))
+        cm.append(el("left", w=_CELL_MAR_LR, type="dxa"))
+        cm.append(el("right", w=_CELL_MAR_LR, type="dxa"))
+        tblPr.append(cm)
+
+        # --- tblGrid widths ----------------------------------------------
+        for c, gc in enumerate(gridcols):
+            gc.set(f"{ns}w", str(final_total[c]))
+
+        # --- numeric column detection (>=60% of body cells numeric) -------
+        numeric = [0] * ncol
+        total = [0] * ncol
+        for tr in rows[1:]:
+            pos = 0
+            for tc in tr.findall(f"{ns}tc"):
+                tcPr = tc.find(f"{ns}tcPr")
+                gs = tcPr.find(f"{ns}gridSpan") if tcPr is not None else None
+                span = int(gs.get(f"{ns}val")) if gs is not None else 1
+                if span == 1 and pos < ncol:
+                    s = ctext(tc)
+                    if s:
+                        total[pos] += 1
+                        numeric[pos] += 1 if is_num(s) else 0
+                pos += span
+        col_is_num = [total[c] > 0 and numeric[c] / total[c] >= 0.6 for c in range(ncol)]
+
+        # --- per-row / per-cell styling ----------------------------------
+        # Booktabs rules are drawn at the CELL level (tcBorders), which override
+        # any table style or conditional formatting — the table-level tblBorders
+        # alone is not enough because pandoc's tblStyle reference can reintroduce
+        # a full grid. top rule on the first row, midrule under the header,
+        # bottom rule on the last row; every interior edge nil.
+        nrows = len(rows)
+        last_row = nrows - 1
+        for ri, tr in enumerate(rows):
+            trPr = get_or_make(tr, "trPr", 0)
+            if trPr.find(f"{ns}cantSplit") is None:
+                trPr.append(el("cantSplit"))
+            pos = 0
+            for tc in tr.findall(f"{ns}tc"):
+                tcPr = get_or_make(tc, "tcPr", 0)
+                for sh in tcPr.findall(f"{ns}shd"):
+                    tcPr.remove(sh)
+                gs = tcPr.find(f"{ns}gridSpan")
+                span = int(gs.get(f"{ns}val")) if gs is not None else 1
+                # cell width = sum of spanned grid columns
+                cell_w = sum(final_total[pos:pos + span]) if pos < ncol else final_total[-1]
+                for e in tcPr.findall(f"{ns}tcW"):
+                    tcPr.remove(e)
+                tcPr.append(el("tcW", w=cell_w, type="dxa"))
+                col = pos
+                # explicit cell borders (booktabs)
+                for tcb in tcPr.findall(f"{ns}tcBorders"):
+                    tcPr.remove(tcb)
+                tcb = el("tcBorders")
+                tcb.append(border("top", "single", 8) if ri == 0 else el("top", val="nil"))
+                tcb.append(el("left", val="nil"))
+                if ri == last_row:
+                    tcb.append(border("bottom", "single", 8))
+                elif ri == 0:
+                    tcb.append(border("bottom", "single", 6))
+                else:
+                    tcb.append(el("bottom", val="nil"))
+                tcb.append(el("right", val="nil"))
+                tcb.append(el("insideH", val="nil"))
+                tcb.append(el("insideV", val="nil"))
+                tcPr.append(tcb)
+                align = "right" if (col < ncol and col_is_num[col]) else "left"
+                set_align(tc, align)
+                set_run_font(tc, half_pt, bold=(ri == 0))
+                pos += span
+
+        if orient == "landscape":
+            landscape_tables.append(t)
+
+    # --- heading keepNext + keepLines (idempotent) ------------------------
+    HEADING_STYLES = {"Heading1", "Heading2", "Heading3"}
+    for p in body.iter(f"{ns}p"):
+        pPr = p.find(f"{ns}pPr")
+        if pPr is None:
+            continue
+        pStyle = pPr.find(f"{ns}pStyle")
+        if pStyle is None:
+            continue
+        if pStyle.get(f"{ns}val") in HEADING_STYLES:
+            if pPr.find(f"{ns}keepNext") is None:
+                pPr.append(el("keepNext"))
+            if pPr.find(f"{ns}keepLines") is None:
+                pPr.append(el("keepLines"))
+
+    # --- caption keepNext (paragraph immediately before each table) -------
+    def para_text(p):
+        return "".join(x.text or "" for x in p.iter(f"{ns}t"))
+
+    def is_caption(p):
+        if p.tag != f"{ns}p":
+            return False
+        pPr = p.find(f"{ns}pPr")
+        if pPr is not None:
+            ps = pPr.find(f"{ns}pStyle")
+            if ps is not None and ps.get(f"{ns}val") in ("TableCaption", "Caption"):
+                return True
+        return bool(re.match(r'\s*Table\s', para_text(p)))
+
+    children = list(body)
+    for idx, ch in enumerate(children):
+        if ch.tag == f"{ns}tbl" and idx > 0:
+            # nearest preceding paragraph (skip bookmarks)
+            j = idx - 1
+            while j >= 0 and children[j].tag != f"{ns}p":
+                j -= 1
+            if j >= 0 and is_caption(children[j]):
+                pPr = get_or_make(children[j], "pPr")
+                if pPr.find(f"{ns}keepNext") is None:
+                    pPr.append(el("keepNext"))
+
+    # --- landscape sections for over-wide tables --------------------------
+    def clone_sect(landscape):
+        if final_sect is not None:
+            sect = ET.fromstring(ET.tostring(final_sect, encoding='unicode'))
+        else:
+            sect = el("sectPr")
+            sect.append(el("type", val="nextPage"))
+            sect.append(el("pgSz", w=12240, h=15840))
+            sect.append(el("pgMar", top=1440, bottom=1440, left=marg_l, right=marg_r))
+        # force a plain next-page break (never even/odd -> avoids blank pages)
+        for ty in sect.findall(f"{ns}type"):
+            sect.remove(ty)
+        sect.insert(0, el("type", val="nextPage"))
+        pgsz = sect.find(f"{ns}pgSz")
+        if pgsz is None:
+            pgsz = ET.SubElement(sect, f"{ns}pgSz")
+        if landscape:
+            pgsz.set(f"{ns}w", str(pg_h))   # rotate
+            pgsz.set(f"{ns}h", str(pg_w))
+            pgsz.set(f"{ns}orient", "landscape")
+        else:
+            pgsz.set(f"{ns}w", str(pg_w))
+            pgsz.set(f"{ns}h", str(pg_h))
+            if pgsz.get(f"{ns}orient"):
+                del pgsz.attrib[f"{ns}orient"]
+        return sect
+
+    def add_sectpr_to_para(p, sect):
+        pPr = get_or_make(p, "pPr")
+        # idempotent: replace any existing sectPr
+        for e in pPr.findall(f"{ns}sectPr"):
+            pPr.remove(e)
+        # sectPr must precede rPr within pPr
+        rPr = pPr.find(f"{ns}rPr")
+        if rPr is not None:
+            pPr.insert(list(pPr).index(rPr), sect)
+        else:
+            pPr.append(sect)
+
+    def make_landscape(sect):
+        """Rotate an existing sectPr to landscape, plain next-page (in place)."""
+        for ty in sect.findall(f"{ns}type"):
+            sect.remove(ty)
+        sect.insert(0, el("type", val="nextPage"))
+        pgsz = sect.find(f"{ns}pgSz")
+        if pgsz is None:
+            pgsz = ET.SubElement(sect, f"{ns}pgSz")
+        pgsz.set(f"{ns}w", str(pg_h))
+        pgsz.set(f"{ns}h", str(pg_w))
+        pgsz.set(f"{ns}orient", "landscape")
+
+    for t in landscape_tables:
+        children = list(body)
+        try:
+            idx = children.index(t)
+        except ValueError:
+            continue
+        # caption = nearest preceding paragraph
+        ci = idx - 1
+        while ci >= 0 and children[ci].tag != f"{ns}p":
+            ci -= 1
+        caption = children[ci] if (ci >= 0 and is_caption(children[ci])) else None
+        island_start = ci if caption is not None else idx
+        caption_el = children[island_start] if caption is not None else None
+
+        # portrait terminator target: nearest paragraph before the island start
+        pj = island_start - 1
+        while pj >= 0 and children[pj].tag != f"{ns}p":
+            pj -= 1
+        term_para = children[pj] if pj >= 0 else None
+
+        # trailing Note paragraph(s) immediately after the table
+        nj = idx + 1
+        note_el = None
+        while nj < len(children):
+            nxt = children[nj]
+            if nxt.tag == f"{ns}p":
+                txt = para_text(nxt).strip()
+                if re.match(r'(?i)^(note|notes|source|sources)\b', txt):
+                    note_el = nxt
+                    nj += 1
+                    continue
+                break
+            elif nxt.tag in (f"{ns}bookmarkStart", f"{ns}bookmarkEnd"):
+                nj += 1
+                continue
+            break
+
+        island_end_el = note_el if note_el is not None else t
+        island_end_idx = children.index(island_end_el)
+        # Is there REAL content after the island (non-empty paragraph or table)?
+        # A trailing empty paragraph is NOT content — counting it would strand a
+        # blank portrait page after an end-of-document landscape table.
+        has_trailing = any(
+            children[k].tag == f"{ns}tbl"
+            or (children[k].tag == f"{ns}p" and para_text(children[k]).strip())
+            for k in range(island_end_idx + 1, len(children))
+        )
+
+        # 1) portrait terminator before the caption (always)
+        if term_para is not None:
+            add_sectpr_to_para(term_para, clone_sect(landscape=False))
+        else:
+            term = el("p")
+            add_sectpr_to_para(term, clone_sect(landscape=False))
+            insert_at = list(body).index(caption_el) if caption_el is not None else list(body).index(t)
+            body.insert(insert_at, term)
+
+        # 2) close the landscape section
+        if has_trailing:
+            # real content follows -> end the landscape section on the note (or a
+            # new empty paragraph after the table) so the rest stays portrait.
+            if note_el is not None:
+                add_sectpr_to_para(note_el, clone_sect(landscape=True))
+            else:
+                land_para = el("p")
+                add_sectpr_to_para(land_para, clone_sect(landscape=True))
+                body.insert(list(body).index(t) + 1, land_para)
+        else:
+            # island is the last content in the document -> make the BODY-FINAL
+            # sectPr landscape rather than adding a break, so no empty portrait
+            # page is stranded after it.
+            if note_el is not None:
+                npr = note_el.find(f"{ns}pPr")
+                if npr is not None:
+                    for e in npr.findall(f"{ns}sectPr"):
+                        npr.remove(e)
+            if final_sect is not None:
+                make_landscape(final_sect)
+            else:
+                body.append(clone_sect(landscape=True))
+
+    # --- normalize child order to the OOXML schema -----------------------
+    # Word silently DROPS properties that appear out of canonical order (e.g.
+    # tblBorders after tblLayout, or tcW after gridSpan), which is how a full
+    # grid leaks back in. Re-sort the children of every properties element we
+    # touch into schema order. Unknown tags are pushed to the end, preserving
+    # their relative order.
+    _ORDERS = {
+        "tblPr": ["tblStyle", "tblpPr", "tblOverlap", "bidiVisual",
+                  "tblStyleRowBandSize", "tblStyleColBandSize", "tblW", "jc",
+                  "tblCellSpacing", "tblInd", "tblBorders", "shd", "tblLayout",
+                  "tblCellMar", "tblLook", "tblCaption", "tblDescription"],
+        "trPr": ["cnfStyle", "divId", "gridBefore", "gridAfter", "wBefore",
+                 "wAfter", "cantSplit", "trHeight", "tblHeader",
+                 "tblCellSpacing", "jc", "hidden", "ins", "del", "trPrChange"],
+        "tcPr": ["cnfStyle", "tcW", "gridSpan", "hMerge", "vMerge", "tcBorders",
+                 "shd", "noWrap", "tcMar", "textDirection", "tcFit", "vAlign",
+                 "hideMark"],
+        "pPr": ["pStyle", "keepNext", "keepLines", "pageBreakBefore", "framePr",
+                "widowControl", "numPr", "suppressLineNumbers", "pBdr", "shd",
+                "tabs", "suppressAutoHyphens", "kinsoku", "wordWrap",
+                "overflowPunct", "topLinePunct", "autoSpaceDE", "autoSpaceDN",
+                "bidi", "adjustRightInd", "snapToGrid", "spacing", "ind",
+                "contextualSpacing", "mirrorIndents", "suppressOverlap", "jc",
+                "textDirection", "textAlignment", "textboxTightWrap",
+                "outlineLvl", "divId", "cnfStyle", "rPr", "sectPr", "pPrChange"],
+    }
+
+    def reorder(parent, order):
+        rank = {t: i for i, t in enumerate(order)}
+        kids = list(parent)
+        kids.sort(key=lambda e: rank.get(e.tag.split('}')[-1], len(order)))
+        for k in kids:
+            parent.remove(k)
+        for k in kids:
+            parent.append(k)
+
+    for tag in ("tblPr", "trPr", "tcPr"):
+        for e in body.iter(f"{ns}{tag}"):
+            reorder(e, _ORDERS[tag])
+    for p in body.iter(f"{ns}p"):
+        pPr = p.find(f"{ns}pPr")
+        if pPr is not None:
+            reorder(pPr, _ORDERS["pPr"])
+
+    new_xml = ET.tostring(root, encoding='unicode')
+    if not new_xml.lstrip().startswith('<?xml'):
+        new_xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' + new_xml
+    contents['word/document.xml'] = new_xml.encode('utf-8')
+
+    tmp = docx_path.with_suffix('.docx.tmp')
+    with zipfile.ZipFile(docx_path, 'r') as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            zout.writestr(item, contents[item.filename])
+    shutil.move(tmp, docx_path)
+
+
+def _doc_default_half(styles_xml: str) -> int:
+    """Document default font size in half-points (e.g. 24 == 12pt)."""
+    m = re.search(r'<w:docDefaults>.*?<w:rPrDefault>.*?<w:sz w:val="(\d+)"',
+                  styles_xml, re.DOTALL)
+    if m:
+        return int(m.group(1))
+    return 24
+
+
 def build(project_dir: Path, output: Optional[Path] = None, fix_footnotes: bool = True, pdf: bool = False) -> Path:
     drafts = sorted(project_dir.glob("drafts/*Draft*.md"), key=sort_key)
     if not drafts:
@@ -764,6 +1374,10 @@ date: "{meta['date']}"
                  str(crossrefs_script), "--docx", str(output)],
                 capture_output=True,
             )
+
+    # Restyle native tables (booktabs look + content-fit widths + landscape for
+    # over-wide tables). Runs LAST so nothing downstream disturbs the tables.
+    style_tables(output)
 
     print(f"Output: {output}")
     print(f"Sections: {len(drafts)}")
