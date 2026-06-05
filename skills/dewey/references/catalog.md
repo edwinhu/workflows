@@ -1,0 +1,324 @@
+# Dewey Data Catalog (UVA/NYU subscription)
+
+Auto-generated map of the Dewey catalog accessible under the institutional subscription — **249 datasets / 39 partners** (≈96% of the 258 advertised; a few near-duplicate variants omitted). Access: **DL**=downloadable, **sample**=sample-only, **—**=view-only. Coverage = date-partition range (else `snapshot`). Regenerate via the MCP `search_datasets`+`get_download_info` sweep (see `mcp.md`).
+
+> Sizes/rows are as reported by `get_download_info`. Empty size = not reported. Use this to pick a dataset, then `get_dataset_schema` / `read_sample` before any bulk pull (SKILL Iron Law).
+
+## Categories
+
+- **Company Insights** — 78 datasets (57 downloadable)
+- **Consumer Transactions** — 53 datasets (53 downloadable)
+- **Finance** — 11 datasets (11 downloadable)
+- **Government** — 8 datasets (3 downloadable)
+- **Location** — 1 datasets (1 downloadable)
+- **Mobility** — 10 datasets (10 downloadable)
+- **Real Estate** — 5 datasets (5 downloadable)
+- **Supply Chain** — 3 datasets (3 downloadable)
+- **Tech, Telecom, and Social Media** — 17 datasets (17 downloadable)
+- **Uncategorized** — 57 datasets (25 downloadable)
+- **Weather & ESG** — 6 datasets (5 downloadable)
+
+
+## Company Insights  (78 datasets, 57 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| BrightQuery | 504 Data | snapshot | 135K | 5MB | DL |
+| BrightQuery | 504 Data - Legal Entity | snapshot | 298K | 37MB | DL |
+| BrightQuery | 7a - Legal Entity | snapshot | 202K | 23MB | DL |
+| BrightQuery | 7a Data | snapshot | 753K | 31MB | DL |
+| BrightQuery | Age Range | snapshot | 24.1M | 2GB | DL |
+| BrightQuery | Benefit Plan Data | snapshot | 59K | 3MB | DL |
+| BrightQuery | Corporate Status | snapshot | 2.7M | 82MB | DL |
+| BrightQuery | Employment Data (Annual) | snapshot | 68K | 1MB | DL |
+| BrightQuery | Employment Data (Monthly) | snapshot | 780K | 6MB | DL |
+| BrightQuery | Employment Data (Most Recent) | snapshot | 5K | 194KB | DL |
+| BrightQuery | Employment Data (Quarterly) | snapshot | 283K | 3MB | DL |
+| BrightQuery | Financials (Annual) | snapshot | 591K | 138MB | DL |
+| BrightQuery | Firmographic Information | snapshot | 38K | 3MB | DL |
+| BrightQuery | Industry | snapshot | 32K | 28MB | DL |
+| BrightQuery | Legal Entity | snapshot | 1.4M | 171MB | DL |
+| BrightQuery | New Company Formations | snapshot | 100K | 361KB | DL |
+| BrightQuery | Occupational Wage Data | snapshot | 25.5M | 1GB | DL |
+| BrightQuery | Revenue Range | snapshot | 30.0M | 2GB | DL |
+| BrightQuery | Sector | snapshot | 1K | 882KB | DL |
+| BrightQuery | Stock Class | snapshot | 1.5M | 61MB | sample |
+| BrightQuery | Stock Event Timeline | snapshot | 2.0M | 43MB | DL |
+| BrightQuery | Stock Group | snapshot | 1.1M | 44MB | DL |
+| BrightQuery | Stock Group - Most Recent | snapshot | 343K | 10MB | DL |
+| BrightQuery | Stock Time Series | snapshot | 423K | 21MB | DL |
+| BrightQuery | Stock Time Series - Daily | snapshot | 1.3B | 6GB | DL |
+| BrightQuery | Stock Time Series - Most Recent | snapshot | 406K | 19MB | DL |
+| Capology | Professional Football Salary Data | snapshot | 152K | 9MB | DL |
+| LinkUp | Company Analytics | 2007-08→2026-05 | 123.3M |  | DL |
+| LinkUp | Company and Ticker Reference | snapshot | 201K |  | DL |
+| LinkUp | Job Records | 2007-08→2026-05 | 342.0M |  | DL |
+| LinkUp | ONET Taxonomy | snapshot | 342.6M |  | DL |
+| LinkUp | Ticker Analytics | 2007-08→2026-05 | 25.6M |  | DL |
+| People Data Labs | Affiliated Profile | snapshot | 342K |  | sample |
+| People Data Labs | Alternative Domain | snapshot | 6.3M |  | sample |
+| People Data Labs | Alternative Name | snapshot | 3.0M |  | sample |
+| People Data Labs | Average Tenure by Level | snapshot | 281.6M |  | DL |
+| People Data Labs | Average Tenure by Role | snapshot | 647.7M |  | sample |
+| People Data Labs | Certification | snapshot | 303.5M |  | DL |
+| People Data Labs | Company Insights | snapshot | 74.7M |  | DL |
+| People Data Labs | Country | snapshot | 839.1M |  | DL |
+| People Data Labs | Degree | snapshot | 475.3M |  | DL |
+| People Data Labs | Direct Subsidiary | snapshot | 137K |  | sample |
+| People Data Labs | Employee Churn Rate | snapshot | 74.7M |  | DL |
+| People Data Labs | Employee Count by Country | snapshot | 55.8M |  | sample |
+| People Data Labs | Employee Count by Month | snapshot | 3.2B |  | DL |
+| People Data Labs | Employee Count by Month by Level | snapshot | 19.1B |  | DL |
+| People Data Labs | Employee Count by Month by Role | snapshot | 76.1B |  | DL |
+| People Data Labs | Employee Growth Rate | snapshot | 74.7M |  | sample |
+| People Data Labs | Employee Growth Rate 12 Month by Role | snapshot | 675.9M |  | DL |
+| People Data Labs | Experience Title Level | snapshot | 434.0M |  | DL |
+| People Data Labs | Funding Stage | snapshot | 476K |  | sample |
+| People Data Labs | Gross Additions by Month | snapshot | 2.7B |  | sample |
+| People Data Labs | Gross Departures by Month | snapshot | 1.9B |  | sample |
+| People Data Labs | Interest | snapshot | 302.1M |  | DL |
+| People Data Labs | Job Title Level | snapshot | 137.7M |  | DL |
+| People Data Labs | Linkedin Profile | snapshot | 157.9M |  | sample |
+| People Data Labs | Location | snapshot | 74.7M |  | DL |
+| People Data Labs | Location Name | snapshot | 846.5M |  | DL |
+| People Data Labs | Minor | snapshot | 2.4M |  | DL |
+| People Data Labs | NAICS | snapshot | 8.3M |  | DL |
+| People Data Labs | Person | snapshot | 812.3M |  | DL |
+| People Data Labs | Profile | snapshot | 940.0M |  | DL |
+| People Data Labs | Recent Exec Departure | snapshot | 195K |  | sample |
+| People Data Labs | Recent Exec Hire | snapshot | 232K |  | sample |
+| People Data Labs | SIC | snapshot | 7.3M |  | sample |
+| People Data Labs | Skill | snapshot | 3.4B |  | DL |
+| People Data Labs | Subsidiary | snapshot | 175K |  | sample |
+| People Data Labs | Tag | snapshot | 63.4M |  | sample |
+| People Data Labs | Top Next Employer by Role | snapshot | 341.6M |  | sample |
+| People Data Labs | Top Previous Employer 12 Month | snapshot | 27.0M |  | sample |
+| People Data Labs | Top Previous Employer by Role | snapshot | 376.8M |  | sample |
+| People Data Labs | Top US Employee Metro | snapshot | 10.7M |  | sample |
+| Rhetorik | Company Data | snapshot | 290.4M | 57GB | DL |
+| Rhetorik | Office Data | snapshot | 291.9M | 67GB | DL |
+| WageScape | Job Postings with Salary | 2016-04→2025-03 | 323.6M |  | DL |
+| WageScape | Role Mapping | snapshot | 17.5M | 165MB | DL |
+| WageScape | Time Log | snapshot | 4.8M | 38MB | DL |
+| WageScape | Titles | snapshot | 116.5M | 1GB | DL |
+
+## Consumer Transactions  (53 datasets, 53 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| ConsumerEdge | Brand Detail (URL, Etc.) | snapshot | 14K |  | DL |
+| ConsumerEdge | Brand and Demographic Cohort Breakout | 2021-01→2026-03 | 67.3M |  | DL |
+| ConsumerEdge | Brand and Demographic Cohort Breakout USA 1 | 2023-04→2026-04 | 42.8M |  | DL |
+| ConsumerEdge | Brand and Geography Cohort Breakout | 2021-01→2026-03 | 213.1M |  | DL |
+| ConsumerEdge | Brand and Geography Cohort Breakout USA 1 | 2023-04→2026-04 | 119.4M |  | DL |
+| ConsumerEdge | Brand and Transaction Amount Range Breakout | 2021-01→2026-03 | 33.3M |  | DL |
+| ConsumerEdge | Brand and Transaction Amount Range Breakout USA 1 | 2023-04→2026-04 | 15.9M |  | DL |
+| ConsumerEdge | Company Detail (Symbol, ISIN, RIC, Ownership Status, Etc.) | snapshot | 1K |  | DL |
+| ConsumerEdge | Cross-Shop Brand Breakout | 2021-01→2026-03 | 118.7M |  | DL |
+| ConsumerEdge | Cross-Shop Brand Breakout USA 1 | 2023-04→2026-04 | 52.6M |  | DL |
+| ConsumerEdge | Customer Return Behavior by Brand and When Customer First Shopped | 2021-01→2026-03 | 32.1M |  | DL |
+| ConsumerEdge | Customer Return Behavior by Brand and When Customer First Shopped USA 1 | 2023-04→2026-04 | 11.0M |  | DL |
+| ConsumerEdge | Daily Brand and Channel Type (Online/Offline) Breakout | 2018-01→2026-05 | 31.7M |  | DL |
+| ConsumerEdge | Daily Spend Breakout by Brand | 2018-01→2026-05 | 28.6M |  | DL |
+| ConsumerEdge | Daily Spend Breakout by Brand and State | 2018-01→2026-04 | 444.7M |  | DL |
+| ConsumerEdge | Daily Spend Breakout by Census Region and NAICS Code | 2018-01→2026-05 | 353K |  | DL |
+| ConsumerEdge | Daily Spend Breakout by Channel (Online/Offline) and NAICS Code | 2018-01→2026-05 | 176K |  | DL |
+| ConsumerEdge | Daily Spend Breakout by Symbol (Ticker) | 2018-01→2024-12 | 2.0M |  | DL |
+| ConsumerEdge | Delivery Service Provider Credit and Debit Card Transaction Data | 2018-01→2026-05 | 5.3M |  | DL |
+| ConsumerEdge | Industry and Demographic Cohort Breakout USA 1 | 2023-04→2026-04 | 123K |  | DL |
+| ConsumerEdge | Industry and Geography Cohort Breakout | 2021-01→2026-03 | 1.2M |  | DL |
+| ConsumerEdge | Industry and Geography Cohort Breakout USA1 | 2023-04→2026-04 | 827K |  | DL |
+| ConsumerEdge | M&A Reference Dates by Symbol and Brand | 2013-03→2024-12 | 7K |  | DL |
+| ConsumerEdge | Same Store Sales Breakout by Symbol (Ticker) and Fiscal Period | 2018-01→2025-07 | 6K |  | DL |
+| ConsumerEdge | Subindustry and Demographic Cohort Breakout | 2021-01→2026-03 | 833K |  | DL |
+| ConsumerEdge | Subindustry and Demographic Cohort Breakout USA 1 | 2023-04→2026-04 | 576K |  | DL |
+| ConsumerEdge | Subindustry and Geography Cohort Breakout | 2021-01→2026-03 | 5.5M |  | DL |
+| ConsumerEdge | Subindustry and Geography Cohort Breakout USA 1 | 2023-04→2026-04 | 3.8M |  | DL |
+| ConsumerEdge | Total Panel Spend Demographic Cohort Breakout | 2021-01→2026-03 | 6K |  | DL |
+| ConsumerEdge | Total Panel Spend Demograpic Cohort Breakout USA 1 | 2023-04→2026-04 | 4K |  | DL |
+| ConsumerEdge | Total Panel Spend Geography Cohort Breakout | 2021-01→2026-03 | 42K |  | DL |
+| ConsumerEdge | Total Panel Spend Geography Cohort Breakout USA1 | 2023-04→2026-03 | 29K |  | DL |
+| OpenBrand | Automotive | snapshot | 577K |  | DL |
+| OpenBrand | Building/Plumbing/Electric/Safety | snapshot | 379K |  | DL |
+| OpenBrand | Consumer Electronics | snapshot | 3.2M |  | DL |
+| OpenBrand | Furniture & Home Accessories | snapshot | 741K |  | DL |
+| OpenBrand | Home Improvement Products | snapshot | 1.8M |  | DL |
+| OpenBrand | Kitchen & Bath Improvement | snapshot | 463K |  | DL |
+| OpenBrand | Lawn & Garden | snapshot | 1.6M |  | DL |
+| OpenBrand | Major Appliances | snapshot | 949K |  | DL |
+| OpenBrand | Power Tools and Accessories | snapshot | 274K |  | DL |
+| OpenBrand | Small Appliances | snapshot | 1.9M |  | DL |
+| OpenBrand | Sports Equipment | snapshot | 59K |  | DL |
+| PDI | Discounts | 2025-11→2026-06 | 5.3B |  | DL |
+| PDI | Master GTIN | 2025-11→2025-11 | 71K |  | DL |
+| PDI | Payments | 2025-11→2026-06 | 31.2B |  | DL |
+| PDI | Shopper ID | 2025-11→2026-06 | 6.6B |  | DL |
+| PDI | Stores Information | 2023-07→2026-06 | 36K |  | DL |
+| PDI | Stores Status | 2023-07→2026-06 | 36K |  | DL |
+| PDI | Transaction Items | 2025-11→2026-06 | 44.9B |  | DL |
+| PDI | Transaction Items Daily Aggregation | 2025-11→2026-06 | 14.6B |  | DL |
+| PDI | Transaction Sets | 2025-11→2026-05 | 24.3B |  | DL |
+| SafeGraph | Spend Patterns | 2019-01→2026-04 | 93.7M |  | DL |
+
+## Finance  (11 datasets, 11 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| 7 Chord | BondDroid Credit Curves | 2023-02→2025-06 | 2.3M |  | DL |
+| 7 Chord | Historical Top Liquid Bond Prices & Liquidity Indicators | 2020-08→2023-10 | 44.1M |  | DL |
+| 7 Chord | Top Liquid Bond Prices & Liquidity Indicators | 2023-10→2025-03 | 36.9M |  | DL |
+| Exchange Data International | Global Equity Corporate Actions | 2001-01→2026-12 | 8.6M | 492MB | DL |
+| Exchange Data International | Global Equity Corporate Actions - Notes | 2024-01→2026-04 | 587K | 261MB | DL |
+| Exchange Data International | Global Equity End of Day Pricing Data w/ Adjustment Factors | 2006-03→2026-05 | 145K | 7MB | DL |
+| Exchange Data International | Global FX Rates – US Base Rate | 2014-01→2026-05 | 821K | 9MB | DL |
+| InfutorData | Auto Ownership | snapshot | 150.5M |  | DL |
+| InfutorData | Consumer Address History | snapshot | 758.8M |  | DL |
+| InfutorData | Consumer Profiles | snapshot | 256.6M |  | DL |
+| InfutorData | Property Data | snapshot | 87.2M |  | DL |
+
+## Government  (8 datasets, 3 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| L2 | Early Voting Return | snapshot | 41.5M | 312MB | — |
+| L2 | Historic National Voter File | snapshot | 2.4B | 18GB | — |
+| L2 | Historic National Voter File Alternate Format | snapshot | 217.6M | 3GB | — |
+| L2 | National Voter File | snapshot | 217.6M | 61GB | — |
+| L2 | Voting Performance | snapshot | 217.6M | 2GB | — |
+| LobbyingData | U.S. Lobbying Data | 1999-01→2026-06 | 1.9M | 1GB | DL |
+| TenderAlpha | Green Government Contracts | 2000-01→2029-02 | 5.8M | 279MB | DL |
+| TenderAlpha | US Subcontracting Data | snapshot | 38K | 4MB | DL |
+
+## Location  (1 datasets, 1 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| SafeGraph | Global Places (POI) & Geometry | snapshot | 72.1M |  | DL |
+
+## Mobility  (10 datasets, 10 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| Advan Research | Foot Traffic / Neighborhood Patterns Plus | 2019-01→2026-04 | 19.5M | 412GB | DL |
+| Advan Research | Foot Traffic / Weekly Patterns Plus | 2017-01→2026-05 | 2.6B | 1TB | DL |
+| PassBy | Daily Store Visits | 2019-01→2026-05 | 3.5B |  | DL |
+| PassBy | PassBy Placekeys (Jan) | snapshot | 1.5M |  | DL |
+| PassBy | Retail Store Visitors (Jan) | 2019-01→2024-12 | 87.5M |  | DL |
+| PassBy | Retail Store Visits (Jan) | 2018-12→2024-12 | 395.1M |  | DL |
+| PassBy | Store Visitors | 2019-01→2026-04 | 113.8M |  | DL |
+| Veraset | Home Visits | snapshot |  | 1TB | DL |
+| Veraset | Visits | snapshot |  | 16TB | DL |
+| Veraset | Work Visits | snapshot |  | 631GB | DL |
+
+## Real Estate  (5 datasets, 5 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| ATTOM Data | Assessor History | 2025-05→2026-01 | 2.9B |  | DL |
+| ATTOM Data | Pre-Foreclosure History | 2012-12→2026-06 | 27.6M |  | DL |
+| Dwellsy | Dwellsy TotalIQ | 2020-09→2026-04 | 13.5M | 9GB | DL |
+| REsimplifi | Listing Data | snapshot | 497K | 178MB | DL |
+| RentHub | Rental Data | 2014-01→2026-05 | 535.7M | 57GB | DL |
+
+## Supply Chain  (3 datasets, 3 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| Vizion | Export Performance Ocean Ports | 2021-01→2026-07 | 1.9M |  | DL |
+| Vizion | Import Performance Ocean Ports | 2021-01→2026-07 | 2.0M |  | DL |
+| Vizion | Monthly Ocean Port Performance | 2021-01→2026-07 | 67K |  | DL |
+
+## Tech, Telecom, and Social Media  (17 datasets, 17 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| Context Analytics | Social Sentiment Metrics for Equities - Twitter | 2011-12→2026-06 | 10.3M | 264MB | DL |
+| IPinfo | Company IP Address Data | snapshot | 31.8M | 675MB | DL |
+| IPinfo | Geolocation IP Address Data | snapshot | 77.2M | 2GB | DL |
+| IPinfo | Geolocation IP Address Data - Last Changed | snapshot | 204.5M | 7GB | DL |
+| IPinfo | IP ASN Data | snapshot | 1.1M | 25MB | DL |
+| IPinfo | IP Address Data for Mobile Carrier Detection | snapshot | 156K | 6MB | DL |
+| IPinfo | IP Address Data for Privacy Detection | snapshot | 11.3M | 201MB | DL |
+| IPinfo | IP Address Data for Privacy Detection - Extended | snapshot | 7.1M | 162MB | DL |
+| IPinfo | Residential Proxy | snapshot | 74.1M | 819MB | DL |
+| IPinfo | Whois - Maintainer | snapshot | 171K | 13MB | DL |
+| IPinfo | Whois - Network | snapshot | 11.3M | 2GB | DL |
+| IPinfo | Whois - Organization | snapshot | 3.5M | 296MB | DL |
+| IPinfo | Whois Full Dataset | snapshot | 123K | 39MB | DL |
+| Similarweb | Daily App Engagement | 2023-02→2026-05 | 2.6M |  | DL |
+| Similarweb | Desktop Search Keywords | 2026-01→2026-03 | 22.4B | 804GB | DL |
+| Similarweb | Historical Desktop Search Keywords | snapshot |  | 11TB | DL |
+| Similarweb | Website Traffic Visits | 2019-02→2026-05 | 17.9M |  | DL |
+
+## Uncategorized  (57 datasets, 25 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| ATTOM Data | Automated Valuation Model (AVM) | snapshot | 97.2M |  | DL |
+| ATTOM Data | Community Information Layout | snapshot | 901K |  | DL |
+| ATTOM Data | Macro Neighborhood XREF | snapshot | 35.7M |  | DL |
+| ATTOM Data | Neighborhood & Residential Subdivision Boundaries | snapshot | 901K |  | DL |
+| ATTOM Data | Neighborhood XREF | snapshot | 39.4M |  | DL |
+| ATTOM Data | Recorder | snapshot | 597.9M |  | DL |
+| ATTOM Data | Residential Subdivision XREF | snapshot | 44.9M |  | DL |
+| ATTOM Data | School Attendance Boundaries | snapshot | 444K | 4GB | DL |
+| ATTOM Data | Sub-Neighborhood XREF | snapshot | 3.7M |  | DL |
+| ATTOM Data | Tax Assessor | snapshot | 160.1M |  | DL |
+| AnaChart | NASDAQ100 Analyst Recommendation and Price Target History | snapshot | 81K | 4MB | — |
+| Capology | Professional Football Club Financial Data | snapshot | 203K | 5MB | DL |
+| Construction Monitor | Construction Monitor Permits | 2025-01→2026-05 | 372K | 59MB | — |
+| Construction Monitor | ConstructionWire - Contacts | snapshot | 181K | 6MB | — |
+| Construction Monitor | ConstructionWire - Reports | snapshot | 83K | 13MB | — |
+| Cotality (formerly CoreLogic) | Property Characteristics | snapshot | 160.0M | 46GB | — |
+| Cotality (formerly CoreLogic) | Property Characteristics Historical | snapshot | 2.3B |  | — |
+| Data Axle | Business | snapshot | 363.3M | 31GB | — |
+| Data Axle | Consumer | snapshot | 1.1B | 77GB | — |
+| Data Axle | Consumer (Historical) | snapshot | 1.8B | 125GB | — |
+| Exchange Data International | F&O Reference | 2025-08→2025-10 | 698K | 30MB | DL |
+| Exchange Data International | Futures and Options | 2025-08→2025-12 | 183.5M | 9GB | DL |
+| Extract Alpha | Estimize - Economics Estimates | 2014-04→2026-03 | 455K | 8MB | — |
+| Extract Alpha | Estimize - Economics Indicators | snapshot | 0K | 4KB | — |
+| Extract Alpha | Estimize - Economics Releases | 2010-01→2028-06 | 15K | 324KB | — |
+| Extract Alpha | Estimize - Equities Combined Consensus New | snapshot | 18.1M | 463MB | — |
+| Extract Alpha | Estimize - Equities Combined Estimates New | snapshot | 4.2M | 168MB | — |
+| Extract Alpha | Estimize - Metrics Actuals | snapshot | 14K | 270KB | — |
+| Extract Alpha | Estimize - Metrics Consensus | 2017-07→2026-03 | 346K | 4MB | — |
+| Extract Alpha | Estimize - Metrics Estimates | 2017-07→2026-03 | 133K | 3MB | — |
+| Extract Alpha | Estimize - Metrics Instruments | snapshot | 7K | 184KB | — |
+| Extract Alpha | Estimize - Metrics Metrics | snapshot | 0K | 8KB | — |
+| Extract Alpha | Estimize - Metrics Releases | snapshot | 321K | 10MB | — |
+| Extract Alpha | Estimize - Metrics Users | 2011-11→2025-12 | 128K | 3MB | — |
+| IPqwery | IPqwery Active IP Records | snapshot | 19.5M | 10GB | — |
+| IPqwery | IPqwery IP Owners | snapshot | 4.7M | 289MB | — |
+| LinkUp | Company Scrape Log | snapshot | 65.5M |  | DL |
+| LinkUp | PIT Company Reference | snapshot | 277K |  | DL |
+| PassBy | Store Info | snapshot | 1.7M |  | DL |
+| REsimplifi | Brokers | snapshot | 813K | 21MB | DL |
+| REsimplifi | Suites | snapshot | 877K | 34MB | DL |
+| Revelio Labs | Company Reference | snapshot | 31.4M | 8GB | — |
+| Revelio Labs | Individual Education | snapshot | 673.3M | 31GB | — |
+| Revelio Labs | Individual Position | snapshot | 1.8B | 391GB | — |
+| Revelio Labs | Individual Skill | snapshot | 11.1B | 223GB | — |
+| Revelio Labs | Layoffs | snapshot | 62K | 5MB | — |
+| Revelio Labs | Sentiment | snapshot | 43.5M | 32GB | — |
+| Revelio Labs | Unified Job Postings | snapshot | 1.5B | 2TB | — |
+| Revelio Labs | User | snapshot | 594.0M | 90GB | — |
+| Revelio Labs | Workforce Dynamics | snapshot | 6.8B | 196GB | — |
+| TenderAlpha | Unified Government Contract Awards | snapshot | 131.0M | 14GB | DL |
+| Veridion | ESG Company Scores | snapshot | 5K | 15MB | DL |
+| Veridion | Firmographics (Company Core Profiles) | snapshot | 26.8M | 11GB | DL |
+| Veridion | Products | snapshot | 47.8M | 10GB | DL |
+| Veridion | Services | snapshot | 2.9M | 90MB | DL |
+| WARN Database | Airline Employment Data | 1990-01→2026-02 | 31K | 366KB | DL |
+| WARN Database | WARN Layoff Data | 1996-07→2026-06 | 85K | 3MB | DL |
+
+## Weather & ESG  (6 datasets, 5 DL)
+
+| Partner | Dataset | Coverage | Rows | Size | Access |
+|---|---|---|---|---|---|
+| ClimateCheck | U.S Climate Risk Data | snapshot | 33K | 12MB | DL |
+| Custom Weather | Daily Weather Data | 1970-08→2026-02 | 13.1M | 253MB | DL |
+| Custom Weather | Hourly Weather Data | 2017-12→2026-05 | 150.5M |  | DL |
+| Custom Weather | US Locations | snapshot | 2K |  | DL |
+| NatureQuant | Nature Score | snapshot | 30.1M | 986MB | DL |
+| NatureQuant | Urban Heat Index | snapshot | 130.3M | 1GB | sample |

@@ -118,7 +118,7 @@ Institutional login (to browse the catalog / create the key) is via **UVA NetBad
 | LinkUp | Job postings | Labor-market activity |
 | ATTOM / Dwellsy / RentHub | Real estate | Property records, rentals |
 
-Full catalog and discovery workflow: `references/datasets.md`.
+**Full catalog (all ~250 datasets):** `references/catalog.md` — every dataset grouped by category with time coverage, row count, size, and download access (machine-readable: `references/catalog.csv`). Featured-dataset detail + discovery workflow: `references/datasets.md`.
 
 ## SafeGraph Global Places Quick Reference
 
@@ -146,6 +146,7 @@ Core POI schema — **columns are UPPERCASE**, `NAICS_CODE` is a **string**, `BR
 - **`references/duckdb.md`** — selective remote-Parquet pulls, `COPY TO … PARTITION_BY` pattern, querying downloaded files
 - **`references/mcp.md`** — Dewey MCP server URL, JSON config, the 9 tools, discovery → schema → sample workflow
 - **`references/datasets.md`** — featured-dataset catalog, UVA NetBadge / NYU institutional access, discovery workflow
+- **`references/catalog.md`** + **`catalog.csv`** — full enumerated catalog (~250 datasets / 39 partners) by category, with coverage / rows / size / access
 - **`references/safegraph-places.md`** — Global Places schema, NAICS 522320, BTM operator brands, opened_on/closed_on, the Bitcoin-ATM worked example
 
 ### Example Files
