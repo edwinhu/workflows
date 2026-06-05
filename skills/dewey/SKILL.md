@@ -146,7 +146,8 @@ Core POI schema — **columns are UPPERCASE**, `NAICS_CODE` is a **string**, `BR
 - **`references/duckdb.md`** — selective remote-Parquet pulls, `COPY TO … PARTITION_BY` pattern, querying downloaded files
 - **`references/mcp.md`** — Dewey MCP server URL, JSON config, the 9 tools, discovery → schema → sample workflow
 - **`references/datasets.md`** — featured-dataset catalog, UVA NetBadge / NYU institutional access, discovery workflow
-- **`references/catalog.md`** + **`catalog.csv`** — full enumerated catalog (~250 datasets / 39 partners) by category, with coverage / rows / size / access
+- **`references/catalog.md`** + **`catalog.csv`** — full enumerated catalog (~250 datasets / 39 partners) by category, with coverage / rows / **column count** / size / access
+- **`references/schemas.json`** — full column schemas for all ~250 datasets (keyed by slug → `columns[]` with name/type/description; 11,264 columns). Look up a dataset's columns here before pulling, instead of a live `get_dataset_schema` call
 - **`references/safegraph-places.md`** — Global Places schema, NAICS 522320, BTM operator brands, opened_on/closed_on, the Bitcoin-ATM worked example
 
 ### Example Files
