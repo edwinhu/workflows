@@ -148,6 +148,7 @@ Core POI schema — **columns are UPPERCASE**, `NAICS_CODE` is a **string**, `BR
 - **`references/datasets.md`** — featured-dataset catalog, UVA NetBadge / NYU institutional access, discovery workflow
 - **`references/catalog.md`** + **`catalog.csv`** — full enumerated catalog (~250 datasets / 39 partners) by category, with coverage / rows / **column count** / size / access
 - **`references/schemas.json`** — full column schemas for all ~250 datasets (keyed by slug → `columns[]` with name/type/description; 11,264 columns). Look up a dataset's columns here before pulling, instead of a live `get_dataset_schema` call
+- **`references/linkage.md`** — cross-dataset join-key map (placekey, ticker, cusip/cik, domain, person id, lat/long, fips, zip…) — which datasets combine and on what spine
 - **`references/safegraph-places.md`** — Global Places schema, NAICS 522320, BTM operator brands, opened_on/closed_on, the Bitcoin-ATM worked example
 
 ### Example Files
