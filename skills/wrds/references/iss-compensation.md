@@ -4,6 +4,7 @@
 
 - [Tables](#tables)
 - [Key Fields](#key-fields)
+- [Grain & Keys](#grain--keys)
 - [Query Patterns](#query-patterns)
 - [Related: Compustat ExecuComp](#related-compustat-execucomp)
 - [Related: Capital IQ Compensation](#related-capital-iq-compensation)
@@ -36,6 +37,25 @@
 - `stock_awards` - Stock award value
 - `option_awards` - Option award value
 - `total_comp` - Total compensation
+
+## Grain & Keys
+
+Declare the grain before aggregating — these tables are firm-year panels and a wrong key
+double-counts or merges the wrong firm. Verify each with `df.duplicated(subset=PK).sum() == 0`.
+
+| Table | Row grain (primary key) | Notes |
+|-------|-------------------------|-------|
+| `comppeer` | `(cik, fiscalyear, peercik)` — one focal-firm × year × peer | A peer list is many rows; use `SELECT DISTINCT` when you only want the peer set for a year |
+| `sumcomp` | `(cik, fiscalyear, execid)` — one executive × firm-year | One summary-comp row per exec-year; `SUM`ming without grouping by execid conflates executives |
+| `participantfy` | `(cik, fiscalyear, participantid)` — participant identity per firm-year | Names/roles live here; join to `sumcomp` on the participant + year key |
+
+**Firm key: use CIK, not ticker.** CIK is the stable identifier — **zero-pad to 10 digits**
+(e.g. `'0000000001'`) when joining to EDGAR/other CIK sources. Tickers recycle and change over
+time (a real wrong-firm / duplicate trap; this is why peer matching here is CIK-based).
+
+**Grant-level fan-out:** Incentive Lab also carries award/grant-level detail. If you join `sumcomp`
+(exec-year grain) to a grant-level table, the grain becomes per-grant — do NOT then sum exec-level
+totals (you'll multiply by the grant count). Aggregate grants to exec-year first, or keep grains separate.
 
 ## Query Patterns
 

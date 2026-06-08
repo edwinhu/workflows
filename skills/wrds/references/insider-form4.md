@@ -4,6 +4,7 @@
 
 - [Tables](#tables)
 - [Key Fields](#key-fields)
+- [Grain, Keys & Amendments](#grain-keys--amendments)
 - [Rolecode Reference](#rolecode-reference)
 - [Transaction Codes](#transaction-codes)
 - [Query Patterns](#query-patterns)
@@ -23,9 +24,12 @@
 
 ### table1 (Transactions)
 - `ticker` - Stock ticker
-- `dcn` - Document control number (links to header)
+- `dcn` - Document control number = one Form 4 filing (also links to header)
+- `seqnum` - Line sequence **within** a filing. **`(dcn, seqnum)` is the row primary key** — carry it; never drop it (see [Grain, Keys & Amendments](#grain-keys--amendments))
 - `personid` - Person identifier (links to header)
-- `fdate` - Filing date
+- `formtype` - Filing type. **Stays `'4'` even for amendments** — do NOT use it to detect amendments
+- `amend` - `'A'` when this row comes from an **amended (4/A)** filing, else NULL. This is the only reliable amendment flag
+- `fdate` - Filing date (a 4/A is filed later than the 4 it amends — use to pick the surviving copy)
 - `trandate` - Transaction date
 - `trancode` - Transaction code (S=Sale, P=Purchase, etc.)
 - `acqdisp` - A=Acquisition, D=Disposition
@@ -34,11 +38,55 @@
 - `sharesheld` - Shares held after transaction
 - `ownership` - D=Direct, I=Indirect
 
+### table2 (Derivative transactions / holdings)
+- `dcn`, `seqnum`, `personid`, `amend` - same meaning as table1; **`(dcn, seqnum)` is the row primary key**
+- `trancode` - `'M'` = option/derivative exercise
+- `derivative` - `'OPTNS'` = stock options, `'UTS'` = RSUs/units (filter to OPTNS for option-exercise cost)
+- `xprice` - Exercise/strike price; `sprice` - Sale price on same-day sell
+- `shares` - Underlying shares for this line; `xdate` - Exercise date
+- `trandate` / `fdate` - Transaction / filing date
+
 ### header (Insider Info)
 - `dcn` - Document control number
 - `personid` - Person identifier
 - `owner` - Insider name
 - `rolecode1`, `rolecode2`, `rolecode3` - Role codes
+
+## Grain, Keys & Amendments
+
+**This dataset has two levels of identity. Aggregations that ignore the second one double-count.**
+
+| Level | Key | Meaning |
+|-------|-----|---------|
+| **Row primary key** | `(dcn, seqnum)` | one transaction line on one filing. MUST be unique — if it isn't, your join to `header` fanned out (a `(dcn, personid)` with >1 header row), so add `DISTINCT` or fix the join, do not blindly sum |
+| **Economic event key** | `(personid, trandate, trancode, shares, round(price,2), ownership)` | the real-world trade. A **4/A amendment re-reports the same event under a NEW `dcn`** |
+
+### Amendments (4/A) — the silent double-count
+
+When an insider amends a Form 4, Thomson Reuters keeps **both** the original and the amendment as
+separate `dcn`s, each with the full set of transaction lines. So the same trade appears twice.
+
+- The amendment is flagged by **`amend = 'A'`** (NOT by `formtype`, which stays `'4'`).
+- The amendment often **corrects a field** (e.g. `sharesheld`), so the two copies are NOT byte-identical
+  → `drop_duplicates()` / `SELECT DISTINCT` will NOT remove them.
+- Correct handling = **supersession**: within each economic event key, keep only the row from the
+  **latest filing** (`max(fdate)` / the `amend='A'` dcn) and drop the superseded original.
+
+```python
+# amendment supersession, THEN exact-dup safety net
+ev = ["personid", "trandate", "trancode", "shares"]
+df["_p"] = df["tprice"].round(2)
+df = df.sort_values("fdate").groupby(ev + ["_p"], as_index=False).last()  # keep amended copy
+df = df.drop_duplicates()
+```
+
+**Profiling probes to run before any sum** (declare the grain, then verify it):
+```python
+df.duplicated(subset=["dcn", "seqnum"]).sum()          # row PK — MUST be 0
+(df["amend"] == "A").sum()                              # how many amended rows exist
+df.groupby(ev + ["_p"])["dcn"].nunique().gt(1).sum()    # events under >1 dcn = amendment double-counts
+```
+If you dropped `dcn`/`seqnum`/`amend` at extraction you cannot run these — so **carry them through**.
 
 ## Rolecode Reference
 
@@ -100,9 +148,18 @@
 ## Query Patterns
 
 ### Executive Stock Disposals
+
+**Carry `dcn`, `seqnum`, `amend` into the output** — they are the row primary key and the amendment
+flag. Dropping them (as a bare `SELECT DISTINCT` without them does) makes downstream
+de-duplication and amendment supersession impossible. See [Grain, Keys & Amendments](#grain-keys--amendments).
+
 ```python
 sql = """
-    SELECT DISTINCT
+    SELECT
+        t.dcn,
+        t.seqnum,
+        t.personid,
+        t.amend,
         t.ticker,
         t.fdate as filing_date,
         t.trandate as transaction_date,
@@ -182,6 +239,8 @@ sql = f"""
 3. **Transaction value** - Calculate as `shares * tprice`
 4. **Direct vs Indirect** - `ownership = 'D'` for direct holdings only
 5. **Join keys** - Use both `dcn` AND `personid` when joining table1 to header
+6. **Amendments (4/A) double-count** - The same trade is re-filed under a new `dcn` with `amend='A'`. `formtype` stays `'4'`, and a corrected field (e.g. `sharesheld`) defeats `DISTINCT`/`drop_duplicates()`. Carry `dcn`/`seqnum`/`amend` and apply event-key supersession before summing — see [Grain, Keys & Amendments](#grain-keys--amendments)
+7. **Don't drop `seqnum`** - Multiple lines on one filing can share size/price (legitimate separate lots/tranches). They look like duplicates only if you drop `seqnum`; keep it so real lots aren't collapsed
 
 ## Bulk extraction for panel construction
 

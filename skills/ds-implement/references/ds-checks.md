@@ -44,19 +44,36 @@ if len(high_null) > 0:
 
 **Confidence if triggered:** >= 80
 
-### DQ3: Duplicate Rows
+### DQ3: Duplicate Rows / Grain Integrity
 
-Detect duplicate rows on key columns (from PLAN.md).
+Three levels — DQ3 is NOT just `df.duplicated()`. PLAN.md must declare both the row
+primary key (`pk_cols`) and the coarser business/event key (`event_cols`); this check
+verifies the grain and surfaces restatements/amendments that exact-row dedup misses.
 
 ```python
-key_cols = [...]  # from PLAN.md
-dupes = df.duplicated(subset=key_cols, keep=False)
-if dupes.sum() > 0:
-    print(f"WARNING [DQ3]: {dupes.sum()} duplicate rows on {key_cols}")
-    print(df[dupes].head())
+# pk_cols and event_cols come from PLAN.md (the declared grain, sourced from the
+# dataset's reference skill — e.g. WRDS Form 4: pk=(dcn,seqnum), event=(personid,trandate,trancode,shares,price))
+
+# (a) Row PK uniqueness — MUST hold; if not, an upstream join fanned out
+pk_dupes = df.duplicated(subset=pk_cols).sum()
+if pk_dupes > 0:
+    print(f"FAIL [DQ3a]: {pk_dupes} rows violate the declared PK {pk_cols} (join fan-out?)")
+
+# (b) Exact-duplicate rows (byte-identical ingestion artifacts)
+exact = df.duplicated(keep=False)
+if exact.sum() > 0:
+    print(f"WARNING [DQ3b]: {exact.sum()} byte-identical duplicate rows")
+
+# (c) Business/event-key collisions — same real-world event under >1 PK, NOT byte-identical.
+#     Catches amendments/restatements (e.g. Form 4 4/A) that (a) and (b) both miss.
+collisions = df.groupby(event_cols).size()
+n_collide = (collisions > 1).sum()
+if n_collide > 0:
+    print(f"WARNING [DQ3c]: {n_collide} event keys appear >1x — check for amendments/restatements; "
+          f"resolve by supersession (keep latest filing) not blind drop_duplicates")
 ```
 
-**Confidence if triggered:** >= 80
+**Confidence if triggered:** >= 80 for (a); >= 70 for (b)/(c) (may be legitimate multi-lot rows — confirm against the declared grain before dropping)
 
 ### DQ4: Row Count Traceability
 

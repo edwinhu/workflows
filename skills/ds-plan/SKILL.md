@@ -220,8 +220,25 @@ df.info()                   # Memory, non-null counts
 
 # Data quality checks
 df.isnull().sum()           # Missing values per column
-df.duplicated().sum()       # Duplicate rows
+df.duplicated().sum()       # Exact-duplicate rows (byte-identical)
 df[col].value_counts()      # Distribution of categories
+
+# Grain / candidate-key identification (REQUIRED — do not skip)
+# Profiling MUST output the row grain, not just a dup count. df.duplicated()
+# alone misses near-duplicates (e.g. amended/restated records that changed one
+# field). Identify the key empirically AND check it against the declared grain.
+from itertools import combinations
+cand = [c for c in df.columns if df[c].notna().any()]
+for k in (1, 2, 3):                              # smallest unique column-set = de-facto PK
+    hit = next((c for c in combinations(cand, k)
+                if not df.duplicated(subset=list(c)).any()), None)
+    if hit:
+        print("candidate key:", hit); break
+# Declared grain: look it up in the dataset's reference skill (e.g. wrds
+# insider-form4.md → row PK (dcn, seqnum); event key (personid, trandate, ...)).
+# Record BOTH the row PK and the coarser business/event key in PLAN.md.
+df.duplicated(subset=DECLARED_PK).sum()          # MUST be 0, else extraction fanned out
+df.groupby(BUSINESS_KEY).size().gt(1).sum()      # business-key collisions = restatement/amendment signal
 
 # For time series
 df[date_col].min(), df[date_col].max()  # Date range
@@ -259,15 +276,22 @@ Required checks:
 1. Shape: rows x columns
 2. Data types: df.dtypes
 3. Missing values: df.isnull().sum()
-4. Duplicates: df.duplicated().sum()
-5. Summary statistics: df.describe()
-6. Unique value counts for categorical columns
-7. Date range if time series
-8. Memory usage: df.info()
+4. Exact-duplicate rows: df.duplicated().sum()
+5. GRAIN / candidate key: find the smallest column-set that is unique (the de-facto
+   primary key). If this dataset comes from a known source (WRDS, etc.), look up its
+   DECLARED grain in that source's reference skill and verify df.duplicated(subset=PK)==0.
+6. Business/event-key collisions: pick the coarser real-world key and report rows that
+   share it but are NOT byte-identical — these are restatements/amendments/corrections
+   that df.duplicated() misses (e.g. Form 4 4/A re-filings).
+7. Summary statistics: df.describe()
+8. Unique value counts for categorical columns
+9. Date range if time series
+10. Memory usage: df.info()
 
 Output format:
 - Markdown table with column summary
-- List of data quality issues found
+- The row primary key and the business/event key you identified
+- List of data quality issues found (call out any key-uniqueness or amendment/restatement findings)
 - Recommendations for cleaning
 
 Read-only profiling: you have Read/Glob/Grep/Bash only (enforced via allowed_tools).

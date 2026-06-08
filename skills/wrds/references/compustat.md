@@ -58,6 +58,8 @@ WHERE indfmt = 'INDL'   -- Industrial format (vs FS for financials)
   AND consol = 'C'      -- Consolidated statements
 ```
 
+**These filters ARE the dedup.** `comp.funda`'s row grain is `(gvkey, datadate, indfmt, datafmt, popsrc, consol)`; **omit the four filters and you get up to ~4 rows per firm-year** (different formats/populations) — silent duplicate firm-years that double-count any sum. With the standard filters applied the grain collapses to **one row per `(gvkey, datadate)`** — verify with `df.duplicated(['gvkey','datadate']).sum() == 0`. (For `comp.fundq` it's `(gvkey, datadate, fqtr)`.)
+
 ##### Key Fields
 
 | Field | Description | Notes |
