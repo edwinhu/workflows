@@ -7,6 +7,57 @@ For Gemini batch scale-up, see `../../../skills/gemini-batch/references/scale-up
 
 ---
 
+## Key & Grain Carry-Through
+
+**Enforces:** the row primary key and business/event key that ds-plan profiling identified and
+recorded in PLAN.md (`row_pk`, `event_key`). Discovery (ds-plan) and verification (DQ3) are
+useless if the implementation drops the key columns between stages.
+
+**The rule: identify the grain once, then carry its key columns through EVERY stage. Never drop
+them mid-pipeline.** Dropping the identifying columns (e.g. `dcn`/`seqnum`/`amend` on Form 4) is
+what creates silent double-counts no downstream check can catch — once the keys are gone,
+duplicates and amendments are indistinguishable from legitimate rows.
+
+### Enforcement
+
+```
+## Key Carry-Through Enforcement (Non-Negotiable)
+
+PLAN.md declares row_pk (smallest unique column-set) and event_key (coarser real-world key).
+
+### Every load/transform MUST keep the key columns
+- The SELECT / read keeps all columns composing row_pk AND event_key (and any amendment flag).
+- After EVERY transform that could change the grain (join, groupby, pivot, dedup), assert:
+      assert not df.duplicated(subset=ROW_PK).any(), f"row_pk {ROW_PK} no longer unique"
+- Carry the keys into every intermediate file (parquet/csv). Only drop them in the FINAL
+  deliverable, and only AFTER dedup/aggregation is complete.
+
+### Dedup = supersession, NOT blanket drop_duplicates
+- Resolve real duplicates (amendments/restatements) by keeping the latest filing per event_key:
+      df = df.sort_values(FILING_DATE).groupby(EVENT_KEY, as_index=False).last()
+- NEVER df.drop_duplicates(subset=EVENT_KEY) blindly — it deletes legitimate repeated
+  lots/tranches (same size/price, different seqnum). Keep row_pk so real lots survive.
+- df.duplicated() (all columns) only catches byte-identical rows; it MISSES amendments that
+  changed one field. The event_key collision check is what catches those.
+
+### Self-Check
+- [ ] row_pk and event_key columns present in every intermediate output (verified, not assumed)
+- [ ] PK uniqueness asserted after each grain-changing transform
+- [ ] Any dedup uses supersession on event_key, with row_pk preserved
+- [ ] Key columns dropped (if at all) only in the final deliverable, after dedup
+```
+
+### Rationalization Table
+
+| Excuse | Reality | Do Instead |
+|--------|---------|------------|
+| "I only need the analysis columns, not the IDs" | Without `dcn`/`seqnum`/`amend` you can't tell an amended re-filing from a real second trade — silent double-count | Carry the keys through; drop them only at the final deliverable, after dedup |
+| "`drop_duplicates()` cleaned it up" | It only removes byte-identical rows; an amendment that corrected one field survives and double-counts | Supersede on the event key (keep latest filing); verify with the event-key collision check |
+| "I'll dedup on the business key to be safe" | That collapses legitimate multi-lot rows (same size/price, different seqnum) — now you've under-counted | Keep the row PK; only superseded amendments get dropped |
+| "Profiling already found the grain, I'm done" | Discovery without carry-through is wasted — the keys must survive every transform to stay checkable | Assert PK presence + uniqueness after each stage |
+
+---
+
 ## Filter Push-Down
 
 **Enforces:** PLAN.md `### Filter Strategy` table decisions.

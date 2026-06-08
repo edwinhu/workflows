@@ -307,6 +307,7 @@ If PLAN.md contains an `## ETL Strategy` section, the user made decisions during
 
 | PLAN.md Section | Enforcement Reference | Inject Into |
 |-----------------|----------------------|-------------|
+| `row_pk` / `event_key` declared (any data with a grain) | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Key & Grain Carry-Through | Every data load/transform subagent prompt |
 | `Implementation Language: SAS` or `Mixed` | SAS ETL enforcement (`skills/wrds/references/sas-etl.md`) | Every SAS subagent prompt |
 | `Filter Strategy` table present | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Filter Push-Down | Subagent prompts for data loading tasks |
 | `Parallelism Plan` table present | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Parallelism | Implementation strategy choice |
