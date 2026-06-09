@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'edit a skill', 'add enforcement patterns', 'audit skill enforcement', or needs to substantially create or edit any SKILL.md file."
+description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'edit a skill', 'add a skill to a plugin', 'add enforcement patterns', 'add Iron Laws or fact rows', 'fix a skill description', 'audit skill enforcement', or needs to substantially create or edit any SKILL.md file — including a single skill inside a plugin. Use plugin-creator only for plugin-level work (manifest, hooks wiring, multi-component scaffolding)."
 hooks:
   PostToolUse:
     - matcher: "Edit|Write"

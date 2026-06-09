@@ -1,7 +1,7 @@
 ---
 name: dev-debug
 version: 5.0
-description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', or needs systematic debugging."
+description: "This skill should be used when the user asks to 'debug', 'fix bug', 'investigate error', 'why is it broken', 'trace root cause', 'find the bug', 'something's wrong with the output', 'the tests are failing and I don't know why', 'it returns the wrong result', or needs systematic debugging of a specific failure (not architectural understanding of working code)."
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"

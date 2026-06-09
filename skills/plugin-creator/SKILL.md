@@ -1,6 +1,6 @@
 ---
 name: plugin-creator
-description: "This skill should be used when the user asks to 'create a plugin', 'scaffold a plugin', 'set up plugin structure', 'new plugin', 'add plugin components', or needs to substantially edit an existing plugin."
+description: "This skill should be used when the user asks to 'create a plugin', 'scaffold a plugin', 'set up plugin structure', 'new plugin', 'edit the plugin manifest', 'wire plugin hooks', 'validate plugin structure', or needs plugin-level work spanning multiple components. For creating or editing a single skill (even inside a plugin), use skill-creator instead."
 hooks:
   PostToolUse:
     - matcher: "Edit|Write"

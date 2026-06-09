@@ -1,6 +1,6 @@
 ---
 name: ds
-description: "This skill should be used when the user asks to 'start data analysis', 'brainstorm analysis approach', 'plan a data project', 'clarify analysis requirements', or needs the data science workflow."
+description: "This skill should be used when the user asks to 'start data analysis', 'brainstorm analysis approach', 'plan a data project', 'clarify analysis requirements', 'explore this dataset', 'what's in this data', 'what should I analyze here', 'set up a new study', or needs the data science workflow (exploration starts with questions, not data pulls — the workflow enforces that ordering)."
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 hooks:
   PreToolUse:
