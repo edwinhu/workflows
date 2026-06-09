@@ -46,9 +46,14 @@ if len(high_null) > 0:
 
 ### DQ3: Duplicate Rows / Grain Integrity
 
-Three levels — DQ3 is NOT just `df.duplicated()`. PLAN.md must declare both the row
-primary key (`pk_cols`) and the coarser business/event key (`event_cols`); this check
-verifies the grain and surfaces restatements/amendments that exact-row dedup misses.
+Three levels — DQ3 is NOT just `df.duplicated()`. An all-columns dup check is
+unreliable in both directions: it misses amendments/restatements (one field changed),
+and it reports ZERO duplicates after a join fan-out, because the fanned rows differ in
+the joined columns — only the keyed check (a) reveals them. The same applies to
+remediation: `drop_duplicates()` without `subset=` silently keeps fan-out rows.
+PLAN.md must declare both the row primary key (`pk_cols`) and the coarser
+business/event key (`event_cols`); this check verifies the grain and surfaces what
+exact-row dedup misses.
 
 ```python
 # pk_cols and event_cols come from PLAN.md (the declared grain, sourced from the

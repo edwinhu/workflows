@@ -15,6 +15,9 @@ print(f"RIGHT: {len(right):,} rows, keys: {right[key].nunique():,} unique")
 result = left.merge(right, on=key, how=how)
 print(f"RESULT: {len(result):,} rows ({len(result)/len(left):.1%} of left)")
 print(f"UNMATCHED LEFT: {len(left) - len(result.dropna(subset=right.columns)):,}")
+# KEYED dup check — result.duplicated() across all columns reports ZERO on
+# fan-out (fanned rows differ in the joined columns); only subset=key reveals it
+print(f"POST-JOIN KEY DUPES: {result.duplicated(subset=key).sum():,}")
 ```
 
 | Join Issue | Severity | Action |

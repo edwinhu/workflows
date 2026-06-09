@@ -144,7 +144,7 @@ Protocol (NON-NEGOTIABLE):
 4. Deviations: R1 bug / R2 missing-critical / R3 blocking → auto-fix + test + record. R4 architectural (new schema, lib swap, breaking API) → do NOT proceed; set status="blocked" and report it verbatim in deviations.
 
 Return TRANSFORM_SCHEMA with status, testWritten, verifyPassed, verifyOutput (last ~25 lines of the Verify Command run — your PROOF), filesTouched, deviations, summary. Do NOT claim verifyPassed=true without actually running the command.`,
-    { label: `task:${t.num}`, phase: 'Transform', schema: TRANSFORM_SCHEMA, model: 'sonnet' })
+    { label: `task:${t.num}`, phase: 'Transform', schema: TRANSFORM_SCHEMA })
   if (tr) liveTransforms.push(tr)
 }
 

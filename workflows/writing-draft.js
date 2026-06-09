@@ -161,7 +161,7 @@ Drafting contract (the Iron Laws of writing-draft):
 - Apply R1-R3 deviations inline if drafting surfaces them (R1 factual fix, R2 add a real source, R3 structural bridge). If you hit an R4 (the argument itself needs restructuring), do NOT invent a fix — note it in summary and draft to the outline as written.
 
 Write the full prose to ${s.draftFile} with the Write tool (include frontmatter \`implements: [the outline's CLAIM ids]\`). Then return TRANSFORM_SCHEMA with status="drafted", content=the FULL prose you wrote, and pointsExpanded=the number of outline points you expanded.`,
-    { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA, model: 'sonnet' }))
+    { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA }))
 }
 const liveTransforms = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-draft: ${drafted} section(s) live, ${carriedCount} carried`)

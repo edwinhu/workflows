@@ -135,7 +135,7 @@ Protocol (NON-NEGOTIABLE — output-first):
 4. Deviations: R1 bug / R2 missing-critical / R3 blocking → auto-fix + re-verify + record. R4 (schema change, new data source, methodology pivot) → do NOT proceed; set status="blocked", report verbatim in deviations.
 
 Return TRANSFORM_SCHEMA with status, outputsProduced, verifyPassed, verifyOutput (last ~25 lines — your PROOF), filesTouched, deviations, summary (incl. the key output numbers).`,
-    { label: `task:${t.num}`, phase: 'Transform', schema: TRANSFORM_SCHEMA, model: 'sonnet' })
+    { label: `task:${t.num}`, phase: 'Transform', schema: TRANSFORM_SCHEMA })
   if (tr) liveTransforms.push(tr)
 }
 

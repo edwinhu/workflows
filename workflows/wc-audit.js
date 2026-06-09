@@ -278,7 +278,7 @@ for (const d of DIMENSIONS) {
     continue
   }
   reran++
-  tasks.push(() => agent(d.prompt, { label: d.key, phase: 'Review', schema: d.schema, model: 'sonnet' }))
+  tasks.push(() => agent(d.prompt, { label: d.key, phase: 'Review', schema: d.schema }))
 }
 const live = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-audit: ${reran} dimension(s) live, ${carriedCount} carried`)

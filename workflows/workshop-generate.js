@@ -106,7 +106,7 @@ WRITE two files (mkdir -p ${disc.fragmentsDir} first):
 - ${disc.fragmentsDir}/section-${sec.id}.typ — ALL this section's \`=== ...\` + \`#slide[...]\` blocks, in order (NO file header, NO \`==\` heading).
 - ${disc.fragmentsDir}/notes-section-${sec.id}.typ — flowing speaker-notes for this section (one block per slide, with timing from each slide's Notes).
 Return SECTION_SCHEMA: slidesPath, notesPath, slideNums (must equal ${JSON.stringify(sec.slides.map(s => s.num))}), citedInventory (⊆ the allowed set), summary.`,
-    { label: `section:${sec.id}`, phase: 'Sections', schema: SECTION_SCHEMA, model: 'sonnet' })
+    { label: `section:${sec.id}`, phase: 'Sections', schema: SECTION_SCHEMA })
 }))).filter(Boolean)
 const secById = Object.fromEntries(liveSecs.map(s => [String(s.section), s]))
 const allSecs = sectionList.map(s => secById[s.id] || (PRIOR.has(s.id) ? PRIOR.get(s.id) : null))
@@ -132,7 +132,7 @@ Steps (use Bash to cat the files — do NOT paste content from memory):
 2. Write ${disc.notesPath}: the notes preamble, then per section a \`= Section\` heading + \`cat\` its notesFile.
 3. Compile: \`tinymist compile ${disc.slidesPath}\` (or \`typst compile\`) from ${PROJECT}; fix ONLY compile-blocking syntax and recompile.
 Return ASSEMBLE_SCHEMA.`,
-    { label: 'assemble', phase: 'Assemble', schema: ASSEMBLE_SCHEMA, model: 'sonnet' })
+    { label: 'assemble', phase: 'Assemble', schema: ASSEMBLE_SCHEMA })
 }
 
 // ── Phase 4: Gate (pure JS — every section written AND the deck compiles) ──────

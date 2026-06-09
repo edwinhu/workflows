@@ -98,36 +98,12 @@ Before exploring data or creating tasks, you MUST have:
 **If `.planning/SPEC.md` doesn't exist, run /ds first.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Profiling Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Data looks clean, profiling unnecessary" | Your data is never clean | PROFILE to discover issues |
-| "I can profile as I go" | You'll miss systemic issues | PROFILE comprehensively NOW |
-| "Quick .head() is enough" | Your head hides tail problems | RUN full profiling checklist |
-| "Missing values won't affect my analysis" | They always do | DOCUMENT and plan handling |
-| "I'll handle data issues during analysis" | Your issues will derail your analysis | FIX data issues FIRST |
-| "User didn't mention data quality" | They assume YOU'LL check | QUALITY check is YOUR job |
-| "Profiling takes too long" | Your skipping it costs days later | INVEST time now |
-
-### Drive-Aligned Framing
-
-**Skipping data profiling is NOT HELPFUL — your plan will be built on assumptions, not facts, and the user wastes hours on rework.**
-
-You cannot plan analysis steps without knowing:
-- Your data's shape and types
-- Your missing value patterns
-- Your data quality issues
-- Your cleaning requirements
-
-Profiling costs you minutes. Your wrong plan costs hours of rework and incorrect results.
-
-### Drive-Aligned Framing (Consequences)
-
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping data profiling | You skipped profiling to save time. NaN columns and type mismatches crash the pipeline 3 tasks in — your shortcut tripled the work. |
-| Thin task breakdown | You wrote vague tasks to move faster. The implementer guesses wrong — your speed created confusion. |
+- Real-world data is never clean on arrival, and `.head()` samples the clean front of the file — nulls, type drift, and grain problems live in the tail and in rare groups. A plan built from a head-sample is built on assumptions; it crashes 3 tasks into implementation and the user redoes hours of work. Delivering that plan fast is not helpful — it is counterproductive, and it reads as incompetent.
+- Data-quality checking is your job whether or not the user mentions it. A plan that silently assumes clean data asserts a verification you never performed — an unverified claim presented as fact is a form of dishonesty.
+- Profiling costs minutes; a wrong plan costs hours. Skipping it to save time triples the work — the shortcut is counterproductive on its own terms.
+- Thin, vague tasks push the guessing onto the implementer, who executes the plan literally and guesses wrong. Speed achieved by under-specifying is not efficiency; it is deferred confusion delivered to someone else.
 
 ### No Pause After Completion
 
@@ -224,9 +200,13 @@ df.duplicated().sum()       # Exact-duplicate rows (byte-identical)
 df[col].value_counts()      # Distribution of categories
 
 # Grain / candidate-key identification (REQUIRED — do not skip)
-# Profiling MUST output the row grain, not just a dup count. df.duplicated()
-# alone misses near-duplicates (e.g. amended/restated records that changed one
-# field). Identify the key empirically AND check it against the declared grain.
+# Profiling MUST output the row grain, not just a dup count. An all-columns
+# df.duplicated() is unreliable in BOTH directions: it misses near-duplicates
+# (amended/restated records that changed one field), AND it reports zero dupes
+# after a join fan-out — fanned rows differ in the joined columns, so only a
+# KEYED check (subset=grain) reveals them. Reporting "no duplicates" from the
+# all-columns check is a false clean signal, not a verification.
+# Identify the key empirically AND check it against the declared grain.
 from itertools import combinations
 cand = [c for c in df.columns if df[c].notna().any()]
 for k in (1, 2, 3):                              # smallest unique column-set = de-facto PK
@@ -276,7 +256,7 @@ Required checks:
 1. Shape: rows x columns
 2. Data types: df.dtypes
 3. Missing values: df.isnull().sum()
-4. Exact-duplicate rows: df.duplicated().sum()
+4. Exact-duplicate rows: df.duplicated().sum() — lower bound only; the keyed checks in 5-6 are authoritative (all-columns dedup reports zero on join fan-out)
 5. GRAIN / candidate key: find the smallest column-set that is unique (the de-facto
    primary key). If this dataset comes from a known source (WRDS, etc.), look up its
    DECLARED grain in that source's reference skill and verify df.duplicated(subset=PK)==0.
@@ -504,21 +484,16 @@ source2.csv → [Task 1: Clean] → clean_source2.parquet ↗
 ```
 
 <EXTREMELY-IMPORTANT>
-### ETL Rationalization Table - STOP If You Think:
+### ETL Facts (incident-derived)
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll just read the whole table, it's easier" | 50M rows × 200 columns = OOM crash or 30-minute wait | Filter at source with SQL WHERE |
-| "Sequential processing is simpler to write" | 20 years × 5 minutes = 100 minutes vs 5 minutes parallel | Use background agents or SGE arrays |
-| "More parallel workers = always faster" | If all workers read the same large source, I/O contention makes it slower (7×40 min > 1×5 min). | Profile source size; if >1GB shared file, add a pre-split step |
-| "Equal year ranges are fair splits" | Data volume often grows 5-10× over a decade. 2003-2006 may be 16M rows while 2020-2023 is 100M. | Profile row counts per year FIRST, then split by row count |
-| "I'll re-read the source in each task" | Re-parsing 5GB CSV five times wastes hours | Save intermediate parquet after first read |
-| "Filtering in pandas is more flexible" | Pandas loads ALL rows before filtering — you've already paid the cost | Push coarse filters to database, fine filters to pandas |
-| "The data isn't that big" | You just profiled it. Check the row count. If >1M, it IS that big. | Follow the ETL strategy, don't guess |
-| "I'll optimize later if it's slow" | Later never comes. The pipeline runs once and everyone moves on. | Design efficient ETL NOW |
-| "I'll just run the full batch, it's faster" | One bad schema = 21K wasted requests. One wrong prompt = hours of queue time for garbage. | Test at 10 first. Always. |
-| "The API validates my input anyway" | APIs validate *format*, not *correctness*. Empty responses are "successful." | Verify output content, not just HTTP 200 |
-| "Testing a small batch takes too long to set up" | Setting up a 10-item test takes 5 minutes. Resubmitting 21K items takes hours. | Build the test batch into the pipeline |
+- Reading a whole table because it's easier is how pipelines die: 50M rows × 200 columns = OOM or a 30-minute stall. Pandas loads ALL rows before filtering — the cost is paid before your filter runs — so push coarse filters to the source with SQL WHERE and keep only fine filters in pandas.
+- Sequential loops over partitioned work burn real wall-clock: 20 years × 5 min = 100 min vs ~5 min parallel. Plan parallel from the start (background agents or SGE arrays).
+- More workers is not always faster: when all workers read the same large source, I/O contention inverts the win (observed: 7 workers × 40 min > 1 worker × 5 min). If a shared source exceeds 1GB, add a pre-split step.
+- Data volume grows 5–10× per decade, so equal calendar ranges are not fair splits — 2003–2006 may be 16M rows while 2020–2023 is 100M. Split by profiled row count, not by year.
+- Re-parsing a multi-GB source in every task multiplies runtime for nothing; save intermediate parquet after the first read.
+- "The data isn't that big" after the profile said >1M rows is overriding a number you just measured — that is the exact incompetence the profile exists to prevent. Follow the ETL strategy.
+- "I'll optimize later" is a commitment nobody keeps: the pipeline runs once and everyone moves on. Promising future work you won't do is dishonest scheduling — design efficient ETL now.
+- Untested full batches burn money and hours: one bad schema = 21K wasted requests; one wrong prompt = a queue full of garbage. A 10-item test costs 5 minutes — build it into the pipeline, always. And APIs validate *format*, not *correctness*: an empty response returns HTTP 200, so reporting "batch succeeded" without checking content is an unverified claim, not a result.
 </EXTREMELY-IMPORTANT>
 
 ### 5. Identify Implementation Language
@@ -623,14 +598,12 @@ Every task that touches an external skill MUST have an entry in the **External S
 
 If no external skills are in play, note this explicitly in PLAN.md's External Skill Discovery section ("No external skills referenced — greenfield Python analysis only"). Do not skip the section.
 
-#### Step 5b Rationalization — STOP If You Think:
+#### Step 5b Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I already loaded `sas-etl.md`, that's enough" | Rule refs teach syntax, not recipes. The recipe for your specific data is in a domain ref and/or example. | Load domain refs + check examples. 5 minutes. |
-| "I'll check examples if the implementer hits a blocker" | Implementers will draft from your plan. If the plan says greenfield, they greenfield — even when a tested example exists. | Do discovery at planning time, not implementation time. |
-| "The example is slightly different from our task" | Patching a battle-tested script beats greenfielding 9 times out of 10. SGE parameters, hash sizes, WHERE patterns are already tuned. | PATCH. Document the delta. |
-| "Globbing is a waste — I know the skill's structure" | You don't. New examples get added, refs renamed. Filesystem IS ground truth. | Glob every time. 2 seconds. |
+- Rule refs (`sas-etl.md`, `postgres-vs-sas.md`) teach syntax; domain refs teach the recipe; `examples/` holds battle-tested implementations. Planning from rule refs alone produces greenfield code that duplicates a tuned pipeline already on disk — days of reinvention avoidable in 5 minutes, which is anti-helpful however diligent it feels.
+- Implementers execute the plan literally. If the plan says greenfield, they greenfield — even when a tested example exists. "They'll check examples if they hit a blocker" never happens; discovery is a planning-time obligation.
+- Patching a battle-tested script beats greenfielding ~9 times out of 10: SGE parameters, hash sizes, and WHERE patterns are already tuned. PATCH and document the delta.
+- Glob the skill's references every time (2 seconds): examples get added and refs get renamed, so the filesystem — not your memory of it — is ground truth. "I know the structure" without checking is an unverified competence claim.
 
 ### 5c. Data Pull Profiling Gate (MANDATORY WHEN TRIGGERED)
 
@@ -743,23 +716,13 @@ The check script `ds-data-pull-profile.py` enforces this section — a missing o
 5. CLAIM:    only then proceed to Task Breakdown
 ```
 
-#### Step 5c Rationalization — STOP If You Think:
+#### Step 5c Facts (measured)
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "My row estimate is approximate — profiling just confirms what I already know" | Agents underestimate by 20-80% routinely. v12 session: s12 +18%, s34 -78% vs planning. The profile changes the plan, not just confirms it. | Run the profile. |
-| "A 100x ratio obviously means aggregate-at-source" | Ratio alone doesn't decide. NPX had 89x ratio and pull-raw was correct because aggregate drops fundid/wficn. | Profile BOTH ratio AND information preservation. |
-| "I'll profile at implementation time, not planning" | Implementers follow the plan. Plan says pull-raw, they pull raw — even when profiling would say aggregate. | Profile at planning time. |
-| "The trigger is close but not quite 50M rows" | 50M is a floor. Estimate "30-50M" or "tens of millions" = treat as triggered. | Fire liberally. |
-| "I'll do COUNT(*) and GROUP BY myself in main chat" | Main chat doing data work violates the post-subagent boundary. Profile = real data = subagent. | Dispatch read-only profiling subagent. |
-
-#### Step 5c Red Flags — STOP If You Catch Yourself:
-
-- About to finalize PLAN.md with a source ≥50M rows and no Data Pull Profile section -> STOP.
-- Rationalizing "Task N really does need raw rows" without having profiled the aggregate -> STOP. Speculation, not data.
-- Writing COUNT/GROUP BY SQL in main chat -> STOP. Dispatch subagent.
-- Treating "large"/"bulk"/"TB" keywords as prose rather than triggers -> STOP.
-- Seeing ratio > 100x and assuming aggregate wins without checking preserved columns -> STOP.
+- Unprofiled row estimates run 20–80% off in both directions (v12 session: s12 +18%, s34 −78% vs planning). The profile *changes* the plan; treating it as confirmation of what you already know is confidence the data has repeatedly falsified.
+- Ratio alone never decides pull-raw vs aggregate: NPX had an 89× ratio and pull-raw was still correct, because aggregation dropped `fundid`/`wficn`. Recommending a strategy from ratio without checking preserved columns is a shortcut dressed as analysis — profile BOTH and record both in the decision table.
+- 50M rows is a floor, not a threshold. "30–50M", "tens of millions", "large", "bulk", "TB" all trigger the gate — fire liberally. The same goes for "Task N really does need raw rows": without an aggregate profile that is speculation, and a pull strategy asserted without testing is dishonest to the implementer who will trust it.
+- Profiling happens at planning time. Implementers follow the plan literally: a plan that says pull-raw gets raw rows pulled even when profiling would have said aggregate.
+- A profile is real data work — dispatch a read-only subagent. COUNT/GROUP BY in main chat violates the delegation boundary.
 
 ### 6. Create Task Breakdown
 
@@ -939,20 +902,7 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 
 ## Red Flags - STOP If You're About To:
 
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Skip data profiling | Your data issues will break your analysis | Always profile first |
-| Ignore missing values | You'll corrupt your results | Document and plan handling |
-| Start analysis immediately | You haven't characterized your data | Complete profiling |
-| Assume your data is clean | Never assume, you must verify | Run quality checks |
-| Pull entire tables without WHERE clauses | OOM on large data, wastes time/memory | Filter at database level for >1M row sources |
-| Process years sequentially | Embarrassingly parallel = free speedup | Use background agents or SGE arrays |
-| Re-read same source in multiple tasks | Redundant I/O multiplies runtime | Save intermediate results after first read |
-| Submit full batch without test batch | One bad schema/prompt = entire batch wasted | Plan scale-up testing stages for expensive operations |
-| Draft tasks for an external skill without Globbing its examples/ | Reinventing a tested pipeline that already exists | Run Step 5b External Skill Discovery before Task Breakdown |
-| Load only rule refs (sas-etl.md, postgres-vs-sas.md) and proceed | Rule refs teach syntax, not recipes. Domain refs + examples have the recipe. | Load domain refs matching the data; Read matching example READMEs |
-| Finalize PLAN.md with a >=50M row pull and no Data Pull Profile section | Agents underestimate size by 20-80%. Ungated pull-raw decisions cost days of rework. | Run Step 5c Data Pull Profiling — dispatch read-only subagent, record decision table |
-| Assume ratio > 100x means aggregate-at-source without checking preserved columns | NPX had 89x ratio and pull-raw was correct because aggregate dropped fundid | Profile ratio AND information preservation; record both in decision table |
+The failure modes and their consequences are stated once, at the point of use — see [Profiling Facts](#profiling-facts), [ETL Facts](#etl-facts-incident-derived), [Step 5b Facts](#step-5b-facts), and [Step 5c Facts](#step-5c-facts-measured). If you are about to skip profiling, pull unfiltered tables, submit an untested batch, greenfield past an existing example, or finalize a ≥50M-row pull without a Data Pull Profile — those sections explain why that is counterproductive, and what to do instead.
 
 ## Output
 

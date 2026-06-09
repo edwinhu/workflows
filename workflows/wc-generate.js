@@ -130,7 +130,7 @@ Hard rules:
 - Verifier/reviewer agents get allowed-tools restricted to read-only (Read, Grep, Glob).
 - A constraint .md MUST have a co-located .py of the same stem if DESIGN marked it testable; a convention is .md only.
 Write the file with the Write tool, then return TRANSFORM_SCHEMA with status="created", filesTouched=[the path], and content=the FULL file you wrote (so the verify stage can adjudicate before worktrees are merged).`,
-    { label: String(f.fileId), phase: 'Transform', schema: TRANSFORM_SCHEMA, model: 'sonnet', isolation: 'worktree' }))
+    { label: String(f.fileId), phase: 'Transform', schema: TRANSFORM_SCHEMA, isolation: 'worktree' }))
 }
 const liveTransforms = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-generation: ${reran} file(s) live, ${carriedCount} carried`)
