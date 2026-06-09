@@ -48,24 +48,20 @@ Before claiming ANY marimo notebook works:
 
 This is not negotiable. Skipping execution and output inspection is NOT HELPFUL — the user gets a notebook that fails when they open it.
 
-### Rationalization Table - STOP If You Think:
+### Marimo Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "marimo check passed, so it works" | Syntax check ≠ runtime correctness | EXECUTE with --include-outputs and inspect |
-| "Just a small change, can't break anything" | Reactivity means small changes propagate everywhere | VERIFY with full execution |
-| "I'll let marimo handle the dependency tracking" | Verification of correct behavior is still required | CHECK outputs match expectations |
-| "The function signature looks right" | Wrong deps/returns break reactivity silently | VALIDATE all vars are in params AND returns |
-| "I can modify the function signature" | Breaks marimo's dependency detection | ONLY edit inside function bodies |
-| "Variables can be used without returning them" | Will cause NameError in dependent cells | RETURN all created variables |
-| "I can skip the trailing comma for single returns" | Python treats `return var` as returning the value, breaks unpacking | USE `return var,` for single returns |
+- `marimo check` validates syntax and structure only — it never executes cells. Claiming a notebook works because check passed is an unverified claim presented as fact.
+- Reactivity propagates every edit through the DAG: a one-line change re-executes all dependent cells. Verifying only the edited cell misses downstream breakage — counterproductive on its own terms.
+- Wrong dependencies or missing returns break reactivity silently: no error at edit time, only a NameError when a dependent cell runs. Validate that all used variables are in params AND all created variables are in returns.
+- A variable created but not returned raises NameError in every cell that depends on it.
+- Python treats `return var` as returning the bare value, which breaks unpacking — single returns require the trailing comma (`return var,`).
 
-### Red Flags - STOP Immediately If You Think:
+### Red Flags — STOP If About To:
 
-- "Let me add this variable to the function signature" → NO. Marimo manages signatures.
-- "I'll just run marimo check and call it done" → NO. Execute with outputs required.
-- "The code looks correct" → NO. Marimo's reactivity must be verified at runtime.
-- "I can redefine this variable in another cell" → NO. One variable = one cell.
+- Edit a `@app.cell` decorator or `def _(...)` signature → STOP. Marimo manages these; edit only the function body.
+- Claim done after only `marimo check` → STOP. Execution with `--include-outputs` is required.
+- Claim the notebook works from reading the code → STOP. Reactive correctness shows only at runtime.
+- Define a variable that another cell already defines → STOP. One variable = one cell.
 
 ### Editing Checklist
 
@@ -111,12 +107,6 @@ Follow this sequence for EVERY marimo task:
 ```
 
 **NEVER skip verification gates.** Marimo's reactivity means changes propagate unpredictably.
-
-### Drive-Aligned Framing
-
-**Skipping --include-outputs execution and inspection is NOT HELPFUL — the user gets a notebook that looks correct in code but fails in reactive execution.**
-
-Syntax checks and code inspection prove nothing about reactive execution correctness. The user expects a working notebook where all cells execute correctly with proper dependency tracking.
 
 ## Key Concepts
 

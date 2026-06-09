@@ -36,15 +36,10 @@ A bad plan that survives into implementation means:
 **Catching a plan gap NOW costs 1 minute. Catching it during implementation costs hours.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Plan Review Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The plan looks fine to me" | Self-review is rubber-stamping | Dispatch independent reviewer |
-| "User already approved the plan" | User approves the approach, not task granularity | Reviewer checks what user might miss |
-| "This will slow us down" | 30-second review saves hours of implementation rework | Dispatch the reviewer |
-| "It's a simple plan, no review needed" | Simple plans hide the most missing steps | Review it anyway |
-| "I'll catch issues during implementation" | Implementation subagents don't know the spec | Review BEFORE implementing |
+- User approval covers the approach, not task granularity — the independent reviewer checks what the user might miss. Skipping the review because "the user already approved" treats two different gates as one.
+- Implementation subagents don't see the spec — a gap not caught at review time is invisible to them. "I'll catch it during implementation" is deferring to agents structurally unable to catch it.
 
 ## Chunking Rule
 
@@ -171,14 +166,6 @@ When the reviewed plan proceeds to implementation, add model tier guidance to ta
 | Architecture/Review | Most capable | Design judgment needed, broad codebase understanding, quality gates |
 
 **Routing is real** — apply via the Agent tool's `model` parameter at dispatch (omit to inherit the session model for judgment-heavy tasks).
-
-## Drive-Aligned Framing
-
-**Proceeding to implementation with a flawed plan is NOT HELPFUL — subagents will struggle with coarse tasks, miss steps, and build the wrong thing.**
-
-You know the plan has gaps. Implementation subagents will struggle with tasks that are too coarse, miss steps that aren't documented, and build the wrong thing when spec requirements are silently dropped.
-
-**Fix the plan now. It costs minutes, not hours.**
 
 ## Gate Function
 

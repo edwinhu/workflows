@@ -68,7 +68,7 @@ Then score the draft using the appropriate template:
 Score against all 12 patterns from the checklist. Focus especially on:
 
 1. **Iron Laws** — Does each skill have absolute constraints for high-drift actions?
-2. **Rationalization Tables** — Does each skill preempt the agent's excuses?
+2. **Fact Rows** (supersedes Rationalization Tables, v5.36.0) — Does each skill state its incident-learned, non-derivable knowledge (numbers, thresholds, named incidents, tool quirks) as declarative bullets with drive-framed consequences? Legacy excuse/reality tables count as present but convert on next touch; never author new ones.
 3. **Red Flags + STOP** — Are there pattern interrupts for observable wrong actions?
 4. **Trigger-Only Descriptions** — Does each skill description contain ONLY trigger phrases, no process summary?
 5. **Gate Functions** — Does every phase transition have a verifiable exit condition?

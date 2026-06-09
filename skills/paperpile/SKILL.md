@@ -172,7 +172,7 @@ Paperpile (this skill) → cite-check (upload PDFs to Gemini)
 - Paperpile All Papers: `~/Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My Drive/resources/Paperpile/All Papers/`
 - Re-import cookies when they expire (~30 days for Paperpile, ~8-12h for Shibboleth hard expiry)
 
-## Red Flags -- STOP If You Catch Yourself:
+## Red Flags
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|

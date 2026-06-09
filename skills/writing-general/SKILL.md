@@ -27,24 +27,12 @@ Every word must earn its place. Vigorous writing is concise. A sentence should c
 | Put statements in positive form | Say what something is, not what it isn't |
 | Use definite language | Avoid hedging, qualifiers, and weasel words |
 
-### Red Flags - Stop If You Think
+### Red Flags
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "I'll add some qualifiers to be safe" | Weakens the writing | Make definite assertions |
-| "Let me list these points" | Bullet points are lazy | Write in prose paragraphs |
-| "I should sound more formal" | Formality often means wordiness | Write naturally, then edit |
-| "This needs more emphasis" | Overemphasis dilutes meaning | Let strong words speak |
-
-## Rationalization Table - STOP If You Think:
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The passive voice is fine here" | Passive voice hides the actor; name them | REWRITE in active voice |
-| "This adverb adds emphasis" | Strong verbs don't need adverbs | DELETE the adverb, pick a stronger verb |
-| "The reader needs this context first" | Lead with the point, add context after | MOVE the point to the front |
-| "This paragraph needs one more sentence" | If the paragraph is complete, stop | STOP writing and move on |
-| "I should vary the sentence structure" | Clarity beats variety; don't complexify for style | KEEP the clear structure |
+- About to add qualifiers "to be safe" → STOP. Hedging weakens the writing; make definite assertions.
+- About to reformat prose into bullet points → STOP. Write prose paragraphs unless lists were explicitly requested.
+- About to formalize the register → STOP. Formality usually means wordiness; write naturally, then edit.
+- About to add emphasis → STOP. Overemphasis dilutes meaning; let strong words speak.
 
 ### Delete & Restart Triggers
 
@@ -61,12 +49,6 @@ Every word must earn its place. Vigorous writing is concise. A sentence should c
 After deleting, restart the sentence with THE POINT first, then evidence.
 
 **Skipping the deletion pass is NOT HELPFUL — the user publishes bloated prose that buries their argument.** Identify violations and purge them.
-
-## Drive-Aligned Framing
-
-**Skipping the sentence-level check is NOT HELPFUL — the user publishes weak prose that undermines their credibility.** Reading your own output and thinking "looks good" is not editing.
-
-- You skip the style check because the content is correct. The prose reads as AI slop — your content expertise is hidden behind bad writing.
 
 ## Editing Checklist
 

@@ -22,14 +22,9 @@ Every phase skill has a flowchart. **If text and flowchart disagree, the flowcha
 1. Agent follows prose description that says "skip review if time is short" while the flowchart shows a mandatory review gate.
 2. Agent invents a process step not in the flowchart because it "seems implied" by the text.
 
-## Rationalization Table
+## Flowchart Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The text explanation is clearer" | Clarity ≠ authority. The flowchart is the spec. | Follow the flowchart |
-| "The flowchart seems outdated" | If it's in the skill, it's authoritative until changed | Follow the flowchart, flag concern to user |
-| "Common sense says to skip this step" | The flowchart encodes the designer's intent, not your common sense | Follow the flowchart |
-| "The text says I can take a shortcut" | Text is commentary. Flowchart is spec. | Follow the flowchart |
+- A flowchart that seems outdated is still authoritative until changed — follow it and flag the concern to the user. Silently "correcting" it substitutes your judgment for the designer's spec.
 
 ## Red Flags
 

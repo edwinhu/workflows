@@ -47,14 +47,9 @@ This pattern was discovered in dev-debug (March 16, 2026) when a user asked an o
 1. User: "What time is my meeting tomorrow?" → Agent answers the question, never returns to the writing workflow. User has to re-invoke /writing.
 2. User asks something ambiguous → Agent assumes it's a new topic, abandons workflow silently.
 
-## Rationalization Table
+## Pause Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The user clearly wants to switch topics" | Maybe, but announce the pause so the loop state is preserved | Announce pause, handle, announce resume |
-| "I can handle this quickly and get back" | You'll forget to resume. The workflow dies silently. | Announce the pause explicitly |
-| "The workflow is at a natural pause point" | No point is natural enough to silently abandon | Announce even at phase boundaries |
-| "I'll remember to come back" | Context compression will erase your intent to resume | Announce resume, read ACTIVE_WORKFLOW.md |
+- Context compression erases an unannounced intent to resume — "I'll handle this quickly and get back" dies silently. The pause/resume announcements (plus re-reading ACTIVE_WORKFLOW.md) are the only state that survives; even a clear topic switch or a "natural pause point" gets announced.
 
 ## Red Flags
 

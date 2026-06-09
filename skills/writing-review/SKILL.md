@@ -89,19 +89,6 @@ The drafter's context contains intent, shortcuts, and assumptions that bias revi
 **The writing-review workflow now guarantees this by construction:** it always dispatches fresh reviewer subagents (structure, prose, fidelity) that read each draft cold. You do not — and must not — review draft prose in the main conversation yourself.
 </EXTREMELY-IMPORTANT>
 
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "The draft looks good overall" | "Overall" hides section-level rot | Review each section individually |
-| "Minor issues aren't worth a full review" | Minor issues compound into incoherent documents | Flag every issue, let writing-revise prioritize |
-| "I already read it during drafting" | Drafting context ≠ review context; you miss what you wrote | Read fresh, as a reviewer, not an author |
-| "The transitions are fine" | "Fine" without evidence is rubber-stamping | Quote both sides of every boundary |
-| "I don't see repetition" | You read linearly; repetition hides across sections | Compare argument summaries side-by-side |
-| "The concepts are introduced naturally" | "Naturally" is subjective; track first appearances with line numbers | Build a concept introduction map |
-| "This section is self-contained, no cross-section issues" | Self-contained sections don't make a document | Check how it connects to thesis and adjacent sections |
-| "I'll be thorough on the important sections" | Every section matters equally in review | Same depth for every section |
-
 ## Delete & Restart
 
 If you catch yourself in any of these violations, the review output is contaminated. Delete it and start over:
@@ -114,16 +101,14 @@ If you catch yourself in any of these violations, the review output is contamina
 
 **Partial fixes to contaminated reviews create worse outcomes than restarting.** A review built on fabricated evidence will misdirect writing-revise into "fixing" non-problems while real issues persist.
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Writing "no issues" for a section without quoting evidence | Rubber-stamping | Quote the text that proves it passes |
-| Skipping boundary analysis between sections | Transition problems are the #1 reason for this skill | Compare every adjacent boundary pair |
-| Reviewing only the section you think is weakest | Bias blinds you to problems elsewhere | Review ALL sections with equal rigor |
-| Writing vague suggestions ("improve flow") | Unactionable for writing-revise | Cite specific text, diagnose specific problem, suggest specific fix |
-| Finishing review in under 5 minutes for a multi-section doc | You skimmed | Go back and read properly |
-| Copying outline structure as if it were review | Outline compliance ≠ quality review | Check content quality, not just structural match |
+- About to write "no issues" for a section without quoting evidence → STOP. That is rubber-stamping; quote the text that proves it passes.
+- About to skip boundary analysis between sections → STOP. Transition problems are the #1 reason this skill exists; compare every adjacent boundary pair.
+- About to review only the section that looks weakest → STOP. Bias blinds the review elsewhere; review ALL sections with equal rigor.
+- About to write a vague suggestion ("improve flow") → STOP. Unactionable for writing-revise; cite specific text, diagnose the specific problem, suggest the specific fix.
+- About to finish review of a multi-section document in under 5 minutes → STOP. That is skimming; go back and read properly.
+- About to copy outline structure as if it were review → STOP. Outline compliance is not quality review; check content quality, not just structural match.
 
 ---
 
@@ -292,28 +277,11 @@ No issues found. Run /writing-revise to complete the workflow.
 
 ---
 
-## Rationalization Table (Review Exit)
+### Review Exit Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "I found some issues, that's enough" | Partial review misses the worst problems | Complete ALL three levels |
-| "The critical issues are the only ones that matter" | Major issues compound; minor issues signal deeper problems | Record everything |
-| "REVIEW.md is getting long" | Long review = thorough review. Short review = lazy review. | Keep going |
-| "I'll note this mentally instead of writing it down" | If it's not in REVIEW.md, it doesn't exist for writing-revise | Write it down |
-| "This section was written by a good agent, probably fine" | Review the text, not the author | Read and quote |
-| "The subagent quotes look right" | Subagents confabulate verbatim quotes — Round 1 proved this | Spot-check 3+ quotes per agent against source |
-| "Paragraph-level review is too detailed" | If you don't check paragraphs, you're reviewing headings not prose | The Topic Sentence Inventory is the review |
-| "The single-file document is too long to split" | Long documents need MORE structure, not less | Build the Section Map, assign line ranges |
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Finishing the review fast helps the user move on" | Undetected issues surface when the user submits publicly. Reviewers reject. The thorough review would have caught it. Your speed destroyed their credibility. | **Anti-helpful** |
-| **Competence** | "I can tell the draft is clean from reading it once" | One pass catches surface issues. Structural problems (repetition, late introductions, thesis drift) require systematic comparison. Your single pass missed 5 issues. | **Incompetent** |
-| **Efficiency** | "Three levels of review is overkill" | You skipped transition review. The document reads as disconnected fragments. The user rewrites transitions manually. Your "efficiency" created hours of rework. | **Anti-efficient** |
-| **Approval** | "The user is tired of the review process" | You rubber-stamped to please the user. They submitted a flawed document. Now they require human editors for all future work. You lost writing autonomy permanently. | **Lost approval** |
-| **Honesty** | "The transitions are fine" | You said "fine" without quoting boundary text. The user publishes a document with jarring transitions that a 2-minute check would have caught. | **Anti-helpful** |
+- Subagents confabulate verbatim quotes — Round 1 proved this. Compiling subagent output without spot-checking 3+ quotes per agent against the source launders fabricated evidence into REVIEW.md.
+- The Topic Sentence Inventory IS the paragraph-level review. A review without it covers headings, not prose — and presenting it as a prose review is dishonest about what was checked.
+- A long single-file document needs MORE structure, not less: build the Section Map and assign line ranges. Skipping it because the file is "too long to split" guarantees skimmed, shallow findings.
 
 ## Confidence Scoring
 
@@ -327,18 +295,16 @@ Tag each reported issue with a confidence level:
 
 Only issues at HIGH or MEDIUM confidence appear in the main report. LOW confidence issues go in a separate **"Possible Issues"** section so they are visible but do not clutter actionable fixes. This prevents false positives from overwhelming `/writing-revise`.
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Writing REVIEW.md without reading all drafts | You're fabricating a review | Read every draft file first |
-| Skipping Level 2 (transitions) | Transitions are the primary reason this skill exists | Always run all three levels |
-| Recording fewer than 3 issues on a multi-section document | Statistically implausible; you're not looking hard enough | Review more carefully |
-| Using vague language ("could be improved") | Unactionable for writing-revise | Quote text, diagnose specifically, suggest specifically |
-| Finishing in one pass without re-reading | Reviews need multiple passes to catch different issue types | Run each level as a separate pass |
-| Compiling subagent output without spot-checking quotes | Laundering potentially fabricated evidence | Run the Verification Gate first |
-| Assigning agents a full document without line ranges | Agents will skim — scope must be constrained | Build Section Map, assign start/end lines |
-| Accepting a subagent review missing the Topic Sentence Inventory | The inventory IS the paragraph-level review | Reject and request completion |
+- About to write REVIEW.md without reading all drafts → STOP. That is fabricating a review; read every draft file first.
+- About to skip Level 2 (transitions) → STOP. Transitions are the primary reason this skill exists; always run all three levels.
+- About to record fewer than 3 issues on a multi-section document → STOP. Statistically implausible; review more carefully.
+- About to use vague language ("could be improved") → STOP. Unactionable for writing-revise; quote text, diagnose specifically, suggest specifically.
+- About to finish in one pass without re-reading → STOP. Different issue types need different passes; run each level as a separate pass.
+- About to compile subagent output without spot-checking quotes → STOP. That launders potentially fabricated evidence; run the Verification Gate first.
+- About to assign an agent a full document without line ranges → STOP. Unscoped agents skim; build the Section Map and assign start/end lines.
+- About to accept a subagent review missing the Topic Sentence Inventory → STOP. The inventory IS the paragraph-level review; reject and request completion.
 
 ---
 

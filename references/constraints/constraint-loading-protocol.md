@@ -47,16 +47,10 @@ Editing with only domain skill loaded misses AI anti-patterns. Editing with only
 1. "I loaded the domain skill" → Begin drafting without ai-anti-patterns. Result: prose with legal citations but full of AI writing smell.
 2. "I remember the rules from the last section" → Begin drafting without re-reading skill files. Result: context-compressed hallucination of rules.
 
-## Rationalization Table
+## Loading Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I loaded the domain skill, that's enough" | Domain skill doesn't catch AI writing smell | Load ai-anti-patterns too |
-| "ai-anti-patterns covers the basics" | It doesn't know legal citation rules or econ style | Load domain skill too |
-| "I remember the rules from earlier" | Context may be compressed; you're guessing | Read() the skill files every time |
-| "This is just a quick fix" | Quick fixes without constraints introduce new violations | Load constraints, then fix |
-
-**Editing with partial constraints is NOT HELPFUL — the user publishes prose that passes one quality check but fails another.** Both constraint layers exist because each catches problems the other misses.
+- The layers are not substitutes: the domain skill doesn't catch AI writing smell, and ai-anti-patterns doesn't know legal citation rules or econ style. Editing with one layer loaded produces prose that passes one quality check and fails the other — and the user publishes the failure.
+- "I remember the rules from earlier" after context compression is a hallucination of rules, not a memory — Read() the skill files every time, even for a "quick fix". Loading takes seconds; fixing constraint violations after publication takes hours, so skipping it is counterproductive on its own terms.
 
 ## Red Flags
 

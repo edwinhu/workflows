@@ -159,28 +159,11 @@ The analysis is reproducible. No issues with confidence >= 80 detected.
 X critical and Y important reproducibility issues must be addressed before proceeding.
 ```
 
-## Rationalization Prevention
+## Review Facts
 
-STOP - you're about to rationalize if these thoughts arise:
-
-| Thought | Reality |
-|---------|---------|
-| "Seeds probably don't matter here" | Probably is not verification. Check if operations are stochastic. |
-| "I trust the analyst documented versions" | Trust is not verification. Check pixi.toml yourself. |
-| "Reproduction would take too long" | Your unverified approval costs days of rework. Try it. |
-| "The environment looks standard" | Looks ≠ reproducible. Verify or discard. |
-| "Data is probably versioned" | Probably ≠ evidence. Check LEARNINGS.md for source documentation. |
-
-## Drive-Aligned Framing
-
-**Approving without attempting reproduction is NOT HELPFUL — the user publishes work that others cannot replicate.**
-
-An "APPROVED" verdict means YOU assert:
-- Analysis is reproducible (not "should be reproducible")
-- Seeds are set (not "probably don't matter")
-- Environment is documented (not "looks standard")
-
-**CHANGES REQUIRED is helpful. An unverified APPROVED wastes the user's time and undermines their research.**
+- "Seeds probably don't matter", "environment looks standard", "data is probably versioned" are checkable claims: check whether operations are stochastic, check `pixi.toml` yourself, check LEARNINGS.md for source documentation — or discard the finding. The analyst's documentation claims are not evidence.
+- Reproduction costs less than the days of rework an unverified approval causes — skipping it is counterproductive on its own terms.
+- An "APPROVED" verdict asserts that the analysis is reproducible, seeds are set, and the environment is documented. Issuing it without attempting reproduction is an unverified claim presented as fact — the user publishes work others cannot replicate. CHANGES REQUIRED is the helpful verdict.
 
 ## After Review Completes
 

@@ -20,9 +20,6 @@ STATE.md shows `step: 1-philosophy, status: completed` before INTERVIEW.md or DE
 ### Incorrect
 DESIGN.md exists but STATE.md shows no philosophy step — agent skipped straight to decomposition.
 
-## Rationalization Table
+## Loading Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I remember the philosophy from last time" | Context doesn't persist across sessions. Your memory is unreliable. | Read it. Every time. |
-| "This is a simple workflow, philosophy is overkill" | Simple workflows drift fastest. Philosophy is most needed when you're tempted to skip it. | Read it. |
+- Context doesn't persist across sessions — "I remember the philosophy from last time" is unreliable memory presented as a loaded artifact. Simple workflows drift fastest, so the read matters most exactly when it feels like overkill. Read it every time.

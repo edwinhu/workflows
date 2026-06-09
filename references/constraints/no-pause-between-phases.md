@@ -27,14 +27,9 @@ After completing any phase and passing its gate, IMMEDIATELY load the next skill
 1. PRECIS reviewer approves → Agent says "Great, the precis has been approved! Would you like me to proceed to outlining?" → User says "yes" → Agent finally loads the outline skill. Two wasted messages.
 2. Draft phase completes → Agent summarizes all sections written → Asks "Ready for validation?" → Wastes context on a summary nobody asked for.
 
-## Rationalization Table
+## No-Pause Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The user might want to review before continuing" | That's what gates are for. The gate passed. | Load the next skill |
-| "A summary helps the user understand progress" | Phase summaries go in PHASE_SUMMARY.md, not chat messages | Write to PHASE_SUMMARY.md, then load next skill |
-| "It's polite to ask before continuing" | It's polite to respect the user's time. They invoked /writing for autonomous execution. | Load the next skill |
-| "What if the user wants to stop here?" | They can interrupt at any time. Don't pre-emptively stop for them. | Load the next skill |
+- Progress summaries belong in PHASE_SUMMARY.md, not chat messages — the gate already passed, which is the review the boundary needed. The user can interrupt at any time; pre-emptively stopping "to be polite" spends their time to buy yourself reassurance, which is the opposite of the autonomous execution they invoked /writing for.
 
 ## Red Flags
 

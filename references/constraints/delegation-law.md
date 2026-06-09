@@ -50,26 +50,11 @@ Main chat: "Ah, I see the issue. Let me fix it." (Edit on source file)
 (Investigation AND implementation in main chat — both violations)
 ```
 
-## Rationalization Table
+## Delegation Facts
 
-| Thought | Reality |
-|---------|---------|
-| "It's just a small fix" | Small fixes become big mistakes. Delegate. |
-| "I'll be quick" | Quick means sloppy. Delegate. |
-| "The subagent will take too long" | Subagent time is cheap. Your context is expensive. |
-| "I already know what to do" | Knowing ≠ doing it well. Delegate. |
-| "Let me just do this one thing" | One thing leads to another. Delegate. |
-| "This is too simple for a subagent" | Simple is exactly when delegation works best. |
-| "I'm already here in the code" | Being there ≠ writing there. Delegate. |
-| "The user is waiting" | User wants DONE, not fast. They won't debug your shortcuts. |
-| "This is just porting/adapting code" | Porting = writing = code. Delegate. |
-| "I already have context loaded" | Fresh context per task is the point. Delegate. |
-| "It's config, not real code" | JSON/YAML/TOML = code. Delegate. |
-| "I need to set things up first" | Setup IS implementation. Delegate. |
-| "Let me just quickly check one thing" | "One thing" becomes 50 file reads. Subagent. |
-| "I have a strong hypothesis already" | That's what you thought last time. Subagent. |
-
-**The Meta-Rationalization:** If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've already failed. Simple work is EXACTLY when discipline matters most.
+- The boundary cases ARE code and investigation: porting/adapting existing code, config files (JSON/YAML/TOML), setup work, and "quickly checking one thing" in source. All of them delegate. "One thing" historically becomes 50 file reads; a strong hypothesis is what you had last time you were wrong.
+- Main-chat context is expensive and subagent time is cheap — burning orchestrator context on work a subagent does with better isolation is counterproductive on its own terms. The author also cannot objectively review their own code; delegation is what preserves review quality.
+- This rule is an invariant for ALL work, not a guideline for complex work — simple work is exactly when discipline matters most.
 
 ## Red Flags
 

@@ -68,14 +68,10 @@ Iteration 4: 4 issues -> fix -> re-review: 5 issues
 ... (cycling forever without escalating)
 ```
 
-## Rationalization Table
+## Iteration Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll draft all sections at once for efficiency" | Drafting all sections at once produces shallow treatment. Serial catches depth issues per section. | Draft one section at a time with depth checks. |
-| "3 iterations should be enough, let me try once more" | The escalation trigger exists because the 4th attempt rarely succeeds where 3 failed. | Escalate to the user with a diagnosis of why you're stuck. |
-| "The reviewer keeps flagging style issues, I'll keep iterating" | Same flags after fixes = wrong approach, not insufficient effort. | STOP. Escalate. You need different guidance, not more iterations. |
-| "I'm making progress, just slowly" | If issue count isn't decreasing, you're cycling, not progressing. | Track issue count per iteration. If it's not dropping, escalate. |
+- Drafting all sections at once produces shallow treatment — the serial topology exists because depth issues are only caught per section.
+- The 4th attempt rarely succeeds where 3 failed, and the same flags after fixes mean the *approach* is wrong, not the effort insufficient. Track issue count per iteration: if it isn't dropping, you're cycling, not progressing — escalate with a diagnosis of why you're stuck, not another iteration.
 
 ## Red Flags
 

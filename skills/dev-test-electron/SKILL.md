@@ -42,16 +42,11 @@ Before writing ANY test, verify from SPEC.md/PLAN.md:
 
 **If any answer is "I don't know" → Go back to SPEC.md. Don't guess.**
 
-### Rationalization Prevention (Electron-Specific)
+### Electron Testing Facts
 
-| Thought | Reality |
-|---------|---------|
-| "HTTP is easier to test" | But app uses WebSocket. Test WebSocket. |
-| "I can call the function directly" | User clicks a button. Use CDP Input events. |
-| "CDP is complex, let me mock" | Mocking hides bugs. Use real CDP. |
-| "Main process is hard to test" | Main process crashes break app. Test it. |
-| "Panel state is internal" | User SEES the panel. Test what user sees. |
-| "IPC is just plumbing" | IPC bugs cause silent failures. Test it. |
+- Production code paths are the test target: users click buttons (CDP Input events, not direct function calls), the app talks over its real transport (WebSocket, not an easier HTTP stand-in), and the user SEES the panel even if its state is "internal". A test that bypasses any of these exercises a code path production never runs — its pass is an unverified claim about the real one.
+- The main process and IPC need coverage as much as the renderer: main-process crashes take down the whole app, and IPC bugs fail silently. Renderer-only testing asserts whole-app health from partial evidence.
+- Mocking CDP hides exactly the bugs this skill exists to catch; use the real CDP connection.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -148,15 +143,9 @@ Related skills:
 - Hammerspoon skill - macOS native
 - Linux skill - Linux native
 
-### Rationalization Prevention
+### Tool Boundary Facts
 
-| Thought | Reality |
-|---------|---------|
-| "Chrome MCP works for Electron" | NO. Electron has main process + renderer. Need Electron-specific CDP. |
-| "Playwright can test Electron apps" | NO. Playwright is for web browsers, not Electron main process. |
-| "I'll just test the renderer" | Main process matters. File dialogs, native menus need testing too. |
-| "CDP is too complex" | It's the ONLY way to properly test Electron apps. Learn it. |
-| "I can skip the main process" | NO. Main process crashes break the app. Test both. |
+- Chrome MCP cannot attach to Electron's main process, and Playwright MCP targets web browsers — neither reaches Electron's main process. Electron-specific CDP is the only tool that covers both main process and renderer (see Capability Comparison below); picking a familiar web tool instead produces a test blind to file dialogs, native menus, and main-process crashes.
 
 ### Capability Comparison
 

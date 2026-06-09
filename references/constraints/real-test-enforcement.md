@@ -66,16 +66,11 @@ grep -r "def cli_function" src/
 (Proves the function exists. Says nothing about whether it runs correctly.)
 ```
 
-## Rationalization Table
+## Test Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I just want to check it's wired up" | Wired up = test it's callable | Write a test that calls it |
-| "Full test is too complex to set up" | Complex setup → integration test → worth writing | Write the integration test |
-| "The log shows it ran" | Log was written by code. Code ran. Didn't verify output. | Assert the output |
-| "grep confirms the function exists" | Function existence ≠ function correctness | Run the function, assert the result |
-| "I'll write a real test later" | "Later" tests never get written | Write the real test now |
-| "A unit test is good enough here" | Unit test covers unit. User workflow crosses multiple units. | Write the integration/E2E test |
+- "Wired up" is testable — write a test that calls it. Complex setup is the signal that you need an integration test, not a reason to skip one. A unit test covers a unit; the user's workflow crosses multiple units — feature-level claims need the integration/E2E test.
+- A log line saying "success" was written by the code under test — it proves execution, not correct output. Grep proves existence, not correctness. Citing either as verification is an unverified claim presented as fact; assert the output.
+- "I'll write a real test later" — later tests never get written; promising one is dishonest scheduling. Write it now.
 
 ## Red Flags
 

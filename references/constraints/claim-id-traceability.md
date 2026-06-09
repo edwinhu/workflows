@@ -65,15 +65,11 @@ and disclosure causes overload.
 (No per-claim status. No evidence. Just assertion.)
 ```
 
-## Rationalization Table
+## Traceability Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The claims are obvious from context" | Obvious to you now. Not obvious to the validation phase or a resuming session. | Assign explicit CLAIM-XX IDs. |
-| "Adding IDs clutters the outline" | IDs are one line per section. Clutter is finding out in revision that a claim was never covered. | Add the `Implements:` line. |
-| "I'll add traceability during validation" | Validation checks traceability -- it can't add it. The IDs must exist before validation runs. | Add IDs at each phase as artifacts are created. |
-| "Not all claims map neatly to sections" | Then the outline structure needs revision. A claim with no section home is a structural gap. | Flag it as a structural issue (R4 deviation). |
-| "REVIEW.md doesn't need claim IDs" | When a review issue affects claim coverage, the ID makes the impact clear. | Reference claim IDs in review issues when relevant. |
+- Validation checks traceability — it cannot add it. The IDs must exist before validation runs, so "I'll add traceability during validation" schedules work the phase cannot do; assign IDs as each artifact is created.
+- A claim with no section home is a structural gap, not an ID inconvenience — flag it as an R4 deviation; the outline structure needs revision.
+- "The claims are obvious from context" is obvious only to you, now — not to the validation phase or a resuming session. Asserting coverage without per-claim IDs is an unverified claim presented as fact.
 
 ## Red Flags
 

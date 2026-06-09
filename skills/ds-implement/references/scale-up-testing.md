@@ -39,22 +39,14 @@ For each task with a scale-up plan in PLAN.md:
 - Only after all required stages pass their gates
 - Document final batch parameters in LEARNINGS.md
 
-### Scale-Up Rationalization Table - STOP If You Think:
+### Scale-Up Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I already tested the prompt interactively" | Interactive != batch. Schema, format, and parameters differ. Batch-specific bugs only appear in batch. | Run a 10-item batch test. It takes 5 minutes. |
-| "The first 10 worked, 21K will be fine" | Stage 1 catches format errors. Stage 2 catches edge cases and error rate patterns. Skipping stages hides systematic failures. | Follow ALL required stages for your batch size. |
-| "I'll check the results after the full batch" | By then you've wasted hours/dollars. Errors compound silently at scale. | Verify at each stage before scaling up. |
-| "The API returned 200 OK, so it worked" | HTTP 200 means the *request* succeeded, not the *output*. Empty responses, malformed JSON, and hallucinated content all return 200. | Parse and inspect actual response content. |
-| "Running test batches slows down the pipeline" | A 10-item test takes minutes. Resubmitting 21K items after a schema error takes hours. | Test batches are the fastest path to production. |
-| "The outputs parsed correctly, so quality is fine" | Parsing checks structure, not content. LLM outputs can be structurally valid but factually wrong, incomplete, or hallucinated. | Randomly sample and actually read outputs at every stage. |
+- Interactive testing is not batch testing: schema, format, and parameters differ, and batch-specific bugs only appear in batch. A 10-item batch test takes 5 minutes; resubmitting 21K items after a schema error takes hours — skipping the test is counterproductive on its own terms.
+- Stages catch different failures: Stage 1 catches format errors; edge cases and error-rate patterns only emerge at ~100 items (Stage 2). Skipping stages hides systematic failures until they surface at maximum cost — errors compound silently at scale.
+- HTTP 200 means the *request* succeeded, not the *output*: empty responses, malformed JSON, and hallucinated content all return 200. Likewise, parsing checks structure, not content — structurally valid output can be factually wrong, incomplete, or hallucinated. Reporting success from status codes or parse success alone is an unverified claim presented as fact; randomly sample and actually READ outputs at every stage.
+- The full batch can cost 10x what you expected — extrapolate before scaling: (stage cost / stage items) × total items.
 
-### Red Flags - STOP If You Catch Yourself:
+### Red Flags
 
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| About to submit full batch without a test batch | You will discover errors at maximum cost | Submit 10 items first |
-| Checking only that the API returned success | "Success" means the request was processed, not that output is correct | Parse and read actual response content |
-| Skipping Stage 2 because Stage 1 passed | Edge cases and error rate patterns only emerge at ~100 items | Follow the scale-up plan from PLAN.md |
-| Not extrapolating cost before scaling up | Full batch could cost 10x what you expected | Calculate: (stage cost / stage items) x total items |
+- About to submit the full batch without a passing test batch → submit 10 items first.
+- About to skip Stage 2 because Stage 1 passed → follow the scale-up plan from PLAN.md.

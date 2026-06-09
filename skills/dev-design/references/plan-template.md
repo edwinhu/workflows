@@ -89,22 +89,15 @@ For each task below:
 
 **Every task MUST have a test that EXECUTES the code and VERIFIES behavior.**
 
-### Rationalization Prevention (No Tests)
+### TDD Facts
 
-If you catch yourself thinking these thoughts, STOP:
+- Missing test infrastructure is not an exemption — adding it becomes Task 0 of the plan.
+- "Hard to test" has tooling answers (Playwright, ydotool, E2E harnesses); if none fit, ask the user. Silently planning an untested task hands the user the debugging later — counterproductive on its own terms.
+- Manual testing in SPEC.md — even user-approved — does not override TDD. Push back or fix the SPEC.
 
-| Thought | Reality |
-|---------|---------|
-| "No test infrastructure exists" | Add it as Task 0. That's the plan now. |
-| "This is hard to test" | Use E2E tools (Playwright, ydotool). Ask user. |
-| "I'll add tests later" | No. TDD means tests FIRST. |
-| "Just this one task without tests" | No exceptions. Ever. |
-| "Manual testing is in SPEC.md" | That's wrong. Fix it or ask user. |
-| "User approved manual testing" | Push back. TDD is the workflow. |
+### Fake Test Detection
 
-### Rationalization Prevention (Fake Tests)
-
-See `references/constraints/real-test-enforcement.md` for fake test detection red flags and rationalization patterns.
+See `references/constraints/real-test-enforcement.md` for fake test detection facts and red flags.
 
 ## Files to Modify
 | File | Change |

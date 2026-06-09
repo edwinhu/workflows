@@ -118,27 +118,9 @@ fi
 **If tests fail:** Report failures and note that baseline has issues. Do NOT proceed silently.
 **If tests pass:** Report clean baseline.
 
-### Rationalization Prevention (Baseline Verification)
+### Baseline Facts
 
-| Thought | Reality |
-|---------|---------|
-| "Tests will pass, they passed on main" | Worktree setup can break things. Verify. |
-| "Baseline check takes too long" | Debugging pre-existing failures takes longer. Run now. |
-| "I'll notice if something is broken later" | You won't know if the failure is yours or inherited. Run now. |
-| "Dependencies installed fine, should be good" | Install success != test success. Run tests. |
-| "Main branch is green, worktree will be too" | Worktree has different env, paths, symlinks. Verify independently. |
-
-### Drive-Aligned Framing
-
-**Claiming clean baseline without running tests is NOT HELPFUL — every failure becomes ambiguous and you can't tell if bugs are yours or inherited.** Your assumption is not verification.
-
-### Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Skip baseline to start faster" | Broken baseline infects all work, every failure is ambiguous | **Anti-helpful** |
-| **Competence** | "I know the codebase well enough" | Your mental model is stale. The worktree reveals conflicts you didn't anticipate. | **Incompetent** |
-| **Efficiency** | "Skip worktree setup to save time" | Merge conflicts later cost 10x the setup time | **Anti-efficient** |
+- A worktree is not the main checkout: different env, paths, and symlinks mean green-on-main does not imply green-in-worktree, and install success != test success. Claiming a clean baseline without running tests is an unverified claim presented as fact — every later failure becomes ambiguous, and you can't tell which bugs are yours and which were inherited.
 </EXTREMELY-IMPORTANT>
 
 ### Step 6: Report Ready

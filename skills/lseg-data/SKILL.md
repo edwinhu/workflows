@@ -35,24 +35,18 @@ Before claiming ANY LSEG query succeeded, follow these steps:
 
 This is not negotiable. Skipping result inspection is NOT HELPFUL — the user builds analysis on data with undetected quality problems.
 
-### Rationalization Table - STOP If You Think:
+### LSEG API Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| “The query returned data, so it worked” | Returned data ≠ correct data | INSPECT for NULLs, wrong dates, invalid values |
-| “User gave me the RIC” | Users often use wrong suffixes | VERIFY symbology against RIC Symbology section |
-| “I’ll let pandas handle missing data” | You’ll propagate bad data downstream | CHECK for NULLs BEFORE returning |
-| “Field names look right” | Typos are common (TR.EPS vs TR.Eps) | VALIDATE field names in documentation first |
-| “Just a quick test” | Test queries teach bad habits | Full validation even for tests |
-| “I can check the data later” | You won’t | Inspection is MANDATORY before claiming success |
-| “Rate limits don’t matter for small queries” | Small queries add up | CHECK rate limits section, use batching |
+- The API does not raise errors for invalid field names or wrong RICs — it returns empty results or NULL columns. Treating returned rows as correct data is an unverified claim presented as fact: inspect for NULLs, wrong dates, and invalid values before returning anything.
+- Field-name typos are common and fail silently (TR.EPS vs TR.Eps). Validate field names against the documentation before executing.
+- User-supplied RICs often carry the wrong exchange suffix. Verify against the RIC Symbology section (`.O`, `.N`, `.L`, `.T`) before querying.
+- Market data has T-1 availability — today's data arrives tomorrow. Querying through today produces silent gaps; see the Date Awareness section.
+- Rate limits bind per session (500 requests/minute) and per request (`get_data()` 10,000 data points, `get_history()` 3,000 rows) — many small queries still hit the session cap. Batch instead of looping.
 
-### Red Flags - STOP Immediately If You Think:
+### Red Flags — STOP If About To:
 
-- “Let me run this and see what happens” → NO. Validate field names and RICs FIRST.
-- “The API will error if something is wrong” → NO. API returns empty results, not errors.
-- “I’ll just return the dataframe to the user” → NO. Inspect sample BEFORE returning.
-- “Market data is always up-to-date” → NO. Check Date Awareness section (T-1 lag).
+- Execute a query without validating field names and RIC suffixes first → STOP. The API will not error for you.
+- Return a dataframe without `.head()` or `.sample()` inspection → STOP. Handing over uninspected data gives the user undetected quality problems — unhelpful on its own terms.
 
 ### Data Validation Checklist
 

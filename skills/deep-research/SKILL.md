@@ -106,14 +106,10 @@ This is the most expensive tool in the librarian's toolkit. Before every invocat
 3. State the estimated cost range ($1-3 for fast, $3-7 for thorough)
 4. Wait for the user's go-ahead
 
-### Rationalization Table
+### Cost Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The user probably wants this" | $3-7 burned on assumption | Ask first, always |
-| "I'll just do a quick scan" | Even --fast costs $1-3 | Check Scholar/Consensus first -- they are free |
-| "The curated sources didn't have enough" | Did you try ALL five? | Exhaust Paperpile, Scholar, Consensus, NLM, Readwise before reaching for this |
-| "It's faster than searching multiple sources" | It takes 5-20 minutes and costs money | The free tools return in seconds |
+- Even `--fast` costs $1-3 and takes 2-10 minutes; Scholar, Consensus, Paperpile, NLM, and Readwise are free and return in seconds. Reaching for deep research because it seems "faster than searching multiple sources" is counterproductive on its own terms.
+- "The curated sources didn't have enough" is only a fact after ALL five (Paperpile, Scholar, Consensus, NLM, Readwise) have been tried. Before that it is an assumption — and $3-7 spent on an assumption without the user's go-ahead is unauthorized spending.
 
 ## Integration with Librarian Workflow
 
@@ -139,7 +135,7 @@ After deep research completes:
 3. If the user wants to keep specific sources, add them to NLM notebooks
 4. The report is also saved to `/tmp/deep-research-<id>.md` for reference
 
-## Red Flags -- STOP If You Catch Yourself:
+## Red Flags
 
 | # | Action | Why Wrong | Do Instead |
 |---|--------|-----------|------------|

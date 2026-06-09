@@ -56,10 +56,7 @@ Verify the `applies-to` frontmatter on each constraint `.md` actually covers thi
 - **Router skills.** Entry points that immediately delegate to another skill without evaluating work don't need to load constraints themselves — the delegated-to skill loads them.
 - **Plugins without the loader script.** If `scripts/load-constraints.py` is absent in the plugin, manual `Read()` is the only option.
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| Adding a new constraint and editing every skill that should load it | You're doing work the loader is supposed to do. The `applies-to` frontmatter is the wiring. | Add `applies-to` to the constraint file. The loader picks it up. |
-| Leaving a long `Read()` list because "it still works" | It works until a new constraint is added and some skills get it and some don't. Silent drift. | Replace the list with one loader bang line. |
-| "This skill only has 2 Read calls, loader is overkill" | Two today, five tomorrow. The loader scales; the list doesn't. | Use the loader uniformly. One pattern, everywhere. |
+- About to add a new constraint by editing every skill that should load it → the `applies-to` frontmatter is the wiring; the loader picks it up.
+- About to leave a long `Read()` list in place (even a short one — two calls today, five tomorrow) → it works until the next constraint is added and some skills silently miss it. Replace with one loader bang line.

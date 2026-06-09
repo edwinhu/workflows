@@ -85,15 +85,9 @@ Reply when configured and I'll continue testing.
 **For debugging, discover and read the Chrome MCP skill:**
 Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-chrome/SKILL.md` and follow its instructions.
 
-### Rationalization Prevention
+### Playwright Facts
 
-| Thought | Reality |
-|---------|---------|
-| "Playwright can do everything" | NO. It cannot read console or network requests. |
-| "I don't need console debugging" | You will. Start with Chrome MCP if unsure. |
-| "I'll add console checks later" | You can't with Playwright. Choose the right tool now. |
-| "Headless mode doesn't matter" | YES IT DOES for CI/CD. |
-| "Chrome MCP works for CI" | NO. It requires visible browser. |
+- Playwright MCP cannot read console messages or network requests, and that capability cannot be bolted on later — if console/network debugging may be needed, start with Chrome MCP. Chrome MCP in turn requires a visible browser, so headless CI/CD requires Playwright. Choosing by familiarity instead of by these constraints (see Capability Comparison below) produces a test that cannot observe what it claims to verify.
 
 ### Capability Comparison
 

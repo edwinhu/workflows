@@ -34,7 +34,7 @@ At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md
 ## Contents
 
 - [The Iron Law of Test-Only](#the-iron-law-of-test-only)
-- [Red Flags - STOP Immediately](#red-flags---stop-immediately)
+- [Coverage Facts](#coverage-facts)
 - [The Process](#the-process)
 - [Phase 1: Read Requirements and Plan](#phase-1-read-requirements-and-plan)
 - [Phase 2: Scan Test Infrastructure](#phase-2-scan-test-infrastructure)
@@ -64,19 +64,11 @@ Your job is to validate that tests exist for every requirement, and fill gaps by
 **If a test fails because the implementation is wrong, ESCALATE. Do not fix the implementation.**
 </EXTREMELY-IMPORTANT>
 
-<EXTREMELY-IMPORTANT>
-## Red Flags - STOP Immediately If You Catch Yourself Thinking:
+## Coverage Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "The implementation has a small bug, let me fix it" | You are a test auditor, not an implementer | Escalate: mark requirement as FAIL in VALIDATION.md |
-| "This requirement doesn't need a test" | Every requirement needs coverage evidence | Write the test. If truly untestable, document why. |
-| "The existing test sort of covers this" | "Sort of" = PARTIAL, not COVERED | Write the specific test or classify as PARTIAL |
-| "I'll adjust the implementation to match the test" | Implementation is immutable to you | Write the test to match the spec, escalate if it fails |
-| "This is a trivial requirement" | Trivial requirements have trivial tests. Write them. | Write the test anyway |
-| "Tests are passing so coverage must be fine" | Passing tests prove what IS tested, not what ISN'T | Map every requirement explicitly |
-| "I need to refactor the code to test it" | Refactoring = modifying implementation = violation | Escalate as "untestable without refactor" |
-</EXTREMELY-IMPORTANT>
+- A passing suite proves what IS tested, not what ISN'T — "tests pass, so coverage must be fine" asserts coverage that was never measured, an unverified claim presented as fact. The coverage map (every requirement explicitly classified) is the only evidence.
+- TDD during implementation gives *task-level* coverage; this phase checks *requirement-level* coverage. Gaps hide between tasks — a requirement split across tasks, or covered by no task at all. Treating this phase as redundant after TDD conflates the two granularities.
+- A requirement that cannot be tested without refactoring the implementation is escalated as "untestable without refactor" — refactoring here would modify implementation code, which violates the Iron Law above.
 
 ## The Process
 
@@ -350,19 +342,4 @@ Run the canonical 5-step gate before chaining to dev-review:
 ```
 
 **If any step fails, status stays `gaps_found` (or `draft`). A structural check (`grep status: validated`) is NOT the same as runtime evidence — see C3 (Structural vs Runtime Verification).**
-</EXTREMELY-IMPORTANT>
-
-## Drive-Aligned Framing
-
-<EXTREMELY-IMPORTANT>
-**Skipping test gap validation is NOT HELPFUL -- you're shipping code with unknown coverage holes the user will discover in production.**
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Tests passed, coverage must be fine" | Passing tests prove what IS tested, not what ISN'T. User finds untested bugs. | **Anti-helpful** |
-| **Competence** | "I wrote good tests during implementation" | Good tests per task != full requirement coverage. Gaps hide between tasks. | **Incompetent** |
-| **Efficiency** | "Validation is redundant after TDD" | TDD ensures task-level coverage. Test gap validation ensures requirement-level coverage. Different. | **Inefficient** |
-| **Honesty** | "I'll write `validated`, the suite passed last turn" | A `validated` marker with no run THIS turn is a structural claim with no runtime evidence — a fabricated gate. dev-review proceeds on a lie. | **Dishonest** |
-
-**The protocol is not overhead you pay. It is the safety net you provide.**
 </EXTREMELY-IMPORTANT>

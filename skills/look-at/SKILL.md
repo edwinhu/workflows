@@ -11,24 +11,16 @@ Multi-backend vision tool for PDFs, images, diagrams, and other media files. Rou
 
 ## Tool Selection Enforcement
 
-### Rationalization Table - STOP When Thinking:
+### Tool Routing Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can read images directly with Read" | You'll waste thousands of context tokens showing the full image | Use look_at for analysis |
-| "I'll use Read for this PDF" | You'll lose table structure and visual information by extracting raw text | Use look_at for PDFs with tables/charts/diagrams |
-| "Just a quick glance at the file" | Your quick glances still consume full context tokens | Use look_at for targeted extraction |
-| "I need exact text, so Read is required" | Gemini's extraction is accurate for most use cases | Use look_at first, Read only if extraction insufficient |
-| "look_at adds complexity" | You gain context savings and faster processing | Use look_at for media files |
-| "The file is small" | Your small files still waste context if uninterpreted | Size doesn't determine tool choice, content type does |
-| "I'll process it myself" | You waste reasoning tokens on trivial extraction | Delegate to look_at |
+- Read on a media file loads the full content into context regardless of how briefly you look at it — a "quick glance" costs the same thousands of tokens as a full read. Content type, not file size, determines the tool.
+- Read on a PDF extracts raw text and loses table structure and visual information; look_at returns it as structured data.
+- Gemini's extraction is accurate for most use cases — start with look_at, escalate to Read only if the extraction is insufficient. Defaulting to Read "for exact text" wastes the context this skill exists to save.
 
-### Red Flags - STOP Immediately When Thinking:
+### Red Flags
 
-- If you catch yourself thinking "Let me Read this image/PDF/screenshot" → STOP. Use look_at for media files.
-- If you catch yourself thinking "I can see the image directly" → STOP. Seeing it directly still wastes context. Use look_at.
-- If you catch yourself thinking "Just need to glance at this diagram" → STOP. Glancing still costs context tokens. Use look_at.
-- If you catch yourself thinking "The PDF is text-based, so Read is fine" → STOP. If it has structure/tables/charts, use look_at.
+- Passing an image, PDF, or screenshot path to Read → use look_at.
+- A text-based PDF with structure/tables/charts → still look_at, not Read.
 
 ### Cost & Context Benefits
 

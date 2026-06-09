@@ -47,14 +47,11 @@ PLAN.md declares row_pk (smallest unique column-set) and event_key (coarser real
 - [ ] Key columns dropped (if at all) only in the final deliverable, after dedup
 ```
 
-### Rationalization Table
+### Key & Grain Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I only need the analysis columns, not the IDs" | Without `dcn`/`seqnum`/`amend` you can't tell an amended re-filing from a real second trade — silent double-count | Carry the keys through; drop them only at the final deliverable, after dedup |
-| "`drop_duplicates()` cleaned it up" | It only removes byte-identical rows; an amendment that corrected one field survives and double-counts | Supersede on the event key (keep latest filing); verify with the event-key collision check |
-| "I'll dedup on the business key to be safe" | That collapses legitimate multi-lot rows (same size/price, different seqnum) — now you've under-counted | Keep the row PK; only superseded amendments get dropped |
-| "Profiling already found the grain, I'm done" | Discovery without carry-through is wasted — the keys must survive every transform to stay checkable | Assert PK presence + uniqueness after each stage |
+- Without `dcn`/`seqnum`/`amend`, an amended re-filing is indistinguishable from a real second trade — a silent double-count no downstream check can catch. Keeping "only the analysis columns" creates exactly this.
+- `drop_duplicates()` removes only byte-identical rows — an amendment that corrected one field survives and double-counts. Deduping on the business key instead collapses legitimate multi-lot rows (same size/price, different seqnum) and under-counts. Supersession on the event key (keep latest filing) with row_pk preserved is the only dedup that does neither; verify with the event-key collision check.
+- Discovery without carry-through is wasted work: profiling found the grain, but the keys must survive every transform to stay checkable — assert PK presence + uniqueness after each stage.
 
 ---
 
@@ -92,13 +89,11 @@ For each data source in this task, check PLAN.md Filter Strategy table:
 - [ ] No full-table loads for sources marked as "Database" filtering
 ```
 
-### Rationalization Table
+### Filter Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll filter in pandas, it's more flexible" | You just loaded 50M rows into memory to discard 49M | Push the WHERE clause to SQL |
-| "The SQL syntax is complicated for this filter" | Hybrid exists for exactly this case. Push the coarse filter to SQL. | Use hybrid: SQL for date/key, pandas for complex logic |
-| "It loaded fine without filtering" | It loaded fine on YOUR machine with YOUR memory. Production data is 10x bigger. | Follow the plan. Filter at source. |
+- Pandas pays the full load cost before your filter runs: filtering "flexibly" in pandas means loading 50M rows into memory to discard 49M. The WHERE clause belongs in SQL.
+- "The SQL syntax is complicated for this filter" is exactly what Hybrid exists for: coarse filter (date/key) in SQL, complex logic in pandas.
+- "It loaded fine without filtering" means it loaded on YOUR machine with YOUR memory — production data is 10x bigger. Overriding the plan's filter location on that evidence is the failure the Filter Strategy table exists to prevent.
 
 ---
 
@@ -156,14 +151,11 @@ Alternative read paths that avoid contention:
 - [ ] Shared-source contention risk assessed for parallel tasks
 ```
 
-### Rationalization Table
+### Parallelism Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Sequential is simpler to debug" | The user already decided this is parallelizable. You're overriding their decision. | Follow the plan. Use the method they chose. |
-| "I'll parallelize after I get it working" | You won't. The pipeline runs once and moves on. | Parallelize now, as planned. |
-| "The overhead of spawning agents isn't worth it" | 20 years × 5 min = 100 min sequential vs ~10 min parallel. It's worth it. | Spawn the agents. |
-| "More parallel workers = faster" | If all workers read the same source, contention makes it slower. 7 jobs × 40 min > 1 job × 5 min. | Check for shared-source contention first. Pre-split if needed. |
+- The parallelism method in PLAN.md is a decision the user already made — running sequentially "because it's simpler to debug" overrides it. The overhead of spawning agents is dwarfed by the win: 20 years × 5 min = 100 min sequential vs ~10 min parallel.
+- "I'll parallelize after I get it working" is a commitment nobody keeps — the pipeline runs once and everyone moves on. Promising it is dishonest scheduling; parallelize now, as planned.
+- More parallel workers is not always faster: when all workers read the same source, contention inverts the win (observed: 7 jobs × 40 min each vs 1 job × 5 min solo). Check shared-source contention first; pre-split if needed.
 
 ---
 
@@ -206,13 +198,11 @@ For each task that produces intermediates (per PLAN.md Data Flow):
 - [ ] Dtypes verified after loading intermediates (especially for CSV)
 ```
 
-### Rationalization Table
+### Caching Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "CSV is easier to inspect" | Open parquet in pandas with 2 lines. CSV loses dtypes silently — you'll spend more time debugging type coercion than you saved. | Save as parquet, inspect with `pd.read_parquet().head()` |
-| "I'll just re-read the raw source" | The plan says use intermediates. Re-reading 5GB CSV five times wastes hours. | Load from the intermediate, as planned. |
-| "The intermediate file is small, format doesn't matter" | Format consistency matters more than size. Mixed formats create brittle pipelines. | Use the planned format for all intermediates. |
+- CSV loses dtypes silently — the time spent debugging type coercion exceeds whatever "easier to inspect" saved. Parquet inspects in 2 lines: `pd.read_parquet().head()`.
+- Re-reading a 5GB raw source five times wastes hours — load from the planned intermediate.
+- Format consistency matters more than file size: mixed intermediate formats create brittle pipelines. Use the planned format for all intermediates.
 
 ---
 

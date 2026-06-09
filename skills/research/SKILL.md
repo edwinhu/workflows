@@ -71,14 +71,12 @@ After running the script, read `${CLAUDE_SKILL_DIR}/../google-scholar/domain-kno
 
 Trusted papers first (sorted by citations desc), then non-trusted in a collapsed table.
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| **Running sources manually instead of using the script** | Serializes work, triples wall time | `uv run python3 research.py "<query>"` |
-| **Using `mcp__consensus__search`** | Rate-limited to 3 results | Script uses CLI binary automatically |
-| **Presenting before reading domain-knowledge.local.md** | User expects ★ signals | Read it first, always |
-| **Using `journal` field when `journal_resolved` is present** | SSRN label hides real venue | Always prefer `journal_resolved` |
+- About to run the sources manually in sequence → STOP. That serializes the work and triples wall time; run `uv run python3 research.py "<query>"`.
+- About to call `mcp__consensus__search` → STOP. It is rate-limited to 3 results; the script uses the CLI binary automatically.
+- About to present results before reading domain-knowledge.local.md → STOP. The ★ trusted-journal signals come from that file; read it first, always.
+- About to use the `journal` field when `journal_resolved` is present → STOP. The SSRN label hides the real venue; always prefer `journal_resolved`.
 
 ## Common Patterns
 

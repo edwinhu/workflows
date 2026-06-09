@@ -44,16 +44,6 @@ A bad precis that survives into outlining means:
 **Catching a precis gap NOW costs 1 minute. Catching it during drafting costs a full rewrite.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The precis looks complete to me" | Self-review is rubber-stamping | Dispatch independent reviewer |
-| "User already confirmed the thesis" | User confirms intent, not precision | Reviewer checks what user might miss |
-| "This will slow us down" | 30-second review saves hours of rewriting | Dispatch the reviewer |
-| "It's a short piece, no review needed" | Short pieces with vague theses are the worst — nowhere to hide | Review it anyway |
-| "I'll refine the thesis during drafting" | You won't. You'll write around the vagueness and produce mush | Review BEFORE outlining |
-
 ## Dispatch Template
 
 Use this Task invocation to dispatch the precis reviewer:
@@ -152,14 +142,6 @@ Escalate to user:
 [list issues]
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the precis?"
 ```
-
-## Drive-Aligned Framing
-
-**Proceeding to outlining with a vague precis is NOT HELPFUL — the user builds an entire document on a foundation that collapses under review.**
-
-You know the thesis is fuzzy. You know the claims overlap. You know the counterarguments are weak. Outlining built on a bad precis produces a structure that doesn't cohere. Drafting built on a bad structure produces prose that wanders. The reader will notice even if you don't.
-
-**Fix the precis now. It costs minutes, not hours.**
 
 ## Gate Function
 

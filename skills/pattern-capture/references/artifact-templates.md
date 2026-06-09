@@ -46,15 +46,16 @@ Add to an existing skill's enforcement section:
 
 **Placement:** After the skill's existing Iron Laws, before Red Flags section.
 
-## Rationalization Table Entry
+## Fact Row Entry (supersedes Rationalization Table entries — v5.36.0)
 
-Add row to an existing skill's Rationalization Table:
+Add a bullet to an existing skill's `### <Topic> Facts` section (create the section if the skill has none; never add new excuse/reality Rationalization Table rows):
 
 ```markdown
-| "<exact excuse the agent generates — quote from transcript if possible>" | "<why this reasoning is wrong — be specific>" | "<the correct action to take instead>" |
+- <Non-derivable fact learned from the observed failure — number / threshold / named incident / tool quirk>.
+  <Consequence of ignoring it, stated as a property of the action: "...is an unverified claim presented as fact — a form of dishonesty" / "...is counterproductive on its own terms" / "...is the exact incompetence this step exists to prevent".>
 ```
 
-**Source requirement:** The excuse in column 1 MUST come from an observed agent response, not a hypothetical. If you haven't seen the agent make this excuse, don't add it.
+**Source requirement:** The fact MUST come from an observed failure, not a hypothetical (no speculative enforcement). It must also pass the litmus: *could a strong model with no project history derive this from the rule itself?* If yes, don't add it — the rule statement carries it.
 
 ## Red Flag Entry
 

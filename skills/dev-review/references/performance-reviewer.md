@@ -128,28 +128,11 @@ The reviewed code meets performance standards. No regressions with confidence >=
 X critical and Y important performance issues must be fixed before proceeding.
 ```
 
-## Rationalization Prevention
+## Review Facts
 
-STOP - you're about to rationalize if these thoughts arise:
-
-| Thought | Reality |
-|---------|---------|
-| "This looks inefficient" | Looks != measurable. Estimate Big-O or discard. |
-| "Could be faster with caching" | Could is not evidence. Verify cache improves latency. |
-| "I would optimize this differently" | Your style preference doesn't matter. Check if current approach is acceptable. |
-| "The performance might degrade" | Might = < 80% confidence. Measure or discard. |
-| "Micro-optimization" | If you're thinking this, it's probably < 80 confidence. Discard. |
-
-## Drive-Aligned Framing
-
-**You approving without verifying measurable impact is NOT HELPFUL — you're shipping performance regressions the user will discover in production.**
-
-An "APPROVED" verdict means YOU assert:
-- No measurable performance regressions exist (not "probably fast enough")
-- Current performance is acceptable (not "I would optimize differently")
-- Evidence exists and YOU verified it (not trusted reports)
-
-**CHANGES REQUIRED protects the user. Your fake APPROVED ships regressions.**
+- "Looks inefficient" / "could be faster with caching" / "might degrade" sits below the 80-confidence bar — estimate Big-O or measure, otherwise discard. If you are labeling something "micro-optimization", it is almost certainly < 80 confidence: discard.
+- Optimization style preferences ("I would do it differently") never justify a finding — only measurable regressions do.
+- An "APPROVED" verdict asserts that no measurable regressions exist and YOU verified the evidence rather than trusting reports. Issuing it without that verification is an unverified claim presented as fact — it ships regressions the user discovers in production. CHANGES REQUIRED protects the user.
 
 ## After Review Completes
 

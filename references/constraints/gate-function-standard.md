@@ -43,15 +43,10 @@ Every phase exits through a gate. All gates follow this 6-step pattern:
 (No file read. No claim count. No verification. Just vibes.)
 ```
 
-## Rationalization Table
+## Gate Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I just wrote the file, I know what's in it" | You know what you intended. The file may differ. | RUN the read, check the actual content |
-| "The gate is obvious, no need to be formal" | Obvious gates get skipped. Formal gates get executed. | Follow all 6 steps every time |
-| "I'll verify at the next phase" | The next phase assumes this gate passed. Skipping creates cascading failures. | Verify NOW, before advancing |
-| "Looks good" | That's an opinion, not evidence. | Cite the specific artifact and its content |
-| "I already verified this mentally" | Mental verification is not auditable. The SUMMARY step needs evidence. | Execute the steps; write the evidence |
+- Having just written the file is not evidence of its contents — you know what you *intended*; the file may differ. RUN the read. Mental verification is not auditable: the SUMMARY step needs written evidence.
+- The next phase assumes this gate passed — deferring verification to "the next phase" creates cascading failures, and the phantom completions this pattern caused are exactly why the gate exists. Claiming a gate passed without executing steps 2-4 is an unverified claim presented as fact.
 
 ## Red Flags
 

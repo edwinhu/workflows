@@ -299,10 +299,10 @@ dev-implement checks   → file exists AND status == APPROVED, else REFUSE to st
 
 **Naming convention:** `.planning/{PHASE_NAME}_{ACTION}.md` (e.g., `SPEC_REVIEWED.md`, `DESIGN_APPROVED.md`, `EXPLORATION_COMPLETE.md`)
 
-**Red Flags — STOP if you catch yourself thinking:**
-- "The skill says 'must' so it will be followed" → STOP. Advisory text is not enforcement. The agent that would skip the gate is the same agent reading the advisory text.
-- "The entry point chains phases automatically so gates can't be skipped" → STOP. Users can invoke any phase skill directly. Mid-point entry bypasses the chain.
-- "Adding marker files is overhead" → STOP. The dev workflow shipped advisory-only gates for months. The bug was only caught by a meta-audit, not by the workflow itself.
+**Gate Design Facts:**
+- Advisory text is not enforcement: the agent that would skip the gate is the same agent reading the "must" sentence.
+- Entry-point chaining does not protect gates — users can invoke any phase skill directly, so mid-point entry bypasses the chain.
+- The dev workflow shipped advisory-only gates for months; the bug was caught by a meta-audit, not by the workflow itself. Marker files are not overhead — they are the layer that would have failed closed.
 
 | Gate Type | Enforcement | Can Be Bypassed? | Strength |
 |-----------|-------------|-------------------|----------|
@@ -675,13 +675,11 @@ Do NOT edit the file — report only."""
 
 Step 4 is high-drift: you decide how much enforcement each generated phase carries, and the cheapest shortcut is to under-enforce.
 
-| Excuse (Step 4) | Reality | Do Instead |
-|--------|---------|------------|
-| "This medium-drift phase doesn't really need an Iron Law" | Drift risk is a spectrum; the phase you under-enforce is the one that fails in production. | Assign enforcement by the tier table below, then write the actual content. |
-| "Listing the pattern names is enough" | The gate fails at Level 4: naming ≠ generating. A phase with "Iron Laws: yes" but no Iron Law text has none. | Draft the actual Iron Law / fact rows / Red Flags per phase, not a checklist of names. |
-| "I'll make the mechanical rule a prompt line, faster than a hook" | Prompt rules drift and cost context; mechanical rules belong in hooks/`.py`. | Hook-or-`.py` for anything checkable; prose only for judgment. |
+#### Step 4 Facts
 
-**Drive check:** under-enforcing here to "move faster to generation" is **anti-helpful** (the user inherits a workflow that drifts), **incompetent** (you skipped the drift-risk scoring that beats intuition), and **anti-efficient** (a missing gate costs 10× to fix during implementation). Enforce proportional to drift — that IS the deliverable.
+- The Step 4 gate fails at Level 4: naming ≠ generating. A phase whose plan says "Iron Laws: yes" but carries no Iron Law text has none — draft the actual Iron Law / fact rows / Red Flags per phase, not a checklist of pattern names.
+- A missing gate costs 10× to fix during implementation. Under-enforcing a "medium-drift" phase to move faster to generation is anti-helpful (the user inherits a workflow that drifts) and anti-efficient on its own terms — drift-risk scoring by the tier table below beats intuition, and enforcement proportional to drift IS the deliverable.
+- Mechanical rules written as prompt lines drift and cost context; anything checkable belongs in a hook or co-located `.py` — prose only for judgment.
 
 For each phase, score which of the 13 patterns are needed:
 - **High-drift phases** (implementation, verification): Iron Laws, Fact Rows (incident-grounded), Gate Functions, Artifact Review Gates
@@ -1152,11 +1150,11 @@ one-liner: "Entry point (start fresh) and midpoint (re-enter with constraint loa
 **NO GENERATED PHASE FILE WITHOUT THE ENFORCEMENT DENSITY ITS DRIFT TIER DEMANDS.** Step 6 is the highest-drift phase of Mode 1 — you are now WRITING, and the temptation is to emit a clean-looking SKILL.md that silently drops the gate, the Iron Law, or the co-located `.py` that DESIGN assigned. A generated file that looks complete but omits its enforcement ships the gap to every user of that workflow.
 </EXTREMELY-IMPORTANT>
 
-| Excuse (Step 6) | Reality | Do Instead |
-|--------|---------|------------|
-| "The design looks complete, I'll skip enforcement on the medium-drift phase" | Medium-drift phases still drift. The omission is invisible until the workflow fails. | Generate the enforcement DESIGN assigned to EVERY phase, by tier. |
-| "I'll write the constraint `.md` now and the `.py` later" | Later never comes; the runner auto-discovers nothing. | Write the `.md` + `.py` together — same stem, same dir. |
-| "Transitions as prose are fine" | Prose transitions are advisory; users invoke phases directly and bypass them. | Wire hook-enforced gate artifacts where DESIGN marked them mandatory. |
+#### Step 6 Facts
+
+- The constraint runner auto-discovers co-located `.py` files only — an `.md` shipped "now" with its `.py` deferred is never machine-checked, and later never comes. Write `.md` + `.py` together: same stem, same dir.
+- Prose transitions are advisory: users invoke phase skills directly and bypass them. Where DESIGN marked a gate mandatory, wire the hook-enforced gate artifact — generating prose in its place ships the gap to every user of the workflow.
+- Medium-drift phases still drift, and an enforcement omission is invisible until the workflow fails in production. Generate the enforcement DESIGN assigned to EVERY phase, by tier.
 
 **Red Flags — STOP if you catch yourself:** about to write a phase SKILL.md without the gate DESIGN specified · about to skip the co-located `.py` for a testable rule · about to write a verifier/reviewer agent without read-only `allowed-tools` · about to emit a hook `command:` with `${CLAUDE_SKILL_DIR}` instead of `${CLAUDE_PLUGIN_ROOT}`. **Drive check:** skipping enforcement to "ship the files faster" is anti-helpful — the user inherits every gap you dropped.
 
@@ -1475,11 +1473,11 @@ one-liner: "wc-audit Discover enumerated the target's entry/midpoint/phase skill
 **Scoring is the highest-drift step in this skill.** You are about to score 22 principles across multiple files and the pull is to skim, anchor to a first impression, and award generous round numbers. A generous score here is the most damaging error wc makes: it ships an improvement plan built on a false baseline.
 </EXTREMELY-IMPORTANT>
 
-| Excuse (while scoring) | Reality | Do Instead |
-|--------|---------|------------|
-| "This principle is obviously a 9, I can tell from the structure" | "Can tell from structure" is the anchoring that produced a generous 6.5 where the careful tally was 5.2 (Apr 2026). | Cite the specific file:line that earns the score. No line → the score is a guess. |
-| "It's mostly there, call it 8" | "Mostly" means a gap exists; an honest score reflects the gap, not the vibe. | Find the gap, score to it, write the one-line justification. |
-| "I'll reuse my impression from the last principle" | Adjacent-principle anchoring makes scores reflect reading order, not evidence. | Score each principle from its own evidence; reset between principles. |
+#### Scoring Facts
+
+- "Can tell from the structure" is the anchoring that produced a generous 6.5 where the careful tally was 5.2 (Apr 2026). A score without a cited file:line that earns it is a guess presented as a measurement.
+- Adjacent-principle anchoring makes scores reflect reading order, not evidence — score each principle from its own evidence and reset between principles.
+- "Mostly there" means a gap exists; an honest score reflects the gap, not the vibe. Find the gap, score to it, write the one-line justification.
 
 **Red Flags — STOP:** awarding a 9-10 without a cited line · scoring before reading the relevant file section · rounding a 7-ish up to 8 to "move on" · trusting a self-reported composite (the JS gate owns it). **Drive check:** a fast generous audit is **anti-helpful** — the user acts on a false baseline and the workflow fails where you said it was fine.
 
@@ -2101,11 +2099,11 @@ Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 | Gap | Fix |
 |-----|-----|
 | Missing Iron Law | Write with `<EXTREMELY-IMPORTANT>` tags |
-| Missing Rationalization Table | 5-10 entries (Excuse → Reality → Do Instead) |
+| Missing Fact Rows | `### <Topic> Facts` bullets from observed incidents — numbers, thresholds, tool quirks — with the drive-consequence inline (never excuse/reality tables; deprecated v5.36.0) |
 | Weak gate | Replace with verifiable condition |
 | Self-review as final gate | Add fresh subagent reviewer dispatch |
 | Missing Red Flags | 3-5 wrong-path indicators |
-| Missing Drive-Aligned Framing | 5-drive table (helpfulness > competence > efficiency > approval > honesty) |
+| Missing Drive-Aligned Framing | Embed drive vocabulary (helpfulness > competence > efficiency > approval > honesty) inside fact rows and Iron Laws — standalone 5-drive tables deprecated v5.36.0 |
 | No shared enforcement across skill family | Move rules to `references/constraints/`; all domain skills `Read()` the specific `.md` files they need |
 | Rules in separate `constraints/` and `conventions/` directories | Merge into single `constraints/` directory. Presence of `.py` file = constraint; `.md` only = convention |
 | Monolithic shared constraints file >15 sections | Refactor to atomic files in `constraints/` — one `.md` per rule, co-located `.py` for testable rules |
@@ -2135,7 +2133,7 @@ Address findings from `.planning/wc/{name}/AUDIT.md`, prioritized by severity:
 | Missing agent tool restrictions | Add `allowed-tools` to reviewer/verifier skills |
 | Missing requirement traceability | Add CATEGORY-NN IDs in spec, trace through plan and validation |
 | Missing autonomous phase chaining | Add auto-advance for human-verify gates, smart-discuss batching |
-| Mechanical constraints enforced only via prompt | Write scoped `PreToolUse`/`PostToolUse` hooks in skill frontmatter. File extension guards, path guards, tool param validation, sequence enforcement → hooks. Keep rationalization tables, drive-aligned framing, and quality judgments as prompt text |
+| Mechanical constraints enforced only via prompt | Write scoped `PreToolUse`/`PostToolUse` hooks in skill frontmatter. File extension guards, path guards, tool param validation, sequence enforcement → hooks. Keep fact rows, Iron Laws, and quality judgments as prompt text |
 
 ### Deviation Rules for Mode 3 Phase C (Fixing)
 
@@ -2195,15 +2193,14 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 
 **The structural fix:** `/goal` drives the iteration; a separate evaluator reads `.planning/SCORES.md` and marks done only when **`substratePass` is true AND the composite is flat at/above the calibrated ceiling**. This cuts BOTH failure modes: it won't let you stop with a substrate blocker, and it won't make you grind a flat composite toward an unreachable 9.5.
 
-### Rationalization Table — Mode 3
+### Mode 3 Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "8.6 is below 9.5, keep grinding" | If `substratePass` is true and the composite is FLAT, 9.5 is unreachable noise — grinding it forces over-enforcement of creative steps (the anti-pattern). | Stop. Ship at the calibrated ceiling. Record the composite as the honest harsh reading. |
-| "substratePass is true so I'm done" (composite still climbing, not flat) | Not yet — a non-flat composite means cheap real gaps may remain. | One more pass on sub-9 medium gaps; stop once flat or no cheap real fix remains. |
-| "The critical is a domain characteristic / measurement artifact" | A critical keeps `substratePass` false — you cannot stop on it. But verify it first: a worktree's ambient `.planning/` SPEC can make traceability checks fire spuriously (see asymptote memory). | Confirm the critical is real against the actual files; fix it or, if it's a confirmed measurement artifact, neutralize the artifact — don't just ignore it. |
-| "I'll run the audit manually instead of using `/goal`" | Manual loops have no enforcement; you'll stop early. | Set `/goal` pinned to substratePass + flat. The evaluator decides. |
-| "Re-reading all files each iteration is wasteful" | Fresh-context audit is what makes the substrate trustworthy. | Full re-read every iteration (selective via onlyChecks after iter 1). |
+- The composite is a ±0.2 LLM proxy with a drifting denominator; its observed ceiling is ~9.0, not 9.5. Once `substratePass` is true and the composite is FLAT, further grinding is the treadmill — the judge regenerates findings and the last mile rewards over-enforcement of creative steps, making the workflow worse. A flat 8.7 with substratePass beats a gamed 9.5; record the composite as the honest harsh reading and ship at the calibrated ceiling.
+- `substratePass: true` with a still-climbing (non-flat) composite is not done — a non-flat composite means cheap real gaps may remain. One more pass on sub-9 medium gaps; stop once flat or no cheap real fix remains.
+- A critical keeps `substratePass` false — you cannot stop on it. But verify it first: a worktree's ambient `.planning/` SPEC can make traceability checks fire spuriously (see asymptote memory). Confirm the critical against the actual files; fix it, or if it is a confirmed measurement artifact, neutralize the artifact. Ignoring an open critical is fabricating completion.
+- Manual loops have no enforcement and stop early. Run Mode 3 under `/goal` pinned to substratePass + flat — the evaluator decides, not the fixer.
+- A fresh-context full re-read every audit iteration is what makes the substrate trustworthy: it catches regressions that incremental review misses (selective via `onlyChecks` after iteration 1 applies to the *fixer's* reading, never the auditor's). Skipping the re-read audits your own memory — rubber-stamping.
+- A diff cannot show that a fix closed a gap — self-assessment is rubber-stamping; the independent auditor exists because the author cannot see their own blind spots. Shipping unverified fixes hands the user a substrate gap in production.
 
 ### Red Flags — STOP If You Catch Yourself:
 
@@ -2214,16 +2211,6 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 | Running Mode 3 without `/goal` | Honor system — you'll stop early. | Set `/goal` pinned to substratePass + composite≥9.0 + flat. |
 | Auditing your own fixes by hand | Rubber-stamping. | Re-run the wc-audit workflow (read-only reviewers, JS gate). |
 | Treating the composite as the gate | It's a ±0.2 LLM proxy with a drifting denominator. | The gate is `substratePass`; the composite is advisory + the flatness check. |
-
-#### Drive-Aligned Framing — Mode 3
-
-| Your Drive | Why You Cut Corners | What Actually Happens | The Drive You Failed |
-|------------|--------------------|-----------------------|---------------------|
-| **Helpfulness** | "Ship the fixes faster, skip the re-audit" | Unverified fixes ship broken enforcement; the user discovers a substrate gap in production. | **Anti-helpful** |
-| **Competence** | "I can tell from the diff this fixes the gap" | Self-assessment is rubber-stamping; the auditor exists because you can't see your blind spots. | **Incompetent** |
-| **Efficiency** | "Re-reading all files each iteration is wasteful" | Fresh-context audit catches regressions incremental review misses. | **Anti-efficient** |
-| **Approval** | "I'll grind to 9.5 because a bigger number looks better to the user" | You burn tokens on a treadmill and over-enforce creative steps, making the workflow worse. A flat 8.7 with substratePass beats a gamed 9.5. | **Lost approval** |
-| **Honesty** | "I'll call it 9.5-equivalent" or "I'll ignore the open critical" | Misrepresenting a noisy proxy, or shipping with a real substrate blocker, is fabricating completion. | **Dishonest** |
 
 ---
 
@@ -2293,7 +2280,7 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 | Letting an artifact pass to the next phase without review | Bad specs become bad designs become bad implementations. A 30-second review saves hours. | Add artifact review gate between producing and consuming phases |
 | No enforcement at the post-subagent boundary | That's where 71 violations happened in dev-debug (March 16). Main chat "verifies" by investigating. | Define verification/investigation boundary explicitly for the domain |
 | No topic change protocol in iterative loops | Off-topic user messages silently kill the loop. User has to re-invoke the skill. | Add announce-pause / handle / announce-resume protocol |
-| Rationalizations are hypothetical, not grounded | "Agents sometimes skip" is ignorable. "March 16: 71 violations, 3 re-invocations" is not. | Cite real failed sessions with dates, IDs, and violation counts |
+| Fact rows are hypothetical, not grounded | "Agents sometimes skip" is ignorable. "March 16: 71 violations, 3 re-invocations" is not. | Cite real failed sessions with dates, IDs, and violation counts |
 | Implementation phase with no deviation rules | Agents encounter unplanned work and either silently change architecture or halt on trivial bugs. | Add 4-rule deviation system with auto-fix for R1-R3, STOP for R4 |
 | State files scattered across `.claude/` and project root | Next session can't find state; handoff fails. | Consolidate into `.planning/` directory |
 | No handoff support in entry points | Context window exhaustion means lost work — next session starts from scratch. | Check for `.planning/HANDOFF.md` at startup, support structured resume |
@@ -2308,48 +2295,12 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 | Copying a hook frontmatter pattern from a sibling skill without checking the variable | Sibling skills can carry latent bugs that only surface under specific matcher combinations. The teaching plugin carried a `${CLAUDE_SKILL_DIR}` vs `${CLAUDE_PLUGIN_ROOT}` bug in hook commands for 9 days (v2.83.1–v2.84.4) — silently default-approving because hook scripts also default to approve. Adding a single `matcher: "*"` hook in a new skill exposed the latent bug across the plugin. | Check docs: `${CLAUDE_PLUGIN_ROOT}` for hook `command:` fields, `${CLAUDE_SKILL_DIR}` for skill content. Never trust a sibling's pattern without verifying. |
 | Using `matcher: "*"` under `PreToolUse` without a bulletproof hook script | `matcher: "*"` fires for *every* tool call in the entire session — including calls before the skill was loaded. A hook script that can't find its path or exits non-zero blocks every tool. | Move to `PostToolUse` unless blocking is genuinely needed. If blocking IS needed, use a specific matcher (`Write\|Edit\|Agent`) and a defensively-coded script. |
 
-## Rationalization Table
+## Workflow Design Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "This workflow is simple, doesn't need enforcement" | Simple workflows drift fastest because the agent thinks it can shortcut | Add enforcement proportional to drift risk |
-| "Iron Laws feel too aggressive" | LLMs ignore polite suggestions. Strong framing works. | Write the Iron Law. It will be ignored if weakened. |
-| "Not every phase needs a gate" | Ungated phases are where quality dies | Define a verifiable gate condition |
-| "The user will catch errors in review" | Relying on human review defeats the purpose of the workflow | Build adversarial review INTO the workflow |
-| "I'll add enforcement later" | Later never comes. Enforcement debt compounds. | Add it now, refine through use |
-| "This domain is different, dev patterns don't apply" | The three pillars are universal. Enforcement density varies, principles don't. | Apply pillars, adjust density |
-| "Each skill can have its own enforcement" | Then lecture-prep misses what slides-edit catches, and the user runs 3 skills to get what 1 should provide. | Shared enforcement file. One source of truth for the domain. |
-| "This hook only applies to slides-edit, not lecture-prep" | Hooks enforce mechanical constraints. If the constraint applies to the domain, it applies to ALL skills in the domain. A hook that fires in one skill but not its sibling creates inconsistent enforcement with no visible warning. | Add to all sibling skills or justify in the Hook Coverage Matrix. |
-| "I'll add this constraint to the shared file later" | Later never comes. The rule lives in one skill, others ship without it. | Add `.md` (+ `.py` if testable) to `constraints/` NOW. Over-inclusion is cheaper than drift. |
-| "One big constraints file is simpler than many small files" | Simpler to create, harder to maintain. At 20+ sections, every skill loads 400+ lines it doesn't need. | Atomic files: one `.md` per rule, co-located `.py` for testable ones. |
-| "I need an index file to track all constraints" | The filesystem IS the index. `ls constraints/*.md` = all rules. `ls constraints/*.py` = all tests. | No index needed. Auto-discovery replaces manual tracking. |
-| "This rule doesn't need a check script" | If it's mechanically testable, it needs a `.py` file. If it can't be tested, it's a convention — that's fine, just don't call it a constraint. | Ask: "Can I write a script that returns pass/fail?" If yes, write the `.py`. |
-| "I'll write the check script later" | Later never comes. The `.md` ships without its `.py`. The runner auto-discovers nothing. | Write `.md` and `.py` together. They're a pair. |
-| "I need to register the check script in the runner" | Auto-discovery means adding the `.py` file IS registration. Manual wiring is a bug source. | Just add the `.py` file. The runner globs `constraints/*.py`. |
-| "The LLM review covers everything, scripts are redundant" | LLM review drifts, rationalizes, and misses mechanical violations. Scripts are deterministic. | Scripts for mechanical checks, LLM for judgment. Both legs of verification. |
-| "This convention could be a constraint but testing it is hard" | Start it as a convention. Note it as a graduation candidate. Revisit when you have a testing idea. Don't force-fit a bad test. | Classify honestly. Graduation happens when testability improves, not when you want fewer conventions. |
-| "The spec looks fine, no need to review it" | Self-review is rubber-stamping. The author can't see their own blind spots. | Dispatch a fresh reviewer subagent. 30 seconds saves hours. |
-| "Plan review will slow us down" | A bad plan costs 10x more to fix during implementation than during review. | Review the plan. Fix it now, not during implementation. |
-| "The reviewer can just fix small issues it finds" | That bypasses plan-execute-verify. The "fix" was never planned, never reviewed, never tested. Now you have unverified code in production. | Restrict verifiers to read-only tools. Issues go back to the executor. |
-| "Context monitoring is overkill for short workflows" | A 4-phase workflow can exhaust context on phase 2 if implementation is complex. "Short" is about phase count, not context usage. | Add monitoring. It costs nothing when context is plentiful. |
-| "Requirement IDs are bureaucracy" | Without IDs, the validation phase maps requirements by fuzzy text matching. "Auth" matches 3 different requirements and misses 2. | IDs take 30 seconds to assign and make coverage auditable. |
-| "Autonomous mode is too risky without human oversight" | 90% of gates are rubber-stamp `human-verify`. The other 10% still pause. Autonomous mode skips the rubber stamps, not the real decisions. | Classify checkpoints. Auto-advance the rubber stamps. |
-| "The human can read the test output to verify" | Maybe they can, maybe they rubber-stamp it. You don't know until you observe. Don't assume — track what they actually do. | Log the review pattern. If they consistently ask for a specific view, automate it. |
-| "The dispatcher pattern keeps things modular" | 3-layer delegation fails because sub-sub-agent results don't reliably return. The middle dispatcher times out, returns empty, or loses results. Modularity that doesn't work isn't modular — it's broken. | Flat dispatch from the orchestrator. The "dispatcher" logic lives in the skill definition (a file), not in an agent (a runtime). |
-| "This agent needs to coordinate multiple checks" | Coordination is the orchestrator's job. An agent that spawns other agents is a dispatcher — and dispatchers fail. March 2026: reviewer agent had to be called 3 times before results returned. | The orchestrator reads the check list and spawns each check as a direct parallel agent. |
-
-### Why Skipping Steps Hurts the Thing You Care About Most
-
-You skip steps because you think it's helpful, efficient, or competent. Here's what actually happens:
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Skip interview to deliver workflow faster" | Wrong workflow for the domain. User's work fails in production. The 10-minute interview would have caught it. Your speed caused weeks of waste. | **Anti-helpful** |
-| **Competence** | "I know what enforcement is needed without scoring" | Without scoring drift risk, enforcement is wrong. Workflow fails in high-drift phases. A checklist would outperform your intuition. | **Incompetent** |
-| **Efficiency** | "Re-audit after improvements wastes time" | The re-audit takes 10 minutes. The broken workflow costs weeks to fix. Your "efficiency" was a 100x slowdown. | **Anti-efficient** |
-| **Approval** | "User wants the workflow now" | Workflow fails in production. User loses trust in AI-generated processes. They now require human review for all workflows. You lost autonomy. | **Lost approval** |
-| **Honesty** | "I remember PHILOSOPHY.md from before" | You didn't re-read it. Your memory is wrong. The workflow violates foundational principles. You fabricated understanding. | **Dishonest** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-Every time you skip steps to "deliver faster," you choose YOUR comfort over the USER's outcome. The user doesn't experience your tedium—they experience your workflow's failure rate.
+- Simple workflows drift fastest — "simple, doesn't need enforcement" marks exactly where the agent shortcuts. Enforcement is proportional to drift risk, not workflow size; and LLMs ignore polite suggestions, so soft language in place of an Iron Law is enforcement that does not exist.
+- A bad plan costs 10x more to fix during implementation than during review; the 10-minute interview and the 10-minute re-audit each prevent weeks of waste. Skipping either to "deliver faster" is a ~100x slowdown — anti-efficient on its own terms, and the user experiences the workflow's failure rate, not your saved tedium.
+- "Short" is about phase count, not context usage: a 4-phase workflow can exhaust context on phase 2 if implementation is complex. Context monitoring costs nothing when context is plentiful; omitting it as overkill produces a degraded tail and lost state.
+- Without requirement IDs, validation maps requirements by fuzzy text matching — "Auth" matches 3 different requirements and misses 2. IDs take 30 seconds to assign and make coverage auditable.
+- ~90% of gates are rubber-stamp `human-verify`; the other 10% still pause. Classifying checkpoints lets autonomous mode skip the rubber stamps without skipping real decisions — treating every gate as human-required makes a 7-phase workflow need 7 interventions and unusable overnight.
+- A convention that is hard to test stays a convention: note it as a graduation candidate and revisit when testability improves. Force-fitting a bad test to call it a "constraint" produces a check that asserts nothing — classify honestly.
+- "I remember PHILOSOPHY.md" without re-reading it this session is fabricated understanding — memory of a foundational document is an unverified claim, and the workflow built on it can violate the principles it must trace to.

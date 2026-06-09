@@ -381,7 +381,7 @@ See [references/etl-enforcement.md](references/etl-enforcement.md) for ETL strat
 
 Three stages: Test (~10 items, always required) -> Intermediate (~100, if total >500) -> Large (~1,000, if total >5,000). Each stage has quality gates that must pass before scaling up.
 
-> **Full protocol, rationalization table, and red flags:** See [references/scale-up-testing.md](references/scale-up-testing.md)
+> **Full protocol, scale-up facts, and red flags:** See [references/scale-up-testing.md](references/scale-up-testing.md)
 
 ## Common Failures to Avoid
 

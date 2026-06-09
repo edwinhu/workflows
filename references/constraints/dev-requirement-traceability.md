@@ -65,14 +65,11 @@ The app needs authentication and pagination.
 (No per-requirement status. Just assertion.)
 ```
 
-## Rationalization Table
+## Traceability Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "Requirements are obvious from context" | Obvious to you now. Not to the validation phase or a resuming session. | Assign explicit CATEGORY-NN IDs. |
-| "Adding IDs clutters the plan" | IDs are one line per task. Clutter is finding out in review that a requirement was never tested. | Add the `implements:` line. |
-| "I'll add traceability during validation" | Validation checks traceability -- it can't add it. IDs must exist before validation runs. | Add IDs at each phase as artifacts are created. |
-| "Not all requirements map neatly to tasks" | Then the plan structure needs revision. A requirement with no task is a coverage gap. | Flag it as a structural issue during design. |
+- Validation checks traceability — it cannot add it. The IDs must exist before validation runs, so "I'll add traceability during validation" schedules work the phase cannot do; assign IDs as each artifact is created.
+- A requirement with no task is a coverage gap, not an ID inconvenience — flag it as a structural issue during design; the plan structure needs revision.
+- "Requirements are obvious from context" is obvious only to you, now — not to the validation phase or a resuming session. Asserting coverage without per-requirement status is an unverified claim presented as fact.
 
 ## Prose Section Audit
 

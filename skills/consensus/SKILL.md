@@ -111,7 +111,7 @@ Trusted papers first (confirmed then resolved), then unresolved, then non-truste
 
 The MCP tool is rate-limited to 3 results per search and requires a free account. The CLI binary uses the enterprise account session in Dia and returns up to 100 results with no rate limit.
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|

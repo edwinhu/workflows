@@ -59,23 +59,11 @@ When your changes affect what users see or interact with, you MUST:
 
 **Unit tests prove components work. E2E tests prove YOUR feature works for users.**
 
-### Rationalization Prevention
+### E2E Facts
 
-When you catch yourself thinking these rationalizations, STOP—you're about to skip E2E tests:
-
-| Thought | Why You're Wrong | Do Instead |
-|---------|-----------------|-----------|
-| "Unit tests are enough" | Your unit tests don't test user flows. | Write E2E. |
-| "E2E is too slow" | You're choosing slow tests < shipped bugs. | Write E2E. |
-| "I'll add E2E later" | You won't. Your future self won't either. | Write it NOW. |
-| "This is just backend" | Does it affect user output? Then YOU need E2E. | Write E2E. |
-| "The tool setup is complex" | Your complexity = complex failure modes. E2E finds them. | Write E2E. |
-| "The UI is unchanged" | Your assumption isn't proven. | Prove it with a visual snapshot. |
-| "Manual testing is faster" | You're creating false confidence — manual testing misses regressions. | Write E2E. |
-| "It's just a small change" | Your small change breaks UIs. E2E proves it doesn't. | Write E2E. |
-| "User can verify" | NO. You don't trust users with QA. | Automated verification or it didn't happen. |
-| **"Log checking is my E2E test"** | **You're confusing observability with verification.** | **Verify your actual outputs.** |
-| **"Screenshots are too hard to capture"** | **Your avoidance = hard to debug in production later.** | **Automate it.** |
+- Manual testing leaves no evidence and misses regressions — "it worked when I tried it" becomes an unverified claim the moment the code changes again. Capture the manual check as an automated test.
+- Backend-only changes still need E2E when they affect user-visible output; "this is just backend" classifies by where the code lives, not by what the user sees.
+- "The UI is unchanged" is an assumption until a visual snapshot proves it; asserting it without one is an unverified claim presented as fact.
 
 ### Fake E2E Detection - STOP
 
@@ -112,16 +100,6 @@ def test_icon_theme_change():
     # This would have shown 89% of icons were wrong
 ```
 
-### Red Flags - STOP If Thinking:
-
-If you catch yourself thinking these patterns, STOP—you're about to skip E2E:
-
-| Thought | Why You're Wrong | Do Instead |
-|---------|-----------------|-----------|
-| "Tests pass" (only unit) | Your unit tests ≠ E2E | Write E2E test |
-| "Code looks correct" | You're only looking ≠ running user flow | Run E2E |
-| "It worked when I tried it" | Your manual testing ≠ automated | Capture as E2E |
-| "Screenshot shows it works" | Your static screenshot ≠ interaction test | Add automation |
 </EXTREMELY-IMPORTANT>
 
 ## Browser Testing Decision Tree
@@ -197,16 +175,10 @@ If you catch yourself thinking these patterns, STOP—you're about to skip E2E:
 | **Cross-browser** | ✅ (Chromium/Firefox/WebKit) | ❌ (Chrome only) |
 | Natural language find | ❌ | ✅ `find` |
 
-### Rationalization Prevention (Browser MCP)
+### Browser MCP Facts
 
-| Thought | Why You're Wrong | Do Instead |
-|---------|-----------------|-----------|
-| "I'll check the console manually" | You can't capture all edge cases manually. | Use Chrome MCP `read_console_messages` |
-| "I can infer the API response" | Your inference is wrong. Real data differs. | Use Chrome MCP `read_network_requests` |
-| "Playwright can do everything" | You're wrong. It cannot read console or network. | Use Chrome MCP for debugging |
-| "Chrome MCP is enough for CI" | You're ignoring constraints—it requires visible browser. | Use Playwright MCP for CI/CD |
-| "I'll just look at DevTools" | Your manual inspection is not automated. | Automate with Chrome MCP |
-| "Headless doesn't matter" | You're wrong. Your CI/CD requires headless. | Use Playwright MCP |
+- Playwright MCP cannot read console messages or network requests — debugging those requires Chrome MCP (`read_console_messages`, `read_network_requests`). Chrome MCP cannot run headless — CI/CD requires Playwright MCP. Choosing by familiarity instead of by these constraints produces a test that cannot observe what it claims to verify.
+- An API response inferred from code is not the real response — real data differs. Asserting behavior from inference instead of `read_network_requests` is an unverified claim presented as fact.
 </EXTREMELY-IMPORTANT>
 
 ## Platform Detection

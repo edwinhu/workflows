@@ -35,12 +35,8 @@ Using `sources.bib` + pandoc-citeproc prevents these failure modes mechanically:
 - Author names, titles, journals, volumes, and years come from the single canonical .bib entry — never re-typed by the drafting agent
 - Short form, supra/id., page pinpoints, and ordering are all produced from the CSL style, not hand-written
 
-## Rationalization Table
+## Citation Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I know this citation from training data" | Training data conflates authors, titles, and journals across papers | Use `[@bibkey]` — let pandoc resolve it |
-| "The outline has the short cite, that's enough" | "Lund & Robertson 2023" doesn't tell you the coauthor's first name or the journal | Look up the bib key in sources.bib |
-| "I'll verify citations during review" | Review catches errors but doesn't prevent them — prevention is cheaper than repair | Anchor citations at draft time via `[@bibkey]` |
-| "sources.bib is too much setup work" | Building it takes 15 minutes; fixing 16 hallucinated citations takes hours | Build `sources.bib` |
-| "I'll just type the citation as prose" | Hand-typed citations skip the bib check entirely | Use `[@bibkey]` — citeproc renders the format |
+- Training data conflates authors, titles, and journals across papers — a citation typed "from memory" is a hallucination presented as a source, and hand-typed prose citations skip the bib check entirely. `[@bibkey]` resolved by pandoc/citeproc is the only checked path.
+- The outline's short cite ("Lund & Robertson 2023") does not contain the coauthor's first name or the journal — look up the bib key in sources.bib.
+- Building sources.bib takes ~15 minutes; fixing 16 hallucinated citations takes hours. Review catches errors but doesn't prevent them — deferring anchoring to review is counterproductive on its own terms.

@@ -37,18 +37,12 @@ See `references/constraints/wrds-sge-enforcement.md` for the full pattern and ex
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
 
-### Rationalization Table — Login Node & Existing Infrastructure
+### Login Node & Infrastructure Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "It's a quick test, just one file" | One file becomes 100K when you forget to change the command | Write the SGE script first, test with `-t 1-1` |
-| "nohup makes it background, so it's fine" | nohup is still the login node — same shared CPU | qsub, not nohup |
-| "I'll run the real job via qsub later" | You'll forget. The 'test' run is the one that flags the account | qsub from the start |
-| "It only takes 30 seconds" | You don't know that until it runs. 173K filings over NFS is not 30 seconds | If in doubt, qsub |
-| "The quorum parser ran fine on the login node last time" | It didn't — you got lucky, or it was killed silently | Look at how the quorum parser ACTUALLY runs: submit_quorum.sh |
-| "I need a new Go binary for this extraction" | `scan_covers` already has a profile-based framework with SGE, concurrency, and path handling | Add a profile to `scripts/scan_covers/`, don't create a standalone binary |
-| "I'll build the path logic myself" | You'll get the `wrds_clean_filings` directory structure wrong | Read `references/edgar.md` — `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` |
-| "This parser is different enough to need its own binary" | It isn't. `scan_covers` profiles handle header extraction, body parsing, and custom extractors | Add a `profiles_*.go` file. If you need custom logic, use the `Custom` field type |
+- Tests go through the scheduler too: `qsub -t 1-1 submit.sh`. The login-node "quick test" is the run that flags the account — one file becomes 100K when the command changes, and 173K filings over NFS is not 30 seconds.
+- The quorum parser does not run on the login node and never did — it runs via `submit_quorum.sh`. Citing it as login-node precedent is an unverified claim presented as fact.
+- The `wrds_clean_filings` path convention is `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` (see `references/edgar.md`). Hand-rolled path logic gets this wrong.
+- `scan_covers` profiles handle header extraction, body parsing, and custom extractors (`Custom` field type) — "this parser is different enough to need its own binary" has not yet been true once.
 
 ### Red Flags — STOP Immediately If You're About To:
 
@@ -90,23 +84,12 @@ Before executing ANY WRDS query, you MUST:
 
 This is not negotiable. Skipping sample inspection is NOT HELPFUL — the user builds analysis on data with undetected quality problems.
 
-### Rationalization Table - STOP If You Think:
+### Red Flags
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll add filters later" | You'll forget and pull bad data | Add filters NOW, before execution |
-| "User didn't specify filters" | Standard filters are ALWAYS required | Apply Critical Filters section defaults |
-| "Just a quick test query" | Test queries with bad filters teach bad patterns | Use production filters even for tests |
-| "I'll let the user filter in pandas" | Pulling millions of unnecessary rows wastes time/memory | Filter at database level FIRST |
-| "The query worked, so it's correct" | Query success ≠ data quality | INSPECT sample for invalid records |
-| "I can use f-strings for simple queries" | SQL injection risk + wrong type handling | ALWAYS use parameterized queries |
-
-### Red Flags - STOP Immediately If You Think:
-
-- "Let me run this query quickly to see what's there" → NO. Check Critical Filters section first.
-- "I'll just pull everything and filter later" → NO. Database-level filtering is mandatory.
-- "The table name is obvious from the request" → NO. Check Quick Reference section for exact names.
-- "I can inspect the data after the user sees it" → NO. Sample inspection BEFORE claiming success.
+- Running a query without checking the Critical Filters section → standard filters apply even when the user doesn't mention them, and even for test queries.
+- Pulling everything to filter in pandas later → filter at the database level first.
+- Guessing a table name from the request → check the Quick Reference section for exact names.
+- Claiming success before sample inspection → inspect `.head()`/`.sample()` first; query success ≠ data quality.
 
 ### Query Validation Checklist
 
@@ -190,17 +173,13 @@ Before EVERY SAS program execution:
 - [ ] Double quotes used where macro resolution is needed
 - [ ] `options mprint mlogic symbolgen` used during development
 
-### SAS Rationalization Table - STOP If You Think:
+### SAS Performance Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Sort-merge is simpler to write" | Hash is 10x faster for lookup joins and requires no sorting | Write the hash — it's 5 extra lines |
-| "year(date) is readable" | Readable but prevents index usage — full table scan on millions of rows | Use BETWEEN with date literals |
-| "I'll parallelize later" | Later never comes and the job runs 18x slower sequentially | Write the SGE array job NOW |
-| "Single quotes work fine in hash" | Single quotes block macro resolution — your output dataset name is wrong | ALWAYS double quotes in h.output() |
-| "PROC SQL is easier than hash" | PROC SQL still sorts for joins — hash avoids all sorting | Hash for lookups, SQL only for complex aggregations |
-| "The job only takes a few minutes per year" | 18 years × 3 minutes = 54 minutes sequential vs 3 minutes parallel | SGE array for ANY multi-year job |
-| "%sysget works for getting the year" | Unreliable in SGE context — may return blank silently | Use -sysparm + &sysparm. |
+- Hash lookup joins are ~10x faster than `PROC SORT` + `MERGE` and need no sorting; PROC SQL still sorts for joins. The hash is 5 extra lines — choosing sort-merge for a lookup join makes the user's job slower for your convenience.
+- `year(date)` (or any function) on an indexed column forces a full table scan over millions of rows; `BETWEEN` with date literals uses the index.
+- Sequential multi-year jobs run ~18x slower than the SGE array (18 years × 3 minutes = 54 minutes sequential vs 3 minutes parallel) — "I'll parallelize later" is anti-efficient on its own terms.
+- Single quotes in `h.output(dataset: '...')` block macro resolution — the output dataset name comes out wrong. Always double quotes.
+- `%sysget` is unreliable under SGE — it may return blank silently. Pass the year via `-sysparm` + `&sysparm.`.
 
 ### SAS Red Flags - STOP Immediately If You're About To:
 

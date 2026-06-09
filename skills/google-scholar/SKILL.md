@@ -28,16 +28,12 @@ YES → Use that data
 NO  → Run scholar search/lookup --bibtex FIRST, then report
 ```
 
-### Rationalization Table
+### Metadata Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I know this famous paper" | Training data has wrong years, missing authors, garbled titles | Run `scholar lookup "title" --bibtex` |
-| "I'll fill in details later" | You won't — the hallucinated version sticks | Get BibTeX first, present after |
-| "It's a well-known paper" | Even well-known papers have co-authors you'll forget | Let Google Scholar provide the metadata |
-| "The user just wants a quick answer" | A wrong answer is worse than a 2-second lookup | `--bibtex` adds seconds, not minutes |
+- Training-data paper metadata is unreliable even for famous papers — wrong years, missing co-authors, garbled titles. Presenting remembered metadata is an unverified claim presented as fact; run `scholar lookup "title" --bibtex` first, then report.
+- `--bibtex` adds seconds, not minutes, and the BibTeX includes the abstract — reconstructing either from memory is counterproductive on its own terms.
 
-### Red Flags — STOP If You Catch Yourself:
+### Red Flags
 
 - **About to type a paper title from memory** → STOP. Run `scholar lookup`.
 - **About to list authors without a source** → STOP. Run `--bibtex`.

@@ -131,28 +131,11 @@ The reviewed code meets security standards. No vulnerabilities with confidence >
 X critical and Y important security issues must be fixed before proceeding.
 ```
 
-## Rationalization Prevention
+## Review Facts
 
-STOP - you're about to rationalize if these thoughts arise:
-
-| Thought | Reality |
-|---------|---------|
-| "This could be exploited in theory" | Theoretical != exploitable. Verify attack works. |
-| "It's not validated but probably safe" | Your probably != evidence. Check the validation. |
-| "Auth is missing but it's internal" | Internal exposure is still exposure. Require auth. |
-| "The risk is low" | Risk assessment requires evidence. Find proof or discard. |
-| "I would add defense-in-depth" | Defense-in-depth suggestions are < 80 confidence unless current state is exploitable. |
-
-## Drive-Aligned Framing
-
-**You approving without verifying exploitability is NOT HELPFUL — you're shipping vulnerabilities the user will discover in production.**
-
-An "APPROVED" verdict means YOU assert:
-- No exploitable vulnerabilities exist (not "probably safe")
-- Current protections are sufficient (not "I would add more")
-- Evidence exists and YOU verified it (not trusted reports)
-
-**CHANGES REQUIRED protects the user. Your fake APPROVED ships vulnerabilities.**
+- "Could be exploited in theory" / "probably safe" / "the risk is low" sits below the 80-confidence bar — verify the attack works or check the actual validation, otherwise discard. Defense-in-depth suggestions are < 80 confidence unless the current state is exploitable.
+- Missing auth on an "internal" surface is still exposure — internality is not mitigation; require auth.
+- An "APPROVED" verdict asserts that no exploitable vulnerabilities exist and YOU verified the evidence rather than trusting reports. Issuing it without that verification is an unverified claim presented as fact — it ships vulnerabilities the user discovers in production. CHANGES REQUIRED protects the user.
 
 ## After Review Completes
 

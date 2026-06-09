@@ -28,15 +28,14 @@ Announce: "Using writing-validate (Phase 3.5) to validate draft sections against
 ## Contents
 
 - [The Iron Law of Validation](#the-iron-law-of-validation)
-- [Red Flags - STOP Immediately](#red-flags---stop-immediately)
+- [Red Flags](#red-flags)
 - [Purpose](#purpose)
 - [Validation Levels](#validation-levels)
 - [The Process](#the-process)
 - [Classification](#classification)
 - [VALIDATION.md Template](#validationmd-template)
 - [Gate](#gate)
-- [Rationalization Prevention](#rationalization-prevention)
-- [Drive-Aligned Framing](#drive-aligned-framing)
+- [Validation Facts](#validation-facts)
 - [Phase Transition](#phase-transition)
 
 # Claim Validation Against PRECIS.md
@@ -52,14 +51,12 @@ writing-review MUST NOT start until `.planning/VALIDATION.md` confirms all PRECI
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## Red Flags - STOP Immediately If You Catch Yourself Thinking:
+## Red Flags
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| About to invoke writing-review without VALIDATION.md | Review checks quality, not coverage. Unvalidated drafts may miss entire claims. | Run validation first. |
-| Claiming "all claims covered" without reading each draft section | You cannot verify coverage without reading the prose | Read every draft file and check against every PRECIS claim |
-| Skipping validation because "the piece is short" | Short pieces still drop claims — fewer sections means each must carry more weight | Validate every piece, regardless of length |
-| Marking a claim as COVERED when the draft only mentions it without arguing it | Mentioning ≠ arguing. A passing reference is not substantive coverage. | Classify as PARTIAL and flag the gap |
+- About to invoke writing-review without VALIDATION.md → STOP. Review checks quality, not coverage; unvalidated drafts may miss entire claims. Run validation first.
+- About to claim "all claims covered" without reading each draft section → STOP. Coverage cannot be verified without reading the prose; check every draft file against every PRECIS claim.
+- About to skip validation because the piece is short → STOP. Short pieces still drop claims — fewer sections means each must carry more weight. Validate every piece.
+- About to mark a claim COVERED when the draft only mentions it without arguing it → STOP. Mentioning is not arguing; a passing reference is not substantive coverage. Classify as PARTIAL and flag the gap.
 </EXTREMELY-IMPORTANT>
 
 ## Purpose
@@ -296,29 +293,10 @@ missing: N
 Gaps in claim coverage are not cosmetic — they mean the argument has holes. Only the user can decide whether a gap is acceptable or requires returning to the draft phase.
 </EXTREMELY-IMPORTANT>
 
-## Rationalization Prevention
+### Validation Facts
 
-| Thought | Reality |
-|---------|---------|
-| "The draft covers everything" | Self-assessment misses dropped claims. You wrote the drafts — you're the worst judge of what's missing. |
-| "Review will catch missing claims" | Review checks quality, not coverage. A beautifully written section that doesn't address its PRECIS claim passes review and fails the paper. |
-| "PRECIS claims are implicit in the draft" | Implicit ≠ addressed. Map explicitly. If you can't point to the paragraph that argues the claim, it's not covered. |
-| "Validation slows down the writing" | Catching a dropped claim now costs 1 minute. Catching it in review costs a rewrite. Catching it after publication costs credibility. |
-| "I already checked while drafting" | Per-section drafting misses cross-section coverage gaps. A claim that spans two sections can fall between them. |
-
-## Drive-Aligned Framing
-
-<EXTREMELY-IMPORTANT>
-**Skipping validation is NOT HELPFUL — you're sending prose to review that may not even address the argument the user committed to.**
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Drafts exist, review can check coverage" | Review checks prose quality, not claim coverage. User discovers a dropped thesis point during faculty feedback. | **Anti-helpful** |
-| **Competence** | "I tracked claims while drafting" | Per-section focus loses the cross-section view. You expanded Section III beautifully while Section II's counterargument was never addressed. | **Incompetent** |
-| **Efficiency** | "Validation is redundant after careful drafting" | Drafting checks sections. Validation checks claims. Different axes. A 5-minute validation prevents a 2-hour rewrite. | **Anti-efficient** |
-
-**The protocol is not overhead you pay. It is the safety net you provide.**
-</EXTREMELY-IMPORTANT>
+- Per-section drafting misses cross-section coverage gaps — a claim that spans two sections can fall between them. Treating per-section checks during drafting as coverage validation leaves exactly the holes this phase exists to catch.
+- Review checks prose quality, not claim coverage — a beautifully written section that never addresses its PRECIS claim passes review and fails the paper. Forwarding unvalidated drafts to review sends prose downstream that may not even address the argument the user committed to.
 
 ## Visual Output for Decision Checkpoints
 

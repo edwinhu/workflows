@@ -66,16 +66,12 @@ Is it an academic paper (journal article, working paper, SSRN)?
                   NO  → Flag as gap
 ```
 
-### Rationalization Table
+### Channel Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "I'll just cite it from memory, the paper is well-known" | Your memory is training data, not a source file | Find it in Paperpile or Scholar |
-| "The Readwise article is enough for a journal paper" | Readwise has web captures, not canonical PDFs | Send academic papers through Paperpile |
-| "I'll materialize sources later during drafting" | Later never comes. Draft agents cite what's available | Materialize NOW |
-| "This SEC speech doesn't need a local copy" | Cite-check needs local text to verify your claims | Clip it to Obsidian or find in Readwise |
-| "Scholar found it, I don't need to add to Paperpile" | Scholar gives metadata. Paperpile stores the PDF | Add to Paperpile, then rclone |
-| "The web source will always be online" | URLs break. Local copies don't | Clip to Obsidian |
+- Draft agents cite only what exists in `references/` — sources deferred to "later" never enter the draft. On unmaterialized PRECIS runs, cite-check has flagged ~30% of citations as NOT_IN_STORE, forcing the user to backtrack and gather sources mid-draft. Deferring materialization to "show progress faster" is anti-helpful on its own terms.
+- Readwise stores web captures, not canonical PDFs. An academic paper routed through Readwise lacks the authoritative text and metadata cite-check needs — send academic papers through Paperpile.
+- Scholar returns metadata only; Paperpile stores the PDF. A Scholar hit without a Paperpile add (then rclone) leaves nothing to materialize.
+- Cite-check verifies claims against local text in `references/` — every source you cite, including web sources like SEC speeches, needs a local copy (Obsidian clip or Readwise export). A bib entry without a backing file is an unverifiable citation.
 
 ## Process
 
@@ -203,15 +199,13 @@ Gaps (need manual action): Z
   - [bibkey2]: "Title" → not found anywhere
 ```
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| Writing sources.bib without local files in references/ | Downstream cite-check will fail — bib entries without files are useless | Materialize first, then build bib |
-| Routing an academic paper through Readwise | Readwise has web captures, not canonical PDFs with proper metadata | Use Paperpile for academic papers |
-| Skipping the Paperpile search ("I'll just use the DOI") | Paper may already be in Paperpile — avoid duplicates | Search first, add only if missing |
-| Moving to setup without running gap analysis | Gaps found during drafting are 10x harder to fill | Run gap analysis now |
-| Creating sources.bib manually instead of from Paperpile export | Manual bib entries have typos, missing fields, wrong citekeys | Extract from paperpile.bib |
+- About to write sources.bib entries without local files in `references/` → STOP. Bib entries without files are unverifiable; materialize first, then build the bib.
+- About to route an academic paper through Readwise → STOP. Readwise has web captures, not canonical PDFs with proper metadata — use Paperpile.
+- About to add by DOI without searching Paperpile first → STOP. The paper may already be in Paperpile; search first, add only if missing.
+- About to move to setup without running gap analysis → STOP. Gaps found during drafting are 10x harder to fill.
+- About to create sources.bib manually instead of from the Paperpile export → STOP. Manual entries get typos, missing fields, and wrong citekeys — extract from paperpile.bib.
 
 ## Gate: Exit Lit Review
 
@@ -240,13 +234,6 @@ Before proceeding to writing-setup:
 **A gap rate above 20% is a BLOCKER.** Ask the user: "20% of sources are missing. Should we search more, or proceed with known gaps?"
 
 **Do not write `status: APPROVED` until sources are genuinely materialized.** The artifact certifies local copies in `references/` — forging it sends setup into a PRECIS built on sources that cite-check cannot verify.
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|---|---|---|---|
-| **Helpfulness** | "Getting to PRECIS faster helps the user see progress" | The PRECIS cites sources that don't exist locally. Cite-check flags 30% as NOT_IN_STORE. The user has to backtrack and gather sources mid-draft. | **Anti-helpful** |
-| **Efficiency** | "Materialization is overhead — we can cite from metadata" | Cite-check can't verify metadata-only citations. Every unverifiable citation is a credibility risk the user discovers at submission time. | **Anti-efficient** |
 
 ## No Pause Between Steps
 

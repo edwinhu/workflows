@@ -74,14 +74,9 @@ The login node is shared infrastructure. Running estimation, bulk processing, or
 The login node is for: `sbatch`, `squeue`, `scancel`, `sinfo`, `scp`, `ls`, `head`, short queries.
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table
+### Login Node Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "It's a quick test, just one stock" | One stock becomes 5,000 when you forget to change the args | Write the sbatch script first, test with `--array=1-1` |
-| "nohup makes it background, so it's fine" | nohup is still the login node — same shared CPU | sbatch, not nohup |
-| "I'll run the real job via sbatch later" | You'll forget. The 'test' run flags the account | sbatch from the start |
-| "It only takes 30 seconds" | You don't know that until it runs | If in doubt, sbatch |
+- Tests go through the scheduler too: write the sbatch script first and test with `--array=1-1`. The login-node "quick test" is the run that flags the account — one stock becomes 5,000 when the args change, and you don't know it "only takes 30 seconds" until it runs.
 
 ### Red Flags — STOP If You're About To
 

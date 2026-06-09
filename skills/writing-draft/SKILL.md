@@ -335,42 +335,15 @@ When drafting reveals unplanned issues, follow this 4-rule system:
 Each section's draft summary should include:
 **Deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
 
-## Rationalization Table
+## Red Flags
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "I'll outline in my head, no file needed" | Mental outlines produce wandering prose | Write the outline file first |
-| "This section is short, outline is overkill" | Short sections still need structure | Write a brief outline, then expand |
-| "I'll draft all sections at once for flow" | Monolithic drafting loses focus and depth | One section at a time, verify each |
-| "The outline is close enough to prose already" | Outlines organize; prose argues | Expand with evidence and transitions |
-| "I'll fix the structure in editing" | Structural problems in drafts compound | Get structure right in outline, before prose |
-| "This doesn't match the outline but it's better" | Unplanned deviations are usually rationalizations | Update outline first, then draft to match |
-| "I'll write a quick version now and expand later" | "Later" means never. Cursory drafts stay cursory. | Write it properly the first time |
-| "The user just wants to see something fast" | Fast garbage requires more rework than slow quality | Invest in depth now, save rework later |
-| "This section only needs 2 paragraphs" | If the outline has 5 subsections, 2 paragraphs is cursory | Match the depth the outline implies |
-| "I can skip the evidence for now" | Evidence-free claims are assertions, not arguments | Include every piece of evidence from the outline |
-
-## Red Flags - STOP If You Catch Yourself:
-
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Drafting without reading the section outline | Prose will drift from structure | Read outline first, always |
-| Writing multiple sections simultaneously | Lose focus, miss transitions, cursory treatment | One section at a time |
-| Ignoring domain style rules | Generic prose instead of appropriate register | Load and follow domain skill |
-| Skipping the PRECIS cross-reference | Section may not advance the argument | Check which claim this section serves |
-| Stopping after one section to ask user | Breaks momentum and context | Continue to next section immediately |
-| Writing a section in 2 paragraphs when outline has 5 subsections | You are being cursory to "finish" faster | Expand every subsection properly |
-| Skipping evidence mapped in the outline | Claims without evidence are assertions | Include all evidence, developed in prose |
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Finishing the draft fast helps the user" | Cursory drafts create 3x the rework. Every skipped outline point becomes a revision cycle. Your speed produced waste. | **Anti-helpful** |
-| **Competence** | "I know the domain style rules" | You didn't load the domain skill. The prose reads as generic AI output. Reviewers will flag every paragraph. Your confidence was incompetence. | **Incompetent** |
-| **Efficiency** | "Outlining is overkill for a short section" | The section wandered without structure. You rewrote it twice. The 5-minute outline would have saved 30 minutes. Your "efficiency" was a 6x slowdown. | **Anti-efficient** |
-| **Approval** | "The user wants to see progress" | You showed a cursory draft. The user sees thin prose and loses confidence in the workflow. Next time they'll micromanage every section. You lost autonomy. | **Lost approval** |
-| **Honesty** | "I expanded the outline points" | You skipped 3 of 5 subsections. The user discovers gaps during review — your shortcut created rework they trusted you to prevent. | **Anti-helpful** |
+- About to draft a section without reading its outline file → STOP. The prose drifts from structure; read the outline first.
+- About to write multiple sections simultaneously → STOP. Focus splinters, transitions slip, treatment goes cursory — one section at a time.
+- About to write prose without the domain style rules loaded → STOP. The output is generic register instead of the document's; load the domain skill.
+- About to skip the PRECIS cross-reference → STOP. A section that advances no claim is filler; check which claim it serves.
+- About to pause after one section to ask the user → STOP. That breaks momentum and context; continue to the next section immediately.
+- About to write a 2-paragraph section under a 5-subsection outline → STOP. That is cursory completion-seeking; expand every subsection.
+- About to skip evidence mapped in the outline → STOP. Claims without evidence are assertions, not arguments; develop every item in prose.
 
 ---
 

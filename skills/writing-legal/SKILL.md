@@ -67,34 +67,16 @@ If your draft makes a prescriptive claim but doesn't address obvious objections,
 
 If you cite a case/statute/historical fact via an intermediate source (law review, treatise), DELETE the citation and READ THE ORIGINAL. Even Supreme Court opinions misstate precedents.
 
-### Rationalization Table - STOP If You Think:
+### Citation Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This article discusses..." | Bores reader instantly | START with concrete problem or controversy |
-| "Table-of-contents paragraph helps" | Readers skip it | INTEGRATE roadmap into intro |
-| "Background section comes first" | Not before establishing relevance | SHOW problem first, background second |
-| "Case-by-case summary is thorough" | Tedious and unhelpful | SYNTHESIZE: "Courts hold X except Y" |
-| "Counterargument would hurt my claim" | Ignoring it hurts worse | CONFRONT and refine claim |
-| "Treatise summary is good enough" | Treatises have errors | READ original cases |
-| "Arguably" makes my point | Acknowledges controversy without arguing | MAKE the argument explicitly |
-| "This metaphor is clear" | Metaphors hide incomplete logic | UNPACK: what's the actual argument? |
+- Reviewers and editors check citations against the originals. A case cited from a headnote, a treatise, or training data — without reading the holding — is an unverified claim presented as fact, and one wrong citation destroys the author's credibility with every reader who catches it.
 
-### Drive-Aligned Framing
+### Red Flags — STOP If About To:
 
-**Citing a case without reading its holding is NOT HELPFUL — the user submits a paper with a wrong citation and reviewers destroy their credibility.** Relying on headnotes or training data is not legal research.
-
-- You omitted the strongest counterargument to make the thesis look stronger. The reader sees through it — your omission destroyed credibility.
-- You cited a treatise instead of the primary case. The reader checks and finds the user didn't read the original — your shortcut destroyed their scholarly reputation.
-- You wrote the analysis free-form to be "more natural." The argument has no structure — your creativity produced confusion.
-
-### Red Flags - STOP Immediately If You Think:
-
-**Content Red Flags:**
-- "Let me write standard intro" → NO. Find concrete problem first.
-- "I'll address objections later" → NO. Confront counterarguments NOW.
-- "This treatise explains the case" → NO. Read the original case.
-- "Background section needs more" → NO. Only include what proves claim.
+- Open with "This article discusses..." → STOP. Hook with the concrete problem or controversy.
+- Defer counterarguments to a later section → STOP. Confront objections in the section that makes the claim (Iron Law #2).
+- Cite a case via a treatise or another case → STOP. Read and cite the original (Iron Law #3).
+- Expand background beyond what the claim requires → STOP. Show the problem first; include only what proves the claim.
 
 ### Delete & Restart Pattern
 
@@ -253,7 +235,7 @@ For comprehensive guidance, consult:
   - Body text styles
   - Document creation gate function (5-step)
   - Pandoc `--reference-doc` usage
-  - Template rationalization table and red flags
+  - Template facts and red flags
 
 - **`references/volokh-distilled.md`** - Extended Volokh guidance covering:
   - Full logical problems taxonomy

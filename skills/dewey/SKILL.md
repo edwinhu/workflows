@@ -59,16 +59,13 @@ Before downloading ANY Dewey dataset, you MUST:
 
 This is not negotiable. Skipping the sample-and-filter step is NOT HELPFUL — Dewey datasets are routinely **hundreds of GB to multiple TB**; an unfiltered pull burns hours of bandwidth and disk for data you'll immediately throw away.
 
-### Rationalization Table — STOP If You Think:
+### Dewey Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll just download everything and filter in pandas" | SafeGraph Patterns is multi-TB; you'll fill the disk | DuckDB `COPY TO` with WHERE on remote parquet — pull only the rows/cols you need |
-| "I don't need to check the schema first" | Column names differ by provider/release (`naics_code` vs `NAICS_CODE`, `opened_on` may not exist) | `read_sample(nrows=100)` BEFORE the full pull |
-| "No date filter needed, I want all of it" | Most datasets are date-partitioned; "all" = every weekly file ever | Set `partition_key_after/before` to your study window |
-| "The download started, so it's correct" | A started download ≠ the right columns | Inspect a sample on disk before claiming success |
-| "Presigned links are fine for a long job" | Links expire in **24h** (`download_files0`) | Use `download_files1` (page-by-page, refreshes links) for large multi-day pulls |
-| "I'll hardcode the product path I think it is" | Wrong `prj_` → 404 or someone else's data | Get it from Connect to API, or MCP `search_datasets` |
+- SafeGraph Patterns is **multi-TB**; "download everything and filter in pandas" fills the disk before the filter ever runs — counterproductive on its own terms. Use DuckDB `COPY TO` with a WHERE clause on the remote parquet to pull only the rows/columns you need.
+- Column names differ by provider and release (`naics_code` vs `NAICS_CODE`; `opened_on` may not exist at all). A full pull against guessed columns is the exact incompetence the sample step exists to prevent — `read_sample(nrows=100)` BEFORE the full pull.
+- Most datasets are date-partitioned weekly; "all of it" means every weekly file ever shipped. Set `partition_key_after/before` to the study window.
+- Presigned links expire in **24h** (`download_files0`). For large multi-day pulls use `download_files1` (page-by-page, refreshes links) — a long job on `download_files0` dies mid-pull.
+- A wrong `prj_` product path 404s or returns someone else's data. Get the path from Connect to API or MCP `search_datasets`; hardcoding a guessed path is an unverified claim presented as fact.
 
 ### Red Flags — STOP Immediately If You're About To:
 

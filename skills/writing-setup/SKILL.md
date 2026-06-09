@@ -337,36 +337,15 @@ Before proceeding to outline phase (see `constraints/gate-function-standard.md` 
    - provides: [.planning/PRECIS.md, .planning/OUTLINE.md, .planning/ACTIVE_WORKFLOW.md]
    - Include substantive one-liner (NOT "Setup complete")
 
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "I'll refine the thesis during drafting" | Unrefined thesis = unfocused draft = complete rewrite | Nail the thesis now |
-| "Three claims is plenty" | Check if three is earned or arbitrary | Justify each claim's necessity |
-| "The scope section isn't important" | Unbounded scope produces unbounded documents | Define IN and OUT explicitly |
-| "I already know the structure" | You're guessing from similar papers, not this one | Derive structure from THIS thesis and claims |
-| "The outline doesn't need transitions planned yet" | Transitions ARE the argument's logic | Plan transitions now or the draft will be fragments |
-| "I can add counterarguments later" | Counterarguments shape the thesis itself | Confront objections before finalizing claims |
-
 **Skipping PRECIS verification is NOT HELPFUL — the user builds an entire document on a vague thesis that collapses under scrutiny.** A vague thesis is not a thesis. Placeholder claims are not claims.
 
-## Why Skipping Hurts the Thing You Care About Most
+## Red Flags
 
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Getting to drafting fast helps the user see progress" | The draft has no foundation. Every section wanders from the thesis. You rewrite the entire document. Your speed created 3x the work. | **Anti-helpful** |
-| **Competence** | "I can hold the thesis in my head, no need for detailed PRECIS" | Without written claims, sections drift. Without scope boundaries, the document sprawls. Your mental model was incomplete — the PRECIS would have caught it. | **Incompetent** |
-| **Honesty** | "The PRECIS is complete enough" | You wrote a vague thesis and placeholder claims. The user drafts an entire document on a shaky foundation — every section wanders. | **Anti-helpful** |
-
-## Red Flags - STOP If You Catch Yourself:
-
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Creating OUTLINE before PRECIS | Structure without thesis = incoherent | Write PRECIS first |
-| Skipping the thesis interview | You'll write a document without an argument | Ask the thesis questions |
-| Setting domain without checking source indicators | Wrong domain = wrong style rules loaded later | Check the domain detection table |
-| Creating ACTIVE_WORKFLOW without PRECIS and OUTLINE | Workflow state without foundation is meaningless | Create artifacts first |
-| Rushing through PRECIS to get to drafting | Thin PRECIS → thin argument → high rework | Invest time in PRECIS now |
+- About to create OUTLINE.md before PRECIS.md → STOP. Structure without a thesis is incoherent; write the PRECIS first.
+- About to skip the thesis interview → STOP. That produces a document without an argument; ask the thesis questions.
+- About to set the domain without checking source indicators → STOP. Wrong domain means wrong style rules loaded for every later phase; check the domain detection table.
+- About to create ACTIVE_WORKFLOW.md without PRECIS and OUTLINE → STOP. Workflow state without its foundation artifacts is meaningless; create them first.
+- About to rush PRECIS to get to drafting → STOP. A thin PRECIS yields a thin argument and high rework; invest the time now.
 
 ## Next Phase
 

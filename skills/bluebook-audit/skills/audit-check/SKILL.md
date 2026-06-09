@@ -104,16 +104,14 @@ Claude receives:
 
 **Output:** Annotated version of Gemini findings with cross-footnote issues added and false positives flagged.
 
-## Red Flags - STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Sending plain text to Gemini | 10-20x false positives without formatting info | Always include inline markup |
-| Auditing a subset of footnotes | Missed errors guaranteed | Audit ALL footnotes |
-| Skipping NBSP variants in mechanical checks | Silent search failures | Always try both space types |
-| Trusting Gemini results without Claude cross-check | Per-footnote misses cross-footnote patterns | Always run Stage 2c |
-| Trusting Claude review without mechanical checks | Claude misses deterministic patterns | Mechanical checks are authoritative for their categories |
-| Skipping any stage | Each stage catches different error classes | Run all three: mechanical → Gemini → Claude |
+- Sending plain text to Gemini → always include inline markup; plain text produces 10-20x false positives without formatting info.
+- Auditing a subset of footnotes → audit ALL footnotes; subsets guarantee missed errors.
+- Skipping NBSP variants in mechanical checks → always try both space types; NBSPs cause silent search failures.
+- Trusting Gemini results without the Claude cross-check → always run Stage 2c; per-footnote review misses cross-footnote patterns.
+- Trusting Claude review without mechanical checks → mechanical checks are authoritative for their categories; Claude misses deterministic patterns.
+- Skipping any stage → run all three (mechanical → Gemini → Claude); each catches a different error class.
 
 ## Merging Three-Layer Findings
 

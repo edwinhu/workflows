@@ -110,15 +110,11 @@ Related skills:
 - Chrome MCP skill - for debugging
 - Playwright skill - for CI/CD
 
-### Rationalization Prevention
+### Linux Automation Facts
 
-| Thought | Reality |
-|---------|---------|
-| "I can test the app manually" | AUTOMATE IT with ydotool/xdotool |
-| "Web testing tools work for desktop apps" | NO. Use native Linux tools |
-| "ydotool daemon is hard to set up" | One-time setup. Do it. |
-| "X11 is deprecated, skip xdotool" | Many systems still use X11. Support both. |
-| "D-Bus is too complex" | D-Bus gives precise control. Learn it. |
+- Many systems still run X11 despite Wayland's rise — support both xdotool (X11) and ydotool (Wayland), and always detect the display server first (snippet below). Assuming Wayland-only drops working setups.
+- The ydotool daemon is a one-time setup; web-testing tools cannot drive native Linux desktop apps, and manual testing in their place produces no automated evidence — "it worked" becomes an unverified claim.
+- D-Bus gives precise control over desktop state that raw input simulation cannot; skipping it as "too complex" trades precision for flakiness.
 
 ### Display Server Detection
 

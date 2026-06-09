@@ -82,14 +82,9 @@ RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
 **Invoking X directly when the user said 'in a companion session' is NOT HELPFUL — the task runs in your current context, dies when the conversation ends, and the user cannot monitor or interact with it in the companion web UI. You did the opposite of what was asked.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table — Companion Routing
+### Companion Routing Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The user wants X, not a companion launch" | The user said "in a companion session" — they want X running in a separate persistent instance | Invoke companion, put X in the prompt |
-| "Agent tool with run_in_background is the same thing" | Background agents die when the conversation ends and can't be accessed via companion web UI | Use companion skill for real independence |
-| "I'll invoke X directly, it's simpler" | Simpler for you, wrong for the user — they asked for a separate session they can monitor | Invoke companion as the transport layer |
-| "Session keyword was incidental, not the main intent" | If the user said "companion" or "in a new session," the transport is the intent — respect it | Companion first, X goes in the prompt |
+- Agent tool with `run_in_background` is NOT a companion session: background agents die when the conversation ends and can't be accessed via the companion web UI. Substituting it for the companion skill gives the user the opposite of the persistent, monitorable session they asked for.
 
 ## Skill Triggers (Can Auto-Invoke)
 
@@ -106,23 +101,12 @@ RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
 | Workshop presentation | `/workshop` | workshop presentation, workshop slides, faculty workshop, workshop talk, slides from paper |
 | Revise workshop | `/workshop-revise` | revise workshop, fix slides, update presentation, workshop feedback |
 
-## Red Flags - You're Skipping the Skill Check
+## Red Flags
 
-If you think any of these, STOP:
-
-| Thought | Reality |
-|---------|---------|
-| **"I need to invoke the skill properly"** | **If user said "use /dev", it's ALREADY LOADED. Just proceed.** |
-| **"Let me invoke the skill first"** | **Check for `<command-name>` tag - it's already loaded if present** |
-| **"I should use Skill tool for /dev"** | **NO. User invocation = already loaded = proceed to next step** |
-| "This is just a simple question" | Simple questions don't involve reading code |
-| "I'll gather information first" | That IS investigation - use the skill |
-| "I know exactly what to do" | The skill provides structure you'll miss |
-| "It's just one file" | Scope doesn't exempt you from process |
-| "Let me quickly check..." | "Quickly" means skipping the workflow |
-| **"I can read this image directly"** | **Use look-at to save context tokens** |
-| **"User said 'use X in a companion session' — I'll invoke X directly"** | **'In a companion session' = invoke companion skill, put X in the prompt** |
-| **"I'll use Agent tool for this companion request"** | **Agent = subagent in THIS session. Companion = separate server session. Use companion skill.** |
+- About to invoke a skill the user already invoked (e.g., "use /dev") → it is ALREADY LOADED; check for the `<command-name>` tag and just proceed.
+- About to "gather information" or "quickly check" code before starting the matching workflow → that IS investigation; invoke the skill first. Scope ("just one file", "simple question") doesn't exempt you from the process.
+- About to Read an image/PDF directly → use look-at.
+- User said "use X in a companion session" and you're about to invoke X directly or via the Agent tool → companion skill is the transport, X goes in the prompt. Agent = subagent in THIS session; companion = separate server session.
 
 ## Bug Reports - Mandatory Response
 
@@ -213,22 +197,14 @@ uv run python3 "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
 - Config files requiring exact formatting preservation
 - Any file that needs editing after reading
 
-### Rationalization Table - STOP If You Think:
+### Tool Routing Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can read images directly" | Read tool shows you the image, but wastes context tokens | Use look-at to extract ONLY what's needed |
-| "It's just one small image" | Still uses 1000+ tokens in conversation context | look-at returns 50-200 tokens of extracted info |
-| "I need to see the whole thing" | You can see it, user can't see what you see | Use look-at with specific goal |
-| "look-at might miss details" | You can always fall back to Read if needed | Start with look-at, escalate if insufficient |
-| "The user didn't ask for look-at" | look-at is FOR YOU, not the user | Use the right tool for the job |
+- Read on an image costs 1,000+ context tokens even for a "small" file; look-at returns 50-200 tokens of extracted info. File size doesn't change this — content type determines the tool.
+- look-at is FOR YOU, not the user — it applies whether or not the user asked for it. You can always fall back to Read if the extraction is insufficient; start with look-at and escalate.
 
-### Red Flags - STOP If You Catch Yourself:
+### Red Flags
 
-- **"Let me read this image..."** → NO. Use look-at.
-- **"I'll use Read to see what's in the PDF..."** → NO. Use look-at.
-- **"Just quickly checking this screenshot..."** → NO. Use look-at.
-- **Passing image path to Read tool** → STOP. Use look-at instead.
+- Passing an image, PDF, or screenshot path to the Read tool → use look-at.
 
 ### Cost & Context Benefits
 
@@ -307,22 +283,10 @@ Bash(
 )
 ```
 
-### Rationalization Table - STOP If You Think:
+### Red Flags
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The skill is just guidance" | Skills contain tested, required patterns | Follow the skill's exact instructions |
-| "I know a better way" | Your way skips enforcement or optimization | Use the skill's pattern - it exists for a reason |
-| "Description parameter is optional" | When skill says REQUIRED, it's required | Add the description parameter as instructed |
-| "I'll add it if it fails" | You'll clutter the conversation with messy output first | Follow the pattern from the start |
-| "It's just cosmetic" | Clean descriptions improve UX and debugging | Professional output requires following the pattern |
-
-### Red Flags - STOP If You Catch Yourself:
-
-- **About to call Bash without description when skill requires it** → STOP. Add the description parameter.
-- **Thinking "I'll skip this requirement"** → STOP. Skills don't have optional requirements.
-- **"The skill says to do X but I'll do Y"** → STOP. Follow the skill or don't load it.
-- **Modifying the skill's pattern "to be simpler"** → STOP. The pattern exists for a reason.
+- About to call Bash without the `description` parameter when the skill requires it → add it.
+- About to modify a skill's required pattern "to be simpler" → follow the skill or don't load it.
 
 ### Why This Matters
 
@@ -382,18 +346,10 @@ plugin-dev:skill-development, plugin-dev:plugin-structure, etc.)
 
 Trigger words: see Skill Triggers table above.
 
-### Rationalization Table - STOP If You Think:
+### Red Flags
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll use the built-in creator directly / I know the patterns" | Built-in has no PostToolUse hooks — path errors and structural issues go uncaught. Knowing is not doing; hooks fire automatically, your memory does not | Invoke the workflows wrapper |
-| "This is a simple/quick edit" | If changing process flow, hooks, or enforcement sections, it's substantial | Use the wrapper |
-| "I'm not in the workflows project" | Wrappers apply globally — enforcement patterns matter everywhere | Invoke the workflows wrapper from any project |
-
-### Red Flags - STOP If You Catch Yourself:
-
-- **About to invoke a built-in creator directly** (`skill-creator:skill-creator`, `plugin-dev:*`, etc.) → STOP. Use the workflows wrapper.
-- **Editing enforcement patterns without the wrapper** → STOP. This is exactly when the audit matters most.
+- About to invoke a built-in creator directly (`skill-creator:skill-creator`, `plugin-dev:*`, etc.) → use the workflows wrapper. The built-in has no PostToolUse hooks; path errors and structural issues go uncaught.
+- Editing enforcement patterns without the wrapper → this is exactly when the audit matters most.
 
 ## Advanced Agent Harnessing Patterns
 

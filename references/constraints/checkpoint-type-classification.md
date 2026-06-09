@@ -57,14 +57,10 @@ Options: (a) fix gaps in revision, (b) accept partial coverage, (c) restructure 
 (decision gate. Don't auto-advance. Present options.)
 ```
 
-## Rationalization Table
+## Gate Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Let me ask the user just to be safe" | Pausing at human-verify gates wastes the user's time and breaks flow | Check the table. human-verify = auto-advance. |
-| "The user probably wants to decide here" | The table defines which gates need decisions. Trust it. | If it's human-verify, auto-advance. |
-| "I'll auto-advance this decision gate since the choice seems obvious" | Obvious to you is not obvious to the user. Decision gates exist for a reason. | Present options and wait. |
-| "I'll combine these two decision gates into one question" | Each gate has distinct options. Combining loses clarity. | Present each decision gate separately. |
+- The table, not your judgment, defines where the user decides. Asking "just to be safe" at a human-verify gate wastes the user's time; auto-advancing a decision gate because "the choice seems obvious" removes their agency on a choice that affects output quality. Both directions of override are unhelpful.
+- Decision gates are presented separately, never combined into one question — each has distinct options, and combining loses clarity. (Smart Discuss batching applies to intra-phase ambiguities, not to decision gates.)
 
 ## Red Flags
 

@@ -33,24 +33,15 @@ Before claiming ANY jupytext script executed successfully, follow this sequence:
 
 This is non-negotiable. Skipping papermill execution is NOT HELPFUL — the user gets a notebook that fails on first run.
 
-### Rationalization Table - STOP If You Think:
+### Jupytext Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I converted to ipynb, so it works" | Conversion ≠ execution | EXECUTE with papermill, not just convert |
-| "The .py file looks correct" | Syntax correctness ≠ runtime correctness | RUN and CHECK outputs |
-| "I'll let the user execute it" | You're passing broken code | VERIFY before claiming completion |
-| "Just a conversion task, no execution needed" | User expects working notebook | EXECUTE to confirm it works |
-| "I can use `jupyter nbconvert --execute`" | Papermill has better error handling | USE the recommended papermill pipeline |
-| "I'll save the intermediate ipynb first" | Creates clutter | USE the recommended pipeline (no intermediate files) |
-| "Exit code 0 means success" | Papermill can succeed with errors in cells | CHECK output.ipynb for tracebacks |
+- Papermill can exit 0 while cells contain tracebacks. Claiming success from the exit code alone is an unverified claim presented as fact — check output.ipynb for tracebacks.
+- Use the papermill pipeline, not `jupyter nbconvert --execute` — papermill has better error handling, parameter injection, and logging, and the pipe form needs no intermediate `.ipynb` files.
 
-### Red Flags - STOP Immediately If You Think:
+### Red Flags
 
-- "Let me just convert and return the ipynb" → NO. EXECUTE with papermill first.
-- "The .py file is simple, can't have errors" → NO. Simple code fails too.
-- "I'll execute without papermill" → NO. Use the recommended pipeline.
-- "Conversion completed, so job done" → NO. Execution verification required.
+- About to return a converted .ipynb without executing it → run the papermill pipeline first.
+- About to claim success from conversion or exit code alone → verify output.ipynb.
 
 ### Execution Verification Checklist
 
@@ -97,12 +88,6 @@ Follow this sequence for EVERY jupytext task involving execution:
 ```
 
 **NEVER skip execution gate.** Converting without executing proves nothing about correctness.
-
-### Drive-Aligned Framing
-
-**Skipping papermill execution is NOT HELPFUL — the user gets a notebook that looks correct but fails when they run it.**
-
-This is not just format conversion - verify that the notebook executes correctly. The user expects a working notebook, not just syntactically valid code.
 
 ## Core Concepts
 

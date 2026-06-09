@@ -48,15 +48,10 @@ Main chat "verification":
 (Now main chat is investigating AND planning to fix. Full delegation collapse.)
 ```
 
-## Rationalization Table
+## Boundary Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'm just checking the fix looks right" | That's reading source code = investigation | Trust test output. If tests pass, it works. |
-| "The test passed but I want to verify the logic" | Logic verification = code reading = investigation | Spawn a code review subagent if you need logic review |
-| "Let me make sure the subagent didn't miss anything" | Checking for misses = reading source = investigation | Run the full test suite. Trust it. |
-| "I need to understand what changed to write a good commit message" | `git diff` is allowed. Reading changed files to understand them is investigation | Use `git diff --stat` for commit message context |
-| "Just a quick sanity check" | "Quick sanity check" = reading code = investigation | No. Run tests. |
+- Needing commit-message context is not a license to read changed files — `git diff --stat` is the allowed tool. Needing logic review is not a license to read source — spawn a code review subagent.
+- In the March 16, 2026 session, each violation started as a "quick sanity check" or "making sure the subagent didn't miss anything" — reading source after a subagent returns is investigation regardless of the label, and it cascaded into full delegation collapse. If the tests pass, that IS the verification.
 
 ## Red Flags
 

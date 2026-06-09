@@ -94,15 +94,10 @@ Related skills:
 - Chrome MCP skill - debugging
 - Playwright skill - CI/CD
 
-### Rationalization Prevention
+### Hammerspoon Facts
 
-| Thought | Reality |
-|---------|---------|
-| "I can use AppleScript instead" | Hammerspoon is more reliable for automation |
-| "I'll test the app manually" | AUTOMATE IT with Hammerspoon |
-| "Web testing tools work for desktop apps" | NO. Use Hammerspoon for native apps |
-| "Accessibility permissions are too hard" | One-time setup. Do it. |
-| "The app is too complex to automate" | Break it into testable steps |
+- Hammerspoon is more reliable than AppleScript for macOS automation, and web-testing tools (Chrome MCP, Playwright) cannot drive native macOS apps at all — substituting either leaves the native UI untested.
+- Accessibility permissions are a one-time setup; avoiding the setup by testing manually produces no automated evidence, so "it worked" is an unverified claim.
 </EXTREMELY-IMPORTANT>
 
 ## Hammerspoon Setup

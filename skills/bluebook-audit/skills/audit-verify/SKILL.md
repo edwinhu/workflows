@@ -37,13 +37,11 @@ The verify phase MUST re-run the scanner on the corrected DOCX. Skipping verific
 If the re-scan finds issues, go back to Correct phase. Do NOT proceed to Archive with unresolved issues.
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Skipping re-scan because "all fixes applied" | Silent failures are common | Run the scanner |
-| Dismissing remaining findings as false positives | Some "false positives" are real | Investigate each one |
-| Proceeding to Archive with >0 real issues | Uncorrected issues persist forever | Fix them first |
+- Skipping the re-scan because "all fixes applied" → run the scanner; silent fix failures are common.
+- Dismissing remaining findings as false positives → investigate each one; some "false positives" are real.
+- Proceeding to Archive with >0 real issues → fix them first; uncorrected issues persist forever.
 
 ## Gate: Exit Verify
 

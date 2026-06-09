@@ -485,7 +485,7 @@ The lit review phase gathers academic papers (Scholar → Paperpile), personal r
 - An inferred angle is usually the wrong angle (a paper arguing critique when the user wanted reform gets rewritten from scratch). The 5-minute angle/audience interview is cheaper than the rewrite — skipping it to look fast is counterproductive.
 - Sources deferred are sources never gathered: drafting proceeds with whatever is on hand, so a PRECIS written before gathering produces a thin argument whose claims are assertions.
 
-## Red Flags - STOP If You Catch Yourself:
+## Red Flags
 
 The failure modes and their consequences are stated once, at the point of use — see [Source-Gathering Facts](#source-gathering-facts), the Iron Law of Clarifying Intent, and the librarian dispatch rule. If you are about to create PRECIS without sources, skip the angle/audience interview, run one search instead of parallel librarian agents, call Readwise MCP directly, guess the domain, or move to setup without user confirmation — those sections explain why that is counterproductive, and what to do instead.
 

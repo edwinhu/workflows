@@ -1,42 +1,21 @@
-# Rationalization Prevention
+# Verification Facts and Red Flags
 
-## Rationalization Table
+## Verification Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The code compiles, so it looks right" | Compiling proves syntax, not visual correctness | Render and look at it |
-| "I checked the source code carefully" | Source code is not pixels. You cannot infer alignment from code. | Render and look at it |
-| "Gemini just describes images, not useful" | Gemini WITH CONTEXT is a reviewer, not a descriptor | Assemble context, then look |
-| "Vision API calls are slow/expensive" | One Gemini Flash call costs <$0.001 and takes <2 seconds | Call it. Every time. |
-| "I'll visually verify at the end" | You'll have 10 issues compounding. Verify each change. | Render and look after every change |
-| "The previous render looked fine, this small change won't break it" | Small changes cause clipping, overflow, and alignment shifts | Render and look. Every time. |
-| "A generic Gemini goal is sufficient" | Generic goals give generic descriptions | Assemble full context |
-| "Gemini's pixel measurements won't translate" | Structured measurements translate better than vague descriptions | Request the structured format |
+- Compiling proves syntax, and source code is not pixels — alignment, clipping, and overflow cannot be inferred from code (that inference was wrong 15 iterations ago). Claiming visual correctness without rendering is an unverified claim presented as fact: the user gets broken output and sees the bugs you didn't check for.
+- One Gemini Flash call costs <$0.001 and takes <2 seconds — "slow/expensive" is never a reason to skip it.
+- Small changes cause clipping, overflow, and alignment shifts — a fine previous render says nothing about this one, and deferring verification to "the end" leaves 10 compounding issues. Render and look after every change.
+- Gemini WITH CONTEXT is a reviewer, not a descriptor: generic goals produce generic descriptions, while context-enriched goals requesting the structured measurement format produce precise, actionable feedback — structured pixel measurements translate better than vague descriptions. Verbose context = precise feedback; terse context = useless description.
 
-## Red Flags -- STOP Immediately
+## Red Flags — STOP Immediately
 
-| Thought | Do Instead |
-|---------|-----------|
-| "I'll skip the render, the code is obviously correct" | STOP. Render it. "Obviously correct" code produces "obviously wrong" output. |
-| "Gemini won't understand this domain" | STOP. That's why you provide context. Context-enriched goals tell Gemini exactly what to check. |
-| "One more code change, then I'll render" | STOP. Render NOW. Each unverified change compounds risk. |
-| "The goal template is too verbose" | STOP. Verbose context = precise feedback. Terse context = useless description. |
-| "I'll use Read to look at the image myself" | STOP. Use Gemini CLI. Reading images wastes context tokens. |
-| "This fletcher diagram needs 1 more iteration" (iteration 4+) | STOP. Use the reference sketch approach. Incremental fixes aren't converging. |
-| "Score is 9.5 so I'm done" but you see an arrow pointing to empty space | STOP. The score is necessary but not sufficient. Check the 9 defect categories. Gemini misses structural issues. |
-| "It's defect-free so I'm done" but it doesn't match the design intent | STOP. A defect-free diagram that argues the wrong thing is still wrong. Check intent first, then defects. |
-| "One clean pass, ship it" | STOP. One pass catches bugs. A second pass catches composition — lopsided layout, cramped sections, inconsistent spacing. At least 2 clean passes. |
-| "Let me try page N, N+1, N+2..." to find a slide | STOP. Use `Skill("teaching:find-slide-page")` — one `typst query` returns ALL heading→page mappings. Sequential page-hunting wastes 5-15 tool calls. |
-| "I'll use pdftotext to search for the heading" | STOP. `find-slide-page` does this in one call with zero error. Manual pdftotext loops are the anti-pattern it was built to eliminate. |
-
-## Drive-Aligned Framing
-
-| Drive | Why You Skip | What Actually Happens | Drive You Failed |
-|-------|-------------|----------------------|-----------------|
-| **Helpfulness** | "Skip render to deliver faster" | User gets broken visual output. They see the bugs you didn't check for. | **Anti-helpful** |
-| **Efficiency** | "Skip Gemini, I can see it's fine from the code" | You can't see pixels from source code. Gemini CLI catches what you miss. | **Anti-efficient** |
-| **Competence** | "I can infer layout from source code" | Source code is not pixels. Your inference was wrong 15 iterations ago. | **Incompetent** |
-| **Thoroughness** | "3 iterations is enough, ship it" | The label still overlaps. The user sees it on the first glance. | **Sloppy** |
-| **Helpfulness** | "Score hit 9.5, declare done" | Score checks checklist items but misses structural issues — arrows to empty space, inconsistent sub-diagram layout. User opens the slide and immediately sees what Gemini didn't report. | **Anti-helpful** |
+- About to skip the render because "the code is obviously correct" → render it. "Obviously correct" code produces "obviously wrong" output.
+- About to make "one more code change, then render" → render NOW. Each unverified change compounds risk.
+- About to use Read to look at the image yourself → use Gemini CLI. Reading images wastes context tokens.
+- About to run iteration 4+ on a fletcher diagram → incremental fixes aren't converging. Use the reference sketch approach.
+- About to declare done on a 9.5 score while you can see an arrow pointing to empty space → the score is necessary but not sufficient. Check the 9 defect categories; Gemini misses structural issues the user sees on first glance.
+- About to ship a defect-free diagram that doesn't match the design intent → a defect-free diagram that argues the wrong thing is still wrong. Check intent first, then defects.
+- About to ship after one clean pass → one pass catches bugs; a second pass catches composition (lopsided layout, cramped sections, inconsistent spacing). At least 2 clean passes.
+- About to page-hunt ("try page N, N+1, N+2...") or run pdftotext loops to find a slide → `Skill("teaching:find-slide-page")` returns ALL heading→page mappings in one `typst query`. Manual hunting wastes 5-15 tool calls and is the anti-pattern the skill was built to eliminate.
 
 **The protocol is not overhead you pay. It is the service you provide.**

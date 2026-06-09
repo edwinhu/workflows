@@ -37,15 +37,10 @@ Each task summary MUST include a deviation tracking line: `**Total deviations:**
 2. Subagent stops for every missing import, asking the user about R3-level changes. Workflow grinds to a halt.
 3. Subagent doesn't track deviations. After implementation, nobody knows what changed from the plan.
 
-## Rationalization Table
+## Deviation Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "This schema change is minor" | If it changes the data model, it's R4. User decides. | STOP. Flag as R4. |
-| "I'll note the deviation later" | Later = never. Track it NOW. | Track immediately in the task summary. |
-| "Adding a new service is just good architecture" | New services change deployment and maintenance. User MUST know. | Flag as R4. User decides. |
-| "Tracking deviations slows down implementation" | 30 seconds of tracking prevents hours of "why did the architecture change?" | Track every deviation. Every time. |
-| "I'm not sure if this is R3 or R4" | Unsure -> R4. The cost of a false R4 (user decides quickly) is far less than a false R3 (silent architecture change). | When in doubt, R4. |
+- Schema changes and new services are R4 even when they feel "minor" or like "just good architecture" — they change the data model, deployment, and maintenance, which the user decides. A cost asymmetry settles unsure cases: a false R4 costs the user one quick decision; a false R3 is a silent architecture change. Unsure → R4, always.
+- Tracking a deviation costs ~30 seconds; an untracked change costs hours of "why did the architecture change?" later. Track immediately in the task summary — a deferred note does not survive the task.
 
 ## Red Flags
 

@@ -20,18 +20,12 @@ Every application, service, script, or test runner you write MUST write logs to 
 | "It worked" = no proof | Log file = proof of execution |
 | Can't review after the fact | Can read logs later |
 | No GATE 5 possible | GATE 5 enforces reading them |
+</EXTREMELY-IMPORTANT>
 
-## Rationalization Prevention (Logging)
+## Logging Facts
 
-| Excuse | Reality |
-|--------|---------|
-| "Stdout is enough" | Stdout disappears. You need a file to READ. |
-| "I can see the output" | You can't see it after it scrolls by. FILE LOGS. |
-| "App doesn't support --log-file" | Use `2>&1 \| tee /tmp/app.log` instead. |
-| "Logs aren't necessary for simple scripts" | Simple scripts still need verification. ALWAYS log to file. |
-| "I'll just look at the terminal" | Terminal output is ephemeral. FILE-BASED ONLY. |
-| "stderr is good enough" | stderr isn't a file you can `cat`. Use file logs. |
-| "Too much output to log" | That's why you READ the logs (GATE 5), not print them. |
+- `2>&1 | tee /tmp/app.log` captures output from any program, including ones with no `--log-file` flag — "the app doesn't support logging" never exempts a launch from file logging.
+- Terminal output is ephemeral: once it scrolls past, no GATE 5 read is possible. High-volume output is an argument FOR file logs, not against — GATE 5 reads the file; nothing requires printing it.
 
 ## Log File Verification Pattern
 
@@ -60,18 +54,12 @@ echo "✓ Log file exists and has content"
 
 **Tool description:** Verify log file exists and has content after launch
 
-## Drive-Aligned Framing (Logging)
-
 <EXTREMELY-IMPORTANT>
-**Running code without file-based logging is NOT HELPFUL — you have no evidence of what happened and can't debug when things go wrong.**
-
 When you claim "code executed" or "tests ran", you are asserting:
 - You created a log file
 - You verified the log file exists
 - You READ the full log file
 - You confirmed what happened from the logs
 
-Running without file logs means you have NO EVIDENCE of what happened.
-
-**"I saw it in terminal" is not verification. File-based logs are mandatory.**
+Claiming any of this without the log file you actually read is an unverified claim presented as fact — a form of dishonesty. "I saw it in terminal" is not verification.
 </EXTREMELY-IMPORTANT>

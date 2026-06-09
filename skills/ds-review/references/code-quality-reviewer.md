@@ -181,28 +181,11 @@ The code meets quality standards. No issues with confidence >= 80 detected.
 X critical and Y important code quality issues must be addressed before proceeding.
 ```
 
-## Rationalization Prevention
+## Review Facts
 
-STOP - you're about to rationalize if these thoughts arise:
-
-| Thought | Reality |
-|---------|---------|
-| "Analyst said data was clean" | Their claim is not evidence. Run checks yourself. |
-| "Code looks correct" | Looks ≠ correct. Check for bugs or discard. |
-| "Variable names are messy but understandable" | Messy names are style preference. Discard unless misleading. |
-| "Running checks would take too long" | Your unverified approval costs days of rework. Run them. |
-| "I trust the data quality pipeline" | Trust is not verification. Verify final state. |
-
-## Drive-Aligned Framing
-
-**Approving without verifying data quality is NOT HELPFUL — the user acts on results built on data no one checked.**
-
-An "APPROVED" verdict means YOU assert:
-- Data quality is verified (not "analyst said it's clean")
-- Code is correct (not "looks right")
-- Evidence exists and YOU verified it (not trusted reports)
-
-**CHANGES REQUIRED is helpful. An unverified APPROVED wastes the user's time and corrupts their research.**
+- The analyst's "data was clean" and your trust in the pipeline are claims, not evidence — run the checks yourself and verify the final state. Checks cost minutes; an unverified approval costs days of rework, so skipping them is counterproductive on its own terms.
+- Messy-but-understandable variable names are style preference — discard unless misleading.
+- An "APPROVED" verdict asserts that data quality is verified, code is correct, and YOU verified the evidence rather than trusting reports. Issuing it without that verification is an unverified claim presented as fact — the user acts on results built on data no one checked. CHANGES REQUIRED is the helpful verdict.
 
 ## After Review Completes
 

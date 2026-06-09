@@ -65,15 +65,9 @@ grep -r "def get_users" src/api/
 # NO — this is structural analysis, not verification
 ```
 
-## Rationalization Table
+## Verification Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can see the implementation is correct" | Seeing ≠ executing. Hidden bugs survive visual review. | Run the code. Assert the output. |
-| "The diff shows the change is there" | The diff shows text changed. Not that the text works. | Run tests on the changed code. |
-| "ast-grep confirms the pattern exists" | Pattern existence ≠ pattern correctness | Execute the code. Check runtime behavior. |
-| "The function is defined, it should work" | "Should work" is not evidence. | Run it. Assert what it returns. |
-| "We're short on time, let's ship it" | Shipping unverified code creates more time debt | Write one test. Run it. Ship verified code. |
+- Hidden bugs survive visual review — the dev-debug audit (March 16, 2026) counted 71 protocol violations in one session, many of them "it looks right" structural checks. Claiming "verified" off a read, a diff, or an ast-grep hit is an unverified claim presented as fact. One test run is faster than the time debt of shipping unverified code — the "short on time" shortcut is counterproductive on its own terms.
 
 ## Red Flags
 

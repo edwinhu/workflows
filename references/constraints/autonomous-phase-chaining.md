@@ -101,17 +101,11 @@ Should I proceed to the drafting phase?"
 (Three pauses instead of one batched question.)
 ```
 
-## Rationalization Table
+## Chaining Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Let me summarize before continuing" | Summaries at phase boundaries are procrastination. The phase summary is in PHASE_SUMMARY.md. | Auto-advance. The summary is already recorded. |
-| "The user might want to pause here" | If the gate is human-verify, the answer is no. The checkpoint table defines this. | Check the table. Auto-advance at human-verify gates. |
-| "The user clearly wants to switch topics" | Maybe, but announce the pause so the loop state is preserved | Announce pause, handle, announce resume |
-| "I can handle this quickly and get back" | You'll forget to resume. The workflow dies silently. | Announce the pause explicitly |
-| "The workflow is at a natural pause point" | No point is natural enough to silently abandon | Announce even at phase boundaries |
-| "I'll remember to come back" | Context compression will erase your intent to resume | Announce resume, read ACTIVE_WORKFLOW.md |
-| "Each question needs its own answer" | Batching respects the user's time. Sequential questions are interrupts. | Batch ambiguities into one Smart Discuss call. |
+- Context compression erases an unannounced intent to resume — "I'll get back to the workflow" dies silently, exactly as in the March 16, 2026 dev-debug incident. The pause/resume announcements are the only state that survives; even a "natural pause point" or a clear topic switch gets announced.
+- The phase summary already exists in PHASE_SUMMARY.md — re-summarizing at a boundary duplicates recorded state and stalls the chain. Whether the user "might want to pause" is defined by the checkpoint table, not by your guess: human-verify gates auto-advance.
+- Sequential questions are interrupts — batching ambiguities into one Smart Discuss call respects the user's time.
 
 ## Red Flags
 

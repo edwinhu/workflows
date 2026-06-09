@@ -54,28 +54,12 @@ Before ANY E2E testing, screenshots, or verification:
 ```
 
 **YOU CANNOT SKIP GATES. YOU CANNOT REORDER GATES.**
+</EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP Immediately
 
-If you catch yourself thinking ANY of these, STOP—you're about to skip a gate:
-
-| Thought | Why It's Wrong | Action |
-|---------|----------------|--------|
-| "Build succeeded, let me screenshot" | You skipped GATES 2-6 | Go to GATE 2 |
-| "Let me take a screenshot" | You skipped GATES 1-6 | Start at GATE 1 |
-| "Process is running, let me test" | You skipped GATES 5-6 (READ LOGS) | Go to GATE 5 |
-| "I'll check logs if test fails" | Backward—logs come BEFORE tests | Go to GATE 5 |
-| "Sleep is enough" | Sleep ≠ verification | Do GATES 4-6 |
-
-## Rationalization Prevention
-
-| Excuse | Reality |
-|--------|---------|
-| "Build passed, app must work" | NO. GATES 2-6 required. Do them now. |
-| "I can see the window" | NO. You haven't READ LOGS (GATE 5). Do it now. |
-| "I'll check logs later" | NO. GATE 5 comes BEFORE E2E. Do it now. |
-| "Logs are optional" | NO. GATE 5 is MANDATORY. Cannot skip. |
-| "Screenshots will show issues" | NO. Screenshots can't show log errors. GATE 5 first. |
+- About to screenshot or run E2E tests without having passed GATES 1-4 → start at GATE 1.
+- About to test with the process running but logs unread → GATE 5 first. Logs come BEFORE tests, not after failures — screenshots cannot show log errors.
 
 ## For GUI Applications (Mandatory Pattern)
 
@@ -160,16 +144,11 @@ Every GUI application you implement MUST have:
 | "Success" message from wrong app | Only your app's messages |
 | Icons from desktop/panel confuse analysis | Only your app's icons |
 | Can't isolate your app's behavior | Isolated verification |
+</EXTREMELY-IMPORTANT>
 
-## Rationalization Prevention (Screenshots)
+## Screenshot Facts
 
-| Excuse | Reality |
-|--------|---------|
-| "Whole screen is easier" | Easier = wrong conclusions. Window only. |
-| "I can tell which app it is" | You make mistakes. Isolate the window. |
-| "Other apps don't matter" | They confuse verification. Window only. |
-| "grim /tmp/screenshot.png works" | That's whole screen. Use `-g` with geometry. |
-| "scrot is enough" | That's whole screen. Use `scrot -u` for active window. |
+- Bare `grim /tmp/screenshot.png` and bare `scrot` capture the WHOLE screen — other apps' "Success" messages, icons, and panels leak into the frame. Window-only capture requires `grim -g "$GEOMETRY"` (Wayland) or `scrot -u` (X11). A verdict read off a whole-screen shot is evidence you could not isolate — an unverified claim presented as verification.
 
 ## Platform-Specific Window Screenshots
 
@@ -246,24 +225,10 @@ DIALOG_GEOMETRY=$(hyprctl clients -j | jq -r '.[] | select(.title | contains("Se
 grim -g "$DIALOG_GEOMETRY" /tmp/dialog.png
 ```
 
-## Rationalization Prevention (Feature Cropping)
-
-| Excuse | Reality |
-|--------|---------|
-| "Whole window shows context" | Context confuses verification. Crop to feature. |
-| "I can see the feature in the full screenshot" | You read wrong elements. Isolate the feature. |
-| "Cropping is too much work" | 5 extra seconds prevents false conclusions. |
-| "The whole window is relevant" | Only test what you changed. Crop to feature. |
-| "I'll just focus on the right area" | You make mistakes. Force isolation via crop. |
-
 **Tool description:** Crop screenshot to specific feature region being tested
 </EXTREMELY-IMPORTANT>
 
-## Drive-Aligned Framing
-
 <EXTREMELY-IMPORTANT>
-**Skipping gates is NOT HELPFUL — you're shipping unverified code the user will have to debug.**
-
 When you say "E2E test passed", you are asserting:
 - You passed GATE 1 (built successfully)
 - You passed GATE 2 (launched with logging)

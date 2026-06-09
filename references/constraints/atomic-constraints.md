@@ -47,7 +47,7 @@ Signs of a monolith:
 - More than ~40 lines of rule content (not counting examples)
 - Multiple rationalization table entries covering different rules
 
-### Red Flags — STOP If You Catch Yourself:
+### Red Flags
 
 - **Creating `references/foo-constraints.md` (plural)** — STOP. Create individual files in `references/constraints/`.
 - **Adding a new section to an existing constraint file** — STOP. Create a new file.
@@ -55,12 +55,8 @@ Signs of a monolith:
 - **Putting constraints anywhere except `references/constraints/`** — STOP. That's the one directory.
 - **Creating a TOC or index file listing constraints** — STOP. The filesystem is the index.
 
-### Rationalization Table
+### Atomicity Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "One big file is simpler" | Simpler to create, harder to maintain. At 10+ sections, every skill loads rules it doesn't need. | Atomic files: one `.md` per rule |
-| "They're all related (same domain)" | Related ≠ identical. Bullet spacing and widow detection are both Typst rules, but they test different things. | Co-locate in same directory, separate files. `applies-to` handles grouping. |
-| "I'll split it later" | Later never comes. The monolith accumulates more sections until someone has to do the painful split. | Split now. Creating 10 small files takes the same time as one big one. |
-| "The loader handles filtering" | The loader filters by *skill*, not by *rule*. A monolith forces every matching skill to load all sections. | Atomic files let the loader include only relevant rules. |
-| "I need a shared rationalization table" | Each rule has its own rationalization. Bundling them trains Claude to rationalize across unrelated rules. | Keep rationalization inline with each constraint. |
+- The loader filters by *skill* (`applies-to`), not by rule — a monolith forces every matching skill to load all its sections, while atomic files load only the relevant rules. "Related" rules (bullet spacing and widow detection are both Typst rules) still test different things: co-locate in the directory, separate the files, let `applies-to` handle grouping.
+- "I'll split it later" never happens — the monolith accumulates sections until someone has to do the painful split. Creating 10 small files takes the same time as one big one.
+- Enforcement content (facts, red flags) belongs inline with its own constraint — bundling enforcement across unrelated rules trains rationalization across them.

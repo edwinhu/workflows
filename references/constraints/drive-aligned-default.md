@@ -24,14 +24,9 @@ If yes, do not skip. The user experiences the quality of the final document, not
 1. Agent skips the validation phase because "the draft covers everything." Published work has a missing claim.
 2. Agent skips constraint loading because "it's just one sentence." Published sentence uses hollow hedging.
 
-## Rationalization Table
+## Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This step is redundant" | You think it's redundant because you haven't done it yet. It may catch something. | Do the step. |
-| "I'm saving the user time" | You're saving YOUR time. The user pays the cost of skipped quality. | Do the step. |
-| "The user won't notice" | The user's readers will notice. Reviewers will notice. | Do the step. |
-| "I can always fix it later" | Later = never. Each phase builds on the previous. Errors compound. | Do the step now. |
+- "Saving the user time" by skipping a step saves YOUR time; the user pays in published quality — their readers and reviewers see what you skipped. The shortcut is counterproductive on its own terms: each phase builds on the previous, so errors compound rather than wait for "later".
 
 ## Red Flags
 

@@ -35,31 +35,20 @@ Before claiming ANY notebook executed successfully, you MUST:
 
 This is not negotiable. Skipping traceback checks is NOT HELPFUL — the user opens a notebook that throws errors on first run.
 
-### Rationalization Table - STOP If You Think:
+### Notebook Execution Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The command succeeded, so notebook works" | Exit code 0 ≠ no errors | CHECK for tracebacks in outputs |
-| "I'll just run the source file directly" | You'll miss cell-level errors | EXECUTE to ipynb first, then inspect |
-| "User will see errors when they run it" | You're wasting their time | VERIFY before claiming completion |
-| "I can see the code, so I know it works" | Code that looks right can still fail | EXECUTE and READ outputs |
-| "Quick check with grep is enough" | Grep misses stderr and cell outputs | Use BOTH quick check AND Read tool |
-| "Only the last cell matters" | Middle cells can fail silently | VERIFY all cells executed (execution_count) |
-| "I'll fix errors if user reports them" | Proactive checking is your job | CHECK before user sees it |
+- Exit code 0 from the executor does not mean the cells succeeded — tracebacks live inside cell outputs. Claiming "notebook works" from the exit code alone is an unverified claim presented as fact.
+- Running the `.py` source file directly loses cell-level outputs and error attribution. Execute to ipynb first, then inspect.
+- The grep quick check reads only `outputs[].text` — it misses stderr and structured `error` outputs. Use BOTH the quick check AND the Read tool.
+- Cells downstream of a failure are skipped with `execution_count: null` — a middle-cell failure is invisible unless you verify every cell executed.
+- The cell that raises is often not the root cause — bad data originates upstream (observed: root cause 5 cells above the error cell). Tracing only the error cell misses it.
 
-### Drive-Aligned Framing
+### Red Flags — STOP If About To:
 
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping cell-by-cell trace | You jumped to the error cell without tracing data flow. The root cause is 5 cells upstream — your shortcut missed it. |
-| Fixing without reproducing | You applied a fix without reproducing the error first. The fix is wrong — your confidence was negligence. |
-
-### Red Flags - STOP Immediately If You Think:
-
-- "Let me run marimo/jupytext and assume it worked" → NO. Execute to ipynb and CHECK outputs.
-- "The notebook ran last time, so it still works" → NO. Fresh execution EVERY time.
-- "I can tell from the code that it's correct" → NO. Code inspection ≠ runtime verification.
-- "Just a small change, can't break anything" → NO. Small changes cause big failures.
+- Claim success without checking the exported ipynb outputs → STOP. Execute to ipynb and inspect.
+- Reuse a previous run's outputs as evidence → STOP. Fresh execution EVERY time.
+- Claim correctness from reading the source code → STOP. Code inspection ≠ runtime verification.
+- Apply a fix without reproducing the error first → STOP. An unreproduced fix is an unverifiable fix.
 
 ### Verification Checklist
 

@@ -241,33 +241,9 @@ When adding to an existing data context skill:
 - The generated skill becomes available to all future Claude sessions in that project
 - Subagents spawned by `ds-delegate` will have access to it automatically
 
-## Rationalization Table
+## Data Context Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can infer the metrics from column names" | Column names are labels, not business logic. `revenue` could be gross, net, or recognized. | Ask the user for the exact definition and edge cases |
-| "The schema tells me everything I need" | Schema captures structure, not semantics. It can't tell you which fields lie or which joins explode. | Interview the user — schema is the starting point, not the answer |
-| "I'll fill in the gotchas section later" | Gotchas are the most valuable part. Later means never — you'll ship a skill that misleads every analysis. | Capture gotchas during the interview while context is fresh |
-| "The entity relationships are obvious from foreign keys" | Foreign keys show connections, not business rules. A `user_id` FK doesn't tell you users can have multiple active accounts. | Verify every relationship with the user, especially cardinality |
-| "I already know this domain well enough" | Your training data is not this user's data. Their dataset has specific quirks you cannot guess. | Interview anyway — it takes 10 minutes and prevents weeks of wrong analysis |
-
-### Drive-Aligned Framing
-
-**Skipping the domain expert interview is NOT HELPFUL — every downstream analysis inherits your wrong assumptions about the data.** Pattern-matching from column names is not domain understanding.
-
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping the interview | You skip the interview to save time. The generated skill has wrong assumptions — every analysis using it produces wrong results. Your shortcut corrupted the entire pipeline. |
-| Generating from schema alone | You inferred metric definitions from column names. Three teams used your skill. All three published wrong numbers. Your inference was misinformation. |
-
-## Red Flags - STOP If You Think:
-
-| Thought | Reality |
-|---------|---------|
-| "I can infer this metric from the schema" | Schema doesn't capture business logic. Ask the user. |
-| "This entity relationship is obvious" | Obvious relationships hide gotchas. Verify with user. |
-| "I'll fill in the gotchas later" | Gotchas are the most valuable part. Capture them now. |
-| "The user said 'standard SQL'" | There's no such thing as standard SQL in practice. Get the dialect. |
-| "I'll skip the read-back, it looks right" | Your version ≠ their mental model. Always read back. |
-| "I should document how to connect to WRDS" | `/wrds` already covers that. Document project-specific tables and filters only. |
-| "Let me add the LSEG field prefixes" | `/lseg-data` already covers that. Document which fields THIS project uses. |
+- Schema and column names carry structure, not semantics: `revenue` may be gross, net, or recognized; a `user_id` foreign key does not say whether users can hold multiple active accounts. A metric definition or relationship cardinality inferred from names is an unverified claim presented as fact — every downstream analysis that loads the generated skill inherits the error. The interview takes 10 minutes; weeks of wrong analysis is what it prevents.
+- Gotchas are the most valuable section of the generated skill and the easiest to defer. "Fill in later" means never — capture them during the interview while context is fresh, or the skill ships as a hazard that misleads every future analysis.
+- There is no "standard SQL" in practice. When the user says "standard SQL", get the exact dialect — definitions in metrics.md must be runnable as written.
+- WRDS connection mechanics are covered by `/wrds`, and LSEG field prefixes by `/lseg-data`. Re-documenting them here duplicates and drifts; document only the project-specific tables, fields, and filters THIS project uses.

@@ -140,28 +140,11 @@ The analysis methodology meets statistical standards. No issues with confidence 
 X critical and Y important methodology issues must be addressed before proceeding.
 ```
 
-## Rationalization Prevention
+## Review Facts
 
-STOP - you're about to rationalize if these thoughts arise:
-
-| Thought | Reality |
-|---------|---------|
-| "This methodology is unusual" | Unusual ≠ wrong. Verify it's invalid. |
-| "I would use a different test" | Your preference doesn't matter. Check if current test is valid. |
-| "Assumptions probably hold" | Probably is not verification. Check if assumptions were tested. |
-| "The bias is small" | You don't know that without quantifying. Measure or discard. |
-| "Sample size seems adequate" | Seems is not evidence. Calculate power or check rule of thumb. |
-
-## Drive-Aligned Framing
-
-**Approving without verifying validity is NOT HELPFUL — the user builds conclusions on methodology no one checked.**
-
-An "APPROVED" verdict means YOU assert:
-- Methodology is sound (not "seems reasonable")
-- Assumptions are verified (not "probably hold")
-- Conclusions are justified (not "close enough")
-
-**CHANGES REQUIRED is helpful. An unverified APPROVED wastes the user's time and undermines their conclusions.**
+- Unusual methodology is not invalid methodology, and "I would use a different test" is preference — a finding requires verifying the current approach is actually invalid.
+- "Assumptions probably hold", "the bias is small", "sample size seems adequate" are quantifiable claims: check the assumption tests, measure the bias, calculate power (or check the rule of thumb) — or discard the finding.
+- An "APPROVED" verdict asserts that methodology is sound, assumptions are verified, and conclusions are justified. Issuing it without that verification is an unverified claim presented as fact — the user builds conclusions on methodology no one checked. CHANGES REQUIRED is the helpful verdict.
 
 ## After Review Completes
 

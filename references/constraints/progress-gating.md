@@ -31,14 +31,10 @@ Signs you are stuck:
 2. Agent cycles between approach A and approach B for 6 iterations without noticing the pattern.
 3. Reviewer flags "insufficient evidence for CLAIM-02" three times; agent keeps rephrasing the claim instead of asking the user for additional sources.
 
-## Rationalization Table
+## Escalation Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This next iteration will fix it" | That's what you said 3 iterations ago | STOP. Escalate. |
-| "I'm making progress, just slowly" | If the reviewer flags the same issue after your "fix," you're not making progress | STOP. Escalate. |
-| "Escalating makes me look incompetent" | Spinning for 10 iterations without progress IS incompetence. Escalating at 5 is competence. | STOP. Escalate. |
-| "The user doesn't want to be bothered" | The user wants quality output. Infinite loops don't produce quality. | STOP. Escalate with a specific question. |
+- If the reviewer flags the same issue after your "fix", you are not making progress — "this next iteration will fix it" is what iteration 3 said. Count, don't feel.
+- Escalating at 5 iterations is competence; spinning to 10 without progress IS incompetence dressed as persistence. The user wants quality output, not protection from questions — escalate with a specific question.
 
 ## Red Flags
 

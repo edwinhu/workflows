@@ -11,7 +11,7 @@ Use this when you already know what the pattern looks like:
 | "You keep skipping step Z" | **Enforcement pattern** | Add Iron Law or Red Flag to relevant skill |
 | "Never use X in Y files" (detectable by grep) | **Validation hook** | `jest.mock` in integration tests |
 | "When X happens, do these 5 steps" | **Learned skill** | Pixi environment debugging |
-| "You always make excuse E before doing wrong thing" | **Rationalization Table entry** | "Build should still pass" → stale |
+| "You learned fact F the hard way (number/quirk/incident)" | **Fact Row entry** | "HTTP 200 ≠ output correct" with consequence |
 
 ## Decision Tree (Thorough Path)
 
@@ -42,7 +42,7 @@ From weakest to strongest:
 
 1. **Memory entry** — loaded at session start, relies on agent reading it
 2. **Red Flag table entry** — loaded when skill activates, targets observable actions
-3. **Rationalization Table entry** — preempts specific excuses, loaded with skill
+3. **Fact Row entry** — states the incident-learned, non-derivable fact with its drive consequence, loaded with skill (supersedes Rationalization Table entries)
 4. **Iron Law** — `<EXTREMELY-IMPORTANT>` wrapped, strongest prompt-level enforcement
 5. **Validation hook** — programmatic, runs automatically, can block actions
 

@@ -137,15 +137,18 @@ When approved, translate to CeTZ. For charts, the data arrays transfer directly 
 
 ---
 
-## Red Flags — STOP If You Catch Yourself:
+## Mockup Facts
 
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| Spending 10+ minutes polishing the mockup | The user is waiting for a sketch, not a deliverable. Polishing a mockup is anti-helpful — it delays the real diagram. | Get it "good enough to discuss" and open it. 2 minutes max. |
-| Adding data, formulas, or precise styling | You're building the real diagram in the wrong tool. The mockup exists to be thrown away. | Boxes, arrows, labels, data shape. That's it. |
-| Skipping the mockup because "I know the layout" | You thought that about Morrison too. The user saw crossing arrows you didn't. Skipping creates 3+ failed compile-fix cycles — that's not faster, it's slower. | If 4+ nodes, sketch it. 30 seconds vs. 3 failed compiles. |
-| Going straight to CeTZ for a chart | You can't see data shape problems until you compile. Editing CeTZ data arrays blind wastes the user's time on compile-squint-edit cycles. | Mockup in matplotlib first — iterate on data with the user, then translate. |
-| Editing CeTZ data arrays "real quick" without mockup | You're gambling that you'll guess the right data shape. The value-line incident: "just shift the prices down" produced a chart that told the wrong story for weeks. | 30-second matplotlib plot catches data shape errors the user can see instantly. |
+- Morrison: the layout you "knew" had crossing arrows the user spotted instantly; skipping the mockup produced 3+ failed compile-fix cycles. A 30-second sketch beats 3 failed compiles — skipping is slower, not faster.
+- The value-line incident: editing CeTZ data arrays "real quick" without a mockup ("just shift the prices down") produced a chart that told the wrong story for weeks. Data-shape problems are invisible until compile; a 30-second matplotlib plot makes them visible to the user instantly.
+- The mockup is a throwaway sketch — 2 minutes max, boxes/arrows/labels/data shape only. Polishing it is anti-helpful: the user is waiting for a sketch, and polish delays the real diagram.
+
+## Red Flags
+
+- Spending 10+ minutes polishing the mockup → "good enough to discuss," then open it.
+- Adding data, formulas, or precise styling → you're building the real diagram in the wrong tool.
+- Skipping the mockup for a 4+ node diagram because "I know the layout" → sketch it.
+- Going straight to CeTZ for a chart, or editing CeTZ data arrays without a mockup → matplotlib first, iterate with the user, then translate.
 
 ## What This Skill is NOT
 

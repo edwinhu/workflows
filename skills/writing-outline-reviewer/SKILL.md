@@ -45,16 +45,6 @@ A bad outline that survives into drafting means:
 **Catching an outline gap NOW costs 1 minute. Catching it during drafting costs a full rewrite.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The outline looks fine to me" | Self-review is rubber-stamping | Dispatch independent reviewer |
-| "User already approved the structure" | User approves the approach, not subsection depth | Reviewer checks what user might miss |
-| "This will slow us down" | 30-second review saves hours of drafting rework | Dispatch the reviewer |
-| "It's a simple structure, no review needed" | Simple structures hide the most missing transitions | Review it anyway |
-| "I'll figure out the details during drafting" | Drafting without structure is improvising, not writing | Review BEFORE drafting |
-
 ## Chunking Rule
 
 **If the outline has 10+ sections (across OUTLINE.md and outlines/ files):** Review in groups of 3-4 sections. Each group should be logically related (e.g., "introduction + background", "core argument sections", "counterarguments + conclusion").
@@ -167,14 +157,6 @@ Escalate to user:
 [list issues]
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the outline?"
 ```
-
-## Drive-Aligned Framing
-
-**Proceeding to draft with a thin outline is NOT HELPFUL — every section will be improvised, transitions will fragment, and the user rewrites from scratch.**
-
-You know the subsections lack evidence mapping. You know the transitions are missing. You know some sections don't advance any claim. Drafting built on a thin outline produces improvised prose that wanders, asserts without evidence, and fragments between sections.
-
-**Fix the outline now. It costs minutes, not hours.**
 
 ## Gate Function
 

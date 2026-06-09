@@ -35,15 +35,10 @@ A bad spec that survives into exploration means:
 **Catching a spec gap NOW costs 1 minute. Catching it during implementation costs hours.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Spec Review Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The spec looks complete to me" | Self-review is rubber-stamping | Dispatch independent reviewer |
-| "User already confirmed the spec" | User confirms intent, not completeness | Reviewer checks what user might miss |
-| "This will slow us down" | 30-second review saves hours of rework | Dispatch the reviewer |
-| "It's a simple feature, no review needed" | Simple specs have the most hidden assumptions | Review it anyway |
-| "I'll catch issues during exploration" | You'll explore the wrong things | Review BEFORE exploring |
+- User confirmation verifies *intent*, not *completeness* — the user approves what they asked for, not what implementation needs (error handling, testing strategy, measurable success criteria). Treating user sign-off as a substitute for the reviewer is an unverified completeness claim presented as fact.
+- Self-review of a spec you just wrote rubber-stamps your own assumptions; the gate exists because only an *independent* reviewer subagent catches them. Skipping the 30-second dispatch trades it against hours of rework — counterproductive on its own terms.
 
 ## Dispatch Template
 
@@ -119,14 +114,6 @@ Escalate to user:
 [list issues]
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the spec?"
 ```
-
-## Drive-Aligned Framing
-
-**Proceeding to exploration with a flawed spec is NOT HELPFUL — you'll explore the wrong areas and build the wrong thing, creating hours of rework.**
-
-You know the spec has gaps. Exploration built on a bad spec produces bad findings. Design built on bad findings produces a bad plan. Implementation of a bad plan wastes everyone's time.
-
-**Fix the spec now. It costs minutes, not hours.**
 
 ## Gate Function
 

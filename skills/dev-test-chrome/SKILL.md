@@ -88,15 +88,11 @@ Reply when configured and I'll continue testing.
 **For CI/CD and headless, discover and read the Playwright skill:**
 Read `${CLAUDE_SKILL_DIR}/../../skills/dev-test-playwright/SKILL.md` and follow its instructions.
 
-### Rationalization Prevention
+### Chrome MCP Facts
 
-| Thought | Reality |
-|---------|---------|
-| "I'll check the console manually" | NO. Use `read_console_messages` |
-| "I can infer what the API returns" | NO. Use `read_network_requests` |
-| "I'll just look at DevTools" | AUTOMATE IT. Chrome MCP captures the same data |
-| "Chrome MCP works for CI" | NO. It requires visible browser. Use Playwright. |
-| "Recording a GIF is overkill" | GIFs prove interactions worked. Record them. |
+- Chrome MCP requires a visible browser — it cannot run headless, so it cannot serve CI/CD. That is Playwright's job.
+- Console and network state eyeballed in DevTools is not captured evidence — `read_console_messages` and `read_network_requests` record the same data as part of the test. An API response inferred rather than read is an unverified claim presented as fact.
+- A GIF recording (`gif_creator`) is proof an interaction worked; skipping it as "overkill" trades a one-command recording for an unevidenced claim.
 </EXTREMELY-IMPORTANT>
 
 ## MCP Tools Overview

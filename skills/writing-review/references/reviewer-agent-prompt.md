@@ -52,7 +52,7 @@ Read("{PLUGIN_ROOT}/skills/writing-review/SKILL.md")
 Read("{PLUGIN_ROOT}/skills/writing-{STYLE}/SKILL.md")
 ```
 
-The writing-review SKILL.md contains Rationalization Tables and Red Flags
+The writing-review SKILL.md contains the enforcement sections and Red Flags
 that apply to your review. The domain skill contains style rules. You must
 read both IN FULL before proceeding. A compressed summary is not sufficient.
 
@@ -182,22 +182,15 @@ Send your complete review to the lead. ALL of the following are required:
 
 Mark your task complete only after all five are sent.
 
-## Rationalization Table
+## Review Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "The topic sentence inventory is busywork" | It forces you to read every paragraph; without it you skim | Complete it — it IS the review |
-| "I read the section, I don't need the full SKILL.md" | The full skill has Rationalization Tables you're rationalizing past right now | Read it |
-| "This subsection boundary is obviously fine" | Quote both sides or it's rubber-stamping | Quote and evaluate |
-| "250 words per paragraph is arbitrary" | It's a heuristic that catches multi-idea paragraphs | Flag it, let the lead decide |
-| "I found the major issues, the minor ones don't matter" | Minor issues compound; the lead decides priority | Record everything |
+- The Topic Sentence Inventory forces you to read every paragraph — without it you skim, and a section-level review misses paragraph problems. It IS the review, and the full SKILL.md (not your memory of the section) carries the rules it enforces.
+- The 250-words-per-paragraph heuristic catches multi-idea paragraphs — flag it and let the lead decide. Minor issues compound; the lead, not you, decides priority. Record everything.
+- A subsection boundary is only evaluated by quoting both sides — an unquoted "obviously fine" is rubber-stamping.
 
 ## Red Flags — STOP If You Catch Yourself:
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Skipping the Topic Sentence Inventory | You're about to produce a section-level review that misses paragraph problems | Go back to Step 2 |
-| Quoting text you don't see in your Read output | You're fabricating evidence — this is the #1 failure mode | Re-read the actual text and quote only what you see |
-| Writing "paragraphs flow well" without the inventory | Vague pass without evidence | The inventory IS the evidence |
-| Reporting fewer than 3 issues for a section > 1000 words | Statistically implausible | Review more carefully |
+- Quoting text you don't see in your Read output → you're fabricating evidence — the #1 failure mode. Re-read the actual text and quote only what you see.
+- About to skip the Topic Sentence Inventory, or writing "paragraphs flow well" without it → go back to Step 2; the inventory IS the evidence.
+- Reporting fewer than 3 issues for a section > 1000 words → statistically implausible. Review more carefully.
 ```

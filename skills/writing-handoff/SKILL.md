@@ -10,11 +10,10 @@ Announce: "Using writing-handoff to capture session state for clean resumption."
 ## Contents
 
 - [The Iron Law of Handoff](#the-iron-law-of-handoff)
-- [Red Flags - STOP Immediately](#red-flags---stop-immediately-if-you-catch-yourself-thinking)
+- [Red Flags](#red-flags)
 - [Process](#process)
 - [Handoff Template](#handoff-template)
-- [Drive-Aligned Framing](#drive-aligned-framing)
-- [Rationalization Prevention](#rationalization-prevention)
+- [Handoff Facts](#handoff-facts)
 
 # Session Handoff
 
@@ -36,17 +35,13 @@ Before writing `.planning/HANDOFF.md`, you MUST:
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## Red Flags - STOP Immediately If You Catch Yourself Thinking:
+## Red Flags
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "I remember what we wrote" | Memory degrades across long sessions — sections blur together | READ the state files |
-| "The handoff can be brief" | Brief handoffs lose critical context about argument direction | Be thorough — the next session knows NOTHING |
-| "I'll just note the current section" | Section name without context (which claims it serves, what's drafted vs. outlined) is useless | Include decisions, argument direction, and next action |
-| "We're almost done, no need for handoff" | "Almost done" is the most dangerous state to lose — one missed section derails review | Capture it — especially when close to completion |
-| "The state files have everything" | State files track structure, not session context (style decisions, argument pivots, rejected framings) | Add what's NOT in the files |
-| "Let me just note where we are" | This always produces vague handoffs | READ state files FIRST, then write from evidence |
-| "The user can figure out where we left off" | They can't reconstruct your argument decisions, rejected framings, or section dependencies | Write it all down |
+- About to write a handoff from memory without reading the state files → STOP. Memory degrades across long sessions — sections blur together; read the files and write from evidence.
+- About to write a brief handoff or "just note the current section" → STOP. A section name without which claims it serves, what's drafted vs. outlined, and the next action forces full re-discovery — the next session knows NOTHING.
+- About to skip the handoff because "we're almost done" → STOP. Near-complete is the most dangerous state to lose — one missed section derails review.
+- About to rely on state files alone → STOP. State files track structure, not session context; add the decisions, pivots, and rejected framings that are NOT in the files.
+- About to leave resumption to the user ("they can figure out where we left off") → STOP. Argument decisions, rejected framings, and section dependencies cannot be reconstructed from artifacts; write them all down.
 </EXTREMELY-IMPORTANT>
 
 ## Process
@@ -164,37 +159,11 @@ focusing on the counterargument to Smith (2024) that PRECIS.md commits to addres
 The first two subsections are drafted in drafts/Section III (Draft).md."]
 ```
 
-## Drive-Aligned Framing
+## Handoff Facts
 
-<EXTREMELY-IMPORTANT>
-**A vague handoff is NOT HELPFUL — the next session wastes its context re-discovering what you already know.**
-
-When you write "continue working on Section III", you are:
-- Forcing the next session to re-read all files to figure out where you were
-- Losing argument decisions and framing choices that took this session significant effort to develop
-- Losing structural knowledge (which sections connect, which transitions work, which claims are weak) that is expensive to re-derive
-- Creating a resumption that starts slower than a fresh start
-
-**A thorough handoff is the most helpful thing you can do when pausing.**
-</EXTREMELY-IMPORTANT>
-
-## Rationalization Prevention
-
-| Thought | Reality |
-|---------|---------|
-| "The state files capture everything" | State files don't capture session decisions, rejected framings, or in-flight argument pivots |
-| "I'll just note the phase and section" | Phase + section name without context forces full re-discovery |
-| "The handoff is good enough" | "Good enough" handoffs lose 30 minutes of the next session to re-orientation |
-| "We can figure it out from git history" | Git history shows WHAT changed, not WHY or WHAT'S NEXT |
-| "ACTIVE_WORKFLOW.md has the progress" | ACTIVE_WORKFLOW.md has phase tracking. Handoff has intent, decisions, and next steps. |
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Quick handoff to unblock the user faster" | Next session wastes time re-discovering argument direction and section dependencies | **Anti-helpful** |
-| **Efficiency** | "Handoff is overhead, just save the files" | Lost context costs 10x the handoff time — re-reading every draft to reconstruct where the argument stands | **Anti-efficient** |
-| **Competence** | "I captured the important parts" | You don't know what the next session will need — rejected framings, structural discoveries, style decisions made mid-draft | **Incompetent** |
+- State files don't capture session decisions, rejected framings, or in-flight argument pivots — they track structure. A handoff that omits what's NOT in the files throws away the work that produced those decisions.
+- Git history shows WHAT changed, not WHY or WHAT'S NEXT — pointing the next session at git history is not a handoff.
+- ACTIVE_WORKFLOW.md carries phase tracking; the handoff carries intent, decisions, and the next action. Substituting one for the other loses exactly the half that cannot be reconstructed — a resumption that starts slower than a fresh start, which defeats the point of pausing cleanly.
 
 ## Completion
 

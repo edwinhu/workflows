@@ -72,15 +72,11 @@ One-liner: Phase complete.
 
 (Missing required fields. Non-substantive one-liner. No decisions or issues. Useless for handoff.)
 
-## Rationalization Table
+## Summary Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The phase was simple, no need for a detailed summary" | Simple phases still produce artifacts that the next phase consumes. Record them. | Fill in all required fields. |
-| "I'll write the summary later" | Later = never. Context will compress and you'll forget details. | Write it NOW as step 6 of the gate function. |
-| "Phase complete" is enough for the one-liner | "Phase complete" tells the next session nothing. What was produced? What changed? | Write what actually happened: artifacts, decisions, deviations. |
-| "Deviations were zero, no need to track" | Zero deviations is information. It confirms the plan held. | Record `{r1: 0, r2: 0, r3: 0, r4: 0}` explicitly. |
-| "The next phase can figure out what happened" | The next phase shouldn't have to re-read all files to reconstruct state. | That's exactly what `provides` and `artifacts_produced` prevent. |
+- The summary is step 6 of the phase gate function — written at gate time, not "later": context compression erases the details, and simple phases still produce artifacts the next phase consumes.
+- Zero deviations is information — `{r1: 0, r2: 0, r3: 0, r4: 0}` confirms the plan held; record it explicitly.
+- The next session reconstructs state from `provides`/`artifacts_produced` alone. A "Phase complete" one-liner forces it to re-read every file — the exact failure (post-context-exhaustion resume) this constraint exists to prevent.
 
 ## Red Flags
 

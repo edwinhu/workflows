@@ -98,25 +98,11 @@ Previous failure: Gemini flagged 10+ items as needing italic/small caps that wer
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## Rationalization Table
+## Audit Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "Gemini already checked this phase" | Gemini hallucinates citation formats; its output requires human verification | Run the mechanical checker independently and merge results |
-| "Sampling footnotes is good enough" | One wrong supra reference invalidates the reader's trust in ALL footnotes | Audit every footnote — no subsets, no sampling |
-| "Re-scanning is redundant overhead" | Fixes in one phase create new errors in dependent phases | Re-run the scanner after every correction pass |
-| "The document is short, I can eyeball it" | Eyeballing misses systematic errors that pattern-matching catches | Run all phases regardless of document length |
-| "This footnote format is close enough" | Bluebook compliance is binary — close is wrong | Fix it to spec or flag it for human review |
-</EXTREMELY-IMPORTANT>
-
-<EXTREMELY-IMPORTANT>
-## Red Flags + STOP
-
-- **"Skipping a phase because the document 'looks clean'"** → STOP. Every phase catches different error types.
-- **"Trusting Gemini's output without spot-checking"** → STOP. Gemini fabricates citation details.
-- **"Applying fixes without re-running the affected phase"** → STOP. Fixes cascade.
-- **"Marking a footnote as correct without checking the reporter/volume"** → STOP. Surface-level review misses citation errors.
-- **"Rushing the final verification because earlier phases were clean"** → STOP. Earlier phases being clean doesn't guarantee the fixes didn't introduce new errors.
+- Gemini hallucinates citation formats and fabricates citation details. Its output is a lead sheet, not a verdict — run the mechanical checker independently, merge results, and spot-check before applying anything. A Gemini suggestion applied unverified is an unverified claim applied as a fix.
+- Fixes cascade: a correction in one phase creates new errors in dependent phases, and every phase catches a different error type. Re-run the affected scanner after every correction pass — "earlier phases were clean" says nothing about errors the fixes just introduced.
+- One wrong supra reference invalidates the reader's trust in ALL footnotes. Sampling, eyeballing, or marking a footnote correct without checking the reporter/volume audits a subset and asserts compliance for the whole — a claim the audit never verified. Every footnote, every phase, regardless of document length.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -124,10 +110,3 @@ Previous failure: Gemini flagged 10+ items as needing italic/small caps that wer
 
 **If you sent plain text to Gemini instead of formatted text with footnote markers, DELETE the results and START OVER with properly formatted input.** Gemini cannot audit what it cannot parse.
 </EXTREMELY-IMPORTANT>
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Shortcut | Consequence |
-|---|---|
-| Skipping a phase because footnotes "looked fine" | You skipped the signal-word phase because footnotes "looked fine." Wrong supra references persist — your efficiency corrupted the document. |
-| Not verifying fixes after applying them | You applied formatting fixes without re-checking. The fixes introduced new errors — your speed was destructive. |

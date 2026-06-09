@@ -55,32 +55,17 @@ These signal you haven't found your hook. Start fresh with a compelling finding.
 
 One concept = One word. If you catch yourself varying terms ("industrialization" / "development" / "growth") for the same concept, you are confusing the reader. Pick ONE term and use it consistently.
 
-### Rationalization Table - STOP If You Think:
+### Econ Writing Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "But journals use boilerplate" | Bad journals do | HOOK reader with finding |
-| "Elegant variation shows vocabulary" | Shows you don't know what you mean | USE same word for same thing |
-| "Readers need roadmap paragraph" | They skip it | DELETE table-of-contents para |
-| "This terminology is standard in field" | Doesn't make it good | USE concrete Anglo-Saxon words |
-| "Need to sound academic" | Sounds pompous instead | WRITE like human being |
-| "Passive voice sounds objective" | Sounds evasive | USE active voice |
-| "Technical writing must be formal" | Technical ≠ turgid | BE clear AND technical |
+- Describing an empirical strategy without understanding its identification assumption is a fatal methodological gap — referees reject papers for it, and not addressing endogeneity is the canonical fatal omission. Pattern-matching the design from similar papers is not econometric reasoning; presenting it as such is an unverified claim wearing a methods section.
+- Openers like "In recent years..." read as AI filler to academic readers — an opening written "to seem academic" destroys credibility before the finding lands.
 
-### Drive-Aligned Framing
+### Red Flags
 
-**Describing an empirical strategy without understanding the identification assumption is NOT HELPFUL — the referee rejects the paper for a fatal methodological gap.** Pattern-matching from similar papers is not econometric reasoning.
-
-- You opened with "In recent years..." to seem academic. The reader recognizes it as AI filler — your opening destroyed credibility.
-- You called the same variable "cost," then "expense," then "outlay" to avoid repetition. The reader thinks these are different concepts — your style created confusion.
-- You described the empirical approach without addressing endogeneity. The referee rejects the paper — your omission was fatal.
-
-### Red Flags - STOP Immediately If You Think:
-
-- "Let me write a standard introduction" → NO. Find your hook first.
-- "I'll improve this later" → NO. Fix boilerplate NOW or restart.
-- "This varies the language nicely" → NO. Consistency > variation.
-- "Readers expect this phrase" → NO. Expectations can be wrong.
+- About to write a "standard introduction" → STOP. Find the hook first.
+- About to leave boilerplate in place "to improve later" → STOP. Fix it now or restart — boilerplate left in stays in.
+- About to vary terms for the same concept → STOP. Consistency beats variation; the reader thinks varied terms are different concepts.
+- About to keep a phrase because "readers expect it" → STOP. Expectations can be wrong.
 
 ### Delete & Restart Pattern
 

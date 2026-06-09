@@ -55,18 +55,12 @@ This applies all template styles (fonts, spacing, heading formatting, footnote s
 
 **NEVER run `pandoc -o output.docx` without `--reference-doc`.** A bare conversion produces default Calibri formatting that violates journal requirements.
 
-## Rationalization Table - Template Usage
+## Template Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll format it properly later" | Formatting is structural, not cosmetic | START with template |
-| "The content matters more" | Wrong format = rejection by journals | Template provides correct format |
-| "I can apply styles after" | Retroactive styling breaks footnotes | Use template from the start |
-| "A blank doc is simpler" | Blank doc means redoing all formatting | Copy template, it's one step |
-| "User didn't ask for template" | Professional output is implicit | Always use template for docx |
+- Retroactive styling breaks footnotes — formatting is structural, not cosmetic, so it cannot be "applied properly later". Copying the template is one step; starting from a blank doc means redoing all formatting.
+- Wrong format means rejection by journals, whether or not the user mentioned the template — professional output is implicit in every docx request.
 
-## Red Flags - STOP If You Think:
+## Red Flags
 
-- "Let me create a new Word document" → NO. Copy the template first.
-- "I'll add the template formatting later" → NO. Start with template.
-- "The docx skill will handle formatting" → NO. docx skill needs template base.
+- About to create a new Word document from scratch → copy the template first.
+- About to run pandoc or the docx skill without the template as base → the template IS the formatting; wire in `--reference-doc` now.

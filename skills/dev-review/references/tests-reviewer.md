@@ -129,28 +129,11 @@ The test suite meets quality standards. No gaps with confidence >= 80 detected.
 X critical and Y important test issues must be fixed before proceeding.
 ```
 
-## Rationalization Prevention
+## Review Facts
 
-STOP - you're about to rationalize if these thoughts arise:
-
-| Thought | Reality |
-|---------|---------|
-| "This should be tested" | Should is not evidence. Check if it's actually untested. |
-| "Edge case might not be covered" | Might = < 80% confidence. Verify the gap or discard. |
-| "Test structure is messy" | Messy is style preference. Focus on reliability. |
-| "I would test it differently" | Your preference doesn't matter. Check if current tests verify behavior. |
-| "Pre-existing gap" | Pre-existing = 0 confidence. Discard. |
-
-## Drive-Aligned Framing
-
-**You approving without verifying test coverage is NOT HELPFUL — you're shipping undertested code the user will have to debug.**
-
-An "APPROVED" verdict means YOU assert:
-- Critical paths are tested (not "should be fine")
-- Tests verify behavior (not "tests exist")
-- Evidence exists and YOU verified it (not trusted reports)
-
-**CHANGES REQUIRED protects the user. Your fake APPROVED ships bugs.**
+- "Should be tested" / "might not be covered" sits below the 80-confidence bar — verify the gap is real or discard it. "Pre-existing gap" scores 0 confidence: out of scope, discard.
+- Messy test structure and "I would test it differently" are style preferences, not reliability findings — they never justify an issue.
+- An "APPROVED" verdict asserts that critical paths are tested, tests verify behavior (not merely exist), and YOU verified the evidence rather than trusting reports. Issuing it without that verification is an unverified claim presented as fact — it ships undertested code the user will have to debug. CHANGES REQUIRED protects the user.
 
 ## After Review Completes
 

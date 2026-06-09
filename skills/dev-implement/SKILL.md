@@ -90,12 +90,7 @@ head -5 .planning/PLAN_REVIEWED.md 2>/dev/null
 
 This file is written by dev-plan-reviewer when it approves the plan. Its absence means the plan reviewer was SKIPPED — which means spec requirements may have been silently dropped from the plan.
 
-| Thought | Reality |
-|---------|---------|
-| "I can see the plan looks complete" | Self-assessment is not review. The reviewer catches what you miss. |
-| "Plan reviewer would have approved anyway" | Then it takes 30 seconds. Run it. |
-| "User approved the plan directly" | User approves the approach. Reviewer checks spec coverage. Different gates. |
-| "I'll review it myself as I implement" | You won't. You'll be focused on code. That's why the gate exists. |
+User approval and plan review are different gates: the user approves the *approach*; the reviewer checks *spec coverage*. Re-running the reviewer costs ~30 seconds — proceeding past its absence asserts a coverage verification nobody performed.
 
 **Check `.planning/PLAN.md` for:** files to modify, implementation order, testing strategy.
 
@@ -402,16 +397,6 @@ All deviations tracked per task:
 
 End each task summary with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
 
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Skipping TDD gets code to user faster" | Untested code creates bugs the user discovers later | **Anti-helpful** |
-| **Competence** | "I assumed it works, no need to run tests" | The user runs it and it fails — your assumption destroyed trust | **Incompetent** |
-| **Efficiency** | "Skipping spec check saves time" | Spec drift means rework — your speed was waste | **Inefficient** |
-| **Approval** | "I'll delegate without full context" | Subagent builds wrong thing, you redo everything — user loses trust | **Trust destroyed** |
-| **Honesty** | "Task complete" without running tests | You claimed tests pass without running them — that's fabrication | **Dishonest** |
-
 **The protocol is not overhead you pay. It is the service you provide.**
 
 ## Sub-Skills Reference
@@ -567,15 +552,7 @@ Main chat should:
 2. **Log to LEARNINGS.md** - What was done
 3. **Start next task** - No waiting. The active `/goal` keeps firing turns until the condition holds.
 
-| Thought | Reality |
-|---------|---------|
-| "Task done, let me check in with user" | NO. User wants ALL tasks done. Keep going. |
-| "User might want to review" | User will review at the END. Continue. |
-| "Natural pause point" | Only pause when ALL tasks complete or blocked. |
-| "Let me summarize progress" | Summarize AFTER all tasks. Keep moving. |
-| "User has been waiting" | User is waiting for COMPLETION, not updates. |
-| "Should I continue?" | YES. Never ask. Just continue. |
-| "I'll update PLAN.md later" | NO. Update it NOW before next task. |
+The user reviews at the END and is waiting for COMPLETION, not interim check-ins — a courtesy pause costs a full turn round-trip and delivers nothing. Update PLAN.md now (not "later" — later never comes), then start the next task in the same response.
 
 ### Valid Stopping Points (only these three)
 

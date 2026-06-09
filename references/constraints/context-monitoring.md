@@ -38,14 +38,10 @@ Before starting any phase (especially Draft, Review, Revise), check remaining co
 1. Agent at 20% context begins drafting a new 5-section phase. Last 3 sections are degraded — hollow transitions, missed constraints, dropped claim IDs.
 2. Agent notices degraded output quality but thinks "I'm almost done, just one more section" and pushes through. The section is garbage.
 
-## Rationalization Table
+## Context Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'm almost done, just one more section" | "Almost done" is the most dangerous state — you'll produce degraded output | Handoff. The next session picks up clean. |
-| "Handoff takes too long" | Handoff takes 2 minutes. Redoing 3 botched sections takes hours. | Write the handoff. |
-| "I can tell I still have enough context" | You can't reliably self-assess context remaining | Check the signal (response quality, lost details) and err toward handoff |
-| "The user wants this done now" | The user wants it done RIGHT. Degraded output wastes more time than a session break. | Handoff is faster than re-doing degraded work. |
+- A handoff takes ~2 minutes; redoing 3 degraded sections takes hours — pushing through "to get it done now" is counterproductive on its own terms. Degraded output wastes more of the user's time than a session break.
+- You cannot reliably self-assess your own degradation — "I can tell I still have enough context" is the judgment that fails first, and "almost done" is the most dangerous state. Check the level table and err toward handoff.
 
 ## Red Flags
 

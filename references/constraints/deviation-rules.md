@@ -32,15 +32,10 @@ Each section's summary must include a deviation tracking line. This is how we kn
 2. Subagent stops for every date correction, asking the user about R1-level changes. Workflow grinds to a halt.
 3. Subagent doesn't track deviations. After drafting, nobody knows what changed from the outline.
 
-## Rationalization Table
+## Deviation Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "This restructuring is minor" | If it changes the argument flow, it's R4. User decides. | STOP. Flag as R4. |
-| "I'll note the change later" | Later = never. STOP now, track it. | Track immediately in the section summary. |
-| "Adding a section won't change the argument" | New sections shift emphasis and flow. User MUST know. | Flag as R4. User decides. |
-| "Tracking deviations interrupts the writing flow" | 30 seconds of tracking prevents hours of "why did the argument change?" | Track every deviation. Every time. |
-| "I'm not sure if this is R3 or R4" | Unsure → R4. The cost of a false R4 (user decides quickly) is far less than a false R3 (silent argument change). | When in doubt, R4. |
+- Adding a section is R4 even when it "won't change the argument" — new sections shift emphasis and flow, which changes what the document argues. A cost asymmetry decides unsure cases: a false R4 costs the user one quick decision; a false R3 is a silent argument change. Unsure → R4, always.
+- Tracking a deviation costs ~30 seconds; an untracked change costs hours of "why did the argument change?" later. Track immediately in the section summary — a deferred note does not survive the section.
 
 ## Red Flags
 

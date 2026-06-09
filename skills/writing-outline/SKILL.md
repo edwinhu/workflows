@@ -96,14 +96,6 @@ If you find yourself writing prose without a matching outline file:
 Thin outlines produce thin drafts. Each outline must have POINT, EVIDENCE, and LOGIC for every subsection.
 </EXTREMELY-IMPORTANT>
 
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Thin outlines let us get to drafting faster" | The draft has no structure to expand. Every section wanders. You redraft from scratch. Your speed produced chaos and rework. | **Anti-helpful** |
-| **Competence** | "I know this topic well enough to skip detail" | Without mapped evidence, the draft section makes unsupported assertions. Without planned transitions, the argument fragments. Your confidence was incompetence. | **Incompetent** |
-| **Honesty** | "The outline covers the main points" | You listed topics without POINT, EVIDENCE, or LOGIC. The user drafts from a skeleton — every section is improvised and needs rewriting. | **Anti-helpful** |
-
 ## Session Resume Detection
 
 Before starting, check for an existing handoff:
@@ -341,25 +333,13 @@ Before finalizing each outline, verify:
 - [ ] Anticipated objections are noted where relevant
 - [ ] Length estimate is realistic
 
-## Red Flags - STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Creating an outline without reading PRECIS first | Outline won't align with thesis | Read PRECIS.md before every outline |
-| Writing a topic list instead of structured outline | Topics ≠ arguments | Add POINT, EVIDENCE, LOGIC for each subsection |
-| Skipping the cross-reference with PRECIS | Section may not advance any claim | Check which claim this section serves |
-| Stopping after one outline to ask permission | Breaks momentum | Continue to next section immediately |
-| Making an outline without sources | Evidence-free outlines produce evidence-free prose | Go back to brainstorm for sources |
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "The outline is obvious for this structure" | Obvious outlines produce generic papers — the structure should reflect the argument's logic, not a template | Write the outline that THIS argument needs |
-| "I'll figure out transitions during drafting" | Transitions ARE the argument's logic; planning them IS the outline's job | Plan every transition now |
-| "Three sections is enough" | Check if three is earned by the argument or arbitrary — structure follows claims, not convention | Derive section count from PRECIS claims |
-| "I can add supporting points later" | Later means the draft section will be thin and need rewriting — evidence gaps compound | Map evidence to every point now |
-| "The PRECIS already covers the structure" | PRECIS is a summary, outline is the blueprint — they serve different purposes | Build the outline as a separate, detailed document |
+- About to create an outline without reading PRECIS.md first → STOP. The outline won't align with the thesis; read PRECIS before every outline.
+- About to write a topic list instead of a structured outline → STOP. Topics are not arguments; add POINT, EVIDENCE, LOGIC for each subsection.
+- About to skip the cross-reference with PRECIS → STOP. The section may advance no claim; check which claim it serves.
+- About to pause after one outline to ask permission → STOP. That breaks momentum; continue to the next section immediately.
+- About to outline without sources → STOP. Evidence-free outlines produce evidence-free prose; go back to brainstorm for sources.
 
 ## Progress Gating
 

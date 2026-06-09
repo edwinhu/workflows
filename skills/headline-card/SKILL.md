@@ -88,11 +88,10 @@ Headline cards have a dark background (`#12121e`). Logos need to be **white on t
 grep '<text' assets/logos/publication-white.svg && echo "FAKE — contains <text> elements, download a real logo"
 ```
 
-| Excuse | Reality |
-|---|---|
-| "I'll use a text placeholder for now" | There is no "for now" — the placeholder ships and looks unprofessional |
-| "I can't find an SVG" | Wikimedia Commons has SVGs for virtually every major publication. Search harder. |
-| "The text version looks fine" | It doesn't — it has the wrong font, wrong weight, wrong spacing. Real logos are designed. |
+### Logo Facts
+
+- Wikimedia Commons has SVGs for virtually every major publication — "I can't find an SVG" means search harder, not fall back to a placeholder.
+- A text-based SVG always has the wrong font, weight, and spacing — real logos are designed. Shipping one as "temporary" is shipping it; it looks unprofessional in the deliverable.
 
 ### Creating a white variant
 

@@ -272,15 +272,11 @@ Fix identified root cause: [HYPOTHESIS C]
 """)
 ```
 
-### Rationalization Prevention
+### Investigation Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "Hypothesis X is obviously wrong" | Your intuition isn't evidence | Investigate it anyway with verification |
-| "I don't need to check that" | Unchecked assumptions cause silent failures | Check it with output-first protocol |
-| "The teammate probably verified" | You're trusting without checking | Read their code, verify their outputs yourself |
-| "80% confidence is good enough" | You need ≥90 to proceed with a fix | Collect more evidence or report ambiguity |
-| "Let me just fix it and see" | You're guessing, not diagnosing | Complete investigation first |
+- "Obviously wrong" is intuition, not evidence — every hypothesis gets investigated with the output-first protocol; unchecked assumptions cause silent failures.
+- A teammate's "verified" is a claim, not a verification — read their code and verify their outputs yourself; relaying it unchecked is an unverified claim presented as fact.
+- The threshold to proceed with a fix is ≥90 confidence; 80 is not good enough — collect more evidence or report the ambiguity. "Fix it and see" below threshold is guessing, not diagnosing.
 
 ### Example Flow
 

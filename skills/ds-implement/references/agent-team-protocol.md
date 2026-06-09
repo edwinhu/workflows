@@ -107,15 +107,10 @@ Before moving to the next step, you MUST:
 | Check for unexpected nulls | Skip intermediate checks |
 | Plot distributions | Move on without looking |
 
-### Rationalization Prevention
+### Output-First Facts
 
-| Thought | Reality |
-|---------|---------|
-| "I'll check at the end" | STOP — you're letting errors compound silently. Check after every step. |
-| "This transform is simple" | STOP — simple code can still be wrong. Output and verify. |
-| "I know merge worked" | STOP — you've assumed this before and been wrong. Check row counts. |
-| "Data looks fine" | STOP — you're confusing "looks" with verification. Print stats, show samples. |
-| "I'll batch the outputs" | STOP — you're about to lose your ability to isolate issues. Output per operation. |
+- Errors compound silently between checks: deferring verification to the end — or batching outputs — forfeits the ability to isolate which step broke. Output per operation, check after every step.
+- Merges that "obviously worked" have been wrong before — row counts are the verification, not your confidence. "Data looks fine" without printed stats and sample rows is an unverified claim presented as fact.
 
 ## Step 1: Load Analysis Protocol
 

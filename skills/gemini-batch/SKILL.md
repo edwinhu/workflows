@@ -43,24 +43,13 @@ The Batch API has non-obvious requirements that will fail silently:
 
 **Rationale:** Previous agents wasted hours debugging API errors that the examples would have prevented. The patterns in `examples/` are battle-tested production code.
 
-### Rationalization Table - STOP If You Catch Yourself Thinking:
+### Red Flags
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I know how APIs work" | You're overconfident about non-obvious gotchas | Read examples first |
-| "I can figure it out" | You'll waste 30+ minutes on trial-and-error | Copy working patterns |
-| "The examples might be outdated" | They're maintained and tested | Trust the examples |
-| "I need to customize anyway" | Your customization comes AFTER copying base pattern | Start with examples, then adapt |
-| "Reading examples takes too long" | You'll save 30 minutes debugging with 2 minutes of reading | Read examples first |
-| "My approach is simpler" | Your simpler approach already failed | Use proven patterns |
-
-### Red Flags - STOP If You Catch Yourself Thinking:
-
-- **"Let me pass `dest=` as a kwarg"** → Works on older SDKs only. Current SDK puts `dest` inside `config={}`. Read examples.
-- **"I'll create a `CreateBatchJobConfig` object"** → You're instantiating a type instead of using a plain dict. Stop.
-- **"I'll nest metadata like a normal API"** → You'll trigger BigQuery type errors. Flatten your data.
-- **"This should work like other Google APIs"** → Your assumption is wrong; this API is different.
-- **"I'll figure out the JSONL format"** → You'll waste time. Copy from examples instead.
+- About to pass `dest=` as a kwarg → STOP. That works on older SDKs only; the current SDK puts `dest` inside `config={}`. Read the examples.
+- About to instantiate a `CreateBatchJobConfig` object → STOP. The config is a plain dict, not a wrapper type.
+- About to nest metadata like a normal API → STOP. Nested objects trigger BigQuery type errors; flatten the data.
+- About to assume this works like other Google APIs → STOP. This API is different; the examples are authoritative.
+- About to improvise the JSONL format → STOP. Copy the structure from the examples instead.
 
 ### MANDATORY Checklist Before ANY Batch API Code
 
@@ -211,7 +200,7 @@ This frees the conversation to continue working while the batch runs. You get no
 
 **Metadata must be flat primitives** (no nested objects — BigQuery-backed storage). **`dest` is a config field, not a top-level kwarg** in the current SDK (Vertex AI only). **Config is a plain dict** (not a wrapper type).
 
-See the Rationalization Table in the first Iron Law section above — the same gotchas apply here. The Key Gotchas table below summarizes all critical issues.
+See the Red Flags in the first Iron Law section above — the same gotchas apply here. The Key Gotchas table below summarizes all critical issues.
 
 ## Key Gotchas
 

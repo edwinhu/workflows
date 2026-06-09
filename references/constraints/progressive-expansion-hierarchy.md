@@ -41,14 +41,10 @@ drafts/Part I.md           # Level 4: Prose expansion
 2. Agent creates OUTLINE.md without a PRECIS.md — the outline has no thesis to serve.
 3. Agent begins revising a draft without REVIEW.md — fixes are unstructured guesses.
 
-## Rationalization Table
+## Hierarchy Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The user already knows what they want to write" | Knowing ≠ having a structured PRECIS. The hierarchy catches gaps in argument structure early. | Create PRECIS.md first |
-| "I can outline in my head while drafting" | Internal outlines are invisible, unverifiable, and lost on context compression | Write the outline file |
-| "The piece is short, it doesn't need all four levels" | Short pieces still need thesis → structure → prose. Levels can be brief but not skipped. | Create brief artifacts at each level |
-| "Let me just start revising — the issues are obvious" | Without REVIEW.md, you're guessing at issues. Obvious to you ≠ systematic diagnosis. | Run /writing-review first |
+- An outline held "in my head while drafting" is invisible, unverifiable, and erased by context compression — only the written file survives to ground the next level.
+- Short pieces make the levels brief; they never skip them — a thesis → structure → prose chain exists at every length.
 
 ## Red Flags
 

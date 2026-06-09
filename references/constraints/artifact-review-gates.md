@@ -67,17 +67,11 @@ The moment main chat reads a draft, it forms opinions about quality. Those opini
 (Investigation. Main chat reading prose after subagent returned.)
 ```
 
-## Rationalization Table
+## Review-Gate Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Let me read the draft to understand the review" | REVIEW.md already summarizes the issues with citations | Read REVIEW.md, not the draft |
-| "Let me check the tone real quick" | Tone checking IS review work -- delegate it | Invoke /writing-review or spawn a subagent |
-| "Quick edit to the intro" | Quick edits bypass constraint loading and review | Invoke /writing-revise with full constraint loading |
-| "I need to verify the subagent's fixes" | Verification = checking REVIEW.md exists with issues resolved. Reading prose = investigation | Check artifact existence, not content |
-| "The review missed something obvious" | If it's obvious, it'll be caught in re-review. If you read the draft, you'll edit it | Spawn a new review subagent |
-| "I'll just glance at the opening paragraph" | "Glance" becomes "read" becomes "edit" becomes unstructured session | STOP. Invoke the appropriate skill |
-| "I wrote it, I know what needs fixing" | That's exactly why you can't review it. Author blindness is real. | Spawn a fresh subagent |
+- REVIEW.md already summarizes every issue with citations — reading the draft "to understand the review" is investigation, and "glance" becomes "read" becomes "edit" becomes an unstructured session. Verifying the subagent's fixes means checking REVIEW.md exists with issues resolved — artifact existence, never prose content. Quick edits and tone checks bypass constraint loading; they go through /writing-revise and /writing-review.
+- A review that "missed something obvious" gets a fresh review subagent — re-review will catch it; supplementing it yourself converts orchestration into review work.
+- "I wrote it, I know what needs fixing" is exactly why you can't review it — author blindness is real. A fresh subagent is the only honest reviewer.
 
 ## Red Flags
 

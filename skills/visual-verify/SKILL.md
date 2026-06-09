@@ -277,7 +277,7 @@ See `references/complex-diagram-strategy.md` for the full approach.
 
 See `references/render-commands.md` for the full reference.
 
-## Red Flags — STOP If You Catch Yourself:
+## Red Flags
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
@@ -297,6 +297,6 @@ See `references/render-commands.md` for the full reference.
 
 - `references/goal-templates.md` -- copy-paste goal templates per domain
 - `references/render-commands.md` -- render commands for all supported domains
-- `references/rationalization-prevention.md` -- excuses, red flags, honesty framing, drive-aligned consequences
+- `references/rationalization-prevention.md` -- verification facts (with drive consequences) and red flags
 - `references/complex-diagram-strategy.md` -- reference sketch approach for persistent layout failures
 - `references/examples.md` -- worked examples (Typst slide, matplotlib chart, diagram escalation)

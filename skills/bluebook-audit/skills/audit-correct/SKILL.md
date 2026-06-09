@@ -82,14 +82,12 @@ After each category of corrections, verify the fix was applied by reading back t
 Skipping read-back verification is NOT HELPFUL — silent failures from NBSP or run boundaries mean the user's document still has errors.
 </EXTREMELY-IMPORTANT>
 
-## Rationalization Table
+## Correction Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "The fix applied in code, no need to verify" | NBSP causes silent failures; run boundaries cause wrong-target | Read back the XML and verify |
-| "I'll verify all at once at the end" | By then you can't tell which fix failed | Verify after each category |
-| "This is the same pattern as last time" | Each footnote has unique run structure | Check each footnote individually |
-| "I can skip the backup" | One XML corruption destroys the whole document | Always back up first |
+- NBSP characters and run boundaries cause silent failures and wrong-run targeting — code that "applied" is not code that worked. A fix reported without XML read-back is an unverified claim presented as a correction.
+- Verification batched to the end can't attribute a failure to the fix that caused it; verify after each category.
+- Every footnote has a unique run structure — a pattern that worked on the last footnote proves nothing about this one.
+- One XML corruption destroys the whole document; skipping the backup gambles the user's manuscript to save seconds.
 
 ## Gate: Exit Correct
 

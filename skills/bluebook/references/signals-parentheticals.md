@@ -338,15 +338,11 @@ See Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th C
 | Cf. Smith v. Jones... | Cf. Smith v. Jones... (explaining the analogy) |
 | Compare X with Y. | Compare X (point A) with Y (contrasting point). |
 
-## Rationalization Table - STOP If You Think:
+## Signal Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "No signal is fine here" | Source may not directly state proposition | CHECK: Does it say exactly this? |
-| "*See* is always safe" | *See* implies inference; wrong if direct | VERIFY: Direct statement vs. support |
-| "Parenthetical is optional" | For *cf.*, *compare*, it's required | ADD parenthetical explaining relationship |
-| "Order doesn't matter" | Wrong order confuses readers | FOLLOW Rule 1.4 ordering |
-| "More citations = stronger" | Padding weakens credibility | CITE strongest authorities only |
+- [No signal] requires the source to state the proposition directly — check that it says exactly this. *See* implies an inferential step, so it is wrong for direct statements; neither choice is the "safe default", and asserting a signal without checking the source's words is an unverified claim about what the source says.
+- Parentheticals are required, not optional, for *cf.*, *but cf.*, and *compare ... with ...* — without them the relationship to the proposition is invisible to the reader.
+- Authority ordering follows Rule 1.4, and string citations are restraint, not strength — padding weakens credibility; cite the strongest authorities only.
 
 ## Verification Checklist
 

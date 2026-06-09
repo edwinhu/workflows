@@ -178,20 +178,18 @@ In the target phase/SKILL file, **replace** (a) the section that hand-dispatches
 2. **"Read the gate"** — print `result.scoreTable`; the gate is `result.overallPass`, computed in JS — *do not recompute or rationalize it*.
 3. **Rewrite the `/goal` fix loop** so each iteration calls the workflow: full pass first, then on re-runs pass `onlyChecks: <prev result.reviewersThatFlagged>` + `priorReviews: <prev result.reviews>`.
 
-**Preserve verbatim:** drafting/creation steps, Iron Laws, rationalization/red-flag tables, deviation rules, R4 escalation, and the `/goal` primitive. Only the reviewer dispatch + gate computation move into the workflow. **If a self-report-then-recompute gate step existed, DELETE it** — note in the rewrite that the JS now owns the arithmetic. If a parent SKILL.md describes the phase as "spawn N agents," update that prose too (and reframe any Flat-Dispatch Iron Law: a workflow is a script, not a dispatcher agent).
+**Preserve verbatim:** drafting/creation steps, Iron Laws, fact-row sections and red flags (or legacy rationalization tables), deviation rules, R4 escalation, and the `/goal` primitive. Only the reviewer dispatch + gate computation move into the workflow. **If a self-report-then-recompute gate step existed, DELETE it** — note in the rewrite that the JS now owns the arithmetic. If a parent SKILL.md describes the phase as "spawn N agents," update that prose too (and reframe any Flat-Dispatch Iron Law: a workflow is a script, not a dispatcher agent).
 
 ---
 
-## 6. Red flags — STOP if you catch yourself
+## 6. Migration facts
 
-| Rationalization | Reality | Do instead |
-|-----------------|---------|------------|
-| "The workflow logged 4/4 passed, so it's done." | Self-report ≠ ground truth. (A script wrote to `workflows/workflows/` because a spec carried a stray prefix; its verifier passed the *doubled* path.) | Verify artifacts exist at the **expected** path; `node --check` them yourself. |
-| "I'll decide migrate/leave from the audit summary." | Summaries under-describe fan-out. | Read the actual phase file; count the agents. |
-| "The reviewer reports a composite, I'll trust it." | Self-reported scores inflate — that's the smell that justified migrating. | Reviewer returns counts; the JS computes the score. |
-| "I'll return only the final verify stage." | You lose the generate stage's wiring guide / artifacts. | Thread every stage's output through the pipeline return. |
-| "Wrapping this one agent in a workflow is cleaner." | One agent = no fan-out, no win. | Leave it conversational. |
-| "This phase *writes* files, so it must stay in the skill." | FALSE — workflows do write work (500-file migrations, codemods, "make the change"); write agents use `isolation:'worktree'`. | Migrate it as a transform workflow if the per-item "what" is spec-driven. Only *creative* generation stays. |
+- Workflow self-report ≠ ground truth: a script once wrote to `workflows/workflows/` because a spec carried a stray prefix — and its own verifier passed the *doubled* path. "Logged 4/4 passed" is an unverified claim; verify artifacts exist at the **expected** path and `node --check` them yourself.
+- Audit summaries under-describe fan-out — read the actual phase file and count the agents before deciding migrate/leave.
+- Self-reported composite scores inflate — that is the smell that justified migrating in the first place. The reviewer returns counts; the JS computes the score. Trusting the composite reintroduces the failure the migration removed.
+- Returning only the final verify stage loses the generate stage's wiring guide and artifacts — thread every stage's output through the pipeline return.
+- One agent = no fan-out = no win — leave it conversational rather than wrapping it in a workflow.
+- "This phase *writes* files, so it must stay in the skill" is FALSE — workflows do write work (500-file migrations, codemods, "make the change"); write agents use `isolation:'worktree'`. Migrate it as a transform workflow if the per-item "what" is spec-driven; only *creative* generation stays.
 
 ---
 

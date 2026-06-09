@@ -230,24 +230,17 @@ Fabricating patterns the user hasn't actually repeated leads to over-engineered 
 Adding a Red Flag or Iron Law without understanding the skill's existing enforcement creates conflicts, duplicates, and confusion. Read the entire SKILL.md before modifying it.
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP If You Catch Yourself:
+## Red Flags
 
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Creating a skill for a one-sentence rule | Over-engineering; a memory entry suffices | Use the classification tree — simple rules are memories |
-| Adding enforcement without observed violations | Speculative enforcement constrains legitimate work | Wait for 2+ real instances before adding enforcement |
-| Modifying a skill you haven't read | You'll create conflicts with existing patterns | Read the full SKILL.md first |
-| Creating a validation hook for a subjective rule | Hooks need programmatic detection; "code quality" isn't checkable | Use a Red Flag or memory instead |
-| Skipping user confirmation for proactive detection | You might misclassify the pattern or the user might disagree | Always present findings before generating |
+- About to create a skill for a one-sentence rule → STOP. Over-engineering; a memory entry suffices — use the classification tree.
+- About to add enforcement without observed violations → STOP. Speculative enforcement constrains legitimate work and devalues existing Iron Laws; wait for 2+ real instances.
+- About to modify a skill without reading it in full → STOP. That creates conflicts with existing patterns; read the full SKILL.md first.
+- About to create a validation hook for a subjective rule → STOP. Hooks need programmatic detection — "code quality" isn't checkable; use a Red Flag or memory instead.
+- About to skip user confirmation for proactively detected patterns → STOP. The classification may be wrong or unwanted; always present findings before generating.
 
-## Rationalization Table
+### Pattern Capture Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This pattern is obvious, it doesn't need evidence" | Obvious patterns are obvious TO YOU — the user may not have this correction in mind | Find concrete instances before generating |
-| "A skill is more powerful than a memory" | Power isn't the goal; fit is. Most patterns are simple rules that belong in memory | Use the classification tree honestly |
-| "I'll add this to all relevant skills" | Shotgun enforcement creates maintenance burden and contradictions | Add to the ONE most relevant skill |
-| "Adding this rule now will prevent future issues" | Speculative enforcement without observed drift adds cognitive cost and devalues existing Iron Laws | Only add enforcement for patterns with real observed drift |
+- A captured pattern goes to the ONE most relevant skill — shotgun-adding it to every plausible skill creates maintenance burden and contradictions, the opposite of the de-duplication this skill exists for.
 
 ## Integration Points
 
