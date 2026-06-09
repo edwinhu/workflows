@@ -1,7 +1,7 @@
 ---
 name: lseg-data
 version: 1.0
-description: Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "Refinitiv news", or any use of the `lseg.data` Python API.
+description: Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "municipal bonds", "Lipper fund details", "stock screening (fscreen)", "Refinitiv news", or any use of the `lseg.data` Python API. (For academic loan/PE data, WRDS DealScan/PitchBook may be the better source — the wrds skill covers those.)
 user-invocable: false
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "ISS governance/compensation", "TAQ intraday/NBBO", "SDC M&A or new issues", "FISD bonds", "Form D/ADV", "FJC court data", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
+description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD bonds", "Form D/ADV", "fund formation", "FJC court data", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
 user-invocable: false
 ---
 
