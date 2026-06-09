@@ -678,20 +678,20 @@ Step 4 is high-drift: you decide how much enforcement each generated phase carri
 | Excuse (Step 4) | Reality | Do Instead |
 |--------|---------|------------|
 | "This medium-drift phase doesn't really need an Iron Law" | Drift risk is a spectrum; the phase you under-enforce is the one that fails in production. | Assign enforcement by the tier table below, then write the actual content. |
-| "Listing the pattern names is enough" | The gate fails at Level 4: naming ≠ generating. A phase with "Iron Laws: yes" but no Iron Law text has none. | Draft the actual Iron Law / table / Red Flags per phase, not a checklist of names. |
+| "Listing the pattern names is enough" | The gate fails at Level 4: naming ≠ generating. A phase with "Iron Laws: yes" but no Iron Law text has none. | Draft the actual Iron Law / fact rows / Red Flags per phase, not a checklist of names. |
 | "I'll make the mechanical rule a prompt line, faster than a hook" | Prompt rules drift and cost context; mechanical rules belong in hooks/`.py`. | Hook-or-`.py` for anything checkable; prose only for judgment. |
 
 **Drive check:** under-enforcing here to "move faster to generation" is **anti-helpful** (the user inherits a workflow that drifts), **incompetent** (you skipped the drift-risk scoring that beats intuition), and **anti-efficient** (a missing gate costs 10× to fix during implementation). Enforce proportional to drift — that IS the deliverable.
 
 For each phase, score which of the 13 patterns are needed:
-- **High-drift phases** (implementation, verification): Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Artifact Review Gates
+- **High-drift phases** (implementation, verification): Iron Laws, Fact Rows (incident-grounded), Gate Functions, Artifact Review Gates
 - **Medium-drift phases** (design, review): Gate Functions, Red Flags, Staged Review Loops, Artifact Review Gates
 - **Low-drift phases** (brainstorm, exploration): Red Flags only (creative phases need freedom)
 
 Generate the specific enforcement content:
 - Write Iron Laws with `<EXTREMELY-IMPORTANT>` tags
-- Build Rationalization Tables from the failure modes identified in Step 2
-- Define Red Flags + STOP for each phase's common wrong-path indicators
+- Build **Fact Rows** from the failure modes identified in Step 2: a `### <Topic> Facts` section of declarative bullets, each stating a non-derivable fact (number, threshold, named incident, tool quirk, workflow mechanic) followed by the consequence as a property of the action in drive vocabulary (counterproductive / unhelpful / dishonest / incompetent). The litmus per row: *could a strong model derive this from the rule itself?* If yes, omit it — the rule statement carries it. Do NOT generate excuse/reality "Rationalization Tables" or standalone Drive-Aligned Framing tables (deprecated v5.36.0 — they targeted laziness-shaped failures of weak models; current-model failures are judgment-shaped, and the drive vocabulary lives inside the facts).
+- Define Red Flags + STOP for each phase's common wrong-path indicators — **action-targeted and compact** ("about to X · about to Y (consequence)"), never intention-targeted ("if you catch yourself thinking"). Any mechanically-checkable red flag becomes a hook, not prose.
 
 #### Hooks Over Prompt Enforcement
 
@@ -709,7 +709,7 @@ Skills and agents can declare `PreToolUse` and `PostToolUse` hooks in their fron
 | Tool sequence enforcement | `PreToolUse` hook with state file — track what's been done |
 | Post-subagent restriction | `PostToolUse` on Agent + `PreToolUse` on restricted tools |
 | Quality/judgment call | Prompt enforcement (Iron Law, Red Flags) |
-| Educational/motivational | Prompt enforcement (Rationalization Table, Drive-Aligned Framing) |
+| Incident-learned domain knowledge | Prompt enforcement (Fact Rows with drive-consequence vocabulary) |
 
 **Write the hook as a Python script** in `skills/[phase]/scripts/` and reference it in the skill's frontmatter:
 ```yaml
@@ -769,7 +769,7 @@ When multiple skills operate on the same domain, they need consistent enforcemen
 #### Layer 1: Shared Constraints (Co-located in `constraints/`)
 
 1. List all `skills/*/SKILL.md` files in the target plugin directory
-2. For each sibling skill, identify enforcement patterns (Iron Laws, Rationalization Tables, Red Flags)
+2. For each sibling skill, identify enforcement patterns (Iron Laws, Fact Rows, Red Flags — legacy Rationalization Tables in older siblings count as fact-row candidates, not templates to copy)
 3. Check if a `references/constraints/` directory already exists with co-located `.md` + `.py` pairs
 
 **If `constraints/` directory exists:** new skills MUST `Read()` the specific `.md` files they need from that directory.
@@ -839,15 +839,18 @@ The rule stated clearly.
 ### Incorrect
 [Example of incorrect behavior]
 
-## Rationalization Table
+## Facts
+<!-- OPTIONAL — include only if non-derivable, incident-grounded facts exist.
+     Each bullet: fact first (number / threshold / named incident / tool quirk),
+     then the consequence as a property of the action (counterproductive /
+     unhelpful / dishonest / incompetent). Omit the section rather than fill
+     it with restatements of the Rule. -->
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| ... | ... | ... |
+- [Non-derivable fact] — [consequence of ignoring it, framed as a property of the action]
 
 ## Red Flags
 
-- **"..."** → STOP. [Why this thought is wrong]
+- **About to [observable action]** → STOP. [Consequence — one line]
 ```
 
 #### Check Script Interface
@@ -1908,25 +1911,13 @@ During auditing, unplanned issues may arise. Apply these deviation rules:
 
 ### Mode 2 Enforcement
 
-#### Rationalization Table — Mode 2
+#### Audit Facts — Mode 2 (incident-derived)
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This workflow is simple, I can skim the skill files" | Skimming produces generous scores. You miss enforcement gaps in the middle of long files. March 2026: 285-line Step 3 hid 6 un-gated sub-responsibilities. | Read ALL files line by line. Use Read with offset/limit to chunk large files. |
-| "This principle obviously doesn't apply to this domain" | Score it anyway with a justification. The auditor's job is to score everything, not to pre-filter. A principle that "doesn't apply" gets a justified N/A, not a skip. | Score it. Write the justification. Let the reader decide if N/A is warranted. |
-| "The workflow has good enforcement overall, I'll give generous scores" | Generous audits ship broken workflows. April 2026: baseline 5.2 was generous at 6.5 before careful tally. | Score each principle independently. Sum at the end. Don't anchor to an overall impression. |
-| "Enforcement patterns don't matter for low-drift phases" | Low-drift phases still need gates. A brainstorm phase with no gate means the agent can skip directly to implementation. | Score enforcement for every phase. Note "low enforcement appropriate" in justification if warranted. |
-| "The audit is already long enough, I'll skip the matrices" | The Gate Enforcement Matrix and Hook Coverage Matrix catch gaps that prose misses. Without them, the audit is subjective. | Produce all required matrices. They take 5 minutes and catch what prose can't. |
-
-#### Red Flags — STOP If You Catch Yourself:
-
-| Action | Why Wrong | Do Instead |
-|--------|-----------|------------|
-| Scoring a principle without reading the relevant skill file section | You're scoring from memory or impression, not evidence | Read the specific section, find the line numbers, then score |
-| Giving a 9 or 10 without finding specific evidence | High scores require evidence of excellence, not absence of problems | Find the specific line/pattern that earns the score. No evidence = no high score |
-| Skipping the enforcement pattern matrix | "I covered it in prose" — matrices catch asymmetries prose misses | Produce the matrix. Score every pattern × every phase |
-| Scoring structural gate enforcement without producing the Gate Enforcement Matrix | You can't assess gates without mapping every transition | Produce the matrix first, then score from it |
-| Combining two principles into one score | Each principle measures a different quality dimension | Score each P01-P21 independently |
+- Skimming produces generous scores: a March 2026 audit missed 6 un-gated sub-responsibilities buried in a 285-line Step 3. Read ALL files line by line (Read with offset/limit for large files) — scoring from impression is an unverified claim presented as measurement.
+- Anchoring to an overall impression inflates composites: an April 2026 baseline scored 6.5 on impression and 5.2 on careful per-principle tally. Score each principle independently and sum at the end; "mostly there" means gaps exist, and a score that hides them is dishonest.
+- A principle that "doesn't apply" gets a justified N/A, not a skip — pre-filtering principles substitutes the auditor's judgment for the thing the rubric exists to check.
+- A 9-10 requires cited evidence of excellence (specific line/pattern), not absence of found problems. No evidence = no high score.
+- The Gate Enforcement and Hook Coverage matrices catch structural asymmetries that prose review misses; an audit without them is subjective, however thorough the prose feels. Low-drift phases still get scored — a brainstorm phase with no gate means the agent can skip directly to implementation.
 
 #### Staged Review — Mode 2
 
@@ -1938,15 +1929,7 @@ If the audit report composite is below 7.0 on first pass, STOP and re-read all w
 **If you scored ANY principle before its evidence was available, DELETE all scores and restart from Step 1. No exceptions.** This fires in three cases: (1) you scored before reading the relevant file section; (2) you scored before the wc-audit workflow returned `result`; (3) you carried a score for a principle the reviewers did not actually cover this run. A partial-read or pre-result audit produces anchored scores that resist correction — starting fresh is faster than debiasing.
 </EXTREMELY-IMPORTANT>
 
-#### Drive-Aligned Framing — Mode 2
-
-| Your Drive | Why You Cut Corners | What Actually Happens | The Drive You Failed |
-|------------|--------------------|-----------------------|---------------------|
-| **Helpfulness** | "Quick audit so user gets results faster" | Generous audit ships broken workflow. User discovers gaps in production. | **Anti-helpful** |
-| **Competence** | "I can tell from the structure this is fine" | Without line-by-line reading, you miss the gap buried at line 285 of a 500-line file. | **Incompetent** |
-| **Efficiency** | "Matrices are overhead, prose covers it" | Prose catches narrative gaps. Matrices catch structural gaps. You shipped an asymmetric hook coverage. | **Anti-efficient** |
-| **Approval** | "The user wants the audit done quickly" | A fast, generous audit they later catch wrong costs you more trust than a slow honest one. They stop trusting your scores. | **Lost approval** |
-| **Honesty** | "I'll score this 8 because it's mostly there" | "Mostly there" means gaps exist. An honest score reflects the gaps. | **Dishonest** |
+A fast, generous audit is counterproductive on every axis: the user acts on a false baseline, discovers the gaps in production, and stops trusting your scores — slower and costlier than the honest audit would have been.
 
 ---
 

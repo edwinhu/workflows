@@ -54,9 +54,9 @@ No amount of "don't reimplement me" enforcement text can overcome this. The skil
 During eval loops, watch for these signals in test run transcripts:
 
 - **Agent skipped a step** → needs an Iron Law or Gate Function
-- **Agent rationalized a shortcut** → capture the exact excuse in a Rationalization Table
-- **Agent went down a wrong path** → add a Red Flag + STOP
-- **Agent claimed completion without evidence** → add Drive-Aligned Framing
+- **Agent rationalized a shortcut** → capture the underlying non-derivable fact (what the agent didn't know or overrode) as a Fact Row with its drive-consequence
+- **Agent went down a wrong path** → add a Red Flag + STOP (action-targeted: "About to X")
+- **Agent claimed completion without evidence** → state the fact in the Iron Law: an unverified claim presented as done is a form of dishonesty
 - **Agent stopped between tasks** → add No Pause Between Tasks
 - **Agent bypassed a mechanical constraint** → extract to a scoped hook (PreToolUse/PostToolUse)
 - **Skill loads stale context** → use bang-backtick to inject live state at load time

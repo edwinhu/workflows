@@ -96,9 +96,9 @@ hooks:
 
 | Enforce with Hook | Keep as Prompt |
 |-------------------|----------------|
-| File path/extension guards | Rationalization tables |
-| Missing prerequisite file checks | Drive-aligned framing |
-| Tool parameter validation | Red flags (judgment-based) |
+| File path/extension guards | Fact rows (incident-grounded) |
+| Missing prerequisite file checks | Iron Laws with drive-consequence framing |
+| Tool parameter validation | Red flags (judgment-based, action-targeted) |
 | Post-edit lint/format checks | "Why" explanations |
 | Outline-before-prose guards | Deviation rule classification |
 
@@ -143,7 +143,7 @@ Score against all 12 patterns. Use the scoring template from the checklist. Focu
 
 1. **Iron Laws** — Does the skill have absolute constraints for high-drift actions? Are they wrapped in `<EXTREMELY-IMPORTANT>` tags with strong framing? If they use soft language ("try to", "should", "consider"), they will be ignored — rewrite with action-masking language.
 
-2. **Rationalization Tables** — Does the skill preempt the agent's excuses? The table must contain *actual excuses the agent generates*, not hypothetical ones. Observe failure modes in test runs, then add entries.
+2. **Fact Rows** (supersedes Rationalization Tables, v5.36.0) — Does the skill state its incident-learned knowledge as declarative facts? Each row must be *non-derivable* (a number, threshold, named incident, or tool quirk from observed failures — not a restatement of the rule), with the consequence framed as a property of the action (counterproductive / unhelpful / dishonest / incompetent). Legacy excuse/reality tables in existing skills count as present but should convert on next touch; never author new ones.
 
 3. **Red Flags + STOP** — Are there pattern interrupts for observable wrong actions? Must target actions ("About to X"), not intentions ("Thinking about X").
 
@@ -151,7 +151,7 @@ Score against all 12 patterns. Use the scoring template from the checklist. Focu
 
 5. **Trigger-Only Descriptions** — Does the description contain ONLY trigger phrases? If it contains a process summary, the agent will follow the short description instead of reading the body. This is the single most common skill design mistake.
 
-6. **Drive-Aligned Framing** — Do verification steps use helpfulness-first framing? "Skipping X is NOT HELPFUL — [concrete user harm]" is stronger than "incorrect" or "premature" because it targets the model's strongest drive.
+6. **Drive-Aligned Framing** — Do Iron Laws and fact rows carry helpfulness-first consequences? "Skipping X is NOT HELPFUL — [concrete user harm]" is stronger than "incorrect" or "premature" because it targets the model's strongest drive. Embed in the law or fact row itself — standalone "Your Drive | Why You Skip" tables are deprecated (they restate one consequence five times).
 
 7. **Skill Dependencies** — Does each phase explicitly read and invoke the next phase? Without explicit chaining, the agent will stop and wait.
 
@@ -171,7 +171,7 @@ Score against all 12 patterns. Use the scoring template from the checklist. Focu
 
 Score against patterns 2, 3, 5, and 10:
 
-- **Rationalization Tables** — What are common misuse patterns? (e.g., using the wrong API endpoint, skipping authentication)
+- **Fact Rows** — What are the tool's non-derivable gotchas? (e.g., "the API validates format, not correctness — an empty response returns 200"; rate limits; auth quirks)
 - **Red Flags + STOP** — What wrong actions can the agent take? (e.g., calling a destructive API without confirmation)
 - **Trigger-Only Descriptions** — Keep description to triggers only
 - **Staged Review Loops** — For multi-step tool interactions, add review after each step
@@ -189,8 +189,8 @@ The built-in skill-creator's writing advice and superpowers enforcement patterns
 | skill-creator says | superpowers says | Resolution |
 |---|---|---|
 | "Explain the why, avoid heavy-handed MUSTs" | "Iron Laws use strongest framing available" | **Both are right for different contexts.** Use "explain the why" for standalone instructions. Use Iron Laws for high-drift actions where the agent will rationalize shortcuts. |
-| "Keep the prompt lean" | "Add Rationalization Tables, Red Flags" | **Enforcement patterns go in the skill body, not the description.** Progressive disclosure keeps it lean — move detailed tables to `references/` if SKILL.md exceeds 500 lines. |
-| "Generalize from feedback, don't overfit" | "Observe failure modes, add entries to tables" | **Rationalization Tables ARE generalization.** Each entry captures a class of failures, not a specific test case. |
+| "Keep the prompt lean" | "Add Fact Rows, Red Flags" | **Enforcement patterns go in the skill body, not the description.** Progressive disclosure keeps it lean — move detailed facts to `references/` if SKILL.md exceeds 500 lines. |
+| "Generalize from feedback, don't overfit" | "Observe failure modes, add fact rows" | **Fact Rows ARE generalization.** Each row captures a class of failures (the fact + its consequence), not a specific test case. |
 
 When the built-in skill-creator suggests removing enforcement patterns because they're "not pulling their weight" or are "oppressively constrictive MUSTs," push back if the pattern addresses a real observed failure mode. The test: did an agent actually take the shortcut this pattern prevents? If yes, keep it.
 

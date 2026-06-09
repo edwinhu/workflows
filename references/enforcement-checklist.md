@@ -32,25 +32,32 @@ Source: [obra/superpowers](https://github.com/obra/superpowers)
 
 ---
 
-### 2. Rationalization Tables
+### 2. Fact Rows (supersedes Rationalization Tables — v5.36.0)
 
-**When to use:** Any phase where the agent might self-justify shortcuts.
+**When to use:** Any phase with incident-learned knowledge the agent cannot derive from the rule itself.
 
-**What it does:** Preempts the agent's excuses before they form. Maps each rationalization to reality and the correct action.
+**What it does:** States non-derivable facts (numbers, thresholds, named incidents, tool quirks, workflow mechanics) as declarative bullets, with the consequence of ignoring each framed as a property of the action in drive vocabulary (counterproductive / unhelpful / dishonest / incompetent).
+
+**Why the format changed:** Excuse/reality "Rationalization Tables" targeted laziness-shaped failures of weaker models ("I'll check at the end"). Current-model failures are judgment-shaped — confident override of a step with fluent justification. Stating the fact and the consequence works on a model that was never tempted; arguing with a hypothetical excuse does not. The drive-aligned consequence survives — embedded in each fact, not as a standalone table.
+
+**The litmus per row:** *could a strong model with no project history derive this from the rule itself?* If YES (persuasion, restatement), omit it — the rule statement carries it. If NO (incident-learned), keep it.
 
 **Template:**
 ```markdown
-## Rationalization Table
+### <Topic> Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "[plausible-sounding shortcut]" | [why it fails] | [correct action] |
+- [Non-derivable fact — number / threshold / named incident / tool quirk].
+  [Consequence of ignoring it, as a property of the action: "...is an unverified
+  claim presented as fact — a form of dishonesty" / "...is the exact incompetence
+  this step exists to prevent" / "...is counterproductive on its own terms".]
 ```
 
-**Example** (dev-implement, 14 entries):
-> | "It's a trivial change, no test needed" | Trivial changes cause production incidents | Write the test. Trivial takes 2 minutes. |
+**Example** (ds-plan):
+> - Unprofiled row estimates run 20–80% off in both directions (v12: s12 +18%, s34 −78%). The profile *changes* the plan; treating it as confirmation of what you already know is confidence the data has repeatedly falsified.
 
-**Key insight:** The table must contain the *actual excuses the agent generates*. Observe failure modes in real sessions, then add entries.
+**Key insight:** Facts must come from *observed* failures (no speculative enforcement). A fact row that merely rephrases the rule is the old table wearing the new format — delete it.
+
+**Legacy note:** Excuse/reality tables and standalone Drive-Aligned Framing tables in unconverted skills still count as present enforcement in audits (legacy format, LOW-severity convert note) — but never generate new ones.
 
 ---
 
@@ -239,7 +246,7 @@ You skip this because you think it's faster. Here's what actually happens:
 
 **The nuclear reframe:** When Claude skips steps, it's not being rebellious — it's being a people-pleaser in the wrong direction. It optimizes for *appearing* helpful (fast response, confident diagnosis) instead of *being* helpful (correct diagnosis, verified fix). Drive-aligned framing redirects the people-pleasing toward protocol compliance by showing that compliance IS the most helpful thing.
 
-**How to apply:** After writing any enforcement pattern (Iron Law, Rationalization Table, etc.), add a drive-aligned consequence that answers: "If Claude skips this, which of its drives fails, and how?" Default to helpfulness unless a different drive is clearly more relevant.
+**How to apply:** After writing any enforcement pattern (Iron Law, Fact Row, etc.), add a drive-aligned consequence that answers: "If Claude skips this, which of its drives fails, and how?" Default to helpfulness unless a different drive is clearly more relevant. **Delivery vehicle (v5.36.0):** embed the consequence in the Iron Law sentence or the fact row itself — do not emit standalone "Your Drive | Why You Skip | What Actually Happens" tables (deprecated; they restate one consequence five times).
 
 **Anti-pattern:**
 ```markdown
@@ -356,13 +363,13 @@ Not all phases need equal enforcement. Match density to drift risk:
 - **Implementation phases** - Agent most tempted to skip tests, take shortcuts
 - **Verification phases** - Agent most tempted to rubber-stamp
 
-Recommended patterns: Iron Laws, Rationalization Tables, Gate Functions, Drive-Aligned Framing, Delete & Restart, No Pause Between Tasks
+Recommended patterns: Iron Laws, Fact Rows (incident-grounded, with drive-consequence vocabulary), Gate Functions, Delete & Restart, No Pause Between Tasks
 
 ### Medium Enforcement
 - **Design phases** - Agent might drift but has less temptation to shortcut
 - **Review phases** - Agent might be superficial without adversarial framing
 
-Recommended patterns: Gate Functions, Red Flags, Staged Review Loops, Drive-Aligned Framing
+Recommended patterns: Gate Functions, Red Flags (action-targeted), Staged Review Loops
 
 ### Low Enforcement
 - **Brainstorm phases** - Creative freedom needed, but still need boundaries
@@ -379,7 +386,7 @@ When auditing a workflow, score each phase against all 11 patterns:
 | # | Pattern | Phase 1 | Phase 2 | ... | Phase N |
 |---|---|---|---|---|---|
 | 1 | Iron Laws | ✅ Present / ⚠️ Weak / ❌ Absent / ➖ N/A | | | |
-| 2 | Rationalization Tables | | | | |
+| 2 | Fact Rows (or legacy Rationalization Tables) | | | | |
 | 3 | Red Flags + STOP | | | | |
 | 4 | Gate Functions | | | | |
 | 5 | Flowcharts as Spec | | | | |

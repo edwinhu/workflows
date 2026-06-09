@@ -11,14 +11,14 @@
 | Pattern | Description | Check |
 |---------|-------------|-------|
 | **Iron Laws** | "NO X WITHOUT Y FIRST" - absolute constraints, not guidelines | ☐ |
-| **Rationalization Tables** | Excuse → Reality tables that preempt Claude's defensive thinking | ☐ |
-| **Red Flags + STOP** | "If you catch yourself thinking X, STOP" - mental pattern interrupts | ☐ |
+| **Fact Rows** | Incident-grounded declarative facts (numbers, thresholds, named incidents, tool quirks) with drive-consequence framing — supersedes excuse/reality Rationalization Tables (v5.36.0; litmus: delete any row a strong model could derive from the rule itself) | ☐ |
+| **Red Flags + STOP** | Action-targeted interrupts: "About to X → STOP (consequence)" — never intention-targeted ("if you catch yourself thinking"); mechanically-checkable flags become hooks | ☐ |
 | **Gate Functions** | IDENTIFY → RUN → READ → VERIFY → CLAIM (5-step verification) | ☐ |
 | **Flowcharts as Spec** | Process diagrams as authoritative definition, not just documentation | ☐ |
 | **Staged Review Loops** | Multiple review stages with re-review on issues | ☐ |
 | **Delete & Restart** | "Write code before test? Delete it. No exceptions." | ☐ |
 | **Skill Dependencies** | Cross-references that enforce workflow order | ☐ |
-| **Drive-Aligned Framing** | Frame violation as failure of the drive that motivated it (helpfulness > competence > efficiency > approval > honesty) | ☐ |
+| **Drive-Aligned Framing** | Frame violation as failure of the drive that motivated it (helpfulness > competence > efficiency > approval > honesty) — embedded in Iron Laws and fact rows, not standalone "Your Drive" tables (deprecated) | ☐ |
 | **Trigger-Only Descriptions** | Brief triggers in description, process details in body only | ☐ |
 | **No Pause Between Tasks** | After completing task N, immediately start task N+1 | ☐ |
 
