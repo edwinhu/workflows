@@ -683,11 +683,7 @@ A methodology is fundamentally flawed when:
 - **Missing critical variable** (e.g., no control for a known confounder, omitted variable bias)
 - **Wrong unit of analysis** (e.g., analyzing at firm-level when the question is about transactions)
 
-| Thought | Action |
-|---------|--------|
-| "The approach is mostly right, just needs tweaking" | If the statistical method is wrong, tweaking parameters is p-hacking. DELETE and replan. |
-| "We can add the missing variable as a robustness check" | If the variable is a known confounder, the main analysis is invalid. DELETE and replan with it included. |
-| "Let's patch the methodology and re-review" | Patching a flawed foundation produces a patched flawed analysis. DELETE and replan from scratch. |
+**Methodology-flaw facts:** tweaking parameters around a wrong statistical method is p-hacking, not fixing; a known confounder omitted from the main analysis invalidates it — adding it as a "robustness check" leaves the headline result wrong; and patching a flawed foundation produces a patched flawed analysis. All three cases mean DELETE and replan, not iterate.
 
 **When you identify a fundamental flaw:**
 1. Document the flaw in LEARNINGS.md (what's wrong and why it can't be patched)

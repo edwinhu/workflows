@@ -408,12 +408,7 @@ Three stages: Test (~10 items, always required) -> Intermediate (~100, if total 
 <EXTREMELY-IMPORTANT>
 **After completing task N, IMMEDIATELY start task N+1. You MUST NOT pause.**
 
-| Thought | Reality |
-|---------|---------|
-| "Task done, should check in with user" | You're wasting context. User wants ALL tasks done. Keep going. |
-| "User might want to see intermediate results" | You're assuming wrong. User will see results at the END. Continue. |
-| "Natural pause point" | You're making excuses. Only pause when ALL tasks complete or you're blocked. |
-| "Should summarize this step" | You're procrastinating. Summarize AFTER all tasks. Keep moving. |
+The user sees results at the END and is waiting for completion, not interim check-ins — a courtesy pause costs a full turn round-trip and delivers nothing. Pause only when ALL tasks are complete or you are blocked.
 
 **Your pausing between tasks is procrastination disguised as courtesy.**
 </EXTREMELY-IMPORTANT>

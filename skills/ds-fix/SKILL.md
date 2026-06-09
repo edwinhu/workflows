@@ -314,11 +314,7 @@ Before claiming any fix is done, execute this gate:
 <EXTREMELY-IMPORTANT>
 **After a fix passes the verification gate, IMMEDIATELY proceed to the next issue from Step 2's diagnosis. Do NOT pause to ask "should I continue?"**
 
-| Thought | Reality |
-|---------|---------|
-| "Should I check if they want the next fix?" | Step 2 already enumerated the issues. Asking again is stalling. |
-| "Let me summarize what I just fixed" | LEARNINGS.md is the summary. Repeating it in chat wastes context. |
-| "Natural stopping point between categories" | The diagnosis is the work-list. A verified fix means start the next one. |
+Step 2's diagnosis IS the work-list — re-asking permission per item is stalling, and LEARNINGS.md is the summary (repeating it in chat wastes context). A verified fix means start the next one.
 
 **The fix loop runs until every issue in Step 2's diagnosis is resolved OR a STOP escalation (R4 / rethink) is required. Your pause is procrastination disguised as courtesy.**
 </EXTREMELY-IMPORTANT>

@@ -125,18 +125,16 @@ Identify which skill the pattern belongs to, then add the appropriate enforcemen
 </EXTREMELY-IMPORTANT>
 ```
 
-**Rationalization Table entry** (for patterns where the agent makes excuses):
+**Fact Row entry** (for incident-learned knowledge the agent overrode or lacked — supersedes Rationalization Table entries, v5.36.0):
 ```markdown
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "<exact excuse the agent generates>" | "<why this is wrong>" | "<correct action>" |
+- <Non-derivable fact from the observed incident — number / threshold / tool quirk / mechanic>.
+  <Consequence of ignoring it, as a property of the action: counterproductive / unhelpful / dishonest / incompetent.>
 ```
+Litmus before adding: could a strong model derive this from the rule itself? If yes, strengthen the rule statement instead of adding a row.
 
-**Red Flag entry** (for observable wrong actions):
+**Red Flag entry** (for observable wrong actions — action-targeted, never "if you catch yourself thinking"):
 ```markdown
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| "<observable behavior>" | "<concrete harm>" | "<correct alternative>" |
+- **About to <observable behavior>** → STOP. <concrete harm — one line>.
 ```
 
 #### For VALIDATION HOOKS
