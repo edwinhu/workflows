@@ -11,7 +11,7 @@ disable-model-invocation: true
 - [The TDD Cycle](#the-tdd-cycle)
 - [What Counts as a Test](#what-counts-as-a-test)
 - [Logging TDD Progress](#logging-tdd-progress)
-- [Red Flags - Thoughts That Mean STOP](#red-flags---thoughts-that-mean-stop)
+- [TDD Facts](#tdd-facts)
 - [Delete & Restart](#delete--restart)
 - [E2E Test Requirement](#e2e-test-requirement)
 
@@ -254,38 +254,11 @@ pytest tests/test_feature.py -v
 ```
 ```
 
-## Red Flags - Thoughts That Mean STOP
+## TDD Facts
 
-If you catch yourself thinking these thoughts—STOP. They're indicators you're about to skip TDD:
-
-| Thought | Reality |
-|---------|---------|
-| "Write the test after" | You're about to do verification, not TDD. You MUST test FIRST. |
-| "This is too simple for TDD" | Your simple code benefits MOST from TDD. |
-| "Just fix this quickly" | Your speed isn't the goal. Your correctness is. |
-| "Know the test will fail" | You knowing isn't the same as you seeing it fail. You MUST RUN it, see RED. |
-| "Grep confirms it exists" | Your existence check ≠ working code. You MUST execute the code. |
-| "Already have the code" | You MUST DELETE IT. You write test first, then reimplement. |
-| "Test passed on first run" | Suspicious. Did you actually see RED first? |
-
-### Red Flags - Fake Test Indicators
-
-If you catch yourself thinking these thoughts—STOP. They're indicators you're writing a FAKE test:
-
-| Thought | Reality |
-|---------|---------|
-| "This protocol is easier to test" | But production uses different protocol. Test that. |
-| "I can call the function directly" | User doesn't do that. Simulate user action. |
-| "I'll mock this dependency" | Then you're not testing real behavior. |
-| "Internal state is more direct" | User doesn't see internal state. Test what user sees. |
-| "I know a better way" | User specified a skill. Use it. |
-| "Let me fix this assertion" | Maybe the test is wrong. Question it first. |
-| "User workflow is complex" | That's what user does. Replicate it. |
-| "This shortcut tests the same thing" | No it doesn't. Follow exact workflow. |
-| "Async is hard to test" | Production is async. Test it async. |
-| "Integration tests are slow" | Unit tests hide boundary bugs. Test integration. |
-
-**If your test doesn't replicate what the user does, it's a FAKE test.**
+- A test that passes on its first run has proven nothing: it never failed, so it cannot distinguish working code from a test that exercises nothing. The RED run is the only evidence that the test actually tests the feature. Claiming TDD on a never-red test is an unverified claim presented as fact.
+- When an assertion fails during GREEN, the test itself may be wrong — but editing the assertion to match observed output converts the test into a record of the bug. Question the assertion before changing it.
+- Mocks, direct function calls, and substitute protocols verify the stand-in, not the production behavior — boundary bugs live exactly where the stand-in replaces the real thing. A test that doesn't replicate what the user does is a FAKE test, and unit tests alone hide those boundary bugs.
 
 **If your test doesn't fail first, you haven't practiced TDD.**
 

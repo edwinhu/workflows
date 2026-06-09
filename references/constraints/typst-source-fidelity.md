@@ -37,17 +37,3 @@ If a claim cannot be found in the paper:
 - **Flag it to the user** with: "Could not find support for: [claim]. Should this be included?"
 - **Never fill gaps from training knowledge** — see the `typst-source-first` constraint
 </EXTREMELY-IMPORTANT>
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This is common knowledge in the field" | Common knowledge to you may be a hallucination. The paper is the authoritative source. | Verify against the paper. |
-| "The paper probably says this somewhere" | "Probably" is not verification. | Find the specific passage or flag to user. |
-| "I'll add context beyond the paper to enrich the presentation" | The presentation summarizes THIS paper. Extra context should come from the user, not training knowledge. | Stay within the paper's scope. Flag enrichment ideas to user. |
-
-## Red Flags
-
-- **Writing a statistic without extracting it from the paper** — STOP. Extract first.
-- **Attributing a finding to the authors without page reference** — STOP. Find the passage.
-- **"Enriching" slides with training knowledge** — STOP. Flag to user for approval.

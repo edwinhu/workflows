@@ -170,7 +170,7 @@ When the reviewed plan proceeds to implementation, add model tier guidance to ta
 | Integration | Standard | Multi-file coordination, pattern matching, debugging within scope |
 | Architecture/Review | Most capable | Design judgment needed, broad codebase understanding, quality gates |
 
-**Advisory only** — Claude Code doesn't yet support model routing. Document intent for future use.
+**Routing is real** — apply via the Agent tool's `model` parameter at dispatch (omit to inherit the session model for judgment-heavy tasks).
 
 ## Drive-Aligned Framing
 

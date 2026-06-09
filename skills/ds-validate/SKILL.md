@@ -55,15 +55,13 @@ Announce: "Using ds-validate (Phase 3.5) to validate analysis outputs against SP
 ## Contents
 
 - [The Iron Law of Validation](#the-iron-law-of-validation)
-- [Red Flags - STOP Immediately](#red-flags---stop-immediately)
+- [Validation Facts](#validation-facts)
 - [Key Difference from Dev](#key-difference-from-dev)
 - [The Process](#the-process)
 - [Validation Levels](#validation-levels)
 - [Classification](#classification)
 - [VALIDATION.md Template](#validationmd-template)
 - [Gate](#gate)
-- [Rationalization Prevention](#rationalization-prevention)
-- [Drive-Aligned Framing](#drive-aligned-framing)
 - [Phase Transition](#phase-transition)
 
 # Output Validation Against SPEC.md
@@ -79,15 +77,11 @@ ds-review MUST NOT start until `.planning/VALIDATION.md` confirms all requiremen
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## Red Flags - STOP Immediately If You Catch Yourself Thinking:
+## Validation Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "Outputs look fine, skip validation" | Silent failures hide in DQ gaps | Run every check systematically |
-| "I already checked during implement" | Per-task checks miss cross-task issues | Validate requirement-to-output mapping end-to-end |
-| "DQ checks are overkill for this analysis" | DQ checks ARE the test suite for DS | Run them all. Report results. |
-| "User is waiting, skip to review" | Review without validation is theater | Validate first — it catches what review won't |
-| "LEARNINGS.md already logs everything" | Logs are not a systematic requirement-to-output map | Run the full mapping process |
+- Per-task checks during implement miss cross-task issues — joins that silently drop rows and filters that compound only surface in the end-to-end requirement-to-output mapping.
+- LEARNINGS.md logs observations; VALIDATION.md maps requirements to outputs. They serve different purposes — one cannot substitute for the other.
+- Row-count traceability cannot be eyeballed — "outputs look fine" is not a validation result, and review run on unvalidated outputs either misses the gaps or re-runs the same checks.
 </EXTREMELY-IMPORTANT>
 
 ## Key Difference from Dev
@@ -327,30 +321,6 @@ last_gaps: [REQ-ID, ...]  # requirement IDs still PARTIAL/MISSING
 **Do NOT auto-fill gaps. Do NOT silently proceed past gaps. Present them and wait for user decision.**
 
 This is the critical difference from dev-test-gaps. In dev, missing tests can be auto-generated. In DS, missing or wrong outputs mean the analysis itself may be wrong. Only the user can judge whether a gap is acceptable.
-</EXTREMELY-IMPORTANT>
-
-## Rationalization Prevention
-
-| Thought | Reality |
-|---------|---------|
-| "Outputs look fine, skip validation" | Silent failures hide in DQ gaps — you cannot eyeball row count traceability |
-| "I already checked during implement" | Per-task checks miss cross-task issues: joins that silently drop rows, filters that compound |
-| "DQ checks are overkill for this analysis" | DQ checks ARE the test suite — DS has no pytest, only systematic output verification |
-| "User is waiting, skip to review" | Review without validation is theater — reviewer will either miss issues or re-run the same checks |
-| "LEARNINGS.md already logs everything" | LEARNINGS.md logs observations. Validation maps requirements to outputs. Different purpose. |
-
-## Drive-Aligned Framing
-
-<EXTREMELY-IMPORTANT>
-**Skipping validation is NOT HELPFUL — you're delivering analysis with unknown data quality holes the user will discover when results don't make sense.**
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Outputs exist, review can catch issues" | Review without validation misses silent DQ failures. User gets wrong results. | **Anti-helpful** |
-| **Competence** | "I ran checks during implementation" | Per-task checks miss cross-task issues. Gaps hide between pipeline stages. | **Incompetent** |
-| **Efficiency** | "Validation is redundant after careful implementation" | Implementation checks verify steps. Validation verifies requirements. Different. | **Anti-efficient** |
-
-**The protocol is not overhead you pay. It is the safety net you provide.**
 </EXTREMELY-IMPORTANT>
 
 ## Phase Transition

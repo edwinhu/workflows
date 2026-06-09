@@ -406,30 +406,11 @@ Citation hallucination happens because the LLM confabulates plausible-sounding r
 **Skipping external source checks is NOT HELPFUL — unverified citations damage the user's credibility when readers check them.**
 </EXTREMELY-IMPORTANT>
 
-## Rationalization Table
+## Verification Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The citation looks right, I don't need to check the bib" | Looking right is how hallucinated citations work — they're designed to look plausible | Grep paperpile.bib. Every time. |
-| "rga didn't find the quote but it's probably in there" | If rga can't find it, the quote may be fabricated or paraphrased | Try NLM chat as semantic fallback. If still not found, flag as QUOTE_NOT_FOUND |
-| "The volume number is close enough (42 vs 44)" | Wrong volume = wrong citation. A reader following it will find the wrong article. | Fix it to match the bibtex entry |
-| "Case cites don't need checking" | Federal cases CAN be checked via WRDS fjc_litigation. State cases are SKIPPED_NO_GROUND_TRUTH. | Check federal cases against FJC database. Skip state cases explicitly. |
-| "I'll just check the first few footnotes" | Hallucinated citations cluster in the middle and end where writing fatigue hits | Check ALL footnotes. No sampling. |
-| "Claim grounding is overkill" | Only if the user didn't request it. Don't skip it if they did. | Run Check 4 when requested, skip when not |
-
-## Red Flags — STOP If You Catch Yourself:
-
-- **Verifying a citation from memory instead of paperpile.bib** → STOP. Your memory is the hallucination source.
-- **Skipping Check 1-2 and jumping to LLM verification** → STOP. Mechanical checks first.
-- **Marking a citation VERIFIED without actually finding it in the bib** → STOP. Show the matching bibtex entry.
-- **"The quote is close enough"** → STOP. Either it matches or it's a QUOTE_MISMATCH.
-- **Running all checks yourself without spawning a fresh audit agent** → STOP. Self-verification is rubber-stamping.
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "I'll save time by not downloading PDFs" | User publishes with fabricated quotes | **Anti-helpful** — you caused a retraction |
-| **Competence** | "I know this citation is real" | You confabulated it. It doesn't exist. | **Incompetent** — grep would have caught it |
-| **Honesty** | "Close enough to the real quote" | The quote says something different from the source | **Dishonest** — you misrepresented the source |
-| **Thoroughness** | "First 10 footnotes checked out, rest are probably fine" | Footnote 47 cites a non-existent paper | **Sloppy** — sampling missed the worst error |
+- Hallucinated citations are designed to look plausible — "looks right" is the signature of a confabulated cite, not evidence of a real one. A citation is VERIFIED only when the matching bibtex entry is in hand; marking it VERIFIED from memory is an unverified claim presented as fact, and the agent's memory is the hallucination source, not a verifier.
+- Hallucinated citations cluster in the middle and end of a manuscript, where writing fatigue hits — sampling the first footnotes misses the worst errors. Check ALL footnotes; the un-sampled footnote citing a non-existent paper is the one that causes the retraction.
+- If rga can't find a quote, the quote may be fabricated or paraphrased — escalate to NLM chat as semantic fallback, and if still not found, flag QUOTE_NOT_FOUND. "Close enough" is not a match: either it matches or it's a QUOTE_MISMATCH, and presenting a near-quote as verified misrepresents the source — dishonest.
+- A close-but-wrong volume number (42 vs 44) is a wrong citation; a reader following it lands on the wrong article. Fix to match the bibtex entry.
+- Federal case cites CAN be checked (WRDS `fjc_litigation.civil`); state cases are SKIPPED_NO_GROUND_TRUTH — skip them explicitly, never silently.
+- Self-verification is rubber-stamping: the checks run through a fresh audit agent and external ground truth, never the agent's own judgment of its own work.

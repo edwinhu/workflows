@@ -46,8 +46,7 @@ hooks:
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)
 - [Core Principle](#core-principle)
 - [The Process](#the-process)
-- [Drive-Aligned Framing](#drive-aligned-framing)
-- [Rationalization Prevention](#rationalization-prevention)
+- [Delegation Facts](#delegation-facts)
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
@@ -450,43 +449,14 @@ Before marking any task as complete, execute this gate:
 
 **Skipping output verification is NOT HELPFUL — unverified results lead the user to act on wrong analysis.**
 
-## Drive-Aligned Framing
+## Delegation Facts
 
 <EXTREMELY-IMPORTANT>
-**Skipping output verification is NOT HELPFUL — the user makes decisions based on results you never checked.**
-
-When you say "Step complete", you are asserting:
-- A Task agent ran the analysis
-- Output was visible and verified by you
-- You personally checked it (not just trusting the agent's word)
-- Methodology reviewer approved (for statistical tasks)
-
-If ANY of these didn't happen, you are not "summarizing" — you are being anti-helpful by giving the user false confidence in unverified work.
-
-**Unverified claims waste the user's time and corrupt their research. Verified "investigating" protects their work.**
+"Step complete" asserts four things at once: a Task agent ran the analysis, output was visible, you personally verified it (not just trusted the agent's word), and the methodology reviewer approved (for statistical tasks). If any of these didn't happen, the claim is unverified — it gives the user false confidence in work no one checked.
 </EXTREMELY-IMPORTANT>
 
-## Rationalization Prevention
-
-Recognize these thoughts as signals to stop and delegate instead:
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll just check the shape quickly" | You'll skip the output-first protocol | Delegate to Task agent with full verification |
-| "It's just a simple merge" | Your merges fail silently | Delegate with verification requirements |
-| "I already know this data" | Your knowing ≠ verified | Delegate anyway with output-first protocol |
-| "The subagent will be slower" | Wrong results are slower than slow results | Delegate — correctness beats speed |
-| "Just this one plot" | You're hiding data issues with one plot | Delegate with full output requirements |
-| "User wants results fast" | They want CORRECT results | Delegate — optimize for correctness, not speed |
-| "Skip methodology review, it's standard" | Your "standard" assumptions often fail | Dispatch methodology reviewer anyway |
-| "Output looked reasonable" | "Looked reasonable" ≠ verified | Check the actual numbers against expectations |
-
-### Drive-Aligned Framing
-
-| Shortcut | Consequence |
-|----------|-------------|
-| Delegating without context | You spawned a task agent without SPEC/PLAN context. It guesses wrong — your delegation created confusion. |
-| Skipping verification of agent output | You trusted the agent's claim of completion. The output is wrong — your trust was negligence. |
+- A Task agent dispatched without SPEC/PLAN context guesses — and executes its guess literally. A summarized PLAN.md strips details the analyst needs; provide the full task text.
+- An agent's "completion" is a claim, not a result — accepting it without reading the actual output is an unverified claim passed to the user as fact.
 
 ### Delete & Restart
 
@@ -494,17 +464,7 @@ Recognize these thoughts as signals to stop and delegate instead:
 
 Code written in main chat is contaminated by orchestrator context, skips the output-first protocol, and bypasses methodology review. It cannot be salvaged — it must be replaced.
 
-## Red Flags
-
-**If you catch yourself thinking these, STOP immediately:**
-
-- "I can skip output verification this time"
-- "I'll chain operations together, it's fine"
-- "Unexpected nulls are probably okay"
-- "Methodology review takes too long, skip it"
-- "The merge probably worked"
-- "Output-first protocol is overkill here"
-- "I'll just summarize PLAN.md for the analyst" (STOP—provide full text)
+## Failure Handling
 
 **When analyst produces no visible output:**
 - You must re-dispatch with explicit output requirements
@@ -545,7 +505,7 @@ Analyst:
 
 ## Model Tier Hints
 
-When dispatching subagents, match model capability to task complexity. This is **advisory** -- Claude Code doesn't yet support model routing -- but documents intent for cost-aware delegation.
+When dispatching subagents, match model capability to task complexity via the Agent tool's `model` parameter (omit it to inherit the session model -- the right default for judgment-heavy work).
 
 | Task Complexity | Model Tier | Signals | Example |
 |----------------|------------|---------|---------|

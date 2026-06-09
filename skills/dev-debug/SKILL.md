@@ -383,10 +383,6 @@ You may NOT claim "root cause found" unless:
 
 **"I found the line that's wrong" is NOT root cause.**
 
-### Drive-Aligned Framing
-
-**Claiming "root cause found" without a reproducing test that fails before the fix and passes after is NOT HELPFUL — the bug comes back next week and you've wasted the user's time, not saved it.** Your hypothesis is not a root cause. Your confidence is not evidence.
-
 ## GUI Application Debugging
 
 When debugging GUI apps, subagents MUST complete execution gates:
@@ -397,30 +393,12 @@ BUILD → LAUNCH (with logging) → WAIT → CHECK PROCESS → READ LOGS → VER
 
 **Only after reading logs can you claim "bug reproduced" or "bug fixed."**
 
-## Rationalization Prevention
+## Debugging Facts (incident-derived)
 
-**If ANY of these thoughts cross your mind, spawn a subagent instead of acting on them.**
-
-| Thought | Reality |
-|---------|---------|
-| "Let me analyze what we know first" | That's the subagent's job. Spawn one. |
-| "I have a strong hypothesis already" | You thought that 30 times last time. Spawn a subagent. |
-| "Let me gather context first" | Context gathering IS investigation. Subagent. |
-| "Let me just quickly check one thing" | "One thing" becomes 50 file reads. Subagent. |
-| "This is a simple bug, no loop needed" | 19MB transcript was a "simple" bug. Loop. |
-| "I already know the codebase" | You claimed root cause 30 times. You were wrong 30 times. |
-| "Subagents are slow, I'll do it myself" | You lose objectivity and can't revert cleanly |
-| "I can test two hypotheses at once" | Neither confirmed nor refuted. You learned nothing. |
-| "Let me verify the subagent's work by reading the code" | Running the TEST is verification. Reading CODE is investigation. Subagent. |
-| "This error is urgent/persistent, I need to act now" | Urgency is EXACTLY when you need the protocol. You'll do 50 commands and still need a subagent. |
-| "Let me check the logs/container/database real quick" | Log reading IS investigation. Docker exec IS investigation. DB queries ARE investigation. Subagent. |
-| "The user asked about something else, I'll just handle it" | Announce the pause. Don't silently abandon the loop. |
-| "I'll just check one thing before spawning the subagent" | That's what happened on March 16: "one thing" became 50 commands. Spawn first, check never. |
-| "The subagent won't know how to docker exec / curl / read logs" | Subagents have full tool access. They CAN do operational debugging. You CANNOT. |
-
-### The Confidence Trap
-
-**The more confident you feel, the MORE you need the protocol.** High confidence = strong prior = resistance to disconfirming evidence.
+- In the March 6-7, 2026 session, main chat claimed "root cause found" ~30 times and was wrong every time — felt confidence is a strong prior that resists disconfirming evidence, not evidence. The more confident the diagnosis, the more the one-hypothesis-per-subagent protocol matters.
+- That "simple" bug produced a 19MB transcript with zero resolution, and on March 16 "let me just check one thing" became 50+ commands before any subagent was spawned. The protocol costs ~30 minutes; the shortcut cost 3+ hours and a killed session. There is no bug small or urgent enough to exempt from the loop — urgency is precisely when the escape happens.
+- The investigation boundary is categorical: context gathering, log reading, `docker exec`, `curl`, DB queries, and reading source code are all investigation. Main chat's verification is limited to running the named regression test and reading `.planning/` files — reading code to "verify" a subagent's finding is investigation relabeled, and presenting it as verification is dishonest about what was checked.
+- Subagents have full tool access: they can `docker exec`, `curl`, and read logs. "The subagent can't do operational debugging" is false — main chat doing it instead is the protocol violation, with the added costs of lost objectivity and no clean revert.
 
 ### Observed Escape Patterns (March 16, 2026 — nanoclaw audit)
 
@@ -441,17 +419,6 @@ A new 500 error appeared. Main chat "urgently" checked logs, diagnosed the 14MB 
 **Escape D: Pre-Delegation Investigation**
 Persistent 400 errors appeared. Main chat ran 50+ lines of docker exec, curl, env inspection, log analysis, source reading BEFORE spawning a subagent. By the time it delegated, it had already done all the investigation.
 - STOP trigger: If you're about to run docker exec, curl, sqlite3, or read logs → STOP. These are investigation tools. Spawn a subagent with the symptom description. Let the subagent investigate.
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Faster = more helpful" | 19MB transcript, zero resolution | **Anti-helpful** |
-| **Competence** | "I already know" | 30 wrong root cause claims | **Incompetent** |
-| **Efficiency** | "Protocol is overhead" | Protocol: 30 min. Shortcut: 3+ hours | **Inefficient** |
-| **Approval** | "User wants results now" | User killed your session | **Trust destroyed** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
 
 ## No Pause Between Iterations
 

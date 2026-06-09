@@ -32,10 +32,3 @@ After creating or modifying any `cetz.canvas` block:
 
 **A diagram that compiles is NOT a diagram that works.** Compilation verifies syntax; visual-verify verifies that the audience can actually read it. Shipping an unverified diagram means the presenter discovers clipped labels at the podium.
 </EXTREMELY-IMPORTANT>
-
-## Red Flags
-
-- **Writing `cetz.canvas` without planning a visual-verify loop** — STOP. Compile, render, score.
-- **Declaring a diagram "done" after compilation alone** — STOP. Compilation ≠ visual quality.
-- **Using `length: 1cm` or smaller** — STOP. Use `2em` minimum.
-- **Importing cetz-plot** — STOP. Forbidden (version conflict).

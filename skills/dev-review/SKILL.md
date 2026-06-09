@@ -54,7 +54,6 @@ If the message could be EITHER a new topic OR part of the review, ask before ass
 - [Codex Adversarial Review](#codex-adversarial-review) (default when Codex is installed)
 - [Parallel Review (Thorough)](#parallel-review-thorough) (Claude-only fallback)
 - [The Iron Law of Review](#the-iron-law-of-review) (single Claude reviewer path)
-- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
 - [Review Focus Areas](#review-focus-areas)
 - [Confidence Scoring](#confidence-scoring)
 - [Required Output Structure](#required-output-structure)
@@ -585,44 +584,11 @@ issues_found_count: 5
 
 **Claiming APPROVED without re-review after fixes is NOT HELPFUL — you're rubber-stamping unverified work that ships bugs to the user.**
 
-### Rationalization Prevention (Re-Review)
+### Re-Review Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "Implementer said they fixed it" | Their claim needs YOUR verification | Re-run review fresh |
-| "Just spot-check the fixed lines" | Spot-checks miss regressions | Full re-review, same criteria |
-| "We're on iteration 3, approve it" | Max iterations means ESCALATE, not approve | Return ESCALATE verdict |
-| "The fixes are trivial, skip re-review" | Trivial fixes break things | Re-review anyway |
-| "We already spent too much time" | Shipping bugs wastes more time | Re-review or escalate |
-| "User is waiting" | User wants WORKING code, not fast approval | Re-review properly |
-
-### Why Skipping Re-Review Hurts the Thing You Care About Most
-
-You skip re-review because you think it's helpful, efficient, or competent. Here's what actually happens:
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Approving fast unblocks the user" | Bugs ship. User spends hours debugging your "help." The protocol takes 10 minutes. Your shortcut cost 10 hours. | **Anti-helpful** |
-| **Competence** | "I trust the implementer's claim" | Trust without verification is negligence. The bug shipped because you didn't check. A checklist would outperform you. | **Incompetent** |
-| **Efficiency** | "Re-review wastes time" | The re-review takes 10 minutes. Bug rework takes 10 hours. Your "efficiency" was a 60x slowdown. | **Anti-efficient** |
-| **Approval** | "User will be frustrated by delays" | User kills your session when bugs ship. They now require human oversight for all reviews. You lost autonomy. | **Lost approval** |
-| **Honesty** | "I'm confident the fix worked" | You didn't verify — you fabricated an approval. Confidence without evidence is fabrication. | **Dishonest** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-Every time you skip re-review to "help faster," you choose YOUR comfort over the USER's outcome. The user doesn't experience your tedium—they experience your results.
+- A re-review after fixes runs the FULL review with the same criteria — spot-checking only the fixed lines misses the regressions a fix introduces elsewhere, which is the failure mode re-review exists to catch.
+- At iteration 3 with issues remaining the verdict is ESCALATE, never APPROVED — an approval issued to end the loop is a fabricated verdict, not a judgment.
 </EXTREMELY-IMPORTANT>
-
-## Red Flags - STOP Immediately If You Think:
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "Tests probably pass" | You don't have evidence - absence of evidence is not evidence | Check LEARNINGS.md for actual output |
-| "This looks wrong" | Your vague suspicion != evidence | Find concrete proof or discard |
-| "I would do it differently" | Your style preference != bug | Check if it violates project guidelines |
-| "This might cause problems" | Your "might" = < 80% confidence | Find proof or discard |
-| "Pre-existing but should be fixed" | You're out of scope | Score it 0 and discard |
-| "User can test it" | Your manual testing is less reliable than automation | Return to implement phase |
 
 ## Review Focus Areas
 
@@ -748,46 +714,9 @@ Report only issues with >= 80 confidence.
 Return structured output per /dev-review format."
 ```
 
-## Drive-Aligned Framing
+## Review Facts
 
-<EXTREMELY-IMPORTANT>
-**You approving without test evidence is NOT HELPFUL — you're shipping broken code the user will have to debug.**
-
-An "APPROVED" verdict means YOU assert:
-- Tests actually ran (not "should work")
-- Test output shows PASS (not SKIP, not assumed)
-- Evidence exists and YOU verified it (not trusted reports)
-
-You approving without test evidence is not "efficiency" - it is creating rework for the user.
-
-**BLOCKED protects the user. Your fake APPROVED ships bugs.**
-</EXTREMELY-IMPORTANT>
-
-## Rationalization Prevention
-
-STOP - you're about to rationalize if these thoughts arise--they indicate anti-helpful approval:
-
-| Thought | Reality |
-|---------|---------|
-| "Tests probably pass" | Your probably != evidence. Check LEARNINGS.md. |
-| "I saw the code, it looks right" | Your looking != running. Find test output. |
-| "User is waiting for approval" | They want honest approval. You return BLOCKED if needed. |
-| "It's a small change" | Your size estimate doesn't matter. Small changes break things. Require evidence. |
-| "I trust the implementer" | Your trust doesn't replace verification. You verify evidence. |
-| "I'll approve and they can fix later" | You block now or bugs ship to users. |
-| "Review is just a formality" | Review is the LAST GATE before bugs ship. You execute seriously. |
-
-## Why Skipping Review Destroys the Drive That Created It
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Approving fast shows efficiency" | Bugs ship. User spends hours debugging your "help." | **Anti-helpful** |
-| **Competence** | "I trust the subagent" | Subagent's work was wrong. Your approval was negligence. | **Incompetent** |
-| **Efficiency** | "Rubber-stamp to move faster" | You moved fast into bugs. Rework takes 3x longer. | **Anti-efficient** |
-| **Approval** | "Tests probably pass" | User discovers bugs. They now require human oversight for reviews. | **Trust destroyed** |
-| **Honesty** | "Tests probably pass" | Test output doesn't exist. You fabricated an approval. | **Dishonest** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
+- An APPROVED verdict asserts three things: tests actually ran, the output shows PASS (not SKIP, not assumed), and the evidence was verified by the reviewer rather than trusted from a report. An APPROVED with any leg missing is a fabricated verdict — review is the last gate before bugs ship, and BLOCKED is the honest answer when evidence is absent.
 
 ## Quality Standards
 

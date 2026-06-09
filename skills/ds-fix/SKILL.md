@@ -77,35 +77,11 @@ Before changing ANY analysis code, you MUST:
 **If you're about to change code without diagnosing first, STOP.**
 </EXTREMELY-IMPORTANT>
 
-### Drive-Aligned Framing
+### Fix Facts
 
-**Skipping diagnosis is NOT HELPFUL — guessing at a root cause wastes the user's time when the real bug resurfaces.** Your guess is not a diagnosis. Your assumption is not evidence.
-
-### Drive-Aligned Framing (Consequences)
-
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping diagnosis | You skipped diagnosis because you thought you were smart enough to guess. A checklist would outperform you. |
-| Fixing without understanding | You applied a patch without understanding the root cause. The bug returns in a different form — your fix was cosmetic. |
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can see the bug from the error message" | Error messages show symptoms, not causes. The traceback tells you WHERE, not WHY. | Trace backwards through the pipeline to find the first divergence point |
-| "This is the same bug as last time" | Similar symptoms can have different root causes. Pattern-matching from memory is not diagnosis. | Diagnose fresh — compare against LEARNINGS.md for prior context, but verify independently |
-| "The fix is obvious" | Obvious fixes mask deeper issues. The "obvious" fix is usually a patch over the symptom. | Identify root cause first, then fix. If it's truly obvious, diagnosis takes 30 seconds. |
-| "I'll just rerun and see if it works" | Retry without understanding is cargo cult debugging. If you don't know why it failed, you don't know why it passed. | Diagnose the failure, fix the cause, then rerun to verify |
-| "The data probably changed" | Verify before assuming external cause. Blaming data without evidence is a cop-out. | Compare data profiles before/after — shape, dtypes, distributions, nulls |
-
-## Red Flags - STOP Immediately If You Think:
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "I'll just re-run everything" | Brute force hides root cause | Trace to the specific failing step |
-| "The data probably changed" | Your guess isn't a diagnosis | Compare data profiles before/after |
-| "Let me tweak the parameters" | Tweaking without understanding is p-hacking | Understand WHY parameters are wrong first |
-| "I'll fix it and check later" | You're skipping output-first | Fix AND verify in the same step |
+- "The data probably changed" is a hypothesis, not a diagnosis — it is only established by comparing data profiles before/after: shape, dtypes, distributions, nulls.
+- Parameter-tweaking until the error goes away is specification search applied to debugging. A fix whose mechanism you can't state is cosmetic — the bug returns in a different form.
+- A traceback locates WHERE the pipeline failed, not WHY — the root cause is found by tracing backwards to the first divergence point, and if you don't know why it failed, a passing rerun tells you nothing about why it passed.
 
 ## Step 1: Load Context
 

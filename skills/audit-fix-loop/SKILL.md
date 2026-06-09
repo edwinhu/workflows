@@ -149,34 +149,7 @@ than a harsh one. Do NOT soften findings. Do NOT say "overall good." Then give a
 
 Compile into `.planning/AUDIT.md`, append the row to `.planning/SCORES.md`, then DECIDE → FIX → end turn.
 
-## Rationalization Table
+## Loop Facts
 
-| Excuse | Reality | Do instead |
-|--------|---------|------------|
-| "I can audit my own fixes" | Self-audit is rubber-stamping — you'll approve your own work | Fresh subagent every audit (Iron Law 1) |
-| "The remaining findings are minor" | If they're MEDIUM/LOW and the substrate is clean and flat, that's *done* — not a reason to grind | End the turn; minors are advisory |
-| "Substrate's clean but the score is only 8.7 — keep going" | A flat score below your floor is the domain ceiling / judge noise, not a defect | Stop; record the number as the honest reading |
-| "8.7 is below 9.5, one more pass" | If the score is FLAT, 9.5 is unreachable noise — grinding it forces over-engineering | Stop once substrate-clean + flat (Iron Law 2) |
-| "A CRITICAL is just a measurement artifact" | A CRITICAL keeps the substrate dirty — you cannot stop on it | Verify it against the real files; fix it, or neutralize the artifact — don't ignore it |
-| "'all issues addressed' ≈ meeting the gate" | Honor-system phrasing — the gate is the SCORES.md substrate, not your summary | Pin `/goal` to the file (Iron Law 3) |
-| "I'll skip the planning AskUserQuestion" | Unplanned `/goal`s are naive — the evaluator has nothing concrete to check | Plan first, set the goal second |
-
-## Red Flags — STOP if you catch yourself
-
-| Action | Why wrong | Do instead |
-|--------|-----------|------------|
-| Setting a `/goal` before Step 1 | Naive condition, no audit structure | Plan the loop first |
-| Condition like "all issues addressed" | Evaluator has nothing concrete to check | Pin to `.planning/SCORES.md` substrate + flat |
-| Auditing your own fixes in-context | Rubber-stamping | Fresh audit subagent |
-| Declaring done while a CRITICAL/HIGH is open | The substrate is dirty — that's the gate | Keep iterating; the substrate is non-negotiable |
-| Iterating to push a FLAT score toward 9.5 | The treadmill — over-engineers the artifact | Stop once substrate-clean + flat |
-| Skipping a selected scorer "to save time" | Partial audit misses whole failure categories | Run all selected scorers every iteration |
-
-## Why skipping hurts the thing you care about most
-
-| Your drive | Why you skip | What actually happens | The drive you failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "I'll save time self-auditing" | You approved your own sloppy work | **Anti-helpful** — the artifact still has issues |
-| **Competence** | "I know it's good enough" | A fresh auditor found 8 more issues | **Incompetent** — you missed what a checklist caught |
-| **Efficiency** | "Planning is overhead" | Unplanned loop ran 10 turns with no progress | **Inefficient** — planning takes 30s; an unplanned loop wastes minutes |
-| **Honesty** | "Close enough to the floor" | Score was 8.7 with a CRITICAL open | **Dishonest** — you claimed the gate without checking |
+- A CRITICAL caused by a measurement artifact still keeps the substrate dirty. Verify it against the real files, then either fix it or neutralize the artifact — waiving it informally ("it's just an artifact") converts the gate back into the honor system, which is claiming the gate without checking it.
+- A flat score below the floor with a clean substrate is the domain ceiling / judge noise, not a defect — record the number as the honest reading and stop. Grinding a flat score toward 9.5 over-engineers the artifact and makes it worse (Iron Law 2).

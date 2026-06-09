@@ -96,13 +96,8 @@ For each `drafts/*.md` section, treat the heading structure (`##`, `###`) as def
 
 False positives are acceptable — the check is a first-pass filter. The reviewer subagent applies judgment for edge cases (rhetorical numbers, well-known statistics, Part-level summaries).
 
-## Rationalization Table
+## Anchoring Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The reader knows which table it's from" | The reader does not — you wrote the paper, they didn't | Name the table at least once in the subsection |
-| "The footnote cites the table" | Body text should be self-contained; footnotes supplement | Anchor in the body text at the subsection opening |
-| "It's obvious from context" | If it were obvious you wouldn't need the number | If obvious, cut the number; if needed, anchor once per subsection |
-| "Anchoring every paragraph is repetitive" | Correct — that is why anchoring is per-subsection, not per-paragraph | Anchor once at the subsection opening |
-| "I'll add table references in final editing" | Final editing never comes; numbers multiply in revision | Anchor during drafting |
-| "The lede needs to be punchy, not anchored" | Correct — Part-level ledes are exempt | Anchor where each number is developed, in the appropriate subsection |
+- Body text must be self-contained: a footnote citing the table does not substitute for an in-body anchor at the subsection opening.
+- Numbers multiply during revision, so anchors deferred to "final editing" never get added — anchor during drafting.
+- A number whose source is "obvious from context" either doesn't need to appear (cut it) or needs the once-per-subsection anchor like any other.

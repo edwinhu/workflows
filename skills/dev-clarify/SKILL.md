@@ -39,7 +39,6 @@ At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md
 - [What Clarify Does](#what-clarify-does)
 - [Process](#process)
 - [Question Categories](#question-categories)
-- [Red Flags](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
 
 # Post-Exploration Clarification
@@ -65,25 +64,9 @@ Use this knowledge to ask **informed questions** about:
 **If you catch yourself about to design without resolving ambiguities, STOP.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Clarification Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The pattern choice is obvious" | Multiple patterns exist for a reason | ASK which to follow |
-| "I can decide edge cases myself" | Your assumptions don't match user expectations | ASK for clarification |
-| "This is a small detail" | Small details cause big bugs | ASK about edge cases now |
-| "I'll handle integration points during implementation" | Wrong integration breaks everything | CLARIFY integration NOW |
-| "The exploration gave me enough info" | Code tells you HOW, not WHAT SHOULD happen | ASK for requirements, not just patterns |
-| "I can make a reasonable assumption" | Reasonable != correct | ASK, don't assume |
-| "Asking too many questions annoys users" | Building wrong thing annoys users more | ASK clarifying questions |
-
-### Drive-Aligned Framing
-
-**Assuming user requirements without asking is NOT HELPFUL — you build the wrong thing and create hours of rework.**
-
-You explored the codebase and found patterns. But patterns show HOW things work, not WHAT the user wants. Clarification bridges this gap.
-
-Asking costs minutes. Wrong assumptions cost hours of rework.
+- Exploration shows HOW the code works, not WHAT SHOULD happen — patterns found in code are not requirements. When multiple patterns coexist in the codebase, they exist for a reason; which one to follow is a user decision, and picking one by inference is a guess presented as a decision.
 
 ### No Pause After Completion
 
@@ -327,25 +310,6 @@ Before proceeding to design, verify the testing strategy passes real-test enforc
 - What the feature does (that's brainstorm)
 - Whether to build it (user already decided)
 - Architecture approach (that's design)
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "I don't want to bother the user with questions" | You build the wrong thing — your courtesy was sabotage | **Anti-helpful** |
-| **Competence** | "I can infer edge cases from the code" | Code shows HOW, not WHAT SHOULD happen — your inference was a guess | **Incompetent** |
-| **Efficiency** | "Assumptions are faster than questions" | Wrong assumptions mean rework — your speed was waste | **Inefficient** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-## Red Flags - STOP If You're About To:
-
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Ask without exploration context | Questions will be generic | Reference specific code findings |
-| Propose architecture | Too early, still clarifying | Ask questions, save design for next phase |
-| Make assumptions | Leads to rework | Ask and get explicit answer |
-| Skip to design | Ambiguities cause bugs | Resolve all questions first |
 
 ## Output
 

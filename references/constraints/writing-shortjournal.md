@@ -60,11 +60,7 @@ Exempt (no shortjournal required):
 }
 ```
 
-## Rationalization Table
+## Shortjournal Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The CSL will figure out the abbreviation" | CSLs don't synthesize abbreviations from full names; they look up a stored short form | Add `shortjournal` to the bib entry |
-| "I use a separate abbreviations JSON" | JSON works but requires coordination between bib and JSON; bib-local data is more robust | Prefer `shortjournal` in bib; use JSON only as a fallback |
-| "Working paper, no abbreviation needed" | Correct — the check exempts SSRN, arXiv, working-paper venues | Keep the full name; the check will pass |
-| "One missing shortjournal won't hurt" | It silently degrades to the full name and slips past review | Fix at draft time, not during proofs |
+- CSLs do not synthesize abbreviations from full journal names; they look up a stored short form. A missing `shortjournal` silently degrades to the full name and slips past review — fix at draft time, not during proofs.
+- A separate Zotero-style abbreviations JSON works but requires coordinating two files; bib-local `shortjournal` is more robust. Prefer it; use the JSON only as a fallback.

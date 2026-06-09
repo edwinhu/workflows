@@ -44,7 +44,7 @@ At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md
 - [Process](#process)
 - [Approach Categories](#approach-categories)
 - [PLAN.md Format](#planmd-format)
-- [Red Flags](#red-flags---stop-if-youre-about-to)
+- [Design Facts](#design-facts)
 - [Output](#output)
 
 # Architecture Design with User Gate
@@ -80,12 +80,6 @@ Implementation CANNOT start without user saying "Yes" or choosing an approach.
 
 **STOP - you're about to implement without user approval.**
 </EXTREMELY-IMPORTANT>
-
-### Drive-Aligned Framing
-
-**Proposing an architecture without reading the codebase is NOT HELPFUL — the user trusts your proposal reflects reality, and you're wasting their approval on fiction.**
-
-Design without exploration is not "efficiency" — it is fabricating an approach from imagination. The user trusts your proposal reflects the actual codebase. If it doesn't, you wasted their approval on fiction.
 
 ## What Design Does
 
@@ -430,39 +424,10 @@ Ask yourself before proceeding:
 
 If ANY answer is "no" → STOP. Fix the REAL Test Criteria section.
 
-## Rationalization Prevention
+## Design Facts
 
-Recognize these thoughts as red flags—they signal attempts to bypass the user gate:
-
-| Thought | Reality |
-|---------|---------|
-| "User will approve this" | Your assumption ≠ approval. Ask and wait. |
-| "It's the obvious choice" | User decides what's obvious. Present options. |
-| "Let me just start" | NO. Gate exists for a reason. Wait. |
-| "User said they trust me" | Trust doesn't mean skip approval. Ask. |
-| "Time pressure" | You'll waste more time with the wrong approach. Wait for approval. |
-| "Only one viable option" | Present it anyway. User may see alternatives. |
-| "Ask forgiveness later" | No. Ask permission now. |
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "I'll pick the best approach for them" | User had context you lacked — your choice was wrong | **Anti-helpful** |
-| **Competence** | "Only one viable option, no need to ask" | User sees alternatives you missed — your confidence was arrogance | **Incompetent** |
-| **Efficiency** | "Skip user approval to move faster" | Wrong approach means full rework | **Inefficient** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-## Red Flags - STOP If You're About To:
-
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Present only one approach | You're removing user choice | Always show 2-3 options |
-| Skip trade-offs | You're making decision for user | Explain pros/cons clearly |
-| Start implementing | You don't have approval yet | Wait for explicit "Yes" |
-| Assume recommendation accepted | You're guessing at user preference | Ask and wait for answer |
-| Write PLAN.md without checking SPEC.md prose sections for un-ID'd requirements | Behavioral features in Design Decisions, Discovered Protocol, or Clarified Requirements will be silently dropped from the entire traceability chain | Run Prose Section Audit (step 4b) first |
+- Behavioral requirements without REQ-IDs hide in SPEC.md prose sections — Design Decisions, Discovered Protocol, Clarified Requirements. A PLAN.md written without the Prose Section Audit (step 4b) silently drops them from the entire traceability chain, and implementers execute the plan literally: what the plan omits never gets built.
+- "Only one viable option" still gets presented as an option with trade-offs — the user routinely has context you lack and sees alternatives you missed; choosing for them converts their approval gate into a notification.
 
 ## Output
 

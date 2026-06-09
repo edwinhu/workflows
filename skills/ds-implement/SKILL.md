@@ -60,7 +60,7 @@ Apply output-first verification at every step of analysis implementation. This i
 - [The Iron Law of DS Implementation](#the-iron-law-of-ds-implementation) - EVERY step MUST produce visible output
 - [Delegation](#delegation) - Main chat orchestrates, subagents analyze
 - [What Output-First Means](#what-output-first-means)
-- [Red Flags](#red-flags---stop-immediately)
+- [Output-First Facts](#output-first-facts)
 - [SAS Language Routing](#sas-language-routing) - Load SAS enforcement when PLAN.md specifies SAS
 - [Implementation Process](#implementation-process)
 - [Verification Patterns](#verification-patterns) - See `references/verification-patterns.md`
@@ -148,40 +148,12 @@ The legacy per-task `ds-delegate` template is now embedded in the workflow's imp
 
 **The Mantra:** If not visible, it cannot be trusted.
 
-## Rationalization Table
+### Output-First Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I'll combine these steps to save time" | Combined steps hide which one failed. Your efficiency creates undiagnosable bugs. | One operation per verification cycle |
-| "Output looks roughly right" | "Roughly" means you didn't actually check. Roughly right is precisely wrong. | Compare against PLAN.md expected output with specific numbers |
-| "LEARNINGS.md is overhead" | Undocumented steps are invisible to review. Skipping logs means review can't verify your work. | Log every task completion — it takes 30 seconds |
-| "This task is trivial, no need to delegate" | Trivial tasks in main chat accumulate into unverified analysis. | Delegate everything, verify everything |
-| "I'll read the agent's output later" | Running code without reading the output is running blind. The agent may have reported errors you missed. | Read agent output immediately, verify claims against actual data |
-
-### Drive-Aligned Framing
-
-| Drive | Shortcut | Consequence |
-|-------|----------|-------------|
-| **Helpfulness** | Skipping output verification | You assumed the output was correct because the code ran. The results are wrong — your assumption is the error the user publishes. You were anti-helpful. |
-| **Helpfulness** | Claiming task complete without checking output | You logged "COMPLETE" in LEARNINGS.md without verifying the output. The task may have silently failed — the user acts on results that don't exist. |
-| **Competence** | Running all tasks sequentially yourself | You ran everything yourself to feel productive. Quality suffered without delegation and review — your productivity was incompetence disguised as efficiency. |
-| **Efficiency** | Not delegating to Task agents | You wrote analysis in main chat because it felt faster. Now it must be deleted and redone. Your shortcut doubled the work — anti-efficient. |
-| **Approval** | Skipping LEARNINGS.md logging | You skipped documentation to move faster. The reviewer cannot verify your work. The user loses trust when review fails. You lost their approval. |
-
-## Red Flags - STOP Immediately
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "I'll check at the end" | STOP - you're letting errors compound silently | Check after every step |
-| "This transform is simple" | STOP - simple code can still be wrong | Output and verify |
-| "I know merge worked" | STOP - you've assumed this before and been wrong | Check row counts |
-| "Data looks fine" | STOP - you're confusing "looks" with verification | Print stats, show samples |
-| "I'll batch the outputs" | STOP - you're about to lose your ability to isolate issues | Output per operation |
-| "Just a quick plot in main chat" | STOP - you're about to violate delegation | Spawn a Task agent |
-| "I'll combine these steps to save time" | STOP - combined steps hide which one failed | One operation per verification cycle |
-| "Output looks roughly right" | STOP - "roughly" means you didn't actually check | Compare against `.planning/PLAN.md` expected output |
-| "LEARNINGS.md is overhead" | STOP - undocumented steps are invisible to review | Log every task completion to `.planning/LEARNINGS.md`, it takes 30 seconds |
-| "This task is trivial, no need to delegate" | STOP - trivial tasks in main chat accumulate into unverified analysis | Delegate everything, verify everything |
+- "The merge worked fine" without printed numbers is an unverified claim — show the counts, compared against `.planning/PLAN.md` expected output.
+- Combined operations hide which step failed: when the error surfaces at the end, the root cause is buried under every later transform and cannot be isolated. One operation per verification cycle.
+- A "COMPLETE" logged in `.planning/LEARNINGS.md` without verified output is a false claim that review inherits — the task may have silently failed, and the user acts on results that don't exist. Logging a verified completion takes 30 seconds; an unlogged step is invisible to review.
+- An agent's summary can gloss over errors its full output reports — deferring the read means running blind. Read agent output immediately and verify claims against the actual data.
 
 
 ## Implementation Strategy Choice

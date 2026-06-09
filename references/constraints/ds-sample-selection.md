@@ -50,17 +50,3 @@ Starting universe: 50,000 firm-years (2000-2023)
 df = df[df["year"] >= 2010]  # Why 2010? Not documented
 df = df.dropna()  # How many rows dropped? Not logged
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Standard filters for this field" | Standard doesn't mean documented. The user needs to see what was dropped. | Document every filter with counts. |
-| "Only a few rows were dropped" | "A few" is not a number. Log the exact count. | Print before/after counts for every filter. |
-| "The missing data isn't important" | You don't know that without analyzing what's missing. | Document missing data patterns before dropping. |
-
-## Red Flags
-
-- **"Standard sample filters"** → STOP. Document them anyway with counts.
-- **Dropping >20% without flagging** → STOP. Flag as potential selection bias.
-- **`dropna()` without logging count** → STOP. Log how many rows and which columns.

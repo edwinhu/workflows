@@ -45,24 +45,12 @@ A bad plan that survives into implementation means:
 **Catching a plan gap NOW costs 1 minute. Catching it during implementation costs hours.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Plan-Review Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The plan looks fine to me" | Self-review is rubber-stamping | Dispatch independent reviewer |
-| "User already approved the plan" | User approves the approach, not task granularity | Reviewer checks what user might miss |
-| "This will slow us down" | 30-second review saves hours of implementation rework | Dispatch the reviewer |
-| "It's a simple analysis, no review needed" | Simple plans hide the most missing steps | Review it anyway |
-| "I'll catch issues during implementation" | Implementation subagents don't know the spec | Review BEFORE implementing |
-
-### Red Flags - STOP If You Catch Yourself:
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "The plan looks fine to me" | Self-assessment is rubber-stamping — check EVERY task against the checklist | Read each task individually, verify outputs and verification steps defined |
-| "Plan looks similar to a prior analysis" | Similar structure ≠ complete tasks — prior plans had different data sources | Evaluate THIS plan against THIS spec's requirements |
-| "Tasks are obvious, they don't need intermediate output definitions" | Subagents receiving these tasks have no context — vague tasks produce wrong analysis | Verify EVERY task defines what it produces and what proves completion |
-| "Missing verification steps are fine, ds-implement handles that" | ds-implement enforces output-first per step, but missing task-level verification means no one checks the task's overall outcome | Flag missing verification criteria NOW |
+- User approval covers the approach, not task granularity — an approved plan can still have vague tasks, missing profiling steps, and silently dropped requirements. The reviewer checks what the user didn't.
+- Implementation subagents receive only the task text — they don't know the spec, and they execute vague tasks literally, producing wrong analysis. Every task must define what it produces and what proves completion.
+- ds-implement enforces output-first per step, but a task with no task-level verification criterion has no one checking its overall outcome — per-step output discipline does not substitute for it.
+- A plan that resembles a prior analysis is not thereby complete — prior plans had different data sources; each task is checked against THIS spec's requirements.
 
 ## Chunking Rule
 
@@ -181,15 +169,7 @@ When the reviewed plan proceeds to implementation, add model tier guidance to ta
 | Integration | Standard | Merges/joins across sources, aggregations, visualization, data reshaping |
 | Architecture/Review | Most capable | Feature engineering strategy, model selection, statistical assumption validation, methodology review |
 
-**Advisory only** -- Claude Code doesn't yet support model routing. Document intent for future use.
-
-## Drive-Aligned Framing
-
-**Proceeding to implementation with a flawed plan is NOT HELPFUL — implementation subagents will fail on gaps you could have caught now.**
-
-You know the plan has gaps. Implementation subagents will struggle with tasks that lack intermediate output definitions, miss data profiling steps that aren't documented, and build the wrong analysis when spec requirements are silently dropped.
-
-**Fix the plan now. It costs minutes, not hours.**
+**Routing is real** -- apply via the Agent tool's `model` parameter at dispatch (omit to inherit the session model for judgment-heavy tasks).
 
 ## Gate Function
 

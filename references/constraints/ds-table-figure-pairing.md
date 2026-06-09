@@ -81,19 +81,8 @@ table.save(output / "reg_results.html")
 # "The reader can see the coefficients in the table"
 ```
 
-## Rationalization Table
+## Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The table is self-explanatory" | Tables are never self-explanatory to a skimmer. Figures catch the eye; tables require effort. | Make the figure. It takes 5 minutes. |
-| "There's no natural visual for this result" | There is always a visual. Coefficients get dot plots. Distributions get densities. Time variation gets line plots. | Pick the right chart type from the table above. |
-| "The figure would be redundant" | Redundancy is the point. Two channels, one story. If they disagree, you found a bug. | Redundancy is a feature, not a cost. |
-| "I'll add figures later in the polishing phase" | Later never comes. The table ships without its figure and the reader misses the story. | Create table and figure together, in the same script. |
-| "It's just a robustness table, not a main result" | If it's important enough to include, it's important enough to visualize. | Make the figure. Robustness deserves visual evidence too. |
-
-## Red Flags
-
-- **Writing a regression table without starting the companion figure** --- STOP. Write both in the same code block.
-- **"I'll come back and add the figure"** --- STOP. You won't. Do it now.
-- **Saving a .tex or .csv table with no .pdf/.png in the same output directory** --- STOP. The pair must ship together.
-- **A figure that doesn't match the table's specification** --- STOP. If the table has 3 columns (baseline, +controls, +FE), the coefficient plot must have 3 points.
+- A .tex or .csv table with no .pdf/.png in the same output directory shipped without its figure — the pair ships together, written in the same script. Figures deferred to "the polishing phase" never get made.
+- The figure must match the table's specification: if the table has 3 columns (baseline, +controls, +FE), the coefficient plot must have 3 points. A mismatched pair is a broken robustness check, not a style issue.
+- There is always a natural visual — coefficients get dot plots, distributions get densities, time variation gets line plots (see the mapping table above). "No natural visual for this result" is a claim the mapping table already refutes.

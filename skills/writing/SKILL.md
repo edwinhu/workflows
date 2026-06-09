@@ -478,38 +478,16 @@ Read `${CLAUDE_SKILL_DIR}/../writing-lit-review/SKILL.md` and follow its instruc
 
 The lit review phase gathers academic papers (Scholar → Paperpile), personal reading (Readwise), and web sources (NLM → Obsidian), then materializes everything into `references/`. Only after sources are materialized does setup (PRECIS + OUTLINE) begin.
 
-## Rationalization Table
+## Source-Gathering Facts
 
-| Excuse | Reality | Do Instead |
-|---|---|---|
-| "I already know enough about this topic" | Your training data is not research | Search for real sources |
-| "One search is enough" | One search finds one perspective | Decompose into 3-6 parallel searches |
-| "The user seems impatient, skip the interview" | Wrong objectives waste more time than questions | Ask the clarifying questions |
-| "I'll gather more sources later" | Later never comes; you'll draft with what you have | Gather sources now |
-| "This topic is straightforward" | "Straightforward" means you haven't thought deeply enough | Find the complexity |
-
-**Skipping source gathering is NOT HELPFUL — the user publishes unsupported claims that reviewers reject.** Your training knowledge is not research. Your recall is not citation.
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Getting to drafting fast helps the user see progress" | The draft has no evidence. Every claim is an assertion. The user submits and reviewers reject for lack of sources. Your speed destroyed their credibility. | **Anti-helpful** |
-| **Competence** | "I already know enough about this topic to skip research" | You searched nothing. The paper misses the 3 most relevant recent sources. A librarian search would have found them in 2 minutes. Your expertise was ignorance. | **Incompetent** |
-| **Efficiency** | "The user interview wastes time — I can infer the angle" | You inferred wrong. The paper argues critique when the user wanted reform. You rewrote from scratch. The 5-minute interview would have saved 2 hours. | **Anti-efficient** |
-| **Approval** | "The user seems eager to start writing" | You skipped clarification to please them. The draft argues the wrong thesis. The user now questions whether you understand their work at all. You lost trust. | **Lost approval** |
-| **Honesty** | "I cited from memory — I know these sources" | Your training data citations are wrong or outdated. The user submits fabricated sources — their credibility is destroyed. | **Anti-helpful** |
+- Training data is not research and recall is not citation: from-memory citations come out wrong or outdated, and a draft built on them ships fabricated sources under the user's name — an unverified citation presented as real is dishonest, and it destroys the user's credibility when reviewers check.
+- A single search finds a single perspective; a paper built on it misses the most relevant recent sources that a 2-minute parallel librarian sweep would have found. Decompose into 3-6 parallel librarian searches.
+- An inferred angle is usually the wrong angle (a paper arguing critique when the user wanted reform gets rewritten from scratch). The 5-minute angle/audience interview is cheaper than the rewrite — skipping it to look fast is counterproductive.
+- Sources deferred are sources never gathered: drafting proceeds with whatever is on hand, so a PRECIS written before gathering produces a thin argument whose claims are assertions.
 
 ## Red Flags - STOP If You Catch Yourself:
 
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Jumping to PRECIS creation without source gathering | PRECIS without sources = thin argument | Gather sources first |
-| Skipping the user interview about angle/audience | You'll brainstorm for the wrong audience | Ask the clarifying questions |
-| Running a single search instead of parallel librarian agents | Single search misses themes | Decompose into 3-6 parallel librarian searches |
-| Calling Readwise MCP tools directly | Violates librarian Iron Law, pollutes context | Always dispatch workflows:librarian |
-| Detecting domain without checking source indicators | Wrong domain = wrong style enforcement later | Check the domain detection table |
-| Moving to setup before user confirms the topic | User approval is the gate | Present findings, get confirmation |
+The failure modes and their consequences are stated once, at the point of use — see [Source-Gathering Facts](#source-gathering-facts), the Iron Law of Clarifying Intent, and the librarian dispatch rule. If you are about to create PRECIS without sources, skip the angle/audience interview, run one search instead of parallel librarian agents, call Readwise MCP directly, guess the domain, or move to setup without user confirmation — those sections explain why that is counterproductive, and what to do instead.
 
 ## Next Phase
 

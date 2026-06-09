@@ -182,19 +182,12 @@ These apply to EVERY edit, no matter how small:
 **Shipping a "quick fix" with broken formatting means the presenter discovers it at the podium. That's not a fix — it's a trap you set for them.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table — Revision Edits
+### Revision Edit Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "It's just one slide, conventions don't matter" | One slide with wrong spacing is visible to the entire audience | Follow conventions on every edit |
-| "I'll fix the spacing later" | Later never comes; conventions rot incrementally | Fix it now |
-| "The user only asked about content, not formatting" | Shipping broken formatting is anti-helpful to the presenter | Fix content AND maintain formatting |
-| "Notes don't need updating for this slide change" | Out-of-sync notes cause confusion at the podium | Update notes to match slide changes |
-| "Sub-bullet spacing is cosmetic" | Tight sub-bullets are unreadable when projected | Add blank lines between sub-bullets |
-| "Table inset 5pt saves space" | 5pt is illegible at 16:9 projection | Use 10pt minimum |
-| "Only text changed — skip widow detection" | Widow positions shift with any content reflow | Re-run widow detection after every compile |
-| "It's formatting-only — skip the workshop-verify loop" | Formatting edits cascade into spacing/overflow violations only the checker catches | Run the gate; the JS verdict decides |
-| "User only asked about slides — notes can stay" | Out-of-sync notes confuse the presenter at the podium | Update notes to match the slide change |
+- Widow positions shift with ANY content reflow — a text-only edit still requires widow detection after every compile. "Only text changed" is precisely the case the detector exists for.
+- Formatting-only edits cascade into spacing and overflow violations that only the mechanical checks catch — the Step 4 verification runs regardless of how small the edit was. Declaring a small edit clean without it is an unverified claim.
+- slides.typ and notes.typ are a synchronized pair: a slide content change without the matching notes update leaves the presenter reading stale notes at the podium. Editing one without checking the other is an incomplete edit, even when the user only mentioned slides.
+- The theme import line and `qr: none` in config-info are load-bearing for the secreg theme — removing or "cleaning up" either breaks compilation.
 
 ### Deviation Rules (revision edits)
 
@@ -330,22 +323,6 @@ The midpoint leaves a durable record so a later session can see what changed and
    - Reviewed by: [how the user inspected the result — observe, don't infer]
    ```
 2. **Observe → record → offer:** if the **same** kind of revision request recurs 3+ times across sessions (e.g. "shrink the results table" every time), offer to encode it as a default — but only after the pattern proves itself. Do NOT pre-build automation for a one-off.
-
-### Red Flags — STOP If You Catch Yourself:
-
-- **Editing files without completing Step 1** → STOP. Load context first. If you already edited, DELETE edits and restart.
-- **Editing slides.typ without checking notes.typ for corresponding changes** → STOP. Keep them in sync.
-- **Skipping compilation after edits** → STOP. Always verify.
-- **Skipping widow detection after compile** → STOP. PDF is ground truth.
-- **Removing `qr: none` or changing the theme import** → STOP. Those are load-bearing.
-- **Adding cetz-plot for "better visualization"** → STOP. Use tables.
-- **Writing sub-bullets with `--` marker** → STOP. Use two-space indent + `- `.
-- **Writing consecutive bullets without blank lines** → STOP. Add blank lines.
-- **Typing `)'s` or `]'s`** → STOP. Use `\u{2019}s`.
-- **Writing `cetz.canvas(length: 1cm, ...)` or smaller** → STOP. Use `2em` minimum.
-- **Writing `cetz.canvas` without `// Storytelling:` comment** → STOP. Add it.
-- **Writing `$100` without escaping** → STOP. Use `\$100`.
-- **Adding `#callout[]` to a slide with 3+ `#pause`** → STOP. Split the slide.
 
 ## Skill Dependencies
 

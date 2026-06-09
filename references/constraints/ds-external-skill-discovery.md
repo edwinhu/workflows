@@ -49,22 +49,13 @@ Incorrect — same task:
 3. PLAN.md has no External Skill Discovery section.
 ```
 
-## Rationalization Table
+## Facts (incident-derived)
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The rule references tell me how to write SAS, that's enough" | Rule refs teach syntax, not recipes. The recipe for holdings→permno-quarter aggregation is in `tfn-ownership.md` AND in `voting_ownership_pipeline/`. | Load BOTH rule refs AND domain refs AND check examples. |
-| "I'll search examples if I get stuck" | You won't get "stuck" — you'll silently draft worse code than the example, and it'll pass review because no one will know it could have been better. | Search examples BEFORE drafting, not after. |
-| "The example is for a different year / slightly different task" | Patching a battle-tested example beats greenfielding from scratch 9 times out of 10. The example has SGE parameters, hash table sizes, and WHERE patterns already tuned. | PATCH the example. Document the delta in PLAN.md. |
-| "Globbing is a waste of time, I know what's in the skill" | You don't. New examples get added, references renamed. The `examples/` directory IS the ground truth. | Glob every time. 2 seconds. |
-| "I'll note the example in a comment" | Comments don't create enforcement. PLAN.md section creates enforcement — the plan reviewer checks it, implementers follow it. | Write the decision in the External Skill Discovery section of PLAN.md. |
-
-## Red Flags — STOP If You Catch Yourself
-
-- About to draft a SAS / Python / R script from scratch without first `Glob`bing `skills/<skill>/examples/` → STOP. That directory exists specifically to prevent reinvention.
-- Loaded only rule refs (`sas-etl.md`, `postgres-vs-sas.md`) and proceeding to task breakdown → STOP. You loaded rule refs, not domain refs. What's the data? What's the ref for that data?
-- About to write a `gemini_batch_*.py` / LSEG / NotebookLM task without reading `skills/<skill>/examples/` → STOP. Same pattern, different skill.
-- Assumed no relevant example exists without checking → STOP. Check.
+- "I'll search examples if I get stuck" never fires: greenfield drafting doesn't get stuck — it silently produces worse code than the existing example, and it passes review because no one knows it could have been better. Discovery is a planning-time obligation, not a fallback.
+- Patching a battle-tested example beats greenfielding ~9 times out of 10: SGE parameters, hash table sizes, and WHERE patterns are already tuned. PATCH and document the delta in PLAN.md.
+- The filesystem, not memory of it, is ground truth — new examples get added and references get renamed, so "I know what's in the skill" without globbing is an unverified competence claim. The glob takes 2 seconds.
+- A comment noting the example creates no enforcement; the PLAN.md External Skill Discovery section does — the plan reviewer checks it and implementers follow it.
+- The pattern is skill-agnostic: a `gemini_batch_*.py`, LSEG, or NotebookLM task drafted without reading `skills/<skill>/examples/` repeats the same reinvention as the SAS case.
 
 ## Cross-references
 

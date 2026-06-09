@@ -27,15 +27,3 @@ DQ1: Check for nulls in key columns
 DQ2: Check for duplicates
 # These will drift from the canonical definitions
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I remember the check definitions" | Your memory drifts. The canonical file doesn't. | Read the file. |
-| "It's faster to inline them" | Faster to write, slower to maintain. Drift is invisible until it causes wrong results. | Read the canonical file. |
-
-## Red Flags
-
-- **"I know what DQ3 checks for"** → STOP. Read the canonical file.
-- **"I'll just add a quick quality check"** → STOP. Use the standard DQ1-DQ6 definitions.

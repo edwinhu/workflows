@@ -130,7 +130,6 @@ Status: In progress
 - [The Iron Law of Brainstorming](#the-iron-law-of-brainstorming)
 - [What Brainstorm Does](#what-brainstorm-does)
 - [Process](#process)
-- [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
 
 # Brainstorming (Questions Only)
@@ -153,23 +152,9 @@ Approaches come later (in /dev-design) after exploring the codebase.
 **If YOU catch YOURSELF about to explore the codebase before asking questions, STOP.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Brainstorm Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The requirements seem obvious" | Your assumptions are often wrong | ASK questions to confirm |
-| "Let me just look at the code to understand" | Code tells HOW, not WHY | ASK what user wants first |
-| "I can gather requirements while exploring" | You'll waste time on distraction and miss critical questions | QUESTIONS FIRST, exploration later |
-| "User already explained everything" | You'll find users always leave out critical details | ASK clarifying questions anyway |
-| "I'll ask if I need more info" | You cannot know unknown unknowns without asking | ASK questions NOW, not later |
-| "Quick peek at the code won't hurt" | You'll let codebases bias your thinking | STAY IGNORANT until requirements clear |
-| "I can propose approaches based on description" | You need exploration to precede design | WAIT for dev-design phase |
-
-### Drive-Aligned Framing
-
-**Guessing user requirements is NOT HELPFUL — you build the wrong thing and create rework for the user.**
-
-Asking questions is cheap. Building the wrong thing is expensive. Every minute spent clarifying requirements saves hours of wasted implementation.
+- Code answers HOW the system works, not WHY the user wants the change — and reading the codebase before requirements are fixed anchors the questions you ask on what already exists. Deliberate ignorance until requirements are clear is the point of this phase, not an accident of ordering.
 
 ### No Pause After Completion
 
@@ -394,25 +379,6 @@ If the project has no tests, your first task is to ADD test infrastructure, not 
 ```
 
 **Note:** No "Chosen Approach" yet - that comes after exploration and design phases.
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Start coding to show progress" | Progress on wrong requirements is negative progress | **Anti-helpful** |
-| **Competence** | "I can infer what user wants" | Your inference is a guess — guesses become bugs | **Incompetent** |
-| **Efficiency** | "Requirements are obvious, skip questions" | You build the wrong thing, rework everything | **Inefficient** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-## Red Flags - STOP If You're About To:
-
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Spawn explore agent | You're exploring before understanding | Ask questions first |
-| Read source files | You're looking at code before requirements are clear | Ask what user wants |
-| Propose approaches | You're jumping ahead - you need exploration first | Save for /dev-design |
-| Create task list | You're planning before you understand the requirements | Finish brainstorm first |
 
 ## Output
 

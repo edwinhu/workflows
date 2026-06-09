@@ -16,7 +16,6 @@ hooks:
 - [What Brainstorm Does](#what-brainstorm-does)
 - [Critical Questions to Ask](#critical-questions-to-ask)
 - [Process](#process)
-- [Red Flags - STOP If You're About To](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
 
 ## Session Resume Detection
@@ -213,37 +212,6 @@ Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly ex
 - Option C: [why rejected]
 ```
 
-### Drive-Aligned Framing
-
-**Skipping the user interview is NOT HELPFUL — pattern-matching from similar requests produces wrong objectives, wasting the entire analysis.** You are pattern-matching from similar-sounding requests, not understanding THIS specific analysis.
-
-### Drive-Aligned Framing (Consequences)
-
-| Shortcut | Consequence |
-|----------|-------------|
-| Skipping user interview | You skipped questions because you thought it was faster. Wrong objectives mean the entire analysis is wasted — you were anti-helpful. |
-| Not gathering sources | You assumed you knew the data. Your assumptions produce wrong results — your confidence was negligence. |
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I already know what analysis is needed" | You're pattern-matching from similar-sounding requests, not understanding THIS one | Ask questions first |
-| "The data will tell me what to do" | Data exploration without objectives is aimless — you'll profile everything and answer nothing | Define objectives first |
-| "User seems impatient, skip to analysis" | Wrong results from skipped brainstorm waste more time than 3 questions | Ask the questions |
-| "The request is clear enough" | Clear to YOU is not clear to the user — your assumptions ≠ their intent | Confirm with AskUserQuestion |
-| "I'll refine objectives as I go" | You'll commit to an approach and rationalize the objective to fit | Lock objectives before exploring |
-
-## Red Flags - STOP If You Catch Yourself Doing This:
-
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Loading data | You're exploring before understanding goals | Ask what the user wants to learn |
-| Running describe() | You're profiling data when that's for /ds-plan | Finish defining objectives first |
-| Proposing specific models | You're jumping to HOW before clarifying WHAT | Define success criteria first |
-| Creating task lists | You're planning before objectives are clear | Complete brainstorm first |
-| Skipping replication question | You might miss critical methodology constraints | Always ask about replication upfront |
-
 ## Gate: Exit Brainstorm
 
 **Checkpoint type:** human-verify (SPEC.md content is machine-verifiable)
@@ -300,13 +268,10 @@ This skill is Phase 1 of the 5-phase `/ds` workflow:
 <EXTREMELY-IMPORTANT>
 **After user confirms objectives, IMMEDIATELY proceed to ds-plan. Do NOT ask "should I continue?" or "ready to proceed?"**
 
-| Thought | Reality |
-|---------|---------|
-| "Should I ask if they want to continue?" | User already confirmed objectives. Asking again is stalling. |
-| "Let me summarize what we agreed on" | SPEC.md IS the summary. Repeating it wastes context. |
-| "Natural stopping point" | The workflow is sequential. Brainstorm done = plan starts. No gap. |
-
-**Your pause is procrastination disguised as courtesy. The user confirmed — move.**
+DO NOT:
+- Ask "should I continue?" (the user already confirmed objectives — a second confirmation request is a stall, not courtesy)
+- Summarize what was agreed (SPEC.md IS the summary; repeating it wastes context)
+- Treat this as a stopping point (the workflow is sequential — brainstorm done = plan starts, no gap)
 </EXTREMELY-IMPORTANT>
 
 ## Phase Summary

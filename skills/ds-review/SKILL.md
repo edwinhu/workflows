@@ -392,42 +392,12 @@ issues_found_count: 5
 
 **Claiming APPROVED without re-review after fixes is NOT HELPFUL — the user acts on an approval that has no verification behind it.**
 
-### Rationalization Prevention (Re-Review)
+### Re-Review Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "Analyst said they fixed it" | Their claim needs YOUR verification | Re-run review fresh |
-| "Just spot-check the fixed analysis" | Spot-checks miss downstream impacts | Full re-review, same criteria |
-| "We're on iteration 3, approve it" | Max iterations means ESCALATE, not approve | Return ESCALATE verdict |
-| "The fixes are minor tweaks" | Minor analysis changes break conclusions | Re-review anyway |
-| "We already spent too much time" | Publishing wrong results wastes more time | Re-review or escalate |
-| "Results look reasonable now" | Reasonable-looking != methodologically sound | Re-run full review |
-
-### Why Skipping Re-Review Hurts the Thing You Care About Most
-
-You skip re-review because you think it's helpful, efficient, or competent. Here's what actually happens:
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Approving fast delivers results" | Wrong results ship. User makes decisions on flawed analysis. The 20-minute re-review would have caught it. Your speed caused harm. | **Anti-helpful** |
-| **Competence** | "I trust the methodology now" | Trust without re-checking is negligence. The selection bias remained. Reviewers catch it. Your approval was incompetent. | **Incompetent** |
-| **Efficiency** | "Re-review wastes time on fixed issues" | The re-review takes 20 minutes. The retracted paper costs 20 weeks. Your "efficiency" destroyed months of work. | **Anti-efficient** |
-| **Approval** | "User wants results now" | User retracts the paper when flaws surface. They now require external review for all analysis. You lost their trust. | **Lost approval** |
-| **Honesty** | "The analyst said they fixed it" | You didn't verify — you rubber-stamped. You claimed "analysis is sound" based on trust, not evidence. Unverified approval wastes the user's time. | **Anti-helpful** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-Publishing wrong results is worse than slow results. The user experiences your conclusions, not your review process. Speed without correctness is malpractice.
+- An analyst's "I fixed it" is a claim, not a verification — approving on it is rubber-stamping, and the approval carries no evidence.
+- Spot-checks of fixed code miss downstream impacts; a "minor" analysis change can break conclusions several steps away. Re-review runs the full criteria, not a diff of the fix.
+- A 20-minute re-review is cheap against a retracted result — skipping it to deliver faster is anti-helpful on its own terms.
 </EXTREMELY-IMPORTANT>
-
-## Red Flags - STOP Immediately If You Think:
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This looks wrong" | Your vague suspicion isn't evidence | Find concrete proof or discard |
-| "I would do it differently" | Your style preference isn't a methodology error | Check if the approach is valid |
-| "This might cause problems" | Your "might" means < 80% confidence | Find proof or discard |
-| "Unusual approach" | Unusual isn't wrong—your bias toward familiar methods is clouding judgment | Verify the methodology is sound |
 
 ## Shared Enforcement
 
@@ -694,28 +664,13 @@ Return structured output per /ds-review format.
 """)
 ```
 
-### Drive-Aligned Framing
+### Review Facts
 
-**Approving analysis without running independent verification code is NOT HELPFUL — the user acts on results no one actually checked.** Reading the analyst's notebook and thinking "looks reasonable" is not verification. If you did not execute code that independently checks the results, you did not review — you rubber-stamped.
-
-| Drive | Shortcut | Consequence |
-|-------|----------|-------------|
-| **Helpfulness** | Trusting analyst claims | You trusted 'data is clean' without checking. The results are wrong — your trust caused the user to publish flawed analysis. Anti-helpful. |
-| **Competence** | Reporting low-confidence issues | You flagged issues below 80% confidence to appear thorough. Noise drowns signal — the real issues get lost. Incompetent review. |
-| **Efficiency** | Not running verification code | You read the notebook instead of executing checks. The 30-second verification would have caught the join explosion that took 3 days to debug. Anti-efficient. |
-| **Approval** | Rubber-stamping to avoid conflict | You approved to keep things moving. The user retracts when flaws surface. They now require external review. You lost their trust. |
-| **Honesty** | Skipping independent verification | You reported 'methodology sound' without running anything. The user publishes wrong results — your unverified approval wasted their time. |
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Analyst said data was clean" | Their claim is not evidence. They may have skipped checks. | Run independent verification yourself |
-| "I already read LEARNINGS.md, quality looks fine" | Reading a report is not verification | Execute the verification code patterns on actual data |
-| "Running checks would take too long" | Your unverified approval costs days of rework downstream | Run the checks. They take seconds. |
-| "The output-first protocol already caught issues" | Output-first catches per-step issues, not cumulative ones | Check final state independently |
-| "No point re-checking, I trust the methodology" | Trust is not verification. Your job is adversarial review. | Verify, then trust |
-| "Minor data issues won't affect conclusions" | You don't know that without checking the magnitude | Quantify the impact, then decide |
+- Reading the analyst's notebook or LEARNINGS.md and thinking "looks reasonable" is not verification — only executed code that independently checks the results is. An approval without it is a rubber stamp the user mistakes for review.
+- Output-first verification during implementation catches per-step issues, not cumulative ones — the final state must be checked independently, or the review verifies nothing the implementer didn't already.
+- The verification checks take seconds; a skipped 30-second check has let a join explosion through that took 3 days to debug. Reading instead of running is anti-efficient.
+- Issues reported below 80 confidence are noise that drowns the real findings — flagging them to appear thorough makes the review less useful, not more.
+- "Minor data issues won't affect conclusions" is a magnitude claim made without measuring the magnitude — quantify the impact, then decide.
 
 ## Delete & Restart: Fundamental Methodology Failures
 

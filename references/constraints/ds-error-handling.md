@@ -42,21 +42,3 @@ except:
 
 df = df.dropna()  # How many rows? Which columns? Nobody knows.
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The errors are rare edge cases" | Rare errors in production become common errors at scale. | Log them. If truly rare, the log is short. |
-| "errors='coerce' handles it gracefully" | "Gracefully" = silently turning data into NaN. That's data loss. | Log count and sample of coerced values. |
-| "dropna() is standard practice" | Standard practice that hides data loss. How many rows? Which columns? | Print count before/after, log reason. |
-
-## Red Flags
-
-- **`except: pass`** → STOP. Never catch-and-ignore. Log and re-raise.
-- **`errors='coerce'` without logging** → STOP. Log count and sample.
-- **`dropna()` without printing count** → STOP. Log how many rows and why.
-
-## Drive-Aligned Framing
-
-Silent error handling is not robustness — it's data loss with extra steps. Every silently dropped row is a result the user will never know they lost.

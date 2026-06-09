@@ -40,7 +40,6 @@ At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md
 - [Process](#process)
 - [Test Infrastructure Discovery](#test-infrastructure-discovery)
 - [Key Files List Format](#key-files-list-format)
-- [Red Flags](#red-flags---stop-if-youre-about-to)
 - [Output](#output)
 
 # Codebase Exploration
@@ -63,25 +62,9 @@ After agents return, **you MUST read all key files** before proceeding.
 **STOP if you're about to move on without reading all key files.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If Thinking:
+### Exploration Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can design without reading all key files" | You'll miss critical patterns | READ every file on the list |
-| "The file names tell me enough" | File names hide implementation details | READ the actual code |
-| "I'll read them if I need more info" | You cannot know what is missing | READ all key files NOW |
-| "Exploration summary is enough" | Summaries miss crucial nuances | READ original files |
-| "Reading files will take too long" | You'll waste days later by skipping them | READ now, save time later |
-| "I already understand the architecture" | Your assumptions remain incomplete | READ to confirm understanding |
-| "I can grep for specific details later" | You'll miss context and relationships | READ to understand connections |
-
-### Drive-Aligned Framing
-
-**Returning key files without reading them is NOT HELPFUL — you'll design against imagined code and create days of rework.**
-
-Exploration agents find the files. Main chat MUST read them to understand the codebase. Skipping reads means proceeding with incomplete knowledge, which guarantees wrong implementation choices.
-
-Reading costs minutes. Wrong architecture costs days of rework.
+- Agent summaries and file names compress away the implementation details design decisions hinge on. A design built from summaries alone is built against imagined code — reading the key files costs minutes; the resulting wrong architecture costs days of rework.
 
 ### No Pause After Completion
 
@@ -291,16 +274,11 @@ DISCOVER test framework → FOUND?
 3. **Propose solution** - "Should I add test infrastructure as Task 0?"
 4. **Wait for resolution** - Do not rationalize around this
 
-### Rationalization Prevention
+### Test Infrastructure Facts
 
-| Thought | Reality |
-|---------|---------|
-| "This project doesn't have tests" | Then add tests. That's Task 0. |
-| "It's a UI/DOM project, hard to test" | Use Playwright, ydotool, screenshot comparison |
-| "SPEC.md says manual testing" | That's wrong. Fix SPEC.md or ask user. |
-| "I can add tests later" | No. TDD means tests FIRST. |
-| "User won't want to set up tests" | Ask them. Don't assume. |
-| "Just this one feature without tests" | No exceptions. Ever. |
+- A project without tests gets test infrastructure as Task 0 — absence of a harness is a setup task, not a TDD waiver.
+- UI/DOM and GUI features are testable: Playwright, ydotool, and screenshot comparison cover them. "Hard to test" is a tooling gap to solve, not an exemption.
+- A SPEC.md that prescribes manual testing is a spec bug — fix SPEC.md or ask the user; assuming the user "won't want tests" decides on their behalf without asking.
 </EXTREMELY-IMPORTANT>
 
 ### Project Test Framework
@@ -436,25 +414,6 @@ Each agent MUST return files in this format:
 | 4 | `src/types/user.ts:1` | User type definitions |
 | 5 | `tests/auth/login.test.ts:1` | Existing test patterns |
 ```
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "User is waiting, I'll explore less" | Shallow exploration produces wrong architecture | **Anti-helpful** |
-| **Competence** | "File names tell me enough" | Implementation details surprise you mid-build | **Incompetent** |
-| **Efficiency** | "I'll skip reading key files to save time" | You design against imagined code, rework everything | **Inefficient** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-## Red Flags - STOP If You're About To:
-
-| Action | Why It's Wrong | Do Instead |
-|--------|----------------|------------|
-| Skip reading key files | You'll miss crucial context | Read every file on the list |
-| Ask design questions | You're conflating exploration with design | Save for clarify/design phases |
-| Propose approaches | You're jumping to decisions too early | Just document what exists |
-| Start implementing | You must understand first | Complete exploration fully |
 
 ## Output
 

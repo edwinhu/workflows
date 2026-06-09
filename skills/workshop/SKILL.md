@@ -187,20 +187,11 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 **Skipping extraction to "help faster" is anti-helpful — it ships wrong metadata that the user has to debug and fix. That's rework you created, not time you saved.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table — Title Extraction
+### Title Extraction Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The filename tells me the title" | Filenames are abbreviated, incomplete, or wrong | Use look-at on the actual paper |
-| "I can infer the authors from context" | Context may be wrong; co-authors change between drafts | Extract from the paper's title page |
-| "I'll fix the title later" | Wrong titles propagate to slides AND notes | Get it right first |
-| "The user told me the title" | Verify against the paper — user may have paraphrased | Extract and confirm |
-
-### Red Flags — STOP If You Catch Yourself:
-
-- **Writing a title without having read the paper** → STOP. Use look-at first.
-- **Typing an author name from memory** → STOP. Extract from the paper.
-- **Using the directory name as the paper title** → STOP. That's fabrication.
+- Co-author lists change between drafts of the same paper — author names inferred from context or memory may match an older draft, so they must come from the title page of the PDF actually on disk.
+- A title supplied by the user is often a paraphrase or shorthand — extract from the paper and confirm even when the user has stated the title. Putting an unverified title on the deck asserts a check that was never performed.
+- A wrong title or author propagates into both slides.typ and notes.typ; deferring the fix doubles it.
 
 ### Steps
 
@@ -419,13 +410,6 @@ Sources gathered and verified. Paper metadata extracted from source document.
 
 **Producing an outline from memory instead of the paper's structure means the presentation won't match the paper. The user discovers misaligned sections during Phase 3, requiring rework of both the outline AND the slides. Getting the structure right here saves hours downstream.**
 
-### Red Flags — STOP If You Catch Yourself:
-
-- **Writing an outline without having read the paper's section structure** → STOP. Use look-at first.
-- **Allocating time without user's preferred proportions** → STOP. Ask the user.
-- **Creating slides in OUTLINE.md without inventory IDs** → STOP. Every slide traces to F/T/R/A IDs.
-- **Proceeding past Phase 2 without user approval** → STOP. This is a decision checkpoint.
-
 ### Gate: Outline Approved (decision checkpoint)
 
 - [ ] OUTLINE.md written with section proportions and timing
@@ -586,30 +570,6 @@ If you wrote slides.typ or notes.typ WITHOUT having read the paper (Phase 1), DE
 **Blocker escalation:** if an R3 blocker (font/package conflict, version incompatibility) cannot be resolved in **one** auto-fix attempt, STOP and present the user three options: **(1) retry** with a different approach, **(2) skip** the blocked element and note it in the gate artifact, or **(3) stop** and await user action. Do not silently loop on an unresolvable blocker.
 
 After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **Impact:** [assessment].
-
-### Rationalization Table — Typst Conventions
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Blank lines between bullets waste space" | This is the project's strict convention | Add blank lines. Adjust font size if needed. |
-| "cetz-plot would look better for this chart" | cetz-plot conflicts with secreg's cetz 0.3.2 | Use #table() for data visualization |
-| "I'll use ## for slide titles" | Typst uses = not # for headings | Use === for slide titles |
-| "I don't need qr: none" | The theme expects it; compilation may fail | Always include qr: none |
-
-### Red Flags — STOP If You Catch Yourself:
-
-- **Writing bullets without blank lines between them** → STOP. Add blank lines.
-- **Using `#import "@preview/cetz-plot"` or any cetz-plot** → STOP. Use tables instead.
-- **Using `##` or `###` for headings** → STOP. Typst uses `=`, `==`, `===`.
-- **Omitting `qr: none` from config-info** → STOP. Add it.
-- **Writing slide titles that aren't complete sentences** → STOP. Make them sentences.
-- **Writing `cetz.canvas(length: 1cm, ...)` or similar small lengths** → STOP. Use `2em` minimum.
-- **Writing `cetz.canvas` without `// Storytelling:` comment** → STOP. Add it.
-- **Writing `)'s` or `]'s`** → STOP. Use `\u{2019}s` for smart apostrophe.
-- **Writing `$100` without escaping** → STOP. Use `\$100`.
-- **Adding `#image()` without `#align(center)`** → STOP. Center it.
-- **Adding `#callout[]` to a slide with 3+ `#pause`** → STOP. Split the slide.
-- **Typing a calculated number** (percentage, ratio, dollar amount) → STOP. Write a `calc` expression.
 
 ### Notes File Conventions (notes.typ)
 
@@ -856,22 +816,9 @@ Do not declare the presentation ready, do not present to the user, do not skip t
 
 **Priority:** R4 (STOP) > R1-R2 (auto) > R3 (escalate after budget). After Phase 4, report deviations alongside the gate result.
 
-### Rationalization Table — Final Verification
+### Final Verification Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Phase 3 already verified this — Phase 4 is redundant" | Phase 3's last run may have been selective (`onlyChecks`); the deck was never confirmed clean *together* | Run the full non-selective workshop-verify |
-| "`overallPass` was almost true — good enough" | The JS gate is binary; "almost" means a real finding is still open | Fix the finding, let the next run recompute |
-| "No new diagrams, so skip visual-verify" | Existing diagrams shift when surrounding slides change | Let the full gate run visual-verify on all diagrams |
-| "It compiled, so it's verified" | Compilation proves syntax, not widows/overflow/fidelity | Read the JS gate, not the compiler exit code |
-
-### Red Flags — STOP If You Catch Yourself:
-
-- **Skipping widow detection after compile** → STOP. PDF is ground truth, not compilation.
-- **Skipping overflow detection** → STOP. Overflow means content spills off-slide.
-- **Declaring "verified" without running check-all.py** → STOP. Run the constraint checks.
-- **Reporting "all clean" without checking source fidelity** → STOP. Every claim must trace to the paper.
-- **Skipping visual-verify on diagrams** → STOP. Compilation proves syntax, not readability.
+- Existing diagrams shift when surrounding slides change — a run with "no new diagrams" still needs visual-verify on ALL diagrams, which the full non-selective gate runs automatically. Skipping it on that excuse ships a clipped label the presenter discovers at the podium.
 
 ### Gate: Verified (final)
 

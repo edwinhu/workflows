@@ -12,8 +12,7 @@ disable-model-invocation: true
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)
 - [Where This Fits](#where-this-fits)
 - [The Process](#the-process)
-- [Drive-Aligned Framing](#drive-aligned-framing)
-- [Rationalization Prevention](#rationalization-prevention)
+- [Delegation Facts](#delegation-facts)
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
@@ -308,50 +307,13 @@ APPROVED or CHANGES REQUIRED
 
 **If CHANGES REQUIRED:** Have implementer fix, then re-run quality review.
 
-## Drive-Aligned Framing
+## Delegation Facts
 
-<EXTREMELY-IMPORTANT>
-**Claiming "done" without subagent verification is NOT HELPFUL — you're shipping unreviewed code the user will have to debug.**
-
-When you say "Task complete", you are asserting:
-- A Task agent implemented the change
-- Spec reviewer confirmed compliance
-- Quality reviewer approved
-
-If ANY of these didn't happen, you are not "summarizing" or "moving on" - you are creating rework for the user.
-
-**Skipping verification destroys the user's time. "Still working" protects it.**
-</EXTREMELY-IMPORTANT>
-
-## Rationalization Prevention
-
-These thoughts mean STOP—you're about to skip delegation:
-
-| Thought | Reality |
-|---------|---------|
-| "I'll just fix this quickly" | Quick = sloppy = bugs. Delegate. |
-| "The subagent will be slower" | Subagent time is cheap. Your context is expensive. |
-| "I already know what to do" | Knowing ≠ doing correctly. Delegate. |
-| "It's just one line" | One line can break everything. Delegate. |
-| "I'm already looking at the code" | Looking ≠ editing. Delegate. |
-| "User is waiting" | User wants CORRECT, not fast. Delegate. |
-| "Skip review, it's obviously right" | "Obviously" is how bugs ship. Review. |
-| "Spec review passed, skip quality" | Both reviews exist for a reason. Do both. |
-| "Quality review found nothing, done" | Did spec review pass first? Check. |
-
-## Red Flags
-
-**Never:**
-- Skip either review (spec OR quality)
-- Proceed with unfixed issues
-- Let implementer self-review replace actual review
-- Start quality review before spec compliance passes
-- Make subagent read plan file (provide full text)
-- Rush past subagent questions
-
-**If subagent fails:**
-- Dispatch fix subagent with specific instructions
-- Don't fix manually in main chat (context pollution)
+- Subagent time is cheap; orchestrator context is expensive. A main-chat edit consumes the context every remaining task depends on — the cost asymmetry, not the size of the change, is why even one-line fixes go through a Task agent. "Quick fix in main chat" is counterproductive on its own terms.
+- "Code" for delegation purposes is everything that lands in the repo: ported/adapted code, config files (JSON/YAML/TOML), boilerplate, setup work, and mechanical execution of a detailed PLAN.md. The only main-chat writes are `.planning/*.md`.
+- Spec review and quality review verify different claims and run in order — spec compliance first, then quality. A quality APPROVED without a prior spec COMPLIANT says nothing about whether requirements were met; "Task complete" asserts a Task agent implemented it, the spec reviewer confirmed compliance, AND the quality reviewer approved. Claiming it with any leg missing is an unverified claim presented as fact.
+- When an implementer's work fails review, the fix goes to a fix subagent — fixing it manually in main chat is the same context pollution the Iron Law exists to prevent, now with reviewer findings as cover.
+- Subagents do not share your session context: paste the full task text from PLAN.md into the prompt. A prompt that says "read PLAN.md" produces an implementer that guesses at scope.
 
 ## Example Flow
 
@@ -398,7 +360,7 @@ Quality Reviewer: APPROVED
 
 ## Model Tier Hints
 
-When dispatching subagents, match model capability to task complexity. This is **advisory** — Claude Code doesn't yet support model routing — but documents intent for cost-aware delegation.
+When dispatching subagents, match model capability to task complexity via the Agent tool's `model` parameter (omit it to inherit the session model — the right default for judgment-heavy work).
 
 | Task Complexity | Model Tier | Signals | Example |
 |----------------|------------|---------|---------|

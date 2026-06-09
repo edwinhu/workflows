@@ -95,30 +95,10 @@ If text and flowchart disagree, the flowchart wins.
 
 **If the writing has problems, SAY SO. Being nice is NOT HELPFUL — the user publishes weak prose that gets rejected.**
 
-### Red Flag Detection
+### Critique Facts
 
-If you catch yourself thinking:
-- "This is pretty good overall" - STOP. Find the weakness.
-- "I don't want to be too harsh" - STOP. Harsh is kind.
-- "The author probably knows what they're doing" - STOP. Check anyway.
-</EXTREMELY-IMPORTANT>
-
-### Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "It's a draft, I'll be gentle" | Drafts need MORE critique, not less | Critique hardest on drafts |
-| "The main point is clear enough" | "Clear enough" means unclear | Find the ambiguity and fix it |
-| "I'll focus on positives first" | Positives don't help improve writing | Lead with problems |
-| "This is good enough for a first pass" | "Good enough" is reward hacking | Find specific problems to fix |
-| "The user will polish it themselves" | Relying on human editing defeats the workflow | Fix it now |
-| "I don't want to discourage the writer" | False kindness produces bad writing | Honest critique is the kindest act |
-| "The argument flows well overall" | "Overall" hides section-level problems | Check each section against PRECIS claims |
-| "Minor style issues aren't worth flagging" | Minor issues compound into unprofessional prose | Flag every issue you find |
-| "The structure matches the outline" | Structural match doesn't mean quality match | Check content quality, not just structure |
-| "This section is creative, rules don't apply" | Creative writing still needs clarity and precision | Apply rules, note creative exceptions explicitly |
-
-**Reporting "all checks pass" without actually running every check is NOT HELPFUL — uncaught issues survive into the final draft.** You must have evidence for every checkmark. An unchecked box with "assumed OK" means the user publishes with undetected problems.
+- "Overall flows well" hides section-level problems — each section must be checked against PRECIS claims, and a structural match to the outline says nothing about content quality.
+- A checkmark without evidence is an unverified claim presented as verification: reporting "all checks pass" without running every check means the user publishes with undetected problems.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -173,50 +153,19 @@ issues_found_count: 5
 
 **Claiming "all issues resolved" without re-reviewing is NOT HELPFUL — the user trusts a false "all clear" and publishes with remaining problems.**
 
-### Rationalization Prevention (Re-Review)
+### Re-Review Facts
 
-| Thought | Reality | Do Instead |
-|---------|---------|------------|
-| "I fixed the issues from REVIEW.md" | Your fixes need verification | Re-invoke /writing-review |
-| "Just spot-check the edited sections" | Spot-checks miss cascading changes | Full re-review via /writing-review |
-| "We're on iteration 3, call it done" | Max iterations means ESCALATE, not approve | Report to user with remaining issues |
-| "The edits are minor, skip re-review" | Minor edits create subtle problems | Re-review anyway |
-| "We've spent enough time on this" | Publishing flawed writing wastes more time | Re-review or escalate |
-| "The draft looks clean now" | Looking clean != being clean | Re-run /writing-review to verify |
-
-### Why Skipping Re-Review Hurts the Thing You Care About Most
-
-You skip re-review because you think it's helpful, efficient, or competent. Here's what actually happens:
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|--------------|----------------------|---------------------|
-| **Helpfulness** | "Finishing fast helps the user move on" | Draft has remaining issues. User submits. Reviewers reject. The 15-minute re-review would have caught it. Your speed caused waste. | **Anti-helpful** |
-| **Competence** | "I can tell the draft is clean" | Your eyes glaze over your own edits. Fresh review catches what you miss. The draft has 3 remaining issues. Your judgment failed. | **Incompetent** |
-| **Efficiency** | "Re-review wastes time on fixed work" | The re-review takes 15 minutes. The rejection-and-rewrite takes 15 hours. Your "efficiency" was a 60x slowdown. | **Anti-efficient** |
-| **Approval** | "User is tired of iterations" | User submits flawed draft. Reviewers reject. User now requires human editor oversight. You lost writing autonomy. | **Lost approval** |
-| **Honesty** | "I fixed the issues from REVIEW.md" | You fixed THOSE issues but introduced new ones. The user publishes with new problems you created. | **Anti-helpful** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
-
-Delivering a clean draft is the service. Feeling like you're done is not the service. The user experiences the quality of the submitted draft, not your sense of completion.
+- Revision introduces new errors — fixes cascade into adjacent text, and your eyes glaze over your own edits, so spot-checks and "looks clean" miss what a fresh `/writing-review` catches. Shipping an unverified revised draft asserts a verification that never happened; an unverified claim presented as done is dishonest.
+- The rejection-and-rewrite cost far exceeds the re-review cost (a 15-minute re-review vs hours of rework after reviewers reject). Skipping re-review to finish faster is counterproductive on its own terms.
+- Hitting the iteration cap with issues remaining means ESCALATE, not approve.
 </EXTREMELY-IMPORTANT>
 
-## Why Skipping Hurts the Thing You Care About Most (Other Shortcuts)
+### Revision Facts
 
-| Shortcut | Consequence |
-|---|---|
-| Rewriting instead of targeted fix | You rewrote the section to "improve" it. You introduced new issues and lost the author's voice — your ambition was destructive. |
-| Marking fixed without checking | You marked the issue resolved without re-reading. It's still there — the user trusts your false "fixed" status. |
-
-## Red Flags — STOP If You Catch Yourself:
-
-| Action | Why Wrong | Do Instead |
-|---|---|---|
-| Rewriting entire sections instead of targeted fixes | Introduces new issues, loses author voice | Apply the minimum change that resolves the issue |
-| Marking issue as fixed without verifying the draft changed | You're lying about completion | Re-read the draft passage after editing |
-| Applying fix without re-reading surrounding context | Fix may break adjacent text | Read the paragraph before and after |
-| Skipping domain skill load because you "remember the rules" | You don't remember — you're guessing | Read() the domain skill every time |
-| Combining multiple unrelated fixes in one pass | Makes it impossible to verify each fix | One issue at a time, verify each |
+- Rewriting an entire section instead of applying the minimum targeted fix introduces new issues and loses the author's voice — destructive ambition, not improvement.
+- A fix can break adjacent text; the paragraph before and after the edit must be re-read, and the edited passage itself re-read before the issue is marked fixed — marking it fixed unread is a false completion claim.
+- Combining multiple unrelated fixes in one pass makes per-fix verification impossible; one issue at a time.
+- "Remembering" the domain rules is guessing — Read() the domain skill every time.
 
 ## When to Use
 
@@ -270,13 +219,7 @@ Run /writing-review first to produce .planning/REVIEW.md, then re-run /writing-r
 
 **STOP HERE. Do not fall back to inline review. Do not offer to "do a quick check instead."**
 
-Why: Inline review is shallow by design — it misses cross-section issues, transition problems, and thesis drift that only hierarchical review catches. Allowing a fallback path means the full review is never run. The review-then-revise pipeline exists because revision without diagnosis produces random edits, not targeted fixes.
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can do a quick inline review" | Inline review misses structural issues | Run /writing-review |
-| "The user just wants small fixes" | Small fixes without review context create new issues | Run /writing-review first |
-| "REVIEW.md will be generated anyway later" | Later never comes — the user thinks revision is done | Require it now |
+Why: Inline review is shallow by design — it misses cross-section issues, transition problems, and thesis drift that only hierarchical review catches. Allowing a fallback path means the full review is never run. The review-then-revise pipeline exists because revision without diagnosis produces random edits, not targeted fixes. Small fixes applied without review context create new issues the same way.
 </EXTREMELY-IMPORTANT>
 
 **When REVIEW.md exists:**

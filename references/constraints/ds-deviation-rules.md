@@ -32,18 +32,3 @@ Each task's LEARNINGS.md entry must include a deviation summary line. This is no
 ## Task 3: Merge datasets - COMPLETE
 # No deviation tracking — we don't know what changed from the plan
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This data issue is minor, just fix it" | If it changes what the data represents, it's R4a. User decides. | Check: does this change meaning? If yes → R4. |
-| "I'll note the methodology change later" | Later = never. STOP now, track it. | STOP and present to user immediately. |
-| "The user won't care about this deviation" | Undisclosed deviations are undisclosed assumptions. User MUST know. | Track it. Let the user decide what matters. |
-| "Tracking deviations slows me down" | 30 seconds of tracking prevents hours of "why did the results change?" | Track every deviation. |
-
-## Red Flags
-
-- **"This is minor, just fix it"** → STOP. Does it change data meaning? If uncertain → R4.
-- **"I'll note it later"** → STOP. Track it NOW in LEARNINGS.md.
-- **"The user won't care"** → STOP. Undisclosed deviations are undisclosed assumptions.

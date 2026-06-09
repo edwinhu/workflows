@@ -110,25 +110,15 @@ Corresponds to user feedback memory `feedback_aggregate_server_side.md` (2026-04
 5. PLAN.md does not need a Data Pull Profile section.
 ```
 
-## Rationalization Table
+## Facts (measured)
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The row estimate is approximate — profiling just confirms what I already know" | Agents underestimate by 20-80% routinely. v12 s12 was +18%, s34 was -78% vs planning. The profile changes the plan, not just confirms it. | Run the profile. The 10-minute cost prevents days of rework. |
-| "Server-side aggregation is obviously better for a 100× ratio" | Ratio alone doesn't decide. If the aggregate drops fundid/permno/any column Task N needs, pull-raw wins despite the ratio. NPX had a 89× ratio and pull-raw was correct. | Profile BOTH the ratio AND what columns survive aggregation. The information-preservation check is as important as the size check. |
-| "I'll profile during ds-implement, not planning" | Implementers follow the plan. If the plan says pull-raw, they pull raw — even when profiling would have said aggregate. | Profile at planning time. The plan encodes the decision; fixing it later requires re-planning. |
-| "The trigger is close but not quite 50M rows" | 50M is a floor, not a threshold. Agents underestimate. Round up: if the estimate is "30-50M rows" or "tens of millions," treat it as triggered. | Fire liberally. A 3-minute profile on a source that turned out to be 40M costs nothing; a missed profile on a source that turned out to be 150M costs days. |
-| "I can do the COUNT(*) and GROUP BY myself in main chat without dispatching a subagent" | Main chat doing data work is the exact antipattern ds-plan's post-subagent-boundary hook prevents. Profile = real data access = subagent. | Dispatch a read-only profiling subagent. Main chat reads the investigation file afterward. |
-| "Writing a docs/investigations/ file is overhead — the decision table is enough" | The investigation file documents the WHY (bytes/row calibration, information-loss notes, the specific counts queried). Without it, next session's agent can't tell why the decision was made and will re-litigate. | Write the investigation file. PLAN.md's decision table references it. Both are required. |
-
-## Red Flags — STOP If You Catch Yourself
-
-- About to finalize PLAN.md with a source ≥50M rows and no Data Pull Profile section → **STOP**. You're shipping a plan with a ungated pull-raw decision.
-- Rationalizing that "the source is large but Task N really does need raw rows" without having actually profiled the aggregate and checked what columns are preserved → **STOP**. You're speculating. Run the profile.
-- Writing SQL COUNT/GROUP BY queries in main chat instead of dispatching a subagent → **STOP**. Use a read-only profiling subagent. Main chat reads the result file.
-- Treating "large" / "bulk" / "TB" keywords in SPEC as prose rather than a trigger → **STOP**. Those keywords are triggers. Fire the gate.
-- Seeing a ratio > 100× and assuming aggregate-at-source is obviously correct without checking information preservation → **STOP**. Check what columns survive. NPX had 89× ratio and pull-raw was correct because of fundid.
-- Skipping the profile because "the user didn't ask for it" → **STOP**. The user's review is the last line of defense. If the user has to catch this, the workflow failed.
+- Unprofiled row estimates run 20–80% off in both directions (v12: s12 +18%, s34 −78% vs planning). The profile changes the plan; treating it as confirmation of an estimate is confidence the data has repeatedly falsified.
+- Ratio alone never decides pull-raw vs aggregate: NPX had an 89× ratio and pull-raw was still correct, because aggregation dropped `fundid`/`wficn`. A strategy recommended from ratio without checking which columns survive aggregation is a shortcut dressed as analysis — and "Task N really does need raw rows" without an aggregate profile is speculation asserted as fact.
+- 50M rows is a floor, not a threshold — agents underestimate, so "30–50M", "tens of millions", "large", "bulk", "TB" all trigger the gate. A 3-minute profile on a source that turned out to be 40M costs nothing; a missed profile on a 150M source costs days.
+- Implementers follow the plan literally: a plan that says pull-raw gets raw rows pulled even when profiling would have said aggregate. Profiling deferred to ds-implement never happens; fixing the decision later requires re-planning.
+- The profile is real data work — COUNT/GROUP BY in main chat is the exact antipattern the post-subagent-boundary hook prevents. Dispatch the read-only subagent; main chat reads the investigation file afterward.
+- The investigation file records the WHY (bytes/row calibration, information-loss notes, the specific counts queried). Without it, the next session's agent cannot tell why the decision was made and re-litigates it. PLAN.md's decision table and the investigation file are both required.
+- If the user has to catch a missed profile in review, the workflow failed — their review is the last line of defense, not the gate.
 
 ## Cross-references
 

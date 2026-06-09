@@ -54,25 +54,3 @@ User: "What's in the cleaned data?" (during ds-implement)
 Agent: [silently reads CSVs, runs queries, answers question]
 Agent: [implementation loop is dead, state is lost]
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I can answer this without pausing" | If it's not about the current task, it requires a pause announcement. | Announce pause first. |
-| "The user asked a question, I should answer immediately" | You answer inline, context is corrupted, implementation loop dies. | Announce pause, handle, announce resume. |
-| "Pausing takes too long" | The pause announcement takes 5 seconds. Without it, you lose the loop and spend 10 minutes reloading state. | Follow the protocol. |
-
-## Red Flags
-
-- **Answering a data exploration question without announcing pause** → STOP. Announce pause first.
-- **Reading project files to answer user's question mid-implementation** → STOP. That's both off-topic AND investigation.
-- **"I can answer this without pausing"** → STOP. If it's not about the current task, it requires a pause announcement.
-
-## Drive-Aligned Framing
-
-| Drive | Why You Skip the Pause | What Actually Happens |
-|-------|------------------------|----------------------|
-| **Helpfulness** | "User asked a question, I should answer immediately" | You answer inline, context is corrupted, implementation loop dies. User must re-invoke `/ds` and lose progress. Your "helpfulness" cost them 30 minutes. |
-| **Efficiency** | "Pausing takes too long, I'll just answer quickly" | The pause announcement takes 5 seconds. Without it, you lose the loop and spend 10 minutes reloading state. Anti-efficient. |
-| **Competence** | "I can handle both the question and the task simultaneously" | You can't. Context windows are finite. Answering the question pushes task state out of context. Your multitasking is a delusion. |

@@ -32,16 +32,6 @@ A bullet that says "let's walk through the scenarios" is useless at the podium. 
 If the presentation includes Q&A preparation in notes, answer blocks follow the SAME rules — full prose, max 2 sentences per bullet.
 </EXTREMELY-IMPORTANT>
 
-## Rationalization Table
+## Notes Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Dense bullets are fine — the presenter can read fast" | Nobody reads 4 sentences at a glance while maintaining eye contact | Split into 2-sentence bullets |
-| "I'll reference the arguments and the presenter can elaborate" | The presenter CANNOT elaborate from memory — these are teleprompter lines | Extract from the paper and write each argument as prose |
-| "The slides already have this content" | Slides have bullet points. Notes have the spoken words. Different purposes. | Write the teleprompter version |
-
-## Red Flags
-
-- **Writing a 3+ sentence bullet in notes** — STOP. Split into 2-sentence bullets.
-- **Writing "let's walk through" without the actual content** — STOP. Write out each item.
-- **Writing outline fragments** (`- ECMH → price reflects info`) — STOP. Write full sentences.
+- Slides and notes serve different functions: slides carry bullet points; notes carry the spoken words. Copying slide bullets into notes produces a deck the presenter cannot read aloud — outline fragments (e.g. `- ECMH → price reflects info`) are not speakable.

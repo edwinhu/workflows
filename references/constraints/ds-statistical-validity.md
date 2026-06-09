@@ -43,21 +43,3 @@ print(f"Test result: stat={t:.4f}, p={p_val:.4f}")
 t, p = stats.ttest_ind(group_a, group_b)  # Assumes normality without checking
 print(f"Groups differ: p={p:.4f}")  # Claims difference without effect size or CI
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The test is standard for this data" | Standard doesn't mean correct. Check assumptions. | Document and verify assumptions before running |
-| "The p-value is very small, assumptions don't matter" | Grossly violated assumptions invalidate even small p-values | Check assumptions regardless of p-value |
-| "I'll add assumption checks later" | Later never comes. The result is already reported. | Check assumptions BEFORE running the test |
-
-## Red Flags
-
-- **"The result is significant"** → STOP. Did you check test assumptions? Correct SEs? Effect size?
-- **"The model fits well (R²=0.95)"** → STOP. In-sample only? Check out-of-sample.
-- **"Groups clearly differ"** → STOP. By visual inspection? Run the appropriate test.
-
-## Drive-Aligned Framing
-
-Reporting a statistically invalid result is worse than reporting nothing. The user makes decisions based on your numbers. Wrong numbers create wrong decisions.

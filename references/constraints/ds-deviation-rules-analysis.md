@@ -37,18 +37,3 @@ Agent: "Results were insignificant, so I added industry fixed effects
 and the coefficient is now significant at 5%. Here are the updated results."
 # Specification change after seeing results without user approval
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "This data issue is minor, just fix it" | If it changes what the data represents, it's R4a. User decides. | Check: does this change meaning? If yes → R4 |
-| "I'll note the methodology change later" | Later = never. STOP now, track it. | STOP and present to user immediately |
-| "The user won't care about this deviation" | Undisclosed deviations are undisclosed assumptions. User MUST know. | Track it and present |
-| "Adding this control is standard" | Standard doesn't exempt it from R4 if you added it after seeing results | Was it in PLAN.md? If not → R4 |
-
-## Red Flags
-
-- **"Results improved after I..."** → STOP. You changed the spec after seeing results. That's R4.
-- **"I added a standard control"** → STOP. Was it in PLAN.md before you saw results? If not → R4.
-- **"The original spec was wrong"** → STOP. Maybe, but that's still R4. User decides.

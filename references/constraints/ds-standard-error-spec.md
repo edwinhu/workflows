@@ -37,20 +37,7 @@ model = sm.OLS(y, X).fit()  # Default SEs — too small for panel data
 # Every t-stat is inflated, every p-value is too small
 ```
 
-## Rationalization Table
+## Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Default SEs are fine for a quick look" | Wrong SEs give wrong inference. There's no "quick look" that's allowed to be wrong. | Use correct SEs from the start. |
-| "Clustering doesn't change the main result" | Sometimes it does. You won't know until you try. | Always cluster appropriately, then compare. |
-| "I'm not sure what level to cluster at" | Cluster at the level of treatment assignment. When uncertain, cluster at the higher level. | Document your clustering choice and justification. |
-
-## Red Flags
-
-- **Default OLS SEs on panel data** → STOP. Cluster by firm at minimum.
-- **No clustering justification in output** → STOP. Document why this clustering level.
-- **"SEs don't matter much here"** → STOP. Wrong SEs invalidate ALL inference.
-
-## Drive-Aligned Framing
-
-Reporting results with wrong standard errors is reporting fiction. Every t-stat is wrong. Every confidence interval is wrong. The user's conclusions are built on sand.
+- The correct clustering level is the level of treatment assignment; when uncertain between levels, the higher level is the conservative choice. An undocumented clustering choice is an unjustified one — record the level and the reason in the output.
+- "Clustering doesn't change the main result" is unknowable before running it — the claim is only honest after the comparison is shown.

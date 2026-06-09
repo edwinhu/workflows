@@ -198,7 +198,7 @@ Misses: subtle horizontal adjacency (Gemini often scores these 9/10 or higher).
 
 **Prong 3: Multi-model vision consensus (step 3b) — second opinions**
 
-For diagram pages, use look-at's `--consensus` mode (runs Gemini + GPT-5.4 in parallel) plus a Claude Opus subagent. Run all three in parallel:
+For diagram pages, use look-at's `--consensus` mode (runs Gemini + GPT-5.4 in parallel) plus a Claude subagent. Run all three in parallel:
 
 ```bash
 # Gemini + GPT-5.4 consensus (via look_at.sh)
@@ -207,18 +207,17 @@ For diagram pages, use look-at's `--consensus` mode (runs Gemini + GPT-5.4 in pa
     --goal "[CONTEXT-ENRICHED GOAL]" \
     --consensus
 
-# Claude Opus subagent (reads PNG natively)
+# Claude subagent (reads PNG natively; inherits the session model)
 Agent(
     prompt="Read the image at /tmp/visual-verify.png. [CONTEXT-ENRICHED GOAL]. Score 0-10. Report BLOCKING and COSMETIC issues.",
-    description="Vision prong: Claude Opus",
-    subagent_type="general-purpose",
-    model="opus"
+    description="Vision prong: Claude",
+    subagent_type="general-purpose"
 )
 ```
 
 **When to use prong 3:** Always for diagram pages. For non-diagram pages (body text, tables), prong 2 alone is sufficient.
 
-**Calibration note (from testing):** Gemini tends to underscore overlap defects — marking BLOCKING issues as COSMETIC and scoring 8/10 when Claude Opus scores 5/10 on the same image. Trust the stricter score. If any model flags BLOCKING, treat it as BLOCKING regardless of other models' severity ratings.
+**Calibration note (measured with Claude Opus; re-baseline if scores drift):** Gemini tends to underscore overlap defects — marking BLOCKING issues as COSMETIC and scoring 8/10 when Claude scores 5/10 on the same image. Trust the stricter score. If any model flags BLOCKING, treat it as BLOCKING regardless of other models' severity ratings.
 
 **Consensus rule:** If any model flags a BLOCKING issue that others missed, treat it as a real defect and fix it. A 9.5 from Gemini + a 7.0 from Claude = not clean. All models must agree the output is clean.
 

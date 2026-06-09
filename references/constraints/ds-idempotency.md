@@ -32,16 +32,3 @@ df.to_sql("results", engine, if_exists="replace")  # Overwrites, not appends
 # Non-idempotent: each run adds more rows
 df.to_sql("results", engine, if_exists="append")  # Re-run = double data
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "We only run this once" | Today. Tomorrow someone re-runs to debug. | Make it idempotent from the start. |
-| "Append is faster than replace" | Faster to corrupt data, yes. | Use replace or deduplicate. |
-
-## Red Flags
-
-- **`if_exists='append'`** → STOP. Use `replace` or deduplicate.
-- **File opened in append mode** → STOP. Use write mode.
-- **Global counter incremented** → STOP. Reset at pipeline start.

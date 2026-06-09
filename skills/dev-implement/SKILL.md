@@ -54,11 +54,10 @@ dev-implement (this skill)
 ## Contents
 
 - [Prerequisites](#prerequisites)
-- [Implementation Strategy Choice](#implementation-strategy-choice)
+- [Implementation Strategy: the dev-implement workflow](#implementation-strategy-the-dev-implement-workflow)
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)
 - [The Process](#the-process) (Sequential)
 - [Sub-Skills Reference](#sub-skills-reference)
-- [If Max Iterations Reached](#if-max-iterations-reached)
 - [Test Gap Validation Gate (MANDATORY)](#test-gap-validation-gate-mandatory)
 - [Phase Complete](#phase-complete)
 
@@ -135,21 +134,12 @@ This is not a suggestion. This is the workflow. Every task follows:
 5. RUN the test → SEE GREEN (pass)
 ```
 
-### Rationalization Prevention (Implementation Phase)
+### TDD Facts (implement-time)
 
-If you catch yourself thinking these, STOP IMMEDIATELY:
+- Missing test infrastructure discovered at implement time is an explore/clarify failure — the recovery is routing back and adding a Task 0 that sets up the harness, not implementing without tests.
+- A SPEC.md that prescribes manual testing is a spec bug: fix SPEC.md with the user. It does not waive TDD.
 
-| Thought | Reality | Action |
-|---------|---------|--------|
-| "No test infra, I'll just implement" | You should have caught this in explore/clarify | STOP. Go back. Add Task 0. |
-| "SPEC.md says manual testing" | SPEC.md is wrong | STOP. Fix SPEC.md. Ask user. |
-| "This task is too simple for tests" | Simple tasks benefit MOST from tests | Write the test anyway. |
-| "I'll add tests after this works" | That's not TDD. That's anti-helpful — untested code ships bugs. | DELETE your code. Write test first. |
-| "User is waiting, I'll be quick" | User wants WORKING code, not fast code | Take time. Write test first. |
-| "The subagent skipped tests" | Your job is to catch that | REJECT the work. Redo with tests. |
-| "Just this one exception" | No exceptions. Ever. | Write the test. |
-
-**If you wrote code without a failing test first, DELETE IT and start over.**
+**If you wrote code without a failing test first, DELETE IT and start over.** (Full TDD doctrine: dev-tdd.)
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -169,32 +159,7 @@ Main chat orchestrates. Subagents implement. If you catch yourself about to use 
 
 **If you're about to edit code directly, STOP and spawn a Task agent instead.**
 
-### Rationalization Prevention
-
-These thoughts mean STOP—you're rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "It's just a small fix" | Small fixes become big mistakes. Delegate. |
-| "I'll be quick" | Quick means sloppy. Delegate. |
-| "The subagent will take too long" | Subagent time is cheap. Your context is expensive. |
-| "I already know what to do" | Knowing ≠ doing it well. Delegate. |
-| "Let me just do this one thing" | One thing leads to another. Delegate. |
-| "This is too simple for a subagent" | Simple is exactly when delegation works best. |
-| "I'm already here in the code" | Being there ≠ writing there. Delegate. |
-| "The user is waiting" | User wants DONE, not fast. They won't debug your shortcuts. |
-| "This is just porting/adapting code" | Porting = writing = code. Delegate. |
-| "I already have context loaded" | Fresh context per task is the point. Delegate. |
-| "It's config, not real code" | JSON/YAML/TOML = code. Delegate. |
-| "I need to set things up first" | Setup IS implementation. Delegate. |
-| "This is boilerplate" | Boilerplate = code = delegate. |
-| "PLAN.md is detailed, just executing" | Execution IS implementation. Delegate. |
-
-### The Meta-Rationalization
-
-**If you're treating these rules as "guidelines for complex work" rather than "invariants for ALL work", you've already failed.**
-
-Simple work is EXACTLY when discipline matters most—because that's when you're most tempted to skip it.
+The full delegation doctrine — including what counts as code (ported code, config, boilerplate, setup, mechanical PLAN execution) — lives in dev-delegate's Delegation Facts.
 </EXTREMELY-IMPORTANT>
 
 ### Context Monitoring
@@ -366,18 +331,8 @@ you MUST verify it works against the real system, not just mocks.
 
 **If ANY check fails → REJECT the work. Do NOT mark task complete.**
 
-### Rationalization Prevention (Verification Phase)
-
-| Thought | Reality | Action |
-|---------|---------|--------|
-| "The agent said tests pass" | Agents lie. Verify yourself. | Run the tests. |
-| "66 tests passing is enough" | Count skipped tests. Read test code. | Check for fake tests. |
-| "I'll verify at the end" | You'll forget. Bugs compound. | Verify NOW. |
-| "The spec said X, code does Y, but Y is close enough" | Close enough = wrong. | Reject and redo. |
-| "Integration test is skipped but unit tests pass" | Unit tests don't prove integration works. | Require real integration test. |
-| "External system isn't running, but code is correct" | Untested code is broken code. | Start the system and test. |
-
 **If ALL pass → mark the task [x] in PLAN.md and move on.** If ANY fail → iterate within the active `/goal`; the next turn will fire automatically.
+</EXTREMELY-IMPORTANT>
 
 ### Task Summary (MANDATORY after each task)
 
@@ -697,15 +652,9 @@ If test gap reports implementation bugs (escalations):
 3. Repeat until VALIDATION.md status is `validated`
 4. Max 2 re-validation cycles. After that, escalate to user.
 
-### Rationalization Prevention
+### Test-Gap Facts
 
-| Thought | Reality |
-|---------|---------|
-| "All task tests pass, test gap is redundant" | Task tests != requirement coverage. Gaps hide between tasks. Run test gap. |
-| "test gap will slow us down" | Shipping untested requirements slows the USER down. Run test gap. |
-| "I'll validate coverage manually" | Manual validation is not validation. Run the skill. |
-| "Requirements are simple, tests obviously cover them" | "Obviously" is not evidence. Run test gap and prove it. |
-| "We already wrote thorough tests" | Then test gap will confirm that quickly. Run it. |
+- Per-task tests passing does not sum to requirement coverage — gaps hide *between* tasks, which is exactly what dev-test-gaps exists to catch. Skipping it (or "validating coverage manually") ships requirements no test exercises, asserted as covered.
 </EXTREMELY-IMPORTANT>
 
 ## Phase Complete

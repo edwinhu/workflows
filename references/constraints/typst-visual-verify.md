@@ -35,18 +35,3 @@ After creating or modifying ANY visual element (`cetz.canvas`, `fletcher-diagram
 | Alignment | Elements that should be aligned but aren't |
 | Completeness | Missing elements compared to the intended design |
 </EXTREMELY-IMPORTANT>
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The code looks correct" | Code correctness ≠ visual correctness. A node at position (3,2) might overlap another. | Render and visually verify. |
-| "I'll check it visually later" | Later never comes. The presenter discovers the clipped label at the podium. | Verify now, before declaring done. |
-| "Compilation succeeded, so it's fine" | Compilation checks syntax, not layout. A 200-character label in a 2em-wide node compiles but is unreadable. | Render to image and score. |
-| "Visual-verify is too slow for small changes" | A 30-second render check prevents a 30-minute podium disaster. | Run the check. Every time. |
-
-## Red Flags
-
-- **Declaring a diagram "done" without rendering** — STOP. Compile, render, score.
-- **Skipping visual-verify "because it compiled"** — STOP. Compilation ≠ quality.
-- **Creating 3+ diagrams without verifying any** — STOP. Verify each one.

@@ -29,24 +29,3 @@ assert df.shape[0] > 0, "Empty dataframe"
 df = pd.read_csv("data.csv")  # No shape/null check
 result = df.groupby("category").mean()  # Assumes categories haven't changed
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I already know what this data looks like" | Your knowledge is stale or wrong. Data changes, schemas drift, nulls appear. | Profile/verify fresh every time |
-| "Results look roughly right" | "Roughly" means you didn't check. Roughly right is precisely wrong. | Compare against specific expected values from SPEC.md or PLAN.md |
-| "I can see the issue from the output" | You see a symptom, not a cause. Pattern-matching from output is not diagnosis. | Trace backwards to the first divergence point |
-| "It should reproduce / be the same" | "Should" is not evidence. Run it and compare. | Execute fresh, hash outputs, compare |
-| "I trust the analyst / prior step" | Trust is not verification. Claims require evidence. | Run independent checks yourself |
-
-## Red Flags
-
-- **"I already know what this data looks like"** → STOP. Your knowledge is stale. Profile it fresh.
-- **"Results look roughly right"** → STOP. Compare against specific expected values.
-- **"It should be the same"** → STOP. Run it and compare.
-- **"I trust the prior step"** → STOP. Trust is not verification.
-
-## Drive-Aligned Framing
-
-Every time you substitute assumption for evidence, you choose YOUR confidence over the USER's correctness. The user doesn't experience your certainty — they experience your errors.

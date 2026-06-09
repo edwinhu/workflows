@@ -74,12 +74,8 @@ subsection belongs
 ```
 Fix: either add `- **E. [title]**` to the OUTLINE under Part II, or fold the new section back into a planned section.
 
-## Rationalization Table
+## Outline-Sync Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I updated the draft but not OUTLINE" | OUTLINE staleness triggers false review violations next run | Update OUTLINE immediately after changing draft structure or numbers |
-| "The review will catch the mismatch" | It will — but as a false positive that wastes a review-revise iteration | Sync OUTLINE first, then run review |
-| "OUTLINE numbers are planning targets, not restatements" | Introduction and Conclusion bullets are restatements; they should match the draft | Use OUTLINE Part body bullets for planning; keep Intro/Conclusion current |
-| "These are just warnings" | Soft warnings compound — the same stale number fires every review run until fixed | Fix OUTLINE after the first warning, not the fifth |
-| "The reviewer subagent can tell which numbers are stale" | Subagents can confabulate which side is right; mechanical check is more reliable | Trust the check, update OUTLINE |
+- A stale OUTLINE fires the same false-positive review violation on every run until fixed, burning a review-revise iteration each time — sync OUTLINE immediately after changing draft structure or numbers, before running review.
+- OUTLINE Introduction and Conclusion bullets are restatements that must match the draft; Part body bullets are planning notes and need not.
+- Reviewer subagents can confabulate which side of a number mismatch is correct; the mechanical check is the reliable arbiter — trust the check and update OUTLINE.

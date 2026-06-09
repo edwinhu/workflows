@@ -50,7 +50,7 @@ Auto-load all constraints matching `applies-to: dev-verify`:
 ## Contents
 
 - [The Iron Law of Verification](#the-iron-law-of-verification)
-- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Verification Facts](#verification-facts)
 - [The Gate Function](#the-gate-function)
 - [Claims Requiring Evidence](#claims-requiring-evidence)
 - [Insufficient Evidence](#insufficient-evidence)
@@ -95,16 +95,10 @@ This applies even when:
 **If you catch yourself about to claim completion without fresh evidence, STOP.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Catch Yourself Thinking:
+## Verification Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "It should work" | "Should" isn't evidence | Run the command |
-| "I'm pretty sure it passes" | Confidence isn't verification | Run the command |
-| "The agent reported success" | Agent reports need confirmation | Run it yourself |
-| "I ran it earlier" | Earlier isn't fresh | Run it again |
-| "The code exists" | Existing ≠ working | Run and check output |
-| "Grep shows the function" | Pattern match ≠ runtime test | Run the function |
+- Structural evidence — a grep hit, an ast-grep match, a diff, "the file exists", "the function is defined", "the implementation looks correct" — proves code is present, not that it works. Presenting structural analysis as verification asserts a runtime result that was never observed; an unverified claim presented as fact is a form of dishonesty.
+- Logs, exit codes, "console contains 'success'", and "file was created" are observability, not verification: they prove code executed, not that it produced correct output.
 
 ## The Gate Function
 
@@ -145,33 +139,10 @@ Before making ANY status claim:
 | "Feature complete" | ❌ Insufficient | ✅ User flow simulation |
 | "No regressions" | ❌ Insufficient | ✅ E2E suite passes |
 
-### Fake E2E Patterns - STOP
+### E2E Facts
 
-**These are NOT E2E tests. They are observability, not verification.**
-
-| ❌ Fake E2E | ✅ Real E2E |
-|-------------|-------------|
-| "Log shows function was called" | "Screenshot shows correct UI rendered" |
-| "grep papirus in logs" | "grim screenshot + visual diff confirms icon changed" |
-| "Console output contains 'success'" | "Playwright assertion: element.textContent === 'Success'" |
-| "File was created" | "E2E test opens file and verifies contents" |
-| "Process exited 0" | "Functional test verifies actual output matches spec" |
-| "Mock returned expected value" | "Real integration returns expected value" |
-
-**Red Flag:** If you catch yourself thinking "logs prove it works" - STOP, you're about to claim false verification. Logs prove code executed, not that it produced correct results. E2E means verifying the actual output users see.
-
-### Rationalization Prevention (E2E)
-
-| Thought | Reality |
-|---------|---------|
-| "Unit tests cover it" | Unit tests don't simulate users. Where's YOUR E2E? |
-| "E2E would be redundant" | YOU'LL catch bugs with redundancy. Write E2E. |
-| "No time for E2E" | YOU don't have time to fix production bugs? Write E2E. |
-| "Feature is internal" | Does it affect user output? Then YOU need E2E. |
-| "I manually tested" | YOU provided no evidence. Automate it. |
-| **"Log checking verifies it works"** | **YOUR log checking only verifies code executed, not results. Not E2E.** |
-| **"E2E with screenshots is too complex"** | **If YOU can't verify it simply, your feature isn't done. Complexity = bugs hiding.** |
-| **"Implementation is done, testing is just verification"** | **Testing IS YOUR implementation. Untested code is unfinished code.** |
+- E2E evidence is the output the user actually sees: a Playwright assertion on rendered content (`element.textContent === 'Success'`), a screenshot + visual diff (e.g. `grim` capture) confirming the visual change, a test that opens the produced file and verifies its contents, a real integration returning the expected value.
+- "Log shows the function was called", "grep papirus in logs", "process exited 0", and "mock returned expected value" are observability, not E2E — they prove execution paths fired, not that the user-visible result is correct. Reporting them as E2E evidence claims a verification that never happened.
 
 ### The E2E Gate Function
 
@@ -186,6 +157,7 @@ For user-facing changes, add to verification:
 ```
 
 **"Unit tests pass" is not "feature complete" for user-facing changes.**
+</EXTREMELY-IMPORTANT>
 
 ### GUI Application Gate (CRITICAL)
 
@@ -218,63 +190,6 @@ These do NOT count as verification:
 - Partial checks (ran some tests, not all)
 - Agent reports without independent confirmation
 - "I think..." / "It seems..." / "Probably..."
-
-## Drive-Aligned Framing
-
-<EXTREMELY-IMPORTANT>
-**Claiming completion without fresh evidence is NOT HELPFUL — the user trusts your claim and discovers the failure themselves.**
-
-When you say "Feature complete", you are asserting:
-- You ran the verification commands yourself (fresh)
-- You saw the output with your own tokens
-- The output confirms the claim
-
-Saying "complete" based on stale data or agent reports is not "summarizing" - it is creating a false sense of completion that wastes the user's time.
-
-**"Still verifying" protects the user. "Complete" without evidence creates rework.**
-</EXTREMELY-IMPORTANT>
-
-## Rationalization Prevention
-
-These thoughts mean STOP—you're about to claim falsely:
-
-| Thought | Reality |
-|---------|---------|
-| "I just ran it" | "Just" = stale. YOU must run it AGAIN. |
-| "The agent said it passed" | Agent reports need YOUR confirmation. YOU run it. |
-| "It should work" | "Should" is hope. YOU run and see output. |
-| "I'm confident" | YOUR confidence ≠ verification. YOU run the command. |
-| "We already verified earlier" | Earlier ≠ now. YOU need fresh evidence only. |
-| "User will verify it" | NO. YOU verify before claiming. User trusts YOUR claim. |
-| "Close enough" | Close ≠ complete. YOU verify fully. |
-| "Time to move on" | YOU only move on after FRESH verification. |
-
-**STRUCTURAL VERIFICATION IS NOT RUNTIME VERIFICATION:**
-
-| ❌ NOT Verification | ✅ IS Verification |
-|---------------------|-------------------|
-| "Code exists in file" | "Code ran and produced output X" |
-| "Function is defined" | "Function was called and returned Y" |
-| "Grep found the pattern" | "Program output shows expected behavior" |
-| "ast-grep found the code" | "Test executed and passed with output" |
-| "Diff shows the change" | "Change tested with actual input/output" |
-| "Implementation looks correct" | "Ran test, saw PASS in logs" |
-
-**The key difference:**
-- Structural: "The code IS THERE" (useless)
-- Runtime: "The code WORKS" (valid)
-
-If you find yourself saying "the code exists" or "I verified the implementation" without running it, **STOP** - you're doing structural analysis, not verification.
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Report 'verified' to unblock the user" | The user discovers the failure — your shortcut created rework | **Anti-helpful** |
-| **Competence** | "I'm confident it works without running it" | Confidence without evidence is delusion, not competence | **Incompetent** |
-| **Efficiency** | "Prior tests still pass, skip fresh evidence" | They don't — your assumption is the bug the user discovers | **Inefficient** |
-
-**The protocol is not overhead you pay. It is the service you provide.**
 
 ## Verification Patterns
 
@@ -482,5 +397,3 @@ The `/dev` workflow is now finished. Offer to:
 **Runtime Over Structural:** Verify code works by running it, not by checking if code exists. Structural analysis cannot prove behavior.
 
 **E2E for User-Facing:** User-visible features require end-to-end evidence (screenshots, user flow tests), not unit tests alone.
-
-**Drive-Aligned Framing:** Claiming completion without fresh evidence creates rework for the user. Only advance when fully verified.

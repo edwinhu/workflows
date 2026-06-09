@@ -55,7 +55,7 @@ Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."
 ## Contents
 
 - [The Iron Law of DS Verification](#the-iron-law-of-ds-verification)
-- [Red Flags - STOP Immediately If You Think](#red-flags---stop-immediately-if-you-think)
+- [Verification Facts](#verification-facts)
 - [The Verification Gate](#the-verification-gate)
 - [Verification Checklist](#verification-checklist)
 - [Reproducibility Demonstration](#reproducibility-demonstration)
@@ -105,35 +105,13 @@ This applies even when:
 **If you catch yourself thinking "I can skip verification," STOP — you're about to deliver unverified results that waste the user's time.**
 </EXTREMELY-IMPORTANT>
 
-### Drive-Aligned Framing
+## Verification Facts
 
-| Drive | Shortcut | Consequence |
-|-------|----------|-------------|
-| **Helpfulness** | Skipping fresh re-run | You assumed prior results still hold. They don't reproduce — the user publishes irreproducible work. Your assumption is the error they discover. Anti-helpful. |
-| **Competence** | Verifying your own work | You ran the reproducibility check yourself instead of dispatching a fresh agent. You share the implementer's biases. A fresh agent would have caught the issue. Incompetent verification. |
-| **Efficiency** | Not running reproducibility check | You skipped the 10-minute check. The irreproducible results take 10 days to debug when someone else tries to run them. Anti-efficient. |
-| **Approval** | Skipping user acceptance interview | You declared completion without asking the user. They discover the results don't answer their question. They now require manual review of all analysis. Lost approval. |
-| **Honesty** | Rubber-stamping verification | You reported 'verified' without re-executing. The analysis fails on fresh data — your unverified claim wastes the user's time. |
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The results matched before" | Prior results don't prove current reproducibility. Code, data, or environment may have changed. | Re-run fresh and compare outputs |
-| "I just need to check the numbers" | Reproducibility means re-running, not re-reading. Reading cached output proves nothing. | Execute the analysis fresh and verify outputs match |
-| "The reviewer already verified this" | Review checks methodology, verify checks reproducibility. They are different gates. | Run the reproducibility demonstration yourself |
-| "Fresh re-run will give same results" | If you're sure, running it costs nothing. If you're wrong, skipping it costs everything. | Run it. Proof is cheap, assumptions are expensive. |
-| "The user is waiting" | Publishing irreproducible results wastes more time than verification. A 10-minute check prevents a 10-day retraction. | Run verification now — the user wants correct results, not fast wrong ones |
-
-## Red Flags - STOP Immediately If You Think:
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "Results should be the same" | Your "should" isn't verification | Re-run and compare |
-| "I ran it earlier" | Your earlier run isn't fresh | Run it again now |
-| "It's reproducible" | Your claim requires evidence | Demonstrate reproducibility |
-| "User will be happy" | Your assumption isn't their acceptance | Ask explicitly |
-| "Outputs look right" | Your visual inspection isn't verified | Check against criteria |
+- Review checks methodology; verify checks reproducibility. They are different gates — a passed review is not evidence the analysis reproduces.
+- Reproducibility means re-running, not re-reading: prior results don't prove current reproducibility, because code, data, or environment may have changed since. Reading cached output proves nothing.
+- Verifying your own work shares the implementer's biases — the reproducibility demonstration is run fresh, not vouched for by its author. "Verified" without re-execution is an unverified claim.
+- The 10-minute reproducibility check is cheap against the 10 days of debugging when someone else can't run the analysis — skipping it to deliver faster is anti-efficient.
+- "User will be happy" is an assumption, not acceptance — completion requires the user's explicit confirmation, not your prediction of it.
 
 ## Static Analysis (Constraint Check Scripts)
 

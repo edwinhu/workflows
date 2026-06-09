@@ -47,12 +47,7 @@ Flag body-text sentences containing a cited author's surname followed by a past-
 
 Also flag inline forms that bury the year after a comma instead of in parens: *"Lund, 2018, argues"* — should be *"Lund (2018) argues."*
 
-## Rationalization Table
+## Citation-Tense Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Past tense is more natural English" | Past tense is natural for events, not for persistent arguments | Present tense for arguments; past tense for events |
-| "The paper came out in a specific year" | Fine — put the year in parens, keep the verb present | *"Lund (2018) argues"* |
-| "Law review style puts year only in footnote" | True as a general rule, but this project has adopted inline parenthetical years | Follow the project's chosen style |
-| "It's just one verb tense" | Tense shifts across a draft signal sloppy editing | Apply uniformly |
-| "I'll fix it on final proofread" | "Final proofread" never comes | Fix during drafting and review |
+- The publication year belongs in parens with the verb kept present: *"Lund (2018) argues"* — the year does not justify a past-tense verb.
+- Tense shifts across a draft signal sloppy editing; the rule applies uniformly, during drafting and review, not deferred to a final proofread.

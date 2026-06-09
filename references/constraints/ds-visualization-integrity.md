@@ -36,17 +36,3 @@ ax.set_title("Revenue by Category")
 ```python
 ax.set_ylim(990, 1010)  # Truncated axis — tiny differences look huge
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The differences are hard to see at full scale" | Then the differences are small. Show them honestly. | Use full scale, add annotations for differences |
-| "Dual axes make it easier to compare" | Dual axes manufacture visual correlation | Separate panels or normalize to same scale |
-| "3D looks more professional" | 3D distorts proportions and obscures values | 2D always |
-
-## Red Flags
-
-- **Truncated y-axis** → STOP. Start at 0 or clearly label the break.
-- **Dual y-axes** → STOP. Use separate panels.
-- **Smoothed line without raw data** → STOP. Show both or add confidence band.

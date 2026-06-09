@@ -25,16 +25,3 @@ When writing or fixing slide/notes content, extract from the source paper and `.
 
 **If you cannot find content in the source paper, it does not go in the slides.**
 </EXTREMELY-IMPORTANT>
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "I know this paper from training — I'll write the findings" | Training knowledge fabricates results and misattributes findings | Extract from the paper. Every claim needs a source. |
-| "The gap is small — I'll fill it from what I know" | Small fabrications are harder to catch than large ones | Flag the gap to the user |
-
-## Red Flags
-
-- **Writing empirical results without extracting from the paper** — STOP. Extract first.
-- **Adding claims not found in the source** — STOP. Flag to the user.
-- **"I'm confident this is correct from training"** — STOP. Confidence ≠ accuracy.

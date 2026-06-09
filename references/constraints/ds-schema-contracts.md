@@ -41,17 +41,3 @@ df = pd.read_csv("data.csv")
 # No schema validation — proceeds even if columns changed
 result = df["returns"] / df["market_cap"]  # KeyError 5 steps later
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The schema won't change" | It will. Data sources evolve. | Assert schema at every boundary. |
-| "Schema checks slow things down" | Schema violations crash the pipeline anyway — just later and harder to debug. | Fail fast at the boundary. |
-| "I'll add schema checks later" | Later never comes. The pipeline runs unvalidated. | Add schema contracts when writing the transform. |
-
-## Red Flags
-
-- **No column assertions at data load** → STOP. Add schema contract.
-- **Schema changed upstream** → STOP. This is R4. User decides how to adapt.
-- **`KeyError` in transformation** → STOP. Missing schema contract at input.

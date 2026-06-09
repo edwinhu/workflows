@@ -46,17 +46,3 @@ print(f"Placebo p-value: {placebo_result.pvalues['placebo_treatment']:.4f}")
 "Spec curve shows 85% of specifications significant → robust finding"
 # But no placebo test, no leave-one-out, no check for influential observations
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Spec curve already shows robustness" | Spec curves test specification choices, not identification | Run at least one A3 check |
-| "Placebo test isn't standard in this field" | That's an argument FOR running it, not against | Run it and report |
-| "Leave-one-out is too computationally expensive" | If one observation drives your result, you need to know | Run it on key coefficients |
-
-## Red Flags
-
-- **"Spec curve is enough"** → STOP. Spec curves don't test identification or influence.
-- **"No standard robustness checks for this method"** → STOP. At minimum, run leave-one-out influence.
-- **"Results are clearly robust"** → STOP. "Clearly" without evidence is assumption.

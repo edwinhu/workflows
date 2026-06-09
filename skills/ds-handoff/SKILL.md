@@ -10,11 +10,9 @@ Announce: "Using ds-handoff to capture session state for clean resumption."
 ## Contents
 
 - [The Iron Law of Handoff](#the-iron-law-of-handoff)
-- [Red Flags - STOP Immediately](#red-flags---stop-immediately-if-you-catch-yourself-thinking)
+- [Handoff Facts](#handoff-facts)
 - [Process](#process)
 - [Handoff Template](#handoff-template)
-- [Drive-Aligned Framing](#drive-aligned-framing)
-- [Rationalization Prevention](#rationalization-prevention)
 
 # Session Handoff
 
@@ -35,17 +33,11 @@ Before writing `.planning/HANDOFF.md`, you MUST:
 **If you catch yourself writing a handoff without reading state files first, STOP.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Catch Yourself Thinking:
+## Handoff Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "I remember what we did" | Memory degrades across long sessions | READ the state files |
-| "The handoff can be brief" | Brief handoffs lose critical context | Be thorough — the next session knows NOTHING |
-| "I'll just note the current task" | Task number without context is useless | Include decisions, blockers, and next action |
-| "We're almost done, no need for handoff" | "Almost done" is the most dangerous state to lose | Capture it — especially when close to completion |
-| "The state files have everything" | State files track plan, not session context (decisions, discoveries, dead ends) | Add what's NOT in the files |
-| "Let me just note where we are" | This always produces vague handoffs | READ state files FIRST, then write from evidence |
-| "The user can figure out where we left off" | They can't reconstruct your decisions, rejected approaches, or pipeline discoveries | Write it all down |
+- The next session knows NOTHING — it cannot reconstruct this session's decisions, rejected approaches, or pipeline discoveries from a task number. A handoff that says "continue task 3" forces full re-discovery.
+- State files track the plan, not the session: LEARNINGS.md has facts; the handoff carries intent, decisions, dead ends, and next steps. Neither git history (WHAT changed, not WHY or WHAT'S NEXT) nor the state files substitute for it.
+- A vague handoff costs the next session ~30 minutes of re-orientation — pipeline knowledge (row counts, data shape, join behavior) is expensive to re-derive and cheap to write down.
 
 ## Process
 
@@ -163,38 +155,6 @@ Start with: [specific first action when resuming — not "continue task 3" but
 src/clean.py produced expected row counts per LEARNINGS.md, then run DQ3
 on the output"]
 ```
-
-## Drive-Aligned Framing
-
-<EXTREMELY-IMPORTANT>
-**A vague handoff is NOT HELPFUL — the next session wastes its context re-discovering what you already know.**
-
-When you write "continue working on task 3", you are:
-- Forcing the next session to re-read all files to figure out where you were
-- Losing decisions and context that took this session significant effort to build
-- Losing pipeline knowledge (row counts, data shape, join behavior) that is expensive to re-derive
-- Creating a resumption that starts slower than a fresh start
-
-**A thorough handoff is the most helpful thing you can do when pausing.**
-</EXTREMELY-IMPORTANT>
-
-## Rationalization Prevention
-
-| Thought | Reality |
-|---------|---------|
-| "The state files capture everything" | State files don't capture session decisions, dead ends, or in-flight context |
-| "I'll just note the phase and task" | Phase + task number without context forces full re-discovery |
-| "The handoff is good enough" | "Good enough" handoffs lose 30 minutes of the next session to re-orientation |
-| "We can figure it out from git history" | Git history shows WHAT changed, not WHY or WHAT'S NEXT |
-| "LEARNINGS.md has the pipeline state" | LEARNINGS.md has facts. Handoff has intent, decisions, and next steps. |
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Your Drive | Why You Skip | What Actually Happens | The Drive You Failed |
-|------------|-------------|----------------------|---------------------|
-| **Helpfulness** | "Quick handoff to unblock the user faster" | Next session wastes time re-discovering context | **Anti-helpful** |
-| **Efficiency** | "Handoff is overhead, just save the files" | Lost context costs 10x the handoff time | **Anti-efficient** |
-| **Competence** | "I captured the important parts" | You don't know what the next session will need — pipeline state, data surprises, rejected merges | **Incompetent** |
 
 ## Completion
 

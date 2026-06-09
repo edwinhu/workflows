@@ -69,31 +69,3 @@ Read("src/analysis.py")          # INVESTIGATION — reading source code
 head -20 output/results.csv      # INVESTIGATION — reading data contents
 python3 -c "import pandas..."    # INVESTIGATION — running analysis code
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Let me quickly check the data" | You're about to investigate, not verify. "Quickly" is how every protocol violation starts. | Read LEARNINGS.md for the subagent's data summary |
-| "Let me verify the output looks right" | If you're reading output files, you're investigating. Verification = checking LEARNINGS.md says "COMPLETE" with verified output. | Check LEARNINGS.md entry, not the data itself |
-| "Quick look at the notebook" | You're about to read implementation code. That's investigation. | If notebook quality matters, dispatch a code review subagent |
-| "I need to understand what the analyst did" | The analyst's report tells you what they did. Reading their code is investigation, not understanding. | Read the subagent's returned report |
-| "Just confirming the merge worked" | Confirming = running code = investigation. The analyst already confirmed in their output-first protocol. | Trust the verified output in the subagent report |
-| "The results seem off, let me check" | If results seem off, that's a new investigation task. Don't do it yourself. | Dispatch a fresh Task agent to investigate the discrepancy |
-
-## Red Flags
-
-- **"Let me check the data"** → STOP. That's investigation. Delegate it.
-- **"Let me verify the output"** → STOP. Read LEARNINGS.md instead.
-- **"Quick look at the notebook"** → STOP. Dispatch a review subagent.
-- **"I'll just read the CSV to confirm"** → STOP. Check file existence with `ls`, not contents.
-- **"Let me run a quick query"** → STOP. Running queries is analysis, not orchestration.
-- **"I need to see what happened"** → STOP. The subagent report tells you what happened.
-
-## Drive-Aligned Framing
-
-| Drive | Why You Investigate | What Actually Happens |
-|-------|--------------------|-----------------------|
-| **Helpfulness** | "I should verify before proceeding" | You re-do the subagent's work, wasting time. Your "verification" is investigation that should have been delegated. Anti-helpful. |
-| **Competence** | "I need to understand the analysis" | You read code to feel informed. But you're the orchestrator, not the analyst. Understanding implementation details is the subagent's job. |
-| **Efficiency** | "Faster to check myself than spawn another agent" | You spend 10 minutes reading code. A subagent takes 2 minutes and produces a structured report. Your "efficiency" was slower. |

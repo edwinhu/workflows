@@ -81,24 +81,3 @@ summary(results, type = "curve")
 "What if we use log returns instead?"
 "Results are stronger if we drop pre-2008..."
 ```
-
-## Rationalization Table
-
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| Running 20 specs, reporting the one that's significant | Multiple testing without correction | Pre-register spec in PLAN.md, report ALL results |
-| Adding controls until p < 0.05 | Specification search | Lock controls in PLAN.md before running |
-| Dropping outliers until results "improve" | Data snooping | Define outlier criteria in PLAN.md before analysis |
-| Trying log/level/sqrt transforms until significant | Functional form search | Justify transformation choice from theory, not results |
-| Subsetting to periods where effect is strongest | Cherry-picking sample | Full sample first, subsamples as robustness |
-
-## Red Flags
-
-- **"Let me try a different specification"** → STOP. Did you see results first? That's p-hacking.
-- **"Results are stronger if we..."** → STOP. You're optimizing for significance, not truth.
-- **"This control makes it significant"** → STOP. Was this control in PLAN.md? If not, it's R4.
-- **"Let me check a subsample"** → STOP. Was this subsample pre-specified? If not, it's cherry-picking.
-
-## Drive-Aligned Framing
-
-A single regression is one path through a garden of forking paths. Reporting it as "the result" without showing the specification curve is like reporting one coin flip as evidence. The spec curve shows the full garden — and if your finding only exists on one path, the user needs to know that before making decisions.

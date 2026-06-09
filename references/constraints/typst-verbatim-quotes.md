@@ -27,9 +27,3 @@ Statutory text, judicial language, and direct quotes from the paper are precise 
 
 **Why:** Statutory text IS the law. Opinion quotes are what the court actually said. Paper quotes are what the authors actually wrote. Paraphrasing changes meaning. Training knowledge reconstructs quotes with subtle errors.
 </EXTREMELY-IMPORTANT>
-
-## Red Flags
-
-- **Paraphrasing a direct quote** — STOP. Preserve verbatim.
-- **Writing a quote from training knowledge** — STOP. Extract from source.
-- **Trimming a quote to fix overflow** — STOP. Trim surrounding content instead.

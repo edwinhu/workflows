@@ -44,24 +44,11 @@ A bad spec that survives into planning means:
 **Catching a spec gap NOW costs 1 minute. Catching it during implementation costs hours.**
 </EXTREMELY-IMPORTANT>
 
-### Rationalization Table - STOP If You Think:
+### Spec-Review Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The spec looks complete to me" | Self-review is rubber-stamping | Dispatch independent reviewer |
-| "User already confirmed the spec" | User confirms intent, not completeness | Reviewer checks what user might miss |
-| "This will slow us down" | 30-second review saves hours of rework | Dispatch the reviewer |
-| "It's a simple analysis, no review needed" | Simple specs have the most hidden assumptions | Review it anyway |
-| "I'll catch issues during data profiling" | You'll profile the wrong data | Review BEFORE profiling |
-
-### Red Flags - STOP If You Catch Yourself:
-
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This spec looks complete to me" | Self-assessment is rubber-stamping — check EVERY section against the checklist | Read each section individually, verify none are empty or vague |
-| "Spec looks similar to a prior one, should be fine" | Similar structure ≠ complete content — prior specs had different data sources and objectives | Evaluate THIS spec against THIS analysis's requirements |
-| "The objectives are obvious, no need to scrutinize" | Obvious objectives hide unstated assumptions — the user's intent may differ from your inference | Verify objectives are specific, measurable, and user-confirmed |
-| "Incomplete section is fine, they'll fill it in during planning" | Planning consumes the spec as-is — gaps survive into data profiling and task breakdown | Flag the gap NOW, before it propagates downstream |
+- User confirmation covers intent, not completeness — a user-confirmed spec can still have empty sections, missing data sources, and unstated assumptions. The reviewer checks what the user didn't.
+- Planning consumes the spec as-is: gaps survive into data profiling and task breakdown, so an incomplete section is not "filled in later" — it propagates downstream until someone profiles the wrong data.
+- A spec that resembles a prior one is not thereby complete — prior specs had different data sources and objectives; each section is checked against THIS analysis's requirements.
 
 ## Dispatch Template
 
@@ -154,14 +141,6 @@ Escalate to user:
 [list issues]
 Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the spec?"
 ```
-
-## Drive-Aligned Framing
-
-**Proceeding to data profiling with a flawed spec is NOT HELPFUL — wrong profiling produces wrong plans, which produce wrong analysis, wasting everyone's time.**
-
-You know the spec has gaps. Profiling built on a bad spec profiles the wrong data. Plans built on wrong profiling produce wrong analysis. Implementation of a wrong plan wastes everyone's time and produces incorrect results.
-
-**Fix the spec now. It costs minutes, not hours.**
 
 ## Gate Function
 

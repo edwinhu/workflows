@@ -81,25 +81,13 @@ Before writing ANY citation:
 
 **Skipping any step produces unreliable citations.**
 
-## Rationalization Table - STOP If You Think:
+## Citation Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| “I’m pretty sure that’s the volume” | Pretty sure = wrong | VERIFY with actual source |
-| “Id. is close enough” | Intervening cite breaks id. | Use full short form |
-| “This signal seems right” | Wrong signals mislead readers | CHECK rule 1.2 examples |
-| “The parenthetical isn’t needed” | Parentheticals explain relevance | ADD what the source says |
-| “I’ll fix the pinpoint later” | Pinpoints prove claims | ADD pinpoint NOW |
-| “Small caps isn’t that important” | Typeface is mandatory | APPLY correct typeface |
-| “This abbreviation is obvious” | Wrong abbreviations fail | CHECK tables T6, T10, T12 |
-
-## Red Flags - STOP Immediately If:
-
-- “Let me guess the reporter volume” → NO. Verify the actual cite.
-- “Id. probably works here” → NO. Check for intervening citations.
-- “Supra will point them back” → NO. Verify the full citation exists.
-- “I’ll use the common abbreviation” → NO. Use Bluebook tables.
-- “Close enough on the page number” → NO. Exact pinpoints required.
+- An intervening citation breaks *id.* — *id.* after an intervening cite is ambiguous and must become a full short form. *Supra* only works when the full citation it points to actually exists earlier in the document.
+- Signals are checked against Rule 1.2 examples, not intuition — a wrong signal misleads the reader about how the source supports the proposition.
+- Parentheticals explain the source's relevance; pinpoints prove the specific claim. A cite deferred ("I'll add the pinpoint later") ships without one.
+- Typeface (Rule 2) is mandatory, not stylistic. Abbreviations come from tables T6, T10, T12 — "common" or "obvious" abbreviations that don't match the tables fail cite-check.
+- "Pretty sure" about a reporter volume or page number means unverified — a guessed element presented as a citation is an unverified claim, and exact pinpoints are required.
 
 ## Quick Reference: Common Citation Forms
 
@@ -270,14 +258,6 @@ Use with `/writing-legal` for complete legal scholarship workflow:
 1. `/bluebook` formats citations correctly
 2. `/writing-legal` ensures argument structure and evidence handling
 3. `/ai-anti-patterns` catches AI writing indicators before submission
-
-## Why Skipping Hurts the Thing You Care About Most
-
-| Shortcut | Consequence |
-|---|---|
-| Guessing citation format to save time | You guessed the citation format to save time. The footnote is wrong — your guess undermines the paper's credibility. |
-| Skipping verification of reporter/volume | You cited without checking the reporter. The cite is to the wrong volume — your laziness is visible to every reader. |
-| Using short form without establishing full citation first | You used a short form before the full citation. The reader can't trace the source — your shortcut created confusion. |
 
 ## Delete & Restart Pattern
 

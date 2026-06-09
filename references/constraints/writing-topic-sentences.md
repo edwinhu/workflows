@@ -54,11 +54,7 @@ Flag paragraph-initial sentences containing:
 
 These are high-confidence indicators. Not exhaustive — review should also apply judgment to catch variants.
 
-## Rationalization Table
+## Topic-Sentence Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "The reader needs signposting" | Signpost with substance, not meta-commentary | Lead with the point; the structure speaks for itself |
-| "This frames the paragraph" | Framing that doesn't contain substance is filler | The topic sentence IS the frame — make it substantive |
-| "Academic writing uses these transitions" | Good academic writing does not; textbooks and AI do | Read Volokh ch. 4 on cutting filler |
-| "It's just one sentence" | It's the FIRST sentence — the one that sets the reader's expectation | Make it the strongest sentence in the paragraph |
+- Meta-commentary openers are a textbook/AI register, not good academic writing — Volokh ch. 4 covers cutting this filler. Signposting is done with substance: the topic sentence IS the frame, and a frame without substance is filler.
+- The opening sentence sets the reader's expectation for the paragraph; it should be the strongest sentence in it, not throat-clearing.

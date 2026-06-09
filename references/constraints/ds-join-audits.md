@@ -49,16 +49,8 @@ merged = prices.merge(fundamentals, on='ticker')
 # Did we lose rows? Gain rows? No idea.
 ```
 
-## Rationalization Table
+## Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "It's a simple join" | Simple joins fail silently when keys aren't unique | Log diagnostics for every join |
-| "I checked the keys already" | Your check was before the join. Post-join diagnostics catch what pre-checks miss. | Log before AND after |
-| "The row count looks right" | "Looks right" is not a diagnostic. Print exact numbers. | Print exact counts and ratios |
-
-## Red Flags
-
-- **`df.merge()` without printing diagnostics** → STOP. Add join audit.
-- **Row count increased after join** → STOP. Likely many-to-many. Investigate.
-- **"The merge worked fine"** → STOP. Show the numbers.
+- `result.duplicated()` across all columns reports ZERO on join fan-out — fanned rows differ in the joined columns, so only `duplicated(subset=key)` reveals it. Reporting "no duplicates" from the all-columns check is a false clean signal, not a verification.
+- "The merge worked fine" without printed numbers is an unverified claim — show the counts. Pre-join key checks don't substitute: the fan-out happens at the join, so post-join diagnostics catch what pre-checks miss.
+- A row count that increased after a join is a many-to-many signature until proven otherwise.

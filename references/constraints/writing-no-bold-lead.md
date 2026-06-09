@@ -42,11 +42,7 @@ Right (when structural label needed):
 to control a disproportionate share of total votes.
 ```
 
-## Rationalization Table
+## Bold-Lead Facts
 
-| Excuse | Reality | Do Instead |
-|--------|---------|------------|
-| "Bold labels help the reader scan" | Readers scan via headings and topic sentences, not bold inline labels | Use a heading or write a clear topic sentence |
-| "This is standard academic formatting" | No law review uses bold inline headers in body text | Write prose paragraphs |
-| "The structure needs visual markers" | If you need markers, use italic or actual headings | Use `*italic*` or `###` |
-| "It's just formatting, not content" | Formatting signals genre — this signals AI generation | Remove the bold pattern |
+- No law review uses bold inline headers in body text; readers scan via headings and topic sentences, not bold labels. When the genre genuinely needs a structural marker, the alternatives are `*italic*` labels or actual `###` headings.
+- Formatting signals genre — the `**Bold Label.**` pattern signals AI generation regardless of the content that follows it.
