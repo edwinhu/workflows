@@ -1,5 +1,6 @@
 ---
 name: headline-card
+user-invocable: false
 description: "Use this skill when the user asks to add news headline cards, 'Last Week Tonight'-style cards, headline slides, news quote slides, or media quote cards to a Typst presentation. Also use when the user wants to modify existing headline cards (add/remove cards, change quotes, swap logos, fix layout issues). Trigger on: 'add a headline', 'news card', 'LWT card', 'headline slide', 'quote card', 'media quote', 'add a quote from [publication]'."
 ---
 
