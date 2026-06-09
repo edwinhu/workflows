@@ -36,7 +36,16 @@ uv run --with lxml python3 \
 # Cross-references only
 uv run --with lxml python3 \
   "$SKILL_DIR/scripts/create_crossrefs.py" --docx path/to/file.docx
+
+# Refresh stale NOTEREF cross-ref numbers after a coauthor inserted/moved
+# footnotes in Word (render-based, ground-truth; needs LibreOffice)
+"$SKILL_DIR/scripts/refresh_noteref_caches.py" path/to/file.docx --verify
 ```
+
+**Which script do I want?**
+- Footnotes look broken after a **Google Docs / Word Online** round-trip (missing separators, wrong styles, mark/number mix-ups) → **`fix_footnotes.py`**.
+- The doc still has **hardcoded** "supra note 42" **text** that should become auto-updating fields → **`create_crossrefs.py`**.
+- The doc **already uses NOTEREF fields** but a coauthor **inserted/moved/deleted footnotes in Word** and the cross-reference **numbers are now wrong** → **`refresh_noteref_caches.py`** (this is the common "Nadya emailed back tracked edits and the numbering is off" case).
 
 ## Scripts
 
@@ -85,6 +94,44 @@ Converts hardcoded "supra note N" references to NOTEREF field codes that auto-up
 - Creates bookmark targets on referenced footnotes
 - Replaces hardcoded numbers with `NOTEREF _RefFN<id> \h` field codes
 - Preserves italic formatting on "supra"
+
+### refresh_noteref_caches.py
+
+Refreshes the cached numbers on existing `NOTEREF` cross-reference fields after
+footnotes were inserted/moved/deleted in Word. Use when cross-references already
+ARE fields (not hardcoded text) but their numbers went stale.
+
+**Why the naive approaches fail (and this script's method):**
+- The offset is **not uniform** — `+N to everything` is wrong.
+- Computing numbering from `document.xml` order is wrong: the 3 `customMarkFollows`
+  author-bio footnotes are **not** counted in the numeric sequence, and a tracked
+  footnote **move** makes XML order diverge from rendered order.
+- LibreOffice's **inline cross-ref render lies** — it always recomputes NOTEREF on
+  load and **excludes unaccepted tracked-inserted footnotes**, so it shows xrefs
+  ~2 low even though it numbers the page-bottom markers correctly.
+
+So the script uses the **rendered page-bottom footnote markers as ground truth**:
+render → extract markers → fingerprint-match each footnote to its true marker
+(longest-common-prefix, one-to-one, most-distinctive first) → set every NOTEREF
+cache to its target's marker. It also repairs NOTEREF field codes left dangling by
+Word's **40-char bookmark-name truncation** (`_RefBib_...2024` → the real
+`_RefBib_...20`). It deliberately does **not** add `updateFields` (that re-triggers
+the buggy recompute). Verify with a **changes-accepted** render — once inserts are
+accepted every engine agrees and the inline xrefs render correctly.
+
+**Requires:** LibreOffice (`soffice`) and `pymupdf` (auto-installed via the inline
+script deps; run the file directly, e.g. `./refresh_noteref_caches.py file.docx`).
+
+**Flags:**
+- `-o` / `--output`: Output path (default: overwrite input)
+- `--dry-run`: Report the cache changes without writing
+- `--verify`: Also emit a changes-accepted `*_ACCEPTED_preview.pdf` proof
+- `--soffice PATH`: Path to the LibreOffice binary (auto-discovered if omitted)
+
+**Scope (intentional):** refreshes numbers only. It does **not** do editorial
+retargeting (e.g. "this xref should point to notes 210–212 instead of its current
+target"). That is a human decision — move the bookmark / change the NOTEREF target
+first, then re-run this to refresh.
 
 ## Reference
 
