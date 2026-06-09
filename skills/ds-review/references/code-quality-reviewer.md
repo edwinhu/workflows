@@ -46,15 +46,10 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Finding Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This looks messy" | Messy ≠ wrong | Check if it affects correctness |
-| "Variable names are unclear" | Style preference unless they're actively misleading | Discard if code is understandable |
-| "I would refactor this" | Your refactoring preference isn't a quality issue | Check if current code has bugs |
-| "This might be inefficient" | Might = < 80% confidence | Measure or discard |
-| "Code is hard to read" | Hard is subjective | Check if logic is correct |
+- A finding requires evidence at >=80 confidence; "looks messy", "unclear names", "hard to read", and "I would refactor this" are style preferences, not quality issues — report them only if they cause incorrect behavior or actively mislead.
+- "Might be inefficient" is below the confidence bar by definition: measure it or discard it.
 
 ## Confidence Scoring
 

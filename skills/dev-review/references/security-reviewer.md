@@ -43,15 +43,10 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Finding Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This could be exploited" | Your "could" = < 80% confidence | Verify exploitability or discard |
-| "This seems insecure" | Your vague suspicion isn't evidence | Find concrete attack vector or discard |
-| "I would validate this" | Your style preference isn't a vulnerability | Check if current approach is exploitable |
-| "Pre-existing but should be fixed" | You're out of scope | Score it 0 and discard |
-| "Theoretical attack" | Theoretical != exploitable | Verify it works in practice or discard |
+- "Could be exploited" and "seems insecure" are below the 80-confidence bar — a security finding requires a concrete attack vector, and theoretical != exploitable: verify it works in practice or discard.
+- "I would validate this" is a style preference unless the current approach is actually exploitable. Pre-existing issues are out of scope — score 0 and discard.
 
 ## Confidence Scoring
 

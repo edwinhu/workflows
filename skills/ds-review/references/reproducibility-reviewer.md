@@ -47,15 +47,10 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Finding Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "Seeds might be missing" | Might = < 80% confidence | Check if stochastic operations exist |
-| "This seems hard to reproduce" | Seems isn't evidence | Try reproducing it yourself |
-| "Versions should be documented" | Should is preference | Check if versions matter for these packages |
-| "I would version this differently" | Your style preference isn't a reproducibility issue | Check if current approach works |
-| "Data source not clear" | Check LEARNINGS.md first | Verify it's truly undocumented |
+- "Seems hard to reproduce" is not evidence — try reproducing it yourself; "seeds might be missing" is below the 80-confidence bar until you confirm stochastic operations exist.
+- Check LEARNINGS.md before reporting an undocumented data source, and verify package versions actually matter before flagging them — version pinning style is preference, not a reproducibility defect.
 
 ## Confidence Scoring
 

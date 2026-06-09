@@ -42,15 +42,10 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Finding Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This should be tested" | Your should isn't evidence | Check if it's actually untested |
-| "Edge case might not be covered" | Your might = < 80% confidence | Verify the gap exists or discard |
-| "I would test it differently" | Your style preference isn't a test issue | Check if current tests verify behavior |
-| "Test structure is inconsistent" | Style preference, not a bug | Discard unless it affects reliability |
-| "Pre-existing gap" | You're out of scope | Score it 0 and discard |
+- "Should be tested" and "edge case might not be covered" are below the 80-confidence bar until you verify the gap actually exists; "I would test it differently" and inconsistent test structure are style preferences unless they affect reliability.
+- Pre-existing gaps are out of scope for this review — score 0 and discard.
 
 ## Confidence Scoring
 

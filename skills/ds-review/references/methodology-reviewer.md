@@ -49,15 +49,11 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Finding Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This looks wrong" | Your vague suspicion isn't evidence | Find statistical principle violated or discard |
-| "Unusual approach" | Unusual ≠ invalid | Verify the methodology is sound |
-| "I would do it differently" | Your style preference isn't a methodology error | Check if the approach is valid |
-| "Might introduce bias" | Your might = < 80% confidence | Verify bias exists or discard |
-| "Assumptions not verified" | Check if assumptions were tested elsewhere | Read full analysis before claiming missing |
+- A methodology finding requires the specific statistical principle violated; "looks wrong", "unusual approach", and "I would do it differently" are not evidence — unusual is not invalid, and reporting suspicion as a finding is an unverified claim.
+- "Might introduce bias" is below the 80-confidence bar: verify the bias exists or discard.
+- Before claiming assumptions were never verified, read the full analysis — they may be tested elsewhere.
 
 ## Confidence Scoring
 

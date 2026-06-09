@@ -43,15 +43,10 @@ This applies even when:
 **STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT.**
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP Immediately If You Think:
+## Finding Facts
 
-| Thought | Why It's Wrong | Do Instead |
-|---------|----------------|------------|
-| "This looks slow" | Your vague suspicion isn't evidence | Estimate Big-O or discard |
-| "I would optimize this" | Your style preference isn't a perf issue | Check if it's in a hot path |
-| "Micro-optimization" | Premature optimization is waste | Focus on algorithmic issues |
-| "This could be cached" | Your "could" = < 80% confidence | Verify cache hit rate matters |
-| "Pre-existing but should be fixed" | You're out of scope | Score it 0 and discard |
+- "Looks slow" is not evidence — estimate Big-O or discard; "could be cached" is below the 80-confidence bar until the hit rate demonstrably matters.
+- Micro-optimizations outside hot paths are waste; focus on algorithmic issues. Pre-existing issues are out of scope — score 0 and discard.
 
 ## Confidence Scoring
 
