@@ -26,6 +26,7 @@ CLI use:
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -65,6 +66,16 @@ _SUPPLEMENTAL_PREFIXES = (
     "Times New Roman", "Arial", "Georgia", "Verdana", "Tahoma",
     "Trebuchet", "Courier New", "Comic Sans", "Impact", "Book Antiqua",
     "Garamond", "Palatino",
+)
+
+# Icon/symbol fonts poison x2t's font matcher: with octicons.ttf et al. in
+# m_sFontDir, small-caps Times New Roman runs render as icon glyphs
+# (law_review_template TABLE OF CONTENTS -> "mommomom" + lightning-bolt icon;
+# verified 2026-06-10). Exclude them from the merged cache.
+_ICON_FONT_RE = re.compile(
+    r"icons?|awesome|glyph|emoji|symbols?|dingbat|webdings|wingdings"
+    r"|powerline|nerd|-NF-|^NFM|octicons|devicons",
+    re.IGNORECASE,
 )
 
 
@@ -123,7 +134,8 @@ def _app_dir() -> Path:
     # Key the cache by the store-path/dir name so version bumps re-copy.
     app = Path.home() / ".cache" / "x2t-app" / tree.resolve().parts[-3]
 
-    index = app / "sdkjs" / "common" / "AllFonts.js"
+    common = app / "sdkjs" / "common"
+    index = common / "AllFonts.js"
     if not app.is_dir():
         app.parent.mkdir(parents=True, exist_ok=True)
         tmp_app = app.with_suffix(".partial")
@@ -133,8 +145,11 @@ def _app_dir() -> Path:
         for p in [tmp_app, *tmp_app.rglob("*")]:
             p.chmod(p.stat().st_mode | 0o200)
         tmp_app.rename(app)
-    elif _fonts_changed and index.exists():
-        index.unlink()
+    elif _fonts_changed:
+        # Remove ALL index artifacts — docbuilder skips regeneration if
+        # fonts.log still matches its last scan.
+        for stale in (index, common / "font_selection.bin", common / "fonts.log"):
+            stale.unlink(missing_ok=True)
 
     if not index.exists():
         with tempfile.TemporaryDirectory(prefix="x2t-init-") as tmp:
@@ -155,7 +170,11 @@ def _collect_fonts() -> dict[str, Path]:
     font_files: dict[str, Path] = {}
 
     def add(f: Path) -> None:
-        if f.is_file() and f.suffix.lower() in (".ttf", ".otf", ".ttc"):
+        if (
+            f.is_file()
+            and f.suffix.lower() in (".ttf", ".otf", ".ttc")
+            and not _ICON_FONT_RE.search(f.name)
+        ):
             font_files.setdefault(f.name, f)
 
     for d in _FONT_SOURCE_DIRS:
