@@ -11,6 +11,30 @@ Board-level governance data from ISS (formerly IRRC/RiskMetrics).
 
 **These are two separate tables with different schemas.** You must pull from both and harmonize to cover the full time series.
 
+## Grain & Keys (verified 2026-06-09)
+
+- **Row PK `risk.rmdirectors` (2007+):** none exact. The WRDS-documented primary identifier is
+  `(year, ticker, director_detail_id)`
+  ([Identifiers in ISS Directors US](https://wrds-www.wharton.upenn.edu/pages/support/support-articles/iss-formerly-known-riskmetrics-and-irrc/best-identifier-use-riskmetrics-directors-changes-identifier-between-legacy-and-current-files/):
+  "The primary identifier in the current dataset is year-ticker-director_detail_id").
+  VERIFIED-WITH-RESIDUAL: 82 dupes over 268,451 rows; `(cusip, meetingdate, director_detail_id)` → 72 dupes.
+  Inspected collisions are byte-identical duplicate rows (same name, title, everything) — run
+  `drop_duplicates()` first, then the documented key is effectively unique. Two-meetings-per-year firms
+  explain the (year,ticker) vs (cusip,meetingdate) difference.
+- **Row PK `risk.directors` (1996-2006):** none. The documented key FAILS here:
+  `director_detail_id` is NULL on 51,511 / 166,375 rows (`legacy_director_id` NULL on 4,631), so
+  `(year, ticker, director_detail_id)` leaves 39,788 dupes and `(cusip, year, legacy_director_id)` leaves
+  2,210. Best observed: `(cusip, meetingdate, fullname)` — 26 dupes over 166,375 (byte-identical pairs;
+  `drop_duplicates()` clears them). WRDS confirms: "There is no single variable that is populated for all
+  companies and all years" (same article).
+- **Business/event key:** director-firm-year (one board seat in one proxy season). No amendment axis;
+  collisions = vendor duplicate loads only.
+- **Linking identifiers:** `cusip` (legacy table = 6-digit HEADER cusip, backfilled to latest by WRDS;
+  `rmdirectors` = as-delivered, typically 9-digit historical — per the same WRDS article), `ticker`
+  (as-delivered, never restated), `director_detail_id` (person across boards/years; cross-board interlocks),
+  `legacy_director_id` (legacy table only — never use across tables), `company_id` (rmdirectors only),
+  link to Compustat/CRSP via `cusip6`.
+
 ## Key Column Differences
 
 | Column | `directors` (1996-2006) | `rmdirectors` (2007+) |

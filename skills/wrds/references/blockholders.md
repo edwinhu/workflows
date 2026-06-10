@@ -30,6 +30,24 @@ Year assignment differs from filing date:
 - 13G with position <10% filed by Feb 24 → previous year (annual 13G)
 - All others: `year = year(filing_date)`
 
+## Grain & Keys (verified 2026-06-09)
+
+- **Row PK (pipeline output):** `(company_CIK, blockholder_CIK, year)` — VERIFIED BY CONSTRUCTION, not by
+  index: the aggregator's amendment-resolution step `drop_duplicates` on exactly this triple after sorting
+  `file_date` descending (see [Key gotchas](#key-gotchas) #1), so the output panel is unique on it by
+  definition. Re-verify with `df.duplicated(subset=["company_CIK","blockholder_CIK","year"]).sum() == 0`
+  after any pipeline change.
+- **Business/event key:** same triple = one blockholder's stake in one company in one ownership year.
+  Collisions upstream = SC 13D/A / 13G/A amendments + multiple filings per year; resolved by keeping the
+  **latest `file_date`** filing per triple (Volkova supersession rule).
+- **Underlying index tables (schema-verified):** `wrdssec_all.wrds_forms` — `fname` unique, `(accession,
+  cik)` unique, `accession` alone NOT unique (one row per filer CIK; 347,721 dupes in a 2023 slice of
+  1,159,918 rows) — hence the `DISTINCT` / `drop_duplicates('accession')` steps in this pipeline.
+  **Caveat:** the SQL below selects `accession` FROM `wrdssec_all.forms`, but `forms` has NO `accession`
+  column (verified 2026-06-09) — use `wrdssec_all.wrds_forms`, or derive the accession from `forms.fname`.
+- **Linking identifiers:** `company_CIK` / `blockholder_CIK` (SEC CIK) → gvkey via `wrdssec.wciklink_gvkey`;
+  13F overlap via `wrdssec_all.forms` form ILIKE '%13F%'.
+
 ## Script locations
 
 - Parser: `~/projects/mirror/src/blockholders/parser.py`

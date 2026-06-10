@@ -6,6 +6,7 @@
 - [Schema Architecture](#schema-architecture)
 - [Row Counts and Coverage](#row-counts-and-coverage)
 - [ID Formats](#id-formats)
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09)
 - [CRITICAL: Quirks and Gotchas](#critical-quirks-and-gotchas)
 - [Key Tables](#key-tables)
 - [Relation Tables](#relation-tables)
@@ -73,6 +74,24 @@ PitchBook covers private market activity: VC/PE deals, fund formation, LP commit
 | Person | `NNNNNN-NNP` | `100000-00P` |
 
 **Warning:** `companyid` and `investorid` share the same `NNNNNN-NN` format but are separate ID spaces. Never join company to investor on raw ID equality.
+
+## Grain & Keys (verified 2026-06-09)
+
+- **Row PK `pitchbk_companies_deals.company`:** `companyid` — VERIFIED: 0 dupes over 10,682,455 rows.
+- **Row PK `pitchbk_companies_deals.deal`:** `dealid` — VERIFIED: 0 dupes over 3,052,767 rows.
+- **Row PK `pitchbk_investors_funds_lps.fund`:** `fundid` — VERIFIED: 0 dupes over 165,937 rows.
+- **Row PK `pitchbk_investors_funds_lps.investor`:** `investorid` — VERIFIED: 0 dupes over 648,066 rows.
+- No unique indexes (only plain btree on the id columns); keys verified by dupe count. One deal = one
+  `dealid` (a financing round/transaction); one fund = one `fundid`. Relation tables
+  (`dealinvestorrelation`, `companyinvestorrelation`, `fundlpcommitmentrelation`, `fundreturnrelation`)
+  are many-to-many bridges — expect fan-out, not unique ids.
+- **Business/event key:** same as row PK (vendor-assigned entity ids; no amendment/versioning axis in the
+  current snapshot — prior vintages live in the separate `pitchbk_*_old` schemas).
+- **Linking identifiers:** `companyid` ↔ `parentcompanyid`, `dealid` ↔ `firstfinancingdealid`/`lastfinancingdealid`,
+  `investorid`, `limitedpartnerid`, `serviceproviderid` (within-product links per
+  [WRDS Overview of PitchBook](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/pitchbook/wrds-pitchbook-overview-new/));
+  external: `investor.cikcode` (CIK, btree-indexed), `ticker`, SIC — otherwise name-match (WRDS doc:
+  CIK/SIC when available, name matching for private companies).
 
 ## CRITICAL: Quirks and Gotchas
 

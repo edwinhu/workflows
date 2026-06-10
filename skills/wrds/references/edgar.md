@@ -3,6 +3,7 @@
 ## Contents
 
 - [Key Tables](#key-tables) - `edgar.filings`, `edgar.company_info`
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09) - **`edgar` schema does NOT exist on WRDS pg — use `wrdssec_all`**
 - [Common Form Types](#common-form-types) - 10-K, 10-Q, 8-K, DEF 14A, Form 4
 - [Query Patterns](#query-patterns) - Find filings, filter by type/date
 - [Accessing Filing Documents](#accessing-filing-documents) - URL construction, Form 4 URLs
@@ -44,6 +45,30 @@ Company registration information.
 | `sic` | varchar(4) | SIC code |
 | `state` | varchar(2) | State |
 | `fiscal_year_end` | varchar(4) | Fiscal year end |
+
+## Grain & Keys (verified 2026-06-09)
+
+> **WARNING — `edgar.filings` and `edgar.company_info` DO NOT EXIST on wrds-pgdata.** Verified 2026-06-09:
+> no `edgar` schema in `pg_namespace` at all (not a permissions issue). The query patterns above are kept
+> for historical context but will fail. The working SEC filing-index tables for this account are
+> `wrdssec_all.forms` and `wrdssec_all.wrds_forms` (WRDS SEC Analytics Suite — manuals:
+> https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/wrds-sec-analytics-suite/).
+> See `wrds-forms-tables.md` for column details.
+
+- **Row PK `wrdssec_all.wrds_forms`** (~26.9M rows): `fname` — VERIFIED SAMPLED 2023 fdate slice: 0 dupes
+  over 1,159,918 rows. `(accession, cik)` — also 0 dupes (SAMPLED 2023). `accession` ALONE IS NOT UNIQUE:
+  347,721 dupes in the 2023 slice — one row per filer CIK on multi-filer submissions (`regcount` co-registrants).
+  Count filings with `COUNT(DISTINCT accession)`; count filer-filings with `(accession, cik)`.
+- **Row PK `wrdssec_all.forms`** (~26.9M rows): `fname` — VERIFIED SAMPLED 2023 fdate slice: 0 dupes over
+  1,160,114 rows. **`forms` has NO `accession` column** (cols: gvkey, cik, fdate, findexdate, lindexdate,
+  form, coname, fname, iname, source) — derive the accession from `fname` if needed.
+- **Business/event key:** one EDGAR submission = `accession` (equivalently the accession embedded in
+  `fname`). Amendments (`10-K/A`, `SC 13D/A`, ...) are separate submissions with their own accessions —
+  supersede by `(cik, form-family, period)` taking the latest `fdate`, as in `blockholders.md`.
+- **Linking identifiers:** `cik`; `gvkey` (pre-joined on `wrdssec_all.forms`, or via
+  `wrdssec.wciklink_gvkey` — filter `flag` 2-3, see
+  [WRDS CIK Linking Tables](https://wrds-www.wharton.upenn.edu/documents/750/WRDS_CIK_Linking_Tables.pdf));
+  `cusip` via `wrdssec.wciklink_cusip` (filter `validated` 2-3); names via `wrdssec.wciklink_names`.
 
 ## Common Form Types
 

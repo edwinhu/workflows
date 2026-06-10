@@ -11,11 +11,21 @@ SGE sharding, extended to 2022–present.
 ## Contents
 
 - [Pipeline](#pipeline)
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09)
 - [Upstream sources](#upstream-sources)
 - [Name variants](#name-variants)
 - [Sample frame (N-PX, sample-only)](#sample-frame-n-px-sample-only)
 - [Validation methodology](#validation-methodology)
 - [Anti-patterns](#anti-patterns)
+
+## Grain & Keys (verified 2026-06-09)
+
+This is a **derived pipeline**, not a WRDS table — the grain is its own output, not a vendor key.
+
+- **Output PK:** `(mgmt_cd, year, advisor)` — one row per fund family × year × proxy advisor (ISS / GL / EJ), each carrying a 0/1 contracted flag. The CIK-level intermediate is `(cik, year, advisor)`; aggregation to `mgmt_cd` is via CRSP MFDB (`crsp.fund_hdr`, CIK → `mgmt_cd`). Verify uniqueness on your own output after the aggregate stage; there is no upstream constraint to lean on.
+- **Index-stage key (`wrdssec_all.forms`, 485BPOS/485APOS filter):** `fname` — VERIFIED: 0 dupes (SAMPLED 2020 485 slice; `fname` = `edgar/data/<cik>/<accession>.txt` is the per-filing unique id). `(cik, accession)` is NOT directly available — `accession` is not a column here; derive it from `fname` if needed. Note: `wrdssec_all.forms` has no `dcn`/`accession`/`seqnum` columns (unlike `wrdssec_all.wrds_forms`) — its columns are `gvkey, cik, fdate, findexdate, lindexdate, form, coname, fname, iname, source`.
+- **Sample-frame key (`risk.voteanalysis_npx`, sample-definition only):** see [iss-voting.md](iss-voting.md) — used to define the CIK × year frame, never as an output grain.
+- **Linking identifiers:** `cik` (filer), `mgmt_cd` (CRSP management company), `year`. To merge to fund characteristics, go `cik → crsp.fund_hdr.mgmt_cd → crsp.fund_summary`.
 
 ## Pipeline
 

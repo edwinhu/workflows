@@ -61,6 +61,26 @@ One row per fund per agenda item. Links to `vavoteresults` via `itemonagendaid`.
 
 `fundvote` values: `'For'`, `'Against'`, `'Withhold'`, `'Abstain'`, `'One Year'`, `'Two Years'`, `'Three Years'`
 
+## Grain & Keys (verified 2026-06-09)
+
+- **Row PK `risk.vavoteresults`:** `itemonagendaid` — VERIFIED-WITH-RESIDUAL: 230 dupes over 887,341 rows
+  (0.03%). Inspected collisions are versioning pairs: the same `itemonagendaid` (same `meetingid`,
+  `seqnumber`) appears once with `voteresult = 'Pending'` and once with the final result (`'Pass'`/`'Fail'`).
+  Resolve: when an `itemonagendaid` has >1 row, drop the `'Pending'` copy. After that, `itemonagendaid`
+  is the unique agenda-item key. Dataset page (variable definitions):
+  https://wrds-www.wharton.upenn.edu/pages/get-data/institutional-shareholder-services-iss/voting-analytics/company-vote-results-us/
+- **Row PK `risk.voteanalysis_npx`:** none — table has 238,445,215 rows. `(fundid, itemonagendaid)` —
+  SAMPLED 2023 meetingdate slice: 7,010 dupes over 16,485,811 rows (0.04%). Inspected collisions are
+  **split votes**: the same fund voting e.g. `For` AND `Withhold` on the same item (different share lots).
+  Row grain = fund × agenda item × vote direction. For fund-level analysis either keep the
+  largest/`sharesvoted`-weighted row or aggregate; never assume one row per fund-item.
+- **Business/event key:** agenda item = `itemonagendaid` (use it, not `issagendaitemid`, to join NPX to
+  vavoteresults); meeting = `meetingid`; company-meeting = `(companyid, meetingdate)`.
+- **Linking identifiers:** `cusip` (historical, 9-digit) + `ticker` → CRSP/Compustat (see
+  [Linking to CRSP](#linking-to-crsp)); `companyid` (ISS internal); `fundid`/`institutionid` (NPX side) →
+  CRSP MFDB via fund name/CIK matching (see `proxy-advisors.md` for a CIK×year → `crsp.fund_hdr.mgmt_cd`
+  pipeline).
+
 ## Query Patterns
 
 ### Basic Vote Results Pull

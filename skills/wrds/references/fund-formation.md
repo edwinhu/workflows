@@ -3,6 +3,7 @@
 ## Contents
 
 - [Overview](#overview)
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09)
 - [Source 1: Form D — Pooled Investment Funds](#source-1-form-d--pooled-investment-funds)
 - [Source 2: EDGAR N-2 — Closed-End Fund Registrations](#source-2-edgar-n-2--closed-end-fund-registrations)
 - [Source 3: SEC Form ADV — Investment Adviser Registrations](#source-3-sec-form-adv--investment-adviser-registrations)
@@ -25,6 +26,40 @@
 - Private funds (hedge/PE/VC) → Form D filtered by `industrygrouptype`
 - Public closed-end funds → EDGAR N-2 filing counts
 - RIA registrations as alternative fund proxy → Form ADV from SEC bulk download
+
+## Grain & Keys (verified 2026-06-09)
+
+Grain differs per source — this is a composite reference.
+
+### Source 1: `wrdssec.wrds_vc_formd` (Form D)
+
+- **Row PK:** NONE — and no composite of identifying columns works. The table is a **cartesian flattening
+  of every repeating Form D XML list**: 9,689,729 rows from only 425,603 distinct `accession`s. Verified:
+  `(accession, regcik)` leaves 9,258,656 dupes; even the 8-column composite
+  `(accession, regcik, issuer_cik, issuerpreviousname, exempt_item, recipientname, state, signaturename)`
+  leaves 8,034,599 dupes — each additional repeating list (co-issuers × previous names × exemption codes ×
+  sales-compensation recipients × solicitation states × signatures, times one copy per registrant CIK
+  `regcik`/`wrdsfname`) multiplies rows. WRDS VC manual describes `edgarsubmission_ordinal` only as a merge
+  ID for the related-persons file, not a row key
+  ([WRDS VC Suite Manual](https://wrds-www.wharton.upenn.edu/documents/1459/WRDS_VC_Suite_Manual.pdf)).
+- **Business/event key:** `accession` = one Form D filing (VERIFIED: 425,603 distinct). **Every query must
+  `COUNT(DISTINCT accession)` / `SELECT DISTINCT` the columns at the grain it needs** — the canonical
+  queries in this file already do. Amendments: `isamendment = 'true'` rows are D/A filings chaining to the
+  original via `previousaccessionnumber`; filter `isamendment = 'false'` for new-fund counts.
+- **Linking identifiers:** `primarycik` / `issuer_cik` (CIK) → gvkey via `wrdssec.wciklink_gvkey`;
+  `recipientcrdnumber` / `associatedbdcrdnumber` (FINRA CRD) → Form BD/ADV.
+
+### Source 2: `wrdssec_all.wrds_forms` (N-2 filing counts)
+
+- **Row PK:** `fname` — VERIFIED SAMPLED 2023 slice: 0 dupes over 1,159,918 rows; `(accession, cik)` also
+  0 dupes. `accession` alone is NOT unique (347,721 dupes in the 2023 slice — one row per filer CIK on
+  multi-filer submissions). Count filings with `COUNT(DISTINCT accession)`.
+- **Linking identifiers:** `cik` → gvkey via `wrdssec.wciklink_gvkey`.
+
+### Source 3: Form ADV (SEC IAPD bulk download)
+
+- **Grain:** UNVERIFIED — not hosted on WRDS PostgreSQL; grain of the SEC bulk CSVs (one row per adviser
+  per filing version, keyed by CRD number + filing date) must be profiled at download time.
 
 ## Source 1: Form D — Pooled Investment Funds
 

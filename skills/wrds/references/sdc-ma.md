@@ -5,6 +5,7 @@
 - [Overview](#overview)
 - [Discovering the Schema](#discovering-the-schema)
 - [Tables](#tables)
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09)
 - [Key Columns](#key-columns)
 - [Deal Status Codes](#deal-status-codes)
 - [Form of Transaction Codes](#form-of-transaction-codes)
@@ -81,6 +82,24 @@ for col in cur.fetchall(): print(col)
 | `tr_sdc_ma.wrds_ma_purpose` | Deal purpose codes (e.g., LBO strategy, expansion) |
 | `tr_sdc_ma.wrds_ma_related` | Related deal cross-references |
 | `tr_sdc_ni.wrds_ni_details` | New issues (see `sdc-issuances.md`) |
+
+## Grain & Keys (verified 2026-06-09)
+
+- **Row PK `tr_sdc_ma.wrds_ma_details`:** `master_deal_no` — VERIFIED-WITH-RESIDUAL: 117 dupes over
+  1,612,934 rows (0.007%). WRDS docs say Master Deal Number "serves as the unique deal ID across all
+  related tables and modules"
+  ([WRDS Overview of SDC](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/lseg/sdc/wrds-overview-of-sdc/)),
+  but 117 deal numbers appear twice — exact or near-duplicate vendor rows (inspected examples: identical
+  except acquiror-name variants, e.g. `1005792040` "Fielmann AG" vs "Fielmann Group AG"; `1242563040` is a
+  byte-identical pair). Resolve: `SELECT DISTINCT ON (master_deal_no) ... ORDER BY master_deal_no` (or
+  drop exact dupes first) before any deal-level count or merge. No unique index exists (plain btree only).
+- **Business/event key:** `master_deal_no` = one announced M&A transaction. Withdrawn/competing bids get
+  their own deal numbers (see `wrds_ma_competition`); child tables (`wrds_ma_advisors`, `wrds_ma_events`,
+  `wrds_ma_purpose`, `wrds_ma_related`) fan out per advisor/event/purpose-code/related-deal — aggregate
+  before joining back.
+- **Linking identifiers:** `master_cusip`, `acusip` (acquiror), `tcusip` (target) — 6-digit company CUSIPs
+  per the WRDS SDC doc (company-level, often missing for private parties); tickers; CIK via
+  `wrdssec.wciklink_cusip`; cross-module via `master_deal_no` in `tr_sdc_ni.wrds_ni_related`.
 
 ## Key Columns
 

@@ -5,6 +5,7 @@
 - [Overview](#overview)
 - [Discovering the Schema](#discovering-the-schema)
 - [Tables](#tables)
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09)
 - [Equity Issuances: Key Columns](#equity-issuances-key-columns)
 - [Debt Issuances: Key Columns](#debt-issuances-key-columns)
 - [CRITICAL: IPO vs SEO Identification](#critical-ipo-vs-seo-identification)
@@ -88,6 +89,22 @@ for col in cur.fetchall():
 | `tr_sdc_ni.wrds_ni_sharehlds` | Shareholder selling data |
 
 For debt offerings specifically, the SDC New Issues database includes both equity and debt in `wrds_ni_details`, differentiated by `security` (security type field).
+
+## Grain & Keys (verified 2026-06-09)
+
+- **Row PK `tr_sdc_ni.wrds_ni_details`:** `master_deal_no` — VERIFIED: 0 dupes over 1,713,304 rows.
+  One row = one new-issue deal (a tranche of an offering as SDC defines a deal). WRDS docs confirm:
+  "each record represents a transaction or deal identified by a Master Deal Number, which serves as the
+  unique deal ID across all related tables and modules"
+  ([WRDS Overview of SDC](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/lseg/sdc/wrds-overview-of-sdc/)).
+  No unique index exists (plain btree on `master_deal_no` only); uniqueness verified by dupe count.
+- **Business/event key:** `master_deal_no` (same as row PK). Child tables fan out on it:
+  `wrds_ni_managers` (one row per manager role), `wrds_ni_events` (per event), `wrds_ni_sharehlds`
+  (per selling shareholder), `wrds_ni_related` (per related M&A deal) — always aggregate or
+  `COUNT(DISTINCT master_deal_no)` after joining them.
+- **Linking identifiers:** `master_cusip` / issuer CUSIPs (6-digit company CUSIP per WRDS SDC doc —
+  company-level, not security-level), ticker fields; CIK via `wrdssec.wciklink_cusip`;
+  `tr_sdc_ni.wrds_ni_related` links to `tr_sdc_ma.wrds_ma_details.master_deal_no`.
 
 ## Equity Issuances: Key Columns
 

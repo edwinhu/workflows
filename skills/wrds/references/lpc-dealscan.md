@@ -3,6 +3,7 @@
 ## Contents
 
 - [Overview](#overview)
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09)
 - [Tables](#tables)
 - [dealscan.facility Key Columns](#dealscanfacility-key-columns)
 - [dealscan.package Key Columns](#dealscanpackage-key-columns)
@@ -66,6 +67,36 @@ DealScan was restructured on WRDS in August 2021 when it moved from Thomson Reut
 | Organization type | `tr_dealscan.organizationtype` | 46,482 | Through ~2020 | Borrower org type |
 | Facility dates | `tr_dealscan.facilitydates` | 227,683 | Through ~2020 | Amendment/closing/launch dates |
 | Sublimits | `tr_dealscan.sublimits` | 334,539 | Through ~2020 | Sub-facility limits (LC, swingline, etc.) |
+
+## Grain & Keys (verified 2026-06-09)
+
+### Normalized tables (data through ~2020)
+
+- **Row PK `tr_dealscan.facility`:** `facilityid` — VERIFIED: 0 dupes over 396,004 rows.
+- **Row PK `tr_dealscan.package`:** `packageid` — VERIFIED: 0 dupes over 268,991 rows.
+- **Row PK `tr_dealscan.company`:** `companyid` — VERIFIED: 0 dupes over 148,318 rows.
+- **Row PK `tr_dealscan.lendershares`:** `(facilityid, companyid)` — VERIFIED: 0 dupes over 2,150,142 rows.
+- No unique indexes exist on any table (only plain btree); all keys verified by dupe count.
+
+### Flat table `tr_dealscan.dealscan` (use for 2021+)
+
+- **Row PK:** none clean. WRDS docs state the historical tranche-level unique observation is
+  `(lender_id, borrower_id, lpc_deal_id, deal_input_date, deal_active_date, lpc_tranche_id, tranche_active_date)`
+  ([WRDS Overview of DealScan (LoanConnector)](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/lseg/wrds-reuters-dealscan/wrds-overview-on-dealscan-loanconnector/), "Identifying a Unique Observation").
+  VERIFIED-WITH-RESIDUAL: 2,842 dupes over 3,102,898 rows (0.09%) — exact/near-duplicate vendor revision
+  rows (same key, differing `agent`/`all_lenders` rosters or maturity dates). Drop exact dupes, then
+  dedupe arbitrarily on the 7-col key.
+- **Business/event key:** `(lpc_tranche_id, lender_id)` = lender×tranche, BUT every amendment re-reports
+  the full lender roster under the SAME ids: 672,442 collisions (verified), distinguished by `tranche_o_a`
+  (`'Origination'`, `'Amendment 1'`, ...). Adding `tranche_o_a` still leaves 19,300 dupes (same label,
+  different `tranche_active_date` — vendor revisions). Resolve: latest terms = keep `max(tranche_active_date)`
+  per `(lpc_tranche_id, lender_id)`; origination terms = filter `tranche_o_a = 'Origination'`.
+  Unlike the legacy schema, `lpc_deal_id`/`lpc_tranche_id` persist across amendments/refinancings (per the
+  same WRDS doc) — this is a feature for tracking, a fan-out trap for counting.
+- **Linking identifiers:** `borrower_id` (DealScan company id), `perm_id` / `deal_permid` / `tranche_permid`
+  (LSEG PermID), `legal_entity_id_lei` (LEI), `ticker`, `tranche_cusip`; legacy `borrowercompanyid`/`companyid`;
+  gvkey via Chava-Roberts `wrdsapps_link_dealscan_wscope.dswslink` (legacy ids, stale post-2020);
+  `tr_dealscan.wrds_loanconnector_ids` maps new LoanConnector ids ↔ legacy WRDS ids.
 
 ## tr_dealscan.facility Key Columns
 
