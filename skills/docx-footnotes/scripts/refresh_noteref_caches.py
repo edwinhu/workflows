@@ -84,38 +84,22 @@ def norm(s: str) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# LibreOffice discovery + rendering
+# PDF rendering (ONLYOFFICE x2t preferred, soffice fallback)
+# x2t renders footnote numRestart correctly where soffice does not — see
+# docs/investigations/2026-06-10_onlyoffice-vs-libreoffice.md
 # --------------------------------------------------------------------------- #
-def find_soffice(explicit: str | None) -> str:
-    if explicit:
-        return explicit
-    for cand in (
-        shutil.which("soffice"),
-        shutil.which("libreoffice"),
-        "/Applications/LibreOffice.app/Contents/MacOS/soffice",
-        "/usr/bin/soffice",
-        "/usr/bin/libreoffice",
-    ):
-        if cand and Path(cand).exists():
-            return cand
-    sys.exit(
-        "ERROR: LibreOffice (soffice) not found. Install it or pass --soffice. "
-        "It is required to render the document and read ground-truth footnote markers."
-    )
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from x2t_convert import convert as _convert  # noqa: E402
 
 
-def render_pdf(soffice: str, docx: Path, outdir: Path) -> Path:
-    subprocess.run(
-        [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(outdir), str(docx)],
-        check=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        timeout=300,
-    )
-    pdf = outdir / (docx.stem + ".pdf")
-    if not pdf.exists():
-        sys.exit(f"ERROR: LibreOffice did not produce {pdf}")
-    return pdf
+def render_pdf(docx: Path, outdir: Path, soffice: str | None = None) -> Path:
+    try:
+        return _convert(docx, outdir / (docx.stem + ".pdf"), soffice=soffice)
+    except RuntimeError as e:
+        sys.exit(
+            f"ERROR: {e}. A renderer is required to read ground-truth "
+            "footnote markers (install onlyoffice-x2t or LibreOffice)."
+        )
 
 
 def extract_markers(pdf: Path) -> dict[int, str]:
@@ -348,7 +332,7 @@ def main() -> int:
     if not docx.exists():
         sys.exit(f"ERROR: {docx} not found")
     out: Path = args.output or docx
-    soffice = find_soffice(args.soffice)
+    soffice = args.soffice
 
     with tempfile.TemporaryDirectory() as td:
         tdp = Path(td)
@@ -356,7 +340,7 @@ def main() -> int:
         # 1. Render original -> ground-truth markers
         pdf_dir = tdp / "pdf"
         pdf_dir.mkdir()
-        markers = extract_markers(render_pdf(soffice, docx, pdf_dir))
+        markers = extract_markers(render_pdf(docx, pdf_dir, soffice=soffice))
         if not markers:
             sys.exit("ERROR: no footnote markers extracted from render; cannot proceed.")
         print(f"Ground-truth markers from render: {len(markers)} (1..{max(markers)})")
@@ -444,7 +428,7 @@ def main() -> int:
             rezip(acc_dir, acc_docx)
             vpdf_dir = tdp / "vpdf"
             vpdf_dir.mkdir()
-            vpdf = render_pdf(soffice, acc_docx, vpdf_dir)
+            vpdf = render_pdf(acc_docx, vpdf_dir, soffice=soffice)
             final = out.with_name(out.stem + "_ACCEPTED_preview.pdf")
             shutil.copy(vpdf, final)
             acc_markers = extract_markers(vpdf)

@@ -109,6 +109,15 @@ for s in prs.slides[N-1].shapes:
 "
 ```
 
-## Note on soffice
+## Rendering slides to PDF/PNG
 
-`soffice --headless` (LibreOffice via nix-darwin) is available but unreliable — it silently fails (returns 0, no output) due to profile lock issues. Use `python-pptx` instead.
+For actual rasterization (not content extraction), use the shared x2t wrapper — ONLYOFFICE x2t is stateless and parallel-safe, unlike soffice:
+
+```bash
+# pptx -> PDF (all slides, then split with pdftoppm if per-slide PNGs needed)
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/x2t_convert.py deck.pptx deck.pdf
+# pptx -> PNG (first slide only)
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/x2t_convert.py deck.pptx slide1.png
+```
+
+**Do NOT call `soffice --headless` directly** — it silently fails on macOS (returns 0, no output) due to profile lock issues. The wrapper prefers `x2t` and only falls back to soffice where x2t is absent.

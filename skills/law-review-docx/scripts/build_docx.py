@@ -579,33 +579,25 @@ def convert_to_pdf_via_word(docx_path: Path) -> Optional[Path]:
 
 
 def convert_to_pdf(docx_path: Path) -> Optional[Path]:
-    """Convert DOCX to PDF. Prefers Word via osascript on macOS (accurate layout),
-    falls back to LibreOffice headless (approximate layout, font-substituted)."""
+    """Convert DOCX to PDF. Prefers Word via osascript on macOS (line-exact
+    layout for widow detection), then ONLYOFFICE x2t (OOXML-native; renders
+    footnote numRestart correctly where LibreOffice does not), then
+    LibreOffice headless as last resort."""
     import shutil, sys as _sys
     # On macOS with Word installed, prefer osascript for layout accuracy.
     if _sys.platform == "darwin" and Path("/Applications/Microsoft Word.app").exists():
         pdf = convert_to_pdf_via_word(docx_path)
         if pdf:
             return pdf
-        print("INFO: Word PDF export failed; falling back to LibreOffice", file=sys.stderr)
-    # Fallback: LibreOffice headless.
-    soffice = shutil.which("soffice") or shutil.which("libreoffice")
-    if not soffice:
-        print("WARN: no PDF renderer available (Word not installed and soffice not on PATH)", file=sys.stderr)
+        print("INFO: Word PDF export failed; falling back to x2t/LibreOffice", file=sys.stderr)
+    # x2t preferred, soffice fallback — shared wrapper verifies output exists.
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+    from x2t_convert import convert as _convert
+    try:
+        return _convert(docx_path, docx_path.parent / (docx_path.stem + ".pdf"))
+    except Exception as e:
+        print(f"WARN: PDF conversion failed: {e}", file=sys.stderr)
         return None
-    outdir = docx_path.parent
-    result = subprocess.run(
-        [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(outdir), str(docx_path)],
-        capture_output=True, text=True,
-    )
-    if result.returncode != 0:
-        print(f"WARN: LibreOffice PDF conversion failed:\n{result.stderr}", file=sys.stderr)
-        return None
-    pdf_path = outdir / (docx_path.stem + ".pdf")
-    if not pdf_path.exists():
-        print(f"WARN: expected PDF at {pdf_path} but not found", file=sys.stderr)
-        return None
-    return pdf_path
 
 
 def force_widow_control(docx_path: Path) -> None:

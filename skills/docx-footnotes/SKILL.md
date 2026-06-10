@@ -38,7 +38,7 @@ uv run --with lxml python3 \
   "$SKILL_DIR/scripts/create_crossrefs.py" --docx path/to/file.docx
 
 # Refresh stale NOTEREF cross-ref numbers after a coauthor inserted/moved
-# footnotes in Word (render-based, ground-truth; needs LibreOffice)
+# footnotes in Word (render-based, ground-truth; needs x2t or LibreOffice)
 "$SKILL_DIR/scripts/refresh_noteref_caches.py" path/to/file.docx --verify
 ```
 
@@ -119,14 +119,15 @@ Word's **40-char bookmark-name truncation** (`_RefBib_...2024` → the real
 the buggy recompute). Verify with a **changes-accepted** render — once inserts are
 accepted every engine agrees and the inline xrefs render correctly.
 
-**Requires:** LibreOffice (`soffice`) and `pymupdf` (auto-installed via the inline
+**Requires:** ONLYOFFICE `x2t` (preferred; `onlyoffice-x2t` nix package) or
+LibreOffice (`soffice`) as fallback, plus `pymupdf` (auto-installed via the inline
 script deps; run the file directly, e.g. `./refresh_noteref_caches.py file.docx`).
 
 **Flags:**
 - `-o` / `--output`: Output path (default: overwrite input)
 - `--dry-run`: Report the cache changes without writing
 - `--verify`: Also emit a changes-accepted `*_ACCEPTED_preview.pdf` proof
-- `--soffice PATH`: Path to the LibreOffice binary (auto-discovered if omitted)
+- `--soffice PATH`: Path to the LibreOffice binary, used only when `x2t` is not on PATH (auto-discovered if omitted)
 
 **Scope (intentional):** refreshes numbers only. It does **not** do editorial
 retargeting (e.g. "this xref should point to notes 210–212 instead of its current
@@ -144,6 +145,6 @@ See [`footnotes-reference.md`](footnotes-reference.md) for detailed technical re
 
 When author bio footnotes use `customMarkFollows` (*, †, ‡), they consume auto-numbers 1–3, causing body footnotes to start at 4. Fix by adding `numRestart=eachSect` to `settings.xml` and updating NOTEREF cached values.
 
-**Requires:** A section break between title page and body. Must use **Word** (not LibreOffice) for PDF — LibreOffice renders numRestart as zeros.
+**Requires:** A section break between title page and body. Render PDF with **Word** or **x2t** (`scripts/x2t_convert.py` at plugin root) — both honor numRestart; **LibreOffice does not** (renders restart numbering wrong; verified 2026-06-10, x2t restarts at 1 per section where soffice numbers continuously).
 
 See [`footnotes-reference.md`](footnotes-reference.md) § 4 for details, code patterns, and the critical rule: numRestart goes in `settings.xml` ONLY (not in sectPr — causes all-zeros).
