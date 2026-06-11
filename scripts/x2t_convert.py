@@ -43,8 +43,7 @@ _PARAMS_TEMPLATE = """<?xml version="1.0" encoding="utf-8"?>
 <TaskQueueDataConvert xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <m_sFileFrom>{src}</m_sFileFrom>
   <m_sFileTo>{dst}</m_sFileTo>
-  <m_sTempDir>{tmp}</m_sTempDir>
-  <m_sFontDir>{fonts}</m_sFontDir>
+  <m_sTempDir>{tmp}</m_sTempDir>{fonts_elem}
 </TaskQueueDataConvert>
 """
 
@@ -107,6 +106,23 @@ def _bundled_fonts_dir() -> Path | None:
     tree = _x2t_tree()
     if tree and (tree / "fonts").is_dir():
         return tree / "fonts"
+    return None
+
+
+def _nix_mode_bindir(tool: str = "x2t") -> Path | None:
+    """Detect the nix source-built layout (onlyoffice-docbuilder on linux).
+
+    nixpkgs' hermetic build is self-contained: DoctRenderer.config sits next
+    to the binaries and points at store-path sdkjs + build-time AllFonts —
+    no tree copy, no font index init, no m_sFontDir needed. Detected by a
+    sibling DoctRenderer.config with NO sdkjs dir beside the binary.
+    """
+    exe = shutil.which(tool)
+    if not exe:
+        return None
+    bindir = Path(exe).resolve().parent
+    if (bindir / "DoctRenderer.config").is_file() and not (bindir / "sdkjs").is_dir():
+        return bindir
     return None
 
 
@@ -229,24 +245,94 @@ def font_dir() -> Path | None:
 
 def _run_x2t(src: Path, dst: Path, timeout: int) -> None:
     with tempfile.TemporaryDirectory(prefix="x2t-") as tmp:
-        fonts = font_dir() or _bundled_fonts_dir()
-        app = _app_dir()  # after font_dir() so a cache rebuild re-inits the index
+        nix_bin = _nix_mode_bindir("x2t")
+        if nix_bin is not None:
+            exe, cwd = nix_bin / "x2t", Path(tmp)
+            fonts_elem = ""
+        else:
+            fonts = font_dir() or _bundled_fonts_dir()
+            app = _app_dir()  # after font_dir() so a rebuild re-inits the index
+            exe, cwd = app / "x2t", app
+            fonts_elem = f"\n  <m_sFontDir>{fonts}</m_sFontDir>"
         params = Path(tmp) / "params.xml"
         params.write_text(
             _PARAMS_TEMPLATE.format(
                 src=src.resolve(), dst=dst.resolve(),
-                tmp=Path(tmp) / "work", fonts=fonts,
+                tmp=Path(tmp) / "work", fonts_elem=fonts_elem,
             )
         )
         (Path(tmp) / "work").mkdir()
         subprocess.run(
-            [str(app / "x2t"), str(params)],
-            cwd=app,
+            [str(exe), str(params)],
+            cwd=cwd,
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             timeout=timeout,
         )
+
+
+def _run_docbuilder(script_text: str, timeout: int) -> None:
+    """Run a .docbuilder script with the source-built (watermark-free)
+    docbuilder. Official prebuilt binaries watermark output — only use a
+    source build (nix onlyoffice-docbuilder package on both platforms)."""
+    nix_bin = _nix_mode_bindir("docbuilder")
+    if nix_bin is not None:
+        exe, cwd = nix_bin / "docbuilder", None
+    else:
+        if not shutil.which("docbuilder"):
+            raise RuntimeError(
+                "docbuilder not on PATH: install the onlyoffice-docbuilder "
+                "nix package (~/nix, source-built, watermark-free)"
+            )
+        font_dir()  # refresh merged cache so _app_dir can re-init the index
+        app = _app_dir()
+        exe, cwd = app / "docbuilder", app
+    with tempfile.TemporaryDirectory(prefix="docbuilder-") as tmp:
+        script = Path(tmp) / "script.docbuilder"
+        script.write_text(script_text)
+        subprocess.run(
+            [str(exe), str(script)],
+            cwd=cwd,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=timeout,
+        )
+
+
+def recalc_xlsx(
+    src: Path | str,
+    dst: Path | str | None = None,
+    *,
+    timeout: int = 300,
+) -> Path:
+    """Recalculate all formulas in an xlsx and write cached values back.
+
+    Replaces the LibreOffice-macro approach (skills/xlsx/recalc.py upstream):
+    docbuilder's Api.RecalculateAllFormulas() computes the formula graph and
+    the saved workbook carries cached values readable via
+    openpyxl load_workbook(data_only=True). Verified watermark-free with the
+    source-built docbuilder (2026-06-10). Defaults to in-place.
+    """
+    src = Path(src)
+    if not src.exists():
+        raise FileNotFoundError(src)
+    out = Path(dst) if dst else src
+    with tempfile.TemporaryDirectory(prefix="recalc-") as tmp:
+        tmp_out = Path(tmp) / ("recalc_" + src.name)
+        _run_docbuilder(
+            f'builder.OpenFile("{src.resolve()}");\n'
+            "Api.RecalculateAllFormulas();\n"
+            f'builder.SaveFile("xlsx", "{tmp_out}");\n'
+            "builder.CloseFile();\n",
+            timeout,
+        )
+        if not tmp_out.exists() or tmp_out.stat().st_size == 0:
+            raise RuntimeError("docbuilder exited 0 but produced no output")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(tmp_out), str(out))
+    return out
 
 
 def _run_soffice(soffice: str, src: Path, dst: Path, timeout: int) -> None:
@@ -323,14 +409,22 @@ def main() -> None:
 
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("src", type=Path)
-    ap.add_argument("dst", type=Path)
+    ap.add_argument("dst", type=Path, nargs="?")
+    ap.add_argument("--recalc", action="store_true",
+                    help="recalculate xlsx formulas (writes cached values; "
+                         "in-place unless dst given)")
     ap.add_argument("--timeout", type=int, default=300)
     args = ap.parse_args()
     try:
-        convert(args.src, args.dst, timeout=args.timeout)
+        if args.recalc:
+            out = recalc_xlsx(args.src, args.dst, timeout=args.timeout)
+        else:
+            if args.dst is None:
+                ap.error("dst is required unless --recalc")
+            out = convert(args.src, args.dst, timeout=args.timeout)
     except Exception as e:
         sys.exit(f"ERROR: {e}")
-    print(args.dst)
+    print(out)
 
 
 if __name__ == "__main__":
