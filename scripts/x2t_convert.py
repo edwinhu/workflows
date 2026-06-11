@@ -248,7 +248,11 @@ def _run_x2t(src: Path, dst: Path, timeout: int) -> None:
         nix_bin = _nix_mode_bindir("x2t")
         if nix_bin is not None:
             exe, cwd = nix_bin / "x2t", Path(tmp)
-            fonts_elem = ""
+            # the nix build's baked font index covers only core-fonts (metric
+            # substitutes); pass the merged system-font cache when available
+            # so e.g. Times New Roman embeds instead of substituting
+            fonts = font_dir()
+            fonts_elem = f"\n  <m_sFontDir>{fonts}</m_sFontDir>" if fonts else ""
         else:
             fonts = font_dir() or _bundled_fonts_dir()
             app = _app_dir()  # after font_dir() so a rebuild re-inits the index
