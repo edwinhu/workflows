@@ -19,7 +19,7 @@ from typing import Iterator
 
 W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
-DRAFT_GLOBS = ("*.md", "*.markdown", "*.docx", "*.txt")
+DRAFT_GLOBS = ("*.md", "*.markdown", "*.docx", "*.txt", "*.typ")
 DRAFT_SUBDIRS = ("drafts", "outlines")
 
 
@@ -88,10 +88,90 @@ def _iter_text_lines(path: Path) -> Iterator[tuple[int, str]]:
         yield i, stripped
 
 
+def _delim_delta(line: str) -> int:
+    """Net count of opening minus closing brackets/braces/parens in a line.
+
+    Used to track multi-line Typst code expressions (e.g. a `#let foo = (` dict
+    spanning several lines). Naive — does not account for delimiters inside
+    string literals — but adequate for skipping code blocks in a prose linter.
+    """
+    opens = line.count("(") + line.count("{") + line.count("[")
+    closes = line.count(")") + line.count("}") + line.count("]")
+    return opens - closes
+
+
+def _iter_typ_lines(path: Path) -> Iterator[tuple[int, str]]:
+    """Yield (lineno, prose_text) for a Typst (.typ) file, stripping markup.
+
+    Typst mixes prose with code/markup. We want only the prose body so that
+    prose rules (Strunk, AI tells, …) don't fire on `#let`/`#import`/function
+    calls. We skip:
+      - lines starting with `#` (code/markup: #let, #import, #show, #set,
+        #figure, function calls) and any continuation lines while a `#`-line's
+        brackets remain unbalanced (multi-line dicts/args);
+      - `//` line comments and `/* … */` block comments;
+      - lines that are only bracket/brace punctuation;
+    and we strip leading heading (`=`) and list (`-`, `+`) markers, yielding the
+    remaining prose text. Everything else is yielded verbatim.
+    """
+    try:
+        content = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return
+    in_block_comment = False
+    code_depth = 0  # unbalanced delimiters opened by a skipped code line
+    for i, raw in enumerate(content.splitlines(), start=1):
+        line = raw.strip()
+
+        # Block comments /* ... */
+        if in_block_comment:
+            if "*/" in line:
+                in_block_comment = False
+            continue
+        if line.startswith("/*"):
+            if "*/" not in line:
+                in_block_comment = True
+            continue
+
+        # Continuation of a multi-line code expression.
+        if code_depth > 0:
+            code_depth = max(0, code_depth + _delim_delta(line))
+            continue
+
+        if not line:
+            continue
+        if line.startswith("//"):
+            continue
+
+        # Typst code/markup commands and function calls.
+        if line.startswith("#"):
+            code_depth = max(0, _delim_delta(line))
+            continue
+
+        # Markup-only lines (e.g. a lone `]`, `)`, or `{`).
+        if line and all(ch in "[](){}" for ch in line):
+            continue
+
+        # Strip leading heading markers (`=`, `==`, …).
+        if line.startswith("="):
+            line = line.lstrip("=").strip()
+            if not line:
+                continue
+        # Strip leading list markers (`-`, `+`).
+        elif line[:1] in ("-", "+") and line[1:2] in (" ", ""):
+            line = line[1:].strip()
+            if not line:
+                continue
+
+        yield i, line
+
+
 def iter_lines(path: Path) -> Iterator[tuple[int, str]]:
-    """Unified line iterator — docx by paragraph, text by line."""
+    """Unified line iterator — docx by paragraph, typst/text by line."""
     if is_docx(path):
         yield from _iter_docx_paragraphs(path)
+    elif path.suffix.lower() == ".typ":
+        yield from _iter_typ_lines(path)
     else:
         yield from _iter_text_lines(path)
 
