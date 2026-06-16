@@ -66,6 +66,10 @@ This is not negotiable. Skipping the sample-and-filter step is NOT HELPFUL — D
 - Most datasets are date-partitioned weekly; "all of it" means every weekly file ever shipped. Set `partition_key_after/before` to the study window.
 - Presigned links expire in **24h** (`download_files0`). For large multi-day pulls use `download_files1` (page-by-page, refreshes links) — a long job on `download_files0` dies mid-pull.
 - A wrong `prj_` product path 404s or returns someone else's data. Get the path from Connect to API or MCP `search_datasets`; hardcoding a guessed path is an unverified claim presented as fact.
+- **Use `deweypy.get_dataset_files`, not `deweydatapy.get_meta/get_file_list`** — the latter's `external-api/v3` endpoint is dead (returns non-JSON / 500 → `JSONDecodeError`), confirmed 2026-06-10. See `references/deweypy-client.md`.
+- **The download service throws transient HTTP 500s on individual presigned URLs**, and one bad file aborts a whole-batch DuckDB `COPY read_csv([...])`. For filtered pulls: chunk (~20 files), retry per chunk re-minting fresh URLs, fall back to per-file skip; restartable via per-chunk parquet. Set `SET http_timeout=120000; SET http_retries=3;`. Worked example in `references/deweypy-client.md`.
+- **Some providers gate access behind extra terms** (e.g. ConsumerEdge): the web "Get Data" flow shows an "I acknowledge…additional terms" modal you must accept once before the dataset is usable / its `prj_` path mints. Don't auto-accept a provider license without the user's OK.
+- **MCP tools load only at session start.** After `claude mcp add … dewey-prod`, the `search_datasets`/`sample_dataset`/etc. tools are NOT available in the current session — start a new session to use them.
 
 ### Red Flags — STOP Immediately If You're About To:
 

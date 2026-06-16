@@ -40,9 +40,38 @@ urls = get_dataset_files(
 ```
 `urls` is then handed to DuckDB `read_parquet($urls)` for selective column/row pulls — see `duckdb.md`.
 
+`get_dataset_files` returns presigned URLs of the form
+`https://downloads.deweydata.io/api/v2/downloads/<uuid>.csv.gz?secret=…` (CSV.gz for
+ConsumerEdge; parquet for SafeGraph). For CSV.gz datasets, DuckDB needs the explicit
+codec: `read_csv(urls, compression='gzip', union_by_name=true)`.
+
+### Resilient filter-in-flight pull (TESTED 2026-06-10)
+
+Dewey's download service throws **transient HTTP 500s** on individual presigned URLs, and
+the URLs **expire**. A single bad file aborts a whole-batch DuckDB `COPY … read_csv([...])`.
+So don't COPY hundreds of URLs in one query. Instead:
+
+1. **Chunk** the URL list (~20 files/chunk) and COPY each chunk to its own `chunk_NNN.parquet`.
+2. **Retry** each chunk a few times, **re-minting fresh URLs** each attempt (`get_dataset_files`
+   again — old secrets expire/regenerate).
+3. On persistent failure, fall back to **file-by-file**, skipping (and logging) the one bad file.
+4. **Restartable:** skip chunks whose parquet already exists; combine at the end with
+   `read_parquet('out/**/chunk_*.parquet')`.
+5. Set DuckDB `SET http_timeout=120000; SET http_retries=3;`.
+
+Filter happens in the SQL (`WHERE BRAND_NAME IN (…)`), so only the filtered subset lands on
+disk — e.g. CE "Daily Spend by Brand & State" is 8.3 GB / 450M rows full, but a ~23-brand
+filtered pull is tens of MB. Worked example: `~/projects/batm/scratch/dewey_pull_ce_spend.py`.
+
 ---
 
 ## deweydatapy (legacy, function API)
+
+> ⚠️ **DEAD ENDPOINT (confirmed 2026-06-10):** `deweydatapy.get_meta` / `get_file_list` hit
+> the old `app.deweydata.io/external-api/v3/...` API, which now returns non-JSON / HTTP 500
+> → `JSONDecodeError: Expecting value`. **Prefer `deweypy.get_dataset_files`** (live
+> `downloads.deweydata.io/api/v2` service). Only use deweydatapy if you confirm its endpoint
+> is back.
 
 ### Install
 ```bash
