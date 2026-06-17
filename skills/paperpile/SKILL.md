@@ -1,7 +1,7 @@
 ---
 name: paperpile
 description: This skill should be used when the user asks to "add paper", "paperpile add", "fetch PDF for", "find and add", "search paperpile", "find in paperpile", "paperpile search", "label paper", "trash paper", "download paper", "paperpile index", "edit paper metadata", "update paper title", "fix paper author", "paperpile edit", "find PDF online", "search google for PDF", "resolve PDF", "fetch PDF for citation", "get full-text for DOI", "resolve cite to PDF", or any request to manage their Paperpile library or resolve a citation to a local PDF.
-version: 0.4.0
+version: 0.5.0
 user-invocable: false
 ---
 
@@ -9,10 +9,18 @@ user-invocable: false
 
 Manage your Paperpile library and resolve citations to PDFs via the `paperpile` CLI.
 
+**CLI-first — this is the whole point of the skill.** Every library operation (add, search,
+fetch, label, edit, trash, auth) goes through the `paperpile` CLI, which is pure HTTP. **Never
+drive the Paperpile web app (app.paperpile.com) via browser automation** to add or manage
+references — it is slower, the React forms reject synthetic input, and the CLI already does it.
+If the CLI fails, it is almost always stale auth — refresh cookies (below), do not reach for the browser.
+
 ## Prerequisites
 
 - `paperpile` binary at `~/.local/bin/paperpile` (Bun-compiled from `~/projects/paperpile-cli`)
-- Cookies imported via `paperpile auth import <path>` (exported from Cookie-Editor in JSON format)
+- Valid auth cookies. If `paperpile auth` fails, **refresh them automatically** (no manual
+  Cookie-Editor export needed): `${CLAUDE_SKILL_DIR}/scripts/refresh-auth-from-dia.sh` pulls the
+  cookies from the logged-in Dia browser over CDP (:9222), imports them, and verifies.
 - For PDF resolution: Chrome running with CDP on port 9250 (dedicated instance at `~/.config/chrome-cdp`)
 
 ## Library Management
@@ -170,12 +178,16 @@ Paperpile (this skill) → cite-check (upload PDFs to Gemini)
 - Cookies: `~/.claude-work/skills/paperpile/cookies/<domain>.json`
 - Cache: `~/.claude-work/skills/paperpile/cache/paperpile-index.json`
 - Paperpile All Papers: `~/Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My Drive/resources/Paperpile/All Papers/`
-- Re-import cookies when they expire (~30 days for Paperpile, ~8-12h for Shibboleth hard expiry)
+- Cookies expire (~30 days for Paperpile, ~8-12h for Shibboleth hard expiry). To refresh, run
+  `${CLAUDE_SKILL_DIR}/scripts/refresh-auth-from-dia.sh` — it extracts the live cookies from the
+  logged-in Dia browser via CDP (:9222) and `paperpile auth import`s them (no Cookie-Editor export).
+  Requires being logged into Paperpile in Dia; if not, log in there first.
 
 ## Red Flags
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
+| About to drive the Paperpile **web app** (app.paperpile.com) via browser automation — CDP clicks, the Add → "Paste references" dialog, filling React forms | The `paperpile` CLI does every library op over HTTP. The web UI is slower and its React forms silently reject synthetic input (you'll wrestle a textarea that never registers). This is the #1 trap — reaching for the browser when a one-word CLI command exists. | Use the CLI (`paperpile add <doi\|url\|pdf>`). If it errors on auth, run `scripts/refresh-auth-from-dia.sh`, then retry. |
 | Using `--force` without user approval | Adds DOI stubs without metadata -- clutters library | Ask user before adding DOIs without Guru data. URLs and PDFs don't need `--force` |
 | Running `trash --confirm` without showing dry run | Destructive, cannot be undone | Run without `--confirm` first |
 | Skipping `paperpile index` before search | Stale results from cached index | Run `paperpile index --refresh` first |
