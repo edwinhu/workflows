@@ -16,9 +16,12 @@ There are **two dedicated muni sources** on WRDS — but see the access caveat: 
 > `contrib_bond_*`) is **corporate, not muni**.
 >
 > **Consequence:** `msrb` gives muni **trades + CUSIP-level coupon/maturity/dated_date** but **no
-> ratings and no GO-vs-revenue flag.** For muni **ratings** or **GO vs revenue**, WRDS is a **dead
-> end** on this subscription → (a) ask the WRDS admin to **add the SDC subscription**, (b) use
-> **LSEG/Refinitiv** reference data, or (c) **MSRB EMMA**.
+> ratings and no GO-vs-revenue flag.** For muni **ratings** or **GO vs revenue**, both WRDS-SDC and
+> **LSEG/Refinitiv are dead ends on our entitlements** (LSEG tested 2026-06-17: muni ratings
+> access/license-denied, and the CUSIP→deal join is a fuzzy issuer-level match returning 19–486
+> deals/CUSIP — not viable; see the lseg-data skill `references/municipal-bonds.md`). Working
+> routes: **(a) MSRB EMMA** (free, issue-level ratings + security type, CUSIP-keyed) — best;
+> (b) a **licensed SDC** subscription *with the per-maturity CUSIP table*; (c) **Bloomberg/ICE**.
 
 ## 1. `msrb.msrb` — MSRB RTRS trades (PRIMARY muni source)
 
@@ -63,8 +66,11 @@ Tables and the fields that matter:
 - **`msrb.msrb`** — the only readable muni source: trades + CUSIP-level **coupon / maturity /
   dated_date** (clean 9-digit join). This is all WRDS gives you on this subscription.
 - **`tr_sdc_municipals`** *(would give ratings / sector / size / structure, but is permission-denied
-  here)*. To get **ratings** and **GO-vs-revenue** you must go outside WRDS-as-licensed: add the SDC
-  subscription (WRDS admin), or use **LSEG/Refinitiv** reference data, or **MSRB EMMA**.
+  here)*. To get **ratings** and **GO-vs-revenue** you must go outside WRDS-as-licensed. LSEG was
+  tested (2026-06-17) and is **also a dead end** by CUSIP (ratings denied; fuzzy issuer-level
+  deal match). Working routes: **MSRB EMMA** (free, issue-level ratings + security type,
+  CUSIP-keyed) — best; a **licensed SDC** subscription *with the per-maturity CUSIP table*; or
+  **Bloomberg/ICE**.
 
 Context: documented while sourcing a **selection control** for the muni-pennying paper — bond
 characteristics to control for selection in the bid-wanted auction-penalty result.

@@ -2,6 +2,14 @@
 
 Access municipal bond issuance data via the LSEG Data Library using `TR.Muni*` fields.
 
+> ## ⚠️ Access & limitation note — muni-by-CUSIP enrichment is NOT viable on this entitlement
+> Tested 2026-06-17 against 15 real muni CUSIPs (NULLs inspected). Findings:
+> - **RATINGS are NOT available.** `TR.MuniRating` returns **access-denied** (entitlement); **S&P is license-denied**; ~40 Moody/S&P/Fitch muni rating field-name variants all return "unable to resolve" (no working field). The entire `TR.Fi*` fixed-income module is access-denied too (incl. `TR.FiCouponRate`/`TR.FiMaturityDate`/`TR.FiMoodysRating`).
+> - **Issuance fields ARE retrievable by CUSIP** (pass the raw 9-digit CUSIP directly as the `get_data` universe — no `@DEALID` needed): `TR.MuniBackedSecurityType` (GO/Revenue), `TR.MuniIssueDescription`, `TR.MuniIssueBidType`, `TR.MuniPrincipalAmount`, `TR.MuniIssuerState`, `TR.MuniDealId`. (`TR.CommonName` resolves the issuer for ~all CUSIPs.)
+> - **BUT it is a cusip6/issuer-level FUZZY match, not a 9-digit per-bond join.** A single CUSIP returns the issuer's **entire deal history — 19 to 486 distinct deals per CUSIP** — with **both** "General Obligation" and "Revenue" present for the same CUSIP. `TR.MuniCUSIP` comes back NA, so there is no reliable way to pick the deal/maturity that matches the exact 9-digit CUSIP. Coverage on the 15-sample was only **7/15** (8 returned a single null row).
+> - **Not viable at scale.** The 1-to-many fan-out (up to 486 rows/CUSIP) blows up the 10k-datapoints/request + 500-requests/minute limits unpredictably, and the output still isn't a clean per-CUSIP characteristic (and has no ratings).
+> - **For per-CUSIP muni ratings + clean GO/rev, use [MSRB EMMA](https://emma.msrb.org)** (free, issue-level ratings + security type, CUSIP-keyed), a **licensed SDC** subscription with the per-maturity CUSIP table, or **Bloomberg/ICE**. The `@DEALID`-keyed flow below is for deal-level issuance research, not per-CUSIP bond enrichment.
+
 ## Overview
 
 Municipal bond data comes from SDC Platinum. Unlike equity-based datasets, muni bonds must be queried using **deal IDs** (`@DEALID` suffix) rather than ticker symbols.
