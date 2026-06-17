@@ -227,7 +227,7 @@ See **`references/sas-etl.md`** for complete patterns:
 | Thomson S34 (13-F Institutional) | `tfn` (SAS) / `tr_13f` (PG) | `s34` — 13-F institutional holdings |
 | FISD / Mergent (Corporate Bonds) | `fisd_fisd` | `fisd_mergedissue`, `fisd_mergedissuer` — corporate/agency/Treasury; **NOT the muni source** (issuer_type='M' munis are incidental) |
 | Municipal trades (MSRB RTRS) | `msrb` | `msrb` (trades + inline CUSIP master: coupon, maturity), `msrb_lookup`; also `msrb_all`, `msrbsamp`. **Primary muni source.** See `references/muni-bonds.md` |
-| Municipal new issues (SDC) | `tr_sdc_municipals` | `deals_data`, `ratings`, `maturity`, `calldata`, `managers` — deal-level: GO/rev, ratings, bank-qualified, callable, size, sector. See `references/muni-bonds.md` |
+| Municipal new issues (SDC) | `tr_sdc_municipals` | deal-level: ratings, GO/rev, bank-qualified, callable, size, sector — **but `SELECT` is permission-denied on this subscription (not licensed)**; `msrb` is the only readable muni schema. See `references/muni-bonds.md` |
 | PitchBook | `pitchbk_companies_deals`, `pitchbk_investors_funds_lps`, `pitchbk_fund_returns` | `deal`, `company`, `fund`, `wrds_fund_returns` — dealsize in USD millions |
 
 ## Connection
