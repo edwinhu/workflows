@@ -36,9 +36,10 @@ Capture current workflow state into `.planning/HANDOFF.md` so a fresh session ca
 Before writing `.planning/HANDOFF.md`, you MUST:
 1. READ `.planning/SPEC.md` (if exists) — understand the requirements
 2. READ `.planning/PLAN.md` (if exists) — understand task breakdown and progress
-3. READ `.planning/ACTIVE_WORKFLOW.md` (if exists) — understand current phase
-4. ASSESS what is actually done vs. what remains
-5. Only THEN write the handoff document
+3. READ `.planning/progress.md` (if exists) — the append-only ledger is the crash-safe record of which tasks are DONE; it is authoritative over PLAN.md `[x]` marks for "what not to redo"
+4. READ `.planning/ACTIVE_WORKFLOW.md` (if exists) — understand current phase
+5. ASSESS what is actually done vs. what remains (ledger ∪ PLAN.md `[x]` = done)
+6. Only THEN write the handoff document
 
 **If you catch yourself writing a handoff without reading state files first, STOP.**
 </EXTREMELY-IMPORTANT>
@@ -59,14 +60,18 @@ Read all available state files to understand where we are:
 1. Read .planning/ACTIVE_WORKFLOW.md → current phase, workflow type
 2. Read .planning/SPEC.md → requirements and success criteria
 3. Read .planning/PLAN.md → task breakdown and approach
-4. Scan recent git log → what's been committed
-5. Check for uncommitted changes → what's in-flight
+4. Read .planning/progress.md → append-only ledger: tasks already DONE (never redo these)
+5. Scan recent git log → what's been committed
+6. Check for uncommitted changes → what's in-flight
 ```
 
 **Run:**
 ```bash
 # Check workflow state
 cat .planning/ACTIVE_WORKFLOW.md 2>/dev/null || echo "No active workflow"
+
+# Completed-task ledger (crash-safe record of what's done)
+cat .planning/progress.md 2>/dev/null || echo "No progress ledger yet"
 
 # Check for uncommitted work
 git status --short 2>/dev/null
@@ -81,7 +86,7 @@ git log --oneline -10 2>/dev/null
 
 From the state files and git history, determine:
 - **Current phase** (from ACTIVE_WORKFLOW.md)
-- **Which tasks are complete** (from git history and PLAN.md)
+- **Which tasks are complete** (from `.planning/progress.md` ledger ∪ PLAN.md `[x]` ∪ git history — the ledger is authoritative for "do not redo")
 - **Which task is in progress** (from uncommitted changes)
 - **Decisions made during this session** (from session context)
 - **Blockers encountered** (from session context)

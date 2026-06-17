@@ -350,6 +350,11 @@ Required sections:
 - **Files to Modify** - Specific paths with change descriptions
 - **New Files** - If any, with purposes
 - **Implementation Order** - the MANDATORY machine-executable table: `Task | Deps | Files | Failing Test | Verify Command | Implements`, one row per task, every column filled (see `references/plan-template.md`). `dev-implement` reads this table to build the dependency DAG and the per-task verify gates — record tasks as table ROWS, never as prose `### Phase` headings. **Enforced:** `dev-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until the table is complete and the `Deps` graph is an acyclic, resolvable DAG. Self-check before approving: `uv run python3 ${CLAUDE_SKILL_DIR}/../../hooks/dev-plan-executable-guard.py .planning/PLAN.md`.
+- **Global Constraints** (recommended) - a `## Global Constraints` block of invariants binding every task; **Task Interfaces** (recommended) - one `### Task N` Consumes/Produces block per task. Both are OPTIONAL and backward-compatible (the guard does not require them, and `task-brief.sh` produces valid briefs without them). When present, `task-brief.sh` folds the Global Constraints + the task's Interfaces into each per-task brief, so the implementer reads ONE self-contained file instead of re-reading the whole plan — see `references/plan-template.md`.
+
+### PLAN Self-Containment Facts
+
+- A pasted task and a re-read of the full PLAN.md are the two failure modes the brief sits between: pasting parks the bytes in the controller's context, "go read PLAN.md" makes the implementer guess scope. The brief (`task-brief.sh` → `.planning/handoff/task-N-brief.md`) is the scoped middle — pin Global Constraints + Interfaces in the plan so the brief is genuinely self-contained, or the implementer falls back to one of the two failure modes.
 
 ## The Gate Function
 

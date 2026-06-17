@@ -36,6 +36,34 @@ Auto-load all constraints matching `applies-to: dev-implement`:
 
 **Dynamic plan re-read:** Before starting work, re-read `.planning/PLAN.md` to catch any phases or tasks that were dynamically inserted by earlier phases. Do not rely on cached plan state from a prior phase.
 
+## Progress Ledger (append-only — read FIRST, write on every completion)
+
+`.planning/progress.md` is the durable record of which tasks are DONE. PLAN.md `[x]`
+marks and the `/goal` transcript are both lossy across compaction; the ledger is not.
+
+**At phase entry (before dispatching anything):** read the ledger and treat every task
+listed there as already complete — do NOT re-dispatch it, even if PLAN.md shows it
+unchecked (a crash between "task done" and "marked [x]" is exactly when this saves you).
+
+```bash
+cat .planning/progress.md 2>/dev/null || echo "(no ledger yet — fresh phase)"
+```
+
+**On every task completion (append one line, never rewrite):**
+
+```bash
+printf '%s | task %s | %s | verify:%s\n' "$(date -u +%FT%TZ)" "<N>" "<commit-sha-or-->" "pass" >> .planning/progress.md
+```
+
+A task is "done" iff it appears in the ledger AND its PLAN.md row is `[x]`. If the two
+disagree, the ledger wins for *skip* decisions (never redo logged work) and PLAN.md
+is corrected to match.
+
+### Ledger Facts
+
+- A controller that lost its place re-dispatching an already-finished task is the single most expensive failure mode of a long implement loop — it re-runs the most costly work for zero gain. The ledger exists so "did I already do task 4?" is a `cat`, not a guess. Skipping the read because "I remember where I was" is the exact overconfidence that compaction punishes.
+- The ledger is append-only. Rewriting or trimming it to "clean it up" destroys the crash-recovery record; a stale-but-complete ledger is strictly safer than a tidy one missing the last entry.
+
 ## Where This Fits
 
 ```
@@ -549,8 +577,9 @@ Main chat should:
 ### Post-Task Checklist (mandatory, same response)
 
 1. **Update PLAN.md** - Mark task `[x]` complete
-2. **Log to LEARNINGS.md** - What was done
-3. **Start next task** - No waiting. The active `/goal` keeps firing turns until the condition holds.
+2. **Append to the ledger** - one line to `.planning/progress.md` (append-only; the crash-safe record of "done")
+3. **Log to LEARNINGS.md** - What was done
+4. **Start next task** - No waiting. The active `/goal` keeps firing turns until the condition holds.
 
 The user reviews at the END and is waiting for COMPLETION, not interim check-ins — a courtesy pause costs a full turn round-trip and delivers nothing. Update PLAN.md now (not "later" — later never comes), then start the next task in the same response.
 
@@ -585,10 +614,11 @@ This mirrors dev-debug's protocol: silent loop abandonment is how a structured `
 After each task's verification completes:
 
 1. Update PLAN.md — mark completed task `[x]`
-2. Append to LEARNINGS.md — what was accomplished, test command, exit code
-3. Check for blockers — dependencies from task N needed for N+1?
-4. If clear → IMMEDIATELY dispatch the implementer for task N+1
-5. If blocked → Ask user EXACTLY what's missing (not "I'm blocked")
+2. Append to `.planning/progress.md` — the append-only ledger line (crash-safe "done")
+3. Append to LEARNINGS.md — what was accomplished, test command, exit code
+4. Check for blockers — dependencies from task N needed for N+1?
+5. If clear → IMMEDIATELY dispatch the implementer for task N+1
+6. If blocked → Ask user EXACTLY what's missing (not "I'm blocked")
 
 **Violations to catch:**
 - "Let me check with user if they want me to continue" → NO, continue automatically

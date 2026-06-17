@@ -22,6 +22,18 @@ Use this template when writing `.planning/PLAN.md` after user approves an approa
 - [Why this approach fits]
 - [Trade-offs accepted]
 
+## Global Constraints
+
+> **Recommended, not required (backward-compatible).** Rules that bind EVERY task —
+> invariants no single task may break (naming conventions, error-handling policy,
+> "all timestamps UTC", "no new runtime deps without R4", security rules). `task-brief.sh`
+> copies this block verbatim into every per-task brief, so each implementer/reviewer
+> sees the cross-cutting rules without re-reading the whole plan. A plan with no
+> Global Constraints still parses and produces valid (constraint-free) briefs.
+
+- CON-1: [invariant binding every task]
+- CON-2: [invariant binding every task]
+
 ## Testing Strategy (MANDATORY - GATE)
 
 > **This section MUST be complete BEFORE implementation.**
@@ -136,4 +148,25 @@ See `references/constraints/real-test-enforcement.md` for fake test detection fa
 | 3. Route handler | `after 1` | `src/routes/api.ts, src/routes/api.test.ts` | `test_api_endpoint()` | `pytest tests/test_api.py -v` | `API-01` |
 
 > Tasks 2 and 3 share `Deps: after 1` and touch disjoint Files → `dev-implement` runs them **in parallel** (same level), merges, then runs the full suite.
+
+## Task Interfaces
+
+> **Recommended, not required (backward-compatible).** One block per task naming exactly
+> what it **Consumes** (inputs/symbols/files it depends on) and **Produces** (the
+> contract downstream tasks rely on). `task-brief.sh` folds a task's block into its brief,
+> so an implementer knows its boundary without reading sibling tasks. Keep the parsed
+> Implementation Order table flat — interfaces live here as prose sub-blocks, NOT as
+> extra table columns. Heading MUST be `### Task N` (the parser matches on the number).
+
+### Task 1
+- Consumes: —
+- Produces: `src/auth/types.ts` — `Session` type (used by Tasks 2, 3)
+
+### Task 2
+- Consumes: `src/auth/types.ts` (`Session`)
+- Produces: `validateSession(req): Session | null` in `src/auth/service.ts`
+
+### Task 3
+- Consumes: `src/auth/types.ts` (`Session`)
+- Produces: `POST /api/session` route in `src/routes/api.ts`
 ```

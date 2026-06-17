@@ -359,8 +359,21 @@ Each reviewer receives a self-contained prompt from a reference file. **Reviewer
 
 **Tool Restrictions:** All reviewers are READ-ONLY. Dispatch each with `allowed_tools=["Read", "Glob", "Grep", "Bash(read-only)"]`. Reviewers MUST NOT use Write or Edit tools. They read code, analyze it, and report findings — the main chat handles all fixes.
 
+**Generate the review package ONCE (shared across all lenses):**
+
+The diff is the largest artifact in review. Write it to a file ONCE and point every
+reviewer at the path — do not paste the diff into three prompts (it parks the most
+expensive bytes in context three times over).
+
+```bash
+# BASE = the commit before this implementation began (the task/level base SHA you
+# recorded — NOT HEAD~1, which drops all but the last commit of a multi-commit task).
+bash ${CLAUDE_SKILL_DIR}/../../scripts/dev/review-package.sh <BASE_SHA> HEAD
+# prints: wrote .planning/handoff/review-<base>..<head>.diff  (.planning/ excluded)
+```
+
 **Before spawning, substitute these variables in each prompt:**
-- `CHANGED_FILES` -> output of `git diff --name-only HEAD~1` (paste actual list)
+- `REVIEW_PACKAGE_PATH` -> the path review-package.sh printed (each reviewer reads it ONCE; do NOT paste the diff)
 - `SPEC_CONTEXT` -> relevant sections of .planning/SPEC.md (paste inline, do NOT reference file)
 - `LEARNINGS_TEST_OUTPUT` -> test output from .planning/LEARNINGS.md (paste actual output)
 - `PLUGIN_ROOT` -> resolved base directory for skill paths (relative to this skill's base directory)
@@ -717,6 +730,10 @@ Return structured output per /dev-review format."
 ## Review Facts
 
 - An APPROVED verdict asserts three things: tests actually ran, the output shows PASS (not SKIP, not assumed), and the evidence was verified by the reviewer rather than trusted from a report. An APPROVED with any leg missing is a fabricated verdict — review is the last gate before bugs ship, and BLOCKED is the honest answer when evidence is absent.
+- During reconciliation the controller dedups and prioritizes; it does not get to drop a reviewer's qualifying finding or pre-rate its severity down. A finding suppressed at reconciliation ships the bug with the review's sign-off attached — the one outcome review exists to prevent. (Conflicts between lenses get a *unified* fix in Pass 3, never a silent deletion.)
+- A rationale a reviewer or implementer offers ("it's intentional", "covered elsewhere") is a claim to verify against the diff and SPEC, never a reason to downgrade the finding. Lowering severity on the strength of an unverified rationale is trusting the report — the exact failure the read-only-reviewer design rules out.
+- A finding the diff cannot settle is labeled **"Cannot verify from diff"** with the missing context named — not silently dropped and not guessed into Critical. Dropping it understates risk; inventing a verdict fabricates one; naming the gap is the honest reviewer move and routes the right follow-up.
+- Every lens reads the SAME review package file (one `review-package.sh` run), so re-deriving the diff per reviewer (or pasting it per prompt) is wasted turns and wasted context for an identical artifact — generate once, share the path.
 
 ## Quality Standards
 

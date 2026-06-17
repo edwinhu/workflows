@@ -29,7 +29,7 @@ const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const TASK = {
   type: 'object', additionalProperties: false,
-  required: ['num', 'name', 'deps', 'files', 'failingTest', 'verifyCmd', 'implements', 'done', 'taskText'],
+  required: ['num', 'name', 'deps', 'files', 'failingTest', 'verifyCmd', 'implements', 'done', 'taskText', 'interfaces'],
   properties: {
     num: { type: 'string', description: 'the task number as a string, e.g. "2"' },
     name: { type: 'string' },
@@ -40,14 +40,16 @@ const TASK = {
     implements: { type: 'string', description: 'SPEC requirement IDs' },
     done: { type: 'boolean', description: 'true if the PLAN row is already checked [x]' },
     taskText: { type: 'string', description: 'the full task text from PLAN.md (name + sub-bullets) — pasted to the implementer so it need not re-read the file' },
+    interfaces: { type: 'string', description: "this task's Interfaces sub-block (Consumes/Produces) from PLAN.md's '## Task Interfaces' section, verbatim; '' if the plan declares none" },
   },
 }
 const DISCOVERY_SCHEMA = {
   type: 'object', additionalProperties: false,
-  required: ['planReadable', 'specPath', 'tasks', 'levels', 'levelToRun'],
+  required: ['planReadable', 'specPath', 'globalConstraints', 'tasks', 'levels', 'levelToRun'],
   properties: {
     planReadable: { type: 'boolean', description: 'true iff PLAN.md has a parseable Implementation Order table' },
     specPath: { type: 'string', description: 'absolute path to .planning/SPEC.md, or "" if absent' },
+    globalConstraints: { type: 'string', description: "verbatim text of PLAN.md's '## Global Constraints' section (rules binding EVERY task), or '' if the plan declares none (optional/backward-compatible)" },
     tasks: { type: 'array', items: TASK },
     levels: { type: 'array', items: { type: 'array', items: { type: 'string' } }, description: 'topological levels: levels[i] = task numbers whose deps are all in earlier levels' },
     levelToRun: { type: 'integer', description: 'index into levels of the LOWEST level that has pending (not-done) tasks; -1 if all tasks done' },
@@ -83,10 +85,11 @@ const disc = await agent(
   `Parse the hardened Implementation Order table in the dev PLAN and build the dependency DAG. Working directory: ${PROJECT}
 
 1. Read ${PROJECT}/.planning/PLAN.md. If it has no machine-executable Implementation Order table (columns Task | Deps | Files | Failing Test | Verify Command | Implements), set planReadable=false, tasks=[], levels=[], levelToRun=-1 — the workflow will refuse (the dev-plan-executable-guard should have prevented this).
-2. For EACH table row, extract a task: num (leading integer), name, deps (parse \`---\`→[] or \`after N\`/\`after N,M\`→["N","M"]), files (split the Files cell), failingTest, verifyCmd (the Verify Command cell verbatim), implements, done (true iff the row's task checkbox is [x] or a "done" marker is present). taskText = the row PLUS any sub-bullets/detail for that task elsewhere in PLAN.md (so the implementer needn't re-read the file).
-3. Compute topological levels: levels[0] = tasks with deps [] OR all-deps-done; each subsequent level = tasks whose deps are all in earlier levels. (A DAG is guaranteed — the guard rejected cycles.)
-4. levelToRun = index of the LOWEST level that contains at least one NOT-done task whose every dep is done. If all tasks are done, levelToRun=-1.
-5. specPath = ${PROJECT}/.planning/SPEC.md if present else "".
+2. For EACH table row, extract a task: num (leading integer), name, deps (parse \`---\`→[] or \`after N\`/\`after N,M\`→["N","M"]), files (split the Files cell), failingTest, verifyCmd (the Verify Command cell verbatim), implements, done (true iff the row's task checkbox is [x] or a "done" marker is present). taskText = the row PLUS any sub-bullets/detail for that task elsewhere in PLAN.md (so the implementer needn't re-read the file). interfaces = the task's sub-block under a '## Task Interfaces' section (a '### Task N' block with Consumes/Produces), verbatim; '' if the plan has no such section or no block for this task (it is optional/backward-compatible).
+3. globalConstraints = the verbatim body of a '## Global Constraints' section if PLAN.md has one (rules that bind EVERY task), else '' — the plan format makes this optional, so absence is normal, not an error.
+4. Compute topological levels: levels[0] = tasks with deps [] OR all-deps-done; each subsequent level = tasks whose deps are all in earlier levels. (A DAG is guaranteed — the guard rejected cycles.)
+5. levelToRun = index of the LOWEST level that contains at least one NOT-done task whose every dep is done. If all tasks are done, levelToRun=-1.
+6. specPath = ${PROJECT}/.planning/SPEC.md if present else "".
 
 Return DISCOVERY_SCHEMA with absolute paths where relevant.`,
   { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
@@ -115,6 +118,12 @@ if (!targetNums.length) {
 log(`Level ${disc.levelToRun}/${disc.levels.length - 1}: implementing ${targetNums.length} task(s) [${targetNums.join(', ')}] sequentially; ${pendingTotal} pending overall${ONLY ? ` (re-run ${ONLY.size})` : ''}`)
 
 // ── Phase 2: Transform (SEQUENTIAL within the level — implementers write the shared tree in turn) ─
+// Model policy (turn-economics): mechanical stages (Discover/Verify) are pinned to a
+// mid-tier model (sonnet) — the floor, never the cheapest tier, because cheap models
+// take 2-3× the turns on multi-step work and cost more end to end. The implementer
+// runs multi-step TDD, so it deliberately OMITS model to inherit the session model
+// (≥ the mid-tier floor — capability where judgment is needed). Do NOT downgrade the
+// implementer to the cheapest tier; that trades a token line-item for more turns.
 phase('Transform')
 const tdHint = PLUGIN ? `Read ${PLUGIN}/../skills/dev-tdd/SKILL.md and follow the TDD Iron Law + Execution Gate before writing code.` : 'Follow TDD: write the failing test, see it RED, then implement to GREEN.'
 const liveTransforms = []
@@ -130,6 +139,8 @@ Implements (SPEC IDs): ${t.implements}
 Files to create/edit (from the PLAN, under ${PROJECT}): ${(t.files || []).join(', ') || '(none declared — declare what you touch)'}
 Failing Test (write this FIRST): ${t.failingTest}
 Verify Command (must exit 0 when done): ${t.verifyCmd}
+${(t.interfaces && t.interfaces.trim()) ? `\nINTERFACES (what this task consumes / produces — honor these boundaries exactly):\n${t.interfaces}` : ''}
+${(disc.globalConstraints && disc.globalConstraints.trim()) ? `\nGLOBAL CONSTRAINTS (bind EVERY task — obey verbatim):\n${disc.globalConstraints}` : ''}
 
 FULL TASK TEXT FROM PLAN:
 ${t.taskText}

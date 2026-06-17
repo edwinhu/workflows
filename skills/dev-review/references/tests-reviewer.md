@@ -10,9 +10,18 @@ Test quality, coverage, and reliability:
 - Test organization (clear structure, good naming)
 - TDD compliance (test before implementation)
 
-## Files Changed (Your Review Scope)
+## Changes to Review (Your Review Scope)
 
-{CHANGED_FILES}
+A review package — commit list, file stat, and the full diff (context `-U10`) — has
+been written to a file. **Read it ONCE** with the Read tool. Do NOT ask for the diff
+to be pasted and do NOT re-run `git diff`/`git log` yourself (every lens reads the
+same package; re-deriving it wastes turns):
+
+`{REVIEW_PACKAGE_PATH}`
+
+The diff's context lines ARE the changed files — review from the package. Read a
+changed file separately ONLY if a hunk you must judge is cut off mid-function (and
+say so in your report).
 
 ## Requirements Context (from SPEC.md)
 
@@ -61,7 +70,7 @@ This applies even when:
 
 ## Your Review Checklist
 
-For each file in CHANGED_FILES, check:
+For each changed file in the review package, check:
 
 ### Test Completeness
 - [ ] Happy path tested
@@ -85,12 +94,24 @@ For each file in CHANGED_FILES, check:
 - [ ] Visual regression tested (screenshots/snapshots)
 - [ ] Accessibility tested (keyboard navigation, screen readers)
 
+## Review Integrity (non-negotiable)
+
+- Report every qualifying finding. Suppressing a finding because it is awkward, or
+  pre-rating its severity down to avoid a fix, is banned — a withheld finding is the
+  bug you let ship, signed off in your name.
+- A stated rationale (a code comment, a commit message, the implementer's note) is a
+  claim to verify, never a reason to downgrade a finding's severity. "They said it's
+  intentional" does not lower the score; verify against the diff and the spec.
+- If the package's diff is insufficient to judge a finding (a hunk cut off, behavior
+  that depends on code outside the diff), label it **"Cannot verify from diff"** and
+  say exactly what you would need — do NOT guess a verdict either way.
+
 ## Required Output Structure
 
 ```markdown
 ## Test Quality Review
 
-Reviewed: {CHANGED_FILES}
+Reviewed: changes in `{REVIEW_PACKAGE_PATH}`
 
 ### Critical Test Issues (Confidence >= 90)
 
