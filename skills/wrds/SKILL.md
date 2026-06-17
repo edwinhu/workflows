@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD bonds", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
+description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
 user-invocable: false
 ---
 
@@ -225,7 +225,9 @@ See **`references/sas-etl.md`** for complete patterns:
 | TAQ Millisecond | `taqmsec` | `mastm_YYYY`, `wrds_iid_YYYY`, `ctm_YYYYMM`, `complete_nbbo_YYYYMMDD` |
 | Thomson S12 (Mutual Fund Holdings) | `tfn` (SAS) / `tr_mutualfunds` (PG) | `s12` — 13F/N-CSR fund holdings |
 | Thomson S34 (13-F Institutional) | `tfn` (SAS) / `tr_13f` (PG) | `s34` — 13-F institutional holdings |
-| FISD / Mergent (Bonds) | `fisd_fisd` | `fisd_mergedissue`, `fisd_mergedissuer` |
+| FISD / Mergent (Corporate Bonds) | `fisd_fisd` | `fisd_mergedissue`, `fisd_mergedissuer` — corporate/agency/Treasury; **NOT the muni source** (issuer_type='M' munis are incidental) |
+| Municipal trades (MSRB RTRS) | `msrb` | `msrb` (trades + inline CUSIP master: coupon, maturity), `msrb_lookup`; also `msrb_all`, `msrbsamp`. **Primary muni source.** See `references/muni-bonds.md` |
+| Municipal new issues (SDC) | `tr_sdc_municipals` | `deals_data`, `ratings`, `maturity`, `calldata`, `managers` — deal-level: GO/rev, ratings, bank-qualified, callable, size, sector. See `references/muni-bonds.md` |
 | PitchBook | `pitchbk_companies_deals`, `pitchbk_investors_funds_lps`, `pitchbk_fund_returns` | `deal`, `company`, `fund`, `wrds_fund_returns` — dealsize in USD millions |
 
 ## Connection
