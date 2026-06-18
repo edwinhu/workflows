@@ -188,10 +188,13 @@ small core patch.
 
 The HarfBuzz/GPOS injector is now integrated (no rebuild, no core patch):
 
-- `_inject_kerning(pdf, font_dir)` — ports §5's logic into the wrapper. It shapes
-  each `TJ` run with HarfBuzz and folds GPOS/`kern` pair adjustments into the array.
-  It is fed the **staged render faces** from `_doc_focused_dir(src)` — the exact
-  files x2t embedded, GPOS intact — so names match and kerning is correct.
+- `scripts/x2t_kern.py` — standalone HarfBuzz/GPOS injector (the shaping logic).
+  Run via **`uv`** so its deps (`uharfbuzz`/`pikepdf`/`fontTools`) need not be in
+  the ambient python.
+- `_inject_kerning(pdf, font_dir)` in `x2t_convert.py` — shells out to
+  `uv run --with uharfbuzz --with pikepdf --with fonttools python3 x2t_kern.py …`,
+  fed the **staged render faces** from `_doc_focused_dir(src)` (the exact files x2t
+  embedded, GPOS intact, so names match). Best-effort: skipped if `uv` is absent.
 - `_docx_is_justified(src)` — scans `word/document.xml` + `word/styles.xml` for
   `w:jc w:val="both"`.
 - `convert(..., kern=None)` — `kern=None` (default) is **auto**: inject for x2t
@@ -219,8 +222,9 @@ embedded MD5 changed (§1a) — the bundled `AllFonts.js` "Garamond" and the fam
 cache otherwise silently serve the wrong font.
 
 ## Artifacts
+- `scripts/x2t_kern.py` — standalone HarfBuzz/GPOS injector (run via uv); usable
+  ad-hoc on any x2t PDF: `uv run --with uharfbuzz --with pikepdf --with fonttools
+  python3 scripts/x2t_kern.py out.pdf <font-or-dir>`.
 - `scripts/x2t_convert.py` — `_inject_kerning` / `_docx_is_justified` / `convert(kern=)`
-  (the shipped integration).
-- `scratch/x2t_kern_postprocess.py` — standalone HarfBuzz/GPOS injector (same logic,
-  for ad-hoc use on any x2t PDF).
+  (the shipped integration; calls `x2t_kern.py` via uv).
 - `scratch/x2t_kern_before_after.png` — EB Garamond before/after (caps + lowercase).
