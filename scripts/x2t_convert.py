@@ -432,6 +432,205 @@ def _doc_focused_dir(src: Path) -> "Path | None":
     return out if any(out.iterdir()) else None
 
 
+def _docx_is_justified(src: Path) -> bool:
+    """True if the docx justifies any paragraph (``<w:jc w:val="both"/>`` in
+    content or in styles defaults).
+
+    Render-time kern injection (see ``_inject_kerning``) tightens glyphs after
+    sdkjs already laid out the line at its UNKERNED width, so on justified text
+    the last glyph stops short of the right margin by the line's kern sum.
+    Detect justification and skip injection for those documents.
+    """
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(src) as z:
+            members = [m for m in z.namelist()
+                       if m in ("word/document.xml", "word/styles.xml")]
+            for m in members:
+                blob = z.read(m).decode("utf-8", "replace")
+                if 'w:jc w:val="both"' in blob or "w:jc w:val='both'" in blob:
+                    return True
+    except Exception:
+        # If we cannot tell, be conservative and assume justified (skip kern)
+        # only when the file is unreadable as a zip; a non-docx source (e.g.
+        # pptx/xlsx) never reaches the prose-kern path anyway.
+        return False
+    return False
+
+
+def _kern_font_index(font_dir: "Path | None"):
+    """Map PostScript/family name -> (hb.Font, upem) for every face in the
+    staged render dir. Returns {} if the dir or the shaping deps are missing."""
+    if not font_dir or not Path(font_dir).is_dir():
+        return {}
+    try:
+        import uharfbuzz as hb
+        from fontTools.ttLib import TTFont
+    except Exception:
+        return {}
+    shapers: dict = {}
+    for p in Path(font_dir).iterdir():
+        if p.suffix.lower() not in (".ttf", ".otf"):
+            continue
+        try:
+            face = hb.Face(hb.Blob.from_file_path(str(p)))
+            hbfont = hb.Font(face)
+            upem = face.upem
+            ft = TTFont(str(p))
+            for nid in (6, 1, 16, 4):  # PS name, family, typo family, full
+                n = ft["name"].getDebugName(nid)
+                if n:
+                    shapers.setdefault(n, (hbfont, upem))
+                    shapers.setdefault(n.replace(" ", ""), (hbfont, upem))
+        except Exception:
+            continue
+    return shapers
+
+
+def _inject_kerning(pdf_path: Path, font_dir: "Path | None") -> bool:
+    """Add GPOS/`kern` pair kerning to an x2t-produced PDF in place.
+
+    x2t's docx->PDF path (sdkjs in V8) applies NO pair kerning -- it positions
+    glyphs by their nominal advance only (verified: stripping a font's GPOS or
+    `kern` table leaves x2t's output width unchanged). It already emits each run
+    as a ``TJ`` array, so we recover the run text via /ToUnicode, shape it with
+    HarfBuzz (the shaper Word/LibreOffice use, so GPOS is covered), and fold the
+    per-glyph advance difference into the ``TJ`` adjustments.
+
+    Uses the staged render faces (the exact files x2t embedded). Best-effort:
+    returns False and leaves the PDF untouched if deps/faces are unavailable.
+    See docs/investigations/2026-06-19_x2t-kerning-patch.md.
+    """
+    try:
+        import re as _re
+        import pikepdf
+    except Exception:
+        return False
+    shapers = _kern_font_index(font_dir)
+    if not shapers:
+        return False
+
+    def kern_shifts(text, hbfont, upem):
+        import uharfbuzz as hb
+
+        def adv(do_kern):
+            b = hb.Buffer()
+            b.add_str(text)
+            b.guess_segment_properties()
+            hb.shape(hbfont, b, {"kern": do_kern, "liga": False})
+            return [p.x_advance for p in b.glyph_positions]
+
+        kon, koff = adv(True), adv(False)
+        if len(kon) != len(text) or len(koff) != len(text):
+            return None  # ligature/cluster: glyph count != char count, skip run
+        shifts, cum = [], 0.0
+        for i in range(len(kon)):
+            shifts.append(cum * 1000.0 / upem)
+            cum += (koff[i] - kon[i])  # positive => kerned tighter
+        return shifts
+
+    def parse_tounicode(font):
+        tu = bytes(font.ToUnicode.read_bytes()).decode("latin-1")
+        m = {}
+        for x in _re.finditer(r"<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>", tu):
+            try:
+                m[int(x.group(1), 16)] = chr(int(x.group(2), 16))
+            except ValueError:
+                pass
+        return m
+
+    def base_name(font):
+        return str(font.get("/BaseFont", "")).split("+")[-1].lstrip("/")
+
+    changed = False
+    try:
+        pdf = pikepdf.open(str(pdf_path), allow_overwriting_input=True)
+    except Exception:
+        return False
+    for pg in pdf.pages:
+        fonts = {}
+        for key, fn in pg.Resources.get("/Font", {}).items():
+            c2u = parse_tounicode(fn) if "/ToUnicode" in fn else {}
+            fonts[str(key).lstrip("/")] = (c2u, shapers.get(base_name(fn)))
+        c = pg.Contents
+        try:
+            data = (b"".join(bytes(s.read_bytes()) for s in c)
+                    if isinstance(c, pikepdf.Array) else bytes(c.read_bytes()))
+        except Exception:
+            continue
+        txt = data.decode("latin-1")
+        state = {"cur": None}
+
+        def fix_tj(body):
+            ctx = fonts.get(state["cur"])
+            if not ctx or not ctx[1]:
+                return None
+            c2u, (hbfont, upem) = ctx
+            toks = _re.findall(r"<([0-9A-Fa-f]+)>|(-?\d+\.?\d*)", body)
+            seq = []
+            for hx, num in toks:
+                if hx:
+                    for i in range(0, len(hx), 4):
+                        seq.append(("g", int(hx[i:i + 4], 16)))
+                elif num:
+                    seq.append(("n", float(num)))
+            text = "".join(c2u.get(v, "") for k, v in seq if k == "g")
+            if not text.strip():
+                return None
+            shifts = kern_shifts(text, hbfont, upem)
+            if shifts is None:
+                return None
+            out, gi = [], 0
+            for kind, val in seq:
+                if kind == "g":
+                    if 0 < gi < len(shifts):
+                        d = shifts[gi] - shifts[gi - 1]
+                        if abs(d) > 0.01:
+                            out.append(("n", d))
+                    out.append(("g", val))
+                    gi += 1
+                else:
+                    out.append(("n", val))
+            parts, buf = [], ""
+            for kind, val in out:
+                if kind == "g":
+                    buf += "%04X" % val
+                else:
+                    if buf:
+                        parts.append("<%s>" % buf)
+                        buf = ""
+                    parts.append("%.3f" % val)
+            if buf:
+                parts.append("<%s>" % buf)
+            return "[" + " ".join(parts) + "]TJ"
+
+        def repl(m):
+            nonlocal changed
+            if m.group("tf"):
+                state["cur"] = m.group("name")
+                return m.group(0)
+            new = fix_tj(m.group("arr"))
+            if new is None:
+                return m.group(0)
+            changed = True
+            return new
+
+        pat = _re.compile(
+            r"/(?P<name>[A-Za-z0-9_.]+)\s+[-\d.]+\s+(?P<tf>Tf)"
+            r"|\[(?P<arr>[^\]]*)\]TJ"
+        )
+        new_txt = pat.sub(repl, txt)
+        if new_txt != txt:
+            pg.Contents = pdf.make_stream(new_txt.encode("latin-1"))
+    if changed:
+        try:
+            pdf.save(str(pdf_path))
+        except Exception:
+            return False
+    return changed
+
+
 def _run_x2t(src: Path, dst: Path, timeout: int) -> None:
     with tempfile.TemporaryDirectory(prefix="x2t-") as tmp:
         nix_bin = _nix_mode_bindir("x2t")
@@ -565,12 +764,22 @@ def convert(
     *,
     timeout: int = 300,
     soffice: str | None = None,
+    kern: bool | None = None,
 ) -> Path:
     """Convert src to dst (format inferred from dst extension). Returns dst.
 
     Tries x2t from PATH first; falls back to soffice if x2t is absent.
     Raises RuntimeError if no converter is available or the output was not
     produced (both tools can exit 0 without writing output).
+
+    ``kern`` controls render-time GPOS/`kern` injection for x2t docx->PDF
+    output (x2t itself applies no pair kerning; see ``_inject_kerning``):
+      * None (default) "auto": inject unless the docx justifies any paragraph
+        (justified text would fall short of the right margin -- see
+        ``_docx_is_justified``). Override with ``$X2T_KERN`` = 1/true or 0/false.
+      * True / False: force on / off.
+    Only applies to x2t (soffice already kerns) and .pdf output. Best-effort:
+    silently skipped if uharfbuzz/pikepdf are unavailable.
     """
     src, dst = Path(src), Path(dst)
     if not src.exists():
@@ -595,6 +804,21 @@ def convert(
 
     if not dst.exists() or dst.stat().st_size == 0:
         raise RuntimeError(f"{tool} exited 0 but did not produce {dst}")
+
+    if kern is None:
+        env = os.environ.get("X2T_KERN", "").strip().lower()
+        if env in ("1", "true", "yes", "on"):
+            kern = True
+        elif env in ("0", "false", "no", "off"):
+            kern = False
+    if (
+        x2t
+        and dst.suffix.lower() == ".pdf"
+        and src.suffix.lower() == ".docx"
+        and kern is not False
+        and (kern is True or not _docx_is_justified(src))
+    ):
+        _inject_kerning(dst, _doc_focused_dir(src) or font_dir())
     return dst
 
 
@@ -608,6 +832,12 @@ def main() -> None:
                     help="recalculate xlsx formulas (writes cached values; "
                          "in-place unless dst given)")
     ap.add_argument("--timeout", type=int, default=300)
+    kg = ap.add_mutually_exclusive_group()
+    kg.add_argument("--kern", dest="kern", action="store_true", default=None,
+                    help="force GPOS/kern injection into docx->PDF (x2t applies "
+                         "none); default auto-on for non-justified docs")
+    kg.add_argument("--no-kern", dest="kern", action="store_false",
+                    help="disable kern injection")
     args = ap.parse_args()
     try:
         if args.recalc:
@@ -615,7 +845,8 @@ def main() -> None:
         else:
             if args.dst is None:
                 ap.error("dst is required unless --recalc")
-            out = convert(args.src, args.dst, timeout=args.timeout)
+            out = convert(args.src, args.dst, timeout=args.timeout,
+                          kern=args.kern)
     except Exception as e:
         sys.exit(f"ERROR: {e}")
     print(out)

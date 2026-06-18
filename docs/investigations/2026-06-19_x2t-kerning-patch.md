@@ -184,20 +184,43 @@ small core patch.
 
 ---
 
-## 7. Recommendation
+## 7. Resolution — wired into `scripts/x2t_convert.py`
 
-- **Ship today:** add `scratch/x2t_kern_postprocess.py` as an optional post-render
-  step in `scripts/x2t_convert.py`, fed the document's **original** font files (you
-  already resolve those for `m_sFontDir`). It is GPOS-aware, so it fixes lowercase
-  body-text kerning for EB Garamond. Accept the justified-text caveat (§5b.1) or gate
-  it to left/center-aligned bodies — for a left-ragged law-review draft it's a clean win.
-- **If justified fidelity is required:** there is no small core patch; the real path
-  is enabling HarfBuzz shaping in the desktop build and routing sdkjs through it
-  (§6.1), validated by a full docbuilder rebuild.
-- **Harness note for future work:** always rename test fonts uniquely and assert the
-  embedded MD5 changed (§1a) — the bundled `AllFonts.js` "Garamond" and the
-  family-name cache will otherwise silently serve the wrong font.
+The HarfBuzz/GPOS injector is now integrated (no rebuild, no core patch):
+
+- `_inject_kerning(pdf, font_dir)` — ports §5's logic into the wrapper. It shapes
+  each `TJ` run with HarfBuzz and folds GPOS/`kern` pair adjustments into the array.
+  It is fed the **staged render faces** from `_doc_focused_dir(src)` — the exact
+  files x2t embedded, GPOS intact — so names match and kerning is correct.
+- `_docx_is_justified(src)` — scans `word/document.xml` + `word/styles.xml` for
+  `w:jc w:val="both"`.
+- `convert(..., kern=None)` — `kern=None` (default) is **auto**: inject for x2t
+  docx→PDF **unless the doc justifies any paragraph** (§5b.1 margin undershoot).
+  `kern=True/False` forces; `$X2T_KERN=1/0` and CLI `--kern`/`--no-kern` override.
+  Soffice output is untouched (it already kerns). Best-effort: silently skipped if
+  `uharfbuzz`/`pikepdf` are absent.
+
+**End-to-end verification** (EB Garamond as the render font, via the real wrapper):
+
+| invocation | caps line | lowercase line |
+|---|---|---|
+| `--no-kern` (x2t raw) | 1571 px | 1469 px |
+| auto-kern (non-justified) | **1407 px** | **1442 px** |
+| justified doc, auto | 1795 px (skipped ✓) | 1798 px (skipped ✓) |
+| justified doc, `--kern` | 1631 px (forced) | 1771 px (forced) |
+
+**Remaining limit:** justified text is deliberately skipped by default — for true
+justified fidelity the only fix is in sdkjs layout (§6.1). If a justified law-review
+PDF needs kerning, run with `--kern`/`X2T_KERN=1` and accept the slight right-margin
+undershoot, or switch that draft to ragged-right.
+
+**Harness note for future work:** always rename test fonts uniquely and assert the
+embedded MD5 changed (§1a) — the bundled `AllFonts.js` "Garamond" and the family-name
+cache otherwise silently serve the wrong font.
 
 ## Artifacts
-- `scratch/x2t_kern_postprocess.py` — verified HarfBuzz/GPOS kern injector (deployable).
+- `scripts/x2t_convert.py` — `_inject_kerning` / `_docx_is_justified` / `convert(kern=)`
+  (the shipped integration).
+- `scratch/x2t_kern_postprocess.py` — standalone HarfBuzz/GPOS injector (same logic,
+  for ad-hoc use on any x2t PDF).
 - `scratch/x2t_kern_before_after.png` — EB Garamond before/after (caps + lowercase).
