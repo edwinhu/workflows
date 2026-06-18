@@ -243,18 +243,163 @@ def font_dir() -> Path | None:
     return merged
 
 
+def _docx_font_families(src: Path) -> set:
+    """Font family names a .docx actually references.
+
+    Covers literal run/style fonts (w:rFonts ascii/hAnsi/cs) and the theme's
+    Latin major/minor typefaces (which run-level asciiTheme/hAnsiTheme resolve
+    to). Returns lowercased names; empty set on anything unreadable.
+    """
+    import zipfile, re
+    if src.suffix.lower() != ".docx":
+        return set()
+    fams = set()
+    try:
+        with zipfile.ZipFile(src) as z:
+            names = set(z.namelist())
+            # Only the fonts an unstyled run actually resolves to: the
+            # docDefaults rFonts and explicit run-level rFonts in the content.
+            # Per-style rFonts in styles.xml (Consolas for code, Arial Unicode
+            # as a cs fallback, etc.) are mostly unused and, if added to the
+            # render pool, re-poison the bold/italic match — so they are
+            # excluded here. Theme major/minor Latin faces are added below.
+            if "word/styles.xml" in names:
+                st = z.read("word/styles.xml").decode("utf-8", "ignore")
+                dd = re.search(r'<w:docDefaults>.*?</w:docDefaults>', st, re.S)
+                if dd:
+                    for m in re.findall(r'w:(?:ascii|hAnsi)="([^"]+)"', dd.group(0)):
+                        fams.add(m.strip())
+            for n in ("word/document.xml", "word/footnotes.xml",
+                      "word/endnotes.xml", "word/header1.xml",
+                      "word/header2.xml", "word/footer1.xml", "word/footer2.xml"):
+                if n in names:
+                    t = z.read(n).decode("utf-8", "ignore")
+                    for m in re.findall(r'w:(?:ascii|hAnsi)="([^"]+)"', t):
+                        fams.add(m.strip())
+            if "word/theme/theme1.xml" in names:
+                th = z.read("word/theme/theme1.xml").decode("utf-8", "ignore")
+                major = re.search(r'<a:majorFont>.*?<a:latin typeface="([^"]*)"', th, re.S)
+                minor = re.search(r'<a:minorFont>.*?<a:latin typeface="([^"]*)"', th, re.S)
+                if major and major.group(1):
+                    fams.add(major.group(1)); fams.add("majorhansi")
+                if minor and minor.group(1):
+                    fams.add(minor.group(1)); fams.add("minorhansi")
+                # map the theme sentinels to the resolved names
+                if major and major.group(1):
+                    fams = {major.group(1) if f.lower() == "majorhansi" else f for f in fams}
+                if minor and minor.group(1):
+                    fams = {minor.group(1) if f.lower() == "minorhansi" else f for f in fams}
+    except Exception:
+        return set()
+    return {f.lower() for f in fams if f and not f.startswith("+")
+            and f.lower() not in ("majorhansi", "minorhansi", "majorbidi", "minorbidi")}
+
+
+def _font_family_index(merged: Path) -> dict:
+    """Map lowercased family name -> list of font file Paths in `merged`.
+
+    Built with fontTools (reads name IDs 1 and 16). Cached to
+    ~/.cache/x2t-family-index.json keyed by the dir's file signature so the
+    ~800-font scan runs once. Returns {} if fontTools is unavailable.
+    """
+    import json
+    try:
+        from fontTools.ttLib import TTFont, TTCollection
+    except Exception:
+        return {}
+    cache = Path.home() / ".cache" / "x2t-family-index.json"
+    files = sorted(p for p in merged.iterdir()
+                   if p.suffix.lower() in (".ttf", ".otf", ".ttc"))
+    sig = str([(p.name, p.stat().st_size) for p in files])
+    if cache.exists():
+        try:
+            blob = json.loads(cache.read_text())
+            if blob.get("sig") == sig:
+                return {k: [merged / n for n in v] for k, v in blob["idx"].items()}
+        except Exception:
+            pass
+    idx: dict = {}
+
+    def add(fam, name):
+        if fam:
+            idx.setdefault(fam.lower(), [])
+            if name not in idx[fam.lower()]:
+                idx[fam.lower()].append(name)
+
+    for p in files:
+        try:
+            faces = TTCollection(p).fonts if p.suffix.lower() == ".ttc" else [TTFont(p, fontNumber=0, lazy=True)]
+            for f in faces:
+                nm = f["name"]
+                add(nm.getDebugName(1), p.name)
+                add(nm.getDebugName(16), p.name)
+        except Exception:
+            continue
+    try:
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps({"sig": sig, "idx": idx}))
+    except Exception:
+        pass
+    return {k: [merged / n for n in v] for k, v in idx.items()}
+
+
+def _doc_focused_dir(src: Path) -> "Path | None":
+    """Build an m_sFontDir containing only the fonts the document references.
+
+    x2t selects render faces from m_sFontDir; with the full ~800-font system
+    pool its matcher mis-resolves bold/italic of a serif family to Arial.
+    Restricting the pool to the document's own font families makes it pick the
+    correct bold/italic faces. Returns None (caller falls back to the full
+    merged dir) if extraction or indexing is unavailable.
+    """
+    fams = _docx_font_families(src)
+    if not fams:
+        return None
+    merged = font_dir()
+    if not merged or not Path(merged).is_dir():
+        return None
+    index = _font_family_index(Path(merged))
+    if not index:
+        return None
+    wanted: dict = {}
+    for fam in fams:
+        files = index.get(fam, [])
+        # A .ttc collection registers only its first face to x2t, so a family
+        # that also has individual .ttf/.otf faces (the bold/italic variants)
+        # must NOT also carry the .ttc — the duplicate regular re-poisons the
+        # bold/italic match. Prefer the individual faces; keep .ttc only when
+        # it is the family's sole source.
+        non_ttc = [f for f in files if f.suffix.lower() != ".ttc"]
+        for f in (non_ttc or files):
+            wanted[f.name] = f
+    if not wanted:
+        return None
+    import hashlib
+    key = hashlib.sha1((str(sorted(fams)) + str(sorted(wanted))).encode()).hexdigest()[:12]
+    out = Path.home() / ".cache" / "x2t-docfonts" / key
+    if not out.is_dir():
+        out.mkdir(parents=True, exist_ok=True)
+        for name, target in wanted.items():
+            try:
+                shutil.copyfile(target, out / name)
+            except Exception:
+                pass
+    return out if any(out.iterdir()) else None
+
+
 def _run_x2t(src: Path, dst: Path, timeout: int) -> None:
     with tempfile.TemporaryDirectory(prefix="x2t-") as tmp:
         nix_bin = _nix_mode_bindir("x2t")
         if nix_bin is not None:
             exe, cwd = nix_bin / "x2t", Path(tmp)
-            # the nix build's baked font index covers only core-fonts (metric
-            # substitutes); pass the merged system-font cache when available
-            # so e.g. Times New Roman embeds instead of substituting
-            fonts = font_dir()
+            # Prefer a pool restricted to the document's own font families:
+            # x2t selects render faces from m_sFontDir, and the full ~800-font
+            # system pool makes its matcher mis-resolve bold/italic of a serif
+            # family to Arial. Fall back to the full merged dir otherwise.
+            fonts = _doc_focused_dir(src) or font_dir()
             fonts_elem = f"\n  <m_sFontDir>{fonts}</m_sFontDir>" if fonts else ""
         else:
-            fonts = font_dir() or _bundled_fonts_dir()
+            fonts = _doc_focused_dir(src) or font_dir() or _bundled_fonts_dir()
             app = _app_dir()  # after font_dir() so a rebuild re-inits the index
             exe, cwd = app / "x2t", app
             fonts_elem = f"\n  <m_sFontDir>{fonts}</m_sFontDir>"
