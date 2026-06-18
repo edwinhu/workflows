@@ -396,15 +396,17 @@ def _doc_focused_dir(src: Path) -> "Path | None":
             _have_ft = True
         except Exception:
             _have_ft = False
-        # x2t mangles two kinds of legacy table when laying out some fonts
-        # (e.g. the macOS Garamond), and both only matter for on-screen
-        # rasterization, never for PDF vector output:
-        #   - device-metrics (hdmx/LTSH/VDMX/gasp): mis-read as glyph advances,
-        #     producing cramped, overlapping text;
-        #   - the old-style `kern` table: mis-applied, producing collisions and
-        #     words that run together ("shareh olders", "251(h)" blobs).
-        # Strip them when staging the font into the render pool. Modern kerning
-        # lives in GPOS, which x2t handles correctly and which is left intact.
+        # Two fixes when staging a font into the render pool, both invisible to
+        # other apps:
+        #   1. Drop device-metrics tables (hdmx/LTSH/VDMX/gasp). x2t mis-reads
+        #      them as glyph advances, cramming the text; they only matter for
+        #      screen rasterization, never for PDF vector output.
+        #   2. Normalize the font to 1000 units-per-em. x2t mis-scales kerning
+        #      and positioning for fonts whose upm is not 1000 (the macOS
+        #      Garamond is 2048), over-applying the kern table so letters
+        #      collide ("shareh olders", "251(h)" blobs). Rescaling preserves
+        #      the font's real kerning (kern + GPOS) and makes x2t apply it
+        #      correctly, matching how Word renders the same file.
         for name, target in wanted.items():
             dest = out / name
             staged = False
@@ -412,9 +414,12 @@ def _doc_focused_dir(src: Path) -> "Path | None":
                 try:
                     from fontTools.ttLib import TTFont
                     f = TTFont(str(target))
-                    for tag in ("hdmx", "LTSH", "VDMX", "gasp", "kern"):
+                    for tag in ("hdmx", "LTSH", "VDMX", "gasp"):
                         if tag in f:
                             del f[tag]
+                    if f["head"].unitsPerEm != 1000:
+                        from fontTools.ttLib.scaleUpem import scale_upem
+                        scale_upem(f, 1000)
                     f.save(str(dest))
                     staged = True
                 except Exception:
