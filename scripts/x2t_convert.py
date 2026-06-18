@@ -361,9 +361,21 @@ def _doc_focused_dir(src: Path) -> "Path | None":
     index = _font_family_index(Path(merged))
     if not index:
         return None
+    # Per-family render override: ~/.config/x2t-render-fonts/<family>/ lets the
+    # user substitute, for x2t rendering only (not the system/Word), a font
+    # x2t lays out poorly. E.g. the macOS Garamond is a tight design whose only
+    # kerning is a legacy `kern` table x2t mangles; dropping a clean GPOS-kerned
+    # Garamond (EB Garamond renamed to "Garamond") there fixes the spacing
+    # without touching how any other app resolves "Garamond".
+    override_root = Path.home() / ".config" / "x2t-render-fonts"
     wanted: dict = {}
     for fam in fams:
-        files = index.get(fam, [])
+        ov = override_root / fam
+        if ov.is_dir():
+            files = [p for p in ov.iterdir()
+                     if p.suffix.lower() in (".ttf", ".otf", ".ttc")]
+        else:
+            files = index.get(fam, [])
         # A .ttc collection registers only its first face to x2t, so a family
         # that also has individual .ttf/.otf faces (the bold/italic variants)
         # must NOT also carry the .ttc — the duplicate regular re-poisons the
@@ -384,11 +396,15 @@ def _doc_focused_dir(src: Path) -> "Path | None":
             _have_ft = True
         except Exception:
             _have_ft = False
-        # x2t mis-reads device-metrics tables (hdmx in particular) as glyph
-        # advances for some fonts (e.g. the macOS Garamond), producing badly
-        # overlapping, cramped text. Those tables only matter for screen
-        # rasterization, never for PDF vector output, so strip them when
-        # staging the font into the render pool. Falls back to a plain copy.
+        # x2t mangles two kinds of legacy table when laying out some fonts
+        # (e.g. the macOS Garamond), and both only matter for on-screen
+        # rasterization, never for PDF vector output:
+        #   - device-metrics (hdmx/LTSH/VDMX/gasp): mis-read as glyph advances,
+        #     producing cramped, overlapping text;
+        #   - the old-style `kern` table: mis-applied, producing collisions and
+        #     words that run together ("shareh olders", "251(h)" blobs).
+        # Strip them when staging the font into the render pool. Modern kerning
+        # lives in GPOS, which x2t handles correctly and which is left intact.
         for name, target in wanted.items():
             dest = out / name
             staged = False
@@ -396,7 +412,7 @@ def _doc_focused_dir(src: Path) -> "Path | None":
                 try:
                     from fontTools.ttLib import TTFont
                     f = TTFont(str(target))
-                    for tag in ("hdmx", "LTSH", "VDMX", "gasp"):
+                    for tag in ("hdmx", "LTSH", "VDMX", "gasp", "kern"):
                         if tag in f:
                             del f[tag]
                     f.save(str(dest))
