@@ -379,11 +379,35 @@ def _doc_focused_dir(src: Path) -> "Path | None":
     out = Path.home() / ".cache" / "x2t-docfonts" / key
     if not out.is_dir():
         out.mkdir(parents=True, exist_ok=True)
+        try:
+            from fontTools.ttLib import TTFont  # noqa: F401
+            _have_ft = True
+        except Exception:
+            _have_ft = False
+        # x2t mis-reads device-metrics tables (hdmx in particular) as glyph
+        # advances for some fonts (e.g. the macOS Garamond), producing badly
+        # overlapping, cramped text. Those tables only matter for screen
+        # rasterization, never for PDF vector output, so strip them when
+        # staging the font into the render pool. Falls back to a plain copy.
         for name, target in wanted.items():
-            try:
-                shutil.copyfile(target, out / name)
-            except Exception:
-                pass
+            dest = out / name
+            staged = False
+            if _have_ft and target.suffix.lower() in (".ttf", ".otf"):
+                try:
+                    from fontTools.ttLib import TTFont
+                    f = TTFont(str(target))
+                    for tag in ("hdmx", "LTSH", "VDMX", "gasp"):
+                        if tag in f:
+                            del f[tag]
+                    f.save(str(dest))
+                    staged = True
+                except Exception:
+                    staged = False
+            if not staged:
+                try:
+                    shutil.copyfile(target, dest)
+                except Exception:
+                    pass
     return out if any(out.iterdir()) else None
 
 
