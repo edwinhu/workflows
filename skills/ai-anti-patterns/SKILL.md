@@ -91,6 +91,12 @@ Words/phrases the model reaches for that don't match the user's voice:
 - **"has bite" / "bites" / "with bite"** — model-reach for "has real
   effect." User never writes it. Replace with the specific effect: "raises
   the cost of X," "triggers quorum failure," "deters Y."
+- **"the cut" / "X cut Y" for a rule change** — model-reach noun/verb for a
+  regulatory reduction (e.g. "the SEC cut the period," "the 20-to-10 cut").
+  Real legal prose does not use "cut" this way; the user never does. Replace
+  the noun with "the reduction" / "the shortening" and the verb with
+  "shortened" / "reduced." EXCEPTION: the idioms "cuts against," "cuts the
+  other way," and the phrasal "cut off" are legitimate and stay.
 - **Caveat phrasings** (candidates to replace with `To be sure,`):
   `admittedly`, `granted,`, `of course,`, `that said,`, `to be clear,`,
   `no doubt,`, `we acknowledge that`. Use `To be sure,` *only* when the
