@@ -1253,6 +1253,36 @@ def _doc_default_half(styles_xml: str) -> int:
     return 24
 
 
+def hoist_abstract(md: str) -> str:
+    """Move an Abstract custom-style block to front matter.
+
+    The TOC is injected before the first top-level heading (see ``insert_toc``),
+    so the abstract must sit before that heading to render in the conventional
+    order Title -> Abstract -> Table of Contents -> Introduction. Authors often
+    nest the abstract *under* the first ``# Introduction`` heading, which pushes
+    it after the TOC. This relocates the block to immediately before the first
+    ``# `` heading regardless of where it was drafted. Idempotent; a no-op if no
+    abstract block or no heading is present.
+    """
+    abs_re = re.compile(
+        r'::: \{custom-style="Abstract Heading"\}.*?'
+        r'::: \{custom-style="Abstract"\}.*?\n:::',
+        re.DOTALL,
+    )
+    m = abs_re.search(md)
+    if not m:
+        return md
+    block = m.group(0).strip()
+    rest = md[:m.start()] + md[m.end():]
+    h = re.search(r'^# ', rest, re.MULTILINE)
+    if not h:
+        return md  # no top-level heading to anchor against; leave untouched
+    before = rest[:h.start()].rstrip()
+    after = rest[h.start():]
+    sep = (before + "\n\n") if before else ""
+    return sep + block + "\n\n" + after
+
+
 def build(project_dir: Path, output: Optional[Path] = None, fix_footnotes: bool = True, pdf: bool = False) -> Path:
     drafts = sorted(project_dir.glob("drafts/*Draft*.md"), key=sort_key)
     if not drafts:
@@ -1276,6 +1306,7 @@ date: "{meta['date']}"
         combined += text + "\n\n"
 
     combined = resolve_includes(combined)
+    combined = hoist_abstract(combined)
     combined = bluebook_lint(combined)
 
     for lineno, snippet in find_stacked_footnotes(combined):
