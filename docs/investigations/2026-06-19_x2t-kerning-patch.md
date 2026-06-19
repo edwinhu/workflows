@@ -333,3 +333,54 @@ to font selection, not glyph data.
 2. **Later:** x2t source fix for per-run measurement faces (also unlocks correct
    bold/italic spacing and pairs with the Part 1 HarfBuzz-shaping work).
 3. **Avoid:** the PDF post-process de-cram alone (introduces right-margin overflow).
+
+---
+
+# Part 2 — RESOLVED: the cram is macOS-Garamond-specific; fix = EB Garamond render override
+
+The Part-2 cause above ("x2t measures every run with one global italic-face advance")
+is correct, but the trigger is **specific to the macOS (Monotype) Garamond faces**,
+not a general x2t bug and not the staging:
+
+- **Times New Roman**, all 4 faces in `m_sFontDir` → **0 cram**.
+- **EB Garamond**, all 4 faces → **+1%** (clean).
+- **macOS Garamond**, all 4 faces → **+13%** regular / **+23%** bold cram.
+- macOS Garamond **un-staged (2048 upm)** also crams **+13%** → not the upm-normalize.
+
+The macOS Garamond faces have proper, distinct name/weight/style metadata (verified
+against TNR — identical structure), yet x2t collapses them to the italic face's
+metrics for measurement. So it is an x2t font-selection quirk that this particular
+font tickles; well-formed families (TNR, EB Garamond) are handled correctly.
+
+## Fix (no rebuild, no harmonization, italics correct)
+
+**Use EB Garamond as the render font for "Garamond"** via the existing per-family
+override the wrapper already supports (`_doc_focused_dir`):
+
+```
+~/.config/x2t-render-fonts/garamond/      # dir name = lowercased docx family
+  EBGaramond-Regular.ttf   # all four faces, name tables renamed so the
+  EBGaramond-Bold.ttf      # internal family (name IDs 1/16) = "Garamond"
+  EBGaramond-Italic.ttf    # and subfamily (2/17) = Regular/Bold/Italic/Bold Italic
+  EBGaramond-BoldItalic.ttf
+```
+
+Verified end-to-end through the wrapper: `_doc_focused_dir` resolves `garamond` →
+the 4 EB faces (GPOS present), x2t renders with **no cram** (regular +1%, bold/italic
+clean), and because EB Garamond is **GPOS-kerned**, the Part-1 `--kern` injector then
+applies real kerning on top. One font swap fixes both the base-layout cram **and**
+unlocks kerning.
+
+Bonus: this is exactly what the `_doc_focused_dir` comment already anticipated
+("dropping a clean GPOS-kerned Garamond (EB Garamond renamed to 'Garamond')") — it
+just needed **all four faces** present, not only the regular weight, and the dir
+named to match the lowercased family.
+
+## Recommendation (supersedes Part-2's harmonization idea)
+1. Populate `~/.config/x2t-render-fonts/garamond/` with the 4 renamed EB Garamond
+   faces. Fixes cramming for every weight, keeps italics correct, enables kerning.
+   (The advance-harmonization workaround is no longer needed — it degraded italics.)
+2. The render-time de-cram post-process is **not** needed for Garamond.
+3. The underlying x2t font-selection quirk (one global face for measurement on the
+   macOS Garamond) remains a latent issue for any similarly-built font; a source fix
+   is still the only thing that would make the macOS Garamond itself render correctly.
