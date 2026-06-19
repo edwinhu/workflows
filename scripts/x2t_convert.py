@@ -459,6 +459,37 @@ def _docx_is_justified(src: Path) -> bool:
     return False
 
 
+def _docx_restarts_footnotes(src: Path) -> bool:
+    """True if the docx restarts footnote numbering per section or per page
+    (``<w:numRestart w:val="eachSect"/>`` or ``"eachPage"`` in settings.xml or a
+    section's ``<w:footnotePr>``).
+
+    This is the ONE case where LibreOffice mis-renders (it numbers continuously
+    regardless), so such documents must go through x2t (or Word). Continuous-
+    footnote documents -- the ordinary law-review essay -- render correctly in
+    LibreOffice, which (unlike x2t) applies proper HarfBuzz kerning and glyph
+    positioning. See docs/investigations/2026-06-10_onlyoffice-vs-libreoffice.md.
+    """
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(src) as z:
+            names = set(z.namelist())
+            for m in ("word/settings.xml", "word/document.xml"):
+                if m not in names:
+                    continue
+                blob = z.read(m).decode("utf-8", "replace")
+                if "numRestart" not in blob:
+                    continue
+                for val in ("eachSect", "eachPage"):
+                    if f'w:numRestart w:val="{val}"' in blob \
+                            or f"w:numRestart w:val='{val}'" in blob:
+                        return True
+    except Exception:
+        return False
+    return False
+
+
 def _inject_kerning(pdf_path: Path, font_dir: "Path | None") -> bool:
     """Add GPOS/`kern` pair kerning to an x2t-produced PDF in place.
 
@@ -596,30 +627,78 @@ def recalc_xlsx(
 def _run_soffice(soffice: str, src: Path, dst: Path, timeout: int) -> None:
     fmt = dst.suffix.lstrip(".")
     with tempfile.TemporaryDirectory(prefix="soffice-") as tmp:
+        # Isolate the LibreOffice profile per call. Without a dedicated
+        # UserInstallation (and a clean HOME) soffice silently no-ops on a
+        # locked/shared profile -- exits 0, writes nothing. The file:// URL form
+        # of -env:UserInstallation is required.
+        profile = Path(tmp) / "profile"
+        env = dict(os.environ, HOME=str(Path(tmp) / "home"))
+        (Path(tmp) / "home").mkdir(parents=True, exist_ok=True)
         subprocess.run(
-            [soffice, "--headless", "--convert-to", fmt,
+            [soffice, f"-env:UserInstallation=file://{profile}",
+             "--headless", "--norestore", "--convert-to", fmt,
              "--outdir", tmp, str(src)],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             timeout=timeout,
+            env=env,
         )
         produced = Path(tmp) / (src.stem + dst.suffix)
         if produced.exists():
             shutil.move(str(produced), str(dst))
 
 
+def _unwrap_soffice(cand: str) -> str | None:
+    """Resolve a soffice candidate to a usable executable.
+
+    On macOS, nixpkgs' ``bin/soffice`` is a one-line bash launcher that runs
+    ``open -na LibreOffice.app`` -- that detaches the GUI app, returns 0
+    immediately, and never performs (or waits for) a headless conversion. The
+    actual synchronous CLI binary lives at ``.../LibreOffice.app/Contents/
+    MacOS/soffice``. Detect the launcher and redirect to the bundle binary.
+    """
+    p = Path(cand)
+    if not p.exists():
+        return None
+    try:
+        head = p.read_bytes()[:512]
+    except Exception:
+        head = b""
+    if head[:2] == b"#!" and b"open -na" in head:
+        m = re.search(rb"(/\S+?\.app)", head)
+        if m:
+            bundle = Path(m.group(1).decode()) / "Contents/MacOS/soffice"
+            if bundle.exists():
+                return str(bundle)
+        return None  # launcher we cannot unwrap is useless headless
+    return cand
+
+
 def find_soffice(explicit: str | None = None) -> str | None:
-    for cand in (
+    import glob as _glob
+
+    cands = [
         explicit,
+        os.environ.get("SOFFICE_BIN"),
         shutil.which("soffice"),
         shutil.which("libreoffice"),
+        str(Path.home() / ".nix-profile/bin/soffice"),
         "/Applications/LibreOffice.app/Contents/MacOS/soffice",
         "/usr/bin/soffice",
         "/usr/bin/libreoffice",
-    ):
-        if cand and Path(cand).exists():
-            return cand
+    ]
+    # nix-built LibreOffice not on PATH: the real CLI binary is inside the .app
+    # bundle (bin/soffice there is the open-launcher). Prefer the bundle path.
+    cands += sorted(_glob.glob(
+        "/nix/store/*-libreoffice-*/Applications/LibreOffice.app"
+        "/Contents/MacOS/soffice"))
+    cands += sorted(_glob.glob("/nix/store/*-libreoffice-*/bin/soffice"))
+    for cand in cands:
+        if cand:
+            resolved = _unwrap_soffice(cand)
+            if resolved:
+                return resolved
     return None
 
 
@@ -630,10 +709,21 @@ def convert(
     timeout: int = 300,
     soffice: str | None = None,
     kern: bool | None = None,
+    renderer: str = "auto",
 ) -> Path:
     """Convert src to dst (format inferred from dst extension). Returns dst.
 
-    Tries x2t from PATH first; falls back to soffice if x2t is absent.
+    ``renderer`` selects the docx->PDF engine:
+      * ``"auto"`` (default): **LibreOffice for ordinary (continuous-footnote)
+        documents** -- it applies correct HarfBuzz kerning and glyph
+        positioning -- and **x2t only when the docx restarts footnote numbering
+        per section/page** (``_docx_restarts_footnotes``), the one case
+        LibreOffice mis-renders. Non-docx sources, or when only one engine is
+        installed, fall through to whatever is available.
+      * ``"soffice"`` / ``"x2t"``: force that engine.
+    For non-PDF output (or non-docx input) the renderer choice is moot and the
+    first available engine is used.
+
     Raises RuntimeError if no converter is available or the output was not
     produced (both tools can exit 0 without writing output).
 
@@ -655,17 +745,38 @@ def convert(
     dst.unlink(missing_ok=True)
 
     x2t = shutil.which("x2t")
-    tool = "x2t" if x2t else "soffice"
-    if x2t:
+    sof = find_soffice(soffice)
+    is_docx_pdf = (dst.suffix.lower() == ".pdf"
+                   and src.suffix.lower() == ".docx")
+
+    # Decide the engine. Default ("auto") prefers LibreOffice for ordinary
+    # docx->PDF (correct kerning) and reserves x2t for footnote-restart docs.
+    use = renderer
+    if use == "auto":
+        if is_docx_pdf and sof and not (x2t and _docx_restarts_footnotes(src)):
+            use = "soffice"
+        elif x2t:
+            use = "x2t"
+        elif sof:
+            use = "soffice"
+        else:
+            use = "x2t"  # will raise below with the install hint
+    if use == "soffice" and not sof:
+        use = "x2t" if x2t else "soffice"
+    if use == "x2t" and not x2t:
+        use = "soffice" if sof else "x2t"
+
+    if use == "x2t" and x2t:
+        tool = "x2t"
         _run_x2t(src, dst, timeout)
-    else:
-        sof = find_soffice(soffice)
-        if not sof:
-            raise RuntimeError(
-                "no converter found: install onlyoffice-x2t (preferred; "
-                "`nix build ~/nix#onlyoffice-x2t`) or LibreOffice"
-            )
+    elif use == "soffice" and sof:
+        tool = "soffice"
         _run_soffice(sof, src, dst, timeout)
+    else:
+        raise RuntimeError(
+            "no converter found: install onlyoffice-x2t (`nix build "
+            "~/nix#onlyoffice-x2t`) or LibreOffice"
+        )
 
     if not dst.exists() or dst.stat().st_size == 0:
         raise RuntimeError(f"{tool} exited 0 but did not produce {dst}")
@@ -677,9 +788,8 @@ def convert(
         elif env in ("0", "false", "no", "off"):
             kern = False
     if (
-        x2t
-        and dst.suffix.lower() == ".pdf"
-        and src.suffix.lower() == ".docx"
+        tool == "x2t"
+        and is_docx_pdf
         and kern is not False
         and (kern is True or not _docx_is_justified(src))
     ):
@@ -697,6 +807,11 @@ def main() -> None:
                     help="recalculate xlsx formulas (writes cached values; "
                          "in-place unless dst given)")
     ap.add_argument("--timeout", type=int, default=300)
+    ap.add_argument("--renderer", choices=("auto", "soffice", "x2t"),
+                    default="auto",
+                    help="docx->PDF engine: auto (LibreOffice for ordinary "
+                         "docs, x2t only for footnote-restart docs), or force "
+                         "soffice / x2t")
     kg = ap.add_mutually_exclusive_group()
     kg.add_argument("--kern", dest="kern", action="store_true", default=None,
                     help="force GPOS/kern injection into docx->PDF (x2t applies "
@@ -711,7 +826,7 @@ def main() -> None:
             if args.dst is None:
                 ap.error("dst is required unless --recalc")
             out = convert(args.src, args.dst, timeout=args.timeout,
-                          kern=args.kern)
+                          kern=args.kern, renderer=args.renderer)
     except Exception as e:
         sys.exit(f"ERROR: {e}")
     print(out)
