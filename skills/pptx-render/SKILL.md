@@ -115,9 +115,9 @@ For actual rasterization (not content extraction), use the shared x2t wrapper â€
 
 ```bash
 # pptx -> PDF (all slides, then split with pdftoppm if per-slide PNGs needed)
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/x2t_convert.py deck.pptx deck.pdf
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/doc_render.py deck.pptx deck.pdf
 # pptx -> PNG (first slide only)
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/x2t_convert.py deck.pptx slide1.png
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/doc_render.py deck.pptx slide1.png
 ```
 
 **Do NOT call `soffice --headless` directly** â€” it silently fails on macOS (returns 0, no output) due to profile lock issues. The wrapper prefers `x2t` and only falls back to soffice where x2t is absent.

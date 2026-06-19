@@ -15,7 +15,7 @@ pixel-correct; italics render in EB Garamond and pick up real kerning via the
 quirk — far better than the ~23% with all-macOS; use --all-eb for zero residual
 at the cost of EB upright text.)
 
-The wrapper (`scripts/x2t_convert.py` `_doc_focused_dir`) reads
+The wrapper (`scripts/doc_render.py` `_doc_focused_dir`) reads
 `~/.config/x2t-render-fonts/<lowercased-family>/` and uses those files for that
 family, so this writes the four faces there, each renamed so the internal family
 is "Garamond" with the correct subfamily/style bits preserved per face.
