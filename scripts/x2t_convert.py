@@ -343,6 +343,111 @@ def _font_family_index(merged: Path) -> dict:
     return {k: [merged / n for n in v] for k, v in idx.items()}
 
 
+# Built-in render substitutions: families x2t mis-renders, mapped to a clean
+# drop-in. The macOS (Monotype) Garamond *italic* face poisons x2t's measurement
+# so upright text renders with overlapping glyphs; EB Garamond renders correctly
+# AND is GPOS-kerned. Substitution is render-only (m_sFontDir) — the .docx/Word
+# still resolve the real font. Disable with $X2T_NO_FONT_SUBST=1. See
+# docs/investigations/2026-06-19_x2t-kerning-patch.md.
+_RENDER_SUBSTITUTE = {"garamond": "EB Garamond"}
+
+_EB_GARAMOND_GLOBS = (
+    "~/Library/Fonts/EBGaramond*.ttf",
+    "~/Library/Fonts/EBGaramond*.otf",
+    "/Library/Fonts/EBGaramond*.ttf",
+    "~/.local/share/fonts/EBGaramond*.ttf",
+    "/nix/store/*-eb-garamond-*/share/fonts/truetype/EBGaramond*.ttf",
+    "/nix/store/*-eb-garamond-*/share/fonts/opentype/EBGaramond*.otf",
+    "/usr/share/fonts/**/EBGaramond*.tt[fc]",
+)
+# Decorative/optical cuts that must never be used as the text faces.
+_EB_EXCLUDE = ("SC", "Initials", "AllSC", "Caps")
+
+
+def _find_eb_garamond() -> dict:
+    """Locate EB Garamond text faces -> {(bold, italic): Path}. Prefers the 12pt
+    optical master; excludes small-caps/initials. {} if not all four present."""
+    import glob
+    try:
+        from fontTools.ttLib import TTFont
+    except Exception:
+        return {}
+    best: dict = {}  # (bold,italic) -> (priority, Path)
+    for pat in _EB_GARAMOND_GLOBS:
+        for sp in glob.glob(os.path.expanduser(pat), recursive=True):
+            p = Path(sp)
+            if any(x in p.stem for x in _EB_EXCLUDE):
+                continue
+            try:
+                f = TTFont(sp, fontNumber=0, lazy=True)
+                fam = (f["name"].getDebugName(16) or f["name"].getDebugName(1) or "")
+                if "garamond" not in fam.lower():
+                    continue
+                o = f.get("OS/2")
+                mac = f["head"].macStyle
+                italic = bool(mac & 0x02) or bool(o and o.fsSelection & 0x01)
+                bold = bool(mac & 0x01) or bool(o and o.fsSelection & 0x20) \
+                    or bool(o and o.usWeightClass >= 600)
+            except Exception:
+                continue
+            # priority: 12pt optical > unsuffixed > 08pt; shorter stem wins ties
+            pr = (0 if "12" in p.stem else (1 if not any(c.isdigit() for c in p.stem)
+                  else 2), len(p.stem))
+            k = (bold, italic)
+            if k not in best or pr < best[k][0]:
+                best[k] = (pr, p)
+    faces = {k: v[1] for k, v in best.items()}
+    return faces if len(faces) == 4 else {}
+
+
+def _substitute_render_dir(fam: str) -> "Path | None":
+    """For a substituted family, return a cache dir of the replacement faces
+    renamed to that family (correct subfamily/style bits), or None."""
+    if os.environ.get("X2T_NO_FONT_SUBST"):
+        return None
+    if fam not in _RENDER_SUBSTITUTE:
+        return None
+    faces = _find_eb_garamond() if _RENDER_SUBSTITUTE[fam] == "EB Garamond" else {}
+    if not faces:
+        return None
+    try:
+        from fontTools.ttLib import TTFont
+    except Exception:
+        return None
+    import hashlib
+    sig = sorted((str(b), str(i), str(p), str(p.stat().st_mtime))
+                 for (b, i), p in faces.items())
+    key = hashlib.sha1((fam + str(sig)).encode()).hexdigest()[:12]
+    out = Path.home() / ".cache" / "x2t-render-subst" / f"{fam}-{key}"
+    if out.is_dir() and any(out.iterdir()):
+        return out
+    out.mkdir(parents=True, exist_ok=True)
+    target = fam.title()  # "garamond" -> "Garamond"
+    plan = {(False, False): ("Regular", f"{target}.ttf"),
+            (True, False): ("Bold", f"{target}Bold.ttf"),
+            (False, True): ("Italic", f"{target}Italic.ttf"),
+            (True, True): ("Bold Italic", f"{target}BoldItalic.ttf")}
+    for k, src in faces.items():
+        subfamily, outname = plan[k]
+        full = target if subfamily == "Regular" else f"{target} {subfamily}"
+        ps = target if subfamily == "Regular" else f"{target}-{subfamily.replace(' ', '')}"
+        try:
+            f = TTFont(str(src))
+            for rec in f["name"].names:
+                if rec.nameID in (1, 16):
+                    rec.string = target
+                elif rec.nameID in (2, 17):
+                    rec.string = subfamily
+                elif rec.nameID == 4:
+                    rec.string = full
+                elif rec.nameID == 6:
+                    rec.string = ps
+            f.save(str(out / outname))
+        except Exception:
+            return None
+    return out if any(out.iterdir()) else None
+
+
 def _doc_focused_dir(src: Path) -> "Path | None":
     """Build an m_sFontDir containing only the fonts the document references.
 
@@ -361,18 +466,22 @@ def _doc_focused_dir(src: Path) -> "Path | None":
     index = _font_family_index(Path(merged))
     if not index:
         return None
-    # Per-family render override: ~/.config/x2t-render-fonts/<family>/ lets the
-    # user substitute, for x2t rendering only (not the system/Word), a font
-    # x2t lays out poorly. E.g. the macOS Garamond is a tight design whose only
-    # kerning is a legacy `kern` table x2t mangles; dropping a clean GPOS-kerned
-    # Garamond (EB Garamond renamed to "Garamond") there fixes the spacing
-    # without touching how any other app resolves "Garamond".
+    # Render-face resolution per family, highest priority first:
+    #   1. User override ~/.config/x2t-render-fonts/<family>/ — explicit control,
+    #      for x2t rendering only (not the system/Word).
+    #   2. Built-in substitution (_RENDER_SUBSTITUTE) — families x2t mis-renders,
+    #      e.g. macOS Garamond -> EB Garamond. Auto, no per-machine setup.
+    #   3. The document's own system faces.
     override_root = Path.home() / ".config" / "x2t-render-fonts"
     wanted: dict = {}
     for fam in fams:
         ov = override_root / fam
+        sub = None if ov.is_dir() else _substitute_render_dir(fam)
         if ov.is_dir():
             files = [p for p in ov.iterdir()
+                     if p.suffix.lower() in (".ttf", ".otf", ".ttc")]
+        elif sub:
+            files = [p for p in sub.iterdir()
                      if p.suffix.lower() in (".ttf", ".otf", ".ttc")]
         else:
             files = index.get(fam, [])

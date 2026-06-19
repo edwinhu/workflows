@@ -449,3 +449,26 @@ Trade-off table:
 
 Re-run `python3 scripts/setup_garamond_render_override.py` (add `--all-eb` for the
 all-EB variant) and `rm -rf ~/.cache/x2t-docfonts` to re-stage.
+
+---
+
+# Part 2 — default: x2t auto-substitutes Garamond → EB Garamond
+
+Promoted the override to a **built-in default** in `x2t_convert.py`. Whenever a
+docx references "Garamond", `_doc_focused_dir` now renders it with **EB Garamond**
+(located via `_find_eb_garamond()` across `~/Library/Fonts`, the nix
+`eb-garamond` store path, and the usual system font dirs), renamed to family
+"Garamond" with correct per-face style bits, cached under
+`~/.cache/x2t-render-subst/`.
+
+Resolution order per family: user override `~/.config/x2t-render-fonts/<fam>/` →
+built-in substitution (`_RENDER_SUBSTITUTE`) → the doc's own system faces. So a
+user override still wins, and `$X2T_NO_FONT_SUBST=1` forces the real macOS
+Garamond (cram returns). Render-only — the `.docx`/Word are untouched. If EB
+Garamond isn't installed, it silently falls back to macOS Garamond (no worse than
+before).
+
+This is "default to EB when using x2t": no per-machine setup, every Garamond doc
+renders clean and GPOS-kerned. `setup_garamond_render_override.py` remains for
+forcing a specific mix (e.g. macOS roman + EB italics) or pre-seeding the user
+override; the all-EB default needs neither.
