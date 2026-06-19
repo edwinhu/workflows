@@ -384,3 +384,36 @@ named to match the lowercased family.
 3. The underlying x2t font-selection quirk (one global face for measurement on the
    macOS Garamond) remains a latent issue for any similarly-built font; a source fix
    is still the only thing that would make the macOS Garamond itself render correctly.
+
+---
+
+# Part 2 — addendum: it's the macOS Garamond *italic* face, not the regular
+
+Q: "what's wrong with regular Garamond?" A: **nothing — the regular face is fine.**
+The defect is in the macOS Garamond **italic** face, which x2t latches onto as the
+metric source for the whole family.
+
+Empirical proof (direct `m_sFontDir`, regular "median" overlap):
+- regular only → 0% (fine)
+- regular + **italic** → +13% (regular laid out with italic advances)
+- regular + **bold** → 0% ; regular + **bold-italic** → 0% (siblings at weight 700
+  don't interfere; only the weight-400 italic does)
+- **macOS-regular + EB-italic → 0%** (clean italic ⇒ no cram)
+- **EB-regular + macOS-italic → crams** (the macOS italic alone reintroduces it)
+
+So x2t uses the macOS Garamond **italic** face's advances to *measure* every Garamond
+run (regular and bold), while *embedding* each run's correct face — hence the overlap.
+The regular and italic faces share weight 400; x2t's sdkjs-side layout font-selection
+collapses them and picks the italic, but **only for this font** — Times New Roman and
+EB Garamond have the same reg/italic structure (both weight 400, italic properly
+flagged: macOS italicAngle −12, fsSel italic bit set) yet are handled correctly. By
+x2t's *native* penalty scorer regular would win (italic-penalty 4 > 0), so the fault
+is in the doctrenderer/sdkjs measurement path, not the native scorer.
+
+The exact malformed field in the macOS italic was not isolated (OS/2 ranges, panose,
+weight, italic flags, names all look proper or match the working fonts; zeroing panose
+did not help). Practically it doesn't matter: the macOS (Monotype) Garamond is the
+broken input, and swapping to EB Garamond (Part-2 resolution) avoids it entirely. A
+narrower workaround — keep macOS Garamond but replace only its italic face with a
+clean italic — also removes the cram (macOS-regular + EB-italic = 0%), but EB Garamond
+is the simpler, GPOS-kerned choice.
