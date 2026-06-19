@@ -417,3 +417,35 @@ broken input, and swapping to EB Garamond (Part-2 resolution) avoids it entirely
 narrower workaround — keep macOS Garamond but replace only its italic face with a
 clean italic — also removes the cram (macOS-regular + EB-italic = 0%), but EB Garamond
 is the simpler, GPOS-kerned choice.
+
+---
+
+# Part 2 — applied fix: macOS roman + EB italics (`setup_garamond_render_override.py`)
+
+Per request, the shipped override keeps the macOS Garamond look for **upright** text
+and uses EB Garamond only for the **slanted** faces (the macOS italic was the bad
+input). `scripts/setup_garamond_render_override.py` writes the four faces to
+`~/.config/x2t-render-fonts/garamond/`:
+
+| face | source |
+|---|---|
+| regular | macOS Garamond |
+| bold | macOS Garamond |
+| italic | EB Garamond |
+| bold-italic | EB Garamond |
+
+Measured on the paper (direct render): **regular +0%** (was +13% — fixed), **bold
+mean ~+6% / max ~+11%** (was +23% — much improved but a residual remains; x2t's
+measurement quirk doesn't fully clear for the macOS bold once weights are mixed),
+italics render in EB Garamond and pick up GPOS kerning via `--kern`.
+
+Trade-off table:
+- **macOS roman + EB italics** (shipped, `setup_garamond_render_override.py`):
+  upright body pixel-correct, bold ~6% residual, italics are EB design.
+- **all EB Garamond** (`--all-eb`): every weight clean (regular +1%), fully kerned,
+  but upright text is EB Garamond's design, not macOS Garamond's.
+- Mixing macOS regular with **EB bold** is worse, not better (regular went to −9%):
+  don't split the upright weights across families.
+
+Re-run `python3 scripts/setup_garamond_render_override.py` (add `--all-eb` for the
+all-EB variant) and `rm -rf ~/.cache/x2t-docfonts` to re-stage.
