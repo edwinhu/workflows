@@ -472,3 +472,56 @@ This is "default to EB when using x2t": no per-machine setup, every Garamond doc
 renders clean and GPOS-kerned. `setup_garamond_render_override.py` remains for
 forcing a specific mix (e.g. macOS roman + EB italics) or pre-seeding the user
 override; the all-EB default needs neither.
+
+---
+
+# BUG 1 — LibreOffice collapses the great_tables-styled tables (root cause + fix)
+
+**Symptom:** soffice `--convert-to pdf` renders the booktabs-styled tables in
+`Who Loses - revised.docx` as a single vertical column (every cell stacked on its
+own line); x2t and Word render the proper grid. The OOXML is valid (tblGrid with 5
+gridCols 2292/1408/1554/1473/1554, tblLayout fixed, matching tcW, tblW 8281 dxa).
+
+## Root cause: LibreOffice collapses the whole table when any cell must auto-wrap
+
+Bisected on the real table (collapse detected by the header-row cells' y-spread):
+- Stripping every table/cell/row property — tblLayout, tblInd, cantSplit, tcW,
+  tcBorders, tblBorders, tblW, tblStyle, even all of tblPr/tcPr — does **not** fix
+  it. (So it's not a property.)
+- Removing the `<w:gridCol w:w>` widths **does** fix it — but a python-docx table
+  *with* gridCol widths renders fine. So it's an interaction with the widths.
+- Decisive sweep: `revised widths + SHORT cell text → GRID`; `revised widths +
+  the real (long, multi-word) headers → COLLAPSED`. Same widths, only the content
+  differs. Doubling all widths (content now fits) → GRID; halving → COLLAPSED.
+
+**So: LibreOffice collapses the entire table to a single stacked column whenever a
+cell's content is wider than its column (i.e. needs to auto-wrap). Word and x2t
+wrap the cell content and keep the grid; LibreOffice-headless does not.**
+
+The great_tables styler (`skills/law-review-docx/scripts/build_docx.py`
+`style_tables`) sizes each **header** column to its longest *word* (not the full
+phrase), deliberately expecting multi-word headers ("All completed", "Hostile /
+unsolicited") to auto-wrap. That intent is fine for Word/x2t and fatal for soffice.
+
+## Fix — the styler CAN satisfy both engines (verified)
+
+Two fixes, both verified GRID in **soffice AND x2t**:
+
+1. **Insert explicit line breaks (`<w:br/>`) between header words** at the styler's
+   intended wrap points, instead of relying on auto-wrap. Keeps the narrow,
+   word-sized columns; nothing auto-wraps, so soffice doesn't collapse. *(Best —
+   preserves the compact table design; no width change.)*
+   - Verified: explicit-break headers + the real narrow widths → `soffice GRID,
+     x2t GRID`.
+2. **Size every column to its full (unwrapped) phrase** so no cell wraps. Also works
+   (`wide cols → soffice GRID, x2t GRID`) but widens tables (sum 8281 → 10288 dxa
+   for the test table), pushing more tables into font-shrink/landscape.
+
+Recommended: fix #1 — in `style_tables`, when a header cell's text is wider than its
+computed column width, replace inter-word spaces with `<w:br/>` (greedy-fill to the
+column width for the fewest lines), so the header is *explicitly* multi-line rather
+than auto-wrapped. Apply to any cell whose content exceeds its column, not just
+headers, for safety.
+
+Detector for regression tests: render via soffice, read the header row's cells'
+y-coordinates — same y = grid, spread = collapsed.
