@@ -755,7 +755,17 @@ def style_tables(docx_path: Path) -> None:
         return el(tag, val=val, sz=sz, space=0, color="000000")
 
     def ctext(tc):
-        return "".join(t.text or "" for t in tc.iter(f"{ns}t")).strip()
+        # Document-order text; treat line/page breaks and tabs as whitespace so
+        # words split correctly even after wrap_cell has inserted <w:br/> between
+        # them (otherwise "All"+"completed" would read as one token "Allcompleted"
+        # -- breaking width sizing and idempotency on re-runs).
+        out = []
+        for node in tc.iter():
+            if node.tag == f"{ns}t":
+                out.append(node.text or "")
+            elif node.tag in (f"{ns}br", f"{ns}cr", f"{ns}tab"):
+                out.append(" ")
+        return "".join(out).strip()
 
     NUM = re.compile(r'^[\(\-–]?[\d,]+\.?\d*%?\)?$|^[–-]$|^\$')
 
@@ -791,6 +801,53 @@ def style_tables(docx_path: Path) -> None:
                 e.set(f"{ns}val", str(half_pt))
             if bold and rPr.find(f"{ns}b") is None:
                 rPr.append(el("b"))
+
+    import copy as _copy
+
+    def wrap_cell(tc, text_area, font_pt, bold):
+        """Insert explicit ``<w:br/>`` at greedy wrap points so the cell never
+        relies on auto-wrap. LibreOffice-headless collapses the WHOLE table to a
+        single stacked column when any cell's content is wider than its column
+        (Word/x2t wrap fine); pre-breaking the text keeps soffice rendering the
+        grid. Idempotent: flattens any prior breaks and re-wraps identically.
+        Only the simple single-paragraph cell is touched. See
+        docs/investigations/2026-06-19_x2t-kerning-patch.md (BUG 1)."""
+        ps = tc.findall(f"{ns}p")
+        if len(ps) != 1 or text_area <= 0:
+            return
+        p = ps[0]
+        words = ctext(tc).split()  # break-aware: re-flattens prior wraps
+        if not words:
+            return
+        bf = _BOLD_FACTOR if bold else 1.0
+        lines, cur = [], []
+        for w in words:
+            if cur and _text_twips(" ".join(cur + [w]), font_pt) * bf > text_area:
+                lines.append(" ".join(cur))
+                cur = [w]
+            else:
+                cur.append(w)
+        if cur:
+            lines.append(" ".join(cur))
+        # representative rPr (post set_run_font) to clone onto the rebuilt runs
+        sample = None
+        for r in p.findall(f"{ns}r"):
+            if r.find(f"{ns}rPr") is not None:
+                sample = r.find(f"{ns}rPr")
+                break
+        for child in list(p):           # keep pPr, drop all runs/breaks
+            if child.tag != f"{ns}pPr":
+                p.remove(child)
+        for i, line in enumerate(lines):
+            if i > 0:                   # explicit line break between lines
+                br = ET.SubElement(p, f"{ns}r")
+                ET.SubElement(br, f"{ns}br")
+            r = ET.SubElement(p, f"{ns}r")
+            if sample is not None:
+                r.append(_copy.deepcopy(sample))
+            t = ET.SubElement(r, f"{ns}t")
+            t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+            t.text = line
 
     # --- usable text width from the body's final sectPr -------------------
     final_sect = None
@@ -1010,6 +1067,9 @@ def style_tables(docx_path: Path) -> None:
                 align = "right" if (col < ncol and col_is_num[col]) else "left"
                 set_align(tc, align)
                 set_run_font(tc, half_pt, bold=(ri == 0))
+                # Pre-break cell text to its column's text width so nothing
+                # auto-wraps (LibreOffice collapses tables that auto-wrap).
+                wrap_cell(tc, cell_w - 2 * _CELL_MAR_LR, font_pt, bold=(ri == 0))
                 pos += span
 
         if orient == "landscape":
