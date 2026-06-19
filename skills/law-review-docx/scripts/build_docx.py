@@ -592,7 +592,7 @@ def convert_to_pdf(docx_path: Path) -> Optional[Path]:
         print("INFO: Word PDF export failed; falling back to x2t/LibreOffice", file=sys.stderr)
     # x2t preferred, soffice fallback — shared wrapper verifies output exists.
     _sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
-    from x2t_convert import convert as _convert
+    from doc_render import convert as _convert
     try:
         return _convert(docx_path, docx_path.parent / (docx_path.stem + ".pdf"))
     except Exception as e:

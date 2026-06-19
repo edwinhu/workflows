@@ -89,7 +89,7 @@ def norm(s: str) -> str:
 # docs/investigations/2026-06-10_onlyoffice-vs-libreoffice.md
 # --------------------------------------------------------------------------- #
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
-from x2t_convert import convert as _convert  # noqa: E402
+from doc_render import convert as _convert  # noqa: E402
 
 
 def render_pdf(docx: Path, outdir: Path, soffice: str | None = None) -> Path:
