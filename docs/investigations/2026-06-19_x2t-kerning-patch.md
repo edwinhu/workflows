@@ -228,3 +228,108 @@ cache otherwise silently serve the wrong font.
 - `scripts/x2t_convert.py` — `_inject_kerning` / `_docx_is_justified` / `convert(kern=)`
   (the shipped integration; calls `x2t_kern.py` via uv).
 - `scratch/x2t_kern_before_after.png` — EB Garamond before/after (caps + lowercase).
+
+---
+
+# Part 2 — A separate base-layout bug: x2t crams glyphs (multi-face metric contamination)
+
+**Date:** 2026-06-19 (follow-up). The kerning work above sits on top of a *different*
+x2t bug that the user surfaced: in `~/projects/tender_offers/paper`, the word
+**"median"** (p3, regular Garamond) renders with **m-e-d overlapping**, in **both**
+`--kern` and `--no-kern` output. So it is not the kern injection — it is x2t's own
+glyph positioning.
+
+## Symptom, measured
+
+The PDF `/W` widths are correct (regular Garamond: m=771 e=417 d=500 i=229 a=406
+n=510, matching the embedded subset's `hmtx`, upm=1000, no `hdmx`). The cramming is
+in the **inter-glyph `TJ` numbers**: x2t emits a large *positive* `TJ` after most
+glyphs, and a positive `TJ` subtracts from the advance (moves the next glyph left).
+
+Effective advance = `/W − TJ`. For "median": m 771−146=**625**, e 417−125=**292**,
+d 500−94=**406**, n 510−83=**427**. Those are an **exact** match for **Garamond-
+Italic**'s advances (m=625, e=292, d=406, n=427). Word-level:
+
+| run | "median" intra-word advance | correct ΣW | error |
+|---|---|---|---|
+| default pipeline (4 faces) | 2468 | 2833 | **+13% too tight (overlap)** |
+| regular-face-only dir | 2833 | 2833 | 0% ✓ |
+
+The Bold heading "Introduction" is **+23%** too tight (bold embeds m=844 but is laid
+out at italic's narrower advance). The *italic* runs are the only ones correct (italic
+embedded `/W` == italic layout advance, `TJ≈0`).
+
+## Cause (definitive)
+
+**x2t measures EVERY run with a single global face's advances — here the Garamond-
+Italic face — while embedding/drawing the correct per-run face.** So:
+- regular text: embedded `/W`=771, laid out at italic 625 ⇒ +13% overlap;
+- bold text: embedded 844, laid out at italic ⇒ +23% overlap;
+- italic text: embedded == laid-out ⇒ correct.
+
+The trigger is **multiple faces of a family in `m_sFontDir`**. Decisive test on the
+real paper (`--no-kern`):
+- font dir with **only** `Garamond.ttf` (regular): **0** crammed runs;
+- font dir with **all four** Garamond faces: **994** crammed runs (identical to the
+  default pipeline).
+
+Ruled out as fixes (all still cram): giving each face a **distinct family name**
+(regular still laid out with italic metrics; italic even fell back to the regular
+family); changing **file/load order** (regular sorted last still crams). Any sibling
+face present corrupts the others' spacing — italic (narrowest) makes the rest cram;
+bold/BoldItalic produce other constant offsets. Only a single-face dir is clean.
+
+This is an x2t **font-selection / measurement** bug (the layout in sdkjs picks one
+face's metrics for all runs), independent of the kerning gap in Part 1.
+
+## Is it fixable in the render-time post-process layer (`x2t_kern.py`)?
+
+**Partially — not cleanly.** Because base x2t applies no kerning, every positive
+intra-glyph `TJ` is spurious cram, so the post-process *can* reset each glyph to its
+correct embedded `/W` (verified: "median" 2468 → 2833, exactly correct). **But x2t
+already broke the lines using the narrow (italic) metrics**, packing extra text per
+line. Widening the glyphs without re-breaking pushes lines past the right margin:
+
+| page-3 render | rightmost ink | right margin |
+|---|---|---|
+| crammed (default) | 1453 px | 247 px (fits) |
+| post-process "de-cram" | 1686 px | **14 px (overflows)** |
+| regular-face-only (correct) | 1451 px | 249 px (fits) |
+
+A PDF post-process cannot re-flow paragraphs, so it trades glyph overlap for
+right-margin overflow on left-aligned text. **Not recommended alone.**
+
+## Practical fix that works today — harmonize advances in the staging path
+
+Because x2t uses one global face's advances for all measurement, the contamination
+becomes **harmless if every staged face reports the same advances**. Copying the
+**regular** weight's per-character advances into all four staged faces (in
+`_doc_focused_dir`, alongside the existing hdmx-strip + upm-normalize) gives, on the
+real paper:
+
+- **regular body text: 0% error, right margin restored to 249 px** (perfect — this is
+  ~95% of the document, and the user's actual complaint);
+- bold headings: improve from +23% cram to ~9% (bold ink in regular advance);
+- italic: no overlap, but spaced at regular advances (~19% looser than ideal italic).
+
+Verified: regular "median" 2833/2833 = 0%, margin 249 px; italic/regular both render
+with `TJ≈0` (internally consistent, no overlap). It fixes the dominant body text and
+eliminates all overlap; the cost is italic emphasis sitting slightly loose. Lives in
+the existing staging path — no rebuild, no docx surgery.
+
+## The only *complete* fix — x2t source
+
+Making bold and italic spaced correctly *and* regular un-crammed requires x2t to
+measure each run with its **own** face (matching what it already embeds). That is a
+source fix in the sdkjs/native font-selection path (the doctrenderer measurement
+picks one face for the whole document) plus a docbuilder rebuild — the same build the
+Part 1 HarfBuzz-shaping fix would touch. Worth a dedicated source dive; the evidence
+here (global italic-face metrics for every run; single-face dir = 0 cram) localizes it
+to font selection, not glyph data.
+
+## Recommendation
+1. **Now:** add advance-harmonization (to the regular weight) to `_doc_focused_dir`'s
+   staging. Fixes the body-text cramming the user hit, no rebuild, no overflow.
+2. **Later:** x2t source fix for per-run measurement faces (also unlocks correct
+   bold/italic spacing and pairs with the Part 1 HarfBuzz-shaping work).
+3. **Avoid:** the PDF post-process de-cram alone (introduces right-margin overflow).
