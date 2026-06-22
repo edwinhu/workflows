@@ -62,6 +62,24 @@ This template defines all styles that pandoc applies:
 
 Report the output path, section count, footnote count, and approximate word count. If the user needs further formatting (NOTEREF cross-references, footnote repair from cloud editing), suggest `--fix-footnotes` or the `docx-footnotes` skill.
 
+## Rendering to PDF (Word fidelity, incl. from background jobs)
+
+`build_docx.convert_to_pdf()` delegates to `doc_render.convert(renderer="word")`,
+which uses Microsoft Word's engine for line-exact layout and faithful complex
+tables (LibreOffice/x2t mangle them). Word is GUI-driven, so a **detached Claude
+background job** can't drive it directly (AppleEvents fail with -600 — it's in a
+non-console GUI session without Word's TCC grant). `doc_render` handles this
+transparently by dispatching the render into a **cmux pane** (which lives in the
+console GUI session and is TCC-granted). One-time host prerequisites:
+
+- cmux socket control enabled: `automation.socketControlMode` ≠ `"cmuxOnly"` in
+  `~/.config/cmux/cmux.json`, then `cmux reload-config`.
+- Microsoft Word granted to cmux under System Settings → Privacy & Security →
+  Automation, and Word in Full Disk Access.
+
+Set `$DOC_RENDER_NO_CMUX=1` to disable the cmux path (then background jobs fall
+back to x2t/LibreOffice). See `docs/investigations/2026-06-22_word-render-cmux-dispatch.md`.
+
 ## Known Gotcha: Pandoc-Citeproc Paren-Wrap Inside Footnotes
 
 **Symptom.** In the compiled DOCX, some footnotes read with a doubled space

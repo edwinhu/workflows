@@ -541,60 +541,28 @@ def replace_header_placeholders(docx_path: Path, short_title: str,
     shutil.move(tmp, docx_path)
 
 
-def convert_to_pdf_via_word(docx_path: Path) -> Optional[Path]:
-    """Convert DOCX to PDF via Microsoft Word on macOS (osascript).
-
-    Uses Word's actual layout engine — line breaks, font substitution, and
-    pagination match what law-review editors and submission platforms see
-    when they open the DOCX. Much more accurate than LibreOffice for widow
-    detection and final-pass layout checks.
-    """
-    pdf_path = docx_path.with_suffix(".pdf")
-    # Word needs activation to execute AppleScript, but we hide its windows
-    # immediately via System Events so the interruption is minimal (~1-2s).
-    # Leave Word running across builds to skip cold-start cost.
-    script = f'''
-    tell application "Microsoft Word"
-        activate
-        open POSIX file "{docx_path}"
-        delay 1
-        save as active document file format format PDF file name "{pdf_path}"
-        close active document saving no
-    end tell
-    tell application "System Events"
-        set visible of application process "Microsoft Word" to false
-    end tell
-    '''
-    result = subprocess.run(
-        ["osascript", "-e", script],
-        capture_output=True, text=True, timeout=120,
-    )
-    if result.returncode != 0:
-        print(f"WARN: Word PDF export failed:\n{result.stderr}", file=sys.stderr)
-        return None
-    if not pdf_path.exists():
-        print(f"WARN: expected PDF at {pdf_path} but not found", file=sys.stderr)
-        return None
-    return pdf_path
-
-
 def convert_to_pdf(docx_path: Path) -> Optional[Path]:
-    """Convert DOCX to PDF. Prefers Word via osascript on macOS (line-exact
-    layout for widow detection), then ONLYOFFICE x2t (OOXML-native; renders
-    footnote numRestart correctly where LibreOffice does not), then
-    LibreOffice headless as last resort."""
-    import shutil, sys as _sys
-    # On macOS with Word installed, prefer osascript for layout accuracy.
-    if _sys.platform == "darwin" and Path("/Applications/Microsoft Word.app").exists():
-        pdf = convert_to_pdf_via_word(docx_path)
-        if pdf:
-            return pdf
-        print("INFO: Word PDF export failed; falling back to x2t/LibreOffice", file=sys.stderr)
-    # x2t preferred, soffice fallback — shared wrapper verifies output exists.
+    """Convert DOCX to PDF. Prefers Microsoft Word on macOS (line-exact layout
+    for widow detection and faithful tables), then ONLYOFFICE x2t (OOXML-native;
+    renders footnote numRestart correctly where LibreOffice does not), then
+    LibreOffice headless as last resort.
+
+    Word rendering is delegated to ``doc_render.convert(renderer="word")``,
+    which drives Word directly from a foreground/granted GUI session and, from a
+    detached/background job (where direct AppleEvents fail with -600), transparently
+    dispatches the render into a cmux pane that lives in the console GUI session.
+    See scripts/doc_render.py and docs/investigations/2026-06-22_word-render-cmux-dispatch.md.
+    """
+    import sys as _sys
+    out = docx_path.parent / (docx_path.stem + ".pdf")
     _sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
-    from doc_render import convert as _convert
+    from doc_render import convert as _convert, find_word
     try:
-        return _convert(docx_path, docx_path.parent / (docx_path.stem + ".pdf"))
+        if _sys.platform == "darwin" and find_word():
+            # renderer="word" → Word's engine; doc_render falls back to
+            # x2t/LibreOffice internally if Word cannot be reached at all.
+            return _convert(docx_path, out, renderer="word", allow_word=True)
+        return _convert(docx_path, out)
     except Exception as e:
         print(f"WARN: PDF conversion failed: {e}", file=sys.stderr)
         return None

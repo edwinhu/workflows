@@ -865,19 +865,22 @@ def find_word() -> bool:
     return _WORD_APP.is_dir() and _WORD_CONTAINER.is_dir()
 
 
-def _run_word(src: Path, dst: Path, timeout: int,
-              update_fields: bool = True) -> None:
-    """Render docx->PDF via Microsoft Word — gold-standard fidelity (native
-    kerning/layout) and the only engine that can recompute Word fields.
+def _run_word_direct(src: Path, dst: Path, timeout: int,
+                     update_fields: bool = True) -> None:
+    """Drive Word in THIS process's GUI session via AppleEvents.
 
     Word is sandboxed: it freely accesses only its own container, so we stage
     src there, render, and copy the PDF out. macOS gotchas handled: strip
     com.apple.quarantine (else the file opens in Protected View, unscriptable);
-    render inside the container (no powerbox "Grant File Access" prompt). Needs
-    Word added to Full Disk Access (System Settings → Privacy & Security).
+    render inside the container (no powerbox "Grant File Access" prompt).
 
-    NOT headless and NOT parallel-safe (drives the GUI app). Best-effort: raises
-    on any failure so convert() can fall back to LibreOffice/x2t.
+    Works only from a process that is (a) in the console GUI session (audit
+    session shared with WindowServer) AND (b) granted Automation control of
+    Microsoft Word in TCC. A foreground terminal (cmux/wezterm/Terminal) is
+    both; a detached/launchd background job is NEITHER, so the `open`/`save as`
+    AppleEvents fail with -600 "Application isn't running" — that is the signal
+    for `_run_word` to retry via a cmux pane. See docs/investigations/
+    2026-06-22_word-render-cmux-dispatch.md.
     """
     if dst.suffix.lower() != ".pdf" or src.suffix.lower() != ".docx":
         raise RuntimeError("Word backend only renders docx -> PDF")
@@ -904,6 +907,177 @@ def _run_word(src: Path, dst: Path, timeout: int,
         shutil.copyfile(out_pdf, dst)
     finally:
         shutil.rmtree(work, ignore_errors=True)
+
+
+# --- cmux dispatch: render Word from a detached/background job ---------------
+#
+# A faithful Word render needs a process in the *console* GUI session that is
+# TCC-granted to control Word. A Claude background job (and any launchd-detached
+# process) is in neither: it lives in a separate GUI session whose app launches
+# have no WindowServer, so Word's window ops fail with AppleEvent -600. cmux is
+# a GUI terminal already running in the console session and TCC-granted to
+# control Word; its terminal panes are children of the cmux GUI process, so a
+# shell command run *inside a cmux pane* inherits the working session+grant.
+#
+# So: create a non-focused helper pane via the cmux control socket, `cmux send`
+# a render command into it, poll for a sentinel file, and close the pane. This
+# requires cmux's socket control to be enabled (automation.socketControlMode in
+# ~/.config/cmux/cmux.json set to "automation"/"password"/"allowAll", not the
+# default "cmuxOnly") and Microsoft Word granted to cmux under System Settings →
+# Privacy & Security → Automation. Disable this path with $DOC_RENDER_NO_CMUX=1.
+# See docs/investigations/2026-06-22_word-render-cmux-dispatch.md.
+
+_CMUX_BIN = "/Applications/cmux.app/Contents/Resources/bin/cmux"
+
+
+def _cmux_cli() -> "str | None":
+    if os.environ.get("DOC_RENDER_NO_CMUX"):
+        return None
+    cli = shutil.which("cmux") or (_CMUX_BIN if Path(_CMUX_BIN).exists() else None)
+    return cli
+
+
+def _cmux(cli: str, *args: str, timeout: int = 15) -> subprocess.CompletedProcess:
+    return subprocess.run([cli, *args], capture_output=True, text=True,
+                          timeout=timeout)
+
+
+def _cmux_reachable(cli: str) -> bool:
+    try:
+        r = _cmux(cli, "ping", timeout=10)
+        return r.returncode == 0 and "PONG" in r.stdout
+    except Exception:
+        return False
+
+
+def _cmux_focused_workspace(cli: str) -> "str | None":
+    import json
+    try:
+        r = _cmux(cli, "identify", timeout=10)
+        if r.returncode != 0:
+            return None
+        return json.loads(r.stdout)["focused"]["workspace_ref"]
+    except Exception:
+        return None
+
+
+def _cmux_new_helper_surface(cli: str, workspace: str) -> "str | None":
+    """Create a non-focused right-side terminal pane; return its surface ref.
+
+    `--focus false` keeps the user's attention where it is (the render pane
+    appears but never steals focus). Output is like ``OK surface:6 pane:4 ...``.
+    """
+    try:
+        r = _cmux(cli, "new-pane", "--workspace", workspace, "--type",
+                  "terminal", "--direction", "right", "--focus", "false",
+                  timeout=15)
+    except Exception:
+        return None
+    if r.returncode != 0:
+        return None
+    m = re.search(r"surface:\d+", r.stdout)
+    return m.group(0) if m else None
+
+
+def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
+                       update_fields: bool = True) -> None:
+    """Render docx->PDF by dispatching the Word render into a cmux pane.
+
+    Stages the doc + an osascript runner inside Word's container, opens a
+    non-focused cmux helper pane (which lives in the console GUI session with
+    cmux's TCC Automation grant), `cmux send`s the runner into it, polls for a
+    sentinel, copies the PDF out, and closes the pane. Raises on any failure so
+    convert() can fall back to LibreOffice/x2t.
+    """
+    import time
+    import uuid
+    if dst.suffix.lower() != ".pdf" or src.suffix.lower() != ".docx":
+        raise RuntimeError("Word backend only renders docx -> PDF")
+    if not find_word():
+        raise RuntimeError("Microsoft Word not installed")
+    cli = _cmux_cli()
+    if not cli or not _cmux_reachable(cli):
+        raise RuntimeError("cmux control socket not reachable (enable "
+                           "automation.socketControlMode in cmux.json)")
+    workspace = _cmux_focused_workspace(cli)
+    if not workspace:
+        raise RuntimeError("cmux: could not resolve a target workspace")
+
+    work = _WORD_CONTAINER / "wordrender" / uuid.uuid4().hex
+    work.mkdir(parents=True, exist_ok=True)
+    in_doc, out_pdf = work / "in.docx", work / "out.pdf"
+    scpt, runner = work / "render.scpt", work / "run.sh"
+    done, log = work / "done", work / "run.log"
+    surface = None
+    try:
+        shutil.copyfile(src, in_doc)
+        subprocess.run(["xattr", "-c", str(in_doc)], check=False,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        scpt.write_text(_WORD_RENDER_SCPT)
+        fields = "fields" if update_fields else "nofields"
+        runner.write_text(
+            "#!/bin/bash\n"
+            f'/usr/bin/osascript "{scpt}" "{in_doc}" "{out_pdf}" '
+            f'"{fields}" "in.docx" > "{log}" 2>&1\n'
+            f'echo "rc=$?" >> "{log}"\n'
+            f'echo done > "{done}"\n'
+        )
+        runner.chmod(0o755)
+
+        surface = _cmux_new_helper_surface(cli, workspace)
+        if not surface:
+            raise RuntimeError("cmux: could not create a render pane")
+        # Literal '\n' tells `cmux send` to press Enter in the pane.
+        r = _cmux(cli, "send", "--surface", surface, "--",
+                  f'bash "{runner}"\\n', timeout=15)
+        if r.returncode != 0:
+            raise RuntimeError(f"cmux send failed: {r.stderr.strip()}")
+
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline and not done.exists():
+            time.sleep(2)
+        if not done.exists():
+            raise RuntimeError("Word render via cmux timed out")
+        if not out_pdf.exists() or out_pdf.stat().st_size == 0:
+            tail = log.read_text()[-500:] if log.exists() else "(no log)"
+            raise RuntimeError(f"Word via cmux produced no PDF; log: {tail}")
+        shutil.copyfile(out_pdf, dst)
+    finally:
+        if surface:
+            try:
+                _cmux(cli, "close-surface", "--surface", surface, timeout=10)
+            except Exception:
+                pass
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def _run_word(src: Path, dst: Path, timeout: int,
+              update_fields: bool = True) -> None:
+    """Render docx->PDF via Microsoft Word — gold-standard fidelity (native
+    kerning/layout) and the only engine that can recompute Word fields.
+
+    Tries the direct AppleEvent path first (works from a foreground/granted GUI
+    terminal). If that fails — the tell-tale being AppleEvent -600 from a
+    detached/launchd background job, which is in a non-console GUI session
+    without Word's TCC grant — it retries by dispatching the render into a cmux
+    pane that does have both (``_run_word_via_cmux``). Needs Word in Full Disk
+    Access. NOT parallel-safe (drives the GUI app). Best-effort: raises on any
+    failure so convert() can fall back to LibreOffice/x2t.
+    """
+    try:
+        _run_word_direct(src, dst, timeout, update_fields)
+        return
+    except Exception as direct_err:
+        if _cmux_cli() is None:
+            raise
+        try:
+            _run_word_via_cmux(src, dst, timeout, update_fields)
+            return
+        except Exception as cmux_err:
+            raise RuntimeError(
+                f"Word direct render failed ({direct_err}); "
+                f"cmux dispatch also failed ({cmux_err})"
+            )
 
 
 def convert(
