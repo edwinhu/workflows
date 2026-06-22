@@ -1,12 +1,17 @@
 ---
 name: law-review-docx
-description: "Use this skill when the user asks to 'generate a docx', 'create the Word file', 'export to docx', 'apply the law review template', 'build the document', 'make a Word version', or wants to convert their law review markdown drafts into a formatted .docx file."
+description: "Use this skill to BUILD a formatted Word document from law review / legal MARKDOWN drafts via the law_review_template + pandoc (footnotes, TOC, styled tables) — NOT the generic 'docx' skill (which edits docx content) and NOT 'docx-render' (which only converts an existing .docx to PDF). Triggers: 'generate a docx', 'create the Word file', 'export to docx', 'build the document', 'compile/finalize the draft', 'build the law review document', 'make a Word version', 'turn my markdown draft into Word', 'make the submission docx', 'apply the law review template'."
 user-invocable: true
 ---
 
 # Law Review DOCX Export
 
 Convert markdown drafts into a properly formatted Word document using the law review template via pandoc.
+
+**This is the ONLY correct way to build a law-review .docx — never hand-roll
+`pandoc`/`soffice`; the template, footnote handling, TOC, and table styling all
+live in `build_docx.py`.** Agents **without the `Skill` tool** (most workflow
+subagents) can't invoke this skill — run the script below directly:
 
 ## Usage
 

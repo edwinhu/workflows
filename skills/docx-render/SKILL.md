@@ -1,0 +1,58 @@
+---
+name: docx-render
+description: "Use when rendering/converting an EXISTING .docx (or .pptx/.xlsx) to PDF or PNG — 'convert docx to pdf', 'docx to pdf', 'render this Word doc', 'word to pdf', 'export docx as pdf', 'make a pdf of this docx', 'pdf from the docx', 'render the document to PDF'. The faithful path (Word's engine, incl. from background/headless jobs) lives in scripts/doc_render.py. NOT for editing docx content (use the generic 'docx' skill) and NOT for building a docx from markdown (use 'law-review-docx')."
+user-invocable: true
+---
+
+**Announce:** "I'm using docx-render to convert this document to PDF via doc_render."
+
+# DOCX → PDF/PNG rendering
+
+Office docs → PDF/PNG go through the shared converter `scripts/doc_render.py`
+(`convert()`), which picks the best engine and applies the right fixes. **Do not
+hand-roll `soffice`/`libreoffice` or lean on the generic `docx` skill's own
+export** — those skip the Word-fidelity path and the x2t kerning/table fixes.
+
+## Entry point
+
+```bash
+# CLI (faithful Word engine):
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/doc_render.py IN.docx OUT.pdf --renderer word
+# auto engine (LibreOffice/x2t; no Word): omit --renderer
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/doc_render.py IN.docx OUT.pdf
+```
+```python
+import sys; sys.path.insert(0, "<plugin>/scripts")
+from doc_render import convert
+convert("in.docx", "out.pdf", renderer="word", allow_word=True)   # gold standard
+convert("in.docx", "out.pdf")                                     # auto (headless)
+```
+
+**Agents without the `Skill` tool** (most workflow subagents): run the CLI above
+directly — you don't need to invoke this skill, just call `doc_render.py`.
+
+## Which engine, and why it matters
+
+| Engine | Fidelity | Notes |
+|--------|----------|-------|
+| **Word** (`--renderer word`) | gold standard | native layout; **only engine that keeps an auto-wrapping table as a grid** in a *hand-authored* docx (LibreOffice collapses it to a stacked column). Recomputes Word fields (REF/NOTEREF/PAGEREF/TOC). |
+| **x2t** | good | OOXML-native; correct per-section footnote restart; doc_render injects GPOS/kern + EB-Garamond so it matches. |
+| **LibreOffice** | good *except* | wrong for per-section/page footnote restart; collapses auto-wrapping tables not pre-broken upstream. |
+
+`convert()` auto-falls-back Word → x2t/soffice. **Verify which ran** via the PDF
+Producer: `macOS … Quartz PDFContext` = Word; `LibreOffice …` = LibreOffice.
+
+## Word from a background/headless job (the non-obvious part)
+
+A detached Claude job is in a non-console GUI session without Word's TCC grant, so
+direct AppleEvents fail with -600. `doc_render` transparently **dispatches the
+render into a cmux pane** (console session, TCC-granted) and falls back to
+x2t/LibreOffice if that's unavailable. Prereqs + full root-cause:
+`docs/investigations/2026-06-22_word-render-cmux-dispatch.md`. Disable with
+`$DOC_RENDER_NO_CMUX=1`.
+
+## Related skills
+
+- **law-review-docx** — *builds* a .docx from markdown (template + pandoc), then renders.
+- **docx** (generic) — *edits* docx content (tracked changes, comments, text).
+- **xlsx** recalc / **pptx-render** — spreadsheet recalc / slide inspection.
