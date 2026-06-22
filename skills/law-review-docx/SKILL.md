@@ -65,12 +65,24 @@ Report the output path, section count, footnote count, and approximate word coun
 ## Rendering to PDF (Word fidelity, incl. from background jobs)
 
 `build_docx.convert_to_pdf()` delegates to `doc_render.convert(renderer="word")`,
-which uses Microsoft Word's engine for line-exact layout and faithful complex
-tables (LibreOffice/x2t mangle them). Word is GUI-driven, so a **detached Claude
-background job** can't drive it directly (AppleEvents fail with -600 — it's in a
-non-console GUI session without Word's TCC grant). `doc_render` handles this
-transparently by dispatching the render into a **cmux pane** (which lives in the
-console GUI session and is TCC-granted). One-time host prerequisites:
+which uses Microsoft Word's engine for line-exact layout (best for widow detection)
+and faithful tables.
+
+Note on table fidelity: for tables this skill *builds*, the `wrap_cell` pass (see
+`style_tables`) already pre-breaks cells with explicit `<w:br/>` so soffice and
+x2t render the grid too (commit `ec349c5`), and x2t kerning is corrected by
+`doc_render`'s GPOS/kern injection + EB-Garamond substitution. So all three
+engines are grid-faithful for build-generated tables; Word is preferred for
+polish, not required for table integrity. Word matters most for *hand-authored*
+docx whose tables never pass through `wrap_cell` — LibreOffice collapses such a
+table to a single stacked column whenever a cell must auto-wrap (Word/x2t keep the
+grid).
+
+Word is GUI-driven, so a **detached Claude background job** can't drive it directly
+(AppleEvents fail with -600 — it's in a non-console GUI session without Word's TCC
+grant). `doc_render` handles this transparently by dispatching the render into a
+**cmux pane** (which lives in the console GUI session and is TCC-granted). One-time
+host prerequisites:
 
 - cmux socket control enabled: `automation.socketControlMode` ≠ `"cmuxOnly"` in
   `~/.config/cmux/cmux.json`, then `cmux reload-config`.
