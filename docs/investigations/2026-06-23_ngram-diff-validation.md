@@ -54,31 +54,70 @@ The first rule (false-unity closer) was gated on **15,162** human sentences. The
 0/339 may still appear in the full corpus. So candidates wait for the
 **full ~13.8k-article FP gate** before becoming rules.
 
-## Full-scale run (in progress, on rjds)
+## Full-scale run (rjds) — DONE
 
-The sample proved the method; the full run sharpens the human-rate denominator
-(rarer phrases get measured; topic words get properly down-weighted). Moved to
-**rjds** (64 cores, 251 GB RAM) — the harvest is the CPU/RAM hog, and at 13.8k
-articles it's ~30× the sample. Decoupled cleanly:
+Moved to **rjds** (64 cores, 251 GB RAM). Decoupled cleanly: rjds does the
+CLI-free human side (`rclone` all 13,109 PDFs by folder-id → harvest →
+`/data/eh2889/aitic_corpus`); the Mac keeps the CLI-bound elicitation and syncs
+its few-MB LLM cache over. `AITIC_CORPUS_DIR` / `AITIC_CACHE_DIR` env overrides
+let the tested CLI run against the out-of-repo corpus unchanged.
 
-- **rjds** (CLI-free): `rclone` all ~13.8k PDFs by folder-id → 60-worker harvest
-  → `/data/eh2889/aitic_corpus`. Running detached (`setsid nohup`,
-  `aitic/run_overnight.sh`). 251 GB RAM means the full n-gram diff also fits in
-  memory — no streaming/DuckDB needed.
-- **Mac** (CLI-bound): elicitation stays where copilot/agy are authed; the LLM
-  cache (a few MB) syncs to rjds for the diff.
+**Harvest perf fix (the run that mattered).** The first harvest used
+`pymupdf4llm.to_markdown` and crawled — 2 h 22 m for ~1,800 articles — because
+(a) markdown layout analysis is slow and (b) its in-order `ex.map` stalled
+whenever a malformed PDF (broken LZW stream) hung a worker. Rewrote to raw
+`fitz.get_text()` + `as_completed` + a SIGALRM per-PDF watchdog: **480 PDFs went
+from 2 h 22 m → 3.7 s** (~1000×), and the full 13,109-PDF corpus harvested in
+minutes → **11,229 articles / 103 M tokens / 8.73 M sentences** (~14 % skipped as
+scanned/short).
+
+## Full-corpus result — the sample lied, and that's the point
+
+Re-running `ngram-diff` against 103 M human tokens (vs 3.4 M in the sample)
+**corrected the sample's false positives** — exactly the reason to scale the
+human side:
+
+| candidate | sample human | FULL human | verdict |
+|---|---|---|---|
+| `this study contributes to the growing literature` | **0** | **6** | NOT a tic — real authors write it |
+| `implications for both theory/practice` | **0** | **6 FP** | NOT a tic — standard academic phrasing |
+| `by demonstrating that` | low | 213 | common human prose |
+| `these findings carry [significant] implications` | 0 | **0** | **real tic — shipped** |
+
+The poster-child candidate from the sample (`contributes to the growing
+literature`) turned out to be genuine human scholarship. A rule shipped off the
+339-article sample would have been a false positive on the user's own writing.
+
+## Shipped rule
+
+`these findings carry significant implications` (and `findings/analysis carry
+<adj> implications`) — the AI academic closer that asserts importance instead of
+saying what the findings imply. **0 hits in 8,733,332 human sentences**,
+cross-model (GPT + Gemini), recall 9/80 academic samples. Added to
+`_STRUCTURAL_PATTERNS` (SOFT) + pytest case (incl. a negative asserting the
+killed siblings are NOT flagged).
+
+## Lessons
+
+1. **A big human FP corpus is load-bearing, not optional.** Three of four top
+   candidates that looked clean on 339 articles were real human phrasing at 11k.
+   The FP gate must be large and genre-matched or the rule fires on real writing.
+2. **The diff is a candidate *generator*, not a *judge*.** It ranks; the
+   full-corpus FP gate decides. Net yield here: 1 solid rule from ~20 ranked
+   candidates — the right ratio for a conservative, soft linter.
+3. **Plain `get_text()` beats markdown extraction for this** by ~1000× and is
+   adequate for n-gram counting.
+4. Single-threaded Python n-gram counting over 103 M tokens took ~12 min / 35 GB
+   RAM. Fine on rjds; for routine reuse, parallelize the count (per-doc Counters
+   merged) or prune n-grams seen <2 during counting.
 
 ## Next
 
-1. When the rjds harvest finishes: sync the LLM cache to rjds, run `ngram-diff`
-   against the full corpus.
-2. Promote the shortlist (`contributes to the growing literature on`, `these
-   findings carry significant implications for both`, …) to candidate regexes;
-   `fp-hunt` each against the full corpus; lock in the 0-FP ones as SOFT rules
-   with pytest cases — same discipline as the false-unity closer.
-3. Filter the hallucinated-citation artifacts (`et al <year>`) out of the
-   ranking, or split them into their own candidate (LLMs inventing citations is
-   itself a worth-flagging tell).
+1. Elicit more academic samples (current LLM side is only 80 paragraphs → modest
+   recall denominator); re-rank with a larger LLM corpus.
+2. Split hallucinated-citation artifacts (`et al <year>`) into their own
+   candidate — LLMs inventing citations is itself a worth-flagging tell.
+3. Parallelize/prune the n-gram counter for faster reuse.
 
 ## Harness additions this round
 

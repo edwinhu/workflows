@@ -74,6 +74,19 @@ _STRUCTURAL_PATTERNS = [
      r'|\b(?:a\s+single|one|the\s+same)\s+(?:uncomfortable\s+|stubborn\s+|dark\s+|simple\s+|sobering\s+)?(?:truth|throughline|thread|axiom)\b'
      r'|\bnot\s+(?:separate\s+|isolated\s+)?(?:crises|stories|trends|coincidences|contradictions)\b[^.?!]{0,30}?(?:\bbut\b|[—–-]\s*they\s+are)\b)',
      "structure: false-unity payload ('…the lesson is the same' / 'all point to one truth' / 'not separate crises but a single…') — AI flourish forcing a grand shared meaning; make the real link explicit or cut"),
+    # "These findings carry significant implications" — the LLM-default academic
+    # closer that asserts the results matter ("for both theoretical and practical
+    # audiences") rather than saying what they imply. Discovered by the n-gram
+    # rate-ratio diff (scripts/ai-tic-discovery.py ngram-diff), then FP-gated
+    # against the FULL ~11k-article finance/accounting corpus: 0 hits in
+    # 8,733,332 human sentences, cross-model (GPT + Gemini). NOTE the discipline
+    # this rule's siblings failed: 'contributes to the growing literature' and
+    # 'implications for both theory and practice' looked clean on a 339-article
+    # sample but recur in real scholarship at full scale — they were dropped.
+    # See docs/investigations/2026-06-23_ngram-diff-validation.md.
+    (r'(?:\bthese\s+findings\s+carry\b'
+     r'|\b(?:findings|analysis)\s+carry\s+(?:significant\s+|important\s+|broad\s+|key\s+|profound\s+)?implications\b)',
+     "structure: 'these findings carry significant implications' — AI academic closer asserting importance; state what the findings actually imply, or cut"),
     # ", not X" parallel tail (only when followed by a prepositional/comparative
     # form that signals the antithetical-parallel cadence)
     (r',\s+not\s+(?:through|by|because|from|via|merely|only|just|simply|to)\b',

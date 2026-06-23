@@ -371,6 +371,31 @@ def test_false_unity_no_false_positive_on_legal_prose(tmp_path):
     assert ctx is None or "false-unity" not in ctx, ctx
 
 
+def test_hook_flags_findings_carry_implications(tmp_path):
+    """The 'these findings carry significant implications' AI academic closer
+    (discovered by the n-gram diff, FP-gated on 8.7M human sentences) is flagged;
+    the sibling phrasings the full corpus proved are HUMAN ('contributes to the
+    growing literature', 'implications for both theory and practice') are NOT."""
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    f.write_text(
+        "These findings carry significant implications for both theoretical and "
+        "practical audiences in the disclosure literature.\n"
+        "\n"
+        "This study contributes to the growing literature on auditor expertise.\n"
+        "\n"
+        "Our results have implications for both theory and practice.\n"
+    )
+    ctx = _run_hook(f)
+    assert ctx is not None
+    assert "findings carry significant implications" in ctx, ctx
+    assert "d.md:1" in ctx, ctx
+    # the full-corpus-cleared (i.e. genuinely human) siblings must NOT be flagged
+    assert "d.md:3" not in ctx, ctx
+    assert "d.md:5" not in ctx, ctx
+
+
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-v"]))
