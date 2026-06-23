@@ -16,13 +16,16 @@ default-running again — an `.error` file does NOT count as a cached success).
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
 from . import models
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CACHE_DIR = REPO_ROOT / "scratch" / "ai-tics" / "cache"
+# AITIC_CACHE_DIR lets the cache live outside the repo (e.g. synced to rjds).
+CACHE_DIR = Path(os.environ.get("AITIC_CACHE_DIR",
+                                str(REPO_ROOT / "scratch" / "ai-tics" / "cache")))
 
 
 @dataclass

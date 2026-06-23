@@ -17,12 +17,16 @@ Pure-stdlib so the pytest battery can import it.
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
 # scripts/ai_tic_discovery/corpus.py -> repo root is parents[2].
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CORPUS_DIR = REPO_ROOT / "corpus" / "human"
+# AITIC_CORPUS_DIR lets the diff run against a corpus outside the repo (e.g. the
+# full ~11k-article corpus on rjds) without moving files into the tree.
+CORPUS_DIR = Path(os.environ.get("AITIC_CORPUS_DIR",
+                                 str(REPO_ROOT / "corpus" / "human")))
 
 # Sentence-ish splitter: break on ., !, ? followed by whitespace + capital /
 # quote / digit. Crude but adequate for a line-oriented FP hunt — the real
