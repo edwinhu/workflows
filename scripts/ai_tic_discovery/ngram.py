@@ -122,7 +122,8 @@ def dedupe_nested(cands: list[Candidate]) -> list[Candidate]:
     chosen: list[str] = []
     for c in sorted(cands, key=lambda c: (c.ratio, c.llm_count), reverse=True):
         covered = any(
-            c.ngram != o and c.ngram in o and o.llm_count >= c.llm_count * 0.7
+            c.ngram != o.ngram and c.ngram in o.ngram
+            and o.llm_count >= c.llm_count * 0.7
             for o in longer)
         if not covered:
             kept.append(c)
