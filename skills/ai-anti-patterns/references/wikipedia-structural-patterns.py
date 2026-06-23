@@ -59,7 +59,7 @@ _STRUCTURAL_PATTERNS = [
     # (GPT/copilot 20/40, Gemini/agy 9/40 of elicited closers) and tuned to ZERO
     # false positives on 15,162 sentences of pre-2017 finance/accounting journal
     # prose (incl. Delaware opinions). Discovered via scripts/ai-tic-discovery.py
-    # (see docs/investigations/2026-06-22_false-unity-closer.md). Two scoped
+    # (see the personal ai-tic discovery harness (dotfiles)). Two scoped
     # rules — the enumerated "Whether… or…, [unifier]" lead, and the
     # manufactured-unity payload — both conservative SCHEMAS, not fixed phrases:
     #   A — "Whether [it's/we are] X, …, or Y, [the/we/our/humanity…]"
@@ -83,7 +83,7 @@ _STRUCTURAL_PATTERNS = [
     # this rule's siblings failed: 'contributes to the growing literature' and
     # 'implications for both theory and practice' looked clean on a 339-article
     # sample but recur in real scholarship at full scale — they were dropped.
-    # See docs/investigations/2026-06-23_ngram-diff-validation.md.
+    # See the personal ai-tic discovery harness (dotfiles).
     (r'(?:\bthese\s+findings\s+carry\b'
      r'|\b(?:findings|analysis)\s+carry\s+(?:significant\s+|important\s+|broad\s+|key\s+|profound\s+)?implications\b)',
      "structure: 'these findings carry significant implications' — AI academic closer asserting importance; state what the findings actually imply, or cut"),
@@ -96,7 +96,7 @@ _STRUCTURAL_PATTERNS = [
     # recall 19/182. The same expanded run also produced topic-drift noise
     # (machine-learning / ESG / "et al 2021"): modern subjects rare in a pre-2017
     # corpus rank high but are NOT tics — they were ignored. SOFT, so the lone
-    # near-miss is acceptable. See docs/investigations/2026-06-23_ngram-diff-validation.md.
+    # near-miss is acceptable. See the personal ai-tic discovery harness (dotfiles).
     (r'(?:\b(?:a|this|that|important|significant|key|the)\s+critical\s+gap\b'
      r'|\bcritical\s+gap\s+in\s+(?:the|our|this)\b'
      r'|\bpractically,?\s+these\s+findings\b)',

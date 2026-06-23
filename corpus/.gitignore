@@ -1,4 +1,0 @@
-# The human control corpus is extracted full-text from copyrighted journal
-# articles — a LOCAL validation artifact, never committed. Rebuild it with
-# scripts/ai_tic_discovery/build_corpus.py (see corpus/README.md).
-human/*.txt
