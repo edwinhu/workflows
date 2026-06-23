@@ -37,6 +37,43 @@ _STRUCTURAL_PATTERNS = [
     # "isn't X, it is/it's Y"
     (r"\bisn[’']t\s+[^.;:!?]{2,80}?[,;—-]\s+it[’']?s?\s+(?:is\s+)?[a-z]",
      "structure: \"isn't X, it is Y\" antithesis — AI flourish"),
+    # Epigrammatic antithesis: the verbless two-/three-beat summary line that
+    # contrasts scattered particulars against a single unifying point —
+    # "Different rules, one direction:" / "Scattered rules, singular purpose." /
+    # "Same playbook, different target." An AI summary flourish (confirmed
+    # empirically: GPT + Gemini both reach for the contrastive bicolon when asked
+    # to tie disparate items together). Two scoped rules, both [:.]-capped to
+    # avoid legit prose ("different rules, one for each state…", "Same store,
+    # same staff, same hours."):
+    #   A — contrast lead → unifying tail (optional middle beat for tricolons)
+    (r'\b(?:Different|Scattered|Separate|Disparate|Distinct|Varied)\s+\w+,\s+(?:\w+\s+\w+,\s+)?(?:one|a\s+single|single|the\s+same|same|singular|no)\s+(?:\w+\s+){0,2}\w+\s*[:.]',
+     "structure: epigrammatic antithesis ('Different X, one Y:' / 'Scattered X, singular Y.') — AI summary flourish; state the point plainly"),
+    #   B — the reverse 'Same X, different Y.' form
+    (r'\bSame\s+\w+,\s+different\s+\w+\s*[:.]',
+     "structure: epigrammatic antithesis ('Same X, different Y.') — AI summary flourish; state the point plainly"),
+    # False-unity closer — the LLM-default op-ed/essay ending that enumerates
+    # three or more unrelated items and then asserts they share one grand,
+    # universal lesson ("Whether it's the Fed, the WHO, or Boeing… the lesson is
+    # the same:"; "X, Y, and Z all point to one uncomfortable truth"; "are not
+    # separate crises but a single…"). Confirmed empirically across BOTH models
+    # (GPT/copilot 20/40, Gemini/agy 9/40 of elicited closers) and tuned to ZERO
+    # false positives on 15,162 sentences of pre-2017 finance/accounting journal
+    # prose (incl. Delaware opinions). Discovered via scripts/ai-tic-discovery.py
+    # (see docs/investigations/2026-06-22_false-unity-closer.md). Two scoped
+    # rules — the enumerated "Whether… or…, [unifier]" lead, and the
+    # manufactured-unity payload — both conservative SCHEMAS, not fixed phrases:
+    #   A — "Whether [it's/we are] X, …, or Y, [the/we/our/humanity…]"
+    (r'\bWhether\s+(?:it.?s|we\s+are|you\s+are|through|watching|observing|tracking)\b[^.?!]{20,200}?,\s+or\b[^.?!]{2,90}?,\s+(?:the|we|our|humanity|every)\b',
+     "structure: false-unity closer ('Whether X, Y, or Z, the lesson is…') — AI flourish that manufactures unity across unrelated items; state the actual connection or cut"),
+    #   B — manufactured-unity payload (lesson/truth is the same; all point to one
+    #       truth; not separate crises but a single …; if X,Y,Z share anything, it is)
+    (r'(?:\b(?:the\s+)?(?:lesson|throughline|thread|pattern|moral|takeaway)\s+is\s+the\s+same\b'
+     r'|\b(?:all\s+)?(?:point\s+to|remind\s+us|confess|confirm|reveal|rhyme\s+with)\b[^.?!]{0,50}?\b(?:the\s+same|a\s+single|one)\b[^.?!]{0,35}?\b(?:truth|lesson|thread|throughline|story|axiom|question|failure|warning|verse|meter)\b'
+     r'|\bare\s+not\s+(?:separate|isolated|unrelated|coincidences?)\b[^.?!]{0,70}?(?:\bbut\b|[—–-]\s*they\s+are)\b[^.?!]{0,40}?\b(?:a\s+single|one|the\s+same)\b'
+     r'|\bIf\b[^.?!]{15,200}?\b(?:share|tell\s+us|prove)\b[^.?!]{0,15}?\banything,?\s+it\s+is\b'
+     r'|\b(?:a\s+single|one|the\s+same)\s+(?:uncomfortable\s+|stubborn\s+|dark\s+|simple\s+|sobering\s+)?(?:truth|throughline|thread|axiom)\b'
+     r'|\bnot\s+(?:separate\s+|isolated\s+)?(?:crises|stories|trends|coincidences|contradictions)\b[^.?!]{0,30}?(?:\bbut\b|[—–-]\s*they\s+are)\b)',
+     "structure: false-unity payload ('…the lesson is the same' / 'all point to one truth' / 'not separate crises but a single…') — AI flourish forcing a grand shared meaning; make the real link explicit or cut"),
     # ", not X" parallel tail (only when followed by a prepositional/comparative
     # form that signals the antithetical-parallel cadence)
     (r',\s+not\s+(?:through|by|because|from|via|merely|only|just|simply|to)\b',
@@ -51,6 +88,12 @@ _STRUCTURAL_PATTERNS = [
     # AI conversation openers that bleed into prose
     (r'^\s*(Certainly|Of\s+course|Absolutely|Definitely)[!,.]',
      "structure: chatbot opener at start of paragraph"),
+    # Imperative scene-setting opener — the LLM-default way to introduce an
+    # example ("Consider the X", "Take the X", "Picture this", "Imagine…").
+    # Empirically the model's #1 reach for example-intros; reads as signposted
+    # / explainer-essay. Anchored to paragraph start to stay high-signal.
+    (r'^\s*(?:Consider\b|Take\s+(?:the|this)\b|Picture\s+this\b|Imagine\s+(?:a|the|that|how|if|you)\b|Look\s+no\s+further\b)',
+     "structure: imperative scene-setting opener ('Consider…' / 'Take the X' / 'Picture this' / 'Imagine…') — AI-default example intro; open on the concrete sentence instead"),
 ]
 
 

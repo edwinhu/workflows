@@ -1,0 +1,38 @@
+# Elicitation contexts — places an AI tic lives, expressed as prompts that ask a
+# model to PRODUCE text in that context. Each runs across copilot (GPT) + agy
+# (Gemini) × n_samples, cached under scratch/ai-tics/cache/<id>/.
+#
+# Design notes:
+#   - Ask for MANY items per call (8-12) so one elicitation yields many positives.
+#   - Match the genre the hook guards (law-review / op-ed / explainer prose),
+#     NOT generic creative writing.
+#   - Keep prompts neutral about the tic you're hunting — you want the model's
+#     DEFAULT reach, not a primed imitation.
+
+- id: oped_closer
+  n_samples: 6
+  prompt: >
+    Write 10 different one-sentence closing lines for op-eds. Each should tie
+    together three unrelated recent news items into a single broader point.
+    Output only the 10 sentences, numbered 1-10, nothing else.
+
+- id: example_intro
+  n_samples: 6
+  prompt: >
+    Write 10 different opening sentences that each introduce a concrete example
+    to illustrate an abstract legal or economic point. Output only the 10
+    sentences, numbered 1-10, nothing else.
+
+- id: section_transition
+  n_samples: 6
+  prompt: >
+    Write 10 different one-sentence transitions that move a reader from one
+    section of a law-review article to the next, summarizing what came before
+    and previewing what follows. Output only the 10 sentences, numbered 1-10.
+
+- id: abstract_closer
+  n_samples: 6
+  prompt: >
+    Write 10 different final sentences for the abstract of a scholarly article,
+    each stating why the article's contribution matters. Output only the 10
+    sentences, numbered 1-10, nothing else.

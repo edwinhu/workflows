@@ -1,0 +1,27 @@
+# Candidate patterns under investigation. A candidate moves through:
+#   measure  → does it fire across BOTH models? (cross-model agreement = real default)
+#   judge    → do the models call it an AI tic, and what do they name it?
+#   eval     → recall on mined positives, ZERO false positives on the human corpus
+#   lock-in  → paste regex+label into the right _*_PATTERNS table + add a pytest case
+#
+# `regex` uses the same flags as prose-lint (IGNORECASE|MULTILINE). Keep it a
+# SCHEMA, not a fixed phrase — and conservative enough to clear fp-hunt.
+
+# ── SHIPPED 2026-06-22 ──────────────────────────────────────────────────────
+# "false-unity closer" — LOCKED IN to wikipedia-structural-patterns.py rules A+B
+# (see docs/investigations/2026-06-22_false-unity-closer.md). Kept here as the
+# worked example of a full discovery cycle. Final family: 36% recall over 80
+# elicited closers (copilot 20/40 + gemini 9/40 → cross-model), 0 FP on 15,162
+# pre-2017 finance/accounting journal sentences. The SEED below (whether-only)
+# scored 25% single-model and drew a false positive on a Delaware opinion
+# ("Whether the merger was fair is the question…") — fp-hunt caught it; the rule
+# was broadened to a SCHEMA and the `question` payload dropped.
+- id: false_unity_closer_lead
+  context_ids: [oped_closer]
+  label: 'structure: false-unity closer (Whether X, Y, or Z, the lesson is…)'
+  regex: '\bWhether\s+(?:it.?s|we\s+are|you\s+are|through|watching|observing|tracking)\b[^.?!]{20,200}?,\s+or\b[^.?!]{2,90}?,\s+(?:the|we|our|humanity|every)\b'
+
+- id: false_unity_closer_payload
+  context_ids: [oped_closer]
+  label: 'structure: false-unity payload (…the lesson is the same / all point to one truth)'
+  regex: '(?:\b(?:the\s+)?(?:lesson|throughline|thread|pattern|moral|takeaway)\s+is\s+the\s+same\b|\b(?:all\s+)?(?:point\s+to|remind\s+us|confess|confirm|reveal|rhyme\s+with)\b[^.?!]{0,50}?\b(?:the\s+same|a\s+single|one)\b[^.?!]{0,35}?\b(?:truth|lesson|thread|throughline|story|axiom|question|failure|warning|verse|meter)\b|\bare\s+not\s+(?:separate|isolated|unrelated|coincidences?)\b[^.?!]{0,70}?(?:\bbut\b|[—–-]\s*they\s+are)\b[^.?!]{0,40}?\b(?:a\s+single|one|the\s+same)\b|\bIf\b[^.?!]{15,200}?\b(?:share|tell\s+us|prove)\b[^.?!]{0,15}?\banything,?\s+it\s+is\b|\b(?:a\s+single|one|the\s+same)\s+(?:uncomfortable\s+|stubborn\s+|dark\s+|simple\s+|sobering\s+)?(?:truth|throughline|thread|axiom)\b|\bnot\s+(?:separate\s+|isolated\s+)?(?:crises|stories|trends|coincidences|contradictions)\b[^.?!]{0,30}?(?:\bbut\b|[—–-]\s*they\s+are)\b)'

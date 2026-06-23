@@ -271,6 +271,106 @@ def test_hook_no_double_report_puffery(tmp_path):
     assert "writing-ai-smell-puffery" not in ctx, ctx
 
 
+def test_hook_flags_imperative_scene_setting_opener(tmp_path):
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    f.write_text(
+        "Consider the staggered board, a setup that split directors into classes.\n"
+        "\n"
+        "For decades, big companies split their boards into classes.\n"
+    )
+    ctx = _run_hook(f)
+    assert ctx is not None
+    # the "Consider the X" opener on line 1 is flagged ...
+    assert "imperative scene-setting opener" in ctx, ctx
+    assert "d.md:1" in ctx, ctx
+    # ... and the concrete rewrite on line 3 is not flagged for it.
+    assert "d.md:3" not in ctx, ctx
+
+
+def test_hook_flags_epigrammatic_antithesis(tmp_path):
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    f.write_text(
+        "Different rules, one direction: each strips away a protection.\n"
+        "\n"
+        "Each of these strips away a protection investors rely on.\n"
+    )
+    ctx = _run_hook(f)
+    assert ctx is not None
+    assert "epigrammatic antithesis" in ctx, ctx
+    assert "d.md:1" in ctx, ctx
+    assert "d.md:3" not in ctx, ctx
+
+
+def test_hook_epigrammatic_antithesis_variants(tmp_path):
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    # tricolon, reverse "Same X, different Y", and two legit non-antithesis lines
+    f.write_text(
+        "Scattered rules, singular purpose.\n"
+        "\n"
+        "Same playbook, different target.\n"
+        "\n"
+        "Same store, same staff, same hours.\n"   # anaphora, not antithesis
+        "\n"
+        "Different rules apply, one for each state.\n"  # legit usage
+    )
+    ctx = _run_hook(f)
+    assert ctx is not None
+    assert "d.md:1" in ctx and "d.md:3" in ctx, ctx       # both flagged
+    assert "d.md:5" not in ctx and "d.md:7" not in ctx, ctx  # neither false-positive
+
+
+def test_hook_flags_false_unity_closer(tmp_path):
+    """The 'Whether X, Y, or Z, the lesson is the same' / 'all point to one
+    truth' closer (a cross-model AI default, discovered via the ai-tic-discovery
+    harness) is flagged; genuine human enumerations are not."""
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    f.write_text(
+        "Whether it's the Fed's rate hold, the WHO's treaty, or Boeing's scandal, "
+        "the lesson is the same: institutions built for a slower world are failing.\n"
+        "\n"
+        "The wildfires, the bank collapse, and the AI ruling all point to one "
+        "uncomfortable truth: we write rules only after the fire has burned.\n"
+        "\n"
+        "These three cases are not separate crises but a single failure of will.\n"
+        "\n"
+        "The committee reviewed the merger, the spinoff, and the buyback in turn.\n"
+    )
+    ctx = _run_hook(f)
+    assert ctx is not None
+    assert "false-unity" in ctx, ctx
+    assert "d.md:1" in ctx, ctx   # "Whether… or…, the lesson is the same"
+    assert "d.md:3" in ctx, ctx   # "all point to one uncomfortable truth"
+    assert "d.md:5" in ctx, ctx   # "not separate crises but a single…"
+    assert "d.md:7" not in ctx, ctx  # plain enumeration — not flagged
+
+
+def test_false_unity_no_false_positive_on_legal_prose(tmp_path):
+    """The false-unity rule must NOT fire on ordinary academic / legal prose —
+    the corpus-validated discipline (0 FP on 15k pre-2017 journal sentences)."""
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    f.write_text(
+        "Whether the merger was fair is the question we now answer.\n"
+        "\n"
+        "These results point to a single conclusion about investor behavior.\n"
+        "\n"
+        "From a negotiating perspective, that signaled a strong response.\n"
+    )
+    ctx = _run_hook(f)
+    # "a single conclusion" is NOT in the payload vocabulary (truth/thread/axiom);
+    # "Whether X is the question" lacks the ", or …," enumeration. None flagged.
+    assert ctx is None or "false-unity" not in ctx, ctx
+
+
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-v"]))
