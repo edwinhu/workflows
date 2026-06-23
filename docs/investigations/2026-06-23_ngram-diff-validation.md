@@ -111,12 +111,38 @@ killed siblings are NOT flagged).
    RAM. Fine on rjds; for routine reuse, parallelize the count (per-doc Counters
    merged) or prune n-grams seen <2 during counting.
 
+## Expanded elicitation (182-sample LLM denominator)
+
+Bumped the LLM side ~6× via multi-paragraph contexts (7 `*_multi` contexts, 6
+paragraphs/call) → 182 academic samples / ~630 K chars. Re-ran the diff against
+the same 103 M-token human corpus.
+
+**New rule shipped:** AI gap-statement / results-framing cliché —
+`a critical gap in the literature` + `Practically, these findings…`. FP = **1**
+in 8,733,332 sentences (a structurally-identical human "fill a critical gap"),
+cross-model, recall 19/182. SOFT, so the lone near-miss is acceptable. Added to
+`_STRUCTURAL_PATTERNS` + pytest (36 passing).
+
+**Most expanded candidates still failed the gate** — `study advances the`
+(18 FP), `remain poorly understood` (4), `significant gap` (3), `we therefore
+hypothesize` (34): all genuine human phrasing. `contributes to the growing
+literature` reconfirmed human. The 0-FP bar keeps doing its job.
+
+**New noise source — topic drift.** Letting the multi-prompts choose topics made
+the models reach for *modern* subjects (machine learning, NLP, ESG, remote work,
+`et al 2021/2022/2023`) that barely exist in a **pre-2017** corpus, so they rank
+high without being tics. Lesson: for stylistic-tic mining, either constrain
+prompt topics to timeless ones or down-weight content-word-heavy n-grams; judge
+function-word patterns, not topic words. (The `et al <recent-year>` cluster is a
+real tell on its own — LLMs fabricating recent citations — but needs a dedicated
+detector, not the generic diff.)
+
 ## Next
 
-1. Elicit more academic samples (current LLM side is only 80 paragraphs → modest
-   recall denominator); re-rank with a larger LLM corpus.
-2. Split hallucinated-citation artifacts (`et al <year>`) into their own
-   candidate — LLMs inventing citations is itself a worth-flagging tell.
+1. Constrain elicitation topics (or filter content-word n-grams) to suppress the
+   pre-2017 topic-drift noise before the next mining pass.
+2. Split hallucinated-citation artifacts (`et al <recent year>`) into their own
+   candidate — LLMs inventing recent citations is itself a worth-flagging tell.
 3. Parallelize/prune the n-gram counter for faster reuse.
 
 ## Harness additions this round

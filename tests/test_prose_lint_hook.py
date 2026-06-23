@@ -396,6 +396,28 @@ def test_hook_flags_findings_carry_implications(tmp_path):
     assert "d.md:5" not in ctx, ctx
 
 
+def test_hook_flags_gap_statement_cliche(tmp_path):
+    """The AI gap-statement / results-framing cliché ('a critical gap in the
+    literature', 'Practically, these findings…') is flagged; a plain statement
+    of a research question is not. FP-gated to 1/8.7M on the full corpus."""
+    drafts = tmp_path / "drafts"
+    drafts.mkdir()
+    f = drafts / "d.md"
+    f.write_text(
+        "This study addresses a critical gap in the corporate governance literature.\n"
+        "\n"
+        "Practically, these findings suggest managers should disclose earlier.\n"
+        "\n"
+        "We examine whether staggered boards affect takeover premiums.\n"
+    )
+    ctx = _run_hook(f)
+    assert ctx is not None
+    assert "gap-statement" in ctx, ctx
+    assert "d.md:1" in ctx, ctx   # "a critical gap in the … literature"
+    assert "d.md:3" in ctx, ctx   # "Practically, these findings…"
+    assert "d.md:5" not in ctx, ctx  # plain research-question statement — not flagged
+
+
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-v"]))

@@ -87,6 +87,20 @@ _STRUCTURAL_PATTERNS = [
     (r'(?:\bthese\s+findings\s+carry\b'
      r'|\b(?:findings|analysis)\s+carry\s+(?:significant\s+|important\s+|broad\s+|key\s+|profound\s+)?implications\b)',
      "structure: 'these findings carry significant implications' — AI academic closer asserting importance; state what the findings actually imply, or cut"),
+    # AI gap-statement / results-framing cliché — "we identify a critical gap in
+    # the literature" and the "Practically, these findings…" pivot. Surfaced by
+    # the n-gram diff on the expanded (182-sample) academic LLM corpus, then
+    # FP-gated against the full ~11k-article corpus: ONE near-miss in 8,733,332
+    # human sentences (a structurally-identical "fill a critical gap in the …
+    # literature" that can't be separated without overfitting), cross-model,
+    # recall 19/182. The same expanded run also produced topic-drift noise
+    # (machine-learning / ESG / "et al 2021"): modern subjects rare in a pre-2017
+    # corpus rank high but are NOT tics — they were ignored. SOFT, so the lone
+    # near-miss is acceptable. See docs/investigations/2026-06-23_ngram-diff-validation.md.
+    (r'(?:\b(?:a|this|that|important|significant|key|the)\s+critical\s+gap\b'
+     r'|\bcritical\s+gap\s+in\s+(?:the|our|this)\b'
+     r'|\bpractically,?\s+these\s+findings\b)',
+     "structure: AI gap-statement / results-framing cliché ('a critical gap in the literature' / 'Practically, these findings…') — name the specific gap or finding, don't signpost it"),
     # ", not X" parallel tail (only when followed by a prepositional/comparative
     # form that signals the antithetical-parallel cadence)
     (r',\s+not\s+(?:through|by|because|from|via|merely|only|just|simply|to)\b',
