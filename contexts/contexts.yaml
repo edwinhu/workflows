@@ -36,3 +36,57 @@
     Write 10 different final sentences for the abstract of a scholarly article,
     each stating why the article's contribution matters. Output only the 10
     sentences, numbered 1-10, nothing else.
+
+# ── Academic-prose moves (genre-matched to the journal human corpus) ─────────
+# These produce connected PARAGRAPHS in the register of finance/accounting/law
+# scholarship, so the n-gram diff against the journal corpus surfaces phrases
+# LLMs over-use in ACADEMIC writing — the user's actual drafting context.
+# Prompts stay neutral about any tic: we want the model's default reach.
+
+- id: paper_intro
+  n_samples: 5
+  prompt: >
+    Write the opening paragraph of an academic finance or accounting research
+    paper. Pick any plausible topic. Two to four sentences motivating the
+    question. Output only the paragraph — no title, no heading.
+
+- id: hypothesis_development
+  n_samples: 5
+  prompt: >
+    Write a paragraph from the hypothesis-development section of an empirical
+    finance/accounting paper, building the theoretical argument toward a testable
+    prediction. Pick any plausible topic. Output only the paragraph.
+
+- id: results_framing
+  n_samples: 5
+  prompt: >
+    Write a paragraph describing and interpreting the main empirical result of a
+    finance/accounting study. Pick any plausible finding. Output only the
+    paragraph.
+
+- id: discussion_implications
+  n_samples: 5
+  prompt: >
+    Write a paragraph from the discussion section of a scholarly paper explaining
+    why the findings matter for theory and practice. Pick any plausible topic.
+    Output only the paragraph.
+
+- id: conclusion_para
+  n_samples: 5
+  prompt: >
+    Write the concluding paragraph of an academic finance/accounting article,
+    summarizing the contribution and noting directions for future research. Pick
+    any plausible topic. Output only the paragraph.
+
+- id: lit_review_transition
+  n_samples: 5
+  prompt: >
+    Write a paragraph from the literature-review section of a scholarly paper
+    that situates the study relative to prior work and identifies a gap. Pick any
+    plausible topic. Output only the paragraph.
+
+- id: contribution_statement
+  n_samples: 5
+  prompt: >
+    Write a paragraph stating the contributions of an academic finance/accounting
+    paper to the literature. Pick any plausible topic. Output only the paragraph.

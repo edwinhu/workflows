@@ -40,6 +40,7 @@ from ai_tic_discovery import elicit as _elicit  # noqa: E402
 from ai_tic_discovery import judge as _judge  # noqa: E402
 from ai_tic_discovery import measure as _measure  # noqa: E402
 from ai_tic_discovery import corpus as _corpus  # noqa: E402
+from ai_tic_discovery import ngram as _ngram  # noqa: E402
 from ai_tic_discovery.evaluate import evaluate_regex  # noqa: E402
 
 REPO_ROOT = SCRIPTS_DIR.parent
@@ -194,6 +195,42 @@ def cmd_corpus(args):
         print(f"  {f.name}")
 
 
+def _llm_texts_by_model(context_ids):
+    """{model: [sample texts]} from cache for the given contexts (or all)."""
+    by: dict[str, list] = {}
+    for s in _samples_for(context_ids):
+        by.setdefault(s.model, []).append(s.text)
+    return by
+
+
+def cmd_ngram_diff(args):
+    """Rank n-grams over-represented in cached LLM output vs the human corpus."""
+    human_texts = [f.read_text(encoding="utf-8", errors="ignore")
+                   for f in _corpus.corpus_files()]
+    if not human_texts:
+        sys.exit("human corpus empty — run harvest first (corpus/human/*.txt)")
+    ctx_ids = args.context.split(",") if args.context else None
+    llm_texts = _llm_texts_by_model(ctx_ids)
+    if not llm_texts:
+        sys.exit("no cached LLM samples — run `elicit` first")
+
+    hc, ht = _ngram.count_ngrams(human_texts, args.n_min, args.n_max)
+    llm_by = {m: _ngram.count_ngrams(t, args.n_min, args.n_max)
+              for m, t in llm_texts.items()}
+    cands = _ngram.diff(hc, ht, llm_by, min_llm_count=args.min_count,
+                        min_models=args.min_models, max_human_rate=args.max_human,
+                        top=args.top)
+    if args.dedupe:
+        cands = _ngram.dedupe_nested(cands)
+    print(f"human: {len(human_texts)} docs / {ht:,} tokens   "
+          f"LLM: {sum(len(t) for t in llm_texts.values())} samples, "
+          f"models={','.join(sorted(llm_texts))}\n")
+    print(f"{'ratio':>7} {'n':>2} {'llmC':>5} {'humC':>5}  phrase")
+    for c in cands:
+        print(f"{c.ratio:7.1f} {c.n:>2} {c.llm_count:>5} {c.human_count:>5}  "
+              f"{c.ngram}   [{'/'.join(c.models_hit)}]")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -236,6 +273,22 @@ def main():
 
     pc = sub.add_parser("corpus", help="human-corpus stats")
     pc.set_defaults(func=cmd_corpus)
+
+    pn = sub.add_parser("ngram-diff",
+                        help="rank n-grams over-used by LLMs vs human corpus")
+    pn.add_argument("--context", help="comma-separated context ids (default: all cached)")
+    pn.add_argument("--n-min", type=int, default=2)
+    pn.add_argument("--n-max", type=int, default=6)
+    pn.add_argument("--min-count", type=int, default=3,
+                    help="min total LLM occurrences (noise floor)")
+    pn.add_argument("--min-models", type=int, default=2,
+                    help="cross-model gate: phrase must appear in >= N models")
+    pn.add_argument("--max-human", type=float, default=50.0,
+                    help="drop phrases above this human rate (per million)")
+    pn.add_argument("--top", type=int, default=80)
+    pn.add_argument("--dedupe", action="store_true",
+                    help="drop shorter n-grams subsumed by a longer one")
+    pn.set_defaults(func=cmd_ngram_diff)
 
     args = p.parse_args()
     args.func(args)
