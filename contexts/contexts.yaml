@@ -90,3 +90,58 @@
   prompt: >
     Write a paragraph stating the contributions of an academic finance/accounting
     paper to the literature. Pick any plausible topic. Output only the paragraph.
+
+# ── Multi-paragraph variants (efficient bulk: ~6 paragraphs per slow CLI call) ─
+# Same academic moves, but each call yields 6 paragraphs on different topics, so
+# we build a much larger LLM denominator without 6x the (rate-limited) calls.
+# Keeps the single-paragraph caches above untouched.
+
+- id: paper_intro_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different opening paragraphs for academic finance/accounting research
+    papers, each on a different plausible topic (2-4 sentences each, motivating
+    the question). Number them 1-6. Output only the paragraphs.
+
+- id: hypothesis_development_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different hypothesis-development paragraphs from empirical
+    finance/accounting papers, each building a theoretical argument toward a
+    testable prediction on a different topic. Number them 1-6. Output only the
+    paragraphs.
+
+- id: results_framing_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different paragraphs that describe and interpret the main empirical
+    result of a finance/accounting study, each on a different finding. Number them
+    1-6. Output only the paragraphs.
+
+- id: discussion_implications_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different discussion-section paragraphs explaining why a study's
+    findings matter for theory and practice, each on a different topic. Number
+    them 1-6. Output only the paragraphs.
+
+- id: conclusion_para_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different concluding paragraphs for academic finance/accounting
+    articles, each summarizing the contribution and noting future research on a
+    different topic. Number them 1-6. Output only the paragraphs.
+
+- id: lit_review_transition_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different literature-review paragraphs that situate a study relative
+    to prior work and identify a gap, each on a different topic. Number them 1-6.
+    Output only the paragraphs.
+
+- id: contribution_statement_multi
+  n_samples: 8
+  prompt: >
+    Write 6 different paragraphs stating the contributions of an academic
+    finance/accounting paper to the literature, each on a different topic. Number
+    them 1-6. Output only the paragraphs.
