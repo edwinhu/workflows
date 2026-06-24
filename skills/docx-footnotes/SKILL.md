@@ -148,3 +148,11 @@ When author bio footnotes use `customMarkFollows` (*, †, ‡), they consume au
 **Requires:** A section break between title page and body. Render PDF with **Word** or **x2t** (`scripts/doc_render.py` at plugin root) — both honor numRestart; **LibreOffice does not** (renders restart numbering wrong; verified 2026-06-10, x2t restarts at 1 per section where soffice numbers continuously).
 
 See [`footnotes-reference.md`](footnotes-reference.md) § 4 for details, code patterns, and the critical rule: numRestart goes in `settings.xml` ONLY (not in sectPr — causes all-zeros).
+
+## Related (document skill group)
+
+This skill repairs footnote **markup**. It is a separate concern from **OOXML
+package repair** (`scripts/docx_repair.py` — fixes the case-broken `customXML`
+part paths a Google Docs export emits, which make Word refuse to open the file)
+and from **PDF export** (`scripts/doc_render.py`). See the full
+[document skill group](../../references/document-skills.md).

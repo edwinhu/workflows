@@ -821,10 +821,24 @@ _WORD_CONTAINER = Path.home() / "Library/Containers/com.microsoft.Word/Data"
 
 # Render via Word: activate, open, wait for the doc (large docs open async),
 # optionally update all fields (REF/NOTEREF/PAGEREF/TOC/SEQ -> live values),
-# save as PDF, close defensively. `document 1` (not `active document`) and the
-# close loop work around Word's reference quirks after save-as.
-# item 4 = the staged doc's name (e.g. "in.docx"); reference the doc BY NAME so
-# we never grab a different document the user already has open.
+# save as PDF, close defensively. Reference the doc BY NAME (item 4 = the staged
+# doc's name, e.g. "in.docx") so we never grab a different document the user
+# already has open; fall back to `active document` if the name lookup misses.
+#
+# Two timeout/diagnostic details that matter for big or awkward docs:
+#   * `save as` is wrapped in `with timeout of 1800 seconds`. The PDF export of a
+#     long doc (e.g. a 73-page brief with embedded fonts) takes well over the
+#     default ~120s AppleEvent reply window; unwrapped it dies with -1712
+#     "AppleEvent timed out" even though Word is still exporting. (Verified
+#     2026-06-23.)
+#   * A doc that fails to enter the `documents` collection gets a SPECIFIC error
+#     (`WORDRENDER_NO_DOCUMENT`) so the caller can report the real cause — a
+#     modal "recover unreadable content?" repair / Protected-View prompt that
+#     blocks the open — instead of a generic failure. Do NOT add
+#     `set display alerts to none` to silence that modal: with alerts off Word
+#     resolves the repair prompt by SILENTLY DECLINING to open the doc (0
+#     documents), which is worse than surfacing the blocked-open. (Verified
+#     2026-06-23.)
 _WORD_RENDER_SCPT = r'''
 on run argv
   set docName to item 4 of argv
@@ -839,15 +853,27 @@ on run argv
       end try
       delay 0.5
     end repeat
-    if d is missing value then error "Word: document did not open"
+    if d is missing value then
+      set ndocs to 0
+      try
+        set ndocs to count of documents
+      end try
+      if ndocs > 0 then
+        set d to active document
+      else
+        error "WORDRENDER_NO_DOCUMENT: Word opened no document (a modal repair / Protected-View prompt likely blocked the open)"
+      end if
+    end if
     if (item 3 of argv) is "fields" then
-      with timeout of 600 seconds
+      with timeout of 1800 seconds
         try
           update fields of d
         end try
       end timeout
     end if
-    save as d file name (item 2 of argv) file format format PDF
+    with timeout of 1800 seconds
+      save as d file name (item 2 of argv) file format format PDF
+    end timeout
     try
       close d saving no
     on error
@@ -896,12 +922,19 @@ def _run_word_direct(src: Path, dst: Path, timeout: int,
         subprocess.run(["xattr", "-c", str(in_doc)], check=False,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         scpt.write_text(_WORD_RENDER_SCPT)
-        subprocess.run(
+        # Capture osascript's stderr (NOT DEVNULL): the AppleScript error text
+        # (-600 detached session, -1712 timeout, WORDRENDER_NO_DOCUMENT modal,
+        # ...) is the actual diagnosis and must reach the caller, not be
+        # swallowed.
+        proc = subprocess.run(
             ["osascript", str(scpt), str(in_doc), str(out_pdf),
              "fields" if update_fields else "nofields", in_doc.name],
-            check=True, timeout=timeout,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=timeout, capture_output=True, text=True,
         )
+        if proc.returncode != 0:
+            raise RuntimeError(
+                f"Word (direct) failed: {proc.stderr.strip() or proc.stdout.strip()}"
+            )
         if not out_pdf.exists() or out_pdf.stat().st_size == 0:
             raise RuntimeError("Word exited but produced no PDF")
         shutil.copyfile(out_pdf, dst)
@@ -1007,7 +1040,7 @@ def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
     work.mkdir(parents=True, exist_ok=True)
     in_doc, out_pdf = work / "in.docx", work / "out.pdf"
     scpt, runner = work / "render.scpt", work / "run.sh"
-    done, log = work / "done", work / "run.log"
+    done, log, started = work / "done", work / "run.log", work / "started"
     surface = None
     try:
         shutil.copyfile(src, in_doc)
@@ -1015,8 +1048,13 @@ def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         scpt.write_text(_WORD_RENDER_SCPT)
         fields = "fields" if update_fields else "nofields"
+        # `started` is written the instant the pane's shell runs the script — it
+        # distinguishes "the pane never executed anything" (a cmux helper pane
+        # whose shell did not spawn — see the readiness check below) from "the
+        # render itself ran and failed/stalled" (we then have run.log).
         runner.write_text(
             "#!/bin/bash\n"
+            f'echo started > "{started}"\n'
             f'/usr/bin/osascript "{scpt}" "{in_doc}" "{out_pdf}" '
             f'"{fields}" "in.docx" > "{log}" 2>&1\n'
             f'echo "rc=$?" >> "{log}"\n'
@@ -1033,13 +1071,28 @@ def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
         if r.returncode != 0:
             raise RuntimeError(f"cmux send failed: {r.stderr.strip()}")
 
+        # Readiness gate: a freshly-created cmux helper pane sometimes has no
+        # live shell yet (cmux can defer spawning the pane's shell), so the
+        # `cmux send` lands in a dead PTY and nothing runs. Wait up to 30s for
+        # the `started` sentinel; if it never appears the pane shell never ran
+        # and we say so explicitly instead of mislabeling it a render timeout.
+        start_deadline = time.monotonic() + 30
+        while time.monotonic() < start_deadline and not started.exists():
+            time.sleep(1)
+        if not started.exists():
+            raise RuntimeError(
+                "cmux helper pane shell did not start (no live shell to run the "
+                "render; the pane's PTY consumed nothing). Retry, or render from "
+                "a foreground terminal.")
+
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline and not done.exists():
             time.sleep(2)
         if not done.exists():
-            raise RuntimeError("Word render via cmux timed out")
+            tail = log.read_text()[-800:] if log.exists() else "(no log yet)"
+            raise RuntimeError(f"Word render via cmux timed out; log: {tail}")
         if not out_pdf.exists() or out_pdf.stat().st_size == 0:
-            tail = log.read_text()[-500:] if log.exists() else "(no log)"
+            tail = log.read_text()[-800:] if log.exists() else "(no log)"
             raise RuntimeError(f"Word via cmux produced no PDF; log: {tail}")
         shutil.copyfile(out_pdf, dst)
     finally:
@@ -1051,18 +1104,14 @@ def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
         shutil.rmtree(work, ignore_errors=True)
 
 
-def _run_word(src: Path, dst: Path, timeout: int,
-              update_fields: bool = True) -> None:
-    """Render docx->PDF via Microsoft Word — gold-standard fidelity (native
-    kerning/layout) and the only engine that can recompute Word fields.
+def _drive_word(src: Path, dst: Path, timeout: int, update_fields: bool) -> None:
+    """Drive Word to render src->dst: direct AppleEvents, then cmux dispatch.
 
-    Tries the direct AppleEvent path first (works from a foreground/granted GUI
-    terminal). If that fails — the tell-tale being AppleEvent -600 from a
-    detached/launchd background job, which is in a non-console GUI session
-    without Word's TCC grant — it retries by dispatching the render into a cmux
-    pane that does have both (``_run_word_via_cmux``). Needs Word in Full Disk
-    Access. NOT parallel-safe (drives the GUI app). Best-effort: raises on any
-    failure so convert() can fall back to LibreOffice/x2t.
+    Tries the direct path first (works from a foreground/granted GUI terminal);
+    on failure — the tell-tale being AppleEvent -600 from a detached/launchd
+    background job in a non-console GUI session without Word's TCC grant — it
+    retries by dispatching into a cmux pane that has both
+    (``_run_word_via_cmux``).
     """
     try:
         _run_word_direct(src, dst, timeout, update_fields)
@@ -1078,6 +1127,83 @@ def _run_word(src: Path, dst: Path, timeout: int,
                 f"Word direct render failed ({direct_err}); "
                 f"cmux dispatch also failed ({cmux_err})"
             )
+
+
+def _word_preflight(src: Path, timeout: int) -> "tuple[Path, str | None, Path | None, bool]":
+    """Repair a Google Docs-export package so Word won't reject it on open.
+
+    Composes the standalone ``docx_repair`` util (separate concern, not coupled
+    in): if the .docx has OPC integrity problems (e.g. the case-broken
+    ``customXML`` refs a Google export emits — which make Word pop a "recover
+    unreadable content" modal that a background job can't dismiss), repair it to
+    a temp copy. A clean docx is returned untouched (full Word fidelity).
+
+    Returns ``(path_to_render, note, tmpdir_to_clean, did_reserialize)``.
+    """
+    if src.suffix.lower() != ".docx":
+        return src, None, None, False
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import docx_repair
+        issues = docx_repair.opc_integrity_issues(src)
+    except Exception:
+        return src, None, None, False
+    if not issues:
+        return src, None, None, False
+    tmpdir = Path(tempfile.mkdtemp(prefix="wordprep-"))
+    try:
+        res = docx_repair.repair_docx(src, tmpdir / src.name, timeout=timeout)
+    except Exception:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        return src, None, None, False
+    note = (f"repaired Google-export package via {res.method} "
+            f"({len(issues)} OPC issue(s))")
+    return res.dst, note, tmpdir, res.method == "reserialize"
+
+
+def _run_word(src: Path, dst: Path, timeout: int,
+              update_fields: bool = True) -> None:
+    """Render docx->PDF via Microsoft Word — gold-standard fidelity (native
+    kerning/layout) and the only engine that can recompute Word fields.
+
+    Three stages: (1) a preflight that repairs a corrupt Google-export package
+    via the standalone ``docx_repair`` util so Word doesn't pop a repair modal;
+    (2) drive Word (direct AppleEvents, then cmux dispatch from a background
+    job); (3) if Word STILL reports the doc unreadable
+    (``WORDRENDER_NO_DOCUMENT``) and the preflight didn't already reserialize,
+    reserialize via docbuilder and retry once. Needs Word in Full Disk Access.
+    NOT parallel-safe. Best-effort: raises on any failure so convert() can fall
+    back to LibreOffice/x2t.
+    """
+    prepared, note, tmpdir, did_reserialize = _word_preflight(src, timeout)
+    if note:
+        print(f"doc_render: Word preflight — {note}", file=sys.stderr)
+    try:
+        try:
+            _drive_word(prepared, dst, timeout, update_fields)
+            return
+        except Exception as err:
+            if "WORDRENDER_NO_DOCUMENT" not in str(err) or did_reserialize:
+                raise
+            # Word still calls the doc unreadable and we haven't reserialized —
+            # apply the docbuilder big hammer and retry once.
+            try:
+                import docx_repair
+                reb = docx_repair.reserialize_docx(prepared, timeout=timeout)
+            except Exception:
+                reb = None
+            if reb is None:
+                raise
+            print("doc_render: Word rejected the doc as unreadable; reserialized "
+                  "via docbuilder and retrying", file=sys.stderr)
+            try:
+                _drive_word(reb, dst, timeout, update_fields)
+                return
+            finally:
+                shutil.rmtree(reb.parent, ignore_errors=True)
+    finally:
+        if tmpdir is not None:
+            shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 def convert(
@@ -1107,7 +1233,11 @@ def convert(
     ``renderer``: ``"auto"`` (default) uses Word if ``allow_word`` and available,
     else LibreOffice for ordinary docs and x2t for footnote-restart docs
     (``_docx_restarts_footnotes``); or force ``"word"``/``"soffice"``/``"x2t"``.
-    If the chosen engine fails, falls back through the others (best-effort).
+    Only ``"auto"`` falls back through the other engines if its first choice
+    fails. An EXPLICIT ``renderer`` runs ONLY that engine and raises its real
+    error on failure — it never silently substitutes a lower-fidelity engine
+    (so ``--renderer word`` never quietly returns an x2t/LibreOffice PDF). Every
+    engine failure is also logged to stderr.
 
     ``allow_word`` lets ``"auto"`` pick Word (default False — keeps auto
     headless/parallel-safe). ``update_fields`` (Word only) updates all fields
@@ -1148,13 +1278,24 @@ def convert(
         else:
             use = "x2t"  # raises below with the install hint
 
-    # Try the chosen engine, then fall back through the rest (best-effort).
-    order = [use] + [e for e in ("soffice", "x2t", "word") if e != use]
+    # An EXPLICIT engine (renderer != "auto") is a request to use THAT engine —
+    # not "try it, then silently substitute a lower-fidelity one." Falling back
+    # would hand back e.g. an ONLYOFFICE/x2t PDF under `--renderer word` and hide
+    # the real Word error, which is exactly the failure this path must not have.
+    # So for an explicit renderer we run only that engine and surface its error;
+    # only "auto" cascades through the rest (best-effort).
+    explicit = renderer != "auto"
+    order = [use] if explicit else (
+        [use] + [e for e in ("soffice", "x2t", "word") if e != use])
     runners = {
         "word": lambda: _run_word(src, dst, max(timeout, 600), update_fields),
         "soffice": lambda: _run_soffice(sof, src, dst, timeout),
         "x2t": lambda: _run_x2t(src, dst, timeout),
     }
+    if explicit and not avail.get(use):
+        raise RuntimeError(
+            f"renderer={use!r} requested but unavailable for this conversion "
+            f"(src={src.suffix}, dst={dst.suffix}); availability={avail}")
     tool, last_err = None, None
     for e in order:
         if not avail.get(e):
@@ -1168,6 +1309,13 @@ def convert(
         except Exception as ex:
             last_err = ex
             dst.unlink(missing_ok=True)
+            # Never let an engine fail invisibly: a swallowed Word error is what
+            # makes `--renderer word` quietly hand back an x2t PDF.
+            print(f"doc_render: {e} renderer failed: {ex}", file=sys.stderr)
+            if explicit:
+                raise RuntimeError(
+                    f"renderer={use!r} failed and no fallback is used for an "
+                    f"explicit renderer: {ex}") from ex
     if tool is None:
         raise RuntimeError(
             "no converter succeeded: install Microsoft Word, LibreOffice, or "

@@ -46,14 +46,21 @@ Four primary workflows, each with a fresh-start entry and a midpoint re-entry:
 
 ### Document Formats
 
+Part of the **[document skill group](references/document-skills.md)** — one
+pipeline (extract → create → repair → build → render → verify) bundling the
+Anthropic Office skills with this project's repair/build/render tooling.
+
 | Skill | Purpose |
 |-------|---------|
 | `/docx` | Word document creation, editing, tracked changes |
 | `/pdf` | PDF extraction, creation, form filling |
 | `/pptx` | Presentation creation and editing |
 | `/xlsx` | Spreadsheet creation and analysis |
+| `/docx-render`, `/pptx-render` | Faithful export to PDF/PNG (Word/x2t/LibreOffice) |
+| `/docx-footnotes` | Footnote repair after Google Docs / Word Online round-trips |
+| `/law-review-docx` | Markdown/legal draft → law-review-styled Word doc |
 
-> Office format skills sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule.
+> Office format skills sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule. Shared converters + the Google-export **OOXML package repair** (`scripts/docx_repair.py`) live in `scripts/`. See **[references/document-skills.md](references/document-skills.md)** for the full group and how the stages decouple.
 
 ### Meta
 

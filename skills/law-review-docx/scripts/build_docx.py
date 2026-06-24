@@ -559,9 +559,11 @@ def convert_to_pdf(docx_path: Path) -> Optional[Path]:
     from doc_render import convert as _convert, find_word
     try:
         if _sys.platform == "darwin" and find_word():
-            # renderer="word" → Word's engine; doc_render falls back to
-            # x2t/LibreOffice internally if Word cannot be reached at all.
-            return _convert(docx_path, out, renderer="word", allow_word=True)
+            # auto + allow_word = "prefer Word, but accept the x2t/LibreOffice
+            # fallback if Word can't render." (An EXPLICIT renderer="word" is now
+            # strict — it raises instead of falling back — which is right for the
+            # CLI but wrong here, where the build just needs *a* PDF.)
+            return _convert(docx_path, out, renderer="auto", allow_word=True)
         return _convert(docx_path, out)
     except Exception as e:
         print(f"WARN: PDF conversion failed: {e}", file=sys.stderr)

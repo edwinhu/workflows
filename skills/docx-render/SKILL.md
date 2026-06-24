@@ -51,8 +51,21 @@ x2t/LibreOffice if that's unavailable. Prereqs + full root-cause:
 `docs/investigations/2026-06-22_word-render-cmux-dispatch.md`. Disable with
 `$DOC_RENDER_NO_CMUX=1`.
 
+## Google Docs exports
+
+A docx exported from Google Docs can carry OOXML package corruption (case-broken
+`customXML` part paths) that makes Word pop a "recover unreadable content" modal
+on open — fatal to a headless render. The Word path **auto-repairs** it via a
+preflight (`scripts/docx_repair.py`); you'll see `Word preflight — repaired
+Google-export package …` on stderr. Repair a docx standalone with
+`python3 scripts/docx_repair.py in.docx [out.docx]`. Root cause:
+`docs/investigations/2026-06-23_gdocs-customxml-case.md`.
+
 ## Related skills
 
+Part of the **[document skill group](../../references/document-skills.md)**
+(extract → create → repair → build → render → verify):
 - **law-review-docx** — *builds* a .docx from markdown (template + pandoc), then renders.
 - **docx** (generic) — *edits* docx content (tracked changes, comments, text).
+- **docx-footnotes** — repairs footnote *markup* (a separate concern from package repair).
 - **xlsx** recalc / **pptx-render** — spreadsheet recalc / slide inspection.
