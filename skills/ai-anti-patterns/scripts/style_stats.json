@@ -1,0 +1,140 @@
+{
+  "sent_len_mean": {
+    "human_mean": 33.36523744862891,
+    "human_std": 17.045858859453737,
+    "ai_mean": 35.33304044440408,
+    "direction": -1
+  },
+  "sent_len_std": {
+    "human_mean": 23.045314116411554,
+    "human_std": 16.233531549625212,
+    "ai_mean": 11.301589739218823,
+    "direction": 1
+  },
+  "sent_len_cv": {
+    "human_mean": 0.7142236154553515,
+    "human_std": 0.3192366309530594,
+    "ai_mean": 0.3336322853281457,
+    "direction": 1
+  },
+  "adj_delta_mean": {
+    "human_mean": 25.73986920328486,
+    "human_std": 19.001313142554555,
+    "ai_mean": 15.094005994005993,
+    "direction": 1
+  },
+  "adj_delta_norm": {
+    "human_mean": 0.7561188046095638,
+    "human_std": 0.27431255073979455,
+    "ai_mean": 0.43934797698815814,
+    "direction": 1
+  },
+  "frac_short_sent": {
+    "human_mean": 0.25757980457573004,
+    "human_std": 0.2382692147019599,
+    "ai_mean": 0.06877592104864833,
+    "direction": 1
+  },
+  "frac_long_sent": {
+    "human_mean": 0.39659615840356377,
+    "human_std": 0.25422023619992373,
+    "ai_mean": 0.6270963884600249,
+    "direction": -1
+  },
+  "triad_per_1000": {
+    "human_mean": 1.8835383466711157,
+    "human_std": 3.5639148264663842,
+    "ai_mean": 2.0792045994634627,
+    "direction": -1
+  },
+  "commas_per_sent": {
+    "human_mean": 2.3729306397057295,
+    "human_std": 1.5093427511001525,
+    "ai_mean": 1.9009755396119032,
+    "direction": 1
+  },
+  "subord_per_1000": {
+    "human_mean": 25.56409676612396,
+    "human_std": 13.83610837311112,
+    "ai_mean": 28.43938231325555,
+    "direction": -1
+  },
+  "hedge_per_1000": {
+    "human_mean": 8.989381984183265,
+    "human_std": 8.087612246966392,
+    "ai_mean": 8.910845808241255,
+    "direction": 1
+  },
+  "passive_per_1000": {
+    "human_mean": 17.483896433808212,
+    "human_std": 12.741688110757286,
+    "ai_mean": 5.498264023073075,
+    "direction": 1
+  },
+  "passive_per_sent": {
+    "human_mean": 0.6114323386692079,
+    "human_std": 0.5975635957367996,
+    "ai_mean": 0.21276223776223777,
+    "direction": 1
+  },
+  "latinate_ratio": {
+    "human_mean": 0.09453100594996805,
+    "human_std": 0.037722231940004944,
+    "ai_mean": 0.13083104519004085,
+    "direction": -1
+  },
+  "word_len_mean": {
+    "human_mean": 5.021918639754123,
+    "human_std": 0.4792939934556071,
+    "ai_mean": 6.169685212337886,
+    "direction": -1
+  },
+  "frac_long_words": {
+    "human_mean": 0.21972140845901691,
+    "human_std": 0.05502029038374767,
+    "ai_mean": 0.3713153955065435,
+    "direction": -1
+  },
+  "transition_per_1000": {
+    "human_mean": 4.023211723135714,
+    "human_std": 4.875858717108759,
+    "ai_mean": 6.137903337962254,
+    "direction": -1
+  },
+  "transition_types": {
+    "human_mean": 0.720353982300885,
+    "human_std": 0.8599402420106144,
+    "ai_mean": 0.9090909090909091,
+    "direction": -1
+  },
+  "sent_init_trans_frac": {
+    "human_mean": 0.03110094342004805,
+    "human_std": 0.07877619853698806,
+    "ai_mean": 0.06953046953046953,
+    "direction": -1
+  },
+  "emdash_per_1000": {
+    "human_mean": 0.24719802986838574,
+    "human_std": 1.7430318143651866,
+    "ai_mean": 7.368077963095569,
+    "direction": -1
+  },
+  "colon_per_1000": {
+    "human_mean": 3.6833903430376798,
+    "human_std": 7.0622328497677636,
+    "ai_mean": 2.5231354769402166,
+    "direction": 1
+  },
+  "semicolon_per_1000": {
+    "human_mean": 7.319241610085599,
+    "human_std": 11.517458642049672,
+    "ai_mean": 0.4316306809062494,
+    "direction": 1
+  },
+  "para_sent_count_mean": {
+    "human_mean": 6.957522123893805,
+    "human_std": 3.445140358565743,
+    "ai_mean": 4.601301476301476,
+    "direction": 1
+  }
+}

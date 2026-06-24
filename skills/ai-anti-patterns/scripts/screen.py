@@ -45,6 +45,10 @@ PATTERN_TABLES = [
     ("template",     "wikipedia-template-artifacts.py",      "_PLACEHOLDER_PATTERNS"),
     ("communication","wikipedia-communication-patterns.py",  "_HARD_PATTERNS"),
     ("communication","wikipedia-communication-patterns.py",  "_SOFT_PATTERNS"),
+    # Scored AI-tic table (generated from the ai-tic linter's tics.yaml): every
+    # entry passed the ~0-human-rate gate against the law+finance corpora; the
+    # severity (sev1-5) rides in the label as `ai-tic·sevN·id`.
+    ("scored-tic",   "scored-tics-patterns.py",               "_TIC_PATTERNS"),
 ]
 
 

@@ -1,0 +1,113 @@
+# Diction dictionary — fancy AI word -> plain alternative, TIERED BY
+# EMPIRICAL RATE in the combined law+finance+accounting corpus (14,294,148 sentences).
+# Source mappings: github.com/conorbronsdon/avoid-ai-writing (their tiers were
+# general-text vibes; re-tiered here against real scholarly prose).
+#   always_flag = <2/M in BOTH genres -> safe to flag/replace on sight
+#   cluster     = 2-20/M -> flag when 2+ appear in one paragraph
+#   density     = 20-80/M -> flag only when saturated (~3%+ of words)
+#   dropped     = >80/M -> legal/finance-NORMAL; do NOT flag (would FP)
+
+meta: {corpus: combined_law_finance, sentences: 14294148, gate: rate_per_M}
+
+always_flag:
+  - {word: paradigm-shifting, replace_with: "(describe what actually shifted)", rate_per_M: 0.0}
+  - {word: underpinning, replace_with: "basis, foundation, what supports", rate_per_M: 0.0}
+  - {word: game-changer, replace_with: "describe what specifically changed and why it matters", rate_per_M: 0.1}
+  - {word: nestled, replace_with: "is located, sits, is in", rate_per_M: 0.2}
+  - {word: ever-evolving, replace_with: "changing, growing (or describe how)", rate_per_M: 0.4}
+  - {word: bustling, replace_with: "busy, active (or cite what makes it busy)", rate_per_M: 0.6}
+  - {word: learnings, replace_with: "lessons, findings, takeaways", rate_per_M: 0.6}
+  - {word: showcasing, replace_with: "showing, demonstrating (or cut the clause)", rate_per_M: 0.8}
+  - {word: reimagine, replace_with: "rethink, redesign, rebuild", rate_per_M: 1.0}
+  - {word: tapestry, replace_with: "(describe the actual complexity)", rate_per_M: 1.1}
+  - {word: symphony, replace_with: "(describe the actual coordination or combination)", rate_per_M: 1.5}
+  - {word: world-class, replace_with: "Cite a benchmark or comparison", rate_per_M: 1.5}
+
+cluster:
+  - {word: cutting-edge, replace_with: "latest, newest, advanced", rate_per_M: 2.1}
+  - {word: boasts, replace_with: "has", rate_per_M: 2.7}
+  - {word: impactful, replace_with: "effective, significant (or describe the impact)", rate_per_M: 3.0}
+  - {word: galvanize, replace_with: "motivate, rally, push", rate_per_M: 3.4}
+  - {word: catalyze, replace_with: "start, trigger, accelerate", rate_per_M: 4.1}
+  - {word: juxtapose, replace_with: "compare, contrast, set side by side", rate_per_M: 5.2}
+  - {word: spearhead, replace_with: "lead, drive, run", rate_per_M: 5.2}
+  - {word: scalable, replace_with: "Describe what scales and to what", rate_per_M: 5.7}
+  - {word: thriving, replace_with: "growing, active (or cite a number)", rate_per_M: 5.8}
+  - {word: revolutionize, replace_with: "change, transform, reshape (or describe what changed)", rate_per_M: 6.4}
+  - {word: seamless, replace_with: "smooth, easy, without friction", rate_per_M: 6.4}
+  - {word: unpack, replace_with: "explain, break down, walk through", rate_per_M: 8.6}
+  - {word: meticulous, replace_with: "careful, detailed, precise", rate_per_M: 9.0}
+  - {word: poised, replace_with: "ready, set, about to", rate_per_M: 9.4}
+  - {word: unleash, replace_with: "release, enable, unlock", rate_per_M: 9.8}
+  - {word: beacon, replace_with: "(rewrite entirely)", rate_per_M: 10.1}
+  - {word: vibrant, replace_with: "(describe what makes it active, or cut)", rate_per_M: 10.4}
+  - {word: multifaceted, replace_with: "(describe the actual facets, or cut)", rate_per_M: 10.6}
+  - {word: quintessential, replace_with: "typical, classic, defining", rate_per_M: 10.6}
+  - {word: navigate, replace_with: "work through, handle, deal with", rate_per_M: 11.1}
+  - {word: plethora, replace_with: "many, a lot of (or give a number)", rate_per_M: 11.3}
+  - {word: delve, replace_with: "explore, dig into, look at", rate_per_M: 12.1}
+  - {word: elucidate, replace_with: "explain, clarify, spell out", rate_per_M: 12.2}
+  - {word: resonate, replace_with: "connect with, appeal to, matter to", rate_per_M: 12.7}
+  - {word: burgeoning, replace_with: "growing, emerging (or cite a number)", rate_per_M: 13.0}
+  - {word: transformative, replace_with: "(describe what changed and how)", rate_per_M: 13.6}
+  - {word: cultivate, replace_with: "build, develop, grow", rate_per_M: 14.1}
+  - {word: daunting, replace_with: "hard, difficult, challenging", rate_per_M: 15.6}
+  - {word: nascent, replace_with: "new, early-stage, emerging", rate_per_M: 19.8}
+
+density:
+  - {word: harness, replace_with: "use, take advantage of", rate_per_M: 23.6}
+  - {word: overarching, replace_with: "main, central, broad", rate_per_M: 24.0}
+  - {word: embark, replace_with: "start, begin", rate_per_M: 24.9}
+  - {word: holistic, replace_with: "complete, full, whole (or describe what's included)", rate_per_M: 25.3}
+  - {word: streamline, replace_with: "simplify, speed up", rate_per_M: 25.9}
+  - {word: enduring, replace_with: "lasting, long-running (or cite how long)", rate_per_M: 26.9}
+  - {word: cornerstone, replace_with: "foundation, basis, key part", rate_per_M: 27.8}
+  - {word: intricate, replace_with: "complex, detailed (or name the specific complexity)", rate_per_M: 27.8}
+  - {word: ecosystem, replace_with: "system, community, network, market", rate_per_M: 30.3}
+  - {word: genuinely, replace_with: "(cut — just state the fact)", rate_per_M: 35.0}
+  - {word: underscores, replace_with: "highlights, shows", rate_per_M: 36.9}
+  - {word: keen, replace_with: "interested, eager, enthusiastic (or cut — just state the interest)", rate_per_M: 37.4}
+  - {word: illuminate, replace_with: "clarify, explain, show", rate_per_M: 38.5}
+  - {word: nuanced, replace_with: "specific, subtle, detailed (or name the actual nuance)", rate_per_M: 41.8}
+  - {word: pivotal, replace_with: "important, key, critical", rate_per_M: 45.7}
+  - {word: myriad, replace_with: "many, numerous (or give a number)", rate_per_M: 49.3}
+  - {word: unprecedented, replace_with: "Name the precedent it breaks (or cut)", rate_per_M: 49.3}
+  - {word: interplay, replace_with: "relationship, connection, interaction", rate_per_M: 50.2}
+  - {word: complexities, replace_with: "(name the actual complexities, or use 'problems' / 'details')", rate_per_M: 51.2}
+  - {word: underpin, replace_with: "support, form the basis of", rate_per_M: 57.4}
+  - {word: landscape, replace_with: "field, space, industry, world", rate_per_M: 59.1}
+  - {word: actionable, replace_with: "practical, useful, concrete", rate_per_M: 60.2}
+  - {word: remarkable, replace_with: "Say what's worth remarking on", rate_per_M: 65.2}
+  - {word: bolster, replace_with: "support, strengthen, back up", rate_per_M: 66.5}
+  - {word: elevate, replace_with: "improve, raise, strengthen", rate_per_M: 71.8}
+  - {word: endeavor, replace_with: "effort, attempt, try", rate_per_M: 76.3}
+  - {word: realm, replace_with: "area, field, domain", rate_per_M: 77.0}
+
+# legal/finance-normal — recorded so they're never re-flagged:
+dropped:
+  - {word: significant, rate_per_M: 6366.3}
+  - {word: effective, rate_per_M: 3446.8}
+  - {word: leverage, rate_per_M: 2981.8}
+  - {word: presents, rate_per_M: 2516.8}
+  - {word: robust, rate_per_M: 2365.4}
+  - {word: dynamic, rate_per_M: 1340.3}
+  - {word: facilitate, rate_per_M: 849.5}
+  - {word: features, rate_per_M: 831.0}
+  - {word: comprehensive, rate_per_M: 675.6}
+  - {word: sophisticated, rate_per_M: 537.8}
+  - {word: utilize, rate_per_M: 384.1}
+  - {word: crucial, rate_per_M: 352.5}
+  - {word: instrumental, rate_per_M: 335.7}
+  - {word: foster, rate_per_M: 296.5}
+  - {word: ascertain, rate_per_M: 269.1}
+  - {word: augment, rate_per_M: 258.2}
+  - {word: compelling, rate_per_M: 224.0}
+  - {word: encompass, rate_per_M: 207.2}
+  - {word: empower, rate_per_M: 191.9}
+  - {word: innovative, rate_per_M: 185.0}
+  - {word: paradigm, rate_per_M: 175.2}
+  - {word: commence, rate_per_M: 170.4}
+  - {word: embrace, rate_per_M: 150.1}
+  - {word: exceptional, rate_per_M: 116.8}
+  - {word: paramount, rate_per_M: 105.2}
+  - {word: synergy, rate_per_M: 87.4}

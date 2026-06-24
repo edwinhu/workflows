@@ -158,6 +158,23 @@ This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, t
 
 Constraint checks are **Leg 1** of two-leg verification. **Leg 2** (convention scoring via reviewer subagents) happens in Level 1.
 
+### Step 2d: AI-prose audit (standard — always runs)
+
+Run the corpus-validated AI-prose scorer on every draft. This is **not optional** — the
+review always includes scorer-based AI-ism findings so the de-AI pass in `/writing-revise`
+has spans to act on:
+
+```bash
+uv run --with pyyaml python3 ${CLAUDE_SKILL_DIR}/../de-ai-revise/scripts/de_ai_audit.py --json drafts/*.md
+```
+
+Carry these into the review:
+- **`diction:always_flag` spans and `tic` spans with `sev_score >= 4`** → AI-ism findings. List them in REVIEW.md (as **minor** advisory polish, unless several cluster in one section → **major**). Each carries `line`, `text`, and `replace_with`.
+- **`composite_human_likeness` + `tic_density` + `advisories`** → record per draft as context for the revise loop.
+- Do **not** elevate AI-prose spans to blocking criticals, and do **not** treat a mid-range composite as failure — a human legal draft scores ~55-65 with em-dashes as nearly the whole signal (see `de-ai-revise` Iron Law of Goodhart). The substrate gate (critical+major) is unchanged.
+
+The fix for these findings is `/writing-revise`'s mandatory de-ai-revise pass — review only surfaces them.
+
 ---
 
 ## Run the writing-review workflow

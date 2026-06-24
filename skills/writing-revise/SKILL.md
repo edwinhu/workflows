@@ -70,7 +70,8 @@ START
   ├─ Step 4: Fix issues in priority order
   │  ├─ 4a: Critical issues (argument-breaking)
   │  ├─ 4b: Major issues (transitions, repetition, late introductions)
-  │  └─ 4c: Minor issues (polish)
+  │  ├─ 4c: Minor issues (polish)
+  │  └─ 4d: De-AI prose pass (MANDATORY — run /de-ai-revise on every edited draft)
   │
   ├─ Step 5: Formatting check
   │
@@ -320,6 +321,34 @@ For each major issue:
 For each minor issue:
 1. Apply fix
 2. Quick verify
+
+#### 4d: De-AI prose pass (mandatory — always runs)
+
+<EXTREMELY-IMPORTANT>
+**NO REVISE COMPLETES WITHOUT THE DE-AI PASS. This is not negotiable.**
+
+After fixing REVIEW.md issues, run the `de-ai-revise` skill (rewrite mode) on **every**
+edited `drafts/*.md` so the prose reads less AI-generated. This is a standard step, not
+an optional polish — the AI-prose scorers (tics + always_flag diction + stylometrics)
+are corpus-validated and `/writing-review` already surfaced their spans (Step 2d).
+</EXTREMELY-IMPORTANT>
+
+```
+Skill(skill="workflows:de-ai-revise")   # or follow skills/de-ai-revise/SKILL.md
+```
+
+The de-ai-revise process: AUDIT (`de_ai_audit.py`) → rewrite flagged spans (swap
+`always_flag` diction for the plain replacement, fix tics, vary rhythm toward bursty,
+thin em-dash clusters) → one corrective 2nd pass → report.
+
+**Honor its Iron Law of Goodhart:** the scorers GUIDE which spans to revise; do NOT
+chase the composite. Preserve already-human passages, quoted/statutory text, and the
+author's deliberate em-dashes — a mid-range composite is a human who likes em-dashes,
+not an AI tell. Over-editing to win the number flattens voice.
+
+AI-prose spans are **advisory polish**, not blocking criticals — the substrate gate
+(critical + major) is unchanged. The de-AI pass runs every iteration but never blocks
+completion on its own.
 
 ### Step 5: Formatting Check
 

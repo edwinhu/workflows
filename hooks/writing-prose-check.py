@@ -36,6 +36,10 @@ from pathlib import Path
 PLUGIN_ROOT = Path(__file__).parent.parent
 CHECK_ALL = PLUGIN_ROOT / "references" / "constraints" / "check-all.py"
 PROSE_LINT = PLUGIN_ROOT / "scripts" / "prose-lint.py"
+# Corpus-derived stylometric linter (line-level span findings only — em-dash,
+# metronomic-run, opener-transition, nominalization). Its draft-level advisories
+# (burstiness, diction) belong in the review stage, NOT this on-edit hook.
+STYLE_LINT = PLUGIN_ROOT / "skills" / "ai-anti-patterns" / "scripts" / "style_metrics.py"
 
 # Granular constraints whose regex tables DUPLICATE prose-lint's
 # `ai-anti-patterns` category. prose-lint is preferred; suppress these from the
@@ -144,6 +148,26 @@ def _run_prose_lint(path: Path, style: str | None,
     return out
 
 
+def _run_style_lint(path: Path, ranges: list[tuple[int, int]]) -> list[str]:
+    """Run style_metrics --lint; return ONLY line-level span findings scoped to
+    edited lines. Advisories (global rhythm/diction tells) are intentionally
+    dropped here — they're review-stage signals, not inline fixes."""
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(STYLE_LINT), "--lint", "--json", str(path)],
+            capture_output=True, text=True, timeout=30,
+        )
+        data = json.loads(proc.stdout or "{}")
+    except Exception:
+        return []
+    out: list[str] = []
+    for f in data.get("findings", []):
+        ln = f.get("line")
+        if ln and _in_ranges(int(ln), ranges):
+            out.append(f"{path.name}:{ln} [style] {f.get('type')}: {f.get('message','')}")
+    return out
+
+
 def _run_check_all(project_root: Path, path: Path,
                    ranges: list[tuple[int, int]]) -> list[str]:
     """Run check-all.py; return logic/structural violations for the edited file,
@@ -217,6 +241,7 @@ def main():
     ranges = _edit_ranges(tool_name, tool_input, path)
 
     violations = _run_prose_lint(path, style, ranges)
+    violations += _run_style_lint(path, ranges)
     if run_check_all:
         violations += _run_check_all(project_root, path, ranges)
 

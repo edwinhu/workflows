@@ -421,3 +421,49 @@ def test_hook_flags_gap_statement_cliche(tmp_path):
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-v"]))
+
+
+# --------------------------------------------------------------------------
+# scored AI-tic table (gate-then-grade): positive fires, human near-miss doesn't
+# --------------------------------------------------------------------------
+def _scored_tic_patterns():
+    import importlib.util
+    p = REPO_ROOT / "skills" / "ai-anti-patterns" / "scripts" / "screen.py"
+    spec = importlib.util.spec_from_file_location("aap_screen", p)
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return [(lab, rx) for cat, lab, rx in mod.load_patterns(only={"scored-tic"})]
+
+
+def test_scored_tic_fires_on_ai_phrase():
+    pats = _scored_tic_patterns()
+    assert pats, "scored-tic table did not load"
+    text = "This weaves a rich tapestry of doctrine."
+    assert any(rx.search(text) for _, rx in pats)
+    # severity rides in the label
+    assert all(lab.startswith("ai-tic·sev") for lab, _ in pats)
+
+
+def test_scored_tic_skips_human_near_miss():
+    pats = _scored_tic_patterns()
+    # bare "delve into" is REJECTED (real authors write it); only the narrowed
+    # "delve into the intricacies of" is a rule. The bare form must NOT fire.
+    assert not any(rx.search("We delve into the statute's text.") for _, rx in pats)
+    # "plays a crucial role" (bare) is rejected; only "...pivotal role in shaping"
+    assert not any(rx.search("Disclosure plays a crucial role here.") for _, rx in pats)
+
+
+def test_scored_tic_repo_survivors_fire():
+    pats = _scored_tic_patterns()
+    fire = lambda t: any(rx.search(t) for _, rx in pats)
+    assert fire("Let's think step by step about the statute.")          # reasoning-chain
+    assert fire("This represents a broader shift in doctrine.")          # superficial-meaning
+    assert fire("It covers everything from contracts to torts, and everything in between.")  # false-range
+
+
+def test_scored_tic_repo_rejects_do_not_fire():
+    pats = _scored_tic_patterns()
+    fire = lambda t: any(rx.search(t) for _, rx in pats)
+    # these FAILED the corpus gate — real legal scholars write them; must NOT fire
+    assert not fire("The statute serves as a deterrent to coercive tender offers.")
+    assert not fire("The rule could potentially affect minority shareholders.")
+    assert not fire("Studies show that staggered boards reduce firm value.")

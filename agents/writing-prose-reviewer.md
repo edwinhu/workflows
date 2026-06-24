@@ -69,6 +69,40 @@ For each paragraph in the draft (excluding frontmatter, headings, footnotes):
 | Hedge stacking | "relatively", "somewhat", "arguably", "tends to" |
 | Expletive constructions | "There are three reasons...", "It is clear that..." |
 
+### Check Against Corpus-Derived Style Tells (the *rhythm/diction* signature)
+
+These are the holistic, section-level AI tells measured against a pre-2020 human
+legal-prose corpus (per-phrase tics are already caught by the linter — grade the
+*statistical* signature the linter can't flag inline). Flag a section that shows
+the AI pattern; quote the stretch and name the tell.
+
+**Mechanical backstop (run it, don't eyeball it):** the same three corpus-gated
+scorers are folded into one script. Run it on the draft and fold its
+`diction:always_flag` + `sev_score>=4 tic` spans into your findings as quoted
+violations (each carries the plain `replace_with`):
+
+```bash
+uv run --with pyyaml python3 {PLUGIN_ROOT}/skills/de-ai-revise/scripts/de_ai_audit.py --json {DRAFT_PATH}
+```
+
+Treat its `composite_human_likeness` as a *guide*, not a grade: a real human legal
+draft scores ~55-65 with em-dashes as nearly the whole signal — do NOT flag a
+section as AI just because the composite is mid-range. Quote a specific tell or
+say nothing.
+
+| Tell | Human baseline | AI pattern to flag |
+|------|----------------|--------------------|
+| **Flat rhythm** (the #1 tell) | sentence lengths swing widely (SD ~22 words; short 8-word sentences next to 40-word ones) | sentences cluster around one length; no short punchy sentences; runs of same-length sentences |
+| **Dense diction** (biggest gap) | mix of plain Anglo-Saxon + Latinate | uniformly long/Latinate words, nominalizations ("utilization", "the implementation of") |
+| **Em-dash overuse** | ~0.25 per 1k words | em-dashes as a default connector (flag any cluster) |
+| **Semicolon avoidance** | ~7 per 1k words | near-zero semicolons across a long section |
+| **Passive under-use** | passive ~3× the AI rate, used deliberately | conspicuously all-active, uniform clause structure |
+
+Optional model-attribution note (if asked): GPT-family over-subordinates + uses
+colons + em-dashes hardest; Gemini-family opens sentences with "Moreover/Thus" and
+floods connectives. Sentence-initial transitions and subordination depth are the
+cleanest model discriminators.
+
 ### Check Against Prose Constraints
 
 | Constraint | Pattern |
