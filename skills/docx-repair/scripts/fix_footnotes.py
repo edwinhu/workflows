@@ -151,6 +151,11 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     if wrap_count:
         issues.append(f"pandoc_cite_wraps({wrap_count})")
 
+    # Google Docs leftover content controls (the visible "boxes" in Word).
+    goog_sdts = doc_xml.count('goog_rdk')
+    if goog_sdts:
+        issues.append(f"goog_content_controls({goog_sdts})")
+
     return issues
 
 
@@ -768,6 +773,273 @@ def restore_bio_custom_marks(doc_xml, fn_xml, num_bio_footnotes=3):
     return doc_xml, fn_xml, changes
 
 
+# ── Feature 1: strip Google Docs leftover content controls ─────────────
+def strip_goog_content_controls(doc_xml):
+    """Unwrap every ``<w:sdt>`` whose ``<w:tag w:val>`` contains ``goog_rdk``.
+
+    Google Docs' export wraps freshly-written / suggestion-mode body content in
+    ``<w:sdt>`` content controls tagged ``goog_rdk_<n>`` — often 3-deep around a
+    section. Word renders the nested ones as visible **boxes** around the text.
+    Each such control is replaced in place by the children of its
+    ``<w:sdtContent>``; the loop repeats until none remain, so nested controls
+    flatten fully. Non-``goog`` sdts (real form controls, the TOC ``docPartObj``)
+    are kept untouched. Idempotent — a doc with no ``goog_rdk`` sdts is a no-op.
+    Returns ``(doc_xml, changes)``.
+    """
+    root = etree.fromstring(doc_xml.encode("utf-8"))
+    total = 0
+    # Snapshot-then-process each pass; reparented inner sdts stay valid and are
+    # caught on a later pass. The loop is the belt-and-suspenders for nesting.
+    while True:
+        removed = 0
+        for sdt in list(root.iter(_wq("sdt"))):
+            tag = sdt.find(f"{_wq('sdtPr')}/{_wq('tag')}")
+            val = tag.get(_wq("val")) if tag is not None else None
+            if not (val and "goog_rdk" in val):
+                continue
+            parent = sdt.getparent()
+            if parent is None:
+                continue
+            content = sdt.find(_wq("sdtContent"))
+            children = list(content) if content is not None else []
+            idx = parent.index(sdt)
+            for off, child in enumerate(children):
+                parent.insert(idx + off, child)
+            # Preserve any tail text hanging off the sdt element.
+            if sdt.tail:
+                if children:
+                    children[-1].tail = (children[-1].tail or "") + sdt.tail
+                else:
+                    prev = sdt.getprevious()
+                    if prev is not None:
+                        prev.tail = (prev.tail or "") + sdt.tail
+                    else:
+                        parent.text = (parent.text or "") + sdt.tail
+            parent.remove(sdt)
+            removed += 1
+        total += removed
+        if removed == 0:
+            break
+    if not total:
+        return doc_xml, []
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+    return out, [f"Stripped {total} Google Docs content control(s) (goog_rdk sdt)"]
+
+
+# ── Feature 2: heading normalization ───────────────────────────────────
+# Section markers that LOOK like headings on a short standalone line.
+_HEADING_MARKER_RE = re.compile(r'^\s*(\([A-Za-z0-9]+\)|[A-Za-z]+\.|\d+\.)\s+\S')
+_ROMAN_RE = re.compile(r'^[IVXLCDM]+$')
+# Front-matter labels that look like headings but must NOT be restyled.
+_HEADING_EXCLUDE_LABELS = {"abstract", "table of contents", "contents"}
+
+
+def _heading_level_for_marker(token):
+    """Map a leading section-marker token to a Heading level (1-5), else None.
+
+    Tiers: Roman ``I.``→1, upper letter ``A.``→2, digit ``1.``→3, lower letter
+    ``a.``→4, parenthesized ``(a)``/``(1)``→5. Single uppercase Roman chars
+    other than ``I`` (V/X/L/C/D/M) are read as alphabetic markers (→2), since a
+    lone ``C.`` between ``B.`` and ``D.`` is far more common than Roman 100.
+    """
+    m = re.match(r'^\([A-Za-z0-9]+\)$', token)
+    if m:
+        return 5
+    m = re.match(r'^([A-Za-z0-9]+)\.$', token)
+    if not m:
+        return None
+    body = m.group(1)
+    if body.isdigit():
+        return 3
+    if body.islower():
+        return 4
+    if _ROMAN_RE.match(body) and (len(body) > 1 or body == "I"):
+        return 1
+    return 2
+
+
+def _para_all_bold(p):
+    """True if every text-bearing run in the paragraph is bold."""
+    runs = [r for r in p.findall(_wq("r")) if r.find(_wq("t")) is not None]
+    if not runs:
+        return False
+    for r in runs:
+        rpr = r.find(_wq("rPr"))
+        if rpr is None:
+            return False
+        b = rpr.find(_wq("b"))
+        if b is None or b.get(_wq("val")) in ("0", "false"):
+            return False
+    return True
+
+
+def _is_toc_paragraph(p):
+    """True if p lives inside a Table-of-Contents structure (a ``docPartObj``
+    sdt — Word's TOC wrapper)."""
+    anc = p.getparent()
+    while anc is not None:
+        if anc.tag == _wq("sdt") and anc.find(
+                f"{_wq('sdtPr')}/{_wq('docPartObj')}") is not None:
+            return True
+        anc = anc.getparent()
+    return False
+
+
+def _looks_like_toc_entry(p, txt):
+    """Heuristic TOC-row guard for TOCs not wrapped in a docPartObj sdt: a
+    trailing page number paired with a hyperlink and/or tab/dot leader."""
+    if not re.search(r'\d$', txt):
+        return False
+    has_link = p.find(f".//{_wq('hyperlink')}") is not None
+    has_tab = p.find(f".//{_wq('tab')}") is not None
+    return has_link or has_tab
+
+
+def _set_heading_style(p, level):
+    """Force ``pStyle = HeadingN`` on the paragraph (creating pPr/pStyle as the
+    schema-required first children if absent)."""
+    pPr = p.find(_wq("pPr"))
+    if pPr is None:
+        pPr = etree.Element(_wq("pPr"))
+        p.insert(0, pPr)
+    ps = pPr.find(_wq("pStyle"))
+    if ps is None:
+        ps = etree.Element(_wq("pStyle"))
+        pPr.insert(0, ps)
+    ps.set(_wq("val"), f"Heading{level}")
+
+
+def normalize_headings(doc_xml):
+    """Restyle heading-looking paragraphs that carry no Heading style.
+
+    Detect short standalone paragraphs that either lead with a section marker
+    (``I.`` / ``A.`` / ``1.`` / ``a.`` / ``(a)``) or are entirely bold, and that
+    are currently unstyled (pStyle None / Normal). Assign ``HeadingN`` by marker
+    tier (bold-without-marker → Heading1). Idempotent.
+
+    False-positive guards (the reason this is safe to run on a correct doc):
+      * already ``Heading*`` / ``TOC*`` / ``Title`` styled → skipped;
+      * Table-of-Contents entries (inside a docPartObj sdt, or a trailing
+        page-number row with a hyperlink/tab leader) → skipped;
+      * ``Abstract`` and similar front-matter labels → skipped.
+    Returns ``(doc_xml, changes)``.
+    """
+    root = etree.fromstring(doc_xml.encode("utf-8"))
+    restyled = 0
+    for p in root.iter(_wq("p")):
+        pPr = p.find(_wq("pPr"))
+        cur = None
+        if pPr is not None:
+            ps = pPr.find(_wq("pStyle"))
+            if ps is not None:
+                cur = ps.get(_wq("val"))
+        if cur is not None and cur not in ("Normal", "BodyText"):
+            continue  # already styled (Heading*, TOC*, Title, …) — leave it
+        if _is_toc_paragraph(p):
+            continue
+        txt = "".join(t.text or "" for t in p.iter(_wq("t"))).strip()
+        if not txt or len(txt) > 100:
+            continue
+        if txt.lower() in _HEADING_EXCLUDE_LABELS:
+            continue
+        if _looks_like_toc_entry(p, txt):
+            continue
+        level = None
+        m = _HEADING_MARKER_RE.match(txt)
+        if m:
+            level = _heading_level_for_marker(m.group(1))
+        if level is None and _para_all_bold(p):
+            level = 1
+        if level is None:
+            continue
+        _set_heading_style(p, level)
+        restyled += 1
+    if not restyled:
+        return doc_xml, []
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+    return out, [f"Normalized {restyled} unstyled heading-looking paragraph(s)"]
+
+
+# w:pPr children to KEEP when stripping a heading paragraph's direct formatting.
+# pStyle is the style reference; numPr is kept only when the heading is a genuine
+# list (auto-numbered) heading — everything else is direct formatting to drop.
+_HEADING_PPR_KEEP = ("pStyle", "numPr")
+
+
+def normalize_heading_formatting(doc_xml):
+    """Strip per-paragraph direct formatting from Heading-styled paragraphs so
+    they derive ENTIRELY from the style definition (Eddy: "set these once in the
+    template and forget about it").
+
+    Google Docs bakes direct formatting into headings, so two paragraphs with the
+    same Heading style render differently (one flush-left ``<w:ind w:left="0"
+    w:firstLine="0"/>``, another forced to Arial/sz22, …). For every
+    ``Heading*`` paragraph this:
+      * reduces ``<w:pPr>`` to only ``<w:pStyle>`` (+ ``<w:numPr>`` for a genuine
+        list heading) — dropping ``ind`` / ``spacing`` / ``tabs`` / the
+        paragraph-mark ``<w:rPr>`` / ``pPrChange`` / any other direct property;
+      * strips ``<w:rPr>`` from every run.
+    Then it DELETES empty heading paragraphs (Google Docs leaves blank styled
+    ones that render as stray indented lines). A paragraph carrying a section
+    break (``sectPr``) is never deleted. Idempotent.
+
+    Returns ``(doc_xml, changes)``.
+    """
+    root = etree.fromstring(doc_xml.encode("utf-8"))
+    normalized = 0
+    removed = 0
+    for p in list(root.iter(_wq("p"))):
+        pPr = p.find(_wq("pPr"))
+        if pPr is None:
+            continue
+        ps = pPr.find(_wq("pStyle"))
+        style = ps.get(_wq("val")) if ps is not None else None
+        if not (style and style.startswith("Heading")):
+            continue
+        has_sectpr = pPr.find(_wq("sectPr")) is not None
+        text = "".join(t.text or "" for t in p.iter(_wq("t"))).strip()
+        if not text and not has_sectpr:
+            parent = p.getparent()
+            if parent is not None:
+                parent.remove(p)
+                removed += 1
+            continue
+        # Keep numPr only for a GENUINE list heading — one whose number is
+        # auto-generated. If the heading text already starts with a literal
+        # marker ("a. …", "1. …"), an auto-number would render doubled, so drop
+        # numPr too and leave only pStyle.
+        keep = ("pStyle",) if _HEADING_MARKER_RE.match(text) else _HEADING_PPR_KEEP
+        changed = False
+        for child in list(pPr):
+            if etree.QName(child).localname in keep:
+                continue
+            pPr.remove(child)
+            changed = True
+        for r in p.findall(_wq("r")):
+            rpr = r.find(_wq("rPr"))
+            if rpr is not None:
+                r.remove(rpr)
+                changed = True
+        if changed:
+            normalized += 1
+    changes = []
+    if normalized:
+        changes.append(
+            f"Stripped direct formatting from {normalized} heading paragraph(s)")
+    if removed:
+        changes.append(f"Removed {removed} empty heading paragraph(s)")
+    if not changes:
+        return doc_xml, []
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+    return out, changes
+
+
 def fix_toc_separator(doc_xml):
     """Shrink the TOC-to-body separator paragraph to near-zero height."""
     changes = []
@@ -1027,6 +1299,10 @@ def main():
                         help="Also run create_crossrefs.py after fixing")
     parser.add_argument("--fix-numbering", action="store_true",
                         help="Fix numbering offset from customMarkFollows bio footnotes")
+    parser.add_argument("--normalize-headings", action="store_true",
+                        help="Restyle unstyled heading-looking paragraphs (section "
+                             "markers / bold short lines) to HeadingN; excludes TOC "
+                             "entries and front-matter labels (off by default)")
     parser.add_argument("--template", default=str(TEMPLATE),
                         help="Law-review reference template (.docx) to restore "
                              "missing footnote style definitions from "
@@ -1050,7 +1326,7 @@ def main():
         styles_xml = read_zip_member(zf, 'word/styles.xml')
 
     issues = detect_issues(fn_xml, doc_xml, settings_xml, styles_xml)
-    if not issues and not args.fix_numbering:
+    if not issues and not args.fix_numbering and not args.normalize_headings:
         print("No footnote damage detected.")
         return
 
@@ -1069,7 +1345,12 @@ def main():
         fn_xml_fixed, args.bio_footnotes)
     all_changes.extend(bio_body_changes)
 
-    doc_xml_fixed, doc_changes = fix_document_xml(doc_xml, args.bio_footnotes)
+    # Feature 1: strip Google Docs leftover content controls FIRST so every
+    # downstream pass sees the flattened structure (no goog_rdk sdt wrappers).
+    doc_xml_fixed, sdt_changes = strip_goog_content_controls(doc_xml)
+    all_changes.extend(sdt_changes)
+
+    doc_xml_fixed, doc_changes = fix_document_xml(doc_xml_fixed, args.bio_footnotes)
     all_changes.extend(doc_changes)
 
     doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
@@ -1101,6 +1382,23 @@ def main():
     styles_xml_fixed, mutation_changes = replace_mutated_footnote_styles(
         styles_xml_fixed, args.template)
     all_changes.extend(mutation_changes)
+
+    # Feature 2: heading normalization (opt-in). Runs last on document.xml, after
+    # the goog_rdk strip so TOC detection sees the kept docPartObj sdt.
+    if args.normalize_headings:
+        # 2b first: style heading-looking paragraphs that aren't yet headings, so
+        # 2a then normalizes their formatting too.
+        doc_xml_fixed, h2b_changes = normalize_headings(doc_xml_fixed)
+        all_changes.extend(h2b_changes)
+        # 2a: strip direct formatting + delete empty heading paragraphs.
+        doc_xml_fixed, h2a_changes = normalize_heading_formatting(doc_xml_fixed)
+        all_changes.extend(h2a_changes)
+        # Restore Heading1-4 style definitions from the template if a round-trip
+        # stripped them (same add-only restore fix_footnotes does for FNStyleBest).
+        styles_xml_fixed, heading_style_changes = ensure_footnote_styles(
+            styles_xml_fixed, args.template,
+            needed=("Heading1", "Heading2", "Heading3", "Heading4"))
+        all_changes.extend(heading_style_changes)
 
     if args.fix_numbering:
         settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, num_changes = fix_numbering_offset(

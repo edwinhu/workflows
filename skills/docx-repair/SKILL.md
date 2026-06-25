@@ -1,19 +1,20 @@
 ---
 name: docx-repair
-description: "Use to REPAIR a .docx damaged by a Google Docs or Word Online round-trip — both the package/XML wiring and the footnote markup. Triggers: 'Word won't open the docx / says it's corrupt', 'Google Docs export broken', 'fix the customXML error', 'recover unreadable content', 'phantom blank page', 'repair this docx'; AND 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'doubled footnote marks (**, ††)' — or converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Any OOXML-level repair on a .docx edited in a cloud editor, even if the user never says 'OOXML'. NOT for building a docx from markdown (law-review-docx) or exporting to PDF (docx-render)."
+description: "Use to REPAIR a .docx damaged by a Google Docs or Word Online round-trip — the package/XML wiring, the footnote markup, leftover content controls, and heading styling. Triggers: 'Word won't open the docx / says it's corrupt', 'Google Docs export broken', 'fix the customXML error', 'recover unreadable content', 'phantom blank page', 'repair this docx'; AND 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'doubled footnote marks (**, ††)'; AND 'boxes around text after Google Docs', 'content controls / doubled boxes around paragraphs', 'remove the boxes Word draws around headings', 'heading text isn't styled as a heading', 'headings look different / inconsistent heading formatting', 'blank/empty heading lines' — or converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Any OOXML-level repair on a .docx edited in a cloud editor, even if the user never says 'OOXML'. NOT for building a docx from markdown (law-review-docx) or exporting to PDF (docx-render)."
 user-invocable: false
 ---
 
 # DOCX Repair (Google Docs / Word Online damage)
 
-Cloud editors damage a `.docx` in **two independent ways**. This skill is the front door for both; run only the track(s) you need.
+Cloud editors damage a `.docx` in **independent ways**. This skill is the front door for all of them; run only the track(s) you need.
 
 | Damage class | Symptom | Fix |
 |---|---|---|
 | **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `scripts/docx_repair.py` (plugin root) — §[Package repair](#a-package--ooxml-wiring-repair) |
 | **B. Footnote & cross-reference markup** | Bios show `1,2,3` not `*,†,‡`; numbering starts wrong; "supra note N" points to the wrong footnote; missing separator line | the footnote scripts — §[Footnote repair](#b-footnote--cross-reference-repair) |
+| **C. Document content (boxes + headings)** | Visible **boxes** around freshly-edited text; heading-looking lines not styled as headings; same-style headings rendering differently; blank heading lines | `fix_footnotes.py`'s document.xml passes — §[Content cleanup](#c-document-content-cleanup-boxes--headings) |
 
-They are decoupled: package repair fixes the **part wiring** (never touches content); footnote repair fixes the **footnote markup**. A file can need either, both, or neither. If you don't know which, run the package check first (it's a no-op on a clean package), then the footnote pass.
+They are decoupled: package repair fixes the **part wiring** (never touches content); footnote repair fixes the **footnote markup**; content cleanup strips Google-Docs leftover content controls and normalizes headings. A file can need any, all, or none. If you don't know which, run the package check first (it's a no-op on a clean package), then the footnote pass (it carries the content cleanup).
 
 > Heads-up: `docx-render`'s Word path already composes `docx_repair.py` as a preflight, so a Google export "just renders" without a manual Track A. Run Track A manually when you need the *repaired file itself* (to hand back, edit, or footnote-fix), not just a PDF.
 
@@ -57,8 +58,10 @@ A law-review draft that round-trips through **Google Docs** every editing round 
 #    baseline remap both assume the FINAL accepted text. (Word: Review →
 #    Accept All; or the document skill's accept-changes path.)
 
-# 2. Repair footnote markup (separators, styles, bio custom marks, pStyles).
-uv run "$SKILL_DIR/scripts/fix_footnotes.py" returned.docx -o step2.docx
+# 2. Repair footnote markup (separators, styles, bio custom marks, pStyles) AND
+#    strip Google Docs leftover content controls (the "boxes"). Add
+#    --normalize-headings to also restyle/clean heading paragraphs (see §C).
+uv run "$SKILL_DIR/scripts/fix_footnotes.py" returned.docx -o step2.docx --normalize-headings
 
 # 3. Remap stale "supra note N" numbers against the known-good baseline, THEN
 #    convert to NOTEREF fields. --baseline is what fixes the coauthor-shift.
@@ -70,7 +73,7 @@ uv run "$SKILL_DIR/../../scripts/doc_render.py" \
   step3.docx step3.pdf --renderer word --allow-word
 ```
 
-**Verify in the render:** author bios show `*`, `†`, `‡` (not `1, 2, 3` and not doubled `**`, `††`); the first real footnote is `1`; a remapped reference (e.g. "Kahan & Rock, supra note 8") points to the correct footnote. Then in Word, **Ctrl+A, F9** to refresh the NOTEREF display numbers.
+**Verify in the render:** author bios show `*`, `†`, `‡` (not `1, 2, 3` and not doubled `**`, `††`); the first real footnote is `1`; a remapped reference (e.g. "Kahan & Rock, supra note 8") points to the correct footnote; no boxes around freshly-edited sections; same-level headings render identically. Then in Word, **Ctrl+A, F9** to refresh the NOTEREF display numbers.
 
 ### Procedure Facts (incident-grounded)
 
@@ -78,6 +81,7 @@ uv run "$SKILL_DIR/../../scripts/doc_render.py" \
 - **`--baseline` is not optional for the Google Docs case.** Google Docs flattens every NOTEREF field back to hardcoded "supra note N" text, frozen at the prior draft's numbering. After a coauthor inserts/deletes footnotes the offset is *non-uniform*, so `create_crossrefs` without `--baseline` bookmarks by current position and mis-targets ~90% of references — the exact failure this skill exists to prevent.
 - **The remap's flagged list is a human cite-check queue, not noise.** `--baseline` prints `⚠ … could NOT be remapped` for references whose footnote content did not align one-to-one (inserts, deletes, densely-similar citation clusters). These are left unchanged on purpose — guessing a target you cannot prove is how a wrong citation ships. Surface the flagged list to the user for manual verification; do not suppress it.
 - **Render with Word, never LibreOffice, to verify.** LibreOffice renders `customMarkFollows` numbering wrong (verified 2026-06-10), so bios that are actually correct can look broken — leading you to "fix" something that was right. `doc_render.py --renderer word` (or `x2t`) is ground truth.
+- **The `goog_rdk` "boxes" are an on-screen Word artifact — they do NOT export to PDF.** Word draws boundaries around nested content controls in its editor, but neither Word's nor x2t's PDF export renders them. So a "no boxes" PDF is NOT proof the controls were stripped — verify at the XML level (`unzip -p file.docx word/document.xml | grep -c goog_rdk` → `0`). `fix_footnotes.py` reports the strip count; trust that over the render.
 
 ### When footnote repair applies
 
@@ -155,12 +159,21 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
   citations while preserving author-written explanatory parentheticals
   (which lack the double-whitespace XML signature).
 
+**Document content cleanup (see §[C](#c-document-content-cleanup-boxes--headings)):**
+- **Content controls (the "boxes")** — unwraps every `<w:sdt>` tagged `goog_rdk*`
+  (Google Docs suggestion-mode markers, often 3-deep, that Word draws as boxes),
+  replacing each with its `<w:sdtContent>` children. Keeps non-`goog` sdts (real
+  controls, the TOC). **Runs by default** in the document.xml pass; idempotent.
+- **Heading normalization** (`--normalize-headings`, opt-in) — styles unstyled
+  heading-looking paragraphs and strips direct formatting off every heading; see §C.
+
 **Flags:**
 - `--output` / `-o`: Output path (default: overwrite input)
 - `--dry-run`: Show what would change without modifying
 - `--bio-footnotes N`: Number of author bio footnotes (default: 3)
 - `--crossrefs`: Chain to create_crossrefs.py after fixing
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
+- `--normalize-headings`: Normalize headings (off by default) — style unstyled heading-looking paragraphs (2b) AND strip direct formatting + delete empty heading paragraphs (2a); restores Heading1–4 style defs from the template if missing. See §C.
 - `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `writing-legal/templates/law_review_template.docx`)
 
 #### create_crossrefs.py
@@ -248,10 +261,69 @@ When author bio footnotes use `customMarkFollows` (*, †, ‡), they consume au
 
 See [`footnotes-reference.md`](footnotes-reference.md) § 4 for details, code patterns, and the critical rule: numRestart goes in `settings.xml` ONLY (not in sectPr — causes all-zeros).
 
+## C. Document content cleanup (boxes + headings)
+
+Two document.xml passes carried by `fix_footnotes.py`, for damage that is neither
+package wiring nor footnote markup. Both are idempotent and live in the same pass,
+so they ride along with the canonical procedure's step 2.
+
+### Feature 1 — strip Google Docs content controls (the "boxes") — DEFAULT ON
+
+Google Docs wraps freshly-written / suggestion-mode body content in `<w:sdt>`
+content controls tagged `goog_rdk_<n>`, often **3-deep**. Word's editor draws the
+nested ones as visible **boxes** around the text. The pass unwraps every `goog_rdk`
+sdt — replacing it with the children of its `<w:sdtContent>`, looping until none
+remain — and **keeps** non-`goog` sdts (real form controls and the TOC's
+`docPartObj` wrapper). It runs automatically (no flag); a doc with no `goog_rdk`
+sdts is a no-op. Text, footnotes, comments, and tracked changes are preserved
+verbatim (verified: 137 controls stripped, 0 text/footnote/comment delta).
+
+### Feature 2 — heading normalization — OPT-IN (`--normalize-headings`)
+
+Two parts, run in order (2b then 2a) so a newly-styled heading is also formatting-cleaned:
+
+- **2b — style heading-looking paragraphs that aren't headings.** Detects short
+  standalone paragraphs that either lead with a section marker (`I.`→Heading1,
+  `A.`→Heading2, `1.`→Heading3, `a.`→Heading4, `(a)`→Heading5) or are entirely
+  **bold** (→Heading1), and are currently unstyled (pStyle None/Normal). **Guards
+  (why it's safe to run on a correct doc):** skips anything already `Heading*` /
+  `TOC*` / `Title`; skips Table-of-Contents entries (inside a `docPartObj` sdt, or
+  a trailing-page-number row with a hyperlink/tab leader); skips `Abstract` and
+  similar front-matter labels.
+- **2a — strip direct formatting off every heading.** Google Docs bakes
+  per-paragraph formatting into headings, so same-style headings render
+  differently. For each `Heading*` paragraph this reduces `<w:pPr>` to only
+  `<w:pStyle>` (+ `<w:numPr>` for a *genuine* list heading) and strips `<w:rPr>`
+  from every run, then **deletes empty heading paragraphs**. Result: headings
+  derive entirely from the style definition.
+- **Heading style defs** — restores `Heading1`–`Heading4` definitions from the
+  law-review template if a round-trip stripped them (same add-only restore used
+  for `FNStyleBest`).
+
+### Content-cleanup Facts (incident-grounded)
+
+- **A heading whose text starts with a literal marker (`a. …`, `1. …`) must NOT
+  keep a `numPr`.** 2a keeps `numPr` only for a *genuine* list heading (number
+  auto-generated, no literal marker in the text). On the OPV baseline, `a. Pure
+  Robo-Voting` carried a leftover Google Docs `numPr` while its siblings did not —
+  keeping it would render a **doubled** marker ("1. a. Pure Robo-Voting") and the
+  three sibling headings would not match. Dropping it makes `a.`/`b.`/`c.`
+  resolve to identical `<w:pPr><w:pStyle w:val="Heading4"/></w:pPr>`.
+- **2b's regression case is "no false restyling," not "no change."** On a doc
+  whose body headings are already styled (the OPV deliverable), 2b must report
+  zero restyles — its only unstyled "heading-looking" paragraphs are TOC entries
+  and `Abstract`, all excluded. 2a still changes that doc (it normalizes the
+  already-styled headings); only 2b is the no-false-positive guard. Confusing the
+  two leads to "fixing" guards that were working.
+- **The `goog_rdk` boxes do not export to PDF — verify removal in the XML.** See
+  the Procedure Fact above: a clean PDF is not proof. Check
+  `grep -c goog_rdk word/document.xml → 0`.
+
 ## Related (document skill group)
 
-This skill owns the **REPAIR** stage — both package wiring (Track A) and footnote
-markup (Track B) — for a `.docx` damaged by a cloud editor. Adjacent stages:
+This skill owns the **REPAIR** stage — package wiring (Track A), footnote
+markup (Track B), and document-content cleanup (Track C) — for a `.docx` damaged
+by a cloud editor. Adjacent stages:
 
 - **Build** a styled `.docx` from markdown → `law-review-docx` (its `build_docx.py`
   chains this skill's footnote repair + NOTEREF conversion after the pandoc build).
