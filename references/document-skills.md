@@ -40,7 +40,6 @@ Vendored from [anthropics/skills](https://github.com/anthropics/skills) under
 |---|---|
 | **`docx-repair`** (skill) | **Front door for both repair tracks.** Track A: OOXML package corruption (composes `docx_repair.py`). Track B: footnote structure + NOTEREF cross-refs after Google Docs / Word Online round-trips. |
 | `scripts/docx_repair.py` | **Track A library** — Google Docs exports' case-broken `customXML` part paths, `evenAndOddHeaders` phantom pages. Case-normalize → docbuilder reserialize fallback. Importable (`repair_docx`, `reserialize_docx`, `opc_integrity_issues`) + CLI. Lives at plugin root because `doc_render.py` composes it as a render preflight. |
-| `bluebook-audit/scripts/fix_gdocs_footnotes.py` | Deprecated shim — forwards to `docx-repair`'s `fix_footnotes.py` (consolidated 2026-06-25). |
 
 The two tracks are **distinct concerns** under one front door — package wiring
 (never touches content) vs. footnote markup. A file can need either, both, or
