@@ -417,6 +417,13 @@ Auto-load all constraints matching `applies-to: ds-review`:
 - [ ] Check constraints were respected (especially replication requirements)
 - [ ] Verify analysis answers the original question
 
+### Master Dataset Consistency
+<!-- Per the master-datasets constraint (loaded above). Applies to multi-exhibit projects. -->
+- [ ] Every table/figure derives from a declared master dataset — no exhibit re-pulls or re-filters raw sources on its own (per-exhibit pulls produce exhibits that silently disagree)
+- [ ] Exhibits that should share a sample DO tie out: shared N / counts match across tables built from the same master (a high-confidence issue if they don't)
+- [ ] The dataset-construction mermaid diagram matches the code that actually ran — masters, merges, and filters in the diagram exist in the pipeline; the diagram is not stale
+- [ ] Each master dataset is unique at its declared grain (run the keyed dedup; a fan-out here corrupts every downstream exhibit)
+
 ### Data Quality Handling
 - [ ] Confirm missing values handled appropriately (not ignored)
 - [ ] Verify duplicates addressed (documented if kept)
@@ -654,9 +661,10 @@ Report any WARNING as confidence >= 80.
 
 PASS 2 - Methodology and Compliance Review (READ CODE):
 1. Spec compliance - verify all SPEC.md objectives addressed
-2. Data quality handling - confirm issues from PLAN.md were resolved
-3. Methodology - verify appropriate methods, assumptions checked
-4. Reproducibility - confirm seeds, versions, documentation
+2. Master dataset consistency - confirm every exhibit derives from a declared master (none re-pulls raw sources); exhibits sharing a master tie out (matching N/counts); the dataset-construction mermaid diagram matches the code that ran. Mismatched counts across exhibits that should share a sample = confidence >= 80.
+3. Data quality handling - confirm issues from PLAN.md were resolved
+4. Methodology - verify appropriate methods, assumptions checked
+5. Reproducibility - confirm seeds, versions, documentation
 
 Confidence score each issue (0-100).
 Report only issues with >= 80 confidence.

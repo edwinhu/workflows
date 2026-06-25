@@ -138,6 +138,12 @@ current phase gate status. Be specific.]
 - [Decision]: [what was decided and WHY]
 - [Decision]: [what was decided and WHY]
 
+## Master Datasets & Construction Diagram
+<!-- For multi-exhibit projects. Lets the next session resume without re-deriving the data architecture. -->
+- Master datasets and their grain/keys: [e.g. firm_quarter.parquet (gvkey, yearq) — BUILT; trade_file.parquet (cusip, trade_dt, seqnum) — NOT YET BUILT]
+- Construction diagram location + currency: [e.g. docs/INVESTIGATION.md — current through Task 5; Task 6's filter not yet reflected]
+- Exhibits still unmapped / unbuilt: [list, or "all exhibits map to a built master"]
+
 ## Rejected Approaches
 - [Approach]: [why it was rejected — saves the next session from re-exploring dead ends]
 

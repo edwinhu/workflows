@@ -361,6 +361,16 @@ Output: [output files produced and their contents]
 
 **One-liner rule:** Must be SUBSTANTIVE. Good: "Panel regression with firm and year FE, clustered SEs, 3 robustness checks". Bad: "Completed task 3".
 
+## Dataset Construction Diagram (Maintain As You Build)
+
+If PLAN.md has a `## Dataset Construction Diagram` (the master-datasets mermaid flowchart: raw → merges → filters → master datasets → exhibits), it is a **required doc deliverable** the pipeline must keep current. PLAN.md's diagram is the *intended* construction; the docs carry the construction that *actually ran*.
+
+- After a master-build task lands, update the diagram in the analysis docs (e.g. `docs/INVESTIGATION` or the analysis README/notebook header) with the real merge keys and the actual row-drops each filter produced (the profiled numbers, not the planned estimates).
+- If the built pipeline diverges from the plan (an extra filter, a different join key, a master split in two), update the diagram AND note the divergence in LEARNINGS.md. A stale diagram that contradicts the code is worse than none — the reader trusts the picture over the script.
+- Keep master nodes as `[(rounded)]` and label every edge with its key or filter+row-drop. An edgeless box diagram hides the sample funnel, which is the one thing the diagram exists to show.
+
+This is cheap to edit per-task and expensive to reconstruct from memory at write-up time. The final diagram is what ds-handoff records and ds-review checks against the code.
+
 ## Verification Patterns
 
 See [references/verification-patterns.md](references/verification-patterns.md) for detailed code patterns for:

@@ -102,6 +102,7 @@ Before loading data, before exploring, before proposing approaches, you MUST:
 
 ### Output Questions
 - What format should results be in (report, dashboard, model)?
+- **What tables and figures will the final output contain?** (The planned-exhibits list — ds-plan maps every exhibit to a canonical "master" dataset so they all share one methodology. Capturing it here, even roughly, is what lets the plan be built around the smallest set of datasets feeding every exhibit.)
 - What visualizations are expected?
 - How will results be validated?
 
@@ -177,6 +178,12 @@ After selecting an approach:
 ## Data Sources
 - [Source 1]: [location, format, time period]
 - [Source 2]: [location, format, time period]
+
+## Planned Exhibits
+<!-- The tables and figures the final output will contain. Rough is fine — ds-plan Step 5d maps each to a canonical master dataset so all exhibits share one methodology. Omit only for a genuine single-table one-off. -->
+- Table 1: [what it shows]
+- Table 2: [what it shows]
+- Figure 1: [what it shows]
 
 ## Requirements
 

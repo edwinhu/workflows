@@ -83,7 +83,7 @@ Auto-load all constraints matching `applies-to: ds-plan`:
 
 !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-plan`
 
-**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate).
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate); `ds-master-datasets` governs Step 5d (Master Dataset Design).
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning
@@ -133,7 +133,7 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 
 ## Process
 
-**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.** The two sub-gates (5b External Skill Discovery, 5c Data Pull Profiling) and the exit Plan Review are mandatory when their triggers fire — they are not optional steps a fast path can skip.
+**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.** The sub-gates (5b External Skill Discovery, 5c Data Pull Profiling, 5d Master Dataset Design) and the exit Plan Review are mandatory when their triggers fire — they are not optional steps a fast path can skip. Step 5d fires for any project with 3+ planned exhibits sharing a sample.
 
 ```
  1. Verify SPEC.md exists ──(missing)──▶ STOP, run /ds first
@@ -154,7 +154,10 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
  5c. Data Pull Profiling gate ──(source ≥50M rows / ≥500MB / "large")──▶ read-only size profile → decision table
             │
             ▼
- 6. Task breakdown (each task carries implements: [REQ-ID])
+ 5d. Master Dataset Design ──▶ name minimal master datasets + grain/keys, map every exhibit→master, draft construction mermaid diagram
+            │
+            ▼
+ 6. Task breakdown (each task carries implements: [REQ-ID]; master-build tasks produce the master datasets)
             │
             ▼
  7. Write .planning/PLAN.md
@@ -724,12 +727,50 @@ The check script `ds-data-pull-profile.py` enforces this section — a missing o
 - Profiling happens at planning time. Implementers follow the plan literally: a plan that says pull-raw gets raw rows pulled even when profiling would have said aggregate.
 - A profile is real data work — dispatch a read-only subagent. COUNT/GROUP BY in main chat violates the delegation boundary.
 
+### 5d. Master Dataset Design (MANDATORY FOR MULTI-EXHIBIT PROJECTS)
+
+<EXTREMELY-IMPORTANT>
+**NO TASK BREAKDOWN WITHOUT NAMING THE MASTER DATASETS AND MAPPING EVERY EXHIBIT TO ONE. This is not negotiable for any project with 3+ exhibits that share a sample.**
+
+For most projects, every table and figure must derive from the **smallest set of canonical "master" datasets** — one consistent methodology feeding every exhibit, NOT an ad-hoc per-exhibit data pull. Designing this at planning time is what makes the exhibits tie out by construction. Deferring it to implementation means each exhibit's author re-applies the sample filter and re-guesses the grain — and the exhibits silently disagree.
+</EXTREMELY-IMPORTANT>
+
+Full rule: `references/constraints/ds-master-datasets.md` (loaded above as the `master-datasets` constraint).
+
+#### Step 5d.1: Enumerate the planned exhibits
+
+List every table and figure the analysis will produce (from SPEC.md's planned-exhibits list, or derive it from the success criteria if the spec is thin). This is the demand side — what the data must feed.
+
+#### Step 5d.2: Name the minimal master datasets and their grain
+
+Identify the **smallest** set of analysis-ready datasets from which all exhibits can be derived. For each master dataset, declare:
+- **Grain** — one row = one *what* (firm-quarter, trade, security-day, meeting-vote)
+- **Keys** — the column-set unique at that grain (verified against the profiling candidate-key check from Step 2)
+- **Source intermediates** — which cleaned/merged inputs build it
+
+Minimal ≠ exactly one: distinct analysis grains (a firm-quarter panel AND a trade-level file) genuinely need distinct masters. But do not split one grain across several ad-hoc files, and do not merge two grains into one bloated file. Justify each master by an exhibit that needs its grain.
+
+#### Step 5d.3: Map every exhibit to its master dataset(s)
+
+Build the exhibit→dataset map (template below). Every exhibit reads exactly one master (or a clearly-justified join of two). **No exhibit may read a raw source directly** — if one does, either it needs its own master or the master set is incomplete.
+
+#### Step 5d.4: Draft the dataset-construction mermaid diagram
+
+Draft the `flowchart` showing **raw sources → merges → filters → master datasets → exhibits**, with merge keys and filter row-drops on the edges. This is a required PLAN.md deliverable (template below); ds-implement keeps it current as the pipeline is built, and ds-handoff carries its location.
+
+#### Step 5d.5: Record in PLAN.md and reconcile with the Task Breakdown
+
+The `## Master Datasets`, `## Exhibit → Dataset Map`, and the mermaid diagram go in PLAN.md. Each master dataset MUST be produced by a real task in the Task Breakdown (Step 6) — the master-build tasks are the join points of the DAG that exhibit tasks depend on.
+
+If the project is genuinely a one-off (a single descriptive pull feeding one table), note that explicitly in the Master Datasets section ("Single exhibit, no shared sample — master-dataset apparatus not required") and proceed. Do not skip the section header.
+
 ### 6. Create Task Breakdown
 
 Break analysis into ordered tasks:
 - Each task should produce **visible output**
 - Order by data dependencies
 - Include data cleaning tasks FIRST
+- **Master-build tasks produce the master datasets** named in Step 5d; exhibit tasks depend on them (`after N`) and read ONLY the master, never raw sources
 - For any task touching an external skill, reference the ADOPT/PATCH decision recorded in Step 5b (example path, delta)
 
 ### 7. Write Plan Doc
@@ -821,6 +862,52 @@ See: docs/investigations/YYYY-MM-DD_pull_profile.md
 - **source1:** Ratio 89x favors aggregate, BUT aggregate drops `fundid` required by Task 5 block classification. pull-raw despite ratio.
 - **source2:** Ratio 540x; aggregate preserves (permno, rqdate) — everything downstream needs. SAS-on-WRDS pipeline ships 18 MB result instead of 2.5 GB raw.
 
+## Master Datasets
+<!-- Required for any project with 3+ exhibits sharing a sample. -->
+<!-- If a genuine one-off, state so in one line and omit the tables: "Single exhibit, no shared sample — master-dataset apparatus not required." -->
+
+The minimal canonical datasets every exhibit derives from. Each is built by a real task below and read directly by exhibit tasks (never raw sources).
+
+| Master | Grain (one row =) | Keys (unique at grain) | Built by Task | Source intermediates |
+|--------|-------------------|------------------------|---------------|----------------------|
+| firm_quarter.parquet | one firm-quarter | (gvkey, yearq) | Task 4 | clean_crsp, clean_comp |
+| trade_file.parquet | one muni trade | (cusip, trade_dt, seqnum) | Task 5 | clean_msrb |
+
+## Exhibit → Dataset Map
+<!-- Every planned table/figure from SPEC.md maps to exactly one master (or a justified join of two). No exhibit reads a raw source directly. -->
+
+| Exhibit | Reads master | Notes |
+|---------|--------------|-------|
+| Table 2 (summary stats) | firm_quarter | — |
+| Table 3 (pennying funnel) | trade_file | funnel = sample-selection on trade_file |
+| Table 4 (panel regressions) | firm_quarter | — |
+| Figure 3 (coef plot) | firm_quarter | companion to Table 4 |
+| Figure 5 (spread by size) | trade_file | companion to Table 3 |
+
+## Dataset Construction Diagram
+<!-- Required doc deliverable. Mermaid flowchart: raw sources → merges → filters → master datasets → exhibits. -->
+<!-- Master datasets are [(rounded)] nodes; edges into a master carry the merge key or filter (with row-drop). Every exhibit has one incoming path from a master. -->
+<!-- ds-implement keeps this current as the pipeline is built; if the built pipeline diverges, update the diagram and note the divergence. -->
+
+```mermaid
+flowchart LR
+  subgraph raw [Raw sources]
+    A[CRSP daily]
+    B[Compustat fundq]
+    C[MSRB trades]
+  end
+  A -->|filter: 2010-2024, common shares| F1[clean_crsp]
+  B -->|filter: non-financial| F2[clean_comp]
+  F1 -->|merge permno-gvkey via CCM| M1[(firm_quarter)]
+  F2 --> M1
+  C -->|filter: drop interdealer, >$1M| M2[(trade_file)]
+  M1 --> T2[Table 2]
+  M1 --> T4[Table 4]
+  M1 --> F3[Figure 3]
+  M2 --> T3[Table 3]
+  M2 --> F5[Figure 5]
+```
+
 ## Task Breakdown — MANDATORY EXECUTABLE TABLE
 
 > **This table is the machine-executable spec.** `ds-implement` reads it directly: it topologically sorts `Deps` (the data-flow DAG — which intermediates a task consumes) into levels, runs each level's tasks output-first (produce the `Outputs`, then run the `Verify` assertion), and gates each task on its `Verify` exit code. **A plan without a complete table is not executable — `ds-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until every row is filled.** (ds is output-first, not TDD: the `Verify` command is the per-task mechanical gate; `Expected Output` is the human-readable claim that `ds-validate-coverage` reviews per requirement.)
@@ -871,6 +958,8 @@ source.csv ──→ [Task 1: Clean] ──→ clean.parquet ──→ [Task 2: 
 
 This flowchart IS the specification. If PLAN.md narrative and flowchart disagree, the flowchart wins.
 
+**Relationship to the Dataset Construction Diagram:** the mermaid `## Dataset Construction Diagram` above is the canonical **construction** view (raw → merges → filters → master datasets → exhibits — what feeds what). This ASCII flowchart annotates the same flow with **ETL execution** concerns (FILTER push-down, PARALLEL dimension, CACHE format). They describe one pipeline from two angles; the two must agree on which intermediates and masters exist. For projects with master datasets, the mermaid diagram is required; the ASCII annotations are optional detail.
+
 ### Scale-Up Testing Plan
 <!-- Include when any task involves batch APIs, irreversible operations, or >500 items through external services -->
 
@@ -914,6 +1003,7 @@ Complete the plan when:
 - Assess ETL strategy (if data > 1M rows or multiple sources)
 - **Run External Skill Discovery (Step 5b)** for every external skill in play — record ADOPT/PATCH/GREENFIELD per task
 - **Run Data Pull Profiling (Step 5c)** for every source >= 50M rows, >= 500 MB, or flagged large in SPEC — record decision table in PLAN.md, investigation file in `docs/investigations/`
+- **Run Master Dataset Design (Step 5d)** for any project with 3+ shared-sample exhibits — name the minimal master datasets with grain/keys, map every exhibit to its master, draft the dataset-construction mermaid diagram
 - Order tasks by dependency
 - Define output verification criteria
 - Write `.planning/PLAN.md`
@@ -957,8 +1047,9 @@ Before proceeding to ds-implement, execute this gate:
 
 1. **IDENTIFY**: PLAN.md exists at `.planning/PLAN.md`
 2. **RUN**: `Read(".planning/PLAN.md")`, `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.py .`, and `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.py .`
-3. **READ**: Verify it contains: Data Profile section, Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
+3. **READ**: Verify it contains: Data Profile section, Master Datasets + Exhibit → Dataset Map + Dataset Construction Diagram (if multi-exhibit), Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
 4. **VERIFY**:
+   - If 3+ exhibits share a sample, confirm the Master Datasets table (grain + keys per master), the Exhibit → Dataset Map (every planned exhibit mapped, none reading raw sources), and the mermaid Dataset Construction Diagram are all present, and each master is built by a real Task Breakdown row
    - If any data source > 1M rows, confirm ETL Strategy section exists
    - If any task references an external skill, confirm the External Skill Discovery section names the skill(s), lists Glob results, loaded domain refs, example READMEs read, and an ADOPT/PATCH/GREENFIELD decision per task
    - If any source >= 50M rows OR >= 500 MB OR SPEC uses large-source keywords, confirm the Data Pull Profile section contains the decision table (Source, Raw rows, Raw MB, Aggregate level, Aggregate rows, Aggregate MB, Ratio, Recommendation) AND references `docs/investigations/YYYY-MM-DD_pull_profile.md`
