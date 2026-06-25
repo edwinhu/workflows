@@ -280,6 +280,7 @@ If PLAN.md contains an `## ETL Strategy` section, the user made decisions during
 | PLAN.md Section | Enforcement Reference | Inject Into |
 |-----------------|----------------------|-------------|
 | `row_pk` / `event_key` declared (any data with a grain) | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Key & Grain Carry-Through | Every data load/transform subagent prompt |
+| `Filters & Parameters` table present | parameter-transparency: reference the named config location by name, NO inline literals (see [Parameter Centralization](#parameter-centralization-no-inline-literals)) | Every subagent prompt that filters/caps/winsorizes/windows data |
 | `Implementation Language: SAS` or `Mixed` | SAS ETL enforcement (`skills/wrds/references/sas-etl.md`) | Every SAS subagent prompt |
 | `Filter Strategy` table present | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Filter Push-Down | Subagent prompts for data loading tasks |
 | `Parallelism Plan` table present | ETL enforcement (`skills/ds-implement/references/etl-enforcement.md`) § Parallelism | Implementation strategy choice |
@@ -370,6 +371,17 @@ If PLAN.md has a `## Dataset Construction Diagram` (the master-datasets mermaid 
 - Keep master nodes as `[(rounded)]` and label every edge with its key or filter+row-drop. An edgeless box diagram hides the sample funnel, which is the one thing the diagram exists to show.
 
 This is cheap to edit per-task and expensive to reconstruct from memory at write-up time. The final diagram is what ds-handoff records and ds-review checks against the code.
+
+## Parameter Centralization (No Inline Literals)
+
+If PLAN.md has a `## Filters & Parameters` table, it names a single config location (e.g. `src/config.py`). Every task subagent MUST read parameters from that location by name and write **NO inline numeric literals** for any analysis decision — filters, bands, caps, winsorization levels, date windows, min-obs counts.
+
+- **Inject the config-location instruction into every implementation subagent prompt:** "All filter/threshold/cap/window values come from `<config location>` referenced by name. Do NOT hard-code numeric literals for analysis decisions — if a value you need is missing from the config, ADD it there (with a Filters & Parameters row), don't inline it."
+- `df[df.price > 100]` is a magic number; `df[df.price > P.MIN_PRICE]` is correct. Loop indices, unit conversions (`* 100` for percent), and array offsets are not parameters — leave them inline.
+- When a task introduces a new parameter not in the inventory, the subagent ADDS it to the config location AND appends a row to the `## Filters & Parameters` table (name · value · where · rationale · kind · sensitivity check). A new `arbitrary` parameter triggers a robustness check — log it for ds-review.
+- A scattered literal is a `[Rule 2 - Missing Critical]` deviation: centralize it (move to config, reference by name), verify the output is unchanged, and track it.
+
+A magic number that reaches the final pipeline is a replication landmine the reviewer will flag — centralizing as you write costs one import; retrofitting after literals scatter costs an audit pass (the exact rework Edwin's muni magic-numbers audit is paying down).
 
 ## Verification Patterns
 

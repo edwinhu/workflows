@@ -87,6 +87,7 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
 | Spec Alignment | Plan covers ALL spec requirements, no scope creep, no requirements silently dropped |
 | **Master Datasets** | For any project with 3+ shared-sample exhibits: a `## Master Datasets` table names the minimal canonical datasets with grain + unique keys; an `## Exhibit → Dataset Map` maps EVERY planned exhibit to a master (none reading raw sources directly); a mermaid `## Dataset Construction Diagram` shows raw → merges → filters → masters → exhibits with keys/filters on edges. Each master must be built by a real Task Breakdown row. Per-exhibit ad-hoc pulls (exhibits not tracing to a shared master) is a flag — it manufactures exhibits that disagree. |
+| **Parameter Transparency** | If the analysis has any sample filters or tuning parameters: a `## Filters & Parameters` table names a single config location and lists every parameter (name · value · where · rationale · arbitrary-vs-principled). Every `arbitrary` row MUST trace to a sensitivity/robustness task in the Task Breakdown. Missing table, no named config location, or arbitrary parameters with no sensitivity check is a flag — scattered magic numbers are a replication hazard. |
 | Data Profiling | Data profile section present with shape, types, quality issues documented |
 | Task Decomposition | Tasks atomic enough for a single subagent, clear boundaries, steps actionable |
 | Task Ordering | Dependencies correct (cleaning before analysis), no circular dependencies |
@@ -107,6 +108,8 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 - Exhibits that read raw sources directly instead of a declared master dataset (per-exhibit pulls that will silently disagree)
 - A master dataset named in the map with no Task Breakdown row that builds it, or a planned exhibit absent from the Exhibit → Dataset Map
 - A Dataset Construction Diagram whose edges omit the merge keys / filter row-drops (decoration, not a spec)
+- Inline numeric literals implied by task descriptions instead of a named config location (magic numbers)
+- Arbitrary parameters (round-number caps, "looks reasonable" cutoffs) with no sensitivity/robustness check in the Task Breakdown
 - Tasks too large for a single subagent (>100 lines of change or multiple distinct operations)
 - ETL strategy missing when data is large (>1M rows) or from multiple sources
 - Missing output verification plan section

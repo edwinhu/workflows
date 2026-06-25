@@ -424,6 +424,12 @@ Auto-load all constraints matching `applies-to: ds-review`:
 - [ ] The dataset-construction mermaid diagram matches the code that actually ran — masters, merges, and filters in the diagram exist in the pipeline; the diagram is not stale
 - [ ] Each master dataset is unique at its declared grain (run the keyed dedup; a fan-out here corrupts every downstream exhibit)
 
+### Parameter Transparency
+<!-- Per the parameter-transparency constraint (loaded above). Applies to any analysis with filters/parameters. -->
+- [ ] No magic numbers: filter thresholds, caps, bands, winsorization levels, date windows, and min-obs counts come from a single named config location, not inline literals (grep the pipeline for stray numeric literals in filter/clip/winsorize/date comparisons — any found is a high-confidence issue)
+- [ ] The `## Filters & Parameters` table matches the config values actually used (table and code agree; no parameter in code is absent from the table)
+- [ ] Every parameter marked `arbitrary` has a corresponding sensitivity/robustness check that varies it (an arbitrary parameter with no robustness check is an unexamined researcher degree of freedom)
+
 ### Data Quality Handling
 - [ ] Confirm missing values handled appropriately (not ignored)
 - [ ] Verify duplicates addressed (documented if kept)
@@ -662,9 +668,10 @@ Report any WARNING as confidence >= 80.
 PASS 2 - Methodology and Compliance Review (READ CODE):
 1. Spec compliance - verify all SPEC.md objectives addressed
 2. Master dataset consistency - confirm every exhibit derives from a declared master (none re-pulls raw sources); exhibits sharing a master tie out (matching N/counts); the dataset-construction mermaid diagram matches the code that ran. Mismatched counts across exhibits that should share a sample = confidence >= 80.
-3. Data quality handling - confirm issues from PLAN.md were resolved
-4. Methodology - verify appropriate methods, assumptions checked
-5. Reproducibility - confirm seeds, versions, documentation
+3. Parameter transparency - grep for inline numeric literals in filter/clip/winsorize/date-comparison code; confirm all come from the named config location and match the Filters & Parameters table; confirm every `arbitrary` parameter has a sensitivity check. Stray magic numbers in analysis decisions = confidence >= 80.
+4. Data quality handling - confirm issues from PLAN.md were resolved
+5. Methodology - verify appropriate methods, assumptions checked
+6. Reproducibility - confirm seeds, versions, documentation
 
 Confidence score each issue (0-100).
 Report only issues with >= 80 confidence.

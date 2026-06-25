@@ -83,7 +83,7 @@ Auto-load all constraints matching `applies-to: ds-plan`:
 
 !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-plan`
 
-**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate); `ds-master-datasets` governs Step 5d (Master Dataset Design).
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate); `ds-master-datasets` governs Step 5d (Master Dataset Design); `ds-parameter-transparency` governs Step 5e (Parameter Inventory).
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning
@@ -133,7 +133,7 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
 
 ## Process
 
-**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.** The sub-gates (5b External Skill Discovery, 5c Data Pull Profiling, 5d Master Dataset Design) and the exit Plan Review are mandatory when their triggers fire — they are not optional steps a fast path can skip. Step 5d fires for any project with 3+ planned exhibits sharing a sample.
+**This flowchart IS the specification. If prose elsewhere and this diagram disagree, the diagram wins.** The sub-gates (5b External Skill Discovery, 5c Data Pull Profiling, 5d Master Dataset Design, 5e Parameter Inventory) and the exit Plan Review are mandatory when their triggers fire — they are not optional steps a fast path can skip. Step 5d fires for any project with 3+ planned exhibits sharing a sample; Step 5e fires for any project with sample filters or tuning parameters (nearly all).
 
 ```
  1. Verify SPEC.md exists ──(missing)──▶ STOP, run /ds first
@@ -155,6 +155,9 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
             │
             ▼
  5d. Master Dataset Design ──▶ name minimal master datasets + grain/keys, map every exhibit→master, draft construction mermaid diagram
+            │
+            ▼
+ 5e. Parameter Inventory ──▶ list every filter/threshold/cap/window, centralize in one config location, mark arbitrary-vs-principled, flag arbitrary for sensitivity check
             │
             ▼
  6. Task breakdown (each task carries implements: [REQ-ID]; master-build tasks produce the master datasets)
@@ -764,6 +767,32 @@ The `## Master Datasets`, `## Exhibit → Dataset Map`, and the mermaid diagram 
 
 If the project is genuinely a one-off (a single descriptive pull feeding one table), note that explicitly in the Master Datasets section ("Single exhibit, no shared sample — master-dataset apparatus not required") and proceed. Do not skip the section header.
 
+### 5e. Parameter Inventory (MANDATORY — NO MAGIC NUMBERS)
+
+<EXTREMELY-IMPORTANT>
+**NO TASK BREAKDOWN WITHOUT A PARAMETER INVENTORY AND A NAMED CONFIG LOCATION. This is not negotiable for any project with sample filters or tuning parameters (nearly all).**
+
+Every filter threshold, price band, size cap, winsorization level, sample cutoff, date window, and minimum-observation count is an analysis decision. Scattered as inline literals across the pipeline they are a replication landmine — the same cutoff hard-coded at five sites drifts to four-and-a-half when someone edits four of them, and the analysis silently runs two samples. Deciding the config location and inventorying the parameters at planning time is what stops literals from being written in the first place.
+</EXTREMELY-IMPORTANT>
+
+Full rule: `references/constraints/ds-parameter-transparency.md` (loaded above as the `parameter-transparency` constraint).
+
+#### Step 5e.1: Inventory every parameter
+
+From the sample-selection plan, the master-dataset filters, and the methodology, list every numeric decision: filters, bands, caps, winsorization levels, date windows, min-obs counts, bin edges, significance levels. (Loop indices, unit conversions, and array offsets are not parameters.)
+
+#### Step 5e.2: Name the single config location
+
+Decide the ONE place parameters live — a `src/config.py` / `constants.py` module, a `params` dataclass, or a `config.yaml`/`.toml`. Match the project's existing pattern if one exists. Record the chosen location in PLAN.md so every implementation task references it by name and writes NO inline literals.
+
+#### Step 5e.3: Classify arbitrary vs principled, flag sensitivity checks
+
+Build the `## Filters & Parameters` table (name · value · where applied · rationale · kind · sensitivity check). Mark each parameter **principled** (follows from data availability, an institutional/legal threshold, a published convention, or theory — state which) or **arbitrary** (a judgment call / round number). Every **arbitrary** parameter MUST get a sensitivity/robustness check that varies it — add a corresponding task or robustness-check entry to the Task Breakdown.
+
+#### Step 5e.4: Record in PLAN.md
+
+The `## Filters & Parameters` table and the named config location go in PLAN.md. The arbitrary-flagged rows must each trace to a robustness check in the Task Breakdown (this is how [[ds-robustness-checks]] and [[ds-p-hacking-prevention]] get their inputs). If the project genuinely has no analysis parameters, state so explicitly ("No sample filters or tuning parameters") and proceed — do not skip the section header.
+
 ### 6. Create Task Breakdown
 
 Break analysis into ordered tasks:
@@ -908,6 +937,21 @@ flowchart LR
   M2 --> F5[Figure 5]
 ```
 
+## Filters & Parameters
+<!-- Required unless the project genuinely has no sample filters or tuning parameters (state so in one line). -->
+<!-- Every value here lives in the named config location below — NO inline literals in pipeline/exhibit code. -->
+<!-- Every row marked `arbitrary` MUST have a sensitivity check that traces to a Task Breakdown robustness task. -->
+
+**Config location:** `src/config.py` (the ONE place these values live; every task references by name)
+
+| Name | Value | Where applied | Rationale | Kind | Sensitivity check |
+|------|-------|---------------|-----------|------|-------------------|
+| MIN_PRICE | 1.00 | trade_file filter | Sub-$1 munis are odd-lot noise | principled | — |
+| MAX_TRADE_SIZE | 1_000_000 | trade_file filter | Institutional cutoff | arbitrary | robustness: {500K, 2M} |
+| WINSOR_PCT | 0.01 | returns, spreads | Standard 1%/99% trim | principled | — |
+| SAMPLE_START | 2010-01-01 | all masters | MSRB coverage begins | principled | — |
+| MIN_OBS_PER_FIRM | 8 | firm_quarter panel | Need ≥2yrs for FE | arbitrary | robustness: {4, 12} |
+
 ## Task Breakdown — MANDATORY EXECUTABLE TABLE
 
 > **This table is the machine-executable spec.** `ds-implement` reads it directly: it topologically sorts `Deps` (the data-flow DAG — which intermediates a task consumes) into levels, runs each level's tasks output-first (produce the `Outputs`, then run the `Verify` assertion), and gates each task on its `Verify` exit code. **A plan without a complete table is not executable — `ds-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until every row is filled.** (ds is output-first, not TDD: the `Verify` command is the per-task mechanical gate; `Expected Output` is the human-readable claim that `ds-validate-coverage` reviews per requirement.)
@@ -1004,6 +1048,7 @@ Complete the plan when:
 - **Run External Skill Discovery (Step 5b)** for every external skill in play — record ADOPT/PATCH/GREENFIELD per task
 - **Run Data Pull Profiling (Step 5c)** for every source >= 50M rows, >= 500 MB, or flagged large in SPEC — record decision table in PLAN.md, investigation file in `docs/investigations/`
 - **Run Master Dataset Design (Step 5d)** for any project with 3+ shared-sample exhibits — name the minimal master datasets with grain/keys, map every exhibit to its master, draft the dataset-construction mermaid diagram
+- **Run Parameter Inventory (Step 5e)** — list every filter/threshold/cap/window, name the single config location, classify arbitrary-vs-principled, flag every arbitrary parameter for a sensitivity check
 - Order tasks by dependency
 - Define output verification criteria
 - Write `.planning/PLAN.md`
@@ -1047,9 +1092,10 @@ Before proceeding to ds-implement, execute this gate:
 
 1. **IDENTIFY**: PLAN.md exists at `.planning/PLAN.md`
 2. **RUN**: `Read(".planning/PLAN.md")`, `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.py .`, and `uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.py .`
-3. **READ**: Verify it contains: Data Profile section, Master Datasets + Exhibit → Dataset Map + Dataset Construction Diagram (if multi-exhibit), Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
+3. **READ**: Verify it contains: Data Profile section, Master Datasets + Exhibit → Dataset Map + Dataset Construction Diagram (if multi-exhibit), Filters & Parameters section, Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
 4. **VERIFY**:
    - If 3+ exhibits share a sample, confirm the Master Datasets table (grain + keys per master), the Exhibit → Dataset Map (every planned exhibit mapped, none reading raw sources), and the mermaid Dataset Construction Diagram are all present, and each master is built by a real Task Breakdown row
+   - If the analysis has any sample filters or tuning parameters, confirm the Filters & Parameters table is present with a named config location and an arbitrary-vs-principled kind per row, and that every `arbitrary` row traces to a sensitivity/robustness task in the Task Breakdown
    - If any data source > 1M rows, confirm ETL Strategy section exists
    - If any task references an external skill, confirm the External Skill Discovery section names the skill(s), lists Glob results, loaded domain refs, example READMEs read, and an ADOPT/PATCH/GREENFIELD decision per task
    - If any source >= 50M rows OR >= 500 MB OR SPEC uses large-source keywords, confirm the Data Pull Profile section contains the decision table (Source, Raw rows, Raw MB, Aggregate level, Aggregate rows, Aggregate MB, Ratio, Recommendation) AND references `docs/investigations/YYYY-MM-DD_pull_profile.md`
