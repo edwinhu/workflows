@@ -156,6 +156,19 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     if goog_sdts:
         issues.append(f"goog_content_controls({goog_sdts})")
 
+    # Google Docs OOXML cruft (redundant run formatting, all-zero rsids, no-op
+    # shading). Detected on doc + footnotes (the bulk); hygiene cleans more parts.
+    cruft = 0
+    for xml in (doc_xml, fn_xml):
+        cruft += len(re.findall(r'w:rsid\w+="00000000"', xml))
+        cruft += len(re.findall(r'<w:shd[^>]*w:val="clear"[^>]*/>', xml))
+        cruft += xml.count('w:val="none"') + xml.count('w:val="baseline"')
+        cruft += len(re.findall(r'<w:(?:b|i|bCs|iCs|strike|smallCaps|rtl)'
+                                r' w:val="(?:0|false)"/>', xml))
+        cruft += xml.count('<w:color w:val="000000"/>')
+    if cruft:
+        issues.append(f"gdocs_cruft({cruft})")
+
     return issues
 
 
@@ -1286,6 +1299,211 @@ def ensure_footnote_styles(styles_xml, template_path, needed=(FN_PSTYLE,)):
     return styles_xml, changes
 
 
+# ── Google Docs OOXML hygiene (de-cruft) ───────────────────────────────
+# Run-property toggles whose explicit "off" value is a redundant no-op (a run
+# inherits "off" by default). We strip these ONLY when the value is explicitly
+# off — never a bare element (which means ON) and never an explicit "1"/"true".
+_OFF_TOGGLE_TAGS = {
+    "b", "bCs", "i", "iCs", "strike", "dstrike", "smallCaps", "caps",
+    "emboss", "imprint", "outline", "vanish",
+}
+_OFF_VALUES = {"0", "false"}
+# All-zero rsid attributes are the Google Docs signature (Word writes random
+# non-zero rsids). Stripping only "00000000" leaves real Word revision metadata.
+_RSID_LOCALNAMES = {"rsidR", "rsidRPr", "rsidDel", "rsidP", "rsidTr", "rsidSect"}
+# Content parts whose run/paragraph formatting is direct-formatting cruft. We
+# deliberately EXCLUDE styles.xml and numbering.xml — an explicit "off" toggle
+# there can intentionally override an inherited "on" (changes rendering).
+_HYGIENE_PART_RE = re.compile(
+    r'^word/(document|footnotes|endnotes|comments|header\d+|footer\d+)\.xml$')
+
+
+def is_hygiene_part(name):
+    """True for the content parts the GDocs hygiene pass should clean."""
+    return bool(_HYGIENE_PART_RE.match(name))
+
+
+def _default_body_font(styles_xml):
+    """The document's default body font (docDefaults rFonts ascii), or None."""
+    if not styles_xml:
+        return None
+    m = re.search(r'<w:docDefaults>.*?</w:docDefaults>', styles_xml, re.DOTALL)
+    scope = m.group(0) if m else styles_xml
+    mm = re.search(r'<w:rFonts[^>]*\bw:ascii="([^"]+)"', scope)
+    return mm.group(1) if mm else None
+
+
+def _rfonts_is_redundant(el, default_font):
+    """True if an <w:rFonts> only names the default body font (safe to drop).
+
+    Keeps any rFonts that names a DIFFERENT font (Symbol for the `*` glyph, an
+    intentional Arial, Times New Roman, …) or that references a theme font.
+    """
+    if not default_font:
+        return False
+    for a in el.attrib:
+        if etree.QName(a).localname.endswith("Theme"):
+            return False  # theme-bound font reference — keep
+    present = [el.get(_wq(x)) for x in ("ascii", "hAnsi", "cs", "eastAsia")]
+    present = [v for v in present if v]
+    return bool(present) and all(v == default_font for v in present)
+
+
+def _strip_rpr_cruft(rpr, default_font):
+    """Remove redundant children from one <w:rPr>. Returns the count removed.
+
+    KEEPS every meaningful "on" property: bold/italic on, real underline,
+    smallCaps=1, super/subscript, non-black color, non-default fonts.
+    """
+    n = 0
+    for child in list(rpr):
+        ln = etree.QName(child).localname
+        val = child.get(_wq("val"))
+        drop = False
+        if ln in _OFF_TOGGLE_TAGS:
+            drop = val in _OFF_VALUES
+        elif ln == "u":
+            drop = val == "none"
+        elif ln == "vertAlign":
+            drop = val == "baseline"          # keep superscript/subscript
+        elif ln == "rtl":
+            drop = val in _OFF_VALUES
+        elif ln == "color":
+            drop = (val == "000000"           # black is the default
+                    and child.get(_wq("themeColor")) is None)
+        elif ln == "rFonts":
+            drop = _rfonts_is_redundant(child, default_font)
+        if drop:
+            rpr.remove(child)
+            n += 1
+    return n
+
+
+def gdocs_hygiene(xml, default_font=None):
+    """Strip Google Docs OOXML cruft from one part's XML. Returns (xml, count).
+
+    Removes: all-zero rsid attributes; no-op ``<w:shd w:val="clear">`` (auto
+    fill/color) anywhere; redundant "off"/default run properties inside every
+    ``<w:rPr>`` (see :func:`_strip_rpr_cruft`); and any ``<w:rPr>``/``<w:pPr>``
+    left empty afterward. Idempotent — a clean part returns unchanged with 0.
+    """
+    root = etree.fromstring(xml.encode("utf-8"))
+    n = 0
+
+    # 1. All-zero rsid attributes on any element.
+    for el in root.iter():
+        if not isinstance(el.tag, str):
+            continue
+        for a in list(el.attrib):
+            if (etree.QName(a).localname in _RSID_LOCALNAMES
+                    and el.attrib[a] == "00000000"):
+                del el.attrib[a]
+                n += 1
+
+    # 2. No-op shading (clear + auto fill/color) wherever it appears.
+    for shd in list(root.iter(_wq("shd"))):
+        if (shd.get(_wq("val")) == "clear"
+                and shd.get(_wq("fill")) in (None, "auto")
+                and shd.get(_wq("color")) in (None, "auto")):
+            parent = shd.getparent()
+            if parent is not None:
+                parent.remove(shd)
+                n += 1
+
+    # 3. Redundant run-property toggles / default color / default fonts.
+    for rpr in list(root.iter(_wq("rPr"))):
+        n += _strip_rpr_cruft(rpr, default_font)
+
+    # 4. Drop rPr/pPr left empty by the strips above (rPr first, so a pPr that
+    #    held only an emptied paragraph-mark rPr is then itself removed).
+    for tag in ("rPr", "pPr"):
+        for el in list(root.iter(_wq(tag))):
+            if len(el) == 0 and not el.attrib:
+                parent = el.getparent()
+                if parent is not None:
+                    parent.remove(el)
+                    n += 1
+
+    if n == 0:
+        return xml, 0
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+    return out, n
+
+
+def _para_style(p):
+    """The pStyle val of a paragraph, or None."""
+    pPr = p.find(_wq("pPr"))
+    if pPr is None:
+        return None
+    ps = pPr.find(_wq("pStyle"))
+    return ps.get(_wq("val")) if ps is not None else None
+
+
+def normalize_body_indent(doc_xml):
+    """Apply the document's dominant first-line indent to body paragraphs that
+    lack one (Google Docs drops it on freshly-written paragraphs).
+
+    Editorial, so OPT-IN. The dominant indent is the mode of ``<w:ind
+    firstLine>`` over Normal/unstyled body paragraphs. Front-matter guard: only
+    paragraphs AFTER the first Heading1 (title/abstract/TOC excluded), only
+    unstyled/Normal paragraphs longer than 60 chars, and only when the paragraph
+    has no existing first-line / left / hanging indent. Returns (doc_xml, changes).
+    """
+    root = etree.fromstring(doc_xml.encode("utf-8"))
+    paras = list(root.iter(_wq("p")))
+    from collections import Counter
+    firstlines = Counter()
+    for p in paras:
+        if _para_style(p) not in (None, "Normal"):
+            continue
+        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
+        if ind is not None and ind.get(_wq("firstLine")):
+            firstlines[ind.get(_wq("firstLine"))] += 1
+    if not firstlines:
+        return doc_xml, []
+    dominant = firstlines.most_common(1)[0][0]
+
+    seen_h1 = False
+    applied = 0
+    for p in paras:
+        st = _para_style(p)
+        if st == "Heading1":
+            seen_h1 = True
+            continue
+        if not seen_h1 or st not in (None, "Normal"):
+            continue
+        text = "".join(t.text or "" for t in p.iter(_wq("t"))).strip()
+        if len(text) <= 60:
+            continue
+        pPr = p.find(_wq("pPr"))
+        ind = pPr.find(_wq("ind")) if pPr is not None else None
+        if ind is not None and (ind.get(_wq("firstLine"))
+                                or ind.get(_wq("left"))
+                                or ind.get(_wq("hanging"))):
+            continue
+        if pPr is None:
+            pPr = etree.Element(_wq("pPr"))
+            p.insert(0, pPr)
+        if ind is None:
+            ind = etree.Element(_wq("ind"))
+            ref = pPr.find(_wq("rPr")) or pPr.find(_wq("sectPr"))
+            if ref is not None:
+                ref.addprevious(ind)
+            else:
+                pPr.append(ind)
+        ind.set(_wq("firstLine"), dominant)
+        applied += 1
+    if not applied:
+        return doc_xml, []
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+    return out, [f"Normalized body first-line indent (firstLine={dominant}) "
+                 f"on {applied} paragraph(s)"]
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Fix footnote damage (Google Docs round-trip, pandoc-citeproc wraps)"
@@ -1303,6 +1521,14 @@ def main():
                         help="Restyle unstyled heading-looking paragraphs (section "
                              "markers / bold short lines) to HeadingN; excludes TOC "
                              "entries and front-matter labels (off by default)")
+    parser.add_argument("--no-hygiene", action="store_true",
+                        help="Skip the Google Docs OOXML hygiene pass (de-cruft). "
+                             "Hygiene is ON by default — strips all-zero rsids, "
+                             "redundant off/default run formatting, no-op shading, "
+                             "default-font/black-color residue across content parts")
+    parser.add_argument("--normalize-body-indent", action="store_true",
+                        help="Apply the document's dominant first-line indent to "
+                             "body paragraphs that lack it (editorial; off by default)")
     parser.add_argument("--template", default=str(TEMPLATE),
                         help="Law-review reference template (.docx) to restore "
                              "missing footnote style definitions from "
@@ -1405,6 +1631,36 @@ def main():
             settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, args.bio_footnotes)
         all_changes.extend(num_changes)
 
+    # Body-paragraph first-line-indent normalization (editorial, opt-in).
+    if args.normalize_body_indent:
+        doc_xml_fixed, indent_changes = normalize_body_indent(doc_xml_fixed)
+        all_changes.extend(indent_changes)
+
+    # Google Docs OOXML hygiene (de-cruft) — default-on. Runs LAST so it cleans
+    # the residue every prior pass may leave, across all content parts. The two
+    # parts already in flight (document/footnotes) are cleaned in-memory; the
+    # auxiliary parts (comments, headers, footers) are read + cleaned here and
+    # written from `aux_hygiene` in the write loop below.
+    aux_hygiene = {}
+    if not args.no_hygiene:
+        default_font = _default_body_font(styles_xml_fixed or styles_xml)
+        doc_xml_fixed, n = gdocs_hygiene(doc_xml_fixed, default_font)
+        if n:
+            all_changes.append(f"Hygiene: removed {n} GDocs cruft node(s)/attr(s) from document.xml")
+        fn_xml_fixed, n = gdocs_hygiene(fn_xml_fixed, default_font)
+        if n:
+            all_changes.append(f"Hygiene: removed {n} GDocs cruft node(s)/attr(s) from footnotes.xml")
+        with zipfile.ZipFile(docx_path, 'r') as zf:
+            for name in zf.namelist():
+                if name in ('word/document.xml', 'word/footnotes.xml'):
+                    continue
+                if not is_hygiene_part(name):
+                    continue
+                cleaned, n = gdocs_hygiene(zf.read(name).decode('utf-8'), default_font)
+                if n:
+                    aux_hygiene[name] = cleaned
+                    all_changes.append(f"Hygiene: removed {n} GDocs cruft node(s)/attr(s) from {name}")
+
     print(f"Changes ({len(all_changes)}):")
     for c in all_changes:
         print(f"  - {c}")
@@ -1428,6 +1684,8 @@ def main():
                         zout.writestr(item, settings_xml_fixed.encode('utf-8'))
                     elif item.filename == 'word/styles.xml' and styles_xml_fixed is not None:
                         zout.writestr(item, styles_xml_fixed.encode('utf-8'))
+                    elif item.filename in aux_hygiene:
+                        zout.writestr(item, aux_hygiene[item.filename].encode('utf-8'))
                     else:
                         zout.writestr(item, zin.read(item.filename))
 

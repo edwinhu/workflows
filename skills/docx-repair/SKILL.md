@@ -1,6 +1,6 @@
 ---
 name: docx-repair
-description: "Use to REPAIR a .docx damaged by a Google Docs or Word Online round-trip — the package/XML wiring, the footnote markup, leftover content controls, and heading styling. Triggers: 'Word won't open the docx / says it's corrupt', 'Google Docs export broken', 'fix the customXML error', 'recover unreadable content', 'phantom blank page', 'repair this docx'; AND 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'doubled footnote marks (**, ††)'; AND 'boxes around text after Google Docs', 'content controls / doubled boxes around paragraphs', 'remove the boxes Word draws around headings', 'heading text isn't styled as a heading', 'headings look different / inconsistent heading formatting', 'blank/empty heading lines' — or converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Any OOXML-level repair on a .docx edited in a cloud editor, even if the user never says 'OOXML'. NOT for building a docx from markdown (law-review-docx) or exporting to PDF (docx-render)."
+description: "Use to REPAIR a .docx damaged by a Google Docs or Word Online round-trip — the package/XML wiring, the footnote markup, leftover content controls, and heading styling. Triggers: 'Word won't open the docx / says it's corrupt', 'Google Docs export broken', 'fix the customXML error', 'recover unreadable content', 'phantom blank page', 'repair this docx'; AND 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'doubled footnote marks (**, ††)'; AND 'boxes around text after Google Docs', 'content controls / doubled boxes around paragraphs', 'remove the boxes Word draws around headings', 'heading text isn't styled as a heading', 'headings look different / inconsistent heading formatting', 'blank/empty heading lines'; AND 'clean up Google Docs XML cruft', 'strip redundant run formatting', 'de-bloat docx after Google Docs', 'remove rsid bloat / no-op shading / explicit black' — or converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Any OOXML-level repair on a .docx edited in a cloud editor, even if the user never says 'OOXML'. NOT for building a docx from markdown (law-review-docx) or exporting to PDF (docx-render)."
 user-invocable: false
 ---
 
@@ -12,7 +12,7 @@ Cloud editors damage a `.docx` in **independent ways**. This skill is the front 
 |---|---|---|
 | **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `scripts/docx_repair.py` (plugin root) — §[Package repair](#a-package--ooxml-wiring-repair) |
 | **B. Footnote & cross-reference markup** | Bios show `1,2,3` not `*,†,‡`; numbering starts wrong; "supra note N" points to the wrong footnote; missing separator line | the footnote scripts — §[Footnote repair](#b-footnote--cross-reference-repair) |
-| **C. Document content (boxes + headings)** | Visible **boxes** around freshly-edited text; heading-looking lines not styled as headings; same-style headings rendering differently; blank heading lines | `fix_footnotes.py`'s document.xml passes — §[Content cleanup](#c-document-content-cleanup-boxes--headings) |
+| **C. Document content (boxes + headings + cruft)** | Visible **boxes** around freshly-edited text; heading-looking lines not styled as headings; same-style headings rendering differently; blank heading lines; bloated XML full of all-zero rsids, no-op shading, explicit `b=0`/`i=0`/`u=none`, redundant black color & default fonts | `fix_footnotes.py`'s document.xml passes — §[Content cleanup](#c-document-content-cleanup-boxes--headings--cruft) |
 
 They are decoupled: package repair fixes the **part wiring** (never touches content); footnote repair fixes the **footnote markup**; content cleanup strips Google-Docs leftover content controls and normalizes headings. A file can need any, all, or none. If you don't know which, run the package check first (it's a no-op on a clean package), then the footnote pass (it carries the content cleanup).
 
@@ -58,10 +58,12 @@ A law-review draft that round-trips through **Google Docs** every editing round 
 #    baseline remap both assume the FINAL accepted text. (Word: Review →
 #    Accept All; or the document skill's accept-changes path.)
 
-# 2. Repair footnote markup (separators, styles, bio custom marks, pStyles) AND
-#    strip Google Docs leftover content controls (the "boxes"). Add
-#    --normalize-headings to also restyle/clean heading paragraphs (see §C).
-uv run "$SKILL_DIR/scripts/fix_footnotes.py" returned.docx -o step2.docx --normalize-headings
+# 2. Repair footnote markup (separators, styles, bio custom marks, pStyles),
+#    strip Google Docs content controls (the "boxes"), AND strip GDocs OOXML
+#    cruft (hygiene pass, default-on). --normalize-headings restyles/cleans
+#    heading paragraphs; --normalize-body-indent uniforms body indents (see §C).
+uv run "$SKILL_DIR/scripts/fix_footnotes.py" returned.docx -o step2.docx \
+  --normalize-headings --normalize-body-indent
 
 # 3. Remap stale "supra note N" numbers against the known-good baseline, THEN
 #    convert to NOTEREF fields. --baseline is what fixes the coauthor-shift.
@@ -159,13 +161,19 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
   citations while preserving author-written explanatory parentheticals
   (which lack the double-whitespace XML signature).
 
-**Document content cleanup (see §[C](#c-document-content-cleanup-boxes--headings)):**
+**Document content cleanup (see §[C](#c-document-content-cleanup-boxes--headings--cruft)):**
 - **Content controls (the "boxes")** — unwraps every `<w:sdt>` tagged `goog_rdk*`
   (Google Docs suggestion-mode markers, often 3-deep, that Word draws as boxes),
   replacing each with its `<w:sdtContent>` children. Keeps non-`goog` sdts (real
   controls, the TOC). **Runs by default** in the document.xml pass; idempotent.
+- **OOXML hygiene (de-cruft)** — strips redundant off/default run formatting,
+  all-zero rsids, no-op shading, black color, and default-font residue across all
+  content parts (document, footnotes, comments, headers, footers). Keeps every
+  "on" property. **Runs by default** (`--no-hygiene` to skip); idempotent.
 - **Heading normalization** (`--normalize-headings`, opt-in) — styles unstyled
   heading-looking paragraphs and strips direct formatting off every heading; see §C.
+- **Body indent normalization** (`--normalize-body-indent`, opt-in) — uniforms
+  body first-line indents; see §C.
 
 **Flags:**
 - `--output` / `-o`: Output path (default: overwrite input)
@@ -174,6 +182,8 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - `--crossrefs`: Chain to create_crossrefs.py after fixing
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
 - `--normalize-headings`: Normalize headings (off by default) — style unstyled heading-looking paragraphs (2b) AND strip direct formatting + delete empty heading paragraphs (2a); restores Heading1–4 style defs from the template if missing. See §C.
+- `--no-hygiene`: Skip the Google Docs OOXML hygiene pass. Hygiene is **on by default** — strips all-zero rsids, redundant off/default run formatting, no-op shading, black color, and default-font residue across content parts; keeps all "on" formatting. See §C Feature 3.
+- `--normalize-body-indent`: Apply the document's dominant first-line indent to body paragraphs that lack it (editorial; off by default). See §C.
 - `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `writing-legal/templates/law_review_template.docx`)
 
 #### create_crossrefs.py
@@ -261,11 +271,11 @@ When author bio footnotes use `customMarkFollows` (*, †, ‡), they consume au
 
 See [`footnotes-reference.md`](footnotes-reference.md) § 4 for details, code patterns, and the critical rule: numRestart goes in `settings.xml` ONLY (not in sectPr — causes all-zeros).
 
-## C. Document content cleanup (boxes + headings)
+## C. Document content cleanup (boxes + headings + cruft)
 
-Two document.xml passes carried by `fix_footnotes.py`, for damage that is neither
-package wiring nor footnote markup. Both are idempotent and live in the same pass,
-so they ride along with the canonical procedure's step 2.
+Three content passes carried by `fix_footnotes.py`, for damage that is neither
+package wiring nor footnote markup. All are idempotent and ride along with the
+canonical procedure's step 2.
 
 ### Feature 1 — strip Google Docs content controls (the "boxes") — DEFAULT ON
 
@@ -300,6 +310,35 @@ Two parts, run in order (2b then 2a) so a newly-styled heading is also formattin
   law-review template if a round-trip stripped them (same add-only restore used
   for `FNStyleBest`).
 
+### Feature 3 — Google Docs OOXML hygiene (de-cruft) — DEFAULT ON (`--no-hygiene` to skip)
+
+Google Docs bakes redundant direct formatting into every run. The hygiene pass
+strips it across **all content parts** (document, footnotes, comments, headers,
+footers — NOT styles.xml/numbering.xml, where an explicit "off" can intentionally
+override an inherited "on"). On the raw OPV draft it removed **~33,800 nodes/attrs**
+with zero visual change. Rules:
+
+- **A. Strip unconditional no-ops** inside `<w:rPr>`: explicit-off toggles
+  (`<w:b w:val="0"/>`, `i`, `bCs`, `iCs`, `strike`, `dstrike`, `smallCaps`,
+  `caps`, `emboss`, `imprint`, `outline`, `vanish`), `<w:u w:val="none"/>`,
+  `<w:vertAlign w:val="baseline"/>`, `<w:rtl w:val="0"/>`; no-op
+  `<w:shd w:val="clear">` (auto fill/color) anywhere; all-zero rsid attributes
+  (`w:rsid*="00000000"` — the GDocs signature; real Word rsids are non-zero).
+- **B. Strip only when it matches the default:** `<w:color w:val="000000"/>`
+  (black); `<w:rFonts>` that names **only** the default body font (read from
+  `docDefaults`, e.g. Garamond). Emptied `<w:rPr>`/`<w:pPr>` are then removed.
+- **CRITICAL — keep every "on" property:** bold/italic on (`<w:b/>`, `w:val="1"`),
+  real underline, `smallCaps=1`, super/subscript, non-black color, non-default
+  fonts (Symbol for the `*` glyph, intentional Arial/Times). Verified preserved:
+  italic case names, small-caps citations, and footnote superscripts all survive
+  byte-identically to a `--no-hygiene` run.
+
+**Body indent normalization** (`--normalize-body-indent`, opt-in, editorial) —
+applies the document's dominant first-line indent (mode of `<w:ind firstLine>` on
+Normal/unstyled body paras; `firstLine=360` in OPV) to body paragraphs that lack
+it. Front-matter guard: only unstyled paras >60 chars **after the first Heading1**
+(title/abstract/TOC excluded). Logged, never silent.
+
 ### Content-cleanup Facts (incident-grounded)
 
 - **A heading whose text starts with a literal marker (`a. …`, `1. …`) must NOT
@@ -318,6 +357,18 @@ Two parts, run in order (2b then 2a) so a newly-styled heading is also formattin
 - **The `goog_rdk` boxes do not export to PDF — verify removal in the XML.** See
   the Procedure Fact above: a clean PDF is not proof. Check
   `grep -c goog_rdk word/document.xml → 0`.
+- **Hygiene never touches styles.xml or numbering.xml.** An explicit "off" toggle
+  (`<w:b w:val="0"/>`) inside a *style definition* can intentionally override an
+  inherited "on" from its `basedOn` parent — stripping it there changes rendering.
+  In run-level direct formatting it is pure GDocs cruft. The pass is scoped to
+  content parts only; the audit's count came almost entirely from there anyway.
+- **Hygiene strips only explicit-off / default values, never bare or "on".** A
+  bare `<w:b/>` means bold-ON; `<w:vertAlign w:val="superscript"/>` is a real
+  footnote mark; `<w:rFonts w:ascii="Symbol"/>` carries the `*` glyph. Stripping
+  by tag name (rather than value) would silently kill italic case names,
+  small-caps citations, and superscripts — the exact content this pass must keep.
+  The compressed `.docx` shrinks only modestly (cruft is repetitive, compresses
+  well); the uncompressed XML shrinks dramatically — judge the win by node count.
 
 ## Related (document skill group)
 
