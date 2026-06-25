@@ -1412,7 +1412,7 @@ date: "{meta['date']}"
     force_widow_control(output)
 
     if fix_footnotes:
-        scripts_dir = Path(__file__).resolve().parent.parent.parent / "docx-footnotes" / "scripts"
+        scripts_dir = Path(__file__).resolve().parent.parent.parent / "docx-repair" / "scripts"
         fix_script = scripts_dir / "fix_footnotes.py"
         crossrefs_script = scripts_dir / "create_crossrefs.py"
         if fix_script.exists():
@@ -1450,7 +1450,7 @@ def main():
     parser.add_argument("project_dir", type=Path, help="Project directory containing drafts/")
     parser.add_argument("--output", "-o", type=Path, help="Output DOCX path")
     parser.add_argument("--no-fix-footnotes", dest="fix_footnotes", action="store_false",
-                        help="Skip docx-footnotes repair + supra/infra crossrefs (default: on)")
+                        help="Skip docx-repair footnote repair + supra/infra crossrefs (default: on)")
     parser.add_argument("--pdf", action="store_true",
                         help="After building the DOCX, also render to PDF via LibreOffice headless")
     parser.set_defaults(fix_footnotes=True)

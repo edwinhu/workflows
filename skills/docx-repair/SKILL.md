@@ -1,14 +1,54 @@
 ---
-name: docx-footnotes
-description: "Use when DOCX footnotes break after a Google Docs or Word Online round-trip — 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'double asterisk / doubled footnote marks' — or when converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Also any OOXML-level footnote surgery on a .docx edited in a cloud editor, even if the user never says 'OOXML'."
+name: docx-repair
+description: "Use to REPAIR a .docx damaged by a Google Docs or Word Online round-trip — both the package/XML wiring and the footnote markup. Triggers: 'Word won't open the docx / says it's corrupt', 'Google Docs export broken', 'fix the customXML error', 'recover unreadable content', 'phantom blank page', 'repair this docx'; AND 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'doubled footnote marks (**, ††)' — or converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Any OOXML-level repair on a .docx edited in a cloud editor, even if the user never says 'OOXML'. NOT for building a docx from markdown (law-review-docx) or exporting to PDF (docx-render)."
 user-invocable: false
 ---
 
-# DOCX Footnote Repair & Cross-References
+# DOCX Repair (Google Docs / Word Online damage)
 
-Fix footnote formatting damage caused by Google Docs and Word Online, and convert hardcoded supra note references to NOTEREF field codes.
+Cloud editors damage a `.docx` in **two independent ways**. This skill is the front door for both; run only the track(s) you need.
 
-## Canonical Procedure — Google Docs round-trip
+| Damage class | Symptom | Fix |
+|---|---|---|
+| **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `scripts/docx_repair.py` (plugin root) — §[Package repair](#a-package--ooxml-wiring-repair) |
+| **B. Footnote & cross-reference markup** | Bios show `1,2,3` not `*,†,‡`; numbering starts wrong; "supra note N" points to the wrong footnote; missing separator line | the footnote scripts — §[Footnote repair](#b-footnote--cross-reference-repair) |
+
+They are decoupled: package repair fixes the **part wiring** (never touches content); footnote repair fixes the **footnote markup**. A file can need either, both, or neither. If you don't know which, run the package check first (it's a no-op on a clean package), then the footnote pass.
+
+> Heads-up: `docx-render`'s Word path already composes `docx_repair.py` as a preflight, so a Google export "just renders" without a manual Track A. Run Track A manually when you need the *repaired file itself* (to hand back, edit, or footnote-fix), not just a PDF.
+
+---
+
+## A. Package / OOXML wiring repair
+
+Google Docs' `.docx` export emits OOXML that strict consumers reject while lenient ones (x2t) accept. Two recurring, concrete defects:
+
+1. **Case-mismatched OPC part references** — the export spells the folder `customXML` (capital) in `document.xml.rels` and `[Content_Types].xml` but stores the part as `customXml` (lowercase). OPC part names are **case-sensitive**, so the part is unreferenced/untyped → Word says the document is corrupt.
+2. **`<w:evenAndOddHeaders/>` left in `settings.xml`** → Word renders phantom blank pages.
+
+`scripts/docx_repair.py` (at plugin root — it's a shared library `doc_render.py` composes, so it lives there, not in this skill's `scripts/`) fixes both, cheapest-first: case-normalize part references → drop the Word-breaking directive → if still structurally broken, reserialize via ONLYOFFICE docbuilder (clean OOXML, watermark-free, at the cost of a re-layout; opt out with `--no-reserialize`).
+
+```bash
+# CLI — detect + repair (in-place if dirty)
+python3 "$SKILL_DIR/../../scripts/docx_repair.py" returned.docx fixed.docx
+python3 "$SKILL_DIR/../../scripts/docx_repair.py" returned.docx --dry-run   # report only
+```
+```python
+import sys; sys.path.insert(0, "<plugin>/scripts")
+from docx_repair import repair_docx, opc_integrity_issues
+issues = opc_integrity_issues("returned.docx")   # [] = clean
+repair_docx("returned.docx", "fixed.docx")        # -> RepairResult
+```
+
+Detail and the root-cause investigation: `docs/investigations/2026-06-23_gdocs-customxml-case.md`.
+
+---
+
+## B. Footnote & cross-reference repair
+
+Fix footnote formatting damage and convert hardcoded supra-note references to NOTEREF field codes.
+
+### Canonical Procedure — Google Docs round-trip
 
 A law-review draft that round-trips through **Google Docs** every editing round (the OPV/Nadya case) comes back with both formatting damage AND stale cross-reference numbers. Run these **in this exact order** on the returned `.docx`. Use `$SKILL_DIR` for the absolute path to this skill's directory and keep the last-known-good draft as `OLD.docx`.
 
@@ -39,9 +79,9 @@ uv run "$SKILL_DIR/../../scripts/doc_render.py" \
 - **The remap's flagged list is a human cite-check queue, not noise.** `--baseline` prints `⚠ … could NOT be remapped` for references whose footnote content did not align one-to-one (inserts, deletes, densely-similar citation clusters). These are left unchanged on purpose — guessing a target you cannot prove is how a wrong citation ships. Surface the flagged list to the user for manual verification; do not suppress it.
 - **Render with Word, never LibreOffice, to verify.** LibreOffice renders `customMarkFollows` numbering wrong (verified 2026-06-10), so bios that are actually correct can look broken — leading you to "fix" something that was right. `doc_render.py --renderer word` (or `x2t`) is ground truth.
 
-## When This Applies
+### When footnote repair applies
 
-Common symptoms in `.docx` files round-tripped through Google Docs or Word Online:
+Common footnote symptoms in `.docx` files round-tripped through Google Docs or Word Online:
 
 - Missing footnote separator lines
 - Stripped paragraph styles (pStyle) on footnote bodies
@@ -52,7 +92,7 @@ Common symptoms in `.docx` files round-tripped through Google Docs or Word Onlin
 - TOC separator paragraphs that inflate to fill a whole page
 - Hardcoded "supra note N" / "infra note N" references that need to become auto-updating NOTEREF fields
 
-## Quick Start
+### Footnote scripts — quick start
 
 Scripts are in this skill's `scripts/` directory. Use `$SKILL_DIR` below as a placeholder for the absolute path to this skill (the directory containing this SKILL.md). Each script carries PEP 723 inline metadata, so `uv run script.py` auto-installs `lxml` — no `--with lxml` needed.
 
@@ -79,9 +119,9 @@ uv run "$SKILL_DIR/scripts/create_crossrefs.py" \
 - The doc still has **hardcoded** "supra note 42" **text** that should become auto-updating fields → **`create_crossrefs.py`** (add **`--baseline OLD.docx`** when the numbers went stale through a Google Docs round-trip).
 - The doc **already uses NOTEREF fields** but a coauthor **inserted/moved/deleted footnotes in Word** and the cross-reference **numbers are now wrong** → **`refresh_noteref_caches.py`** (this is the common "Nadya emailed back tracked edits and the numbering is off" case).
 
-## Scripts
+### Footnote scripts (detail)
 
-### fix_footnotes.py
+#### fix_footnotes.py
 
 Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 
@@ -123,7 +163,7 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
 - `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `writing-legal/templates/law_review_template.docx`)
 
-### create_crossrefs.py
+#### create_crossrefs.py
 
 Converts hardcoded "supra note N" references to NOTEREF field codes that auto-update.
 
@@ -154,7 +194,7 @@ already excluded from the count).
 - `--baseline OLD.docx`: Known-good prior draft whose "supra note N" numbering is
   correct; remaps stale numbers to current numbering by content-identity alignment
 
-### refresh_noteref_caches.py
+#### refresh_noteref_caches.py
 
 Refreshes the cached numbers on existing `NOTEREF` cross-reference fields after
 footnotes were inserted/moved/deleted in Word. Use when cross-references already
@@ -193,14 +233,14 @@ retargeting (e.g. "this xref should point to notes 210–212 instead of its curr
 target"). That is a human decision — move the bookmark / change the NOTEREF target
 first, then re-run this to refresh.
 
-## Reference
+### Footnote reference
 
 See [`footnotes-reference.md`](footnotes-reference.md) for detailed technical reference covering:
 1. Run-level editing gotchas (NBSP, cross-run matching, xml:space)
 2. Cloud editor damage patterns (what gets destroyed and why)
 3. Direct ZIP surgery patterns (bypassing Document libraries)
 
-### Footnote Numbering Offset Fix
+#### Footnote Numbering Offset Fix
 
 When author bio footnotes use `customMarkFollows` (*, †, ‡), they consume auto-numbers 1–3, causing body footnotes to start at 4. Fix by adding `numRestart=eachSect` to `settings.xml` and updating NOTEREF cached values.
 
@@ -210,8 +250,15 @@ See [`footnotes-reference.md`](footnotes-reference.md) § 4 for details, code pa
 
 ## Related (document skill group)
 
-This skill repairs footnote **markup**. It is a separate concern from **OOXML
-package repair** (`scripts/docx_repair.py` — fixes the case-broken `customXML`
-part paths a Google Docs export emits, which make Word refuse to open the file)
-and from **PDF export** (`scripts/doc_render.py`). See the full
-[document skill group](../../references/document-skills.md).
+This skill owns the **REPAIR** stage — both package wiring (Track A) and footnote
+markup (Track B) — for a `.docx` damaged by a cloud editor. Adjacent stages:
+
+- **Build** a styled `.docx` from markdown → `law-review-docx` (its `build_docx.py`
+  chains this skill's footnote repair + NOTEREF conversion after the pandoc build).
+- **Render** to PDF/PNG → `docx-render` / `scripts/doc_render.py` (Word path composes
+  Track A's `docx_repair.py` as a preflight automatically).
+- A law-review-specific Google Docs footnote fixer also lives at
+  `bluebook-audit/scripts/fix_gdocs_footnotes.py` — an **older near-duplicate** of
+  `fix_footnotes.py`; prefer this skill's hardened version for new work.
+
+See the full [document skill group](../../references/document-skills.md).

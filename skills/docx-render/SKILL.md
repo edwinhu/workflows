@@ -67,5 +67,5 @@ Part of the **[document skill group](../../references/document-skills.md)**
 (extract → create → repair → build → render → verify):
 - **law-review-docx** — *builds* a .docx from markdown (template + pandoc), then renders.
 - **docx** (generic) — *edits* docx content (tracked changes, comments, text).
-- **docx-footnotes** — repairs footnote *markup* (a separate concern from package repair).
+- **docx-repair** — repairs a cloud-editor-damaged .docx (package/XML wiring + footnote markup).
 - **xlsx** recalc / **pptx-render** — spreadsheet recalc / slide inspection.

@@ -14,11 +14,11 @@ fine. The recurring, concrete defects:
      docx skill's OOXML validator: ``CRITICAL: Unreferenced file:
      customXml/item1.xml``.
   2. ``<w:evenAndOddHeaders/>`` left in settings.xml -> Word renders phantom
-     blank pages (the same residue the docx-footnotes skill strips).
+     blank pages (the same residue the docx-repair skill strips).
 
 This is a STANDALONE, general-docx utility. It is deliberately decoupled from
 the two adjacent concerns:
-  * Footnote repair (GDocs separator/mark/ID damage) -> the ``docx-footnotes``
+  * Footnote repair (GDocs separator/mark/ID damage) -> the ``docx-repair``
     skill / ``fix_gdocs_footnotes.py``.
   * PDF export (Word / x2t / LibreOffice) -> ``doc_render.py``.
 The ``law-review-docx`` build chains all three; ``doc_render``'s Word preflight

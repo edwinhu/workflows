@@ -25,7 +25,7 @@ The script:
 3. Strips YAML frontmatter and prefixes footnote labels to avoid cross-section collisions
 4. Resolves `<!-- include: PATH -->` sentinels by inlining file contents (paths must be absolute or `~`-expanded)
 5. Runs pandoc with `--reference-doc` pointing to the law review template
-6. Optionally runs the docx-footnotes repair script (`--fix-footnotes`)
+6. Optionally runs the docx-repair repair script (`--fix-footnotes`)
 
 ## Compile-Time Includes
 
@@ -65,7 +65,7 @@ This template defines all styles that pandoc applies:
 
 ## After Export
 
-Report the output path, section count, footnote count, and approximate word count. If the user needs further formatting (NOTEREF cross-references, footnote repair from cloud editing), suggest `--fix-footnotes` or the `docx-footnotes` skill.
+Report the output path, section count, footnote count, and approximate word count. If the user needs further formatting (NOTEREF cross-references, footnote repair from cloud editing), suggest `--fix-footnotes` or the `docx-repair` skill.
 
 ## Rendering to PDF (Word fidelity, incl. from background jobs)
 
@@ -121,7 +121,7 @@ many articles), pandoc-citeproc with a note-style CSL emits just a stray
 number (`1.`) because the full cite is supposed to go into a footnote and
 there is no footnote to host it (we're already inside one).
 
-**Fix.** The `docx-footnotes` skill's `fix_footnotes.py` detects and strips
+**Fix.** The `docx-repair` skill's `fix_footnotes.py` detects and strips
 these wraps post-compile. The detector keys on the distinctive XML
 signature:
 
