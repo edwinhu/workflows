@@ -151,8 +151,9 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     if wrap_count:
         issues.append(f"pandoc_cite_wraps({wrap_count})")
 
-    # Google Docs leftover content controls (the visible "boxes" in Word).
-    goog_sdts = doc_xml.count('goog_rdk')
+    # Google Docs leftover content controls (the visible "boxes" in Word) —
+    # present in the body AND in footnotes (and comments, not checked here).
+    goog_sdts = doc_xml.count('goog_rdk') + fn_xml.count('goog_rdk')
     if goog_sdts:
         issues.append(f"goog_content_controls({goog_sdts})")
 
@@ -1488,7 +1489,9 @@ def normalize_body_indent(doc_xml):
             p.insert(0, pPr)
         if ind is None:
             ind = etree.Element(_wq("ind"))
-            ref = pPr.find(_wq("rPr")) or pPr.find(_wq("sectPr"))
+            ref = pPr.find(_wq("rPr"))
+            if ref is None:
+                ref = pPr.find(_wq("sectPr"))
             if ref is not None:
                 ref.addprevious(ind)
             else:
@@ -1561,7 +1564,14 @@ def main():
 
     all_changes = []
 
-    fn_xml_fixed, fn_changes = fix_footnotes_xml(fn_xml, args.bio_footnotes)
+    # Feature 1: strip Google Docs content controls from footnotes.xml FIRST so
+    # the footnote fixers see flattened structure. goog_rdk sdts live here too
+    # (not just document.xml) and render as boxes in the footnote area.
+    fn_xml_fixed, fn_sdt_changes = strip_goog_content_controls(fn_xml)
+    if fn_sdt_changes:
+        all_changes.append("footnotes.xml: " + fn_sdt_changes[0])
+
+    fn_xml_fixed, fn_changes = fix_footnotes_xml(fn_xml_fixed, args.bio_footnotes)
     all_changes.extend(fn_changes)
 
     fn_xml_fixed, pandoc_changes = fix_pandoc_cite_wraps(fn_xml_fixed)
@@ -1574,7 +1584,8 @@ def main():
     # Feature 1: strip Google Docs leftover content controls FIRST so every
     # downstream pass sees the flattened structure (no goog_rdk sdt wrappers).
     doc_xml_fixed, sdt_changes = strip_goog_content_controls(doc_xml)
-    all_changes.extend(sdt_changes)
+    if sdt_changes:
+        all_changes.append("document.xml: " + sdt_changes[0])
 
     doc_xml_fixed, doc_changes = fix_document_xml(doc_xml_fixed, args.bio_footnotes)
     all_changes.extend(doc_changes)
@@ -1636,30 +1647,42 @@ def main():
         doc_xml_fixed, indent_changes = normalize_body_indent(doc_xml_fixed)
         all_changes.extend(indent_changes)
 
-    # Google Docs OOXML hygiene (de-cruft) — default-on. Runs LAST so it cleans
-    # the residue every prior pass may leave, across all content parts. The two
-    # parts already in flight (document/footnotes) are cleaned in-memory; the
-    # auxiliary parts (comments, headers, footers) are read + cleaned here and
-    # written from `aux_hygiene` in the write loop below.
-    aux_hygiene = {}
+    # Content-part post-processing across every part that carries body content.
+    # document.xml + footnotes.xml are already in flight (goog strip applied
+    # above); the auxiliary parts (comments, headers, footers) are read here.
+    # Two passes per part, both scoped to the SAME content-part list:
+    #   * Feature 1 — strip goog_rdk content controls (ALWAYS; they render as
+    #     boxes in the footnote/comment area too, not just the body);
+    #   * Hygiene de-cruft (default-on; --no-hygiene skips).
+    # Cleaned aux parts are collected in `aux_out` for the write loop.
+    aux_out = {}
+    default_font = _default_body_font(styles_xml_fixed or styles_xml)
     if not args.no_hygiene:
-        default_font = _default_body_font(styles_xml_fixed or styles_xml)
         doc_xml_fixed, n = gdocs_hygiene(doc_xml_fixed, default_font)
         if n:
             all_changes.append(f"Hygiene: removed {n} GDocs cruft node(s)/attr(s) from document.xml")
         fn_xml_fixed, n = gdocs_hygiene(fn_xml_fixed, default_font)
         if n:
             all_changes.append(f"Hygiene: removed {n} GDocs cruft node(s)/attr(s) from footnotes.xml")
-        with zipfile.ZipFile(docx_path, 'r') as zf:
-            for name in zf.namelist():
-                if name in ('word/document.xml', 'word/footnotes.xml'):
-                    continue
-                if not is_hygiene_part(name):
-                    continue
-                cleaned, n = gdocs_hygiene(zf.read(name).decode('utf-8'), default_font)
+    with zipfile.ZipFile(docx_path, 'r') as zf:
+        for name in zf.namelist():
+            if name in ('word/document.xml', 'word/footnotes.xml'):
+                continue
+            if not is_hygiene_part(name):
+                continue
+            xml = zf.read(name).decode('utf-8')
+            changed = False
+            xml, sdt_ch = strip_goog_content_controls(xml)
+            if sdt_ch:
+                changed = True
+                all_changes.append(f"{name}: " + sdt_ch[0])
+            if not args.no_hygiene:
+                xml, n = gdocs_hygiene(xml, default_font)
                 if n:
-                    aux_hygiene[name] = cleaned
+                    changed = True
                     all_changes.append(f"Hygiene: removed {n} GDocs cruft node(s)/attr(s) from {name}")
+            if changed:
+                aux_out[name] = xml
 
     print(f"Changes ({len(all_changes)}):")
     for c in all_changes:
@@ -1684,8 +1707,8 @@ def main():
                         zout.writestr(item, settings_xml_fixed.encode('utf-8'))
                     elif item.filename == 'word/styles.xml' and styles_xml_fixed is not None:
                         zout.writestr(item, styles_xml_fixed.encode('utf-8'))
-                    elif item.filename in aux_hygiene:
-                        zout.writestr(item, aux_hygiene[item.filename].encode('utf-8'))
+                    elif item.filename in aux_out:
+                        zout.writestr(item, aux_out[item.filename].encode('utf-8'))
                     else:
                         zout.writestr(item, zin.read(item.filename))
 

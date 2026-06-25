@@ -165,7 +165,8 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - **Content controls (the "boxes")** — unwraps every `<w:sdt>` tagged `goog_rdk*`
   (Google Docs suggestion-mode markers, often 3-deep, that Word draws as boxes),
   replacing each with its `<w:sdtContent>` children. Keeps non-`goog` sdts (real
-  controls, the TOC). **Runs by default** in the document.xml pass; idempotent.
+  controls, the TOC). **Runs by default across all content parts** (document,
+  footnotes, comments, headers, footers — not just `document.xml`); idempotent.
 - **OOXML hygiene (de-cruft)** — strips redundant off/default run formatting,
   all-zero rsids, no-op shading, black color, and default-font residue across all
   content parts (document, footnotes, comments, headers, footers). Keeps every
@@ -279,14 +280,22 @@ canonical procedure's step 2.
 
 ### Feature 1 — strip Google Docs content controls (the "boxes") — DEFAULT ON
 
-Google Docs wraps freshly-written / suggestion-mode body content in `<w:sdt>`
-content controls tagged `goog_rdk_<n>`, often **3-deep**. Word's editor draws the
-nested ones as visible **boxes** around the text. The pass unwraps every `goog_rdk`
-sdt — replacing it with the children of its `<w:sdtContent>`, looping until none
-remain — and **keeps** non-`goog` sdts (real form controls and the TOC's
-`docPartObj` wrapper). It runs automatically (no flag); a doc with no `goog_rdk`
-sdts is a no-op. Text, footnotes, comments, and tracked changes are preserved
-verbatim (verified: 137 controls stripped, 0 text/footnote/comment delta).
+Google Docs wraps freshly-written / suggestion-mode content in `<w:sdt>` content
+controls tagged `goog_rdk_<n>`, often **3-deep**. Word's editor draws the nested
+ones as visible **boxes** around the text. The pass unwraps every `goog_rdk` sdt —
+replacing it with the children of its `<w:sdtContent>`, looping until none remain —
+and **keeps** non-`goog` sdts (real form controls and the TOC's `docPartObj`
+wrapper). It runs automatically (no flag); a doc with no `goog_rdk` sdts is a no-op.
+Text, footnotes, comments, and tracked changes are preserved verbatim.
+
+**Runs across every content part, not just `document.xml`.** goog_rdk sdts also
+live in `footnotes.xml` and `comments.xml` (and could in headers/footers), where
+they render as boxes in the footnote/comment area. The strip iterates the same
+content-part list as the hygiene pass (document, footnotes, comments, headers,
+footers). Verified on OPV: 137 (body) + 104 (footnotes) + 28 (comments) → **0
+remaining**, with footnote italics/small-caps/superscripts and footnote count
+intact. (Before v5.55.1 only `document.xml` was processed — footnote-area boxes
+survived.)
 
 ### Feature 2 — heading normalization — OPT-IN (`--normalize-headings`)
 
@@ -355,8 +364,16 @@ it. Front-matter guard: only unstyled paras >60 chars **after the first Heading1
   already-styled headings); only 2b is the no-false-positive guard. Confusing the
   two leads to "fixing" guards that were working.
 - **The `goog_rdk` boxes do not export to PDF — verify removal in the XML.** See
-  the Procedure Fact above: a clean PDF is not proof. Check
-  `grep -c goog_rdk word/document.xml → 0`.
+  the Procedure Fact above: a clean PDF is not proof. Check **every content part**,
+  not just the body: `for p in document footnotes comments; do unzip -p f.docx
+  word/$p.xml | grep -c goog_rdk; done` → all `0`.
+- **`goog_rdk` content controls live in `footnotes.xml` and `comments.xml`, not
+  only `document.xml`.** The v5.54.0 strip processed the body alone, so 104
+  footnote + 28 comment controls survived and rendered as boxes in the footnote
+  area of the OPV regen (found in production). The strip now iterates the same
+  content-part list as the hygiene pass. A part-scoped cleanup that hard-codes
+  `document.xml` will silently miss footnote/comment damage — scope both passes to
+  the shared `is_hygiene_part` list.
 - **Hygiene never touches styles.xml or numbering.xml.** An explicit "off" toggle
   (`<w:b w:val="0"/>`) inside a *style definition* can intentionally override an
   inherited "on" from its `basedOn` parent — stripping it there changes rendering.
