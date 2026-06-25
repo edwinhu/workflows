@@ -1,12 +1,43 @@
 ---
 name: docx-footnotes
-description: "Use when DOCX footnotes are broken after Google Docs or Word Online round-trips, when converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields, or for any OOXML-level footnote surgery on a Word document — even if the user doesn't say 'OOXML' but describes footnote formatting problems in a .docx edited in a cloud editor."
+description: "Use when DOCX footnotes break after a Google Docs or Word Online round-trip — 'footnotes broken after Google Docs', 'supra notes wrong after coauthor edits', 'cross-references point to the wrong footnote', 'bio footnotes show numbers instead of symbols (*, †, ‡)', 'author note shows 1 2 3 not star dagger', 'footnote numbering starts at the wrong number', 'separator line missing', 'double asterisk / doubled footnote marks' — or when converting hardcoded 'supra note N' cross-references to auto-updating NOTEREF fields. Also any OOXML-level footnote surgery on a .docx edited in a cloud editor, even if the user never says 'OOXML'."
 user-invocable: false
 ---
 
 # DOCX Footnote Repair & Cross-References
 
 Fix footnote formatting damage caused by Google Docs and Word Online, and convert hardcoded supra note references to NOTEREF field codes.
+
+## Canonical Procedure — Google Docs round-trip
+
+A law-review draft that round-trips through **Google Docs** every editing round (the OPV/Nadya case) comes back with both formatting damage AND stale cross-reference numbers. Run these **in this exact order** on the returned `.docx`. Use `$SKILL_DIR` for the absolute path to this skill's directory and keep the last-known-good draft as `OLD.docx`.
+
+```bash
+# 1. Accept tracked changes first (the coauthor's edits). Numbering and the
+#    baseline remap both assume the FINAL accepted text. (Word: Review →
+#    Accept All; or the document skill's accept-changes path.)
+
+# 2. Repair footnote markup (separators, styles, bio custom marks, pStyles).
+uv run "$SKILL_DIR/scripts/fix_footnotes.py" returned.docx -o step2.docx
+
+# 3. Remap stale "supra note N" numbers against the known-good baseline, THEN
+#    convert to NOTEREF fields. --baseline is what fixes the coauthor-shift.
+uv run "$SKILL_DIR/scripts/create_crossrefs.py" \
+  --docx step2.docx --output step3.docx --baseline OLD.docx
+
+# 4. Render with WORD and eyeball it (LibreOffice numbers custom marks wrong).
+uv run "$SKILL_DIR/../../scripts/doc_render.py" \
+  step3.docx step3.pdf --renderer word --allow-word
+```
+
+**Verify in the render:** author bios show `*`, `†`, `‡` (not `1, 2, 3` and not doubled `**`, `††`); the first real footnote is `1`; a remapped reference (e.g. "Kahan & Rock, supra note 8") points to the correct footnote. Then in Word, **Ctrl+A, F9** to refresh the NOTEREF display numbers.
+
+### Procedure Facts (incident-grounded)
+
+- **Step 3 must run AFTER step 2.** `create_crossrefs --baseline` counts footnote display numbers the way Word does — skipping the `customMarkFollows` bio marks. Until `fix_footnotes` converts the bios to custom marks, the bios are still numbered `1, 2, 3`, so the alignment is off by the bio count and every remapped number is wrong. Running step 3 first silently mis-targets the cross-references it was supposed to fix.
+- **`--baseline` is not optional for the Google Docs case.** Google Docs flattens every NOTEREF field back to hardcoded "supra note N" text, frozen at the prior draft's numbering. After a coauthor inserts/deletes footnotes the offset is *non-uniform*, so `create_crossrefs` without `--baseline` bookmarks by current position and mis-targets ~90% of references — the exact failure this skill exists to prevent.
+- **The remap's flagged list is a human cite-check queue, not noise.** `--baseline` prints `⚠ … could NOT be remapped` for references whose footnote content did not align one-to-one (inserts, deletes, densely-similar citation clusters). These are left unchanged on purpose — guessing a target you cannot prove is how a wrong citation ships. Surface the flagged list to the user for manual verification; do not suppress it.
+- **Render with Word, never LibreOffice, to verify.** LibreOffice renders `customMarkFollows` numbering wrong (verified 2026-06-10), so bios that are actually correct can look broken — leading you to "fix" something that was right. `doc_render.py --renderer word` (or `x2t`) is ground truth.
 
 ## When This Applies
 
@@ -15,27 +46,28 @@ Common symptoms in `.docx` files round-tripped through Google Docs or Word Onlin
 - Missing footnote separator lines
 - Stripped paragraph styles (pStyle) on footnote bodies
 - Stripped style *definitions* (`FNStyleBest` etc.) — the pStyle reference points at an undefined style and Word silently falls back to Normal
-- Author bio custom marks (`*`, `†`, `‡`) replaced with numbers
+- Author bio custom marks (`*`, `†`, `‡`) replaced with numbers, or rendered **doubled** (`**`, `††`) when Google Docs welded the literal mark onto adjacent text
 - Footnote numbering starting at the wrong number (offset from `customMarkFollows` bio footnotes)
+- "supra note N" cross-references pointing to the **wrong footnote** after a coauthor inserted/deleted footnotes (numbers frozen by a Google Docs NOTEREF flatten)
 - TOC separator paragraphs that inflate to fill a whole page
 - Hardcoded "supra note N" / "infra note N" references that need to become auto-updating NOTEREF fields
 
 ## Quick Start
 
-Scripts are in this skill's `scripts/` directory. Use `$SKILL_DIR` below as a placeholder for the absolute path to this skill (the directory containing this SKILL.md).
+Scripts are in this skill's `scripts/` directory. Use `$SKILL_DIR` below as a placeholder for the absolute path to this skill (the directory containing this SKILL.md). Each script carries PEP 723 inline metadata, so `uv run script.py` auto-installs `lxml` — no `--with lxml` needed.
+
+For the full **Google Docs round-trip**, follow the [Canonical Procedure](#canonical-procedure--google-docs-round-trip) above (it chains these in the required order). Individual scripts:
 
 ```bash
-# Fix all cloud editor damage + convert cross-references
-uv run --with lxml python3 \
-  "$SKILL_DIR/scripts/fix_footnotes.py" path/to/file.docx --crossrefs
-
 # Dry run (show what would change)
-uv run --with lxml python3 \
-  "$SKILL_DIR/scripts/fix_footnotes.py" path/to/file.docx --dry-run
+uv run "$SKILL_DIR/scripts/fix_footnotes.py" path/to/file.docx --dry-run
 
-# Cross-references only
-uv run --with lxml python3 \
-  "$SKILL_DIR/scripts/create_crossrefs.py" --docx path/to/file.docx
+# Fix cloud-editor footnote damage
+uv run "$SKILL_DIR/scripts/fix_footnotes.py" path/to/file.docx -o fixed.docx
+
+# Convert cross-references, remapping stale numbers against a known-good baseline
+uv run "$SKILL_DIR/scripts/create_crossrefs.py" \
+  --docx fixed.docx --baseline OLD.docx
 
 # Refresh stale NOTEREF cross-ref numbers after a coauthor inserted/moved
 # footnotes in Word (render-based, ground-truth; needs x2t or LibreOffice)
@@ -43,8 +75,8 @@ uv run --with lxml python3 \
 ```
 
 **Which script do I want?**
-- Footnotes look broken after a **Google Docs / Word Online** round-trip (missing separators, wrong styles, mark/number mix-ups) → **`fix_footnotes.py`**.
-- The doc still has **hardcoded** "supra note 42" **text** that should become auto-updating fields → **`create_crossrefs.py`**.
+- Footnotes look broken after a **Google Docs / Word Online** round-trip (missing separators, wrong styles, bios numbered or doubled, mark/number mix-ups) → **`fix_footnotes.py`**.
+- The doc still has **hardcoded** "supra note 42" **text** that should become auto-updating fields → **`create_crossrefs.py`** (add **`--baseline OLD.docx`** when the numbers went stale through a Google Docs round-trip).
 - The doc **already uses NOTEREF fields** but a coauthor **inserted/moved/deleted footnotes in Word** and the cross-reference **numbers are now wrong** → **`refresh_noteref_caches.py`** (this is the common "Nadya emailed back tracked edits and the numbering is off" case).
 
 ## Scripts
@@ -55,7 +87,13 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 
 **Google Docs / Word Online round-trip damage:**
 - Missing separator/continuation footnotes (id=-1, 0)
-- Custom mark restoration for author bio footnotes (*, dagger, double-dagger)
+- Custom mark restoration for author bio footnotes (`*`, `†`, `‡`). Handles
+  **both** round-trip flavors: Word Online (symbol kept in a separate run) and
+  Google Docs (symbol run **deleted** and the literal mark **welded** onto the
+  adjacent text — e.g. `<w:t>* Nadya Malenko</w:t>`). A position-based lxml pass
+  forces the first `--bio-footnotes` references and their footnote bodies into
+  the canonical custom-mark shape and strips the welded literal so the mark does
+  not render doubled (`**`, `††`). Idempotent.
 - Footnote ID renumbering (shifted by missing system footnotes)
 - Missing paragraph styles (adds configurable pStyle to all footnotes)
 - Wrong paragraph styles — reassigns `pStyle="FootnoteText"` (the Google Docs
@@ -94,6 +132,27 @@ Converts hardcoded "supra note N" references to NOTEREF field codes that auto-up
 - Creates bookmark targets on referenced footnotes
 - Replaces hardcoded numbers with `NOTEREF _RefFN<id> \h` field codes
 - Preserves italic formatting on "supra"
+
+**`--baseline OLD.docx` — remap stale numbers before converting (the coauthor-shift fix):**
+
+When a coauthor edited the draft in Google Docs, every NOTEREF field came back as
+hardcoded "supra note N" text frozen at the *prior* draft's numbering. After
+footnotes are inserted/deleted the offset is non-uniform, so converting those
+numbers as-is mis-targets ~90% of references. `--baseline` aligns the baseline
+and current footnote **sequences by letter-only content fingerprint** (difflib)
+and rewrites each stale number to its current value **before** conversion. The
+remap is cross-run aware ("supra" is its own italic run; the number lives in a
+following run). References whose footnote content does not align one-to-one
+(inserts, deletes, densely-similar clusters) are **flagged for human cite-check,
+never guessed**. Run this *after* `fix_footnotes.py` (so bio custom marks are
+already excluded from the count).
+
+**Flags:**
+- `--docx`: Input DOCX (required)
+- `--output`: Output path (default: overwrite input)
+- `--dry-run`: Report changes without writing
+- `--baseline OLD.docx`: Known-good prior draft whose "supra note N" numbering is
+  correct; remaps stale numbers to current numbering by content-identity alignment
 
 ### refresh_noteref_caches.py
 

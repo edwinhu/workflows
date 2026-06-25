@@ -1,4 +1,8 @@
 #!/usr/bin/env -S uv run python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["lxml"]
+# ///
 """Fix footnote formatting damage in law review OOXML.
 
 Two classes of damage, detected and fixed independently:
@@ -38,6 +42,17 @@ import sys
 import tempfile
 import zipfile
 from pathlib import Path
+
+from lxml import etree
+
+# WordprocessingML namespace, for the lxml-based bio normalization pass.
+_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+
+def _wq(tag):
+    """Qualify a bare WordprocessingML tag/attr name for lxml."""
+    return f"{{{_W}}}{tag}"
+
 
 # ── Custom mark definitions ────────────────────────────────────────────
 AUTHOR_BIO_MARKS = [
@@ -580,6 +595,179 @@ def fix_document_xml(doc_xml, num_bio_footnotes=3):
     return doc_xml, changes
 
 
+# ── Bio custom-mark restoration (authoritative, position-based) ────────
+# The regex bio fixers above only match the "number run + symbol run" shape
+# Word Online leaves behind. Google Docs is more destructive: it sets
+# customMarkFollows="0" AND DELETES the trailing symbol run entirely, leaving
+# a bare footnoteReference. The regex never matches that, so the bios stay in
+# the numbered sequence (rendering 1,2,3 with real footnotes starting at 4).
+#
+# This pass normalizes the FIRST `num_bio_footnotes` references in document
+# order — which are the author-bio marks by law-review convention — and their
+# corresponding footnote bodies to the canonical baseline shape, regardless of
+# how the round-trip damaged them. It is position-based (not id-based) so it is
+# robust to the +1 id shift the earlier passes may or may not have applied, and
+# it is idempotent: a correct bio is rebuilt to the identical shape.
+#
+#   body reference run :  <w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>
+#                         <w:footnoteReference w:customMarkFollows="1" w:id="N"/>SYM</w:r>
+#   footnote body run  :  <w:r><w:rPr><w:rStyle w:val="FootnoteReference"/></w:rPr>SYM</w:r>
+#
+# where SYM is <w:sym w:font="Symbol" w:char="F02A"/> (*), <w:t>†</w:t>, <w:t>‡</w:t>.
+
+def _glyph_elem(mark):
+    """Build the symbol element (`SYM`) for a bio mark."""
+    if mark["mark_type"] == "sym":
+        s = etree.Element(_wq("sym"))
+        s.set(_wq("font"), mark["font"])
+        s.set(_wq("char"), mark["char"])
+        return s
+    t = etree.Element(_wq("t"))
+    t.text = mark["detect_text"]  # the literal glyph, e.g. "†"
+    return t
+
+
+def _is_glyph_node(node, mark):
+    """True if `node` is a stray symbol/text node carrying this mark's glyph."""
+    if node.tag == _wq("sym"):
+        return node.get(_wq("char")) == mark.get("char")
+    if node.tag == _wq("t"):
+        return (node.text or "").strip() == mark["detect_text"]
+    return False
+
+
+def _strip_following_literal_mark(ref_run, mark):
+    """Google Docs deletes the symbol RUN but keeps the symbol CHARACTER,
+    welding it onto the front of the next text run (e.g. `<w:t>* Nadya …</w:t>`).
+    After we re-add the custom mark we must remove that orphaned literal, or the
+    glyph renders twice (`**`, `††`). Strip a single leading mark glyph from the
+    first text-bearing run that follows. Idempotent: once stripped, the run no
+    longer starts with the mark, so a re-run is a no-op."""
+    glyph = mark["detect_text"]
+    for nxt in ref_run.itersiblings():
+        if nxt.tag != _wq("r"):
+            continue
+        t = nxt.find(_wq("t"))
+        if t is not None and t.text:
+            if t.text[0] == glyph:
+                t.text = t.text[1:]
+            return
+
+
+def _normalize_bio_rpr(run):
+    """Set the run's rPr to exactly <w:rStyle w:val="FootnoteReference"/>.
+
+    Matches the baseline shape: the FootnoteReference character style already
+    confers superscript, so no inline <w:vertAlign> is kept (GDocs residue)."""
+    rpr = run.find(_wq("rPr"))
+    if rpr is None:
+        rpr = etree.Element(_wq("rPr"))
+        run.insert(0, rpr)
+    else:
+        for child in list(rpr):
+            rpr.remove(child)
+    rs = etree.SubElement(rpr, _wq("rStyle"))
+    rs.set(_wq("val"), "FootnoteReference")
+
+
+def restore_bio_custom_marks(doc_xml, fn_xml, num_bio_footnotes=3):
+    """Force the first `num_bio_footnotes` footnotes into custom-mark form in
+    both document.xml (the body reference) and footnotes.xml (the footnote
+    body). Returns (doc_xml, fn_xml, changes). See module comment above."""
+    changes = []
+    marks = AUTHOR_BIO_MARKS[:num_bio_footnotes]
+    if not marks:
+        return doc_xml, fn_xml, changes
+
+    # ── document.xml: the in-text bio references ──────────────────────
+    doc = etree.fromstring(doc_xml.encode("utf-8"))
+    refs = list(doc.iter(_wq("footnoteReference")))[:num_bio_footnotes]
+    fixed_refs = 0
+    for idx, ref in enumerate(refs):
+        mark = marks[idx]
+        run = ref.getparent()
+        if run is None or run.tag != _wq("r"):
+            continue
+        already = (ref.get(_wq("customMarkFollows")) == "1"
+                   and ref.getnext() is not None
+                   and _is_glyph_node(ref.getnext(), mark))
+        ref.set(_wq("customMarkFollows"), "1")
+        _normalize_bio_rpr(run)
+        # Drop any stray glyph nodes following the reference inside this run.
+        for sib in list(ref.itersiblings()):
+            if _is_glyph_node(sib, mark):
+                run.remove(sib)
+        # Drop an orphaned glyph run that GDocs/Word may have split off next.
+        nxt = run.getnext()
+        if nxt is not None and nxt.tag == _wq("r"):
+            kids = [k for k in nxt if k.tag != _wq("rPr")]
+            if kids and all(_is_glyph_node(k, mark) for k in kids):
+                run.getparent().remove(nxt)
+        # Append exactly one fresh glyph right after the reference.
+        ref.addnext(_glyph_elem(mark))
+        # Remove the literal mark GDocs welded onto the following text run.
+        _strip_following_literal_mark(run, mark)
+        if not already:
+            fixed_refs += 1
+    if fixed_refs:
+        changes.append(
+            f"Restored custom marks on {fixed_refs} bio body reference(s)")
+    doc_xml = etree.tostring(
+        doc, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+
+    # ── footnotes.xml: the bio footnote bodies ────────────────────────
+    foot = etree.fromstring(fn_xml.encode("utf-8"))
+    bios = []
+    for fn in foot.iter(_wq("footnote")):
+        if fn.get(_wq("type")) in ("separator", "continuationSeparator"):
+            continue
+        bios.append(fn)
+        if len(bios) >= num_bio_footnotes:
+            break
+    fixed_bodies = 0
+    for idx, fn in enumerate(bios):
+        mark = marks[idx]
+        # The auto-number placeholder run, if it survived.
+        ref_run = None
+        for r in fn.iter(_wq("r")):
+            if r.find(_wq("footnoteRef")) is not None:
+                ref_run = r
+                break
+        if ref_run is not None:
+            fref = ref_run.find(_wq("footnoteRef"))
+            ref_run.remove(fref)
+            _normalize_bio_rpr(ref_run)
+            for child in list(ref_run):
+                if child.tag != _wq("rPr"):
+                    ref_run.remove(child)
+            ref_run.append(_glyph_elem(mark))
+            _strip_following_literal_mark(ref_run, mark)
+            fixed_bodies += 1
+        else:
+            # No footnoteRef: already a custom mark. Ensure the first run still
+            # carries the right glyph (rebuild defensively for idempotency).
+            first_run = fn.find(f".//{_wq('r')}")
+            if first_run is not None:
+                kids = [k for k in first_run if k.tag != _wq("rPr")]
+                if not (kids and all(_is_glyph_node(k, mark) for k in kids)):
+                    _normalize_bio_rpr(first_run)
+                    for child in list(first_run):
+                        if child.tag != _wq("rPr"):
+                            first_run.remove(child)
+                    first_run.append(_glyph_elem(mark))
+                    _strip_following_literal_mark(first_run, mark)
+                    fixed_bodies += 1
+    if fixed_bodies:
+        changes.append(
+            f"Restored symbol glyph on {fixed_bodies} bio footnote bod(y/ies)")
+    fn_xml = etree.tostring(
+        foot, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+
+    return doc_xml, fn_xml, changes
+
+
 def fix_toc_separator(doc_xml):
     """Shrink the TOC-to-body separator paragraph to near-zero height."""
     changes = []
@@ -887,6 +1075,13 @@ def main():
     doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
         doc_xml_fixed, args.bio_footnotes)
     all_changes.extend(bio_ref_changes)
+
+    # Authoritative bio normalization (lxml, position-based). Runs after the
+    # regex bio fixers so it also repairs the Google-Docs bare-reference case
+    # they cannot match, and leaves a correct bio untouched (idempotent).
+    doc_xml_fixed, fn_xml_fixed, bio_norm_changes = restore_bio_custom_marks(
+        doc_xml_fixed, fn_xml_fixed, args.bio_footnotes)
+    all_changes.extend(bio_norm_changes)
 
     doc_xml_fixed, toc_changes = fix_toc_separator(doc_xml_fixed)
     all_changes.extend(toc_changes)

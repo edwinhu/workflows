@@ -1,4 +1,8 @@
 #!/usr/bin/env -S uv run python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["lxml"]
+# ///
 """Convert hardcoded supra/infra note cross-references to NOTEREF field codes.
 
 Scans footnotes.xml for patterns like "supra note 42" and replaces the hardcoded
@@ -13,6 +17,7 @@ Usage:
 
 import argparse
 import copy
+import difflib
 import os
 import re
 import shutil
@@ -444,6 +449,134 @@ def replace_with_noteref(fn_root, bookmark_map):
     return count
 
 
+# ── Baseline remap (content-identity alignment) ────────────────────────
+#
+# Google Docs flattens every NOTEREF field back to hardcoded "supra note N"
+# text, FROZEN at the numbering of whatever draft last had live fields. After a
+# coauthor inserts/deletes footnotes, those numbers are stale by a NON-UNIFORM
+# offset, so create_crossrefs (which bookmarks by current display position)
+# would silently mis-target ~90% of them.
+#
+# --baseline OLD.docx remaps each "supra/infra note N" from the baseline frame
+# to the current numbering BEFORE conversion, by aligning the two documents'
+# footnote sequences on letter-only content fingerprints (difflib). Footnotes
+# that do not align one-to-one (inserts, deletes, or densely-similar citation
+# clusters) are NOT guessed — every supra pointing into an unaligned region is
+# emitted as a flagged list for human cite-check.
+
+
+def _footnote_fingerprint_text(fn):
+    """Letter-only, lowercased, first-60-char fingerprint of a footnote's
+    visible text. Collects <w:t> only (so NOTEREF instrText field codes and
+    digits never pollute the fingerprint)."""
+    text = "".join(t.text or "" for t in fn.iter(f"{{{W}}}t"))
+    return re.sub(r"[^a-zA-Z]", "", text)[:60].lower()
+
+
+def _display_sequence(doc_root, fn_root):
+    """Return [(display_num, fingerprint), ...] in display order, using the
+    SAME display numbering create_crossrefs bookmarks with (get_display_to_id):
+    footnoteReferences in document order, skipping custom-mark bio footnotes."""
+    fp_by_id = {
+        int(fn.get(f"{{{W}}}id", "0")): _footnote_fingerprint_text(fn)
+        for fn in fn_root.findall(f"{{{W}}}footnote")
+    }
+    d2id = get_display_to_id(doc_root)
+    return [(d, fp_by_id.get(d2id[d], "")) for d in sorted(d2id)]
+
+
+def build_remap(baseline_path, doc_root, fn_root):
+    """Align baseline → current footnote sequences. Returns (omap, report)
+    where omap = {baseline_display_num: current_display_num} for footnotes that
+    align one-to-one, and report describes coverage/gaps."""
+    with zipfile.ZipFile(Path(baseline_path).expanduser().resolve(), "r") as z:
+        base_doc = etree.fromstring(z.read("word/document.xml"))
+        base_fn = etree.fromstring(z.read("word/footnotes.xml"))
+
+    base_seq = _display_sequence(base_doc, base_fn)
+    cur_seq = _display_sequence(doc_root, fn_root)
+
+    sm = difflib.SequenceMatcher(
+        a=[fp for _, fp in base_seq], b=[fp for _, fp in cur_seq], autojunk=False
+    )
+    omap = {}
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            for k in range(i2 - i1):
+                omap[base_seq[i1 + k][0]] = cur_seq[j1 + k][0]
+
+    report = {
+        "base_count": len(base_seq),
+        "cur_count": len(cur_seq),
+        "aligned": len(omap),
+    }
+    return omap, report
+
+
+def _remap_paragraph(p, omap, changes, flagged):
+    """Rewrite 'supra/infra note N' numbers in one paragraph, cross-run.
+
+    'supra' is its own (italic) run and the number lives in a following run, so
+    we concatenate the paragraph's run texts, locate the digits, and edit them
+    back into their owning <w:t> right-to-left. Unmapped numbers are flagged,
+    never guessed."""
+    tels = [t for t in p.iter(f"{{{W}}}t") if t.text]
+    if not tels:
+        return
+    full = ""
+    idx = []  # (char_start, char_end, t_element)
+    for t in tels:
+        idx.append((len(full), len(full) + len(t.text), t))
+        full += t.text
+    if "supra" not in full and "infra" not in full:
+        return
+
+    edits = []  # (char_start, char_end, replacement) — only for CHANGED numbers
+    covered = set()
+    for m in RANGE_PAT.finditer(full):
+        covered.update(range(m.start(), m.end()))
+        a, b = int(m.group(1)), int(m.group(2))
+        na, nb = omap.get(a), omap.get(b)
+        if na is None or nb is None:
+            flagged.append(m.group(0).strip())
+            continue
+        if (na, nb) != (a, b):
+            edits.append((m.start(1), m.end(1), str(na)))
+            edits.append((m.start(2), m.end(2), str(nb)))
+            changes.append((f"{m.group(0).strip()}", f"{na}-{nb}"))
+    for m in SINGLE_PAT.finditer(full):
+        if m.start() in covered:
+            continue
+        a = int(m.group(1))
+        na = omap.get(a)
+        if na is None:
+            flagged.append(m.group(0).strip())
+            continue
+        if na != a:
+            edits.append((m.start(1), m.end(1), str(na)))
+            changes.append((f"{m.group(0).strip()}", str(na)))
+
+    for s, e, rep in sorted(edits, key=lambda x: -x[0]):
+        for cs, ce, t in idx:
+            if cs <= s and e <= ce:
+                t.text = t.text[: s - cs] + rep + t.text[e - cs :]
+                break
+        else:
+            flagged.append(f"SPAN_MULTIRUN:{full[s:e]}")
+
+
+def remap_supra_numbers(doc_root, fn_root, baseline_path):
+    """Remap stale supra/infra numbers to current numbering in both the body
+    and the footnotes. Returns (changes, flagged, report)."""
+    omap, report = build_remap(baseline_path, doc_root, fn_root)
+    changes, flagged = [], []
+    for p in fn_root.iter(f"{{{W}}}p"):
+        _remap_paragraph(p, omap, changes, flagged)
+    for p in doc_root.iter(f"{{{W}}}p"):
+        _remap_paragraph(p, omap, changes, flagged)
+    return changes, flagged, report
+
+
 # ── Main ────────────────────────────────────────────────────────────────
 
 
@@ -457,6 +590,14 @@ def main():
         "--dry-run",
         action="store_true",
         help="Report what would change without modifying the file",
+    )
+    parser.add_argument(
+        "--baseline",
+        help="Known-good prior DOCX whose 'supra note N' numbering is correct. "
+        "When set, stale note numbers (frozen by a Google Docs NOTEREF "
+        "flatten) are remapped to current numbering by content-identity "
+        "alignment BEFORE conversion. Run this AFTER fix_footnotes.py so bio "
+        "footnotes are already custom marks and excluded from the count.",
     )
     args = parser.parse_args()
 
@@ -475,6 +616,31 @@ def main():
         all_data = {item.filename: z.read(item.filename) for item in all_items}
     doc_root = etree.fromstring(doc_xml)
     fn_root = etree.fromstring(fn_xml)
+
+    # ── Step 0: Baseline remap (optional) ───────────────────────────
+    if args.baseline:
+        base_path = Path(args.baseline).expanduser().resolve()
+        if not base_path.exists():
+            print(f"ERROR: baseline {base_path} not found")
+            sys.exit(1)
+        print(f"Step 0: Remapping stale note numbers against baseline...")
+        changes, flagged, report = remap_supra_numbers(doc_root, fn_root, base_path)
+        print(f"  Aligned {report['aligned']}/{report['base_count']} baseline "
+              f"footnotes to {report['cur_count']} current footnotes")
+        renumbered = [c for c in changes]
+        print(f"  Remapped {len(renumbered)} stale reference number(s)")
+        for old, new in renumbered[:25]:
+            print(f"    {old!r} -> note {new}")
+        if len(renumbered) > 25:
+            print(f"    ... and {len(renumbered) - 25} more")
+        if flagged:
+            print(f"\n  ⚠ {len(flagged)} reference(s) could NOT be remapped "
+                  f"(unaligned content — FLAG FOR HUMAN CITE-CHECK):")
+            for f in flagged[:40]:
+                print(f"      {f}")
+            if len(flagged) > 40:
+                print(f"      ... and {len(flagged) - 40} more")
+        print()
 
     # ── Step 1: Parse cross-references ──────────────────────────────
     print("Step 1: Parsing cross-references...")
