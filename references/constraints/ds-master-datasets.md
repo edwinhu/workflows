@@ -16,7 +16,13 @@ The plan MUST do three things:
 
 This makes the methodology consistent by construction: sample filters, winsorization, key definitions, and merges happen ONCE in the master-dataset build, so every exhibit inherits the same sample and the same numbers. Ad-hoc per-exhibit pulls produce exhibits that silently disagree (different row counts, different filters, different vintages) — the failure this rule exists to prevent.
 
-**When a single master dataset is wrong:** distinct grains genuinely require distinct masters (e.g., a firm-quarter panel for regressions AND a trade-level file for microstructure). Minimal ≠ exactly one — it means *no more masters than distinct analysis grains require*, each justified. Splitting one grain across several ad-hoc files is the anti-pattern; merging two genuinely different grains into one bloated file is the opposite anti-pattern.
+**When a single master dataset is wrong:** distinct grains genuinely require distinct masters (e.g., a firm-quarter panel for regressions AND a trade-level file for microstructure). Minimal ≠ exactly one — it means *no more masters than distinct analysis grains require*, each justified. Splitting one grain across several ad-hoc files is the anti-pattern; merging two genuinely different grains into one bloated file is the opposite anti-pattern. (Reference: the muni-pennying project landed on exactly two masters — `trades`, grain one MSRB print, key cusip × event_ts; and `auctions`, grain one executed bid-wanted auction, key cusip × link_identifier — because the unit of analysis genuinely differs, and every exhibit is a filter/aggregate of one of them.)
+
+### Master design notes (from the muni-pennying reference)
+
+- **Carry multiple benchmarks/variants as COLUMNS, not as forked datasets.** When a result can be computed against more than one benchmark (e.g. an inter-dealer mid AND a quoted BBO; or a 3-, 5-, and 10-day window), put them all on the master as columns (`cost_vs_mid`, `quote_cost_bps`, `mid_lag_days`, `MID_WINDOWS=(3,5,10)`) with flag columns for availability (`has_same_day_mid`, `two_sided`). Forking `trades_vs_mid` and `trades_vs_quote` into separate masters re-introduces the divergence this rule exists to prevent — the two would drift in sample.
+- **The funnel reports TWO counts per step: N rows AND N distinct keys** (e.g. N trades and N distinct CUSIPs). Reviewers tie out on both — a step that drops rows but no CUSIPs means something different from one that drops whole securities. The construction funnel IS [[sample-selection]] applied to the master; report both counts at each filter edge.
+- **"Recover, don't drop" — then VALIDATE against ground truth.** Before discarding rows that fail a status/quality field, check whether the sample can be *recovered* by a defined rule, and validate that rule against clean-labeled rows (recall / false-positive) before adopting it. muni recovered the auction sample ~6× this way: the status field was BLANK/PENDING for 91% of rows, so "executed" was redefined by a match rule and validated at 86% recall / 21% FP against the labeled minority. Flag the recovered selection with a dummy and report sensitivity. Dropping the 91% would have been a silent, catastrophic selection — recovery + validation is a master-construction decision, recorded in the construction diagram's filter edges.
 
 ## Dataset-Construction Mermaid Diagram (required doc deliverable)
 
@@ -44,6 +50,8 @@ flowchart LR
 ```
 
 Master datasets are the `[(rounded)]` nodes; raw sources and intermediates are plain nodes; exhibits are leaf nodes named by their table/figure number. Every edge into a master carries its merge key or filter. Every exhibit node has exactly one incoming path from a master — if an exhibit reads a raw source directly, that is the rule violation the diagram makes visible.
+
+Layout (`TD` or `LR`) and master-node shape (`[(rounded)]` or `[[subroutine]]`) are conventions — pick one and be consistent (the muni-pennying reference uses `flowchart TD` with `[[master]]`). What matters is that **merge edges carry their keys** and **filter edges carry their named filter AND its row-drop** (e.g. `price_ok`, `exec_confirmed`, `winsorize`) — ideally both counts, rows and distinct keys, per the funnel rule above.
 
 ## Exhibit → Dataset Map (PLAN.md section)
 

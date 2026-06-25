@@ -374,11 +374,11 @@ This is cheap to edit per-task and expensive to reconstruct from memory at write
 
 ## Parameter Centralization (No Inline Literals)
 
-If PLAN.md has a `## Filters & Parameters` table, it names a single config location (e.g. `src/config.py`). Every task subagent MUST read parameters from that location by name and write **NO inline numeric literals** for any analysis decision — filters, bands, caps, winsorization levels, date windows, min-obs counts.
+If PLAN.md has a `## Filters & Parameters` table, it names a single config location (default: a plain `src/config.py` of named constants with rationale in inline comments). Every task subagent MUST read parameters from that location by name and write **NO inline numeric literals** for any analysis decision — filters, bands, caps, winsorization levels, date windows, min-obs counts.
 
 - **Inject the config-location instruction into every implementation subagent prompt:** "All filter/threshold/cap/window values come from `<config location>` referenced by name. Do NOT hard-code numeric literals for analysis decisions — if a value you need is missing from the config, ADD it there (with a Filters & Parameters row), don't inline it."
-- `df[df.price > 100]` is a magic number; `df[df.price > P.MIN_PRICE]` is correct. Loop indices, unit conversions (`* 100` for percent), and array offsets are not parameters — leave them inline.
-- When a task introduces a new parameter not in the inventory, the subagent ADDS it to the config location AND appends a row to the `## Filters & Parameters` table (name · value · where · rationale · kind · sensitivity check). A new `arbitrary` parameter triggers a robustness check — log it for ds-review.
+- `df[df.price > 100]` is a magic number; `df[df.price > MIN_PRICE]` is correct. Loop indices, unit conversions (`* 100` for percent), and array offsets are not parameters — leave them inline.
+- When a task introduces a new parameter not in the inventory, the subagent ADDS it to the config location AND appends a row to the `## Filters & Parameters` table (constant · value · applied in · rationale/source · principled? · disposition). A new convenience (⚠) parameter needs a disposition (robustness panel / verified-redundant / display-only) — log it for ds-review; principled (✓) requires a cited source or a validation result.
 - A scattered literal is a `[Rule 2 - Missing Critical]` deviation: centralize it (move to config, reference by name), verify the output is unchanged, and track it.
 
 A magic number that reaches the final pipeline is a replication landmine the reviewer will flag — centralizing as you write costs one import; retrofitting after literals scatter costs an audit pass (the exact rework Edwin's muni magic-numbers audit is paying down).

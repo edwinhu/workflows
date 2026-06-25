@@ -157,7 +157,7 @@ The workflow phases are SEQUENTIAL. Complete plan → immediately start implemen
  5d. Master Dataset Design ──▶ name minimal master datasets + grain/keys, map every exhibit→master, draft construction mermaid diagram
             │
             ▼
- 5e. Parameter Inventory ──▶ list every filter/threshold/cap/window, centralize in one config location, mark arbitrary-vs-principled, flag arbitrary for sensitivity check
+ 5e. Parameter Inventory ──▶ list every filter/threshold/cap/window, centralize in one config location, mark principled(✓)-vs-convenience(⚠), assign each ⚠ a disposition (robustness panel / verified-redundant / display-only)
             │
             ▼
  6. Task breakdown (each task carries implements: [REQ-ID]; master-build tasks produce the master datasets)
@@ -783,15 +783,19 @@ From the sample-selection plan, the master-dataset filters, and the methodology,
 
 #### Step 5e.2: Name the single config location
 
-Decide the ONE place parameters live — a `src/config.py` / `constants.py` module, a `params` dataclass, or a `config.yaml`/`.toml`. Match the project's existing pattern if one exists. Record the chosen location in PLAN.md so every implementation task references it by name and writes NO inline literals.
+Decide the ONE place parameters live. Default to a **plain-Python `src/config.py` of named constants with the rationale in an inline comment** next to each value (the muni-pennying reference pattern — diffable, zero-dep, importable, rationale-adjacent). Match the project's existing pattern if one exists. Record the chosen location in PLAN.md so every implementation task references it by name and writes NO inline literals.
 
-#### Step 5e.3: Classify arbitrary vs principled, flag sensitivity checks
+#### Step 5e.3: Classify principled vs convenience, assign a disposition
 
-Build the `## Filters & Parameters` table (name · value · where applied · rationale · kind · sensitivity check). Mark each parameter **principled** (follows from data availability, an institutional/legal threshold, a published convention, or theory — state which) or **arbitrary** (a judgment call / round number). Every **arbitrary** parameter MUST get a sensitivity/robustness check that varies it — add a corresponding task or robustness-check entry to the Task Breakdown.
+Build the `## Filters & Parameters` table (constant · value · applied in · rationale/source · principled? · disposition). Mark each parameter:
+- **✓ principled** — traceable to a **cited source** ("Craig fn 55") OR a **data-validation result** (a recall/FP rate, a coverage check). "It seemed reasonable" does NOT qualify.
+- **⚠ convenience cutoff** — a round number / judgment call with no external basis. Every ⚠ parameter MUST carry exactly one **disposition**: **robustness panel** (name the alternative values), **verified-redundant** (show the result barely moves, cite the magnitude), or **display-only** (affects presentation, not an estimate). Route robustness-panel and verified-redundant dispositions to corresponding tasks in the Task Breakdown.
+
+Sometimes the right disposition is to **delete the parameter** — replace a hand-picked cutoff with a principled pipeline and verify equivalence (muni killed its `[20,200]`/`[50,150]` price bands for a Craig `price_ok`+winsorize pipeline, verified medians moved <0.2bps).
 
 #### Step 5e.4: Record in PLAN.md
 
-The `## Filters & Parameters` table and the named config location go in PLAN.md. The arbitrary-flagged rows must each trace to a robustness check in the Task Breakdown (this is how [[ds-robustness-checks]] and [[ds-p-hacking-prevention]] get their inputs). If the project genuinely has no analysis parameters, state so explicitly ("No sample filters or tuning parameters") and proceed — do not skip the section header.
+The `## Filters & Parameters` table and the named config location go in PLAN.md. Every ⚠ row's disposition must trace to a task in the Task Breakdown (this is how [[ds-robustness-checks]] and [[ds-p-hacking-prevention]] get their inputs); **an exhibit isn't "done" until its ⚠ parameters have a disposition.** If the project genuinely has no analysis parameters, state so explicitly ("No sample filters or tuning parameters") and proceed — do not skip the section header.
 
 ### 6. Create Task Breakdown
 
@@ -894,6 +898,8 @@ See: docs/investigations/YYYY-MM-DD_pull_profile.md
 ## Master Datasets
 <!-- Required for any project with 3+ exhibits sharing a sample. -->
 <!-- If a genuine one-off, state so in one line and omit the tables: "Single exhibit, no shared sample — master-dataset apparatus not required." -->
+<!-- Carry benchmark/variant columns ON the master (e.g. cost_vs_mid AND quote_cost_bps; MID_WINDOWS=(3,5,10)) — do NOT fork a dataset per benchmark. -->
+<!-- The construction funnel reports TWO counts per filter step: N rows AND N distinct keys (e.g. trades and CUSIPs). -->
 
 The minimal canonical datasets every exhibit derives from. Each is built by a real task below and read directly by exhibit tasks (never raw sources).
 
@@ -940,17 +946,18 @@ flowchart LR
 ## Filters & Parameters
 <!-- Required unless the project genuinely has no sample filters or tuning parameters (state so in one line). -->
 <!-- Every value here lives in the named config location below — NO inline literals in pipeline/exhibit code. -->
-<!-- Every row marked `arbitrary` MUST have a sensitivity check that traces to a Task Breakdown robustness task. -->
+<!-- Principled? = ✓ (cited source OR data-validation result) / ⚠ (convenience cutoff). -->
+<!-- Every ⚠ row MUST carry a disposition: robustness panel {values} | verified-redundant (result moves <X) | display-only. An exhibit isn't done until its ⚠ params have a disposition. -->
 
-**Config location:** `src/config.py` (the ONE place these values live; every task references by name)
+**Config location:** `src/config.py` — a plain module of named constants, rationale in an inline comment next to each value (diffable, zero-dep, importable). Every task references by name; no inline literals.
 
-| Name | Value | Where applied | Rationale | Kind | Sensitivity check |
-|------|-------|---------------|-----------|------|-------------------|
-| MIN_PRICE | 1.00 | trade_file filter | Sub-$1 munis are odd-lot noise | principled | — |
-| MAX_TRADE_SIZE | 1_000_000 | trade_file filter | Institutional cutoff | arbitrary | robustness: {500K, 2M} |
-| WINSOR_PCT | 0.01 | returns, spreads | Standard 1%/99% trim | principled | — |
-| SAMPLE_START | 2010-01-01 | all masters | MSRB coverage begins | principled | — |
-| MIN_OBS_PER_FIRM | 8 | firm_quarter panel | Need ≥2yrs for FE | arbitrary | robustness: {4, 12} |
+| Constant | Value | Applied in | Rationale / source | Principled? | Disposition |
+|----------|-------|------------|--------------------|-------------|-------------|
+| TICK | 0.125 | pennying flag | Craig fn 55 | ✓ | — |
+| EXEC_LAG_MAX_DAYS | 1 | executed-match | validated 86% recall / 21% FP vs status | ✓ | — |
+| WINSOR | (.01, .99) | prices, spreads | Craig error trio | ✓ | — |
+| MAX_TRADE_SIZE | 1_000_000 | trades filter | convenience cutoff | ⚠ | robustness panel {500K, 2M} |
+| MIN_OBS_PER_FIRM | 8 | firm_quarter panel | round number | ⚠ | verified-redundant (result moves <0.2bps) |
 
 ## Task Breakdown — MANDATORY EXECUTABLE TABLE
 
@@ -1048,7 +1055,7 @@ Complete the plan when:
 - **Run External Skill Discovery (Step 5b)** for every external skill in play — record ADOPT/PATCH/GREENFIELD per task
 - **Run Data Pull Profiling (Step 5c)** for every source >= 50M rows, >= 500 MB, or flagged large in SPEC — record decision table in PLAN.md, investigation file in `docs/investigations/`
 - **Run Master Dataset Design (Step 5d)** for any project with 3+ shared-sample exhibits — name the minimal master datasets with grain/keys, map every exhibit to its master, draft the dataset-construction mermaid diagram
-- **Run Parameter Inventory (Step 5e)** — list every filter/threshold/cap/window, name the single config location, classify arbitrary-vs-principled, flag every arbitrary parameter for a sensitivity check
+- **Run Parameter Inventory (Step 5e)** — list every filter/threshold/cap/window, name the single config location, classify principled(✓)-vs-convenience(⚠), assign every ⚠ parameter a disposition (robustness panel / verified-redundant / display-only)
 - Order tasks by dependency
 - Define output verification criteria
 - Write `.planning/PLAN.md`
@@ -1095,7 +1102,7 @@ Before proceeding to ds-implement, execute this gate:
 3. **READ**: Verify it contains: Data Profile section, Master Datasets + Exhibit → Dataset Map + Dataset Construction Diagram (if multi-exhibit), Filters & Parameters section, Task Breakdown section, Output Verification Plan, External Skill Discovery section, Data Pull Profile section (if triggered)
 4. **VERIFY**:
    - If 3+ exhibits share a sample, confirm the Master Datasets table (grain + keys per master), the Exhibit → Dataset Map (every planned exhibit mapped, none reading raw sources), and the mermaid Dataset Construction Diagram are all present, and each master is built by a real Task Breakdown row
-   - If the analysis has any sample filters or tuning parameters, confirm the Filters & Parameters table is present with a named config location and an arbitrary-vs-principled kind per row, and that every `arbitrary` row traces to a sensitivity/robustness task in the Task Breakdown
+   - If the analysis has any sample filters or tuning parameters, confirm the Filters & Parameters table is present with a named config location and a principled(✓)-vs-convenience(⚠) mark per row, and that every ⚠ row carries a disposition (robustness panel / verified-redundant / display-only) tracing to a Task Breakdown task
    - If any data source > 1M rows, confirm ETL Strategy section exists
    - If any task references an external skill, confirm the External Skill Discovery section names the skill(s), lists Glob results, loaded domain refs, example READMEs read, and an ADOPT/PATCH/GREENFIELD decision per task
    - If any source >= 50M rows OR >= 500 MB OR SPEC uses large-source keywords, confirm the Data Pull Profile section contains the decision table (Source, Raw rows, Raw MB, Aggregate level, Aggregate rows, Aggregate MB, Ratio, Recommendation) AND references `docs/investigations/YYYY-MM-DD_pull_profile.md`
