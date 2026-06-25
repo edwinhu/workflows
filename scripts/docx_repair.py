@@ -19,7 +19,7 @@ fine. The recurring, concrete defects:
 This is a STANDALONE, general-docx utility. It is deliberately decoupled from
 the two adjacent concerns:
   * Footnote repair (GDocs separator/mark/ID damage) -> the ``docx-repair``
-    skill / ``fix_gdocs_footnotes.py``.
+    skill's ``fix_footnotes.py``.
   * PDF export (Word / x2t / LibreOffice) -> ``doc_render.py``.
 The ``law-review-docx`` build chains all three; ``doc_render``'s Word preflight
 composes THIS one so a Google export "just renders." Each is independently

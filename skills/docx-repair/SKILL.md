@@ -257,8 +257,9 @@ markup (Track B) — for a `.docx` damaged by a cloud editor. Adjacent stages:
   chains this skill's footnote repair + NOTEREF conversion after the pandoc build).
 - **Render** to PDF/PNG → `docx-render` / `scripts/doc_render.py` (Word path composes
   Track A's `docx_repair.py` as a preflight automatically).
-- A law-review-specific Google Docs footnote fixer also lives at
-  `bluebook-audit/scripts/fix_gdocs_footnotes.py` — an **older near-duplicate** of
-  `fix_footnotes.py`; prefer this skill's hardened version for new work.
+- `bluebook-audit/scripts/fix_gdocs_footnotes.py` is now a **deprecated shim** that
+  forwards here to `fix_footnotes.py` (consolidated 2026-06-25) — call this skill's
+  script directly. (Bluebook's `create_crossrefs.py` + `audit_crossref_targets.py`
+  remain a deliberate, actively-used fork with their own retargeting strategy.)
 
 See the full [document skill group](../../references/document-skills.md).
