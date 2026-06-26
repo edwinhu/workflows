@@ -138,10 +138,30 @@ def probe(draft_path: Path, bib_path: Path | None, precis_path: Path | None,
         }
 
     floor_fail = bool(evidence.get("bibUnresolved") or evidence.get("citeNeeded") or evidence.get("claimIdsMissing"))
+    # SCOPE (canonical gateProbe contract): a deterministic floor must DISCLOSE its boundary —
+    # a clean pass must never imply coverage it doesn't have. `checked` is what a green pass
+    # actually verifies; `notChecked` is what it CANNOT and is deferred to the semantic authority
+    # (writing-review + source-verify) — so necessary-not-sufficient says WHERE the line is.
+    scope = {
+        "checked": [
+            "bib-resolution ([@key] → sources.bib)" if bib_path and bib_path.is_file() else "bib-resolution (SKIPPED — no bib provided)",
+            "cite-needed-markers",
+            "claim-id-trace",
+        ] + (["numeric-consistency-vs-PRECIS/OUTLINE (NOT dataset provenance)"] if spec_text else []),
+        "notChecked": [
+            "quote-in-source fidelity (→ source-verify)",
+            "claim-actually-supported-by-source (→ writing-review/source-verify)",
+            "coverage / prose-quality / transitions / thesis (→ writing-review)",
+            "spelled-out quantities (numeric scan is digit-only)",
+            "dataset provenance (number→cell; dataset is remote/absent)",
+        ],
+    }
     return {
         "section": draft_path.stem,
         "pass": not floor_fail,                # necessary-not-sufficient: the semantic authority decides sufficiency
+        "artifactsPresent": draft_path.is_file(),
         "evidence": evidence,
+        "scope": scope,
         "citesChecked": len(cited),
         "claims": claims,
     }

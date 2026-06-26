@@ -86,6 +86,24 @@ with tempfile.TemporaryDirectory() as td:
     ok("spelled-out blind spot disclosed", "forty-five percent" in dp.get("spelledOutNotChecked", []), str(dp.get("spelledOutNotChecked")))
     ok("note discloses numeric-only + spelled-out gap", "spelled-out" in dp.get("note", "").lower())
 
+# 8. SCOPE contract (canonical D1 {pass, artifactsPresent, evidence, SCOPE})
+with tempfile.TemporaryDirectory() as td:
+    d = Path(td)
+    bib = write(d, "sources.bib", BIB)
+    precis = write(d, "PRECIS.md", "42.9%.\nCLAIM-01\n")
+    cl = write(d, "S (Draft).md", "---\nimplements: [CLAIM-01]\n---\nRate 42.9% [@smith2019].\n")
+    r = gp.probe(cl, bib, precis)
+    ok("return carries artifactsPresent", r.get("artifactsPresent") is True)
+    ok("return carries scope.checked + scope.notChecked",
+       isinstance(r.get("scope", {}).get("checked"), list) and isinstance(r["scope"].get("notChecked"), list))
+    ok("scope.notChecked discloses semantic deferral",
+       any("source-verify" in x for x in r["scope"]["notChecked"]))
+    ok("scope.notChecked discloses spelled-out + dataset blind spots",
+       any("spelled-out" in x for x in r["scope"]["notChecked"]) and any("dataset" in x for x in r["scope"]["notChecked"]))
+    r2 = gp.probe(cl, None, precis)
+    ok("scope reflects skipped bib when none provided",
+       any("SKIPPED" in x for x in r2["scope"]["checked"]))
+
 # real-repo smoke (skipped if absent)
 REAL = Path.home() / "projects" / "tender_offers" / "paper"
 d3 = REAL / "drafts" / "Part III. Objections and the Targeted Fix (Draft).md"
