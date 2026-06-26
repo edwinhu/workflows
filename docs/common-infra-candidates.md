@@ -112,10 +112,12 @@ second input to the same derivation — parallel-safe even on a shared tree — 
   layer OUTSIDE `run.js`, never a judgment returned by the probe. So `D1`'s shared return contract
   `{pass, artifactsPresent, evidence, scope}` holds across all three, and the injected body is always
   deterministic — no LLM judge inside the runner to game. **Core-gate rule (settled for the extraction):
-  the CORE conjoins `pass && artifactsPresent` — it never trusts `pass` alone.** A domain may pre-fold
-  all-present into `pass` (writing does; harmless), but the core must not RELY on it — that keeps
-  doctrine (iii) CORE-enforced (not per-domain-trusted) and lets findings distinguish "gate failed" from
-  "gate passed but artifact missing/clobbered."
+  `pass` ⊥ `artifactsPresent` — every probe returns them as TWO INDEPENDENT booleans (ds: `exit0` +
+  `outputsPresent`; writing: floor-checks + `draft_path.is_file()`), and the CORE conjoins
+  `pass && artifactsPresent` — it never trusts `pass` alone.** No instance pre-folds; doctrine (iii) is
+  therefore PURELY core-enforced (not per-domain-trusted), and findings can distinguish "gate failed"
+  from "gate passed but artifact missing/clobbered." (A domain *could* pre-fold all-present into `pass`
+  and the core's AND would still be correct, but none does — keep the two booleans independent.)
 - **The extraction gate is CLEARED** (writing A/B parity green) — **pass #9 is active.**
 - **Run-core gateProbe CONTRACT item (pass #9):** the gate return contract gains a coverage **`scope`**
   (checked / not-checked) — a clean `pass` must not over-claim (doctrine #3 addendum). The wc-creator
