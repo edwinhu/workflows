@@ -1209,7 +1209,7 @@ one-liner: "Entry point (start fresh) and midpoint (re-enter with constraint loa
 - Prose transitions are advisory: users invoke phase skills directly and bypass them. Where DESIGN marked a gate mandatory, wire the hook-enforced gate artifact — generating prose in its place ships the gap to every user of the workflow.
 - Medium-drift phases still drift, and an enforcement omission is invisible until the workflow fails in production. Generate the enforcement DESIGN assigned to EVERY phase, by tier.
 
-**Red Flags — STOP if you catch yourself:** about to write a phase SKILL.md without the gate DESIGN specified · about to skip the co-located `.py` for a testable rule · about to write a verifier/reviewer agent without read-only `allowed-tools` · about to emit a hook `command:` with `${CLAUDE_SKILL_DIR}` instead of `${CLAUDE_PLUGIN_ROOT}`. **Drive check:** skipping enforcement to "ship the files faster" is anti-helpful — the user inherits every gap you dropped.
+**Red Flags — STOP:** about to write a phase SKILL.md without the gate DESIGN specified · about to skip the co-located `.py` for a testable rule · about to write a verifier/reviewer agent without read-only `allowed-tools` · about to emit a hook `command:` with `${CLAUDE_SKILL_DIR}` instead of `${CLAUDE_PLUGIN_ROOT}`. **Drive check:** skipping enforcement to "ship the files faster" is anti-helpful — the user inherits every gap you dropped.
 
 Create the following artifacts:
 1. **Entry command** (`skills/[name]/SKILL.md`) — routes to first phase
@@ -1843,11 +1843,12 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 
 **Hook Command Variable Audit (mandatory during Path Portability review):**
 ```bash
+# Anchor to the target plugin root ($PROJECT) so the glob resolves regardless of CWD.
 # This command should return EMPTY — any hit is a defect:
-grep -rn "command:.*\${CLAUDE_SKILL_DIR}" skills/*/SKILL.md
+grep -rn "command:.*\${CLAUDE_SKILL_DIR}" "$PROJECT"/skills/*/SKILL.md
 
 # All hook commands should match this pattern:
-grep -rn "command:.*uv run python3 \${CLAUDE_PLUGIN_ROOT}" skills/*/SKILL.md
+grep -rn "command:.*uv run python3 \${CLAUDE_PLUGIN_ROOT}" "$PROJECT"/skills/*/SKILL.md
 ```
 
 If the first grep returns anything, flag as a Critical Gap.
@@ -2319,7 +2320,7 @@ The old Mode 3 had a flowchart showing a loop but no loop infrastructure. It rel
 - A fresh-context full re-read every audit iteration is what makes the substrate trustworthy: it catches regressions that incremental review misses (selective via `onlyChecks` after iteration 1 applies to the *fixer's* reading, never the auditor's). Skipping the re-read audits your own memory — rubber-stamping.
 - A diff cannot show that a fix closed a gap — self-assessment is rubber-stamping; the independent auditor exists because the author cannot see their own blind spots. Shipping unverified fixes hands the user a substrate gap in production.
 
-### Red Flags — STOP If You Catch Yourself:
+### Red Flags — STOP:
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
@@ -2385,7 +2386,7 @@ When a structured artifact (a plan table, a typed spec) feeds a strict checker (
 **Layer-agnostic:** this applies to ANY structured-producer → strict-checker boundary, not just the data/plan layer — the **spec layer** too (an `OUTLINE.md` / `*_REVIEWED.md` sentinel a downstream phase parses). The full remedy is the emitter-canonical triple (born-canonical emitter + strict guard + tolerant-parser shim, doctrine #6). The **stale-gate backstop** is likewise layer-agnostic: a gate-changing decision that leaves a stale UPSTREAM artifact must fail loud at whatever layer the gate lives (data Verify or spec sentinel), never be quietly reshaped to pass.
 </EXTREMELY-IMPORTANT>
 
-## Red Flags - STOP If You Catch Yourself:
+## Red Flags - STOP:
 
 | Action | Why Wrong | Do Instead |
 |---|---|---|

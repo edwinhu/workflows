@@ -144,6 +144,26 @@ def marker_approved(state_dir, marker):
         return False
 
 
+def manifest_violations(state_dir):
+    """Single-source generation guard (P23): validate the DESIGN.md Generation Manifest via the
+    SAME parser wc-generate uses (validate = parse_design().violations), so the generated file SET
+    can't drift from the design. Back-compat: a DESIGN with NO manifest is allowed (wc-generate
+    falls back to LLM enumeration) — only a manifest that is PRESENT-but-INVALID blocks. Never
+    blocks on a tooling error."""
+    design = Path(state_dir) / "DESIGN.md"
+    if not design.is_file():
+        return None
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "wc"))
+        from wc_file_set import parse_design
+        fs = parse_design(design.read_text())
+    except Exception:
+        return None
+    # drop the "no manifest" violation → back-compat allow; any OTHER violation blocks.
+    viols = [v for v in fs.violations if "Generation Manifest" not in v]
+    return viols or None
+
+
 def check_state_chain(tool_input, completed_steps, mode, state_dir):
     content = tool_input.get("content", "")
     new_string = tool_input.get("new_string", "")
@@ -188,6 +208,19 @@ def check_state_chain(tool_input, completed_steps, mode, state_dir):
             f"(written by the upstream review gate once the reviewer returns APPROVED).\n\n"
             f"**Remedy:** Run the review gate to convergence and write the marker before advancing."
         )
+
+    # Single-source generation guard (P23): entering 6-generate requires the DESIGN.md
+    # Generation Manifest to parse clean (so the deterministic file-set enumeration can't drift).
+    if new_step == "6-generate":
+        viols = manifest_violations(state_dir)
+        if viols:
+            return (
+                "MANIFEST BLOCKED: Cannot enter step '6-generate' — DESIGN.md's "
+                "`## Generation Manifest` is present but invalid:\n- " + "\n- ".join(viols) + "\n\n"
+                "**Remedy:** Fix the manifest in DESIGN.md (run "
+                "`uv run python3 scripts/wc/wc_file_set.py --check .planning/wc/{name}/DESIGN.md` "
+                "until clean), then advance."
+            )
 
     return None
 
