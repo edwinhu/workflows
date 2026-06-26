@@ -573,13 +573,20 @@ a gate-changing decision leaves a stale UPSTREAM artifact and the deterministic 
 `*_REVIEWED.md` vs live `OUTLINE.md` — confirmed live by writing-refactor's step-1).
 
 ### 9.3 INJECTED (per-domain — the real fork)
-- **D1 — `gateProbe(t)`, OPAQUE.** Returns `{pass, corroboration, evidence}` where `pass` may be an
-  exit code OR a judgment; **`corroboration` is required** (safety inv. iii — corroborate the artifact
-  INDEPENDENTLY of the pass signal, because a pass can be stale OR gamed) but its SHAPE is per-domain
-  (ds: outputs exist; dev: files+test exist; writing: evidence-is-the-corroboration). **TRUST-CLASS
-  axis:** exit-code (can't lie) vs judgment (can be gamed) — the core's evidence handling assumes the
-  judgment case (richest) so it degrades gracefully to exit-code, and when trust-class=judgment the
-  adversarial-layer-outside-`run.js` invariant flips from backstop to **PRIMARY** authority.
+- **D1 — `gateProbe(t)`, OPAQUE.** Returns `{pass, corroboration, evidence}`; **`corroboration` is
+  required** (safety inv. iii — corroborate the artifact INDEPENDENTLY of the pass signal, because a
+  pass can be stale OR gamed), SHAPE per-domain (ds: outputs exist; dev: files+test exist; writing:
+  the deterministic citation/claim checks). **THREE trust-classes now have a real instance each**
+  (writing's GATE step landed, 2026-06-26): **exit-code** (ds/dev — can't lie) / **mechanical-floor**
+  (writing's deterministic `writing_gate_probe.py`: bib-grep `[@key]` vs `sources.bib`, `[CITE-NEEDED]`,
+  claim-trace, labeled dataProvenance) / **judgment+empirical** (writing's semantic review).
+  **SHARPENING from writing (record in canonical D1):** the runner-side `gateProbe.pass` is **always
+  DETERMINISTIC** — exit-code is the strongest floor, mechanical-floor the next; a **pure judgment never
+  lives INSIDE the probe.** The probe is a *necessary-not-sufficient floor*; the semantic authority
+  (writing-review + source-verify) stays the **external PRIMARY arbiter OUTSIDE `run.js`**. So
+  "judgment trust-class" = "deterministic floor in the runner + semantic authority outside," NOT "a
+  judgment returned by the probe." Evidence is numbered because a semantic gate can be gamed where an
+  exit code can't.
 - **D2 — `implementerPrompt(t)`** (carries the TDD/output-first/no-phantom-RED discipline for dev).
 - **D3 — task-spec COLUMNS.**
 - **D4 — tier/effort policy** (ds heuristic; dev = inherit session model; do NOT put in the shared compiler).
@@ -600,20 +607,23 @@ doesn't conflate "a human must decide" with "the skill must re-check":
 
 ### 9.5 Extraction timing + the honest open gap
 - **Extract the PROVEN core now** (S2 driver / S3 pause / S4 schema+helpers — two instances agree).
-  **Update (writing step-1 landed, blind-oracle parity-passed):** `compile`=worklist-vs-codegen (S5) is
-  now **CONFIRMED** — writing's data section-index emit is a real 2nd shape, not a prediction. The
-  layer-agnostic stale-gate backstop (S3, spec layer) is likewise confirmed. So of the two seams once
-  under-determined, **only ONE remains: `gateProbe`-opaque (D1) at the JUDGMENT trust-class** — it
-  awaits writing's GATE step (writing's gate is semantic, not yet built). Keep **D1's judgment body** an
-  injected interface pending that; everything else (incl. S5's data-emit branch) is extraction-ready.
-  Also an **extraction-cleanup item** (ds-refactor): give `yield-for-recheck` its OWN return channel —
-  my dev impl muxes it onto `pauseKind:'fullsuite'` as a shortcut (impl, not seam). Target shape:
+  **Update (writing GATE step landed + tested, 2026-06-26):** the last under-determined seam is
+  **RESOLVED.** S5 (`compile`=code|data) was confirmed by writing step-1; the layer-agnostic stale-gate
+  backstop (S3) likewise; and now **D1's three trust-classes each have a real instance** (exit-code /
+  mechanical-floor / judgment+empirical — 9.3). With the sharpening that the runner probe is always a
+  deterministic floor (judgment external), **D1 is no longer an under-determined interface — it is a
+  confirmed 3-instance abstraction.** Everything is extraction-ready; **pass #9 can extract clean once
+  writing's A/B parity lands** (the only remaining validation, not a design unknown). One
+  **extraction-cleanup item** (ds-refactor): give `yield-for-recheck` its OWN return channel — my dev
+  impl muxes it onto `pauseKind:'fullsuite'` as a shortcut (impl, not seam). Target shape:
   `templates/run-core.js` (driver + pause + schema + the SIX invariants + helpers, with D1–D4 + the
   `intraLevel` flag injected) + `templates/<domain>-task.js`.
-- **OPEN GAP (honest, shared, deferred — ds-refactor catch A):** the dev port hardened the **parser +
-  guard** but did NOT harden the **emitter** (`dev-design`/`dev-plan`) to write born-canonical. So the
-  tolerant parser currently *relocates* the LLM's silent tolerance into regex — the exact thing
-  `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md` warns against. Same deferred
-  increment ds flagged (DESIGN-ds §8b "emitter, not parser — next increment"). **Follow-up:**
-  born-canonical emitter → guard goes strict → parser tolerance becomes a back-compat shim, not the
-  primary defense. Applies to both ds and dev.
+- **EMITTER GAP — now PROVEN CLOSEABLE (writing did it first, 2026-06-26):** the dev (and ds) port
+  hardened the **parser + guard** but NOT the **emitter**, so the tolerant parser *relocates* the LLM's
+  tolerance into regex rather than eliminating it (the `2026-06-26_llm-discovery-masked-spec-drift.md`
+  anti-pattern). **writing became the FIRST instance to close it:** `writing-setup` emits a
+  born-canonical `OUTLINE.md` (`## Structure` + `## Claim → Section Map`) and `writing-outline` pins
+  per-section `implements` + a source per claim — **tolerance eliminated, not relocated** (guard goes
+  strict; parser tolerance demotes to a back-compat shim). So doctrine #6 (emitter-canonical) has a
+  worked instance. **dev/ds follow-up remains open** but is now a known-good move, not an idea: harden
+  `dev-design`/`dev-plan` to emit born-canonical (and per ds DESIGN-ds §8b).
