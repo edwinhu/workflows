@@ -9,8 +9,7 @@ These are the compile **targets** for workflow-creator's compiled-runner pattern
 | `run-core.js` | **THE shared driver core (pass #9).** ONE copy of the topo/level/`runTask`/`returnReason`/`intraLevel` driver + helpers + unified `TRANSFORM_SCHEMA` + the six doctrine invariants. The compiler SPLICES it with a per-domain fragment into a self-contained `<project>/.planning/run.js`. Holes: `__META__/__PROJECT__/__TASKS__/__GLOBAL_CONSTRAINTS__/__LEVEL_MODES__/__TASK_BODIES__`. |
 | `ds-task.js` | ds FRAGMENT (spliced into `__TASK_BODIES__`) — the injected fns: `gateProbe` (output-first / outputs-exist), `implementerPrompt` (no `recheckTrigger`). |
 | `dev-task.js` | dev FRAGMENT — `gateProbe` (TDD / files+test → `artifactsPresent`), `implementerPrompt` (Global Constraints + Interfaces), `recheckTrigger` (cross-level overlap → full suite). |
-| `compiled-runner-template.js` | **Generic reference (birther).** Converging onto `run-core.js` — it will splice the shared core, not carry a parallel driver copy (co-owned follow-up with wc-creator). |
-| `ds-run-template.js` · `dev-run-template.js` | **DEPRECATED** — pre-pass-#9 monolithic copies, superseded by `run-core.js` + `<domain>-task.js`; the compilers no longer use them. Retired in the birther-convergence pass. |
+| `compiled-runner-template.js` | **Generic FRAGMENT skeleton (birther).** Copy to `<domain>-task.js` and fill the three injected fns (`gateProbe`/`implementerPrompt`/optional `recheckTrigger`) + write `<domain>_compile.py` per its header recipe. Carries NO driver — the driver is `run-core.js`, spliced at compile time. (`ds-run-template.js`/`dev-run-template.js` were the pre-pass-#9 monolithic copies — **deleted** in the birther-convergence pass; the compilers use `run-core.js` + `<domain>-task.js`.) |
 
 ## How a runner is born — the emitter/guard/parser triple
 
