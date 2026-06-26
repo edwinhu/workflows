@@ -605,7 +605,7 @@ doesn't conflate "a human must decide" with "the skill must re-check":
   it is **not** a human pause; the core should model `yield-for-recheck` as its own return-reason, not a
   3rd pause-kind. (My earlier draft mis-labeled it a "3rd pause kind" — corrected here.)
 
-### 9.5 Extraction timing + the honest open gap
+### 9.5 Extraction timing + the emitter-canonical question (resolved: no gap)
 - **Extract the PROVEN core now** (S2 driver / S3 pause / S4 schema+helpers — two instances agree).
   **Update (writing GATE step landed + tested, 2026-06-26):** the last under-determined seam is
   **RESOLVED.** S5 (`compile`=code|data) was confirmed by writing step-1; the layer-agnostic stale-gate
@@ -618,12 +618,18 @@ doesn't conflate "a human must decide" with "the skill must re-check":
   impl muxes it onto `pauseKind:'fullsuite'` as a shortcut (impl, not seam). Target shape:
   `templates/run-core.js` (driver + pause + schema + the SIX invariants + helpers, with D1–D4 + the
   `intraLevel` flag injected) + `templates/<domain>-task.js`.
-- **EMITTER GAP — now PROVEN CLOSEABLE (writing did it first, 2026-06-26):** the dev (and ds) port
-  hardened the **parser + guard** but NOT the **emitter**, so the tolerant parser *relocates* the LLM's
-  tolerance into regex rather than eliminating it (the `2026-06-26_llm-discovery-masked-spec-drift.md`
-  anti-pattern). **writing became the FIRST instance to close it:** `writing-setup` emits a
-  born-canonical `OUTLINE.md` (`## Structure` + `## Claim → Section Map`) and `writing-outline` pins
-  per-section `implements` + a source per claim — **tolerance eliminated, not relocated** (guard goes
-  strict; parser tolerance demotes to a back-compat shim). So doctrine #6 (emitter-canonical) has a
-  worked instance. **dev/ds follow-up remains open** but is now a known-good move, not an idea: harden
-  `dev-design`/`dev-plan` to emit born-canonical (and per ds DESIGN-ds §8b).
+- **EMITTER-CANONICAL (doctrine #6) — NO GAP for dev or ds (verified against code 2026-06-26; corrects
+  an earlier over-claim).** An earlier draft of this section called dev's emitter an "open gap" — that
+  was conceded under ds-refactor's catch-A *without verifying*. On inspection: `dev-design`'s
+  plan-template **already emits canonical** (`N.` integer ids + `after N`/`---` deps + canonical
+  Files/Verify cells — the parser's *primary* format), there is **no** non-canonical emit path anywhere
+  in `dev-design`/`dev-implement`, and dev-design mandates the table (guard-enforced via the shared
+  `dev_plan_table` parser). Critically, doctrine #5 (no LLM between producer and checker) **already
+  holds** because the discovery LLM is retired — so the parser's tolerance (`**T1**`/em-dash/bare-list)
+  is **intentional hand-edit robustness, NOT relocated tolerance** (there is no LLM left to mask drift,
+  and no legacy pre-canonical dev PLAN corpus that would drift). ds-refactor confirmed ds is the same:
+  canonical + intentionally tolerant for hand-editable PLANs. **A strict guard would be WRONG** for both
+  (it would reject a human writing `T1` for `1.` with zero benefit). So **doctrine #6 is satisfied by
+  construction in ds + dev**, with a deliberately tolerant-deterministic parser; **writing** simply made
+  the *different, domain-appropriate* choice of a strict guard + born-canonical emitter (valid, not a
+  fix dev/ds owe). Run-core pass #9 closed this as a **no-op** (Step 5).
