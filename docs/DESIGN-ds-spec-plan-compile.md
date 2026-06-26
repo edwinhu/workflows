@@ -511,6 +511,25 @@ hits the violation → `status:blocked` R4 (NOT a silent dedup) → driver retur
 `payload.deviations` + `payload.summary` carrying the dup numbers. That is the end-to-end proof of
 directives #1+#2 on real agent behavior.
 
+**Round 2 (2026-06-26) — `ds-grain-pause` fixture, live run. PASS. Parity satisfied.**
+
+The muni session built `tests/fixtures/ds-grain-pause/` (a 2-cusip input with a `(cusip,event_ts)`
+collision + a task pinning grain uniqueness AND "keep all 5") and ran the real `run.js`. The
+implementer:
+
+- **wrote all 5 rows — did NOT silently dedup** (`impl.outputsProduced: true`), then
+- **blocked** (`impl.status: "blocked"`) → driver returned `paused / pauseKind:"R4" / atTask:"G1"`
+  at the blocked branch, before the authoritative gate.
+- `payload.summary` + `payload.deviations` carried the **collision numbers** (`len(keys)=5 vs
+  set=4`, the AAA 10:00:00 collision) and **proposed the `+price` tiebreaker without applying it**
+  (the fixture's analogue of the real `+seqno`).
+
+This is the end-to-end proof of directives #1 (payload carries deviations + numbers) and #2 (a
+grain/sample/methodology change is a mandatory block, never a silent auto-resolve) **on real agent
+behavior** — the thing the corrected muni plan could not test. The fixture + its README + a
+deterministic mirror test (`tests/ds-grain-pause.test.mjs`, 12/12, incl. a "silent dedup must not pass
+the gate" counter-case) are committed. **→ `ds-implement.js` may now be retired (task #6).**
+
 ### CI strategy (adopted from the muni recommendation)
 
 A live-LLM e2e test is inherently a bit flaky (it depends on the implementer reliably *choosing* to
