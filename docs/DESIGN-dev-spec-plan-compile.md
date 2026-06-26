@@ -546,8 +546,8 @@ only by the dev driver unit test (+ ds) — lowest-risk, deferred.
 
 > **CONVERGED** via the host-dispatch cross-pollination (dev-refactor × ds-refactor, 2026-06-26;
 > writing-refactor input folded in). **Canonical list:** `docs/common-infra-candidates.md` (owned by
-> ds-refactor, one owner = no conflict). This section is the **dev-side view** that fed that
-> convergence — kept here for the dev port's record; the canonical doc governs pass #9.
+> ds-refactor; merged PR #10, commit `2411584`). This section is the **dev-side view** that fed that
+> convergence — kept here for the dev port's record; **the canonical doc governs pass #9.**
 >
 > Guardrail stands: **brainstorm written down; NO shared `run-core` extracted in this pass.** ds + dev
 > are two exit-code instances; writing is a 3rd (judgment gate). Two seams are genuinely
@@ -555,18 +555,21 @@ only by the dev driver unit test (+ ds) — lowest-risk, deferred.
 
 ### 9.1 SHARED (core candidates — ds + dev agree, mostly verbatim)
 - **S1 — deterministic table parser + DAG/topo/cycle logic** (columns differ via a column-map; mechanics identical).
-- **S2 — the run-template DRIVER:** topo → level-iteration → gate-first idempotent skip → `pause()` (structured early return) → uniform result. **`intraLevel` is a CORE FLAG, default `sequential`, that the COMPILER sets to `parallel` only when it can PROVE the level's tasks write DISJOINT artifacts** (output-disjointness derivation — ds-refactor's refinement, conceded; better than my first "per-domain strategy" framing). ds's disjoint parquets qualify automatically; dev's shared tree never does → stays sequential, so **tree-corruption is impossible by construction, not by convention.**
+- **S2 — the run-template DRIVER:** topo → level-iteration → gate-first idempotent skip → structured early-return → uniform result. **`intraLevel` is a CORE FLAG, default `sequential`, that the COMPILER sets to `parallel` only when it can PROVE the level's tasks write DISJOINT artifacts** (output-disjointness derivation — ds-refactor's refinement, conceded; better than my first "per-domain strategy" framing). **Provability is from the DECLARED outputs** — a runtime-computed path (glob/dir) is not statically provable → sequential. **Worktree isolation is a 2nd input to the same derivation** (parallel-safe even on a shared tree). So dev is "**sequential UNTIL disjoint-provable OR isolated**," not sequential-forever — future-proof without re-arch. ds's disjoint parquets qualify automatically; dev's shared tree (today) doesn't → sequential, so **tree-corruption is impossible by construction.**
 - **S3 — pause/resume protocol:** `args.decisions` + `clearedPauses`; the two-kinds-of-decision routing + **STALE-GATE BACKSTOP** (proven live in dev: implementer honored a decision then re-blocked on a stale gate).
 - **S4 — result schema + a FIRST-CLASS payload TYPE** `{deviations, numbered summary/evidence}` (ds-refactor hindsight: make it a fixed type from day 1, not a payload literal — it's the catch-channel). `tasksThatFailed` / `findings` / `reviews` / `scoreTable` / `tasksRemaining`.
 - **S5 — compile = "produce the work-list"; emit representation per-domain:** inlined codegen `run.js` (ds/dev) OR a data work-list artifact (writing's already-generic runner). Not "emit code."
 - **S6 — parser/compiler/guard split:** one parser imported by both compiler and guard → "**compiles ⇔ passes gate**" is a property. **The guard asserts STRUCTURE only** (cycles / missing cells / dangling deps); **all format tolerance lives in the parser, one place.** (Aged best; keep verbatim.)
 - **`collect()` / `scoreTable()` / `pausePayload()`** — ~90% identical ds↔dev → strong shared helpers.
 
-### 9.2 SHARED DOCTRINE (domain-agnostic; baked into the core, not re-typed per domain)
-The four safety invariants — (i) payload > pass/fail, (ii) mandatory R4 block, (iii) probe asserts
-artifacts-exist, (iv) adversarial/review layer OUTSIDE `run.js` — **plus a 5th** (ds-refactor, adopted):
-(v) **NO LLM between a structured producer and a strict checker** — the root cause of the
-discovery-mask. **Plus emitter-canonical** (one format spec, strict-at-emitter / tolerant-at-parser).
+### 9.2 SHARED DOCTRINE — now SIX (domain-agnostic; baked into the core, not re-typed per domain)
+(i) payload > pass/fail, (ii) mandatory R4 block, (iii) probe asserts artifacts-exist, (iv)
+adversarial/review layer OUTSIDE `run.js`, (v) **NO LLM between a structured producer and a strict
+checker** (the root cause of the discovery-mask), (vi) **emitter-canonical** (one format spec,
+strict-at-emitter / tolerant-at-parser). The **stale-artifact backstop is LAYER-AGNOSTIC** (S3 / 9.5):
+a gate-changing decision leaves a stale UPSTREAM artifact and the deterministic checker catches it loud
+— at the *data* layer (ds/dev: a stale `Verify` assertion) **or** the *spec* layer (writing: a stale
+`*_REVIEWED.md` vs live `OUTLINE.md` — confirmed live by writing-refactor's step-1).
 
 ### 9.3 INJECTED (per-domain — the real fork)
 - **D1 — `gateProbe(t)`, OPAQUE.** Returns `{pass, corroboration, evidence}` where `pass` may be an
@@ -580,10 +583,19 @@ discovery-mask. **Plus emitter-canonical** (one format spec, strict-at-emitter /
 - **D3 — task-spec COLUMNS.**
 - **D4 — tier/effort policy** (ds heuristic; dev = inherit session model; do NOT put in the shared compiler).
 
-### 9.4 Two orthogonal AXES (record separately so extraction doesn't conflate them)
-- **PAUSE axis:** declared (`⏸` in plan) vs dynamic (R4 block). *(dev adds a 3rd kind — `fullsuite`, the
-  hybrid cross-level-overlap checkpoint; dev-specific today, generalization TBD — a candidate, not an assertion.)*
-- **DECISION axis:** gate-changing (edit the gate + recompile) vs behavior-only (`args.decisions`).
+### 9.4 RETURN-REASON taxonomy + two orthogonal decision/pause axes
+The runner yields to the skill for one of several **return-reasons** — `done | hard-fail |
+pause-human | yield-for-recheck` (ds-refactor's framing, adopted). Keep these separate so extraction
+doesn't conflate "a human must decide" with "the skill must re-check":
+- **`pause-human`** (the human-decision subset) has its own **PAUSE axis:** declared (`⏸` in plan) vs
+  dynamic (R4 block); and an orthogonal **DECISION axis:** gate-changing (edit the gate + recompile) vs
+  behavior-only (`args.decisions`).
+- **`yield-for-recheck`** is an AUTOMATED cross-cutting gate — **no human decides.** dev's `fullsuite`
+  checkpoint is this (the skill runs the full suite, green→auto-resume, red→`onlyChecks`); ds's analog
+  is `ds-validate-coverage` (once at end rather than mid-run). **NOTE:** my dev impl currently *muxes*
+  the recheck onto the pause return channel (`paused:true, pauseKind:'fullsuite'`) as a shortcut — but
+  it is **not** a human pause; the core should model `yield-for-recheck` as its own return-reason, not a
+  3rd pause-kind. (My earlier draft mis-labeled it a "3rd pause kind" — corrected here.)
 
 ### 9.5 Extraction timing + the honest open gap
 - **Extract the PROVEN core now** (S2 driver / S3 pause / S4 schema+helpers — two instances agree).
