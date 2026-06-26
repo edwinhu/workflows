@@ -37,7 +37,7 @@
 // Holes the compiler replaces verbatim, exactly once:
 //   __META__     meta object literal
 //   __PROJECT__  absolute project dir string literal
-//   __TASKS__    array-of-task-spec literal (shape = ▼ SEAM 1)
+//   __TASKS__    array-of-task-spec literal (shape = ▼ D3)
 // ============================================================================
 
 export const meta = /*__META__*/
@@ -143,7 +143,7 @@ async function gateProbe(t) {
 //   only the domain's role line and its R4 list (what counts as an assumption change)
 //   change per domain. The "what" is pinned by the plan row — no scope latitude.
 function implementerPrompt(t) {
-  const role = 'You are a domain implementer. <SEAM 2: domain role + determinism/idempotency/schema rules>.'
+  const role = 'You are a domain implementer. <D2: domain role + determinism/idempotency/schema rules>.'
   const decision = DECISIONS[String(t.id)]
     ? `\nHUMAN DECISION for this task (honor it EXACTLY): ${DECISIONS[String(t.id)]}\n  ⚠ STALE-GATE BACKSTOP: if this decision changes the contract/grain/schema but the Verify above still encodes the OLD one, do NOT revert your output to satisfy the stale gate. Honor the decision, then RE-BLOCK (status="blocked") and state in deviations that the PLAN's Verify must be updated and recompiled.`
     : ''
@@ -163,7 +163,7 @@ Protocol (NON-NEGOTIABLE):
 1. Produce every declared output (write the code/artifact, run it, confirm it exists).
 2. Run the Verify/gate yourself and read your own output — confirm it matches Expected Output (specific numbers/shape), not "looks right".
 3. Deviations: R1 bug / R2 missing-critical / R3 blocking → auto-fix + re-verify + record in deviations.
-   ⛔ MANDATORY R4 — you may NOT auto-resolve these to make the gate pass; set status="blocked" and put the decision + the conflicting NUMBERS in deviations (the run pauses, a human decides): <SEAM 2: the domain's assumption/contract/architecture-change list>. "I changed an assumption so the gate would pass" is always a blocked R4.
+   ⛔ MANDATORY R4 — you may NOT auto-resolve these to make the gate pass; set status="blocked" and put the decision + the conflicting NUMBERS in deviations (the run pauses, a human decides): <D2: the domain's assumption/contract/architecture-change list>. "I changed an assumption so the gate would pass" is always a blocked R4.
 4. summary MUST carry the KEY OUTPUT NUMBERS named in Expected Output — these are surfaced at every pause and are the channel that catches gate-passing bugs (invariant i). A summary without numbers is a regression.
 Return TRANSFORM_SCHEMA.`
 }
@@ -293,15 +293,24 @@ for (let li = 0; li < levels.length; li++) {
   const failed = results.find(r => !r.pass && !(r.impl && r.impl.status === 'blocked'))
   if (failed) return collect(state)
 
+  // RETURN-REASON 4 — pause-human / declared: a planned decision point not yet cleared. Checked BEFORE
+  // the recheck and keyed ONLY on `pauseAfter && !CLEARED` (NOT on this-run `!r.skipped`), so a declared
+  // pause SURVIVES a resume: on re-invoke the pausing task gate-first-skips, but the pause still surfaces
+  // until the human clears it (rides in args.clearedPauses). Dropping a human decision because the work
+  // happened in a prior invocation is exactly the autopilot-past-a-gate failure the pattern forbids.
+  const gateRes = results.find(r => byId[r.id] && byId[r.id].pauseAfter && !CLEARED.has(r.id))
+  if (gateRes) return collect(state, { paused: true, pauseKind: 'decision', atTask: gateRes.id, payload: pausePayload(gateRes, byId[gateRes.id].pauseAfter) })
+
   // RETURN-REASON 3 — yield-for-recheck: an AUTOMATED cross-cutting gate (NO human). Its OWN channel,
   // never muxed onto a pause. The skill runs the recheck (e.g. full suite) and auto-resumes on green.
+  // CONSTRAINT: do NOT co-locate a recheck trigger and a declared ⏸ pause on the SAME level. The recheck
+  // trigger derives from THIS-invocation `results`, which a resume erases (the level gate-first-skips) —
+  // so a level that both pauses and rechecks would surface the pause first, then lose the recheck on the
+  // post-clear resume. Split them across levels (a recheck level carries no pauseAfter). A durable
+  // recheck (tracked in args like clearedPauses) is the core's next increment; until then this is a
+  // compile-time constraint, not a runtime guarantee.
   const recheckKind = recheckTrigger(results, li)
   if (recheckKind) return collect(state, { yieldForRecheck: true, recheckKind, atLevel: li })
-
-  // RETURN-REASON 4 — pause-human / declared: a planned decision point implemented this run and not yet
-  // cleared. Cleared pauses ride in args.clearedPauses so resume is deterministic.
-  const gateRes = results.find(r => !r.skipped && byId[r.id] && byId[r.id].pauseAfter && !CLEARED.has(r.id))
-  if (gateRes) return collect(state, { paused: true, pauseKind: 'decision', atTask: gateRes.id, payload: pausePayload(gateRes, byId[gateRes.id].pauseAfter) })
 }
 
 return collect(state, { done: true })
