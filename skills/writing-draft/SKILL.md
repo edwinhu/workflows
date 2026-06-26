@@ -203,17 +203,28 @@ Skill(skill="workflows:ai-anti-patterns")
 
 ### Step 3: Run the writing-draft workflow + drive the /goal loop
 
-Drafting is the `writing-draft` **ultracode workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents. Invoke it once over the whole document:
+Drafting is the `writing-draft` **ultracode workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents.
+
+**First COMPILE the deterministic section index** (the writing analog of ds/dev's compile step — it replaces the workflow's LLM `Discover` with a regex-parse of the approved planning artifacts, so the section set/order/file-pairing/claim-map can't drift). Run it and read the JSON:
+
+```bash
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/writing/writing_section_index.py "<project root>" > .planning/section-index.json
+```
+
+Read `.planning/section-index.json`. If `ok` is true, pass the parsed object as `sectionIndex` (below). If it has `violations` (e.g. a section's `draft.implements` is missing a primary claim the OUTLINE.md Claim→Section Map assigns, or `staleApproval` flags a `*_REVIEWED.md` whose claim/Part count disagrees with the live OUTLINE.md), **STOP and surface them** — these are spec-integrity failures (the writing analog of a stale gate), fixed in writing-outline/-setup, not papered over. If the script errors entirely, omit `sectionIndex` and the workflow falls back to its LLM Discover (back-compat).
+
+Then invoke it once over the whole document:
 
 ```
 Workflow(name="writing-draft", args={
   "projectDir": "<absolute path to the writing project root (cwd)>",
   "pluginRoot": "<absolute path to this plugin's workflows/ dir — resolve ${CLAUDE_SKILL_DIR}/../../workflows>",
-  "outputSubdir": "drafts"
+  "outputSubdir": "drafts",
+  "sectionIndex": <the parsed .planning/section-index.json object, or omit to use the LLM Discover>
 })
 ```
 
-It discovers the sections, asserts each outline is paragraph-structured, fans out one write-agent per section (each EXPANDS its outline → prose, cites real sources, writes bridges from the adjacent outlines), verifies coverage + citation-resolvability + transitions, and returns `{ overallPass, substratePass, verdict, scoreTable, sections, findings, underGranular, sectionsThatFailed, reviews }`. **The gate is computed in JS from raw counts — never self-report it.**
+It discovers the sections (deterministically when `sectionIndex` is passed), asserts each outline is paragraph-structured, fans out one write-agent per section (each EXPANDS its outline → prose, cites real sources, writes bridges from the adjacent outlines), verifies coverage + citation-resolvability + transitions, and returns `{ overallPass, substratePass, verdict, scoreTable, sections, findings, underGranular, sectionsThatFailed, reviews }`. **The gate is computed in JS from raw counts — never self-report it.**
 
 **Read the result and act:**
 
