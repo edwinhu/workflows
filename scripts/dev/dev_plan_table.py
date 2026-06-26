@@ -12,7 +12,9 @@ means." It is imported by:
   - scripts/dev/dev_compile.py            (emits .planning/run.js)
   - hooks/dev-plan-executable-guard.py    (validates the table at PLAN_REVIEWED approval)
 
-so the compiler and the guard can never disagree about a plan.
+so the compiler and the guard can never disagree about a plan. The domain-agnostic table
++ DAG mechanics live in scripts/lib/plan_table_core.py (shared seam S1); this module owns
+the dev COLUMN-MAP + dev-specific logic.
 
 dev columns (vs ds): Task | Deps | Files | Failing Test | Verify Command | Implements.
 dev also carries two optional prose sections the ds plan lacks, which this parser lifts:
@@ -30,18 +32,15 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-REQUIRED_COLS = ("task", "deps", "files", "failing test", "verify command", "implements")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from plan_table_core import (  # noqa: E402
+    ID_RE, DONE_RE, PAUSE_RE, cell, has_col, canon_id,
+    find_table, parse_deps, check_acyclic, toposort_ids,
+)
 
-# id token at the start of a Task cell: **1**, 1, 1., T1 — capture the bare key (e.g. "1", "T1")
-_ID_RE = re.compile(r"^\s*\**\s*((?:[A-Za-z]+)?\d+)\s*\**\.?")
-# done markers: a checked box `[x]` or a literal done marker anywhere in the Task cell
-_DONE_RE = re.compile(r"`?\[x\]`?", re.I)
-# tokens that mean "no dependencies"
-_NO_DEPS = {"", "-", "--", "---", "—", "–", "n/a", "none"}
-# a dependency reference token inside the Deps cell: 1, T1, t10 …
-_DEP_TOK_RE = re.compile(r"(?:[A-Za-z]+)?\d+")
-# an inline pause marker in any cell: ⏸ PAUSE: <text>  (also accepts "PAUSE:" without the glyph)
-_PAUSE_RE = re.compile(r"(?:⏸\s*)?PAUSE:\s*(.+?)(?:\s*$)", re.I)
+REQUIRED_COLS = ("task", "deps", "files", "failing test", "verify command", "implements")
+# dev detects its table by these exact header cells; columns accessed tolerantly (prefix-aware).
+_TABLE_REQUIRED = {"task", "deps", "verify command"}
 # values that mean "no failing test required" (TDD N/A — types-only / meta tasks)
 _TEST_NA = {"", "n/a", "na", "none", "—", "-"}
 
@@ -86,57 +85,10 @@ class ParseResult:
         return not self.violations and bool(self.tasks)
 
 
-def _split_row(line: str) -> list[str]:
-    return [c.strip() for c in line.strip().strip("|").split("|")]
-
-
 def find_task_table(text: str):
-    """Return (header_cells_lower, [row_cell_lists]) for the table whose header has
-    Task + Deps + Verify Command; (None, None) if absent. Same detection as the guard."""
-    lines = text.splitlines()
-    for i, raw in enumerate(lines):
-        line = raw.strip()
-        if not (line.startswith("|") and "|" in line[1:]):
-            continue
-        header = [c.strip().lower() for c in line.strip("|").split("|")]
-        sep = lines[i + 1].strip() if i + 1 < len(lines) else ""
-        is_sep = bool(re.match(r"^\|?[\s:|-]+\|[\s:|-]+\|?$", sep)) and "-" in sep
-        if is_sep and {"task", "deps"}.issubset(set(header)) and "verify command" in header:
-            rows = []
-            j = i + 2
-            while j < len(lines) and lines[j].strip().startswith("|"):
-                rows.append(_split_row(lines[j]))
-                j += 1
-            return header, rows
-    return None, None
-
-
-def _col_index(header, name) -> int:
-    """Index of the column whose header equals `name` or starts with it — tolerant of
-    parenthetical/qualifier suffixes the plan-template uses (e.g. the header cell
-    'failing test (write first)' satisfies the required column 'failing test'). -1 if absent."""
-    for i, h in enumerate(header):
-        if h == name or h.startswith(name + " ") or h.startswith(name + "("):
-            return i
-    return -1
-
-
-def _has_col(header, name) -> bool:
-    return _col_index(header, name) >= 0
-
-
-def _cell(header, cells, name) -> str:
-    i = _col_index(header, name)
-    try:
-        return cells[i].strip() if i >= 0 else ""
-    except IndexError:
-        return ""
-
-
-def _canon_id(token: str) -> str:
-    """Normalise an id token to its canonical key: strip markdown, keep prefix+digits."""
-    m = _ID_RE.match(token)
-    return m.group(1) if m else token.strip().strip("*").strip()
+    """Locate the dev Implementation Order table (Task + Deps + Verify Command). Thin wrapper over
+    the shared core so the guard and the compiler detect the same table."""
+    return find_table(text, _TABLE_REQUIRED)
 
 
 def _parse_section_body(text: str, heading_re: str) -> str:
@@ -175,7 +127,7 @@ def _parse_task_interfaces(text: str) -> dict[str, str]:
         if m:
             if cur_id is not None:
                 out[cur_id] = "\n".join(cur_lines).strip()
-            cur_id, cur_lines = _canon_id(m.group(1)), []
+            cur_id, cur_lines = canon_id(m.group(1)), []
         elif cur_id is not None:
             cur_lines.append(line)
     if cur_id is not None:
@@ -195,7 +147,7 @@ def parse_plan(text: str) -> ParseResult:
             "be recorded as prose/phase-headings, which dev-implement cannot parse into a DAG + "
             "per-task gate.")
         return res
-    missing = [c for c in REQUIRED_COLS if not _has_col(header, c)]
+    missing = [c for c in REQUIRED_COLS if not has_col(header, c)]
     if missing:
         res.violations.append(
             f"Implementation Order table is missing required column(s): {', '.join(missing)}.")
@@ -203,8 +155,8 @@ def parse_plan(text: str) -> ParseResult:
 
     seen: set[str] = set()
     for cells in rows:
-        task_cell = _cell(header, cells, "task")
-        m = _ID_RE.match(task_cell)
+        task_cell = cell(header, cells, "task")
+        m = ID_RE.match(task_cell)
         if not m:
             res.violations.append(f"Task row '{task_cell[:40]}' has no leading id (e.g. `1.`, `T1`).")
             continue
@@ -213,30 +165,24 @@ def parse_plan(text: str) -> ParseResult:
             res.violations.append(f"Duplicate task id '{tid}'.")
         seen.add(tid)
 
-        name = _ID_RE.sub("", task_cell, count=1).strip()
+        name = ID_RE.sub("", task_cell, count=1).strip()
         name = re.sub(r"^\**\s*", "", name)  # strip a dangling bold close
-        name = _DONE_RE.sub("", name).strip().strip("`").strip()
-        done = bool(_DONE_RE.search(task_cell))
+        name = DONE_RE.sub("", name).strip().strip("`").strip()
+        done = bool(DONE_RE.search(task_cell))
 
-        deps_cell = _cell(header, cells, "deps")
-        deps_norm = deps_cell.strip().strip("`").strip().lower()
-        if deps_norm in _NO_DEPS:
-            deps = []
-        else:
-            body = re.sub(r"^after\s+", "", deps_cell.strip(), flags=re.I)
-            deps = [_canon_id(t) for t in _DEP_TOK_RE.findall(body)]
+        deps = parse_deps(cell(header, cells, "deps"))
 
-        files_cell = _cell(header, cells, "files")
+        files_cell = cell(header, cells, "files")
         files = [f.strip().strip("`").strip() for f in re.split(r"[;,]", files_cell) if f.strip()]
-        failing_test = _cell(header, cells, "failing test").strip().strip("`").strip()
-        verify = _cell(header, cells, "verify command").strip().strip("`").strip()
-        impl_cell = _cell(header, cells, "implements")
+        failing_test = cell(header, cells, "failing test").strip().strip("`").strip()
+        verify = cell(header, cells, "verify command").strip().strip("`").strip()
+        impl_cell = cell(header, cells, "implements")
         implements = [s.strip() for s in re.split(r"[;,]", impl_cell) if s.strip()]
 
         # pause marker: look in Failing Test first, then anywhere in the row
         pause = None
         for hay in (failing_test, task_cell):
-            pm = _PAUSE_RE.search(hay)
+            pm = PAUSE_RE.search(hay)
             if pm:
                 pause = pm.group(1).strip()
                 break
@@ -274,35 +220,16 @@ def parse_plan(text: str) -> ParseResult:
 
 
 def _check_acyclic(res: ParseResult) -> None:
-    graph = {t.id: [d for d in t.deps if d in {x.id for x in res.tasks}] for t in res.tasks}
-    WHITE, GREY, BLACK = 0, 1, 2
-    color = {n: WHITE for n in graph}
-
-    def visit(u) -> bool:
-        color[u] = GREY
-        for v in graph.get(u, []):
-            if color.get(v) == GREY or (color.get(v) == WHITE and visit(v)):
-                return True
-        color[u] = BLACK
-        return False
-
-    if any(color[n] == WHITE and visit(n) for n in list(graph)):
+    ids = {t.id for t in res.tasks}
+    deps_map = {t.id: [d for d in t.deps if d in ids] for t in res.tasks}
+    if check_acyclic(deps_map):
         res.violations.append("Deps form a cycle — the dependency graph must be a DAG.")
 
 
 def toposort(tasks: list[Task]) -> list[list[str]]:
     """Return dependency levels: level k holds tasks whose deps are all in levels < k."""
     ids = {t.id for t in tasks}
-    deps = {t.id: [d for d in t.deps if d in ids] for t in tasks}
-    placed: set[str] = set()
-    levels: list[list[str]] = []
-    while len(placed) < len(tasks):
-        layer = [tid for tid in deps if tid not in placed and all(d in placed for d in deps[tid])]
-        if not layer:  # cycle (already reported) — avoid infinite loop
-            layer = [tid for tid in deps if tid not in placed]
-        levels.append(sorted(layer, key=lambda x: [int(n) for n in re.findall(r"\d+", x)] or [0]))
-        placed.update(layer)
-    return levels
+    return toposort_ids({t.id: [d for d in t.deps if d in ids] for t in tasks})
 
 
 def main() -> int:
