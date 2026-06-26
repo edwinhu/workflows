@@ -43,6 +43,10 @@
 export const meta = /*__META__*/
 
 const PROJECT = /*__PROJECT__*/
+// ▼ D3 (task-spec COLUMNS) — the compiler inlines __TASKS__ as an array of task specs whose shape is the
+//   domain's column-map fed to the deterministic parser. Per task: id, name, deps, outputs, expectedOutput,
+//   verify, implements, kind, tier, effort, done, pauseAfter, taskText. ds: Outputs/Expected/Verify;
+//   dev: Files/Failing Test/Verify Command. Add/rename columns here + in <domain>_plan_table.py together.
 const TASKS   = /*__TASKS__*/
 
 // ── args (carry human decisions across pauses; Workflow scripts have no disk) ──
@@ -53,10 +57,12 @@ const ONLY      = (Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length) ? new
 const REVERIFY_DONE = !!cfg.reverifyDone                               // re-probe PLAN `[x]` tasks instead of blind-skipping (clobber-safe resume)
 
 // ── schemas ───────────────────────────────────────────────────────────────
-// ▼ SEAM 3a — the gate return contract. {pass, outputsPresent, evidence}. For an
-//   exit-code gate, pass=exit0. For a semantic gate, pass is the judge's verdict —
-//   but keep `evidence` numbered/specific (a vague-evidence pass is the failure
-//   mode wearing a judge's robe) and keep the adversarial layer OUTSIDE run.js.
+// ▼ D1 (gate return contract) — {pass, outputsPresent, evidence}. For an exit-code
+//   gate, pass=exit0. For a JUDGMENT gate, pass is the judge's verdict — keep
+//   `evidence` numbered/specific (a vague-evidence pass is the failure mode wearing
+//   a judge's robe), and note: a judgment swap ALSO means a non-haiku tier (don't
+//   ship a haiku judging prose) AND the adversarial-review layer becomes PRIMARY,
+//   kept OUTSIDE run.js — not a backstop.
 const GATE_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['pass', 'outputsPresent', 'evidence'],
   properties: {
@@ -94,10 +100,32 @@ function toposort(tasks) {
   return levels
 }
 
-// ▼ SEAM 3b — gateProbe(t): how a task is gated. An INDEPENDENT cheap agent runs the
+// SOUND intra-level disjointness — parallel is safe ONLY when every task's declared outputs are
+// statically-known CONCRETE files AND no normalized output path is a prefix of another. String-
+// uniqueness is NOT enough: `data/out/` (dir) vs `data/out/x.parquet` are distinct strings but nested;
+// a glob (`a/*.csv`) is not statically provable. Any doubt ⇒ sequential (a shared-tree corruption in a
+// BIRTHER template propagates to every copier). LIMIT: this reasons only about DECLARED outputs — if a
+// domain's tasks also touch UNDECLARED shared files (imports, a barrel/index), declared-disjoint is not
+// real disjointness, so that domain's compiler must NOT populate concrete `outputs` for such tasks (→
+// sequential here) — that is why dev (shared tree) stays sequential. Future: per-task
+// opts.isolation:'worktree' is a 2nd input that makes parallel safe even on a shared tree — add it here.
+function provablyDisjoint(todo) {
+  if (todo.length < 2 || !todo.every(t => (t.outputs || []).length)) return false
+  const norm = p => String(p).replace(/\/+$/, '')                       // strip trailing slash
+  const isDirOrGlob = p => /[*?{}\[\]]/.test(p) || /\/$/.test(p) || !/\.[A-Za-z0-9]+$/.test(norm(p).split('/').pop())
+  const all = todo.flatMap(t => (t.outputs || []).map(norm))
+  if (all.some(p => isDirOrGlob(p))) return false                       // dir/glob ⇒ not statically provable
+  for (let i = 0; i < all.length; i++) for (let j = 0; j < all.length; j++) {
+    if (i === j) continue
+    if (all[i] === all[j] || all[i].startsWith(all[j] + '/')) return false  // equal or nested-prefix ⇒ overlap
+  }
+  return true
+}
+
+// ▼ D1 (gateProbe body): how a task is gated. An INDEPENDENT cheap agent runs the
 //   gate AND confirms declared outputs exist (invariant iii). Swapping exit-code ⇄
-//   semantic ⇄ mechanical-floor is an isolated change to THIS one function. NEVER let
-//   the implementer's self-report be the gate.
+//   judgment ⇄ mechanical-floor is an isolated change to THIS one function. NEVER let
+//   the implementer's self-report be the gate. (Default below = exit-code shape.)
 async function gateProbe(t) {
   if (!t.verify) return { pass: false, outputsPresent: false, evidence: '(no Verify/gate in the plan row)' }
   const outs = (t.outputs || []).filter(Boolean)
@@ -110,7 +138,7 @@ async function gateProbe(t) {
     { label: `gate:${t.id}`, phase: 'Gate', schema: GATE_SCHEMA, model: 'haiku', effort: 'low' })
 }
 
-// ▼ SEAM 2 — implementerPrompt(t): how ONE task is produced. Domain role + protocol.
+// ▼ D2 — implementerPrompt(t): how ONE task is produced. Domain role + protocol.
 //   Keep the MANDATORY R4 block + the stale-gate backstop verbatim (invariant ii) —
 //   only the domain's role line and its R4 list (what counts as an assumption change)
 //   change per domain. The "what" is pinned by the plan row — no scope latitude.
@@ -147,7 +175,9 @@ async function runTask(t) {
     const probe = await gateProbe(t)
     if (probe.pass && probe.outputsPresent) { log(`↳ ${t.id}: already satisfied (skip implement)`); return { id: String(t.id), impl: null, gate: probe, pass: true, skipped: true } }
   }
-  // 2. implement (the real work — tiered model per ▼ SEAM 1: t.tier/t.effort)
+  // 2. implement (the real work). ▼ D4 (tier/effort policy): t.tier/t.effort come from the compiler's
+  //    domain policy — ds: heuristic by task weight; dev: inherit the session model (TDD needs capability,
+  //    so omit t.tier and let it default). Pull this policy out of the shared compiler, not hardcoded here.
   const impl = await agent(implementerPrompt(t), {
     label: `task:${t.id}`, phase: 'Implement', schema: TRANSFORM_SCHEMA,
     model: t.tier || 'sonnet', effort: t.effort || 'medium',
@@ -209,7 +239,24 @@ function collect(state, extra = {}) {
   }
 }
 
-// ── driver (topo → level-parallel → gate-first skip → two kinds of pause) ─────
+// yield-for-recheck TRIGGER (optional, domain-filled) — distinct from a human pause. Return a
+// recheckKind string to yield control so the SKILL runs an AUTOMATED cross-cutting gate (dev: the full
+// test suite when a level re-touched an earlier level's file AND did real work; the skill runs the suite
+// and AUTO-RESUMES on green — no human). Returning null (default) means "no recheck". Do NOT route this
+// through the pause channel — muxing an automated recheck onto a human decision is the anti-pattern this
+// channel exists to prevent. ds's analog (validate-coverage) runs once at end-of-run at the SKILL level,
+// so ds leaves this hook returning null.
+const TOUCHED = {}                                                    // level index → Set(files written so far)
+function recheckTrigger(results, li) {
+  // ▼ DOMAIN HOOK (default: no recheck). Example (dev's fullsuite): yield when this level wrote a file an
+  //   EARLIER level already owned (a cross-cutting change the per-task gate can't see).
+  //   const wrote = results.flatMap(r => (r.impl && r.impl.filesTouched) || [])
+  //   const earlier = new Set(Object.entries(TOUCHED).filter(([k]) => +k < li).flatMap(([, s]) => [...s]))
+  //   if (results.some(r => r.impl && r.impl.status === 'implemented') && wrote.some(f => earlier.has(f))) return 'fullsuite'
+  return null
+}
+
+// ── driver (topo → level-parallel → gate-first skip → return-reasons) ─────────
 const levels = toposort(TASKS)
 const state = {}
 log(`compiled-run: ${TASKS.length} task(s), ${levels.length} dependency level(s)${ONLY ? `; re-run ${ONLY.size}` : ''}`)
@@ -224,9 +271,8 @@ for (let li = 0; li < levels.length; li++) {
   // intra-level execution is CORE, not a seam: DERIVE disjointness (parallel IFF this level's tasks
   // write provably-disjoint, statically-known declared outputs — ds's disjoint parquets qualify; dev's
   // shared tree never does → sequential by construction). A naive hand-set parallel copy corrupts a
-  // shared tree. Default SEQUENTIAL when any task lacks declared outputs (not statically provable).
-  const allOuts = todo.flatMap(t => t.outputs || [])
-  const par = todo.length > 1 && todo.every(t => (t.outputs || []).length) && new Set(allOuts).size === allOuts.length
+  // shared tree. provablyDisjoint() is conservative: dir/glob/nested-prefix ⇒ sequential.
+  const par = provablyDisjoint(todo)
   log(`Level ${li}/${levels.length - 1}: [${todo.map(t => t.id).join(', ')}]${todo.length > 1 ? (par ? ' (parallel — disjoint outputs)' : ' (sequential)') : ''}`)
   let results
   if (par) {
@@ -236,18 +282,24 @@ for (let li = 0; li < levels.length; li++) {
     for (const t of todo) { const r = await runTask(t); if (r) results.push(r) }
   }
   for (const r of results) state[r.id] = r
+  TOUCHED[li] = new Set(results.flatMap(r => (r.impl && r.impl.filesTouched) || []))
 
-  // dynamic pause — an implementer hit an R4 it cannot auto-resolve (invariant ii). Surfaces
-  // the deviations + numbers, never a bare exit code (invariant i).
+  // RETURN-REASON 1 — pause-human / dynamic R4: an implementer hit an R4 it cannot auto-resolve
+  // (invariant ii). Surfaces the deviations + numbers, never a bare exit code (invariant i).
   const blocked = results.find(r => r.impl && r.impl.status === 'blocked')
   if (blocked) return collect(state, { paused: true, pauseKind: 'R4', atTask: blocked.id, payload: pausePayload(blocked, (blocked.impl || {}).deviations || 'R4 escalation') })
 
-  // a hard gate failure (not R4) stops the run for the skill's fix loop
+  // RETURN-REASON 2 — hard-fail: a gate failure (not R4) stops the run for the skill's fix loop.
   const failed = results.find(r => !r.pass && !(r.impl && r.impl.status === 'blocked'))
   if (failed) return collect(state)
 
-  // declared pause — a planned decision point implemented this run and not yet cleared.
-  // Cleared pauses ride in args.clearedPauses so resume is deterministic.
+  // RETURN-REASON 3 — yield-for-recheck: an AUTOMATED cross-cutting gate (NO human). Its OWN channel,
+  // never muxed onto a pause. The skill runs the recheck (e.g. full suite) and auto-resumes on green.
+  const recheckKind = recheckTrigger(results, li)
+  if (recheckKind) return collect(state, { yieldForRecheck: true, recheckKind, atLevel: li })
+
+  // RETURN-REASON 4 — pause-human / declared: a planned decision point implemented this run and not yet
+  // cleared. Cleared pauses ride in args.clearedPauses so resume is deterministic.
   const gateRes = results.find(r => !r.skipped && byId[r.id] && byId[r.id].pauseAfter && !CLEARED.has(r.id))
   if (gateRes) return collect(state, { paused: true, pauseKind: 'decision', atTask: gateRes.id, payload: pausePayload(gateRes, byId[gateRes.id].pauseAfter) })
 }
