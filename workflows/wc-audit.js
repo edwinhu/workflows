@@ -1,6 +1,6 @@
 export const meta = {
   name: 'wc-audit',
-  description: "workflow-creator's Mode 2 audit as an ultracode workflow: discover the target workflow's skill files, fan out one read-only reviewer per audit dimension (P01-P26 architecture incl. the runner-architecture/executionClass detector, the 13-pattern enforcement checklist, path portability, the Ultracode-Workflow Candidacy Scan), adversarially verify critical/major gaps against the actual files, then compute the composite + verdict in pure JS. Flags the retired generic-interpreter shape as a critical. Honors workflow-creator's meta-tool exemptions. Read-only; does NOT fix.",
+  description: "workflow-creator's Mode 2 audit as an ultracode workflow: discover the target workflow's skill files, fan out one read-only reviewer per audit dimension (P01-P30 architecture incl. the runner-architecture/executionClass detector — recognizes BOTH the code and DATA compile variants, the 13-pattern enforcement checklist, path portability, the Ultracode-Workflow Candidacy Scan), adversarially verify critical/major gaps against the actual files, then compute the composite + verdict in pure JS. Flags the retired generic-interpreter shape as a critical. Honors workflow-creator's meta-tool exemptions. Read-only; does NOT fix.",
   whenToUse: "Called by workflow-creator Mode 2 (Steps 1-4) and Mode 3 Phase A. Returns { overallPass, composite, verdict, scoreTable, reportMarkdown, candidacyTable, findings, reviews, reviewersThatFlagged }. The skill renders AUDIT.md from the result and drives the Mode 3 /goal fix loop; on a re-audit it passes onlyChecks (flagged dimension keys) + priorReviews. The workflow never fixes and the gate is computed in JS — never trust a self-reported composite.",
   phases: [
     { title: 'Discover', detail: "enumerate the target workflow's entry/midpoint/phase skills + references; resolve Mode 2 criteria, enforcement-checklist, migration playbook; detect the meta-tool" },
@@ -161,7 +161,7 @@ const CANDIDACY_SCHEMA = {
 }
 
 // Runner-architecture reviewer — classifies the target's EXECUTION shape, then conditionally scores the
-// compiled-runner principles P22-P26 (only when the workflow executes a plan-table DAG of mechanical work).
+// compiled-runner principles P22-P30 (only when the workflow executes a plan-table DAG of mechanical work).
 const RUNNER_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['dimension', 'executionClass', 'applicable', 'principles', 'findings'],
   properties: {
@@ -169,14 +169,14 @@ const RUNNER_SCHEMA = {
     executionClass: {
       type: 'string',
       enum: ['generic-interpreter', 'already-a-fan-out', 'compiled-runner', 'not-applicable'],
-      description: 'generic-interpreter = an in-workflow LLM "discovery" agent re-parses a plan/spec each invocation → per-level fan-out → heavyweight re-analysis verifier (the retired anti-pattern). already-a-fan-out = a real per-item fan-out with NO plan-table DAG (e.g. writing-draft; harden + reconcile, do NOT force an engine swap). compiled-runner = already on spec→plan→deterministic-compile→run.js. not-applicable = conversational / single-pass / pure-creative (P22-P26 N/A).',
+      description: 'generic-interpreter = an in-workflow LLM "discovery" agent re-parses a plan/spec each invocation → per-level fan-out → heavyweight re-analysis verifier (the retired anti-pattern). already-a-fan-out = a per-item fan-out that STILL LLM-enumerates each call (no deterministic compile/parser shared by the guard; harden, do NOT force an engine swap). compiled-runner = a deterministic compile/parser REPLACED the LLM discovery and the guard imports it; emit form is CODE (run.js) OR DATA (work-list a generic engine consumes — writing/workshop/teaching; absent run.js is NOT a gap). not-applicable = conversational / single-pass / pure-creative (P22-P30 N/A).',
     },
-    applicable: { type: 'boolean', description: 'true iff the workflow executes a DAG of mechanical work between human gates (classes generic-interpreter | already-a-fan-out | compiled-runner). false ⇒ P22-P26 are N/A and excluded from the composite.' },
+    applicable: { type: 'boolean', description: 'true iff the workflow executes a DAG of mechanical work between human gates (classes generic-interpreter | already-a-fan-out | compiled-runner). false ⇒ P22-P30 are N/A and excluded from the composite.' },
     principles: {
       type: 'array', items: {
         type: 'object', additionalProperties: false, required: ['id', 'score', 'evidence', 'gap', 'naForDomain'],
         properties: {
-          id: { type: 'string', description: 'P22..P26' },
+          id: { type: 'string', description: 'P22..P30' },
           score: { type: 'integer', description: '0-10 grounded in line-number evidence; ignored when applicable=false' },
           evidence: { type: 'string', description: 'file:line citations justifying the score' },
           gap: { type: 'string', description: 'the specific fixable gap if score < threshold, else ""' },
@@ -301,24 +301,31 @@ For each candidate set: phase, fanOut, workerMode (review/transform/none), value
 `${READONLY}
 Set dimension="runner-architecture" verbatim.
 ${groundIn}
-Read the Mode 2 "Compiled-runner architecture (P22-P26)" criteria and the executionClass detector in ${disc.wcSkillPath} (grep \`grep -n "P22\\|P23\\|P24\\|P25\\|P26\\|executionClass" ${disc.wcSkillPath}\`). Also read ${disc.migrationPlaybookPath || `${disc.wcSkillPath} migration reference`} §0 (the compile-vs-interpret rule).
+Read the Mode 2 "Compiled-runner architecture (P22-P30)" criteria and the executionClass detector in ${disc.wcSkillPath} (grep \`grep -n "P22\\|P23\\|P24\\|P25\\|P26\\|P27\\|P28\\|P29\\|P30\\|executionClass" ${disc.wcSkillPath}\`). Also read ${disc.migrationPlaybookPath || `${disc.wcSkillPath} migration reference`} §0 (the compile-vs-interpret rule).
 
-STEP A — CLASSIFY the target's EXECUTION shape (executionClass). Glob ${PROJECT}/workflows/${TARGET}*.js and ${PROJECT}/workflows/*${TARGET}*.js and Read any that drive this workflow's execution (e.g. ${TARGET}-implement.js / ${TARGET}-generate.js / ${TARGET}-run*.js / a compiled .planning/run.js the skill invokes). Also read the implement/transform/generate phase skill. Then classify:
-- **generic-interpreter** — an in-workflow LLM "discovery" agent re-parses a PLAN/spec into a DAG EVERY invocation, then per-level/per-item fan-out, then a heavyweight re-analysis LLM verifier computes the gate. (Tell-tale: \`agent('Enumerate…/re-parse PLAN.md…')\` as step 1 of a workflow; a per-task verify subagent that re-loads data; a per-LEVEL return boundary.) THIS IS THE RETIRED ANTI-PATTERN.
-- **already-a-fan-out** — a genuine per-item fan-out (one agent per section/lecture/question) with NO structured plan-table DAG driving execution. Correct as-is; needs only spec-hardening + guard-reconcile, NOT an engine swap.
-- **compiled-runner** — execution is a deterministic compile of a plan table to a run.js / data work-list (no LLM discovery), a run-template that topo-sorts + gates on real exit codes / a domain gateProbe, with a pause/resume protocol.
-- **not-applicable** — the workflow is conversational / single-pass / pure-creative and executes no plan-table DAG of mechanical work.
+STEP A — CLASSIFY the target's EXECUTION shape (executionClass). Glob ${PROJECT}/workflows/${TARGET}*.js and ${PROJECT}/workflows/*${TARGET}*.js and Read any that drive this workflow's execution (e.g. ${TARGET}-implement.js / ${TARGET}-generate.js / ${TARGET}-verify.js / ${TARGET}-run*.js / a compiled .planning/run.js the skill invokes). ALSO Glob ${PROJECT}/scripts/${TARGET}/*.py and ${PROJECT}/hooks/${TARGET}*guard*.py — a deterministic compile/parser lives there. Read the implement/transform/generate phase skill. Then classify.
 
-Set applicable = (executionClass !== 'not-applicable'). If applicable=false, set every P22-P26 naForDomain=true, score=0, gap="" and emit NO findings — they do not apply.
+⚠️ THE DEFINING PROPERTY of compiled-runner (BOTH variants) is: **a DETERMINISTIC compile/parser REPLACED the in-workflow LLM "discovery" agent, AND the GUARD SHARES that parser** (validate = parse()/build_index().violations). Key on THAT — NOT on whether a generated run.js file exists. There are TWO valid compile-output forms (S5): a **CODE variant** emits a self-contained \`.planning/run.js\` (ds/dev); a **DATA variant** emits a work-list / index (JSON/section-index/slide-table) that a GENERIC fan-out engine consumes via args (writing/workshop/teaching). **Absence of a generated run.js is NOT a gap** — it is the data-variant emit form. Misclassifying a data-variant as generic-interpreter or already-a-fan-out because "there's no run.js" is the #1 detector error.
 
-STEP B — if applicable=true, score P22-P26 each 0-10 with file:line evidence:
-- **P22 Compile-vs-interpret fit** — is plan-table execution deterministically COMPILED (parser → run.js/work-list), NOT re-discovered by an in-workflow LLM agent each call? A generic-interpreter scores LOW here.
-- **P23 Single-source plan parser** — does the executable-guard import the SAME parser the compiler/runner uses (compiles ⇔ passes gate), rather than a second drifting regex?
-- **P24 Honest gate** — is the gate a real exit code (or a domain gateProbe returning {pass, outputsPresent, evidence, scope} where pass is ALWAYS deterministic, never a returned judgment) PLUS an independent artifacts-exist check — never an implementer self-report or a re-analysis LLM verifier as sole arbiter? Output-first/artifact gates MUST have the outputs-exist probe; a mechanical floor MUST disclose its blind spot via scope (a clean pass must not over-claim coverage).
-- **P25 Pause/resume + payload>pass-fail** — do pauses carry deviations + a NUMBERED summary (not a bare pass/fail), with two-kinds-of-decision routing (gate-changing → edit plan + recompile; behavior-only → args.decisions) + a stale-gate backstop + gate-first idempotent short-circuit?
-- **P26 Adversarial layer outside the runner** — does the full-suite/review/verify adversarial layer live OUTSIDE run.js (the gate caught zero bugs in ds/dev; deviations + adversarial review caught them)?
+- **generic-interpreter** — an in-workflow LLM "discovery" agent re-parses a PLAN/spec into a DAG/work-list EVERY invocation, then per-level/per-item fan-out, then a heavyweight re-analysis LLM verifier computes the gate. (Tell-tale: \`agent('Enumerate…/re-parse PLAN.md…')\` as step 1 of a workflow; a per-task verify subagent that re-loads data.) THIS IS THE RETIRED ANTI-PATTERN.
+- **already-a-fan-out** — a genuine per-item fan-out that STILL LLM-enumerates/structures the work-list each call (no deterministic compile/parser; the guard does NOT share a parser). Correct shape, but NOT yet compiled — needs the deterministic-compile + shared-guard hardening, NOT an engine swap. **The line vs compiled-runner-data is exactly "does a deterministic compile/parser exist that replaced the Discover, shared by the guard?" — if yes, it is compiled-runner, not already-a-fan-out.**
+- **compiled-runner** — a deterministic compile/parser replaced the LLM discovery and the guard imports it; output is **CODE (run.js)** OR **DATA (work-list consumed by a generic engine via args)**; gates on real exit codes / a domain gateProbe; pause/resume. Score P22-P30 UNIFORMLY for both emit forms.
+- **not-applicable** — the workflow is conversational / single-pass / pure-creative and executes no plan-table/work-list of mechanical work.
 
-CRITICAL FINDING RULE: if executionClass === 'generic-interpreter' AND applicable=true, emit a **critical** findings[] entry ("execution is the retired generic-interpreter shape — LLM discovery between a structured producer and a strict checker masks spec-drift; port to spec→plan→compile"). This MUST fail the substrate gate. For 'already-a-fan-out', do NOT emit a critical for the shape itself — only score the applicable sub-principles (P23/P24 spec-hardening) and recommend harden-not-swap in notes. Add a findings[] entry (critical <7, major 7-8.9, minor 9-9.4) for each applicable principle below ${THRESHOLD}. Return RUNNER_SCHEMA.`,
+Set applicable = (executionClass !== 'not-applicable'). If applicable=false, set every P22-P30 naForDomain=true, score=0, gap="" and emit NO findings — they do not apply.
+
+STEP B — if applicable=true, score P22-P30 each 0-10 with file:line evidence:
+- **P22 Compile-vs-interpret fit** — is the work-list deterministically COMPILED (parser → run.js OR data index), NOT re-discovered by an in-workflow LLM agent each call? A generic-interpreter scores LOW; a data-variant with a deterministic compile scores HIGH (do NOT penalize the absence of run.js).
+- **P23 Single-source plan parser** — does the executable-guard import the SAME parser the compiler/runner uses (compiles ⇔ passes gate; validate = parse().violations), rather than a second drifting regex?
+- **P24 Honest gate** — (a) is \`pass\` ALWAYS DETERMINISTIC — a real exit code OR a mechanical floor, NEVER a returned LLM judgment (a runner whose gateProbe returns a judgment = the haiku-judging-prose anti-pattern → score LOW)? (b) does the contract return \`{pass, artifactsPresent/outputsPresent, evidence, scope}\` with **pass ⊥ artifactsPresent as TWO INDEPENDENT booleans the core conjoins (pass && artifactsPresent), never trusting pass alone**? (c) does a mechanical floor DISCLOSE its blind spot via \`scope\` (a clean pass must not over-claim coverage)? (d) FLOOR-vs-ASSIST / inverted-G2: a deterministic candidate-narrowing list (uncitedCandidates[]/bibUnresolved) that feeds the OUTSIDE semantic authority for PER-ITEM adjudication is an ASSIST, lives in evidence+scope.notChecked, and must NOT bear the gate — a probe that FAILS the gate on those candidates is the inverted-G2 defect (a false-negative gate, inverse of funnel-clobber; score LOW). NOTE the assist (per-item judgment — feeding it is GOOD) is distinct from a P27 join-MENU (closed-set correspondence — feeding it force-matches, BAD); don't conflate them.
+- **P25 Pause/resume + payload>pass-fail** — pauses carry deviations + a NUMBERED summary (not a bare pass/fail); two-kinds-of-decision routing (layer-agnostic: data Verify or spec sentinel) + stale-gate backstop + gate-first idempotent short-circuit; the skill switches on RETURN-REASON (done|hard-fail|pause-human|yield-for-recheck) and does NOT mux an automated recheck onto the human-pause channel.
+- **P26 Adversarial layer outside the runner** — the full-suite/review/verify adversarial layer lives OUTSIDE run.js, and is the PRIMARY arbiter (not a backstop) when the gate trust-class is semantic.
+- **P27 Join trust-class** — a work-list row's downstream JOIN (work-item ↔ produced artifact) is MECHANICAL (deterministic key) only when the work-list enumerates from a SINGLE source; if it enumerates from MORE THAN ONE source (generate←spec AND verify←built-artifact) the join is SEMANTIC and an LLM must do it OUTSIDE the parser. Score: does the workflow correctly keep a multi-source join semantic (parser ENUMERATES, never key-matches a drifting identifier) and NOT feed the deterministic artifact as a candidate MENU into the join-agent (post-filter in JS outside)? A join-MENU constrains a correspondence to a CLOSED SET ("match X to one of these") → force-matching that masks a dropped item — distinct from a P24(d) ASSIST (per-item adjudication, which IS good to feed). The menu bias is workshop-measured (appendix over-match n=3). Do NOT penalize a multi-source domain for lacking a deterministic join. A born-canonical byte-stable join-key anchor (converts semantic→mechanical) scores high.
+- **P28 Emitter-canonical hardened** — is the EMITTER hardened to born-canonical (doctrine #6), or ONLY the parser+guard? Parser-only RELOCATES the LLM's tolerance into regex. Two valid shapes by producer: machine producer → eliminate tolerance + a STRICT guard; hand-editable producer → canonical emitter + intentional back-compat tolerance, whose guard correctly stays STRUCTURE-ONLY + tolerant (do NOT ding it for not being strict — that's the right shape for a hand-edited producer). Trap (both shapes): was the guard golden-tested against a REAL pre-canonical artifact (not the template, which is already canonical)?
+- **P29 Guard passes REAL artifacts (phantom-canonical)** — does the EXISTING SHIPPED data in the repo PASS its own guard/parser? Run the guard against real artifacts, not just the template. A guard encoding a canonical FORMAT the real authoring never used (false-denying shipped specs) is the phantom-canonical defect (score LOW). This is a DEFAULT check.
+- **P30 Gate covers all declared outputs** — does the gate validate EVERY declared first-class output's compile/validation (not just the primary)? An un-gated compiled deliverable (e.g. notes alongside slides) is a hole.
+
+CRITICAL FINDING RULE: if executionClass === 'generic-interpreter' AND applicable=true, emit a **critical** findings[] entry ("execution is the retired generic-interpreter shape — LLM discovery between a structured producer and a strict checker masks spec-drift; port to spec→plan→compile"). This MUST fail the substrate gate. For 'already-a-fan-out', do NOT emit a critical for the shape itself — only score the applicable sub-principles (P23/P24/P28 hardening) and recommend harden-not-swap in notes. A P29 phantom-canonical failure (shipped data fails its own guard) is a **critical**. Add a findings[] entry (critical <7, major 7-8.9, minor 9-9.4) for each applicable principle below ${THRESHOLD}. Return RUNNER_SCHEMA.`,
   },
 ]
 
@@ -382,7 +389,7 @@ for (const c of ARCH_CLUSTERS) {
   }
 }
 
-// Runner-architecture principles (P22-P26). When the target executes no plan-table DAG (applicable=false /
+// Runner-architecture principles (P22-P30). When the target executes no plan-table DAG (applicable=false /
 // executionClass 'not-applicable'), they are DETERMINISTICALLY N/A — added to RUNNER_NA and excluded from the
 // composite denominator (same discipline as the EXEMPT set: deterministic, not LLM-flagged, so the denominator
 // can't drift run-to-run). When applicable, they score like any other principle and feed the composite + gate.
@@ -399,7 +406,7 @@ for (const p of (runnerDim?.principles || [])) {
 // Composite = mean over ALL non-EXEMPT scored principles. We intentionally do NOT drop LLM-flagged
 // `domainCeiling` principles from the DENOMINATOR — that let the denominator drift run-to-run (a top cause of
 // composite noise; see project_wc_mode3_asymptote). Only the DETERMINISTIC EXEMPT set (meta-tool P01/P06) and the
-// DETERMINISTIC RUNNER_NA set (P22-P26 when the workflow runs no plan-table DAG) are excluded. domainCeiling is
+// DETERMINISTIC RUNNER_NA set (P22-P30 when the workflow runs no plan-table DAG) are excluded. domainCeiling is
 // display-only annotation. The composite is advisory anyway — the substrate gate below is the real signal.
 const counted = ALL_IDS.filter(id => !EXEMPT.has(id) && !RUNNER_NA.has(id))
 const excluded = ALL_IDS.filter(id => EXEMPT.has(id) || RUNNER_NA.has(id))
@@ -448,8 +455,10 @@ const PRINCIPLE_NAMES = {
   P20: 'Hooks over prompt', P21: 'Auto-loader usage',
   P22: 'Compile-vs-interpret fit', P23: 'Single-source plan parser', P24: 'Honest gate (exit-code/probe)',
   P25: 'Pause/resume + payload>pass-fail', P26: 'Adversarial layer outside runner',
+  P27: 'Join trust-class (mechanical/semantic)', P28: 'Emitter-canonical hardened',
+  P29: 'Guard passes REAL artifacts (phantom-canonical)', P30: 'Gate covers all declared outputs',
 }
-const PRINCIPLE_ORDER = ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P19b', 'P20', 'P21', 'P22', 'P23', 'P24', 'P25', 'P26']
+const PRINCIPLE_ORDER = ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P19b', 'P20', 'P21', 'P22', 'P23', 'P24', 'P25', 'P26', 'P27', 'P28', 'P29', 'P30']
 const archRows = PRINCIPLE_ORDER.filter(id => scoreById[id]).map(id => {
   const p = scoreById[id]
   const ex = EXEMPT.has(id) ? ' (EXEMPT — meta-tool)' : (RUNNER_NA.has(id) ? ' (N/A — no plan-table DAG)' : (p.domainCeiling ? ' (domain ceiling — noted, kept in composite)' : ''))
@@ -505,17 +514,17 @@ const reportMarkdown = [
   excluded.length ? `\n_Excluded from composite (deterministic meta-tool exemptions): ${excluded.join(', ')}._` : '',
   ceilingNoted.length ? `_Domain-ceiling-flagged (kept in composite, not penalized as gaps): ${ceilingNoted.join(', ')}._` : '',
   ``,
-  `### Architecture Scores (P01-P26)`,
+  `### Architecture Scores (P01-P30)`,
   archTable,
   ``,
-  `### Runner Architecture (P22-P26)`,
-  `**Execution class:** \`${executionClass}\`${runnerApplicable ? ' — P22-P26 scored above.' : ' — P22-P26 N/A (no plan-table DAG of mechanical work).'}`,
+  `### Runner Architecture (P22-P30)`,
+  `**Execution class:** \`${executionClass}\`${runnerApplicable ? ' — P22-P30 scored above.' : ' — P22-P30 N/A (no plan-table DAG of mechanical work).'}`,
   executionClass === 'generic-interpreter'
     ? '\n⚠️ **This workflow runs the RETIRED generic-interpreter shape** (LLM discovery → per-level fan-out → heavyweight re-analysis verifier). An LLM between a structured producer and a strict checker masks spec-drift. **Recommendation:** port to `spec → plan → deterministic compile → run.js` (see the migration playbook §0). This is a critical finding and fails the substrate gate.'
     : executionClass === 'already-a-fan-out'
       ? '\n_Already a genuine per-item fan-out with no plan-table DAG. **Do NOT force an engine swap.** Recommendation: spec-harden the work-list + reconcile the guard to a single-source parser (P23) where applicable._'
       : executionClass === 'compiled-runner'
-        ? '\n_Already on the compiled-runner pattern. P22-P26 score its quality._'
+        ? '\n_Already on the compiled-runner pattern. P22-P30 score its quality._'
         : '\n_Conversational / single-pass / pure-creative — the compiled-runner principles do not apply._',
   ``,
   `### Enforcement Coverage (13 patterns)`,
@@ -544,7 +553,7 @@ return {
   threshold: THRESHOLD,
   isMetaTool: disc.isMetaTool,
   executionClass,             // generic-interpreter | already-a-fan-out | compiled-runner | not-applicable — drives the Mode 2/3 port-vs-harden recommendation
-  runnerApplicable,           // whether P22-P26 were scored (true) or N/A (false)
+  runnerApplicable,           // whether P22-P30 were scored (true) or N/A (false)
   summary: { composite, substratePass, criticalCount, enfAbsent: enfAbsent.length, totalFindings: findings.length, scored: counted.length, ceilingNoted: ceilingNoted.length, executionClass },
   scoreTable,                 // dimension-level gate table
   reportMarkdown,             // full AUDIT.md body the skill writes verbatim
