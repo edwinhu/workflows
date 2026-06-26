@@ -490,6 +490,13 @@ Correct:
 This applies to EVERY list in EVERY slide. No exceptions.
 </EXTREMELY-IMPORTANT>
 
+### Generation Facts
+
+- The secreg/university theme requires `qr: none` in `config-info` — omit it and the deck does not compile. A deck that won't render is not a faster deck; the missing field surfaces as a compile failure the presenter debugs at their desk.
+- `cetz-plot` is NOT the theme's bundled `cetz` — importing `cetz-plot` breaks the compile. Build diagrams from the theme's `cetz.canvas`; reaching for the familiar package name ships a deck that won't build.
+- A fragment-agent that cites an inventory id absent from `SOURCES.md` fabricates evidence: the verify gate's source-fidelity reviewer flags it AND the JS inventory whitelist silently drops it, so the slide ships PARTIAL with an ungrounded claim. Cite ONLY the row's allowed ids — `citedInventory` is grep-grounded from the written fragment, so a memory-reported list that disagrees with the file is caught.
+- `notes.typ` is compile-gated, not slides-only — an invented note macro (`#slide-notes`, `#speaker-note`) that compiles this run only by an assembly-agent alias ships malformed notes on a less-defensive run. Notes are plain `=`/`==` headings + prose; inventing a macro to force a compile is rework, not speed.
+
 ### Typst Slide Conventions (from working example)
 
 **File header (slides.typ):**
