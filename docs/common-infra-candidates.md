@@ -1,11 +1,19 @@
-# Common-infra candidates: the shared run-core seams (CAPTURE — do NOT extract yet)
+# Common-infra candidates: the shared run-core seams (EXTRACTION UNBLOCKED — pass #9 active)
 
 > **Canonical** cross-workflow seam list for the compiled-runner pattern. Owned here (ds vantage);
-> `dev`'s DESIGN §9 holds the dev-side view and points to this file. **GUARDRAIL: this records
-> candidate seams; it does NOT authorize extraction.** Extraction is pass #9. **As of writing's GATE
-> step landing, EVERY seam is now confirmed across three instances spanning both trust-classes
-> (exit-code + semantic) and both compile-outputs (codegen + data).** No seam remains design-gated. The
-> only thing before pass #9 is writing's A/B parity run — a *validation* step, not a design unknown.
+> `dev`'s DESIGN §9 holds the dev-side view and points to this file. **STATUS: every seam is confirmed
+> across three instances** (both trust-classes exit-code + semantic; both compile-outputs codegen +
+> data), **and writing's A/B parity is GREEN** (writing v5.57.0, PR #18, `63fba86`) — so the extraction
+> gate the guardrail protected is **CLEARED. Pass #9 (run-core extraction) is unblocked and active.**
+>
+> *How parity was shown (the method matters):* a confounded raw current-vs-compiled double-run was
+> deliberately REJECTED as uninterpretable (the L1/L2/L3 reviewers are non-deterministic, so a verdict
+> diff couldn't be attributed to the compile change vs reviewer noise). Parity was proven by a stronger
+> single-variable design: section-set+order proven deterministically (blind-oracle diff=0), the
+> downstream L1/Verify/L2-L3 code byte-identical between paths, a focused precisClaim probe shown benign,
+> and one end-to-end compiled `/writing-review` run clean on a real 12k-word paper (no LLM-Discover; JS
+> substrate gate computed the verdict). The compiled path provably reaches the same place as the old
+> path, minus the LLM-Discover drift-mask.
 
 ## Instances (what we're generalizing from)
 
@@ -20,8 +28,8 @@ trust-class, same codegen compile-output), so they could not validate a seam alo
 were identical. **Writing is the third instance that broke that symmetry, and all of its axes have now
 landed:** compile=DATA (section-index), the spec-layer stale-gate backstop, the born-canonical emitter
 (doctrine #6), and now the GATE step. **Every seam below is confirmed across three instances spanning
-both trust-classes and both compile-outputs.** The only thing between here and pass #9 is writing's
-A/B parity run — a *validation* step, not a design unknown.
+both trust-classes and both compile-outputs.** Writing's A/B parity is now GREEN, so **the extraction
+gate is cleared and pass #9 is active.**
 
 ## SHARED seams (candidate common-infra)
 
@@ -58,12 +66,23 @@ second input to the same derivation — parallel-safe even on a shared tree — 
 5. **No LLM between a structured producer and a strict checker** — it silently absorbs drift and masks spec bugs (the ds sleeper: `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`). Parse deterministically.
 6. **Emitter-canonical** — ONE format spec shared by emitter, parser, and guard; strict-at-emitter / tolerant-at-parser. The plan EMITTER writes canonical so plans are born canonical; the parser's tolerance is then a back-compat shim, not the primary defense.
 
-> ✅ **Doctrine #6 now has a WORKED INSTANCE (writing).** Writing closed the emitter gap *first*:
-> born-canonical `OUTLINE` from writing-setup + per-section source-pinning from writing-outline, so
-> **tolerance is eliminated, not relocated** — the model for what "born-canonical" looks like end-to-end.
-> ⚠ **Still open in ds and dev:** both built a tolerant parser + reconciled guard but left the *producer*
-> free-form (tolerance lives in regex — exactly what doctrine #5's investigation warns relocates rather
-> than removes the risk). Their next increment is to follow writing's pattern. (ds DESIGN §8b; dev §9.)
+> ✅ **Doctrine #6 has worked instances — and two distinct, both-valid shapes:**
+> - **writing — eliminate tolerance** (machine-generated producer): born-canonical `OUTLINE` from
+>   writing-setup + per-section source-pinning, so there is no legacy to tolerate. Transferable lesson:
+>   emit the JOIN KEY (id / output path) byte-identical across emitter+parser+guard+filename; ship
+>   emitter + strict-guard in one pass; golden-test the strict guard against a REAL pre-canonical doc.
+> - **ds — canonical emitter + intentional hand-edit tolerance** (hand-editable producer): `ds-plan`
+>   **already emits canonical** (`**Tn**` ids, `none` deps, `⏸ PAUSE:` markers — `docs/ds-plan-canonical-table.md`),
+>   and the GUARD imports the SAME shared parser (`ds_plan_table.py`), so emitter→parser→guard agree on
+>   the join key (`Tn`) byte-for-byte after one deterministic normalization — *no* emitter/guard mismatch.
+>   ds DELIBERATELY keeps the tolerant parser (legacy `1.`/`—`/`after N`) because `PLAN.md` is
+>   hand-edited; that tolerance is the doctrine's "back-compat shim," not relocated drift, and ds's guard
+>   stays STRUCTURE-only by design. Golden-tested against muni's real pre-canonical PLAN
+>   (`tests/ds_plan_table_test.py`). **So doctrine #6 is SATISFIED for ds — there is no open ds emitter
+>   increment.** (The "tolerance eliminated" form is right when the producer is machine-only; the
+>   "canonical + intentional tolerance" form is right when humans hand-edit — pick by producer.)
+> ⚠ **Still open in dev:** dev built a tolerant parser + reconciled guard but its producer isn't yet
+> hardened to born-canonical (dev DESIGN §9) — its next increment, following whichever shape fits.
 
 ## Orthogonal axes (record separately so extraction doesn't conflate them)
 
@@ -91,10 +110,13 @@ second input to the same derivation — parallel-safe even on a shared tree — 
   came with a *sharper* contract than we'd specified: the runner-side `probe.pass` is **always
   deterministic** (exit-code OR a necessary mechanical floor); the semantic authority is the adversarial
   layer OUTSIDE `run.js`, never a judgment returned by the probe. So `D1`'s shared return contract
-  `{pass, artifactsPresent, evidence}` holds across all three, and the injected body is always
-  deterministic — no LLM judge inside the runner to game.
-- **No design-gated seam remains.** The only thing before pass #9 is writing's **A/B parity run** — a
-  validation step, not a design unknown.
+  `{pass, artifactsPresent, evidence, scope}` holds across all three, and the injected body is always
+  deterministic — no LLM judge inside the runner to game. **Core-gate rule (settled for the extraction):
+  the CORE conjoins `pass && artifactsPresent` — it never trusts `pass` alone.** A domain may pre-fold
+  all-present into `pass` (writing does; harmless), but the core must not RELY on it — that keeps
+  doctrine (iii) CORE-enforced (not per-domain-trusted) and lets findings distinguish "gate failed" from
+  "gate passed but artifact missing/clobbered."
+- **The extraction gate is CLEARED** (writing A/B parity green) — **pass #9 is active.**
 - **Run-core gateProbe CONTRACT item (pass #9):** the gate return contract gains a coverage **`scope`**
   (checked / not-checked) — a clean `pass` must not over-claim (doctrine #3 addendum). The wc-creator
   birther `GATE_SCHEMA` should add it too (it's the floor's analog of the semantic "vague-evidence" guard
@@ -103,9 +125,14 @@ second input to the same derivation — parallel-safe even on a shared tree — 
   durable (args-tracked) recheck trigger so it survives a resume on a co-located level (documented as a
   compile-time constraint for now — see the wc-creator birther template); pull `D4` tier policy out of
   the shared compiler.
-- **Recommendation:** once writing's A/B parity lands, pass #9 extracts the full firm core; `D1`'s body
-  stays an injected interface (now with all three trust-class shapes as reference), not because it's
-  under-determined but because its computation is intrinsically per-domain.
+- **Recommendation (now active):** pass #9 extracts the full firm core as `templates/run-core.js` +
+  per-domain `<domain>-task.js` fragments **spliced at compile time** (run.js is self-contained in the
+  project's `.planning/`, so runtime import is out). `<domain>-task.js` carries ONLY the runtime per-domain
+  bodies — `gateProbe(t)` [D1], `implementerPrompt(t)` [D2], `recheckTrigger()` [default null]; the
+  shared schemas, driver, intra-level disjointness flag, and return-channel taxonomy stay in the core;
+  columns [D3] + tier [D4] are compile-time (parser column-map + the domain compiler). `D1`'s body stays
+  an injected interface (all three trust-class shapes as reference; conformant impl: `scripts/writing/writing_gate_probe.py`),
+  not because it's under-determined but because its computation is intrinsically per-domain.
 
 ---
-*Maintainers: ds-refactor (owner of this file) · dev-refactor (DESIGN §9, dev view) · writing-refactor (third instance — all axes now landed; A/B parity pending).*
+*Maintainers: ds-refactor (owner of this file) · dev-refactor (DESIGN §9, dev view) · writing-refactor (third instance — all axes landed, A/B parity GREEN) · run-core-extract (pass #9, active).*
