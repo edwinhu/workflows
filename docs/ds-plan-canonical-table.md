@@ -45,11 +45,21 @@
 - The guard stays **tolerant** (rejects only genuinely broken plans: missing cells, cycles, dangling deps) —
   we do NOT reintroduce the old guard's sin of rejecting a legitimate hand-written plan.
 
-## Open ergonomics checks for muni
+## Ergonomics pass — RESOLVED (muni, 2026-06-26, blessed)
 
-1. `none` vs leaving the Deps cell **empty** for no-deps — `none` is more self-documenting, but is an empty
-   cell faster to type? (Parser accepts both; canonical pick is yours.)
-2. Pause marker placement — end of the **description** cell (as above) vs the **Expected Output** cell? muni's
-   real "STOP and flag" notes lived in the description-ish prose; the parser checks Expected Output first then
-   the whole row, so either works.
-3. Anything in this spec you would NOT want to type by hand mid-conversation?
+1. **no-deps: emit `none`, not empty.** Self-documenting; keeps every Deps cell content-bearing
+   (`T1` / `T1, T2` / `none`) for a consistent scan rhythm; avoids fragile empty-cell markdown
+   (`| |` vs `||` typos, trailing-space drift). The 4 keystrokes are nothing next to the row's prose.
+2. **pause marker: end of the DESCRIPTION cell.** The pause is a decision about the task's
+   approach/scope (the description's job); Expected Output stays a clean verifiable completion claim.
+   Matches how muni actually wrote the "STOP and flag" notes. (Expected-Output placement still parses
+   — tolerated, just not the emitted canonical spot.)
+3. **Nothing blocks hand-typing**, and the two things that *looked* like the em-dash trap recurring
+   are already safe in the parser (verified, not just documented): the `⏸` glyph is optional
+   (`(?:⏸\s*)?PAUSE:`), and the `—` between id and description is not load-bearing (the parser strips
+   the id token and takes the rest as the description; it never splits on `—`). The only fix needed
+   was **doc clarity** — so the canonical example isn't misread as a keyboard mandate. Added as the
+   "Decorative, not required" note in the spec + the ds-plan skill.
+
+**Status: SHIPPED** — `ds-plan`'s executable-table block now emits the canonical form above (verified
+the new example parses + passes the guard, with the T3 pause lifted). No parser/guard/compiler change.

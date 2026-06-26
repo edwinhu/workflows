@@ -803,7 +803,7 @@ Break analysis into ordered tasks:
 - Each task should produce **visible output**
 - Order by data dependencies
 - Include data cleaning tasks FIRST
-- **Master-build tasks produce the master datasets** named in Step 5d; exhibit tasks depend on them (`after N`) and read ONLY the master, never raw sources
+- **Master-build tasks produce the master datasets** named in Step 5d; exhibit tasks depend on them (a `Deps` entry pointing at the master-build task's id, e.g. `T2`) and read ONLY the master, never raw sources
 - For any task touching an external skill, reference the ADOPT/PATCH decision recorded in Step 5b (example path, delta)
 
 ### 7. Write Plan Doc
@@ -967,18 +967,20 @@ flowchart LR
 >
 > | Column | Rule |
 > |--------|------|
-> | **Task** | `N. <name>` — N a unique integer, referenced by `Deps`. Add a `[engineer]`/`[analyst]` tag if the role matters (pipeline/ETL vs analysis). |
-> | **Deps** | the data-flow DAG: `---` (reads only raw sources) or `after N` / `after N,M` (consumes task N's `Outputs`). Must reference real task numbers; no cycles |
+> | **Task** | `**Tn** <kind?> <done?> — <description>` where `n` is a unique integer. **Use `T`-prefixed ids** (`**T1**`, `**T2**`) — they are insertion-safe labels, NOT positions: insert `T7…T10` mid-plan and reference them in `Deps` without renumbering (plain `1.` ids invite renumber-on-insert, and markdown auto-renumbers an ordered list so a dep pointing at `3` silently retargets). Optional `[engineer]`/`[analyst]` tag after the id when the role matters; optional `` `[x]` `` once done; end the description with `⏸ PAUSE: <decision>` to declare a planned human-decision pause (the compiler lifts it to a pause point). |
+> | **Deps** | the data-flow DAG: **`none`** (reads only raw sources) or an id list **`T1`** / **`T1, T2`** (consumes those tasks' `Outputs`). Must reference real task ids; no cycles |
 > | **Outputs** | the artifact(s) this task produces (intermediate parquet / result table / figure / model file), repo- or DATA_DIR-relative. Drives the DAG (downstream `Deps` consume these) |
-> | **Expected Output** | the verifiable claim that proves completion (`~1.2M rows, 0 nulls in id`; `accuracy ≥ 0.8`; `12 cols incl {a,b,c}`). Specific numbers, not "looks right" |
+> | **Expected Output** | the verifiable claim that proves completion (`~1.2M rows, 0 nulls in id`; `accuracy ≥ 0.8`; `12 cols incl {a,b,c}`). Specific numbers, not "looks right". Keep it a clean completion claim — put any decision pause in the Task description, not here |
 > | **Verify** | the deterministic command whose exit-0 IS the per-task gate — an assertion of Expected Output (`uv run python -c "import pandas as pd; df=pd.read_parquet('out.parquet'); assert len(df)>1_000_000 and df.id.notna().all()"`). For inherently-visual outputs, assert the mechanical floor (file exists, expected shape) and let `ds-validate`/look-at judge the rest. NEVER empty |
 > | **Implements** | SPEC.md `CATEGORY-NN` requirement ID(s). Must trace to a real ID; every v1 requirement appears in ≥1 task's Implements (coverage invariant — ds-plan-reviewer rejects a dropped v1 ID) |
+>
+> **Decorative, not required:** the `—` between id and description and the `⏸` glyph on `PAUSE:` are cosmetic — ds-plan emits them, but a hand-writer can use `-`/`:`/nothing as the separator and bare `PAUSE:`. Descriptions are free prose, so ASCII anywhere is fine (`x` for ×, `-` for —). The parser/guard also tolerate legacy forms (`1.` ids, `---`/`—`/empty for no-deps, `after N`) so a hand-edit is never blocked — but **emit the canonical form above** (strictness at the emitter, tolerance at the parser).
 
 | Task | Deps | Outputs | Expected Output | Verify | Implements |
 |------|------|---------|-----------------|--------|------------|
-| 1. clean source [engineer] | `---` | `clean_source1.parquet` | ~1.2M rows, 0 nulls in `id`, log of rows dropped | `uv run python -c "import pandas as pd; df=pd.read_parquet('data/clean_source1.parquet'); assert len(df)>1_000_000 and df.id.notna().all()"` | `DATA-01` |
-| 2. merge panel [engineer] | `after 1` | `panel.parquet` | 1 row per firm-year, 12 cols incl {gvkey,year,roa} | `uv run python -c "import pandas as pd; df=pd.read_parquet('data/panel.parquet'); assert {'gvkey','year','roa'}<=set(df.columns) and not df.duplicated(['gvkey','year']).any()"` | `DATA-02` |
-| 3. regression [analyst] | `after 2` | `results/model.json` | coef on X significant, R² ≥ 0.3 | `uv run python -c "import json; r=json.load(open('results/model.json')); assert r['r2']>=0.3 and r['p_X']<0.05"` | `STAT-01` |
+| **T1** [engineer] — clean source | none | `clean_source1.parquet` | ~1.2M rows, 0 nulls in `id`, log of rows dropped | `uv run python -c "import pandas as pd; df=pd.read_parquet('data/clean_source1.parquet'); assert len(df)>1_000_000 and df.id.notna().all()"` | `DATA-01` |
+| **T2** [engineer] — merge panel | T1 | `panel.parquet` | 1 row per firm-year, 12 cols incl {gvkey,year,roa} | `uv run python -c "import pandas as pd; df=pd.read_parquet('data/panel.parquet'); assert {'gvkey','year','roa'}<=set(df.columns) and not df.duplicated(['gvkey','year']).any()"` | `DATA-02` |
+| **T3** [analyst] — regression ⏸ PAUSE: confirm the controls + model spec before estimating | T2 | `results/model.json` | coef on X significant, R² ≥ 0.3 | `uv run python -c "import json; r=json.load(open('results/model.json')); assert r['r2']>=0.3 and r['p_X']<0.05"` | `STAT-01` |
 
 > Coverage invariant holds: every `v1` SPEC requirement ID appears in at least one row's Implements; ds-plan-reviewer rejects a plan that drops one.
 
