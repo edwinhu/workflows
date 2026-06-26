@@ -292,6 +292,7 @@ Before proceeding to edit/verify (see `constraints/gate-function-standard.md` fo
 6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
    - phase: draft
    - artifacts_produced: [list all drafts/*.md files created]
+   - implements: [CLAIM-XX ids the drafted sections advance — the requirement→phase trace]
    - provides: [drafts/*.md]
    - deviations: {r1: X, r2: Y, r3: Z, r4: W}
    - Include substantive one-liner (NOT "Drafting complete")

@@ -536,6 +536,7 @@ verdict: COMPLETE
 **SUMMARY**: Append final phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
 - phase: revise
 - artifacts_produced: [list all modified drafts/*.md files]
+- implements: [CLAIM-XX ids the revised sections advance — the requirement→phase trace]
 - provides: [final drafts/*.md]
 - deviations: {r1: X, r2: Y, r3: Z, r4: W}
 - Include substantive one-liner with total iterations and final verdict (NOT "Revision complete")

@@ -354,6 +354,7 @@ Before proceeding to outline phase (see `constraints/gate-function-standard.md` 
 6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
    - phase: setup
    - artifacts_produced: [PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, PRECIS_REVIEWED.md]
+   - implements: [all CLAIM-XX ids defined in PRECIS — the requirement→phase trace]
    - provides: [.planning/PRECIS.md, .planning/OUTLINE.md, .planning/ACTIVE_WORKFLOW.md]
    - Include substantive one-liner (NOT "Setup complete")
 
