@@ -382,9 +382,26 @@ suites unaffected throughout.
   number as verified). Wired into the writing-draft skill Step 4a before the semantic source-verify
   (4b). 13/13 (`tests/writing_gate_probe_test.py`), incl. real Part III (all `[@key]` resolve;
   numbers flagged consistency-only).
-- ⏳ **NEXT (not built):** A/B on the real `tender_offers` — Part III first (both gate tiers), then
-  the Introduction (semantic-only) — vs the current `/writing-review`; the thesis-change / stale-
-  approval PAUSE fixture. Then ship.
+- ✅ **Gate-probe floor honesty (tender-parity A/B):** fixed legal-Bluebook-prose defects — statutory
+  false positive (`§ 78mm`→phantom) via token-boundary lookahead + citation-context guard; spelled-out
+  blind spot DISCLOSED (`spelledOutNotChecked` + numeric-only note) + magnitude-word normalization.
+  Probe return now carries the canonical `scope:{checked,notChecked}` (D1 contract). 23/23.
+- ✅ **PARITY PASSED (A/B on the real `tender_offers`, 2026-06-26).** Methodology: the confounded
+  current-vs-compiled double-run was REJECTED (L1/L2/L3 are non-deterministic — a verdict diff couldn't
+  be attributed to the compile change vs reviewer noise). Instead: section-set+order proven
+  deterministically (oracle diff=0); downstream review code is byte-identical between paths; the only
+  divergent variable is `precisClaim` form. **(A) focused `precisClaim` probe → BENIGN** (controlled
+  output — `precisClaimAdvanced` + argument grasp — identical across bare-ids vs prose-gloss despite
+  reviewer noise). **(B) end-to-end compiled `/writing-review`** ran CLEAN on the real 12k-word paper:
+  consumed `args.sectionIndex` (no LLM Discover), 5 sections, 22 agents, 0 unreliable, transitions+L3
+  ran, JS substrate gate computed the verdict (9C/57M/44m, `substratePass=false`) — a genuine,
+  project-aware review. Cross-validated (A)'s Part III outline-leaks. **Nuance (non-blocking):**
+  `precisClaimAdvanced` flips run-to-run (reviewer noise, NOT an ids-vs-gloss effect) and is NOT
+  gate-bearing → no ship impact; the optional `precisClaim` enrichment for echo-only sections is
+  DEFERRED (would only matter if that field is ever made gate-bearing — no speculative build).
+- ⏳ **SHIP (pending user go):** version bump 5.56.0 → 5.57.0 (minor; new scripts/hooks + engine
+  reconcile, fully back-compat), commit, push, PR, merge worktree. *(Watch for a 5.57.0 collision with
+  the wc-creator worktree; rebase to 5.58.0 if it merges first.)*
 
 ## 9. Honest bottom line
 
