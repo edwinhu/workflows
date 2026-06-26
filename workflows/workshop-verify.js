@@ -35,6 +35,18 @@ if (!PROJECT) throw new Error(`workshop-verify requires args.projectDir. Got "${
 const PLUGIN = cfg.pluginRoot || ''
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.slide), s]))
+// Deterministic side-table from scripts/workshop/workshop_slide_table.py (cfg.slideIndex).
+// DESIGN §3a/§3a-join — verify is the CARDINALITY-CORRECTION case: slide ENUMERATION stays sourced from
+// slides.typ (the built deck, e.g. 38 slides incl. 17 drifted appendix), and the OUTLINE-row↔built-slide
+// JOIN stays an UNBIASED SEMANTIC step. A parity variance-study (opv-parity, n=3) showed that injecting the
+// parser's rows as a candidate MENU into the Discover prompt CONTAMINATES the join — the agent greedily
+// forces unspecced appendix slides onto the nearest row (false COVERED, once 38/38). So the parser does NOT
+// feed the join: the Discover prompt is byte-identical to the LLM-Discover (free OUTLINE read, []-is-common).
+// The parser's contribution is instead a DETERMINISTIC WHITELIST applied in JS AFTER Discover — drop any
+// inventoryRef that is not a real SOURCES.md id (the no-hallucination guard), without biasing the join.
+const SLIDE_INDEX = (cfg.slideIndex && Array.isArray(cfg.slideIndex.slides) && cfg.slideIndex.slides.length) ? cfg.slideIndex : null
+const INV_WHITELIST = SLIDE_INDEX && Array.isArray(SLIDE_INDEX.sourcesInventory) && SLIDE_INDEX.sourcesInventory.length
+  ? new Set(SLIDE_INDEX.sourcesInventory.map(String)) : null
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const FINDING = {
@@ -140,13 +152,27 @@ const disc = await agent(
 2. checkAllPath = ${checkAllHint}.
 3. detectWidowsPath = \`command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1\` (or "" if none).
 4. lookAtPath = ${lookAtHint} (or "" if none).
-5. Read slides.typ and list every slide in document order. A slide is a \`#slide[ ... ]\` block; its title is the \`=== ...\` line inside it. Assign stable IDs S1, S2, ... in order. For each slide, read .planning/OUTLINE.md and record the F/T/R/A inventory IDs that outline maps to that slide (inventoryRefs; empty array if none listed).
+5. Read slides.typ and list every slide in document order. A slide is a \`#slide[ ... ]\` block; its title is the \`=== ...\` line inside it. Assign stable IDs S1, S2, ... in order. For each slide, read .planning/OUTLINE.md and record the F/T/R/A inventory IDs that outline maps to that slide (inventoryRefs; empty array if none listed — MANY built slides, especially appendix/Q&A backups, have NO outline row, so [] is the correct and common answer; do not force a match).
 6. List every diagram: \`cetz.canvas\` blocks (kind "cetz") and \`fletcher-diagram\`/\`#diagram(\` blocks (kind "fletcher"), each tied to the slide title it appears under.
 
 Return DISCOVERY_SCHEMA. Absolute paths only.`,
   { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
 )
 if (!disc.slides.length) throw new Error('No slides discovered — check slides.typ exists with #slide[ ... ] blocks')
+
+// Deterministic inventory WHITELIST (DESIGN §3a-join): the join stayed unbiased (free OUTLINE read);
+// here we drop any inventoryRef the agent attributed that is NOT a real SOURCES.md id (no-hallucination
+// guard) — applied in JS, OUTSIDE the agent, so it cannot bias the join. No-op when no index is passed.
+if (INV_WHITELIST) {
+  let dropped = 0
+  for (const s of disc.slides) {
+    const refs = Array.isArray(s.inventoryRefs) ? s.inventoryRefs : []
+    const kept = refs.filter(r => INV_WHITELIST.has(String(r)))
+    dropped += refs.length - kept.length
+    s.inventoryRefs = kept
+  }
+  if (dropped) log(`Inventory whitelist: dropped ${dropped} non-SOURCES id(s) attributed by Discover`)
+}
 log(`Deck: ${disc.slides.length} slides, ${disc.diagrams.length} diagrams; ${ONLY ? `re-review ${ONLY.size}` : 'full review'}`)
 
 // ── Phase 2: Mechanical leg (compile + scripts; early-exit on compile failure) ──
@@ -174,6 +200,7 @@ if (!mech.slidesCompiled) {
     findings: [{ severity: 'critical', area: 'compile', location: `${disc.slidesPath}`, detail: `slides.typ failed to compile: ${(mech.compileErrors || []).join('; ').slice(0, 400)}` }],
     reviews: [],
     slidesThatFlagged: disc.slides.map(s => s.id),
+    scope: { checked: ['typst compile (slides) — FAILED'], notChecked: ['everything downstream — per-slide review, constraints, widows, overflow, visual: SKIPPED (short-circuit on compile failure)'] },
     mechanical: mech,
   }
 }
@@ -319,10 +346,29 @@ log(substratePass
   ? (total === 0 ? '✅ Workshop verify CLEAN — no issues' : `✅ Workshop verify CLEAN — substrate clean; ${sev.minor} advisory minor note(s) (non-blocking)`)
   : `Workshop verify: ISSUES FOUND — ${sev.critical} critical / ${sev.major} major (blocking) + ${sev.minor} minor (advisory)`)
 
+// D1 contract / doctrine #3 addendum (DESIGN move 2 / §4b): a clean mechanical pass MUST disclose what
+// the deterministic floor did and did NOT verify — so a green check never over-claims coverage.
+const scope = {
+  checked: [
+    'typst compile (slides + notes) — real exit code',
+    'check-all.py constraints — exit code (CAVEAT: rides cross-domain phantom + a broken module → permanently red on every deck; see DESIGN §4c / D-w-8)',
+    'detect_widows.py — deterministic count',
+    'overflow — handout page-count heuristic (CAVEAT: divider-naive, over-counts theme section/title pages; D-w-8)',
+    SLIDE_INDEX ? 'inventoryRefs whitelist — dropped non-SOURCES ids (no-hallucination guard)' : 'inventory ids — agent-attributed (no index whitelist this run)',
+  ],
+  notChecked: [
+    'per-slide convention / notes-coverage / source-fidelity — SEMANTIC (LLM reviewers, OUTSIDE the deterministic floor; the primary arbiter)',
+    'OUTLINE-row↔slide JOIN — semantic (free read); appendix slides w/o a row are PARTIAL by design, not verified-absent',
+    disc.lookAtPath ? null : 'visual-defect detection — look_at.py UNRESOLVED → diagrams NOT visually verified (skipped, not passed)',
+    'spelled-out / non-F·T·R·A-token claims — the inventory floor only sees F/T/R/A id tokens',
+  ].filter(Boolean),
+}
+
 return {
   overallPass,
   substratePass,
   verdict,
+  scope,
   summary: { ...sev, total, blocking, advisoryMinors: sev.minor },
   scoreTable,
   findings: findings.sort((a, b) => ({ critical: 0, major: 1, minor: 2 }[a.severity] - { critical: 0, major: 1, minor: 2 }[b.severity])),

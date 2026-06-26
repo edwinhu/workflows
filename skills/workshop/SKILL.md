@@ -394,6 +394,15 @@ Sources gathered and verified. Paper metadata extracted from source document.
    - **Notes** — the speaker-notes talking points + a `~N min` timing target.
    ```
 
+   **This table IS the canonical, born-canonical form** (doctrine #6). The ONE shared parser
+   `scripts/workshop/workshop_slide_table.py` reads it directly (the guard, `workshop-generate`, and
+   `workshop-verify`'s side-table all consume *the same* parse — "parses ⇔ passes the guard"). Emit the
+   table, not prose: the table pins **Visual + Notes per slide** (7 fields), so generation renders them
+   rather than *inventing* them. The parser also tolerates a legacy 4-field prose form
+   (`- Slide: "Takeaway." — bullets → [IDs]`) **only** as a back-compat shim for decks built before this
+   spec — new decks MUST emit the table so nothing is inferred. (After writing OUTLINE.md, the index is
+   compiled by Phase 3 step 0; a row missing a takeaway or an F/T/R/A id is a `violations` STOP.)
+
 5. **Independent OUTLINE.md review (read-only subagent) — before showing the user.** Don't make the user catch structural gaps. Dispatch ONE fresh read-only subagent (Read/Grep only) to check OUTLINE.md against its spec:
    ```
    Task(subagent_type="Explore", prompt="READ-ONLY review. Do NOT edit any file.
@@ -611,9 +620,17 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 Generation is the **`workshop-generate` ultracode workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, groups slides by **Section**, and fans out one agent per section (each writes that subsection's whole run of `#slide[]` blocks + notes to a section fragment file, from the pinned rows, citing only the allowed inventory ids — section is the coherent unit, keeping intra-section flow), then an assembly agent concatenates the section files under their headers into slides.typ + notes.typ and compiles the deck.
 
 ```
+0. COMPILE THE SLIDE INDEX (the deterministic Discover — replaces the engine's LLM Discover, DESIGN §3):
+   uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_slide_table.py "<project root>" --json > .planning/slide-index.json
+   Read it. If `ok` is true → pass the parsed object as `slideIndex` (below). If it carries `violations`
+   (a slide missing inventory, a dangling F/T/R/A id, a malformed row) or `staleApproval` (OUTLINE_APPROVED.md's
+   slide/section count disagrees with the live OUTLINE.md — a stale approval after a structure change),
+   **STOP and surface them** — these are spec-integrity failures fixed in Phase 2 (re-edit OUTLINE + re-approve),
+   NOT papered over. If the script errors entirely, omit `slideIndex` and the workflow falls back to its LLM Discover.
 1. Workflow(name="workshop-generate", args={
      "projectDir": "<absolute presentation project root (cwd)>",
-     "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>"
+     "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>",
+     "slideIndex": <the parsed .planning/slide-index.json object, or omit to use the LLM Discover>
    })
    → returns { overallPass, slides, compiled, findings, slidesThatFailed, assembledPaths }.
 2. Read the gate:
@@ -654,11 +671,15 @@ If convention violations persist after 3 fix-and-recheck cycles, escalate to use
    cd [presentation directory] && typst compile slides.typ && typst compile notes.typ
    ```
 
-2. **Invoke the workflow** (read-only; never drafts, never fixes):
+2. **Invoke the workflow** (read-only; never drafts, never fixes). Pass `slideIndex` = the parsed
+   `.planning/slide-index.json` (reuse Phase 3 step 0's, or recompile with `workshop_slide_table.py`).
+   In VERIFY this is the OUTLINE **side-table** only — the workflow still enumerates the built `slides.typ`
+   and joins inventory to slides SEMANTICALLY (DESIGN §3a-join); omit it to fall back to the LLM Discover.
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[absolute project root]",
-     "pluginRoot": "${CLAUDE_SKILL_DIR}/../.."
+     "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "slideIndex": <parsed .planning/slide-index.json, or omit for the LLM Discover fallback>
    })
    ```
    It returns `{ overallPass, verdict, scoreTable, findings, reviews, slidesThatFlagged, inventoryCoverage }`.
@@ -673,6 +694,7 @@ If convention violations persist after 3 fix-and-recheck cycles, escalate to use
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[abs]", "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "slideIndex": <parsed .planning/slide-index.json, or omit>,
      "onlyChecks": [<slidesThatFlagged from the prior run>],
      "priorReviews": [<reviews from the prior run>]
    })
@@ -759,11 +781,14 @@ Do not declare the presentation ready, do not present to the user, do not skip t
 
 ### Steps
 
-1. **Final full verification gate** — re-invoke the workflow over the whole deck (no `onlyChecks`):
+1. **Final full verification gate** — re-invoke the workflow over the whole deck (no `onlyChecks`). Pass
+   `slideIndex` = the parsed `.planning/slide-index.json` (recompile with `workshop_slide_table.py` if the
+   OUTLINE changed); omit to fall back to the LLM Discover:
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[absolute project root]",
-     "pluginRoot": "${CLAUDE_SKILL_DIR}/../.."
+     "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "slideIndex": <parsed .planning/slide-index.json, or omit>
    })
    ```
    - If `overallPass` is false → drive the `/goal workshop-verify returns overallPass=true. Stop after 3 turns.` loop (fix `findings` via subagent → recompile → re-invoke). The JS gate is authoritative.
