@@ -15,6 +15,10 @@ hooks:
             GATE_DESCRIPTION="Precis review"
             GATE_REMEDY="Return to writing-setup and run the precis reviewer before outlining"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-outline-executable-guard.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
