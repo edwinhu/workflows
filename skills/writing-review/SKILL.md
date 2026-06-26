@@ -3,7 +3,7 @@ name: writing-review
 description: "Internal skill for hierarchical document review. Called by writing-validate after claim validation passes."
 user-invocable: false
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob, Agent, Skill
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Skill, Workflow
 hooks:
   PreToolUse:
     - matcher: "Write|Edit|Agent"
@@ -269,6 +269,7 @@ Before declaring review complete:
 6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
    - phase: review
    - artifacts_produced: [.planning/REVIEW.md]
+   - implements: [CLAIM-XX ids the reviewed sections cover — the requirement→phase trace]
    - provides: [.planning/REVIEW.md]
    - Include substantive one-liner with issue counts by severity (NOT "Review complete")
 

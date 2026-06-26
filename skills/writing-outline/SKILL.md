@@ -329,6 +329,7 @@ Before proceeding to draft phase (see `constraints/gate-function-standard.md` fo
 7. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
    - phase: outline
    - artifacts_produced: [list all outlines/*.md files created]
+   - implements: [CLAIM-XX ids these outlines advance — the requirement→phase trace]
    - provides: [outlines/*.md, .planning/OUTLINE_REVIEWED.md]
    - deviations: {r1: X, r2: Y, r3: Z, r4: W}
    - Include substantive one-liner (NOT "Outlining complete")

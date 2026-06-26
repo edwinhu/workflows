@@ -14,6 +14,7 @@ phase: [phase-name]
 status: completed
 sections_affected: [list of section names]
 artifacts_produced: [list of files created/modified]
+implements: [CLAIM-XX ids this phase advanced — the requirement→phase trace]
 requires: [artifacts this phase consumed]
 provides: [artifacts this phase produced]
 deviations: {r1: 0, r2: 0, r3: 0, r4: 0}
