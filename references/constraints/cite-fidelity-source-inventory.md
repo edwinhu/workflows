@@ -11,7 +11,7 @@ If `.planning/ACTIVE_WORKFLOW.md` has an `nlm_notebook` field set, run Stage 1
 of the cite-fidelity pipeline before handing off to writing-outline:
 
 ```bash
-uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_source_inventory.py
+uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/nlm_source_inventory.py
 ```
 
 This produces `references/source_summaries.md` — one entry per cited bibkey

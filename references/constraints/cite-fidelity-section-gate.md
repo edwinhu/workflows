@@ -12,7 +12,7 @@ MUST run Stage 3 of the cite-fidelity pipeline before marking the workflow
 COMPLETE:
 
 ```bash
-uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/check_section_cites.py --all
+uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/check_section_cites.py --all
 ```
 
 The script writes `.planning/CITES-{section}.md` per draft section with

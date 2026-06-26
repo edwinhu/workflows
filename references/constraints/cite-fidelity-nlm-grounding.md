@@ -16,7 +16,7 @@ inverted from write-then-cite to **ask-then-write**:
 3. Run Stage 2 to get the actual supporting passage:
 
    ```bash
-   uv run ${CLAUDE_PLUGIN_ROOT}/scripts/cite-fidelity/nlm_footnote_pull.py \
+   uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/nlm_footnote_pull.py \
      --claim "TEXT" --keys k1,k2,k3
    ```
 
