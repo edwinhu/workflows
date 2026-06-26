@@ -48,6 +48,11 @@ real muni dedup — and the implementer **proposes the `+price` tiebreaker witho
 
 - A blocked run leaves `out/master.csv` in a non-gate-passing 5-row intermediate state — that
   is expected; assert on the **result object**, not the file. `out/` is gitignored.
-- **Resume leg:** re-invoke with `args.decisions = { G1: "extend grain to cusip×event_ts×price" }`
-  (no `clearedPauses` — R4 is a dynamic pause; the task re-runs honoring the injected decision)
-  and the rebuilt master then passes the gate.
+- **Resume leg — two kinds of R4 decision (validated live 2026-06-26):**
+  - *Gate-changing* (grain/key/schema → the `Verify` must change): bake the decision into the PLAN.
+    `PLAN-resolved.md` is that variant — grain + `Verify` on `(cusip,event_ts,price)`; recompiling and
+    re-running resumes to a gate-passing `done`. Passing `args.decisions` ALONE against the original
+    `PLAN.md` is insufficient: the implementer honors `+price` in the data but **re-blocks** on the
+    stale `(cusip,event_ts)` `Verify` (it will not re-dedup to satisfy a stale gate — the backstop).
+  - *Behavior-only* (a nuance the `Verify` doesn't assert): `args.decisions[G1]` resumes as-is.
+  - Both branches are locked in `tests/ds-grain-pause.test.mjs`.

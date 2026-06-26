@@ -33,19 +33,19 @@ console.log('compile the fixture plan')
   ok('Verify asserts grain uniqueness', /len\(keys\)==len\(set\(keys\)\)/.test(tasks[0].verify))
 }
 
-// 2. Drive run.js with a stubbed implementer mirroring the LIVE result:
-//    wrote all 5 rows (outputsProduced:true), then BLOCKED with the collision numbers.
-async function run({ impl }) {
+// Drive a compiled run.js with stubbed agent + gate. `source` lets us load a different
+// compiled plan (the original pause plan vs the resolved +price plan).
+async function run({ impl, gate = () => ({ exit0: false, outputsPresent: true, tail: 'grain not unique' }), args = { projectDir: FIX }, source = src }) {
   const trace = { implCalls: [], gateCalls: [] }
   const agent = async (prompt, opts = {}) => {
     const label = opts.label || ''
-    if (label.startsWith('gate:')) { trace.gateCalls.push(label.slice(5)); return { exit0: false, outputsPresent: true, tail: 'grain not unique' } }
+    if (label.startsWith('gate:')) { trace.gateCalls.push(label.slice(5)); return { outputsPresent: true, tail: 'mock', ...gate(label.slice(5)) } }
     if (label.startsWith('task:')) { trace.implCalls.push(label.slice(5)); return impl(label.slice(5)) }
     return {}
   }
   const parallel = async (ts) => Promise.all(ts.map(t => t()))
-  const fn = new AsyncFunction('agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget', src)
-  const result = await fn(agent, parallel, async () => {}, () => {}, () => {}, { projectDir: FIX }, { total: null, spent: () => 0, remaining: () => Infinity })
+  const fn = new AsyncFunction('agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget', source)
+  const result = await fn(agent, parallel, async () => {}, () => {}, () => {}, args, { total: null, spent: () => 0, remaining: () => Infinity })
   return { result, trace }
 }
 
@@ -79,6 +79,39 @@ console.log('counter-case: silent dedup must NOT pass the gate')
   const dedupImpl = () => ({ task: 'G1', status: 'implemented', outputsProduced: true, filesTouched: ['out/master.csv'], deviations: '', summary: 'deduped to 4 rows to satisfy grain' })
   const { result } = await run({ impl: dedupImpl })   // stubbed gate returns exit0:false
   ok('silent dedup fails the gate (not a false green)', result.overallPass === false && result.tasksThatFailed.includes('G1'))
+}
+
+// ── Resume protocol: the two kinds of R4 decision (resume-leg finding, 2026-06-26) ──
+
+console.log('GATE-CHANGING decision injected WITHOUT editing Verify → implementer RE-BLOCKS (backstop)')
+{
+  // Leg A: decisions injected into the SAME (stale-gate) plan. The implementer honors the +price
+  // grain in data but the Verify still checks (cusip,event_ts), so it correctly re-blocks rather
+  // than reverting to a dedup. Stubbed to mirror that live behavior.
+  const reblockImpl = () => ({
+    task: 'G1', status: 'blocked', outputsProduced: true, filesTouched: ['out/master.csv'],
+    deviations: 'Honored decision: grain cusip×event_ts×price, kept all 5. BUT Verify still asserts (cusip,event_ts): 5 rows, 4 unique (cusip,event_ts), 5 unique (cusip,event_ts,price). REQUIRED HUMAN ACTION: update the Verify assertion to (cusip,event_ts,price) and recompile. Refusing to dedup to satisfy the stale gate.',
+    summary: 'G1: +price grain written, all 5 kept; stale Verify still on (cusip,event_ts).',
+  })
+  const { result } = await run({ impl: reblockImpl, args: { projectDir: FIX, decisions: { G1: 'extend grain to cusip×event_ts×price' } } })
+  ok('re-blocks (does not silently pass a stale gate)', result.paused === true && result.pauseKind === 'R4')
+  ok('deviations demand the Verify be updated', /update the Verify|Verify (still )?assert/i.test(result.payload.deviations), result.payload.deviations)
+}
+
+console.log('GATE-CHANGING decision baked into PLAN (RESOLVED variant) → resumes to gate-passing done')
+{
+  // Leg B: the decision is baked into the Verify (PLAN-resolved.md, +price grain) + recompiled.
+  // Now the implementer produces a master that is genuinely unique on the new grain and the
+  // authoritative gate passes.
+  const resolvedRun = join(dir, 'run-resolved.js')
+  execFileSync('uv', ['run', 'python3', join(ROOT, 'scripts/ds/ds_compile.py'),
+    join(FIX, 'PLAN-resolved.md'), '--out', resolvedRun, '--project', FIX], { stdio: 'pipe' })
+  const resolvedSrc = readFileSync(resolvedRun, 'utf8').replace(/^export const meta/m, 'const meta')
+  const goodImpl = () => ({ task: 'G1', status: 'implemented', outputsProduced: true, filesTouched: ['out/master.csv'], deviations: 'None. All 5 rows unique on (cusip,event_ts,price); no dedup.', summary: 'G1: 5 rows, unique on +price grain.' })
+  const { result } = await run({ impl: goodImpl, gate: () => ({ exit0: true, outputsPresent: true }), source: resolvedSrc, args: { projectDir: FIX, decisions: { G1: 'extend grain to cusip×event_ts×price' } } })
+  ok('resolved plan: done + overallPass', result.done === true && result.overallPass === true, JSON.stringify([result.done, result.overallPass]))
+  ok('G1 not in tasksThatFailed', !result.tasksThatFailed.includes('G1'))
+  ok('not paused (loop closes)', !result.paused)
 }
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)

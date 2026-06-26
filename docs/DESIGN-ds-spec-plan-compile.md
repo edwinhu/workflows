@@ -278,6 +278,27 @@ survive a pause is carried in `args` (Workflow scripts can't touch disk), so res
   a run id). A methodology change edits PLAN → recompile → new `run.js`; upstream outputs still on
   disk pass their probes and are skipped. Both layers compose.
 
+### 4.4 Two kinds of R4 decision (resume-leg finding, validated live 2026-06-26)
+
+The resume leg surfaced that **not every R4 decision resumes the same way** — it depends on whether
+the decision changes the *gate*:
+
+- **Gate-changing decision** (resolution alters the GRAIN / KEY / SCHEMA — i.e. the `Verify`
+  assertion itself must change): the decision MUST be baked into the PLAN (edit the `Verify`, +
+  affected cells) and **recompiled**. `args.decisions` alone is insufficient — the implementer honors
+  the decision in the *data* but the stale `Verify` still encodes the old grain, so it **correctly
+  re-blocks**. This is the muni reality: resolving the grain to `+seqno` meant editing the assertion,
+  not just instructing the implementer.
+- **Behavior-only decision** (winsor scope, a sample nuance the `Verify` does not assert — gate
+  unchanged): `args.decisions[atTask]` resumes as-is; no PLAN edit.
+
+**The backstop that makes this safe:** an implementer handed a gate-changing decision against a stale
+gate must NOT revert its output (re-dedup) to pass — it re-blocks and states the `Verify` must be
+updated. So a *mis-routed* decision fails loud, not silent. Codified in the template's implementer
+prompt (the STALE-GATE BACKSTOP clause) and in the skill's resume routing. Both branches are locked in
+CI (`tests/ds-grain-pause.test.mjs`: stale-gate re-block + the `PLAN-resolved.md` +price variant
+resuming to gate-passing `done`).
+
 ---
 
 ## 5. `ds-implement.js` slims to a thin runner; the skill drives pauses
@@ -363,9 +384,12 @@ workflows; each step tested before the next.**
   prompt), not a main-chat dispatch loop.
 - ✅ **Step 1 (wc-audit / invariants)** — audited the retired engine's guarantees and confirmed each
   is preserved or improved by the template + slimmed skill (table below).
-- ⏳ **Steps 5–7** — e2e on a small real analysis, muni parity re-run, then retire the dormant
-  `ds-implement.js`. These need a live project + real agents; `ds-implement.js` is left in place
-  (now unreferenced by the skill) until parity is proven.
+- ✅ **Step 5 (parity)** — muni parity PASSED both rounds (compile + no-op + fork→pause + the full
+  pause→decision→resume→gate-pass loop, incl. the two-kinds-of-R4-decision finding). See §8c.
+- ✅ **Step 6 (retire `ds-implement.js`)** — done; the file is removed (it was dormant + unreferenced
+  by any skill/manifest, kept only as the A/B parity reference until the resume leg landed).
+- ⏳ **Step 7 (emitter canonicalization)** — make `ds-plan` emit the canonical Task-Breakdown format
+  so plans are born canonical (task #5); the tolerant parser stays as a back-compat shim. Next.
 
 ### Invariants preserved (ds-implement.js → template + slimmed skill)
 

@@ -128,13 +128,22 @@ LOOP (under the active /goal), carrying decisions across pauses:
        Returns { paused?, pauseKind, atTask, payload, done?, overallPass, tasksRemaining,
                  tasksThatFailed, findings, reviews, scoreTable }.
   2. If r.paused:  present r.payload (the decision + the implementer's deviation notes + key
-       numbers) to the user. Get the call.
-       - METHODOLOGY change (the plan must change): hand back to ds-plan to edit PLAN.md, then
-         RE-COMPILE (run COMPILE again) — already-built tasks pass their probe and skip, so the
-         re-run is cheap. This is the muni R4 path (grain, winsor scope, sample, Table-3b) —
-         these are exactly the human calls the gates do NOT catch; never autopilot past them.
-       - APPROVE (proceed as planned): add atTask to clearedPauses, record the answer in
-         decisions[atTask], re-invoke (step 1) to resume past the pause.
+       numbers) to the user. Get the call, then ROUTE BY DECISION TYPE — this matters:
+       - DECLARED pause (pauseKind="decision") approved as-planned: add atTask to clearedPauses,
+         re-invoke (step 1) to resume past it.
+       - R4 / dynamic pause (pauseKind="R4") — TWO kinds of decision, route correctly:
+           • GATE-CHANGING (the resolution changes the GRAIN / KEY / SCHEMA — i.e. the Verify
+             assertion ITSELF must change): EDIT PLAN.md's Verify (+ any affected Outputs/Expected
+             cells) to encode the decision, then RE-COMPILE run.js, then re-run. `args.decisions`
+             ALONE is INSUFFICIENT here — the implementer will (correctly) RE-BLOCK on the stale
+             gate. This is the muni reality: resolving the grain to `+seqno` meant EDITING the
+             assertion, not just telling the implementer. (For a methodology pivot that reshapes the
+             plan, hand back to ds-plan to edit, then recompile.)
+           • BEHAVIOR-ONLY (winsor scope, sample nuance the Verify does NOT assert — gate unchanged):
+             re-invoke with decisions[atTask]=<the call>; no PLAN edit needed.
+       - BACKSTOP: if you mis-route a gate-changing decision as behavior-only, the implementer
+         re-blocks on the stale gate (`status="blocked"`, "Verify must be updated") — it fails LOUD,
+         not silent. Re-route to the PLAN-edit path. Never edit the data to satisfy a stale gate.
   3. If r.done AND r.overallPass:  GROUND-TRUTH — run ds-validate-coverage (per-requirement
        coverage / no-regression; the runner's per-task Verify ran in isolation). Then mark the
        PLAN rows [x], log to LEARNINGS.md, write IMPLEMENT_COMPLETE.md, proceed to ds-validate.

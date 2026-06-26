@@ -92,7 +92,9 @@ function implementerPrompt(t) {
     : t.kind === 'analyst'
       ? 'You are a ds-ANALYST: verify every number against the data; no hand-waved results.'
       : 'You are a ds implementer.'
-  const decision = DECISIONS[String(t.id)] ? `\nHUMAN DECISION for this task (honor it exactly): ${DECISIONS[String(t.id)]}` : ''
+  const decision = DECISIONS[String(t.id)]
+    ? `\nHUMAN DECISION for this task (honor it EXACTLY in the output): ${DECISIONS[String(t.id)]}\n  ⚠ STALE-GATE BACKSTOP: if this decision changes the GRAIN / KEY / SCHEMA but the Verify assertion above still encodes the OLD one, do NOT revert your output (e.g. re-dedup) to satisfy the stale gate. Honor the decision in the data, then RE-BLOCK (status="blocked") and state in deviations that the PLAN's Verify must be updated to match the decision and recompiled. A decision honored in data while a stale gate forces a dedup is exactly the silent divergence we forbid.`
+    : ''
   return `${role} You implement EXACTLY ONE planned task by writing DIRECTLY into the project at ${PROJECT}. ds is OUTPUT-FIRST (not TDD): produce the Outputs, then confirm them. The "what" is pinned by the PLAN row — no latitude on scope. Earlier tasks' Outputs are already on disk; build on them.
 Set task="${t.id}" verbatim (the gate keys on it).
 
