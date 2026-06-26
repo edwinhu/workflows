@@ -2,7 +2,7 @@
 
 These are the compile **targets** for workflow-creator's compiled-runner pattern — the default execution skeleton for any workflow that runs a **DAG of mechanical work between human gates** (an implement/transform/generate phase driven by a structured plan table).
 
-> **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** — shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants, the return-reason taxonomy, and the confidence tags (which seams are ds+dev-proven vs writing-pending). See also `skills/workflow-creator/references/dynamic-workflow-migration.md` §0 and `docs/DESIGN-ds-spec-plan-compile.md` / `docs/DESIGN-dev-spec-plan-compile.md`.
+> **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** — shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants, the return-reason taxonomy, and the confidence tags (now **3-instance-confirmed: ds + dev + writing**). See also `skills/workflow-creator/references/dynamic-workflow-migration.md` §0 and `docs/DESIGN-ds-spec-plan-compile.md` / `docs/DESIGN-dev-spec-plan-compile.md` / `docs/DESIGN-writing-spec-plan-compile.md`.
 
 | File | Role |
 |------|------|
@@ -55,4 +55,4 @@ There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the
 
 - **Golden-test the parser against a REAL spec**, not the template — the template can't reveal the format drift an LLM was masking.
 - **Retire the old engine only after parity is proven** on a real spec.
-- **Do NOT extract a shared `run-core` until a 2nd domain runs on the template** — extracting from one domain bakes in its isms. The **judgment gateProbe body** and the **data compile-emit form** each have only one confirming instance (writing) until parity lands — keep them injected interfaces, don't hard-commit.
+- **Do NOT extract a shared `run-core` until a 2nd domain runs on the template** — extracting from one domain bakes in its isms. The **judgment gateProbe floor** and the **data compile-emit form** are now confirmed by writing (PR#18, parity passed) — three instances total — but they stay cleanest as **injected interfaces**, so keep them injected even post-extraction (don't fold a domain shape into the core).

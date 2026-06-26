@@ -657,7 +657,7 @@ Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice,
 Plus two **commitment** decisions:
 | Decision | Note |
 |----------|------|
-| **Compile output (S5)** | CODE (`run.js`) · DATA (work-list a generic engine consumes). *Codegen is proven (ds+dev); the data form is writing-pending — keep the emit step an injected interface, don't hard-commit.* |
+| **Compile output (S5)** | CODE (`run.js`) · DATA (work-list a generic engine consumes). *Codegen proven (ds+dev); the data form is now proven by writing (PR#18, parity passed) — keep the emit step an injected interface for a clean seam.* |
 | **Retire old engine** | ONLY after parity is proven on a real spec. And do NOT extract a shared run-core until a 2nd domain runs on the template. |
 
 **Do NOT put intra-level parallel-vs-sequential in the decision list** — it is **CORE, compiler-DERIVED** (parallel IFF a level's declared outputs are provably disjoint; ds's disjoint parquets qualify, dev's shared tree never does → sequential by construction). Hand-setting it is the retired `D5` proposal; a naive parallel copy corrupts a shared tree.
