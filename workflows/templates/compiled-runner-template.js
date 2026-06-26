@@ -15,7 +15,7 @@
 // source of truth: shared seams S1-S7, injected seams D1-D4, the 6 doctrine invariants).
 //
 // THE FOUR INJECTED SEAMS (the real per-domain fork — everything else is core):
-//   D1  gateProbe(t)        → {pass, outputsPresent, evidence}  (trust-class aware: exit-code vs judgment)
+//   D1  gateProbe(t)        → {pass, outputsPresent, evidence, scope}  (pass ALWAYS deterministic; scope discloses the floor's blind spot)
 //   D2  implementerPrompt(t)→ how one task is produced (output-first vs TDD failing-test-first)
 //   D3  task-spec COLUMNS   → the __TASKS__ shape (fed to the deterministic parser)
 //   D4  tier/effort policy  → t.tier/t.effort (ds: heuristic by weight · dev: inherit session model)
@@ -57,18 +57,23 @@ const ONLY      = (Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length) ? new
 const REVERIFY_DONE = !!cfg.reverifyDone                               // re-probe PLAN `[x]` tasks instead of blind-skipping (clobber-safe resume)
 
 // ── schemas ───────────────────────────────────────────────────────────────
-// ▼ D1 (gate return contract) — {pass, outputsPresent, evidence}. For an exit-code
-//   gate, pass=exit0. For a JUDGMENT gate, pass is the judge's verdict — keep
-//   `evidence` numbered/specific (a vague-evidence pass is the failure mode wearing
-//   a judge's robe), and note: a judgment swap ALSO means a non-haiku tier (don't
-//   ship a haiku judging prose) AND the adversarial-review layer becomes PRIMARY,
-//   kept OUTSIDE run.js — not a backstop.
+// ▼ D1 (gate return contract) — {pass, outputsPresent, evidence, scope}. `pass` is ALWAYS
+//   DETERMINISTIC — an exit code (ds/dev: the gate IS the probe, sufficient) OR a mechanical
+//   FLOOR (semantic domains: necessary-NOT-sufficient). There is NEVER a returned judgment inside
+//   the probe — so there is nothing in the runner to game. For a semantic domain the SUFFICIENT
+//   authority is the adversarial review OUTSIDE run.js (doctrine #4), not this probe.
+//   `scope` discloses the floor's BLIND SPOT (doctrine #3): a clean pass:true must NEVER imply it
+//   verified tokens/quantities it couldn't check (writing's Bluebook regex floor false-positived on
+//   "§ 78mm" and was blind to spelled-out numbers — it must SAY so, not pass silently). This is the
+//   floor's analog of the "vague-evidence pass = the failure mode in a judge's robe" guard.
+//   Keep `evidence` numbered/specific and stating its scope; a semantic floor wants a non-haiku tier.
 const GATE_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['pass', 'outputsPresent', 'evidence'],
+  type: 'object', additionalProperties: false, required: ['pass', 'outputsPresent', 'evidence', 'scope'],
   properties: {
-    pass: { type: 'boolean', description: 'true IFF the gate passed (exit-code: the Verify command exited 0; semantic: the judge confirmed)' },
+    pass: { type: 'boolean', description: 'true IFF the DETERMINISTIC gate passed (exit-code: the Verify command exited 0; mechanical floor: the structural/floor check passed). NEVER a returned judgment.' },
     outputsPresent: { type: 'boolean', description: 'true IFF every declared output artifact exists AND is non-empty — checked INDEPENDENTLY of the gate (a gate can pass on a stale/clobbered artifact). true when none were declared.' },
-    evidence: { type: 'string', description: 'numbered/specific proof it ran (exit-code: last ~25 lines; semantic: the cited specifics). NOT a bare pass/fail.' },
+    evidence: { type: 'string', description: 'numbered/specific proof it ran (exit-code: last ~25 lines; floor: the cited specifics) AND a statement of what it did NOT check. NOT a bare pass/fail.' },
+    scope: { type: 'string', enum: ['checked', 'not-checked'], description: 'coverage disclosure: "checked" iff the gate actually verified the full claim; "not-checked" iff it is a necessary-not-sufficient floor with a blind spot (the sufficient authority is the adversarial review outside run.js).' },
   },
 }
 const TRANSFORM_SCHEMA = {
@@ -127,14 +132,14 @@ function provablyDisjoint(todo) {
 //   judgment ⇄ mechanical-floor is an isolated change to THIS one function. NEVER let
 //   the implementer's self-report be the gate. (Default below = exit-code shape.)
 async function gateProbe(t) {
-  if (!t.verify) return { pass: false, outputsPresent: false, evidence: '(no Verify/gate in the plan row)' }
+  if (!t.verify) return { pass: false, outputsPresent: false, evidence: '(no Verify/gate in the plan row)', scope: 'not-checked' }
   const outs = (t.outputs || []).filter(Boolean)
   return agent(
     `Run EXACTLY this gate from ${PROJECT} and report the result. Do NOT create, edit, fix, or analyze anything — only run it and report.\n\n    ${t.verify}\n\n`
     + (outs.length
         ? `Then INDEPENDENTLY confirm each declared output below EXISTS and is non-empty (an \`ls\` / one-line check — do NOT recompute it; a gate can pass while the artifact is stale or clobbered):\n${outs.map(o => '    ' + o).join('\n')}\n\n`
         : '')
-    + `Return { pass: <true iff the gate passed>, outputsPresent: <true iff every declared output above exists and is non-empty${outs.length ? '' : '; true since none were declared'}>, evidence: "<numbered/specific proof — last ~25 lines or cited specifics>" }.`,
+    + `Return { pass: <true iff the DETERMINISTIC gate passed — exit code 0 / floor check passed; never a judgment>, outputsPresent: <true iff every declared output above exists and is non-empty${outs.length ? '' : '; true since none were declared'}>, evidence: "<numbered/specific proof — last ~25 lines or cited specifics — AND a statement of what this gate did NOT verify>", scope: <"checked" iff the gate verified the FULL claim, else "not-checked" — a necessary-not-sufficient floor with a blind spot> }.`,
     { label: `gate:${t.id}`, phase: 'Gate', schema: GATE_SCHEMA, model: 'haiku', effort: 'low' })
 }
 

@@ -31,7 +31,7 @@ There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the
 
 ## The four INJECTED seams D1-D4 (the ONLY things that change per domain)
 
-1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, outputsPresent, evidence}`. The real fork: **exit-code** (ds/dev) vs **judgment** (writing — evidence IS the corroboration; the adversarial layer becomes PRIMARY). Pick the trust-class via interview Q7.
+1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, outputsPresent, evidence, scope}`. **`pass` is ALWAYS deterministic** (exit code or mechanical floor — never a returned judgment, so nothing in the runner to game). The fork is *sufficiency*: exit-code (ds/dev — the gate IS the probe) vs a **necessary-not-sufficient floor** (writing — the sufficient authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3). Pick the trust-class via interview Q7.
 2. **D2 `implementerPrompt(t)`** — how one task is produced (output-first vs TDD failing-test-first + the domain's R4 assumption-change list). Keep the mandatory-R4 block + stale-gate backstop verbatim.
 3. **D3 `columns` / task-spec shape** — what the plan table carries (`__TASKS__`): `id, name, deps, outputs, expectedOutput, verify, implements, kind, tier, effort, done, pauseAfter, taskText`.
 4. **D4 tier/effort policy** — `t.tier`/`t.effort` (ds: heuristic by task weight · dev: inherit session model). Pull out of the shared compiler.
@@ -42,7 +42,7 @@ There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the
 
 1. **payload > pass/fail** — pauses/findings carry `deviations` + a NUMBERED `summary`, never a bare exit code.
 2. **mandatory R4** — an assumption/contract/grain/schema change BLOCKS (pause); a stale-gate backstop re-blocks rather than reverting to pass a stale gate.
-3. **probe corroborates the artifact** independently of the pass signal (a pass can be stale OR gamed).
+3. **probe corroborates the artifact** independently of the pass signal (a pass can be stale OR gamed) — **and a deterministic floor discloses its blind spot** via `scope`: a clean `pass` must not over-claim coverage it doesn't have (the floor's analog of the "vague-evidence pass = a judge's robe" guard).
 4. **adversarial layer OUTSIDE run.js** — separate workflow/skill phase; PRIMARY (not a backstop) when the gate is a judgment.
 5. **no LLM between a structured producer and a strict checker** — parse deterministically.
 6. **emitter-canonical** — one format spec shared by emitter, parser, guard; strict-at-emitter / tolerant-at-parser; the emitter writes born-canonical so the guard can go strict.

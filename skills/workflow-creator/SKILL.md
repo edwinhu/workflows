@@ -649,7 +649,7 @@ Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice,
 
 | Injected seam (D1-D4) | Options / note |
 |-----------------------|----------------|
-| **D1 — Gate kind** (`gateProbe` body) | returns `{pass, outputsPresent, evidence}`. exit-code-on-test · exit-code-on-artifact (REQUIRES outputs-exist corroboration) · mechanical-floor · judgment (semantic — evidence IS the corroboration; from interview Q7) |
+| **D1 — Gate kind** (`gateProbe` body) | returns `{pass, outputsPresent, evidence, scope}`. **`pass` is ALWAYS deterministic** (exit code / mechanical floor — never a returned judgment). exit-code-on-test · exit-code-on-artifact (REQUIRES outputs-exist corroboration) · mechanical-floor (necessary-not-sufficient; the sufficient semantic authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot (doctrine #3). From interview Q7. |
 | **D2 — `implementerPrompt(t)`** | output-first (ds) · TDD failing-test-first (dev) |
 | **D3 — task-spec COLUMNS** | feed the deterministic parser (ds: Outputs/Expected/Verify · dev: Files/Failing Test/Verify Command) |
 | **D4 — tier/effort policy** | inherit session model (dev — TDD needs capability) · tier heuristic by task weight (ds) |
@@ -1709,7 +1709,7 @@ These five principles apply **only when the workflow executes a DAG of mechanica
 - A drifting second parser is the load-bearing defect: real plans pass one and fail the other. Below "single source" = major/critical.
 
 **P24 — Honest gate:**
-- Is the gate a **real exit code** (or a domain `gateProbe` returning `{pass, outputsPresent, evidence}`) **PLUS an independent artifacts-exist check** — never an implementer self-report or a re-analysis LLM verifier as sole arbiter?
+- Is the gate a **real exit code** (or a domain `gateProbe` returning `{pass, outputsPresent, evidence, scope}` where `pass` is always deterministic) **PLUS an independent artifacts-exist check** — never an implementer self-report or a re-analysis LLM verifier as sole arbiter? A mechanical floor must disclose its blind spot via `scope` (a clean `pass` must not over-claim coverage).
 - **Output-first / produced-artifact gates** (ds-style: `Verify` runs against a parquet/table) MUST carry the outputs-exist probe — `Verify` can go green on a stale/clobbered artifact. **TDD/test gates** (dev-style: RED→GREEN) are honest by construction and may skip it. A self-reported gate scores critically low.
 
 **P25 — Pause/resume + payload>pass-fail:**

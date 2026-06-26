@@ -54,7 +54,7 @@ Does the workflow execute a DAG of MECHANICAL work between human gates
 - `docs/DESIGN-ds-spec-plan-compile.md`, `docs/DESIGN-dev-spec-plan-compile.md` (the design rationale + the explicit per-domain decision list)
 - `docs/ds-generalization-assessment.md` (gateProbe as a domain fn; semantic gates raise the stakes on payload>pass/fail)
 
-**`gateProbe` is THE per-domain fork.** Treat it as a domain-provided function returning `{pass, outputsPresent, evidence}` — the driver stays agnostic to how "pass" is computed (exit code / mechanical floor / semantic judgment). For **semantic** gates the LLM judge can lie where an exit code cannot, so keep the adversarial-review layer robust and OUTSIDE `run.js` and make `evidence` numbered/specific.
+**`gateProbe` is THE per-domain fork.** Treat it as a domain-provided function returning `{pass, outputsPresent, evidence, scope}` — and **`pass` is ALWAYS deterministic** (exit code or mechanical floor, never a returned judgment, so nothing in the runner can be gamed). The fork is *sufficiency*: an exit-code gate is sufficient (the gate IS the probe); a semantic domain's probe is a **necessary-not-sufficient floor**, and the sufficient authority is the adversarial review robust and OUTSIDE `run.js`. `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3); keep `evidence` numbered/specific and stating its scope.
 
 **Do NOT extract a shared `run-core` until a 2nd domain runs on the template** — extracting from one domain bakes in its isms. **Do NOT retire the old engine until parity is proven on a real spec.**
 
