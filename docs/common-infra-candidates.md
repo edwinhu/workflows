@@ -2,10 +2,10 @@
 
 > **Canonical** cross-workflow seam list for the compiled-runner pattern. Owned here (ds vantage);
 > `dev`'s DESIGN §9 holds the dev-side view and points to this file. **GUARDRAIL: this records
-> candidate seams; it does NOT authorize extraction.** Extraction is pass #9. As of writing's step-1
-> landing, the firm core has THREE proven instances; the **only** remaining writing-gated seam is the
-> `D1` gateProbe **judgment** body (writing's compile=data and spec-layer backstop are now confirmed
-> live). A seam confirmed only inside the ds+dev quadrant is not yet a seam — see Confidence.
+> candidate seams; it does NOT authorize extraction.** Extraction is pass #9. **As of writing's GATE
+> step landing, EVERY seam is now confirmed across three instances spanning both trust-classes
+> (exit-code + semantic) and both compile-outputs (codegen + data).** No seam remains design-gated. The
+> only thing before pass #9 is writing's A/B parity run — a *validation* step, not a design unknown.
 
 ## Instances (what we're generalizing from)
 
@@ -13,15 +13,15 @@
 |----------|--------|------------------|----------------|-------------|
 | **ds** | shipped (PR#7, merged) | exit-code (Verify cmd) | codegen `run.js` | parallel (disjoint parquet outputs) |
 | **dev** | shipped (v5.56.0, PR#8), parity-proven on hylo-tauri | exit-code (test RED→GREEN) | codegen `run.js` | sequential (shared tree, no isolation v1) |
-| **writing** | **step-1 landed, blind-oracle parity-passed** (compile=data + spec-layer backstop confirmed live); GATE/judgment step still pending | judgment (semantic) — *pending* | **data work-list** (section-index) — ✅ **confirmed live** | — |
+| **writing** | **GATE step landed + tested** (`writing_gate_probe.py`); compile=data, spec-layer backstop, AND emitter-canonical all confirmed live | judgment+empirical — ✅ **confirmed** (deterministic floor in runner + semantic authority outside) | **data work-list** (section-index) — ✅ **confirmed live** | — |
 
-**Critical caveat for extraction:** ds and dev are *close cousins* — **same trust-class (exit-code)
-and same compile-output (codegen)**. Two cousins cannot validate a seam along an axis where they are
-identical. Writing is the third instance that breaks that symmetry, and it is **landing in steps**:
-its **compile=DATA** form (section-index, not codegen) and its **spec-layer stale-gate backstop** are
-now **parity-confirmed live** — so the compile-output axis is resolved. The **judgment trust-class**
-gate body is the **only** remaining axis where ds+dev are identical and writing has not yet proven a
-third point — it awaits writing's GATE step.
+**Critical caveat for extraction — NOW RESOLVED:** ds and dev were *close cousins* (same exit-code
+trust-class, same codegen compile-output), so they could not validate a seam along an axis where they
+were identical. **Writing is the third instance that broke that symmetry, and all of its axes have now
+landed:** compile=DATA (section-index), the spec-layer stale-gate backstop, the born-canonical emitter
+(doctrine #6), and now the GATE step. **Every seam below is confirmed across three instances spanning
+both trust-classes and both compile-outputs.** The only thing between here and pass #9 is writing's
+A/B parity run — a *validation* step, not a design unknown.
 
 ## SHARED seams (candidate common-infra)
 
@@ -40,7 +40,7 @@ third point — it awaits writing's GATE step.
 
 | # | Seam | Shared contract? | Per-instance |
 |---|------|------------------|--------------|
-| **D1** | `gateProbe(t)` body | **YES** — returns `{pass, artifactsPresent, evidence}` (S4-art) | ds: run Verify + outputs-exist · dev: run test + filesPresent + testPresent · writing: semantic judge, evidence-IS-corroboration |
+| **D1** | `gateProbe(t)` body | **YES** — returns `{pass, artifactsPresent, evidence}` (S4-art). **SHARPENED by writing: `probe.pass` is ALWAYS deterministic** — an exit-code OR a mechanical floor — never a returned judgment. | ds: run Verify (exit-code, sufficient) · dev: run test + filesPresent + testPresent (exit-code, sufficient) · writing: a deterministic mechanical floor in the runner (section-index/structure present, sources pinned) that is **necessary-not-sufficient**; the SEMANTIC verdict (writing-review + source-verify) is the **PRIMARY arbiter OUTSIDE `run.js`**, never inside the probe |
 | **D2** | `implementerPrompt(t)` | partial (output-first vs TDD failing-test-first; no-phantom-RED clause) | per-domain |
 | **D3** | Task-spec COLUMNS | column-map feeds S1 | ds: Outputs/Expected/Verify · dev: Files/Failing Test/Verify Command |
 | **D4** | tier/effort policy | no | ds: heuristic by task weight · dev: inherit session model (TDD needs capability) · **pull out of the shared compiler** |
@@ -54,21 +54,22 @@ second input to the same derivation — parallel-safe even on a shared tree — 
 1. **Payload > pass/fail** — surface `deviations` + a numbered `summary`/`evidence` at every pause; it is the catch-channel.
 2. **Mandatory R4** — grain/sample/schema/interface/methodology changes BLOCK and pause; never silent auto-resolve.
 3. **Probe corroborates the artifact** (S4-art) — never trust the pass signal alone; a pass can be stale or gamed in every domain.
-4. **Adversarial review stays OUTSIDE the runner** — and becomes *primary* (not a backstop) when the gate trust-class is *judgment* (it can lie where an exit code can't).
+4. **Adversarial review stays OUTSIDE the runner** — and is the *primary arbiter* (not a backstop) when the real gate is semantic. Writing's sharpening makes this exact: the runner's `gateProbe` only ever returns a **deterministic floor** (necessary, never a returned judgment); the **semantic authority lives entirely outside `run.js`**. So "judgment trust-class" = *deterministic-floor-in-runner + semantic-authority-outside* — there is no LLM judge *inside* the probe to game. (This also kills the "haiku judging prose" failure mode by construction.)
 5. **No LLM between a structured producer and a strict checker** — it silently absorbs drift and masks spec bugs (the ds sleeper: `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`). Parse deterministically.
 6. **Emitter-canonical** — ONE format spec shared by emitter, parser, and guard; strict-at-emitter / tolerant-at-parser. The plan EMITTER writes canonical so plans are born canonical; the parser's tolerance is then a back-compat shim, not the primary defense.
 
-> ⚠ **DEFERRED FOLLOW-UP (open in BOTH ds and dev):** neither instance has hardened its plan EMITTER to
-> write born-canonical — both built a tolerant parser + reconciled guard but left the producer
-> free-form. Until the emitter is canonical and the guard goes strict, tolerance lives in regex —
-> exactly what doctrine #5's investigation warns relocates (not removes) the silent-tolerance risk.
-> (ds DESIGN §8b; dev DESIGN §9.) This is the next increment for both, not a per-domain miss.
+> ✅ **Doctrine #6 now has a WORKED INSTANCE (writing).** Writing closed the emitter gap *first*:
+> born-canonical `OUTLINE` from writing-setup + per-section source-pinning from writing-outline, so
+> **tolerance is eliminated, not relocated** — the model for what "born-canonical" looks like end-to-end.
+> ⚠ **Still open in ds and dev:** both built a tolerant parser + reconciled guard but left the *producer*
+> free-form (tolerance lives in regex — exactly what doctrine #5's investigation warns relocates rather
+> than removes the risk). Their next increment is to follow writing's pattern. (ds DESIGN §8b; dev §9.)
 
 ## Orthogonal axes (record separately so extraction doesn't conflate them)
 
 - **PAUSE kind** (a *human-decision* return): declared (`⏸ PAUSE:` in the plan) vs dynamic (R4 block at runtime).
 - **DECISION kind:** gate-changing vs behavior-only (`args.decisions`). Gate-changing is **layer-agnostic** — edit the stale upstream artifact *at its layer* + recompile (data layer: the Verify cmd; spec layer: `OUTLINE.md` + re-approve `*_REVIEWED.md`). See S3.
-- **gateProbe TRUST-CLASS:** exit-code (honest, can't lie) vs judgment (can be gamed → evidence must be richest; doctrine #4 promotes adversarial review to primary).
+- **gateProbe TRUST-CLASS:** the *runner-side probe is ALWAYS deterministic* — what varies is whether that deterministic result is **sufficient** (exit-code: ds/dev — the gate IS the probe) or merely a **necessary floor** (semantic domains: writing — the probe checks structure/source-pinning, and the sufficient authority is the adversarial review OUTSIDE `run.js`, doctrine #4). There is no judgment *returned by* the probe — so nothing inside the runner to game.
 - **RETURN-REASON** — the authoritative frame for *why the runner yields to the skill*, and the one the core should model explicitly:
 
   `RETURN-REASON = { done | hard-fail | pause-human(declared | dynamic-R4) | yield-for-recheck(fullsuite | coverage | …) }`
@@ -81,22 +82,26 @@ second input to the same derivation — parallel-safe even on a shared tree — 
 - **Payload schema is a fixed first-class TYPE from day 1** (S4), not an evolved literal.
 - **Per-domain forcing fixture for the stale-gate backstop** (ds: `ds-grain-pause`; dev: signature-canary) — the fixture is per-domain, the backstop logic (S3) is shared.
 
-## Extraction readiness (pass #9) — what's firm vs writing-pending
+## Extraction readiness (pass #9) — ALL SEAMS CONFIRMED (3 instances)
 
-- **Firm to extract now (✅ proven):** S1, S2 (incl. the intra-level flag), S3 (backstop now proven
-  layer-agnostic across ds+dev+writing), S4, S6, S7, and the helpers `collect()/scoreTable()/pausePayload()`
-  (~90% identical across ds+dev). **S5** is now firm too — the code↔data emit split has a proven instance
-  on each side (ds/dev codegen, writing data section-index); the emit STEP is an injected interface but
-  the split itself is confirmed.
-- **Still awaiting writing's GATE step (the LAST under-determined axis):**
-  - `D1` gateProbe **judgment** body + S4-art evidence-as-corroboration. Exit-code bodies (ds/dev) are
-    proven; the judgment body is the only place ds+dev are still identical and writing hasn't yet landed a
-    third point (writing's compile + spec-backstop are done; its GATE is pending).
-- **Extraction cleanup items (impl, not seam):** give `yield-for-recheck` its own return channel
-  (dev currently muxes it onto the pause channel); pull `D4` tier policy out of the shared compiler.
-- **Recommendation:** pass #9 extracts the firm core now and ships `D1`'s gateProbe body as the one
-  injected interface still pending its third (judgment) instance; promote it once writing's GATE step is
-  parity-proven.
+- **Firm to extract (✅ proven across 3 instances):** S1, S2 (incl. the intra-level flag), S3 (backstop
+  layer-agnostic across ds+dev+writing), S4, S5 (code↔data emit, both forms proven), S6, S7, and the
+  helpers `collect()/scoreTable()/pausePayload()`.
+- **`D1` is now confirmed too** — its third (semantic) instance landed with writing's GATE step, and it
+  came with a *sharper* contract than we'd specified: the runner-side `probe.pass` is **always
+  deterministic** (exit-code OR a necessary mechanical floor); the semantic authority is the adversarial
+  layer OUTSIDE `run.js`, never a judgment returned by the probe. So `D1`'s shared return contract
+  `{pass, artifactsPresent, evidence}` holds across all three, and the injected body is always
+  deterministic — no LLM judge inside the runner to game.
+- **No design-gated seam remains.** The only thing before pass #9 is writing's **A/B parity run** — a
+  validation step, not a design unknown.
+- **Extraction cleanup items (impl, not seam):** give `yield-for-recheck` its own return channel + a
+  durable (args-tracked) recheck trigger so it survives a resume on a co-located level (documented as a
+  compile-time constraint for now — see the wc-creator birther template); pull `D4` tier policy out of
+  the shared compiler.
+- **Recommendation:** once writing's A/B parity lands, pass #9 extracts the full firm core; `D1`'s body
+  stays an injected interface (now with all three trust-class shapes as reference), not because it's
+  under-determined but because its computation is intrinsically per-domain.
 
 ---
-*Maintainers: ds-refactor (owner of this file) · dev-refactor (DESIGN §9, dev view) · writing-refactor (the third instance that resolves the ◑ rows).*
+*Maintainers: ds-refactor (owner of this file) · dev-refactor (DESIGN §9, dev view) · writing-refactor (third instance — all axes now landed; A/B parity pending).*
