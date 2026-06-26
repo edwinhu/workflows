@@ -541,3 +541,61 @@ non-terminal overlap → PAUSE→resume→advance (this slice). Combined with AB
 backstop + round-trip), AB3 (payload-with-numbers), **every mechanic of the compiled dev runner is
 parity-proven on the real hylo-tauri repo.** The declared `⏸ PAUSE` row remains the only path proven
 only by the dev driver unit test (+ ds) — lowest-risk, deferred.
+
+## 9. Future extraction candidates (pass #9 — DO NOT extract yet)
+
+> **CONVERGED** via the host-dispatch cross-pollination (dev-refactor × ds-refactor, 2026-06-26;
+> writing-refactor input folded in). **Canonical list:** `docs/common-infra-candidates.md` (owned by
+> ds-refactor, one owner = no conflict). This section is the **dev-side view** that fed that
+> convergence — kept here for the dev port's record; the canonical doc governs pass #9.
+>
+> Guardrail stands: **brainstorm written down; NO shared `run-core` extracted in this pass.** ds + dev
+> are two exit-code instances; writing is a 3rd (judgment gate). Two seams are genuinely
+> under-determined until writing parity lands (9.5).
+
+### 9.1 SHARED (core candidates — ds + dev agree, mostly verbatim)
+- **S1 — deterministic table parser + DAG/topo/cycle logic** (columns differ via a column-map; mechanics identical).
+- **S2 — the run-template DRIVER:** topo → level-iteration → gate-first idempotent skip → `pause()` (structured early return) → uniform result. **`intraLevel` is a CORE FLAG, default `sequential`, that the COMPILER sets to `parallel` only when it can PROVE the level's tasks write DISJOINT artifacts** (output-disjointness derivation — ds-refactor's refinement, conceded; better than my first "per-domain strategy" framing). ds's disjoint parquets qualify automatically; dev's shared tree never does → stays sequential, so **tree-corruption is impossible by construction, not by convention.**
+- **S3 — pause/resume protocol:** `args.decisions` + `clearedPauses`; the two-kinds-of-decision routing + **STALE-GATE BACKSTOP** (proven live in dev: implementer honored a decision then re-blocked on a stale gate).
+- **S4 — result schema + a FIRST-CLASS payload TYPE** `{deviations, numbered summary/evidence}` (ds-refactor hindsight: make it a fixed type from day 1, not a payload literal — it's the catch-channel). `tasksThatFailed` / `findings` / `reviews` / `scoreTable` / `tasksRemaining`.
+- **S5 — compile = "produce the work-list"; emit representation per-domain:** inlined codegen `run.js` (ds/dev) OR a data work-list artifact (writing's already-generic runner). Not "emit code."
+- **S6 — parser/compiler/guard split:** one parser imported by both compiler and guard → "**compiles ⇔ passes gate**" is a property. **The guard asserts STRUCTURE only** (cycles / missing cells / dangling deps); **all format tolerance lives in the parser, one place.** (Aged best; keep verbatim.)
+- **`collect()` / `scoreTable()` / `pausePayload()`** — ~90% identical ds↔dev → strong shared helpers.
+
+### 9.2 SHARED DOCTRINE (domain-agnostic; baked into the core, not re-typed per domain)
+The four safety invariants — (i) payload > pass/fail, (ii) mandatory R4 block, (iii) probe asserts
+artifacts-exist, (iv) adversarial/review layer OUTSIDE `run.js` — **plus a 5th** (ds-refactor, adopted):
+(v) **NO LLM between a structured producer and a strict checker** — the root cause of the
+discovery-mask. **Plus emitter-canonical** (one format spec, strict-at-emitter / tolerant-at-parser).
+
+### 9.3 INJECTED (per-domain — the real fork)
+- **D1 — `gateProbe(t)`, OPAQUE.** Returns `{pass, corroboration, evidence}` where `pass` may be an
+  exit code OR a judgment; **`corroboration` is required** (safety inv. iii — corroborate the artifact
+  INDEPENDENTLY of the pass signal, because a pass can be stale OR gamed) but its SHAPE is per-domain
+  (ds: outputs exist; dev: files+test exist; writing: evidence-is-the-corroboration). **TRUST-CLASS
+  axis:** exit-code (can't lie) vs judgment (can be gamed) — the core's evidence handling assumes the
+  judgment case (richest) so it degrades gracefully to exit-code, and when trust-class=judgment the
+  adversarial-layer-outside-`run.js` invariant flips from backstop to **PRIMARY** authority.
+- **D2 — `implementerPrompt(t)`** (carries the TDD/output-first/no-phantom-RED discipline for dev).
+- **D3 — task-spec COLUMNS.**
+- **D4 — tier/effort policy** (ds heuristic; dev = inherit session model; do NOT put in the shared compiler).
+
+### 9.4 Two orthogonal AXES (record separately so extraction doesn't conflate them)
+- **PAUSE axis:** declared (`⏸` in plan) vs dynamic (R4 block). *(dev adds a 3rd kind — `fullsuite`, the
+  hybrid cross-level-overlap checkpoint; dev-specific today, generalization TBD — a candidate, not an assertion.)*
+- **DECISION axis:** gate-changing (edit the gate + recompile) vs behavior-only (`args.decisions`).
+
+### 9.5 Extraction timing + the honest open gap
+- **Extract the PROVEN core now** (S2 driver / S3 pause / S4 schema+helpers — two instances agree).
+  **Leave `gateProbe`-opaque (D1) and `compile`=worklist-vs-codegen (S5) as INJECTED INTERFACES pending
+  writing parity** — each has only ONE confirming instance until writing (judgment gate / data emit)
+  lands. So the "wait" guardrail is *precise*, not just caution: two seams are genuinely
+  under-determined. Target shape: `templates/run-core.js` (driver + pause + schema + 5 invariants +
+  helpers, with D1–D4 + the `intraLevel` flag injected) + `templates/<domain>-task.js`.
+- **OPEN GAP (honest, shared, deferred — ds-refactor catch A):** the dev port hardened the **parser +
+  guard** but did NOT harden the **emitter** (`dev-design`/`dev-plan`) to write born-canonical. So the
+  tolerant parser currently *relocates* the LLM's silent tolerance into regex — the exact thing
+  `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md` warns against. Same deferred
+  increment ds flagged (DESIGN-ds §8b "emitter, not parser — next increment"). **Follow-up:**
+  born-canonical emitter → guard goes strict → parser tolerance becomes a back-compat shim, not the
+  primary defense. Applies to both ds and dev.
