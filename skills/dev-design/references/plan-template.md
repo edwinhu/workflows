@@ -124,15 +124,15 @@ See `references/constraints/real-test-enforcement.md` for fake test detection fa
 
 ## Implementation Order — MANDATORY EXECUTABLE TABLE
 
-> **This table is the machine-executable spec.** `dev-implement` reads it directly: it topologically sorts `Deps` into dependency levels, runs each level's tasks in parallel (one worktree-isolated implementer per task), merges, and gates each task on its `Verify Command` exit code. **A plan without a complete table is not executable — `dev-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until every row is filled.**
+> **This table is the machine-executable spec.** `dev-compile` turns it into `.planning/run.js`, which topologically sorts `Deps` into dependency levels, runs each level's tasks **sequentially** (writing the shared tree in turn, TDD test-first), and gates each task on its `Verify Command` exit code via an independent probe. **A plan without a complete table is not executable — `dev-plan-executable-guard.py` (the same parser `dev-compile` uses) blocks `PLAN_REVIEWED.md` until every row is filled.**
 >
 > **Every task MUST be one table row** — do NOT carry the work in prose `### Phase` headings (a phase label, if useful, lives in the task name). Every column is REQUIRED for every code task:
 >
 > | Column | Rule |
 > |--------|------|
 > | **Task** | `N. <name>` — N is a unique integer, referenced by `Deps` |
-> | **Deps** | the DAG: `---` (no deps, parallelizable) or `after N` / `after N,M` (fan-in). Must reference real task numbers; no cycles |
-> | **Files** | every file the task creates/edits (comma-separated, repo-relative). Drives conflict detection + worktree merge — same-level tasks with disjoint Files run in parallel; overlapping Files serialize |
+> | **Deps** | the DAG: `---` (no deps) or `after N` / `after N,M` (fan-in). Must reference real task numbers; no cycles. Drives the execution order (levels) |
+> | **Files** | every file the task creates/edits (comma-separated, repo-relative). A same-level task that re-touches a file an earlier level declared triggers a full-suite checkpoint (cross-level regression guard) |
 > | **Failing Test** | the test written FIRST (TDD RED). `N/A` only for types-only / meta tasks |
 > | **Verify Command** | the deterministic command whose exit-0 IS the per-task gate (`pytest tests/test_x.py -v`, `tsc --noEmit`). NEVER empty for a code task |
 > | **Implements** | SPEC.md requirement ID(s). Must trace to a real ID in the Requirements table |
@@ -147,7 +147,7 @@ See `references/constraints/real-test-enforcement.md` for fake test detection fa
 | 2. Service method | `after 1` | `src/auth/service.ts, src/auth/service.test.ts` | `test_validate_session()` | `pytest tests/test_auth.py -v` | `AUTH-01, AUTH-02` |
 | 3. Route handler | `after 1` | `src/routes/api.ts, src/routes/api.test.ts` | `test_api_endpoint()` | `pytest tests/test_api.py -v` | `API-01` |
 
-> Tasks 2 and 3 share `Deps: after 1` and touch disjoint Files → `dev-implement` runs them **in parallel** (same level), merges, then runs the full suite.
+> Tasks 2 and 3 share `Deps: after 1` and touch disjoint Files → they form one dependency level; `run.js` implements them **sequentially** (shared tree, in turn), each gated on its own Verify Command, then the skill runs the full suite once at the end.
 
 ## Task Interfaces
 
