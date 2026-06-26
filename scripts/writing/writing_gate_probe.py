@@ -43,8 +43,16 @@ _CITE_IN_PROSE = re.compile(r"\[@([\w:-]+)")                     # [@key] or [@k
 _EXTRA_CITES = re.compile(r"@([A-Za-z][\w:-]+)")                # bare @key inside a [@a; @b] group
 _CITE_NEEDED = re.compile(r"\[CITE-NEEDED[^\]]*\]", re.I)
 _CLAIM = re.compile(r"CLAIM-\d+")
-# numbers that look like reported statistics: 42.9%, $1.5B, n=58, 1,477
-_STAT = re.compile(r"(?<![\w.])(?:\$?\d[\d,]*(?:\.\d+)?\s*(?:%|B|M|bn|mn)?|n\s*=\s*\d[\d,]*)", re.I)
+# numbers that look like reported statistics: 42.9%, $1.5B, n=58, 1,477.
+# The trailing (?![A-Za-z]) stops a number being clipped out of an alphanumeric LEGAL token
+# (e.g. "§ 78mm" → no longer yields a phantom "78m"; "251(h)" → "251" only, never flagged
+# because it isn't a rich stat). See _looks_legal for the citation-context guard.
+_STAT = re.compile(r"(?<![\w.])(?:\$?\d[\d,]*(?:\.\d+)?\s*(?:%|billion|million|thousand|bn|mn|B|M)?(?![A-Za-z])|n\s*=\s*\d[\d,]*)", re.I)
+# a statutory/citation context immediately before a number → it is a legal cite, not a datum
+_LEGAL_CTX = re.compile(r"(§|U\.?S\.?C\.?|C\.?F\.?R\.?|Rule|DGCL|No\.|art\.|§§)\s*$", re.I)
+# spelled-out quantities legal prose uses ("forty-five percent", "fifty-eight petitions"); the
+# numeric _STAT is structurally blind to these — we DISCLOSE that rather than silently miss them.
+_SPELLED = re.compile(r"\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)[\w-]*\s+(percent|petitions?|deals?|days?|cases?|funds?)\b", re.I)
 
 
 def _bib_keys(bib_path: Path) -> set[str]:
@@ -67,7 +75,11 @@ def _line_of(text: str, needle: str) -> int:
 
 
 def _norm_num(s: str) -> str:
-    return re.sub(r"[\s,]", "", s).lower().rstrip(".")
+    s = re.sub(r"[\s,]", "", s).lower().rstrip(".")
+    # equate magnitude words with their letter suffix so "$1.5billion" == "$1.5B" == "$1.5bn"
+    for long, short in (("billion", "b"), ("million", "m"), ("thousand", "k"), ("bn", "b"), ("mn", "m")):
+        s = s.replace(long, short)
+    return s
 
 
 def probe(draft_path: Path, bib_path: Path | None, precis_path: Path | None,
@@ -102,15 +114,27 @@ def probe(draft_path: Path, bib_path: Path | None, precis_path: Path | None,
             spec_text += "\n" + p.read_text(encoding="utf-8", errors="ignore")
     if spec_text:
         spec_nums = {_norm_num(m) for m in _STAT.findall(spec_text)}
-        draft_nums = [(m, _line_of(text, m)) for m in _STAT.findall(text)]
-        # only flag "rich" stats (a % / $ / n=) to avoid footnote numbers etc.
-        rich = [(m, ln) for m, ln in draft_nums if re.search(r"[%$]|n\s*=|B\b|M\b", m, re.I)]
-        unmatched = [f"{m} @ {draft_path.name}:{ln}" for m, ln in rich if _norm_num(m) not in spec_nums]
+        rich = []
+        for m in _STAT.finditer(text):
+            tok = m.group(0)
+            # only flag "rich" stats (a % / $ / n= / B/M magnitude) — bare footnote numbers are noise
+            if not re.search(r"[%$]|n\s*=|B\b|M\b", tok, re.I):
+                continue
+            # skip statutory/citation numbers ("§ 78mm", "Rule 14e-1", "17 C.F.R. § 240") — not data
+            if _LEGAL_CTX.search(text[max(0, m.start() - 12):m.start()]):
+                continue
+            rich.append((tok, text.count("\n", 0, m.start()) + 1))
+        unmatched = [f"{tok} @ {draft_path.name}:{ln}" for tok, ln in rich if _norm_num(tok) not in spec_nums]
+        spelled = sorted({s.group(0) for s in _SPELLED.finditer(text)})
         evidence["dataProvenance"] = {
             "mode": "consistency-only",  # NOT true number→cell provenance (no local dataset)
             "unmatchedVsSpec": unmatched,
-            "note": "consistency vs PRECIS/OUTLINE only — does NOT verify against the dataset; "
-                    "a remote/absent parquet means these numbers are unverifiable locally.",
+            # BLIND-SPOT DISCLOSURE: the numeric scan cannot see spelled-out quantities legal prose
+            # uses; list them so a clean dataProvenance never implies they were checked.
+            "spelledOutNotChecked": spelled,
+            "note": "consistency vs PRECIS/OUTLINE only, NUMERIC ONLY — does NOT verify against the "
+                    "dataset, and does NOT check spelled-out quantities (see spelledOutNotChecked). "
+                    "A remote/absent dataset means these numbers are unverifiable locally.",
         }
 
     floor_fail = bool(evidence.get("bibUnresolved") or evidence.get("citeNeeded") or evidence.get("claimIdsMissing"))

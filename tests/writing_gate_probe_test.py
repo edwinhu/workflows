@@ -67,6 +67,25 @@ with tempfile.TemporaryDirectory() as td:
     r = gp.probe(clean, None, precis)
     ok("no bib ⇒ cites unchecked note, still passes", r["pass"] is True and "bibNote" in r["evidence"])
 
+# 7. legal-prose robustness (the tender-parity A/B defects)
+with tempfile.TemporaryDirectory() as td:
+    d = Path(td)
+    bib = write(d, "sources.bib", BIB)
+    precis = write(d, "PRECIS.md", "Median deal ~$1.5B; value-at-stake ~$30.7M; 45% repeat funds.\nCLAIM-01\n")
+    # statutory citation must NOT be parsed as a datum; magnitude words must normalize
+    legal = write(d, "Legal (Draft).md",
+                  "---\nimplements: [CLAIM-01]\n---\n"
+                  "Under 15 U.S.C. § 78mm and Rule 14e-1, the median deal is $1.5 billion [@smith2019] "
+                  "and value-at-stake $30.7 million, with forty-five percent repeat funds.\n")
+    r = gp.probe(legal, bib, precis)
+    dp = r["evidence"].get("dataProvenance", {})
+    um = dp.get("unmatchedVsSpec", [])
+    ok("no statutory phantom (§ 78mm not flagged)", not any("78m" in u for u in um), str(um))
+    ok("$1.5 billion matches spec $1.5B (magnitude-word norm)", not any("1.5" in u for u in um), str(um))
+    ok("$30.7 million matches spec $30.7M", not any("30.7" in u for u in um), str(um))
+    ok("spelled-out blind spot disclosed", "forty-five percent" in dp.get("spelledOutNotChecked", []), str(dp.get("spelledOutNotChecked")))
+    ok("note discloses numeric-only + spelled-out gap", "spelled-out" in dp.get("note", "").lower())
+
 # real-repo smoke (skipped if absent)
 REAL = Path.home() / "projects" / "tender_offers" / "paper"
 d3 = REAL / "drafts" / "Part III. Objections and the Targeted Fix (Draft).md"
