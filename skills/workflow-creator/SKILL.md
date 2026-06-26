@@ -288,12 +288,13 @@ Design phases where each phase has:
 Before choosing any fan-out mechanism, ask of the workflow as a whole: **does it execute a DAG of MECHANICAL work between human gates** — an implement/transform/generate phase driven by a structured plan table (tasks with deps + a per-task gate), where the human-gated phases (brainstorm/plan/review/verify) stay conversational?
 
 - **YES → scaffold `spec → plan → deterministic compile → run.js` (the compiled-runner pattern), NOT an interpreted per-phase loop and NOT an in-workflow LLM "discovery" agent.** This is the lesson the ds + dev refactors paid for (PR#7/PR#8). The plan table is regex-parseable; a deterministic parser + compiler emits the runner. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §0 (compile-vs-interpret) and the **compiled-runner skeleton** there. What you emit by default:
-  1. a deterministic, **prefix-tolerant** plan-table parser (`scripts/<domain>/<domain>_plan_table.py`) — the SINGLE source of truth;
-  2. a compiler (`scripts/<domain>/<domain>_compile.py`) → `run.js` (CODE) **or** a data work-list (DATA, if a generic engine already consumes it);
-  3. a `workflows/templates/<domain>-run-template.js` with the **four safety invariants baked in** (payload>pass/fail · mandatory R4 block on assumption change · probe asserts artifacts-exist · adversarial layer OUTSIDE run.js) + two-kinds-of-decision routing + stale-gate backstop + gate-first short-circuit, and **three marked seams: columns, `implementerPrompt(t)`, `gateProbe(t)`** (the gate kind from interview Q7);
-  4. the executable-guard whose `validate_plan()` just imports parser #1 (so "compiles ⇔ passes gate");
-  5. a **slim** skill (COMPILE → run/pause loop, flowchart-as-spec — NOT a per-level dispatch loop).
-  Reference impls already in-repo: `workflows/templates/ds-run-template.js`, `workflows/templates/dev-run-template.js`, `scripts/ds/`, `scripts/dev/`.
+  1. a **born-canonical plan EMITTER** — the plan-producing phase (the skill that writes PLAN.md) emits the EXACT canonical table format, so plans are born canonical. **This is doctrine #6 (emitter-canonical) and the biggest scaffolding fix — do NOT skip it.** Emitting only a tolerant parser + guard (items 2 & 4) *relocates* the LLM's silent tolerance into regex (the very `2026-06-26_llm-discovery-masked-spec-drift` anti-pattern) instead of eliminating it. The full triple is **emitter (canonical) + guard (STRICT) + parser (back-compat shim)**.
+  2. a deterministic plan-table parser (`scripts/<domain>/<domain>_plan_table.py`) — the SINGLE source of truth (S1). Once the emitter is canonical, its tolerance is a back-compat **shim**, not the primary defense.
+  3. a compiler (`scripts/<domain>/<domain>_compile.py`) = **produce the work-list** (S5) → emit `run.js` (CODE) **or** a data work-list (DATA, if a generic engine already consumes it — e.g. writing). Don't hardcode codegen.
+  4. a `workflows/templates/<domain>-run-template.js` carrying the **shared CORE + the doctrine invariants baked in** (payload>pass/fail · mandatory R4 block on assumption change · probe corroborates artifacts-exist · adversarial layer OUTSIDE run.js — PRIMARY when the gate is a judgment) + two-kinds-of-decision routing + stale-gate backstop + gate-first short-circuit, with the **four INJECTED seams D1-D4** the author fills: `gateProbe(t)` (trust-class: exit-code vs judgment), `implementerPrompt(t)`, task-spec columns, tier/effort policy (gate kind from interview Q7). **Intra-level parallel-vs-sequential is CORE, compiler-DERIVED (parallel iff declared outputs are provably disjoint) — NOT a seam to hand-set, and NOT an author question.**
+  5. the executable-guard whose `validate_plan()` imports parser #2 and asserts **STRUCTURE only** (cycles / missing cells / dangling deps), never format (S6) — it can be strict because the emitter is canonical.
+  6. a **slim** skill (COMPILE → run/pause loop, flowchart-as-spec — NOT a per-level dispatch loop) that **branches on the runner's RETURN-REASON**: `done` · `hard-fail` · `pause-human` (declared ⏸ or dynamic R4) · `yield-for-recheck` (an AUTOMATED cross-cutting gate — dev's full-suite, ds's validate-coverage; NO human). Never model a `yield-for-recheck` as a human pause.
+  **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** (shared S1-S7, injected D1-D4, 6 doctrine invariants, return-reason taxonomy). Reference impls in-repo: `workflows/templates/compiled-runner-template.js` (generic) + `ds-run-template.js` / `dev-run-template.js` (live), `scripts/ds/`, `scripts/dev/`.
 - **NO → use the fan-out / conversational patterns below.** A pure per-item fan-out with no plan-table DAG (review or transform) is the `already-a-fan-out` shape — correct as-is; do NOT bolt a compiled runner onto it.
 
 > **Iron Law (see "NO LLM STEP BETWEEN A STRUCTURED PRODUCER AND A STRICT CHECKER"):** if a structured table feeds a strict checker, NEVER scaffold an LLM step between them. An LLM "discovery" agent that re-reads the plan absorbs format drift invisibly — it tolerates rows the guard rejects, masking a spec-drift bug while looking like it works. Scaffold a deterministic parser, not an agent that re-reads the table.
@@ -644,17 +645,22 @@ Phase N produces ARTIFACT.md
 
 Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
 
-**If Step 3 classified the workflow as a compiled runner (executes a plan-table DAG), DESIGN.md MUST also record an explicit decision list** — these were silently hardcoded in the first ds/dev engines and a naive copy corrupted another domain's tree, so make each a deliberate choice:
+**If Step 3 classified the workflow as a compiled runner (executes a plan-table DAG), DESIGN.md MUST also record the per-domain decisions** — the canonical seam list is `docs/common-infra-candidates.md` (shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants). Fill the **four INJECTED seams** (D1-D4); everything else is shared CORE you inherit, not a choice:
 
-| Decision | Options / note |
-|----------|----------------|
-| **Gate kind** (`gateProbe`) | exit-code-on-test · exit-code-on-artifact (REQUIRES outputs-exist probe) · mechanical-floor · judgment+empirical (from interview Q7) |
-| **Compile output** | CODE (`run.js`) · DATA (work-list a generic engine consumes — if one already exists) |
-| **Within-level execution** | sequential (shared work-tree, e.g. dev) · parallel (disjoint outputs, e.g. ds — a naive parallel copy corrupts a shared tree) |
-| **Implementer model policy** | inherit session model (uniform tasks) · tier heuristic (mixed heavy/trivial tasks) |
-| **"Artifact present" means** | files + passing test (dev) · produced data outputs exist (ds) · rendered output (workshop) |
-| **Retire old engine** | ONLY after parity is proven on a real spec (do not delete the interpreter before the runner matches it) |
-| **Shared run-core** | do NOT extract until a 2nd domain runs on the template (extracting from one domain bakes in its isms) |
+| Injected seam (D1-D4) | Options / note |
+|-----------------------|----------------|
+| **D1 — Gate kind** (`gateProbe` body) | returns `{pass, outputsPresent, evidence}`. exit-code-on-test · exit-code-on-artifact (REQUIRES outputs-exist corroboration) · mechanical-floor · judgment (semantic — evidence IS the corroboration; from interview Q7) |
+| **D2 — `implementerPrompt(t)`** | output-first (ds) · TDD failing-test-first (dev) |
+| **D3 — task-spec COLUMNS** | feed the deterministic parser (ds: Outputs/Expected/Verify · dev: Files/Failing Test/Verify Command) |
+| **D4 — tier/effort policy** | inherit session model (dev — TDD needs capability) · tier heuristic by task weight (ds) |
+
+Plus two **commitment** decisions:
+| Decision | Note |
+|----------|------|
+| **Compile output (S5)** | CODE (`run.js`) · DATA (work-list a generic engine consumes). *Codegen is proven (ds+dev); the data form is writing-pending — keep the emit step an injected interface, don't hard-commit.* |
+| **Retire old engine** | ONLY after parity is proven on a real spec. And do NOT extract a shared run-core until a 2nd domain runs on the template. |
+
+**Do NOT put intra-level parallel-vs-sequential in the decision list** — it is **CORE, compiler-DERIVED** (parallel IFF a level's declared outputs are provably disjoint; ds's disjoint parquets qualify, dev's shared tree never does → sequential by construction). Hand-setting it is the retired `D5` proposal; a naive parallel copy corrupts a shared tree.
 
 Update `.planning/wc/{name}/STATE.md`:
 ```yaml
@@ -2342,6 +2348,8 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 When a structured artifact (a plan table, a typed spec) feeds a strict checker (an executable-guard, a deterministic parser), NEVER scaffold an LLM step between them. An LLM "discovery" agent that re-reads the table doesn't just cost tokens — it **silently tolerates format drift the checker rejects**, masking a spec-drift bug while looking like it works. If the input is a structured table, scaffold a **deterministic parser** (shared by the compiler AND the guard, so "compiles ⇔ passes gate"), not an agent that re-reads it.
 
 **The ds incident (June 2026):** the generic-interpreter `ds-implement.js` ran an LLM discovery agent between `ds-plan` (a structured producer) and `ds-plan-executable-guard.py` (a strict checker). Real plans used `**T1**`/em-dash deps that the guard rejected on *every row* — but the LLM tolerated them, so the workflow ran while the guard was silently dead. The drift was invisible until the LLM was removed. The accompanying re-analysis verifier "caught zero substantive bugs." Fix: deterministic parser+compiler shared with the guard; the discovery LLM and the re-analysis verifier were both deleted. (`docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`.) This is enforced at audit time as **executionClass=generic-interpreter ⇒ critical** (Mode 2 P22-P26).
+
+**Layer-agnostic:** this applies to ANY structured-producer → strict-checker boundary, not just the data/plan layer — the **spec layer** too (an `OUTLINE.md` / `*_REVIEWED.md` sentinel a downstream phase parses). The full remedy is the emitter-canonical triple (born-canonical emitter + strict guard + tolerant-parser shim, doctrine #6). The **stale-gate backstop** is likewise layer-agnostic: a gate-changing decision that leaves a stale UPSTREAM artifact must fail loud at whatever layer the gate lives (data Verify or spec sentinel), never be quietly reshaped to pass.
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:

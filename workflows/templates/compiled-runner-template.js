@@ -9,18 +9,30 @@
 //   Workflow({ scriptPath: ".planning/run.js", args: {...} })
 //
 // COPY this file to `workflows/templates/<domain>-run-template.js` and fill ONLY
-// the THREE SEAMS (marked ▼ SEAM). Leave the driver + the four invariants alone —
-// they are hand-won; see ds-run-template.js / dev-run-template.js for live ones.
+// the FOUR INJECTED SEAMS D1-D4 (marked ▼ SEAM). Leave the driver + the invariants
+// alone — they are the SHARED CORE; see ds-run-template.js / dev-run-template.js for
+// live ones, and `docs/common-infra-candidates.md` for the CANONICAL seam list (the
+// source of truth: shared seams S1-S7, injected seams D1-D4, the 6 doctrine invariants).
 //
-// THE FOUR SAFETY INVARIANTS (baked in here so every generated run.js inherits them):
+// THE FOUR INJECTED SEAMS (the real per-domain fork — everything else is core):
+//   D1  gateProbe(t)        → {pass, outputsPresent, evidence}  (trust-class aware: exit-code vs judgment)
+//   D2  implementerPrompt(t)→ how one task is produced (output-first vs TDD failing-test-first)
+//   D3  task-spec COLUMNS   → the __TASKS__ shape (fed to the deterministic parser)
+//   D4  tier/effort policy  → t.tier/t.effort (ds: heuristic by weight · dev: inherit session model)
+// NOT a seam: intra-level parallel-vs-sequential is CORE — the COMPILER DERIVES it (parallel IFF a
+// level's declared outputs are provably DISJOINT, else sequential). Never hand-set it as a constant.
+//
+// THE SAFETY INVARIANTS baked in here (subset of the 6 doctrine invariants that live in the runtime;
+// the other two — no-LLM-between-producer-and-checker and emitter-canonical — live in the parser/compiler):
 //   (i)   payload > pass/fail — pause/finding payloads carry deviations + a NUMBERED
 //         summary, never a bare exit code (the gate caught zero bugs in ds/dev;
 //         deviations + adversarial review caught them).
 //   (ii)  mandatory R4 — an assumption/contract/architecture change BLOCKS (pause),
 //         never auto-resolves to pass a gate; a stale-gate backstop re-blocks.
-//   (iii) the probe asserts ARTIFACTS-EXIST, not just gate-pass (a Verify can pass
-//         on a stale/clobbered artifact).
-//   (iv)  the adversarial/full-suite/review layer stays OUTSIDE this run.js.
+//   (iii) the probe corroborates ARTIFACTS-EXIST independently of the pass signal (a pass
+//         can be stale OR gamed in every domain).
+//   (iv)  the adversarial/full-suite/review layer stays OUTSIDE this run.js (and is PRIMARY,
+//         not a backstop, when the gate trust-class is judgment — it can lie where an exit code can't).
 //
 // Holes the compiler replaces verbatim, exactly once:
 //   __META__     meta object literal
@@ -209,11 +221,20 @@ for (let li = 0; li < levels.length; li++) {
   const todo = layer.filter(t => REVERIFY_DONE || !t.done || (ONLY && ONLY.has(String(t.id))))
   if (!todo.length) { layer.forEach(t => { state[String(t.id)] = { id: String(t.id), impl: null, gate: null, pass: true, skipped: true } }); continue }
   phase(`Level ${li}`)
-  // ▼ SEAM 1 (within-level execution): parallel (disjoint outputs, e.g. ds) is the default here.
-  //   For a SHARED work-tree domain (e.g. dev), the compiler emits sequential levels or the
-  //   implementer serializes — a naive parallel copy corrupts a shared tree. Set per DESIGN.md.
-  log(`Level ${li}/${levels.length - 1}: [${todo.map(t => t.id).join(', ')}]${todo.length > 1 ? ' (parallel)' : ''}`)
-  const results = (await parallel(todo.map(t => () => runTask(t)))).filter(Boolean)
+  // intra-level execution is CORE, not a seam: DERIVE disjointness (parallel IFF this level's tasks
+  // write provably-disjoint, statically-known declared outputs — ds's disjoint parquets qualify; dev's
+  // shared tree never does → sequential by construction). A naive hand-set parallel copy corrupts a
+  // shared tree. Default SEQUENTIAL when any task lacks declared outputs (not statically provable).
+  const allOuts = todo.flatMap(t => t.outputs || [])
+  const par = todo.length > 1 && todo.every(t => (t.outputs || []).length) && new Set(allOuts).size === allOuts.length
+  log(`Level ${li}/${levels.length - 1}: [${todo.map(t => t.id).join(', ')}]${todo.length > 1 ? (par ? ' (parallel — disjoint outputs)' : ' (sequential)') : ''}`)
+  let results
+  if (par) {
+    results = (await parallel(todo.map(t => () => runTask(t)))).filter(Boolean)
+  } else {
+    results = []
+    for (const t of todo) { const r = await runTask(t); if (r) results.push(r) }
+  }
   for (const r of results) state[r.id] = r
 
   // dynamic pause — an implementer hit an R4 it cannot auto-resolve (invariant ii). Surfaces

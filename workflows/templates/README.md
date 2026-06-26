@@ -1,6 +1,8 @@
 # Compiled-runner templates (`spec → plan → compiled run.js`)
 
-These are the compile **targets** for workflow-creator's compiled-runner pattern — the default execution skeleton for any workflow that runs a **DAG of mechanical work between human gates** (an implement/transform/generate phase driven by a structured plan table). See `skills/workflow-creator/references/dynamic-workflow-migration.md` §0 for the doctrine and `docs/DESIGN-ds-spec-plan-compile.md` / `docs/DESIGN-dev-spec-plan-compile.md` for the rationale.
+These are the compile **targets** for workflow-creator's compiled-runner pattern — the default execution skeleton for any workflow that runs a **DAG of mechanical work between human gates** (an implement/transform/generate phase driven by a structured plan table).
+
+> **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** — shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants, the return-reason taxonomy, and the confidence tags (which seams are ds+dev-proven vs writing-pending). See also `skills/workflow-creator/references/dynamic-workflow-migration.md` §0 and `docs/DESIGN-ds-spec-plan-compile.md` / `docs/DESIGN-dev-spec-plan-compile.md`.
 
 | File | Role |
 |------|------|
@@ -8,35 +10,49 @@ These are the compile **targets** for workflow-creator's compiled-runner pattern
 | `ds-run-template.js` | Live instance — **output-first / produced-artifact** gate (needs the outputs-exist probe), parallel within-level, tiered model. |
 | `dev-run-template.js` | Live instance — **TDD / exit-code** gate (RED→GREEN), sequential shared-tree. |
 
-## How a runner is born
+## How a runner is born — the emitter/guard/parser triple
 
 ```
-SPEC ──▶ PLAN (structured task table)
+SPEC ──▶ PLAN-EMITTER phase  ← emits BORN-CANONICAL table format (doctrine #6)
             │
-            ├─ scripts/<domain>/<domain>_plan_table.py   ← deterministic, prefix-tolerant parser (SINGLE source of truth)
-            │     └─ imported verbatim by hooks/<domain>-plan-executable-guard.py  (compiles ⇔ passes gate)
+            ▼
+          PLAN (structured task table)
             │
-            └─ scripts/<domain>/<domain>_compile.py       ← fills the template's holes; deterministic, NO LLM
-                  └─ writes <project>/.planning/run.js  ──▶  Workflow({ scriptPath: ".planning/run.js" })
+            ├─ hooks/<domain>-plan-executable-guard.py   ← STRICT: structure only (cycles/missing/dangling), NEVER format
+            │     └─ imports ─┐
+            ├─ scripts/<domain>/<domain>_plan_table.py ◀─┘  deterministic parser, SINGLE source of truth (tolerance = back-compat shim)
+            │
+            └─ scripts/<domain>/<domain>_compile.py       ← produce the work-list; deterministic, NO LLM
+                  └─ emit CODE (<project>/.planning/run.js)  OR  DATA (a work-list a generic runner consumes)
+                        └─ Workflow({ scriptPath: ".planning/run.js" })  or the generic engine reads the work-list
 ```
 
-There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; wc-audit flags it `executionClass=generic-interpreter` → critical).
+There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; wc-audit flags it `executionClass=generic-interpreter` → critical). **Emitting only parser + guard (no canonical emitter) half-applies the rule — it relocates the tolerance into regex instead of removing it.**
 
-## The three seams (the ONLY things that change per domain)
+## The four INJECTED seams D1-D4 (the ONLY things that change per domain)
 
-1. **`columns` / task-spec shape** — what the plan table carries (`__TASKS__`): `id, name, deps, outputs, expectedOutput, verify, implements, kind, tier, effort, done, pauseAfter, taskText`.
-2. **`implementerPrompt(t)`** — how one task is produced (domain role + the domain's R4 assumption-change list). Keep the mandatory-R4 block + stale-gate backstop verbatim.
-3. **`gateProbe(t)`** — how a task is gated, returning `{pass, outputsPresent, evidence}`. The real fork: exit-code (ds/dev) vs mechanical-floor vs semantic judgment. Pick via interview Q7.
+1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, outputsPresent, evidence}`. The real fork: **exit-code** (ds/dev) vs **judgment** (writing — evidence IS the corroboration; the adversarial layer becomes PRIMARY). Pick the trust-class via interview Q7.
+2. **D2 `implementerPrompt(t)`** — how one task is produced (output-first vs TDD failing-test-first + the domain's R4 assumption-change list). Keep the mandatory-R4 block + stale-gate backstop verbatim.
+3. **D3 `columns` / task-spec shape** — what the plan table carries (`__TASKS__`): `id, name, deps, outputs, expectedOutput, verify, implements, kind, tier, effort, done, pauseAfter, taskText`.
+4. **D4 tier/effort policy** — `t.tier`/`t.effort` (ds: heuristic by task weight · dev: inherit session model). Pull out of the shared compiler.
 
-## The four safety invariants (baked into the driver — do NOT re-derive them)
+**NOT a seam — intra-level parallel-vs-sequential is CORE, compiler-DERIVED:** parallel IFF a level's declared outputs are provably **disjoint** (ds's parquets qualify; dev's shared tree never does → sequential by construction). Never hand-set it; never ask the author. (This killed the earlier `D5` proposal.)
+
+## The doctrine invariants (baked into the core — do NOT re-derive them)
 
 1. **payload > pass/fail** — pauses/findings carry `deviations` + a NUMBERED `summary`, never a bare exit code.
-2. **mandatory R4** — an assumption/contract/architecture change BLOCKS (pause); a stale-gate backstop re-blocks rather than reverting to pass a stale gate.
-3. **probe asserts artifacts-exist** — `outputsPresent` is checked independently of the gate (a gate can pass on a stale/clobbered artifact).
-4. **adversarial layer OUTSIDE run.js** — the full-suite/review/verify layer is a separate workflow or skill phase, never inside the compiled runner. For semantic gates this is load-bearing, not a backstop.
+2. **mandatory R4** — an assumption/contract/grain/schema change BLOCKS (pause); a stale-gate backstop re-blocks rather than reverting to pass a stale gate.
+3. **probe corroborates the artifact** independently of the pass signal (a pass can be stale OR gamed).
+4. **adversarial layer OUTSIDE run.js** — separate workflow/skill phase; PRIMARY (not a backstop) when the gate is a judgment.
+5. **no LLM between a structured producer and a strict checker** — parse deterministically.
+6. **emitter-canonical** — one format spec shared by emitter, parser, guard; strict-at-emitter / tolerant-at-parser; the emitter writes born-canonical so the guard can go strict.
+
+## The runner yields on a RETURN-REASON (the skill loop branches on it)
+
+`done` · `hard-fail` · `pause-human` (declared ⏸ or dynamic R4 — a human decision) · `yield-for-recheck` (an AUTOMATED cross-cutting gate — dev's full-suite, ds's validate-coverage; NO human). Never model a `yield-for-recheck` as a human pause.
 
 ## Discipline
 
 - **Golden-test the parser against a REAL spec**, not the template — the template can't reveal the format drift an LLM was masking.
 - **Retire the old engine only after parity is proven** on a real spec.
-- **Do NOT extract a shared `run-core` until a 2nd domain runs on the template** — extracting from one domain bakes in its isms.
+- **Do NOT extract a shared `run-core` until a 2nd domain runs on the template** — extracting from one domain bakes in its isms. The **judgment gateProbe body** and the **data compile-emit form** each have only one confirming instance (writing) until parity lands — keep them injected interfaces, don't hard-commit.
