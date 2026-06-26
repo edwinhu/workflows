@@ -6,9 +6,11 @@ These are the compile **targets** for workflow-creator's compiled-runner pattern
 
 | File | Role |
 |------|------|
-| `compiled-runner-template.js` | **Generic reference.** Copy to `<domain>-run-template.js` and fill ONLY the three seams. The driver + the four safety invariants are baked in — leave them alone. |
-| `ds-run-template.js` | Live instance — **output-first / produced-artifact** gate (needs the outputs-exist probe), parallel within-level, tiered model. |
-| `dev-run-template.js` | Live instance — **TDD / exit-code** gate (RED→GREEN), sequential shared-tree. |
+| `run-core.js` | **THE shared driver core (pass #9).** ONE copy of the topo/level/`runTask`/`returnReason`/`intraLevel` driver + helpers + unified `TRANSFORM_SCHEMA` + the six doctrine invariants. The compiler SPLICES it with a per-domain fragment into a self-contained `<project>/.planning/run.js`. Holes: `__META__/__PROJECT__/__TASKS__/__GLOBAL_CONSTRAINTS__/__LEVEL_MODES__/__TASK_BODIES__`. |
+| `ds-task.js` | ds FRAGMENT (spliced into `__TASK_BODIES__`) — the injected fns: `gateProbe` (output-first / outputs-exist), `implementerPrompt` (no `recheckTrigger`). |
+| `dev-task.js` | dev FRAGMENT — `gateProbe` (TDD / files+test → `artifactsPresent`), `implementerPrompt` (Global Constraints + Interfaces), `recheckTrigger` (cross-level overlap → full suite). |
+| `compiled-runner-template.js` | **Generic reference (birther).** Converging onto `run-core.js` — it will splice the shared core, not carry a parallel driver copy (co-owned follow-up with wc-creator). |
+| `ds-run-template.js` · `dev-run-template.js` | **DEPRECATED** — pre-pass-#9 monolithic copies, superseded by `run-core.js` + `<domain>-task.js`; the compilers no longer use them. Retired in the birther-convergence pass. |
 
 ## How a runner is born — the emitter/guard/parser triple
 
@@ -31,7 +33,7 @@ There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the
 
 ## The four INJECTED seams D1-D4 (the ONLY things that change per domain)
 
-1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, outputsPresent, evidence, scope}`. **`pass` is ALWAYS deterministic** (exit code or mechanical floor — never a returned judgment, so nothing in the runner to game). The fork is *sufficiency*: exit-code (ds/dev — the gate IS the probe) vs a **necessary-not-sufficient floor** (writing — the sufficient authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3). Pick the trust-class via interview Q7.
+1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, artifactsPresent, evidence, scope}` (canonical names; `pass` ⊥ `artifactsPresent` — the core ANDs them). **`pass` is ALWAYS deterministic** (exit code or mechanical floor — never a returned judgment, so nothing in the runner to game). The fork is *sufficiency*: exit-code (ds/dev — the gate IS the probe) vs a **necessary-not-sufficient floor** (writing — the sufficient authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3). Pick the trust-class via interview Q7.
 2. **D2 `implementerPrompt(t)`** — how one task is produced (output-first vs TDD failing-test-first + the domain's R4 assumption-change list). Keep the mandatory-R4 block + stale-gate backstop verbatim.
 3. **D3 `columns` / task-spec shape** — what the plan table carries (`__TASKS__`): `id, name, deps, outputs, expectedOutput, verify, implements, kind, tier, effort, done, pauseAfter, taskText`.
 4. **D4 tier/effort policy** — `t.tier`/`t.effort` (ds: heuristic by task weight · dev: inherit session model). Pull out of the shared compiler.
