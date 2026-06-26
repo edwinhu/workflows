@@ -1,10 +1,18 @@
-# Common-infra candidates: the shared run-core seams (EXTRACTION UNBLOCKED — pass #9 active)
+# Common-infra candidates: the shared run-core seams (EXTRACTED — pass #9 landed, v5.61.0)
 
 > **Canonical** cross-workflow seam list for the compiled-runner pattern. Owned here (ds vantage);
-> `dev`'s DESIGN §9 holds the dev-side view and points to this file. **STATUS: every seam is confirmed
-> across three instances** (both trust-classes exit-code + semantic; both compile-outputs codegen +
-> data), **and writing's A/B parity is GREEN** (writing v5.57.0, PR #18, `63fba86`) — so the extraction
-> gate the guardrail protected is **CLEARED. Pass #9 (run-core extraction) is unblocked and active.**
+> `dev`'s DESIGN §9 holds the dev-side view and points to this file. **STATUS: EXTRACTED.** Pass #9
+> landed on main (PR #29, `a1a8c71`, v5.61.0, verified): the firm seams **S1–S7 + the helpers now live
+> in `workflows/templates/run-core.js`**; the per-domain bodies are injected as `ds-task.js` /
+> `dev-task.js` ({gateProbe, implementerPrompt, recheckTrigger}); `{ds,dev}_compile` splice core +
+> task + data into a self-contained run.js; the canonical D1 contract `{pass, artifactsPresent,
+> evidence, scope}` ships with the core conjoining the two independent booleans; the `returnReason`
+> enum gives `yield-for-recheck` its own channel (the dev mux is removed; `decision`→`declared`);
+> intra-level is compiler-derived. Emitter-canonical (#6) confirmed a NO-OP for ds+dev. Every seam was
+> confirmed across the instances (both trust-classes exit-code + semantic; both compile-outputs codegen
+> + data) before extraction; writing's A/B parity was GREEN (v5.57.0, PR #18, `63fba86`).
+> **Remaining as flagged follow-ups (not part of pass #9): the shared-Python-S1-parser extraction
+> (co-owned, with the P27 no-deterministic-join constraint) and dev's emitter-canonical hardening.**
 >
 > *How parity was shown (the method matters):* a confounded raw current-vs-compiled double-run was
 > deliberately REJECTED as uninterpretable (the L1/L2/L3 reviewers are non-deterministic, so a verdict
@@ -28,8 +36,8 @@ trust-class, same codegen compile-output), so they could not validate a seam alo
 were identical. **Writing is the third instance that broke that symmetry, and all of its axes have now
 landed:** compile=DATA (section-index), the spec-layer stale-gate backstop, the born-canonical emitter
 (doctrine #6), and now the GATE step. **Every seam below is confirmed across three instances spanning
-both trust-classes and both compile-outputs.** Writing's A/B parity is now GREEN, so **the extraction
-gate is cleared and pass #9 is active.**
+both trust-classes and both compile-outputs.** Writing's A/B parity was GREEN, so the gate cleared and
+**pass #9 has now LANDED** (run-core.js on main, v5.61.0).
 
 ## SHARED seams (candidate common-infra)
 
@@ -101,7 +109,7 @@ second input to the same derivation — parallel-safe even on a shared tree — 
 - **Payload schema is a fixed first-class TYPE from day 1** (S4), not an evolved literal.
 - **Per-domain forcing fixture for the stale-gate backstop** (ds: `ds-grain-pause`; dev: signature-canary) — the fixture is per-domain, the backstop logic (S3) is shared.
 
-## Extraction readiness (pass #9) — ALL SEAMS CONFIRMED (3 instances)
+## Extraction status (pass #9) — ✅ EXTRACTED + LANDED (v5.61.0)
 
 - **Firm to extract (✅ proven across 3 instances):** S1, S2 (incl. the intra-level flag), S3 (backstop
   layer-agnostic across ds+dev+writing), S4, S5 (code↔data emit, both forms proven), S6, S7, and the
@@ -118,23 +126,23 @@ second input to the same derivation — parallel-safe even on a shared tree — 
   therefore PURELY core-enforced (not per-domain-trusted), and findings can distinguish "gate failed"
   from "gate passed but artifact missing/clobbered." (A domain *could* pre-fold all-present into `pass`
   and the core's AND would still be correct, but none does — keep the two booleans independent.)
-- **The extraction gate is CLEARED** (writing A/B parity green) — **pass #9 is active.**
-- **Run-core gateProbe CONTRACT item (pass #9):** the gate return contract gains a coverage **`scope`**
-  (checked / not-checked) — a clean `pass` must not over-claim (doctrine #3 addendum). The wc-creator
-  birther `GATE_SCHEMA` should add it too (it's the floor's analog of the semantic "vague-evidence" guard
-  the template already carries). Worked regex-fix lives in writing.
-- **Extraction cleanup items (impl, not seam):** give `yield-for-recheck` its own return channel + a
-  durable (args-tracked) recheck trigger so it survives a resume on a co-located level (documented as a
-  compile-time constraint for now — see the wc-creator birther template); pull `D4` tier policy out of
-  the shared compiler.
-- **Recommendation (now active):** pass #9 extracts the full firm core as `templates/run-core.js` +
-  per-domain `<domain>-task.js` fragments **spliced at compile time** (run.js is self-contained in the
-  project's `.planning/`, so runtime import is out). `<domain>-task.js` carries ONLY the runtime per-domain
-  bodies — `gateProbe(t)` [D1], `implementerPrompt(t)` [D2], `recheckTrigger()` [default null]; the
-  shared schemas, driver, intra-level disjointness flag, and return-channel taxonomy stay in the core;
-  columns [D3] + tier [D4] are compile-time (parser column-map + the domain compiler). `D1`'s body stays
-  an injected interface (all three trust-class shapes as reference; conformant impl: `scripts/writing/writing_gate_probe.py`),
-  not because it's under-determined but because its computation is intrinsically per-domain.
+- ✅ **DONE — pass #9 landed** (PR #29, `a1a8c71`, v5.61.0; verified on main). The full firm core was
+  extracted as `workflows/templates/run-core.js` + per-domain `ds-task.js` / `dev-task.js` fragments
+  spliced at compile time by `{ds,dev}_compile` into a self-contained `.planning/run.js`. Confirmed in
+  the extracted code:
+  - `<domain>-task.js` defines exactly `{gateProbe(t), implementerPrompt(t), recheckTrigger()}`; the
+    shared schemas, driver, helpers, and intra-level flag stay in the core. Columns [D3] + tier [D4] ride
+    on the `__TASKS__` spec (tier absent → inherit session model — D4 pulled out of the compiler).
+  - D1 contract `{pass, artifactsPresent, evidence, scope:{checked,notChecked}}`; the core conjoins the
+    two independent booleans.
+  - `returnReason` enum — `yield-for-recheck` has its OWN channel (the dev mux is removed;
+    `decision`→`declared`); the recheck trigger is **durable** via `CLEARED_RECHECK` (args
+    `clearedFullSuite`/`clearedRecheck`), so it survives a resume — the co-located-level cleanup is closed,
+    not just documented.
+  - intra-level (`LEVEL_MODES`) is compiler-derived from declared-output disjointness + isolation-safety.
+  - Emitter-canonical (#6) confirmed a NO-OP for ds+dev (dev-refactor verified vs code).
+- **Remaining flagged follow-ups (NOT pass #9):** the shared-Python-S1-parser extraction (co-owned;
+  carries the P27 no-deterministic-join constraint) and dev's emitter-canonical hardening (dev §9).
 
 ---
-*Maintainers: ds-refactor (owner of this file) · dev-refactor (DESIGN §9, dev view) · writing-refactor (third instance — all axes landed, A/B parity GREEN) · run-core-extract (pass #9, active).*
+*Maintainers: ds-refactor (owner of this file) · dev-refactor (DESIGN §9, dev view) · writing-refactor (third instance — all axes landed, A/B parity GREEN) · run-core-extract (pass #9 — LANDED, v5.61.0).*
