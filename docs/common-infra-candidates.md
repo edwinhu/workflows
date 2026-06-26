@@ -40,7 +40,7 @@ A/B parity run — a *validation* step, not a design unknown.
 
 | # | Seam | Shared contract? | Per-instance |
 |---|------|------------------|--------------|
-| **D1** | `gateProbe(t)` body | **YES** — returns `{pass, artifactsPresent, evidence}` (S4-art). **SHARPENED by writing: `probe.pass` is ALWAYS deterministic** — an exit-code OR a mechanical floor — never a returned judgment. | ds: run Verify (exit-code, sufficient) · dev: run test + filesPresent + testPresent (exit-code, sufficient) · writing: a deterministic mechanical floor in the runner (section-index/structure present, sources pinned) that is **necessary-not-sufficient**; the SEMANTIC verdict (writing-review + source-verify) is the **PRIMARY arbiter OUTSIDE `run.js`**, never inside the probe |
+| **D1** | `gateProbe(t)` body | **YES** — returns `{pass, artifactsPresent, evidence, scope}` (S4-art). **SHARPENED by writing: `probe.pass` is ALWAYS deterministic** — exit-code OR mechanical floor, never a returned judgment. **ADDENDUM (writing): a floor must DISCLOSE its blind spot** — a clean `pass:true` must NEVER imply the floor verified tokens/quantities it couldn't check, so the contract carries a coverage **`scope` (checked / not-checked)** and `evidence` states it. | ds: run Verify (exit-code, sufficient) · dev: run test + filesPresent + testPresent (exit-code, sufficient) · writing: a deterministic floor (section-index/structure present, sources pinned) that is **necessary-not-sufficient** AND **scope-disclosing** — e.g. a Bluebook regex floor false-positived on `§ 78mm` and was blind to spelled-out numbers, so it must SAY it didn't check those; the SEMANTIC verdict (writing-review + source-verify) is the **PRIMARY arbiter OUTSIDE `run.js`**, never inside the probe |
 | **D2** | `implementerPrompt(t)` | partial (output-first vs TDD failing-test-first; no-phantom-RED clause) | per-domain |
 | **D3** | Task-spec COLUMNS | column-map feeds S1 | ds: Outputs/Expected/Verify · dev: Files/Failing Test/Verify Command |
 | **D4** | tier/effort policy | no | ds: heuristic by task weight · dev: inherit session model (TDD needs capability) · **pull out of the shared compiler** |
@@ -53,7 +53,7 @@ second input to the same derivation — parallel-safe even on a shared tree — 
 
 1. **Payload > pass/fail** — surface `deviations` + a numbered `summary`/`evidence` at every pause; it is the catch-channel.
 2. **Mandatory R4** — grain/sample/schema/interface/methodology changes BLOCK and pause; never silent auto-resolve.
-3. **Probe corroborates the artifact** (S4-art) — never trust the pass signal alone; a pass can be stale or gamed in every domain.
+3. **Probe corroborates the artifact** (S4-art) — never trust the pass signal alone; a pass can be stale or gamed in every domain. **And a deterministic FLOOR must disclose its blind spot:** a clean `pass:true` must not imply coverage it doesn't have, so the floor's evidence SCOPES what it actually checked (checked / not-checked). This is the floor's analog of the semantic-gate lesson ("vague-evidence pass = the failure mode in a judge's robe") — it keeps *necessary-not-sufficient* honest about WHERE the sufficiency boundary lies. (writing: a regex floor that false-positives or is blind to a token form must say so, not pass silently.)
 4. **Adversarial review stays OUTSIDE the runner** — and is the *primary arbiter* (not a backstop) when the real gate is semantic. Writing's sharpening makes this exact: the runner's `gateProbe` only ever returns a **deterministic floor** (necessary, never a returned judgment); the **semantic authority lives entirely outside `run.js`**. So "judgment trust-class" = *deterministic-floor-in-runner + semantic-authority-outside* — there is no LLM judge *inside* the probe to game. (This also kills the "haiku judging prose" failure mode by construction.)
 5. **No LLM between a structured producer and a strict checker** — it silently absorbs drift and masks spec bugs (the ds sleeper: `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`). Parse deterministically.
 6. **Emitter-canonical** — ONE format spec shared by emitter, parser, and guard; strict-at-emitter / tolerant-at-parser. The plan EMITTER writes canonical so plans are born canonical; the parser's tolerance is then a back-compat shim, not the primary defense.
@@ -95,6 +95,10 @@ second input to the same derivation — parallel-safe even on a shared tree — 
   deterministic — no LLM judge inside the runner to game.
 - **No design-gated seam remains.** The only thing before pass #9 is writing's **A/B parity run** — a
   validation step, not a design unknown.
+- **Run-core gateProbe CONTRACT item (pass #9):** the gate return contract gains a coverage **`scope`**
+  (checked / not-checked) — a clean `pass` must not over-claim (doctrine #3 addendum). The wc-creator
+  birther `GATE_SCHEMA` should add it too (it's the floor's analog of the semantic "vague-evidence" guard
+  the template already carries). Worked regex-fix lives in writing.
 - **Extraction cleanup items (impl, not seam):** give `yield-for-recheck` its own return channel + a
   durable (args-tracked) recheck trigger so it survives a resume on a co-located level (documented as a
   compile-time constraint for now — see the wc-creator birther template); pull `D4` tier policy out of
