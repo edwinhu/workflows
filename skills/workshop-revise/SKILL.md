@@ -207,11 +207,15 @@ Unplanned issues surface mid-revision. Apply the same 4-rule system as the works
 For content or structural changes (NOT simple formatting fixes), the edited deck is reviewed by the **`workshop-verify` ultracode workflow** — the same per-slide fan-out + JS gate the workshop skill uses — scoped to the slides you touched:
 
 1. **Compile** so `slides.pdf` reflects the edits: `cd [presentation directory] && typst compile slides.typ && typst compile notes.typ`
-2. **Invoke selectively** (review only the changed slides; carry the rest forward):
+2. **Invoke selectively** (review only the changed slides; carry the rest forward). Pass `slideIndex` =
+   the parsed `.planning/slide-index.json` (recompile via `scripts/workshop/workshop_slide_table.py "<project>" --json`
+   if the OUTLINE changed) — the deterministic OUTLINE side-table; the workflow still enumerates the built
+   `slides.typ` and joins inventory semantically (DESIGN §3a-join). Omit to fall back to the LLM Discover.
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[absolute project root]",
      "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "slideIndex": <parsed .planning/slide-index.json, or omit>,
      "onlyChecks": [<IDs of the slides you edited, e.g. "S4", "S5">]
    })
    ```

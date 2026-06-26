@@ -18,6 +18,13 @@ if (!PROJECT) throw new Error(`workshop-generate requires args.projectDir. Got "
 const PLUGIN = cfg.pluginRoot || ''
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.section), s]))
+// Deterministic slide index from scripts/workshop/workshop_slide_table.py — the compiled "Discover".
+// When the skill passes it (cfg.slideIndex), we skip the LLM Discover entirely (the ds/dev/writing
+// compile move): the parser's work-list IS the generate enumerator (DESIGN §3a — GENERATE consumes the
+// parser fully). Absent/empty → the LLM Discover still runs (back-compat for old callers / non-standard
+// projects). The fileHeader (theme preamble) is NOT a work-list concern → the assembly agent constructs
+// it from templates + SOURCES.md, so discFromIndex stays 100% deterministic (no LLM).
+const SLIDE_INDEX = (cfg.slideIndex && Array.isArray(cfg.slideIndex.slides) && cfg.slideIndex.slides.length) ? cfg.slideIndex : null
 
 const SLIDE = {
   type: 'object', additionalProperties: false,
@@ -54,19 +61,49 @@ const SECTION_SCHEMA = {
   },
 }
 const ASSEMBLE_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['slidesWritten', 'notesWritten', 'compiled', 'compileError', 'slidesPdf'],
+  type: 'object', additionalProperties: false, required: ['slidesWritten', 'notesWritten', 'compiled', 'compileError', 'notesCompiled', 'notesCompileError', 'slidesPdf'],
   properties: {
     slidesWritten: { type: 'boolean' }, notesWritten: { type: 'boolean' },
-    compiled: { type: 'boolean' }, compileError: { type: 'string' }, slidesPdf: { type: 'string' },
+    compiled: { type: 'boolean' }, compileError: { type: 'string' },
+    notesCompiled: { type: 'boolean', description: 'notes.typ compiled cleanly (a first-class teleprompter deliverable — gated, not slides-only)' },
+    notesCompileError: { type: 'string' },
+    slidesPdf: { type: 'string' },
   },
 }
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
+// Map the deterministic slide index → the DISCOVERY_SCHEMA shape (no LLM). The parser's COMPOSITE
+// group ("<= section> / <== subsection>") is the fan-out key (mirrors the LLM Discover's "= Part + ==
+// subsection" grouping); fileHeader is left "" for the assembly agent to construct. Prose-form rows
+// carry no Visual/Notes — default Visual to "none" and let the section agent infer notes from bullets +
+// the paper (the same inference the LLM Discover path produces from a prose outline).
+function discFromIndex(idx) {
+  return {
+    outlineReadable: true,
+    sourcesPath: idx.sourcesPath || `${PROJECT}/.planning/SOURCES.md`,
+    paperPath: idx.paperPath || '',
+    slidesPath: `${PROJECT}/presentation/slides.typ`,
+    notesPath: `${PROJECT}/presentation/notes.typ`,
+    fileHeader: '',                                  // assembly agent constructs it (DESIGN §3a)
+    fragmentsDir: `${PROJECT}/.planning/slide-fragments`,
+    sectionOrder: idx.groupOrder,                    // composite fan-out keys, document order
+    slides: idx.slides.map(s => ({
+      num: String(s.num),
+      section: s.group,                              // the composite grouping key
+      takeaway: s.takeaway,
+      bullets: s.bullets || '',
+      inventory: Array.isArray(s.inventory) ? s.inventory : [],
+      visual: (s.visual && s.visual.trim()) || 'none',
+      notes: s.notes || '',
+    })),
+  }
+}
+
 phase('Discover')
-const disc = await agent(
+const disc = SLIDE_INDEX ? discFromIndex(SLIDE_INDEX) : await agent(
   `Read the approved workshop Slide Spec and prepare for SECTION-level generation. Working directory: ${PROJECT}
 
-1. Read ${PROJECT}/.planning/OUTLINE.md. If it has no Slide Spec table (columns Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes), set outlineReadable=false. For each row extract a slide: num, section (the `=` Part + `==` subsection text — the grouping key), takeaway, bullets, inventory, visual, notes.
+1. Read ${PROJECT}/.planning/OUTLINE.md. If it has no Slide Spec table (columns Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes), set outlineReadable=false. For each row extract a slide: num, section (the \`=\` Part + \`==\` subsection text — the grouping key), takeaway, bullets, inventory, visual, notes.
 2. sourcesPath = ${PROJECT}/.planning/SOURCES.md ; paperPath = the source-paper path from SOURCES.md (or "").
 3. slidesPath = ${PROJECT}/presentation/slides.typ ; notesPath = ${PROJECT}/presentation/notes.typ (adjust if the project uses a different presentation dir).
 4. fileHeader = the slides.typ preamble (import theme + #show + config-info incl qr:none) — read presentation/templates/ + any existing header, or reconstruct from SOURCES.md metadata. Must be a compilable preamble.
@@ -77,6 +114,7 @@ Return DISCOVERY_SCHEMA with absolute paths.`,
   { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
 )
 if (!disc.outlineReadable) throw new Error(`workshop-generate: ${PROJECT}/.planning/OUTLINE.md has no Slide Spec table. Phase 2 + workshop-outline-executable-guard must produce one first.`)
+if (SLIDE_INDEX) log(`Discover: deterministic slide index (${disc.slides.length} slides, ${disc.sectionOrder.length} groups) — no LLM Discover`)
 
 // Group slides by Section, in sectionOrder. Section id = its index in sectionOrder (stable for onlyChecks).
 const sectionList = disc.sectionOrder.map((key, idx) => ({
@@ -104,8 +142,9 @@ Typst conventions: each slide is \`=== <takeaway sentence>\` then \`#slide[ ... 
 
 WRITE two files (mkdir -p ${disc.fragmentsDir} first):
 - ${disc.fragmentsDir}/section-${sec.id}.typ — ALL this section's \`=== ...\` + \`#slide[...]\` blocks, in order (NO file header, NO \`==\` heading).
-- ${disc.fragmentsDir}/notes-section-${sec.id}.typ — flowing speaker-notes for this section (one block per slide, with timing from each slide's Notes).
-Return SECTION_SCHEMA: slidesPath, notesPath, slideNums (must equal ${JSON.stringify(sec.slides.map(s => s.num))}), citedInventory (⊆ the allowed set), summary.`,
+- ${disc.fragmentsDir}/notes-section-${sec.id}.typ — flowing speaker-notes for this section (one block per slide, with timing from each slide's Notes). Write PLAIN Typst prose + bullets ONLY — NO custom note macros (do NOT invent \`#slide-notes\`/\`#speaker-note\`/etc.; assembly adds the \`= Section\` heading + the standard notes preamble, and the gate now COMPILES notes.typ, so an invented macro breaks the build).
+GROUND citedInventory IN THE FILE (not memory): after writing, run \`grep -ohE '[FTRA][0-9]+' ${disc.fragmentsDir}/section-${sec.id}.typ | sort -u\` and set citedInventory to EXACTLY that grep output — the actual inventory ids present in the fragment you wrote. (The gate checks this ⊆ the allowed set; a memory-reported list that disagrees with the file is the fidelity bug this step closes.)
+Return SECTION_SCHEMA: slidesPath, notesPath, slideNums (must equal ${JSON.stringify(sec.slides.map(s => s.num))}), citedInventory (the grep result, ⊆ the allowed set), summary.`,
     { label: `section:${sec.id}`, phase: 'Sections', schema: SECTION_SCHEMA })
 }))).filter(Boolean)
 const secById = Object.fromEntries(liveSecs.map(s => [String(s.section), s]))
@@ -118,11 +157,13 @@ let asm = null
 if (haveAll) {
   const order = sectionList.map(s => ({ id: s.id, key: s.key,
     slidesFile: `${disc.fragmentsDir}/section-${s.id}.typ`, notesFile: `${disc.fragmentsDir}/notes-section-${s.id}.typ` }))
+  const headerInstruction = disc.fileHeader
+    ? `FILE HEADER (write to the top of slides.typ verbatim):\n${disc.fileHeader}`
+    : `FILE HEADER: none was pre-resolved — CONSTRUCT a compilable slides.typ preamble yourself: \`#import "templates/theme.typ": *\`, the \`#show: university-theme.with(...)\` block with \`config-info(...)\` populated from ${disc.sourcesPath} metadata (title/subtitle/authors/affiliations) and **\`qr: none\` (REQUIRED — the theme expects this field)**, the standard \`#show\`/\`#set\` rules, then \`#title-slide()\`. Read presentation/templates/ + any existing presentation/slides.typ preamble first; reuse it if present.`
   asm = await agent(
     `You are the workshop deck assembler. Build slides.typ + notes.typ by CONCATENATING the per-section fragment files (already written) under their Section headers, then COMPILE. Do NOT rewrite content — only concatenate, emit the \`=\`/\`==\` heading once per section, and fix compile-blocking syntax.
 
-FILE HEADER (write to the top of slides.typ verbatim):
-${disc.fileHeader}
+${headerInstruction}
 
 SECTION ORDER (each slidesFile/notesFile exists; cat them in this order; emit each section's \`=\` Part / \`==\` subsection heading once before its slides):
 ${JSON.stringify(order)}
@@ -130,7 +171,7 @@ ${JSON.stringify(order)}
 Steps (use Bash to cat the files — do NOT paste content from memory):
 1. Write ${disc.slidesPath}: the header, then for each section in order emit its heading + \`cat\` its slidesFile.
 2. Write ${disc.notesPath}: the notes preamble, then per section a \`= Section\` heading + \`cat\` its notesFile.
-3. Compile: \`tinymist compile ${disc.slidesPath}\` (or \`typst compile\`) from ${PROJECT}; fix ONLY compile-blocking syntax and recompile.
+3. Compile: \`tinymist compile ${disc.slidesPath}\` (or \`typst compile\`) AND the notes deck \`tinymist compile ${disc.notesPath}\` (notes are a first-class deliverable, gated — NOT slides-only), from ${PROJECT}; fix ONLY compile-blocking syntax and recompile each. Set compiled/compileError for slides and notesCompiled/notesCompileError for notes. Do NOT invent note macros (e.g. #slide-notes/#speaker-note) to force notes to compile — notes use plain \`=\`/\`==\` headings + prose; an undefined-macro reference is a fragment bug to surface in notesCompileError, not to paper over with a defensive alias.
 Return ASSEMBLE_SCHEMA.`,
     { label: 'assemble', phase: 'Assemble', schema: ASSEMBLE_SCHEMA })
 }
@@ -153,18 +194,21 @@ for (const sec of sectionList) {
   if (f && !fidelityOk) findings.push({ severity: 'major', section: sec.id, detail: `Section "${sec.key}": cited inventory outside its slides' allowed ids` })
 }
 const compiled = !!asm && asm.compiled === true
-if (haveAll && !compiled) findings.push({ severity: 'critical', section: 'deck', detail: `Deck did not compile: ${(asm?.compileError || 'unknown').slice(0, 300)}` })
+const notesCompiled = !!asm && asm.notesCompiled === true
+if (haveAll && !compiled) findings.push({ severity: 'critical', section: 'deck', detail: `slides.typ did not compile: ${(asm?.compileError || 'unknown').slice(0, 300)}` })
+// notes.typ is a first-class teleprompter deliverable — gate it, don't ship malformed notes (opv-parity).
+if (haveAll && compiled && !notesCompiled) findings.push({ severity: 'critical', section: 'deck', detail: `notes.typ did not compile: ${(asm?.notesCompileError || 'unknown').slice(0, 300)}` })
 if (!haveAll) findings.push({ severity: 'critical', section: 'deck', detail: 'Not all sections have fragments — assembly skipped' })
 findings.sort((a, b) => ({ critical: 0, major: 1, minor: 2 }[a.severity] - { critical: 0, major: 1, minor: 2 }[b.severity]))
 
 const allDrafted = rows.length > 0 && rows.every(r => r.drafted && r.completeSlides && r.fidelityOk)
-const overallPass = allDrafted && compiled
+const overallPass = allDrafted && compiled && notesCompiled
 const verdict = overallPass ? 'GENERATED (compiles)' : 'GAPS'
 const scoreTable = [
   '| Section | Slides | Fragment | Complete | Inventory-fidelity |',
   '|---------|--------|----------|----------|--------------------|',
   ...rows.map(r => `| ${r.key.slice(0, 28)} | ${r.slideCount} | ${r.drafted ? '✅' : '❌'} | ${r.completeSlides ? '✅' : '❌'} | ${r.fidelityOk ? '✅' : '❌'} |`),
-  `| **Deck** | compile | ${compiled ? '✅' : '❌'} | | ${overallPass ? '✅ GENERATED' : '❌ GAPS'} |`,
+  `| **Deck** | slides / notes compile | ${compiled ? '✅' : '❌'} / ${notesCompiled ? '✅' : '❌'} | | ${overallPass ? '✅ GENERATED' : '❌ GAPS'} |`,
 ].join('\n')
 
 log(overallPass
@@ -172,7 +216,7 @@ log(overallPass
   : `❌ workshop-generate: ${findings.length} finding(s); fix + re-invoke onlyChecks=sectionsThatFailed`)
 
 return {
-  overallPass, verdict, compiled, scoreTable,
+  overallPass, verdict, compiled, notesCompiled, scoreTable,
   sections: rows,
   findings,
   sectionsThatFailed: rows.filter(r => !r.drafted || !r.completeSlides || !r.fidelityOk).map(r => r.section),
