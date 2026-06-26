@@ -51,7 +51,7 @@ async function run({ args = {}, gate = () => true, outputs = () => true, impl = 
 
 console.log('compile + structure')
 {
-  const tasksLit = JSON.parse(src.match(/const TASKS\s*=\s*(\[[\s\S]*?\])\n\n\/\/ ── args/)[1])
+  const tasksLit = JSON.parse(src.match(/const TASKS\s*=\s*(\[[\s\S]*?\])\nconst GLOBAL_CONSTRAINTS/)[1])
   eq('4 tasks', tasksLit.length, 4)
   eq('A1 engineer→sonnet', tasksLit.find(t => t.id === 'A1').tier, 'sonnet')
   eq('A3 declares pauseAfter', tasksLit.find(t => t.id === 'A3').pauseAfter, 'confirm the panel definition before downstream')
@@ -66,7 +66,7 @@ console.log('happy path (all gates pass after implement)')
   const { result, trace } = await run({ gate })
   ok('parallel batch of 2 for level [A2,A3]', trace.parallelBatches.includes(2), `batches=${trace.parallelBatches}`)
   // A3 has a declared pause → run stops after level containing A3 (level 1), A4 never runs
-  eq('paused at A3 (declared)', [result.paused, result.atTask, result.pauseKind], [true, 'A3', 'decision'])
+  eq('paused at A3 (declared)', [result.returnReason, result.atTask, result.pauseKind], ['pause-human', 'A3', 'declared'])
   ok('A4 not implemented (gated behind pause)', !trace.implCalls.includes('A4'), `impl=${trace.implCalls}`)
   ok('A1 ran before A2/A3', trace.implCalls.indexOf('A1') < trace.implCalls.indexOf('A2'))
 }
@@ -76,7 +76,7 @@ console.log('resume past the declared pause (clearedPauses)')
   const seen = new Set()
   const gate = (id) => seen.has(id) ? true : (seen.add(id), false)
   const { result, trace } = await run({ gate, args: { clearedPauses: ['A3'], decisions: { A3: '3 cols, keyed on id' } } })
-  eq('runs to completion', [result.done, result.overallPass], [true, true])
+  eq('runs to completion', [result.returnReason, result.overallPass], ['done', true])
   ok('A4 implemented after resume', trace.implCalls.includes('A4'))
   ok('decision injected into A3 prompt path', true) // covered by prompt builder; smoke
 }
@@ -93,11 +93,11 @@ console.log('done-checkbox blind-skip vs reverifyDone (clobber-safe resume)')
 console.log('idempotent short-circuit (outputs already satisfy Verify)')
 {
   const { result, trace } = await run({ gate: () => true })  // every pre-probe passes
-  eq('all skipped, done', [result.done, result.overallPass, result.tasksRemaining], [true, true, 0])
+  eq('all skipped, done', [result.returnReason, result.overallPass, result.tasksRemaining], ['done', true, 0])
   eq('no implementer calls', trace.implCalls.length, 0)
   // A3 declares a pause; even when skipped it must still surface for the human... but skipped means already-done.
   // Design choice: a skipped (already-satisfied) task does NOT re-pause — its decision was made in the run that built it.
-  ok('no pause on fully-satisfied resume', !result.paused)
+  ok('no pause on fully-satisfied resume', result.returnReason === 'done')
 }
 
 console.log('dynamic R4 pause (implementer blocks)')
@@ -105,7 +105,7 @@ console.log('dynamic R4 pause (implementer blocks)')
   const seen = new Set()
   const gate = (id) => seen.has(id) ? true : (seen.add(id), false)
   const { result } = await run({ gate, impl: (id) => id === 'A1' ? 'blocked' : 'implemented' })
-  eq('paused R4 at A1', [result.paused, result.pauseKind, result.atTask], [true, 'R4', 'A1'])
+  eq('paused R4 at A1', [result.returnReason, result.pauseKind, result.atTask], ['pause-human', 'R4', 'A1'])
   ok('payload carries the decision text', !!result.payload && /human/.test(result.payload.decision))
   ok('payload carries deviations (the bug channel)', /grain/.test(result.payload.deviations))
   ok('payload carries numbered summary', /n=123/.test(result.payload.summary))
@@ -116,7 +116,7 @@ console.log('declared-pause payload carries deviations + numbers (muni: gate cau
   const seen = new Set()
   const gate = (id) => seen.has(id) ? true : (seen.add(id), false)
   const { result } = await run({ gate })
-  eq('paused at A3', [result.paused, result.atTask], [true, 'A3'])
+  eq('paused at A3', [result.returnReason, result.atTask], ['pause-human', 'A3'])
   ok('A3 payload has summary numbers', /n=123/.test(result.payload.summary), JSON.stringify(result.payload))
   ok('A3 payload has deviations field', 'deviations' in result.payload)
   ok('A3 payload has the decision', /panel definition/.test(result.payload.decision))
@@ -136,7 +136,7 @@ console.log('hard gate failure stops with tasksThatFailed')
 {
   const gate = () => false  // probe never passes, even post-implement
   const { result } = await run({ gate })
-  ok('not done, overallPass false', result.done !== true && result.overallPass === false)
+  ok('not done, overallPass false', result.returnReason === 'hard-fail' && result.overallPass === false)
   ok('A1 reported failed', result.tasksThatFailed.includes('A1'), `failed=${result.tasksThatFailed}`)
 }
 

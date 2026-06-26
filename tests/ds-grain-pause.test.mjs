@@ -27,7 +27,7 @@ const src = readFileSync(runJs, 'utf8').replace(/^export const meta/m, 'const me
 
 console.log('compile the fixture plan')
 {
-  const tasks = JSON.parse(src.match(/const TASKS\s*=\s*(\[[\s\S]*?\])\n\n\/\/ ── args/)[1])
+  const tasks = JSON.parse(src.match(/const TASKS\s*=\s*(\[[\s\S]*?\])\nconst GLOBAL_CONSTRAINTS/)[1])
   ok('one task G1', tasks.length === 1 && tasks[0].id === 'G1', JSON.stringify(tasks.map(t => t.id)))
   ok('G1 engineer', tasks[0].kind === 'engineer')
   ok('Verify asserts grain uniqueness', /len\(keys\)==len\(set\(keys\)\)/.test(tasks[0].verify))
@@ -60,7 +60,7 @@ console.log('blocked implementer → R4 pause with collision numbers (mirrors li
   const { result, trace } = await run({ impl: blockedImpl })
   ok('implementer ran (G1)', trace.implCalls.includes('G1'))
   ok('did NOT silently pass — overallPass false', result.overallPass === false)
-  ok('paused, pauseKind R4, atTask G1', result.paused === true && result.pauseKind === 'R4' && result.atTask === 'G1', JSON.stringify([result.paused, result.pauseKind, result.atTask]))
+  ok('paused, pauseKind R4, atTask G1', result.returnReason === 'pause-human' && result.pauseKind === 'R4' && result.atTask === 'G1', JSON.stringify([result.returnReason, result.pauseKind, result.atTask]))
   // for a blocked task: gate-first PRE-probe runs once (skip-check), then implement → blocked →
   // return BEFORE the authoritative post-impl gate. So exactly ONE gate call for G1, not two.
   ok('authoritative post-impl gate NOT reached (1 probe = pre-check only)', trace.gateCalls.filter(g => g === 'G1').length === 1, `gateCalls=${JSON.stringify(trace.gateCalls)}`)
@@ -94,7 +94,7 @@ console.log('GATE-CHANGING decision injected WITHOUT editing Verify → implemen
     summary: 'G1: +price grain written, all 5 kept; stale Verify still on (cusip,event_ts).',
   })
   const { result } = await run({ impl: reblockImpl, args: { projectDir: FIX, decisions: { G1: 'extend grain to cusip×event_ts×price' } } })
-  ok('re-blocks (does not silently pass a stale gate)', result.paused === true && result.pauseKind === 'R4')
+  ok('re-blocks (does not silently pass a stale gate)', result.returnReason === 'pause-human' && result.pauseKind === 'R4')
   ok('deviations demand the Verify be updated', /update the Verify|Verify (still )?assert/i.test(result.payload.deviations), result.payload.deviations)
 }
 
@@ -109,9 +109,9 @@ console.log('GATE-CHANGING decision baked into PLAN (RESOLVED variant) → resum
   const resolvedSrc = readFileSync(resolvedRun, 'utf8').replace(/^export const meta/m, 'const meta')
   const goodImpl = () => ({ task: 'G1', status: 'implemented', outputsProduced: true, filesTouched: ['out/master.csv'], deviations: 'None. All 5 rows unique on (cusip,event_ts,price); no dedup.', summary: 'G1: 5 rows, unique on +price grain.' })
   const { result } = await run({ impl: goodImpl, gate: () => ({ exit0: true, outputsPresent: true }), source: resolvedSrc, args: { projectDir: FIX, decisions: { G1: 'extend grain to cusip×event_ts×price' } } })
-  ok('resolved plan: done + overallPass', result.done === true && result.overallPass === true, JSON.stringify([result.done, result.overallPass]))
+  ok('resolved plan: done + overallPass', result.returnReason === 'done' && result.overallPass === true, JSON.stringify([result.returnReason, result.overallPass]))
   ok('G1 not in tasksThatFailed', !result.tasksThatFailed.includes('G1'))
-  ok('not paused (loop closes)', !result.paused)
+  ok('not paused (loop closes)', result.returnReason === 'done')
 }
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)

@@ -12,7 +12,8 @@ Usage:
 
 Defaults: --out  <PLAN dir>/run.js
           --project  parent of the .planning dir holding PLAN.md
-          --template workflows/templates/ds-run-template.js (resolved from this file)
+          --template workflows/templates/run-core.js (shared driver; resolved from this file)
+          --fragment workflows/templates/ds-task.js (ds D1/D2 bodies spliced into the core)
 
 Exit 0 on success; non-zero (with violations on stderr) if the plan is not compilable.
 """
@@ -28,7 +29,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ds_plan_table import parse_plan, toposort, Task  # noqa: E402
 
 _HERE = Path(__file__).resolve()
-_DEFAULT_TEMPLATE = _HERE.parents[2] / "workflows" / "templates" / "ds-run-template.js"
+_TEMPLATES = _HERE.parents[2] / "workflows" / "templates"
+_DEFAULT_TEMPLATE = _TEMPLATES / "run-core.js"        # shared driver/helpers/schema (pass #9)
+_DEFAULT_FRAGMENT = _TEMPLATES / "ds-task.js"          # ds D1/D2 bodies spliced into __TASK_BODIES__
+
+# ds is isolation-safe (writes disjoint parquet/output paths in a data dir, no shared source tree),
+# so a level runs in PARALLEL when its tasks write provably-disjoint, statically-known Outputs.
+_ISOLATION_SAFE = True
+
+
+def _static_output(path: str) -> bool:
+    """An output is statically provable iff it names a concrete path — no glob/wildcard/brace
+    and not a bare directory. A runtime-computed path is NOT provable → forces sequential."""
+    p = (path or "").strip()
+    return bool(p) and not any(c in p for c in "*?{}[]") and not p.endswith("/")
+
+
+def _level_modes(levels: list[list[str]], by_id: dict[str, Task]) -> list[str]:
+    """Per-level intraLevel flag (S2, compiler-DERIVED): 'parallel' iff isolation-safe AND every task's
+    declared Outputs are statically known AND pairwise-disjoint across the level; else 'sequential'."""
+    modes: list[str] = []
+    for level in levels:
+        tasks = [by_id[i] for i in level if i in by_id]
+        outs_per_task = [[o for o in (t.outputs or [])] for t in tasks]
+        all_static = all(all(_static_output(o) for o in outs) for outs in outs_per_task)
+        flat = [o for outs in outs_per_task for o in outs]
+        disjoint = len(flat) == len(set(flat))
+        modes.append("parallel" if (_ISOLATION_SAFE and all_static and disjoint) else "sequential")
+    return modes
 
 
 def _tier(t: Task) -> tuple[str, str]:
@@ -68,7 +96,22 @@ def _js_literal(value) -> str:
     return json.dumps(value, ensure_ascii=False, indent=2)
 
 
-def compile_plan(plan_path: Path, out_path: Path, project_dir: Path, template_path: Path) -> int:
+def _node_check(path: Path) -> bool:
+    """`node --check` the emitted run.js — a splice has more failure modes than a single-file fill.
+    Skips silently (returns True) if node is unavailable."""
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        return True
+    proc = subprocess.run([node, "--check", str(path)], capture_output=True, text=True)
+    if proc.returncode != 0:
+        print(f"node --check FAILED on {path}:\n{proc.stderr}", file=sys.stderr)
+    return proc.returncode == 0
+
+
+def compile_plan(plan_path: Path, out_path: Path, project_dir: Path,
+                 template_path: Path, fragment_path: Path) -> int:
     text = plan_path.read_text()
     res = parse_plan(text)
     if not res.ok:
@@ -77,6 +120,8 @@ def compile_plan(plan_path: Path, out_path: Path, project_dir: Path, template_pa
 
     specs = [_spec_dict(t) for t in res.tasks]
     levels = toposort(res.tasks)
+    by_id = {t.id: t for t in res.tasks}
+    level_modes = _level_modes(levels, by_id)
     pauses = [s["id"] for s in specs if s["pauseAfter"]]
 
     meta = {
@@ -91,27 +136,44 @@ def compile_plan(plan_path: Path, out_path: Path, project_dir: Path, template_pa
     }
 
     template = template_path.read_text()
+    fragment = fragment_path.read_text()
+
+    # 1. splice the per-domain fragment into __TASK_BODIES__ FIRST (exactly-once), so the
+    #    exactly-once assertion for the data holes runs over the SPLICED result (catches a hole
+    #    token leaking out of the fragment into the core).
+    body_hole = "/*__TASK_BODIES__*/"
+    if template.count(body_hole) != 1:
+        print(f"Template {template_path}: hole {body_hole} appears {template.count(body_hole)}× (expected 1).", file=sys.stderr)
+        return 2
+    template = template.replace(body_hole, fragment, 1)
+
+    # 2. ds has no Global Constraints; LEVEL_MODES is the compiler-derived intraLevel flag.
     holes = {"/*__META__*/": _js_literal(meta),
              "/*__PROJECT__*/": json.dumps(str(project_dir)),
-             "/*__TASKS__*/": _js_literal(specs)}
+             "/*__TASKS__*/": _js_literal(specs),
+             "/*__GLOBAL_CONSTRAINTS__*/": json.dumps(""),
+             "/*__LEVEL_MODES__*/": _js_literal(level_modes)}
     for hole in holes:
         n = template.count(hole)
         if n != 1:
-            print(f"Template {template_path}: hole {hole} appears {n}× (expected exactly 1). "
+            print(f"After splice: hole {hole} appears {n}× (expected exactly 1). "
                   f"A hole token must not appear in documentation/comments.", file=sys.stderr)
             return 2
 
     banner = (
         "// GENERATED by ds-compile from PLAN.md — DO NOT EDIT. Edit PLAN.md and recompile.\n"
         f"// source: {plan_path}\n"
-        f"// tasks: {len(specs)} | levels: {len(levels)} | declared pauses: {pauses or 'none'}\n\n")
+        f"// core: {template_path.name} + fragment: {fragment_path.name}\n"
+        f"// tasks: {len(specs)} | levels: {len(levels)} | modes: {level_modes} | declared pauses: {pauses or 'none'}\n\n")
     out = banner + template
     for hole, repl in holes.items():
         out = out.replace(hole, repl, 1)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(out)
-    print(f"compiled {len(specs)} task(s), {len(levels)} level(s) → {out_path}")
+    if not _node_check(out_path):
+        return 3
+    print(f"compiled {len(specs)} task(s), {len(levels)} level(s), modes={level_modes} → {out_path}")
     if pauses:
         print(f"  declared pause(s) at: {', '.join(pauses)}")
     return 0
@@ -123,6 +185,7 @@ def main() -> int:
     ap.add_argument("--out")
     ap.add_argument("--project")
     ap.add_argument("--template", default=str(_DEFAULT_TEMPLATE))
+    ap.add_argument("--fragment", default=str(_DEFAULT_FRAGMENT))
     a = ap.parse_args()
 
     plan_path = Path(a.plan).resolve()
@@ -136,7 +199,8 @@ def main() -> int:
     else:
         p = plan_path.parent
         project_dir = p.parent if p.name == ".planning" else p
-    return compile_plan(plan_path, out_path, project_dir, Path(a.template).resolve())
+    return compile_plan(plan_path, out_path, project_dir,
+                        Path(a.template).resolve(), Path(a.fragment).resolve())
 
 
 if __name__ == "__main__":

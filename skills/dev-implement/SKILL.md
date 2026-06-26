@@ -80,8 +80,9 @@ dev-implement (this skill)
                                                           per task (test-first) →
                                                           independent probe gates on the
                                                           REAL Verify Command exit code
-  ← on r.done & overallPass: run the FULL suite (ground-truth) + dev-test-gaps, mark [x]
-  ← on r.paused: present payload, decide, resume (decisions / clearedPauses / clearedFullSuite)
+  ← on returnReason 'done': run the FULL suite (ground-truth) + dev-test-gaps, mark [x]
+  ← on 'pause-human': present payload, decide, resume (decisions / clearedPauses)
+  ← on 'yield-for-recheck': run the FULL suite, resume (clearedFullSuite); on 'hard-fail': fix + onlyChecks
 ```
 
 **Main chat orchestrates COMPILE + the run/pause loop + the full-suite ground-truth + the `/goal`.**
@@ -120,13 +121,11 @@ LOOP (under the active /goal), carrying decisions across pauses:
                             clearedFullSuite: [ <level idx whose full suite you ran green> ],
                             onlyChecks: [ <task ids to force re-run> ] } })    // optional
      → runs to the next pause or to completion. Code is already in the tree. Returns
-       { paused?, pauseKind, atTask|atLevel, payload, done?, overallPass, tasksRemaining,
-         tasksThatFailed, findings, reviews, scoreTable }.
-  2. If r.paused — route by pauseKind:
-       - "decision" (declared ⏸ PAUSE) approved as-planned: add atTask to clearedPauses, re-invoke.
-       - "fullsuite" (cross-level overlap checkpoint at atLevel): RUN THE FULL SUITE + lint now
-         (ground-truth — the runner can't). Green → re-invoke with clearedFullSuite += atLevel.
-         Red → fix the regression, re-invoke with onlyChecks=<regressed task ids>.
+       { returnReason, pauseKind?, recheckKind?, atTask?|atLevel?, payload?, overallPass,
+         tasksRemaining, tasksThatFailed, findings, reviews, scoreTable }.
+       returnReason ∈ { 'done' | 'hard-fail' | 'pause-human' | 'yield-for-recheck' }. SWITCH on it:
+  2. If returnReason === 'pause-human' — a HUMAN must decide; route by pauseKind:
+       - "declared" (declared ⏸ PAUSE) approved as-planned: add atTask to clearedPauses, re-invoke.
        - "R4" (architectural / breaking-API / contract change) — TWO kinds of decision, route correctly:
            • GATE-CHANGING (the resolution changes the Verify Command's CONTRACT — e.g. an API
              signature, a return shape — i.e. the Verify Command ITSELF must change): EDIT PLAN.md's
@@ -139,16 +138,20 @@ LOOP (under the active /goal), carrying decisions across pauses:
        - BACKSTOP: if you mis-route a gate-changing decision as behavior-only, the implementer
          re-blocks on the stale gate (`status="blocked"`, "Verify must be updated") — it fails LOUD,
          not silent. Re-route to the PLAN-edit path. Never bend code to satisfy a stale gate.
-  3. If r.done AND r.overallPass:  GROUND-TRUTH (outside run.js) — run the FULL suite + lint (the
-       PLAN.md Testing Strategy command), then dev-test-gaps (→ VALIDATION.md). Then mark PLAN rows
-       [x], append the progress.md ledger + LEARNINGS.md, and proceed to dev-review.
-  4. If r.done AND NOT overallPass:  read r.findings, fix the cause (PLAN.md / the code via a fresh
+  2b. If returnReason === 'yield-for-recheck' (recheckKind "fullsuite", at atLevel) — AUTOMATED, NO
+       human: a cross-level overlap checkpoint. RUN THE FULL SUITE + lint now (ground-truth — the
+       runner can't). Green → re-invoke with clearedFullSuite += atLevel. Red → fix the regression,
+       re-invoke with onlyChecks=<regressed task ids>.
+  3. If returnReason === 'done' (always overallPass):  GROUND-TRUTH (outside run.js) — run the FULL
+       suite + lint (the PLAN.md Testing Strategy command), then dev-test-gaps (→ VALIDATION.md). Then
+       mark PLAN rows [x], append the progress.md ledger + LEARNINGS.md, and proceed to dev-review.
+  4. If returnReason === 'hard-fail':  read r.findings, fix the cause (PLAN.md / the code via a fresh
        runner invocation), re-invoke with onlyChecks=r.tasksThatFailed.
 ```
 
 The per-task implementer protocol (TDD test-first, Global Constraints + Task Interfaces injection,
-deviation rules R1–R4, the stale-gate backstop, the no-phantom-RED rule) lives in the template's
-implementer prompt (`workflows/templates/dev-run-template.js`); `dev-delegate` remains for ad-hoc
+deviation rules R1–R4, the stale-gate backstop, the no-phantom-RED rule) lives in the fragment's
+implementer prompt (`workflows/templates/dev-task.js`, spliced into the shared `run-core.js`); `dev-delegate` remains for ad-hoc
 single-task dispatch outside this phase. **If you're about to write project code directly, STOP — the
 runner's implementers do that, and `dev-delegation-guard` forbids you (you may only touch
 `.planning/`).**
@@ -324,15 +327,17 @@ block above; this flowchart IS the specification (if the narrative disagrees, th
 │                               │   independent probe gates each task on its REAL Verify Command exit code    │
 └───────────────┬──────────────┘                                                                            │
                 ▼                                                                                            │
-        ┌───────────────┐                                                                                    │
-        │  r.paused?     │── yes ─▶ pauseKind:                                                                │
-        └──────┬────────┘            ├─ "decision" (⏸ PAUSE) ─▶ clearedPauses+=atTask ──────────────────────┤
-               │ no                  ├─ "fullsuite" (atLevel) ─▶ RUN FULL SUITE; green→clearedFullSuite+=lvl ─┤
-               ▼                     │                          red→fix, onlyChecks ──────────────────────────┤
-        ┌───────────────┐            └─ "R4" ─▶ gate-changing? edit PLAN Verify + RECOMPILE ; else decisions ─┘
-        │  r.done?       │
-        └──────┬────────┘
-               │ overallPass
+        ┌─────────────────────┐                                                                              │
+        │ returnReason?        │─ 'pause-human' ─▶ pauseKind:                                                 │
+        └──────┬──────────────┘            ├─ "declared" (⏸ PAUSE) ─▶ clearedPauses+=atTask ──────────────────┤
+               │ 'done'                     └─ "R4" ─▶ gate-changing? edit PLAN Verify + RECOMPILE; else decisions ┤
+               │                  ─ 'yield-for-recheck' (atLevel) ─▶ RUN FULL SUITE; green→clearedFullSuite+=lvl ─┤
+               │                                                     red→fix, onlyChecks ────────────────────────┤
+               ▼                  ─ 'hard-fail' ─▶ read findings, fix, onlyChecks=tasksThatFailed, re-run ────────┘
+        ┌─────────────────────┐
+        │ rr === 'done'        │
+        │ (always overallPass) │
+        └──────┬──────────────┘
                ▼
 ┌──────────────────────────────┐
 │ GROUND-TRUTH (outside run.js): │   FULL suite + lint, then dev-test-gaps (→ VALIDATION.md)

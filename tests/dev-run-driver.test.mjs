@@ -84,7 +84,7 @@ console.log('global constraints + interfaces injected into implementer prompt')
 console.log('declared pause at task 3 (TDD: RED→GREEN forces implement, then pause)')
 {
   const { result, trace } = await run({ gate: redThenGreen() })
-  eq('paused at 3 (declared)', [result.paused, result.atTask, result.pauseKind], [true, '3', 'decision'])
+  eq('paused at 3 (declared)', [result.returnReason, result.atTask, result.pauseKind], ['pause-human', '3', 'declared'])
   ok('task4 not implemented (gated behind pause)', !trace.implCalls.includes('4'), `impl=${trace.implCalls}`)
   ok('payload carries numbered summary', /12 passed/.test(result.payload.summary), JSON.stringify(result.payload))
   ok('payload carries the decision', /API shape/.test(result.payload.decision))
@@ -93,14 +93,14 @@ console.log('declared pause at task 3 (TDD: RED→GREEN forces implement, then p
 console.log('resume past declared pause → hybrid full-suite checkpoint at level 1 (cross-level overlap on src/types.ts)')
 {
   const { result } = await run({ gate: redThenGreen(), args: { clearedPauses: ['3'], decisions: { 3: 'ok' } } })
-  eq('paused fullsuite at level 1', [result.paused, result.pauseKind, result.atLevel], [true, 'fullsuite', 1])
+  eq('paused fullsuite at level 1', [result.returnReason, result.recheckKind, result.atLevel], ['yield-for-recheck', 'fullsuite', 1])
   ok('fullsuite payload names the overlap level', /full test suite/.test(result.payload.decision))
 }
 
 console.log('resume past fullsuite checkpoint (clearedFullSuite) → completion')
 {
   const { result, trace } = await run({ gate: redThenGreen(), args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
-  eq('runs to completion', [result.done, result.overallPass, result.tasksRemaining], [true, true, 0])
+  eq('runs to completion', [result.returnReason, result.overallPass, result.tasksRemaining], ['done', true, 0])
   ok('task4 implemented after both resumes', trace.implCalls.includes('4'))
   ok('decision injected into task3 prompt', /HUMAN DECISION/.test(trace.implPrompts['3'] || ''))
 }
@@ -108,15 +108,15 @@ console.log('resume past fullsuite checkpoint (clearedFullSuite) → completion'
 console.log('idempotent short-circuit (all probes pass first try → skip every implementer)')
 {
   const { result, trace } = await run({ gate: () => true })
-  eq('all skipped, done', [result.done, result.overallPass, result.tasksRemaining], [true, true, 0])
+  eq('all skipped, done', [result.returnReason, result.overallPass, result.tasksRemaining], ['done', true, 0])
   eq('no implementer calls', trace.implCalls.length, 0)
-  ok('no pause on fully-satisfied resume', !result.paused)
+  ok('no pause on fully-satisfied resume', result.returnReason === 'done')
 }
 
 console.log('dynamic R4 architectural pause (implementer blocks)')
 {
   const { result } = await run({ gate: redThenGreen(), impl: (id) => id === '1' ? 'blocked' : 'implemented' })
-  eq('paused R4 at 1', [result.paused, result.pauseKind, result.atTask], [true, 'R4', '1'])
+  eq('paused R4 at 1', [result.returnReason, result.pauseKind, result.atTask], ['pause-human', 'R4', '1'])
   ok('payload carries deviations (the bug channel)', /architectural/.test(result.payload.deviations))
   ok('payload carries numbered summary', /12 passed/.test(result.payload.summary))
 }
@@ -141,7 +141,7 @@ console.log('filesPresent gate: Verify exits 0 but a declared file is missing �
 console.log('hard gate failure stops with tasksThatFailed')
 {
   const { result } = await run({ gate: () => false })  // probe never passes
-  ok('not done, overallPass false', result.done !== true && result.overallPass === false)
+  ok('not done, overallPass false', result.returnReason === 'hard-fail' && result.overallPass === false)
   ok('task1 reported failed', result.tasksThatFailed.includes('1'), `failed=${result.tasksThatFailed}`)
 }
 

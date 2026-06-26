@@ -125,11 +125,12 @@ LOOP (under the active /goal), carrying decisions across pauses:
                             clearedPauses: [ <taskIds already decided> ],
                             onlyChecks: [ <task ids to force re-run>, ] } })   // optional
      → the runner runs to the next pause point or to completion. Outputs are already on disk.
-       Returns { paused?, pauseKind, atTask, payload, done?, overallPass, tasksRemaining,
+       Returns { returnReason, pauseKind?, atTask?, payload?, overallPass, tasksRemaining,
                  tasksThatFailed, findings, reviews, scoreTable }.
-  2. If r.paused:  present r.payload (the decision + the implementer's deviation notes + key
-       numbers) to the user. Get the call, then ROUTE BY DECISION TYPE — this matters:
-       - DECLARED pause (pauseKind="decision") approved as-planned: add atTask to clearedPauses,
+       returnReason ∈ { 'done' | 'hard-fail' | 'pause-human' | 'yield-for-recheck' }. SWITCH on it:
+  2. If returnReason === 'pause-human':  present r.payload (the decision + the implementer's deviation
+       notes + key numbers) to the user. Get the call, then ROUTE BY pauseKind + DECISION TYPE:
+       - DECLARED pause (pauseKind="declared") approved as-planned: add atTask to clearedPauses,
          re-invoke (step 1) to resume past it.
        - R4 / dynamic pause (pauseKind="R4") — TWO kinds of decision, route correctly:
            • GATE-CHANGING (the resolution changes the GRAIN / KEY / SCHEMA — i.e. the Verify
@@ -144,15 +145,16 @@ LOOP (under the active /goal), carrying decisions across pauses:
        - BACKSTOP: if you mis-route a gate-changing decision as behavior-only, the implementer
          re-blocks on the stale gate (`status="blocked"`, "Verify must be updated") — it fails LOUD,
          not silent. Re-route to the PLAN-edit path. Never edit the data to satisfy a stale gate.
-  3. If r.done AND r.overallPass:  GROUND-TRUTH — run ds-validate-coverage (per-requirement
-       coverage / no-regression; the runner's per-task Verify ran in isolation). Then mark the
-       PLAN rows [x], log to LEARNINGS.md, write IMPLEMENT_COMPLETE.md, proceed to ds-validate.
-  4. If r.done AND NOT overallPass:  read r.findings, fix the cause (in PLAN.md / the code via a
+  3. If returnReason === 'done' (always overallPass):  GROUND-TRUTH — run ds-validate-coverage
+       (per-requirement coverage / no-regression; the runner's per-task Verify ran in isolation). Then
+       mark the PLAN rows [x], log to LEARNINGS.md, write IMPLEMENT_COMPLETE.md, proceed to ds-validate.
+  4. If returnReason === 'hard-fail':  read r.findings, fix the cause (in PLAN.md / the code via a
        fresh runner invocation), re-invoke with onlyChecks=r.tasksThatFailed.
+     (ds emits no 'yield-for-recheck'; ds-validate-coverage runs once at step 3, OUTSIDE the runner.)
 ```
 
 The per-task implementer protocol (output-first, deviation rules R1–R4, ETL enforcement) lives in the
-template's implementer prompt (`workflows/templates/ds-run-template.js`); `ds-delegate` remains for
+fragment's implementer prompt (`workflows/templates/ds-task.js`, spliced into the shared `run-core.js`); `ds-delegate` remains for
 ad-hoc single-task dispatch outside this phase. **If you're about to write analysis code directly,
 STOP — the runner's implementers do that, and `ds-no-main-chat-code-guard` forbids you (you may only
 touch `.planning/`).**
@@ -222,14 +224,14 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 └───────────────┬──────────────┘                                                    │
                 ▼                                                                    │
         ┌───────────────┐                                                            │
-        │  r.paused?     │── yes ─▶ present r.payload (decision + deviations + nums)  │
+        │ rr='pause-human'│ yes ─▶ present r.payload (decision + deviations + nums)  │
         └──────┬────────┘            │                                               │
-               │ no                  ├─ APPROVE ─▶ clearedPauses+=atTask; ───────────┘
+               │ 'done'              ├─ APPROVE ─▶ clearedPauses+=atTask; ───────────┘
                ▼                     │            decisions[atTask]=answer
         ┌───────────────┐            └─ METHODOLOGY change ─▶ ds-plan edits PLAN ─▶ RE-COMPILE
-        │  r.done?       │
+        │ rr='done'?     │     ('hard-fail' ─▶ read findings, fix, onlyChecks, re-run)
         └──────┬────────┘
-               │ overallPass
+               │ (always overallPass)
                ▼
 ┌──────────────────────────────┐
 │ GROUND-TRUTH: ds-validate-    │   per-requirement coverage / no-regression
@@ -317,9 +319,9 @@ You do not dispatch per task. Each iteration of the run/pause loop:
 1. `Workflow({ scriptPath: ".planning/run.js", args: {...} })` runs the next slice of the DAG —
    the runner produces each task's `Outputs`, then an independent probe gates it on the `Verify`
    exit code.
-2. On `r.paused`, present the payload and resolve the decision (APPROVE → resume; methodology → edit
-   PLAN + recompile).
-3. On `r.done`, run ds-validate-coverage (ground truth) and log per-task results to LEARNINGS.md.
+2. On `returnReason==='pause-human'`, present the payload and resolve the decision (APPROVE → resume;
+   methodology → edit PLAN + recompile). On `'hard-fail'`, fix the cause and re-run with onlyChecks.
+3. On `returnReason==='done'`, run ds-validate-coverage (ground truth) and log per-task results to LEARNINGS.md.
 
 ### Step 3: Log to LEARNINGS.md
 
