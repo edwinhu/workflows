@@ -24,7 +24,10 @@ hooks:
 
 **Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
 
-**Iteration topology:** serial /goal loop (agent-team parallel for 4+ independent tasks)
+**Iteration topology:** COMPILE once (deterministic, no LLM) → run the compiled `.planning/run.js`
+under one /goal, driving its pauses. The runner walks the whole task DAG in ONE invocation
+(sequential within a level, shared tree), pausing only at decisions / R4 blocks / cross-level
+full-suite checkpoints. No per-level workflow round-trip, no LLM re-parse of PLAN.md.
 
 **Load shared enforcement:**
 
@@ -67,22 +70,94 @@ is corrected to match.
 ## Where This Fits
 
 ```
-Main Chat (you)                         dev-implement workflow (per level)
+Main Chat (you)                         compiled .planning/run.js (ONE invocation, whole DAG)
 ──────────────────────────────────────────────────────────────────────────
 /goal <condition>  ← user sets once at phase entry
 dev-implement (this skill)
-  └─ per level: Workflow(name="dev-implement") ─→ parse PLAN table → DAG
-                                                   sequential TDD implementer
-                                                   per task → Verify Cmd → JS gate
-  ← run FULL suite, mark [x], re-invoke next level
+  └─ COMPILE: dev_compile.py PLAN.md → .planning/run.js   (deterministic, no LLM)
+  └─ RUN:     Workflow(scriptPath=".planning/run.js")  ─→ topo-sort DAG → per level,
+                                                          SEQUENTIAL TDD implementer
+                                                          per task (test-first) →
+                                                          independent probe gates on the
+                                                          REAL Verify Command exit code
+  ← on r.done & overallPass: run the FULL suite (ground-truth) + dev-test-gaps, mark [x]
+  ← on r.paused: present payload, decide, resume (decisions / clearedPauses / clearedFullSuite)
 ```
 
-**Main chat orchestrates the level loop + the full-suite ground-truth + the `/goal`.** The workflow's implementers write the code (TDD) and the JS gate keys on real Verify Command exit codes — completion is not honor-system, and the dev-delegation-guard still forbids you from writing project code yourself.
+**Main chat orchestrates COMPILE + the run/pause loop + the full-suite ground-truth + the `/goal`.**
+The runner's implementers write the code (TDD); the gate is an **independent probe** that actually
+runs each `Verify Command` and reports the real exit code (plus that the failing test + declared files
+exist) — completion is not honor-system, and the dev-delegation-guard still forbids you from writing
+project code yourself.
+
+<EXTREMELY-IMPORTANT>
+## Delegation: COMPILE then RUN/PAUSE (you do NOT hand-dispatch tasks)
+
+You **COMPILE** the hardened PLAN.md Implementation Order table into a lean, project-specific runner
+(`.planning/run.js`), then **RUN** it. The compiled runner topo-sorts the DAG, runs each level's tasks
+**sequentially** (shared tree, TDD test-first), gates each on its `Verify Command` exit code (an
+independent probe — never self-report), and **pauses** at decision points (planned `⏸ PAUSE:` markers,
+runtime R4 architectural blocks, and cross-level full-suite checkpoints). The compile is deterministic
+(`dev_compile.py`) — **PLAN is parsed exactly once, with no LLM re-parse.**
+
+```
+0. Set the goal (once): /goal All tasks in PLAN.md are marked [x], each task's Verify Command
+   exits 0, the FULL suite is green, and .planning/VALIDATION.md status is `validated`. Stop after [N] turns.
+
+COMPILE (once; re-run only when PLAN.md changes):
+  Resolve the compiler (cache first, repo fallback) and emit the runner:
+    CC=$(command ls -d ~/.claude/plugins/cache/*/workflows/*/scripts/dev/dev_compile.py 2>/dev/null | sort -V | tail -1)
+    [ -z "$CC" ] && CC="${CLAUDE_SKILL_DIR}/../../scripts/dev/dev_compile.py"
+    uv run python3 "$CC" .planning/PLAN.md --project "$(pwd)"        # → .planning/run.js
+  (Deterministic, no LLM. Fails loudly if the table is not compilable — fix PLAN.md and recompile.)
+
+LOOP (under the active /goal), carrying decisions across pauses:
+  1. r = Workflow({ scriptPath: "<abs cwd>/.planning/run.js",
+                    resumeFromRunId: <prev runId, if resuming>,
+                    args: { projectDir: "<abs cwd>",
+                            decisions: { <taskId>: "<human's call>", ... },   // grows each pause
+                            clearedPauses: [ <declared-pause taskIds decided> ],
+                            clearedFullSuite: [ <level idx whose full suite you ran green> ],
+                            onlyChecks: [ <task ids to force re-run> ] } })    // optional
+     → runs to the next pause or to completion. Code is already in the tree. Returns
+       { paused?, pauseKind, atTask|atLevel, payload, done?, overallPass, tasksRemaining,
+         tasksThatFailed, findings, reviews, scoreTable }.
+  2. If r.paused — route by pauseKind:
+       - "decision" (declared ⏸ PAUSE) approved as-planned: add atTask to clearedPauses, re-invoke.
+       - "fullsuite" (cross-level overlap checkpoint at atLevel): RUN THE FULL SUITE + lint now
+         (ground-truth — the runner can't). Green → re-invoke with clearedFullSuite += atLevel.
+         Red → fix the regression, re-invoke with onlyChecks=<regressed task ids>.
+       - "R4" (architectural / breaking-API / contract change) — TWO kinds of decision, route correctly:
+           • GATE-CHANGING (the resolution changes the Verify Command's CONTRACT — e.g. an API
+             signature, a return shape — i.e. the Verify Command ITSELF must change): EDIT PLAN.md's
+             Verify Command (+ any affected Files/Failing Test cells) to encode the decision, then
+             RE-COMPILE run.js, then re-run. `args.decisions` ALONE is INSUFFICIENT — the implementer
+             will (correctly) RE-BLOCK on the stale gate. (For a structural pivot, hand back to
+             dev-design to edit, then recompile.)
+           • BEHAVIOR-ONLY (a choice the Verify Command does NOT assert — gate unchanged): re-invoke
+             with decisions[atTask]=<the call>; no PLAN edit.
+       - BACKSTOP: if you mis-route a gate-changing decision as behavior-only, the implementer
+         re-blocks on the stale gate (`status="blocked"`, "Verify must be updated") — it fails LOUD,
+         not silent. Re-route to the PLAN-edit path. Never bend code to satisfy a stale gate.
+  3. If r.done AND r.overallPass:  GROUND-TRUTH (outside run.js) — run the FULL suite + lint (the
+       PLAN.md Testing Strategy command), then dev-test-gaps (→ VALIDATION.md). Then mark PLAN rows
+       [x], append the progress.md ledger + LEARNINGS.md, and proceed to dev-review.
+  4. If r.done AND NOT overallPass:  read r.findings, fix the cause (PLAN.md / the code via a fresh
+       runner invocation), re-invoke with onlyChecks=r.tasksThatFailed.
+```
+
+The per-task implementer protocol (TDD test-first, Global Constraints + Task Interfaces injection,
+deviation rules R1–R4, the stale-gate backstop, the no-phantom-RED rule) lives in the template's
+implementer prompt (`workflows/templates/dev-run-template.js`); `dev-delegate` remains for ad-hoc
+single-task dispatch outside this phase. **If you're about to write project code directly, STOP — the
+runner's implementers do that, and `dev-delegation-guard` forbids you (you may only touch
+`.planning/`).**
+</EXTREMELY-IMPORTANT>
 
 ## Contents
 
 - [Prerequisites](#prerequisites)
-- [Implementation Strategy: the dev-implement workflow](#implementation-strategy-the-dev-implement-workflow)
+- [Implementation Strategy: derived from the DAG, not chosen](#implementation-strategy-derived-from-the-dag-not-chosen)
 - [The Iron Law of Delegation](#the-iron-law-of-delegation)
 - [The Process](#the-process) (Sequential)
 - [Sub-Skills Reference](#sub-skills-reference)
@@ -138,9 +213,15 @@ Before starting ANY task, verify `.planning/PLAN.md` Testing Strategy:
 This is your LAST CHANCE to catch missing test strategy before writing code.
 </EXTREMELY-IMPORTANT>
 
-## Implementation Strategy: the dev-implement workflow
+## Implementation Strategy: derived from the DAG, not chosen
 
-You do NOT choose sequential-vs-parallel and you do NOT hand-dispatch tasks. Implementation is the **`dev-implement` ultracode workflow**, which reads the hardened PLAN.md table, builds the `Deps` DAG, and **auto-parallelizes within each dependency level** (one worktree-isolated implementer per task, all TDD). You drive the level loop: invoke the workflow per level, integrate the level's returned file contents, run the full suite, mark the rows `[x]`, advance — all under one `/goal`. See [The Process](#the-process).
+You do NOT choose sequential-vs-parallel and you do NOT hand-dispatch tasks. You **COMPILE** the
+hardened PLAN.md table into `.planning/run.js`, then **RUN** it (see the Delegation block above). The
+compiled runner topo-sorts the `Deps` DAG and runs each level's tasks **sequentially** (shared working
+tree, TDD test-first — DESIGN D-dev-1; intra-level parallelism via worktree isolation is a future
+enhancement, not v1), gating each on its `Verify Command` exit code via an independent probe, across
+the whole DAG in one invocation. You drive COMPILE + the run/pause loop + the full-suite ground-truth,
+all under one `/goal`. See [The Process](#the-process).
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of TDD (Final Enforcement)
@@ -227,45 +308,42 @@ Monitor(
 
 ## The Process
 
-The workflow implements ONE dependency level per invocation; you loop across levels under the active `/goal`.
+COMPILE once, then run the compiled `.planning/run.js` and drive its pauses — the runner walks the
+**whole DAG in one invocation**, not one level per call. The authoritative steps are in the Delegation
+block above; this flowchart IS the specification (if the narrative disagrees, the flowchart wins):
 
 ```
-0. Set the goal (once, at phase entry):
-   /goal All tasks in .planning/PLAN.md are marked [x] AND [full-suite test command] exits 0
-         AND .planning/VALIDATION.md status is `validated`. Stop after [N] turns.
-
-LOOP (one turn per level, under the active /goal):
-  1. Invoke the workflow:
-       Workflow(name="dev-implement", args={
-         "projectDir": "<absolute path to the dev project (cwd)>",
-         "pluginRoot": "<absolute path to this plugin's workflows/ dir — resolve ${CLAUDE_SKILL_DIR}/../../workflows>"
-       })
-     It picks the lowest level with pending tasks, runs its tasks SEQUENTIALLY (one
-     TDD implementer each, writing directly into the project tree), verifies each
-     (Verify Command exit 0 + read-only corroboration), and returns { overallPass,
-     level, tasksRemaining, tasks, findings, tasksThatFailed, reviews }. The code is
-     ALREADY in the tree when it returns — there is no merge step for you to do.
-
-  2. GROUND-TRUTH (self-reports are not truth): run the FULL suite + lint on the
-     tree (the PLAN.md Testing Strategy command — e.g. `pixi run pytest`,
-     `npm test && npm run lint`). The per-task Verify Commands ran in isolation;
-     this confirms the level integrates without regressions.
-
-  3. If result.overallPass AND the full suite is green:
-     mark this level's PLAN.md rows [x], log to LEARNINGS.md, END THE TURN —
-     the /goal evaluator re-fires for the next level (or closes if tasksRemaining=0).
-     No pause, no "should I continue?".
-
-  4. If result.overallPass is false (a task failed TDD/verify) OR the full suite
-     regressed: read result.findings, fix the cause, then re-invoke with
-     onlyChecks=result.tasksThatFailed + priorReviews=result.reviews. An R4 block
-     (architectural — new schema, lib swap, breaking API) is a critical finding —
-     STOP and escalate it to the user; do not invent the architectural fix.
+┌──────────────────────────────┐
+│ COMPILE (once, deterministic) │   dev_compile.py PLAN.md → .planning/run.js
+│ no LLM; fails if not compilable│
+└───────────────┬──────────────┘
+                ▼
+┌──────────────────────────────┐◄────── resume (decisions / clearedPauses / clearedFullSuite / onlyChecks) ──┐
+│ RUN  Workflow(scriptPath=     │                                                                            │
+│      .planning/run.js)        │   runner: topo-sort DAG → each level SEQUENTIAL, TDD test-first;            │
+│                               │   independent probe gates each task on its REAL Verify Command exit code    │
+└───────────────┬──────────────┘                                                                            │
+                ▼                                                                                            │
+        ┌───────────────┐                                                                                    │
+        │  r.paused?     │── yes ─▶ pauseKind:                                                                │
+        └──────┬────────┘            ├─ "decision" (⏸ PAUSE) ─▶ clearedPauses+=atTask ──────────────────────┤
+               │ no                  ├─ "fullsuite" (atLevel) ─▶ RUN FULL SUITE; green→clearedFullSuite+=lvl ─┤
+               ▼                     │                          red→fix, onlyChecks ──────────────────────────┤
+        ┌───────────────┐            └─ "R4" ─▶ gate-changing? edit PLAN Verify + RECOMPILE ; else decisions ─┘
+        │  r.done?       │
+        └──────┬────────┘
+               │ overallPass
+               ▼
+┌──────────────────────────────┐
+│ GROUND-TRUTH (outside run.js): │   FULL suite + lint, then dev-test-gaps (→ VALIDATION.md)
+│ full suite → dev-test-gaps →   │   then mark PLAN rows [x] + progress.md ledger + LEARNINGS.md
+│ mark [x] → dev-review          │
+└──────────────────────────────┘
 ```
 
-**A blocked task (R4 — new schema, lib swap, breaking API) is in `findings` as critical and `overallPass=false`. STOP and present the R4 to the user; do not invent an architectural fix.**
+**A blocked task (R4 — new DB table, schema change, new service, lib swap, breaking API, contract change) returns as `pauseKind:"R4"` with `overallPass=false`. Present the R4 payload (deviations + the test numbers) to the user and route by gate-changing vs behavior-only; do not invent the architectural fix.**
 
-**The JS gate (`result.overallPass`) + your full-suite run are authoritative.** Do not hand-wave a level done; the Verify Command exit codes decide, not your read of the output.
+**The probe's exit code + your full-suite run are authoritative.** Do not hand-wave a level done; the real Verify Command exit codes decide, not your read of the output. (Today's old engine keyed the gate on the implementer's *self-reported* `verifyPassed` — the compiled runner's independent probe actually runs the command, which is the honesty fix.)
 
 **Cache lookup pattern for skill paths:** Read `${CLAUDE_SKILL_DIR}/../../TARGET/PATH` and follow its instructions.
 
@@ -297,9 +375,15 @@ Key constraints baked into the condition:
 
 If the user prefers to drive `/goal` themselves, hand them the literal condition string instead of setting it for them.
 
-### Step 2: Run the level loop (the dev-implement workflow)
+### Step 2: COMPILE, then run the compiled runner (it executes the tasks)
 
-Implementation is the `dev-implement` workflow, looped per dependency level — see [The Process](#the-process). You do NOT hand-dispatch tasks; the workflow's implementers follow dev-tdd and run each task's Verify Command, and the JS gate keys on the real exit codes. (The legacy per-task `dev-delegate` template is now embedded in the workflow's implementer prompt; `dev-delegate` remains only for ad-hoc single-task dispatch outside this phase.)
+Implementation is COMPILE `.planning/run.js` then the run/pause loop — see [The Process](#the-process)
+and the Delegation block. You do NOT hand-dispatch tasks; the runner's implementers follow dev-tdd
+(test-first) and the **independent probe** runs each task's Verify Command, so the gate keys on the
+real exit codes — not a self-report. (The legacy per-task `dev-delegate` template is now embedded in
+the template's implementer prompt; `dev-delegate` remains only for ad-hoc single-task dispatch outside
+this phase. The old per-level `Workflow(name="dev-implement")` engine is retired — the generated
+`run.js` IS the engine.)
 
 ### Step 3: Verify and Complete (MANDATORY - DO NOT SKIP)
 
