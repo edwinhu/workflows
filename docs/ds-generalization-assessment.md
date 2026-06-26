@@ -63,8 +63,28 @@ Everything ds-specific in the new design is actually three small seams (below); 
   signature decision changes the test; writing: recasting a claim changes the fidelity check) needs the same
   routing: bake gate-changing decisions into the plan + recompile; the implementer re-blocks on a stale gate.
 
+## ⚠ Semantic gates raise the stakes on the central lesson (carry into writing/workshop)
+
+When `gateProbe` becomes a semantic domain function (`{pass, evidence}`), **the gate itself becomes an LLM
+judgment — which can be wrong or gamed in a way an exec exit-code cannot.** An exit-code gate can't lie; a
+"does this section cover its outline / cite only its sources" judge can. So for semantic-gate workflows the
+effort's central finding — *the gate caught zero bugs; the deviation note + adversarial review caught them* —
+gets **STRONGER, not weaker**:
+
+- **Never let the semantic `gateProbe` be the sole arbiter.** Keep the domain's adversarial review layer
+  (writing's review, workshop's verify) robust and OUTSIDE `run.js` — it is the real correctness authority, more
+  so than in ds/dev where the exit-code gate is at least honest.
+- **`{evidence}` must carry the same numbered/specific detail the muni payloads did.** The evidence IS the
+  human's catch-channel (exactly as `deviations` + numbered `summary` were for ds). A semantic gate that returns
+  `pass:true` with vague evidence is the funnel-clobber / 8.8%-dedup failure mode wearing a judge's robe.
+- **Both generalizing invariants apply unchanged:** payload > pass/fail, and two-kinds-of-decision + stale-gate
+  backstop (a writing decision to recast a claim changes the fidelity check = gate-changing → edit plan +
+  recompile). Semantic gates don't relax these; they make them load-bearing.
+
 ## Bottom line
 
 The core **does** generalize, but the honest unit of generalization is `gateProbe` as a domain function, not a
 single template. **Port dev next to prove it on a second exit-code domain, then extract the core, then test it
-against a judgment-gate domain.** Do not rewrite working siblings on spec; let each port earn itself.
+against a judgment-gate domain** — where the gate becomes an LLM judgment and the adversarial-review +
+evidence-rich-payload disciplines become the primary safety net, not a backstop. Do not rewrite working siblings
+on spec; let each port earn itself.
