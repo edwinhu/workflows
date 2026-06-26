@@ -146,7 +146,7 @@ Step 7: Self-Audit ◄── Step 6: Generate ◄── Step 5: Entry Points ◄
 
 Every step below has a STATE.md YAML template. You MUST write this template to STATE.md BEFORE advancing — the hook enforces the chain.
 
-If you catch yourself thinking "I can skip the STATE.md update" — STOP. The STATE.md update IS the gate artifact. The hook will BLOCK subsequent writes without it.
+**About to advance a step before writing STATE.md → STOP.** The STATE.md update IS the gate artifact; the hook BLOCKS subsequent writes without it.
 </EXTREMELY-IMPORTANT>
 
 ### Step 1: Ground in Philosophy
@@ -645,6 +645,19 @@ Phase N produces ARTIFACT.md
 **After verifying Artifact Review Gates are designed, persist design decisions:**
 
 Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
+
+**DESIGN.md MUST include a born-canonical `## Generation Manifest` section** (emitter-canonical, doctrine #6 — wc-creator eats its own cooking). Step 6's `wc-generate` enumerates the file SET from it **deterministically** via `scripts/wc/wc_file_set.py` (a shared parser, no LLM re-enumeration), so the generated set can't drift from the design. Write it exactly:
+```
+## Generation Manifest
+<!-- wc-generate enumerates the file set from this section deterministically. Keep it canonical. -->
+workflow: {name}
+midpoint: fix            # the Step-5 midpoint entry: one of fix | debug | revise | none
+phases: explore, design, implement      # the Step-3 phase slugs, comma-separated, in order
+constraints:             # the Step-4b constraints; `testable` ⇒ a co-located .py is generated, `convention` ⇒ .md only
+- no-skip-tests | testable
+- naming-convention | convention
+```
+Keep it in sync with the decomposition above — the manifest is the single source of truth for *which* files Step 6 generates (the per-file *spec* still comes from the prose design). `wc_file_set.py --check {DESIGN}` must report no violations before Step 6.
 
 **If Step 3 classified the workflow as a compiled runner (executes a plan-table DAG), DESIGN.md MUST also record the per-domain decisions** — the canonical seam list is `docs/common-infra-candidates.md` (shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants). Fill the **four INJECTED seams** (D1-D4); everything else is shared CORE you inherit, not a choice:
 

@@ -1,6 +1,6 @@
 export const meta = {
   name: 'wc-generate',
-  description: "workflow-creator's Mode 1 Step 6 file generation as an ultracode TRANSFORM workflow: discover the file set from the approved DESIGN.md, fan out one worktree-isolated write-agent per file (each skill phase file + each constraint .md/.py pair + the runner) creating it from its pinned DESIGN spec, then a read-only verify stage confirms each file matches its spec and the co-located .md/.py pairing holds. The 'what' comes from DESIGN — write-agents get NO creative latitude. Returns per-file transform + verify records and a computed gate.",
+  description: "workflow-creator's Mode 1 Step 6 file generation as an ultracode TRANSFORM workflow: the file SET is enumerated DETERMINISTICALLY from DESIGN.md's canonical Generation Manifest by scripts/wc/wc_file_set.py (no LLM re-enumeration; LLM fallback only for pre-manifest DESIGNs), then fan out one worktree-isolated write-agent per file (each skill phase file + each constraint .md/.py pair + the runner) creating it from its pinned DESIGN spec, then a read-only verify stage confirms each file matches its spec and the co-located .md/.py pairing holds. The file SET is deterministic; the per-file 'what' comes from DESIGN — write-agents get NO creative latitude. Returns per-file transform + verify records and a computed gate.",
   whenToUse: "Called by workflow-creator Mode 1 Step 6 AFTER Steps 1-5 are completed and DESIGN.md is approved. Returns { overallPass, scoreTable, files, findings, reviews, filesThatFailed }. The skill keeps the interview, decomposition, enforcement design, and the user file-approval gate conversational; it merges the surfaced worktrees and then does the ground-truth ls / node-check at the expected paths. On a re-run it passes onlyChecks (failed file IDs) + priorReviews.",
   phases: [
     { title: 'Discover', detail: 'read DESIGN.md; enumerate every file to generate with its per-file spec (skill phase files + constraint .md/.py pairs + runner)' },
@@ -82,15 +82,16 @@ const disc = await agent(
   `Enumerate the files Mode 1 Step 6 must generate for the "${NAME}" workflow, reading the APPROVED design. Working directory: ${PROJECT}
 
 1. Read ${DESIGN} (the Step 3b DESIGN.md). If it does not exist or has no phase decomposition, set designReadable=false and files=[] — the workflow will refuse (generation without an approved design is forbidden; Delete & Restart protocol).
-2. From DESIGN.md, enumerate EVERY file to create, each with its pinned per-file spec (do NOT invent — extract the "what" from DESIGN):
-   - The entry skill: ${PROJECT}/skills/${NAME}/SKILL.md (kind "skill-entry").
-   - The midpoint skill: ${PROJECT}/skills/${NAME}-fix/SKILL.md (or -debug / -revise per DESIGN) (kind "skill-midpoint").
-   - One phase skill per phase in DESIGN: ${PROJECT}/skills/${NAME}-{phase}/SKILL.md (kind "skill-phase").
-   - For every constraint DESIGN specifies: ${PROJECT}/references/constraints/{rule}.md (kind "constraint-md") AND, if DESIGN marks it mechanically testable, the co-located ${PROJECT}/references/constraints/{rule}.py (kind "constraint-py"). A convention is .md only.
-   - The auto-discovering runner ${PROJECT}/references/constraints/check-all.py (kind "runner") IF DESIGN calls for constraints and it does not already exist.
-3. Each file's spec MUST capture: its single responsibility, gate condition + artifact, the enforcement patterns assigned in DESIGN, the next-phase transition, required frontmatter (name/description/hooks/allowed-tools), and any post-subagent boundary — all sourced from DESIGN.
 
-Use ABSOLUTE paths and stable fileIds (e.g. "skill:${NAME}-implement", "constraint:no-x.md", "constraint:no-x.py", "runner:check-all.py"). Return DISCOVERY_SCHEMA.`,
+2. The file SET is DETERMINISTIC — get it from the enumerator, do NOT hand-enumerate it (wc-creator eats its own cooking: the same spec→deterministic-compile discipline it teaches every workflow). Resolve \`wc_file_set.py\`: try \`${PROJECT}/scripts/wc/wc_file_set.py\` first; else the workflows plugin copy — \`WF=$(command ls -d ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/scripts/wc/wc_file_set.py 2>/dev/null | sort -V | tail -1); [ -z "$WF" ] && WF=~/projects/workflows/scripts/wc/wc_file_set.py\`. Then run:
+       uv run python3 <wc_file_set.py> ${DESIGN} --project ${PROJECT}
+   - If it prints \`"ok": true\`, that \`files\` array (fileId/path/kind) is AUTHORITATIVE — use EXACTLY those files, do NOT add, omit, or rename any (the enumerator is the single source of truth, so the set can't drift from the DESIGN's Generation Manifest).
+   - If the script is unavailable, OR returns \`"ok": false\` (the DESIGN predates the canonical "## Generation Manifest" section), FALL BACK to enumerating per the conventions below (back-compat) and note it:
+     - entry skill ${PROJECT}/skills/${NAME}/SKILL.md (skill-entry); midpoint ${PROJECT}/skills/${NAME}-fix|−debug|−revise/SKILL.md (skill-midpoint); one ${PROJECT}/skills/${NAME}-{phase}/SKILL.md per phase (skill-phase); per constraint ${PROJECT}/references/constraints/{rule}.md (constraint-md) + co-located .py if testable (constraint-py); ${PROJECT}/references/constraints/check-all.py (runner) if any constraints and it doesn't exist.
+
+3. For EACH file in the set, extract its pinned per-file spec from DESIGN (this part IS semantic — read the design prose; the enumerator gives WHICH files, you give WHAT each contains). The spec MUST capture: single responsibility, gate condition + artifact, the enforcement patterns assigned in DESIGN, the next-phase transition, required frontmatter (name/description/hooks/allowed-tools), and any post-subagent boundary — all sourced from DESIGN, NO creative latitude.
+
+Use ABSOLUTE paths and the enumerator's stable fileIds (e.g. "skill:${NAME}-implement", "constraint:no-x.md", "constraint:no-x.py", "runner:check-all.py"). Return DISCOVERY_SCHEMA.`,
   { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
 )
 if (!disc.designReadable) throw new Error(`wc-generate: ${DESIGN} not readable or has no phase decomposition. Mode 1 Steps 1-5 must complete and DESIGN.md must be approved before generation (Delete & Restart protocol).`)
