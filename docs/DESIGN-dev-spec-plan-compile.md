@@ -546,9 +546,9 @@ only by the dev driver unit test (+ ds) — lowest-risk, deferred.
 
 > **CONVERGED** via the host-dispatch cross-pollination (dev-refactor × ds-refactor, 2026-06-26;
 > writing-refactor input folded in). **Canonical list:** `docs/common-infra-candidates.md` (owned by
-> ds-refactor; commit `2835591`, which records the authoritative RETURN-REASON taxonomy). This section
-> is the **dev-side view** that fed that convergence — kept here for the dev port's record; **the
-> canonical doc governs pass #9.**
+> ds-refactor; **CLOSED at commit `58d22f2`, PR #15** — last `◑` resolved, all seams
+> 3-instance-confirmed across ds/dev/writing). This section is the **dev-side view** that fed that
+> convergence — kept here for the dev port's record; **the canonical doc governs pass #9.**
 >
 > Guardrail stands: **brainstorm written down; NO shared `run-core` extracted in this pass.** ds + dev
 > are two exit-code instances; writing is a 3rd (judgment gate). After writing's step-1, **only ONE
