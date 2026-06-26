@@ -1692,6 +1692,20 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 
 These principles apply **only when the workflow executes a DAG/work-list of mechanical work between human gates** — an implement/transform/generate phase driven by a structured plan table or section/slide index. They are the lessons the ds/dev/writing/workshop/teaching `spec → plan → compile` ports paid for (PR#7/#8/#18/#24 + teaching). **First classify, then score** — for conversational / single-pass / pure-creative workflows P22-P30 are **N/A** and excluded from the composite. Canonical seam list: `docs/common-infra-candidates.md`.
 
+**Lockstep map (audit principle ↔ canonical seam/doctrine in `docs/common-infra-candidates.md`)** — keep these in sync; if the canonical source changes a seam, update the matching principle:
+
+| Principle | Canonical seam / doctrine |
+|-----------|---------------------------|
+| P22 Compile-vs-interpret fit | S2 (driver) + S5 (compile = produce the work-list) · doctrine #5 |
+| P23 Single-source plan parser | S1 (shared parser) + S6 (guard↔parser reconciliation) |
+| P24 Honest gate | D1 (`gateProbe`→`{pass, artifactsPresent, evidence, scope}`) + S4-art (pass ⊥ artifactsPresent) · doctrine #3 (floor blind-spot) + #4 (semantic authority outside) |
+| P25 Pause/resume + payload | S3 (pause/resume + stale-gate backstop) + S4 (payload TYPE) · doctrine #1/#2 · RETURN-REASON taxonomy |
+| P26 Adversarial layer outside | doctrine #4 |
+| P27 Join trust-class | S5 (the JOIN refinement: single-source⇒mechanical, multi-source⇒semantic) |
+| P28 Emitter-canonical hardened | doctrine #6 (two shapes by producer; golden-test vs a REAL pre-canonical artifact) |
+| P29 Guard passes REAL artifacts | doctrine #6 (real-artifact golden-test) extended to phantom-canonical (teaching) |
+| P30 Gate covers all declared outputs | workshop "gate only what you compile" |
+
 **executionClass detector (run FIRST).** Read the workflow's execution layer — the implement/transform/verify phase skill AND any `workflows/<name>-*.js`, AND `scripts/<name>/*.py` + `hooks/<name>*guard*.py` (a deterministic compile/parser lives there). 
 
 > ⚠️ **THE DEFINING PROPERTY of `compiled-runner` (both variants) is: a DETERMINISTIC compile/parser REPLACED the in-workflow LLM "discovery" agent, AND the guard SHARES that parser** (`validate = parse()/build_index().violations`). Key on THAT, **not on whether a generated `run.js` exists.** There are TWO valid compile-output forms (S5): a **CODE variant** emits a self-contained `.planning/run.js` (ds/dev); a **DATA variant** emits a work-list/index a GENERIC fan-out engine consumes via `args` (writing/workshop/teaching). **Absence of `run.js` is NOT a gap** — it is the data-variant emit form. Mis-flagging a data-variant because "there's no run.js" is the #1 detector error.
