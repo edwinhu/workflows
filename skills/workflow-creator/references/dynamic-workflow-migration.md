@@ -10,6 +10,8 @@ This connects directly to the **Iron Law of Flat Dispatch**: "an agent that spaw
 
 ## 0. Two execution shapes — COMPILE vs INTERPRET (read FIRST)
 
+> 📊 For a visual, code-grounded walkthrough of how the compiled-runner machinery actually runs (the splice, the driver loop, `gateProbe`, return-reasons, pause/resume — with mermaid diagrams), see **`docs/compiled-runner-architecture.md`**.
+
 There are **two** kinds of ultracode workflow, and picking the wrong one is the most expensive mistake this playbook can cause. Decide this before anything else:
 
 ```

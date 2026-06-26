@@ -2,6 +2,8 @@
 
 These are the compile **targets** for workflow-creator's compiled-runner pattern — the default execution skeleton for any workflow that runs a **DAG of mechanical work between human gates** (an implement/transform/generate phase driven by a structured plan table).
 
+> 📊 **New here? Read `docs/compiled-runner-architecture.md` first** — a visual, code-grounded walkthrough (mermaid diagrams) of how the whole `spec → plan → compile → run.js` machinery actually runs: the splice, the driver loop, `gateProbe`, return-reasons, pause/resume.
+
 > **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** — shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants, the return-reason taxonomy, and the confidence tags (now **3-instance-confirmed: ds + dev + writing**). See also `skills/workflow-creator/references/dynamic-workflow-migration.md` §0 and `docs/DESIGN-ds-spec-plan-compile.md` / `docs/DESIGN-dev-spec-plan-compile.md` / `docs/DESIGN-writing-spec-plan-compile.md`.
 
 | File | Role |

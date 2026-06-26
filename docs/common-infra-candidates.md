@@ -1,5 +1,7 @@
 # Common-infra candidates: the shared run-core seams (EXTRACTED — pass #9 landed, v5.61.0)
 
+> 📊 This file is the *what/why* seam list. For the *how it runs* companion — a visual, code-grounded walkthrough with mermaid diagrams — see **`docs/compiled-runner-architecture.md`**.
+>
 > **Canonical** cross-workflow seam list for the compiled-runner pattern. Owned here (ds vantage);
 > `dev`'s DESIGN §9 holds the dev-side view and points to this file. **STATUS: EXTRACTED.** Pass #9
 > landed on main (PR #29, `a1a8c71`, v5.61.0, verified): the firm seams **S1–S7 + the helpers now live
