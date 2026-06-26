@@ -189,14 +189,23 @@ WF=$(command ls -d ~/.claude/plugins/cache/*/workflows/*/workflows/writing-revie
 [ -z "$WF" ] && WF="${CLAUDE_SKILL_DIR}/../../workflows/writing-review.js"
 ```
 
-**2. Invoke the workflow:**
+**2. COMPILE the deterministic section index** (the writing analog of ds/dev's compile step — replaces the workflow's LLM `Discover` with a regex-parse of the approved planning artifacts; the SAME parser the writing-draft skill and the outline-executable guard use, so the section set can't drift between phases):
+
+```bash
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/writing/writing_section_index.py "<abs project dir>" > .planning/section-index.json
+```
+
+Read `.planning/section-index.json`. If `ok`, pass the parsed object as `sectionIndex` below. If it carries `violations` / `staleApproval` (e.g. a `*_REVIEWED.md` whose claim/Part count disagrees with the live OUTLINE.md — a stale approval after a reframe), **surface them** — they are spec-integrity failures fixed upstream. On a hard error, omit `sectionIndex` (the workflow falls back to its LLM Discover).
+
+**3. Invoke the workflow:**
 
 ```
 Workflow({
   scriptPath: "<WF>",
   args: {
     projectDir: "<abs project dir>",          // holds .planning/, outlines/, drafts/, references/sources.bib
-    pluginRoot: "${CLAUDE_SKILL_DIR}/../.."    // resolves domain skill + bridge_repetition_check.py
+    pluginRoot: "${CLAUDE_SKILL_DIR}/../..",   // resolves domain skill + bridge_repetition_check.py
+    sectionIndex: <parsed .planning/section-index.json, or omit for the LLM Discover fallback>
   }
 })
 ```

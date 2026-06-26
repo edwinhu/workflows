@@ -203,17 +203,28 @@ Skill(skill="workflows:ai-anti-patterns")
 
 ### Step 3: Run the writing-draft workflow + drive the /goal loop
 
-Drafting is the `writing-draft` **ultracode workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents. Invoke it once over the whole document:
+Drafting is the `writing-draft` **ultracode workflow** — do NOT hand-draft sections in this session, and do NOT spawn your own per-section agents.
+
+**First COMPILE the deterministic section index** (the writing analog of ds/dev's compile step — it replaces the workflow's LLM `Discover` with a regex-parse of the approved planning artifacts, so the section set/order/file-pairing/claim-map can't drift). Run it and read the JSON:
+
+```bash
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/writing/writing_section_index.py "<project root>" > .planning/section-index.json
+```
+
+Read `.planning/section-index.json`. If `ok` is true, pass the parsed object as `sectionIndex` (below). If it has `violations` (e.g. a section's `draft.implements` is missing a primary claim the OUTLINE.md Claim→Section Map assigns, or `staleApproval` flags a `*_REVIEWED.md` whose claim/Part count disagrees with the live OUTLINE.md), **STOP and surface them** — these are spec-integrity failures (the writing analog of a stale gate), fixed in writing-outline/-setup, not papered over. If the script errors entirely, omit `sectionIndex` and the workflow falls back to its LLM Discover (back-compat).
+
+Then invoke it once over the whole document:
 
 ```
 Workflow(name="writing-draft", args={
   "projectDir": "<absolute path to the writing project root (cwd)>",
   "pluginRoot": "<absolute path to this plugin's workflows/ dir — resolve ${CLAUDE_SKILL_DIR}/../../workflows>",
-  "outputSubdir": "drafts"
+  "outputSubdir": "drafts",
+  "sectionIndex": <the parsed .planning/section-index.json object, or omit to use the LLM Discover>
 })
 ```
 
-It discovers the sections, asserts each outline is paragraph-structured, fans out one write-agent per section (each EXPANDS its outline → prose, cites real sources, writes bridges from the adjacent outlines), verifies coverage + citation-resolvability + transitions, and returns `{ overallPass, substratePass, verdict, scoreTable, sections, findings, underGranular, sectionsThatFailed, reviews }`. **The gate is computed in JS from raw counts — never self-report it.**
+It discovers the sections (deterministically when `sectionIndex` is passed), asserts each outline is paragraph-structured, fans out one write-agent per section (each EXPANDS its outline → prose, cites real sources, writes bridges from the adjacent outlines), verifies coverage + citation-resolvability + transitions, and returns `{ overallPass, substratePass, verdict, scoreTable, sections, findings, underGranular, sectionsThatFailed, reviews }`. **The gate is computed in JS from raw counts — never self-report it.**
 
 **Read the result and act:**
 
@@ -231,9 +242,20 @@ It discovers the sections, asserts each outline is paragraph-structured, fans ou
 
 **The JS gate is authoritative.** Do not hand-wave it to true; fix a finding and let the next run recompute. Per-section minor prose nits are advisory here — document-quality polish is `/writing-review`'s job, not the draft gate's.
 
-### Step 4: Mandatory source-verify (the citation gate)
+### Step 4: gate the citations — deterministic floor THEN semantic source-verify (two-tier)
 
-The workflow's verify stage confirms each citation *resolves* (the source exists / the cite is well-formed). It does NOT confirm the quoted text actually appears in the source. Before declaring the draft complete, run the deep check:
+Writing's citation gate is **two-tier** (DESIGN §4). Run the deterministic floor FIRST (it cannot be gamed and is nearly free), then the semantic authority:
+
+**4a — Deterministic floor (`{pass, evidence}`, mechanical).** For each `drafts/*.md`, run the gate probe — it greps every `[@key]` against `sources.bib` (closes the old "fidelity asserted, not checked" gap), flags any `[CITE-NEEDED]` left, confirms a `CLAIM-XX` trace, and reports number-vs-PRECIS drift in **labeled `consistency-only` mode** (it does NOT claim true dataset provenance when the parquet is remote/absent):
+
+```bash
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/writing/writing_gate_probe.py \
+  "drafts/<Section> (Draft).md" --bib references/sources.bib --precis .planning/PRECIS.md --outline .planning/OUTLINE.md
+```
+
+`pass:false` (an unresolved `[@key]`, a leftover `[CITE-NEEDED]`, or no claim trace) → feed the named `evidence` into the Step-3 `/goal` loop and re-draft that section; do NOT proceed. `dataProvenance.unmatchedVsSpec` is **advisory** (consistency-only) — review the listed numbers, but it never blocks on its own; numbers whose only source is a remote dataset are **unverifiable locally** and must not be reported as verified.
+
+**4b — Semantic authority (the real correctness check).** The floor is necessary, not sufficient. It confirms a cite *resolves*; it does NOT confirm the quoted text appears in the source or that the source supports the claim. Run the deep check:
 
 ```
 Skill(skill="workflows:source-verify")
