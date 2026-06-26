@@ -733,7 +733,7 @@ When presenting review findings to the user (especially at CHANGES REQUIRED verd
 - **You must treat alternative valid approaches as non-issues (confidence = 0).** If the approach works correctly, don't report it.
 - Ensure each reported issue is immediately actionable
 - **If you're unsure, rate it below 80 confidence.** Uncertainty is not a reason to report—it's a reason to investigate more.
-- Focus on what affects conclusions, not style. **STOP if you catch yourself criticizing coding style—that's not your role here.**
+- Focus on what affects conclusions, not style. **About to report a style/preference/coding-convention issue → DISCARD it (out of scope — this review judges conclusions, not style).**
 
 ## Gate: Exit Review Loop
 

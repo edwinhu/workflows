@@ -102,7 +102,7 @@ This applies even when:
 - "It should reproduce"
 - "User seemed happy earlier"
 
-**If you catch yourself thinking "I can skip verification," STOP — you're about to deliver unverified results that waste the user's time.**
+**About to claim COMPLETE without a fresh re-run this session → STOP (you ship unverified results that waste the user's time).**
 </EXTREMELY-IMPORTANT>
 
 ## Verification Facts
