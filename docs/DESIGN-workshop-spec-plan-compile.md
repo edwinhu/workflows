@@ -492,6 +492,41 @@ already-built shape and consumes the contracts, not the driver.)*
   **Each is its own commit with a before/after on the opv fixture — NEVER folded into the port's
   parity A/B.** *(Recommended as a fast-follow; gated behind parity so the two changes never confound.)*
 
+  ✅ **D-w-8 BUILT (worktree `worktree-workshop-mechanical-floor-dw8`, post-ship of the port v5.59.0).**
+  - **(a) DONE — root cause was deeper + the fix is plugin-wide-correct, not a typst hack.** Nearly EVERY
+    constraint already declares `APPLIES_TO` (typst-* → `["workshop","workshop-revise"]`, writing-* →
+    writing skills, ds-* → ds, …); **`check-all.py` simply IGNORED it** and ran all of them on every
+    project (the documented gotcha). Fix: `check-all.py` now **honors `APPLIES_TO`** against the
+    `workflow:` from `ACTIVE_WORKFLOW.md` (missing field → run, as before; `"all"` → run; no workflow
+    detected → run — all back-compat). A globbed `.py` with **no `check()`** (e.g. `scored-tics-patterns`)
+    is now **skipped, not errored**. Result on a workshop project: the 3 writing phantoms SKIP, scored-tics
+    SKIPS, **0 failed / 0 errors** → the permanently-red gate can finally go green on slide quality. Writing
+    projects still run their own constraints (no regression); standalone unchanged.
+    **+ production WIRING-GAP fix (opv-parity, the unit-test blind spot):** the mechanical leg runs
+    check-all from `presentation/`, but `ACTIVE_WORKFLOW.md` lives at PROJECT-ROOT/`.planning` (the two-dir
+    layout). A `{cwd}/.planning` lookup returned None in production → "run all" → phantoms still fired →
+    gate STILL red, even though the unit tests (which co-located the file with cwd) passed. Fix:
+    `_find_active_workflow` now **walks UP** from cwd to the nearest `.planning/ACTIVE_WORKFLOW.md` (bounded
+    at `$HOME`/root), fixing `_detect_workflow` AND the latent same-bug in `_detect_domain`. **13/13**
+    (`tests/check_all_applies_to_test.py`: + the two-dir Scenario-C regression — cwd=`presentation/`,
+    file at root → phantoms skip).
+  - **(b) overflow — REWRITTEN to a theme-agnostic PER-SLIDE model** (opv-parity caught the first cut:
+    page-count arithmetic that assumed 1 page per `==` — which the theme doesn't emit — inflated
+    `expected` and *masked* real spill → a false NEGATIVE, the worse direction for a verify gate). New
+    model: map each `#slide[]` to the handout page(s) carrying its `=== title`; a slide overflows iff it
+    occupies ≥2 consecutive pages AND has **no `#pause`** (`#pause` builds are intentional multi-page, not
+    spill). NO `handout_pages − slide_count` arithmetic. On opv this is correct for the right reason
+    (S3/S18/S19 span 2 pages but all have `#pause` → overflow 0). Prompt-level; opv-parity re-verifying
+    the per-slide reasoning on the fixture before ship.
+  - **(c) DONE in the port (Step 4b)** — `scope.notChecked` already discloses both caveats.
+  - **(d) DONE — count fix.** The compile-fail short-circuit now emits **one finding per compile error**
+    and sets `summary.critical = findings.length` (was `1 + compileErrors.length`, self-inconsistent +
+    floating). **25/25** engine tests (added: 1-error→critical1, 2-errors→critical2===findings.length).
+  - Full suite green: check-all 10/10, engines 25/25, parser 37/37, guard 6/6.
+  - *Note (out of scope, separate):* the writing phantoms now correctly fire ONLY on writing projects, but
+    they still FAIL there (the writing skills don't reference their `*.md` — a writing-authoring compliance
+    gap, not a check-all bug). Left for a writing-side fix; this pass made the failures correctly-scoped.
+
 ---
 
 ## 9. wc-audit result (folded in — `workflows:wc-audit` on `workshop`, 2026-06-26)
@@ -607,7 +642,10 @@ User signed off ("ok" → D-w-1…D-w-7 approved; D-w-8 mechanical-floor cleanup
 - ✅ **ALL PORT STEPS COMPLETE.** Full suite green: **parser 37/37, guard 6/6, engines 23/23.** Step 2
   parity-validated by opv-parity (Track A + B, n=3); generate path end-to-end validated. Uncommitted in
   `worktree-workshop-spec-plan-compile`.
-- ⬜ **D-w-8** (separate fast-follow, gated behind parity) — mechanical-floor cleanup: scope `check-all.py`
+- ✅ **D-w-8 — BUILT (separate worktree, post-port).** check-all honors APPLIES_TO (permanently-red gate
+  fixed plugin-wide), overflow divider-aware, count fix, no-check modules skip. Tests: check-all 10/10,
+  engines 25/25. See the D-w-8 decision block above for the full before/after.
+- ⬜ ~~**D-w-8** (separate fast-follow, gated behind parity) — mechanical-floor cleanup: scope `check-all.py`~~
   to `typst-*` (kill the permanently-red phantoms), divider-aware overflow, the `critical`/`findings.length`
   count fix. Each its own before/after commit; NOT part of this port's parity surface.
 

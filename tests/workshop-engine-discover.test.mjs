@@ -160,6 +160,18 @@ function makeVerifyMock(extraSlides = []) {
   // compile-fail short-circuit also carries scope (honest about what it skipped).
   const { result } = await exec(verSrc, { args: { projectDir: '/p', slideIndex: INDEX }, onAgent: makeVerifyMock() })
   ok('verify scope: short-circuit discloses downstream SKIPPED', (result.scope?.notChecked || []).some(s => /SKIPPED|short-circuit/.test(s)), JSON.stringify(result.scope))
+  // D-w-8 count fix: summary.critical === findings.length (1 error → 1 finding → critical 1).
+  ok('verify count: critical === findings.length (single error)', result.summary.critical === result.findings.length && result.summary.critical === 1, JSON.stringify(result.summary))
+}
+{
+  // D-w-8: TWO compile errors → 2 findings → critical 2 (count tracks findings, no off-by-one base).
+  const mock = (label) => {
+    if (label === 'discover') return { presentationDir: '/p/presentation', slidesPath: '/p/s.typ', notesPath: '/p/n.typ', sourcesPath: '/p/.planning/SOURCES.md', checkAllPath: '/c.py', detectWidowsPath: '', lookAtPath: '', slides: [{ id: 'S1', title: 'T', inventoryRefs: [] }], diagrams: [] }
+    if (label === 'mechanical') return { slidesCompiled: false, notesCompiled: false, compileErrors: ['err one', 'err two'], constraintsPassed: false, constraintFailures: [], widows: 0, overflow: 0 }
+    return {}
+  }
+  const { result } = await exec(verSrc, { args: { projectDir: '/p', slideIndex: INDEX }, onAgent: mock })
+  ok('verify count: 2 errors → critical 2 === findings.length 2', result.summary.critical === 2 && result.findings.length === 2, JSON.stringify(result.summary))
 }
 
 console.log(`\n${PASS}/${PASS + FAIL} passed` + (FAIL ? `  (${FAIL} FAILED)` : ''))

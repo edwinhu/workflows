@@ -28,17 +28,68 @@ DOMAIN_SKILL_MAP = {
 }
 
 
+def _find_active_workflow(cwd: str) -> Path | None:
+    """Locate the nearest .planning/ACTIVE_WORKFLOW.md by walking UP from cwd.
+
+    CRITICAL (the production wiring gap, opv-parity): the workshop mechanical leg runs check-all from
+    the PRESENTATION dir, but ACTIVE_WORKFLOW.md lives at PROJECT-ROOT/.planning (the two-dir layout:
+    projectRoot/.planning + projectRoot/presentation/). A non-walking `{cwd}/.planning` lookup returns
+    None there → workflow undetected → "run all" → the phantoms still fire → gate still permanently-red.
+    Walking up finds the project-root file from any subdir. Bounded at the filesystem root / $HOME.
+    """
+    home = Path.home()
+    p = Path(cwd).resolve()
+    for d in (p, *p.parents):
+        aw = d / ".planning" / "ACTIVE_WORKFLOW.md"
+        if aw.is_file():
+            return aw
+        if d == home or d == d.parent:  # stop at $HOME or filesystem root — don't escape upward
+            break
+    return None
+
+
 def _detect_domain(cwd: str) -> str | None:
-    """Read style from ACTIVE_WORKFLOW.md frontmatter."""
-    aw = Path(cwd) / ".planning" / "ACTIVE_WORKFLOW.md"
-    if not aw.is_file():
+    """Read style from the nearest ACTIVE_WORKFLOW.md frontmatter (walks up — see _find_active_workflow)."""
+    aw = _find_active_workflow(cwd)
+    if aw is None:
         return None
     try:
-        text = aw.read_text(encoding="utf-8")
-        m = re.search(r"^style:\s*(\w+)", text, re.MULTILINE)
+        m = re.search(r"^style:\s*(\w+)", aw.read_text(encoding="utf-8"), re.MULTILINE)
         return m.group(1) if m else None
     except Exception:
         return None
+
+
+def _detect_workflow(cwd: str) -> str | None:
+    """Read `workflow:` from the nearest ACTIVE_WORKFLOW.md (walks up — fixes the two-dir wiring gap)."""
+    aw = _find_active_workflow(cwd)
+    if aw is None:
+        return None
+    try:
+        m = re.search(r"^workflow:\s*([\w-]+)", aw.read_text(encoding="utf-8"), re.MULTILINE)
+        return m.group(1) if m else None
+    except Exception:
+        return None
+
+
+def _applies(applies_to, workflow) -> bool:
+    """Honor a constraint's APPLIES_TO against the detected workflow (the documented gotcha:
+    check-all previously IGNORED APPLIES_TO and ran every constraint on every project, so writing's
+    authoring-lints fired on workshop decks → a permanently-red gate). Conservative by design:
+      - no APPLIES_TO (missing/empty)  → RUN  (back-compat: missing ⇒ treated as [all])
+      - "all" in APPLIES_TO            → RUN
+      - workflow undetected (standalone / no ACTIVE_WORKFLOW) → RUN (can't scope safely)
+      - else RUN iff some entry == workflow OR startswith(workflow + "-")
+        (APPLIES_TO entries are SKILL names; a skill belongs to its workflow by name prefix:
+         'writing-draft' ∈ 'writing', 'workshop-revise' ∈ 'workshop').
+    """
+    if not applies_to:
+        return True
+    if "all" in applies_to:
+        return True
+    if not workflow:
+        return True
+    return any(e == workflow or e.startswith(workflow + "-") for e in applies_to)
 
 
 def import_check(py_path):
@@ -60,13 +111,27 @@ def _discover(directory, exclude_names=None):
     return md_stems, py_paths
 
 
-def _run_checks(md_stems, py_paths, directory_label, context, results):
+def _run_checks(md_stems, py_paths, directory_label, context, results, workflow=None):
     for name in sorted(md_stems):
         qualified = f"{directory_label}/{name}"
         if name in py_paths:
             try:
                 mod = import_check(py_paths[name])
-                violations = mod.check(context)
+            except Exception as e:
+                results["errors"].append({"name": qualified, "error": str(e)})
+                continue
+            # A globbed .py with no check() callable is a helper/data module, not a constraint — skip,
+            # don't error (fixes e.g. scored-tics-patterns riding the gate as a permanent error).
+            check_fn = getattr(mod, "check", None)
+            if not callable(check_fn):
+                results["skipped"].append(f"{qualified} (no check() — not a constraint)")
+                continue
+            # Honor APPLIES_TO: skip constraints that don't apply to the current workflow.
+            if not _applies(getattr(mod, "APPLIES_TO", None), workflow):
+                results["skipped"].append(f"{qualified} (APPLIES_TO≠{workflow})")
+                continue
+            try:
+                violations = check_fn(context)
                 if violations:
                     results["failed"].append({"name": qualified, "violations": violations})
                 else:
@@ -83,10 +148,11 @@ def main():
     results = {"passed": [], "failed": [], "conventions": [], "errors": [], "skipped": []}
 
     domain = _detect_domain(cwd)
+    workflow = _detect_workflow(cwd)
 
-    # --- Layer 1: plugin-wide constraints ---
+    # --- Layer 1: plugin-wide constraints (now APPLIES_TO-scoped to the detected workflow) ---
     md_stems, py_paths = _discover(_plugin_constraints_dir, exclude_names={"check-all"})
-    _run_checks(md_stems, py_paths, "constraints", context, results)
+    _run_checks(md_stems, py_paths, "constraints", context, results, workflow)
 
     # --- Layer 2: skill-local constraints (prefixed .py files in skills/*/references/) ---
     # Skill reference .md files are long source documents (Strunk, McCloskey, etc.), not
@@ -106,7 +172,18 @@ def main():
                 label = f"skills/{skill_name}/references/{py_path.stem}"
                 try:
                     mod = import_check(py_path)
-                    violations = mod.check(context)
+                except Exception as e:
+                    results["errors"].append({"name": label, "error": str(e)})
+                    continue
+                check_fn = getattr(mod, "check", None)
+                if not callable(check_fn):
+                    results["skipped"].append(f"{label} (no check() — not a constraint)")
+                    continue
+                if not _applies(getattr(mod, "APPLIES_TO", None), workflow):
+                    results["skipped"].append(f"{label} (APPLIES_TO≠{workflow})")
+                    continue
+                try:
+                    violations = check_fn(context)
                     if violations:
                         results["failed"].append({"name": label, "violations": violations})
                     else:

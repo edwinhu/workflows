@@ -183,7 +183,7 @@ const mech = await agent(
 1. Compile both decks: \`typst compile slides.typ\` and \`typst compile notes.typ\`. Record slidesCompiled/notesCompiled and any error text in compileErrors. If slides.typ fails to compile, STILL return (the gate will short-circuit) — do not attempt the steps below.
 2. Constraint checks (auto-discovers all .py): \`uv run python3 ${disc.checkAllPath} .\` — set constraintsPassed from exit code (0 = pass), and copy every "FAIL:" line into constraintFailures.
 3. PDF widow detection (only if slides.pdf built): ${disc.detectWidowsPath ? `\`uv run python3 ${disc.detectWidowsPath} slides.pdf\`` : 'no detector resolved — set widows=0'} — widows = number of widow lines reported (0 if exit 0).
-4. Overflow: compile handout mode \`typst compile slides.typ --input handout=true slides-handout.pdf\` and compare handout page count to slide count; overflow = number of slides that spill to a second page (0 if none / cannot determine).
+4. Overflow (PER-SLIDE, THEME-AGNOSTIC — do NOT use page-count arithmetic; it both over-counts theme pages and can MASK real spill): compile handout mode \`typst compile slides.typ --input handout=true slides-handout.pdf\`, then decide PER SLIDE whether its OWN content spills. Method: extract per-page text (e.g. \`pdftotext -layout -f N -l N slides-handout.pdf -\` per page, or look_at per page) and map each \`#slide[]\` block to the handout page(s) carrying its \`=== <takeaway>\` title. A slide OVERFLOWS iff its content occupies ≥2 CONSECUTIVE handout pages AND the slide block contains NO \`#pause\` (\`#pause\` legitimately produces multiple BUILD pages — that is NOT spill; grep the block for \`#pause\` and exclude those). Pages with no \`===\` title (title slide, TOC/\`#outline\`, \`=\`/\`==\` dividers) are STRUCTURAL — ignore them entirely; never infer overflow from \`handout_pages − slide_count\`. overflow = count of slides that occupy ≥2 pages with no \`#pause\`. If you genuinely cannot map a slide to its pages, set overflow=0 and say so (a false NEGATIVE that hides a clipped slide is worse than a missed warning — but a guessed page-arithmetic positive/negative is worst). Report the offending slide titles in context if overflow>0.
 
 Return MECHANICAL_SCHEMA. Report raw counts — do not soften.`,
   { label: 'mechanical', phase: 'Mechanical', schema: MECHANICAL_SCHEMA, model: 'sonnet' }
@@ -192,12 +192,18 @@ Return MECHANICAL_SCHEMA. Report raw counts — do not soften.`,
 // Early-exit barrier: a deck that does not compile cannot be slide-reviewed meaningfully.
 if (!mech.slidesCompiled) {
   log('❌ slides.typ does not compile — short-circuiting before per-slide review')
+  // D-w-8: one finding per compile error so summary.critical === findings.length (was 1+errors.length,
+  // which disagreed with the always-1 findings array — a self-inconsistent count that also FLOATED
+  // because compileErrors is agent-bucketed). Fall back to one generic finding when none are itemised.
+  const compileFindings = (mech.compileErrors && mech.compileErrors.length)
+    ? mech.compileErrors.map(e => ({ severity: 'critical', area: 'compile', location: disc.slidesPath, detail: `slides.typ failed to compile: ${String(e).slice(0, 400)}` }))
+    : [{ severity: 'critical', area: 'compile', location: disc.slidesPath, detail: 'slides.typ failed to compile (no error text captured)' }]
   return {
     overallPass: false,
     verdict: 'ISSUES FOUND',
-    summary: { critical: 1 + (mech.compileErrors?.length || 0), major: 0, minor: 0, total: 1 + (mech.compileErrors?.length || 0) },
+    summary: { critical: compileFindings.length, major: 0, minor: 0, total: compileFindings.length },
     scoreTable: `| Leg | Result | Gate |\n|-----|--------|------|\n| Compile (slides) | FAIL | ❌ |\n`,
-    findings: [{ severity: 'critical', area: 'compile', location: `${disc.slidesPath}`, detail: `slides.typ failed to compile: ${(mech.compileErrors || []).join('; ').slice(0, 400)}` }],
+    findings: compileFindings,
     reviews: [],
     slidesThatFlagged: disc.slides.map(s => s.id),
     scope: { checked: ['typst compile (slides) — FAILED'], notChecked: ['everything downstream — per-slide review, constraints, widows, overflow, visual: SKIPPED (short-circuit on compile failure)'] },
