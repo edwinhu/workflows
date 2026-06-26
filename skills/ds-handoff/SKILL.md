@@ -30,7 +30,7 @@ Before writing `.planning/HANDOFF.md`, you MUST:
 4. ASSESS what is actually done vs. what remains
 5. Only THEN write the handoff document
 
-**If you catch yourself writing a handoff without reading state files first, STOP.**
+**About to write the handoff without having read the state files first → STOP (read them, then write).**
 </EXTREMELY-IMPORTANT>
 
 ## Handoff Facts
