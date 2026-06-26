@@ -24,6 +24,11 @@ const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error(`writing-review requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [s.section, s]))
+const PLUGIN = cfg.pluginRoot || ''
+// Deterministic section index from scripts/writing/writing_section_index.py — the compiled "Discover".
+// Same shared parser both writing engines consume, so they cannot drift from each other or from the
+// outline-executable guard. Absent ⇒ the LLM Discover still runs (back-compat).
+const SECTION_INDEX = (cfg.sectionIndex && Array.isArray(cfg.sectionIndex.sections) && cfg.sectionIndex.sections.length) ? cfg.sectionIndex : null
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const ISSUE = {
@@ -119,8 +124,28 @@ const DOCUMENT_SCHEMA = {
 }
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
+// Map the deterministic section index → the review DISCOVERY_SCHEMA shape (no LLM). draftFile is
+// the existing draft (review does not write), precisClaim from the OUTLINE.md Claim→Section Map.
+function discFromIndex(idx) {
+  const style = idx.style && idx.style !== 'unspecified' ? idx.style : 'general'
+  return {
+    style: cfg.style || style,
+    precisPath: idx.precisPath || '',
+    outlinePath: idx.outlinePath || '',
+    sourcesBib: idx.bibPath || '',
+    domainSkillPath: PLUGIN ? `${PLUGIN}/../skills/writing-${style}/SKILL.md` : '',
+    repetitionScript: PLUGIN ? `${PLUGIN}/../skills/writing-review/scripts/bridge_repetition_check.py` : '',
+    sections: idx.sections.map(s => ({
+      name: String(s.name),
+      outlineFile: s.outlineFile || '',
+      draftFile: s.draftFile || '',
+      precisClaim: ((s.primaryClaims && s.primaryClaims.length ? s.primaryClaims : (s.implements || [])).join(', ')) || (s.draftFile ? String(s.name) : 'MISSING DRAFT'),
+    })),
+  }
+}
+
 phase('Discover')
-const disc = await agent(
+const disc = SECTION_INDEX ? discFromIndex(SECTION_INDEX) : await agent(
   `Enumerate the document's sections and resolve the review inputs. Working directory: ${PROJECT}
 
 1. Determine \`style\` (legal|econ|general): read .planning/ACTIVE_WORKFLOW.md if it exists; if it does NOT exist, infer from .planning/PRECIS.md's "Domain" line — pure law → legal, pure empirical → econ, and a **hybrid/mixed domain → general** (the safe baseline). ${cfg.style ? `Caller override: use style="${cfg.style}".` : ''}
@@ -134,6 +159,7 @@ Return DISCOVERY_SCHEMA. Absolute paths.`,
 )
 if (!disc.sections.length) throw new Error('No sections discovered — check OUTLINE.md / drafts/')
 let sections = disc.sections
+if (SECTION_INDEX) log(`Discover: deterministic section index (${sections.length} sections, ${disc.style}) — no LLM Discover`)
 log(`Document: ${sections.length} sections (${disc.style}); ${ONLY ? `re-review ${ONLY.size}` : 'full review'}`)
 
 // ── Phase 2: L1 Section Review (per-section × 3 reviewers, parallel) ───────────

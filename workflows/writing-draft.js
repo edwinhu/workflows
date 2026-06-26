@@ -27,6 +27,11 @@ const PLUGIN = cfg.pluginRoot || ''
 const OUTDIR = cfg.outputSubdir || 'drafts'
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.section), s]))
+// Deterministic section index from scripts/writing/writing_section_index.py — the compiled "Discover".
+// When the skill passes it, we skip the LLM Discover entirely (the writing analog of ds/dev's compile
+// step, except the output is DATA — a section index — not a generated run.js). Back-compat: absent ⇒
+// the LLM Discover still runs, so old callers and projects without a compiled index keep working.
+const SECTION_INDEX = (cfg.sectionIndex && Array.isArray(cfg.sectionIndex.sections) && cfg.sectionIndex.sections.length) ? cfg.sectionIndex : null
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const FINDING = {
@@ -97,8 +102,33 @@ const VERIFY_SCHEMA = {
 }
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
+// Map the deterministic section index → the DISCOVERY_SCHEMA shape (no LLM). draftFile is
+// recomputed from OUTDIR so a pilot subdir (e.g. drafts-pilot) is honored; precisClaim comes
+// from the OUTLINE.md Claim→Section Map (primary claims), falling back to the draft's implements.
+function discFromIndex(idx) {
+  const style = idx.style && idx.style !== 'unspecified' ? idx.style : 'general'
+  return {
+    style,
+    precisPath: idx.precisPath || '',
+    outlinePath: idx.outlinePath || '',
+    domainSkillPath: PLUGIN ? `${PLUGIN}/../skills/writing-${style}/SKILL.md` : '',
+    bibPath: idx.bibPath || '',
+    sections: idx.sections.map(s => ({
+      name: String(s.name),
+      outlineFile: s.outlineFile || '',
+      draftFile: `${PROJECT}/${OUTDIR}/${s.name} (Draft).md`,
+      precisClaim: ((s.primaryClaims && s.primaryClaims.length ? s.primaryClaims : (s.implements || [])).join(', ')) || String(s.name),
+      outlineGranular: s.granular !== false,
+      sourcesPinned: !!s.sourcesPinned,
+      granularityNote: s.granularityNote || '',
+      prevName: s.prevName || '',
+      nextName: s.nextName || '',
+    })),
+  }
+}
+
 phase('Discover')
-const disc = await agent(
+const disc = SECTION_INDEX ? discFromIndex(SECTION_INDEX) : await agent(
   `Enumerate the sections the writing-draft phase must produce, reading the APPROVED outlines. Working directory: ${PROJECT}
 
 1. Set style: read ${PROJECT}/.planning/ACTIVE_WORKFLOW.md if present; if ABSENT, INFER style from the material (a law-review / legal paper → "legal"; an economics paper → "econ"; otherwise "general"). Read .planning/PRECIS.md and .planning/OUTLINE.md if present (set their absolute paths, or "" if absent). If OUTLINE.md is absent, derive document order from the outline filenames + their headings.
@@ -112,6 +142,7 @@ Use ABSOLUTE paths. Return DISCOVERY_SCHEMA.`,
   { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
 )
 if (!disc.sections.length) throw new Error(`writing-draft: no section outlines found under ${PROJECT}/outlines/. Outlines must exist (and OUTLINE_REVIEWED.md be APPROVED) before drafting.`)
+if (SECTION_INDEX) log(`Discover: deterministic section index (${disc.sections.length} sections, ${disc.style}) — no LLM Discover`)
 const underGranular = disc.sections.filter(s => s.outlineGranular === false)
 const draftable = disc.sections.filter(s => s.outlineGranular !== false)
 const outlineByName = Object.fromEntries(disc.sections.map(s => [String(s.name), s]))
