@@ -354,6 +354,38 @@ instances now triangulate the core; do the extraction *after* writing, not as pa
 
 ---
 
+## 8b. Build status (2026-06-26, worktree `worktree-writing-spec-plan-compile`, NOT shipped)
+
+User signed off ("go for it" → "Full sequence incl. emitter synergy"). All steps tested; ds+dev
+suites unaffected throughout.
+
+- ✅ **Step 1 — `scripts/writing/writing_section_index.py`** (the deterministic Discover). 28/28
+  (`tests/writing_section_index_test.py`), **blind-oracle parity PASSED** vs `tender_offers`
+  (clean canonical match). Stale-approval catch fires live. Emits `precis/outline/bib` paths so the
+  index is a complete DATA artifact.
+- ✅ **Step 2 — engine reconciliation.** `writing-draft.js` + `writing-review.js` consume
+  `args.sectionIndex` (skip the LLM Discover), back-compat fallback retained. Both skills wired to
+  compile + pass the index. 13/13 (`tests/writing-engine-discover.test.mjs`: no-LLM path, granularity
+  bounce, back-compat).
+- ✅ **Step 3 — guards reconciled to the shared parser.** New
+  `hooks/writing-outline-executable-guard.py` (PreToolUse on `OUTLINE_REVIEWED.md`,
+  `validate = build_index().violations`; deny on ⊇/granularity, allow+warn on stale approval).
+  `writing-claim-id-guard.py` now BLOCKS drafts w/o a claim trace (warns on outlines — incremental).
+  12/12 (`tests/writing_guards_test.py`).
+- ✅ **Emitter synergy (born-canonical, the first instance to close the ds/dev emitter gap).**
+  `writing-setup` OUTLINE.md template now emits the canonical `## Structure` (headings = filename
+  stems) + `## Claim → Section Map`; `writing-outline` emits `implements: [CLAIM-XX]` frontmatter +
+  a pinned source per claim. Tolerant parser is now a back-compat shim, not the primary path.
+- ✅ **Step 4 — two-tier `gateProbe` deterministic floor** (`scripts/writing/writing_gate_probe.py`,
+  closes audit G1). `{pass, evidence}`: bib-grep (`[@key]` vs `sources.bib`), `[CITE-NEEDED]`, claim
+  trace; `dataProvenance` in **labeled consistency-only mode** (never overstates a remote-dataset
+  number as verified). Wired into the writing-draft skill Step 4a before the semantic source-verify
+  (4b). 13/13 (`tests/writing_gate_probe_test.py`), incl. real Part III (all `[@key]` resolve;
+  numbers flagged consistency-only).
+- ⏳ **NEXT (not built):** A/B on the real `tender_offers` — Part III first (both gate tiers), then
+  the Introduction (semantic-only) — vs the current `/writing-review`; the thesis-change / stale-
+  approval PAUSE fixture. Then ship.
+
 ## 9. Honest bottom line
 
 Writing is the farthest sibling and it shows: the ds/dev runner win is **already banked** (flat-

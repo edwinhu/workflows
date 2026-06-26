@@ -198,6 +198,26 @@ Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/I
 
 Structure the argument with sections mapped to claims from PRECIS.md.
 
+<EXTREMELY-IMPORTANT>
+### OUTLINE.md is a MACHINE-EXECUTABLE SPEC (born-canonical)
+
+`scripts/writing/writing_section_index.py` parses OUTLINE.md to build the section set the
+draft and review engines run on (and `writing-outline-executable-guard.py` gates approval on
+it). Two blocks are **load-bearing and must be emitted in this exact shape** — get them right
+here and the outline is born-canonical (the guard goes strict; nothing relies on tolerant
+regex papering over drift):
+
+1. **`## Structure`** — one `### <Section Name>` per section, IN DOCUMENT ORDER. The heading
+   text MUST equal the section's outline/draft **filename stem** (the parser pairs
+   `### Part I. Foo` ⇄ `outlines/Part I. Foo.md` ⇄ `drafts/Part I. Foo (Draft).md`). Do NOT
+   prefix with bare roman numerals like `### I. Introduction` unless the files are named that
+   way — use the real section names (`### Introduction`, `### Part I. <Name>`, `### Conclusion`).
+2. **`## Claim → Section Map`** — the CANONICAL claim→section assignment (the spec the ⊇ gate
+   reads). Each claim has ONE primary home (a section, by `Part` numeral `II.A` or section
+   name); Intro/Conclusion are echo-only. A section's draft must `implements: ⊇` the claims
+   primary-homed to it.
+</EXTREMELY-IMPORTANT>
+
 ### OUTLINE.md Template
 
 ```markdown
@@ -205,35 +225,35 @@ Structure the argument with sections mapped to claims from PRECIS.md.
 
 ## Structure
 
-### I. Introduction
+### Introduction
 - **Goal**: Hook reader, state thesis, roadmap
-- **Hook**: [from PRECIS or TBD]
 - **Thesis**: [from PRECIS]
-- **Claims preview**: [list from PRECIS]
+- **Claims preview**: CLAIM-01 → CLAIM-0N
 
-### II. [Section Name]
+### Part I. [Section Name]
 - **Goal**: [what this section accomplishes]
-- **Implements**: [CLAIM-01, CLAIM-02, etc. from PRECIS]
+- **Implements**: [CLAIM-01, CLAIM-02 — the claims primary-homed here, from the map below]
 - **Key points**:
-  - Point A (sources: ...)
-  - Point B (sources: ...)
-- **Transition to next**: [how it leads to Section III]
+  - Point A — [@bibkey or specific authority]  (pin a real source per substantive claim)
+  - Point B — [@bibkey]
+- **Transition to next**: [how it leads to the next section]
 
-### III. [Section Name]
+### Part II. [Section Name]
 - **Goal**: [what this section accomplishes]
-- **Implements**: [CLAIM-XX from PRECIS]
+- **Implements**: [CLAIM-XX]
 - **Key points**:
-  - [points with sources]
+  - [points, each with a pinned source]
 
-### IV. Counterarguments
-- **Goal**: Address objections from PRECIS
-- **Objection 1**: [from PRECIS] → Response
-- **Objection 2**: [from PRECIS] → Response
-
-### V. Conclusion
-- **Goal**: Restate thesis with earned authority
+### Conclusion
+- **Goal**: Restate thesis with earned authority; synthesize CLAIM-01 … CLAIM-0N
 - **Implications**: What follows from this argument
-- **Future questions**: What remains unresolved
+
+## Claim → Section Map
+| Claim | Primary home | Setup / echo |
+|-------|--------------|--------------|
+| CLAIM-01 ([gloss]) | Part I.A | Introduction |
+| CLAIM-02 ([gloss]) | Part II.A | Part I.B |
+| CLAIM-0N ([gloss]) | Part II.B | Conclusion |
 
 ## Key Sources
 [Deduplicated from search phase]

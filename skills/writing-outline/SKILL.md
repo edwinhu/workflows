@@ -182,16 +182,30 @@ Create directory if needed and write the detailed outline:
 mkdir -p outlines
 ```
 
-Write to `outlines/[Section Name] (Outline).md`:
+Write to `outlines/[Section Name].md` (the **filename stem MUST equal** the `### [Section Name]` heading in `.planning/OUTLINE.md ## Structure` — the section index pairs them; a `(Outline)` suffix is tolerated but match the OUTLINE.md heading exactly):
+
+<EXTREMELY-IMPORTANT>
+**BORN-CANONICAL + SOURCE-PINNED.** Two things make this outline machine-executable (so the
+draft engine consumes it deterministically and the outline-executable guard passes):
+1. **`implements: [CLAIM-XX]` frontmatter** carrying the claims the OUTLINE.md `## Claim →
+   Section Map` primary-homes to this section (the draft's `implements:` must ⊇ these).
+2. **A real source pinned to every substantive claim** — a `[@bibkey]` resolvable in
+   `references/sources.bib`, or a specific named authority (case/statute). The assessment's
+   writing follow-up is "pin a source per claim"; do it HERE, not at draft time. An unsourced
+   point is `[CITE-NEEDED: <what>]`, never an invented cite.
+</EXTREMELY-IMPORTANT>
 
 ```markdown
+---
+implements: [CLAIM-XX, CLAIM-YY]   # the claims primary-homed to this section in OUTLINE.md
+---
 # [Section Name] - Detailed Outline
 
 ## Section Goal
 [From master OUTLINE.md - what this section accomplishes]
 
 ## Claim Supported
-[Which claim from PRECIS.md this section advances]
+[Which claim(s) from PRECIS.md this section advances — same CLAIM-XX as the frontmatter]
 
 ## Structure: [Chronological/Thematic/Problem-Solution/Comparative]
 
@@ -210,9 +224,9 @@ Write to `outlines/[Section Name] (Outline).md`:
 ### Subsection A: [Name]
 
 **Point**: [Main argument of this subsection]
-**Evidence**:
-  - [Source 1]: "[key quote or fact]"
-  - [Source 2]: "[key quote or fact]"
+**Evidence** (pin a REAL source per claim — `[@bibkey]` or a named authority):
+  - [@bibkey1]: "[key quote or fact]"
+  - [@bibkey2]: "[key quote or fact]"
 **Logic**: [How evidence supports point]
 **Transition**: [Bridge to next subsection]
 

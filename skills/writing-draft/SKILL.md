@@ -242,9 +242,20 @@ It discovers the sections (deterministically when `sectionIndex` is passed), ass
 
 **The JS gate is authoritative.** Do not hand-wave it to true; fix a finding and let the next run recompute. Per-section minor prose nits are advisory here — document-quality polish is `/writing-review`'s job, not the draft gate's.
 
-### Step 4: Mandatory source-verify (the citation gate)
+### Step 4: gate the citations — deterministic floor THEN semantic source-verify (two-tier)
 
-The workflow's verify stage confirms each citation *resolves* (the source exists / the cite is well-formed). It does NOT confirm the quoted text actually appears in the source. Before declaring the draft complete, run the deep check:
+Writing's citation gate is **two-tier** (DESIGN §4). Run the deterministic floor FIRST (it cannot be gamed and is nearly free), then the semantic authority:
+
+**4a — Deterministic floor (`{pass, evidence}`, mechanical).** For each `drafts/*.md`, run the gate probe — it greps every `[@key]` against `sources.bib` (closes the old "fidelity asserted, not checked" gap), flags any `[CITE-NEEDED]` left, confirms a `CLAIM-XX` trace, and reports number-vs-PRECIS drift in **labeled `consistency-only` mode** (it does NOT claim true dataset provenance when the parquet is remote/absent):
+
+```bash
+uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/writing/writing_gate_probe.py \
+  "drafts/<Section> (Draft).md" --bib references/sources.bib --precis .planning/PRECIS.md --outline .planning/OUTLINE.md
+```
+
+`pass:false` (an unresolved `[@key]`, a leftover `[CITE-NEEDED]`, or no claim trace) → feed the named `evidence` into the Step-3 `/goal` loop and re-draft that section; do NOT proceed. `dataProvenance.unmatchedVsSpec` is **advisory** (consistency-only) — review the listed numbers, but it never blocks on its own; numbers whose only source is a remote dataset are **unverifiable locally** and must not be reported as verified.
+
+**4b — Semantic authority (the real correctness check).** The floor is necessary, not sufficient. It confirms a cite *resolves*; it does NOT confirm the quoted text appears in the source or that the source supports the claim. Run the deep check:
 
 ```
 Skill(skill="workflows:source-verify")
