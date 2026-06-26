@@ -1,0 +1,54 @@
+# wc-creator follow-up survey (2026-06-26) — does the birther need updates after the 4 sibling ports?
+
+> Survey of all five `*-refactor` sessions after wc-creator shipped **v5.58.0** (the compiled-runner
+> birther: `compiled-runner-template.js` + wc-audit P22-P26 executionClass detector + Step 3 doctrine).
+> Main is now **v5.59.2** — four sibling ports (ds, dev, writing, workshop) shipped, course/teaching shipped
+> in its own repo, and the canonical seam doc (`docs/common-infra-candidates.md`) advanced well past v5.58.0.
+> **Conclusion: yes — the birther has one correctness bug + ~10 doctrine deepenings to absorb, all sourced
+> from real ports.** Assessment only; no engine edits yet.
+
+## Instances surveyed (all DONE + parity-passed + shipped)
+
+| Session | Port | Flavor | Audit-readiness self-report |
+|---------|------|--------|------------------------------|
+| ds-refactor | ds (PR#7) | exit-code · codegen `run.js` | PASS P22-P26; run-template predates `scope`/assist (lag, not gap) |
+| dev-refactor | dev (PR#8, v5.56.0) | exit-code · codegen `run.js` | PASS mechanics; 2 in-flight gaps (emitter-canonical #6, fullsuite muxed onto pauseKind) — owned by pass#9 |
+| writing-refactor | writing (PR#18, v5.57.0) | judgment · **DATA work-list** | PASS **iff** detector recognizes the DATA variant; no run.js by design |
+| workshop-refactor | workshop (PR#24, v5.59.0) | rich-mechanical-floor + semantic-ceiling · **DATA** | PASS; same classifier caveat (writing's twin) |
+| course-refactor | teaching (v2.102.x, **separate repo**) | judgment+mechanical+human-pause · **DATA** | PASS; don't flag absent run.js; inventory-partition stays LLM (correct boundary) |
+
+## 🔴 P0 — a correctness bug in shipped wc-audit (unanimous across writing/workshop/course)
+
+**The executionClass detector must recognize the `compile=DATA` variant, or it FALSE-FLAGS writing/workshop/teaching as `generic-interpreter` (a false critical).** Three of the five ports compile to a **DATA work-list consumed by a generic fan-out engine** — there is **no `run.js`, by design**. The v5.58.0 detector mentions "run.js / data work-list" for the compiled-runner class, but its `already-a-fan-out` class can swallow a *post-port* fan-out (writing/workshop ARE fan-outs) and miss that they now have a deterministic compile feeding them. The disambiguator the sessions give:
+
+> **compiled-runner (data variant) signal** = "a deterministic compile/parser step replaces an LLM Discover (back-compat fallback retained) and feeds the generic engine via `args`; the guard shares that parser (`validate = build_index().violations`)." A fan-out **with** that deterministic compile is `compiled-runner`, NOT `already-a-fan-out`. Absence of a generated `run.js` is **not** a gap.
+
+This is the highest-priority fix — until it lands, re-auditing the three DATA-variant workflows yields a wrong verdict.
+
+## 🟠 P1 — new doctrine the birther + wc-audit should absorb (all sourced from real ports)
+
+1. **S5 JOIN trust-class** (ds canonical PR#21/22; workshop opv-parity). A work-list row's downstream join (work-item ↔ produced artifact) is **mechanical** (deterministic key — ds parquet / dev path) or **semantic** (candidate rows; an LLM joins OUTSIDE the parser). **Predictive test: the join is semantic iff the work-list enumerates from >1 source** (generate←spec AND verify←built-artifact). The parser owns *enumeration, never a drifting-identifier join*. Resolution to recommend: a **born-canonical byte-stable join-key anchor** (doctrine #6 applied to the join key) converts semantic→mechanical. **Don't feed the deterministic artifact INTO the semantic join** — a candidate menu in the prompt biases it (measured: appendix over-match, n=3 [25,20,38] vs truth [21,21,21]); post-filter in JS *outside* the agent. → birther doctrine + a new wc-audit join-trust-class check.
+2. **D1 floor-vs-ASSIST taxonomy** (course N4 → ds canonical PR#23). Deterministic probe output has two roles: gate-bearing **floor** (→`pass`) vs verdict-feeding **assist** (a candidate-narrowing list in `evidence`+`scope.notChecked` that narrows the OUTSIDE authority but does NOT gate). No schema change. → name it in the birther D1 marker; wc-audit P24 scores the **inverted-G2 defect**: a probe that fails the gate on candidates meant for semantic review (false-negative gate — inverse of funnel-clobber).
+3. **Core-gate rule `pass ⊥ artifactsPresent`** (ds PR#19/20). Two independent booleans; the core conjoins `pass && artifactsPresent`, never trusts `pass` alone (the template already does this). → wc-audit P24 asserts the AND lives in the driver so a port can't regress to pass-alone.
+4. **Emitter-canonical as a SCORED check** (dev, writing, ds — doctrine #6). "Does the workflow harden the EMITTER (born-canonical spec output), or ONLY the parser+guard?" Parser-only **relocates** the LLM's tolerance into regex. **Two valid shapes — pick by producer:** writing "eliminate tolerance" (machine producer) vs ds "canonical emitter + intentional hand-edit tolerance" (hand-editable producer). **Trap to encode:** golden-test the strict guard against a **REAL pre-canonical artifact**, not the template (the template is already canonical → can't reveal the drift). → new wc-audit check; the birther EMIT-list already names the emitter but doesn't score the gap or the two-shapes nuance.
+5. **PHANTOM-CANONICAL — run the guard against the REAL repo artifacts** (course; "biggest, a wc-audit default"). The guard can encode a canonical format the real authoring never used, false-denying shipped specs. → wc-audit P-check: *does existing shipped data PASS its own guard?* Generalizes "golden-test against REAL spec, not template" into an enforceable audit step.
+6. **A/B deterministic-parse vs INDEPENDENT-LLM-Discover on REAL data** (course, "deepest"). The parser AND a hand-grep shared the same blind spot (integer-only regex dropped 6a/7a); only an independent LLM enumeration broke it. → a compiled-runner shouldn't PASS audit without this A/B on real data.
+7. **n≥3 variance for judgment seams** (workshop) + **any-fail voting** for boundary-noisy semantic *binary* gates (course): re-adjudicate the same candidate list K times, fail if any run flags (cost short-circuits: 0 candidates→pass; first-run fail→fail; only first-run-pass-with-candidates re-votes). Quantified: 10% single-run false-PASS → ~0.1% with 2 votes. → birther doctrine + wc-audit "is a noisy semantic binary hard-gated without any-fail protection?"
+8. **Gate only what you compile** (workshop). Gate every declared first-class output's compile/validation, not just the primary (workshop shipped malformed notes once). → wc-audit "does the gate cover all declared outputs?"
+9. **check-all `APPLIES_TO` + `ACTIVE_WORKFLOW.md` at project-root** (workshop D-w-8, a SHARED file). `check-all.py` now honors `APPLIES_TO` (was ignored — ran every workflow's constraints on every project) and walks up to find `.planning/ACTIVE_WORKFLOW.md` (two-dir layout). → birther scaffolding rule: every scaffolded workflow MUST set `applies-to` on its constraints (`.md` frontmatter + the `.py`'s `APPLIES_TO`) and keep `ACTIVE_WORKFLOW.md` at PROJECT-ROOT/`.planning`. wc-audit check for both.
+10. **Authoring-lint live-mechanism check** (writing + workshop). The plugin-self-scan authoring-lints must assert a *current* mechanism, not a defunct inline-string ref (writing's 3 stale lints — fixed v5.59.2 — checked a mechanism superseded by `load-constraints.py`). Four more use the same pattern (`constraint-loading-protocol`, `flowchart-authority`, `no-pause-between-phases`, `typst-overflow`) and pass today but should be verified. → wc-audit "does each authoring-lint assert a live mechanism?"
+11. **Niche guard-scoping rules** (course): **severity-gating** (gate `pass` derives from ERROR-severity only; WARNING surfaces as info, never gates) and **render-artifact/logical-unit** (checks over rendered output operate on logical units, collapsing consecutive-identical physical repeats — e.g. `#pause` animation sub-pages). → birther guard-scoping doctrine.
+
+## 🔵 P2 — pairs to coordinate (overlap discovered)
+
+1. **★ BIGGEST: `compiled-runner-template.js` (birther) ≡ `run-core.js` (pass#9 run-core-extract) — the SAME shared driver.** Two hand-maintained copies WILL drift (ds + dev both flagged). **Decision needed (yours):** should the birther CONVERGE onto the extracted `run-core.js` — emitting/pointing-at it as the single source — rather than keeping a parallel copy? Pass#9 (run-core extraction) is *active* but I see no `run-core-extract` session in `agent-msg list` — need to know who drives it. dev supplied the splice contract (fragment-not-module, schemas-don't-hoist→splice-above-first-use, disjoint hole namespaces + exactly-once hole-count assert, `node --check` the emitted output).
+2. **dev owes emitter-canonical (#6); ds is the model** — pair dev↔ds on the *canonical-emitter + intentional hand-edit tolerance* shape (NOT writing's eliminate-tolerance — dev's PLAN is hand-edited like ds's). writing is the reference. Coordinated via pass#9.
+3. **dev+ds skill-switch migration** — moving `fullsuite` from `pauseKind` to its own `returnReason` touches both `dev-implement` + `ds-implement` (both switch on pauseKind today); migrate in the same pass#9.
+4. **Shared-Python S1 parser extraction** — deferred, co-owned (ds/dev/writing/workshop/teaching), with the hard S5 constraint: **do NOT bake a deterministic-join assumption into the parser-core.** Multi-session follow-up, after pass#9.
+5. **check-all + authoring-lints** — workshop's D-w-8 fix surfaced writing's stale lints (fixed v5.59.2); the 4 remaining lints want a coordinated live-mechanism pass (typst-overflow = workshop's to own). course flags writing+workshop to also check **any-fail voting** + **phantom-canonical** on their own judgment gates.
+
+## Recommendation
+
+- **Re-audit is gated on fixing wc-audit first.** Every port self-reports PASS, but the P0 detector bug would mis-verdict the 3 DATA-variant workflows — so the action isn't "re-audit them as-is," it's "fix the detector + add the P1 checks, *then* a re-audit run is meaningful."
+- **Proposed wc-creator update batch (one PR):** P0 detector fix + P1 items 1-11 (birther doctrine + new wc-audit principles P27+). Sized like the original tier-2 doctrine pass.
+- **The run-core convergence (P2.1) is a genuine fork that needs your call** before I touch the birther template — converging onto `run-core.js` vs maintaining a parallel copy changes what the batch edits.
