@@ -360,6 +360,16 @@ flowchart TD
 | P29 | guard passes the REAL shipped artifacts (phantom-canonical) | #6 |
 | P30 | the gate covers every declared output | workshop "gate only what you compile" |
 
+### Operating wc-audit at fleet scale (lessons from the 2026-06-26 compliance pass)
+
+wc-audit fans out ~8–9 reviewer agents per run, each reading the (large) rubric. Running it is cheap for one workflow but expensive in aggregate:
+
+- **STAGGER fleet audits — never fire them concurrently.** Auditing N workflows at once spawns ~N×9 reviewers → **server-side rate-limiting** ("Server is temporarily limiting requests · not your usage limit"). In the fleet pass, 5 simultaneous audits throttled everyone. Run them one at a time (or 2 at most), and serialize the last few explicitly.
+- **The rate-limit FALSE result is unmistakable:** `composite: 0`, `executionClass: "not-applicable"`, every reviewer errored. That is NOT a real fail — it is total throttling returning the defaults.
+- **Recovery = `resumeFromRunId` with BACKOFF, not hammering.** `Workflow({ scriptPath, resumeFromRunId: "<runId>" })` re-runs only the unfinished reviewers; completed ones return cached. BUT under *total* saturation the resume itself gets rejected at dispatch (0-token instant-fails) and does **not** reliably cache partial successes — so **space the resumes** (~minutes apart) and let the wave clear rather than re-dispatching into the throttle. A clean solo run (fleet drained) finished all 12 agents first try.
+- **A clean substrate gate is the goal, not the composite.** The composite is a noisy ±0.2 LLM proxy — once `substratePass` is true (0 critical · 0 enforcement-Absent · portability Clean) and the executionClass is correct, the workflow is compliant; do not chase the composite past it.
+- **P29 has a structural ceiling:** it can only run the guard against artifacts *in the repo*. Real artifacts that live outside (gitignored `.planning/` plans, external decks) can't be verified, so P29 may underscore even when a golden-test against a real artifact exists elsewhere — a known limit, not a workflow defect.
+
 ---
 
 ## 10. The six doctrine invariants (baked into `run-core.js`, never re-typed)
