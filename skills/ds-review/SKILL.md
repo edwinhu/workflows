@@ -339,7 +339,7 @@ This applies even when:
 - "The approach seems unusual"
 - "I would have done it differently"
 
-**STOP - If you catch yourself about to report a low-confidence issue, DISCARD IT. You're about to compromise the review's integrity.**
+**About to report a low-confidence (<80) issue → DISCARD IT (you'd compromise the review's integrity).**
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
