@@ -98,30 +98,55 @@ This applies even when YOU think:
 <EXTREMELY-IMPORTANT>
 **YOU MUST NOT WRITE ANALYSIS CODE IN MAIN CHAT. This is not negotiable.**
 
-You orchestrate the **`ds-implement` ultracode workflow**, which reads the hardened PLAN.md Task Breakdown table, builds the data-flow DAG, and runs each dependency level's tasks output-first (one ds-analyst/ds-engineer per task, writing directly to the project). You drive the level loop; the workflow's implementers do the analysis/ETL.
+You **COMPILE** the hardened PLAN.md Task Breakdown into a lean, project-specific runner
+(`.planning/run.js`), then **RUN** it. The compiled runner topo-sorts the data-flow DAG, runs
+independent tasks **in parallel**, gates each on its `Verify` exit code (an independent probe — never
+self-report), and **pauses** at decision points (planned `⏸ PAUSE:` markers and runtime R4 blocks),
+returning control to you with the data the human needs. You drive compile + the run/pause loop; the
+runner's implementers do the analysis/ETL. **There is no per-level round-trip and no LLM re-parse of
+PLAN.md** — the compile is deterministic (`ds_compile.py`), so PLAN is parsed exactly once.
 
 ```
 0. Set the goal (once): /goal All tasks in PLAN.md are marked [x], each task's Verify
    assertion exits 0, and .planning/VALIDATION.md status is `validated`. Stop after [N] turns.
 
-LOOP (one turn per level, under the active /goal):
-  1. Workflow(name="ds-implement", args={
-       "projectDir": "<absolute project root (cwd)>",
-       "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>"
-     })
-     → runs the lowest level's pending tasks output-first, returns { overallPass, level,
-       tasksRemaining, tasks, findings, tasksThatFailed, reviews }. Outputs are already on disk.
-  2. GROUND-TRUTH: run ds-validate-coverage (or the full pipeline) on the level's outputs —
-     per-task Verify ran in isolation; this confirms requirement coverage / no regression.
-  3. If result.overallPass AND coverage clean: mark this level's PLAN rows [x], log to
-     LEARNINGS.md, END THE TURN (the /goal re-fires for the next level, or closes if
-     tasksRemaining=0). No pause.
-  4. If result.overallPass is false: read result.findings, fix the cause, re-invoke with
-     onlyChecks=result.tasksThatFailed + priorReviews=result.reviews. An R4 (schema change,
-     new data source, methodology pivot) is critical — STOP and escalate to the user.
+COMPILE (once; re-run only when PLAN.md changes):
+  Resolve the compiler (cache first, repo fallback) and emit the runner:
+    CC=$(command ls -d ~/.claude/plugins/cache/*/workflows/*/scripts/ds/ds_compile.py 2>/dev/null | sort -V | tail -1)
+    [ -z "$CC" ] && CC="${CLAUDE_SKILL_DIR}/../../scripts/ds/ds_compile.py"
+    uv run python3 "$CC" .planning/PLAN.md --project "$(pwd)"        # → .planning/run.js
+  (Deterministic, no LLM. Fails loudly if the table is not compilable — fix PLAN.md and recompile.)
+
+LOOP (under the active /goal), carrying decisions across pauses:
+  1. r = Workflow({ scriptPath: "<abs cwd>/.planning/run.js",
+                    resumeFromRunId: <prev runId, if resuming>,
+                    args: { projectDir: "<abs cwd>",
+                            decisions: { <taskId>: "<human's call>", ... },   // grows each pause
+                            clearedPauses: [ <taskIds already decided> ],
+                            onlyChecks: [ <task ids to force re-run>, ] } })   // optional
+     → the runner runs to the next pause point or to completion. Outputs are already on disk.
+       Returns { paused?, pauseKind, atTask, payload, done?, overallPass, tasksRemaining,
+                 tasksThatFailed, findings, reviews, scoreTable }.
+  2. If r.paused:  present r.payload (the decision + the implementer's deviation notes + key
+       numbers) to the user. Get the call.
+       - METHODOLOGY change (the plan must change): hand back to ds-plan to edit PLAN.md, then
+         RE-COMPILE (run COMPILE again) — already-built tasks pass their probe and skip, so the
+         re-run is cheap. This is the muni R4 path (grain, winsor scope, sample, Table-3b) —
+         these are exactly the human calls the gates do NOT catch; never autopilot past them.
+       - APPROVE (proceed as planned): add atTask to clearedPauses, record the answer in
+         decisions[atTask], re-invoke (step 1) to resume past the pause.
+  3. If r.done AND r.overallPass:  GROUND-TRUTH — run ds-validate-coverage (per-requirement
+       coverage / no-regression; the runner's per-task Verify ran in isolation). Then mark the
+       PLAN rows [x], log to LEARNINGS.md, write IMPLEMENT_COMPLETE.md, proceed to ds-validate.
+  4. If r.done AND NOT overallPass:  read r.findings, fix the cause (in PLAN.md / the code via a
+       fresh runner invocation), re-invoke with onlyChecks=r.tasksThatFailed.
 ```
 
-The legacy per-task `ds-delegate` template is now embedded in the workflow's implementer prompt; `ds-delegate` remains for ad-hoc single-task dispatch outside this phase. **If you're about to write analysis code directly, STOP — the workflow's implementers do that, and `ds-no-main-chat-code-guard` forbids you (you may only touch `.planning/`).**
+The per-task implementer protocol (output-first, deviation rules R1–R4, ETL enforcement) lives in the
+template's implementer prompt (`workflows/templates/ds-run-template.js`); `ds-delegate` remains for
+ad-hoc single-task dispatch outside this phase. **If you're about to write analysis code directly,
+STOP — the runner's implementers do that, and `ds-no-main-chat-code-guard` forbids you (you may only
+touch `.planning/`).**
 
 ### Delete & Restart Protocol
 
@@ -156,33 +181,14 @@ The legacy per-task `ds-delegate` template is now embedded in the workflow's imp
 - An agent's summary can gloss over errors its full output reports — deferring the read means running blind. Read agent output immediately and verify claims against the actual data.
 
 
-## Implementation Strategy Choice
+## Implementation Strategy: derived from the DAG, not chosen
 
-After prerequisites pass and PLAN.md verified, check for parallelization potential:
-
-**Skip this choice when:**
-- PLAN.md has fewer than 4 tasks
-- All tasks are dependent (every task is `after N` with no independent groups)
-- Tasks form a pipeline (clean → merge → aggregate → model)
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is not available
-
-**Otherwise, ask the user:**
-
-```python
-AskUserQuestion(questions=[{
-  "question": "How should we implement the analysis tasks in PLAN.md?",
-  "header": "Strategy",
-  "options": [
-    {"label": "Sequential (Default)", "description": "One task at a time with output-first verification. Safest, most DS work is sequential."},
-    {"label": "Agent team (parallel)", "description": "Spawn analyst per independent task group. Only for truly independent analysis branches (descriptive stats by subgroup, model comparisons). Requires reconciliation."}
-  ],
-  "multiSelect": false
-}])
-```
-
-**If Sequential:** Proceed to [Implementation Process](#implementation-process) below (current behavior).
-
-**If Agent team:** Skip to [Agent Team Implementation (Parallel)](#agent-team-implementation-parallel).
+**Do NOT ask the user sequential-vs-parallel.** The compiled runner derives parallelism from the
+`Deps` DAG: tasks in the same dependency level (no path between them) run concurrently via
+`parallel()`; dependent tasks serialize. Independent branches (e.g. muni T2 ∥ T5) parallelize
+automatically; a clean pipeline (clean → merge → aggregate → model) serializes automatically. There
+is no manual agent-team reconciliation to manage — each task writes its own declared `Outputs` and is
+gated independently. Your job is COMPILE then the run/pause loop above.
 
 
 ## SAS Language Routing
@@ -194,54 +200,41 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 ## Implementation Process Flowchart
 
 ```
-┌─────────────────────────┐
-│  Read PLAN.md + Load    │
-│  ds-delegate + ETL refs │
-└───────────┬─────────────┘
-            ▼
-┌─────────────────────────┐
-│  For each task in PLAN  │◄──────────────────────┐
-│  (in dependency order)  │                       │
-└───────────┬─────────────┘                       │
-            ▼                                     │
-┌─────────────────────────┐                       │
-│  Dispatch Task agent    │                       │
-│  (per ds-delegate)      │                       │
-└───────────┬─────────────┘                       │
-            ▼                                     │
-┌─────────────────────────┐     ┌──────────────┐  │
-│  Read agent output      │────→│ Output wrong │  │
-│  Verify output present  │     │ or missing?  │  │
-│  + reasonable            │     └──────┬───────┘  │
-└───────────┬─────────────┘            │           │
-            │ OK                       ▼           │
-            │                 ┌──────────────────┐ │
-            │                 │ STOP. Investigate │ │
-            │                 │ Log issue. Fix.   │ │
-            │                 │ Re-verify.        │ │
-            │                 └──────────────────┘ │
-            ▼                                     │
-┌─────────────────────────┐                       │
-│  Log to LEARNINGS.md    │                       │
-│  (Task N: COMPLETE)     │                       │
-└───────────┬─────────────┘                       │
-            ▼                                     │
-        More tasks? ──── YES ─────────────────────┘
-            │
-            NO
-            ▼
-┌─────────────────────────┐
-│  Exit Gate: Compare     │
-│  PLAN.md vs LEARNINGS   │
-│  (all tasks accounted?) │
-└───────────┬─────────────┘
-            ▼
-┌─────────────────────────┐
-│  Invoke ds-validate     │
-└─────────────────────────┘
+┌──────────────────────────────┐
+│ COMPILE (once, deterministic) │   ds_compile.py PLAN.md → .planning/run.js
+│ no LLM; fails if not compilable│
+└───────────────┬──────────────┘
+                ▼
+┌──────────────────────────────┐◄────────────── resume (clearedPauses + decisions) ──┐
+│ RUN  Workflow(scriptPath=     │                                                    │
+│      .planning/run.js)        │   runner: topo-sort DAG → run each level's tasks   │
+│                               │   in parallel, output-first; gate each on its      │
+│                               │   Verify exit code via an independent probe        │
+└───────────────┬──────────────┘                                                    │
+                ▼                                                                    │
+        ┌───────────────┐                                                            │
+        │  r.paused?     │── yes ─▶ present r.payload (decision + deviations + nums)  │
+        └──────┬────────┘            │                                               │
+               │ no                  ├─ APPROVE ─▶ clearedPauses+=atTask; ───────────┘
+               ▼                     │            decisions[atTask]=answer
+        ┌───────────────┐            └─ METHODOLOGY change ─▶ ds-plan edits PLAN ─▶ RE-COMPILE
+        │  r.done?       │
+        └──────┬────────┘
+               │ overallPass
+               ▼
+┌──────────────────────────────┐
+│ GROUND-TRUTH: ds-validate-    │   per-requirement coverage / no-regression
+│ coverage → mark PLAN rows [x] │
+│ → IMPLEMENT_COMPLETE.md       │
+└───────────────┬──────────────┘
+                ▼
+        Invoke ds-validate
 ```
 
-**This flowchart IS the specification.** If the narrative below and this flowchart disagree, the flowchart wins.
+**This flowchart IS the specification.** If the narrative below and this flowchart disagree, the
+flowchart wins. The runner's per-task discipline (output-first, deviation rules R1–R4, ETL
+enforcement) is carried in the template's implementer prompt; the sections below describe that
+discipline (what each implementer does) — they are NOT a separate main-chat dispatch loop.
 
 ## Topic Change Protocol
 
@@ -257,7 +250,7 @@ If PLAN.md specifies `Implementation Language: SAS` or `Mixed`, load SAS enforce
 
 ## Implementation Process
 
-### Step 1: Read Plan, Load Shared Enforcement, and Delegation Skill
+### Step 1: Read Plan, Load Shared Enforcement, then COMPILE
 
 Auto-load all constraints matching `applies-to: ds-implement`:
 
@@ -269,11 +262,12 @@ Auto-load all constraints matching `applies-to: ds-implement`:
 Read(".planning/PLAN.md")
 ```
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/SKILL.md` and follow its instructions.
+Then run **COMPILE** (see the Delegation block above) to emit `.planning/run.js`, and drive the
+run/pause loop. You do NOT dispatch per-task agents from main chat — the compiled runner does, using
+the output-first protocol embedded in its implementer prompt (the `ds-delegate` template). Load
+`ds-delegate` only for ad-hoc single-task work outside this phase.
 
-Follow the task order defined in the plan. Use ds-delegate's templates for every task.
-
-**ETL Strategy Enforcement — load domain-specific references based on PLAN.md:**
+**ETL Strategy Enforcement — these PLAN.md decisions ride into the runner's implementer prompts:**
 
 If PLAN.md contains an `## ETL Strategy` section, the user made decisions during planning that MUST be enforced during implementation. Check each subsection and load the corresponding enforcement:
 
@@ -308,13 +302,15 @@ Read `${CLAUDE_SKILL_DIR}/../../skills/ds-handoff/SKILL.md` and follow its instr
 
 **Why:** A multi-task analysis pipeline with 20% context remaining produces degraded output. Better to handoff cleanly and resume fresh.
 
-### Step 2: Execute Each Task via Delegation
+### Step 2: Run the compiled runner (it executes the tasks)
 
-For each task in PLAN.md:
-1. Dispatch analyst subagent (per ds-delegate pattern)
-2. Verify outputs are present and reasonable
-3. Dispatch methodology reviewer (for statistical tasks)
-4. Log findings to LEARNINGS.md
+You do not dispatch per task. Each iteration of the run/pause loop:
+1. `Workflow({ scriptPath: ".planning/run.js", args: {...} })` runs the next slice of the DAG —
+   the runner produces each task's `Outputs`, then an independent probe gates it on the `Verify`
+   exit code.
+2. On `r.paused`, present the payload and resolve the decision (APPROVE → resume; methodology → edit
+   PLAN + recompile).
+3. On `r.done`, run ds-validate-coverage (ground truth) and log per-task results to LEARNINGS.md.
 
 ### Step 3: Log to LEARNINGS.md
 
@@ -475,15 +471,15 @@ When subagents encounter unplanned issues during implementation, follow this 4-r
 Each task summary in `.planning/LEARNINGS.md` should end with:
 **Deviations:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
 
-## Agent Team Implementation (Parallel)
+## Agent Team Implementation (Parallel) — SUPERSEDED by the compiled runner
 
-> **Full protocol:** See [references/agent-team-protocol.md](references/agent-team-protocol.md) for prerequisites, spawn prompt template, lead monitoring, reconciliation (3 passes), and usage guidelines.
+The compiled `.planning/run.js` already runs independent tasks (same DAG level) in parallel via
+`parallel()` and gates each independently — there is no manual agent-team to spawn or reconcile. This
+section is retained only for ad-hoc work **outside** the `/ds` implement phase (e.g. a one-off
+`ds-delegate` fan-out). Within the phase, do COMPILE + the run/pause loop; do not hand-roll an agent
+team.
 
-Key points:
-1. Run foundation tasks sequentially FIRST, then spawn parallel teammates
-2. Each teammate gets exclusive data scope and output files
-3. After all teammates complete, lead performs 3 reconciliation passes (Collect, Verify, Methodology)
-4. **Default is sequential.** Only use agent teams for 4+ tasks with true independence (different datasets/subsets, no shared output files)
+> Legacy protocol (ad-hoc use only): [references/agent-team-protocol.md](references/agent-team-protocol.md).
 
 ## Gate: Exit Implementation
 
