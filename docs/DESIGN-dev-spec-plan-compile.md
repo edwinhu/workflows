@@ -546,12 +546,13 @@ only by the dev driver unit test (+ ds) — lowest-risk, deferred.
 
 > **CONVERGED** via the host-dispatch cross-pollination (dev-refactor × ds-refactor, 2026-06-26;
 > writing-refactor input folded in). **Canonical list:** `docs/common-infra-candidates.md` (owned by
-> ds-refactor; merged PR #10, commit `2411584`). This section is the **dev-side view** that fed that
-> convergence — kept here for the dev port's record; **the canonical doc governs pass #9.**
+> ds-refactor; commit `2835591`, which records the authoritative RETURN-REASON taxonomy). This section
+> is the **dev-side view** that fed that convergence — kept here for the dev port's record; **the
+> canonical doc governs pass #9.**
 >
 > Guardrail stands: **brainstorm written down; NO shared `run-core` extracted in this pass.** ds + dev
-> are two exit-code instances; writing is a 3rd (judgment gate). Two seams are genuinely
-> under-determined until writing parity lands (9.5).
+> are two exit-code instances; writing is a 3rd (judgment gate). After writing's step-1, **only ONE
+> seam remains under-determined** (the D1 judgment-gate body) — see 9.5.
 
 ### 9.1 SHARED (core candidates — ds + dev agree, mostly verbatim)
 - **S1 — deterministic table parser + DAG/topo/cycle logic** (columns differ via a column-map; mechanics identical).
@@ -599,11 +600,16 @@ doesn't conflate "a human must decide" with "the skill must re-check":
 
 ### 9.5 Extraction timing + the honest open gap
 - **Extract the PROVEN core now** (S2 driver / S3 pause / S4 schema+helpers — two instances agree).
-  **Leave `gateProbe`-opaque (D1) and `compile`=worklist-vs-codegen (S5) as INJECTED INTERFACES pending
-  writing parity** — each has only ONE confirming instance until writing (judgment gate / data emit)
-  lands. So the "wait" guardrail is *precise*, not just caution: two seams are genuinely
-  under-determined. Target shape: `templates/run-core.js` (driver + pause + schema + 5 invariants +
-  helpers, with D1–D4 + the `intraLevel` flag injected) + `templates/<domain>-task.js`.
+  **Update (writing step-1 landed, blind-oracle parity-passed):** `compile`=worklist-vs-codegen (S5) is
+  now **CONFIRMED** — writing's data section-index emit is a real 2nd shape, not a prediction. The
+  layer-agnostic stale-gate backstop (S3, spec layer) is likewise confirmed. So of the two seams once
+  under-determined, **only ONE remains: `gateProbe`-opaque (D1) at the JUDGMENT trust-class** — it
+  awaits writing's GATE step (writing's gate is semantic, not yet built). Keep **D1's judgment body** an
+  injected interface pending that; everything else (incl. S5's data-emit branch) is extraction-ready.
+  Also an **extraction-cleanup item** (ds-refactor): give `yield-for-recheck` its OWN return channel —
+  my dev impl muxes it onto `pauseKind:'fullsuite'` as a shortcut (impl, not seam). Target shape:
+  `templates/run-core.js` (driver + pause + schema + the SIX invariants + helpers, with D1–D4 + the
+  `intraLevel` flag injected) + `templates/<domain>-task.js`.
 - **OPEN GAP (honest, shared, deferred — ds-refactor catch A):** the dev port hardened the **parser +
   guard** but did NOT harden the **emitter** (`dev-design`/`dev-plan`) to write born-canonical. So the
   tolerant parser currently *relocates* the LLM's silent tolerance into regex — the exact thing
