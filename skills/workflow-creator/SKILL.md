@@ -1828,8 +1828,8 @@ Skills run in the user's project CWD, not the plugin directory. Every path in a 
 
 | Context | Correct Variable | Docs |
 |---------|------------------|------|
-| **Hook `command:` fields in YAML frontmatter** | `${CLAUDE_PLUGIN_ROOT}` | [hooks.md](https://code.claude.com/docs/en/hooks.md) |
-| **Skill content body (markdown + bash injection)** | `${CLAUDE_SKILL_DIR}` | [skills.md](https://code.claude.com/docs/en/skills.md) |
+| **Hook `command:` fields in YAML frontmatter** | `${CLAUDE_PLUGIN_ROOT}` (NOT `${CLAUDE_SKILL_DIR}` — the SKILL_DIR-in-hooks mistake) | [hooks.md](https://code.claude.com/docs/en/hooks.md) |
+| **Skill content body (markdown + bash injection), incl. `references/constraints/*.md` loaded via load-constraints** | `${CLAUDE_SKILL_DIR}` (NOT `${CLAUDE_PLUGIN_ROOT}` — the **inverse** mistake: it is substituted ONLY in hook commands, so in content it stays literal and a runnable path/bang-command fails. wc-audit grep: `${CLAUDE_PLUGIN_ROOT}` in any `skills/*/SKILL.md` body or `references/constraints/*.md` = critical) | [skills.md](https://code.claude.com/docs/en/skills.md) |
 | **Internal skills (loaded via Read)** | Neither substitutes. Use `${CLAUDE_SKILL_DIR}/../../` as a convention so a consistent style is preserved — the agent infers the actual path from context. | — |
 | **`${CLAUDE_SKILL_DIR}` inside an `Agent()` prompt string** | SAFE — it is skill-content body, so it is substituted to the literal absolute path at skill-load, *before* the orchestrator constructs the `Agent()` call. The spawned subagent receives the resolved path, never the token. No need to pre-resolve and pass it in. | — |
 

@@ -118,7 +118,7 @@ const ENFORCEMENT_SCHEMA = {
 
 // Path-portability reviewer.
 const PORTABILITY_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['dimension', 'status', 'violations', 'hookCommandViolations', 'findings'],
+  type: 'object', additionalProperties: false, required: ['dimension', 'status', 'violations', 'hookCommandViolations', 'contentPluginRootViolations', 'findings'],
   properties: {
     dimension: { type: 'string' },
     status: { type: 'string', enum: ['Clean', 'Partial', 'Broken'] },
@@ -132,6 +132,10 @@ const PORTABILITY_SCHEMA = {
     hookCommandViolations: {
       type: 'array', items: { type: 'string' },
       description: 'hook command: fields using ${CLAUDE_SKILL_DIR} instead of ${CLAUDE_PLUGIN_ROOT} — any hit is a critical defect',
+    },
+    contentPluginRootViolations: {
+      type: 'array', items: { type: 'string' },
+      description: 'the INVERSE landmine: ${CLAUDE_PLUGIN_ROOT} appearing in SKILL CONTENT (SKILL.md body, or a references/constraints/*.md loaded via load-constraints) — it is substituted ONLY in hook commands, so in content it stays literal and the command fails. file:line of each hit; any hit is a critical defect',
     },
     findings: { type: 'array', items: FINDING },
   },
@@ -280,8 +284,9 @@ ${groundIn}
 Scan every SKILL.md and references/*.md for path-portability defects (Mode 2 Step 3b):
 - Relative script paths: \`uv run python3 scripts/\`, \`../\`, \`../../\` referencing plugin scripts (break from the user CWD).
 - Relative Read() paths: \`Read("../../skills/...")\`.
-- Hook command: fields using \${CLAUDE_SKILL_DIR} instead of \${CLAUDE_PLUGIN_ROOT} — run \`grep -rn "command:.*\\\${CLAUDE_SKILL_DIR}" ${PROJECT}/skills/${TARGET}*/SKILL.md\`; ANY hit is a critical defect (silent-failure landmine). Put each in hookCommandViolations.
-status: Clean (no broken paths AND no \${CLAUDE_SKILL_DIR} in hook commands), Partial (some fixed, some remain), Broken (relative paths in skill instructions OR \${CLAUDE_SKILL_DIR} in hook commands). Each violation → a findings[] entry (hook-command violations are critical). Return PORTABILITY_SCHEMA.`,
+- Hook command: fields using \${CLAUDE_SKILL_DIR} instead of \${CLAUDE_PLUGIN_ROOT} — run \`grep -rn "command:.*\\\${CLAUDE_SKILL_DIR}" "${PROJECT}"/skills/${TARGET}*/SKILL.md\`; ANY hit is a critical defect (silent-failure landmine). Put each in hookCommandViolations.
+- THE INVERSE landmine — \${CLAUDE_PLUGIN_ROOT} in SKILL CONTENT: \${CLAUDE_PLUGIN_ROOT} is substituted ONLY in hook \`command:\` fields, NOT in skill content (a SKILL.md body, or a references/constraints/*.md loaded via load-constraints.py). In content it stays LITERAL, so a bang-command / runnable path using it fails silently. Run \`grep -rn "\\\${CLAUDE_PLUGIN_ROOT}" "${PROJECT}"/skills/${TARGET}*/SKILL.md "${PROJECT}"/references/constraints/*.md\` then, for each hit, EXCLUDE legitimate uses (a YAML \`command:\` hook field; an illustrative code block explicitly showing a hook-command example) and flag the rest — a runnable path or bang-command in body/constraint content. Put each (file:line) in contentPluginRootViolations. The correct skill-content form is \${CLAUDE_SKILL_DIR}/../.. (or the load-constraints auto-loader). ANY genuine hit is a critical defect.
+status: Clean (no broken paths AND no \${CLAUDE_SKILL_DIR} in hook commands AND no \${CLAUDE_PLUGIN_ROOT} in skill content), Partial (some fixed, some remain), Broken (relative paths in skill instructions OR \${CLAUDE_SKILL_DIR} in hook commands OR \${CLAUDE_PLUGIN_ROOT} in skill content). Each violation → a findings[] entry (hook-command + content-plugin-root violations are critical). Return PORTABILITY_SCHEMA.`,
   },
   {
     key: 'candidacy-scan', schema: CANDIDACY_SCHEMA,
@@ -428,6 +433,7 @@ for (const id of ALL_IDS) {
 // Portability hook-command violations are always critical.
 const port = byDim['path-portability']
 for (const hv of (port?.hookCommandViolations || [])) findings.push({ severity: 'critical', dimension: 'path-portability', location: hv, detail: `hook command uses \${CLAUDE_SKILL_DIR} — silent-failure landmine; use \${CLAUDE_PLUGIN_ROOT}` })
+for (const cv of (port?.contentPluginRootViolations || [])) findings.push({ severity: 'critical', dimension: 'path-portability', location: cv, detail: `\${CLAUDE_PLUGIN_ROOT} in skill content — substituted only in hook commands, stays literal here; use \${CLAUDE_SKILL_DIR}/../..` })
 findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])
 const criticalCount = findings.filter(f => f.severity === 'critical').length
 
@@ -475,10 +481,11 @@ const enfTable = enf
 
 const portTable = port
   ? `Status: **${port.status}**\n\n` + (
-      (port.violations || []).length || (port.hookCommandViolations || []).length
+      (port.violations || []).length || (port.hookCommandViolations || []).length || (port.contentPluginRootViolations || []).length
         ? ['| File | Pattern | Detail |', '|------|---------|--------|',
            ...(port.violations || []).map(v => `| ${v.file} | ${v.pattern} | ${(v.detail || '').replace(/\|/g, '\\|').slice(0, 100)} |`),
-           ...(port.hookCommandViolations || []).map(h => `| ${h} | \${CLAUDE_SKILL_DIR} in hook command | CRITICAL |`)].join('\n')
+           ...(port.hookCommandViolations || []).map(h => `| ${h} | \${CLAUDE_SKILL_DIR} in hook command | CRITICAL |`),
+           ...(port.contentPluginRootViolations || []).map(c => `| ${c} | \${CLAUDE_PLUGIN_ROOT} in skill content | CRITICAL |`)].join('\n')
         : 'No path-portability defects found.')
   : '(path portability not scored this run)'
 
@@ -563,7 +570,7 @@ return {
   reviewersThatFlagged: reviews
     .filter(r => (r.findings || []).length
       || (r.principles || []).some(p => p.score < THRESHOLD && !EXEMPT.has(p.id) && !p.domainCeiling && !p.naForDomain)
-      || (r.violations || []).length || (r.hookCommandViolations || []).length
+      || (r.violations || []).length || (r.hookCommandViolations || []).length || (r.contentPluginRootViolations || []).length
       || (r.candidates || []).some(c => c.recommend === 'strong'))
     .map(r => String(r.dimension)), // pass as onlyChecks on re-audit
 }
