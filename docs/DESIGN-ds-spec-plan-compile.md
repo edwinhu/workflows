@@ -480,6 +480,50 @@ free-form markdown. Co-design `ds-plan`'s Task-Breakdown *output* to equal the s
 canonical format so plans are born canonical and the guard can be strict — otherwise tolerant regex
 just relocates the LLM's silent tolerance. Write-up: `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`.
 
+## 8c. Parity log (run on the live muni repo by the muni session)
+
+**Round 1 (2026-06-26) — compile + no-op path. PASS, with a testing-coverage caveat.**
+
+- **COMPILE: PASS.** `ds_compile` parsed the real `PLAN.md` deterministically — 10 tasks, correct deps
+  (incl. T6's 8-dep fan-in), tiers (T3→haiku, rest sonnet), 9 levels with **T2∥T5** sharing a level.
+  No LLM discovery. (The old engine needed an LLM discovery call here, and that tolerance is exactly
+  what masked the plan's `**T1**`/em-dash drift — see the investigation note.)
+- **RUN (no `onlyChecks`): no-op in ONE invocation — 14 ms, 0 agents, 0 tokens.** The all-`[x]` plan
+  short-circuits via the `done`-checkbox path. The old engine reached the same "all done" via an LLM
+  discovery call. So the no-op goes from an LLM call to instant pure-JS, and round-trips 1 vs ~13.
+- **Caveat (coverage, not a bug):** because the plan is all-`[x]`, the run took the `done`-skip path
+  **before any `gateProbe` fired** — so this run exercised neither `gateProbe`, the implementer, nor a
+  pause path. And since the muni plan was *corrected during its original run* (grain now
+  `cusip×event_ts×seqno`, winsor per-year), re-running it can never re-fire those R4s. **The real plan
+  can only test mechanics, never "fork → pause."**
+- **Boundary clarified + hardened:** the `done`-skip trusting `[x]` is intentional (it's the prior
+  run's ds-validate-coverage-confirmed mark) and defended in depth — within a phase the *clobbering*
+  task is never itself `done` so its own probe catches it; a downstream consumer fails on a clobbered
+  upstream; ds-validate-coverage re-checks cross-task. Added optional `args.reverifyDone` to route
+  `[x]` tasks through the cheap gate-first probe for paranoid fresh-session resumes (default off
+  preserves the 0-agent no-op). Tested (28/28).
+
+**The #1 claim (a real fork surfaces as a PAUSE, not a silent auto-resolve) cannot be tested by the
+corrected muni plan** — only by a fixture that *recreates* a decision point. The muni session is
+carving one: `tests/fixtures/ds-grain-pause/` — a 2-cusip input where `(cusip,event_ts)` is non-unique
++ a mini-PLAN whose task asserts grain uniqueness, then a live `run.js` confirming the implementer
+hits the violation → `status:blocked` R4 (NOT a silent dedup) → driver returns `paused/R4` with
+`payload.deviations` + `payload.summary` carrying the dup numbers. That is the end-to-end proof of
+directives #1+#2 on real agent behavior.
+
+### CI strategy (adopted from the muni recommendation)
+
+A live-LLM e2e test is inherently a bit flaky (it depends on the implementer reliably *choosing* to
+block). So:
+
+- **CI gate = the deterministic driver test** (`tests/ds-run-driver.test.mjs`, 28/28): stubs a blocked
+  implementer and asserts the pause payload carries `deviations` + numbered `summary`, plus the
+  outputs-present gate and the idempotent skip. This proves the **driver** handles the block correctly
+  and is deterministic — already exists.
+- **Periodic behavioral check = the live `ds-grain-pause` fixture run:** proves a **real implementer
+  actually produces the block** instead of silently deduping. Run on demand / periodically, NOT as a
+  blocking CI test.
+
 ## 8b. Superseded — original open-decision list (kept for trace)
 
 - **D1 — Gate mechanism.** Confirm the cheap **probe agent** (not in-JS exec, which Workflow scripts

@@ -30,6 +30,7 @@ let cfg = (typeof args === 'string') ? (() => { try { return JSON.parse(args) } 
 const DECISIONS = cfg.decisions || {}                                  // { taskId: "the human's call" }
 const CLEARED   = new Set((cfg.clearedPauses || []).map(String))       // declared pauses already resolved
 const ONLY      = (Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length) ? new Set(cfg.onlyChecks.map(String)) : null
+const REVERIFY_DONE = !!cfg.reverifyDone                               // re-probe PLAN `[x]` tasks instead of blind-skipping (clobber-safe resume)
 
 // ── schemas ───────────────────────────────────────────────────────────────
 const GATE_SCHEMA = {
@@ -192,7 +193,13 @@ log(`ds-run: ${TASKS.length} task(s), ${levels.length} dependency level(s)${ONLY
 
 for (let li = 0; li < levels.length; li++) {
   const layer = levels[li].map(id => byId[id]).filter(Boolean)
-  const todo = layer.filter(t => !t.done || (ONLY && ONLY.has(String(t.id))))
+  // A PLAN `[x]` (t.done) is the prior run's ds-validate-coverage-confirmed mark; by default we
+  // trust it and blind-skip (instant no-op, 0 agents). Defense for a since-clobbered done output:
+  // (a) within a phase the CLOBBERING task is never itself done, so its own gateProbe catches it;
+  // (b) a downstream consumer's implementer/probe fails on a clobbered upstream; (c) ds-validate-
+  // coverage re-checks cross-task. For a paranoid fresh-session resume, args.reverifyDone routes
+  // done tasks through the cheap gate-first probe instead (skips intact ones, rebuilds clobbered).
+  const todo = layer.filter(t => REVERIFY_DONE || !t.done || (ONLY && ONLY.has(String(t.id))))
   if (!todo.length) { layer.forEach(t => { state[String(t.id)] = { id: String(t.id), impl: null, gate: null, pass: true, skipped: true } }); continue }
   phase(`Level ${li}`)
   log(`Level ${li}/${levels.length - 1}: [${todo.map(t => t.id).join(', ')}]${todo.length > 1 ? ' (parallel)' : ''}`)

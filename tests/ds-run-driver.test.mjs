@@ -81,6 +81,15 @@ console.log('resume past the declared pause (clearedPauses)')
   ok('decision injected into A3 prompt path', true) // covered by prompt builder; smoke
 }
 
+console.log('done-checkbox blind-skip vs reverifyDone (clobber-safe resume)')
+{
+  // toy fixture tasks are NOT [x], so default already probes. Simulate the all-[x] no-op by asserting
+  // the reverifyDone knob routes through the probe: with a clobbered output, a (would-be-done) task
+  // must NOT silently skip. Here all gates pass but A2's output is missing → reverifyDone rebuilds it.
+  const { result, trace } = await run({ gate: () => true, outputs: (id) => id !== 'A2', args: { reverifyDone: true } })
+  ok('reverifyDone rebuilds the clobbered task', trace.implCalls.includes('A2'), `impl=${trace.implCalls}`)
+}
+
 console.log('idempotent short-circuit (outputs already satisfy Verify)')
 {
   const { result, trace } = await run({ gate: () => true })  // every pre-probe passes
