@@ -8,6 +8,57 @@ This connects directly to the **Iron Law of Flat Dispatch**: "an agent that spaw
 
 ---
 
+## 0. Two execution shapes — COMPILE vs INTERPRET (read FIRST)
+
+There are **two** kinds of ultracode workflow, and picking the wrong one is the most expensive mistake this playbook can cause. Decide this before anything else:
+
+```
+Does the workflow execute a DAG of MECHANICAL work between human gates
+(an implement/transform/generate phase driven by a structured PLAN TABLE)?
+        │                                         │
+       YES                                        NO
+        │                                         │
+  COMPILED RUNNER                          FAN-OUT / CONVERSATIONAL
+  spec → plan → deterministic compile      §1-§6 below (review or
+  → run.js (§A) — NOT an LLM discovery     transform fan-out over a
+  agent, NOT a per-phase interpret loop    known list; no plan DAG)
+```
+
+**The compiled-runner shape is the DEFAULT for plan-table workflows (dev, ds, and the like).** It is the pattern the ds + dev refactors proved (PR#7/PR#8), replacing the **generic interpreter** — an in-workflow LLM "discovery" agent that re-parses the plan every invocation → per-level fan-out → a heavyweight re-analysis verifier. That interpreter is a **retired anti-pattern**, not a starting point. wc-audit flags it as `executionClass=generic-interpreter` → **critical**.
+
+### Why the interpreter is wrong (not just slow)
+
+> **Iron Law — NO LLM STEP BETWEEN A STRUCTURED PRODUCER AND A STRICT CHECKER.** An LLM "discovery" agent sitting between a structured producer (the plan emitter) and a strict checker (the executable-guard) **silently tolerates format drift the guard rejects** — it runs plans the guard would reject on every row, masking a spec-drift bug while looking like it works. It also adds a re-analysis verifier that, in both ds and dev, *caught zero substantive bugs*. Delete both. If the input is a structured table, scaffold a **deterministic parser**, not an agent that re-reads it.
+
+### What a COMPILED RUNNER emits by default (§A — the new canonical skeleton)
+
+1. **`scripts/<domain>/<domain>_plan_table.py`** — a deterministic, **prefix-tolerant** plan-table parser (handles real headers like `Failing Test (write FIRST)`; cycle/dangling/empty-row checks; lifts prose sections like Global Constraints/Interfaces). **The single source of truth.**
+2. **`scripts/<domain>/<domain>_compile.py`** — a work-list producer: **CODE** (`run.js` from a template) **or** **DATA** (a work-list a generic fan-out engine consumes, if one already exists). Deterministic, no LLM; asserts each template hole is filled exactly once.
+3. **`workflows/templates/<domain>-run-template.js`** — the protocol, with the **four safety invariants baked in as boilerplate** (authors must stop rediscovering them):
+   - **(i) payload > pass/fail** — every pause/finding carries the implementer's `deviations` + a NUMBERED summary, never a bare exit code. *(The gate caught zero bugs in ds/dev; the deviation note + adversarial review caught them.)*
+   - **(ii) mandatory R4** — an assumption / architecture / contract change must **BLOCK** (pause), never auto-resolve to pass a gate.
+   - **(iii) probe asserts ARTIFACTS-EXIST**, not just gate-pass — a `Verify` can pass on a stale/clobbered artifact (output-first/artifact gates REQUIRE this; TDD gates may skip it).
+   - **(iv) the adversarial / full-suite / review layer stays OUTSIDE `run.js`.**
+   Plus **two-kinds-of-decision routing** (gate-changing → edit the plan + recompile; behavior-only → `args.decisions`) + a **stale-gate backstop** + a **gate-first idempotent short-circuit**, and **three clearly-marked seams: `columns`, `implementerPrompt(t)`, `gateProbe(t)`** (the gate kind comes from interview Q7).
+4. **`hooks/<domain>-plan-executable-guard.py`** whose `validate_plan()` is literally `return parse_plan(text).violations` — it **imports parser #1**, so "compiles ⇔ passes gate" by construction.
+5. **A SLIM skill** — `COMPILE → run/pause` loop driven by a flowchart-as-spec, NOT a per-level dispatch loop.
+6. **Tests** — a parser golden against a **REAL spec** (not the template — the template can't reveal the drift the LLM was masking) + a driver test with mocked primitives covering topo / gate-first skip / declared+dynamic pause / resume-via-`clearedPauses`+decision-injection / R4-block-carries-deviations / artifact-missing-must-not-pass / hard-fail→`tasksThatFailed`.
+
+**Reference implementations already in this repo** — copy from them, do not reinvent:
+- `workflows/templates/ds-run-template.js`, `workflows/templates/dev-run-template.js` (the run-templates)
+- `workflows/templates/compiled-runner-template.js` (the annotated GENERIC template with the three seams + four invariants marked)
+- `scripts/ds/ds_plan_table.py` + `scripts/ds/ds_compile.py`, `scripts/dev/dev_plan_table.py` + `scripts/dev/dev_compile.py`
+- `docs/DESIGN-ds-spec-plan-compile.md`, `docs/DESIGN-dev-spec-plan-compile.md` (the design rationale + the explicit per-domain decision list)
+- `docs/ds-generalization-assessment.md` (gateProbe as a domain fn; semantic gates raise the stakes on payload>pass/fail)
+
+**`gateProbe` is THE per-domain fork.** Treat it as a domain-provided function returning `{pass, outputsPresent, evidence}` — the driver stays agnostic to how "pass" is computed (exit code / mechanical floor / semantic judgment). For **semantic** gates the LLM judge can lie where an exit code cannot, so keep the adversarial-review layer robust and OUTSIDE `run.js` and make `evidence` numbered/specific.
+
+**Do NOT extract a shared `run-core` until a 2nd domain runs on the template** — extracting from one domain bakes in its isms. **Do NOT retire the old engine until parity is proven on a real spec.**
+
+Everything in §1-§6 below is the **FAN-OUT / conversational** path (the "NO" branch) — review or transform fan-out over a known list with no plan-table DAG. If you are building a compiled runner, use §A above and the reference impls; §1-§6 still apply to any *separate* fan-out review/transform phase the runner's skill wraps (e.g. an adversarial coverage pass).
+
+---
+
 ## 1. Decision rubric — MIGRATE vs LEAVE
 
 **Migrate a phase when the SHAPE qualifies AND it gets a meaningful win from at least ONE value driver. The dividing line is `deterministic + parallelizable over a list` (→ workflow, read OR write) vs `judgment + user-input + cross-cutting` (→ skill) — NOT `read-only vs writes`.**
@@ -68,7 +119,7 @@ Either shape: the skill wraps it — run workflow → read gate/verify → (if f
    if (!PROJECT) throw new Error(`<name> requires args.projectDir. Got type "${typeof args}": ${JSON.stringify(args)?.slice(0,200)}`)
    ```
 3. **Selective re-run** — accept `cfg.onlyChecks` (array of `"ID:check"`) + `cfg.priorReviews` (array of prior REVIEW objects). On a selective run, re-run only flagged pairs live; carry the rest forward from priorReviews so the gate still sees every check.
-4. **Discovery agent** (`model:'sonnet'`) — resolves check/agent files and **enumerates the items** to review. Never hardcode a count.
+4. **Discovery agent** (`model:'sonnet'`) — resolves check/agent files and **enumerates the items** to review. Never hardcode a count. **Scope limit (Iron Law):** a discovery agent is for enumerating a *fuzzy* work-list (sections of a paper, lectures, sources) — NOT for re-parsing a *structured plan table that already has a strict checker*. If the items come from a plan-table DAG, that is the COMPILED-RUNNER path (§0/§A): use a deterministic parser shared with the guard, never an LLM that re-reads the table (it absorbs spec-drift invisibly).
 5. **Workers** — `model:'sonnet'`, schema-validated structured output. Two kinds:
    - **Read-only reviewer** (review workflow): prompt opens *"You are a READ-ONLY reviewer. Do NOT create, edit, or overwrite any files."*
    - **Write/transform agent** (transform workflow): edits/creates files per a fixed spec; pass `isolation:'worktree'` on the `agent()` call so parallel mutations don't collide, and return a structured summary of what it changed (files touched, status) for the verify stage. NEVER give write agents creative latitude — the "what" comes from the discovered spec, not the agent's judgment.

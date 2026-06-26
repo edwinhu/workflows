@@ -186,7 +186,7 @@ EOF
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with philosophy status and current progress. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately.
 
-**Red Flags — STOP:** inferring the domain from context instead of asking · skipping questions because they "seem obvious" or the user "seems busy" · closing the interview before all 6 answers are concrete (a shallow interview makes every downstream phase wrong — you'll design for an imagined domain, not the real one). Batch all 6 into one AskUserQuestion; don't drip them.
+**Red Flags — STOP:** inferring the domain from context instead of asking · skipping questions because they "seem obvious" or the user "seems busy" · closing the interview before all 7 answers are concrete (a shallow interview makes every downstream phase wrong — you'll design for an imagined domain, not the real one). Batch all 7 into one AskUserQuestion; don't drip them.
 
 Use AskUserQuestion to understand the domain:
 
@@ -196,10 +196,15 @@ Use AskUserQuestion to understand the domain:
 4. **When does drift happen?** (implementation without design, conclusions without evidence, etc.)
 5. **How should iteration work?** (one-shot with verification, serial hypothesis testing, parallel exploration, agent team review)
 6. **What does verification look like?** (running tests, checking output exists, reviewing summary artifact — define concretely so "verification" can't become investigation)
+7. **What kind of gate proves one unit of work is done?** This drives the `gateProbe` seam if the workflow turns out to be a compiled runner (Step 3). One of:
+   - **exit-code on a test** (TDD: a failing test goes RED→GREEN — honest by construction)
+   - **exit-code on a produced artifact** (a `Verify` command runs against a file/table the work produced — REQUIRES an independent outputs-exist probe; `Verify` can pass on a stale/clobbered artifact)
+   - **mechanical floor** (a linter/threshold/structural check passes)
+   - **judgment + empirical** (a reviewer/LLM judge decides — note: a semantic judge *can* be wrong or gamed, so the adversarial review layer must stay outside any compiled runner)
 
 **Gate: Interview Complete** `[checkpoint: human-verify, auto-advanceable]`
 - Verify AskUserQuestion was called
-- Check that answers to all 6 questions are present
+- Check that answers to all 7 questions are present
 - If interview incomplete, ask remaining questions
 
 **After verifying Interview is complete, persist answers and update state:**
@@ -217,6 +222,7 @@ domain: [code/data/writing/research/other]
 4. **Drift points:** ...
 5. **Iteration style:** ...
 6. **Verification:** ...
+7. **Gate kind:** exit-code-on-test | exit-code-on-artifact | mechanical-floor | judgment+empirical
 ```
 
 Update `.planning/wc/{name}/STATE.md`:
@@ -242,15 +248,15 @@ Agent(
   allowed_tools=["Read", "Grep", "Glob"],
   prompt="""Read .planning/wc/{name}/INTERVIEW.md.
 
-Check against the 6 required interview questions:
-1. Work type  2. Deliverable  3. Failure modes  4. Drift points  5. Iteration style  6. Verification
+Check against the 7 required interview questions:
+1. Work type  2. Deliverable  3. Failure modes  4. Drift points  5. Iteration style  6. Verification  7. Gate kind
 
 For each question, verify the answer is:
 - Present (not missing or placeholder)
 - Specific enough for decomposition (not "TBD" or "various")
 - Consistent with the stated domain
 
-Report: APPROVED if all 6 are adequate, or list specific gaps.
+Report: APPROVED if all 7 are adequate, or list specific gaps.
 Do NOT edit the file — report only."""
 )
 ```
@@ -277,7 +283,22 @@ Design phases where each phase has:
 - **Gate artifact** - the concrete file the producing phase writes and the consuming phase checks (see Structural Gate Artifacts below)
 - **Enforcement needs** - high/medium/low based on drift risk
 
-**Ultracode-workflow check:** For any phase that is a **fan-out over a known list** — either *read-only review* (one reviewer per item → gate/findings) OR *write/transform* (one write-agent per item that creates/transforms from a fixed spec — codemod, migration, per-item spec-driven generation, worktree-isolated) — decide whether to implement it as a Claude Code **ultracode workflow** rather than in-skill agent dispatch. Workflows are NOT read-only; the docs' flagship case is a 500-file write migration. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = deterministic fan-out read-or-write; skill keeps *creative* drafting + `/goal` + R4 + user input), and script conventions. Keep only *creative/judgment* generation, user-approval, and `/goal` loops conversational — mechanical/spec-driven per-item creation belongs in a transform workflow.
+**Compile-vs-interpret classification (do this FIRST — it decides the whole execution skeleton):**
+
+Before choosing any fan-out mechanism, ask of the workflow as a whole: **does it execute a DAG of MECHANICAL work between human gates** — an implement/transform/generate phase driven by a structured plan table (tasks with deps + a per-task gate), where the human-gated phases (brainstorm/plan/review/verify) stay conversational?
+
+- **YES → scaffold `spec → plan → deterministic compile → run.js` (the compiled-runner pattern), NOT an interpreted per-phase loop and NOT an in-workflow LLM "discovery" agent.** This is the lesson the ds + dev refactors paid for (PR#7/PR#8). The plan table is regex-parseable; a deterministic parser + compiler emits the runner. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §0 (compile-vs-interpret) and the **compiled-runner skeleton** there. What you emit by default:
+  1. a deterministic, **prefix-tolerant** plan-table parser (`scripts/<domain>/<domain>_plan_table.py`) — the SINGLE source of truth;
+  2. a compiler (`scripts/<domain>/<domain>_compile.py`) → `run.js` (CODE) **or** a data work-list (DATA, if a generic engine already consumes it);
+  3. a `workflows/templates/<domain>-run-template.js` with the **four safety invariants baked in** (payload>pass/fail · mandatory R4 block on assumption change · probe asserts artifacts-exist · adversarial layer OUTSIDE run.js) + two-kinds-of-decision routing + stale-gate backstop + gate-first short-circuit, and **three marked seams: columns, `implementerPrompt(t)`, `gateProbe(t)`** (the gate kind from interview Q7);
+  4. the executable-guard whose `validate_plan()` just imports parser #1 (so "compiles ⇔ passes gate");
+  5. a **slim** skill (COMPILE → run/pause loop, flowchart-as-spec — NOT a per-level dispatch loop).
+  Reference impls already in-repo: `workflows/templates/ds-run-template.js`, `workflows/templates/dev-run-template.js`, `scripts/ds/`, `scripts/dev/`.
+- **NO → use the fan-out / conversational patterns below.** A pure per-item fan-out with no plan-table DAG (review or transform) is the `already-a-fan-out` shape — correct as-is; do NOT bolt a compiled runner onto it.
+
+> **Iron Law (see "NO LLM STEP BETWEEN A STRUCTURED PRODUCER AND A STRICT CHECKER"):** if a structured table feeds a strict checker, NEVER scaffold an LLM step between them. An LLM "discovery" agent that re-reads the plan absorbs format drift invisibly — it tolerates rows the guard rejects, masking a spec-drift bug while looking like it works. Scaffold a deterministic parser, not an agent that re-reads the table.
+
+**Ultracode-workflow check (for FAN-OUT phases, once the workflow is NOT a compiled runner):** For any phase that is a **fan-out over a known list** — either *read-only review* (one reviewer per item → gate/findings) OR *write/transform* (one write-agent per item that creates/transforms from a fixed spec — codemod, migration, per-item spec-driven generation, worktree-isolated) — decide whether to implement it as a Claude Code **ultracode workflow** rather than in-skill agent dispatch. Workflows are NOT read-only; the docs' flagship case is a 500-file write migration. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` for the decision rubric, the hybrid split (workflow = deterministic fan-out read-or-write; skill keeps *creative* drafting + `/goal` + R4 + user input), and script conventions. Keep only *creative/judgment* generation, user-approval, and `/goal` loops conversational — mechanical/spec-driven per-item creation belongs in a transform workflow.
 
 ### Structural Gate Artifacts
 
@@ -622,6 +643,18 @@ Phase N produces ARTIFACT.md
 **After verifying Artifact Review Gates are designed, persist design decisions:**
 
 Write `.planning/wc/{name}/DESIGN.md` with phase decomposition, topology choice, iteration strategies, and artifact review gates. This is the recoverable artifact if context exhausts during enforcement generation.
+
+**If Step 3 classified the workflow as a compiled runner (executes a plan-table DAG), DESIGN.md MUST also record an explicit decision list** — these were silently hardcoded in the first ds/dev engines and a naive copy corrupted another domain's tree, so make each a deliberate choice:
+
+| Decision | Options / note |
+|----------|----------------|
+| **Gate kind** (`gateProbe`) | exit-code-on-test · exit-code-on-artifact (REQUIRES outputs-exist probe) · mechanical-floor · judgment+empirical (from interview Q7) |
+| **Compile output** | CODE (`run.js`) · DATA (work-list a generic engine consumes — if one already exists) |
+| **Within-level execution** | sequential (shared work-tree, e.g. dev) · parallel (disjoint outputs, e.g. ds — a naive parallel copy corrupts a shared tree) |
+| **Implementer model policy** | inherit session model (uniform tasks) · tier heuristic (mixed heavy/trivial tasks) |
+| **"Artifact present" means** | files + passing test (dev) · produced data outputs exist (ds) · rendered output (workshop) |
+| **Retire old engine** | ONLY after parity is proven on a real spec (do not delete the interpreter before the runner matches it) |
+| **Shared run-core** | do NOT extract until a 2nd domain runs on the template (extracting from one domain bakes in its isms) |
 
 Update `.planning/wc/{name}/STATE.md`:
 ```yaml
@@ -1648,8 +1681,42 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Exceptions: router skills that immediately delegate (no constraint evaluation), ad-hoc single-file references (not phase sets), plugins without `scripts/load-constraints.py`.
 - Score: count of phase skills using the loader / count of phase skills that load ≥2 constraints. Below 80% = critical gap.
 
+#### Compiled-runner architecture (P22-P26) — CONDITIONAL on executionClass
+
+These five principles apply **only when the workflow executes a DAG of mechanical work between human gates** — an implement/transform/generate phase driven by a structured plan table (dev, ds, and the like). They are the lessons the ds + dev `spec → plan → compiled run.js` refactors paid for (PR#7/PR#8). **First classify, then score** — for conversational / single-pass / pure-creative workflows P22-P26 are **N/A** and excluded from the composite.
+
+**executionClass detector (run FIRST).** Read the workflow's execution layer — the implement/transform phase skill AND any `workflows/<name>-implement.js` / `-generate.js` / `-run*.js` / a compiled `.planning/run.js` the skill invokes — and classify into exactly one:
+
+| executionClass | Tell-tale | Recommendation |
+|----------------|-----------|----------------|
+| **generic-interpreter** | An in-workflow LLM "discovery" agent re-parses a PLAN/spec into a DAG **every invocation** → per-level/per-item fan-out → a **heavyweight re-analysis LLM verifier** computes the gate; a per-LEVEL return boundary. **The retired anti-pattern.** | **CRITICAL** finding → fails the substrate gate. **Port to spec→plan→compile** (migration playbook §0). |
+| **already-a-fan-out** | A genuine per-item fan-out (one agent per section/lecture/question) with **no structured plan-table DAG** driving execution (e.g. `writing-draft`). | Correct as-is. **Do NOT force an engine swap** — spec-harden the work-list + reconcile the guard (P23) only. |
+| **compiled-runner** | Execution is a deterministic **compile** of a plan table → `run.js` / data work-list (no LLM discovery); a run-template that topo-sorts + gates on real exit codes / a domain `gateProbe`; a pause/resume protocol. | Already correct — P22-P26 score its quality. |
+| **not-applicable** | Conversational / single-pass / pure-creative; no plan-table DAG of mechanical work. | P22-P26 **N/A** (excluded from composite). |
+
+**P22 — Compile-vs-interpret fit:**
+- Is plan-table execution deterministically **compiled** (a parser → `run.js`/work-list), or **re-discovered by an in-workflow LLM agent every call**?
+- A `generic-interpreter` scores LOW. The structured table is regex-parseable — an LLM that re-reads it is redundant **and** dangerous (see the Iron Law below: it absorbs spec-drift invisibly).
+
+**P23 — Single-source plan parser:**
+- Does the executable-guard `import` the **same parser** the compiler/runner uses (so "compiles ⇔ passes gate"), or does the guard carry a **second regex** that drifts from the runner's interpretation?
+- A drifting second parser is the load-bearing defect: real plans pass one and fail the other. Below "single source" = major/critical.
+
+**P24 — Honest gate:**
+- Is the gate a **real exit code** (or a domain `gateProbe` returning `{pass, outputsPresent, evidence}`) **PLUS an independent artifacts-exist check** — never an implementer self-report or a re-analysis LLM verifier as sole arbiter?
+- **Output-first / produced-artifact gates** (ds-style: `Verify` runs against a parquet/table) MUST carry the outputs-exist probe — `Verify` can go green on a stale/clobbered artifact. **TDD/test gates** (dev-style: RED→GREEN) are honest by construction and may skip it. A self-reported gate scores critically low.
+
+**P25 — Pause/resume + payload>pass-fail:**
+- Do pauses carry the implementer's **deviations + a NUMBERED summary** (not a bare pass/fail)? *(In ds/dev the gate caught zero bugs; the deviation note + adversarial review caught them — a bare pass/fail gate scaffolds the blind spot.)*
+- Is there **two-kinds-of-decision routing** (gate-changing → edit the plan + recompile; behavior-only → `args.decisions`) + a **stale-gate backstop** (the implementer re-blocks rather than reverting to pass a stale gate) + a **gate-first idempotent short-circuit** (resume/recompile skips finished work)?
+
+**P26 — Adversarial layer outside the runner:**
+- Does the full-suite / review / verify adversarial layer live **OUTSIDE** `run.js` (a separate workflow or skill phase), not inside the compiled runner?
+- For **semantic gates** (writing/workshop, where `gateProbe` is an LLM judgment that *can* lie) this is load-bearing, not a backstop — keep the review layer robust and the evidence payload numbered/specific.
+
 **Gate: Architecture Scored** `[checkpoint: human-verify, auto-advanceable]`
-- Verify scores for all P01-P21 (+ P19b) principles are present
+- Classify executionClass FIRST; if `generic-interpreter`, that is a critical finding (recommend a compiled-runner port).
+- Verify scores for all P01-P21 (+ P19b) principles are present; score P22-P26 too when executionClass ≠ `not-applicable` (else mark them N/A).
 - Each principle must have numeric score (0-10) + 1-line justification
 - If any principle ID is missing, score it now
 - Composite = average of scored (non-N/A) principles
@@ -1792,7 +1859,7 @@ For each flagged phase, classify **strong** / **moderate**, note worker-mode (re
 
 ### Step 4: Output Audit Report
 
-**Render AUDIT.md from the workflow result — do NOT re-score by hand.** The wc-audit workflow already produced `result.reportMarkdown` (the full AUDIT.md body: P01-P21 table, enforcement coverage, path portability, candidacy table, critical gaps), `result.scoreTable` (the dimension-level gate), `result.candidacyTable`, `result.composite`, and `result.verdict`. Write `result.reportMarkdown` verbatim to `.planning/wc/{name}/AUDIT.md` and present `result.scoreTable` + `result.composite` to the user. **The gate is `result.overallPass`/`result.composite`, computed in JS — do not recompute or rationalize it.** Append the composite row to `.planning/wc/{name}/SCORES.md` for the Mode 3 trend.
+**Render AUDIT.md from the workflow result — do NOT re-score by hand.** The wc-audit workflow already produced `result.reportMarkdown` (the full AUDIT.md body: P01-P26 table, runner-architecture/executionClass section, enforcement coverage, path portability, candidacy table, critical gaps), `result.scoreTable` (the dimension-level gate), `result.candidacyTable`, `result.executionClass`, `result.composite`, and `result.verdict`. Write `result.reportMarkdown` verbatim to `.planning/wc/{name}/AUDIT.md` and present `result.scoreTable` + `result.composite` to the user. **The gate is `result.overallPass`/`result.composite`, computed in JS — do not recompute or rationalize it.** **If `result.executionClass === 'generic-interpreter'`, lead the Recommendations with a compiled-runner port** (see the migration playbook §0) — it is the highest-value fix. If `already-a-fan-out`, recommend spec-harden + guard-reconcile, NOT an engine swap. Append the composite row to `.planning/wc/{name}/SCORES.md` for the Mode 3 trend.
 
 The format below documents what `result.reportMarkdown` contains (so you can sanity-check the workflow's output) — it is the spec the workflow renders to, not a worksheet to fill in yourself.
 
@@ -1801,7 +1868,7 @@ Format:
 ```
 ## Audit: [Workflow Name]
 
-### Architecture Scores (P01-P21)
+### Architecture Scores (P01-P26)
 | ID | Principle | Score | Notes |
 |----|-----------|-------|-------|
 | P01 | Phased decomposition | [0-10] | [notes] |
@@ -1826,6 +1893,17 @@ Format:
 | P19b | Visual output | [0-10] | [notes] |
 | P20 | Hooks over prompt | [0-10] | [notes] |
 | P21 | Auto-loader usage | [0-10] | [notes] (loader skills / phase skills ≥2 constraints) |
+| P22 | Compile-vs-interpret fit | [0-10] / N/A | [notes] (N/A unless executionClass executes a plan-table DAG) |
+| P23 | Single-source plan parser | [0-10] / N/A | [notes] |
+| P24 | Honest gate (exit-code/probe) | [0-10] / N/A | [notes] |
+| P25 | Pause/resume + payload>pass-fail | [0-10] / N/A | [notes] |
+| P26 | Adversarial layer outside runner | [0-10] / N/A | [notes] |
+
+### Runner Architecture (P22-P26)
+**Execution class:** `generic-interpreter` / `already-a-fan-out` / `compiled-runner` / `not-applicable`
+- If `generic-interpreter`: CRITICAL — recommend a `spec → plan → compile` port (migration playbook §0).
+- If `already-a-fan-out`: do NOT force an engine swap — spec-harden + reconcile the guard (P23) only.
+- If `not-applicable`: P22-P26 N/A (excluded from composite).
 
 ### Gate Enforcement Matrix
 | Transition | Gate | Artifact | Producer Writes? | Consumer Checks? | Hook Enforced? | Status |
@@ -2259,6 +2337,11 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 **When an agent needs multiple checks:** The orchestrator reads the check list and spawns each check as a direct parallel agent. The "dispatcher" logic lives in the skill/phase definition, not in a middle agent.
 
 **The structural fix — ultracode workflows:** For a genuine fan-out (one reviewer per item × check) producing a computed gate, migrate the dispatch into a Claude Code **ultracode workflow** (see `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md`; build it during Mode 1 decomposition or migrate an existing phase via Mode 3). An ultracode workflow is a *script*, not a dispatcher agent: reviewer results land in script variables and the gate is computed in JS, so result loss is impossible by construction — and the model can no longer inflate a self-reported score. Use it when a phase fans out + gates; keep drafting, `/goal`, and user-input phases conversational in the skill.
+
+### NO LLM STEP BETWEEN A STRUCTURED PRODUCER AND A STRICT CHECKER
+When a structured artifact (a plan table, a typed spec) feeds a strict checker (an executable-guard, a deterministic parser), NEVER scaffold an LLM step between them. An LLM "discovery" agent that re-reads the table doesn't just cost tokens — it **silently tolerates format drift the checker rejects**, masking a spec-drift bug while looking like it works. If the input is a structured table, scaffold a **deterministic parser** (shared by the compiler AND the guard, so "compiles ⇔ passes gate"), not an agent that re-reads it.
+
+**The ds incident (June 2026):** the generic-interpreter `ds-implement.js` ran an LLM discovery agent between `ds-plan` (a structured producer) and `ds-plan-executable-guard.py` (a strict checker). Real plans used `**T1**`/em-dash deps that the guard rejected on *every row* — but the LLM tolerated them, so the workflow ran while the guard was silently dead. The drift was invisible until the LLM was removed. The accompanying re-analysis verifier "caught zero substantive bugs." Fix: deterministic parser+compiler shared with the guard; the discovery LLM and the re-analysis verifier were both deleted. (`docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`.) This is enforced at audit time as **executionClass=generic-interpreter ⇒ critical** (Mode 2 P22-P26).
 </EXTREMELY-IMPORTANT>
 
 ## Red Flags - STOP If You Catch Yourself:
@@ -2266,7 +2349,7 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 | Action | Why Wrong | Do Instead |
 |---|---|---|
 | Creating a workflow without reading PHILOSOPHY.md | You'll miss the foundational principles | Read it first, every time |
-| Skipping the user interview | You'll design for an imagined domain, not the real one | Ask the six questions |
+| Skipping the user interview | You'll design for an imagined domain, not the real one | Ask the seven questions |
 | Writing soft language instead of Iron Laws | LLMs ignore polite suggestions | Use strong framing with EXTREMELY-IMPORTANT tags |
 | Proposing ungated phase transitions | Quality will die at the ungated boundary | Define a verifiable gate condition |
 | Designing all phases with equal enforcement | Drift risk varies by phase | Score enforcement density per phase |
