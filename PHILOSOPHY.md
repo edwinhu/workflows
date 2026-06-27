@@ -40,7 +40,7 @@ The RL framing gives precise vocabulary for workflow design decisions. **The wor
 
 ### Where the Lens Breaks Down
 
-- **Dev gates are deterministic** ("tests pass" is binary). **Writing and DS gates are judgment-based** ("does the argument hold?" requires a reader). This doesn't mean writing/DS can't have gates — it means their gates are agent-assessed or human-assessed, not machine-verified.
+- **Every domain's gate has a deterministic floor; the *judgment* differs in where it lives.** The original framing here — "dev gates are deterministic, writing/DS gates are judgment-based" — was superseded by the compiled-runner work (see "Deterministic Execution" above). The sharper statement: the runner-side gate is *always* deterministic (an exit code, or a mechanical floor like "the section index parses / the deck compiles"); what varies is whether that floor is *sufficient* (dev/DS: the exit code IS the gate) or merely *necessary* (writing/workshop: the floor proves structure, and the semantic authority — "does the argument hold?" — is an adversarial reviewer *outside* the runner). So writing/DS don't have "weaker, judgment-based gates" — they have a deterministic floor plus an external judge, never an LLM judging inside the machine.
 - **Action masking is clean in dev** (you literally can't edit code before design). In writing, the equivalent ("you can't draft before outlining") is softer — the agent can always produce *something* without an outline.
 - **Reward is sparse everywhere** (only know quality when the human reviews), but the signal quality differs: a failing test is unambiguous, "this paragraph is weak" is not.
 
@@ -68,6 +68,8 @@ But not all domains have machine-verifiable gates. Writing and DS rely on **judg
 - Results pass sanity checks → can enter review
 
 Judgment gates are weaker than deterministic gates but stronger than no gates. The design principle: **use the strongest gate available for the domain.** Deterministic when possible, judgment-based when not, honor-system never.
+
+**Sharpened by the compiled-runner work (see "Deterministic Execution" below):** even in a "judgment" domain, the *automated* gate is a deterministic **floor** (does it structurally hold?), and the judgment is an adversarial reviewer *outside* the runner — never an LLM grading its own output inside it. And a gate's "pass" and the *artifact actually existing* are separate facts (a check can pass on a stale output), so confirm both. "Honor-system never" now also means: never let the implementer's self-reported `passed: true` be the gate.
 
 ### Structural Gate Artifacts
 
@@ -218,6 +220,30 @@ Shared constraints (the section above) address only one layer of cross-skill enf
 
 **The design principle:** When adding enforcement to any skill in a family, propagate across all three layers — or document why a layer doesn't apply to a specific skill.
 
+### Deterministic Execution: Compile, Don't Interpret
+
+The sections above describe how a workflow *decomposes* and *gates* work. This one is about how the mechanical work between the human gates actually *runs* — the largest correction the program has made to its own design.
+
+**Two execution shapes.** Look at what a workflow does between its human gates:
+- If it runs a **DAG of mechanical work driven by a structured plan** (an implement/transform phase whose tasks have dependencies and a per-task check), that plan is a machine-readable artifact. **Compile it into a deterministic runner; do not have an LLM re-interpret it on every run.**
+- If the work is a single creative pass or a judgment the model must make fresh each time, it stays conversational. Compiling it would be forcing structure where there is none.
+
+**Why compile.** The first-generation design put an LLM "discovery" agent between the plan and the executor — it re-parsed the plan each invocation. That agent did not just cost tokens; sitting **between a structured producer and a strict checker, it silently tolerated format drift the checker rejected**, masking spec-drift bugs while *looking* like it worked. Removing it surfaced bugs that had been hidden for weeks. Hence the Iron Law:
+
+> **NO LLM between a structured producer and a strict checker.** If a structured artifact feeds a strict gate, parse it deterministically. An LLM in that seam absorbs drift invisibly. (And the parser becomes the *single source of truth*: the compiler and the guard import the same one, so "compiles ⇔ passes the gate" is a property, not a hope.)
+
+**The gate must be honest.** This is the deepest finding, and it refines §4's "use the strongest gate available":
+- The **runner-side gate is always *deterministic*** — a real exit code or a mechanical floor check. It is *never* the implementer's self-report, and never an LLM re-analyzing its own output to decide pass/fail. There is no judgment *inside* the runner to game.
+- A pass and the *artifact actually existing* are **two independent facts** — a check can exit 0 against a stale or clobbered output. The runner confirms both; it never trusts the pass signal alone.
+- When the gate is a deterministic **floor** in a semantic domain (it proves structure, not correctness), it must **disclose its blind spot** — say what it did *not* check — and the *sufficient* authority is the **adversarial review, which lives OUTSIDE the runner**. A deterministic floor inside, a semantic judge outside; never an LLM judge inside the machine.
+- The hardest-won part: across every domain, **the per-task gate caught almost no real bugs.** The human decisions and the adversarial review caught them. So the runner's job is to be cheap and honest, not clever — and every pause it surfaces carries the *substance* (what changed, the actual numbers), never a bare pass/fail. **Payload over verdict.**
+
+**Substrate over score.** When a workflow is scored (e.g. an audit), gate on the **deterministic, categorical signal** — did it structurally pass — not on a noisy composite number. A composite is an advisory ±0.2 proxy; chasing it past a clean substrate is gaming the judge, not improving the work.
+
+**Born-canonical producers.** Tolerance in the parser is a back-compat shim, not the primary defense. The real fix is upstream: the phase that *emits* the plan emits it in the canonical format, so the parser rarely needs to tolerate anything and the guard can be strict. One format spec, shared by the emitter, the parser, and the guard.
+
+This is the *why*; the *how* (the compile step, the shared runner, the gate contract, the pause/resume protocol) is documented in `docs/compiled-runner-architecture.md` (a visual walkthrough) and the seam list in `docs/common-infra-candidates.md`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
+
 ## 5. Enforcement and Its Limits
 
 Superpowers enforcement patterns are the regularization that counteracts drift:
@@ -277,6 +303,8 @@ Long-running agent sessions suffer from **context pollution**: each failed attem
 Fresh subagents achieve the same effect within a single session. Each subagent gets clean context. The filesystem is the durable memory.
 
 **Core principle: Progress lives in files, not in conversation.**
+
+**Refinement — the *orchestration* loop should be deterministic, not an LLM.** "Not loops" targets the *Ralph Wiggum LLM loop* (re-feeding a prompt, polluting context). It does **not** mean "no loop at all": for a DAG of mechanical work, the right loop is a **compiled deterministic script** (a `run.js`) that topo-sorts the tasks, runs each, gates it, and pauses for the human — see "Deterministic Execution" in §4. The script holds the loop in *code variables*, not conversation, so there is no context pollution to escape. Each *task* still gets a fresh subagent (the principle holds); what changed is that the *driver around them* is deterministic JS, not a skill re-reading the plan and dispatching a level at a time. So: fresh subagent per task, deterministic loop around them.
 
 ### The Three Topologies
 
