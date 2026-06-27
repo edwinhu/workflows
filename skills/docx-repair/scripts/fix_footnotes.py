@@ -1087,6 +1087,10 @@ def fix_numbering_offset(settings_xml, fn_xml, doc_xml, bio_count=3):
     """
     changes = []
 
+    # No bios → no numbering offset to correct; never add numRestart on a bio-less paper.
+    if bio_count <= 0:
+        return settings_xml, fn_xml, doc_xml, changes
+
     # Check if already fixed
     if 'numRestart' in settings_xml:
         return settings_xml, fn_xml, doc_xml, changes
@@ -1514,8 +1518,12 @@ def main():
     parser.add_argument("docx", help="Path to the .docx file")
     parser.add_argument("--output", "-o", help="Output path (default: overwrite input)")
     parser.add_argument("--dry-run", action="store_true", help="Show what would change")
-    parser.add_argument("--bio-footnotes", type=int, default=3,
-                        help="Number of author bio footnotes (default: 3)")
+    parser.add_argument("--bio-footnotes", type=int, default=None,
+                        help="Number of author bio footnotes. Default: AUTO-DETECT from the "
+                             "doc's customMarkFollows refs (0 if none) — do NOT assume 3, or a "
+                             "paper with no author bios gets *,†,‡ stamped on its real first three "
+                             "footnotes. Pass an explicit count for a Google-Docs round-trip that "
+                             "stripped the marks (auto-detect would see 0).")
     parser.add_argument("--crossrefs", action="store_true",
                         help="Also run create_crossrefs.py after fixing")
     parser.add_argument("--fix-numbering", action="store_true",
@@ -1554,6 +1562,14 @@ def main():
         # styles.xml is read to verify the FNStyleBest definition survives.
         styles_xml = read_zip_member(zf, 'word/styles.xml')
 
+    # Bio-footnote count: AUTO-DETECT from the customMarkFollows refs the build set, NOT a
+    # hardcoded 3. A paper with no author bios (single author, no acknowledgements) has zero
+    # customMarkFollows refs → bio_count=0 → no symbols forced onto its real footnotes. An
+    # explicit --bio-footnotes overrides (e.g. a Google Docs round-trip that stripped the marks).
+    bio_count = args.bio_footnotes if args.bio_footnotes is not None else (doc_xml or '').count('customMarkFollows="1"')
+    if args.bio_footnotes is None:
+        print(f"Auto-detected {bio_count} author bio footnote(s) from customMarkFollows refs.")
+
     issues = detect_issues(fn_xml, doc_xml, settings_xml, styles_xml)
     if not issues and not args.fix_numbering and not args.normalize_headings:
         print("No footnote damage detected.")
@@ -1571,14 +1587,14 @@ def main():
     if fn_sdt_changes:
         all_changes.append("footnotes.xml: " + fn_sdt_changes[0])
 
-    fn_xml_fixed, fn_changes = fix_footnotes_xml(fn_xml_fixed, args.bio_footnotes)
+    fn_xml_fixed, fn_changes = fix_footnotes_xml(fn_xml_fixed, bio_count)
     all_changes.extend(fn_changes)
 
     fn_xml_fixed, pandoc_changes = fix_pandoc_cite_wraps(fn_xml_fixed)
     all_changes.extend(pandoc_changes)
 
     fn_xml_fixed, bio_body_changes = fix_bio_superscript_in_footnotes(
-        fn_xml_fixed, args.bio_footnotes)
+        fn_xml_fixed, bio_count)
     all_changes.extend(bio_body_changes)
 
     # Feature 1: strip Google Docs leftover content controls FIRST so every
@@ -1587,18 +1603,18 @@ def main():
     if sdt_changes:
         all_changes.append("document.xml: " + sdt_changes[0])
 
-    doc_xml_fixed, doc_changes = fix_document_xml(doc_xml_fixed, args.bio_footnotes)
+    doc_xml_fixed, doc_changes = fix_document_xml(doc_xml_fixed, bio_count)
     all_changes.extend(doc_changes)
 
     doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
-        doc_xml_fixed, args.bio_footnotes)
+        doc_xml_fixed, bio_count)
     all_changes.extend(bio_ref_changes)
 
     # Authoritative bio normalization (lxml, position-based). Runs after the
     # regex bio fixers so it also repairs the Google-Docs bare-reference case
     # they cannot match, and leaves a correct bio untouched (idempotent).
     doc_xml_fixed, fn_xml_fixed, bio_norm_changes = restore_bio_custom_marks(
-        doc_xml_fixed, fn_xml_fixed, args.bio_footnotes)
+        doc_xml_fixed, fn_xml_fixed, bio_count)
     all_changes.extend(bio_norm_changes)
 
     doc_xml_fixed, toc_changes = fix_toc_separator(doc_xml_fixed)
@@ -1639,7 +1655,7 @@ def main():
 
     if args.fix_numbering:
         settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, num_changes = fix_numbering_offset(
-            settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, args.bio_footnotes)
+            settings_xml_fixed, fn_xml_fixed, doc_xml_fixed, bio_count)
         all_changes.extend(num_changes)
 
     # Body-paragraph first-line-indent normalization (editorial, opt-in).
