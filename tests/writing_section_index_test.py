@@ -126,22 +126,38 @@ with tempfile.TemporaryDirectory() as td:
     check("style econ read", r2.style == "econ")
 
 
-# ── real-repo parity (skipped if absent): the golden ground truth ────────────────
+# ── real-repo smoke (skipped if absent): assert INVARIANTS, not mutable contents ──────
+# NB: tender_offers/paper is a LIVE repo that gets restructured (section count/names/claim
+# count change as the paper is revised). Asserting an exact section list here is brittle and
+# false-fails whenever the author edits the paper. So check only the parser INVARIANTS that
+# must hold for ANY well-formed writing project; the exact-contents oracle lives in the
+# committed fixture above (writing-section-index), which is stable.
 REAL = Path.home() / "projects" / "tender_offers" / "paper"
 if (REAL / ".planning" / "OUTLINE.md").is_file():
     rr = wsi.build_index(REAL)
-    names = [s.name for s in rr.sections]
-    check("[real] 5 sections, Intro→Conclusion order",
-          names == ["Introduction", "Part I. The Law and Economics of the Tender-Offer Clock",
-                    "Part II. What the Cut Affects — The Two Offer-Period Channels",
-                    "Part III. Objections and the Targeted Fix", "Conclusion"], str(names))
-    check("[real] all claimOk under ⊇", all(s.claim_ok for s in rr.sections))
-    check("[real] stale-approval fired (5≠6 claims, 4≠3 Parts)",
-          len(rr.stale_approval) >= 2, str(rr.stale_approval))
-    check("[real] every section paired to outline+draft",
-          all(s.outline_file and s.draft_file for s in rr.sections))
+    n = len(rr.sections)
+    check("[real] build_index returns sections", n >= 3, f"got {n}")
+    check("[real] document order is contiguous 0..n-1",
+          [s.order for s in rr.sections] == list(range(n)))
+    check("[real] ends have empty prev/next, interiors don't",
+          n >= 2 and rr.sections[0].prev_name == "" and rr.sections[-1].next_name == ""
+          and all(rr.sections[i].prev_name for i in range(1, n)))
+    # Pairing is REPO-STATE-dependent: a WIP repo mid-revision may have ## Structure headings the
+    # outline/draft filenames don't yet match (the parser CORRECTLY surfaces that drift as unpaired
+    # — it's not a parser bug). So assert only that the pairing fields are well-formed (str|None),
+    # and LOG the paired count rather than requiring all-paired.
+    check("[real] pairing fields well-formed (str|None)",
+          all((s.outline_file is None or isinstance(s.outline_file, str))
+              and (s.draft_file is None or isinstance(s.draft_file, str)) for s in rr.sections))
+    paired = sum(1 for s in rr.sections if s.outline_file and s.draft_file)
+    print(f"  -- [real] {paired}/{n} sections fully paired (informational; WIP repos drift)")
+    check("[real] ⊇ claim gate holds for every section", all(s.claim_ok for s in rr.sections),
+          str([s.name for s in rr.sections if not s.claim_ok]))
+    # stale_approval is state-dependent (true iff a *_REVIEWED predates the live structure) — it is
+    # a LIST (possibly empty); assert only that the field is well-formed, never a specific count.
+    check("[real] stale_approval is a well-formed list", isinstance(rr.stale_approval, list))
 else:
-    print("  -- real tender_offers repo absent; parity check skipped")
+    print("  -- real tender_offers repo absent; smoke check skipped")
 
 
 print(f"\n{_passed} passed, {_failed} failed")
