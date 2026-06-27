@@ -238,6 +238,10 @@ implements: [CLAIM-XX, CLAIM-YY]   # the claims primary-homed to this section in
 > several paragraphs). One identical paragraph per bullet is the flat-prose failure mode — proportional
 > is the goal. Optional `### A. Name` group headers may bracket runs of bullets, but the BULLET is
 > the paragraph, never the header.
+> **`## Opening` / `## Body` / `## Closing` below are SCAFFOLDING labels — they organize this outline,
+> they are NOT document headings. The draft renders Opening as the unheaded lead paragraph(s), Body as
+> the lettered `## A./B./C.` subsections, and Closing as a trailing UNHEADED bridge — never a "Closing"
+> or "Conclusion" heading. Only the section title and the lettered subsections become real headings.**
 
 ## Opening
 - [Topic sentence of the opening paragraph — a full claim that frames the section and picks up the prior section]
