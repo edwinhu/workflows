@@ -67,7 +67,7 @@ START (PRECIS + master OUTLINE exist)
   ├─ Step 3: Gather structure/depth preferences
   │
   ├─ Step 4: Create detailed outline
-  │  └─ For each subsection: POINT + EVIDENCE + LOGIC
+  │  └─ One topic-sentence BULLET per paragraph; sub-bullets = its evidence/ideas
   │     Opening → Body (subsections with transitions) → Closing
   │
   ├─ Step 5: Cross-reference with PRECIS claims
@@ -98,7 +98,7 @@ If you find yourself writing prose without a matching outline file:
 3. Create the outline first
 4. THEN draft
 
-Thin outlines produce thin drafts. Each outline must have POINT, EVIDENCE, and LOGIC for every subsection.
+Thin outlines produce thin drafts. Each outline must be a list of paragraph TOPIC-SENTENCE bullets (each a full claim), with supporting evidence/ideas as sub-bullets.
 </EXTREMELY-IMPORTANT>
 
 ## Session Resume Detection
@@ -227,66 +227,48 @@ implements: [CLAIM-XX, CLAIM-YY]   # the claims primary-homed to this section in
 
 ---
 
+> **FORMAT — this is the contract with the draft phase, follow it exactly.** Each top-level bullet
+> `-` is ONE PARAGRAPH, and the bullet text IS that paragraph's TOPIC SENTENCE: a full claim that
+> carries the argument (NOT a label, NOT a topic — "The minimum offer period is the only guaranteed
+> window in which an outsider can build a blocking position," not "the accumulation window").
+> Sub-bullets are that paragraph's supporting evidence/ideas, each with its `[@bibkey]`/authority
+> pinned. **Read the top-level bullets top to bottom — they ARE the argument** (that is the Step-5
+> check). The draft expands each top-level bullet into a paragraph led by that sentence, developed
+> IN PROPORTION to its weight (a minor bullet may merge into a neighbor; a pivotal one may run
+> several paragraphs). One identical paragraph per bullet is the flat-prose failure mode — proportional
+> is the goal. Optional `### A. Name` group headers may bracket runs of bullets, but the BULLET is
+> the paragraph, never the header.
+
 ## Opening
-
-**Lead sentence**: [Draft or TBD]
-**Context needed**: [What reader must know]
-**Transition from previous**: [How we got here]
-
----
+- [Topic sentence of the opening paragraph — a full claim that frames the section and picks up the prior section]
+  - context the reader needs
+  - transition from the previous section (what it established)
 
 ## Body
-
-> **Write each POINT as a TOPIC SENTENCE — a full claim sentence that carries the argument, not a
-> label.** Not "Point: the accumulation window" but "The minimum offer period is the only guaranteed
-> window in which an outside investor can build a blocking position before the §251(h) majority locks."
-> The draft phase leads each unit with its POINT and develops it *in proportion to its weight*, so the
-> POINTs ARE the argument's backbone — a reader should be able to follow the whole argument from the
-> topic sentences alone. Weak label-POINTs produce flat, uniform prose; sharp claim-POINTs produce
-> proportional, human-rhythm prose.
-
-### Subsection A: [Name]
-
-**Point** (a topic sentence — a claim that carries the argument): [full sentence, e.g. "The reform forecloses the one timely check on an underpriced friendly merger."]
-**Evidence** (pin a REAL source per claim — `[@bibkey]` or a named authority):
-  - [@bibkey1]: "[key quote or fact]"
-  - [@bibkey2]: "[key quote or fact]"
-**Logic**: [How evidence supports point]
-**Transition**: [Bridge to next subsection]
-
-### Subsection B: [Name]
-
-**Point**: [Main argument]
-**Evidence**:
-  - [Source]: "[key quote or fact]"
-**Logic**: [How evidence supports point]
-**Anticipated objection**: [If applicable]
-  - Response: [How to address]
-**Transition**: [Bridge to next]
-
-### Subsection C: [Name]
-
-[Continue pattern...]
-
----
+- [Topic sentence — paragraph 1's claim, a full sentence]
+  - supporting evidence / idea — [@bibkey or named authority]
+  - supporting evidence / idea
+- [Topic sentence — paragraph 2's claim]
+  - support — [@bibkey]
+  - anticipated objection + response (if this paragraph carries one)
+- [Topic sentence — paragraph 3's claim]
+  - support
+- […one top-level bullet PER PARAGRAPH the section needs — the bullets in order are the section's spine]
 
 ## Closing
-
-**Section summary**: [One sentence recap]
-**Bridge to next section**: [How this leads to what follows]
-**Thesis thread**: [How this connects to main thesis from PRECIS]
+- [Topic sentence of the closing paragraph — the section's payoff]
+  - bridge to the next section / thesis thread
 
 ---
 
 ## Sources Used in This Section
-- [Source 1] - used for [what]
-- [Source 2] - used for [what]
+- [@bibkey] — used for [what]
 
 ## Open Questions
 - [Anything unresolved before drafting]
 
 ## Estimated Length
-[Paragraph count or word count target]
+[Paragraph count = number of top-level bullets]
 ```
 
 ### Step 5: Cross-Reference with PRECIS
@@ -299,10 +281,10 @@ Verify the detailed outline against PRECIS.md:
 - [ ] Avoids OUT scope items
 - [ ] Maintains thesis thread
 
-**Topic-sentence argument check (do this every time):** read the POINTs in document order, ignoring
-all the evidence/logic underneath. Do they form a coherent argument on their own — each a claim that
-follows from the last and advances the thesis? If the topic-sentence spine doesn't carry the argument,
-the outline is a topic list, not an argument; sharpen the POINTs (or reorder them) before drafting.
+**Topic-sentence argument check (do this every time):** read the TOP-LEVEL BULLETS in document order,
+ignoring all the sub-bullets underneath. Do they form a coherent argument on their own — each a claim
+that follows from the last and advances the thesis? If the top-level spine doesn't carry the argument,
+the outline is a topic list, not an argument; sharpen the bullets (or reorder them) before drafting.
 This is the single best predictor of whether the draft will read like reasoning or like filler.
 
 Report any misalignments.
@@ -350,7 +332,7 @@ Before proceeding to draft phase (see `constraints/gate-function-standard.md` fo
    - Every section in OUTLINE.md has a corresponding file in `outlines/`
    - Each outline cross-references PRECIS.md claims
 2. **RUN**: List files in `outlines/`, compare against sections in OUTLINE.md
-3. **READ**: Check each outline has POINT, EVIDENCE, LOGIC for subsections
+3. **READ**: Check each outline is one topic-sentence bullet per paragraph (full claims), with evidence/idea sub-bullets
 4. **VERIFY**: All sections have outlines, all outlines reference PRECIS claims
 5. **REVIEW**: Dispatch outline reviewer subagent:
    Discover path: `${CLAUDE_SKILL_DIR}/../../skills/writing-outline-reviewer/SKILL.md`, then `Read()` the output.
@@ -374,7 +356,7 @@ Before proceeding to draft phase (see `constraints/gate-function-standard.md` fo
 
 Before finalizing each outline, verify:
 
-- [ ] Every subsection's POINT is written as a topic sentence (a full claim that carries the argument), and the POINTs read in document order form the argument on their own
+- [ ] Every top-level bullet is one paragraph's topic sentence (a full claim, not a label/topic), with evidence/ideas as sub-bullets; the top-level bullets read in document order form the argument on their own
 - [ ] Evidence is specific (quotes, data), not vague ("sources say")
 - [ ] Logic connecting evidence to point is explicit
 - [ ] Transitions between subsections are planned
@@ -385,7 +367,7 @@ Before finalizing each outline, verify:
 ## Red Flags
 
 - About to create an outline without reading PRECIS.md first → STOP. The outline won't align with the thesis; read PRECIS before every outline.
-- About to write a topic list instead of a structured outline → STOP. Topics are not arguments; add POINT, EVIDENCE, LOGIC for each subsection.
+- About to write a topic list instead of a structured outline → STOP. Topics are not arguments; make each top-level bullet a full topic-sentence CLAIM (one per paragraph) with evidence/idea sub-bullets.
 - About to skip the cross-reference with PRECIS → STOP. The section may advance no claim; check which claim it serves.
 - About to pause after one outline to ask permission → STOP. That breaks momentum; continue to the next section immediately.
 - About to outline without sources → STOP. Evidence-free outlines produce evidence-free prose; go back to brainstorm for sources.
@@ -411,7 +393,7 @@ When escalating, present:
 
 | Problem | Fix |
 |---------|-----|
-| Outline is just topic list | Add POINT, EVIDENCE, LOGIC for each |
+| Outline is just topic list | Rewrite each item as a full topic-sentence claim (one per paragraph); put evidence/ideas in sub-bullets |
 | No sources mapped | Go back to research or brainstorm |
 | Section doesn't advance a claim | Rethink why it exists |
 | Too long for one section | Split into multiple sections |
