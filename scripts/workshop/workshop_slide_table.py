@@ -33,6 +33,18 @@ import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 
+# Shared S1 parser-core (seam S1, scripts/lib/plan_table_core.py) — extracted from ds+dev. workshop is
+# the FLAT/data-variant consumer: it takes ONLY the table-cell subset (split_row / col_index /
+# prefix-tolerant cell / find_table), NEVER the DAG (check_acyclic/toposort) — there is no plan-table
+# DAG here. The core does ENUMERATION only and never joins a work-item to a produced artifact, so it is
+# safe for this multi-source-enumeration domain (S5/P27). The workshop COLUMN-MAP + the prose-form parse
+# + the backtick tolerance stay here (the per-domain seam).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from plan_table_core import split_row, col_index, cell as _core_cell, find_table  # noqa: E402
+
+# workshop detects its Slide Spec table by this header subset (same set the guard uses via build_index).
+_TABLE_REQUIRED = {"slide", "section", "takeaway", "inventory"}
+
 # Canonical table columns (born-canonical emitter writes all 7).
 REQUIRED_COLS = ("slide", "section", "takeaway", "bullets", "inventory", "visual", "notes")
 # An F/T/R/A inventory id token (R1, T12, A3, F4). Range "R1-R8" yields the literal endpoints
@@ -115,43 +127,18 @@ def _inv_tokens(cell: str) -> list[str]:
 
 
 # ── table form (canonical) ─────────────────────────────────────────────────────
-def _split_row(line: str) -> list[str]:
-    return [c.strip() for c in line.strip().strip("|").split("|")]
-
-
+# Table location + cell extraction delegate to the shared core (split_row / col_index / find_table).
+# find_slide_table stays as the workshop-named wrapper (the guard's build_index + _parse_table call it).
 def find_slide_table(text: str):
-    """(header_lower, rows) for the table whose header carries slide+section+takeaway+inventory;
-    (None, None) if absent. Same detection as the legacy guard's find_slide_table."""
-    lines = text.splitlines()
-    for i, raw in enumerate(lines):
-        line = raw.strip()
-        if not (line.startswith("|") and "|" in line[1:]):
-            continue
-        header = [c.strip().lower() for c in line.strip("|").split("|")]
-        sep = lines[i + 1].strip() if i + 1 < len(lines) else ""
-        is_sep = bool(re.match(r"^\|?[\s:|-]+\|[\s:|-]+\|?$", sep)) and "-" in sep
-        if is_sep and {"slide", "section", "takeaway", "inventory"}.issubset(set(header)):
-            rows, j = [], i + 2
-            while j < len(lines) and lines[j].strip().startswith("|"):
-                rows.append(_split_row(lines[j])); j += 1
-            return header, rows
-    return None, None
-
-
-def _col_index(header, name) -> int:
-    """Prefix-tolerant column lookup (dev's gotcha: 'Visual (figure/diagram)' satisfies 'visual')."""
-    for i, h in enumerate(header):
-        if h == name or h.startswith(name + " ") or h.startswith(name + "("):
-            return i
-    return -1
+    """(header_lower, rows) for the Slide Spec table (header ⊇ slide+section+takeaway+inventory),
+    via the shared core's find_table; (None, None) if absent."""
+    return find_table(text, _TABLE_REQUIRED)
 
 
 def _cell(header, cells, name) -> str:
-    i = _col_index(header, name)
-    try:
-        return cells[i].strip().strip("`").strip() if i >= 0 else ""
-    except IndexError:
-        return ""
+    """Core cell extraction (prefix-tolerant) + workshop's backtick tolerance (the Section column wraps
+    the `==` separator in backticks per the SKILL template; other cells may too)."""
+    return _core_cell(header, cells, name).strip("`").strip()
 
 
 def _parse_table(text: str, idx: SlideIndex) -> None:
@@ -159,7 +146,7 @@ def _parse_table(text: str, idx: SlideIndex) -> None:
     if header is None:
         return
     idx.form = "table"
-    missing = [c for c in REQUIRED_COLS if _col_index(header, c) < 0]
+    missing = [c for c in REQUIRED_COLS if col_index(header, c) < 0]
     if missing:
         idx.violations.append(f"Slide Spec table missing required column(s): {', '.join(missing)}.")
     seen = set()
