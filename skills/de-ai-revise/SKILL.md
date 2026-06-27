@@ -95,6 +95,10 @@ user's own published prose — uses them deliberately. Do NOT zero them out.
   flag or swap — these are legal/finance-normal; the audit already excludes them.
 - **Quoted text, block quotes, statutory language, party names, code, citations:** flag
   at most; never rewrite someone else's words or a term of art.
+- **Footnotes are auto-excluded:** the audit MASKS pandoc inline `^[...]` and markdown `[^id]:`
+  footnotes before scoring, so findings never land inside them (citation/legal-normal text). You
+  will not see footnote spans to triage; if you ever do, do not edit them. (`--keep-footnotes`
+  disables masking for debugging the raw signal only.)
 - **A flagged span the author clearly chose** (a fragment for emphasis, a repeated key
   term over elegant variation): leave it; note it in the report.
 
