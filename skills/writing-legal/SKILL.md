@@ -100,6 +100,32 @@ Start with CONCRETE QUESTION that matters, not abstract topic description.
 
 ## Law Review Article Structure
 
+<EXTREMELY-IMPORTANT>
+### The Three-Part Body is the DEFAULT — start at three, ALWAYS
+
+A law-review article DEFAULTS to **Introduction + three body Parts + Conclusion**. Seed exactly
+these three body Parts before any decomposition:
+
+| Part | Mode | Holds |
+|------|------|-------|
+| **Part I — Background** | descriptive | the law / doctrine / facts the argument needs |
+| **Part II — The Argument (Proof of the Claim)** | analytical | the proof, with **counterarguments FOLDED IN** — not a separate Part |
+| **Part III — The Prescription** | normative | the reform / fix |
+
+**Splitting a Part into two+ numbered Parts is an EXCEPTION, not the starting point.** Split
+ONLY when a Part has become genuinely too large to hold together as one — and that is a demonstrated
+condition you reach, never the initial decomposition. Begin three-part; expand only on demonstrated
+unwieldiness, and log the split as an R4 decision in LEARNINGS.md.
+
+**Anti-pattern (do NOT do this):** opening by decomposing the body into 4–5 Parts — e.g. splitting
+the Proof into separate "Elimination" and "Window" Parts, or breaking counterarguments out as their
+own Part — before any Part has proven unwieldy. Counterarguments belong folded into Part II. Five
+small Parts where three would hold is a structure smell, not thoroughness.
+
+The subsections below describe what each section/Part DOES; the three-part body above is how many
+there are by default.
+</EXTREMELY-IMPORTANT>
+
 ### Introduction
 
 The introduction serves three functions:
@@ -144,6 +170,13 @@ For prescriptive claims: Show the proposal is both doctrinally sound AND good po
 - How does the claim relate to parallel debates?
 - What subsidiary discoveries emerged?
 - What questions remain for future research?
+
+### Prescription (Part III)
+
+The normative payoff: the reform/fix the argument earns. Keep it ONE Part by default.
+- State the fix concretely and minimally — the smallest change that solves the problem proven in Part II.
+- Show it is feasible and administrable (who implements it, by what mechanism), and tie it back to the doctrine from Part I.
+- Anticipate implementation objections here; deeper merits-counterarguments stay folded into Part II's argument.
 
 ### Conclusion
 

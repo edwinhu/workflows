@@ -217,10 +217,20 @@ already pinned in PRECIS.md (Step 2), so read the matching domain skill's struct
 | econ | `${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md` → its document-structure section (hook-with-finding → … → conclusion) |
 | general | `${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md` → its structure guidance |
 
-Build the master `## Structure` so its sections CONFORM to that template (e.g. for legal: an
-Introduction, a Background that does not exceed the Proof, a Proof-of-the-Claim core, a
-Conclusion). If the argument needs to deviate from the canonical flow, that is an R4 decision —
-note it in LEARNINGS.md, don't drift silently.
+Build the master `## Structure` so its sections CONFORM to that template. **For `style: legal`,
+SEED THE CANONICAL THREE-PART BODY by default — start at three, always:**
+
+- `### Introduction`
+- `### Part I. Background` — descriptive: the law / doctrine / facts the argument needs
+- `### Part II. The Argument` — analytical: the proof, **counterarguments FOLDED IN** (not a separate Part)
+- `### Part III. The Prescription` — normative: the reform / fix
+- `### Conclusion`
+
+**Do NOT open by decomposing the body into 4–5 Parts** (e.g. splitting the Proof into two Parts, or
+breaking counterarguments out as their own Part). Splitting a Part is an EXCEPTION that requires the
+Part to be demonstrably too large to hold together — it is never the starting decomposition. Begin
+three-part; if a Part later proves unwieldy, splitting it is an R4 decision logged in LEARNINGS.md.
+Any deviation from the canonical flow is likewise R4 — note it, don't drift silently.
 
 ### OUTLINE.md is a MACHINE-EXECUTABLE SPEC (born-canonical)
 
