@@ -67,10 +67,12 @@ START (brainstorm confirmed)
   │     └─ ISSUES_FOUND → fix PRECIS.md → re-dispatch (max 5)
   │
   ├─ Step 3: Create OUTLINE.md
-  │  └─ Map sections → claims from PRECIS
+  │  ├─ Step 3a: Load the DOMAIN structure template FIRST (writing-{domain} → its
+  │  │           document-structure section; domain is already pinned in PRECIS Step 2)
+  │  └─ Map sections → claims from PRECIS, CONFORMING to that structure template
   │     Each section has: Goal, Claim, Key Points, Transition
   │
-  ├─ Step 4: Detect domain (legal/econ/general)
+  ├─ Step 4: Confirm domain (already pinned in PRECIS; do NOT re-detect after the outline)
   │
   ├─ Step 5: Create ACTIVE_WORKFLOW.md
   │
@@ -199,6 +201,27 @@ Follow the reviewer skill instructions: dispatch the subagent, handle APPROVED/I
 Structure the argument with sections mapped to claims from PRECIS.md.
 
 <EXTREMELY-IMPORTANT>
+### Step 3a: Load the domain's document-structure template FIRST (before building structure)
+
+**NO MASTER OUTLINE WITHOUT THE DOMAIN STRUCTURE TEMPLATE IN CONTEXT. This is not negotiable.**
+
+The master `## Structure` you build here commits the article's section flow — and the canonical
+flow lives in the **domain skill**, not this skill. Building the outline before reading it means
+the structure is set one-to-two phases before its own template is ever in context (the
+phase-ordering defect: the domain was only loaded at draft/review). The `## Domain` field is
+already pinned in PRECIS.md (Step 2), so read the matching domain skill's structure section NOW:
+
+| Domain (from PRECIS) | Read this structure section |
+|---|---|
+| legal | `${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md` → **"Law Review Article Structure"** (Introduction → Background → Proof of the Claim → Conclusion) |
+| econ | `${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md` → its document-structure section (hook-with-finding → … → conclusion) |
+| general | `${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md` → its structure guidance |
+
+Build the master `## Structure` so its sections CONFORM to that template (e.g. for legal: an
+Introduction, a Background that does not exceed the Proof, a Proof-of-the-Claim core, a
+Conclusion). If the argument needs to deviate from the canonical flow, that is an R4 decision —
+note it in LEARNINGS.md, don't drift silently.
+
 ### OUTLINE.md is a MACHINE-EXECUTABLE SPEC (born-canonical)
 
 `scripts/writing/writing_section_index.py` parses OUTLINE.md to build the section set the
@@ -262,9 +285,13 @@ regex papering over drift):
 [Gaps to address before drafting]
 ```
 
-## Step 4: Domain Detection
+## Step 4: Confirm Domain (already pinned in PRECIS — do NOT re-detect after the outline)
 
-Detect domain from sources and topic:
+The domain is set in PRECIS.md's `## Domain` (Step 2) and was used to load the structure template
+in Step 3a — it must be known BEFORE the outline, not detected after it. Here, just **confirm** the
+PRECIS domain matches the source/topic indicators and **record** it for ACTIVE_WORKFLOW.md. If the
+indicators contradict the PRECIS domain, that is a Step-2 error — fix PRECIS and re-run Step 3a, do
+not silently proceed with an outline built against the wrong structure template.
 
 | Domain Indicators | Style | Skill |
 |---|---|---|
