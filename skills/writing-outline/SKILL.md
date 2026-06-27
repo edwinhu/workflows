@@ -241,7 +241,10 @@ implements: [CLAIM-XX, CLAIM-YY]   # the claims primary-homed to this section in
 > **`## Opening` / `## Body` / `## Closing` below are SCAFFOLDING labels — they organize this outline,
 > they are NOT document headings. The draft renders Opening as the unheaded lead paragraph(s), Body as
 > the lettered `## A./B./C.` subsections, and Closing as a trailing UNHEADED bridge — never a "Closing"
-> or "Conclusion" heading. Only the section title and the lettered subsections become real headings.**
+> or "Conclusion" heading. Only the section title and the lettered subsections become real headings.
+> EXCEPTION by section ROLE: only PARTS (Part I/II/III) get lettered `## A./B./C.` subsection headings.
+> An INTRODUCTION or CONCLUSION renders as CONTINUOUS UNHEADED prose even if its Body is grouped A/B/C
+> — there the groupings guide paragraph ORDER only, and the section's sole heading is its title.**
 
 ## Opening
 - [Topic sentence of the opening paragraph — a full claim that frames the section and picks up the prior section]
