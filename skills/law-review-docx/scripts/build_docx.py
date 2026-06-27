@@ -111,10 +111,6 @@ def get_prefix(path: Path) -> str:
     return stem.lower().replace(" ", "_")[:6]
 
 
-LOREM = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-         "Acknowledgements placeholder — replace via the acknowledgements: field "
-         "in .planning/ACTIVE_WORKFLOW.md.")
-
 
 DEFAULT_CSL = Path.home() / "projects" / "bluebook-law-review-21e.csl"
 
@@ -172,8 +168,10 @@ def parse_metadata(project_dir: Path) -> dict:
     if not meta["short_title"]:
         meta["short_title"] = meta["title"]
 
-    if not meta["acknowledgements"]:
-        meta["acknowledgements"] = LOREM
+    # No LOREM placeholder acknowledgement. A star (*) author footnote is emitted ONLY when the
+    # author actually sets `acknowledgements:` or `author_ack_N:`. Auto-filling a placeholder created
+    # a spurious `*` author footnote on bio-less papers that collided with the real numbered notes
+    # (the reported bug: fn 1 shows `*`). Leave acknowledgements empty when unset → no injection.
 
     if not meta["date"]:
         from datetime import date
@@ -241,6 +239,13 @@ def inject_acknowledgement(docx_path: Path, ack_text: str, author_acks: list = N
     author_text = html.unescape(text_m.group(1))
     footnotes_xml = ''
     filtered_acks = [a for a in (author_acks or []) if a]
+
+    # No per-author acks AND no acknowledgement text → inject NOTHING. Otherwise the legacy
+    # single-star fallback stamps an empty `*` author footnote onto a paper that has no bios,
+    # which then collides with the real numbered footnotes (the bug: fn 1 shows `*`).
+    if not filtered_acks and not (ack_text or '').strip():
+        print('INFO: no author acknowledgements; skipping author bio footnote injection')
+        return
 
     if filtered_acks:
         # Split author_text on each recognized symbol in order of appearance
