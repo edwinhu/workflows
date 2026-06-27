@@ -17,6 +17,14 @@ writing); this skill never renders a verdict on authorship. It improves readabil
 for a human reader. The scorers GUIDE which spans to revise; they are not a target
 to maximize.
 
+**This is a BACKSTOP, not the main event.** The primary lever for human-reading prose is the
+GENERATION contract upstream — writing-draft now drafts topic-sentence-led and *proportional*
+(varied paragraph/sentence length), which is what produces human burstiness in the first place. A
+draft generated well needs little here. If de-ai-revise is finding a lot, the fix usually belongs
+upstream (the outline's POINTs aren't real topic sentences, or the draft padded uniformly), not in
+a heavy span-by-span rewrite here. Use this to catch residue, not to manufacture rhythm a flat draft
+never had.
+
 <law>
 ## The Iron Law of Goodhart
 

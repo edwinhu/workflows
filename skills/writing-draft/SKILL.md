@@ -90,33 +90,33 @@ Writing without an outline produces incoherent, wandering prose that requires co
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## The Iron Law of Draft Completeness
+## The Iron Law of Substance Coverage
 
-**Reporting sections complete without verifying every outline point was expanded is NOT HELPFUL — the user publishes a draft with gaps that reviewers catch.**
+**Reporting a section complete when an outline point's CLAIM is missing is NOT HELPFUL — reviewers catch the gap. But "covered" means the claim is MADE, NOT that every point got its own paragraph.**
 
-Before claiming a section is drafted:
-1. Open the outline file for that section
-2. Check off EVERY subsection point — is it in the prose?
-3. Check off EVERY evidence item — is it cited in the prose?
-4. Check the word count — does it match the outline's estimate?
+Before claiming a section is drafted, check SUBSTANCE, not paragraph-count:
+1. Open the outline. Is every point's CLAIM actually made in the prose — developed in proportion to its weight (a minor point may be a clause; a pivotal one several paragraphs)?
+2. Is every mapped evidence item used where its claim needs it?
+3. Read the topic sentences in order — do they carry the argument?
 
-If ANY point or evidence is missing, the section is NOT complete. Saying "draft done" when outline points were skipped wastes the user's time — they discover gaps during review that should never have survived drafting. The outline is a contract; the draft must fulfill it.
+A DROPPED point or subsection (its claim absent/unsupported) means the section is NOT complete. Do NOT check for one-paragraph-per-point or a word-count target — proportional brevity is correct coverage, not a gap. The outline is a contract for the CLAIMS, not for uniform length.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
-## The Iron Law of Depth
+## The Iron Law of Proportional Depth
 
-**EACH SECTION DESERVES FULL ATTENTION. Do not rush through sections to "finish" the draft. This is not negotiable.**
+**EACH CLAIM GETS THE DEVELOPMENT ITS WEIGHT EARNS — no more, no less. TWO failure modes, both forbidden:**
 
-The failure mode: a single agent writes cursory 2-paragraph versions of every section to reach "draft complete" as fast as possible. This is reward hacking - optimizing for the appearance of completion without the substance.
+1. **STUB** — dropping a point, or writing a section so thin its claims aren't actually made/supported. Reward-hacking completion.
+2. **FLAT PADDING** — giving every point its own same-length paragraph to "look complete." This is the uniform one-paragraph-per-point tell: it reads machine-made (low burstiness) and is exactly what makes Claude's law-review prose stilted while its op-eds read fine.
 
 Each section must:
-- Expand EVERY point from the outline (not a subset)
-- Include EVERY piece of evidence mapped in the outline
-- Develop transitions between subsections
-- Meet the word count target from the outline
+- Make every outline point's CLAIM and support it (no stub)
+- Develop each claim **in proportion to its weight**; vary paragraph and sentence length deliberately
+- Lead each unit with its topic sentence; keep subsection transitions as explicit bridges
+- NOT chase a word-count target — length follows the argument, not a quota
 
-If you catch yourself writing a section significantly shorter than the outline implies, STOP. You are being cursory. Go back to the outline and expand every point.
+If you catch yourself giving every point an identical paragraph, STOP — you are padding to a template. If a section's claims aren't actually made, STOP — you are stubbing. Aim for proportional, topic-sentence-led prose a person would actually write.
 </EXTREMELY-IMPORTANT>
 
 ## Session Resume Detection
@@ -305,14 +305,14 @@ These govern how the **Step-3 `/goal` loop** responds to the workflow's per-sect
 
 | Finding type | Action on re-invoke |
 |-------------|---------------------|
-| **Coverage** (missing/cursory outline points) | The outline point wasn't expanded. Re-invoke that section; if it keeps coming back cursory, the outline point may lack substance → R2/R4. |
+| **Coverage** (a point's CLAIM is missing/unsupported — a dropped point, not mere brevity) | The point's claim wasn't made. Re-invoke that section; if its claim keeps coming back unsupported, the outline point may lack substance → R2/R4. (Do NOT treat proportional brevity as a coverage gap.) |
 | **Fidelity** (`[CITE-NEEDED]` / unresolvable cite) | Find the real source (bib / Paperpile / a search) and supply it, or cut the claim. NEVER let the loop "resolve" it by inventing a cite. |
 | **Transition** (seam, dangling reference) | The adjacent-outline bridge broke. Re-invoke the section; if two sections genuinely don't connect, that's an outline-order issue → R4. |
 | **Structureless** (`underGranular`) | Not fixable in the loop — STOP and bounce the outline to `writing-outline`. |
 
 Re-invoke WITHOUT pausing — the `/goal` evaluator re-checks `result.overallPass` and refires until clean or the turn budget elapses.
 
-**The workflow's coverage check enforces depth mechanically** — a 2-paragraph section under a 5-subsection outline fails coverage and the gate won't pass. You do not need a separate per-section self-check; the JS gate is the check.
+**The workflow's coverage check enforces SUBSTANCE mechanically** — a section that DROPS a point's claim fails coverage and the gate won't pass; proportional brevity does NOT (a minor point folded into a clause is covered). You do not need a separate per-section self-check; the JS gate checks claims-made, not paragraph-count.
 
 ---
 
@@ -365,7 +365,7 @@ Each section's draft summary should include:
 - About to write prose without the domain style rules loaded → STOP. The output is generic register instead of the document's; load the domain skill.
 - About to skip the PRECIS cross-reference → STOP. A section that advances no claim is filler; check which claim it serves.
 - About to pause after one section to ask the user → STOP. That breaks momentum and context; continue to the next section immediately.
-- About to write a 2-paragraph section under a 5-subsection outline → STOP. That is cursory completion-seeking; expand every subsection.
+- About to give every outline point its own identical-length paragraph → STOP. Uniform one-paragraph-per-point reads machine-made (flat rhythm); develop each claim in proportion to its weight. (The opposite failure — dropping a point's claim entirely — is a stub; cover every claim.)
 - About to skip evidence mapped in the outline → STOP. Claims without evidence are assertions, not arguments; develop every item in prose.
 
 ---

@@ -237,9 +237,17 @@ implements: [CLAIM-XX, CLAIM-YY]   # the claims primary-homed to this section in
 
 ## Body
 
+> **Write each POINT as a TOPIC SENTENCE — a full claim sentence that carries the argument, not a
+> label.** Not "Point: the accumulation window" but "The minimum offer period is the only guaranteed
+> window in which an outside investor can build a blocking position before the §251(h) majority locks."
+> The draft phase leads each unit with its POINT and develops it *in proportion to its weight*, so the
+> POINTs ARE the argument's backbone — a reader should be able to follow the whole argument from the
+> topic sentences alone. Weak label-POINTs produce flat, uniform prose; sharp claim-POINTs produce
+> proportional, human-rhythm prose.
+
 ### Subsection A: [Name]
 
-**Point**: [Main argument of this subsection]
+**Point** (a topic sentence — a claim that carries the argument): [full sentence, e.g. "The reform forecloses the one timely check on an underpriced friendly merger."]
 **Evidence** (pin a REAL source per claim — `[@bibkey]` or a named authority):
   - [@bibkey1]: "[key quote or fact]"
   - [@bibkey2]: "[key quote or fact]"
@@ -290,6 +298,12 @@ Verify the detailed outline against PRECIS.md:
 - [ ] Stays within IN scope
 - [ ] Avoids OUT scope items
 - [ ] Maintains thesis thread
+
+**Topic-sentence argument check (do this every time):** read the POINTs in document order, ignoring
+all the evidence/logic underneath. Do they form a coherent argument on their own — each a claim that
+follows from the last and advances the thesis? If the topic-sentence spine doesn't carry the argument,
+the outline is a topic list, not an argument; sharpen the POINTs (or reorder them) before drafting.
+This is the single best predictor of whether the draft will read like reasoning or like filler.
 
 Report any misalignments.
 
@@ -360,7 +374,7 @@ Before proceeding to draft phase (see `constraints/gate-function-standard.md` fo
 
 Before finalizing each outline, verify:
 
-- [ ] Every subsection has a clear POINT
+- [ ] Every subsection's POINT is written as a topic sentence (a full claim that carries the argument), and the POINTs read in document order form the argument on their own
 - [ ] Evidence is specific (quotes, data), not vague ("sources say")
 - [ ] Logic connecting evidence to point is explicit
 - [ ] Transitions between subsections are planned
