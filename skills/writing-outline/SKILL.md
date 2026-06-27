@@ -59,7 +59,8 @@ Auto-load all constraints matching `applies-to: writing-outline`:
 ```
 START (PRECIS + master OUTLINE exist)
   │
-  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW)
+  ├─ Step 1: Load context (PRECIS, OUTLINE, ACTIVE_WORKFLOW) + the DOMAIN structure template
+  │           (writing-{domain} → section-role structure, before outlining a section)
   │
   ├─ Step 2: Select section (user choice or next unoutlined)
   │
@@ -123,6 +124,21 @@ Read(".planning/OUTLINE.md")
 ```
 
 If master OUTLINE.md is missing, run writing-brainstorm first.
+
+**Also load the domain's structure template (same phase-ordering rule as writing-setup Step 3a).**
+The master OUTLINE pins each section's PLACE in the document, but a section's *internal* outline
+depends on its ROLE — a "Proof of the Claim" Part is structured differently from a "Background"
+Part. That role-structure lives in the domain skill, so read its document-structure section
+BEFORE outlining a section (keyed on `style` in ACTIVE_WORKFLOW.md / `## Domain` in PRECIS):
+
+| Domain | Read |
+|---|---|
+| legal | `${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md` → **"Law Review Article Structure"** (what a Background vs Proof vs Conclusion section does) |
+| econ | `${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md` → its document-structure section |
+| general | `${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md` → its structure guidance |
+
+Outline each section to fit its role in that template (e.g. legal: keep Background from
+exceeding the Proof; make a Proof section argument-and-evidence, not just exposition).
 
 ### Step 2: Select Section
 
