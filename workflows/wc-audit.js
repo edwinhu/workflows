@@ -209,7 +209,14 @@ const VERIFY_SCHEMA = {
 const ARCH_CLUSTERS = [
   { key: 'arch-decomp-gates', label: 'decomposition + gates', ids: ['P01', 'P02', 'P03', 'P09', 'P14'] },
   { key: 'arch-verify-review', label: 'verification + artifact review', ids: ['P04', 'P05', 'P10', 'P17'] },
-  { key: 'arch-skill-family', label: 'entry points + skill-family enforcement wiring', ids: ['P06', 'P07', 'P08', 'P20', 'P21'] },
+  { key: 'arch-skill-family', label: 'entry points + skill-family enforcement wiring', ids: ['P06', 'P07', 'P08', 'P20', 'P21'],
+    extra:
+`P20 MECHANICAL SUB-PROBE (RUN it with Grep — do NOT eyeball, and do NOT score P20 on hook PRESENCE; score it on COVERAGE):
+1. Enumerate every load-bearing script/command the skill bodies invoke IMPERATIVELY in prose. Grep each target SKILL.md for bang-lines (\`!\\\`...\\\`\`) and imperative phrases: "run \`", "run check-all", "must run", "first run", "then run", "run the .* script", "uv run", "bash .*\\.sh", "python3 .*\\.py".
+2. For EACH hit, decide if it is MECHANICALLY CHECKABLE (a script that exits non-zero / emits a checkable artifact — e.g. a constraint runner, a validator, a section-index compile). Pure judgment prose is exempt.
+3. For each mechanically-checkable step, confirm a frontmatter hook (PreToolUse/PostToolUse) OR a bang-line ACTUALLY guarantees it — MATCH the hook's matcher + command to the step. Beware two false-positives: (a) the existence of OTHER hooks does not cover THIS step; (b) a gate on Write|Edit|Agent does NOT cover a step that must precede a \`Workflow\`/\`Agent\` FAN-OUT (the gate's matcher must include the tool the step gates).
+4. Any mechanically-checkable imperative step with NO matching enforcing hook/bang = a P20 GAP — list it in the gap with file:line, even when the skill has other hooks. (This is the exact miss that let "run check-all before the review fan-out" sit in skippable prose; a hook on VALIDATION.md existence did not cover it.)`,
+  },
   { key: 'arch-state-traceability', label: 'state, traceability, autonomy', ids: ['P11', 'P12', 'P13', 'P15', 'P16', 'P18', 'P19', 'P19b'] },
 ]
 
@@ -259,6 +266,7 @@ ${groundIn}
 
 Score ONLY these architecture principles, each 0-10, grounded in SPECIFIC line-number evidence (Iron Law of Thorough Scoring — a score without a cited line is a guess): ${c.ids.join(', ')} — ${c.label}.
 Read each principle's full definition in ${disc.wcSkillPath} Mode 2 Step 2 before scoring it. For each principle return: id, score (integer 0-10), evidence (file:line citations), gap (the specific fixable gap if score < ${THRESHOLD}, else ""), domainCeiling (true ONLY if the ceiling is a justified domain characteristic, not a fixable gap — and say why in evidence).
+${c.extra ? `\n${c.extra}\n` : ''}
 ${disc.isMetaTool ? 'NOTE: the target is workflow-creator itself, a META-TOOL. P01 (single responsibility — it has 3 modes) and P06 (two entry points — it has one entry with mode detection) are DOCUMENTED EXEMPTIONS. Still score them honestly, but mark domainCeiling=true and note the exemption; the gate excludes them from the composite.' : ''}
 Add a findings[] entry (severity critical for score<7, major for 7-8.9, minor for 9-9.4) for every principle below ${THRESHOLD}, each with file:line and the gap. Return ARCH_SCHEMA.`,
   })),
