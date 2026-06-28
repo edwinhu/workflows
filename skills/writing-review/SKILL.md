@@ -16,6 +16,10 @@ hooks:
             GATE_DESCRIPTION="Claim validation"
             GATE_REMEDY="Run writing-validate first to validate claim coverage before review"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+    - matcher: "Workflow"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.py"
 ---
 
 # Writing Review

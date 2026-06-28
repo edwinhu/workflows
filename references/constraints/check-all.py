@@ -1,5 +1,10 @@
-#!/usr/bin/env -S uv run python3
+#!/usr/bin/env -S uv run --with lxml python3
 """check-all.py — auto-discovers and runs all constraint checks.
+
+NOTE: invoked with `--with lxml` because several constraint scripts (ai-anti-patterns
+wikipedia-*, writing-general strunk, writing-legal volokh) import lxml. Without it they raise
+"lxml is required" and land in `errors` — i.e. those prose checks silently DON'T run. Callers that
+invoke this as `uv run python3 check-all.py` must also pass `--with lxml`.
 
 Discovers from two directories:
   - references/constraints/*.py       — plugin-wide constraints

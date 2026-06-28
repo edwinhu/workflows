@@ -19,6 +19,10 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-outline-guard.py"
+    - matcher: "Workflow"
+      hooks:
+        - type: command
+          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.py"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
