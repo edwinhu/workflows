@@ -125,6 +125,8 @@ This runs all DS constraint check scripts (determinism, join audits, idempotency
 
 **If any check FAILS:** Report the failures in LEARNINGS.md. These are code quality issues in the analysis scripts that must be fixed before proceeding. Dispatch a fix subagent if needed.
 
+> This re-run is defense-in-depth. The same `check-all-ds.sh` floor is **hook-enforced** one phase upstream at ds-validate (`mechanical-floor-gate.py`, FLOOR=ds). ds-verify deliberately carries no hook for it: its only fan-out is a single fresh-Agent reproducibility check, and gating Agent here would deadlock against `ds-no-main-chat-code-guard` (a failing floor could not be fixed — fixes require an Agent).
+
 **If all checks PASS:** Proceed to runtime DQ checks.
 
 ## The Verification Gate

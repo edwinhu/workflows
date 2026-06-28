@@ -208,7 +208,7 @@ For content or structural changes (NOT simple formatting fixes), the edited deck
 
 1. **Compile** so `slides.pdf` reflects the edits: `cd [presentation directory] && typst compile slides.typ && typst compile notes.typ`
 2. **Invoke selectively** (review only the changed slides; carry the rest forward). Pass `slideIndex` =
-   the parsed `.planning/slide-index.json` (recompile via `scripts/workshop/workshop_slide_table.py "<project>" --json`
+   the parsed `.planning/slide-index.json` (recompile via `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_slide_table.py "<project>" --json`
    if the OUTLINE changed) — the deterministic OUTLINE side-table; the workflow still enumerates the built
    `slides.typ` and joins inventory semantically (DESIGN §3a-join). Omit to fall back to the LLM Discover.
    ```
