@@ -101,7 +101,8 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     # Half-fixed state: customMarkFollows="1" is already present, but the
     # bio reference runs lack any superscript formatting (no vertAlign and
     # no FootnoteReference rStyle). Symptom: bio marks render at baseline.
-    bio_unsuperscripted = _count_unsuperscripted_bio_refs(doc_xml)
+    bio_unsuperscripted = _count_unsuperscripted_bio_refs(
+        doc_xml, ref_style_ok=_footnote_ref_style_has_superscript(styles_xml))
     if bio_unsuperscripted:
         issues.append(f"bio_marks_not_superscript({bio_unsuperscripted})")
 
@@ -156,6 +157,21 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     goog_sdts = doc_xml.count('goog_rdk') + fn_xml.count('goog_rdk')
     if goog_sdts:
         issues.append(f"goog_content_controls({goog_sdts})")
+
+    # Google Docs leading-tab first-line indents: paragraphs whose first line is
+    # indented by a literal leading <w:tab/> (to a docDefaults tab stop) instead
+    # of a real <w:ind firstLine>, so they render over-indented vs neighbours.
+    # Reported here; fixed by fix_leading_tab_indents under --normalize-body-indent.
+    tab_indents = _count_leading_tab_indents(doc_xml)
+    if tab_indents:
+        issues.append(f"leading_tab_indent({tab_indents})")
+
+    # Body paragraphs carrying a direct first-line indent instead of inheriting
+    # it from a body style (Google Docs stripped the style and baked it in).
+    # Fixed by apply_template_body_styles under --restyle-body.
+    unstyled_body = _count_unstyled_body_indents(doc_xml)
+    if unstyled_body:
+        issues.append(f"unstyled_body_indent({unstyled_body})")
 
     # Google Docs OOXML cruft (redundant run formatting, all-zero rsids, no-op
     # shading). Detected on doc + footnotes (the bulk); hygiene cleans more parts.
@@ -483,25 +499,57 @@ def _iter_bio_ref_runs(doc_xml, num_bio_footnotes):
             yield m, fn_id, mark
 
 
-def _run_has_superscript(run_before):
-    """Does the rPr (if any) before the footnoteReference confer superscript?"""
+def _footnote_ref_style_has_superscript(styles_xml):
+    """True only if the ``FootnoteReference`` character style (or a style it is
+    basedOn) actually defines ``vertAlign="superscript"``.
+
+    A Google Docs round-trip can strip the superscript out of this style while
+    leaving the style *reference* on the runs. Bio marks rely on the style
+    rather than explicit run formatting, so when the style is stripped they
+    render at baseline even though ``rStyle="FootnoteReference"`` is present —
+    which is why trusting the bare style reference is unsafe."""
+    if styles_xml is None:
+        return False
+    sid, seen = "FootnoteReference", set()
+    while sid and sid not in seen:
+        seen.add(sid)
+        block = _extract_style(styles_xml, sid)
+        if block is None:
+            return False
+        if re.search(r'<w:vertAlign\s+w:val="superscript"', block):
+            return True
+        m = re.search(r'<w:basedOn\s+w:val="([^"]+)"', block)
+        sid = m.group(1) if m else None
+    return False
+
+
+def _run_has_superscript(run_before, ref_style_ok=False):
+    """Does the rPr (if any) before the footnoteReference confer superscript?
+
+    Explicit ``<w:vertAlign w:val="superscript"/>`` always counts. A bare
+    ``rStyle="FootnoteReference"`` only counts when ``ref_style_ok`` is True —
+    i.e. the caller has verified the FootnoteReference style actually defines
+    superscript (see :func:`_footnote_ref_style_has_superscript`). Defaulting to
+    False means a stripped style is treated as NOT superscript, so the bio fix
+    adds explicit ``vertAlign`` rather than trusting the broken style."""
     if re.search(r'<w:vertAlign\s+w:val="superscript"', run_before):
         return True
-    if re.search(r'<w:rStyle\s+w:val="FootnoteReference"', run_before):
+    if ref_style_ok and re.search(r'<w:rStyle\s+w:val="FootnoteReference"', run_before):
         return True
     return False
 
 
-def _count_unsuperscripted_bio_refs(doc_xml, num_bio_footnotes=3):
+def _count_unsuperscripted_bio_refs(doc_xml, num_bio_footnotes=3,
+                                    ref_style_ok=False):
     """Count bio references that have customMarkFollows="1" but no superscript."""
     n = 0
     for m, fn_id, mark in _iter_bio_ref_runs(doc_xml, num_bio_footnotes):
-        if not _run_has_superscript(m.group(2)):
+        if not _run_has_superscript(m.group(2), ref_style_ok):
             n += 1
     return n
 
 
-def fix_bio_superscript(doc_xml, num_bio_footnotes=3):
+def fix_bio_superscript(doc_xml, num_bio_footnotes=3, ref_style_ok=False):
     """Half-fixed-state repair: bio refs already have customMarkFollows="1",
     but the run lacks superscript formatting. Add inline <w:vertAlign> and,
     if the mark glyph is welded to trailing text in the same <w:t>, split
@@ -524,7 +572,7 @@ def fix_bio_superscript(doc_xml, num_bio_footnotes=3):
         after = m.group(3)
         full = m.group(0)
 
-        if _run_has_superscript(before):
+        if _run_has_superscript(before, ref_style_ok):
             continue
 
         sup_rpr = '<w:rPr><w:vertAlign w:val="superscript"/></w:rPr>'
@@ -1304,6 +1352,127 @@ def ensure_footnote_styles(styles_xml, template_path, needed=(FN_PSTYLE,)):
     return styles_xml, changes
 
 
+_BODY_STYLE = "BodyText"
+
+
+def _count_unstyled_body_indents(doc_xml):
+    """Count Normal/unstyled body paragraphs that carry a *direct* first-line
+    indent — the template's BodyText style should supply it instead. Signals a
+    Google Docs round-trip that stripped the body style and baked the indent
+    into every paragraph."""
+    try:
+        root = etree.fromstring(doc_xml.encode("utf-8"))
+    except Exception:
+        return 0
+    n = 0
+    seen_h1 = False
+    for p in root.iter(_wq("p")):
+        st = _para_style(p)
+        if st == "Heading1":
+            seen_h1 = True
+            continue
+        if not seen_h1 or st not in (None, "Normal"):
+            continue  # front matter (abstract/TOC) keeps its own formatting
+        if not "".join(t.text or "" for t in p.iter(_wq("t"))).strip():
+            continue
+        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
+        if (ind is not None and ind.get(_wq("firstLine"))
+                and not ind.get(_wq("left")) and not ind.get(_wq("hanging"))):
+            n += 1
+    return n
+
+
+def apply_template_body_styles(doc_xml, styles_xml, template_path):
+    """Ensure the template's body styles exist AND are applied to body text.
+
+    Google Docs round-trips strip the ``Normal``/``BodyText`` style definitions
+    and bake the body formatting (first-line indent, line spacing) into every
+    paragraph as direct overrides — so headings/indents look fine but nothing is
+    style-driven, and any paragraph that lost its override (or grew a leading
+    tab) renders inconsistently. This restores the law-review template's body
+    styles and re-homes the formatting into them:
+
+    1. Replace a stripped/empty ``Normal`` with the template's, and ensure
+       ``BodyText`` / ``BodyTextFirstIndent`` / ``FirstParagraph`` (and their
+       linked ``*Char`` styles) are defined (copied from the template).
+    2. Re-style every Normal/unstyled body paragraph that carries a direct
+       first-line indent to ``BodyText``, stripping the now-redundant direct
+       ``ind`` / ``spacing`` / ``pBdr``. Empty paragraphs keep their style but
+       lose the stray direct indent.
+
+    Editorial and **reflows** the document (BodyText carries the template's
+    spacing), so OPT-IN via ``--restyle-body``. Pair with the indent passes
+    (run after them) so tab-led / indent-lacking paragraphs already have a real
+    firstLine to convert. Idempotent. Returns (doc_xml, styles_xml, changes).
+    """
+    changes = []
+    if styles_xml is None:
+        return doc_xml, styles_xml, changes
+    try:
+        with zipfile.ZipFile(template_path) as tz:
+            tpl_styles = tz.read('word/styles.xml').decode('utf-8')
+    except (FileNotFoundError, KeyError, zipfile.BadZipFile):
+        changes.append(f"WARNING: template not readable at {template_path} — "
+                       f"cannot apply template body styles")
+        return doc_xml, styles_xml, changes
+
+    # (a) restore the template's Normal (the doc's is stripped/empty) + body styles
+    tpl_normal = _extract_style(tpl_styles, "Normal")
+    doc_normal = _extract_style(styles_xml, "Normal")
+    if tpl_normal and doc_normal and doc_normal != tpl_normal:
+        styles_xml = styles_xml.replace(doc_normal, tpl_normal, 1)
+        changes.append("Replaced stripped Normal style with template definition")
+    styles_xml, ens = ensure_footnote_styles(
+        styles_xml, template_path,
+        needed=("BodyText", "BodyTextFirstIndent", "FirstParagraph"))
+    changes.extend(ens)
+
+    # (b) apply BodyText to direct-indented body paragraphs; clean stray indents.
+    # Front-matter guard: only paragraphs AFTER the first Heading1 — the title,
+    # author line, Abstract block, and TOC must keep their own formatting (the
+    # abstract is NOT body text; styling it as BodyText adds indent+spacing and
+    # spills it to a second page).
+    root = etree.fromstring(doc_xml.encode("utf-8"))
+    restyled = emptied = 0
+    seen_h1 = False
+    for p in root.iter(_wq("p")):
+        st = _para_style(p)
+        if st == "Heading1":
+            seen_h1 = True
+            continue
+        if not seen_h1:
+            continue
+        if st not in (None, "Normal"):
+            continue
+        pPr = p.find(_wq("pPr"))
+        ind = pPr.find(_wq("ind")) if pPr is not None else None
+        if (ind is None or not ind.get(_wq("firstLine"))
+                or ind.get(_wq("left")) or ind.get(_wq("hanging"))):
+            continue  # not a standard direct first-line indent (skip quotes etc.)
+        if "".join(t.text or "" for t in p.iter(_wq("t"))).strip():
+            ps = pPr.find(_wq("pStyle"))
+            if ps is None:
+                ps = etree.Element(_wq("pStyle"))
+                pPr.insert(0, ps)
+            ps.set(_wq("val"), _BODY_STYLE)
+            for tag in ("ind", "spacing", "pBdr"):
+                el = pPr.find(_wq(tag))
+                if el is not None:
+                    pPr.remove(el)
+            restyled += 1
+        else:
+            pPr.remove(ind)
+            emptied += 1
+    if restyled or emptied:
+        doc_xml = etree.tostring(
+            root, xml_declaration=True, encoding="UTF-8", standalone=True
+        ).decode("utf-8")
+        changes.append(
+            f"Applied {_BODY_STYLE} style to {restyled} body paragraph(s); "
+            f"stripped stray direct indent from {emptied} empty paragraph(s)")
+    return doc_xml, styles_xml, changes
+
+
 # ── Google Docs OOXML hygiene (de-cruft) ───────────────────────────────
 # Run-property toggles whose explicit "off" value is a redundant no-op (a run
 # inherits "off" by default). We strip these ONLY when the value is explicitly
@@ -1511,6 +1680,125 @@ def normalize_body_indent(doc_xml):
                  f"on {applied} paragraph(s)"]
 
 
+_RUN_CONTENT_TAGS = ("tab", "t", "br", "drawing", "footnoteReference")
+
+
+def _para_leads_with_tab(p):
+    """True if the paragraph's first run begins with a literal ``<w:tab/>``.
+
+    Google Docs sometimes encodes a first-line indent as a leading tab
+    character (jumping to a ``docDefaults`` tab stop) instead of a real
+    ``<w:ind firstLine>``. The tab must be the FIRST *content* child of the
+    first run (rPr/bookmarks ignored) — a tab elsewhere in the run is a real
+    tab, not an indent artifact.
+    """
+    first_run = p.find(_wq("r"))
+    if first_run is None:
+        return first_run, None
+    content = [c for c in first_run
+               if c.tag in {_wq(t) for t in _RUN_CONTENT_TAGS}]
+    if content and content[0].tag == _wq("tab"):
+        return first_run, content[0]
+    return first_run, None
+
+
+def _count_leading_tab_indents(doc_xml):
+    """Count body paragraphs whose first-line indent is a leading tab (GDocs)."""
+    try:
+        root = etree.fromstring(doc_xml.encode("utf-8"))
+    except Exception:
+        return 0
+    n = 0
+    for p in root.iter(_wq("p")):
+        if _para_style(p) not in (None, "Normal"):
+            continue
+        if len("".join(t.text or "" for t in p.iter(_wq("t"))).strip()) <= 60:
+            continue
+        _, tab = _para_leads_with_tab(p)
+        if tab is not None:
+            n += 1
+    return n
+
+
+def fix_leading_tab_indents(doc_xml):
+    """Convert Google Docs leading-tab first-line indents to real firstLine.
+
+    Google Docs sometimes drops a paragraph's ``<w:ind firstLine>`` and instead
+    inserts a literal leading ``<w:tab/>`` so the first line jumps to a
+    ``docDefaults`` tab stop (often ~0.47"). Those paragraphs then render
+    over-indented next to neighbours that use a real firstLine indent — the
+    visible "this paragraph is indented further than the others" bug. This
+    strips the leading tab and sets ``firstLine`` to the document's dominant
+    body first-line indent, so all body paragraphs agree. Idempotent.
+
+    Editorial (it changes the visual indent of the affected paragraphs to the
+    dominant value), so it runs under ``--normalize-body-indent`` alongside
+    :func:`normalize_body_indent`. Same guards: Normal/unstyled paragraphs only,
+    text longer than 60 chars.
+    """
+    root = etree.fromstring(doc_xml.encode("utf-8"))
+    paras = list(root.iter(_wq("p")))
+    from collections import Counter
+    firstlines = Counter()
+    for p in paras:
+        if _para_style(p) not in (None, "Normal"):
+            continue
+        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
+        if ind is not None and ind.get(_wq("firstLine")):
+            firstlines[ind.get(_wq("firstLine"))] += 1
+    if not firstlines:
+        return doc_xml, []
+    dominant = firstlines.most_common(1)[0][0]
+
+    content_tags = {_wq(t) for t in _RUN_CONTENT_TAGS}
+    # Collect target paragraphs first (don't mutate mid-scan).
+    targets = [p for p in paras
+               if _para_style(p) in (None, "Normal")
+               and len("".join(t.text or "" for t in p.iter(_wq("t"))).strip()) > 60
+               and _para_leads_with_tab(p)[1] is not None]
+
+    fixed = 0
+    for p in targets:
+        # Strip EVERY leading tab — Google Docs can stack a tab-only run before a
+        # tab+text run, so one removal isn't enough. Loop until the first content
+        # of the paragraph is no longer a tab.
+        while True:
+            first_run, tab = _para_leads_with_tab(p)
+            if tab is None:
+                break
+            first_run.remove(tab)
+            # drop the run if stripping the tab left it contentless (rPr only)
+            if not any(c.tag in content_tags for c in first_run):
+                p.remove(first_run)
+        pPr = p.find(_wq("pPr"))
+        if pPr is None:
+            pPr = etree.Element(_wq("pPr"))
+            p.insert(0, pPr)
+        ind = pPr.find(_wq("ind"))
+        if ind is None:
+            ind = etree.Element(_wq("ind"))
+            ref = pPr.find(_wq("rPr"))
+            if ref is None:
+                ref = pPr.find(_wq("sectPr"))
+            if ref is not None:
+                ref.addprevious(ind)
+            else:
+                pPr.append(ind)
+        # a leading tab is mutually exclusive with firstLine/hanging
+        for a in ("firstLine", "hanging"):
+            if ind.get(_wq(a)) is not None:
+                del ind.attrib[_wq(a)]
+        ind.set(_wq("firstLine"), dominant)
+        fixed += 1
+    if not fixed:
+        return doc_xml, []
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    ).decode("utf-8")
+    return out, [f"Converted {fixed} Google Docs leading-tab indent(s) to "
+                 f"firstLine={dominant}"]
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Fix footnote damage (Google Docs round-trip, pandoc-citeproc wraps)"
@@ -1538,8 +1826,18 @@ def main():
                              "redundant off/default run formatting, no-op shading, "
                              "default-font/black-color residue across content parts")
     parser.add_argument("--normalize-body-indent", action="store_true",
-                        help="Apply the document's dominant first-line indent to "
-                             "body paragraphs that lack it (editorial; off by default)")
+                        help="Normalize body first-line indents to the document's "
+                             "dominant value: apply it to paragraphs that lack one, "
+                             "AND convert Google Docs leading-tab indents (a literal "
+                             "<w:tab/> jumping to a tab stop) into real firstLine "
+                             "indents (editorial; off by default)")
+    parser.add_argument("--restyle-body", action="store_true",
+                        help="Ensure the template's body styles (Normal/BodyText/"
+                             "…) exist AND apply BodyText to body paragraphs, "
+                             "stripping their direct first-line indent/spacing/"
+                             "pBdr so formatting is style-driven. Reflows the "
+                             "document (template spacing). Implies the body-indent "
+                             "passes. Editorial; off by default")
     parser.add_argument("--template", default=str(TEMPLATE),
                         help="Law-review reference template (.docx) to restore "
                              "missing footnote style definitions from "
@@ -1606,16 +1904,22 @@ def main():
     doc_xml_fixed, doc_changes = fix_document_xml(doc_xml_fixed, bio_count)
     all_changes.extend(doc_changes)
 
-    doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
-        doc_xml_fixed, bio_count)
-    all_changes.extend(bio_ref_changes)
-
-    # Authoritative bio normalization (lxml, position-based). Runs after the
-    # regex bio fixers so it also repairs the Google-Docs bare-reference case
-    # they cannot match, and leaves a correct bio untouched (idempotent).
+    # Authoritative bio normalization (lxml, position-based). Repairs the
+    # Google-Docs bare-reference case and rebuilds the canonical custom-mark
+    # ref shape; leaves a correct bio untouched (idempotent).
     doc_xml_fixed, fn_xml_fixed, bio_norm_changes = restore_bio_custom_marks(
         doc_xml_fixed, fn_xml_fixed, bio_count)
     all_changes.extend(bio_norm_changes)
+
+    # Superscript the bio reference marks — MUST run after restore_bio_custom_marks,
+    # which rebuilds the ref runs (and would otherwise discard the vertAlign). The
+    # ref_style_ok check uses the *original* styles: when a Google Docs round-trip
+    # stripped superscript out of the FootnoteReference style, the bare style ref
+    # is not enough and we add explicit vertAlign.
+    doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
+        doc_xml_fixed, bio_count,
+        ref_style_ok=_footnote_ref_style_has_superscript(styles_xml))
+    all_changes.extend(bio_ref_changes)
 
     doc_xml_fixed, toc_changes = fix_toc_separator(doc_xml_fixed)
     all_changes.extend(toc_changes)
@@ -1659,9 +1963,19 @@ def main():
         all_changes.extend(num_changes)
 
     # Body-paragraph first-line-indent normalization (editorial, opt-in).
-    if args.normalize_body_indent:
+    if args.normalize_body_indent or args.restyle_body:
+        doc_xml_fixed, tab_changes = fix_leading_tab_indents(doc_xml_fixed)
+        all_changes.extend(tab_changes)
         doc_xml_fixed, indent_changes = normalize_body_indent(doc_xml_fixed)
         all_changes.extend(indent_changes)
+
+    # Move body formatting into the template's body styles (editorial, opt-in,
+    # reflows). Runs AFTER the indent passes so tab-led / indent-lacking paras
+    # already carry a real firstLine to convert into a BodyText style.
+    if args.restyle_body:
+        doc_xml_fixed, styles_xml_fixed, restyle_changes = apply_template_body_styles(
+            doc_xml_fixed, styles_xml_fixed or styles_xml, args.template)
+        all_changes.extend(restyle_changes)
 
     # Content-part post-processing across every part that carries body content.
     # document.xml + footnotes.xml are already in flight (goog strip applied
