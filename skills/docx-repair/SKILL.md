@@ -83,6 +83,7 @@ uv run "$SKILL_DIR/../../scripts/doc_render.py" \
 - **`--baseline` is not optional for the Google Docs case.** Google Docs flattens every NOTEREF field back to hardcoded "supra note N" text, frozen at the prior draft's numbering. After a coauthor inserts/deletes footnotes the offset is *non-uniform*, so `create_crossrefs` without `--baseline` bookmarks by current position and mis-targets ~90% of references — the exact failure this skill exists to prevent.
 - **The remap's flagged list is a human cite-check queue, not noise.** `--baseline` prints `⚠ … could NOT be remapped` for references whose footnote content did not align one-to-one (inserts, deletes, densely-similar citation clusters). These are left unchanged on purpose — guessing a target you cannot prove is how a wrong citation ships. Surface the flagged list to the user for manual verification; do not suppress it.
 - **Render with Word, never LibreOffice, to verify.** LibreOffice renders `customMarkFollows` numbering wrong (verified 2026-06-10), so bios that are actually correct can look broken — leading you to "fix" something that was right. `doc_render.py --renderer word` (or `x2t`) is ground truth.
+- **Bio-mark superscript depends on the `FootnoteReference` *style*, which Google Docs can strip.** Bio ref runs carry `rStyle="FootnoteReference"` but no explicit `vertAlign`; they render superscript only if that style still defines it. A round-trip can strip the superscript out of the style while leaving the reference, so the marks drop to baseline (OPV, 2026-06-28: title-page `*`/`†`/`‡` baseline; regular footnote numbers were fine because they carry *explicit* `vertAlign`). So `_run_has_superscript` only trusts a bare `rStyle="FootnoteReference"` when `_footnote_ref_style_has_superscript(styles_xml)` confirms the style actually defines it; otherwise `fix_bio_superscript` adds explicit `vertAlign`. And `fix_bio_superscript` MUST run **after** `restore_bio_custom_marks` — restore rebuilds the ref runs and would discard a superscript added before it.
 - **The `goog_rdk` "boxes" are an on-screen Word artifact — they do NOT export to PDF.** Word draws boundaries around nested content controls in its editor, but neither Word's nor x2t's PDF export renders them. So a "no boxes" PDF is NOT proof the controls were stripped — verify at the XML level (`unzip -p file.docx word/document.xml | grep -c goog_rdk` → `0`). `fix_footnotes.py` reports the strip count; trust that over the render.
 
 ### When footnote repair applies
@@ -184,7 +185,8 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
 - `--normalize-headings`: Normalize headings (off by default) — style unstyled heading-looking paragraphs (2b) AND strip direct formatting + delete empty heading paragraphs (2a); restores Heading1–4 style defs from the template if missing. See §C.
 - `--no-hygiene`: Skip the Google Docs OOXML hygiene pass. Hygiene is **on by default** — strips all-zero rsids, redundant off/default run formatting, no-op shading, black color, and default-font residue across content parts; keeps all "on" formatting. See §C Feature 3.
-- `--normalize-body-indent`: Apply the document's dominant first-line indent to body paragraphs that lack it (editorial; off by default). See §C.
+- `--normalize-body-indent`: Normalize body first-line indents to the document's dominant value — apply it to paragraphs that lack one, AND convert Google Docs **leading-tab indents** (a literal `<w:tab/>` jumping to a tab stop) to real `firstLine` indents (editorial; off by default). See §C.
+- `--restyle-body`: Ensure the template's body styles (`Normal`/`BodyText`/…) **exist** and are **applied** — restyle direct-indented body paragraphs to `BodyText` and strip their direct `ind`/`spacing`/`pBdr` so formatting is style-driven, not per-paragraph. Implies the body-indent passes. **Reflows** the document (template spacing). Editorial; off by default. See §C.
 - `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `writing-legal/templates/law_review_template.docx`)
 
 #### create_crossrefs.py
@@ -343,10 +345,51 @@ with zero visual change. Rules:
   byte-identically to a `--no-hygiene` run.
 
 **Body indent normalization** (`--normalize-body-indent`, opt-in, editorial) —
-applies the document's dominant first-line indent (mode of `<w:ind firstLine>` on
-Normal/unstyled body paras; `firstLine=360` in OPV) to body paragraphs that lack
-it. Front-matter guard: only unstyled paras >60 chars **after the first Heading1**
-(title/abstract/TOC excluded). Logged, never silent.
+normalizes body first-line indents to the document's dominant value (mode of
+`<w:ind firstLine>` on Normal/unstyled body paras; `firstLine=360` in OPV). Two
+things, both under this flag:
+- **Lacking-indent paras** — apply the dominant `firstLine` to paragraphs that
+  have none. Front-matter guard: only unstyled paras >60 chars **after the first
+  Heading1** (title/abstract/TOC excluded).
+- **Leading-tab indents** (Google Docs damage) — Google Docs sometimes drops a
+  paragraph's `<w:ind firstLine>` and instead inserts a **literal leading
+  `<w:tab/>`** so the first line jumps to a `docDefaults` tab stop (≈0.47" in
+  OPV). Those paragraphs render **over-indented** next to neighbours that use a
+  real firstLine (the "this body paragraph is indented further than the others"
+  bug — found under OPV's `b.` subsection: the body under it sat at ~0.5" while
+  the rest were at 0.25"). The pass strips the leading tab (the FIRST content
+  child of the first run; a tab elsewhere is a real tab, left alone) and sets
+  `firstLine=<dominant>`. Detected as `leading_tab_indent(N)` in `detect_issues`
+  even without the flag; fixed only when `--normalize-body-indent` is passed.
+  Idempotent. Same >60-char Normal/unstyled guard.
+
+Logged, never silent.
+
+### Feature 4 — apply the template's body styles — OPT-IN (`--restyle-body`)
+
+The deepest form of the body-indent problem: a Google Docs round-trip **strips the
+`Normal`/`BodyText` style definitions** (Normal comes back empty) and **bakes the
+body formatting into every paragraph** as direct `spacing`+`ind firstLine` (+ a
+no-op `pBdr`). Headings and indents can *look* right, but nothing is style-driven —
+so the moment one paragraph loses its override (or grows a leading tab), it renders
+inconsistently (the OPV `b.` case: 16 paras at ~0.5" vs the rest at 0.25"). Patching
+indents one-by-one treats the symptom; the cure is to put the formatting back in the
+style. This pass:
+
+1. **Restores** the template's `Normal` (replacing the stripped/empty one) plus
+   `BodyText` / `BodyTextFirstIndent` / `FirstParagraph` and their linked `*Char`
+   styles (via `ensure_footnote_styles`, add-only for the deps).
+2. **Applies** `BodyText` to every Normal/unstyled body paragraph that carries a
+   direct first-line indent (skips `left`/`hanging`-indented paras — block quotes),
+   stripping the now-redundant direct `ind`/`spacing`/`pBdr`. Empty paragraphs keep
+   their style but lose the stray direct indent.
+
+Detected as `unstyled_body_indent(N)` in `detect_issues` even without the flag.
+**Reflows the document** (BodyText carries the template's `line`/`after` spacing —
+e.g. OPV went 63→68 pp), so it is OPT-IN and editorial. Runs *after* the indent
+passes (so tab-led / indent-lacking paras already have a real firstLine to convert).
+Idempotent. Verified on OPV: 250 `unstyled_body_indent` → 261 paras moved to
+`BodyText`, 0 direct firstLine remaining, footnotes/comments/tracked-changes intact.
 
 ### Content-cleanup Facts (incident-grounded)
 
