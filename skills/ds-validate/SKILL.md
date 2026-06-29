@@ -48,6 +48,10 @@ hooks:
             GATE_REMEDY="Finish ds-implement (all PLAN.md tasks verified in LEARNINGS.md) before validating outputs."
             GATE_BLOCKED_TOOLS=Agent,Workflow
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+    - matcher: "Workflow"
+      hooks:
+        - type: command
+          command: "FLOOR=ds uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.py"
 ---
 
 Announce: "Using ds-validate (Phase 3.5) to validate analysis outputs against SPEC.md requirements."
@@ -98,7 +102,7 @@ bash "${CLAUDE_SKILL_DIR}/../../scripts/check-all-ds.sh" "$(pwd)"
 
 This runs all DS constraint check scripts (determinism, join audits, idempotency, error handling, schema contracts, standard errors, visualization integrity).
 
-**If any check FAILS:** Report the failures in LEARNINGS.md. These are code quality issues in the analysis scripts that must be fixed before proceeding. Dispatch a fix subagent if needed.
+**If any check FAILS:** Report the failures in LEARNINGS.md. These are code quality issues in the analysis scripts that must be fixed before proceeding. Dispatch a fix subagent if needed. This is **hook-enforced**, not just prose: `mechanical-floor-gate.py` (FLOOR=ds, wired on the Workflow matcher) re-runs `check-all-ds.sh` and DENIES the `ds-validate-coverage` fan-out until the floor is clean. It gates the Workflow only — Agent (the fix subagent) stays free so you can actually fix the failures.
 
 **If all checks PASS:** Proceed to runtime DQ checks.
 

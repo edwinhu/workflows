@@ -19,6 +19,8 @@ hooks:
             GATE_DESCRIPTION="Code review approved"
             GATE_REMEDY="Return to dev-review (Phase 6). Review must complete with verdict APPROVED (REVIEW_STATE.md status: APPROVED) before verification. A CHANGES_REQUIRED/ESCALATE/BLOCKED review does not admit verify."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+        - type: command
+          command: "FLOOR=dev uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.py"
 ---
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
@@ -230,7 +232,7 @@ Before spawning the goal-backward verifier, run the auto-discovering constraint 
 uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 ```
 
-**If any constraint FAILS:** Address the failure before proceeding. Constraint failures are hard blocks — do not proceed to goal-backward verification with failing constraints.
+**If any constraint FAILS:** Address the failure before proceeding. Constraint failures are hard blocks — do not proceed to goal-backward verification with failing constraints. This is **hook-enforced**, not just prose: `mechanical-floor-gate.py` (FLOOR=dev, wired on the Agent matcher) re-runs check-all and DENIES the verifier spawn until the floor is clean.
 
 **If all constraints PASS:** Proceed to goal-backward verification below.
 
