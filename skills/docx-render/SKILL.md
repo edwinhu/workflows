@@ -13,12 +13,30 @@ Office docs → PDF/PNG go through the shared converter `scripts/doc_render.py`
 hand-roll `soffice`/`libreoffice` or lean on the generic `docx` skill's own
 export** — those skip the Word-fidelity path and the x2t kerning/table fixes.
 
+## Default to `--renderer word` (Iron Law)
+
+**For any PDF a human will read — a deliverable, an email attachment, a reading-list
+file, anything you hand to the user — pass `--renderer word`.** The bare/`auto`
+command is NOT the safe default: `auto` deliberately EXCLUDES Word (the check is
+`if avail["word"] and allow_word`, and `allow_word` defaults False) and silently
+uses x2t/LibreOffice, which **reflow the layout** (real case: a 5-page doc shipped
+as 7). Word works even from a background/headless job via cmux dispatch (below), so
+there is no reason to skip it for a deliverable.
+
+Reserve bare `auto` for **parallel pipeline builds** (e.g. many law-review renders
+at once) where headless/parallel-safety matters more than line-exact fidelity and
+the docs are pipeline-generated (x2t/soffice already grid-faithful there).
+
+**Always verify the engine actually used** via the PDF Producer before handing off
+(see table below) — `auto` can fall back, and `--renderer word` only *raises* if
+Word is truly unavailable.
+
 ## Entry point
 
 ```bash
-# CLI (faithful Word engine):
+# CLI (faithful Word engine — DEFAULT for anything a human reads):
 python3 ${CLAUDE_SKILL_DIR}/../../scripts/doc_render.py IN.docx OUT.pdf --renderer word
-# auto engine (LibreOffice/x2t; no Word): omit --renderer
+# auto engine (LibreOffice/x2t; NO Word) — ONLY for parallel pipeline builds:
 python3 ${CLAUDE_SKILL_DIR}/../../scripts/doc_render.py IN.docx OUT.pdf
 ```
 ```python
