@@ -569,6 +569,14 @@ def convert_to_pdf(docx_path: Path) -> Optional[Path]:
             # strict — it raises instead of falling back — which is right for the
             # CLI but wrong here, where the build just needs *a* PDF.)
             return _convert(docx_path, out, renderer="auto", allow_word=True)
+        # Word unavailable (not macOS, or Word not installed) — falls back to
+        # the non-Word auto path (x2t/LibreOffice). This contradicts the
+        # docx-render Iron Law ("--renderer word for deliverables": Word is the
+        # only faithful-layout renderer), so make the fallback loud instead of
+        # silent — the caller must know to re-render before submission.
+        print("WARNING: Word unavailable — PDF rendered via x2t/LibreOffice, "
+              "layout may reflow; re-render with --renderer word before submission",
+              file=sys.stderr)
         return _convert(docx_path, out)
     except Exception as e:
         print(f"WARN: PDF conversion failed: {e}", file=sys.stderr)
