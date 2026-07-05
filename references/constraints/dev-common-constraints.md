@@ -93,7 +93,7 @@ Structural enforcement (Layer 2). Two PreToolUse guards are declared in skill fr
 Run all constraint checks:
 
 ```bash
-uv run python3 references/constraints/check-all.py .
+uv run --with lxml python3 references/constraints/check-all.py .
 ```
 
 Coverage: 6/6 dev constraints have `.py` check scripts = 100%.

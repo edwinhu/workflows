@@ -5,6 +5,14 @@ import re
 import sys
 from pathlib import Path
 
+# Shared footnote/citation masker — this constraint already skips `[^id]:` DEFINITION
+# lines (_FOOTNOTE_DEF below), but an INLINE `^[...]` footnote embedded mid-line (a quoted
+# case or statute passage) was never masked, so a genuine em-dash inside quoted source text
+# could trip the density/colon-combo checks as if the author wrote it. Mask before scanning;
+# stdlib-only, no new dependency.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "lib"))
+from footnote_mask import mask_footnotes  # noqa: E402
+
 CONSTRAINT = "writing-ai-smell-em-dash"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"
@@ -139,7 +147,7 @@ def check(context):
         return violations
 
     for md_file in sorted(drafts_dir.glob("*.md")):
-        text = md_file.read_text(encoding="utf-8", errors="ignore")
+        text = mask_footnotes(md_file.read_text(encoding="utf-8", errors="ignore"))
 
         # (1) Per-paragraph checks (existing behavior)
         for start_line, para in _prose_paragraphs(text):
