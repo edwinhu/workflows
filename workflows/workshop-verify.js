@@ -1,11 +1,11 @@
 export const meta = {
   name: 'workshop-verify',
-  description: 'Workshop slide-deck verification as an ultracode workflow: a global mechanical leg (compile + constraint check-all.py + PDF widow + overflow) then a per-slide fan-out (convention + notes-coverage + source-fidelity) and per-diagram visual-verify. Returns structured findings + a computed CLEAN/ISSUES gate from raw counts. Read-only; does NOT fix.',
+  description: 'Workshop slide-deck verification as an ultracode workflow: a global mechanical leg (compile + constraint check-all.py + PDF widow + overflow) then a per-slide fan-out (ONE agent runs convention + notes-coverage + source-fidelity, findings tagged by area) and per-diagram visual-verify. Returns structured findings + a computed CLEAN/ISSUES gate from raw counts. Read-only; does NOT fix.',
   whenToUse: 'Called by the workshop skill at the Phase 3->4 boundary (artifact review gate) and as Phase 4 verification, and by workshop-revise after edits. Returns {overallPass, verdict, scoreTable, findings, reviews, slidesThatFlagged}. The skill renders the gate, drives the /goal fix loop, and on a re-review passes onlyChecks (flagged slide IDs) + priorReviews. The workflow never drafts and never fixes.',
   phases: [
-    { title: 'Discover', detail: 'enumerate slides + diagrams; resolve SOURCES/OUTLINE/check-all/detect_widows' },
+    { title: 'Discover', detail: 'enumerate slides + diagrams; inline each slide\'s body + notes section once; resolve SOURCES/OUTLINE/check-all/detect_widows' },
     { title: 'Mechanical', detail: 'compile both .typ; run check-all.py + widow + overflow (early-exit if compile fails)' },
-    { title: 'Review', detail: 'per-slide: convention + notes-coverage + fidelity, in parallel; per-diagram visual-verify' },
+    { title: 'Review', detail: 'one agent per slide runs convention + notes-coverage + fidelity (area-tagged findings), in parallel; per-diagram visual-verify' },
     { title: 'Gate', detail: 'aggregate raw counts -> severity totals -> CLEAN/ISSUES, computed in JS' },
   ],
 }
@@ -73,11 +73,13 @@ const DISCOVERY_SCHEMA = {
     lookAtPath: { type: 'string', description: 'absolute path to look_at.py, or "" if not found' },
     slides: {
       type: 'array', items: {
-        type: 'object', additionalProperties: false, required: ['id', 'title', 'inventoryRefs'],
+        type: 'object', additionalProperties: false, required: ['id', 'title', 'inventoryRefs', 'slideBody', 'notesBody'],
         properties: {
           id: { type: 'string', description: 'stable ID e.g. S1, S2 in document order' },
           title: { type: 'string', description: 'the === slide-title line verbatim' },
           inventoryRefs: { type: 'array', items: { type: 'string' }, description: 'F/T/R/A inventory IDs this slide should cite per OUTLINE.md (may be empty)' },
+          slideBody: { type: 'string', description: 'the verbatim text of this slide\'s #slide[ ... ] block (inlined so the per-slide reviewer does not re-Read slides.typ per check)' },
+          notesBody: { type: 'string', description: 'the verbatim text of this slide\'s corresponding notes.typ section (by title/topic match), or "" if no section was found' },
         },
       },
     },
@@ -104,31 +106,31 @@ const MECHANICAL_SCHEMA = {
   },
 }
 
-// Per-slide reviewers return RAW COUNTS, never scores. The gate computes everything.
-const CONVENTION_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['slide', 'check', 'itemsChecked', 'findings'],
+// Per-slide reviewer returns RAW COUNTS, never scores. The gate computes everything.
+// ONE agent per slide runs all three checks (convention + notes-coverage + source-fidelity) in a single
+// context — findings are tagged with `area` so downstream gating/scoreTable logic (which only reads
+// findings[].severity, notesSectionFound, claimsChecked, claimsGrounded) stays unchanged.
+const SLIDE_FINDING = {
+  type: 'object', additionalProperties: false, required: ['area', 'severity', 'location', 'detail'],
   properties: {
-    slide: { type: 'string' }, check: { type: 'string', enum: ['convention'] },
+    area: { type: 'string', enum: ['convention', 'notes', 'fidelity'], description: 'which of the three checks this finding came from' },
+    severity: { type: 'string', enum: ['critical', 'major', 'minor'] },
+    location: { type: 'string', description: 'file:line' },
+    detail: { type: 'string' },
+    quote: { type: 'string', description: 'verbatim text from the file backing this finding' },
+    fix: { type: 'string' },
+  },
+}
+const SLIDE_REVIEW_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  required: ['slide', 'itemsChecked', 'notesSectionFound', 'claimsChecked', 'claimsGrounded', 'findings'],
+  properties: {
+    slide: { type: 'string' },
     itemsChecked: { type: 'integer', description: 'convention rules evaluated against this slide' },
-    findings: { type: 'array', items: FINDING },
-  },
-}
-const NOTES_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['slide', 'check', 'itemsChecked', 'notesSectionFound', 'findings'],
-  properties: {
-    slide: { type: 'string' }, check: { type: 'string', enum: ['notes'] },
-    itemsChecked: { type: 'integer' },
     notesSectionFound: { type: 'boolean', description: 'does notes.typ contain a corresponding section for this slide?' },
-    findings: { type: 'array', items: FINDING },
-  },
-}
-const FIDELITY_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['slide', 'check', 'claimsChecked', 'claimsGrounded', 'findings'],
-  properties: {
-    slide: { type: 'string' }, check: { type: 'string', enum: ['fidelity'] },
     claimsChecked: { type: 'integer', description: 'factual claims on this slide (numbers, results, holdings, conclusions)' },
     claimsGrounded: { type: 'integer', description: 'of those, how many trace to a SOURCES.md inventory ID / the paper' },
-    findings: { type: 'array', items: FINDING },
+    findings: { type: 'array', items: SLIDE_FINDING },
   },
 }
 const VISUAL_SCHEMA = {
@@ -155,7 +157,7 @@ const disc = await agent(
 2. checkAllPath = ${checkAllHint}.
 3. detectWidowsPath = \`command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1\` (or "" if none).
 4. lookAtPath = ${lookAtHint} (or "" if none).
-5. Read slides.typ and list every slide in document order. A slide is a \`#slide[ ... ]\` block; its title is the \`=== ...\` line inside it. Assign stable IDs S1, S2, ... in order. For each slide, read .planning/OUTLINE.md and record the F/T/R/A inventory IDs that outline maps to that slide (inventoryRefs; empty array if none listed — MANY built slides, especially appendix/Q&A backups, have NO outline row, so [] is the correct and common answer; do not force a match).
+5. Read slides.typ and list every slide in document order. A slide is a \`#slide[ ... ]\` block; its title is the \`=== ...\` line inside it. Assign stable IDs S1, S2, ... in order. For each slide, read .planning/OUTLINE.md and record the F/T/R/A inventory IDs that outline maps to that slide (inventoryRefs; empty array if none listed — MANY built slides, especially appendix/Q&A backups, have NO outline row, so [] is the correct and common answer; do not force a match). ALSO capture slideBody = the verbatim text of that slide's \`#slide[ ... ]\` block, and notesBody = the verbatim text of its corresponding section in notes.typ (matched by title/topic; "" if no section is found) — inlining both here means the per-slide reviewer does not have to re-Read slides.typ/notes.typ for each of its three checks.
 6. List every diagram: \`cetz.canvas\` blocks (kind "cetz") and \`fletcher-diagram\`/\`#diagram(\` blocks (kind "fletcher"), each tied to the slide title it appears under.
 
 Return DISCOVERY_SCHEMA. Absolute paths only.`,
@@ -232,42 +234,41 @@ if (!mech.slidesCompiled) {
   }
 }
 
-// ── Phase 3: Per-slide fan-out (convention + notes-coverage + fidelity) + per-diagram visual ─
+// ── Phase 3: Per-slide fan-out (ONE agent runs convention + notes-coverage + fidelity) + per-diagram visual ─
+// Consolidated from 3 agents/slide to 1 agent/slide (3N→N) — each agent re-reading whole files 3x per
+// slide was the waste; now Discover inlines the slide body + notes section ONCE (§ above) and this single
+// prompt runs all three checks over that inlined text, tagging findings by area for downstream parity.
 phase('Review')
 const reviewSlide = (s) => {
-  const common = `Slide ${s.id}: "${s.title}"\nslides.typ: ${disc.slidesPath}\nnotes.typ: ${disc.notesPath}\nSOURCES.md: ${disc.sourcesPath}\nExpected inventory IDs for this slide (from OUTLINE.md): ${s.inventoryRefs.length ? s.inventoryRefs.join(', ') : '(none listed)'}`
-  return parallel([
-    // (a) Convention reviewer — Typst workshop conventions on THIS slide.
-    () => agent(
-      `You are a READ-ONLY Typst convention reviewer. Do NOT create, edit, or overwrite any files.
-Set slide="${s.id}", check="convention" verbatim. ${common}
-Locate this slide's \`#slide[ ... ]\` block in slides.typ and check ONLY it against the workshop conventions: blank lines between ALL bullets (top-level AND sub), sub-bullets use two-space indent + "- " (never "--"), heading hierarchy =/==/===, slide title is a complete sentence, no subtitle-body echo, images wrapped in #align(center), tables inset >= 10pt, smart apostrophes after )/], dollar signs escaped, no hardcoded calculations (use calc), no #callout with 3+ #pause. Every finding needs a file:line + verbatim quote. itemsChecked = number of convention rules you evaluated. Return CONVENTION_SCHEMA.`,
-      { label: `${s.id}:convention`, phase: 'Review', schema: CONVENTION_SCHEMA, model: 'sonnet' }),
-    // (b) Notes-coverage reviewer — does notes.typ cover this slide?
-    () => agent(
-      `You are a READ-ONLY notes-coverage reviewer. Do NOT create, edit, or overwrite any files.
-Set slide="${s.id}", check="notes" verbatim. ${common}
-Find the section in notes.typ that corresponds to this slide (by title / topic). Set notesSectionFound. If found, check the notes are flowing teleprompter prose (1-2 sentences per bullet, NOT slide-bullet recaps, NOT fragments) and that section transitions are present. If NOT found, that is a major finding (slide uncovered). Each finding needs file:line. itemsChecked = 1 if a notes section exists for this slide else 0. Return NOTES_SCHEMA.`,
-      { label: `${s.id}:notes`, phase: 'Review', schema: NOTES_SCHEMA, model: 'sonnet' }),
-    // (c) Source-fidelity reviewer — claims on this slide trace to the paper inventory.
-    () => agent(
-      `You are a READ-ONLY source-fidelity reviewer. Do NOT create, edit, or overwrite any files.
-Set slide="${s.id}", check="fidelity" verbatim. ${common}
-List every factual claim on this slide (empirical numbers, coefficients, percentages, sample sizes, case holdings, author conclusions). For each, verify it traces to a SOURCES.md inventory ID (F/T/R/A) — ideally one of the expected IDs above. claimsChecked = total factual claims; claimsGrounded = how many trace to an inventory ID. Any ungrounded claim is a critical finding with the claim text as quote + file:line. Return FIDELITY_SCHEMA.`,
-      { label: `${s.id}:fidelity`, phase: 'Review', schema: FIDELITY_SCHEMA, model: 'sonnet' }),
-  ]).then(([conv, notes, fid]) => ({
+  const inlinedSlide = (s.slideBody && s.slideBody.trim())
+    ? `\nSLIDE BLOCK (inlined verbatim from slides.typ):\n${s.slideBody}\n`
+    : `\n(slide body was not inlined by Discover — Read ${disc.slidesPath} directly for this slide's #slide[ ... ] block)\n`
+  const inlinedNotes = (s.notesBody && s.notesBody.trim())
+    ? `\nNOTES SECTION (inlined verbatim from notes.typ):\n${s.notesBody}\n`
+    : `\n(no notes section was inlined by Discover — Read ${disc.notesPath} directly to look for this slide's section before concluding notesSectionFound=false)\n`
+  const common = `Slide ${s.id}: "${s.title}"\nslides.typ: ${disc.slidesPath}\nnotes.typ: ${disc.notesPath}\nSOURCES.md: ${disc.sourcesPath}\nExpected inventory IDs for this slide (from OUTLINE.md): ${s.inventoryRefs.length ? s.inventoryRefs.join(', ') : '(none listed)'}${inlinedSlide}${inlinedNotes}`
+  return agent(
+    `You are a READ-ONLY workshop-slide reviewer. Do NOT create, edit, or overwrite any files.
+Set slide="${s.id}" verbatim. ${common}
+Run all THREE checks below on this ONE slide in a single pass and tag every finding's \`area\` accordingly:
+
+(a) area="convention" — Typst workshop conventions on the slide block above: blank lines between ALL bullets (top-level AND sub), sub-bullets use two-space indent + "- " (never "--"), heading hierarchy =/==/===, slide title is a complete sentence, no subtitle-body echo, images wrapped in #align(center), tables inset >= 10pt, smart apostrophes after )/], dollar signs escaped, no hardcoded calculations (use calc), no #callout with 3+ #pause. itemsChecked = number of convention rules you evaluated.
+
+(b) area="notes" — does the notes section above (or notes.typ if you had to fall back) cover this slide? Set notesSectionFound. If found, check the notes are flowing teleprompter prose (1-2 sentences per bullet, NOT slide-bullet recaps, NOT fragments) and that section transitions are present. If NOT found, that is a major finding (slide uncovered).
+
+(c) area="fidelity" — list every factual claim on this slide (empirical numbers, coefficients, percentages, sample sizes, case holdings, author conclusions). For each, verify it traces to a SOURCES.md inventory ID (F/T/R/A) — ideally one of the expected IDs above. claimsChecked = total factual claims; claimsGrounded = how many trace to an inventory ID. Any ungrounded claim is a critical finding with the claim text as quote + file:line.
+
+Every finding needs area + file:line (+ verbatim quote where applicable). Return SLIDE_REVIEW_SCHEMA.`,
+    { label: `${s.id}:review`, phase: 'Review', schema: SLIDE_REVIEW_SCHEMA, model: 'sonnet' }
+  ).then(sr => ({
     slide: s.id,
     title: s.title,
-    findings: [
-      ...(conv?.findings || []).map(f => ({ ...f, source: 'convention' })),
-      ...(notes?.findings || []).map(f => ({ ...f, source: 'notes' })),
-      ...(fid?.findings || []).map(f => ({ ...f, source: 'fidelity' })),
-    ],
-    notesSectionFound: notes?.notesSectionFound ?? null,
-    claimsChecked: fid?.claimsChecked || 0,
-    claimsGrounded: fid?.claimsGrounded || 0,
-    itemsChecked: (conv?.itemsChecked || 0) + (notes?.itemsChecked || 0) + (fid?.claimsChecked || 0),
-    unreliable: !(conv && notes && fid) || ((conv?.itemsChecked || 0) === 0),
+    findings: (sr?.findings || []).map(f => ({ ...f, source: f.area })),
+    notesSectionFound: sr?.notesSectionFound ?? null,
+    claimsChecked: sr?.claimsChecked || 0,
+    claimsGrounded: sr?.claimsGrounded || 0,
+    itemsChecked: (sr?.itemsChecked || 0) + (sr?.claimsChecked || 0),
+    unreliable: !sr || ((sr?.itemsChecked || 0) === 0),
   }))
 }
 

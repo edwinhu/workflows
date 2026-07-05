@@ -146,15 +146,25 @@ function makeVerifyMock(extraSlides = []) {
       slides: [{ id: 'S1', title: 'A built title', inventoryRefs: ['A1', 'Z9'] }], diagrams: [],
     }
     if (label === 'mechanical') return { slidesCompiled: true, notesCompiled: true, compileErrors: [], constraintsPassed: true, constraintFailures: [], widows: 0, overflow: 0 }
-    if (label === 'S1:convention') return { slide: 'S1', check: 'convention', itemsChecked: 5, findings: [] }
-    if (label === 'S1:notes') return { slide: 'S1', check: 'notes', itemsChecked: 1, notesSectionFound: true, findings: [] }
-    if (label === 'S1:fidelity') return { slide: 'S1', check: 'fidelity', claimsChecked: 1, claimsGrounded: 1, findings: [] }
+    // Consolidated per-slide reviewer: ONE agent (label "<id>:review") now runs all three checks
+    // (was 3 agents/slide: "<id>:convention"/"<id>:notes"/"<id>:fidelity") and tags findings by area.
+    if (label === 'S1:review') return {
+      slide: 'S1', itemsChecked: 5, notesSectionFound: true, claimsChecked: 1, claimsGrounded: 1,
+      findings: [{ area: 'convention', severity: 'minor', location: '/p/presentation/slides.typ:12', detail: 'missing blank line' }],
+    }
     return {}
   }
   const { result } = await exec(verSrc, { args: { projectDir: '/p', slideIndex: INDEX }, onAgent })
+  ok('one consolidated agent per slide (S1:review), no legacy 3-agent labels', true /* enforced by the mock above returning {} for any other label */)
   const cov = (result.coverageMap || []).find(c => c.slide === 'S1')
   ok('verify whitelist: out-of-SOURCES id Z9 dropped from coverageMap', cov && !cov.inventoryRefs.includes('Z9'), JSON.stringify(cov))
   ok('verify whitelist: valid id A1 kept', cov && cov.inventoryRefs.includes('A1'), JSON.stringify(cov))
+  // The consolidated review's counts (claimsChecked/claimsGrounded/notesSectionFound) still flow
+  // through to the per-slide record the gate reads from.
+  const s1 = (result.reviews || []).find(r => r.slide === 'S1')
+  ok('consolidated review carries claimsChecked/claimsGrounded through', s1 && s1.claimsChecked === 1 && s1.claimsGrounded === 1, JSON.stringify(s1))
+  ok('consolidated review carries notesSectionFound through', s1 && s1.notesSectionFound === true, JSON.stringify(s1))
+  ok('the area-tagged finding survives into result.findings with its area preserved', (result.findings || []).some(f => f.area === 'convention' && f.slide === 'S1'), JSON.stringify(result.findings))
   // D1 scope disclosure (move 2 / §4b): a clean pass discloses checked vs notChecked.
   ok('verify scope: checked lists typst compile', (result.scope?.checked || []).some(s => /typst compile/.test(s)), JSON.stringify(result.scope))
   ok('verify scope: notChecked discloses the SEMANTIC reviewers are outside the floor', (result.scope?.notChecked || []).some(s => /SEMANTIC/.test(s)))

@@ -60,10 +60,10 @@ console.log('compile + structure')
 
 console.log('happy path (all gates pass after implement)')
 {
-  // gate-first probe passes immediately → everything skips implement. Force implement by failing the pre-probe once.
-  const seen = new Set()
-  const gate = (id) => seen.has(id) ? true : (seen.add(id), false)  // first probe fails (→implement), second passes
-  const { result, trace } = await run({ gate })
+  // Fresh, never-done tasks with no reverifyDone/onlyChecks skip the pre-probe entirely (run-core.js
+  // runTask doctrine (1) — a guaranteed miss on a fresh task is pure waste), so a plain always-true
+  // gate exercises the post-implement gate only.
+  const { result, trace } = await run({ gate: () => true })
   ok('parallel batch of 2 for level [A2,A3]', trace.parallelBatches.includes(2), `batches=${trace.parallelBatches}`)
   // A3 has a declared pause → run stops after level containing A3 (level 1), A4 never runs
   eq('paused at A3 (declared)', [result.returnReason, result.atTask, result.pauseKind], ['pause-human', 'A3', 'declared'])
@@ -73,9 +73,7 @@ console.log('happy path (all gates pass after implement)')
 
 console.log('resume past the declared pause (clearedPauses)')
 {
-  const seen = new Set()
-  const gate = (id) => seen.has(id) ? true : (seen.add(id), false)
-  const { result, trace } = await run({ gate, args: { clearedPauses: ['A3'], decisions: { A3: '3 cols, keyed on id' } } })
+  const { result, trace } = await run({ gate: () => true, args: { clearedPauses: ['A3'], decisions: { A3: '3 cols, keyed on id' } } })
   eq('runs to completion', [result.returnReason, result.overallPass], ['done', true])
   ok('A4 implemented after resume', trace.implCalls.includes('A4'))
   ok('decision injected into A3 prompt path', true) // covered by prompt builder; smoke
@@ -90,21 +88,29 @@ console.log('done-checkbox blind-skip vs reverifyDone (clobber-safe resume)')
   ok('reverifyDone rebuilds the clobbered task', trace.implCalls.includes('A2'), `impl=${trace.implCalls}`)
 }
 
-console.log('idempotent short-circuit (outputs already satisfy Verify)')
+// Pre-implement gate-first idempotent short-circuit is now RESTRICTED to resume candidates
+// (t.done || reverifyDone || onlyChecks) — a fresh, never-done task no longer pays for a
+// guaranteed-miss pre-probe (was 2N probes/run; see run-core.js runTask doctrine (1)).
+console.log('resume candidate (reverifyDone): pre-probe runs, all pass first try → skip every implementer')
 {
-  const { result, trace } = await run({ gate: () => true })  // every pre-probe passes
+  const { result, trace } = await run({ gate: () => true, args: { reverifyDone: true } })
   eq('all skipped, done', [result.returnReason, result.overallPass, result.tasksRemaining], ['done', true, 0])
   eq('no implementer calls', trace.implCalls.length, 0)
-  // A3 declares a pause; even when skipped it must still surface for the human... but skipped means already-done.
-  // Design choice: a skipped (already-satisfied) task does NOT re-pause — its decision was made in the run that built it.
+  eq('exactly ONE probe per task (pre-probe only)', trace.gateCalls.length, 4)
   ok('no pause on fully-satisfied resume', result.returnReason === 'done')
+}
+
+console.log('fresh non-done tasks (no reverifyDone/onlyChecks) skip the wasted pre-probe entirely')
+{
+  const { result, trace } = await run({ gate: () => true, args: { clearedPauses: ['A3'], decisions: { A3: 'ok' } } })
+  eq('runs to completion via implement', [result.returnReason, result.overallPass], ['done', true])
+  eq('every task implemented (no pre-probe short-circuit for fresh tasks)', trace.implCalls.slice().sort(), ['A1', 'A2', 'A3', 'A4'])
+  eq('exactly ONE probe per task (post-implement only — the pre-probe waste is gone)', trace.gateCalls.length, 4)
 }
 
 console.log('dynamic R4 pause (implementer blocks)')
 {
-  const seen = new Set()
-  const gate = (id) => seen.has(id) ? true : (seen.add(id), false)
-  const { result } = await run({ gate, impl: (id) => id === 'A1' ? 'blocked' : 'implemented' })
+  const { result } = await run({ gate: () => true, impl: (id) => id === 'A1' ? 'blocked' : 'implemented' })
   eq('paused R4 at A1', [result.returnReason, result.pauseKind, result.atTask], ['pause-human', 'R4', 'A1'])
   ok('payload carries the decision text', !!result.payload && /human/.test(result.payload.decision))
   ok('payload carries deviations (the bug channel)', /grain/.test(result.payload.deviations))
@@ -113,9 +119,7 @@ console.log('dynamic R4 pause (implementer blocks)')
 
 console.log('declared-pause payload carries deviations + numbers (muni: gate caught zero bugs)')
 {
-  const seen = new Set()
-  const gate = (id) => seen.has(id) ? true : (seen.add(id), false)
-  const { result } = await run({ gate })
+  const { result } = await run({ gate: () => true })
   eq('paused at A3', [result.returnReason, result.atTask], ['pause-human', 'A3'])
   ok('A3 payload has summary numbers', /n=123/.test(result.payload.summary), JSON.stringify(result.payload))
   ok('A3 payload has deviations field', 'deviations' in result.payload)
