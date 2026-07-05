@@ -31,8 +31,9 @@
 //                           (the runner-side probe is ALWAYS deterministic; the
 //                            semantic authority, if any, lives OUTSIDE run.js)
 //   implementerPrompt(t) -> string
-//   function recheckTrigger(results, li) -> { recheckKind, atLevel, payload } | null
-//                           (OPTIONAL — omit for domains with no mid-run recheck)
+//   function recheckTrigger(results, li) -> { recheckKind, payload } | null
+//                           (OPTIONAL — omit for domains with no mid-run recheck; do NOT
+//                            return atLevel — the core supplies it from `li` directly)
 //
 // Holes (each a block-comment token the compiler replaces verbatim, exactly once):
 //   __META__              meta object literal
@@ -40,6 +41,8 @@
 //   __TASKS__             array-of-task-spec literal (carries D3 columns + D4 tier)
 //   __GLOBAL_CONSTRAINTS__ verbatim Global Constraints body string literal ("" if none)
 //   __LEVEL_MODES__       per-level 'parallel'|'sequential' array (COMPILER-DERIVED intraLevel)
+//   __REQUIRE_OUTPUTS_PRODUCED__  bool literal: true forces the `outputsProduced` self-report
+//                          (ds); false leaves it optional/advisory (dev has no such field)
 //   __TASK_BODIES__       the per-domain code fragment (gateProbe/implementerPrompt/recheckTrigger)
 // ============================================================================
 
@@ -49,6 +52,7 @@ const PROJECT = /*__PROJECT__*/
 const TASKS   = /*__TASKS__*/
 const GLOBAL_CONSTRAINTS = /*__GLOBAL_CONSTRAINTS__*/
 const LEVEL_MODES = /*__LEVEL_MODES__*/   // intraLevel, derived by the compiler from declared-output disjointness + isolation-safety
+const REQUIRE_OUTPUTS_PRODUCED = /*__REQUIRE_OUTPUTS_PRODUCED__*/   // compiler-set: ds=true (output-first forcing function), dev=false
 
 // ── args (carry human decisions across pauses; Workflow scripts have no disk) ──
 let cfg = (typeof args === 'string') ? (() => { try { return JSON.parse(args) } catch { return {} } })() : (args || {})
@@ -56,7 +60,7 @@ const DECISIONS = cfg.decisions || {}                                  // { task
 const CLEARED   = new Set((cfg.clearedPauses || []).map(String))       // declared pauses already resolved
 const ONLY      = (Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length) ? new Set(cfg.onlyChecks.map(String)) : null
 const REVERIFY_DONE = !!cfg.reverifyDone                               // re-probe PLAN `[x]` tasks instead of blind-skipping (clobber-safe resume)
-const CLEARED_RECHECK = new Set((cfg.clearedFullSuite || cfg.clearedRecheck || []).map(Number))   // level indices whose yield-for-recheck the skill already passed
+const CLEARED_RECHECK = new Set((cfg.clearedFullSuite || []).map(Number))   // level indices whose yield-for-recheck the skill already passed
 
 // ── unified implementer-result schema (shared base + domain-optional fields) ──
 const TRANSFORM_SCHEMA = {
@@ -75,6 +79,10 @@ const TRANSFORM_SCHEMA = {
     verifyOutput: { type: 'string', description: 'dev: last ~25 lines of the Verify Command output you saw (proof)' },
   },
 }
+// ds forces the self-report: when REQUIRE_OUTPUTS_PRODUCED, `outputsProduced` must be present
+// AND true (not merely !== false) — restores the pre-extraction ds forcing function without
+// naming "ds" in the shared core (a compiled config hole flips it per-domain).
+if (REQUIRE_OUTPUTS_PRODUCED) TRANSFORM_SCHEMA.required.push('outputsProduced')
 
 // ── per-domain fragment (spliced ABOVE first use: gateProbe / implementerPrompt / recheckTrigger) ──
 /*__TASK_BODIES__*/
@@ -82,6 +90,11 @@ const TRANSFORM_SCHEMA = {
 // ── core helpers ──────────────────────────────────────────────────────────────
 const byId = Object.fromEntries(TASKS.map(t => [String(t.id), t]))
 
+// DEFERRED (see PR): unify this tie-breaker with scripts/lib/plan_table_core.toposort_ids's
+// Python twin (same numeric-suffix sort, independently maintained). Any change here must stay
+// ORDER-COMPATIBLE with that function — both must place the same task ids in the same levels
+// in the same order, since the compiler's LEVEL_MODES/tier decisions are computed over the
+// Python levels but the runtime driver walks these JS levels.
 function toposort(tasks) {
   const ids = new Set(tasks.map(t => String(t.id)))
   const deps = Object.fromEntries(tasks.map(t => [String(t.id), (t.deps || []).map(String).filter(d => ids.has(d))]))
@@ -112,7 +125,8 @@ async function runTask(t) {
   // 3. authoritative gate — fresh independent probe; the CORE ANDs pass && artifactsPresent
   //    (never trusts pass alone) so "gate passed but artifact missing/clobbered" stays a distinct finding.
   const gate = await gateProbe(t)
-  return { id: String(t.id), impl, gate, pass: !!gate.pass && gate.artifactsPresent !== false && impl.outputsProduced !== false }
+  const outputsOk = REQUIRE_OUTPUTS_PRODUCED ? impl.outputsProduced === true : impl.outputsProduced !== false
+  return { id: String(t.id), impl, gate, pass: !!gate.pass && gate.artifactsPresent !== false && outputsOk }
 }
 
 function scoreTable(state) {
@@ -154,7 +168,7 @@ function collect(state, extra = {}) {
     const impl = r.impl || {}
     const base = { severity: 'critical', task: t.id, summary: impl.summary || '', deviations: impl.deviations || '' }
     if (impl.status === 'blocked') findings.push({ ...base, detail: `R4 escalation: ${impl.deviations || 'blocked'}` })
-    else if (impl.outputsProduced === false) findings.push({ ...base, detail: 'declared Outputs not produced' })
+    else if (REQUIRE_OUTPUTS_PRODUCED ? impl.outputsProduced !== true : impl.outputsProduced === false) findings.push({ ...base, detail: 'declared Outputs not produced' })
     else if (r.gate && r.gate.artifactsPresent === false) {
       const miss = (r.gate.evidence && r.gate.evidence.missing) ? r.gate.evidence.missing : 'a declared artifact'
       findings.push({ ...base, detail: `gate passed but ${miss} missing/empty (stale/clobbered): ${(t.outputs || t.files || []).join(', ')}` })
@@ -188,6 +202,13 @@ for (let li = 0; li < levels.length; li++) {
   let results = []
   let levelDidWork = false
   if (todo.length) {
+    // Stamp the blind-skipped `[x]` tasks THIS layer also holds (a mixed level: some done, some
+    // todo) with the same skip-state shape the all-done branch below uses — otherwise they get
+    // no state entry at all, so collect() under-counts tasksDone/over-counts tasksRemaining and
+    // scoreTable shows '·' (never-run) for work that was already verified done.
+    layer.filter(t => !todo.includes(t)).forEach(t => {
+      state[String(t.id)] = { id: String(t.id), impl: null, gate: null, pass: true, skipped: true }
+    })
     phase(`Level ${li}`)
     log(`Level ${li}/${levels.length - 1}: [${todo.map(t => t.id).join(', ')}] (${mode})`)
     if (mode === 'parallel') {
@@ -218,11 +239,11 @@ for (let li = 0; li < levels.length; li++) {
   // RETURN-REASON 'yield-for-recheck' — an AUTOMATED cross-cutting gate (NO human decides; its own
   // channel, never muxed onto pause-human). The fragment decides whether this level needs it (dev:
   // cross-level file overlap → full suite); the core fires only when the level did real work, more
-  // levels remain, and the skill hasn't already cleared it. atLevel rides so the skill can resume
-  // with clearedFullSuite += atLevel.
+  // levels remain, and the skill hasn't already cleared it. atLevel is `li` itself — the fragment's
+  // recheckTrigger receives `li` as an argument, so it never needs to echo it back in its return.
   const rt = (typeof recheckTrigger === 'function') ? recheckTrigger(results, li) : null
   if (levelDidWork && rt && li < levels.length - 1 && !CLEARED_RECHECK.has(li)) {
-    return collect(state, { returnReason: 'yield-for-recheck', recheckKind: rt.recheckKind, atLevel: rt.atLevel, payload: rt.payload })
+    return collect(state, { returnReason: 'yield-for-recheck', recheckKind: rt.recheckKind, atLevel: li, payload: rt.payload })
   }
 }
 
