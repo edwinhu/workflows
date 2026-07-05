@@ -351,8 +351,11 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
+            GATE_BLOCKED_TOOLS=Agent
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
 ```
+
+**Landmine: `matcher` and `GATE_BLOCKED_TOOLS` are two separate lists that must agree.** `matcher` only decides which calls invoke the script; `phase-gate-guard.py` only actually blocks tools named in `GATE_BLOCKED_TOOLS` (default `Write,Edit` — Agent is NOT blocked unless you list it). A matcher of `Write|Edit|Agent` with no `GATE_BLOCKED_TOOLS=...,Agent` fires on every `Agent` call but silently lets it through — a gate that looks wired but never blocks the fan-out it names.
 
 **How it works:**
 1. Producing phase writes `.planning/X_REVIEWED.md` with `status: APPROVED` frontmatter (unchanged)

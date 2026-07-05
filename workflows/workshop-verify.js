@@ -10,6 +10,8 @@ export const meta = {
   ],
 }
 
+const SEV_RANK = { critical: 0, major: 1, minor: 2 }
+
 // ── Read-only enforcement (P17) ───────────────────────────────────────────────
 // Every reviewer agent() below opens with a "You are a READ-ONLY reviewer; do NOT
 // create, edit, or overwrite any files" instruction. This is PROMPT-level, not
@@ -90,12 +92,13 @@ const DISCOVERY_SCHEMA = {
 
 const MECHANICAL_SCHEMA = {
   type: 'object', additionalProperties: false,
-  required: ['slidesCompiled', 'notesCompiled', 'compileErrors', 'constraintsPassed', 'constraintFailures', 'widows', 'overflow'],
+  required: ['slidesCompiled', 'notesCompiled', 'compileErrors', 'constraintsPassed', 'constraintFailures', 'constraintErrors', 'widows', 'overflow'],
   properties: {
     slidesCompiled: { type: 'boolean' }, notesCompiled: { type: 'boolean' },
     compileErrors: { type: 'array', items: { type: 'string' } },
-    constraintsPassed: { type: 'boolean' },
-    constraintFailures: { type: 'array', items: { type: 'string' }, description: 'raw FAIL lines from check-all.py' },
+    constraintsPassed: { type: 'boolean', description: 'true iff the parsed JSON failed[] array is empty (NOT the process exit code — exit 1 also fires on errors[]-only, which is infra, not a deck defect)' },
+    constraintFailures: { type: 'array', items: { type: 'string' }, description: 'one entry per check-all.py JSON failed[] item: "<name>: <violations summary>" — real constraint violations, blocking' },
+    constraintErrors: { type: 'array', items: { type: 'string' }, description: 'one entry per check-all.py JSON errors[] item: "<name>: <error>" — constraint-module infra failures (import/exception), NOT deck defects, non-blocking' },
     widows: { type: 'integer', description: 'widow count from detect_widows.py on slides.pdf (0 = clean)' },
     overflow: { type: 'integer', description: 'count of slides that overflow the frame (0 = clean)' },
   },
@@ -158,6 +161,7 @@ const disc = await agent(
 Return DISCOVERY_SCHEMA. Absolute paths only.`,
   { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
 )
+if (!disc) throw new Error('Discover agent returned null — re-invoke')
 if (!disc.slides.length) throw new Error('No slides discovered — check slides.typ exists with #slide[ ... ] blocks')
 
 // Deterministic inventory WHITELIST (DESIGN §3a-join): the join stayed unbiased (free OUTLINE read);
@@ -181,14 +185,31 @@ const mech = await agent(
   `You are a READ-ONLY mechanical verifier. Do NOT create, edit, or overwrite any .typ files. Working directory: ${disc.presentationDir}
 
 1. Compile both decks: \`typst compile slides.typ\` and \`typst compile notes.typ\`. Record slidesCompiled/notesCompiled and any error text in compileErrors. If slides.typ fails to compile, STILL return (the gate will short-circuit) — do not attempt the steps below.
-2. Constraint checks (auto-discovers all .py): \`uv run python3 ${disc.checkAllPath} .\` — set constraintsPassed from exit code (0 = pass), and copy every "FAIL:" line into constraintFailures.
+2. Constraint checks (auto-discovers all .py): \`uv run python3 ${disc.checkAllPath} .\` — this prints a JSON object (NOT "FAIL:" lines) with keys passed/failed/conventions/errors/skipped, followed by a summary line. Parse the JSON. For each entry in failed[] (each is {name, violations}), add one string "<name>: <violations summary>" to constraintFailures — these are real constraint violations. For each entry in errors[] (each is {name, error}), add one string "<name>: <error>" to constraintErrors — these are constraint-module infra failures (import/exception), NOT deck defects; do not put them in constraintFailures. Set constraintsPassed = (failed[] is empty) — do NOT use the process exit code, which is also 1 when only errors[] is non-empty.
 3. PDF widow detection (only if slides.pdf built): ${disc.detectWidowsPath ? `\`uv run python3 ${disc.detectWidowsPath} slides.pdf\`` : 'no detector resolved — set widows=0'} — widows = number of widow lines reported (0 if exit 0).
-4. Overflow (PER-SLIDE, THEME-AGNOSTIC — do NOT use page-count arithmetic; it both over-counts theme pages and can MASK real spill): compile handout mode \`typst compile slides.typ --input handout=true slides-handout.pdf\`, then decide PER SLIDE whether its OWN content spills. Method: extract per-page text (e.g. \`pdftotext -layout -f N -l N slides-handout.pdf -\` per page, or look_at per page) and map each \`#slide[]\` block to the handout page(s) carrying its \`=== <takeaway>\` title. A slide OVERFLOWS iff its content occupies ≥2 CONSECUTIVE handout pages AND the slide block contains NO \`#pause\` (\`#pause\` legitimately produces multiple BUILD pages — that is NOT spill; grep the block for \`#pause\` and exclude those). Pages with no \`===\` title (title slide, TOC/\`#outline\`, \`=\`/\`==\` dividers) are STRUCTURAL — ignore them entirely; never infer overflow from \`handout_pages − slide_count\`. overflow = count of slides that occupy ≥2 pages with no \`#pause\`. If you genuinely cannot map a slide to its pages, set overflow=0 and say so (a false NEGATIVE that hides a clipped slide is worse than a missed warning — but a guessed page-arithmetic positive/negative is worst). Report the offending slide titles in context if overflow>0.
+4. Overflow (PER-SLIDE, THEME-AGNOSTIC — do NOT use page-count arithmetic; it both over-counts theme pages and can MASK real spill): compile handout mode \`typst compile slides.typ --input handout=true slides-handout.pdf\`, then decide PER SLIDE whether its OWN content spills. Method: extract ALL page text in ONE pass — \`pdftotext -layout slides-handout.pdf -\` (form-feed \\x0c separates pages; split on it to get per-page text) rather than N separate \`-f/-l\` invocations — and map each \`#slide[]\` block to the handout page(s) carrying its \`=== <takeaway>\` title. A slide OVERFLOWS iff its content occupies ≥2 CONSECUTIVE handout pages AND the slide block contains NO \`#pause\` (\`#pause\` legitimately produces multiple BUILD pages — that is NOT spill; grep the block for \`#pause\` and exclude those). Pages with no \`===\` title (title slide, TOC/\`#outline\`, \`=\`/\`==\` dividers) are STRUCTURAL — ignore them entirely; never infer overflow from \`handout_pages − slide_count\`. overflow = count of slides that occupy ≥2 pages with no \`#pause\`. If you genuinely cannot map a slide to its pages, set overflow=0 and say so (a false NEGATIVE that hides a clipped slide is worse than a missed warning — but a guessed page-arithmetic positive/negative is worst). Report the offending slide titles in context if overflow>0.
 
 Return MECHANICAL_SCHEMA. Report raw counts — do not soften.`,
   { label: 'mechanical', phase: 'Mechanical', schema: MECHANICAL_SCHEMA, model: 'sonnet' }
 )
 
+// Guard against a null mechanical-leg result (agent() can return null; fan-outs .filter(Boolean) this
+// away but a single agent() call does not) — synthesize a critical finding and short-circuit through the
+// same early-exit shape as a compile failure, rather than crashing on mech.slidesCompiled below.
+if (!mech) {
+  log('❌ Mechanical leg agent returned null — short-circuiting before per-slide review')
+  return {
+    overallPass: false,
+    verdict: 'ISSUES FOUND',
+    summary: { critical: 1, major: 0, minor: 0, total: 1 },
+    scoreTable: `| Leg | Result | Gate |\n|-----|--------|------|\n| Mechanical | agent returned null | ❌ |\n`,
+    findings: [{ severity: 'critical', area: 'mechanical', location: disc.presentationDir, detail: 'Mechanical leg agent returned null — re-invoke workshop-verify' }],
+    reviews: [],
+    slidesThatFlagged: disc.slides.map(s => s.id),
+    scope: { checked: [], notChecked: ['everything downstream — mechanical leg returned null, could not run compile/constraint/widow/overflow checks'] },
+    mechanical: null,
+  }
+}
 // Early-exit barrier: a deck that does not compile cannot be slide-reviewed meaningfully.
 if (!mech.slidesCompiled) {
   log('❌ slides.typ does not compile — short-circuiting before per-slide review')
@@ -264,10 +285,18 @@ for (const s of disc.slides) {
 const liveSlides = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-review: ${reran} slide(s) live, ${carriedCount} carried`)
 
-// Per-diagram visual-verify (only on a full review; diagrams are tied to slides).
+// Per-diagram visual-verify. On a full review, all diagrams run. On a selective re-review (ONLY set),
+// still review diagrams belonging to a slide in ONLY (a re-verify of S3 should re-check S3's diagram) —
+// otherwise a selective re-review of an edited slide vacuously passes Visual (empty .every() === true).
+// Diagrams on slides NOT in ONLY are left unreviewed this run (no carry-forward mechanism for diagram
+// reviews exists yet); the scoreTable below distinguishes that from a genuine zero-defect pass.
+const titleToSlideId = Object.fromEntries(disc.slides.map(s => [s.title, s.id]))
+const diagramsToReview = ONLY
+  ? disc.diagrams.filter(d => ONLY.has(titleToSlideId[d.slideTitle]))
+  : disc.diagrams
 let diagramReviews = []
-if (!ONLY && disc.diagrams.length && disc.lookAtPath) {
-  diagramReviews = (await parallel(disc.diagrams.map(d => () =>
+if (diagramsToReview.length && disc.lookAtPath) {
+  diagramReviews = (await parallel(diagramsToReview.map(d => () =>
     agent(
       `You are a READ-ONLY visual reviewer. Do NOT edit files. Render the slides.pdf page containing the diagram on slide "${d.slideTitle}" and score it for visual defects.
 Use: \`uv run python3 ${disc.lookAtPath} --file ${disc.presentationDir}/slides.pdf --goal "Inspect the ${d.kind} diagram on the slide titled '${d.slideTitle}' for: clipped/cut-off text, overlapping elements, bad arrow routing, label anchoring, cramped spacing, illegible text size"\`.
@@ -275,9 +304,10 @@ Set diagram="${d.id}". defectsFound = count of distinct visual defects. Each def
       { label: `${d.id}:visual`, phase: 'Review', schema: VISUAL_SCHEMA, model: 'sonnet' }
     )
   ))).filter(Boolean)
-} else if (!ONLY && disc.diagrams.length && !disc.lookAtPath) {
-  log(`⚠️ ${disc.diagrams.length} diagram(s) present but look_at.py not resolved — visual-verify skipped (NOT silently passed)`)
+} else if (diagramsToReview.length && !disc.lookAtPath) {
+  log(`⚠️ ${diagramsToReview.length} diagram(s) present but look_at.py not resolved — visual-verify skipped (NOT silently passed)`)
 }
+const visualSkippedCarryForward = ONLY && diagramReviews.length === 0 && disc.diagrams.length > 0
 
 const allSlides = [...liveSlides, ...carried]
 const order = Object.fromEntries(disc.slides.map((s, i) => [s.id, i]))
@@ -292,6 +322,12 @@ const findings = []
 for (const e of (mech.compileErrors || [])) { sev.critical++; findings.push({ severity: 'critical', area: 'compile', location: disc.slidesPath, detail: e }) }
 if (!mech.notesCompiled) { sev.critical++; findings.push({ severity: 'critical', area: 'compile', location: disc.notesPath, detail: 'notes.typ failed to compile' }) }
 for (const f of (mech.constraintFailures || [])) { sev.critical++; findings.push({ severity: 'critical', area: 'constraint', location: 'check-all.py', detail: f }) }
+// Constraint-module infra failures (errors[]) are NOT deck defects — one non-blocking minor finding
+// summarizing all of them, so a broken check-all.py module can't masquerade as (or hide) a real violation.
+if ((mech.constraintErrors || []).length) {
+  sev.minor++
+  findings.push({ severity: 'minor', area: 'constraint-infra', location: 'check-all.py', detail: `${mech.constraintErrors.length} constraint module error(s) (infra, not deck defects): ${mech.constraintErrors.join(' | ').slice(0, 400)}` })
+}
 if (mech.widows > 0) { sev.major += mech.widows; findings.push({ severity: 'major', area: 'widow', location: 'slides.pdf', detail: `${mech.widows} widow line(s) — binary gate requires 0` }) }
 if (mech.overflow > 0) { sev.major += mech.overflow; findings.push({ severity: 'major', area: 'overflow', location: 'slides.pdf', detail: `${mech.overflow} slide(s) overflow the frame` }) }
 
@@ -299,8 +335,7 @@ if (mech.overflow > 0) { sev.major += mech.overflow; findings.push({ severity: '
 for (const s of allSlides) {
   for (const f of (s.findings || [])) { if (sev[f.severity] !== undefined) sev[f.severity]++; findings.push({ ...f, area: f.source || 'slide', slide: s.slide }) }
   if (s.notesSectionFound === false) { sev.major++; findings.push({ severity: 'major', area: 'notes', slide: s.slide, location: disc.notesPath, detail: `slide ${s.slide} ("${s.title}") has no corresponding notes section` }) }
-  const ungrounded = Math.max(0, (s.claimsChecked || 0) - (s.claimsGrounded || 0))
-  if (ungrounded > 0) { /* already emitted as fidelity findings; do not double-count severity */ }
+  // Ungrounded claims are already emitted as fidelity findings above — not double-counted here.
 }
 
 // Per-diagram findings.
@@ -339,12 +374,14 @@ const scoreTable = [
   '| Leg | Measure | Result | Gate |',
   '|-----|---------|--------|------|',
   `| Compile | slides / notes | ${mech.slidesCompiled ? 'ok' : 'FAIL'} / ${mech.notesCompiled ? 'ok' : 'FAIL'} | ${mech.slidesCompiled && mech.notesCompiled ? '✅' : '❌'} |`,
-  `| Constraints | check-all.py | ${mech.constraintsPassed ? 'pass' : `${mech.constraintFailures.length} FAIL`} | ${mech.constraintsPassed ? '✅' : '❌'} |`,
+  `| Constraints | check-all.py | ${mech.constraintsPassed ? 'pass' : `${mech.constraintFailures.length} FAIL`}${(mech.constraintErrors || []).length ? ` (+${mech.constraintErrors.length} infra-error, non-blocking)` : ''} | ${mech.constraintsPassed ? '✅' : '❌'} |`,
   `| Widows | detect_widows.py | ${mech.widows} | ${mech.widows === 0 ? '✅' : '❌'} |`,
   `| Overflow | handout page count | ${mech.overflow} | ${mech.overflow === 0 ? '✅' : '❌'} |`,
   `| Source fidelity | claims grounded | ${claimsGrounded}/${claimsChecked} | ${claimsGrounded === claimsChecked ? '✅' : '❌'} |`,
   `| Notes coverage | slides with notes | ${allSlides.filter(s => s.notesSectionFound !== false).length}/${allSlides.length} | ${allSlides.every(s => s.notesSectionFound !== false) ? '✅' : '❌'} |`,
-  `| Visual | diagram defects | ${diagramReviews.reduce((a, d) => a + (d.defectsFound || 0), 0)} | ${diagramReviews.every(d => (d.defectsFound || 0) === 0) ? '✅' : '❌'} |`,
+  visualSkippedCarryForward
+    ? `| Visual | diagram defects | skipped (carry-forward — no diagrams on re-reviewed slides) | ⚠️ |`
+    : `| Visual | diagram defects | ${diagramReviews.reduce((a, d) => a + (d.defectsFound || 0), 0)} | ${diagramReviews.every(d => (d.defectsFound || 0) === 0) ? '✅' : '❌'} |`,
   `| **Overall** | blocking (crit+major) / advisory minor | ${blocking} / ${sev.minor} | ${substratePass ? (total === 0 ? '✅ CLEAN' : '✅ CLEAN (minors advisory)') : '❌ ISSUES'} |`,
 ].join('\n')
 
@@ -357,7 +394,7 @@ log(substratePass
 const scope = {
   checked: [
     'typst compile (slides + notes) — real exit code',
-    'check-all.py constraints — exit code (CAVEAT: rides cross-domain phantom + a broken module → permanently red on every deck; see DESIGN §4c / D-w-8)',
+    'check-all.py constraints — parsed JSON failed[] (real violations, blocking); errors[] reported separately as non-blocking constraint-infra minors (D-w-8: exit code alone conflated infra failures with deck defects)',
     'detect_widows.py — deterministic count',
     'overflow — handout page-count heuristic (CAVEAT: divider-naive, over-counts theme section/title pages; D-w-8)',
     SLIDE_INDEX ? 'inventoryRefs whitelist — dropped non-SOURCES ids (no-hallucination guard)' : 'inventory ids — agent-attributed (no index whitelist this run)',
@@ -377,7 +414,7 @@ return {
   scope,
   summary: { ...sev, total, blocking, advisoryMinors: sev.minor },
   scoreTable,
-  findings: findings.sort((a, b) => ({ critical: 0, major: 1, minor: 2 }[a.severity] - { critical: 0, major: 1, minor: 2 }[b.severity])),
+  findings: findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity]),
   reviews: allSlides,                 // raw per-slide objects — pass back as priorReviews on a selective re-run
   diagramReviews,
   mechanical: mech,

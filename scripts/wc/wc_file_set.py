@@ -68,10 +68,18 @@ def _manifest_block(text: str) -> str | None:
     return text[start: start + nxt.start()] if nxt else text[start:]
 
 
+def _strip_inline_comment(s: str) -> str:
+    """Strip a trailing ' # ...' / '\\t# ...' inline comment (the module's own docstring example
+    annotates `midpoint: fix  # one of: fix | debug | revise | none` this way — without this, the
+    docstring's own example manifest fails validation)."""
+    m = re.search(r"[ \t]#", s)
+    return (s[:m.start()] if m else s).rstrip()
+
+
 def _field(body: str, key: str) -> str | None:
     # [ \t] (not \s) so an empty value doesn't swallow the next line's content.
     m = re.search(rf"^[ \t]*{key}[ \t]*:[ \t]*(\S.*?)[ \t]*$", body, re.M | re.I)
-    return m.group(1).strip() if m else None
+    return _strip_inline_comment(m.group(1).strip()) if m else None
 
 
 def parse_design(text: str, project: Path | None = None) -> FileSet:
@@ -112,7 +120,7 @@ def parse_design(text: str, project: Path | None = None) -> FileSet:
                 if ls and not ls.startswith("#"):
                     break  # left the constraints block
                 continue
-            item = ls.lstrip("-").strip()
+            item = _strip_inline_comment(ls.lstrip("-").strip())
             parts = [x.strip() for x in item.split("|")]
             cname = parts[0]
             kind = (parts[1].lower() if len(parts) > 1 else "convention")
