@@ -112,6 +112,54 @@ def _run_style(path: Path) -> dict:
         return {}
 
 
+def _run_style_score(path: Path) -> dict:
+    """Full per-feature corpus z-scores (style_metrics.py's plain --json mode, i.e.
+    score_text()): {composite_human_likeness, mean_abs_z, per_feature: {name: {value,
+    human_mean, ai_mean, z, flag}}}. A SEPARATE call from _run_style's --lint --json
+    (which only surfaces z on the handful of features that already cross the advisory
+    threshold) — this is the corpus-calibrated z-vs-human report item 4 asks for, reusing
+    style_metrics' existing HUMAN_STATS baseline (mean+std per feature) rather than
+    inventing new numbers. Best-effort: {} on any failure (never blocks the audit)."""
+    try:
+        out = subprocess.run(
+            [sys.executable, str(STYLE_LINT), "--json", str(path)],
+            capture_output=True, text=True, timeout=120)
+        if out.returncode not in (0, 1) or not out.stdout.strip():
+            return {}
+        return json.loads(out.stdout)
+    except Exception:
+        return {}
+
+
+def _diction_rate_report(text: str, diction: dict, words: int, tiers_on) -> dict:
+    """Draft-vs-corpus RATIO (not a z-score) for every diction word actually observed in the
+    draft: the corpus baseline here (references/diction.yaml rate_per_M) is a single point
+    estimate per word, not a mean+std over many human documents — there is no stored standard
+    deviation to divide by, so a true z-score isn't available for diction (unlike the
+    stylometric features below, which DO have human_std in style_metrics.HUMAN_STATS). Reported
+    as `draft_rate_per_M / human_rate_per_M` so a caller can see "12x the corpus rate" instead
+    of a bare count. A corpus rate of 0 is reported as `ratio: null` (undefined multiplier —
+    the word was never observed in 14.3M human sentences at all)."""
+    report = {}
+    for tier_name, entries in diction.items():
+        if tier_name not in tiers_on:
+            continue
+        for e in entries:
+            n = len(e["rx"].findall(text))
+            if not n:
+                continue
+            draft_rate = n * 1_000_000 / words
+            human_rate = e["rate"]
+            ratio = round(draft_rate / human_rate, 1) if human_rate > 0 else None
+            report[e["word"]] = {
+                "tier": tier_name, "count": n,
+                "draft_rate_per_M": round(draft_rate, 1),
+                "human_rate_per_M": human_rate,
+                "ratio_vs_human": ratio,
+            }
+    return report
+
+
 def _paragraphs(text: str):
     """Yield (start_line, paragraph_text). Blank-line delimited."""
     lines = text.split("\n")
@@ -226,6 +274,7 @@ def audit_text(text: str, path: str = "<text>",
     # --- stylometrics (run on the MASKED text so footnote spans don't produce findings either;
     #     blanking preserves line numbers, so style findings still anchor to the right body lines) ---
     style = {}
+    style_score = {}
     if path not in ("<text>",):
         if mask_fn:
             tmp = None
@@ -234,6 +283,7 @@ def audit_text(text: str, path: str = "<text>",
                 with os.fdopen(fd, "w", encoding="utf-8") as tf:
                     tf.write(text)  # already masked above
                 style = _run_style(Path(tmp))
+                style_score = _run_style_score(Path(tmp))
             finally:
                 if tmp:
                     try:
@@ -242,6 +292,7 @@ def audit_text(text: str, path: str = "<text>",
                         pass
         else:
             style = _run_style(Path(path))
+            style_score = _run_style_score(Path(path))
     style_findings = style.get("findings", [])
     for f in style_findings:
         spans.append({
@@ -260,6 +311,20 @@ def audit_text(text: str, path: str = "<text>",
     for s in spans:
         by_type[s["type"]] = by_type.get(s["type"], 0) + 1
 
+    # --- corpus-calibrated z-vs-human report (item: report z, not raw counts) ---
+    # Stylometric features have a REAL z-score (style_metrics.HUMAN_STATS carries mean+std
+    # over the human corpus build) — surfaced here in full, not just the subset that already
+    # crossed the advisory threshold. Diction only has a single corpus rate_per_M point
+    # estimate (no stored std across documents), so it gets a draft-vs-corpus RATIO instead of
+    # a z-score — labeled as such, not invented. AI-tics have no stored corpus rate at all (the
+    # scored-tics gate is pass/fail "~0-human-rate", not a rate number) — raw tic_flags/tic_density
+    # remain the only signal for tics; see PR body for this gap.
+    z_report = {
+        "stylometric_per_feature": style_score.get("per_feature", {}),
+        "stylometric_mean_abs_z": style_score.get("mean_abs_z"),
+        "diction_rate_vs_human": _diction_rate_report(text, diction, words, tiers_on),
+    }
+
     return {
         "file": path,
         "words": words,
@@ -271,6 +336,7 @@ def audit_text(text: str, path: str = "<text>",
         "spans": spans,
         "advisories": style.get("advisories", []),
         "density_words": density_words,
+        "z_report": z_report,
     }
 
 
@@ -295,6 +361,20 @@ def _report(res: dict) -> None:
         print(f"    [advisory] {a.get('message','')}")
     if not res["spans"] and not res["advisories"]:
         print("    (clean — no AI-prose tells)")
+    zr = res.get("z_report", {})
+    per_feat = zr.get("stylometric_per_feature", {})
+    flagged_feat = {k: v for k, v in per_feat.items() if v.get("flag")}
+    if flagged_feat:
+        print("  z-vs-human (stylometric features, |z|>2 on the AI side):")
+        for k, v in sorted(flagged_feat.items(), key=lambda kv: -abs(kv[1]["z"])):
+            print(f"    z={v['z']:+.2f}  {k}: {v['value']} (human mean {v['human_mean']})")
+    rate_vs_human = zr.get("diction_rate_vs_human", {})
+    if rate_vs_human:
+        print("  diction rate vs. human corpus (ratio, not z — no per-word std baseline):")
+        for w, v in sorted(rate_vs_human.items(), key=lambda kv: -(kv[1]["ratio_vs_human"] or 0)):
+            ratio = v["ratio_vs_human"]
+            ratio_s = f"{ratio}x" if ratio is not None else "unseen in corpus"
+            print(f"    {w}: draft {v['draft_rate_per_M']}/M vs human {v['human_rate_per_M']}/M ({ratio_s})")
 
 
 def main():

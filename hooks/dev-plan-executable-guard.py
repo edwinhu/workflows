@@ -19,6 +19,9 @@ Instructional "use the table" text was systematically ignored (a real reviewed
 PLAN — happy-clawd — used prose phase-headings and passed); the hook is the
 structural enforcement.
 
+The shared CLI/hook shell (validate_plan + deny + main dispatch) lives in
+hooks/_plan_guard_common.py — this file supplies only the dev-specific config.
+
 Wired via dev-design frontmatter (skills/dev-design/SKILL.md — dev-plan-reviewer is a read-only
 reviewer and never writes PLAN_REVIEWED.md, so it cannot be this hook's wiring point):
   hooks:
@@ -31,80 +34,34 @@ reviewer and never writes PLAN_REVIEWED.md, so it cannot be this hook's wiring p
 Standalone:  uv run python3 dev-plan-executable-guard.py path/to/PLAN.md
 """
 
-import json
 import sys
 from pathlib import Path
 
-
-def validate_plan(plan_path: Path):
-    """Return list of human-readable violations ([] == executable).
-
-    Single source of truth for "what the Implementation Order table means" — the SAME tolerant
-    parser dev-compile uses to emit run.js, so a plan that COMPILES also PASSES this gate.
-    (Before reconciliation this guard used a stricter regex — `^(\\d+)\\.` ids,
-    `^after\\s+([\\d,\\s]+)$` deps — whose drift the now-retired LLM discovery agent silently
-    tolerated: a plan the workflow could run could still be falsely blocked here, AND the guard's
-    DAG check ran on a different interpretation than the runner's. The shared parser closes both
-    gaps.)
-
-    The parser import is deliberately LAZY (done here, not at module load): this hook's
-    PreToolUse matcher fires on every Write/Edit in a session, but only a write to
-    `PLAN_REVIEWED.md` ever reaches this function — the hundreds of unrelated calls exit early
-    in main() before validate_plan runs. Importing dev_plan_table (and mutating sys.path) at
-    module scope would pay that cost on every one of them.
-    """
-    if not plan_path.is_file():
-        return [f"PLAN.md not found at {plan_path}"]
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "dev"))
-    from dev_plan_table import parse_plan  # noqa: E402
-    return parse_plan(plan_path.read_text()).violations
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _plan_guard_common import PlanGuardConfig, run  # noqa: E402
 
 
-def deny(reason: str):
-    print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": "PreToolUse",
-        "permissionDecision": "deny",
-        "permissionDecisionReason": reason,
-    }}))
-    sys.exit(0)
+def _deny_reason(plan_path: Path, violations: list[str]) -> str:
+    return (
+        "GATE BLOCKED: PLAN.md is not machine-executable, so it cannot be "
+        "approved for implementation.\n\n"
+        f"`{plan_path}` problems:\n- " + "\n- ".join(violations) + "\n\n"
+        "dev-implement reads the Implementation Order table to build the "
+        "dependency DAG and per-task verify gates. Fix the table (see "
+        "dev-design/references/plan-template.md — Task | Deps | Files | "
+        "Failing Test | Verify Command | Implements), then re-run the plan "
+        "reviewer. Do NOT record tasks as prose phase-headings."
+    )
 
 
-def main():
-    # Standalone CLI mode: validate a given PLAN.md, print report, exit 0/1.
-    if len(sys.argv) > 1 and sys.argv[1] not in ("-",):
-        v = validate_plan(Path(sys.argv[1]))
-        if v:
-            print("PLAN NOT EXECUTABLE:\n- " + "\n- ".join(v))
-            sys.exit(1)
-        print("PLAN executable: Implementation Order table is complete and the Deps DAG is valid.")
-        sys.exit(0)
-
-    # Hook mode.
-    try:
-        hook_input = json.load(sys.stdin)
-    except Exception:
-        sys.exit(0)
-    if hook_input.get("tool_name", "") not in ("Write", "Edit"):
-        sys.exit(0)
-    file_path = hook_input.get("tool_input", {}).get("file_path", "")
-    if not file_path or not file_path.endswith("PLAN_REVIEWED.md"):
-        sys.exit(0)  # only guards the approval artifact
-
-    plan_path = Path(file_path).parent / "PLAN.md"
-    violations = validate_plan(plan_path)
-    if violations:
-        deny(
-            "GATE BLOCKED: PLAN.md is not machine-executable, so it cannot be "
-            "approved for implementation.\n\n"
-            f"`{plan_path}` problems:\n- " + "\n- ".join(violations) + "\n\n"
-            "dev-implement reads the Implementation Order table to build the "
-            "dependency DAG and per-task verify gates. Fix the table (see "
-            "dev-design/references/plan-template.md — Task | Deps | Files | "
-            "Failing Test | Verify Command | Implements), then re-run the plan "
-            "reviewer. Do NOT record tasks as prose phase-headings."
-        )
-    sys.exit(0)
+CONFIG = PlanGuardConfig(
+    hooks_dir=Path(__file__).resolve().parent,
+    scripts_subdir="dev",
+    parser_module="dev_plan_table",
+    table_label="Implementation Order",
+    deny_reason=_deny_reason,
+)
 
 
 if __name__ == "__main__":
-    main()
+    run(CONFIG)

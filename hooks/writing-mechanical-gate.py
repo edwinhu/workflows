@@ -14,21 +14,95 @@ TIGHTLY SCOPED on purpose (the "check-all runs all .py" history):
 Result: the Leg-1 mechanical floor is guaranteed clean before the review workflow runs, without
 re-running on every edit and without dragging in other workflows' constraints.
 
+FRESHNESS CACHE (this gate ONLY — NOT hooks/mechanical-floor-gate.py, whose dev/ds floors stay
+fresh-run every time): writing-review's Leg-1 already runs check-all.py once; this gate then
+re-runs the SAME check on the Workflow spawn seconds later — a double run on an unchanged draft.
+After a successful run this gate writes `.planning/.checkall-cache.json` (exit-ok, failed, errors,
+summary, hash); on the next invocation, if the hash (drafts/*.md + constraint files, by mtime)
+still matches, the cached verdict is reused instead of re-running check-all. Fail-open throughout:
+any cache read/write/hash error just falls through to a normal (uncached) check-all run.
+
 CLI (debug):  uv run python3 writing-mechanical-gate.py /abs/project   # prints the would-be gate result
 """
+from __future__ import annotations
+
+import hashlib
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 HOOKS_DIR = Path(__file__).resolve().parent
-CHECK_ALL = HOOKS_DIR.parent / "references" / "constraints" / "check-all.py"
+PLUGIN_ROOT = HOOKS_DIR.parent
+CHECK_ALL = PLUGIN_ROOT / "references" / "constraints" / "check-all.py"
+CACHE_REL = Path(".planning") / ".checkall-cache.json"
 
 # Hooks run standalone (`uv run python3 <path>`) from an unknown cwd, so
 # sys.path-insert this file's own directory before importing the sibling
 # shared module rather than assuming a package/relative import will resolve.
 sys.path.insert(0, str(HOOKS_DIR))
 from _gate_common import deny, _project_from_args  # noqa: E402
+
+
+def _constraint_files():
+    """Every constraint script check-all.py can execute: plugin-wide references/constraints/*.py
+    plus per-skill skills/*/references/*.py — the same universe check-all itself globs (see
+    references/constraints/check-all.py). Sorted for a stable hash input."""
+    files = list((PLUGIN_ROOT / "references" / "constraints").glob("*.py"))
+    files += list(PLUGIN_ROOT.glob("skills/*/references/*.py"))
+    files.append(CHECK_ALL)
+    return sorted(set(files))
+
+
+def _freshness_hash(project: str) -> str | None:
+    """Hash of (path, mtime) over drafts/*.md + every constraint file — the cache is valid iff
+    this is unchanged since the last successful run. Returns None (⇒ cache never matches / never
+    trusted) on any filesystem error, so a hashing failure fails OPEN to a normal check-all run."""
+    try:
+        proj = Path(project)
+        drafts = sorted((proj / "drafts").glob("*.md")) if (proj / "drafts").is_dir() else []
+        stamps = [(str(p), p.stat().st_mtime) for p in drafts + _constraint_files() if p.is_file()]
+        digest = hashlib.sha256(repr(sorted(stamps)).encode("utf-8")).hexdigest()
+        return digest
+    except Exception:
+        return None
+
+
+def _read_cache(project: str) -> dict | None:
+    try:
+        cache_path = Path(project) / CACHE_REL
+        if not cache_path.is_file():
+            return None
+        return json.loads(cache_path.read_text())
+    except Exception:
+        return None
+
+
+def _write_cache(project: str, ok: bool, failed: list, errors: list, summary: str, hash_: str) -> None:
+    try:
+        cache_path = Path(project) / CACHE_REL
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps({
+            "exit_ok": ok, "failed": failed, "errors": errors, "summary": summary, "hash": hash_,
+        }))
+    except Exception:
+        pass  # caching is advisory-only; never fail the gate over a cache-write error
+
+
+def _run_check_all_cached(project: str):
+    """Return (ok, failed_names, error_names, summary, from_cache). Reuses the cached verdict from
+    a prior successful run IFF the freshness hash still matches; otherwise runs check-all fresh and
+    (re)writes the cache. Fail-open: any hashing/cache-read error just runs check-all fresh."""
+    cur_hash = _freshness_hash(project)
+    if cur_hash is not None:
+        cached = _read_cache(project)
+        if cached and cached.get("hash") == cur_hash:
+            return (cached.get("exit_ok", True), cached.get("failed", []),
+                    cached.get("errors", []), cached.get("summary", "(cached)"), True)
+    ok, failed, errors, summary = _run_check_all(project)
+    if cur_hash is not None:
+        _write_cache(project, ok, failed, errors, summary, cur_hash)
+    return ok, failed, errors, summary, False
 
 
 def _run_check_all(project: str):
@@ -62,8 +136,8 @@ def _run_check_all(project: str):
 def main():
     # CLI debug mode
     if len(sys.argv) > 1 and sys.argv[1] not in ("-",):
-        ok, failed, errors, summary = _run_check_all(sys.argv[1])
-        print(f"ok={ok} | {summary}")
+        ok, failed, errors, summary, from_cache = _run_check_all_cached(sys.argv[1])
+        print(f"ok={ok} | {summary}" + (" [cached]" if from_cache else ""))
         if failed:
             print("FAILED (blocking):\n- " + "\n- ".join(failed))
         if errors:
@@ -109,7 +183,7 @@ def main():
         sys.exit(0)
 
     project = _project_from_args(tool_input, hook_input)
-    ok, failed, errors, summary = _run_check_all(project)
+    ok, failed, errors, summary, _from_cache = _run_check_all_cached(project)
     if not ok:
         note = ("\n\n(Plus " + str(len(errors)) + " constraint(s) errored — tooling, NOT blocking.)"
                 if errors else "")
