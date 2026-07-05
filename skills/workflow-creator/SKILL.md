@@ -1,7 +1,7 @@
 ---
 name: workflow-creator
 description: "This skill should be used when the user asks to 'create a workflow', 'design a workflow', 'edit a workflow', 'audit workflow', 'improve workflow', 'break down a task into phases', 'migrate a phase to a dynamic workflow (ultracode)', 'convert fan-out to a workflow script / ultracode', or needs to substantially create or edit any multi-phase workflow."
-version: 0.5.0
+version: 0.6.0
 hooks:
   PreToolUse:
     - matcher: "Write|Edit"
@@ -679,6 +679,8 @@ Plus two **commitment** decisions:
 
 **Do NOT put intra-level parallel-vs-sequential in the decision list** — it is **CORE, compiler-DERIVED** (parallel IFF a level's declared outputs are provably disjoint; ds's disjoint parquets qualify, dev's shared tree never does → sequential by construction). Hand-setting it is the retired `D5` proposal; a naive parallel copy corrupts a shared tree.
 
+**If the workflow is SELF-GRADING** (a JS gate that returns `overallPass`/`substratePass` + a `findings` list + a re-run selector like `*ThatFailed`/`reviewersThatFlagged` consumed by a `/goal` loop's `onlyChecks`/`priorReviews`) — this is broader than the compiled-runner case above; a pure review fan-out with no plan-table DAG (e.g. `wc-audit` itself) qualifies too. Read `${CLAUDE_SKILL_DIR}/references/gate-doctrine.md` NOW and satisfy its **design-time checklist** before generation — the 11 laws there (return-shape contract, selective-re-run integrity, the 3-way overallPass⇔findings⇔selector contract, fail-closed signals, self-report vs independent probe, and more) are cross-repo-recurring defects in exactly this gate shape.
+
 Update `.planning/wc/{name}/STATE.md`:
 ```yaml
 step: 3b-artifact-review
@@ -776,6 +778,8 @@ hooks:
 ```
 
 **Design rule:** Hook first. If the hook can't express the constraint (requires judgment, context, or semantics), fall back to prompt enforcement.
+
+**If the constraint gates a `Workflow`/`Agent` fan-out and the phase is self-grading** (see the Step 3b pointer above), don't just wire the hook — REPL a real dispatched call and confirm the `matcher` fires on what the pipeline actually emits (tool name, path position, `hook_input.cwd` vs `args.*`). This is `references/gate-doctrine.md` L7, which extends the `matcher`/`GATE_BLOCKED_TOOLS` landmine above and the P20 sub-probe to the `Workflow`-dispatch case.
 
 #### Deviation Rules for Implementation Phases
 
@@ -1340,6 +1344,8 @@ Patching files generated without proper investigation, interview, decomposition,
 
 **Review-pattern logging (self-applied P19b):** At each present-to-user checkpoint (Step 6 file presentation, Step 7 audit results), append to `.planning/wc/{name}/LEARNINGS.md` what the user attended to or changed (which findings they prioritized, what they overrode). This is the observe→record→offer loop wc prescribes for the workflows it creates, applied to wc itself — after 3+ recurring patterns, propose encoding them as defaults.
 
+**If the generated workflow is itself self-grading** (a JS gate returning `overallPass`/`substratePass` + `findings` + a re-run selector — this includes any generated `*-verify.js`/`*-audit.js`/`*-generate.js`), the wc-audit run below must additionally satisfy `references/gate-doctrine.md`'s **audit-time checklist** — its P02/P03/P04 gate/enforcement/verification scoring already folds in the gate-doctrine sub-checks (return-shape lint, ONLY-path integrity, the 3-way overallPass⇔findings⇔selector contract, fail-closed signals, self-report vs independent probe). Run `python3 tests/workflow_return_shape_test.py` on the generated files as part of this.
+
 **Context check:** Step 7 dispatches a subagent with a large prompt containing all generated file paths and audit criteria. This is one of the most context-intensive operations. Before proceeding:
 - If context is low (≤35% remaining), write `.planning/wc/{name}/HANDOFF.md` with generated file list, current step, and note that self-audit is pending. Pause.
 - If context is critical (≤25% remaining), write HANDOFF.md immediately — do not attempt the subagent dispatch.
@@ -1499,6 +1505,8 @@ It returns `{ overallPass, composite, verdict, threshold, isMetaTool, scoreTable
 **Post-workflow boundary (verification, not investigation):** after the workflow returns you may Read AUDIT.md/`result.*`, render the report, and fix gaps — you may NOT recompute or rationalize `result.composite`/`result.overallPass` (the JS owns the arithmetic), nor re-score a principle the reviewers scored.
 
 The STATE.md step-chain (1-read → 2-score → 3-enforcement → 3b-portability → 4-report) is **preserved** — the workflow performs the work each step describes; you still write each STATE.md transition so the hook chain holds. **This step-chain IS Mode 2's structural gate enforcement (P03):** `wc-step-gate-guard.py` Layer 2 BLOCKS writing `step: N` to STATE.md unless `step: N-1` shows `status: completed` — a tool-call-layer block, not advisory prose, and the reason a separate per-step marker file is unnecessary for Mode 2's linear chain (the same Layer-2 enforcement governs Mode 3's `1-initial-audit → 1-audit-loop`).
+
+**If the target workflow is self-grading** (a JS gate returning `overallPass`/`substratePass` + `findings` + a re-run selector consumed by `onlyChecks`/`priorReviews` — this covers `wc-audit` itself, any generated `*-verify.js`/`*-audit.js`, and any compiled-runner gate), Step 2's P02/P03/P04 scoring below is where `references/gate-doctrine.md`'s **audit-time checklist** gets applied — its 11 laws are folded into those three principles' scoring criteria (see the sub-bullets under each), not a separate cluster. Run `python3 tests/workflow_return_shape_test.py` against the target as part of P02 evidence-gathering.
 </EXTREMELY-IMPORTANT>
 
 ### Step 1: Read the Workflow
@@ -1549,6 +1557,7 @@ Score each principle 0-10. Use the formal ID (P01-P21) in all audit output for t
 - For subjective domains, are judgment gates explicit? (agent-assessed or human-assessed)
 - Or are they just prose? ("ensure quality is high")
 - Are there ungated transitions?
+- **If the workflow is self-grading** (a JS gate returning `overallPass` + `findings` + a re-run selector — `references/gate-doctrine.md` L1-L3): run `tests/workflow_return_shape_test.py` against it — does the documented `returns {...}` shape match the actual `return {...}` keys AND the re-run selector's id-namespace (L1)? Does `overallPass === false` imply the selector is non-empty for EVERY fail path, including whole-artifact-level failures with no single owning item, and does every fail condition emit an actionable finding (L3)? Is the field that renders the status row the SAME variable that blocks (not a display-only boolean that happens to usually agree) (L3c)? Any drift is a CRITICAL finding — it produces a silent full-regeneration loop that looks like it's working.
 
 **P03 — Structural gate enforcement (CRITICAL — this is the #1 audit gap):**
 - For every mandatory inter-phase gate, classify as STRUCTURAL or ADVISORY:
@@ -1569,6 +1578,8 @@ Score each principle 0-10. Use the formal ID (P01-P21) in all audit output for t
   - **HOOK-ENFORCED:** Skill frontmatter declares a PreToolUse hook that checks for the artifact (strongest)
   - **INSTRUCTION-ONLY:** Skill text checks for the artifact but no hook blocks tool calls (weaker — can be rationalized past under context pressure)
 - Score: count of STRUCTURAL gates / total mandatory gates. Below 80% = critical gap. Count of HOOK-ENFORCED / STRUCTURAL gates — below 50% = recommend hook migration.
+- **If a hook gates a `Workflow`/`Agent` fan-out phase** (`references/gate-doctrine.md` L7, extending the `matcher`/`GATE_BLOCKED_TOOLS` landmine above and the P20 sub-probe): trace (or dispatch) a real call and confirm `matcher` actually fires on what the pipeline emits — the tool name (`Workflow` vs `Agent`, especially after an ultracode-migration where the matcher was left on the old tool), path position in the command, and `hook_input.cwd` vs `args.*` for `projectDir`-style reads. A silent exit-0 no-op here is invisible without this trace.
+- **If the workflow's gate is self-grading, also check the ONLY/onlyChecks path as a first-class execution path, not an afterthought** (L2): does an empty selector array ever render a pass for a non-empty or skipped set? Does adversarial verification still run when `ONLY` is set, or does an `if (ONLY) continue` disable it? Is the carried-forward `reviews`/`priorReviews` a UNION (`[...live, ...carried]`) with verifier corrections written back into the carried record, or can it silently drop/re-flag phantoms? Also check for shared-core drift if the workflow splices an extracted driver across domains (L9), and whether detect/fix share one predicate rather than two hand-copied passes (L8).
 
 **P04 — Independent verification:**
 - Is verification structurally independent from implementation? (fresh subagent, not self-review)
@@ -1588,6 +1599,13 @@ Score each principle 0-10. Use the formal ID (P01-P21) in all audit output for t
 | 4 | **Functional** | Actually works end-to-end | Tests pass, feature runs |
 
 If verification only checks Level 1 (exists), it's theater. A workflow that claims "test exists" without checking the test is substantive, wired, and functional is shipping false confidence.
+
+**Self-grading gate sub-checks** (`references/gate-doctrine.md` L4-L6, L10-L11 — apply when the workflow computes its own gate in JS):
+- **Fail-closed on absent signals (L4):** for every gated dimension, grep for `.filter(Boolean)` / optional-chaining defaults that let an absent or null result read as a vacuous pass. Is there a `dispatchedPairs`-style set distinguishing a crash-drop (should fail/mark unreliable) from an intentional selective-skip (should read n/a)? Is every single (non-fan-out) `await agent()` call guarded with declared null semantics, not dereferenced directly?
+- **Self-report vs independent probe (L5):** for every field the gate reports as evidence (a self-grepped status, a self-reported `artifactsPresent`/`citedInventory`), is there an independent deterministic check or a separate low-effort probe agent — or is it decoration from the same agent whose work it certifies? Are status greps anchored (`^status: APPROVED`), not bare substring matches that false-match unrelated frontmatter?
+- **Doc-template ⇔ parser acceptance (L6):** if a parser feeds both an executable guard and the workflow, does the AUTHORING doc's example actually pass the parser (not just look plausible)? A template the parser rejects false-denies every valid spec written to it.
+- **Enforcement claims are testable (L10):** spot-check 2-3 "wired via X" / "blocks Y" claims in the target's SKILL.md against the actual hook/schema/check — a claim that only cross-references other prose is unenforced.
+- **Real eval, not just `node --check` (L11):** was the workflow smoke-tested with a bogus target and confirmed to reach its OWN arg-validation error (not a template-literal crash at `eval()`)? Is adversarial verification exercised against REAL inputs during authoring, not synthetic ones a verifier would rubber-stamp?
 
 **P05 — Artifact review:**
 - Are intermediate artifacts (specs, plans, outlines) reviewed before downstream phases consume them?
