@@ -265,7 +265,7 @@ Never silently abandon the loop. An off-topic message is not permission to stop 
 
    **Leg 1 — Constraint checks (hard block):**
    ```bash
-   cd [presentation directory] && uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+   cd [presentation directory] && uv run --with lxml python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
    ```
    - If any constraint fails → fix the violation → re-run (max 3 attempts)
    - Hard block: ALL constraints must pass

@@ -101,6 +101,25 @@ const VERIFY_SCHEMA = {
   },
 }
 
+// Section ROLE drives heading emission: only PARTS get lettered ## A./B./C. subsection headings;
+// an Introduction or Conclusion is continuous unheaded prose even when its outline groups its Body
+// as A/B/C (those groupings guide paragraph ORDER, not headings). Match on the FULL title after
+// stripping a leading enumeration prefix ("Part V:", "V.", "IV:", "2.", "Section 3:") — a substring/
+// prefix match would misclassify "Conclusions" / "Concluding Remarks" / "V. Conclusion" as non-continuous
+// (false negative → wrongly lettered subsections) and "Introduction to the Regime" as continuous
+// (false positive → verifier flags legit subsections, unsatisfiable /goal loop).
+function isContinuousSection(name) {
+  let s = String(name).trim()
+  // Strip an enumeration prefix, but require an explicit keyword ("Part") or a delimiter immediately
+  // after the roman/numeral run — otherwise "Conclusion" (which starts with the roman numeral "C")
+  // would get its leading "C" eaten by a bare-letters match.
+  s = s.replace(/^part\s+[ivxlcdm]+\.?:?\)?\s*/i, '')
+  s = s.replace(/^(?:[ivxlcdm]+|\d+)[.:)]\s*/i, '')
+  s = s.replace(/^section\s+\d+[.:)]?\s*/i, '')
+  s = s.trim().toLowerCase()
+  return /^(introduction|intro|conclusion(s)?|concluding remarks|summary and conclusions?|preface|foreword)$/.test(s)
+}
+
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
 // Map the deterministic section index → the DISCOVERY_SCHEMA shape (no LLM). draftFile is
 // recomputed from OUTDIR so a pilot subdir (e.g. drafts-pilot) is honored; precisClaim comes
@@ -151,7 +170,11 @@ if (underGranular.length) log(`⚠️ structureless outlines (NOT drafted): ${un
 const unpinned = draftable.filter(s => s.sourcesPinned === false).map(s => s.name)
 if (unpinned.length) log(`ℹ️ ${unpinned.length} outline(s) don't pin sources — draft agents will assign citations from the bib; fidelity check will verify each resolves: ${unpinned.join(', ')}`)
 
-// ── Phase 2: Transform (one write-agent per executable section, in parallel) ────
+// ── Phase 2+3: Transform → Verify, chained per section (one parallel() barrier) ──────────
+// Each section's verify used to wait on a SECOND parallel() barrier that blocked until every
+// section finished drafting — so a slow section's draft held up a fast section's verify for no
+// reason. Fix: compose draft→verify as ONE thunk per section and run all sections' chains in a
+// single parallel() call; a fast section's verify starts the moment ITS OWN draft lands.
 // Seams dissolve because the FULL spec exists up front: each agent reads the prior/next OUTLINE (not draft)
 // to write correct bridges — no dependency on sibling drafts, so the fan-out is genuinely parallel.
 phase('Transform')
@@ -174,8 +197,8 @@ for (const s of draftable) {
   // Section ROLE drives heading emission: only PARTS get lettered ## A./B./C. subsection headings;
   // an Introduction or Conclusion is continuous unheaded prose even when its outline groups its Body
   // as A/B/C (those groupings guide paragraph ORDER, not headings).
-  const continuous = /^\s*(introduction|intro|conclusion|preface|foreword)\b/i.test(String(s.name))
-  tasks.push(() => agent(
+  const continuous = isContinuousSection(s.name)
+  const draftPrompt =
     `You are a writing-draft prose generator. You EXPAND one section outline into prose. The outline pins the WHAT — the claims, their order at the section level, and the pinned sources. WITHIN the section you MAY merge, subordinate, or reorder the outline's points for PROPORTIONAL development: a minor point can become a clause inside a neighbor's paragraph; a pivotal one can run several paragraphs. What you may NOT do: add new claims, change the section-level structure the outline specifies, or invent citations the outline didn't pin. How the pinned points are developed, paced, and sentenced is YOURS — that judgment is what makes the prose read like a person wrote it.
 Set section="${s.name}" verbatim in your record (the gate keys on it).
 
@@ -198,25 +221,12 @@ Drafting contract (the Iron Laws of writing-draft):
 - CITATIONS: this outline may not pin sources to its claims. Where a substantive claim needs a citation, draw it from a REAL source: ${disc.bibPath ? `the project bibliography ${disc.bibPath}` : 'the user\'s Paperpile bibliography (~/Google Drive/My Drive/resources/Paperpile) or the project sources'}, and for legal claims a real, well-formed, verifiable authority (case/statute/article). Carry through any [@bibkey]/[CLAIM-XX] the outline DOES pin. **NEVER fabricate a citation, and NEVER attribute a claim to a source that does not support it.** If you cannot identify a real source for a claim, leave a literal \`[CITE-NEEDED: <what's needed>]\` marker instead of inventing one — the verify stage treats an invented cite as a critical failure but an honest CITE-NEEDED as a flag to resolve.
 - Apply R1-R3 deviations inline if drafting surfaces them (R1 factual fix, R2 add a real source, R3 structural bridge). If you hit an R4 (the argument itself needs restructuring), do NOT invent a fix — note it in summary and draft to the outline as written.
 
-Write the full prose to ${s.draftFile} with the Write tool (include frontmatter \`implements: [the outline's CLAIM ids]\`). Then return TRANSFORM_SCHEMA with status="drafted", content=the FULL prose you wrote, and pointsExpanded=the number of outline points you expanded.`,
-    { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA }))
-}
-const liveTransforms = (await parallel(tasks)).filter(Boolean)
-if (ONLY) log(`Selective re-draft: ${drafted} section(s) live, ${carriedCount} carried`)
-
-// ── Phase 3: Verify (read-only — execution-fidelity to the spec, NOT document quality) ─
-phase('Verify')
-const specByName = Object.fromEntries(draftable.map(s => [String(s.name), s]))
-const verifs = (await parallel(liveTransforms.map(t => () => {
-  const s = specByName[String(t.section)]
-  const prev = s && s.prevName ? outlineByName[String(s.prevName)] : null
-  const next = s && s.nextName ? outlineByName[String(s.nextName)] : null
-  const continuous = /^\s*(introduction|intro|conclusion|preface|foreword)\b/i.test(String(t.section))
-  return agent(
+Write the full prose to ${s.draftFile} with the Write tool (include frontmatter \`implements: [the outline's CLAIM ids]\`). Then return TRANSFORM_SCHEMA with status="drafted", content=the FULL prose you wrote, and pointsExpanded=the number of outline points you expanded.`
+  const buildVerifyPrompt = (t) =>
     `You are a READ-ONLY verifier. Do NOT create, edit, or overwrite any files. Confirm a drafted section faithfully EXECUTED its outline — this is execution-fidelity, NOT a document-quality review (writing-review does that later).
 Set section="${t.section}" verbatim.
 
-THE OUTLINE IT HAD TO EXPAND: ${s ? s.outlineFile : '(missing — flag critical)'}
+THE OUTLINE IT HAD TO EXPAND: ${s.outlineFile}
 GENERATED PROSE (as written by the draft agent):
 ${(t.content || '').slice(0, 8000)}
 Also try to Read ${t.draftFile} (prefer on-disk content if present).
@@ -227,11 +237,18 @@ Check, and report every gap in findings with severity:
 3. transitionOk — ${prev ? `does the FIRST sentence connect to what "${prev.name}" (${prev.outlineFile}) establishes?` : 'is the opening clean (no "as discussed above" with nothing prior)?'} ${next ? `does the LAST sentence set up "${next.name}" (${next.outlineFile})?` : 'is the close clean (no dangling hand-off)?'} A seam (abrupt jump, repeated setup, dangling reference) ⇒ transitionOk=false (major).
 4. SCAFFOLDING HEADINGS — the outline's \`## Opening\`, \`## Body\`, \`## Closing\` are scaffolding, NOT document headings. If the prose contains a literal heading named "Opening", "Body", or "Closing" (or a synonym like "Conclusion to Part ${'X'}"), report it as a MAJOR finding ("scaffolding label emitted as a heading"): the section must end in an UNHEADED bridging paragraph, not a "Closing"/"Conclusion" heading.${continuous ? ` ALSO — this is an INTRODUCTION/CONCLUSION, which is CONTINUOUS UNHEADED prose: if the draft contains ANY lettered subsection heading (\`## A.\`, \`## B.\`, … — even though the outline groups its Body as A/B/C), report it as a MAJOR finding ("lettered subsections in an Introduction/Conclusion"). Only the section title (\`#\`) is a valid heading here.` : ` Only the section title (\`#\`) and the lettered \`## A./B./C.\` subsections are valid headings in a Part.`}
 Also return boundary.firstSentence and boundary.lastSentence verbatim (for the skill's seam audit).
-Return VERIFY_SCHEMA.`,
-    { label: `verify:${t.section}`, phase: 'Verify', schema: VERIFY_SCHEMA, model: 'sonnet' }
-  )
-}))).filter(Boolean)
-const verifyByName = Object.fromEntries(verifs.map(v => [String(v.section), v]))
+Return VERIFY_SCHEMA.`
+  tasks.push(() => (async () => {
+    const t = await agent(draftPrompt, { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA })
+    if (!t) return null
+    const v = await agent(buildVerifyPrompt(t), { label: `verify:${s.name}`, phase: 'Verify', schema: VERIFY_SCHEMA, model: 'sonnet' })
+    return { transform: t, verify: v }
+  })())
+}
+const liveResults = (await parallel(tasks)).filter(Boolean)
+if (ONLY) log(`Selective re-draft: ${drafted} section(s) live, ${carriedCount} carried`)
+const liveTransforms = liveResults.map(r => r.transform)
+const verifyByName = Object.fromEntries(liveResults.filter(r => r.verify).map(r => [String(r.verify.section), r.verify]))
 
 // ── Phase 4: Gate (pure JS — substrate split: drafted + coverage + fidelity + transitions) ─
 phase('Gate')

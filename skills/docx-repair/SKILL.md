@@ -180,7 +180,7 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 **Flags:**
 - `--output` / `-o`: Output path (default: overwrite input)
 - `--dry-run`: Show what would change without modifying
-- `--bio-footnotes N`: Number of author bio footnotes (default: 3)
+- `--bio-footnotes N`: Number of author bio footnotes. Default: **auto-detected** from the document's `customMarkFollows="1"`/`"0"` refs (0 if the paper has no bios); pass N only to override the auto-detect (e.g. a doc where the marks were stripped entirely).
 - `--crossrefs`: Chain to create_crossrefs.py after fixing
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
 - `--normalize-headings`: Normalize headings (off by default) — style unstyled heading-looking paragraphs (2b) AND strip direct formatting + delete empty heading paragraphs (2a); restores Heading1–4 style defs from the template if missing. See §C.
@@ -361,7 +361,12 @@ things, both under this flag:
   child of the first run; a tab elsewhere is a real tab, left alone) and sets
   `firstLine=<dominant>`. Detected as `leading_tab_indent(N)` in `detect_issues`
   even without the flag; fixed only when `--normalize-body-indent` is passed.
-  Idempotent. Same >60-char Normal/unstyled guard.
+  Idempotent. Same >60-char Normal/unstyled guard, AND the same front-matter
+  guard (only paragraphs after the first Heading1) — title/abstract/TOC are
+  never touched. If tab-led paragraphs exist but the document has no real
+  firstLine indent anywhere to infer the dominant value from, this does not
+  silently no-op: it emits a WARNING change entry so the unfixed issue still
+  surfaces in the log.
 
 Logged, never silent.
 

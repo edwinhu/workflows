@@ -28,14 +28,23 @@ Non-blocking: reports violations as an additionalContext message.
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 PLUGIN_ROOT = Path(__file__).parent.parent
 CHECK_ALL = PLUGIN_ROOT / "references" / "constraints" / "check-all.py"
 PROSE_LINT = PLUGIN_ROOT / "scripts" / "prose-lint.py"
+# Shared footnote/citation masker (scripts/lib/footnote_mask.py) — footnotes are off-limits to
+# prose linting the same way they're off-limits to the de-AI rewrite (skills/de-ai-revise); mask
+# BEFORE handing the draft to style_metrics.py --lint so a style finding never lands inside a
+# footnote span. Masking blanks to spaces and preserves line count/length, so reported line
+# numbers stay valid without any extra offset bookkeeping.
+sys.path.insert(0, str(PLUGIN_ROOT / "scripts" / "lib"))
+from footnote_mask import mask_footnotes  # noqa: E402
 # Corpus-derived stylometric linter (line-level span findings only — em-dash,
 # metronomic-run, opener-transition, nominalization). Its draft-level advisories
 # (burstiness, diction) belong in the review stage, NOT this on-edit hook.
@@ -149,17 +158,34 @@ def _run_prose_lint(path: Path, style: str | None,
 
 
 def _run_style_lint(path: Path, ranges: list[tuple[int, int]]) -> list[str]:
-    """Run style_metrics --lint; return ONLY line-level span findings scoped to
-    edited lines. Advisories (global rhythm/diction tells) are intentionally
-    dropped here — they're review-stage signals, not inline fixes."""
+    """Run style_metrics --lint on a FOOTNOTE-MASKED copy of the draft; return ONLY
+    line-level span findings scoped to edited lines. Advisories (global rhythm/diction
+    tells) are intentionally dropped here — they're review-stage signals, not inline
+    fixes. Masking (blank-to-spaces, line/offset-preserving) keeps line numbers valid
+    while stopping em-dash/metronomic/nominalization findings from landing inside a
+    footnote's citation prose."""
+    tmp = None
     try:
+        raw = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return []
+    try:
+        fd, tmp = tempfile.mkstemp(suffix=path.suffix or ".md")
+        with os.fdopen(fd, "w", encoding="utf-8") as tf:
+            tf.write(mask_footnotes(raw))
         proc = subprocess.run(
-            [sys.executable, str(STYLE_LINT), "--lint", "--json", str(path)],
+            [sys.executable, str(STYLE_LINT), "--lint", "--json", tmp],
             capture_output=True, text=True, timeout=30,
         )
         data = json.loads(proc.stdout or "{}")
     except Exception:
         return []
+    finally:
+        if tmp:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
     out: list[str] = []
     for f in data.get("findings", []):
         ln = f.get("line")

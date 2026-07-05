@@ -5,6 +5,14 @@ import re
 import sys
 from pathlib import Path
 
+# Shared footnote/citation masker — this constraint already skips `[^id]:` DEFINITION
+# lines (_FOOTNOTE_DEF below), but an INLINE `^[...]` footnote embedded mid-line (a quoted
+# case, e.g. a court calling something "unprecedented") was never masked, so quoted source
+# language could trip the puffery/superlative checks as if the author wrote it. Mask before
+# scanning; stdlib-only, no new dependency.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "lib"))
+from footnote_mask import mask_footnotes  # noqa: E402
+
 CONSTRAINT = "writing-ai-smell-puffery"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"
@@ -129,7 +137,7 @@ def check(context):
         return violations
 
     for md_file in sorted(drafts_dir.glob("*.md")):
-        text = md_file.read_text(encoding="utf-8", errors="ignore")
+        text = mask_footnotes(md_file.read_text(encoding="utf-8", errors="ignore"))
         for lineno, line in _prose_lines(text):
             # General puffery patterns
             for pat, label in _PATTERNS:

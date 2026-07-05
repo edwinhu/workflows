@@ -41,8 +41,11 @@ from plan_table_core import (  # noqa: E402
 REQUIRED_COLS = ("task", "deps", "files", "failing test", "verify command", "implements")
 # dev detects its table by these exact header cells; columns accessed tolerantly (prefix-aware).
 _TABLE_REQUIRED = {"task", "deps", "verify command"}
-# values that mean "no failing test required" (TDD N/A — types-only / meta tasks)
-_TEST_NA = {"", "n/a", "na", "none", "—", "-"}
+# "is a test required?" has exactly ONE owner: workflows/templates/dev-task.js's `testRequired`
+# (it decides whether gateProbe/implementerPrompt demand a Failing Test). This parser does NOT
+# duplicate that predicate — a second copy is how P2/v5.68.3 drifted (this parser's now-deleted
+# `_TEST_NA` treated `—`/`-` as N/A while dev-task.js's regex did not, so a `—` cell compiled but
+# could never satisfy the gate). Keep the N/A convention here in sync with dev-task.js by eye.
 
 
 @dataclass
@@ -58,12 +61,6 @@ class Task:
     pause_after: str | None      # decision text if the row declares a ⏸ PAUSE marker, else None
     interfaces: str              # this task's `### Task N` Consumes/Produces block, verbatim; "" if none
     task_text: str               # full task cell, verbatim (for the implementer prompt)
-
-    @property
-    def test_required(self) -> bool:
-        norm = self.failing_test.strip().lower()
-        # "N/A", "N/A (meta)", "N/A (types only)", "none" … all mean no test required
-        return norm not in _TEST_NA and not re.match(r"^(n/?a|none)\b", norm)
 
     def to_dict(self) -> dict:
         return {
@@ -170,7 +167,7 @@ def parse_plan(text: str) -> ParseResult:
         name = DONE_RE.sub("", name).strip().strip("`").strip()
         done = bool(DONE_RE.search(task_cell))
 
-        deps = parse_deps(cell(header, cells, "deps"))
+        deps = parse_deps(cell(header, cells, "deps"), res.violations, f"Task {tid}: ")
 
         files_cell = cell(header, cells, "files")
         files = [f.strip().strip("`").strip() for f in re.split(r"[;,]", files_cell) if f.strip()]

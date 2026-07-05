@@ -29,7 +29,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
 from plan_table_core import (  # noqa: E402
-    ID_RE, DONE_RE, PAUSE_RE, cell, find_table, parse_deps, check_acyclic, toposort_ids,
+    ID_RE, DONE_RE, PAUSE_RE, cell, has_col, find_table, parse_deps, check_acyclic, toposort_ids,
 )
 
 REQUIRED_COLS = ("task", "deps", "outputs", "expected output", "verify", "implements")
@@ -96,7 +96,7 @@ def parse_plan(text: str) -> ParseResult:
             "No Task Breakdown table found (need a markdown table with columns "
             "Task | Deps | Outputs | Expected Output | Verify | Implements).")
         return res
-    missing = [c for c in REQUIRED_COLS if c not in header]
+    missing = [c for c in REQUIRED_COLS if not has_col(header, c)]
     if missing:
         res.violations.append(f"Task Breakdown table missing column(s): {', '.join(missing)}.")
         return res
@@ -119,7 +119,7 @@ def parse_plan(text: str) -> ParseResult:
         kind = kind_m.group(1).lower() if kind_m else "unspecified"
         done = bool(DONE_RE.search(task_cell))
 
-        deps = parse_deps(cell(header, cells, "deps"))
+        deps = parse_deps(cell(header, cells, "deps"), res.violations, f"Task {tid}: ")
 
         outputs_cell = cell(header, cells, "outputs")
         outputs = [o.strip().strip("`").strip() for o in re.split(r"[;,]", outputs_cell) if o.strip()]

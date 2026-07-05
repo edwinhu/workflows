@@ -977,7 +977,7 @@ sys.exit(1 if results["failed"] else 0)
 ```
 Verification Phase
     ↓
-Leg 1: uv run python3 check-all.py (auto-discovers constraints/*.py)
+Leg 1: uv run --with lxml python3 check-all.py (auto-discovers constraints/*.py)
     ↓
     Structured results: {passed: [...], failed: [...], conventions: [...]}
     ↓                              ↓

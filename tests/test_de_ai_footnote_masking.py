@@ -61,5 +61,26 @@ mn = d.mask_footnotes(nested)
 ok("nested-bracket footnote fully masked", "tapestry" not in mn and "@a2019" not in mn)
 ok("nested-cite body prefix intact", mn.startswith("Body."))
 
+# ── multi-paragraph pandoc footnote: blank line + 4-space-indented continuation PARAGRAPH ──
+# (finding 3) a bare "blank line always ends the def block" rule leaves paragraph 2+ unmasked.
+MP_BODY = "Lead-in sentence.[^mp]"                                        # line 1
+MP_DEF = "[^mp]: First paragraph mentions a tapestry."                    # line 3
+MP_CONT = "    Second paragraph continuation, also a tapestry."           # line 5
+MP_AFTER = "Trailing body sentence about a tapestry."                    # line 7
+MP_TEXT = "\n".join([MP_BODY, "", MP_DEF, "", MP_CONT, "", MP_AFTER]) + "\n"
+
+mp_masked = d.mask_footnotes(MP_TEXT)
+ok("multi-para: line count preserved", len(mp_masked.split("\n")) == len(MP_TEXT.split("\n")))
+for idx, (a, b) in enumerate(zip(MP_TEXT.split("\n"), mp_masked.split("\n"))):
+    ok(f"multi-para: line {idx} length preserved", len(a) == len(b), f"{a!r} vs {b!r}")
+ok("multi-para: def paragraph 1 blanked", "First paragraph mentions a tapestry" not in mp_masked)
+ok("multi-para: continuation paragraph 2 blanked (finding 3)",
+   "Second paragraph continuation" not in mp_masked)
+ok("multi-para: trailing body sentence intact", "Trailing body sentence about a tapestry" in mp_masked)
+
+mp_res = d.audit_text(MP_TEXT, mask_fn=True)
+mp_tap_lines = sorted({s["line"] for s in mp_res["spans"] if s.get("text", "").lower() == "tapestry"})
+ok("multi-para: tapestry flagged ONLY on the trailing body line (7)", mp_tap_lines == [7], str(mp_tap_lines))
+
 print(f"\n{_p} passed, {_f} failed")
 sys.exit(1 if _f else 0)

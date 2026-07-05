@@ -229,7 +229,7 @@ npm run build && echo "Exit code: $?"
 Before spawning the goal-backward verifier, run the auto-discovering constraint runner:
 
 ```bash
-uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
+uv run --with lxml python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py .
 ```
 
 **If any constraint FAILS:** Address the failure before proceeding. Constraint failures are hard blocks — do not proceed to goal-backward verification with failing constraints. This is **hook-enforced**, not just prose: `mechanical-floor-gate.py` (FLOOR=dev, wired on the Agent matcher) re-runs check-all and DENIES the verifier spawn until the floor is clean.
