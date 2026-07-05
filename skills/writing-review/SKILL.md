@@ -162,6 +162,8 @@ This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, t
 
 Constraint checks are **Leg 1** of two-leg verification. **Leg 2** (convention scoring via reviewer subagents) happens in Level 1.
 
+`hooks/writing-mechanical-gate.py` re-runs this same check-all when the Workflow spawns moments later — a mandatory gate, not a suggestion you can skip. To avoid running check-all twice on an unchanged draft, that gate (only that gate; the dev/ds mechanical-floor gate always re-runs fresh) caches the last successful verdict in `.planning/.checkall-cache.json`, keyed on a hash of `drafts/*.md` + the constraint files, and reuses it when nothing has changed since your Leg-1 run.
+
 ### Step 2d: AI-prose audit (standard — always runs)
 
 Run the corpus-validated AI-prose scorer on every draft. This is **not optional** — the

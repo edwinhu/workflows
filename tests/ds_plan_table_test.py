@@ -86,6 +86,40 @@ r = parse_plan("# PLAN\n\n## Task Breakdown\n\n" + QUALIFIED_HEADER +
 check("qualified 'Expected Output (per requirement)' header accepted", r.ok, r.violations)
 check("qualified header cell extracted", r.tasks[0].expected_output == "non-empty", r.tasks[0].expected_output)
 
+# 9. optional Tier column (absent ⇒ tier is None, zero behavior change)
+r = parse_plan(tbl("| T1 — x | — | `a` | x | `true` | D-01 |\n"))
+check("no Tier column ⇒ tier is None", r.tasks[0].tier is None, r.tasks[0].tier)
+
+TIER_HEADER = ("| Task | Deps | Outputs | Expected Output | Verify | Implements | Tier |\n"
+               "|---|---|---|---|---|---|---|\n")
+
+
+def tier_tbl(*rows):
+    return "# PLAN\n\n## Task Breakdown\n\n" + TIER_HEADER + "".join(rows)
+
+
+# 10. present Tier column: valid values parsed + prefix-tolerant + case-insensitive
+r = parse_plan(tier_tbl(
+    "| T1 — x | — | `a` | x | `true` | D-01 | heavy |\n",
+    "| T2 — x | T1 | `b` | x | `true` | D-02 | Trivial |\n",
+    "| T3 — x | T1 | `c` | x | `true` | D-03 | methodology |\n",
+    "| T4 — x | T1 | `d` | x | `true` | D-04 | standard |\n",
+))
+check("Tier column parses (ok)", r.ok, r.violations)
+check("T1 tier heavy", r.tasks[0].tier == "heavy", r.tasks[0].tier)
+check("T2 tier trivial (case-insensitive)", r.tasks[1].tier == "trivial", r.tasks[1].tier)
+check("T3 tier methodology", r.tasks[2].tier == "methodology", r.tasks[2].tier)
+check("T4 tier standard", r.tasks[3].tier == "standard", r.tasks[3].tier)
+
+# 11. blank/unrecognized Tier cell falls back to None (heuristic path), not a violation
+r = parse_plan(tier_tbl(
+    "| T1 — x | — | `a` | x | `true` | D-01 |  |\n",
+    "| T2 — x | T1 | `b` | x | `true` | D-02 | bogus |\n",
+))
+check("blank Tier cell ⇒ None", r.tasks[0].tier is None, r.tasks[0].tier)
+check("unrecognized Tier cell ⇒ None (not a violation)", r.tasks[1].tier is None, r.tasks[1].tier)
+check("unrecognized Tier value doesn't fail the plan", r.ok, r.violations)
+
 # 9. real muni plan
 muni = Path.home() / "projects/muni-pennying/.planning/PLAN.md"
 if muni.is_file():
