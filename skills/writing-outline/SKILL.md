@@ -365,8 +365,6 @@ Before finalizing each outline, verify:
 
 - [ ] Every top-level bullet is one paragraph's topic sentence (a full claim, not a label/topic), with evidence/ideas as sub-bullets; the top-level bullets read in document order form the argument on their own
 - [ ] Evidence is specific (quotes, data), not vague ("sources say")
-- [ ] Logic connecting evidence to point is explicit
-- [ ] Transitions between subsections are planned
 - [ ] Section contributes to thesis (not tangential)
 - [ ] Anticipated objections are noted where relevant
 - [ ] Length estimate is realistic
