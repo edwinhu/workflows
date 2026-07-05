@@ -109,10 +109,15 @@ function toposort(tasks) {
 }
 
 async function runTask(t) {
-  // 1. idempotent short-circuit — skip only if the gate passes AND the declared artifact
-  //    actually exists (a stale/clobbered artifact must NOT count as already-done). The
-  //    CORE conjoins the two independent booleans the probe returns (doctrine iii).
-  if (!(ONLY && ONLY.has(String(t.id)))) {
+  // 1. idempotent short-circuit — ONLY probe pre-implement when the task is a resume
+  //    candidate: previously marked done (t.done), a paranoid REVERIFY_DONE resume, or
+  //    explicitly targeted via onlyChecks. A fresh, never-done task outside all three is a
+  //    GUARANTEED MISS — probing it first just doubles the probe count (2N instead of N)
+  //    for zero information (the exact waste on every forward-only run). Skip runs only if
+  //    the gate passes AND the declared artifact actually exists (a stale/clobbered artifact
+  //    must NOT count as already-done) — the CORE conjoins the two independent booleans the
+  //    probe returns (doctrine iii).
+  if (t.done || REVERIFY_DONE || (ONLY && ONLY.has(String(t.id)))) {
     const probe = await gateProbe(t)
     if (probe.pass && probe.artifactsPresent) { log(`↳ ${t.id}: already satisfied (skip implement)`); return { id: String(t.id), impl: null, gate: probe, pass: true, skipped: true } }
   }

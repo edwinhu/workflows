@@ -192,14 +192,25 @@ const RUNNER_SCHEMA = {
   },
 }
 
-// Verifier adjudicates one critical/major gap against the cited files.
-const VERIFY_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['principleId', 'confirmed', 'correctedScore', 'note'],
+// Verifier adjudicates ALL of one architecture cluster's critical/major gaps in ONE context (one
+// agent per cluster, not one per gap) — it re-reads the fileList ONCE and returns a verdict per gap.
+const VERIFY_BATCH_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['cluster', 'results'],
   properties: {
-    principleId: { type: 'string', description: 'echo the dispatched principle id verbatim' },
-    confirmed: { type: 'boolean', description: 'true iff the gap is real after re-reading the cited evidence' },
-    correctedScore: { type: 'integer', description: 'use ONLY if confirmed=false — the score the principle actually deserves (0-10)' },
-    note: { type: 'string' },
+    cluster: { type: 'string', description: 'echo the dispatched cluster key verbatim' },
+    results: {
+      type: 'array',
+      description: 'one entry per gap dispatched for this cluster, in the SAME order — do not omit any',
+      items: {
+        type: 'object', additionalProperties: false, required: ['id', 'verdict', 'correctedScore', 'rationale'],
+        properties: {
+          id: { type: 'string', description: 'echo the principle id verbatim' },
+          verdict: { type: 'string', enum: ['confirmed', 'refuted'], description: 'confirmed = the gap is real after re-reading the cited evidence; refuted = the cited evidence does not actually demonstrate the gap' },
+          correctedScore: { type: 'integer', description: 'use ONLY when verdict="refuted" — the score the principle actually deserves (0-10); 0 when verdict="confirmed" (ignored)' },
+          rationale: { type: 'string' },
+        },
+      },
+    },
   },
 }
 
@@ -358,32 +369,42 @@ if (ONLY) log(`Selective re-audit: ${reran} dimension(s) live, ${carriedCount} c
 const reviews = [...live, ...carried]
 const byDim = Object.fromEntries(reviews.map(r => [String(r.dimension), r]))
 
-// ── Phase 3: Verify (adversarially re-check critical/major principle gaps) ─────
+// ── Phase 3: Verify (adversarially re-check critical/major principle gaps, BATCHED per cluster) ─
 phase('Verify')
-// Collect principle gaps worth verifying: critical (<7) and major (7-8.9). Refuted gaps get a corrected score.
-const gapsToVerify = []
+// Collect principle gaps worth verifying: critical (<7) and major (7-8.9). Refuted gaps get a corrected
+// score. Grouped by architecture cluster so ONE verifier agent per cluster (≤4 agents total) re-checks
+// ALL of that cluster's flagged gaps in one context — instead of one agent per gap re-reading the full
+// fileList each time (was N agents for N gaps, most re-reading the same files).
+const gapsByCluster = new Map() // cluster key -> [{id, score, gap, evidence}]
 for (const c of ARCH_CLUSTERS) {
   const dim = byDim[c.key]
   if (!dim || (ONLY && !ONLY.has(c.key))) continue // only verify freshly-reviewed clusters; carried ones keep their prior verdict
+  const gaps = []
   for (const p of (dim.principles || [])) {
-    if (p.score < 9 && p.gap && !p.domainCeiling) {
-      gapsToVerify.push({ id: p.id, score: p.score, gap: p.gap, evidence: p.evidence })
-    }
+    if (p.score < 9 && p.gap && !p.domainCeiling) gaps.push({ id: p.id, score: p.score, gap: p.gap, evidence: p.evidence })
   }
+  if (gaps.length) gapsByCluster.set(c.key, gaps)
 }
-const verifyResults = (await parallel(gapsToVerify.map(g => () =>
+const gapsToVerify = [...gapsByCluster.values()].flat()
+const clusterVerifyResults = (await parallel([...gapsByCluster.entries()].map(([clusterKey, gaps]) => () =>
   agent(
     `${READONLY}
-Set principleId="${g.id}" verbatim. Adversarially re-check this audit gap against the ACTUAL files (self-reports are not ground truth — read the cited lines yourself):
-PRINCIPLE ${g.id} was scored ${g.score}/10. Claimed gap: "${g.gap}". Cited evidence: ${g.evidence}.
-Open the cited file:line and the surrounding context in:\n${fileList}
-Decide: is the gap REAL? Default to skepticism — if the cited evidence does not actually demonstrate the gap (e.g. it claims "no gate" but a hook/artifact exists, or "advisory-only" but a structural marker is present), set confirmed=false and supply the correctedScore the principle truly deserves. If the gap holds, confirmed=true. Return VERIFY_SCHEMA.`,
-    { label: `verify:${g.id}`, phase: 'Verify', schema: VERIFY_SCHEMA, model: 'sonnet' }
+Set cluster="${clusterKey}" verbatim. Adversarially re-check EACH of the following audit gaps for this cluster against the ACTUAL files (self-reports are not ground truth — read the cited lines yourself). Open the cited file:line + surrounding context in:\n${fileList}
+
+Gaps to re-check (one results[] entry per principle below, in the SAME order — do not omit any):
+${gaps.map(g => `- ${g.id} (scored ${g.score}/10): claimed gap "${g.gap}" — cited evidence: ${g.evidence}`).join('\n')}
+
+For EACH gap decide: is it REAL? Default to skepticism — if the cited evidence does not actually demonstrate the gap (e.g. it claims "no gate" but a hook/artifact exists, or "advisory-only" but a structural marker is present), set verdict="refuted" and supply the correctedScore the principle truly deserves. If the gap holds, verdict="confirmed". Return VERIFY_BATCH_SCHEMA.`,
+    { label: `verify:${clusterKey}`, phase: 'Verify', schema: VERIFY_BATCH_SCHEMA, model: 'sonnet' }
   )
 ))).filter(Boolean)
 const correction = new Map()
-for (const v of verifyResults) if (v && v.confirmed === false) correction.set(String(v.principleId), v.correctedScore)
-if (gapsToVerify.length) log(`Verified ${gapsToVerify.length} gap(s); ${correction.size} refuted (re-scored up)`)
+for (const cr of clusterVerifyResults) {
+  for (const v of (cr.results || [])) {
+    if (v && v.verdict === 'refuted') correction.set(String(v.id), v.correctedScore)
+  }
+}
+if (gapsToVerify.length) log(`Verified ${gapsToVerify.length} gap(s) across ${gapsByCluster.size} cluster(s); ${correction.size} refuted (re-scored up)`)
 // Write corrections back into the review records themselves (not just scoreById) so a future
 // selective re-audit's priorReviews carry the CORRECTED verdict — otherwise reviewersThatFlagged
 // re-flags a refuted phantom finding forever, since carried reviews would still show the raw score.

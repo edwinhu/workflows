@@ -67,14 +67,14 @@ console.log('compile + structure')
 
 console.log('SEQUENTIAL within level (must NOT call parallel())')
 {
-  const { trace } = await run({ gate: redThenGreen(), args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'shape ok' } } })
+  const { trace } = await run({ gate: () => true, args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'shape ok' } } })
   ok('parallel() never used', trace.usedParallel === false)
   ok('task1 ran before 2 and 3', trace.implCalls.indexOf('1') < trace.implCalls.indexOf('2') && trace.implCalls.indexOf('1') < trace.implCalls.indexOf('3'))
 }
 
 console.log('global constraints + interfaces injected into implementer prompt')
 {
-  const { trace } = await run({ gate: redThenGreen(), args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
+  const { trace } = await run({ gate: () => true, args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
   ok('task2 prompt carries GLOBAL CONSTRAINTS', /GLOBAL CONSTRAINTS/.test(trace.implPrompts['2']) && /CON-1/.test(trace.implPrompts['2']))
   ok('task2 prompt carries its INTERFACES', /INTERFACES/.test(trace.implPrompts['2']) && /validate\(req\)/.test(trace.implPrompts['2']))
   ok('task1 (N/A) prompt has the no-test branch', /Failing Test = N\/A|types-only\/meta/.test(trace.implPrompts['1']))
@@ -83,7 +83,7 @@ console.log('global constraints + interfaces injected into implementer prompt')
 
 console.log('declared pause at task 3 (TDD: RED→GREEN forces implement, then pause)')
 {
-  const { result, trace } = await run({ gate: redThenGreen() })
+  const { result, trace } = await run({ gate: () => true })
   eq('paused at 3 (declared)', [result.returnReason, result.atTask, result.pauseKind], ['pause-human', '3', 'declared'])
   ok('task4 not implemented (gated behind pause)', !trace.implCalls.includes('4'), `impl=${trace.implCalls}`)
   ok('payload carries numbered summary', /12 passed/.test(result.payload.summary), JSON.stringify(result.payload))
@@ -92,30 +92,50 @@ console.log('declared pause at task 3 (TDD: RED→GREEN forces implement, then p
 
 console.log('resume past declared pause → hybrid full-suite checkpoint at level 1 (cross-level overlap on src/types.ts)')
 {
-  const { result } = await run({ gate: redThenGreen(), args: { clearedPauses: ['3'], decisions: { 3: 'ok' } } })
+  const { result } = await run({ gate: () => true, args: { clearedPauses: ['3'], decisions: { 3: 'ok' } } })
   eq('paused fullsuite at level 1', [result.returnReason, result.recheckKind, result.atLevel], ['yield-for-recheck', 'fullsuite', 1])
   ok('fullsuite payload names the overlap level', /full test suite/.test(result.payload.decision))
 }
 
 console.log('resume past fullsuite checkpoint (clearedFullSuite) → completion')
 {
-  const { result, trace } = await run({ gate: redThenGreen(), args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
+  const { result, trace } = await run({ gate: () => true, args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
   eq('runs to completion', [result.returnReason, result.overallPass, result.tasksRemaining], ['done', true, 0])
   ok('task4 implemented after both resumes', trace.implCalls.includes('4'))
   ok('decision injected into task3 prompt', /HUMAN DECISION/.test(trace.implPrompts['3'] || ''))
 }
 
-console.log('idempotent short-circuit (all probes pass first try → skip every implementer)')
+// Pre-implement gate-first idempotent short-circuit is now RESTRICTED to resume candidates
+// (t.done || reverifyDone || onlyChecks) — a fresh, never-done task no longer pays for a
+// guaranteed-miss pre-probe (was 2N probes/run; see run-core.js runTask doctrine (1)).
+console.log('resume candidate (reverifyDone): pre-probe runs, all pass first try → skip every implementer')
 {
-  const { result, trace } = await run({ gate: () => true })
+  const { result, trace } = await run({ gate: () => true, args: { reverifyDone: true } })
   eq('all skipped, done', [result.returnReason, result.overallPass, result.tasksRemaining], ['done', true, 0])
   eq('no implementer calls', trace.implCalls.length, 0)
+  eq('exactly ONE probe per task (pre-probe only — no wasted post-implement probe)', trace.gateCalls.length, 4)
   ok('no pause on fully-satisfied resume', result.returnReason === 'done')
+}
+
+console.log('fresh non-done tasks (no reverifyDone/onlyChecks) skip the wasted pre-probe entirely')
+{
+  const { result, trace } = await run({ gate: () => true, args: { clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
+  eq('runs to completion via implement', [result.returnReason, result.overallPass], ['done', true])
+  eq('every task implemented (no pre-probe short-circuit for fresh tasks)', trace.implCalls.slice().sort(), ['1', '2', '3', '4'])
+  eq('exactly ONE probe per task (post-implement only — the pre-probe waste is gone)', trace.gateCalls.length, 4)
+}
+
+console.log('resume candidate that is genuinely stale (reverifyDone, pre-probe misses) still forces implement')
+{
+  const { result, trace } = await run({ gate: redThenGreen(), args: { reverifyDone: true, clearedPauses: ['3'], clearedFullSuite: [1], decisions: { 3: 'ok' } } })
+  eq('runs to completion', [result.returnReason, result.overallPass], ['done', true])
+  eq('every task implemented (pre-probe missed, forcing implement)', trace.implCalls.slice().sort(), ['1', '2', '3', '4'])
+  eq('TWO probes per task (pre-miss + post-hit) — the genuine resume-recheck case', trace.gateCalls.length, 8)
 }
 
 console.log('dynamic R4 architectural pause (implementer blocks)')
 {
-  const { result } = await run({ gate: redThenGreen(), impl: (id) => id === '1' ? 'blocked' : 'implemented' })
+  const { result } = await run({ gate: () => true, impl: (id) => id === '1' ? 'blocked' : 'implemented' })
   eq('paused R4 at 1', [result.returnReason, result.pauseKind, result.atTask], ['pause-human', 'R4', '1'])
   ok('payload carries deviations (the bug channel)', /architectural/.test(result.payload.deviations))
   ok('payload carries numbered summary', /12 passed/.test(result.payload.summary))
@@ -124,7 +144,7 @@ console.log('dynamic R4 architectural pause (implementer blocks)')
 console.log('testPresent gate: Verify exits 0 but the failing test is missing/faked → must NOT pass')
 {
   // every Verify exits 0 and files present, but task 2 has NO real test in the tree.
-  const { result, trace } = await run({ gate: redThenGreen(), files: () => true, test: (id) => id !== '2' })
+  const { result, trace } = await run({ gate: () => true, files: () => true, test: (id) => id !== '2' })
   ok('task2 NOT skipped despite exit0 (test missing → implement)', trace.implCalls.includes('2'), `impl=${trace.implCalls}`)
   ok('task2 fails the gate (test still missing post-implement)', result.tasksThatFailed.includes('2'), `failed=${result.tasksThatFailed}`)
   const f = (result.findings || []).find(x => x.task === '2')
@@ -133,7 +153,7 @@ console.log('testPresent gate: Verify exits 0 but the failing test is missing/fa
 
 console.log('filesPresent gate: Verify exits 0 but a declared file is missing → must NOT pass')
 {
-  const { result, trace } = await run({ gate: redThenGreen(), files: (id) => id !== '1', test: () => true })
+  const { result, trace } = await run({ gate: () => true, files: (id) => id !== '1', test: () => true })
   ok('task1 NOT skipped (file missing → implement)', trace.implCalls.includes('1'))
   ok('task1 fails the gate', result.tasksThatFailed.includes('1'), `failed=${result.tasksThatFailed}`)
 }

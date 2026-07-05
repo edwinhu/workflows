@@ -61,9 +61,11 @@ console.log('blocked implementer → R4 pause with collision numbers (mirrors li
   ok('implementer ran (G1)', trace.implCalls.includes('G1'))
   ok('did NOT silently pass — overallPass false', result.overallPass === false)
   ok('paused, pauseKind R4, atTask G1', result.returnReason === 'pause-human' && result.pauseKind === 'R4' && result.atTask === 'G1', JSON.stringify([result.returnReason, result.pauseKind, result.atTask]))
-  // for a blocked task: gate-first PRE-probe runs once (skip-check), then implement → blocked →
-  // return BEFORE the authoritative post-impl gate. So exactly ONE gate call for G1, not two.
-  ok('authoritative post-impl gate NOT reached (1 probe = pre-check only)', trace.gateCalls.filter(g => g === 'G1').length === 1, `gateCalls=${JSON.stringify(trace.gateCalls)}`)
+  // G1 is fresh (not [x], no reverifyDone/onlyChecks) → the pre-implement gate-first probe is now
+  // SKIPPED entirely (a guaranteed miss on a fresh task is pure waste; run-core.js runTask doctrine
+  // (1)). Implement runs straight away → blocked → return BEFORE the authoritative post-impl gate.
+  // So ZERO gate calls for G1 (was 1 pre-check-only call before the pre-probe-skip fix).
+  ok('no gate call reached for G1 (pre-probe skipped for a fresh task; blocked before post-impl gate)', trace.gateCalls.filter(g => g === 'G1').length === 0, `gateCalls=${JSON.stringify(trace.gateCalls)}`)
   ok('payload.deviations carries the collision count (5 vs 4)', /len\(keys\)=5/.test(result.payload.deviations) && /set\(keys\)\)=4/.test(result.payload.deviations), result.payload.deviations)
   ok('payload.summary carries the numbers', /5 rows/.test(result.payload.summary) && /4 unique/.test(result.payload.summary))
   ok('proposes +price tiebreaker WITHOUT applying (still blocked)', /event_ts×price|event_ts x price|\+price|×price/.test(result.payload.deviations))
