@@ -25,6 +25,7 @@ const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).
 // projects). The fileHeader (theme preamble) is NOT a work-list concern → the assembly agent constructs
 // it from templates + SOURCES.md, so discFromIndex stays 100% deterministic (no LLM).
 const SLIDE_INDEX = (cfg.slideIndex && Array.isArray(cfg.slideIndex.slides) && cfg.slideIndex.slides.length) ? cfg.slideIndex : null
+const SEV_RANK = { critical: 0, major: 1, minor: 2 }
 
 const SLIDE = {
   type: 'object', additionalProperties: false,
@@ -58,6 +59,18 @@ const SECTION_SCHEMA = {
     slideNums: { type: 'array', items: { type: 'string' }, description: 'the slide numbers this section file covers (must equal the section\'s spec rows)' },
     citedInventory: { type: 'array', items: { type: 'string' }, description: 'inventory ids cited across the section (⊆ the union of its slides\' allowed ids)' },
     summary: { type: 'string' },
+  },
+}
+// Independent mechanical probe (mirrors run-core's gateProbe doctrine): the section agent's
+// citedInventory is self-reported (it greps its own fragment and echoes tokens) — nothing deterministic
+// re-checked it. workshop-verify's whitelist covers OUTLINE inventoryRefs, not grepped fragment tokens.
+// This workflow has no filesystem access itself, so a second, CHEAP, low-effort agent re-runs the exact
+// grep independently and its tokens (not the section agent's self-report) are what the gate trusts.
+const PROBE_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['section', 'tokens'],
+  properties: {
+    section: { type: 'string' },
+    tokens: { type: 'array', items: { type: 'string' }, description: 'exact, verbatim output of the grep command — do not add, remove, or further dedupe' },
   },
 }
 const ASSEMBLE_SCHEMA = {
@@ -145,7 +158,17 @@ WRITE two files (mkdir -p ${disc.fragmentsDir} first):
 - ${disc.fragmentsDir}/notes-section-${sec.id}.typ — flowing speaker-notes for this section (one block per slide, with timing from each slide's Notes). Write PLAIN Typst prose + bullets ONLY — NO custom note macros (do NOT invent \`#slide-notes\`/\`#speaker-note\`/etc.; assembly adds the \`= Section\` heading + the standard notes preamble, and the gate now COMPILES notes.typ, so an invented macro breaks the build).
 GROUND citedInventory IN THE FILE (not memory): after writing, run \`grep -ohE '[FTRA][0-9]+' ${disc.fragmentsDir}/section-${sec.id}.typ | sort -u\` and set citedInventory to EXACTLY that grep output — the actual inventory ids present in the fragment you wrote. (The gate checks this ⊆ the allowed set; a memory-reported list that disagrees with the file is the fidelity bug this step closes.)
 Return SECTION_SCHEMA: slidesPath, notesPath, slideNums (must equal ${JSON.stringify(sec.slides.map(s => s.num))}), citedInventory (the grep result, ⊆ the allowed set), summary.`,
-    { label: `section:${sec.id}`, phase: 'Sections', schema: SECTION_SCHEMA })
+    { label: `section:${sec.id}`, phase: 'Sections', schema: SECTION_SCHEMA }
+  ).then(secResult => {
+    // Pipeline the independent probe onto this section's draft (no extra barrier): only probe a
+    // section that actually reports a drafted fragment file.
+    if (!secResult || secResult.status !== 'drafted' || !(secResult.slidesPath || '').trim()) return secResult
+    return agent(
+      `Run this EXACT command and report its output — do not inspect the file's content beyond running the command, do not reason about correctness, just grep and report: \`grep -ohE '[FTRA][0-9]+' ${secResult.slidesPath} | sort -u\`
+Set section="${sec.id}" verbatim. tokens = the command's stdout, one token per line, verbatim (the command already sorts + dedupes — do not add/remove/reorder). Return PROBE_SCHEMA.`,
+      { label: `section:${sec.id}:probe`, phase: 'Sections', schema: PROBE_SCHEMA, model: 'haiku', effort: 'low' }
+    ).then(probe => ({ ...secResult, probedInventory: probe ? probe.tokens : null }))
+  })
 }))).filter(Boolean)
 const secById = Object.fromEntries(liveSecs.map(s => [String(s.section), s]))
 const allSecs = sectionList.map(s => secById[s.id] || (PRIOR.has(s.id) ? PRIOR.get(s.id) : null))
@@ -187,7 +210,11 @@ for (const sec of sectionList) {
   const wrote = new Set((f?.slideNums || []).map(String))
   const completeSlides = drafted && [...expected].every(n => wrote.has(n))
   const allowed = new Set(sec.slides.flatMap(s => (s.inventory || []).map(String)))
-  const fidelityOk = !f || (f.citedInventory || []).every(id => allowed.has(String(id)))
+  // Trust the INDEPENDENT probe's grepped tokens over the section agent's self-reported citedInventory
+  // when a probe ran (gateProbe doctrine) — self-report is not ground truth. Fall back to the
+  // self-report only when no probe result exists (e.g. a carried PRIOR review from before this fix).
+  const citedTokens = (f && Array.isArray(f.probedInventory)) ? f.probedInventory : (f?.citedInventory || [])
+  const fidelityOk = !f || citedTokens.every(id => allowed.has(String(id)))
   rows.push({ section: sec.id, key: sec.key, slideCount: sec.slides.length, drafted, completeSlides, fidelityOk })
   if (!drafted) findings.push({ severity: 'critical', section: sec.id, detail: `Section "${sec.key}": fragment not produced (status=${f ? f.status : 'missing'})` })
   else if (!completeSlides) findings.push({ severity: 'major', section: sec.id, detail: `Section "${sec.key}": missing slides ${[...expected].filter(n => !wrote.has(n)).join(', ')}` })
@@ -199,7 +226,7 @@ if (haveAll && !compiled) findings.push({ severity: 'critical', section: 'deck',
 // notes.typ is a first-class teleprompter deliverable — gate it, don't ship malformed notes (opv-parity).
 if (haveAll && compiled && !notesCompiled) findings.push({ severity: 'critical', section: 'deck', detail: `notes.typ did not compile: ${(asm?.notesCompileError || 'unknown').slice(0, 300)}` })
 if (!haveAll) findings.push({ severity: 'critical', section: 'deck', detail: 'Not all sections have fragments — assembly skipped' })
-findings.sort((a, b) => ({ critical: 0, major: 1, minor: 2 }[a.severity] - { critical: 0, major: 1, minor: 2 }[b.severity]))
+findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])
 
 const allDrafted = rows.length > 0 && rows.every(r => r.drafted && r.completeSlides && r.fidelityOk)
 const overallPass = allDrafted && compiled && notesCompiled

@@ -85,16 +85,43 @@ def deny(reason: str):
     sys.exit(0)
 
 
+def _is_workshop_generate_dispatch(tool_input: dict) -> bool:
+    """True iff this Workflow tool call dispatches workshop-generate (the Phase 2->3 fan-out that
+    actually writes slides.typ/notes.typ). The Edit|Write-only check below never saw this dispatch —
+    Workflow calls carry no file_path, so a skipped OUTLINE_APPROVED step could still start generation
+    via Workflow even though direct Edit/Write to the content files was gated."""
+    target = f"{tool_input.get('scriptPath', '')} {tool_input.get('name', '')}"
+    return "workshop-generate" in target
+
+
 def main():
     try:
         hook_input = json.load(sys.stdin)
     except Exception:
         sys.exit(0)
 
-    if hook_input.get("tool_name", "") not in {"Write", "Edit"}:
+    tool_name = hook_input.get("tool_name", "")
+    tool_input = hook_input.get("tool_input", {})
+
+    if tool_name == "Workflow":
+        if not _is_workshop_generate_dispatch(tool_input):
+            sys.exit(0)
+        if not _status_ok(GATE_ARTIFACT, GATE_STATUS):
+            deny(
+                f"GATE BLOCKED: outline not approved.\n\n"
+                f"Dispatching workshop-generate requires `{GATE_ARTIFACT}` with "
+                f"`status: {GATE_STATUS}` — the Phase 2 outline-approval gate.\n\n"
+                f"The artifact proves the user approved the outline before slide/notes "
+                f"generation. Instructional text alone is not enforcement.\n\n"
+                f"**Remedy:** Return to Phase 2 (Structure Outline), get user approval, "
+                f"and write `.planning/OUTLINE_APPROVED.md`."
+            )
         sys.exit(0)
 
-    file_path = hook_input.get("tool_input", {}).get("file_path", "")
+    if tool_name not in {"Write", "Edit"}:
+        sys.exit(0)
+
+    file_path = tool_input.get("file_path", "")
 
     # Phase 3 -> 4 gate: the VALIDATION.md verification record requires a passed
     # workshop-verify review gate. Checked before the always-allowed .planning

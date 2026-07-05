@@ -24,7 +24,11 @@ from pathlib import Path
 
 
 TRIGGER_RE = re.compile(
-    r"tinymist\s+compile\b.*?\b(slides/\S+\.typ)\b",
+    # Any *.typ compile target, not just one under a literal `slides/` directory — workshop decks
+    # commonly compile `presentation/slides.typ` or a flat `slides.typ`, neither of which matched the
+    # old `slides/\S+\.typ` requirement. The find_scripts_dir() teaching-plugin lookup below stays the
+    # graceful no-op for machines without it — that part is by design, not part of this fix.
+    r"tinymist\s+compile\b.*?\b(\S+\.typ)\b",
 )
 
 

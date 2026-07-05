@@ -364,7 +364,7 @@ phase('Verify')
 const gapsToVerify = []
 for (const c of ARCH_CLUSTERS) {
   const dim = byDim[c.key]
-  if (!dim || ONLY) continue // only verify freshly-reviewed clusters; carried ones keep their prior verdict
+  if (!dim || (ONLY && !ONLY.has(c.key))) continue // only verify freshly-reviewed clusters; carried ones keep their prior verdict
   for (const p of (dim.principles || [])) {
     if (p.score < 9 && p.gap && !p.domainCeiling) {
       gapsToVerify.push({ id: p.id, score: p.score, gap: p.gap, evidence: p.evidence })
@@ -384,6 +384,14 @@ Decide: is the gap REAL? Default to skepticism — if the cited evidence does no
 const correction = new Map()
 for (const v of verifyResults) if (v && v.confirmed === false) correction.set(String(v.principleId), v.correctedScore)
 if (gapsToVerify.length) log(`Verified ${gapsToVerify.length} gap(s); ${correction.size} refuted (re-scored up)`)
+// Write corrections back into the review records themselves (not just scoreById) so a future
+// selective re-audit's priorReviews carry the CORRECTED verdict — otherwise reviewersThatFlagged
+// re-flags a refuted phantom finding forever, since carried reviews would still show the raw score.
+for (const r of reviews) {
+  for (const p of (r.principles || [])) {
+    if (correction.has(p.id)) { p.score = correction.get(p.id); p.gap = '' }
+  }
+}
 
 // ── Phase 4: Gate (pure JS — composite from raw scores; NEVER trust a self-reported composite) ─
 phase('Gate')
@@ -515,7 +523,7 @@ const scoreTable = [
   `| Enforcement checklist | ${enf ? `${(enf.patterns || []).filter(p => p.status === 'Present').length}/${(enf.patterns || []).length} Present` : 'n/a'} | ${enf && (enf.patterns || []).every(p => p.status !== 'Absent') ? '✅' : '⚠️'} |`,
   `| Path portability | ${port ? port.status : 'n/a'} | ${port && port.status === 'Clean' ? '✅' : '❌'} |`,
   `| Ultracode-workflow candidacy | ${cand ? `${(cand.candidates || []).filter(c => c.recommend === 'strong' || c.recommend === 'moderate').length} open` : 'n/a'} | ${cand && !(cand.candidates || []).some(c => c.recommend === 'strong') ? '✅' : '⚠️'} |`,
-  `| Runner architecture | ${runnerApplicable ? `${executionClass} (P22-26 scored)` : `${executionClass} — N/A`} | ${executionClass === 'generic-interpreter' ? '❌' : '✅'} |`,
+  `| Runner architecture | ${runnerApplicable ? `${executionClass} (P22-30 scored)` : `${executionClass} — N/A`} | ${executionClass === 'generic-interpreter' ? '❌' : '✅'} |`,
   `| Critical findings | ${criticalCount} | ${criticalCount === 0 ? '✅' : '❌'} |`,
   `| **Substrate gate** | 0 crit / ${enfAbsent.length} enf-Absent / portability ${portStatus} | ${substratePass ? '✅' : '❌'} |`,
   `| **Overall** | substrate ${substratePass ? 'clean' : 'FAILED'} + composite ${composite} vs ${THRESHOLD} | ${overallPass ? '✅ PASS' : '❌ NEEDS WORK'} |`,
