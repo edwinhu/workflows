@@ -43,6 +43,12 @@ REPO = HOOKS_DIR.parent
 CHECK_ALL_PY = REPO / "references" / "constraints" / "check-all.py"
 CHECK_ALL_DS = REPO / "scripts" / "check-all-ds.sh"
 
+# Hooks run standalone (`uv run python3 <path>`) from an unknown cwd, so
+# sys.path-insert this file's own directory before importing the sibling
+# shared module rather than assuming a package/relative import will resolve.
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import deny, _project_from_args  # noqa: E402
+
 
 def _run_dev(project: str):
     """check-all.py (dev). Return (ok, failed, errors, summary). ok iff no hard content FAILURES.
@@ -86,27 +92,6 @@ def _run_ds(project: str):
     return ok, failed, [], summary
 
 
-def deny(reason: str):
-    print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": "PreToolUse",
-        "permissionDecision": "deny",
-        "permissionDecisionReason": reason,
-    }}))
-    sys.exit(0)
-
-
-def _project_from_args(tool_input: dict) -> str:
-    args = tool_input.get("args")
-    if isinstance(args, str):
-        try:
-            args = json.loads(args)
-        except Exception:
-            args = {}
-    if isinstance(args, dict) and args.get("projectDir"):
-        return str(args["projectDir"])
-    return "."
-
-
 def main():
     floor = os.environ.get("FLOOR", "").strip().lower()
 
@@ -132,7 +117,7 @@ def main():
         # Gate the ds-validate-coverage Workflow fan-out ONLY (never Agent — fix subagents must run).
         if tool_name != "Workflow":
             sys.exit(0)
-        project = _project_from_args(tool_input)
+        project = _project_from_args(tool_input, hook_input)
         ok, failed, errors, summary = _run_ds(project)
         if not ok:
             deny(
@@ -148,7 +133,7 @@ def main():
     # FLOOR=dev (default): gate the goal-backward verifier Agent spawn.
     if tool_name != "Agent":
         sys.exit(0)
-    project = _project_from_args(tool_input)
+    project = _project_from_args(tool_input, hook_input)
     ok, failed, errors, summary = _run_dev(project)
     if not ok:
         note = ("\n\n(Plus " + str(len(errors)) + " constraint(s) errored — tooling, NOT blocking.)"
