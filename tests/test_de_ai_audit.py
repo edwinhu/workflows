@@ -96,5 +96,48 @@ def test_rewrite_improves_tic_density_and_clears_spans():
     assert ra["n_spans"] < rb["n_spans"]
 
 
+# --- corpus z-vs-human reporting (item 4: report z-scores, not just raw counts) ----------
+def test_z_report_present_and_backward_compatible():
+    res = AUDIT.audit_text("The bridge stands as a testament to careful planning.")
+    # backward-compatible: all prior top-level keys still present
+    for key in ("file", "words", "composite_human_likeness", "tic_density", "tic_flags",
+                "n_spans", "by_type", "spans", "advisories", "density_words"):
+        assert key in res
+    # new field, additive only
+    assert "z_report" in res
+    zr = res["z_report"]
+    assert set(zr) == {"stylometric_per_feature", "stylometric_mean_abs_z", "diction_rate_vs_human"}
+
+
+def test_z_report_on_real_file_populates_stylometric_and_diction(tmp_path):
+    text = ("In today's rapidly evolving landscape, the reform stands as a testament to "
+            "progress, and these findings carry significant implications for a "
+            "multifaceted, meticulous debate. The analysis showcases a rich tapestry of "
+            "considerations, and the framework harnesses cutting-edge methodology.")
+    f = tmp_path / "draft.md"
+    f.write_text(text)
+    res = AUDIT.audit_file(str(f), ("always_flag", "cluster", "density"))
+    zr = res["z_report"]
+    assert zr["stylometric_per_feature"], "expected per-feature stylometric z-scores"
+    for feat, v in zr["stylometric_per_feature"].items():
+        assert {"value", "human_mean", "z", "flag"} <= set(v)
+    dr = zr["diction_rate_vs_human"]
+    assert "tapestry" in dr
+    assert dr["tapestry"]["draft_rate_per_M"] > dr["tapestry"]["human_rate_per_M"]
+    assert dr["tapestry"]["ratio_vs_human"] > 1
+
+
+def test_z_report_diction_ratio_none_when_corpus_rate_zero(tmp_path):
+    # 'underpinning' has rate_per_M: 0.0 in diction.yaml (always_flag) — ratio must be
+    # reported as None (undefined multiplier), not a ZeroDivisionError or a fabricated number.
+    f = tmp_path / "draft.md"
+    f.write_text("This underpinning shapes the whole argument.")
+    res = AUDIT.audit_file(str(f), ("always_flag", "cluster", "density"))
+    dr = res["z_report"]["diction_rate_vs_human"]
+    assert "underpinning" in dr
+    assert dr["underpinning"]["human_rate_per_M"] == 0.0
+    assert dr["underpinning"]["ratio_vs_human"] is None
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

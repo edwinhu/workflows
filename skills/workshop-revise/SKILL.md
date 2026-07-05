@@ -42,6 +42,8 @@ hooks:
 
 **Announce:** "I'm using workshop-revise to apply changes to the workshop presentation."
 
+**GATE_REMEDY for decks built before the sources gate existed:** if `.planning/SOURCES_VERIFIED.md` is missing because the deck predates this gate (not because sources were never verified), and you have confirmed sources genuinely were verified, create the artifact by hand instead of routing back through Phase 1: `mkdir -p .planning && printf 'status: VERIFIED\n' > .planning/SOURCES_VERIFIED.md`. Writes to `.planning/` are gate-exempt (`hooks/phase-gate-guard.py` `ALWAYS_ALLOWED_DIRS`), so this write is never itself blocked.
+
 ## Shared Typst Constraints
 
 Load ALL Typst conventions before touching any files:

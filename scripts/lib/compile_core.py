@@ -1,0 +1,150 @@
+"""
+compile_core: shared deterministic PLAN.md -> run.js compile driver.
+
+Both scripts/dev/dev_compile.py and scripts/ds/ds_compile.py are >90% identical:
+splice __TASK_BODIES__ (exactly-once), fill the remaining data holes (exactly-once
+each, over the SPLICED template), node --check the result, write the banner, and
+resolve the project dir from PLAN.md's location the same way. This module extracts
+that shared driver; each domain supplies a small CompileConfig with its own
+parser, spec-dict builder, level-modes function, meta name/description, and the
+domain-specific holes (__GLOBAL_CONSTRAINTS__ source + __REQUIRE_OUTPUTS_PRODUCED__).
+
+NO LLM. Exit 0 on success; non-zero (with violations on stderr) if the plan is not
+compilable — same contract as before extraction.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable
+
+
+def js_literal(value) -> str:
+    """JSON is a subset of JS object/array literal syntax — safe to inject."""
+    return json.dumps(value, ensure_ascii=False, indent=2)
+
+
+def node_check(path: Path) -> bool:
+    """`node --check` the emitted run.js — a splice has more failure modes than a single-file fill.
+    Skips silently (returns True) if node is unavailable."""
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        return True
+    proc = subprocess.run([node, "--check", str(path)], capture_output=True, text=True)
+    if proc.returncode != 0:
+        print(f"node --check FAILED on {path}:\n{proc.stderr}", file=sys.stderr)
+    return proc.returncode == 0
+
+
+@dataclass
+class CompileConfig:
+    domain: str                                   # "dev" | "ds" — used only for defaults/messages
+    default_fragment_name: str                    # e.g. "dev-task.js" / "ds-task.js"
+    parse_plan: Callable[[str], object]            # -> ParseResult with .ok/.violations/.tasks/.global_constraints
+    toposort: Callable[[list], list]               # tasks -> levels
+    spec_dict: Callable[[object], dict]            # Task -> per-task literal dict
+    level_modes: Callable[..., list]               # (levels, [by_id]) -> list[str]; see level_modes_needs_by_id
+    level_modes_needs_by_id: bool                  # dev's level_modes(levels) vs ds's level_modes(levels, by_id)
+    run_name: str                                  # "dev-run" / "ds-run"
+    describe: Callable[[int, int, Path], str]      # (n_tasks, n_levels, project_dir) -> meta.description
+    global_constraints_hole: Callable[[object], str]  # ParseResult -> JSON string for __GLOBAL_CONSTRAINTS__
+    require_outputs_produced: bool                 # __REQUIRE_OUTPUTS_PRODUCED__ literal
+
+
+def compile_plan(cfg: CompileConfig, plan_path: Path, out_path: Path, project_dir: Path,
+                  template_path: Path, fragment_path: Path) -> int:
+    text = plan_path.read_text()
+    res = cfg.parse_plan(text)
+    if not res.ok:
+        print("PLAN NOT COMPILABLE:\n- " + "\n- ".join(res.violations), file=sys.stderr)
+        return 1
+
+    specs = [cfg.spec_dict(t) for t in res.tasks]
+    levels = cfg.toposort(res.tasks)
+    if cfg.level_modes_needs_by_id:
+        by_id = {t.id: t for t in res.tasks}
+        level_modes = cfg.level_modes(levels, by_id)
+    else:
+        level_modes = cfg.level_modes(levels)
+    pauses = [s["id"] for s in specs if s["pauseAfter"]]
+
+    meta = {
+        "name": cfg.run_name,
+        "description": cfg.describe(len(specs), len(levels), project_dir),
+        "phases": [{"title": f"Level {i}", "detail": " ".join(levels[i])} for i in range(len(levels))]
+                  + [{"title": "Gate", "detail": "independent probe of each Verify Command exit code"}],
+    }
+
+    template = template_path.read_text()
+    fragment = fragment_path.read_text()
+
+    # splice the per-domain fragment into __TASK_BODIES__ FIRST (exactly-once), so the data-hole
+    # assertion below runs over the SPLICED result (catches a hole token leaking out of the fragment).
+    body_hole = "/*__TASK_BODIES__*/"
+    if template.count(body_hole) != 1:
+        print(f"Template {template_path}: hole {body_hole} appears {template.count(body_hole)}× (expected 1).", file=sys.stderr)
+        return 2
+    template = template.replace(body_hole, fragment, 1)
+
+    holes = {"/*__META__*/": js_literal(meta),
+             "/*__PROJECT__*/": json.dumps(str(project_dir)),
+             "/*__TASKS__*/": js_literal(specs),
+             "/*__GLOBAL_CONSTRAINTS__*/": cfg.global_constraints_hole(res),
+             "/*__LEVEL_MODES__*/": js_literal(level_modes),
+             "/*__REQUIRE_OUTPUTS_PRODUCED__*/": js_literal(cfg.require_outputs_produced)}
+    for hole in holes:
+        n = template.count(hole)
+        if n != 1:
+            print(f"After splice: hole {hole} appears {n}× (expected exactly 1). "
+                  f"A hole token must not appear in documentation/comments.", file=sys.stderr)
+            return 2
+
+    banner = (
+        f"// GENERATED by {cfg.domain}-compile from PLAN.md — DO NOT EDIT. Edit PLAN.md and recompile.\n"
+        f"// source: {plan_path}\n"
+        f"// core: {template_path.name} + fragment: {fragment_path.name}\n"
+        f"// tasks: {len(specs)} | levels: {len(levels)} | modes: {level_modes} | declared pauses: {pauses or 'none'}\n\n")
+    out = banner + template
+    for hole, repl in holes.items():
+        out = out.replace(hole, repl, 1)
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(out)
+    if not node_check(out_path):
+        return 3
+    print(f"compiled {len(specs)} task(s), {len(levels)} level(s), modes={level_modes} → {out_path}")
+    if pauses:
+        print(f"  declared pause(s) at: {', '.join(pauses)}")
+    return 0
+
+
+def main(cfg: CompileConfig, templates_dir: Path, argv: list[str] | None = None) -> int:
+    default_template = templates_dir / "run-core.js"
+    default_fragment = templates_dir / cfg.default_fragment_name
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("plan")
+    ap.add_argument("--out")
+    ap.add_argument("--project")
+    ap.add_argument("--template", default=str(default_template))
+    ap.add_argument("--fragment", default=str(default_fragment))
+    a = ap.parse_args(argv)
+
+    plan_path = Path(a.plan).resolve()
+    if not plan_path.is_file():
+        print(f"PLAN.md not found: {plan_path}", file=sys.stderr)
+        return 2
+    out_path = Path(a.out).resolve() if a.out else plan_path.parent / "run.js"
+    if a.project:
+        project_dir = Path(a.project).resolve()
+    else:
+        p = plan_path.parent
+        project_dir = p.parent if p.name == ".planning" else p
+    return compile_plan(cfg, plan_path, out_path, project_dir,
+                         Path(a.template).resolve(), Path(a.fragment).resolve())

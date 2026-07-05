@@ -10,9 +10,12 @@ Run: uv run python3 tests/test_writing_mechanical_gate.py
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
+import tempfile
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,6 +82,54 @@ ok("hook invokes check-all with --with lxml",
 # 7. ERRORS are non-blocking; only `failed` blocks (limit-scope: a broken dep must not wall off review)
 ok("hook blocks on failed only (errors non-blocking)",
    "len(failed) == 0" in src and "NOT blocking" in src)
+
+# 8. Freshness cache: reuses the cached verdict when the hash is unchanged, re-runs when a
+#    drafts/*.md file's mtime moves (item 5 — the Leg-1 double-run with writing-review).
+spec = importlib.util.spec_from_file_location("writing_mechanical_gate", HOOK)
+GATE = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(GATE)
+
+with tempfile.TemporaryDirectory() as td:
+    project = Path(td)
+    (project / "drafts").mkdir()
+    draft = project / "drafts" / "intro.md"
+    draft.write_text("Hello world.")
+
+    calls = {"n": 0}
+
+    def _fake_run_check_all(proj):
+        calls["n"] += 1
+        return True, [], [], "ok (fake run)"
+
+    GATE._run_check_all = _fake_run_check_all
+
+    ok1, failed1, errors1, summary1, cached1 = GATE._run_check_all_cached(str(project))
+    ok("cache miss: first call actually runs check-all", calls["n"] == 1 and cached1 is False)
+    ok("cache miss: writes .planning/.checkall-cache.json",
+       (project / ".planning" / ".checkall-cache.json").is_file())
+
+    ok2, failed2, errors2, summary2, cached2 = GATE._run_check_all_cached(str(project))
+    ok("cache hit: unchanged project reuses cached verdict (no re-run)",
+       calls["n"] == 1 and cached2 is True, f"calls={calls['n']} cached2={cached2}")
+    ok("cache hit: verdict matches the cached run", ok2 == ok1 and summary2 == summary1)
+
+    time.sleep(0.02)
+    draft.write_text("Hello world, edited.")
+    ok3, failed3, errors3, summary3, cached3 = GATE._run_check_all_cached(str(project))
+    ok("draft edit invalidates the cache (re-runs check-all)",
+       calls["n"] == 2 and cached3 is False, f"calls={calls['n']} cached3={cached3}")
+
+# 9. Cache read/write are fail-open: a corrupt cache file must not crash the gate, just re-run.
+with tempfile.TemporaryDirectory() as td:
+    project = Path(td)
+    (project / "drafts").mkdir()
+    (project / "drafts" / "a.md").write_text("x")
+    (project / ".planning").mkdir()
+    (project / ".planning" / ".checkall-cache.json").write_text("{not valid json")
+    calls = {"n": 0}
+    GATE._run_check_all = lambda proj: (calls.__setitem__("n", calls["n"] + 1) or (True, [], [], "ok"))
+    ok4, failed4, errors4, summary4, cached4 = GATE._run_check_all_cached(str(project))
+    ok("corrupt cache file fails open (still returns a verdict)", ok4 is True and cached4 is False)
 
 print(f"\n{_p} passed, {_f} failed")
 sys.exit(1 if _f else 0)

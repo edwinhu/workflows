@@ -37,6 +37,10 @@ REQUIRED_COLS = ("task", "deps", "outputs", "expected output", "verify", "implem
 _TABLE_REQUIRED = {"task", "deps", "verify"}
 # ds-only: a [engineer] / [analyst] role tag anywhere in the task cell
 _KIND_RE = re.compile(r"\[(engineer|analyst)\]", re.I)
+# OPTIONAL Tier column (heavy|standard|trivial|methodology) — an author-declared override for
+# ds_compile._tier()'s keyword-sniffing heuristic. Absent column or unrecognized/blank cell value
+# falls back to the heuristic untouched (zero behavior change for existing plans).
+VALID_TIERS = {"heavy", "standard", "trivial", "methodology"}
 
 
 @dataclass
@@ -52,13 +56,14 @@ class Task:
     done: bool
     pause_after: str | None      # decision text if the row declares a ⏸ PAUSE marker, else None
     task_text: str               # full task cell, verbatim (for the implementer prompt)
+    tier: str | None = None      # optional author-declared Tier column value (heavy|standard|trivial|methodology)
 
     def to_dict(self) -> dict:
         return {
             "id": self.id, "name": self.name, "kind": self.kind, "deps": self.deps,
             "outputs": self.outputs, "expectedOutput": self.expected_output,
             "verify": self.verify, "implements": self.implements, "done": self.done,
-            "pauseAfter": self.pause_after, "taskText": self.task_text,
+            "pauseAfter": self.pause_after, "taskText": self.task_text, "tier": self.tier,
         }
 
 
@@ -141,10 +146,16 @@ def parse_plan(text: str) -> ParseResult:
             if not val or val.upper() == "N/A":
                 res.violations.append(f"Task {tid}: {label} is empty/N/A.")
 
+        tier_val = None
+        if has_col(header, "tier"):
+            raw_tier = cell(header, cells, "tier").strip().strip("`").strip().lower()
+            if raw_tier in VALID_TIERS:
+                tier_val = raw_tier
+
         res.tasks.append(Task(
             id=tid, name=name, kind=kind, deps=deps, outputs=outputs,
             expected_output=expected, verify=verify, implements=implements,
-            done=done, pause_after=pause, task_text=task_cell))
+            done=done, pause_after=pause, task_text=task_cell, tier=tier_val))
 
     ids = {t.id for t in res.tasks}
     for t in res.tasks:
