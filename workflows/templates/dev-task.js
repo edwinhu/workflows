@@ -14,9 +14,13 @@
 // `artifactsPresent` — the core then ANDs pass && artifactsPresent (doctrine iii).
 // ============================================================================
 
+// SOLE owner of "is a test required?" (scripts/dev/dev_plan_table.py deliberately does not
+// duplicate this predicate — see its comment). Must stay in sync with the plan-template's N/A
+// convention: '', 'n/a', 'na', 'none', and any run of dash chars (-, –, —) all mean no test.
 const testRequired = t => {
   const n = String(t.failingTest || '').trim().toLowerCase()
-  return n !== '' && !/^(n\/?a|none)\b/.test(n)
+  if (n === '' || /^[-–—]+$/.test(n)) return false
+  return !/^(n\/?a|none)\b/.test(n)
 }
 
 // raw shape the independent probe agent returns (mapped into the canonical contract below)
@@ -108,7 +112,9 @@ function recheckTrigger(results, li) {
   const filesThisLevel = levels[li].flatMap(id => (byId[id] && byId[id].files) || [])
   if (!filesThisLevel.some(f => seenBefore.has(f))) return null
   return {
-    recheckKind: 'fullsuite', atLevel: li,
+    recheckKind: 'fullsuite',
+    // atLevel is NOT set here — it's always just an echo of `li`, so the core (run-core.js)
+    // supplies it directly from the loop variable rather than trusting the fragment to echo it back.
     payload: {
       decision: `Cross-level file overlap at level ${li}: run the full test suite before advancing. If green, resume with clearedFullSuite += ${li}; if red, fix via onlyChecks then resume.`,
       levelTasks: levels[li], filesThisLevel,

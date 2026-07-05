@@ -33,16 +33,55 @@ ID_RE = re.compile(r"^\s*\**\s*((?:[A-Za-z]+)?\d+)\s*\**\.?")
 DONE_RE = re.compile(r"`?\[x\]`?", re.I)
 # tokens that mean "no dependencies"
 NO_DEPS = {"", "-", "--", "---", "—", "–", "n/a", "none"}
-# a dependency reference token inside the Deps cell: T1, 1, t10 …
-DEP_TOK_RE = re.compile(r"(?:[A-Za-z]+)?\d+")
+# a whole dep token, after splitting the cell on commas/whitespace: **T1**, T1., 1, t10 …
+_DEP_TOKEN_RE = re.compile(r"^\**((?:[A-Za-z]+)?\d+)\**\.?$")
 # an inline pause marker in any cell: ⏸ PAUSE: <text>  (also accepts "PAUSE:" without the glyph)
 PAUSE_RE = re.compile(r"(?:⏸\s*)?PAUSE:\s*(.+?)(?:\s*$)", re.I)
 
 _SEP_RE = re.compile(r"^\|?[\s:|-]+\|[\s:|-]+\|?$")
 
 
+def _split_cells(text: str) -> list[str]:
+    """Split a markdown table row's raw text on bare '|' — tolerant of (a) an escaped `\\|`
+    (unescaped to a literal '|' in the resulting cell, not treated as a separator) and (b) a
+    '|' inside a backtick code span (`` `pytest -q | tail` ``, `` `grep -E 'foo|bar'` `` — both
+    real Verify-cell content). Shared by split_row (data rows) and find_table (the header row)
+    so a Verify cell with a shell pipe or regex alternation can never shift later columns."""
+    cells: list[str] = []
+    buf: list[str] = []
+    in_code = False
+    i, n = 0, len(text)
+    while i < n:
+        c = text[i]
+        if c == "\\" and i + 1 < n and text[i + 1] == "|":
+            buf.append("|")
+            i += 2
+            continue
+        if c == "`":
+            in_code = not in_code
+            buf.append(c)
+            i += 1
+            continue
+        if c == "|" and not in_code:
+            cells.append("".join(buf))
+            buf = []
+            i += 1
+            continue
+        buf.append(c)
+        i += 1
+    cells.append("".join(buf))
+    return cells
+
+
+def _strip_outer_pipes(text: str) -> str:
+    text = text.strip()
+    text = re.sub(r"^\|+", "", text)
+    text = re.sub(r"\|+$", "", text)
+    return text
+
+
 def split_row(line: str) -> list[str]:
-    return [c.strip() for c in line.strip().strip("|").split("|")]
+    return [c.strip() for c in _split_cells(_strip_outer_pipes(line))]
 
 
 def col_index(header, name) -> int:
@@ -82,7 +121,7 @@ def find_table(text: str, required: set[str]):
         line = raw.strip()
         if not (line.startswith("|") and "|" in line[1:]):
             continue
-        header = [c.strip().lower() for c in line.strip("|").split("|")]
+        header = [c.strip().lower() for c in _split_cells(_strip_outer_pipes(line))]
         sep = lines[i + 1].strip() if i + 1 < len(lines) else ""
         is_sep = bool(_SEP_RE.match(sep)) and "-" in sep
         if is_sep and required.issubset(set(header)):
@@ -95,14 +134,35 @@ def find_table(text: str, required: set[str]):
     return None, None
 
 
-def parse_deps(deps_cell: str) -> list[str]:
+def parse_deps(deps_cell: str, violations: list[str] | None = None, ctx: str = "") -> list[str]:
     """A Deps cell → a list of canonical dependency ids. Tolerates `after T1, T2`, bare `T1, T2`,
-    and the no-deps tokens (—, ---, none, n/a, …). Plan-internal task refs only (never artifacts)."""
+    and the no-deps tokens (—, ---, none, n/a, …). Plan-internal task refs only (never artifacts).
+
+    Deliberately NOT a digit-sweep over the whole cell: free text like `T1 (needs config v2)`
+    must not turn `v2` into a phantom dep. After stripping the optional leading `after `, the
+    cell is split on commas/whitespace and each piece must FULLMATCH a dep token (optionally
+    `**bold**`-wrapped, optionally trailing `.`); non-conforming residue is dropped from the
+    deps list and, if a `violations` list is supplied, reported there (prefixed with `ctx`)
+    instead of silently becoming a dependency."""
     norm = deps_cell.strip().strip("`").strip().lower()
     if norm in NO_DEPS:
         return []
-    body = re.sub(r"^after\s+", "", deps_cell.strip(), flags=re.I)
-    return [canon_id(t) for t in DEP_TOK_RE.findall(body)]
+    # backticks are markdown formatting only (a whole cell like `` `after 0` `` or individually
+    # `` `T1`, `T2` `` ) — strip them all before the `after ` prefix-check and the token split, or
+    # a wrapped cell's leading backtick would hide the `after ` prefix from re.sub below.
+    body = re.sub(r"^after\s+", "", deps_cell.strip().replace("`", ""), flags=re.I)
+    deps: list[str] = []
+    for piece in re.split(r"[,\s]+", body.strip()):
+        if not piece:
+            continue
+        m = _DEP_TOKEN_RE.match(piece)
+        if m:
+            deps.append(canon_id(piece))
+        elif violations is not None:
+            violations.append(
+                f"{ctx}Deps cell has unparseable text '{piece}' (not a dep token like `T1`/`1`) — "
+                f"dropped, not treated as a dependency.")
+    return deps
 
 
 def check_acyclic(deps_map: dict[str, list[str]]) -> bool:

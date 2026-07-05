@@ -7,7 +7,7 @@ hooks:
       hooks:
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
-    - matcher: "Edit|Write"
+    - matcher: "Edit|Write|Workflow"
       hooks:
         - type: command
           command: >-
@@ -15,8 +15,15 @@ hooks:
             GATE_STATUS=VERIFIED
             GATE_DESCRIPTION="Phase 1 sources gate"
             GATE_REMEDY="Return to Phase 1 and complete source gathering before writing any files"
+            GATE_BLOCKED_TOOLS=Write,Edit
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
         - type: command
+          # workshop-phase-gate-guard.py is bespoke (not built on the GATE_BLOCKED_TOOLS env-var
+          # pattern) — it hardcodes its own tool-name check to Write|Edit|Workflow so it can gate BOTH
+          # direct writes to slides.typ/notes.typ AND the Workflow(name="workshop-generate", ...)
+          # dispatch that actually produces them (a Workflow call carries no file_path, so the
+          # Edit|Write-only check alone never saw it — the OUTLINE_APPROVED gate could be bypassed by
+          # generation starting via Workflow before any Edit/Write landed).
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
         - type: command
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.py"
@@ -639,11 +646,11 @@ Generation is the **`workshop-generate` ultracode workflow** — do NOT hand-wri
      "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>",
      "slideIndex": <the parsed .planning/slide-index.json object, or omit to use the LLM Discover>
    })
-   → returns { overallPass, slides, compiled, findings, slidesThatFailed, assembledPaths }.
+   → returns { overallPass, sections, compiled, findings, sectionsThatFailed, assembledPaths }.
 2. Read the gate:
-   - overallPass=true (every slide fragment produced + deck compiles) → proceed to the review fan-out below.
+   - overallPass=true (every section fragment produced + deck compiles) → proceed to the review fan-out below.
    - overallPass=false → fix the cause (a missing fragment / a compile error / an out-of-inventory citation),
-     re-invoke with onlyChecks=result.slidesThatFailed. If a Slide Spec row is itself under-specified,
+     re-invoke with onlyChecks=result.sectionsThatFailed. If a Slide Spec row is itself under-specified,
      that's an R4 — return to Phase 2, fix the row, re-approve (the outline guard re-checks).
 3. The Typst conventions above are what the fragment-agents follow; the assembly agent owns the file header
    (theme import + config-info incl qr:none) and the section headings. The deck COMPILING is the workflow's

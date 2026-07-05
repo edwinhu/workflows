@@ -10,7 +10,6 @@ keeping the PostToolUse hook (Layer 3) aligned with the full applicable set
 
 import importlib.util
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -27,6 +26,17 @@ CI_ONLY = {"atomic-constraints"}
 REPO_ROOT = Path(__file__).parent.parent
 CONSTRAINTS_DIR = REPO_ROOT / "references" / "constraints"
 
+# Import the SINGLE SOURCE OF TRUTH for applies-to parsing (scripts/load-constraints.py) by path,
+# rather than hand-rolling a regex here. The old hand-rolled regex only matched the bracketed list
+# form `applies-to: [a, b]` — a scalar `applies-to: workflow-creator` (no brackets) silently fell
+# through to "no frontmatter match ⇒ defaults to all", leaking wc-only constraints onto every edit
+# in the repo. parse_frontmatter/skill_matches handle both forms identically to check-all.py.
+_lc_spec = importlib.util.spec_from_file_location("load_constraints", REPO_ROOT / "scripts" / "load-constraints.py")
+_lc = importlib.util.module_from_spec(_lc_spec)
+_lc_spec.loader.exec_module(_lc)
+parse_frontmatter = _lc.parse_frontmatter
+skill_matches = _lc.skill_matches
+
 
 def applies_to_target(md_path):
     """True iff the .md's applies-to frontmatter includes workflow-creator or 'all'
@@ -35,14 +45,13 @@ def applies_to_target(md_path):
         text = md_path.read_text()
     except Exception:
         return False
-    if not text.startswith("---"):
-        return True  # no frontmatter ⇒ defaults to all
-    fm = text.split("---", 2)[1]
-    m = re.search(r'applies-to:\s*\[([^\]]*)\]', fm)
-    if not m:
-        return True
-    entries = [e.strip().strip("'\"").lower() for e in m.group(1).split(",")]
-    return "all" in entries or TARGET_SKILL in entries
+    meta, _body = parse_frontmatter(text)
+    applies_to = meta.get("applies-to", [])
+    if isinstance(applies_to, str):
+        applies_to = [applies_to]
+    if not applies_to:
+        applies_to = ["all"]
+    return skill_matches(applies_to, TARGET_SKILL)
 
 
 def applicable_checks():

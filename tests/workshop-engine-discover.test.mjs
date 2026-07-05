@@ -61,7 +61,11 @@ const INDEX = {
   }
   const { result, trace } = await exec(genSrc, { args: { projectDir: '/p', slideIndex: INDEX }, onAgent })
   ok('gen: no LLM discover when index present', !trace.labels.includes('discover'))
-  ok('gen: one section agent per composite group (2)', trace.labels.filter(l => l.startsWith('section:')).length === 2)
+  // Exact "section:<id>" draft labels only — a probe agent "section:<id>:probe" now also chains onto
+  // each draft (independent grep re-check of citedInventory, gateProbe doctrine), so a loose
+  // startsWith('section:') match would double-count.
+  ok('gen: one section agent per composite group (2)', trace.labels.filter(l => /^section:\d+$/.test(l)).length === 2)
+  ok('gen: one probe agent per drafted section (2)', trace.labels.filter(l => /^section:\d+:probe$/.test(l)).length === 2)
   ok('gen: assemble ran', trace.labels.includes('assemble'))
   ok('gen: overallPass true (all groups drafted + compiles)', result.overallPass === true, JSON.stringify(result?.verdict))
   ok('gen: assemble prompt constructs header (fileHeader empty → instruction)',
@@ -154,7 +158,9 @@ function makeVerifyMock(extraSlides = []) {
   // D1 scope disclosure (move 2 / §4b): a clean pass discloses checked vs notChecked.
   ok('verify scope: checked lists typst compile', (result.scope?.checked || []).some(s => /typst compile/.test(s)), JSON.stringify(result.scope))
   ok('verify scope: notChecked discloses the SEMANTIC reviewers are outside the floor', (result.scope?.notChecked || []).some(s => /SEMANTIC/.test(s)))
-  ok('verify scope: notChecked discloses constraints caveat (phantom/permanently-red)', (result.scope?.checked || []).some(s => /permanently red|phantom/.test(s)))
+  // D-w-8 fix: check-all.py's JSON failed[]/errors[] split is now parsed (not a permanently-red exit
+  // code), so the caveat text changed from "phantom/permanently red" to describing the split itself.
+  ok('verify scope: checked discloses the failed[]/errors[] split (was: exit-code phantom/permanently-red)', (result.scope?.checked || []).some(s => /failed\[\]/.test(s) && /errors\[\]/.test(s)))
 }
 {
   // compile-fail short-circuit also carries scope (honest about what it skipped).

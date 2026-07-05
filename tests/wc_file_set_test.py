@@ -73,5 +73,21 @@ check("bad: flags non-slug constraint", any("Bad Name" in v for v in b.violation
 dup = parse_design(CANONICAL.replace("phases: explore, design, implement", "phases: a, b, a"), Path("/p"))
 check("dup phases: flagged", any("duplicate phase" in v for v in dup.violations))
 
+# the module's OWN docstring example (with an inline `# one of: ...` comment on midpoint:) must parse
+# clean — this is the module eating its own cooking; a stray inline comment previously fed straight
+# into the `midpoint` value and failed validation against _MIDPOINTS.
+DOCSTRING_EXAMPLE = """## Generation Manifest
+<!-- wc-generate enumerates the file set from this section. Keep it canonical. -->
+workflow: myflow
+midpoint: fix                 # one of: fix | debug | revise | none
+phases: explore, design, implement
+constraints:
+- no-skip-tests | testable
+- naming-convention | convention
+"""
+doc = parse_design(DOCSTRING_EXAMPLE, Path("/p"))
+check("docstring example: ok", doc.ok, doc.violations)
+check("docstring example: midpoint skill present (comment stripped)", "skill:myflow-fix" in [f["fileId"] for f in doc.files])
+
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)

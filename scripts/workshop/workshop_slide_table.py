@@ -58,7 +58,9 @@ _INV_TAIL_RE = re.compile(r'(?:→|->)?\s*\[(?P<ids>[^\]]*)\]\s*$')
 
 def section_slug(name: str) -> str:
     """Unicode-safe slug (NFC; em-dash/colon survive as separators). Mirrors
-    writing_section_index.section_slug — used to key OUTLINE rows for the verify side-table join."""
+    writing_section_index.section_slug. Public utility kept for tests/future use — the
+    Slide.title_slug field this once fed was dead code (zero downstream consumers; workshop-verify's
+    OUTLINE-row↔built-slide join stays a free semantic read, DESIGN §3a-join) and was removed."""
     s = unicodedata.normalize("NFC", name).strip()
     s = re.sub(r"[^\w]+", "-", s, flags=re.UNICODE).strip("-")
     return s
@@ -76,14 +78,13 @@ class Slide:
     inventory: list[str]        # F/T/R/A ids (literal tokens; ranges kept as endpoints)
     visual: str                 # table-only ("" in prose form)
     notes: str                  # table-only ("" in prose form)
-    title_slug: str             # section_slug(takeaway) — the join key candidate for verify
 
     def to_dict(self) -> dict:
         return {
             "num": self.num, "part": self.part, "section": self.section,
             "subsection": self.subsection, "group": self.group, "takeaway": self.takeaway,
             "bullets": self.bullets, "inventory": self.inventory, "visual": self.visual,
-            "notes": self.notes, "titleSlug": self.title_slug,
+            "notes": self.notes,
         }
 
 
@@ -183,8 +184,7 @@ def _parse_table(text: str, idx: SlideIndex) -> None:
         group = f"{sec} / {sub}" if sub else sec
         idx.slides.append(Slide(
             num=n, part="", section=sec, subsection=sub, group=group, takeaway=takeaway,
-            bullets=_cell(header, cells, "bullets"), inventory=inv, visual=visual, notes=notes,
-            title_slug=section_slug(takeaway)))
+            bullets=_cell(header, cells, "bullets"), inventory=inv, visual=visual, notes=notes))
     if not seen:
         idx.violations.append("Slide Spec table has no slide rows.")
 
@@ -228,8 +228,7 @@ def _parse_prose(text: str, idx: SlideIndex) -> None:
         inv = _inv_tokens(inv_cell)
         idx.slides.append(Slide(
             num=n, part=part, section=section, subsection=subsection, group=group,
-            takeaway=takeaway, bullets=bullets, inventory=inv, visual="", notes="",
-            title_slug=section_slug(takeaway)))
+            takeaway=takeaway, bullets=bullets, inventory=inv, visual="", notes=""))
         # Prose-form violations (4-field subset — Visual/Notes NOT required here, back-compat):
         if not takeaway:
             idx.violations.append(f"Slide {n}: no takeaway sentence parsed from prose row.")
@@ -269,6 +268,7 @@ def build_index(arg) -> SlideIndex:
     planning = outline.parent
     sources = planning / "SOURCES.md"
     idx.sources_path = str(sources) if sources.is_file() else ""
+    src = ""
     if idx.sources_path:
         src = sources.read_text(encoding="utf-8", errors="ignore")
         # first "- Path:" line (tolerate bold markers: "- **Path:**"); it is the primary paper.
@@ -298,8 +298,8 @@ def build_index(arg) -> SlideIndex:
             idx.group_order.append(sl.group)
 
     # dangling inventory ref check + the canonical ID universe (verify's whitelist; only if SOURCES present)
+    # Reuses `src` read once above — was previously read a second time here.
     if idx.sources_path:
-        src = sources.read_text(encoding="utf-8", errors="ignore")
         known = set(_INV_TOK_RE.findall(src))
         idx.sources_inventory = sorted(known, key=lambda t: (t[0], int(t[1:])))
         for sl in idx.slides:

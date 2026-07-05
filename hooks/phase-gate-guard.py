@@ -25,7 +25,15 @@ Usage in SKILL.md frontmatter:
               GATE_STATUS=APPROVED
               GATE_DESCRIPTION="Plan review"
               GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
+              GATE_BLOCKED_TOOLS=Agent
               uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+
+LANDMINE: the `matcher` alone does NOT block a tool — it only decides which tool calls invoke this
+script. Blocking is decided here, by GATE_BLOCKED_TOOLS, which DEFAULTS to Write,Edit only (see
+DEFAULT_BLOCKED_TOOLS below). A matcher of "Write|Edit|Agent" with no GATE_BLOCKED_TOOLS=...,Agent
+fires this script on every Agent call but silently allows it through (tool_name not in blocked_tools
+=> sys.exit(0)) — a phantom gate that looks wired but never actually blocks the fan-out it names in
+its matcher. Always list every tool named in `matcher` in GATE_BLOCKED_TOOLS too.
 
 Grounded in: April 2026 meta-audit — workflow-creator found that advisory gates
 ("you must run X first") were systematically skipped under context pressure.

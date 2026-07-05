@@ -25,6 +25,25 @@ def find_plugin_root() -> Path | None:
     return None
 
 
+TRIGGER_RE = re.compile(r'\b(?:typst|tinymist)\s+compile\b')
+
+
+def resolve_typ_target(command: str) -> str | None:
+    """Return the .typ compile target in `command`, or None if this isn't a typst/tinymist compile.
+
+    Triggers on both `typst compile` and `tinymist compile`. Tolerates flags between "compile" and
+    the target (e.g. `typst compile --input handout=true slides.typ`, `--root .`) by taking the LAST
+    `*.typ` token in the ;/&/|-delimited segment that contains the trigger, rather than requiring the
+    target to be the first token after "compile".
+    """
+    for seg in re.split(r'[;&|]+', command):
+        if TRIGGER_RE.search(seg):
+            typ_tokens = re.findall(r'([^\s]+\.typ)\b', seg)
+            if typ_tokens:
+                return typ_tokens[-1]
+    return None
+
+
 def main():
     try:
         hook_input = json.load(sys.stdin)
@@ -39,17 +58,13 @@ def main():
 
     command = tool_input.get("command", "")
 
-    # Only trigger on typst compile commands
-    if "typst compile" not in command:
+    # Trigger on both `typst compile` and `tinymist compile` (the compiler the workshop-generate
+    # ultracode workflow and visual-verify actually invoke), tolerating flags before the target —
+    # a substring check on "typst compile" alone silently skipped every tinymist-driven compile, and
+    # requiring the target as the first token after "compile" missed `--input`/`--root` forms.
+    typ_file = resolve_typ_target(command)
+    if not typ_file:
         sys.exit(0)
-
-    # Extract the .typ file being compiled
-    # Match patterns like: typst compile slides.typ, typst compile ./slides.typ
-    match = re.search(r'typst\s+compile\s+([^\s;&|]+\.typ)', command)
-    if not match:
-        sys.exit(0)
-
-    typ_file = match.group(1)
 
     # Only check slides files (not notes.typ or other .typ files)
     if "slides" not in Path(typ_file).stem:

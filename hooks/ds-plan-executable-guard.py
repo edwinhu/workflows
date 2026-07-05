@@ -28,18 +28,26 @@ import json
 import sys
 from pathlib import Path
 
-# Single source of truth for "what the Task Breakdown table means" — the SAME tolerant
-# parser ds-compile uses to emit run.js, so a plan that COMPILES also PASSES this gate.
-# (Before reconciliation this guard used a stricter regex that rejected real plans like
-# muni's `**T1**` / bare-`T1` format, which only ran because the now-retired LLM discovery
-# agent silently tolerated the drift. The shared parser closes that gap.)
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "ds"))
-from ds_plan_table import parse_plan  # noqa: E402
-
 
 def validate_plan(plan_path: Path):
+    """Return list of human-readable violations ([] == executable).
+
+    Single source of truth for "what the Task Breakdown table means" — the SAME tolerant
+    parser ds-compile uses to emit run.js, so a plan that COMPILES also PASSES this gate.
+    (Before reconciliation this guard used a stricter regex that rejected real plans like
+    muni's `**T1**` / bare-`T1` format, which only ran because the now-retired LLM discovery
+    agent silently tolerated the drift. The shared parser closes that gap.)
+
+    The parser import is deliberately LAZY (done here, not at module load): this hook's
+    PreToolUse matcher fires on every Write/Edit in a session, but only a write to
+    `PLAN_REVIEWED.md` ever reaches this function — the hundreds of unrelated calls exit early
+    in main() before validate_plan runs. Importing ds_plan_table (and mutating sys.path) at
+    module scope would pay that cost on every one of them.
+    """
     if not plan_path.is_file():
         return [f"PLAN.md not found at {plan_path}"]
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "ds"))
+    from ds_plan_table import parse_plan  # noqa: E402
     return parse_plan(plan_path.read_text()).violations
 
 
