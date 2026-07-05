@@ -155,7 +155,7 @@ Skill(skill="workflows:ai-anti-patterns")
 Before any review work, run all mechanical constraint checks:
 
 ```bash
-uv run python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py [project-root]
+uv run --with lxml python3 ${CLAUDE_SKILL_DIR}/../../references/constraints/check-all.py [project-root]
 ```
 
 This auto-discovers and runs all `writing-*.py` constraint scripts (bold-lead, topic sentences, source-anchored citations, etc.). If any check fails, report violations and fix them before proceeding to Level 1.

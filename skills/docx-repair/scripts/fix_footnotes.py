@@ -1862,11 +1862,24 @@ def main():
 
     # Bio-footnote count: AUTO-DETECT from the customMarkFollows refs the build set, NOT a
     # hardcoded 3. A paper with no author bios (single author, no acknowledgements) has zero
-    # customMarkFollows refs → bio_count=0 → no symbols forced onto its real footnotes. An
-    # explicit --bio-footnotes overrides (e.g. a Google Docs round-trip that stripped the marks).
-    bio_count = args.bio_footnotes if args.bio_footnotes is not None else (doc_xml or '').count('customMarkFollows="1"')
+    # customMarkFollows refs → bio_count=0 → no symbols forced onto its real footnotes.
+    # IMPORTANT: the documented Google Docs damage (footnotes-reference.md) ALWAYS flips
+    # customMarkFollows="1" → customMarkFollows="0" on round-trip, so counting only "1" misses
+    # every damaged paper's bio refs and silently skips bio restoration. Count BOTH variants —
+    # a bio-less paper has neither, so this preserves the no-spurious-bios behavior; a damaged
+    # paper (all "0") now detects correctly. An explicit --bio-footnotes overrides either way.
+    if args.bio_footnotes is not None:
+        bio_count = args.bio_footnotes
+    else:
+        cmf_1 = (doc_xml or '').count('customMarkFollows="1"')
+        cmf_0 = (doc_xml or '').count('customMarkFollows="0"')
+        bio_count = cmf_1 + cmf_0
     if args.bio_footnotes is None:
-        print(f"Auto-detected {bio_count} author bio footnote(s) from customMarkFollows refs.")
+        variant = 'customMarkFollows="1"' if cmf_1 and not cmf_0 else (
+            'customMarkFollows="0" (damaged — marks flipped by a Google Docs round-trip)' if cmf_0 and not cmf_1 else
+            f'customMarkFollows="1" ({cmf_1}) + customMarkFollows="0" ({cmf_0})' if cmf_1 and cmf_0 else
+            'customMarkFollows="1"/"0" (none found)')
+        print(f"Auto-detected {bio_count} author bio footnote(s) from {variant} refs.")
 
     issues = detect_issues(fn_xml, doc_xml, settings_xml, styles_xml)
     if not issues and not args.fix_numbering and not args.normalize_headings:

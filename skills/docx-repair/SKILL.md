@@ -180,7 +180,7 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 **Flags:**
 - `--output` / `-o`: Output path (default: overwrite input)
 - `--dry-run`: Show what would change without modifying
-- `--bio-footnotes N`: Number of author bio footnotes (default: 3)
+- `--bio-footnotes N`: Number of author bio footnotes. Default: **auto-detected** from the document's `customMarkFollows="1"`/`"0"` refs (0 if the paper has no bios); pass N only to override the auto-detect (e.g. a doc where the marks were stripped entirely).
 - `--crossrefs`: Chain to create_crossrefs.py after fixing
 - `--fix-numbering`: Fix numbering offset from customMarkFollows bio footnotes (adds numRestart, updates NOTEREFs and supra references)
 - `--normalize-headings`: Normalize headings (off by default) — style unstyled heading-looking paragraphs (2b) AND strip direct formatting + delete empty heading paragraphs (2a); restores Heading1–4 style defs from the template if missing. See §C.

@@ -136,33 +136,14 @@ def _paragraphs(text: str):
 # em-dashes — which the rewriter must then exclude by hand. Masking them here (blanking to spaces,
 # PRESERVING line count + offsets so line-anchoring stays exact) means findings never target a
 # footnote in the first place. Covers pandoc inline `^[...]` (one level of nested `[...]` for cites)
-# and markdown reference definitions `[^id]: ...` + their indented continuation lines.
-_INLINE_FN = re.compile(r"\^\[(?:[^\[\]]|\[[^\]]*\])*\]")
-_REF_FN_DEF = re.compile(r"^\s*\[\^[^\]]+\]:")
-
-
-def _blank(s: str) -> str:
-    """Replace every non-newline char with a space (keeps length + line breaks)."""
-    return re.sub(r"[^\n]", " ", s)
-
-
-def mask_footnotes(text: str) -> str:
-    # 1. inline ^[...] footnotes (may span lines; _blank preserves the newlines)
-    text = _INLINE_FN.sub(lambda m: _blank(m.group(0)), text)
-    # 2. reference [^id]: definition blocks — the def line + indented continuation lines
-    out, in_def = [], False
-    for ln in text.split("\n"):
-        if _REF_FN_DEF.match(ln):
-            in_def = True
-            out.append(_blank(ln)); continue
-        if in_def:
-            if ln.strip() == "":          # blank line ends the definition block
-                in_def = False; out.append(ln); continue
-            if re.match(r"^(\s{2,}|\t)", ln):  # indented continuation stays masked
-                out.append(_blank(ln)); continue
-            in_def = False                # non-indented line ends the block
-        out.append(ln)
-    return "\n".join(out)
+# and markdown reference definitions `[^id]: ...` + their indented (incl. multi-paragraph)
+# continuation lines.
+#
+# Lives in scripts/lib/footnote_mask.py — shared with hooks/writing-prose-check.py, which masks a
+# draft the same way before invoking style_metrics.py --lint. Re-exported here (mask_footnotes,
+# _blank, the two regexes) so existing importers of this module keep working unchanged.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from footnote_mask import mask_footnotes, _blank, _INLINE_FN, _REF_FN_DEF  # noqa: E402
 
 
 def audit_text(text: str, path: str = "<text>",
