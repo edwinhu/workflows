@@ -25,6 +25,22 @@ def check(name, cond, extra=""):
 # split_row
 check("split_row strips pipes + cells", split_row("| a | b | c |") == ["a", "b", "c"])
 
+# split_row: a bare '|' shell pipe / regex-alternation inside backticks must NOT split the cell
+# (split_row does NOT strip backticks — that's the domain parser's `cell()` helper's job — so
+# the expected cells here are still backtick-wrapped, just not shifted into the wrong column)
+check("split_row: shell pipe in backticks stays one cell",
+      split_row("| 1 | `---` | `pytest -q | tail` | A-01 |")
+      == ["1", "`---`", "`pytest -q | tail`", "A-01"])
+check("split_row: regex alternation in backticks stays one cell",
+      split_row("| 1 | `---` | `grep -E 'foo|bar'` | A-01 |")
+      == ["1", "`---`", "`grep -E 'foo|bar'`", "A-01"])
+# escaped \| is a literal pipe in the cell, not a separator (unescaped in the output)
+check("split_row: escaped \\| unescaped, not a separator",
+      split_row(r"| 1 | a\|b | c |") == ["1", "a|b", "c"])
+# a plain row with no pipes/backticks/escapes is unchanged
+check("split_row: plain row unchanged",
+      split_row("| Task | Deps | Verify |") == ["Task", "Deps", "Verify"])
+
 # prefix-tolerant column access (the dev 'failing test (write first)' case)
 hdr = ["task", "deps", "failing test (write first)", "verify command"]
 check("col_index exact", col_index(hdr, "task") == 0)
@@ -53,10 +69,31 @@ check("find_table header", h == ["task", "deps", "verify command", "implements"]
 check("find_table rows", len(rows) == 2, rows)
 check("find_table miss → None", find_table(DOC, {"task", "deps", "outputs"}) == (None, None))
 
+# find_table: a data row's Verify Command cell carrying a shell pipe must not corrupt later rows
+DOC_PIPE = """| Task | Deps | Verify Command | Implements |
+|------|------|----------------|------------|
+| 1 | — | `pytest -q | tail` | R1 |
+| 2 | after 1 | `grep -E 'foo|bar'` | R2 |
+"""
+h2, rows2 = find_table(DOC_PIPE, {"task", "deps", "verify command"})
+check("find_table: piped verify cell doesn't shift columns", rows2[0] == ["1", "—", "`pytest -q | tail`", "R1"], rows2)
+check("find_table: regex-alternation verify cell doesn't shift columns", rows2[1] == ["2", "after 1", "`grep -E 'foo|bar'`", "R2"], rows2)
+
 # parse_deps: no-deps tokens, 'after' prefix, bare list, **markdown**
 check("parse_deps none", parse_deps("—") == [] and parse_deps("none") == [] and parse_deps("") == [])
 check("parse_deps after", parse_deps("after 1, 2") == ["1", "2"])
 check("parse_deps bare md", parse_deps("**T1**, T2") == ["T1", "T2"])
+
+# parse_deps: free text with an embedded digit must NOT become a phantom dep (P5/v5.68.3)
+check("parse_deps: free text doesn't sweep in a phantom dep",
+      parse_deps("T1 (needs config v2)") == ["T1"], parse_deps("T1 (needs config v2)"))
+viol = []
+deps = parse_deps("T1 (needs config v2)", viol, "Task 3: ")
+check("parse_deps: non-conforming residue reported as a violation, not silently dropped",
+      deps == ["T1"] and len(viol) >= 1 and "v2" not in deps and all("unparseable" in v for v in viol),
+      (deps, viol))
+check("parse_deps: violations is optional (default None → no crash, no reporting)",
+      parse_deps("T1 (needs config v2)") == ["T1"])
 
 # DAG: cycle detection + level toposort (deps already filtered to present ids)
 check("acyclic: clean DAG false", check_acyclic({"1": [], "2": ["1"], "3": ["1", "2"]}) is False)

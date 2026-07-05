@@ -35,11 +35,11 @@ r = parse_plan(tbl(
 check("canonical parses", r.ok, r.violations)
 check("task0 id", r.tasks[0].id == "0")
 check("task0 no deps (---)", r.tasks[0].deps == [])
-check("task0 N/A test → not required", r.tasks[0].test_required is False)
+check("task0 N/A test cell", r.tasks[0].failing_test == "N/A (meta)")
 check("task1 deps after 0", r.tasks[1].deps == ["0"])
 check("task2 two files", r.tasks[2].files == ["src/auth/service.ts", "src/auth/service.test.ts"])
 check("task2 two implements", r.tasks[2].implements == ["AUTH-01", "AUTH-02"])
-check("task2 test required", r.tasks[2].test_required is True)
+check("task2 test cell present", r.tasks[2].failing_test == "test_validate_session()")
 check("task2 name stripped of id", r.tasks[2].name == "Service")
 
 # 1b. toposort: 0 → 1 → {2,3} parallel level
@@ -105,6 +105,23 @@ check("missing Implements column rejected", not r.ok and any("missing required c
 # 5. ⏸ PAUSE marker lifted
 r = parse_plan(tbl("| 1. x | `---` | `a.ts` | `t()` ⏸ PAUSE: confirm API shape | `npm test` | A-01 |\n"))
 check("pause marker lifted", r.ok and r.tasks[0].pause_after == "confirm API shape", r.tasks[0].pause_after)
+
+# 6. a Verify Command cell carrying a shell pipe must NOT shift later columns (P1/v5.68.3)
+r = parse_plan(tbl(
+    "| 1. x | `---` | `a.ts` | `t()` | `pytest -q | tail` | A-01 |\n",
+))
+check("piped verify cell parses", r.ok, r.violations)
+check("piped verify cell preserved verbatim", r.tasks[0].verify == "pytest -q | tail", r.tasks[0].verify)
+check("piped verify cell doesn't shift Implements", r.tasks[0].implements == ["A-01"], r.tasks[0].implements)
+
+# 7. an em-dash/plain-dash Failing Test cell means NO test required (matches dev-task.js testRequired)
+r = parse_plan(tbl(
+    "| 1. x | `---` | `a.ts` | — | `npm test` | A-01 |\n",
+    "| 2. y | `after 1` | `b.ts` | - | `npm test` | A-02 |\n",
+))
+check("em-dash failing-test cell parses", r.ok, r.violations)
+check("em-dash failing-test cell preserved", r.tasks[0].failing_test == "—", r.tasks[0].failing_test)
+check("plain-dash failing-test cell preserved", r.tasks[1].failing_test == "-", r.tasks[1].failing_test)
 
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)

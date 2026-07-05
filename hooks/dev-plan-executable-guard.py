@@ -19,7 +19,8 @@ Instructional "use the table" text was systematically ignored (a real reviewed
 PLAN — happy-clawd — used prose phase-headings and passed); the hook is the
 structural enforcement.
 
-Wired via dev-plan-reviewer frontmatter:
+Wired via dev-design frontmatter (skills/dev-design/SKILL.md — dev-plan-reviewer is a read-only
+reviewer and never writes PLAN_REVIEWED.md, so it cannot be this hook's wiring point):
   hooks:
     PreToolUse:
       - matcher: "Write|Edit"
@@ -34,20 +35,28 @@ import json
 import sys
 from pathlib import Path
 
-# Single source of truth for "what the Implementation Order table means" — the SAME tolerant
-# parser dev-compile uses to emit run.js, so a plan that COMPILES also PASSES this gate.
-# (Before reconciliation this guard used a stricter regex — `^(\d+)\.` ids, `^after\s+([\d,\s]+)$`
-# deps — whose drift the now-retired LLM discovery agent silently tolerated: a plan the workflow
-# could run could still be falsely blocked here, AND the guard's DAG check ran on a different
-# interpretation than the runner's. The shared parser closes both gaps.)
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "dev"))
-from dev_plan_table import parse_plan  # noqa: E402
-
 
 def validate_plan(plan_path: Path):
-    """Return list of human-readable violations ([] == executable)."""
+    """Return list of human-readable violations ([] == executable).
+
+    Single source of truth for "what the Implementation Order table means" — the SAME tolerant
+    parser dev-compile uses to emit run.js, so a plan that COMPILES also PASSES this gate.
+    (Before reconciliation this guard used a stricter regex — `^(\\d+)\\.` ids,
+    `^after\\s+([\\d,\\s]+)$` deps — whose drift the now-retired LLM discovery agent silently
+    tolerated: a plan the workflow could run could still be falsely blocked here, AND the guard's
+    DAG check ran on a different interpretation than the runner's. The shared parser closes both
+    gaps.)
+
+    The parser import is deliberately LAZY (done here, not at module load): this hook's
+    PreToolUse matcher fires on every Write/Edit in a session, but only a write to
+    `PLAN_REVIEWED.md` ever reaches this function — the hundreds of unrelated calls exit early
+    in main() before validate_plan runs. Importing dev_plan_table (and mutating sys.path) at
+    module scope would pay that cost on every one of them.
+    """
     if not plan_path.is_file():
         return [f"PLAN.md not found at {plan_path}"]
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "dev"))
+    from dev_plan_table import parse_plan  # noqa: E402
     return parse_plan(plan_path.read_text()).violations
 
 

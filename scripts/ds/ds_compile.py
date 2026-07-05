@@ -148,11 +148,15 @@ def compile_plan(plan_path: Path, out_path: Path, project_dir: Path,
     template = template.replace(body_hole, fragment, 1)
 
     # 2. ds has no Global Constraints; LEVEL_MODES is the compiler-derived intraLevel flag.
+    #    ds is output-first: force the outputsProduced self-report (True, not merely !== false) —
+    #    the forcing function the pass-#9 extraction accidentally dropped when it made the field
+    #    domain-optional in the shared TRANSFORM_SCHEMA/pass logic.
     holes = {"/*__META__*/": _js_literal(meta),
              "/*__PROJECT__*/": json.dumps(str(project_dir)),
              "/*__TASKS__*/": _js_literal(specs),
              "/*__GLOBAL_CONSTRAINTS__*/": json.dumps(""),
-             "/*__LEVEL_MODES__*/": _js_literal(level_modes)}
+             "/*__LEVEL_MODES__*/": _js_literal(level_modes),
+             "/*__REQUIRE_OUTPUTS_PRODUCED__*/": _js_literal(True)}
     for hole in holes:
         n = template.count(hole)
         if n != 1:

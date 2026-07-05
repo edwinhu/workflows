@@ -77,7 +77,16 @@ check("empty Verify flagged", any("Verify" in v for v in r.violations), r.violat
 r = parse_plan(tbl("| T1 — x | T9 | `a` | x | `true` | D-01 |\n"))
 check("dangling dep flagged", any("does not exist" in v for v in r.violations), r.violations)
 
-# 8. real muni plan
+# 8. qualified column header (prefix-tolerant, matching dev's already-tolerant column check —
+#    P3/v5.68.3: ds's exact `c not in header` check falsely rejected this before the fix)
+QUALIFIED_HEADER = ("| Task | Deps | Outputs | Expected Output (per requirement) | Verify | Implements |\n"
+                    "|---|---|---|---|---|---|\n")
+r = parse_plan("# PLAN\n\n## Task Breakdown\n\n" + QUALIFIED_HEADER +
+               "| T1 | — | `a.parquet` | non-empty | `true` | D-01 |\n")
+check("qualified 'Expected Output (per requirement)' header accepted", r.ok, r.violations)
+check("qualified header cell extracted", r.tasks[0].expected_output == "non-empty", r.tasks[0].expected_output)
+
+# 9. real muni plan
 muni = Path.home() / "projects/muni-pennying/.planning/PLAN.md"
 if muni.is_file():
     r = parse_plan(muni.read_text())

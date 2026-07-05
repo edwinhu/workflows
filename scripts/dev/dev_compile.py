@@ -112,7 +112,10 @@ def compile_plan(plan_path: Path, out_path: Path, project_dir: Path,
              "/*__PROJECT__*/": json.dumps(str(project_dir)),
              "/*__TASKS__*/": _js_literal(specs),
              "/*__GLOBAL_CONSTRAINTS__*/": json.dumps(res.global_constraints),
-             "/*__LEVEL_MODES__*/": _js_literal(level_modes)}
+             "/*__LEVEL_MODES__*/": _js_literal(level_modes),
+             # dev has no output-first self-report (TDD uses testWritten/verifyPassed instead) —
+             # leave outputsProduced optional/advisory (ds sets this True; see ds_compile.py).
+             "/*__REQUIRE_OUTPUTS_PRODUCED__*/": _js_literal(False)}
     for hole in holes:
         n = template.count(hole)
         if n != 1:
