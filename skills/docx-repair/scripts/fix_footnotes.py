@@ -1355,6 +1355,28 @@ def ensure_footnote_styles(styles_xml, template_path, needed=(FN_PSTYLE,)):
 _BODY_STYLE = "BodyText"
 
 
+def _iter_unstyled_body_paras(root):
+    """Yield (p, pPr, ind) for every Normal/unstyled body paragraph (AFTER the
+    first Heading1 — front matter keeps its own formatting) that carries a
+    *direct* first-line indent with no left/hanging indent. Shared structural
+    predicate for both the detect-count and the fix passes — text-emptiness
+    (empty vs non-empty) is left to the caller since count/apply treat it
+    differently."""
+    seen_h1 = False
+    for p in root.iter(_wq("p")):
+        st = _para_style(p)
+        if st == "Heading1":
+            seen_h1 = True
+            continue
+        if not seen_h1 or st not in (None, "Normal"):
+            continue  # front matter (abstract/TOC) keeps its own formatting
+        pPr = p.find(_wq("pPr"))
+        ind = pPr.find(_wq("ind")) if pPr is not None else None
+        if (ind is not None and ind.get(_wq("firstLine"))
+                and not ind.get(_wq("left")) and not ind.get(_wq("hanging"))):
+            yield p, pPr, ind
+
+
 def _count_unstyled_body_indents(doc_xml):
     """Count Normal/unstyled body paragraphs that carry a *direct* first-line
     indent — the template's BodyText style should supply it instead. Signals a
@@ -1365,19 +1387,8 @@ def _count_unstyled_body_indents(doc_xml):
     except Exception:
         return 0
     n = 0
-    seen_h1 = False
-    for p in root.iter(_wq("p")):
-        st = _para_style(p)
-        if st == "Heading1":
-            seen_h1 = True
-            continue
-        if not seen_h1 or st not in (None, "Normal"):
-            continue  # front matter (abstract/TOC) keeps its own formatting
-        if not "".join(t.text or "" for t in p.iter(_wq("t"))).strip():
-            continue
-        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
-        if (ind is not None and ind.get(_wq("firstLine"))
-                and not ind.get(_wq("left")) and not ind.get(_wq("hanging"))):
+    for p, _pPr, _ind in _iter_unstyled_body_paras(root):
+        if "".join(t.text or "" for t in p.iter(_wq("t"))).strip():
             n += 1
     return n
 
@@ -1434,21 +1445,7 @@ def apply_template_body_styles(doc_xml, styles_xml, template_path):
     # spills it to a second page).
     root = etree.fromstring(doc_xml.encode("utf-8"))
     restyled = emptied = 0
-    seen_h1 = False
-    for p in root.iter(_wq("p")):
-        st = _para_style(p)
-        if st == "Heading1":
-            seen_h1 = True
-            continue
-        if not seen_h1:
-            continue
-        if st not in (None, "Normal"):
-            continue
-        pPr = p.find(_wq("pPr"))
-        ind = pPr.find(_wq("ind")) if pPr is not None else None
-        if (ind is None or not ind.get(_wq("firstLine"))
-                or ind.get(_wq("left")) or ind.get(_wq("hanging"))):
-            continue  # not a standard direct first-line indent (skip quotes etc.)
+    for p, pPr, ind in _iter_unstyled_body_paras(root):
         if "".join(t.text or "" for t in p.iter(_wq("t"))).strip():
             ps = pPr.find(_wq("pStyle"))
             if ps is None:
@@ -1627,17 +1624,9 @@ def normalize_body_indent(doc_xml):
     """
     root = etree.fromstring(doc_xml.encode("utf-8"))
     paras = list(root.iter(_wq("p")))
-    from collections import Counter
-    firstlines = Counter()
-    for p in paras:
-        if _para_style(p) not in (None, "Normal"):
-            continue
-        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
-        if ind is not None and ind.get(_wq("firstLine")):
-            firstlines[ind.get(_wq("firstLine"))] += 1
-    if not firstlines:
+    dominant = _dominant_firstline(paras)
+    if dominant is None:
         return doc_xml, []
-    dominant = firstlines.most_common(1)[0][0]
 
     seen_h1 = False
     applied = 0
@@ -1660,15 +1649,7 @@ def normalize_body_indent(doc_xml):
         if pPr is None:
             pPr = etree.Element(_wq("pPr"))
             p.insert(0, pPr)
-        if ind is None:
-            ind = etree.Element(_wq("ind"))
-            ref = pPr.find(_wq("rPr"))
-            if ref is None:
-                ref = pPr.find(_wq("sectPr"))
-            if ref is not None:
-                ref.addprevious(ind)
-            else:
-                pPr.append(ind)
+        ind = _ensure_ind(pPr)
         ind.set(_wq("firstLine"), dominant)
         applied += 1
     if not applied:
@@ -1678,6 +1659,40 @@ def normalize_body_indent(doc_xml):
     ).decode("utf-8")
     return out, [f"Normalized body first-line indent (firstLine={dominant}) "
                  f"on {applied} paragraph(s)"]
+
+
+def _dominant_firstline(paras):
+    """Mode of ``<w:ind firstLine>`` over Normal/unstyled paragraphs, or None
+    if no paragraph carries a real firstLine indent to infer from. Shared by
+    :func:`normalize_body_indent` and :func:`fix_leading_tab_indents`."""
+    from collections import Counter
+    firstlines = Counter()
+    for p in paras:
+        if _para_style(p) not in (None, "Normal"):
+            continue
+        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
+        if ind is not None and ind.get(_wq("firstLine")):
+            firstlines[ind.get(_wq("firstLine"))] += 1
+    return firstlines.most_common(1)[0][0] if firstlines else None
+
+
+def _ensure_ind(pPr):
+    """Return ``pPr``'s ``<w:ind>`` child, creating one at the correct
+    schema-ordered insertion point if absent. Word silently drops pPr children
+    that appear out of CT_PPr schema order, so a freshly created ``<w:ind>``
+    must land before ``rPr``/``sectPr`` (whichever comes first), else appended
+    at the end."""
+    ind = pPr.find(_wq("ind"))
+    if ind is None:
+        ind = etree.Element(_wq("ind"))
+        ref = pPr.find(_wq("rPr"))
+        if ref is None:
+            ref = pPr.find(_wq("sectPr"))
+        if ref is not None:
+            ref.addprevious(ind)
+        else:
+            pPr.append(ind)
+    return ind
 
 
 _RUN_CONTENT_TAGS = ("tab", "t", "br", "drawing", "footnoteReference")
@@ -1702,22 +1717,33 @@ def _para_leads_with_tab(p):
     return first_run, None
 
 
+def _iter_leading_tab_paras(root):
+    """Yield body paragraphs whose first-line indent is a leading tab (GDocs).
+
+    Same front-matter guard as :func:`_iter_unstyled_body_paras`: only
+    paragraphs AFTER the first Heading1 (title/abstract/TOC excluded), only
+    Normal/unstyled paragraphs, only text longer than 60 chars."""
+    seen_h1 = False
+    for p in root.iter(_wq("p")):
+        st = _para_style(p)
+        if st == "Heading1":
+            seen_h1 = True
+            continue
+        if not seen_h1 or st not in (None, "Normal"):
+            continue  # front matter (abstract/TOC) keeps its own formatting
+        if len("".join(t.text or "" for t in p.iter(_wq("t"))).strip()) <= 60:
+            continue
+        if _para_leads_with_tab(p)[1] is not None:
+            yield p
+
+
 def _count_leading_tab_indents(doc_xml):
     """Count body paragraphs whose first-line indent is a leading tab (GDocs)."""
     try:
         root = etree.fromstring(doc_xml.encode("utf-8"))
     except Exception:
         return 0
-    n = 0
-    for p in root.iter(_wq("p")):
-        if _para_style(p) not in (None, "Normal"):
-            continue
-        if len("".join(t.text or "" for t in p.iter(_wq("t"))).strip()) <= 60:
-            continue
-        _, tab = _para_leads_with_tab(p)
-        if tab is not None:
-            n += 1
-    return n
+    return sum(1 for _ in _iter_leading_tab_paras(root))
 
 
 def fix_leading_tab_indents(doc_xml):
@@ -1733,30 +1759,27 @@ def fix_leading_tab_indents(doc_xml):
 
     Editorial (it changes the visual indent of the affected paragraphs to the
     dominant value), so it runs under ``--normalize-body-indent`` alongside
-    :func:`normalize_body_indent`. Same guards: Normal/unstyled paragraphs only,
-    text longer than 60 chars.
+    :func:`normalize_body_indent`. Same guards: front matter (before the first
+    Heading1) is untouched, Normal/unstyled paragraphs only, text longer than
+    60 chars.
+
+    If tab-led paragraphs exist but no paragraph in the document carries a
+    real firstLine indent to infer the dominant value from, this does NOT
+    silently no-op — it returns a WARNING change entry so the caller/log
+    surfaces the unfixed issue (matches ``detect_issues``' report).
     """
     root = etree.fromstring(doc_xml.encode("utf-8"))
     paras = list(root.iter(_wq("p")))
-    from collections import Counter
-    firstlines = Counter()
-    for p in paras:
-        if _para_style(p) not in (None, "Normal"):
-            continue
-        ind = p.find(f"{_wq('pPr')}/{_wq('ind')}")
-        if ind is not None and ind.get(_wq("firstLine")):
-            firstlines[ind.get(_wq("firstLine"))] += 1
-    if not firstlines:
+    targets = list(_iter_leading_tab_paras(root))
+    if not targets:
         return doc_xml, []
-    dominant = firstlines.most_common(1)[0][0]
+    dominant = _dominant_firstline(paras)
+    if dominant is None:
+        return doc_xml, [
+            f"WARNING: {len(targets)} leading-tab paragraph(s) detected but no "
+            f"real firstLine indent exists to infer the dominant value — not fixed"]
 
     content_tags = {_wq(t) for t in _RUN_CONTENT_TAGS}
-    # Collect target paragraphs first (don't mutate mid-scan).
-    targets = [p for p in paras
-               if _para_style(p) in (None, "Normal")
-               and len("".join(t.text or "" for t in p.iter(_wq("t"))).strip()) > 60
-               and _para_leads_with_tab(p)[1] is not None]
-
     fixed = 0
     for p in targets:
         # Strip EVERY leading tab — Google Docs can stack a tab-only run before a
@@ -1774,16 +1797,7 @@ def fix_leading_tab_indents(doc_xml):
         if pPr is None:
             pPr = etree.Element(_wq("pPr"))
             p.insert(0, pPr)
-        ind = pPr.find(_wq("ind"))
-        if ind is None:
-            ind = etree.Element(_wq("ind"))
-            ref = pPr.find(_wq("rPr"))
-            if ref is None:
-                ref = pPr.find(_wq("sectPr"))
-            if ref is not None:
-                ref.addprevious(ind)
-            else:
-                pPr.append(ind)
+        ind = _ensure_ind(pPr)
         # a leading tab is mutually exclusive with firstLine/hanging
         for a in ("firstLine", "hanging"):
             if ind.get(_wq(a)) is not None:

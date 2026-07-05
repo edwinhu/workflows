@@ -361,7 +361,12 @@ things, both under this flag:
   child of the first run; a tab elsewhere is a real tab, left alone) and sets
   `firstLine=<dominant>`. Detected as `leading_tab_indent(N)` in `detect_issues`
   even without the flag; fixed only when `--normalize-body-indent` is passed.
-  Idempotent. Same >60-char Normal/unstyled guard.
+  Idempotent. Same >60-char Normal/unstyled guard, AND the same front-matter
+  guard (only paragraphs after the first Heading1) — title/abstract/TOC are
+  never touched. If tab-led paragraphs exist but the document has no real
+  firstLine indent anywhere to infer the dominant value from, this does not
+  silently no-op: it emits a WARNING change entry so the unfixed issue still
+  surfaces in the log.
 
 Logged, never silent.
 

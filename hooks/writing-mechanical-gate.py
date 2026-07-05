@@ -21,7 +21,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-CHECK_ALL = Path(__file__).resolve().parent.parent / "references" / "constraints" / "check-all.py"
+HOOKS_DIR = Path(__file__).resolve().parent
+CHECK_ALL = HOOKS_DIR.parent / "references" / "constraints" / "check-all.py"
+
+# Hooks run standalone (`uv run python3 <path>`) from an unknown cwd, so
+# sys.path-insert this file's own directory before importing the sibling
+# shared module rather than assuming a package/relative import will resolve.
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import deny, _project_from_args  # noqa: E402
 
 
 def _run_check_all(project: str):
@@ -50,27 +57,6 @@ def _run_check_all(project: str):
             failed = [(out.stdout.strip().splitlines() or ["check-all reported failures"])[-1]]
     summary = (out.stdout.strip().splitlines() or ["(no output)"])[-1]
     return (len(failed) == 0), failed, errors, summary
-
-
-def deny(reason: str):
-    print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": "PreToolUse",
-        "permissionDecision": "deny",
-        "permissionDecisionReason": reason,
-    }}))
-    sys.exit(0)
-
-
-def _project_from_args(tool_input: dict) -> str:
-    args = tool_input.get("args")
-    if isinstance(args, str):
-        try:
-            args = json.loads(args)
-        except Exception:
-            args = {}
-    if isinstance(args, dict) and args.get("projectDir"):
-        return str(args["projectDir"])
-    return "."
 
 
 def main():
@@ -122,7 +108,7 @@ def main():
                 "permissionDecisionReason": section_warn.strip()}}))
         sys.exit(0)
 
-    project = _project_from_args(tool_input)
+    project = _project_from_args(tool_input, hook_input)
     ok, failed, errors, summary = _run_check_all(project)
     if not ok:
         note = ("\n\n(Plus " + str(len(errors)) + " constraint(s) errored — tooling, NOT blocking.)"
