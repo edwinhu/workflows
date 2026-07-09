@@ -116,7 +116,7 @@ UCLA L. Rev., Yale J. on Reg., Yale L.J., Harv. L. Rev., Stan. L. Rev., Colum. L
 paperpile edit <bibkey-or-_id> --title "..." --author "..." --year 2024 [--confirm]
 ```
 
-Supported flags: `--title`, `--author`, `--year`, `--journal`, `--volume`, `--pages`, `--abstract`, `--url`
+Supported flags: `--title`, `--author`, `--year`, `--journal`, `--volume`, `--issue`, `--pages`, `--abstract`, `--url`, `--doi`, `--publisher`, `--language`, `--pubtype`, `--citekey`
 
 ### Examples
 
@@ -132,7 +132,23 @@ paperpile edit abc123 --author "Davis Polk & Wardwell" --confirm
 
 # Multiple personal authors (comma-separated "First Last" pairs)
 paperpile edit abc123 --author "Jack Pitcher, Emily Glazer" --confirm
+
+# Set a DOI (e.g. after a PDF-first add mangled the metadata)
+paperpile edit abc123 --doi "10.1111/jofi.12422" --confirm
+
+# SSRN working paper: real DOI is 10.2139/ssrn.<abstract_id> + the abstract URL
+paperpile edit abc123 --doi "10.2139/ssrn.666962" \
+  --url "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=666962" --confirm
 ```
+
+**Fixing PDF-first metadata damage:** `paperpile add <local.pdf>` lets Paperpile's
+server-side PDF-text extractor populate metadata, which often drops co-authors,
+blanks the year, or duplicates the title. Prefer DOI-first adds. To repair an
+existing entry, set the correct DOI and repopulate authoritatively from Paperpile's
+own Guru resolver rather than hand-typing every field. SSRN papers **do** have real
+DOIs (`10.2139/ssrn.<abstract_id>`), but they resolve to *preprint* metadata — safe
+for genuine working papers, but don't attach them to a version that was later
+published (it regresses the journal/volume/page citation).
 
 **Key behaviors:**
 - Dry-run by default -- shows what would change without applying. Pass `--confirm` to mutate.
