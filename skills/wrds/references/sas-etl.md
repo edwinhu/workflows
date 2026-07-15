@@ -10,7 +10,7 @@ Reference for writing efficient SAS code on the WRDS cloud (SAS Grid / SGE clust
 - [SGE Array Jobs](#sge-array-jobs) - Year-parallel processing on WRDS grid
 - [Project Organization Patterns](#project-organization-patterns) - Paired scripts, stacking, shared macros
 - [PROC SQL Optimization](#proc-sql-optimization) - Indexed joins, pass-through, monotonic
-- [SAS Macro Patterns](#sas-macro-patterns) - Safe resolution, quoting, debugging
+- [SAS Macro Patterns](#sas-macro-patterns) - Reserved names (never %run/%go), safe resolution, quoting, debugging
 
 ---
 
@@ -552,6 +552,33 @@ quit;
 ---
 
 ## SAS Macro Patterns
+
+### Reserved Names — NEVER use as a macro name (or macro variable / label)
+
+`%macro run;` and `%macro go;` fail with **"Macro RUN has been given a reserved
+name → a dummy macro will be compiled"** — the macro silently doesn't run. These
+are the SAS macro-facility reserved words; **do not name a macro (or macro
+variable, or macro label) any of them:**
+
+```
+ABEND ABORT ACT ACTIVATE BQUOTE BY CLEAR CLOSE CMS COMANDR COPY DEACT DEL
+DELETE DISPLAY DMIDSPLY DMISPLIT DO EDIT ELSE END EVAL FILE GLOBAL GO GOTO IF
+INC INCLUDE INDEX INFILE INPUT KEYDEF LENGTH LET LIST LISTM LOCAL MACRO MEND
+METASYM NRBQUOTE NRQUOTE NRSTR ON OPEN PAUSE PUT QSCAN QSUBSTR QSYSFUNC QUOTE
+QUPCASE RESOLVE RETURN RUN SAVE SCAN STOP STR SUBSTR SUPERQ SYSCALL SYSEVALF
+SYSEXEC SYSFUNC SYSGET SYSRPUT THEN TO TSO UNQUOTE UNSTR UNTIL UPCASE WHILE
+WINDOW
+```
+
+**Rule of thumb:** never name a macro after a common SAS keyword/statement
+(`RUN GO DO END STOP PUT INPUT LENGTH DELETE COPY SAVE`, quoting functions
+`STR QUOTE SCAN SUBSTR EVAL`, etc.). Use a **descriptive, prefixed** name
+instead — `%vwap_day`, `%build_nbbo`, `%do_year` — not `%run`, `%go`, `%do`.
+
+Also avoid the prefixes **`AF DMS SQL SYS`** for macro *variable* names — they
+collide with automatic macro variables.
+
+Refs: [Reserved Words in the Macro Facility](http://support.sas.com/documentation/cdl/en/mcrolref/61885/HTML/default/a001958290.htm).
 
 ### Safe Macro Variable Resolution
 
