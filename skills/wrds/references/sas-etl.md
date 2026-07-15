@@ -553,12 +553,15 @@ quit;
 
 ## SAS Macro Patterns
 
-### Reserved Names — NEVER use as a macro name (or macro variable / label)
+### Reserved Names — by context (these fail, often SILENTLY)
 
-`%macro run;` and `%macro go;` fail with **"Macro RUN has been given a reserved
-name → a dummy macro will be compiled"** — the macro silently doesn't run. These
-are the SAS macro-facility reserved words; **do not name a macro (or macro
-variable, or macro label) any of them:**
+SAS reserves names in **four different contexts**. The failures are nasty because
+several are silent (a dummy macro compiles, or output is discarded).
+
+**1. Macro names / macro variables / macro labels** — `%macro run;` and
+`%macro go;` fail with *"Macro RUN has been given a reserved name → a dummy macro
+will be compiled"* and the macro silently never runs. Full macro-facility
+reserved list:
 
 ```
 ABEND ABORT ACT ACTIVATE BQUOTE BY CLEAR CLOSE CMS COMANDR COPY DEACT DEL
@@ -569,16 +572,30 @@ QUPCASE RESOLVE RETURN RUN SAVE SCAN STOP STR SUBSTR SUPERQ SYSCALL SYSEVALF
 SYSEXEC SYSFUNC SYSGET SYSRPUT THEN TO TSO UNQUOTE UNSTR UNTIL UPCASE WHILE
 WINDOW
 ```
+Also don't prefix macro *variable* names with `AF DMS SQL SYS` (collide with
+automatic macro vars).
 
-**Rule of thumb:** never name a macro after a common SAS keyword/statement
-(`RUN GO DO END STOP PUT INPUT LENGTH DELETE COPY SAVE`, quoting functions
-`STR QUOTE SCAN SUBSTR EVAL`, etc.). Use a **descriptive, prefixed** name
-instead — `%vwap_day`, `%build_nbbo`, `%do_year` — not `%run`, `%go`, `%do`.
+**2. Librefs (libname)** — do NOT use as a libref: **`WORK SASHELP SASUSER
+SASMSG MAPS LIBRARY USER`** (`WORK`, `USER`, `LIBRARY` have special dataset-search
+meaning; the others are system libraries). On WRDS these plus `taqmsec`, `crsp`,
+`comp`, etc. are already assigned by the autoexec — don't clobber them.
 
-Also avoid the prefixes **`AF DMS SQL SYS`** for macro *variable* names — they
-collide with automatic macro variables.
+**3. Dataset names** — do NOT name a dataset **`_NULL_ _DATA_ _LAST_`**.
+`data _null_;` runs the step and writes **no** dataset (used deliberately);
+`_data_`/`_last_` are the auto-named/most-recent dataset keywords. Naming a real
+output dataset one of these means your output silently vanishes.
 
-Refs: [Reserved Words in the Macro Facility](http://support.sas.com/documentation/cdl/en/mcrolref/61885/HTML/default/a001958290.htm).
+**4. Automatic variables & variable-list keywords** — do NOT create variables
+named **`_N_ _ERROR_ _IORC_ _INFILE_ _MSG_ _CMD_`** (DATA-step automatics) or use
+the list keywords **`_ALL_ _NUMERIC_ _CHARACTER_`** as variable names.
+
+**Rule of thumb:** never name a macro/dataset/libref/var after a SAS keyword,
+statement, or function. Use **descriptive, prefixed** names — `%vwap_day`,
+`out.nbbo_&dt.`, libref `res`/`scr`, var `vwap_sip` — not `%run`, `%go`,
+`_null_` (as a real output), `WORK`, `_n_`.
+
+Refs: [Reserved Words in the Macro Facility](http://support.sas.com/documentation/cdl/en/mcrolref/61885/HTML/default/a001958290.htm) ·
+[Names in the SAS Language (librefs, datasets, automatic vars)](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/a000998953.htm).
 
 ### Safe Macro Variable Resolution
 
