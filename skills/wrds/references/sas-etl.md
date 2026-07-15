@@ -294,30 +294,49 @@ pixi run python -u "$@"
 | Hash accumulator (many groups) | `8G` |
 | Large PROC SQL joins | `16G` |
 
-### Workflow: Benchmark Before Full Array
+These are **starting guesses, not truths** — always confirm the real footprint with `qacct -j <jid> | grep maxvmem` on the benchmark unit (see below) and size the array from the measurement. Guessing low OOM-kills every task in the array; the streaming-hash pattern usually needs far less than a big PROC SQL join, but a large per-row output that spills to WORK can push a "cheap" job to several GB.
+
+### Workflow: Profile Before Fan-Out (ALWAYS, for arrays / full scans)
+
+Fan-out multiplies every mistake by N. Before submitting an array or a full-universe scan,
+profile **one representative unit** — the benchmark costs 1 unit and de-risks all N. Cheapest
+step first:
 
 ```bash
-# Step 1: Test single year interactively
-qsas -sysparm "2020" -log "logs/test_2020.log" scripts/etl_year.sas
+# Step 0 — METADATA PROBE (seconds): row counts, date coverage, key lengths.
+#   Reveals the I/O scale up front AND catches schema surprises (e.g. a BY-variable
+#   length mismatch across input datasets -> "unexpected results" + exit_status=1).
+#   proc sql; select memname,nobs from dictionary.tables where libname='TAQMSEC' ...; quit;
+#   proc contents data=lib.big(keep=key_var) out=... ;   /* confirm key var lengths match */
 
-# Step 2: Check log for errors and timing
+# Step 1 — ONE TIMED UNIT. Pick a REPRESENTATIVE-TO-HEAVY unit (a high-volume day /
+#   quad-witching), not the smallest, so time+RAM headroom is a real upper bound.
+qsub -sync y scripts/etl_year.sh 2020        # or: qsas -sysparm 2020 ...
+
+# Step 2 — MEASURE, don't eyeball "it finished". Wall time AND peak memory:
 grep -E "(ERROR|WARNING|real time)" logs/test_2020.log
+qacct -j <jid> | grep -E "maxvmem|ru_wallclock|exit_status"
+#   exit_status must be 0 — a lone WARNING (e.g. BY-length mismatch) exits 1 and flags a
+#   correctness risk worth fixing before it runs N times.
 
-# Step 3: If clean, submit full array
-qsub scripts/etl_array.sh
+# Step 3 — VALIDATE THE OUTPUT VALUES. "Ran clean" != "numbers are right".
+#   proc print/proc sql the benchmark output; confirm groups, counts, rates are sane.
 
-# Step 4: Monitor with streaming events (no polling)
+# Step 4 — SIZE FROM THE MEASUREMENT, then fan out.
+#   m_mem_free = ~1.5x measured maxvmem; array wall ~= (N * per-unit-wall) / slot-cap.
+qsub -t 1-92 scripts/etl_array.sh
+
+# Step 5 — Monitor with streaming events (no manual polling):
 Monitor(
   description="SGE job progress for etl_array",
   timeout_ms=600000, persistent=false,
   command="while qstat -u $USER 2>/dev/null | grep -q .; do qstat -u $USER | grep -v '\\-\\-' | tail -n +2; sleep 30; done && echo 'ALL JOBS COMPLETE'"
 )
-
-# Or simple one-shot check:
-qstat -u $USER
 ```
 
 **Prefer Monitor over manual `qstat` polling.** Monitor emits events as jobs transition states — you keep working and get notified when jobs finish. Use `persistent: true` for multi-hour pipelines.
+
+**Skip profiling only** for cheap one-offs or a well-trodden pipeline whose footprint you already know. For anything that fans out, scans a full day/month of ticks, or where you're unsure of the RAM, profile first. Measured TAQ per-day tick-processing benchmarks live in [taq.md](taq.md#processing-benchmarks-one-day-single-sge-task) (`~17min/3.7G` full universe vs `~105s/1G` for a ~450-symbol subset — the pre-filter is the biggest time lever).
 
 ---
 
