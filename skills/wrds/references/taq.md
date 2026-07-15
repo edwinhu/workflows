@@ -13,8 +13,10 @@ Patterns from the `close`, `bank_pin`, and `pin-code` projects on WRDS.
 | Millisecond master | `taqmsec.mastm_YYYY` or `taqmsec.mastm_YYYYMMDD` | Symbol directory | Yearly or daily |
 | Millisecond IID | `taqmsec.wrds_iid_YYYY` | WRDS Intraday Indicators | Daily aggregates |
 | Consolidated trades | `taqmsec.ctm_YYYYMM` or `taqmsec.ctm_YYYYMMDD` | Raw tick trades | Millisecond |
-| WRDS consolidated trades | `taqmsec.wct_YYYYMMDD` | Cleaned tick trades | Millisecond |
-| Complete NBBO | `taqmsec.complete_nbbo_YYYYMMDD` | National Best Bid/Offer | Millisecond |
+| WRDS cleaned trades | `taqmsec.wct_YYYYMMDD` | Cleaned tick trades (carry matched `nbb`/`nbo`) | Millisecond |
+| Consolidated quotes | `taqmsec.cqm_YYYYMMDD` | Raw per-venue quotes, all sizes (incl odd-lot) | Millisecond |
+| Raw NBBO (**incomplete**) | `taqmsec.nbbom_YYYYMMDD` | NBBO file — structurally incomplete; **don't use alone** | Millisecond |
+| **Complete NBBO** ✅ | `taqmsec.complete_nbbo_YYYYMMDD` | WRDS-derived Official Complete NBBO — **use this** | Millisecond |
 
 **NBBO files are NOT in the default taqmsec libname.** You must add them explicitly:
 
@@ -37,6 +39,38 @@ libname taqmsec (taqmsec '/wrds/nyse/sasdata/wrds_taqms_nbbo') inencoding=asciia
 | 2007+ | `taqmsec.*` | `date, sym_root, sym_suffix` | `SYMBOL_15` → split into root + suffix |
 
 The NMS (Reg NMS) transition in Feb 2007 is the dividing line. Code must handle both eras with separate macros.
+
+---
+
+## Datasets Explained — trades, quotes, and NBBO
+
+Millisecond TAQ (`taqmsec`) has three families: trades, quotes, and NBBO. Know which is which.
+
+| Dataset | What it is |
+|---------|-----------|
+| `mastm_YYYYMMDD` (or `_YYYY`) | **Master / symbol directory.** One row per stock-day: `round_lot`, `UOT` (units-of-trade), `sec_type`, `shares_outstanding`, `listed_exchange`, `tape`, `test_symbol_flag`. Parse `sym_root`/`sym_suffix` from `SYMBOL_15`. |
+| `ctm_YYYYMMDD` | **Consolidated trades (raw).** Every reported trade with `price`, `size`, `tr_scond` (sale condition), `ex`. Includes odd-lot & ISO trades. Filter by sale condition yourself. |
+| `wct_YYYYMMDD` | **WRDS cleaned trades.** `ctm` after WRDS cleaning, and each trade carries the **matched prevailing NBBO** (`nbb`/`nbo`, `nbbqty`/`nboqty`) — no as-of merge needed. May drop trade types; use `ctm` if you need full control (e.g. to keep all odd-lot trades). |
+| `cqm_YYYYMMDD` | **Consolidated quotes (raw).** One row per exchange quote: `ex`, `bid`, `bidsiz`, `ask`, `asksiz`, all in **units-of-trade (UOT)**, all sizes including odd-lot. This is the source the NBBO is built from. |
+| `nbbom_YYYYMMDD` | **DailyNBBO file — STRUCTURALLY INCOMPLETE.** It omits the states where a *single* exchange holds *both* the best bid and best offer (those live only in `cqm`). Do **not** use it as the NBBO. |
+| `complete_nbbo_YYYYMMDD` | **WRDS-derived Official Complete NBBO — USE THIS.** `best_bid`/`best_ask` + `Best_BidSizeShares`/`Best_AskSizeShares` (in **shares**), one row per NBBO change. |
+| `wrds_iid_YYYY` | **Intraday Indicators.** Pre-computed daily aggregates per stock-day: `vw_price_m` (VWAP), `total_vol_m`, `oddlot_vol`, `BuyNumTrades_LR`/`SellNumTrades_LR`, etc. Cheap for filters/controls. |
+
+### ⚠ Which NBBO to use: `complete_nbbo`, never `nbbom` alone
+
+Per Holden & Jacobsen (2014) and Holden's WRDS instructions: the **DailyNBBO (`nbbom`) file does NOT contain the complete NBBO** — when one exchange has both the best bid and best offer, that state is recorded only in the quote (`cqm`) file. The **Official Complete NBBO = `nbbom` combined with `cqm`**.
+
+**WRDS ships this pre-built as `taqmsec.complete_nbbo_YYYYMMDD`.** Use it directly — you do not need to run the Holden-Jacobsen build yourself. `nbbom` diverges from `complete_nbbo` exactly on thin names where one exchange is frequently best on both sides (can be the majority of updates for very-high-priced stocks — this is the documented incompleteness, not noise).
+
+```
+cqm (raw per-venue quotes)  +  nbbom (incomplete NBBO)  ──►  complete_nbbo  (Official Complete NBBO)
+```
+
+- Refs: Holden & Jacobsen (2014), *J. Finance*; instructions at `host.kelley.iu.edu/cholden`. Eddy's Netezza port: `edwinhu/nz_taq`.
+
+### Round-lot (protected) vs odd-lot-inclusive NBBO
+
+`complete_nbbo` (and `nbbom`, `wct.nbb/nbo`) are **odd-lot-inclusive** — the best price across all displayed quotes regardless of size. **None of the WRDS NBBO files is the round-lot *protected* NBBO** (the Reg NMS Rule 611 quote). If you need the round-lot protected quote, **compute it from `cqm`** restricted to displayed size ≥ round lot (best across venues), via an exchange-keyed hash. Sizes in `cqm`/`nbbom` are UOT — multiply by `mastm.UOT` for shares.
 
 ---
 
