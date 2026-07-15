@@ -603,6 +603,31 @@ This handles months with fewer than 31 days and missing trading days (weekends, 
 
 Raw tick processing is I/O-bound. Use hash objects (not PROC SQL joins) for tick-level aggregation — they stream through data in a single pass.
 
+### Processing benchmarks (one day, single SGE task)
+
+Measured on WRDS `all.q` (SAS 9.4 M8), interleaving `cqm` (quotes) + `ctm` (trades) in one
+`by sym_root sym_suffix time_m` pass with an exchange-keyed hash for the cross-venue best,
+Holden-Jacobsen quote cleaning, and a per-trade protected-NBBO trade-through calc (rule611
+`scale_B_full.sas` / `scale_B2.sas`):
+
+| Scope (one trading day) | Wall time | Peak vmem (`maxvmem`) | Notes |
+|-------------------------|-----------|-----------------------|-------|
+| **Full universe** (all non-test common NMS symbols) | **~17 min** (~1030 s) | **~3.7 GB** | Full `cqm` scan (billions of quote rows); ~40M per-trade output rows spill to WORK |
+| **Symbol-filtered subset** (~450 symbols, `sym_root in (…)`) | **~105 s** | **~1.0 GB** | ~85M `cqm` + ~5M `ctm` rows read after the 09:30–16:00 filter |
+
+Takeaways for sizing SGE jobs:
+- **RAM is modest** — the hashes are tiny (≤15-venue quote hash + a symbol→stratum hash);
+  the footprint is dominated by SAS WORK buffers and the per-trade intermediate, **not**
+  in-memory state. **`m_mem_free=4G` is ample for a full-universe day; 2G risks OOM only
+  because of the ~40M-row WORK set.** Switch to an accumulator hash (aggregate in the data
+  step, output a tiny daily summary — no big WORK set) to run a full day in **<1 GB**.
+- **Time scales with the `cqm` row count scanned**, so a `sym_root in (&list)` WHERE or a
+  master-file pre-filter (drop test symbols, restrict to the day's universe) is the biggest
+  lever — a ~450-symbol subset is ~10× faster than the full universe.
+- **A full Q4 (64 trading days) as an SGE array** (`-t 1-92`, non-trading days self-skip via
+  `%sysfunc(exist(...))`) drains in ~2–4 h wall-clock at the ~6–16-slot cap; per-day summaries
+  then combine in seconds.
+
 ---
 
 ## Key Gotchas
