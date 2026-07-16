@@ -612,8 +612,10 @@ Holden-Jacobsen quote cleaning, and a per-trade protected-NBBO trade-through cal
 
 | Scope (one trading day) | Wall time | Peak vmem (`maxvmem`) | Notes |
 |-------------------------|-----------|-----------------------|-------|
-| **Full universe** (all non-test common NMS symbols) | **~17 min** (~1030 s) | **~3.7 GB** | Full `cqm` scan (billions of quote rows); ~40M per-trade output rows spill to WORK |
-| **Symbol-filtered subset** (~450 symbols, `sym_root in (…)`) | **~105 s** | **~1.0 GB** | ~85M `cqm` + ~5M `ctm` rows read after the 09:30–16:00 filter |
+| **Full universe** (all non-test common NMS symbols) | **~17 min** (~1030 s) | **~3.7 GB** | Full `cqm` scan (**~2.33B** quote rows/day) + `ctm` (**~127M** trade rows/day); ~40M per-trade output rows spill to WORK |
+| **Symbol-filtered subset** (~450 symbols, `sym_root in (…)`) | **~105 s** | **~1.0 GB** | ~85M `cqm` + ~5M `ctm` rows read after the symbol + 09:30–16:00 filter |
+
+*(Reference row counts, one Dec-2025 trading day: `cqm` ≈ 2.33B, `ctm` ≈ 127M — quotes outnumber trades ~18:1, so the `cqm` scan dominates wall time.)*
 
 Takeaways for sizing SGE jobs:
 - **RAM is modest** — the hashes are tiny (≤15-venue quote hash + a symbol→stratum hash);
