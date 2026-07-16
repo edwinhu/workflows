@@ -20,7 +20,8 @@ If the CLI fails, it is almost always stale auth — refresh cookies (below), do
 - `paperpile` binary at `~/.local/bin/paperpile` (Bun-compiled from `~/projects/paperpile-cli`)
 - Valid auth cookies. If `paperpile auth` fails, **refresh them automatically** (no manual
   Cookie-Editor export needed): `${CLAUDE_SKILL_DIR}/scripts/refresh-auth-from-dia.sh` pulls the
-  cookies from the logged-in Dia browser over CDP (:9222), imports them, and verifies.
+  cookies from the logged-in browser over CDP (:9222 — Dia on macOS, Chromium on Linux),
+  imports them, and verifies.
 - For PDF resolution: Chrome running with CDP on port 9250 (dedicated instance at `~/.config/chrome-cdp`)
 
 ## Library Management
@@ -196,8 +197,9 @@ Paperpile (this skill) → cite-check (upload PDFs to Gemini)
 - Paperpile All Papers: `~/Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My Drive/resources/Paperpile/All Papers/`
 - Cookies expire (~30 days for Paperpile, ~8-12h for Shibboleth hard expiry). To refresh, run
   `${CLAUDE_SKILL_DIR}/scripts/refresh-auth-from-dia.sh` — it extracts the live cookies from the
-  logged-in Dia browser via CDP (:9222) and `paperpile auth import`s them (no Cookie-Editor export).
-  Requires being logged into Paperpile in Dia; if not, log in there first.
+  logged-in browser via CDP (:9222 — Dia on macOS, Chromium on Linux) and `paperpile auth import`s
+  them (no Cookie-Editor export). Requires being logged into Paperpile in that browser; if not, log
+  in there first.
 
 ## Red Flags
 
