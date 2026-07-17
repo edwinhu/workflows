@@ -4,6 +4,7 @@ Reference for writing efficient SAS code on the WRDS cloud (SAS Grid / SGE clust
 
 ## Contents
 
+- [Probing Data and Metadata](#probing-data-and-metadata) - PROC CONTENTS / PROC DATASETS / PROC PRINT before you write ETL
 - [Hash Object Merge](#hash-object-merge) - O(1) lookup, no sorting required
 - [Hash Accumulator](#hash-accumulator) - Aggregate without PROC MEANS
 - [Index-Friendly WHERE Clauses](#index-friendly-where-clauses) - The #1 performance mistake
@@ -11,6 +12,148 @@ Reference for writing efficient SAS code on the WRDS cloud (SAS Grid / SGE clust
 - [Project Organization Patterns](#project-organization-patterns) - Paired scripts, stacking, shared macros
 - [PROC SQL Optimization](#proc-sql-optimization) - Indexed joins, pass-through, monotonic
 - [SAS Macro Patterns](#sas-macro-patterns) - Reserved names (never %run/%go), safe resolution, quoting, debugging
+
+---
+
+## Probing Data and Metadata
+
+**Probe before you write ETL.** Every pattern below is metadata-only or reads a handful of rows — seconds, not minutes. The mistakes they catch (wrong key length, no index on the column you filter, a date variable that is really a datetime) are the ones that cost an entire array job.
+
+| Question | Proc | Cost |
+|---|---|---|
+| What variables, types, lengths, formats? | `PROC CONTENTS` | Metadata only |
+| Is the column I filter on indexed? | `PROC CONTENTS` (index section) | Metadata only |
+| What datasets exist in this libref? | `PROC DATASETS nolist` / `PROC CONTENTS data=lib._all_ nods` | Metadata only |
+| Row counts across a whole library | `dictionary.tables` via `PROC SQL` | Metadata only |
+| What do the values actually look like? | `PROC PRINT data=... (obs=20)` | Reads 20 rows |
+| Date coverage / row counts by year | `PROC SQL` with `GROUP BY` | Full scan — filter first |
+
+### PROC CONTENTS — schema, lengths, indexes
+
+```sas
+/* Variables in creation order (varnum) rather than alphabetical */
+proc contents data=comp.funda varnum;
+run;
+
+/* Metadata to a dataset instead of the listing — programmatic checks */
+proc contents data=comp.funda out=meta(keep=name type length varnum format) noprint;
+run;
+proc print data=meta(obs=50); run;
+```
+
+The listing reports **`Observations`**, **`Engine`**, **`Sorted by`**, and an **index section**. Read the index section before writing any `WHERE` — an index on `datadate` is what makes the range filter in [Index-Friendly WHERE Clauses](#index-friendly-where-clauses) fast. No index listed means every `WHERE` is a full scan no matter how you write it.
+
+**Confirm key lengths match before a merge or hash join.** A `gvkey` that is `$6` in one dataset and `$8` in another silently produces zero matches (or a `BY` length-mismatch WARNING and `exit_status=1`):
+
+```sas
+proc contents data=lib.a(keep=gvkey permno) out=a_meta(keep=name length) noprint; run;
+proc contents data=lib.b(keep=gvkey permno) out=b_meta(keep=name length) noprint; run;
+
+proc sql;
+  select a.name, a.length as len_a, b.length as len_b
+  from a_meta a inner join b_meta b on a.name = b.name
+  where a.length ne b.length;   /* Empty result = safe to merge */
+quit;
+```
+
+### PROC DATASETS — library inventory and cheap maintenance
+
+`PROC DATASETS` is the metadata workhorse: it lists a library, shows contents, and manages datasets **without reading the data**. Deleting via `PROC DATASETS` is instant; `data lib.x; stop; run;` rewrites the file.
+
+```sas
+/* What's in the library, with sizes and dates */
+proc datasets library=scratch;
+run;
+
+/* Just the names — no per-dataset detail */
+proc datasets library=scratch nolist;
+  contents data=mf_own_2020 out=meta noprint;   /* Same output as PROC CONTENTS */
+run;
+quit;
+
+/* Housekeeping between pipeline steps */
+proc datasets library=work nolist;
+  delete stage1 stage2;                 /* Instant — metadata operation */
+  change old_name = new_name;
+  copy in=work out=scratch;             /* Move results off WORK before job exit */
+  modify mf_own_2020;
+    index create gvkey;                 /* Add an index the source lacked */
+    label ior = "Institutional ownership ratio";
+run;
+quit;
+```
+
+**Always end `PROC DATASETS` with `quit;`** — it is a RUN-group proc and stays open otherwise, so the next step's statements get swallowed.
+
+### Whole-library probes
+
+```sas
+/* Every dataset in a libref, names only — no variable detail */
+proc contents data=taqmsec._all_ nods;
+run;
+
+/* Row counts and sizes for a whole library — metadata, no table scan */
+proc sql;
+  select memname, nobs, nvar, filesize format=sizekmg10.
+  from dictionary.tables
+  where libname = 'TAQMSEC'          /* Libname MUST be uppercase */
+  order by nobs desc;
+quit;
+
+/* Which datasets contain a given variable */
+proc sql;
+  select memname, name, type, length
+  from dictionary.columns
+  where libname = 'COMP' and upcase(name) = 'GVKEY';
+quit;
+```
+
+`dictionary.tables` gives `nobs` from the header — it does not scan the table. This is the fastest way to learn the I/O scale of a job before you commit to it. In a `PROC SQL` context use `dictionary.tables`; inside a DATA step or macro, use the `sashelp.vtable` / `sashelp.vcolumn` views instead.
+
+### PROC PRINT — look at real values, never the whole table
+
+```sas
+/* GOOD — bounded peek */
+proc print data=tfn.s12(obs=20);
+  var fundno fdate cusip shares;
+run;
+
+/* GOOD — peek at the rows a filter actually selects */
+proc print data=comp.funda(obs=10
+    where=(gvkey = '001690' and datadate between "01jan2020"d and "31dec2020"d));
+  var gvkey datadate at sale;
+  format datadate date9.;
+run;
+
+/* BAD — no obs= on a 200M-row table: floods the .lst, may fill the filesystem */
+proc print data=tfn.s12;
+run;
+```
+
+Rules: **always `obs=`**, **always `var`** (a 500-column WRDS table prints unreadably otherwise), and remember `PROC PRINT` output goes to the **SAS listing**, not the log — route it with `-print logs/name.lst` (see [Log Management](#log-management)) or it lands wherever the job started.
+
+For distributions rather than raw rows, `PROC FREQ` and `PROC MEANS` are the right probes — but both scan the table, so filter or sample first:
+
+```sas
+proc freq data=lib.holdings(obs=100000);
+  tables fdate / missing;      /* Date coverage + missingness on a sample */
+run;
+
+proc means data=lib.holdings(obs=100000) n nmiss min p50 max;
+  var shares prc;
+run;
+```
+
+### Probe checklist before writing ETL
+
+- [ ] `PROC CONTENTS` on every input — variable names, types, **lengths**, formats
+- [ ] Index section read — does the `WHERE` column have an index?
+- [ ] Key lengths compared across datasets to be merged
+- [ ] `dictionary.tables` row counts — is this a 4M-row or a 200M-row job?
+- [ ] `PROC PRINT (obs=20)` — do the values look like what the docs claim?
+- [ ] Date variable is a date, not a datetime (a `datetime20.` format means `datepart()` is needed)
+
+This is Step 0 of [Profile Before Fan-Out](#workflow-profile-before-fan-out-always-for-arrays--full-scans) — the metadata probe that precedes the one timed benchmark unit.
 
 ---
 
@@ -308,6 +451,8 @@ step first:
 #   length mismatch across input datasets -> "unexpected results" + exit_status=1).
 #   proc sql; select memname,nobs from dictionary.tables where libname='TAQMSEC' ...; quit;
 #   proc contents data=lib.big(keep=key_var) out=... ;   /* confirm key var lengths match */
+#   proc print data=lib.big(obs=20); var key_var dt;      /* do the values look right? */
+#   See "Probing Data and Metadata" above for the full PROC CONTENTS / DATASETS / PRINT set.
 
 # Step 1 — ONE TIMED UNIT. Pick a REPRESENTATIVE-TO-HEAVY unit (a high-volume day /
 #   quad-witching), not the smallest, so time+RAM headroom is a real upper bound.

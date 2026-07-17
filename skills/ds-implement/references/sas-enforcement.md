@@ -12,6 +12,13 @@ Read `${CLAUDE_SKILL_DIR}/../../skills/wrds/references/sas-etl.md` and follow it
 
 Before writing ANY SAS code, validate against these rules:
 
+### Probe Inputs First (metadata only — seconds)
+- `proc contents data=lib.x varnum;` on EVERY input — variables, types, lengths, formats, and the index section
+- Compare key lengths across datasets you will merge — a `$6` vs `$8` gvkey matches zero rows silently
+- `proc sql; select memname, nobs from dictionary.tables where libname='LIB';` — know the row scale before committing
+- `proc print data=lib.x(obs=20); var ...;` — always `obs=`, always `var`. NEVER print an unbounded WRDS table
+- `proc datasets library=scratch;` to inventory/delete intermediates (metadata op; end with `quit;`)
+
 ### WHERE Clauses
 - **NEVER** wrap indexed columns in functions: year(date), month(date), datepart(dt), upcase(), substr()
 - **ALWAYS** use range-based date filters: `where date between "01jan&year."d and "31dec&year."d`
@@ -33,6 +40,7 @@ Before writing ANY SAS code, validate against these rules:
 - Assign hash methods to temp vars before put statements
 
 ### Self-Check Before Submitting Code
+- [ ] Inputs probed with PROC CONTENTS (lengths + indexes) and PROC PRINT (obs=20) before any ETL was written
 - [ ] No function-wrapped WHERE clauses on indexed columns
 - [ ] Hash used for all lookup merges
 - [ ] SGE array for multi-year processing

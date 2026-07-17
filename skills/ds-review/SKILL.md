@@ -60,9 +60,43 @@ Announce: "Using ds-review (Phase 4) to check methodology and quality."
 | Warning | 25-35% | Complete current review cycle, then trigger ds-handoff |
 | Critical | ≤25% | Immediately trigger ds-handoff — do not start new review cycles |
 
+## Invalidate the previous verdict FIRST
+
+**Before any reviewing starts — the first write of this phase:** if
+`.planning/REVIEW_STATE.md` exists and carries `status: APPROVED`, that approval
+belongs to the *previous* analysis or iteration. Overwrite it now:
+
+```yaml
+---
+status: IN_REVIEW
+iteration: [N]
+max_iterations: 3
+last_review_date: [date]
+verdict: IN_REVIEW
+---
+```
+
+Drop any `codex_second_pass:` and `codex_output_file:` from the prior analysis at
+the same time — a second pass over last analysis's diff says nothing about this
+one.
+
+The loop resets `iteration` for a new analysis but not `status`, so a stale
+APPROVED otherwise sits on disk for the whole review — and `status: APPROVED` is
+exactly what ds-verify's gate hooks on. Every intermediate state after this point
+(`IN_REVIEW`, `SECOND_PASS_PENDING`) keeps that gate shut until this phase
+genuinely re-approves. A gate that was already open before the reviewer started
+is not a gate.
+
+---
+
 ## Review Strategy Choice
 
-After announcing phase, choose review strategy.
+After announcing phase, choose the **primary reviewer**.
+
+This choice picks who reviews FIRST. It is not a choice about whether Codex
+runs — Codex is a *second pass* over whatever the primary reviewer approves
+(see [Codex Second Pass](#codex-second-pass)). The two are additive, never
+alternatives.
 
 **Skip this choice when:**
 - Exploratory analysis (one-off, not for publication)
@@ -87,6 +121,302 @@ AskUserQuestion(questions=[{
 **If Single reviewer:** Proceed to [The Iron Law of DS Review](#the-iron-law-of-ds-review) below (current behavior).
 
 **If Parallel review:** Skip to [Parallel Review (Research-Grade)](#parallel-review-research-grade).
+
+Both paths converge on [Phase Complete](#phase-complete), which runs the Codex
+second pass before any APPROVED verdict is written.
+
+---
+
+## Codex Second Pass
+
+**When this runs:** after the primary reviewer (single or parallel) returns
+APPROVED, and BEFORE `status: APPROVED` is written to `.planning/REVIEW_STATE.md`.
+It never runs on CHANGES_REQUIRED, ESCALATE, or BLOCKED — fix those findings
+first, and the second pass runs on the next iteration.
+
+**Why it exists:** the primary reviewer is Claude reviewing Claude's analysis.
+Codex is a different model family in a different process, so its blind spots are
+not correlated with the analyst's. This is the audit-fix-loop Iron Law ("the
+auditor must not be the fixer") applied to the model itself.
+
+**What it is good at, and what it is not:** Codex reviews the *code* — leakage
+between fit and evaluation, a join that silently fans out rows, a filter applied
+after the split, a hardcoded parameter contradicting SPEC.md. It cannot judge
+whether the research question is worth asking or whether a result is
+substantively interesting. Those stay with the Claude reviewers and the user.
+A Codex approval is not evidence the methodology is sound.
+
+> **Reference:** See `references/codex-availability.md` for the full invocation
+> contract, JSON schema, and verdict mapping table.
+
+### 1. Decide once per review loop, not once per iteration
+
+Read `.planning/REVIEW_STATE.md`. If it already carries a `codex_second_pass:`
+value, honor it and do NOT re-ask:
+
+| Stored value | Meaning | Action |
+|--------------|---------|--------|
+| `requested` | consented and launched; no verdict yet | **Rejoin it** — go to step 7 and read `codex_output_file`. Relaunch (step 6b) only if that file is missing or unparseable. Do NOT re-ask. |
+| `completed` | Codex returned a verdict this iteration | Probe (step 2), then run again for the new fixes — skip step 3 |
+| `declined` | user opted out of the loop | Skip the second pass entirely → Phase Complete's APPROVED write |
+| `unavailable` / `error` | never reachable / ran and failed | Re-probe (step 2) — Codex may have been installed or fixed since |
+| absent | not yet decided | Probe, then ask (steps 2-3) |
+
+Asking on every fix iteration turns an opt-in into nagging. Probe on every
+iteration even when consent is stored — it records the user's answer, not
+Codex's continued availability.
+
+**`requested` and `completed` are different facts, and conflating them is a
+bypass.** `requested` means "we asked Codex"; only `completed` means "Codex
+answered". A launched-but-unjoined pass has produced no evidence, so the verify
+gate accepts `completed`, `declined`, and `unavailable` — never `requested`.
+
+### 2. Probe Codex availability (silent)
+
+```bash
+CODEX_SCRIPT=$(find "$HOME/.claude/plugins/cache/openai-codex/codex" -maxdepth 3 -name codex-companion.mjs -type f 2>/dev/null | sort -rV | head -1)
+if [ -n "$CODEX_SCRIPT" ]; then
+  node "$CODEX_SCRIPT" setup --json 2>/dev/null | jq -r '.ready // false'
+else
+  echo "false"
+fi
+```
+
+If the probe does not print `true`: record `codex_second_pass: unavailable` and
+proceed to Phase Complete's APPROVED write. Do **not** announce Codex's absence
+and do **not** prompt the user to install it.
+
+### 3. Ask the user (only when the probe printed `true`)
+
+```python
+AskUserQuestion(questions=[{
+  "question": "Primary review passed. Run a Codex second pass before verify?",
+  "header": "Second Pass",
+  "options": [
+    {"label": "Run Codex second pass (Recommended)", "description": "Independent adversarial review of the analysis code via Codex — a different model family, so its blind spots don't overlap with Claude's. Catches leakage, join fan-out, and spec drift. Findings at >=80 confidence re-enter the fix loop."},
+    {"label": "Skip — approve now", "description": "Accept the primary review's APPROVED verdict and proceed to ds-verify. Faster; the analysis is reviewed by Claude only."}
+  ],
+  "multiSelect": false
+}])
+```
+
+If the user declines, record `codex_second_pass: declined` and continue to Phase
+Complete. If the user opts in, do NOT record `enabled`/`completed` here — nothing
+has run yet. Go to step 4; step 5 writes the pending state.
+
+### 4. Prerequisites
+
+Codex adversarial review is **git-diff scoped**. If there is no git repo, record
+`codex_second_pass: unavailable` and proceed — do not fabricate a scope.
+
+Notebooks: review the paired text representation (`.py` via jupytext) when one
+exists. A diff of `.ipynb` JSON is mostly execution-count and output noise, and
+a reviewer reading noise finds nothing.
+
+### 5. Close the gate BEFORE launching
+
+First clear the handle, and **verify the clear worked**. It is
+**per-iteration**, and it is emptied *before* the state says `requested`:
+
+```bash
+# substitute this iteration's N
+OUT=.planning/codex-second-pass-iter[N].json
+rm -f "$OUT"
+if [ -e "$OUT" ]; then
+  echo "BLOCKED: cannot clear $OUT — refusing to request a pass that could join a stale verdict"
+  exit 1
+fi
+```
+
+**A clear that silently failed is worse than no clear.** `rm -f` reports success
+for a file that never existed and stays quiet about one it could not remove (a
+read-only `.planning/`, wrong ownership, an immutable bit). The launch redirect
+would then fail for the same reason, leaving the *old* envelope in place for the
+join to read as this pass's answer. Checking that the path is actually gone turns
+that assumption into a precondition.
+
+If the clear fails: do NOT record `requested`. Record `codex_second_pass: error`
+with `status: BLOCKED` and report it — see
+[If the Codex second pass errored](#if-the-codex-second-pass-errored). An
+environment that cannot give the pass a clean handle cannot give it an honest
+verdict either.
+
+Then write this to `.planning/REVIEW_STATE.md` **before** invoking Codex:
+
+```yaml
+---
+status: SECOND_PASS_PENDING
+iteration: [N]
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count from the primary review]
+codex_second_pass: requested
+codex_output_file: .planning/codex-second-pass-iter[N].json
+verdict: SECOND_PASS_PENDING
+---
+```
+
+**A previous pass's verdict is not this pass's answer.** The shell redirect only
+truncates the file when Codex is actually invoked, so a single reused path leaves
+a window: stop between this state write and the launch — or resume into the join —
+and step 7 would read the *last* iteration's envelope, parse its `approve`, and
+write `completed`. The requested pass never ran. A fresh name per iteration plus
+the `rm -f` closes both halves; an absent file gives `PENDING` → relaunch.
+
+**Why before, not after.** `status: APPROVED` may still be sitting in this file
+from an earlier analysis or iteration — the loop resets `iteration`, not
+`status`. If you launch Codex while a stale APPROVED is on disk, the verify gate
+is open for the entire time Codex is running: a crash, an interruption, or a
+resumed session walks straight into ds-verify on a second pass that never
+returned. Writing a non-approved status first means the window never exists.
+
+`codex_output_file` is the join handle (step 7). If the session dies here, the
+state on disk still says PENDING and the gate stays shut.
+
+### 6. Estimate scope and choose wait vs background
+
+```bash
+git status --short --untracked-files=all
+git diff --shortstat --cached
+git diff --shortstat
+```
+
+Wait when the diff is clearly tiny (1-2 files). Otherwise launch in background.
+
+### 6b. Invoke Codex
+
+Each Bash call runs in a fresh shell, so `$CODEX_SCRIPT` from the probe does not
+survive — re-resolve it in the same command that uses it.
+
+**Always pass `--json`, and always redirect to `codex_output_file`.** Both are
+load-bearing:
+
+- `--json` is the ONLY form that carries `confidence`. The default rendered text
+  prints `[high]` but no number, and the iron law below thresholds on
+  confidence >= 0.8 — applied to rendered output it would be a rule with nothing
+  to read.
+- The redirect turns the verdict into a **file on disk**, which is what makes
+  the background path joinable (step 7). Output that exists only in a terminal
+  or a transcript is lost to any interruption.
+
+Redirect to the **exact path recorded in `codex_output_file`** — the state file
+is the authority on which handle this pass owns:
+
+```bash
+CODEX_SCRIPT=$(find "$HOME/.claude/plugins/cache/openai-codex/codex" -maxdepth 3 -name codex-companion.mjs -type f 2>/dev/null | sort -rV | head -1)
+node "$CODEX_SCRIPT" adversarial-review --wait --json \
+  "focus: data leakage between train/test, join row-count fan-out, filters applied after the split, parameters that contradict .planning/SPEC.md" \
+  > .planning/codex-second-pass-iter[N].json 2> .planning/codex-second-pass-iter[N].err
+```
+
+**Foreground (small diff):** run the command above and go to step 7.
+
+**Background (anything bigger):** run the **same** command via
+`Bash(..., run_in_background: true)`, then tell the user: "Codex second pass
+started in the background." Do not advance past step 7's join check until the
+background task reports completion — an unjoined launch is not a verdict.
+
+`--background` on the companion is a no-op for reviews: `adversarial-review`
+always runs in the foreground (only `task` enqueues a job), so the harness's
+`run_in_background` is what actually detaches it. That is exactly why the
+redirect matters — the companion is not holding a result for you to fetch later.
+
+### 7. Join the run, then parse the verdict
+
+**The join is a real step, not a hope.** The state on disk says
+`codex_second_pass: requested`; nothing may advance until this step turns it
+into `completed` or `error`. This is also the resume path: a fresh session that
+finds `requested` starts here.
+
+Extract the verdict mechanically — do not read it off the screen:
+
+```bash
+uv run python3 - <<'PY'
+import json, pathlib, re
+state = pathlib.Path('.planning/REVIEW_STATE.md')
+m = re.search(r'^codex_output_file:\s*(\S+)\s*$', state.read_text(), re.M) if state.exists() else None
+if not m:
+    print('ERROR: no codex_output_file recorded — relaunch (step 6b)')
+    raise SystemExit(0)
+p = pathlib.Path(m.group(1))          # the handle THIS pass owns
+if not p.exists() or not p.stat().st_size:
+    print('PENDING: no output yet — the run is unfinished, failed, or was lost')
+    raise SystemExit(0)
+try:
+    envelope = json.loads(p.read_text())
+    if envelope.get('codex', {}).get('status') != 0:
+        print('ERROR: codex exited', envelope.get('codex', {}).get('status'))
+        raise SystemExit(0)
+    v = json.loads(envelope['codex']['stdout'])   # the schema-validated verdict
+except Exception as e:
+    print('ERROR: unparseable output —', e)
+    raise SystemExit(0)
+print('verdict:', v['verdict'])
+for f in v.get('findings', []):
+    print(f"  {f['confidence']:.2f}  [{f['severity']}]  {f['file']}:{f['line_start']}  {f['title']}")
+PY
+```
+
+It resolves the path from `codex_output_file` rather than hardcoding one — the
+state file names the handle this pass owns, so a verdict left at some other
+path by an earlier iteration can never be read as this one's answer.
+
+The payload is an envelope: `{review, target, threadId, codex: {status, stdout}}`,
+and `codex.stdout` is the schema-validated verdict **as a JSON string** — it
+needs a second parse, which is why this runs as a script and not as an eyeball.
+
+Route on what it printed:
+
+| Printed | Meaning | Do |
+|---------|---------|----|
+| `verdict: ...` | Codex answered | continue below; the pass is `completed` |
+| `PENDING: ...` | still running, or the output was lost | do NOT proceed. If the background task is still going, wait. If it is gone, relaunch (step 6b). The gate stays shut meanwhile. |
+| `ERROR: ...` | ran and failed | go to [If the Codex second pass errored](#if-the-codex-second-pass-errored) |
+
+The verdict object: `verdict` (`approve` | `needs-attention`), `summary`,
+`findings[]`, `next_steps[]`. Each finding has `severity`, `title`, `body`,
+`file`, `line_start`, `line_end`, `confidence` (0-1 float), `recommendation`.
+
+**Apply the iron law: only `confidence >= 0.8` findings block.** Multiply by 100
+when displaying alongside Claude-style scores.
+
+| Codex result | Second-pass outcome |
+|--------------|---------------------|
+| `verdict: approve` | APPROVED — proceed to Phase Complete's APPROVED write |
+| `needs-attention` + any finding ≥ 0.8 confidence | CHANGES_REQUIRED — overrides the primary reviewer's APPROVED |
+| `needs-attention` + all findings < 0.8 | APPROVED (log advisory findings to LEARNINGS.md) |
+
+**A Codex CHANGES_REQUIRED overrides the primary APPROVED.** The primary
+reviewer does not get a veto over the second pass — if it did, the second pass
+would be decorative.
+
+**Move `SECOND_PASS_PENDING` to its terminal state in ONE write** — the same
+edit sets `status:` and flips `codex_second_pass: requested` -> `completed`. Two
+writes means a window where the file claims a verdict it hasn't recorded.
+
+If Codex fails to run (non-zero exit, unparseable output): record
+`codex_second_pass: error` and report the failure to the user. Do **not**
+silently treat a broken second pass as an approval — an unrun reviewer is not a
+passing reviewer.
+
+### 8. Tag findings to requirements
+
+Codex doesn't know SPEC.md REQ-IDs. For each blocking finding: read
+`.planning/SPEC.md`, tag it with the most likely REQ-ID (or `OUT-OF-SPEC`).
+`OUT-OF-SPEC` findings are advisory unless the user opts in.
+
+### 9. Report
+
+Use the same output structure as the Claude paths, with **Reviewer: Codex
+(second pass)** in the header. Each issue includes the Codex confidence (×100)
+and the REQ-ID you tagged in step 8.
+
+### 10. Iteration & re-review
+
+The second pass participates in the same `REVIEW_STATE.md` loop — a blocking
+second pass increments iteration and returns CHANGES_REQUIRED, escalating at
+iteration 3 like any other verdict. On the next iteration the order repeats in
+full: primary review first, second pass only if the primary approves.
 
 ---
 
@@ -200,11 +530,21 @@ After ALL reviewers message completion, the lead performs three passes.
    └──────────────────┘            ┌── yes ──┴── no ──┐
                                    ▼                  ▼
                           ┌────────────────┐ ┌────────────────┐
-                          │ CHANGES REQ'D →│ │ APPROVED →     │
-                          │ /ds-implement  │ │ ds-verify      │
-                          │ (max 3 cycles) │ └────────────────┘
-                          └────────────────┘
+                          │ CHANGES REQ'D →│ │ APPROVED       │
+                          │ /ds-implement  │ │ (primary only) │
+                          │ (max 3 cycles) │ └───────┬────────┘
+                          └────────────────┘         │
+                                                     ▼
+                                          ┌─────────────────────┐
+                                          │ Phase Complete      │
+                                          │ → Codex second pass │
+                                          │ → then ds-verify    │
+                                          └─────────────────────┘
 ```
+
+The primary APPROVED terminates at Phase Complete, not at ds-verify — Phase
+Complete is the only section that runs the second pass and writes
+`status: APPROVED`.
 
 <EXTREMELY-IMPORTANT>
 **Pass 1 — Deduplication:**
@@ -309,10 +649,16 @@ X critical and Y important issues must be addressed. Return to /ds-implement.
 
 After parallel review completes:
 
-**If APPROVED:** Immediately discover and load the ds-verify skill:
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/SKILL.md` and follow its instructions.
+Parallel review produces a *primary* verdict — it is not a terminal state. Do
+NOT load ds-verify or write `status: APPROVED` from here.
 
-**If CHANGES REQUIRED:** Return to `/ds-implement` to fix reported issues.
+Go to [Phase Complete](#phase-complete) and follow it for every verdict. Phase
+Complete is the single authority that runs the Codex second pass, writes
+`.planning/REVIEW_STATE.md`, and invokes ds-verify.
+
+A branch-local "APPROVED → ds-verify" shortcut would let the parallel path reach
+verification without the second pass ever running, being declined, or being
+recorded — which is exactly the bypass the second pass exists to prevent.
 
 **Maximum 3 review cycles.** If issues persist after 3 rounds of review → implement → re-review, escalate to the user with a summary of unresolved issues. Do not loop indefinitely.
 
@@ -769,6 +1115,17 @@ After review completes, handle verdict-specific transitions:
 
 ### If APPROVED (no issues >= 80 confidence)
 
+**STOP — run the [Codex Second Pass](#codex-second-pass) first.** A primary
+APPROVED is a candidate verdict, not a final one. Writing `status: APPROVED`
+before the second pass runs would hand ds-verify a gate that no second reviewer
+ever saw.
+
+Order of operations:
+
+1. Run the Codex second pass (it self-skips when Codex is unavailable or declined).
+2. If it returns **CHANGES_REQUIRED**, follow [If CHANGES REQUIRED](#if-changes-required-issues--80-confidence-found-iteration--3) instead of this section.
+3. Only if it returns **APPROVED** (or self-skipped), write the state below.
+
 Mark review complete in `.planning/REVIEW_STATE.md`:
 
 ```yaml
@@ -778,14 +1135,72 @@ iteration: [N]
 max_iterations: 3
 last_review_date: [date]
 issues_found_count: 0
+codex_second_pass: completed | declined | unavailable
 verdict: APPROVED
 ---
 ```
+
+`codex_second_pass` records what actually happened, so a later reader can tell
+"Codex approved this" from "Codex never ran." Never write `completed` unless a
+Codex run actually returned a verdict you parsed in step 7.
+
+**`requested` and `error` are not valid under `status: APPROVED`** — those three
+are the only ones. `requested` is a launch, not an answer; `error` is a failure,
+not an answer. Neither supports an approval; see
+[If the Codex second pass errored](#if-the-codex-second-pass-errored).
+
+**This is hook-enforced, not advisory.** ds-verify gates Agent dispatch on
+`GATE_REQUIRE_FIELDS=codex_second_pass:completed|declined|unavailable`, so verify
+cannot start until this field records one of those three. Substitute a single
+value — pasting the `completed | declined | unavailable` line verbatim matches
+nothing and the gate blocks it.
 
 **`status: APPROVED` is the structural gate field** — ds-verify declares a PreToolUse `phase-gate-guard.py` hook that blocks Agent dispatch until `.planning/REVIEW_STATE.md` shows `status: APPROVED`. While the review loop is unresolved (CHANGES_REQUIRED / ESCALATE), `status` is NOT `APPROVED`, so verification is structurally blocked.
 
 Immediately discover and load ds-verify:
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/SKILL.md` and follow its instructions.
+
+### If the Codex second pass errored
+
+Codex ran but produced no verdict (non-zero exit, unparseable output). **This is
+not an approval and not a rejection — it is an absence of evidence.** Do NOT
+write `status: APPROVED` and do NOT load ds-verify.
+
+Record the attempt and leave the gate closed:
+
+```yaml
+---
+status: BLOCKED
+iteration: [N]          # unchanged — no review verdict was produced
+max_iterations: 3
+last_review_date: [date]
+issues_found_count: [count from the primary review]
+codex_second_pass: error
+verdict: BLOCKED
+---
+```
+
+Report the failure to the user and ask how to proceed:
+
+```python
+AskUserQuestion(questions=[{
+  "question": "The Codex second pass failed to produce a verdict. How should we proceed?",
+  "header": "Second Pass",
+  "options": [
+    {"label": "Retry the second pass", "description": "Re-run Codex. Transient failures (auth expiry, a dropped thread) usually clear on a retry."},
+    {"label": "Approve without it", "description": "Record codex_second_pass: declined and proceed to ds-verify on the primary review alone. The analysis is reviewed by Claude only."}
+  ],
+  "multiSelect": false
+}])
+```
+
+- **Retry** → return to [Codex Second Pass](#codex-second-pass) step 2.
+- **Approve without it** → rewrite `codex_second_pass: declined` and follow
+  [If APPROVED](#if-approved-no-issues--80-confidence) from the top.
+
+Only an explicit user decision converts an `error` into a path forward. Silently
+downgrading it to an approval is the fabricated-verdict failure this skill exists
+to prevent.
 
 ### If CHANGES REQUIRED (issues >= 80 confidence found, iteration < 3)
 
@@ -798,11 +1213,19 @@ iteration: [N+1]
 max_iterations: 3
 last_review_date: [date]
 issues_found_count: [count]
+codex_second_pass: completed | declined | unavailable
 verdict: CHANGES_REQUIRED
 ---
 ```
 
+Carry `codex_second_pass` forward unchanged — the decision is made once per
+review loop, not re-asked on each iteration.
+
 Return to `/ds-implement` with specific issues. **Analyst MUST re-invoke /ds-review after fixes.**
+
+When the blocking findings came from the second pass, say so in the handoff
+("Codex second pass, REQ-DATA-03, confidence 91") — the analyst needs to know
+which reviewer to satisfy.
 
 **Critical:** When analyst returns claiming "fixed", you MUST re-run the FULL review. No shortcuts.
 
@@ -842,7 +1265,8 @@ Which option do you prefer?
 
 | Verdict | Next Action | Iteration Counter |
 |---------|-------------|-------------------|
-| APPROVED | Invoke /ds-verify immediately | Reset to 1 for next analysis |
+| APPROVED (primary) | Run the [Codex Second Pass](#codex-second-pass) before writing `status: APPROVED` | No change (not a terminal verdict) |
+| APPROVED (second pass done/skipped) | Invoke /ds-verify immediately | Reset to 1 for next analysis |
 | CHANGES REQUIRED | Return to /ds-implement, analyst fixes then re-invokes /ds-review | Increment |
 | ESCALATE | Ask user for direction | Keep at max |
 

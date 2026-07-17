@@ -142,6 +142,14 @@ Writing SAS code that forces full table scans when indexes exist is NOT HELPFUL 
 
 Before EVERY SAS program execution:
 
+**For probing inputs (do this FIRST — metadata only, seconds):**
+- [ ] `PROC CONTENTS data=lib.x varnum` on every input — variables, types, **lengths**, formats
+- [ ] Index section of the CONTENTS listing read — does the WHERE column actually have an index?
+- [ ] Key lengths compared across datasets to be merged (mismatched `$6`/`$8` gvkey = silent zero matches)
+- [ ] `PROC SQL; select memname, nobs from dictionary.tables where libname='LIB';` — row counts before committing to the job
+- [ ] `PROC PRINT data=lib.x(obs=20); var ...;` — values look like the docs claim (always `obs=`, always `var`)
+- [ ] `PROC DATASETS library=scratch;` — inventory intermediates; `delete` there, not via a rewriting DATA step
+
 **For merges/joins:**
 - [ ] Small lookup + large fact table → hash object (not `PROC SORT` + `DATA` merge)
 - [ ] Hash uses `defineKey`/`defineData`/`defineDone` pattern correctly
@@ -193,6 +201,7 @@ Before EVERY SAS program execution:
 ### SAS Reference
 
 See **`references/sas-etl.md`** for complete patterns:
+- Probing data and metadata (PROC CONTENTS, PROC DATASETS, PROC PRINT, `dictionary.tables`)
 - Hash object merge (basic, multidata, accumulator)
 - Index-friendly WHERE clause quick reference table
 - SGE array job templates with memory and logging
@@ -319,7 +328,7 @@ Detailed query patterns and table documentation:
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/taq.md`** - TAQ: master files, IID, raw tick processing (NBBO, VWAP, closing auctions), CRSP–TAQ merge, era transition (legacy vs millisecond)
-- **`references/sas-etl.md`** - SAS hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
+- **`references/sas-etl.md`** - SAS metadata probing (PROC CONTENTS/DATASETS/PRINT), hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
 - **`references/postgres-vs-sas.md`** - Decision guide: when to use PostgreSQL vs SAS for WRDS ETL (benchmarks, constraints, hybrid pattern)
 - **`references/fjc.md`** - FJC Integrated Database: civil/criminal case data, NOS codes, securities litigation queries, firm linking
 - **`references/sdc-issuances.md`** - SDC New Issues: IPOs, SEOs, 144A equity, debt offerings — schema discovery, cleaning filters, CRSP/Compustat linking

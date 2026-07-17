@@ -15,9 +15,10 @@ hooks:
           command: >-
             GATE_ARTIFACT=.planning/REVIEW_STATE.md
             GATE_STATUS=APPROVED
+            GATE_REQUIRE_FIELDS="codex_second_pass:completed|declined|unavailable"
             GATE_BLOCKED_TOOLS=Agent
             GATE_DESCRIPTION="Code review approved"
-            GATE_REMEDY="Return to dev-review (Phase 6). Review must complete with verdict APPROVED (REVIEW_STATE.md status: APPROVED) before verification. A CHANGES_REQUIRED/ESCALATE/BLOCKED review does not admit verify."
+            GATE_REMEDY="Return to dev-review (Phase 6). Review must complete with verdict APPROVED (REVIEW_STATE.md status: APPROVED) before verification. A CHANGES_REQUIRED/ESCALATE/BLOCKED review does not admit verify. REVIEW_STATE.md must also record codex_second_pass: completed (Codex returned a verdict) | declined (user opted out) | unavailable (Codex not installed/ready, or no git repo). codex_second_pass: requested means the second pass was launched but has not returned — join it (read the file named by codex_output_file) before verifying; a launched-but-unjoined pass is not a completed one. codex_second_pass: error is an absence of evidence, not an approval — retry it or have the user explicitly decline."
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
         - type: command
           command: "FLOOR=dev uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.py"
