@@ -10,10 +10,15 @@
 # one command to run — there is never a reason to drive the Paperpile web UI.
 #
 # Cookies are read from the BROWSER-level CDP target via Storage.getCookies,
-# not from a page target. Page targets route through a renderer, and a wedged
-# tab (a playing YouTube tab reproduces this) never answers Network.getCookies —
-# which used to hang this script forever, since it attached to whichever page
-# happened to be listed first. The browser target has no renderer to wedge.
+# not from a page target. Page targets route through a renderer, and a busy
+# renderer never answers Network.getCookies — which used to hang this script
+# forever, since it attached to whichever page happened to be listed first.
+#
+# Any tab can be the wedged one, and it moves: probing six page targets, one
+# hung indefinitely while five answered in milliseconds — and three hours later
+# the hung tab answered fine while a different one had started hanging. It
+# tracks renderer busyness, not the site. The browser target has no renderer,
+# so it cannot wedge and needs no particular tab open.
 set -euo pipefail
 
 PORT="${1:-9222}"
