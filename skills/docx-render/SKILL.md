@@ -27,6 +27,10 @@ Reserve bare `auto` for **parallel pipeline builds** (e.g. many law-review rende
 at once) where headless/parallel-safety matters more than line-exact fidelity and
 the docs are pipeline-generated (x2t/soffice already grid-faithful there).
 
+**On Linux, `--renderer word` cannot work** — it drives `Word.app` through
+AppleEvents. Use **`--renderer word-remote`** instead: the same real Word engine
+in a QEMU Windows guest, driven over SSH. See "Word in a Windows guest" below.
+
 **Always verify the engine actually used** via the PDF Producer before handing off
 (see table below) — `auto` can fall back, and `--renderer word` only *raises* if
 Word is truly unavailable.
@@ -53,7 +57,8 @@ directly — you don't need to invoke this skill, just call `doc_render.py`.
 
 | Engine | Fidelity | Notes |
 |--------|----------|-------|
-| **Word** (`--renderer word`) | gold standard | native layout; **only engine that keeps an auto-wrapping table as a grid** in a *hand-authored* docx (LibreOffice collapses it to a stacked column). Recomputes Word fields (REF/NOTEREF/PAGEREF/TOC). |
+| **Word** (`--renderer word`) | gold standard | native layout; **only engine that keeps an auto-wrapping table as a grid** in a *hand-authored* docx (LibreOffice collapses it to a stacked column). Recomputes Word fields (REF/NOTEREF/PAGEREF/TOC). **macOS only** — it drives `Word.app` over AppleEvents. |
+| **word-remote** (`--renderer word-remote`) | gold standard | the same real Word engine, in a QEMU Windows guest over SSH. **The Word path on Linux**, where `--renderer word` cannot work at all. Also usable from macOS against a guest on that host. |
 | **x2t** | good | OOXML-native; correct per-section footnote restart; doc_render injects GPOS/kern + EB-Garamond so it matches. |
 | **LibreOffice** | good *except* | wrong for per-section/page footnote restart; collapses auto-wrapping tables not pre-broken upstream. |
 
@@ -90,15 +95,50 @@ switch to audit session: Operation not permitted` — needs root).
 
 Fixes, in order of preference:
 
-1. Run the render from a terminal **inside the Mac's GUI login session** (then
+1. **Use `word-remote`** (next section) — a Windows guest is the supported
+   remote path; driving the Mac's Word from off-box is not.
+2. Run the render from a terminal **inside the Mac's GUI login session** (then
    the normal local path, incl. cmux dispatch, applies).
-2. Grant Full Disk Access to `/usr/libexec/sshd-keygen-wrapper` in System
+3. Grant Full Disk Access to `/usr/libexec/sshd-keygen-wrapper` in System
    Settings → Privacy & Security, after which headless SSH renders work.
-3. Accept `x2t`/LibreOffice on the calling machine — but re-read the Iron Law
-   first: for anything a human reads, fidelity loss is usually not acceptable.
 
 **Do not** paper over this by falling back silently — an explicit
 `--renderer word` deliberately raises rather than downgrading.
+
+## Word in a Windows guest (`word-remote`) — the Linux path
+
+`--renderer word` is macOS-only. `word-remote` runs the same Word engine in a
+QEMU Win11 guest and drives it over SSH, so Linux gets gold-standard fidelity:
+
+```bash
+python3 scripts/doc_render.py IN.docx OUT.pdf --renderer word-remote
+```
+
+Provisioned by the `programs.wordRender` nix module — `word-render` and
+`word-render-install-fonts` on PATH, transport at
+`~/.local/share/word-render/word_render_remote.sh` (override with
+`$WORD_RENDER_REMOTE`). Full setup: `~/nix/modules/shared/word-render/README.md`.
+
+Selection rules:
+
+- **Explicit** `--renderer word-remote` always runs it (and raises rather than
+  falling back, like every explicit engine).
+- **`auto` picks it only with `allow_word=True`**, and only when local Word is
+  unavailable — i.e. it is the Linux stand-in for `renderer="word"`, preferred
+  over the lower-fidelity engines rather than silently downgrading.
+- **`auto` never reaches it in the fallback cascade.** Booting/using a VM is not
+  something best-effort should do behind the caller's back.
+
+Availability is a **file check on the transport script, not an SSH probe** — a
+reachability test would cost a round-trip (and can hang on a suspended VM) on
+every `convert()`. A down guest surfaces as a render error naming the fix.
+
+**A fresh guest silently renders the wrong fonts.** Word substitutes
+Cambria/Calibri for any font it can't resolve *and still exits 0*, so the render
+"succeeds" with wrong typography. Run `word-render-install-fonts` once per
+guest, then verify with `pdffonts` — never trust the exit code. (Stock
+`lmodern` does not work: Word won't render CFF-flavoured OpenType, and it
+matches families on name ID 1. The nix module ships a converted set.)
 
 ## Google Docs exports
 

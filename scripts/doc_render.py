@@ -891,6 +891,69 @@ def find_word() -> bool:
     return _WORD_APP.is_dir() and _WORD_CONTAINER.is_dir()
 
 
+# word-remote: the real Word engine running in a QEMU Windows guest, driven over
+# SSH. Provisioned by the `programs.wordRender` nix module (see
+# ~/nix/modules/shared/word-render/README.md); the transport is
+# word_render_remote.sh, which scp's the docx in, renders via COM in the guest's
+# autologon desktop session, and scp's the PDF back.
+#
+# This is the ONLY faithful path on Linux, where `renderer="word"` cannot work
+# at all (it drives Word.app through AppleEvents). It is equally usable from
+# macOS against a guest on that host.
+_WORD_REMOTE_SCRIPT = (
+    Path.home() / ".local/share/word-render/word_render_remote.sh")
+
+
+def find_word_remote() -> str | None:
+    """Path to the word-remote transport, or None if the kit isn't installed.
+
+    Deliberately does NOT probe the guest over SSH: that costs a network
+    round-trip (and can hang on a suspended VM) on every ``convert()`` call,
+    including the many that will never use this engine. A down or unprovisioned
+    guest surfaces as a render error instead — which for an explicit
+    ``renderer="word-remote"`` is exactly right, since explicit engines raise
+    rather than fall back.
+    """
+    env = os.environ.get("WORD_RENDER_REMOTE")
+    if env and Path(env).is_file():
+        return env
+    if _WORD_REMOTE_SCRIPT.is_file():
+        return str(_WORD_REMOTE_SCRIPT)
+    return shutil.which("word-render")
+
+
+def _run_word_remote(script: str, src: Path, dst: Path, timeout: int) -> None:
+    """Render docx -> PDF through Word in the Windows guest.
+
+    The guest needs the Windows-compatible Latin Modern set installed
+    (`word-render-install-fonts`) for any document using those fonts; without
+    it Word silently substitutes Cambria/Calibri and still exits 0. See the
+    nix module's README.
+    """
+    if dst.suffix.lower() != ".pdf" or src.suffix.lower() != ".docx":
+        raise RuntimeError("word-remote renders .docx -> .pdf only")
+    with tempfile.TemporaryDirectory(prefix="word-remote-") as td:
+        # Stage under a stable basename: the transport derives the guest-side
+        # job name from the input, and spaces/odd characters in a real
+        # manuscript filename would have to survive ssh -> cmd -> powershell.
+        staged = Path(td) / "job.docx"
+        shutil.copy2(src, staged)
+        out = Path(td) / "job.pdf"
+        proc = subprocess.run(
+            [script, str(staged), str(out)],
+            capture_output=True, text=True, timeout=timeout)
+        if proc.returncode != 0 or not out.exists() or out.stat().st_size == 0:
+            tail = (proc.stderr or proc.stdout or "").strip().splitlines()
+            hint = ""
+            if "did not complete" in (proc.stderr or ""):
+                hint = (" — is the guest booted? "
+                        "(start-tpm.sh & start-winvm.sh)")
+            raise RuntimeError(
+                f"word-remote render failed (exit {proc.returncode}){hint}: "
+                + " | ".join(tail[-3:]))
+        shutil.copy2(out, dst)
+
+
 def _run_word_direct(src: Path, dst: Path, timeout: int,
                      update_fields: bool = True) -> None:
     """Drive Word in THIS process's GUI session via AppleEvents.
@@ -1256,10 +1319,12 @@ def convert(
     x2t = shutil.which("x2t")
     sof = find_soffice(soffice)
     word = find_word()
+    wremote = find_word_remote()
     is_docx_pdf = (dst.suffix.lower() == ".pdf"
                    and src.suffix.lower() == ".docx")
     avail = {"word": bool(word and is_docx_pdf), "soffice": bool(sof),
-             "x2t": bool(x2t)}
+             "x2t": bool(x2t),
+             "word-remote": bool(wremote and is_docx_pdf)}
 
     # Primary engine choice.
     use = renderer
@@ -1267,6 +1332,13 @@ def convert(
         restarts = is_docx_pdf and x2t and _docx_restarts_footnotes(src)
         if avail["word"] and allow_word:
             use = "word"
+        # word-remote is gated behind the same allow_word opt-in as local Word:
+        # it is equally not-parallel-safe (one guest, one Word) and costs a VM
+        # round-trip. But when Word is wanted and unavailable locally — i.e.
+        # every Linux host — it is the faithful path, so prefer it over the
+        # lower-fidelity engines rather than silently downgrading.
+        elif avail["word-remote"] and allow_word:
+            use = "word-remote"
         elif is_docx_pdf and sof and not restarts:
             use = "soffice"
         elif x2t:
@@ -1285,10 +1357,15 @@ def convert(
     # So for an explicit renderer we run only that engine and surface its error;
     # only "auto" cascades through the rest (best-effort).
     explicit = renderer != "auto"
+    # word-remote is NOT in the auto cascade: a fallback that boots/uses a VM is
+    # not something "best effort" should reach for behind the caller's back. It
+    # runs only when chosen above (allow_word) or requested explicitly.
     order = [use] if explicit else (
         [use] + [e for e in ("soffice", "x2t", "word") if e != use])
     runners = {
         "word": lambda: _run_word(src, dst, max(timeout, 600), update_fields),
+        "word-remote": lambda: _run_word_remote(
+            wremote, src, dst, max(timeout, 900)),
         "soffice": lambda: _run_soffice(sof, src, dst, timeout),
         "x2t": lambda: _run_x2t(src, dst, timeout),
     }
@@ -1348,14 +1425,19 @@ def main() -> None:
                     help="recalculate xlsx formulas (writes cached values; "
                          "in-place unless dst given)")
     ap.add_argument("--timeout", type=int, default=300)
-    ap.add_argument("--renderer", choices=("auto", "word", "soffice", "x2t"),
+    ap.add_argument("--renderer",
+                    choices=("auto", "word", "word-remote", "soffice", "x2t"),
                     default="auto",
                     help="docx->PDF engine: auto (LibreOffice for ordinary "
                          "docs, x2t for footnote-restart; Word if --allow-word) "
-                         "or force word / soffice / x2t")
+                         "or force word / word-remote / soffice / x2t. "
+                         "'word' is macOS-only (AppleEvents to Word.app); "
+                         "'word-remote' is the same engine in a Windows guest "
+                         "over SSH and is the Word path on Linux")
     ap.add_argument("--allow-word", action="store_true",
                     help="let 'auto' use Microsoft Word (gold standard but "
-                         "GUI-driven, not parallel-safe)")
+                         "GUI-driven, not parallel-safe); falls to "
+                         "'word-remote' where local Word is unavailable")
     ap.add_argument("--no-update-fields", dest="update_fields",
                     action="store_false",
                     help="Word backend: skip updating fields before export")
