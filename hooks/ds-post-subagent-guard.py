@@ -27,8 +27,10 @@ def main():
     with open(flag_file, "w") as f:
         f.write("1")
 
-    # Allow the tool use to proceed
-    print(json.dumps({"decision": "allow"}))
+    # Nothing to say. PostToolUse accepts a top-level "decision", but ONLY the value
+    # "block" -- {"decision": "allow"} is rejected as invalid and the whole payload is
+    # dropped. Staying silent is how a PostToolUse hook says "carry on".
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

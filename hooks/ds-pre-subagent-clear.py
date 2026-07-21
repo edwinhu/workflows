@@ -7,7 +7,17 @@ reads needed to prepare the subagent prompt are not blocked.
 import json
 import os
 import sys
+from pathlib import Path
 import tempfile
+
+# PreToolUse has NO top-level `decision` field -- gates go through
+# hookSpecificOutput.permissionDecision. Emitting {"decision": ...} gets the whole
+# payload rejected by the harness ("Hook JSON output validation failed"), silently
+# disabling this guard. Use the shared helpers.
+HOOKS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import allow, deny  # noqa: E402
+
 
 
 def main():
@@ -19,7 +29,7 @@ def main():
     if os.path.exists(flag_file):
         os.remove(flag_file)
 
-    print(json.dumps({"decision": "allow"}))
+    allow()
 
 
 if __name__ == "__main__":

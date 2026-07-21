@@ -76,10 +76,15 @@ def main():
         message = f"[StrategicCompact] {count} edits - good checkpoint for /compact if context is stale"
 
     if message:
-        # Output as additionalContext to inform Claude
+        # hookEventName MUST match the event this hook was actually invoked on, or the
+        # harness rejects the payload and the suggestion is dropped. This hook is wired
+        # to PreToolUse (hooks/hooks.json) AND to PostToolUse (skills/workshop,
+        # skills/workshop-revise), so hardcoding "PreToolUse" silently broke it under
+        # the workshop wiring. Read the event from the payload instead.
+        event = hook_input.get('hook_event_name') or 'PreToolUse'
         result = {
             "hookSpecificOutput": {
-                "hookEventName": "PreToolUse",
+                "hookEventName": event,
                 "additionalContext": message
             }
         }

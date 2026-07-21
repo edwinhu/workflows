@@ -78,6 +78,64 @@ def append_compaction_marker(learnings_path: Path, workflow: str | None) -> bool
         return False
 
 
+def domain_skills_from_spec() -> list[str]:
+    """Skills listed under a 'Skills Touched'-style section of SPEC.md / PLAN.md.
+
+    ds-plan Step 5b globs these skills' references/ ONCE while drafting the plan. That is
+    plan-time only -- nothing re-reads them during implementation, which is how stale
+    domain knowledge slips through. Persisting them here lets SubagentStart re-assert it.
+    """
+    skills: list[str] = []
+    for name in ('SPEC.md', 'PLAN.md'):
+        p = Path.cwd() / '.planning' / name
+        if not p.exists():
+            continue
+        try:
+            text = p.read_text(encoding='utf-8')
+        except (IOError, OSError):
+            continue
+        # lines like:  - `wrds` -- TAQ millisecond data, SAS on the WRDS grid
+        for m in re.finditer(r'^\s*[-*]\s+`([a-z0-9][a-z0-9:_-]*)`\s*[-—]', text, re.M):
+            s = m.group(1)
+            if s not in skills:
+                skills.append(s)
+    return skills
+
+
+def write_state_file(workflow: str | None, instructions: list[str]) -> None:
+    """Persist workflow state so it survives compaction AND reaches spawned subagents."""
+    planning = Path.cwd() / '.planning'
+    if not planning.is_dir():
+        return
+    skills = domain_skills_from_spec()
+    ts = datetime.now().strftime('%Y-%m-%d %H:%M')
+    lines = [
+        "# STATE (auto-written by pre-compact.py -- safe to edit by hand)",
+        "",
+        f"_Last updated: {ts}_",
+        "",
+        f"## Active workflow: {'/' + workflow if workflow else 'UNKNOWN'}",
+        "",
+        *(f"- {i}" for i in instructions),
+        "",
+    ]
+    if skills:
+        lines += [
+            "## Domain knowledge — READ BEFORE WRITING CODE",
+            "",
+            "These skills' `references/` and `examples/` hold verified, project-specific",
+            "facts that supersede training data. Re-read them at implementation time, not",
+            "just at plan time:",
+            "",
+            *(f"- `{s}` — see `~/projects/workflows/skills/{s}/references/`" for s in skills),
+            "",
+        ]
+    try:
+        (planning / 'STATE.md').write_text("\n".join(lines), encoding='utf-8')
+    except (IOError, OSError) as e:
+        print(f"[PreCompact] Failed to write STATE.md: {e}", file=sys.stderr)
+
+
 def main():
     # Read hook input
     try:
@@ -122,15 +180,20 @@ def main():
             f"Read {learnings_loc} for session context and recent progress."
         )
 
-    # Output additionalContext to be included in compaction summary
+    # PreCompact does NOT support hookSpecificOutput.additionalContext -- the harness
+    # rejects the whole payload ("Hook JSON output validation failed"), silently dropping
+    # the reload instruction. Per https://code.claude.com/docs/en/hooks.md PreCompact only
+    # accepts top-level `decision`/`reason` plus universal fields (systemMessage, continue,
+    # suppressOutput, stopReason, terminalSequence).
+    #
+    # So PERSIST the state to .planning/STATE.md instead. SessionStart surfaces .planning/
+    # on the next session, and subagent-start.py reads STATE.md to brief spawned agents.
     if reload_instructions:
-        result = {
-            "hookSpecificOutput": {
-                "hookEventName": "PreCompact",
-                "additionalContext": "\n".join(reload_instructions)
-            }
-        }
-        print(json.dumps(result))
+        write_state_file(active_workflow, reload_instructions)
+        print(json.dumps({
+            "systemMessage": f"Workflow state saved to .planning/STATE.md"
+                             + (f" (/{active_workflow} active)" if active_workflow else "")
+        }))
 
     sys.exit(0)
 

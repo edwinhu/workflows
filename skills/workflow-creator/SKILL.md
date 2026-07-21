@@ -1710,7 +1710,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 - Specifically check for: **phase gate enforcement** (prerequisite artifact checks), file extension guards, path guards, tool parameter validation, tool sequence enforcement, post-subagent restrictions
 - Behavioral/motivational constraints (rationalization tables, drive-aligned framing) should STAY as prompt — hooks can't teach reasoning
 - Score based on: how many mechanical constraints are prompt-only when they could be hooks?
-- **Mechanical sub-probe (COVERAGE, not presence — RUN it, do not eyeball):** P20 is NOT satisfied by the mere existence of some hooks. Grep the skill bodies for every IMPERATIVE script-step — bang-lines (`` !`…` ``) and phrases like "run `X`", "must run", "first run", "uv run", "run check-all", "run the … script". For each that is mechanically checkable (a script that exits non-zero / emits a checkable artifact), confirm a hook **or** bang-line actually guarantees it, matching the hook's **matcher + command** to the step. Two false-positives to reject: (a) other unrelated hooks do not cover this step; (b) a gate whose matcher is `Write|Edit|Agent` does NOT cover a step that must precede a **`Workflow`/`Agent` fan-out** (the matcher must include the gated tool). Any mechanically-checkable imperative step with no matching enforcing mechanism is a P20 gap — even when the skill has other hooks. (Real miss this encodes: "run check-all before the review fan-out" sat in skippable prose while a hook on `VALIDATION.md` existence looked like it satisfied "phase gate enforcement.")
+- **Mechanical sub-probe (COVERAGE, not presence — RUN it, do not eyeball):** P20 is NOT satisfied by the mere existence of some hooks. Grep the skill bodies for every IMPERATIVE script-step — bang-lines (`` !`…` ``) and phrases like "run `X`", "must run", "first run", "uv run", "run check-all", "run the … script". For each that is mechanically checkable (a script that exits non-zero / emits a checkable artifact), confirm a hook **or** bang-line actually guarantees it, matching the hook's **matcher + command** to the step. Two false-positives to reject: (a) other unrelated hooks do not cover this step; (b) a gate whose matcher is `Write|Edit|Agent` does NOT cover a step that must precede a **`Workflow`/`Agent` fan-out** (the matcher must include the gated tool). Any mechanically-checkable imperative step with no matching enforcing mechanism is a P20 gap — even when the skill has other hooks. **P20 scores COVERAGE, never VALIDITY:** a hook can cover its step perfectly and still emit a payload the harness discards, at which point it enforces nothing. That is Step 3c's job — score P20 on coverage and let the hook-contract harness decide whether the covering hook actually works. (Real miss this encodes: "run check-all before the review fan-out" sat in skippable prose while a hook on `VALIDATION.md` existence looked like it satisfied "phase gate enforcement.")
 
 **P21 — Auto-loader usage for constraints:**
 - Do phase skills that load constraint prose use the bang-invoked auto-loader?
@@ -1895,6 +1895,79 @@ affects: [.planning/wc/{name}/STATE.md]
 one-liner: "Path portability scored Clean/Partial/Broken; hook-command variable audit run; candidacy scan fed into Step 4."
 ```
 
+**Proceed to Step 3c.**
+
+### Step 3c: Validate the Hook OUTPUT Contract (RUN it — do not read the hooks)
+
+Steps 3a/3b and P20 all check a hook's **wiring**: does it exist, does its `command:` resolve,
+does its `matcher` cover the step it gates. **None of them check whether the hook's OUTPUT is
+legal for the event it is wired to** — and that is a distinct, entirely silent failure mode.
+
+**Why this is its own step.** When a hook emits a field its event does not accept, Claude Code
+rejects the **entire** payload (`Hook JSON output validation failed — (root): Invalid input`).
+The hook still runs, still exits 0, still prints nothing a human sees. A `deny` becomes an
+allow; an `additionalContext` never reaches Claude. The audit sees a hook wired to the right
+tool with a resolving path and scores it Present — while it enforces nothing. This is strictly
+worse than a missing hook, because the presence of the hook is what stops anyone looking.
+
+This is the same silent-failure family as the April 2026 `${CLAUDE_SKILL_DIR}` incident above —
+note that the guard quoted there defaults to `{"decision": "approve"}`, which is itself not a
+valid payload for any event. The class was diagnosed as a *path* problem; the *payload* half
+went unexamined for another year.
+
+**Real incident (July 2026).** `hooks/pre-compact.py` emitted
+`hookSpecificOutput.additionalContext` on `PreCompact`, which accepts no `hookSpecificOutput` at
+all. Its "the `/ds` workflow was active before compaction — reload it" instruction was dropped
+after **every** compaction, so the workflow's Iron Laws stopped being enforced for the rest of
+each session. Running the harness for the first time found **8 more broken scripts** in the same
+repo, including `ds-no-main-chat-code-guard.py` — the hook enforcing "YOU MUST NOT WRITE ANALYSIS
+CODE IN MAIN CHAT" — which emitted `{"decision": "block", "message": …}` on `PreToolUse`, an
+event with no top-level `decision` field. Every `deny` it ever issued was discarded.
+
+**How to score it — execute, do not eyeball:**
+
+```bash
+cd "$PROJECT" && ./scripts/check-hooks.sh --report
+```
+
+The harness (`tests/hook_output_schema_test.py` + `scripts/checks/hook_output_schema.py`)
+discovers every wiring from `hooks/hooks.json` **and** every `hooks:` frontmatter block in
+`skills/*/SKILL.md`, feeds each realistic payloads, and validates the emitted JSON against the
+per-event schema from <https://code.claude.com/docs/en/hooks.md>. Reading a hook cannot
+substitute for running it: the invalid branch is usually the *block* branch, which only a real
+payload reaches.
+
+Three defects it catches, none of which any other step sees:
+1. **Wrong shape for the event** — `hookSpecificOutput` on `PreCompact`/`SessionEnd`/`Notification`;
+   a top-level `decision` on `PreToolUse` (gates go through `hookSpecificOutput.permissionDecision`);
+   `decision: "allow"` anywhere (only `"block"` exists); invented fields like
+   `{"result": "continue"}` or `"message"`.
+2. **`hookEventName` disagreeing with the wiring** — including a hook wired to *two* events that
+   hardcodes one of them. Read `hook_event_name` off the payload instead.
+3. **Exit code used as a decision** — on `PreToolUse` only exit **2** blocks; any other non-zero
+   is a non-blocking error, so `sys.exit(1)` after printing a block message is a no-op.
+
+**Score:**
+- **Clean** — every wiring the harness exercised emits a payload its event accepts
+- **Broken** — one or more INVALID wirings. **Each is a critical finding** and fails the
+  substrate gate. Never downgrade one because the hook "looks correct" — the harness is the
+  authority, not a reading of the source.
+- **NotRun** — the audited repo has no harness. Note it as a minor finding and say plainly that
+  hook payload validity was **not** checked.
+
+**Gate: Hook Contract Validated** `[checkpoint: deterministic]`
+- `./scripts/check-hooks.sh` exits 0, or every INVALID wiring is recorded as a critical finding
+
+Update `.planning/wc/{name}/STATE.md`:
+```yaml
+step: 3c-hook-contract
+status: completed
+requires: [scripts/check-hooks.sh, all wired hooks]
+provides: [hook output-contract status]
+affects: [.planning/wc/{name}/STATE.md]
+one-liner: "Hook output contract executed against the per-event schema; INVALID wirings recorded as criticals."
+```
+
 #### Ultracode-Workflow Candidacy Scan (feeds Step 4 Recommendations — no separate gate)
 
 Before writing the report, scan every phase for **ultracode-workflow migration candidates** — fan-out phases that should be Claude Code ultracode workflows rather than in-skill agent dispatch. Read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §1 for the rubric. **Scan for BOTH worker modes — workflows are NOT read-only:**
@@ -1983,6 +2056,15 @@ Format:
 |------|---------|--------|
 | skills/X/SKILL.md | `uv run python3 scripts/foo.py` | ❌ Broken / ✅ Fixed |
 | skills/Y/SKILL.md | `Read("../../lib/...")` | ❌ Broken / ✅ Fixed |
+
+### Hook Output Contract
+| Hook | Event | Verdict | Violation |
+|------|-------|---------|-----------|
+| hooks/X.py | PreToolUse | ✅ Valid / ❌ INVALID | [the harness's verbatim message] |
+
+(From `./scripts/check-hooks.sh --report` — executed, not read. Every ❌ is a critical finding
+and fails the substrate gate: an invalid payload is discarded whole, so the hook silently stops
+enforcing while still appearing wired.)
 
 ### Ultracode-Workflow Migration Candidates
 | Phase | Fan-out? | Worker mode (review/transform) | Value driver | Recommend migrate? (strong/moderate) | Note |

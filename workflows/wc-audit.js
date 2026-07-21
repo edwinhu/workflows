@@ -1,12 +1,12 @@
 export const meta = {
   name: 'wc-audit',
-  description: "workflow-creator's Mode 2 audit as an ultracode workflow: discover the target workflow's skill files, fan out one read-only reviewer per audit dimension (P01-P30 architecture incl. the runner-architecture/executionClass detector — recognizes BOTH the code and DATA compile variants, the 13-pattern enforcement checklist, path portability, the Ultracode-Workflow Candidacy Scan), adversarially verify critical/major gaps against the actual files, then compute the composite + verdict in pure JS. Flags the retired generic-interpreter shape as a critical. Honors workflow-creator's meta-tool exemptions. Read-only; does NOT fix.",
+  description: "workflow-creator's Mode 2 audit as an ultracode workflow: discover the target workflow's skill files, fan out one read-only reviewer per audit dimension (P01-P30 architecture incl. the runner-architecture/executionClass detector — recognizes BOTH the code and DATA compile variants, the 13-pattern enforcement checklist, path portability, the DETERMINISTIC hook output-contract leg, the Ultracode-Workflow Candidacy Scan), adversarially verify critical/major gaps against the actual files, then compute the composite + verdict in pure JS. Flags the retired generic-interpreter shape as a critical. Honors workflow-creator's meta-tool exemptions. Read-only; does NOT fix.",
   whenToUse: "Called by workflow-creator Mode 2 (Steps 1-4) and Mode 3 Phase A. Returns { overallPass, composite, verdict, scoreTable, reportMarkdown, candidacyTable, findings, reviews, reviewersThatFlagged }. The skill renders AUDIT.md from the result and drives the Mode 3 /goal fix loop; on a re-audit it passes onlyChecks (flagged dimension keys) + priorReviews. The workflow never fixes and the gate is computed in JS — never trust a self-reported composite.",
   phases: [
     { title: 'Discover', detail: "enumerate the target workflow's entry/midpoint/phase skills + references; resolve Mode 2 criteria, enforcement-checklist, migration playbook; detect the meta-tool" },
-    { title: 'Review', detail: 'one read-only reviewer per dimension (4 architecture clusters + enforcement + portability + candidacy), in parallel — RAW per-principle scores, never a composite' },
+    { title: 'Review', detail: 'one read-only reviewer per dimension (4 architecture clusters + enforcement + portability + hook-contract + candidacy), in parallel — RAW per-principle scores, never a composite' },
     { title: 'Verify', detail: 'adversarially re-check each critical/major gap against the cited files; drop unconfirmed (the verifier supplies a corrected score)' },
-    { title: 'Gate', detail: 'composite = mean of non-exempt, non-ceiling principle scores, computed in JS; verdict + AUDIT.md report + candidacy table' },
+    { title: 'Gate', detail: 'composite = mean of non-exempt, non-ceiling principle scores, computed in JS; the substrate gate additionally requires portability Clean AND hook-contract Clean (a deterministic harness exit, not a judgment); verdict + AUDIT.md report + candidacy table' },
   ],
 }
 
@@ -117,6 +117,33 @@ const ENFORCEMENT_SCHEMA = {
 }
 
 // Path-portability reviewer.
+// Hook OUTPUT-CONTRACT validity. Separate from path-portability (which only checks that a
+// hook command RESOLVES) and from P20 (which only checks that a hook EXISTS and covers the
+// step). Neither notices a hook that runs, is wired correctly, and emits a payload the
+// harness throws away — the exact defect that disabled pre-compact.py's workflow-reload for
+// an unknown length of time, and that had silently broken 8 more scripts alongside it.
+const HOOK_CONTRACT_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  required: ['dimension', 'status', 'wiringsChecked', 'invalidWirings', 'findings'],
+  properties: {
+    dimension: { type: 'string' },
+    status: { type: 'string', enum: ['Clean', 'Broken', 'NotRun'] },
+    wiringsChecked: { type: 'number', description: 'total (script, event, matcher) wirings the harness exercised' },
+    invalidWirings: {
+      type: 'array', items: {
+        type: 'object', additionalProperties: false, required: ['script', 'event', 'detail'],
+        properties: {
+          script: { type: 'string' }, event: { type: 'string' },
+          detail: { type: 'string', description: 'the schema violation verbatim from the harness' },
+        },
+      },
+      description: 'every wiring the harness reported INVALID — each is a silently-dead hook',
+    },
+    harnessOutput: { type: 'string', description: 'the last ~40 lines of harness output, for evidence' },
+    findings: { type: 'array', items: FINDING },
+  },
+}
+
 const PORTABILITY_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['dimension', 'status', 'violations', 'hookCommandViolations', 'contentPluginRootViolations', 'findings'],
   properties: {
@@ -308,6 +335,33 @@ Scan every SKILL.md and references/*.md for path-portability defects (Mode 2 Ste
 status: Clean (no broken paths AND no \${CLAUDE_SKILL_DIR} in hook commands AND no \${CLAUDE_PLUGIN_ROOT} in skill content), Partial (some fixed, some remain), Broken (relative paths in skill instructions OR \${CLAUDE_SKILL_DIR} in hook commands OR \${CLAUDE_PLUGIN_ROOT} in skill content). Each violation → a findings[] entry (hook-command + content-plugin-root violations are critical). Return PORTABILITY_SCHEMA.`,
   },
   {
+    key: 'hook-contract', schema: HOOK_CONTRACT_SCHEMA,
+    prompt:
+`${READONLY}
+Set dimension="hook-contract" verbatim.
+You are a MECHANICAL verifier. Do NOT reason about hook payloads yourself and do NOT read the
+hooks to judge them — RUN the harness and report its RAW output. A hook whose payload the
+harness rejects fails silently: no exception, no warning, exit 0, message discarded. Eyeballing
+does not find these; only executing them does.
+
+1. Run: \`cd "${PROJECT}" && ./scripts/check-hooks.sh --report\`
+   It discovers every hook wiring — hooks/hooks.json AND the \`hooks:\` frontmatter of every
+   skills/*/SKILL.md — feeds each one realistic payloads, and validates the emitted JSON against
+   the per-event schema in scripts/checks/hook_output_schema.py (transcribed from
+   https://code.claude.com/docs/en/hooks.md).
+2. If the script does not exist, set status="NotRun", wiringsChecked=0, invalidWirings=[], and
+   add ONE minor finding saying the audited repo has no hook-contract harness. Do not improvise
+   a substitute check.
+3. Otherwise parse the printed table. Set wiringsChecked = total rows. For EVERY row whose
+   verdict is INVALID (or WIRING ERROR), add an invalidWirings[] entry with the script, the
+   event, and the violation text the harness printed above the table (the \`! ...\` lines).
+   status = "Clean" iff zero INVALID rows, else "Broken".
+4. Put the tail of the harness output in harnessOutput.
+
+Report raw counts. Do NOT soften, do NOT excuse an INVALID row because the hook "looks right" —
+the harness is the authority here, not your reading of the source. Return HOOK_CONTRACT_SCHEMA.`,
+  },
+  {
     key: 'candidacy-scan', schema: CANDIDACY_SCHEMA,
     prompt:
 `${READONLY}
@@ -471,6 +525,17 @@ for (const id of ALL_IDS) {
 const port = byDim['path-portability']
 for (const hv of (port?.hookCommandViolations || [])) findings.push({ severity: 'critical', dimension: 'path-portability', location: hv, detail: `hook command uses \${CLAUDE_SKILL_DIR} — silent-failure landmine; use \${CLAUDE_PLUGIN_ROOT}` })
 for (const cv of (port?.contentPluginRootViolations || [])) findings.push({ severity: 'critical', dimension: 'path-portability', location: cv, detail: `\${CLAUDE_PLUGIN_ROOT} in skill content — substituted only in hook commands, stays literal here; use \${CLAUDE_SKILL_DIR}/../..` })
+// Hook OUTPUT-CONTRACT violations are always critical, and the verdict comes from the harness's
+// exit — never from a reviewer's reading. A hook emitting a payload its event does not accept is
+// a dead hook: it exits 0, prints nothing anyone sees, and whatever it was enforcing stops being
+// enforced. That is strictly worse than a missing hook, because the audit sees a hook there.
+const hookc = byDim['hook-contract']
+for (const iw of (hookc?.invalidWirings || [])) {
+  findings.push({
+    severity: 'critical', dimension: 'hook-contract', location: `hooks/${iw.script} [${iw.event}]`,
+    detail: `hook payload is invalid for ${iw.event} — the harness rejects it wholesale and the hook silently stops enforcing: ${iw.detail}`,
+  })
+}
 findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])
 const criticalCount = findings.filter(f => f.severity === 'critical').length
 
@@ -483,7 +548,12 @@ const criticalCount = findings.filter(f => f.severity === 'critical').length
 const enfDim = byDim['enforcement-checklist']
 const enfAbsent = (enfDim?.patterns || []).filter(p => p.status === 'Absent').map(p => p.pattern)
 const portStatus = port ? port.status : 'n/a'
-const substratePass = criticalCount === 0 && enfAbsent.length === 0 && (portStatus === 'Clean' || portStatus === 'n/a')
+// Hook-contract is a DETERMINISTIC leg (a harness exit, not a judgment), so it belongs in the
+// substrate alongside portability rather than in the noisy composite.
+const hookStatus = hookc ? hookc.status : 'n/a'
+const substratePass = criticalCount === 0 && enfAbsent.length === 0
+  && (portStatus === 'Clean' || portStatus === 'n/a')
+  && (hookStatus === 'Clean' || hookStatus === 'NotRun' || hookStatus === 'n/a')
 const overallPass = substratePass && counted.length > 0 && composite >= THRESHOLD
 const verdict = overallPass ? 'PASS' : 'NEEDS WORK'
 
@@ -526,6 +596,16 @@ const portTable = port
         : 'No path-portability defects found.')
   : '(path portability not scored this run)'
 
+const hookTable = hookc
+  ? `Status: **${hookc.status}** (${hookc.wiringsChecked} wiring(s) executed against the per-event schema)\n\n` + (
+      (hookc.invalidWirings || []).length
+        ? ['| Hook | Event | Violation |', '|------|-------|-----------|',
+           ...(hookc.invalidWirings || []).map(i => `| hooks/${i.script} | ${i.event} | ${(i.detail || '').replace(/\|/g, '\\|').slice(0, 160)} |`)].join('\n')
+        : (hookc.status === 'NotRun'
+            ? 'Harness not present in this repo — hook payload validity was NOT checked.'
+            : 'Every wired hook emits a payload its event accepts.'))
+  : '(hook contract not checked this run)'
+
 const cand = byDim['candidacy-scan']
 const candidacyTable = cand
   ? ['| Phase | Fan-out? | Worker mode | Value driver | Recommend | Note |', '|-------|----------|-------------|--------------|-----------|------|',
@@ -553,8 +633,8 @@ const scoreTable = [
 const reportMarkdown = [
   `## Audit: ${TARGET}${disc.isMetaTool ? ' (meta-tool — P01/P06 exempt)' : ''}`,
   ``,
-  `**Verdict:** ${verdict} &nbsp;·&nbsp; **Substrate gate:** ${substratePass ? '✅ clean' : '❌ ' + criticalCount + ' crit / ' + enfAbsent.length + ' enf-Absent / portability ' + portStatus} &nbsp;·&nbsp; **Composite:** ${composite} / 10 (advisory; threshold ${THRESHOLD}) &nbsp;·&nbsp; **Critical:** ${criticalCount}`,
-  `\n_The substrate gate (0 critical · no enforcement Absent · portability Clean) is the convergence signal. The composite is an advisory ±0.2 LLM proxy — see project_wc_mode3_asymptote; do not chase it past the substrate gate._`,
+  `**Verdict:** ${verdict} &nbsp;·&nbsp; **Substrate gate:** ${substratePass ? '✅ clean' : '❌ ' + criticalCount + ' crit / ' + enfAbsent.length + ' enf-Absent / portability ' + portStatus + ' / hook-contract ' + hookStatus} &nbsp;·&nbsp; **Composite:** ${composite} / 10 (advisory; threshold ${THRESHOLD}) &nbsp;·&nbsp; **Critical:** ${criticalCount}`,
+  `\n_The substrate gate (0 critical · no enforcement Absent · portability Clean · hook contract Clean) is the convergence signal. The composite is an advisory ±0.2 LLM proxy — see project_wc_mode3_asymptote; do not chase it past the substrate gate._`,
   excluded.length ? `\n_Excluded from composite (deterministic meta-tool exemptions): ${excluded.join(', ')}._` : '',
   ceilingNoted.length ? `_Domain-ceiling-flagged (kept in composite, not penalized as gaps): ${ceilingNoted.join(', ')}._` : '',
   ``,
@@ -576,6 +656,11 @@ const reportMarkdown = [
   ``,
   `### Path Portability`,
   portTable,
+  ``,
+  `### Hook Output Contract`,
+  `_Executed, not eyeballed: every wiring in hooks.json + skill frontmatter is run and its emitted JSON validated against the event's schema. An invalid payload is discarded whole by the harness — the hook exits 0 and silently stops enforcing._`,
+  ``,
+  hookTable,
   ``,
   `### Ultracode-Workflow Migration Candidates`,
   candidacyTable,

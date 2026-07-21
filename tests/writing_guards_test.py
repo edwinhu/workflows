@@ -35,6 +35,16 @@ def run(cmd, stdin=None, env=None):
                           env={**os.environ, **(env or {})})
 
 
+def claim_payload(file_path: Path) -> str:
+    """A real PostToolUse payload. Hooks read stdin — there is no CLAUDE_TOOL_INPUT."""
+    return json.dumps({
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {"file_path": str(file_path)},
+        "tool_response": {},
+    })
+
+
 def make_project(tmp: Path, *, granular=True, claim_ok=True, stale=False):
     (tmp / ".planning").mkdir(parents=True)
     (tmp / "outlines").mkdir()
@@ -99,24 +109,28 @@ with tempfile.TemporaryDirectory() as td:
     # a draft with NO claim, inside a project ⇒ block
     bad_draft = proj / "drafts" / "Orphan (Draft).md"
     bad_draft.write_text("# Orphan\nProse with no claim id.\n")
-    r = run(["uv", "run", "python3", str(CLAIM_GUARD)],
-            env={"CLAUDE_TOOL_INPUT": json.dumps({"file_path": str(bad_draft)})})
+    r = run(["uv", "run", "python3", str(CLAIM_GUARD)], stdin=claim_payload(bad_draft))
     out = json.loads(r.stdout)
     ok("claim-guard: draft w/o claim in project ⇒ block", out.get("decision") == "block", r.stdout)
+    ok("claim-guard: block carries a reason (not `message`)",
+       isinstance(out.get("reason"), str) and "message" not in out, r.stdout)
 
-    # an outline with NO claim ⇒ warn (continue), never block
+    # an outline with NO claim ⇒ warn, never block. A warning on PostToolUse is
+    # hookSpecificOutput.additionalContext — `{"result": "continue"}` is not a thing,
+    # and asserting it here is what let the invalid payload survive in production.
     bad_outline = proj / "outlines" / "Orphan.md"
     bad_outline.write_text("- a point with no claim id\n")
-    r = run(["uv", "run", "python3", str(CLAIM_GUARD)],
-            env={"CLAUDE_TOOL_INPUT": json.dumps({"file_path": str(bad_outline)})})
+    r = run(["uv", "run", "python3", str(CLAIM_GUARD)], stdin=claim_payload(bad_outline))
     out = json.loads(r.stdout)
-    ok("claim-guard: outline w/o claim ⇒ continue (warn)", out.get("result") == "continue" and "message" in out)
+    hso = out.get("hookSpecificOutput", {})
+    ok("claim-guard: outline w/o claim ⇒ warn via additionalContext",
+       hso.get("hookEventName") == "PostToolUse" and "additionalContext" in hso
+       and "decision" not in out, r.stdout)
 
-    # a draft WITH a claim ⇒ continue, no block
+    # a draft WITH a claim ⇒ silence (nothing to say), never a block
     r = run(["uv", "run", "python3", str(CLAIM_GUARD)],
-            env={"CLAUDE_TOOL_INPUT": json.dumps({"file_path": str(proj / "drafts" / "Part I. Alpha (Draft).md")})})
-    out = json.loads(r.stdout)
-    ok("claim-guard: draft with claim ⇒ continue", out.get("result") == "continue" and "decision" not in out)
+            stdin=claim_payload(proj / "drafts" / "Part I. Alpha (Draft).md"))
+    ok("claim-guard: draft with claim ⇒ silent", r.stdout.strip() == "" and r.returncode == 0, r.stdout)
 
 print(f"\n{_p} passed, {_f} failed")
 sys.exit(1 if _f else 0)

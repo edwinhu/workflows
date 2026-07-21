@@ -7,9 +7,12 @@ without a matching outline — the Iron Law in the prompt handles hard enforceme
 """
 
 import json
-import os
 import sys
 from pathlib import Path
+
+HOOKS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import deny  # noqa: E402
 
 
 def main():
@@ -63,16 +66,19 @@ def main():
     if outline_found:
         sys.exit(0)  # Outline exists, allow
 
-    # Hard block — NO PROSE WITHOUT OUTLINE (Iron Law enforcement)
-    error = (
+    # Hard block — NO PROSE WITHOUT OUTLINE (Iron Law enforcement).
+    #
+    # This used to be `print(..., file=sys.stderr); sys.exit(1)`, which does NOT block:
+    # on PreToolUse only exit code 2 blocks the tool call, and every other non-zero code
+    # is a "non-blocking error". The Write went through and the message never reached
+    # Claude. The contract-correct hard stop is permissionDecision "deny".
+    deny(
         f"BLOCKED: No outline found for this draft.\n\n"
         f"Writing to `{file_path}` but no matching outline in `{outlines_dir}/`.\n"
         f"Expected: `{outlines_dir}/{section_name}.md`\n\n"
         f"Create the outline first. Prose without structure produces wandering drafts "
         f"that require full rewrites — that's anti-helpful, not efficient."
     )
-    print(error, file=sys.stderr)
-    sys.exit(1)
 
 
 if __name__ == '__main__':

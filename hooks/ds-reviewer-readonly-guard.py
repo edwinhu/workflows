@@ -6,6 +6,16 @@ tool calls to prevent reviewers from "fixing" issues they find.
 """
 import json
 import sys
+from pathlib import Path
+
+# PreToolUse has NO top-level `decision` field -- gates go through
+# hookSpecificOutput.permissionDecision. Emitting {"decision": ...} gets the whole
+# payload rejected by the harness ("Hook JSON output validation failed"), silently
+# disabling this guard. Use the shared helpers.
+HOOKS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import allow, deny  # noqa: E402
+
 
 def main():
     tool_input = json.loads(sys.stdin.read())
@@ -19,14 +29,10 @@ def main():
         path = tool_input.get("tool_input", {}).get("file_path", "")
         parts = [p for p in path.replace("\\", "/").split("/") if p and p != "."]
         if parts and parts[0] in (".planning", ".claude"):
-            print(json.dumps({"decision": "allow"}))
-            return
-        print(json.dumps({
-            "decision": "block",
-            "message": "\ud83d\uded1 Reviewer read-only enforcement: Review/verification agents must NOT modify files. Report findings back to the orchestrator for planned fixes. (Writes to .planning/ verdict sentinels are allowed.)"
-        }))
+            allow()
+        deny("\ud83d\uded1 Reviewer read-only enforcement: Review/verification agents must NOT modify files. Report findings back to the orchestrator for planned fixes. (Writes to .planning/ verdict sentinels are allowed.)")
     else:
-        print(json.dumps({"decision": "allow"}))
+        allow()
 
 if __name__ == "__main__":
     main()

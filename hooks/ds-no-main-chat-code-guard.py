@@ -7,6 +7,16 @@ Analysis code must be written by delegated subagents, not the orchestrator.
 import json
 import os
 import sys
+from pathlib import Path
+
+# PreToolUse has NO top-level `decision` field -- gates go through
+# hookSpecificOutput.permissionDecision. Emitting {"decision": ...} gets the whole
+# payload rejected by the harness ("Hook JSON output validation failed"), silently
+# disabling this guard. Use the shared helpers.
+HOOKS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import allow, deny  # noqa: E402
+
 
 def main():
     tool_input = json.loads(sys.stdin.read())
@@ -15,8 +25,7 @@ def main():
 
     # Only check Write, Edit, and Bash
     if tool_name not in ("Write", "Edit", "Bash"):
-        print(json.dumps({"decision": "allow"}))
-        return
+        allow()
 
     # For Bash, check if command contains analysis-related operations
     if tool_name == "Bash":
@@ -24,21 +33,14 @@ def main():
         # Allow git, ls, cat .planning/, check-all-ds.sh, and other orchestration commands
         safe_prefixes = ["git ", "ls ", "cat .planning/", "head ", "tail ", "wc ", "mkdir ", "chmod ", "bash scripts/"]
         if any(command.strip().startswith(p) for p in safe_prefixes):
-            print(json.dumps({"decision": "allow"}))
-            return
+            allow()
         # Allow pixi/python commands that are just running scripts
         if "check-all-ds" in command or "check-ds-" in command:
-            print(json.dumps({"decision": "allow"}))
-            return
+            allow()
         # Block python/pixi run commands that look like analysis
         if any(kw in command for kw in ["python3 -c", "pixi run python", "import pandas", "import numpy"]):
-            print(json.dumps({
-                "decision": "block",
-                "message": "🛑 Iron Law: No analysis code in main chat. Delegate to a subagent via ds-delegate."
-            }))
-            return
-        print(json.dumps({"decision": "allow"}))
-        return
+            deny("🛑 Iron Law: No analysis code in main chat. Delegate to a subagent via ds-delegate.")
+        allow()
 
     # For Write/Edit, check if target is an analysis file
     path = tool_params.get("file_path", "")
@@ -46,19 +48,14 @@ def main():
     # Allow writes to state files, planning, config
     allowed_patterns = [".planning/", ".claude/", "CLAUDE.md", "scripts/", "hooks/", "references/", "skills/"]
     if any(pattern in path for pattern in allowed_patterns):
-        print(json.dumps({"decision": "allow"}))
-        return
+        allow()
 
     # Block writes to analysis files (.py, .ipynb, .R, .sas, .sql in project dirs)
     analysis_extensions = [".py", ".ipynb", ".R", ".r", ".sas", ".sql", ".qmd"]
     if any(path.endswith(ext) for ext in analysis_extensions):
-        print(json.dumps({
-            "decision": "block",
-            "message": "🛑 Iron Law: No analysis code in main chat. This file should be written by a delegated subagent. Use ds-delegate to dispatch a Task agent."
-        }))
-        return
+        deny("🛑 Iron Law: No analysis code in main chat. This file should be written by a delegated subagent. Use ds-delegate to dispatch a Task agent.")
 
-    print(json.dumps({"decision": "allow"}))
+    allow()
 
 if __name__ == "__main__":
     main()

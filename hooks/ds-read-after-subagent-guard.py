@@ -7,7 +7,17 @@ Read/Grep on paths that are NOT under .planning/.
 import json
 import os
 import sys
+from pathlib import Path
 import tempfile
+
+# PreToolUse has NO top-level `decision` field -- gates go through
+# hookSpecificOutput.permissionDecision. Emitting {"decision": ...} gets the whole
+# payload rejected by the harness ("Hook JSON output validation failed"), silently
+# disabling this guard. Use the shared helpers.
+HOOKS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import allow, deny  # noqa: E402
+
 
 def main():
     tool_input = json.loads(sys.stdin.read())
@@ -21,8 +31,7 @@ def main():
 
     if not os.path.exists(flag_file):
         # No subagent has returned yet — allow everything
-        print(json.dumps({"decision": "allow"}))
-        return
+        allow()
 
     # Subagent has returned — check if this is a read on non-state files
     path = ""
@@ -34,20 +43,15 @@ def main():
         path = tool_params.get("path", "")
 
     if not path:
-        print(json.dumps({"decision": "allow"}))
-        return
+        allow()
 
     # Allow reads of state files (.planning/), plugin files, and common config
     allowed_patterns = [".planning/", ".claude/", "CLAUDE.md", "plugins/cache/"]
     if any(pattern in path for pattern in allowed_patterns):
-        print(json.dumps({"decision": "allow"}))
-        return
+        allow()
 
     # Block reads of source/data files after subagent return
-    print(json.dumps({
-        "decision": "block",
-        "message": "\ud83d\uded1 Post-subagent boundary (C5): After a subagent returns, main chat must NOT read source/data files. Verify via .planning/ state files only. If you need to investigate further, dispatch a NEW subagent."
-    }))
+    deny("\ud83d\uded1 Post-subagent boundary (C5): After a subagent returns, main chat must NOT read source/data files. Verify via .planning/ state files only. If you need to investigate further, dispatch a NEW subagent.")
 
 if __name__ == "__main__":
     main()

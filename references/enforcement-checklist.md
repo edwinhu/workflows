@@ -110,6 +110,23 @@ Before proceeding to [next phase]:
 
 **Key insight:** Gates must be *programmatically verifiable*. "Quality is sufficient" is not a gate. "File X contains string Y" is a gate.
 
+**If the gate is a HOOK, its OUTPUT must be valid for its event — or it is not a gate at all.**
+A hook that emits a field its event does not accept has its **entire** payload rejected by the
+harness (`Hook JSON output validation failed — (root): Invalid input`). It still runs, still
+exits 0, prints nothing anyone sees, and its `deny` silently becomes an allow. Checking that the
+hook exists, that its `command:` resolves, and that its `matcher` covers the step does **not**
+catch this — all three pass on a hook that enforces nothing.
+
+The three that keep recurring:
+- top-level `decision` on `PreToolUse` (gates use `hookSpecificOutput.permissionDecision`)
+- `hookSpecificOutput` on `PreCompact` / `SessionEnd` / `Notification`, which accept none
+- `decision: "allow"` or an invented `{"result": "continue"}` / `"message"` — no event has these
+
+Validate by EXECUTION, never by reading: `./scripts/check-hooks.sh` runs every wiring (from
+`hooks/hooks.json` **and** every skill's `hooks:` frontmatter) against the per-event schema. See
+workflow-creator Mode 2 **Step 3c**. Reading the hook is not enough — the invalid branch is
+usually the *block* branch, which only a real payload reaches.
+
 ---
 
 ### 5. Flowcharts as Spec

@@ -106,6 +106,16 @@
           }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/subagent-start.py"
+          }
+        ]
+      }
     ]
   }
 }

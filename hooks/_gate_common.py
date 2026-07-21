@@ -22,6 +22,32 @@ def deny(reason: str):
     sys.exit(0)
 
 
+def allow():
+    """PreToolUse: silence IS the allow.
+
+    There is no `{"decision": "allow"}` in the hook contract. Emitting one gets the
+    WHOLE payload rejected ("Hook JSON output validation failed"), which is harmless
+    for an allow but means the same code path's *block* is rejected too — the guard
+    silently stops guarding. Print nothing and exit 0.
+    """
+    sys.exit(0)
+
+
+def context(event: str, text: str):
+    """Non-blocking feedback to Claude, on any event that accepts additionalContext.
+
+    `event` MUST equal the event the hook is wired to: a hookEventName that disagrees
+    with the wiring is rejected exactly like an unsupported field. Read it from the
+    payload's `hook_event_name` rather than hardcoding it when a hook is wired to more
+    than one event.
+    """
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": event,
+        "additionalContext": text,
+    }}))
+    sys.exit(0)
+
+
 def _project_from_args(tool_input: dict, hook_input: Optional[dict] = None) -> str:
     """Resolve the project directory the gate should audit.
 

@@ -15,10 +15,18 @@ risk flagged in DESIGN D-w-3):
 Only enforced inside a writing PROJECT (a .planning/ dir present).
 """
 import json
-import os
 import re
 import sys
 from pathlib import Path
+
+# Hooks read their payload from STDIN -- CLAUDE_TOOL_INPUT does not exist -- and there
+# is no {"result": ...} field in the hook contract. This hook used both, so it saw an
+# empty tool_input on every call and its output was rejected wholesale. Warnings go
+# through hookSpecificOutput.additionalContext; a hard stop on PostToolUse is
+# top-level decision:"block" + reason.
+HOOKS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(HOOKS_DIR))
+from _gate_common import context  # noqa: E402
 
 CLAIM_PATTERN = re.compile(r'CLAIM-\d+')
 
@@ -28,17 +36,18 @@ def _in_writing_project(p: Path) -> bool:
 
 
 def main():
-    tool_input_str = os.environ.get('CLAUDE_TOOL_INPUT', '{}')
     try:
-        tool_input = json.loads(tool_input_str)
-    except json.JSONDecodeError:
-        print(json.dumps({"result": "continue"}))
-        return
+        hook_input = json.load(sys.stdin)
+    except Exception:
+        sys.exit(0)
 
+    if hook_input.get('tool_name', '') not in ('Write', 'Edit', 'MultiEdit'):
+        sys.exit(0)
+
+    tool_input = hook_input.get('tool_input', {}) or {}
     file_path = tool_input.get('file_path', '')
     if not file_path:
-        print(json.dumps({"result": "continue"}))
-        return
+        sys.exit(0)
 
     p = Path(file_path)
     parts = p.parts
@@ -48,26 +57,22 @@ def main():
     is_draft = 'drafts' in parts
 
     if not (is_outline or is_draft):
-        print(json.dumps({"result": "continue"}))
-        return
+        sys.exit(0)
 
     # Check if the file exists and contains CLAIM-XX references
     if not p.exists():
-        print(json.dumps({"result": "continue"}))
-        return
+        sys.exit(0)
 
     try:
         content = p.read_text()
     except Exception:
-        print(json.dumps({"result": "continue"}))
-        return
+        sys.exit(0)
 
     claims = CLAIM_PATTERN.findall(content)
     artifact_type = "outline" if is_outline else "draft"
 
     if claims:
-        print(json.dumps({"result": "continue"}))
-        return
+        sys.exit(0)
 
     remedy = (
         f"No CLAIM-XX IDs found in {artifact_type} file: {file_path}\n"
@@ -89,7 +94,7 @@ def main():
         return
 
     # Outlines (or non-project files) → warn only; the outline-executable guard hard-gates at approval.
-    print(json.dumps({"result": "continue", "message": remedy}))
+    context('PostToolUse', remedy)
 
 
 if __name__ == '__main__':
