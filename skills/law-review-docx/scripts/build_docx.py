@@ -697,14 +697,23 @@ def _text_twips(s: str, font_pt: float) -> float:
     return units / 1000.0 * font_pt * 20.0
 
 
-def style_tables(docx_path: Path) -> None:
+def style_tables(docx_path: Path, width_factor: float = 1.0) -> None:
     """Restyle every native Word table to the great_tables (booktabs) look.
 
     Idempotent: re-running on an already-styled document reproduces the same
     result (borders/shading/alignment/widths are overwritten, not appended;
     cantSplit/keepNext/sectPr insertions are guarded against duplication).
+
+    ``width_factor`` scales the Times-Roman width model in ``_text_twips`` for
+    documents set in a wider face. The law-review template is a Times clone, so
+    1.0 is right there; Latin Modern Roman (the law-econ template) runs ~15%
+    wider and needs ~1.15, or column widths come out short and Word splits
+    words mid-token.
     """
     import zipfile, shutil
+
+    def tw(s: str, font_pt: float) -> float:
+        return _text_twips(s, font_pt) * width_factor
     import xml.etree.ElementTree as ET
 
     W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -805,7 +814,7 @@ def style_tables(docx_path: Path) -> None:
         bf = _BOLD_FACTOR if bold else 1.0
         lines, cur = [], []
         for w in words:
-            if cur and _text_twips(" ".join(cur + [w]), font_pt) * bf > text_area:
+            if cur and tw(" ".join(cur + [w]), font_pt) * bf > text_area:
                 lines.append(" ".join(cur))
                 cur = [w]
             else:
@@ -886,7 +895,7 @@ def style_tables(docx_path: Path) -> None:
 
         # --- content-fit column widths (in twips, at base font) -----------
         content_w = [0.0] * ncol
-        min_w = _text_twips("00", tbl_base_pt)
+        min_w = tw("00", tbl_base_pt)
         for ri, tr in enumerate(rows):
             pos = 0
             for tc in tr.findall(f"{ns}tc"):
@@ -899,10 +908,10 @@ def style_tables(docx_path: Path) -> None:
                     pad = _BOLD_FACTOR if is_header else 1.0
                     # floor: longest single token never splits
                     for tok in text.split():
-                        content_w[pos] = max(content_w[pos], _text_twips(tok, tbl_base_pt) * pad)
+                        content_w[pos] = max(content_w[pos], tw(tok, tbl_base_pt) * pad)
                     # body label cells: keep the full phrase on one line
                     if not is_header and text:
-                        content_w[pos] = max(content_w[pos], _text_twips(text, tbl_base_pt))
+                        content_w[pos] = max(content_w[pos], tw(text, tbl_base_pt))
                 pos += span
         content_w = [max(w * _WIDTH_SLACK, min_w) for w in content_w]
         sum_content = sum(content_w)

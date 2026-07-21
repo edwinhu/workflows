@@ -48,7 +48,8 @@ neither. See `docs/investigations/2026-06-23_gdocs-customxml-case.md`.
 ### Build — generate a formatted .docx from source
 | Skill | Role |
 |---|---|
-| `law-review-docx` | Markdown/legal draft → law-review-styled Word doc (pandoc + template; chains footnote repair, NOTEREF, widow control) |
+| `law-review-docx` | Markdown/legal draft → law-review-styled Word doc (pandoc + template; chains footnote repair, NOTEREF, widow control). **Footnote/Bluebook citations, small caps, TOC.** |
+| `law-econ-docx` | Markdown → law-and-economics Word manuscript for JLE / JLS / JLEO / ALER (pandoc + Latin Modern template; citeproc author-date + reference list, double spaced, numbered subheads). **Same machinery as `law-review-docx`, opposite citation model** — pick by discipline, not by file type. |
 
 ### Render — export to PDF/PNG
 | Skill / tool | Role |
