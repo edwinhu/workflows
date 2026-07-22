@@ -44,16 +44,16 @@ paper and discovers the stars are missing at submission time.
 
 ### Table Facts
 
-- Significance stars require `*` inside `coef_fmt` (e.g. `"b* \n (se)"`). Setting `signif_code` alone renders **no stars at all** — silently, with no warning. This is the single most common etable mistake.
+- The **default** `etable()` prints stars (`1.873***`) — but the moment you pass `coef_fmt` yourself, stars come only from a `*` token in it. `coef_fmt="b \n (se)"` silently drops the stars you had for free; `"b* \n (se)"` keeps them. Verified on pyfixest 0.60.0: default → `1.873***`, explicit `"b \n (se)"` → `1.873`. `signif_code` only sets the thresholds, never whether stars render.
 - `keep` / `drop` take **regex**, not names. `keep="x1"` also matches `x10` and `log_x1`; use `r"^x1$"` or `exact_match=True`.
-- pyfixest drops singleton fixed effects by default and prints a warning, not an error — coefficient counts can differ from the same spec in Stata/R unless you read the warning.
+- pyfixest drops singleton fixed-effect groups by default and prints a warning, not an error — the **observation count** silently differs from the same spec elsewhere unless you read the warning.
 - `etable()` returns a `great_tables` `GT` object when `type="gt"` (the default). Reach for the GT method chain for anything etable doesn't parameterize instead of post-processing strings.
 - `fmt_*` methods take `columns=` and `rows=`; omitting both applies the format to the whole table, which is rarely what a mixed-type table wants.
 
 ### Red Flags — STOP If About To:
 
 - Report a regression table as final without having rendered and read it → STOP. Unrendered is unverified.
-- Set `signif_code` and expect stars → STOP. Add `*` to `coef_fmt`.
+- Write a custom `coef_fmt` without a `*` token → STOP. You just turned off the stars the default gave you; `signif_code` will not bring them back.
 - Hand-edit LaTeX that `etable()` produced → STOP. Round-trip the change through `etable()`/`GT` parameters, or the next re-run silently reverts it.
 - Retype numbers from a fit into a table by hand → STOP. Every hand-typed number is an unverified claim; pass the fit objects.
 

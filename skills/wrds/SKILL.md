@@ -363,7 +363,7 @@ Working code from real projects:
 - **`examples/form4_pipeline/`** - Two parallel Form 3/4/5 pipelines: the annualized SAS ownership panel and the XML owner bridge built from the raw filings.
 - **`examples/proxy_advisors_pipeline/`** - 485BPOS/485APOS scan for ISS / Glass Lewis / Egan-Jones customer relationships via the `scan_covers` Go framework + SGE.
 - **`examples/fjc_eda.ipynb`** - FJC Integrated Database: securities cases (`nos = 850`), filing trends, court distribution
-- **`examples/lpc_dealscan_eda.ipynb`** (paired script: `examples/lpc_dealscan_eda.py`) - LPC DealScan: ~171K US facilities 1990-2025, volume by year, loan type and purpose mix
+- **`examples/lpc_dealscan_eda.ipynb`** (paired script: `examples/lpc_dealscan_eda.py`) - LPC DealScan: ~171K US facilities 1990-2020 (the normalized facility table; queries are capped at 2020-12-31), volume by year, loan type and purpose mix
 - **`examples/voting_ownership_eda.py`** - Standalone Python/PostgreSQL EDA of the same ISS-votes + ownership merge. For production work prefer `voting_ownership_pipeline/`, which is the SGE-ready version of this analysis.
 
 ### Scripts
