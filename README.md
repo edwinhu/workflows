@@ -29,7 +29,7 @@ Requires `gh` (GitHub CLI). Tools already on your `$PATH` are skipped.
 
 ---
 
-## User Commands (16)
+## User Commands (17)
 
 These are the skills you invoke directly with `/name`:
 
@@ -67,6 +67,7 @@ Anthropic Office skills with this project's repair/build/render tooling.
 | Skill | Purpose |
 |-------|---------|
 | `/ds-tables` | Publication tables in Python — `pyfixest.etable()` regression tables and `great_tables` GT formatting |
+| `/fuzzy-name-matching` | Entity resolution / record linkage by name — char n-gram TF-IDF + `sparse_dot_topn` top-k cosine, normalize-first, scoped + global two-pass |
 
 ### Meta
 
