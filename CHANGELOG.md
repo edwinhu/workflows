@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.75.0] - 2026-07-22
+
+### Fixed
+- **`load-constraints.py` matched skill names by bare substring**, so a constraint could load into a skill whose name merely *contained* it. `"ds"` is a substring of `"wrds"`: every `/ds` run silently loaded `wrds-sge-enforcement` (WRDS grid-submission rules, meaningless on a generic DS project) while `/wrds` — the intended audience — loaded nothing, because the wrds skill never calls the loader. Nothing errored; the wrong prose just arrived in the wrong prompt.
+  - `skill_matches()` is now name-boundary aware and mirrors `check-all.py`'s `_applies`: `"all"`, exact match, or `entry.startswith(skill + "-")` so a workflow entry point still collects its phase constraints.
+  - Measured before/after across all 21 loader-calling skills: **20 unchanged**, and `/ds` drops from 30 to 29 — the one spurious injection. Exact-match-only was rejected because it would have stripped 18 legitimate `ds-*` constraints from `/ds`.
+  - `tests/load_constraints_applies_to_test.py` (14 assertions) covers exact/prefix/`all` matching, the `ds`↔`wrds` regression, and a sweep asserting no shipped constraint is unreachable. Verified failing (3/14) against the old matcher.
+
+### Removed
+- `references/constraints/wrds-sge-enforcement.md` and `references/constraints/hpc-slurm-enforcement.md` — both subsumed. Each duplicated, in weaker form, the Iron Law already inline in its skill (`wrds` SKILL.md login-node/qsub section; `hpc` SKILL.md "Login Node Enforcement" plus a fuller partition table). Neither could ever load: `applies-to: [wrds]` / `[hpc]`, and neither skill calls the loader. `wrds-sge`'s "existing examples" also pointed at out-of-repo `mirror/scripts/` paths. The one hard-won fact worth keeping — the `wrds_clean_filings` path convention — is already in `skills/wrds/SKILL.md` and `references/edgar.md`.
+
 ## [5.72.1] - 2026-07-21
 
 ### Changed
