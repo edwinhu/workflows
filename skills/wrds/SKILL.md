@@ -32,7 +32,7 @@ The WRDS login node is shared infrastructure. Running parsers, bulk file reads, 
 
 The login node is for: `qsub`, `qstat`, `qdel`, `scp`, `ls`, `head`, short `psql` queries.
 
-See `references/constraints/wrds-sge-enforcement.md` for the full pattern and existing examples (quorum parser, state-of-incorp parser, SAS pipeline).
+Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index_rga/submit_array.sh`, `scripts/parse_13f/sge/submit_array.sh`, and `examples/voting_ownership_pipeline/run_pipeline.sh`.
 </EXTREMELY-IMPORTANT>
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.

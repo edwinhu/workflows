@@ -271,6 +271,9 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 - `references/troubleshooting.md` - Common errors and debugging
 - `references/vertex-ai.md` - Enterprise alternative with comparison
 - `references/cli-reference.md` - gsutil and gcloud commands
+- `references/files-api.md` - Files API: upload, poll-until-ACTIVE, 48h expiry, size limits
+- `references/file-search.md` - File Search (managed RAG): stores, chunking config, grounding metadata
+- `references/structured-output.md` - `responseJsonSchema` / `responseSchema`: supported subset, enum + propertyOrdering
 
 ### Examples
 - `examples/icon_batch_vision.py` - **NEW:** Batch vision analysis with Vertex AI

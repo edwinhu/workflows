@@ -174,7 +174,7 @@ char n-grams), no training pairs.
 
 ## End-to-end worked example
 
-See `mirror/scripts/redo_bridge.py` for the full pipeline applied to
+See `skills/wrds/examples/blockholders_pipeline/redo_bridge.py` for the full pipeline applied to
 Thomson Reuters personid → SEC rptOwnerCik bridging. Results on the
 mirror-voting add-on panel (13,663 rows):
 

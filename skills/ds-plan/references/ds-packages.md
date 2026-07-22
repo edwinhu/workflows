@@ -15,7 +15,7 @@ Packages installed by default in new empirical projects (`new_project.sh --empir
 
 | Package | Purpose | Install |
 |---------|---------|---------|
-| `great_tables` | Publication-quality tables (Python port of R's `gt`) | pixi |
+| `great_tables` | Publication-quality tables (Python port of R's `gt`) — see the `/ds-tables` skill | pixi |
 | `pyobsplot` | Observable Plot bindings (interactive charts in notebooks) | pixi |
 | `plotnine` | Grammar of graphics (ggplot2 for Python) | pixi |
 | `matplotlib` | Low-level plotting | pixi |
