@@ -75,4 +75,6 @@ PitchBook (`dealid`, `fundid`, `investorid`, `companyid`), Form 4
 `fundid`) are **vendor-internal** — they join only within their own product.
 To leave the vendor, route through `cusip`/`cik`/`ticker` and accept the
 name-match fuzziness those carry (PitchBook private companies have no public id
-at all — `investor.cikcode` exists only for SEC-registered investors).
+at all — `investor.cikcode` exists only for SEC-registered investors). When the
+route bottoms out in a name match, use the `fuzzy-name-matching` skill —
+normalize + exact scoped join first, TF-IDF only on the residual.

@@ -26,6 +26,7 @@ These are skills, not plugins - already available:
 | `/lseg-data` | LSEG Data Library (formerly Refinitiv) |
 | `/gemini-batch` | Gemini Batch API for large-scale LLM processing |
 | `/data-context` | Extract tribal knowledge about datasets, generate data context skills |
+| `/fuzzy-name-matching` | Entity resolution / record linkage when datasets share only a name (TF-IDF + `sparse_dot_topn`) |
 
 ## Notebook & Format Skills (Built-in)
 
