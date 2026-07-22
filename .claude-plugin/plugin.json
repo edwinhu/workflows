@@ -1,6 +1,6 @@
 {
   "name": "workflows",
-  "version": "5.74.0",
+  "version": "5.75.0",
   "description": "Development, data science, writing, and workshop presentation workflows with TDD enforcement, output-first verification, agent team parallelization, and GSD-style deviation rules, test gap validation, and session handoff.",
   "author": {
     "name": "edwinhu"
