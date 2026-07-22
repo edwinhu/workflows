@@ -1,5 +1,14 @@
 # Model Profiles
 
+> **Status: design note, not implemented.** Nothing in this repo reads
+> `model_profile` or `model_overrides`, and no `.planning/config.json`
+> resolution step exists — verified 2026-07-22. Agents pin their model
+> directly in `agents/*.md` frontmatter instead (13 × `model: inherit`,
+> 7 × `model: sonnet`). Treat the tables below as the proposed design, not
+> as a description of current behavior; wiring it up would mean building the
+> resolution logic in §Resolution Logic first. Provenance: §4 of
+> [gsd-learnings.md](gsd-learnings.md).
+
 Model profiles control which Claude model each agent uses, balancing quality vs token cost.
 
 ## Profile Definitions

@@ -32,6 +32,7 @@ These are skills, not plugins - already available:
 
 | Skill | Description |
 |-------|-------------|
+| `/ds-tables` | Publication tables — pyfixest `etable()` regressions, `great_tables` formatting |
 | `/jupytext` | Jupyter notebooks as text files |
 | `/marimo` | Marimo reactive Python notebooks |
 | `/xlsx` | Spreadsheets, formulas, CSV conversion |

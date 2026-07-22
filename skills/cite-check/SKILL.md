@@ -167,6 +167,8 @@ Signal cites (`see`, `cf.`, etc.) use relaxed thresholds (0.5 coverage / 0.2 den
 
 Grounding requires extracting text from the source PDF. This uses `pymupdf4llm` (via `extract-pdf-text.py`) which preserves document structure, footnotes, and tables as clean markdown. Extracted text is cached in `<drafts>/.cite-check-text/`.
 
+> The Gemini File Search API behind the primary grounding signal — store creation, chunking config, and the `groundingMetadata` shape `grounding.ts` parses — is documented in `skills/gemini-batch/references/file-search.md`.
+
 ## Google Drive FUSE Bypass
 
 PDF files stored on Google Drive Desktop's FUSE mount (`~/Google Drive/My Drive/`) are subject to EDEADLK deadlocks when accessed concurrently or when not locally cached. The tool detects Google Drive paths — including through symlinks (e.g., `references/All Papers → ~/Google Drive/.../Paperpile/All Papers`) — and uses `rclone copyto` to fetch them to a local cache (`~/.cache/cite-check-pdfs/`) before upload or text extraction. Requires `rclone` with a `google-drive:` remote configured.
