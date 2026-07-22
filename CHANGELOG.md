@@ -3,6 +3,18 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.73.0] - 2026-07-22
+
+### Added
+- **`fuzzy-name-matching` skill**: promotes the ING-banks entity-resolution recipe (char n-gram TF-IDF + `sparse_dot_topn` top-k cosine) out of the repo-root `references/` into a real skill. The two files had **no callers anywhere** — `rg -l 'fuzzy-name-matching|fuzzy_name_match_sample'` hit only themselves — so no skill loaded them and a session needing the recipe rebuilt it from memory. Packaging fix, not a content change.
+  - `skills/fuzzy-name-matching/references/fuzzy-name-matching.md` — moved via `git mv` from `references/`; recipe preserved verbatim (threshold guide, normalize-first rule, scoped + global two-pass, gotchas, alternatives). Only edit: the worked-example pointer now resolves in-repo (`skills/wrds/examples/blockholders_pipeline/redo_bridge.py`) instead of the dangling `mirror/scripts/redo_bridge.py`.
+  - `skills/fuzzy-name-matching/examples/fuzzy_name_match_sample.py` — moved via `git mv`; runnable template (`normalize`, `fuzzy_match`, `fuzzy_match_scoped` + toy demo).
+  - `SKILL.md` — trigger-heavy description (entity resolution, record linkage, fuzzy match, TF-IDF, `sparse_dot_topn`, CIK/permno/gvkey/wficn/EIN bridging, deduping names). **IRON LAW: no fuzzy match without normalization first** — exact scoped join and its measured hit rate come before TF-IDF; fuzzy runs on the residual only. Facts + Red Flags cover the two failure modes that actually bite: fitting the vectorizer inside the per-key loop (IDF becomes corpus-dependent — the same pair scores 0.69 in a toy fit and 0.84 in a 600K-row fit) and reporting a hit rate without inspecting pairs at the threshold.
+
+### Changed
+- `skills/wrds/references/linkage.md`: the "identifiers that DON'T cross vendors" section now routes to `fuzzy-name-matching` — that paragraph is exactly where a WRDS linkage bottoms out in a name match.
+- `skills/ds-tools/SKILL.md`, `README.md`: list the new skill so it's discoverable without already knowing it exists.
+
 ## [5.72.1] - 2026-07-21
 
 ### Changed
