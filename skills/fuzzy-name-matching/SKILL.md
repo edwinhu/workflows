@@ -48,7 +48,7 @@ join they now believe is clean.
 - Scoping is where the signal lives. On the 13,663-row blockholder bridge, the scoped fuzzy pass (≥0.80, per issuer_cik) converted 70% of unmatched rows; the global pass afterward (≥0.90) added 11. Scope by issuer/year/geo and the smaller candidate pool lets you *lower* the threshold safely.
 - TF-IDF on characters is not semantic. `"IBM"` ↔ `"International Business Machines"` will never match at any threshold — that needs a name dictionary or an embedding model.
 - `sp_matmul_topn(A, B, ...)` wants `B` **already transposed** (`R.T`). `sort` only orders the hits *within* each row — top-k selection always keeps the largest values, so `top_n=1` returns the argmax with `sort=False` too (verified on 1.2.0: 60/60 rows matched a dense argmax either way). Pass `sort=True` when `top_n>1` and you care about the order.
-- Duplicate normalized names on the right side with different ids make `top_n=1` return whichever COO entry landed first — non-deterministic id assignment. Deduplicate the right side first.
+- Duplicate normalized names on the right side with different ids make `top_n=1` pick one of them with no defined rule — `sort` does not disambiguate an exact tie (tested on 1.2.0: it kept the *last* duplicate in every layout, under both `sort` settings, but nothing documents that). Whichever it is, the id you get is an accident of row order. Deduplicate the right side first.
 
 ### Red Flags — STOP If About To:
 

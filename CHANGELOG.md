@@ -6,13 +6,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ## [5.76.1] - 2026-07-22
 
 ### Fixed
-- **Six false claims in the 5.73-5.76 prose**, caught by an independent adversarial review and re-verified here by running the libraries rather than re-reading the docs. All six sat in "Facts" and index descriptions — the sections written to be trusted without checking, which is exactly what makes a wrong one expensive.
+- **Eleven false or imprecise claims in the 5.73-5.76 prose**, caught by two rounds of independent adversarial review and re-verified here by running the libraries rather than re-reading the docs. Nearly all of them sat in "Facts" and index descriptions — the sections written to be trusted without checking, which is exactly what makes a wrong one expensive.
   - `ds-tables`: "setting `signif_code` alone renders no stars, silently" was **backwards**. Bare `pf.etable([fit])` prints `1.873***` on pyfixest 0.60.0; the real trap is narrower and more surprising — passing your own `coef_fmt` without a `*` token silently *removes* the stars the default gave you. The Fact, the Red Flag, and `pyfixest-tables.md`'s "Default: `b \n (se)`" (the signature default is `None`) are corrected. Also: singleton-FE dropping changes the **observation** count, not the coefficient count.
   - `fuzzy-name-matching`: "`top_n=1` returns an arbitrary hit unless you pass `sort=True`" is **false**. The docstring says `sort` only orders hits within a row, and top-k selection always keeps the largest values — 60/60 rows matched a dense argmax with `sort=False` on 1.2.0. Corrected in both the Fact and gotcha 5; the sample code keeps `sort=True`, which remains harmless.
   - The `sparse_dot_topn` packaging note said "not on conda-forge". conda-forge **does** carry it, up to 0.3.1 — which predates the v1 `sp_matmul_topn` API, so `pixi add` silently installs a build without the function. The note now says that, which is both true and a better warning than the original.
   - The global-pass Red Flag cited a 0.85 floor while the threshold guide it points at (and the skill's own pipeline diagram) set ≥0.90 for unscoped matches.
   - `file-search.md` was described as covering "chunking config" and `structured-output.md` as covering "propertyOrdering". Neither word appears in either file; replaced with what they actually document (metadata filtering, enums).
   - `lpc_dealscan_eda` covers 1990-**2020** — every query is capped at 2020-12-31 — not 1990-2025. `gsd-learnings.md` is 11 patterns plus a §12 assessment, not 12 patterns.
+  - Duplicate right-side names were said to make `top_n=1` "return whichever COO entry landed first". There is no such rule — and `sort` does not break an exact tie. Testing on 1.2.0 kept the *last* duplicate in every layout under both `sort` settings; the text now says the choice is undefined and records that observation as an observation. The operative advice (dedupe the right side) is unchanged.
 
 ## [5.76.0] - 2026-07-22
 

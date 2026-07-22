@@ -163,8 +163,11 @@ top = sp_matmul_topn(L, R.T, top_n=1, threshold=0.90, sort=True)
    `"GABELLI MARIO JOSEPH"` ↔ `"GABELLI MARIO J"` scores 0.69; in a 600K-
    corpus fit it scores 0.84. Same pair — IDF context changed everything.
 7. **Duplicate norm_names on right side**: if two rows in `right` share a
-   norm_name but have different ids, `top_n=1` returns whichever COO
-   entry ripgrep-ed out first. Deduplicate the right side first with
+   norm_name but have different ids, `top_n=1` picks one of the tied
+   columns by no documented rule, and `sort=True` does not break the tie.
+   (Tested on 1.2.0: the *last* duplicate won in every layout tried, under
+   both `sort` settings — but that is an observation, not a contract.)
+   Deduplicate the right side first with
    `.groupby("name")["id"].agg(lambda x: x.mode().iloc[0])`.
 
 ## Alternatives considered
