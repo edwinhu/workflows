@@ -203,5 +203,6 @@ During the eval loop, watch for enforcement iteration signals (see "Enforcement 
 ## References
 
 - **Enforcement checklist**: `references/enforcement-checklist.md` (in plugin root) — Full 12-pattern reference with templates. Discover via: `${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md`
+- **Description patterns**: `references/skill-description-patterns.md` (in plugin root) — The three description shapes (standalone / user-triggered, workflow-phase / orchestrator-triggered, internal-only) with templates and a migration guide for reclassifying an existing skill. Discover via: `${CLAUDE_SKILL_DIR}/../../references/skill-description-patterns.md`
 - **Philosophy**: `PHILOSOPHY.md` (in plugin root) — Three pillars (phased decomposition, deterministic gates, adversarial review). Discover via: `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md`
 - **Built-in skill-creator**: Handles the eval loop (draft → test → grade → iterate → description optimization)

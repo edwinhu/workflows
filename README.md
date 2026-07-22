@@ -29,7 +29,7 @@ Requires `gh` (GitHub CLI). Tools already on your `$PATH` are skipped.
 
 ---
 
-## User Commands (15)
+## User Commands (16)
 
 These are the skills you invoke directly with `/name`:
 
@@ -61,6 +61,12 @@ Anthropic Office skills with this project's repair/build/render tooling.
 | `/law-review-docx` | Markdown/legal draft → law-review-styled Word doc |
 
 > Office format skills sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule. Shared converters + the Google-export **OOXML package repair** (`scripts/docx_repair.py`) live in `scripts/`. See **[references/document-skills.md](references/document-skills.md)** for the full group and how the stages decouple.
+
+### Data
+
+| Skill | Purpose |
+|-------|---------|
+| `/ds-tables` | Publication tables in Python — `pyfixest.etable()` regression tables and `great_tables` GT formatting |
 
 ### Meta
 

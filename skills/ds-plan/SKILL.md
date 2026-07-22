@@ -1043,6 +1043,11 @@ This flowchart IS the specification. If PLAN.md narrative and flowchart disagree
 - Data snapshot: [date/version]
 ```
 
+> **Filling in "Package versions":** the default empirical stack — core data,
+> tables/visualization, econometrics, notebooks — with a per-package `Install`
+> column (`pixi` vs pypi-only) is in `references/ds-packages.md`. Building the
+> tables themselves is the `/ds-tables` skill.
+
 ## Red Flags - STOP If You're About To:
 
 The failure modes and their consequences are stated once, at the point of use — see [Profiling Facts](#profiling-facts), [ETL Facts](#etl-facts-incident-derived), [Step 5b Facts](#step-5b-facts), and [Step 5c Facts](#step-5c-facts-measured). If you are about to skip profiling, pull unfiltered tables, submit an untested batch, greenfield past an existing example, or finalize a ≥50M-row pull without a Data Pull Profile — those sections explain why that is counterproductive, and what to do instead.

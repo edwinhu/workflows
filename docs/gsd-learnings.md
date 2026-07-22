@@ -85,6 +85,8 @@ Four profiles control which model tier each agent uses:
 
 **Per-agent overrides** available in `config.json` for fine-tuning costs.
 
+The per-agent profile table worked out from this is [model-profiles.md](model-profiles.md) — still a design note; this repo never built the resolution step.
+
 ---
 
 ## 5. Autonomous Mode
