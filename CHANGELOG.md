@@ -16,6 +16,44 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ### Removed
 - `skills/writing-legal/templates/law_review_template.docx.bak` — an 80KB snapshot of the template taken before an edit in 29e8d78. Git already holds every prior version of `law_review_template.docx`; recover with `git show 29e8d78:skills/writing-legal/templates/law_review_template.docx.bak` if ever needed.
 
+## [5.75.0] - 2026-07-22
+
+### Fixed
+- **`load-constraints.py` matched skill names by bare substring**, so a constraint could load into a skill whose name merely *contained* it. `"ds"` is a substring of `"wrds"`: every `/ds` run silently loaded `wrds-sge-enforcement` (WRDS grid-submission rules, meaningless on a generic DS project) while `/wrds` — the intended audience — loaded nothing, because the wrds skill never calls the loader. Nothing errored; the wrong prose just arrived in the wrong prompt.
+  - `skill_matches()` is now name-boundary aware and mirrors `check-all.py`'s `_applies`: `"all"`, exact match, or `entry.startswith(skill + "-")` so a workflow entry point still collects its phase constraints.
+  - Measured before/after across all 21 loader-calling skills: **20 unchanged**, and `/ds` drops from 30 to 29 — the one spurious injection. Exact-match-only was rejected because it would have stripped 18 legitimate `ds-*` constraints from `/ds`.
+  - `tests/load_constraints_applies_to_test.py` (14 assertions) covers exact/prefix/`all` matching, the `ds`↔`wrds` regression, and a sweep asserting no shipped constraint is unreachable. Verified failing (3/14) against the old matcher.
+
+### Removed
+- `references/constraints/wrds-sge-enforcement.md` and `references/constraints/hpc-slurm-enforcement.md` — both subsumed. Each duplicated, in weaker form, the Iron Law already inline in its skill (`wrds` SKILL.md login-node/qsub section; `hpc` SKILL.md "Login Node Enforcement" plus a fuller partition table). Neither could ever load: `applies-to: [wrds]` / `[hpc]`, and neither skill calls the loader. `wrds-sge`'s "existing examples" also pointed at out-of-repo `mirror/scripts/` paths. The one hard-won fact worth keeping — the `wrds_clean_filings` path convention — is already in `skills/wrds/SKILL.md` and `references/edgar.md`.
+
+## [5.74.0] - 2026-07-22
+
+### Added
+- **`ds-tables` skill**: `pyfixest.etable()` regression tables + `great_tables` formatting, promoted from two orphaned root references. IRON LAW is render-before-claiming; the facts cover the etable trap that costs the most time (stars need `*` inside `coef_fmt` — `signif_code` alone renders none, silently) and the regex semantics of `keep`/`drop`.
+
+### Changed
+- **Orphaned root references, wired or retired.** Seven files under `references/` had zero inbound references repo-wide (and none from `~/projects` outside it) — nothing loaded them, so they never surfaced. Each was moved to where it can actually be found:
+  - `gemini/{files-api,file-search,structured-output}.md` → `skills/gemini-batch/references/` and listed in its SKILL.md. The three only cross-referenced *each other*, so the whole cluster was unreachable. `cite-check`'s Passage Grounding section now points at `file-search.md` — its `grounding.ts` parses exactly that API's `groundingMetadata`.
+  - `great-tables.md`, `pyfixest-tables.md` → `skills/ds-tables/references/` (see above). No DS skill mentioned `etable`, `great_tables`, or `gt` anywhere, so burying them in a phase skill would have kept them dark.
+  - `ds-packages.md` → `skills/ds-plan/references/`, pointed to from the PLAN.md "Package versions" template line that it answers.
+  - `skill-description-patterns.md` → stays at the plugin root (same convention as `enforcement-checklist.md` / `creator-anti-patterns.md`) and is now listed in `skill-creator`'s References section.
+  - `gsd-learnings.md` → `docs/`, linked from PHILOSOPHY.md's enforcement-gradient section, which is where its patterns ended up.
+  - `model-profiles.md` → `docs/`, with a **Status: design note, not implemented** banner. Nothing reads `model_profile` or `model_overrides`, and no `.planning/config.json` resolution step exists; agents pin models directly in frontmatter (13 × `inherit`, 7 × `sonnet`). Wiring it into a skill would have advertised a mechanism that doesn't exist.
+
+## [5.73.0] - 2026-07-22
+
+### Added
+- **`fuzzy-name-matching` skill**: promotes the ING-banks entity-resolution recipe (char n-gram TF-IDF + `sparse_dot_topn` top-k cosine) out of the repo-root `references/` into a real skill. The two files had **no callers anywhere** — `rg -l 'fuzzy-name-matching|fuzzy_name_match_sample'` hit only themselves — so no skill loaded them and a session needing the recipe rebuilt it from memory. Packaging fix, not a content change.
+  - `skills/fuzzy-name-matching/references/fuzzy-name-matching.md` — moved via `git mv` from `references/`; recipe preserved verbatim (threshold guide, normalize-first rule, scoped + global two-pass, gotchas, alternatives). Only edit: the worked-example pointer now resolves in-repo (`skills/wrds/examples/blockholders_pipeline/redo_bridge.py`) instead of the dangling `mirror/scripts/redo_bridge.py`.
+  - `skills/fuzzy-name-matching/examples/fuzzy_name_match_sample.py` — moved via `git mv`; runnable template (`normalize`, `fuzzy_match`, `fuzzy_match_scoped` + toy demo).
+  - `SKILL.md` — trigger-heavy description (entity resolution, record linkage, fuzzy match, TF-IDF, `sparse_dot_topn`, CIK/permno/gvkey/wficn/EIN bridging, deduping names). **IRON LAW: no fuzzy match without normalization first** — exact scoped join and its measured hit rate come before TF-IDF; fuzzy runs on the residual only. Facts + Red Flags cover the two failure modes that actually bite: fitting the vectorizer inside the per-key loop (IDF becomes corpus-dependent — the same pair scores 0.69 in a toy fit and 0.84 in a 600K-row fit) and reporting a hit rate without inspecting pairs at the threshold.
+
+### Changed
+- `skills/wrds/references/linkage.md`: the "identifiers that DON'T cross vendors" section now routes to `fuzzy-name-matching` — that paragraph is exactly where a WRDS linkage bottoms out in a name match.
+- `skills/ds-tools/SKILL.md`, `README.md`: list the new skill so it's discoverable without already knowing it exists.
+
+
 ## [5.72.1] - 2026-07-21
 
 ### Changed

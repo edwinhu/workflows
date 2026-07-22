@@ -1,8 +1,8 @@
 """Fuzzy name matching — minimal end-to-end sample.
 
 Copy-paste pattern for entity resolution via char n-gram TF-IDF +
-sparse top-k cosine similarity. See fuzzy-name-matching.md for theory
-and gotchas.
+sparse top-k cosine similarity. See ../references/fuzzy-name-matching.md
+for theory and gotchas.
 
 Dependencies (pixi):
   pixi add scikit-learn

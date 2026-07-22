@@ -46,14 +46,25 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str | list[str]], str]:
 
 
 def skill_matches(applies_to: list[str], skill_name: str) -> bool:
-    """Check if a skill name matches the applies-to list."""
+    """Check if a skill name matches the applies-to list.
+
+    Matching is name-boundary aware, mirroring check-all.py's `_applies`:
+      - "all"                        → matches everything
+      - entry == skill               → exact match ("ds-plan" ⊃ ds-plan)
+      - entry startswith skill + "-" → workflow entry point picks up its own
+                                       phase constraints ("ds" ⊃ ds-implement)
+
+    A bare substring test would be wrong: it made "ds" match "wrds", so the
+    /ds entry point silently loaded wrds-sge-enforcement.
+    """
+    skill_lower = skill_name.lower()
     for entry in applies_to:
         entry_lower = entry.lower()
         if entry_lower == "all":
             return True
-        if entry_lower == skill_name.lower():
+        if entry_lower == skill_lower:
             return True
-        if skill_name.lower() in entry_lower:
+        if entry_lower.startswith(skill_lower + "-"):
             return True
     return False
 

@@ -387,4 +387,4 @@ Not every convention can graduate. "Use active voice" requires judgment. "Match 
 
 The `workflow-creator` skill accelerates this by transferring lessons from mature workflows to immature ones. The `continuous-learning` skill captures patterns from sessions. When you see a failure mode in one workflow, ask: "does this same failure mode exist in the others?"
 
-The enforcement checklist (`references/enforcement-checklist.md`) is the accumulation of these gradient updates — 12 patterns discovered through repeated failure, not designed in advance.
+The enforcement checklist (`references/enforcement-checklist.md`) is the accumulation of these gradient updates — 12 patterns discovered through repeated failure, not designed in advance. `docs/gsd-learnings.md` records where several of them came from — 12 patterns surveyed from the GSD framework (state management, deviation rules, checkpoint types, context monitoring, session handoff, summary frontmatter, requirement traceability, …) with a closing assessment of which transfer to the DS and writing workflows.
