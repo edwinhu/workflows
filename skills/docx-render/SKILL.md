@@ -65,6 +65,14 @@ directly — you don't need to invoke this skill, just call `doc_render.py`.
 `convert()` auto-falls-back Word → x2t/soffice. **Verify which ran** via the PDF
 Producer: `macOS … Quartz PDFContext` = Word; `LibreOffice …` = LibreOffice.
 
+> **Garamond documents on macOS need a one-time setup.** x2t mis-measures the
+> macOS (Monotype) Garamond *italic* face badly enough to cram every upright
+> Garamond run. `scripts/setup_garamond_render_override.py` writes a four-face
+> override to `~/.config/x2t-render-fonts/garamond/` — macOS Garamond for
+> regular/bold, EB Garamond for the slanted faces (`--all-eb` for the all-EB
+> variant) — then `rm -rf ~/.cache/x2t-docfonts` to re-stage. Full measurements:
+> `docs/investigations/2026-06-19_x2t-kerning-patch.md`, Part 2.
+
 ## Word from a background/headless job (the non-obvious part)
 
 A detached Claude job is in a non-console GUI session without Word's TCC grant, so
