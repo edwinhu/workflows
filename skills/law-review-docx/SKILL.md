@@ -67,6 +67,26 @@ This template defines all styles that pandoc applies:
 
 Report the output path, section count, footnote count, and approximate word count. If the user needs further formatting (NOTEREF cross-references, footnote repair from cloud editing), suggest `--fix-footnotes` or the `docx-repair` skill.
 
+### Typographic Widows
+
+`build_docx.py` sets Word's paragraph-level `widowControl`, which prevents a
+paragraph's last line from landing alone on the next *page* — it does nothing
+about a last *line* holding one or two stray words. Two companion scripts
+handle that, after compiling to PDF:
+
+```bash
+# Report widows (paragraph last lines of 1-2 short words, main column only)
+uv run python3 ${CLAUDE_SKILL_DIR}/scripts/check_widows.py OUTPUT.pdf [--max-words N] [--verbose]
+
+# Same detection, then bind the last two words in the offending drafts/*.md
+# paragraph with a pandoc non-breaking space. Recompile afterwards.
+uv run python3 ${CLAUDE_SKILL_DIR}/scripts/fix_widows.py OUTPUT.pdf PROJECT_DIR [--dry-run]
+```
+
+Run `--dry-run` first: `fix_widows.py` edits source markdown, and the fix is
+only meaningful against the PDF it was measured on. Iterate compile → check →
+fix → recompile.
+
 ## Rendering to PDF (Word fidelity, incl. from background jobs)
 
 `build_docx.convert_to_pdf()` delegates to `doc_render.convert(renderer="word")`,

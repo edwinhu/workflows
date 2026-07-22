@@ -158,3 +158,14 @@ Add `--dry-run` to preview. Add `--verbose` for detailed output.
 **RIGHT:** Search Readwise, get full text FROM READWISE using `readwise reader-get-document-details --document-id <id>`.
 
 If a document is in Readwise, the full text is already there. Never go back to the source URL.
+
+## Additional Resources
+
+### Reference Files
+
+- **`references/reader-api.md`** - Reader API reference (endpoints, pagination, `updatedAfter` semantics, document fields) for cases the CLI doesn't cover
+
+### Scripts
+
+- **`scripts/readwise_to_nlm.py`** - Export Readwise documents into a NotebookLM notebook
+- **`scripts/readwise_prune.py`** - Direct-API pruning implementation. The sanctioned path is `readwise-custom prune` (see `/readwise-prune`), which exposes the same flags; keep this only for API-level work the CLI doesn't expose.

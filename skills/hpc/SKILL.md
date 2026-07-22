@@ -367,3 +367,18 @@ New: WRDS PostgreSQL → polars/connectorx → .parquet
 No SAS license needed. Single step. Portable output.
 
 See `references/wrds-polars-pipeline.md` for full examples (joins, partitioned output, Slurm submission for large queries).
+
+## Additional Resources
+
+### Reference Files
+
+- **`references/sge-to-slurm.md`** - SGE → Slurm migration: directive-by-directive translation table for converting WRDS grid jobs to UVA HPC
+- **`references/wrds-polars-pipeline.md`** - WRDS PostgreSQL → polars → Parquet pipeline (joins, partitioned output, Slurm submission for large queries)
+
+### Example Files
+
+Copy these rather than writing a submit script from scratch — both use `--partition=standard`, which is the choice array jobs actually need:
+
+- **`examples/array_job_filelist.sh`** - Array job sharded over a file list (one task per chunk of files)
+- **`examples/array_job_year_chunk.sh`** - Array job sharded over year × chunk, with multiple workers per task (the PIN-estimation shape)
+- **`examples/wrds_conn.py`** - Parses `.pgpass` into a connectorx-compatible URI (connectorx doesn't read `.pgpass` natively)

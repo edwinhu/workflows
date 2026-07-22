@@ -337,6 +337,15 @@ Detailed query patterns and table documentation:
 - **`references/fund-formation.md`** - Fund formation: Form D (pooled investment funds), EDGAR N-2 (closed-end fund IPOs), Form ADV (RIA registrations)
 - **`references/pitchbook.md`** - PitchBook: schema architecture, dealsize/fundsize in USD millions, dealdate outliers, CIK crosswalk, fund performance (wrds_fund_returns), PE/VC/fund formation patterns
 - **`references/proxy-advisors.md`** - Proxy-advisor customer identification: 485BPOS/485APOS body scan for ISS/Glass Lewis/Egan-Jones name variants; CRSP MFDB lift to mgmt_cd × year; validates against chongshu published CSV
+- **`references/linkage.md`** - Cross-dataset linkage map: which identifiers are spines, the load-bearing link tables (CCM, wciklink, dswslink, MFDB), a "how do I join X to Y" table, and which vendor ids never cross
+- **`references/blockholders.md`** - 13D/13G blockholder panel: Volkova replication, position %, the four mutually-exclusive holder flags
+- **`references/execucomp.md`** - ExecuComp: CEO anncomp, legacy codirfin vs current directorcomp, firm-year aggregation
+- **`references/iss-directors.md`** - ISS Directors: risk.directors + risk.rmdirectors, type harmonization, 1996 gender backfill, S&P 1500 filter
+- **`references/iss-voting.md`** - ISS Voting Analytics: vavoteresults, voteanalysis_npx, base-conditional turnout/forpct, agenda codes
+- **`references/tfn-ownership.md`** - Thomson 13-F (S34) institutional ownership and S12 mutual-fund holdings via MFLINKS, passive/index classification
+- **`references/lpc-dealscan.md`** - LPC DealScan: legacy vs 2021+ flat schema, borrower ids, the gvkey link and its grain caveats
+- **`references/muni-bonds.md`** - Municipal bonds: MSRB RTRS trades, SDC municipals
+- **`references/wrds-forms-tables.md`** - `wrdssec_all.wrds_forms` and friends: filing metadata tables and their columns
 
 ### Example Files
 
@@ -350,10 +359,19 @@ Working code from real projects:
 - **`examples/fund_formation_eda.ipynb`** - Fund formation: Form D 3C.1/3C.7 counts, EDGAR N-2 closed-end fund IPOs, Form ADV RIA registrations
 - **`examples/pitchbook_eda.ipynb`** - PitchBook: PE deal activity, VC rounds by stage, fund formation by vintage, IRR/TVPI by strategy
 - **`examples/voting_ownership_pipeline/`** - Self-contained hybrid SAS+Python pipeline: ISS votes, 13-F inst. ownership, MF holdings via MFLINKS, merged panel. Canonical example of PostgreSQL vs SAS decision-making on WRDS. See `README.md` for architecture and usage.
+- **`examples/blockholders_pipeline/`** - 13D/13G → Volkova blockholder panel, end-to-end Python. `redo_bridge.py` is the reference implementation of TR `personid` → SEC `rptOwnerCik` name bridging (97.4% hit rate).
+- **`examples/form4_pipeline/`** - Two parallel Form 3/4/5 pipelines: the annualized SAS ownership panel and the XML owner bridge built from the raw filings.
+- **`examples/proxy_advisors_pipeline/`** - 485BPOS/485APOS scan for ISS / Glass Lewis / Egan-Jones customer relationships via the `scan_covers` Go framework + SGE.
+- **`examples/fjc_eda.ipynb`** - FJC Integrated Database: securities cases (`nos = 850`), filing trends, court distribution
+- **`examples/lpc_dealscan_eda.ipynb`** (paired script: `examples/lpc_dealscan_eda.py`) - LPC DealScan: ~171K US facilities 1990-2025, volume by year, loan type and purpose mix
+- **`examples/voting_ownership_eda.py`** - Standalone Python/PostgreSQL EDA of the same ISS-votes + ownership merge. For production work prefer `voting_ownership_pipeline/`, which is the SGE-ready version of this analysis.
 
 ### Scripts
 
 - **`scripts/test_connection.py`** - Validate WRDS connectivity
+- **`scripts/inventory_schemas.py`** - Inventory every accessible WRDS PostgreSQL schema, its tables, and row counts — run this before guessing at a table name
+- **`scripts/scan_covers/`** - Generic profile-based Go framework for EDGAR extraction (SGE sharding, NFS concurrency, path construction, form-type filtering). Add a `profiles_*.go`, never a new standalone binary — see the Iron Law above.
+- **`scripts/parse_13f/`, `scripts/scan_headers/`, `scripts/sec_index_rga/`** - Companion EDGAR tooling: 13F table parsing, SEC header scanning, index building
 
 ### Local Sample Notebooks
 
