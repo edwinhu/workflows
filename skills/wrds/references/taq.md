@@ -70,7 +70,256 @@ cqm (raw per-venue quotes)  +  nbbom (incomplete NBBO)  ──►  complete_nbbo
 
 ### Round-lot (protected) vs odd-lot-inclusive NBBO
 
-`complete_nbbo` (and `nbbom`, `wct.nbb/nbo`) are **odd-lot-inclusive** — the best price across all displayed quotes regardless of size. **None of the WRDS NBBO files is the round-lot *protected* NBBO** (the Reg NMS Rule 611 quote). If you need the round-lot protected quote, **compute it from `cqm`** restricted to displayed size ≥ round lot (best across venues), via an exchange-keyed hash. Sizes in `cqm`/`nbbom` are UOT — multiply by `mastm.UOT` for shares.
+> **⚠ REWRITTEN 2026-07-16 — the previous text was wrong on both counts. Verified empirically
+> against `taqmsec` (20251020–20251215); see the evidence inline.**
+> It claimed `complete_nbbo` is odd-lot-inclusive, told you to recompute the protected quote from
+> `cqm` at "size ≥ round lot", and to multiply by `mastm.UOT` for shares. All three are wrong.
+
+### ⚠ Quote-size UNITS CHANGE ON 2025-11-03
+
+```
+shares = bidsiz × 100     for dates <= 2025-10-31    (bidsiz is in ROUND LOTS)
+shares = bidsiz           for dates >= 2025-11-03    (bidsiz is in SHARES)
+```
+
+**×100 — NOT `× ROUND_LOT`, NOT `× UOT`.** Pre-Nov, even the handful of names already carrying
+`ROUND_LOT` 10 or 1 (NVR, BRK.A) were quoted in **100-share units**.
+
+**It is an ENCODING change, not a round-lot change** — AAPL's `ROUND_LOT` is 100 throughout:
+
+| date | AAPL modal `bidsiz` | |
+|---|---|---|
+| 20251020 / 29 / 30 / 31 | **1**, 2, 3 | round lots |
+| 20251103 / 04 / 05 / 10 / 1201 / 1215 | **100**, 200, 300 | **shares** |
+
+**Cause:** NYSE Daily TAQ Client Spec **v4.1b (2025-08-07)** — *"Field #5 Bid Size and #7 Ask Size —
+removed 'in round lots'"*. Live in the data from **2025-11-03**.
+**`cqm` itself is correct** — it tracks NYSE faithfully. The WRDS column label ("Bid size in units
+of trade") is **stale**, as is WRDS's own doc site (newest Daily TAQ manual there is v4.0/2022;
+NYSE is on v4.3).
+
+**⚠ If your sample straddles 2025-11-03, convert before comparing any size.** An unconverted
+pre/post comparison shows a spurious **100×** jump in every name.
+
+### ⚠ WRDS BUG: `complete_nbbo` size fields are 100× inflated from 2025-11-03
+
+`complete_nbbo` is **WRDS-created** (`nbbom ∪ cqm`), and its `Best_BidSizeShares` /
+`Best_AskSizeShares` = `cqm.bidsiz × 100` **always**. Paired row-level test (same event, same NBB
+price), ratio exactly 100 with no exceptions: AAPL 646,637/646,637 (Oct 31), 650,140/650,140
+(Dec 15), AZO 13,250/13,250, BKNG 10,002/10,002.
+
+| | reported | truth | |
+|---|---|---|---|
+| AAPL 20251031 | 100, 200, 300 | 100, 200, 300 | ✅ |
+| AAPL 20251215 | **10000, 20000, 30000** | 100, 200, 300 | ❌ 100× |
+| AZO 20251215 | **1000, 2000, 3000** | 10, 20, 30 | ❌ 100× |
+
+Corroborated by `ctm.size` (always true shares): AAPL trades 1/100/10/20/2; AZO 1/10/2/5/3. A
+1,000-share AZO quote ≈ **$3.5M**; a 10,000-share AAPL NBB ≈ **$2.7M**. Both absurd.
+
+**Do not use `complete_nbbo` size fields for dates ≥ 2025-11-03.** Derive size from `cqm`.
+**Prices are unaffected** — reported to WRDS support 2026-07-16.
+
+### `mastm.UOT` is NOT the round lot
+
+`UOT` = *"Minimum size that a trade is executed"* = **1** for every security, pre and post
+(verified 20251031 & 20251215). **Never use `UOT` as a size multiplier.** WRDS's TAQ overview page
+calls it "the unit of trade in Round-Lot value" — a **stale 2010 example** (Dell, when `UOT` was
+100). The round lot is **`mastm.ROUND_LOT`**.
+
+### Round-lot (protected) vs odd-lot — `cqm` has NO odd lots
+
+NYSE Daily TAQ ships these as **separate files** (spec v4.3): **§4 Round Lot Quotes** (= WRDS
+`cqm`), **§5 Odd Lot Quotes**, **§6 NBBO**, **§7 BOLO (Best Odd Lot Bid/Offer)**. WRDS's `cqm` is
+the *Round Lot Quotes* file, so it carries **no odd lots** in either period, and
+**`complete_nbbo` IS the round-lot protected NBBO** (the Rule 611 quote). Claims that "cqm has
+odd-lot quotes down to 1 share" misread pre-Nov `bidsiz=1` (= 100 shares) as one share.
+Odd-lot data requires the §5/§7 files (an NYSE product — not necessarily an IEX-only route).
+
+**⚠ Never write `bidsiz >= 100` for a pre-Nov date** — that demands *100 round lots* = **10,000
+shares**. (This bug is live in `rule611/scripts/wrds/rbbo_single.sas`.)
+
+### MDI round-lot tiers (verified 2026-07-16, `mastm.ROUND_LOT`)
+
+Price-tiered since **2025-11-03** (semiannual reset, one-month lag: Nov ← Sept average):
+
+| ROUND_LOT | avg-price tier | observed 20251215 (nsym, median px) |
+|---|---|---|
+| 100 | ≤ $250 | 9,989 · $26.16 (max $335.89) |
+| 40 | $250.01–1,000 | 231 · $351.32 |
+| 10 | $1,000.01–10,000 | 13 · $1,973.85 (NVR $7,600, BKNG $5,476) |
+| 1 | > $10,000 | 1 (BRK.A) |
+
+Boundaries look fuzzy at the edges because tiers use the **lagged Evaluation Period average**, not
+the current price (e.g. NFLX sits in the 10-tier at $93.89 post-split — its tier reflects its
+~$1,200 pre-split average).
+
+---
+
+## ⏱️ Exchange-to-SIP Latency: matching trades to quotes correctly
+
+**`time_m` (SIP time) and `part_time` (Participant/Exchange time) differ by the message's travel to
+the SIP — 12µs to 540µs depending on venue, ~10ms for a distant one.** Matching a trade to the
+prevailing NBBO on SIP time is therefore **wrong**, and wrong in a *systematic* direction: it
+manufactures locked/crossed quotes that never existed. Holden-Pierson-Wu (2023) quantify it, and the
+fix is two lines.
+
+### The two-liner (HPW 2023, Appendix C.4) — VERBATIM
+
+Inserted into **Holden & Jacobsen's own SAS code (v2018-03-16), STEP 6**:
+
+```sas
+/* STEP 6: CLEAN DAILY TRADES DATA - DELETE ABNORMAL TRADES */
+data trade2;
+set DailyTrade;
+where Tr_Corr eq '00' and price gt 0;     /* <- HJ's ACTUAL trade screen. That is all. */
+LATEN=TIME_M - PART_TIME;                 /* line 1: the trade's own latency */
+TIME_M=PART_TIME - LATEN;                 /* line 2: replace SIP time  => 2*part_time - time_m */
+run;
+```
+
+Then match to the prevailing NBBO **exactly as before**. No latency table is needed — **each trade
+carries its own latency proxy**. (HPW fn 20 states the assumption: the NBBO message's
+exchange→SIP travel ≈ the trade message's.)
+
+⚠️ **HJ's published SAS code filters ONLY on `Tr_Corr='00' and price>0`** — no sale-condition
+screen. The elaborate position-based `substr(sale_condition,...)` filter lives in `edwinhu/nz_taq`
+(a Netezza port), **not** in HJ's SAS code. HPW's fn 25 ("no more data constraints… all symbols and
+all trades") means *beyond HJ STEP 6* — so **ISOs are included**. Different papers make different
+choices here; **state which filter you used.**
+
+### ✅ Replicated on WRDS (2026-07-16) — 1.67 BILLION trades
+
+50 monthly days, 2015-08…2019-09, all symbols, `taqmsec.complete_nbbo` + `ctm`
+(`rule611/scripts/wrds/hpw_replicate.sas`, `hpw_pool.sas`):
+
+| | HPW Table IV | **our replication** | error |
+|---|---|---|---|
+| SIP locked | 5.608% | **5.670%** | +0.06pp |
+| **ADJ locked** | **1.424%** | **1.433%** | **+0.009pp** |
+| SIP crossed | 0.097% | 0.109% | +0.01pp |
+| ADJ crossed | 0.045% | 0.052% | +0.01pp |
+| SIP outside | 2.606% | 2.688% | +0.08pp |
+| ADJ outside | 3.890% | 3.956% | +0.07pp |
+| **locked drop [ADJ−SIP]** | **−4.184pp** | **−4.236pp** | **0.05pp** |
+
+**Latency adjustment removes ~75% of trades matched to locked quotes.** Note the sign flip on
+*outside-NBBO*: it **increases** (2.606% → 3.890%). Correcting latency does not uniformly "clean"
+the data — it moves trades between abnormal categories.
+
+### The RBBO method (HPW §3.2.3) — and what it costs you
+
+Their second, "first-best" method rebuilds each **data-center city's** book as that city would see it:
+
+```
+local city quotes : obst = part_time                    ("Quote@City Time")
+away  city quotes : obst = part_time + RAW city ref     ("Quote@City Latency-adjusted Time")
+trades            : matched at part_time to their OWN city's RBBO, then consolidated
+```
+The **six references** (fn 21) are `median(SIP time − part_time)` per **origin city × SIP network**
+— RAW, i.e. **including each SIP's gateway+processing**. Measured 20190603:
+
+| | →Mahwah (CTA) | →Carteret (UTP) |
+|---|---|---|
+| from Mahwah | **104.9** (local) | 372.0 |
+| from Carteret | 537.2 | **17.1** (local) |
+| from Secaucus | 403.5 | 197.2 |
+
+⚠️ **The same Mahwah↔Carteret fiber reads 537.2µs (CTA) vs 372.0µs (UTP)** — a 165µs spread on
+identical physics, because each ref embeds its own SIP's overhead (104.9 vs 17.1). HPW keep the
+networks separate for exactly this reason (fn 21) rather than reconciling them. Also: away quotes
+get `+raw_ref` while **local quotes get +0**, so the away-vs-local gap is overstated by the local
+SIP's overhead. Normalizing (`− med(local→same SIP)`) is *our* correction, **not theirs** — keep it
+as a robustness check, not a silent substitution.
+
+⚠️ **The RBBO cannot classify OFF-EXCHANGE trades.** It covers only the 12 co-located exchanges, so
+FINRA ADF/TRF (`D`), IEX (`V`, Weehawken) and CHX (`M`) drop out — **11.5M of 47.3M trades on
+20190603 (~24%)**, and TRF alone is ~40% of share volume. A TRF print has no data center, so there
+is no book to reconstruct for it. Table IV's "all trades" sample is therefore **NOT** comparable to
+an RBBO number.
+
+⚠️ **No SIP in Secaucus** ⇒ `travel(→Secaucus)` is unidentifiable; HPW fill it by symmetry. Any
+Secaucus-observer result rests on that. (And symmetry is era-dependent — see below.)
+
+### ✅ Validated against the order book (the only external check that exists)
+
+Score Lee-Ready against the **ARCA Integrated Feed** (WRDS trial days 20211004/05, App C.5):
+join x103 (Order Executed) → x100 (Add Order) by `OrderID` to get the resting order's **`Side`**;
+the initiator is the **opposite** side. 99.9% of executions match a TAQ trade.
+
+| method | ours (20211004) | HPW | |
+|---|---|---|---|
+| SIP | 87.75% | 86.75% | ✅ |
+| **ADJ** (C.4 two-liner) | **92.30%** | **92.05%** | ✅ **0.25pp** |
+| RBBO, **city** book (HPW §3.2.3) | **85.92%** | 92.63% | ❌ **below the raw tape** |
+| RBBO, **per-exchange** book | **91.73%** | 92.63% | ✅ within 0.9pp |
+
+**⚠️ The city book silently drops venues.** It carries only the 12 co-located exchanges, so
+**IEX (`V`), NYSE Texas (`M`), ADF (`D`)** are missing while `complete_nbbo` includes them.
+Lee-Ready is pure midpoint arithmetic ⇒ a book missing real quotes scores **worse than doing
+nothing**. Give every venue its **own measured travel** instead: **+5.8pp**.
+Normalizing the refs (stripping the SIP's ~30µs overhead) does **NOT** help — it scores *worse*
+(85.59%). Don't argue latency choices from the text; **score them against the order book**.
+
+⚠️ HPW report RBBO **beating** ADJ (+58bp); post-Pillar (2021) we find it **trailing** (−57bp).
+CTA Mahwah latency fell **104.9µs (2019) → 30.7µs (2021)** — less latency to correct, less room for
+the RBBO to win. Plausible, unestablished (only 2 trial days exist).
+
+### SIP vs ADJ vs RBBO on an IDENTICAL sample (ours, 20190603, 35.8M trades)
+
+HPW publish **no lock rate for the RBBO** (Table IV is SIP vs ADJ only; Table V reports RBBO
+*classification accuracy*). Running their method ourselves:
+
+| method | locked | crossed | outside | abnormal |
+|---|---|---|---|---|
+| SIP (NBBO) | **6.720%** | 0.085% | 1.531% | 7.934% |
+| ADJ (two-liner) | **1.582%** (−76.5%) | 0.042% | 3.456% | 4.819% |
+| RBBO | **2.671%** (−60.3%) | 0.052% | 1.845% | **4.319%** |
+
+**The RBBO cuts locks LESS than the two-liner (60% vs 76%) but has the lowest TOTAL abnormal rate**,
+because its outside-NBBO is far lower. The methods trade off *across* abnormal categories — no
+single method dominates. Also note restricting to on-exchange raises the SIP lock rate
+(5.406% → 6.720%): off-exchange trades are matched to locked quotes much less often.
+
+### Estimating per-exchange latency yourself
+
+`median(time_m − part_time)` per `(ex, qu_source)` reproduces **HPW's Table I** (`qu_source`:
+`C`=CTA SIP in Mahwah, `N`=UTP SIP in Carteret). Validated on their day (20190603):
+
+| ex | HPW | ours | | ex | HPW | ours |
+|---|---|---|---|---|---|---|
+| C (NYSE National) | 102.3 | **102.9** | | Z (Cboe BZX) | 403.0 | **400.1** |
+| N (NYSE) | 105.1 | **105.2** | | B (Nasdaq BX, CTA) | 536.8 | **535.2** |
+| Y (Cboe BYX) | 401.2 | **401.7** | | B (Nasdaq BX, UTP) | 16.7 | **16.6** |
+| **M (CHX, 2019)** | **10254.1** | **10259.8** | | Q (Nasdaq, UTP) | 17.0 | **17.0** |
+
+**Watch out:**
+- **Corrupt timestamps exist** — `part_time` after `time_m` by ~35,000s. Use the **median** and
+  screen (e.g. `0 ≤ lat ≤ 10ms`).
+- **Latency is NOT symmetric across networks.** 2019: `CAR→MAH` (CTA, fiber) = 432µs vs `MAH→CAR`
+  (UTP, millimeter wave) = 353µs — different physical networks. They had converged by 2025
+  (325.9 vs 324.5). Don't assume symmetry; measure it.
+- **Venue identity changes.** `M` was CHX (10ms, Secaucus/Chicago) in 2019 and is **NYSE Texas**
+  (Mahwah-fast, 20.8µs) in 2025. `G`=24X, `U`=MEMX, `L`=LTSE, `H`=MIAX Pearl post-date HPW.
+  **`V` (IEX) is in Weehawken**, not Secaucus. Get codes from TAQ spec v4.3 Appendix F.
+- **Gateway latency ≠ geography.** MIAX (`H`) sits in Equinix NY4 Secaucus — same town as Cboe
+  (NY5) — yet is **+102µs**. That is MIAX's own egress, not distance. Per-exchange estimation
+  captures it; a venue→city lookup does not.
+- **Clock sync bounds the exercise.** Reg SCI requires venue clocks within **100µs** of NIST, while
+  modelled travel is 164–540µs. Drift is a material fraction of the effect.
+
+### The three cities (and the one that isn't identified)
+
+Mahwah (CTA SIP + NYSE group), Carteret (UTP SIP + Nasdaq group), Secaucus (Cboe group) —
+**96% of lit volume** (HPW). Distances: MAH–CAR 35mi, MAH–SEC 21mi, CAR–SEC 17mi.
+Our measured travel: 9.3 / 9.7 / 9.6 µs-per-mile — one constant across three pairs, ~18% above
+fiber's speed of light (8.05 µs/mi). Good sanity check on any latency matrix.
+
+**There is no SIP in Secaucus**, so `travel(→Secaucus)` is **not identifiable** from TAQ; HPW hit
+this too and fill it by symmetry. Any Secaucus-observer result rests on that assumption.
+
+**Refs:** Holden & Jacobsen (2014, *JF*); Holden-Pierson-Wu (2023), *"In the blink of an eye"*
+(SSRN 4441422) — pinned with the paper text at `rule611/docs/reference/`.
 
 ---
 
