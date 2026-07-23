@@ -33,7 +33,10 @@ scikit-learn = "*"
 sparse_dot_topn = ">=1.2"      # ING's fast sparse top-k matmul
 ```
 
-`sparse_dot_topn` is pypi-only — not on conda-forge as of 2026-04.
+conda-forge tops out at `sparse_dot_topn` 0.3.1 — before the v1
+`sp_matmul_topn` API used here (channel checked 2026-07-22). Install ≥1.2 from
+pypi (`pixi add --pypi sparse_dot_topn`); a plain `pixi add` gets you a build
+without the function.
 
 ## Minimal recipe
 
@@ -145,8 +148,13 @@ top = sp_matmul_topn(L, R.T, top_n=1, threshold=0.90, sort=True)
    sparse matrix waiting to be transposed inside.
 4. **Memory**: `L @ R.T` with sparse TF-IDF is O(nnz), not O(n_left ×
    n_right). Safe up to ~10⁶ × 10⁶ if you chunk `L` in batches of 50K.
-5. **Sort matters for top-1**: pass `sort=True` so the `top_n=1` actually
-   returns the best match, not an arbitrary one.
+5. **`sort` orders, it does not select**: the docstring is explicit that `sort`
+   returns C "in a format where the first non-zero element of each row is the
+   largest value" — top-k *selection* already keeps the largest values, so
+   `top_n=1` gives the argmax with `sort=False` too (checked on 1.2.0: 60/60
+   rows agreed with a dense argmax under both settings). Pass `sort=True` when
+   `top_n>1` and you consume the hits in order. Exact ties stay arbitrary
+   either way — see gotcha 7.
 6. **IDF stability — fit once on the full corpus**: if you fit a fresh
    vectorizer per issuer subset (say 3 candidate rows), IDF weights
    become unstable and scores diverge from full-corpus runs. Fit the
@@ -155,8 +163,11 @@ top = sp_matmul_topn(L, R.T, top_n=1, threshold=0.90, sort=True)
    `"GABELLI MARIO JOSEPH"` ↔ `"GABELLI MARIO J"` scores 0.69; in a 600K-
    corpus fit it scores 0.84. Same pair — IDF context changed everything.
 7. **Duplicate norm_names on right side**: if two rows in `right` share a
-   norm_name but have different ids, `top_n=1` returns whichever COO
-   entry ripgrep-ed out first. Deduplicate the right side first with
+   norm_name but have different ids, `top_n=1` picks one of the tied
+   columns by no documented rule, and `sort=True` does not break the tie.
+   (Tested on 1.2.0: the *last* duplicate won in every layout tried, under
+   both `sort` settings — but that is an observation, not a contract.)
+   Deduplicate the right side first with
    `.groupby("name")["id"].agg(lambda x: x.mode().iloc[0])`.
 
 ## Alternatives considered

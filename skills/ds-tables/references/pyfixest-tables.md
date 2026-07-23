@@ -25,7 +25,10 @@ pf.etable([fit1, fit2])  # returns great_tables GT object
 
 ### coef_fmt — Coefficient Display Format
 
-Default: `"b \n (se)"`
+Signature default: `None` — which resolves to a built-in format that **does**
+include significance stars. (Verified on 0.60.0: bare `etable([fit])` prints
+`1.873***`.) The `"b \n (se)"` form below is what you get if you pass it
+explicitly, and it has no star token — see the note under Tokens.
 
 **Tokens:**
 - `b` — coefficient estimate
@@ -38,7 +41,10 @@ Default: `"b \n (se)"`
 
 **Significance stars** (append `*`): `b*`, `b:.3f*`
 
-Stars only render when `*` is in `coef_fmt`. Without it, `signif_code` has no effect.
+Once you pass `coef_fmt` explicitly, stars render only if it contains `*`. A
+custom format without it silently removes the stars the default supplied, and
+`signif_code` cannot restore them — it sets the thresholds, not whether stars
+appear.
 
 **Layout:** `\n` = line break, `()` = parens, `[]` = brackets
 
