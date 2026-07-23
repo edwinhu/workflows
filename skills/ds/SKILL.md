@@ -176,8 +176,28 @@ After selecting an approach:
 [What question this analysis answers]
 
 ## Data Sources
-- [Source 1]: [location, format, time period]
-- [Source 2]: [location, format, time period]
+- [Source 1]: [location, format] — coverage asserted in "Sample Period & Coverage Requirements" below
+- [Source 2]: [location, format] — coverage asserted in "Sample Period & Coverage Requirements" below
+
+## Sample Period & Coverage Requirements
+<!-- AUTHORITATIVE. This is the ONE place the sample period lives. Do NOT scatter the period across prose elsewhere (a "measured" range here, a "scope" year there) — every phase reviews data pulls against THIS section. See constraint C6 (ds-sample-coverage). -->
+
+**Canonical window:** [start] to [end]
+<!-- The single outer window that bounds the whole study. Every source and task lives inside it unless a row below declares a legitimate extension (lags/leads). -->
+
+**Sub-windows** (narrower windows a specific task/exhibit uses; each names the task(s) that consume it):
+| Sub-window | Range | Consumed by |
+|------------|-------|-------------|
+| [measured] | [2023H2–2025H1] | [Task/Exhibit] |
+| [counterfactual] | [2005–2025] | [Task/Exhibit] |
+
+**Per-source coverage** (Required = UNION of the sub-windows of EVERY task that reads the source — not just the task it was first pulled for; reuse by a wider-window task is exactly what silently truncates data):
+| Source | Required window | Actual (min–max) | Gap? | Disposition |
+|--------|-----------------|------------------|------|-------------|
+| [source1] | [2005–2025 (Task 6 ∪ Task 8)] | TBD (profiled in ds-plan) | TBD | TBD |
+| [source2] | [2009–2024] | TBD (profiled in ds-plan) | TBD | TBD |
+
+**COV gate:** no windowed source is used by a task until its Actual coverage is asserted against that task's Required window. Every gap (Actual narrower than Required) is CLOSED (re-pull) or dispositioned (documented reason it is acceptable). An undispositioned gap is a STOP.
 
 ## Planned Exhibits
 <!-- The tables and figures the final output will contain. Rough is fine — ds-plan Step 5d maps each to a canonical master dataset so all exhibits share one methodology. Omit only for a genuine single-table one-off. -->
@@ -228,7 +248,7 @@ Before transitioning to ds-plan, execute this gate:
 ```
 1. IDENTIFY → SPEC.md exists at `.planning/SPEC.md`
 2. RUN      → Read(".planning/SPEC.md")
-3. READ     → Verify it contains: Objectives, Data Sources, Requirements (with CATEGORY-NN IDs), Success Criteria sections
+3. READ     → Verify it contains: Objectives, Data Sources, Sample Period & Coverage Requirements (canonical window + sub-windows + per-source table), Requirements (with CATEGORY-NN IDs), Success Criteria sections
 4. VERIFY   → User has confirmed the objectives via AskUserQuestion response (not agent self-assessment).
               Check: was AskUserQuestion called and did user respond affirmatively?
 5. CLAIM    → Only proceed to ds-plan if ALL checks pass
@@ -243,6 +263,7 @@ Before transitioning to ds-plan, execute this gate:
 Declare brainstorm complete when:
 - Analysis objectives clearly understood
 - Data sources identified
+- Sample period declared: one canonical window + named sub-windows, each mapped to the task(s) that consume it (per-source Actual coverage is filled later in ds-plan)
 - Success criteria defined
 - Constraints documented (especially replication requirements)
 - Approach chosen from alternatives

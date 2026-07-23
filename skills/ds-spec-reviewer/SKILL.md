@@ -74,6 +74,7 @@ Read the spec file, then evaluate against ALL categories below.
 |----------|------------------|
 | Completeness | TODOs, placeholders, "TBD", incomplete sections, empty fields |
 | Data Sources | All data sources identified with location, format, and time period |
+| Sample Period & Coverage | ONE canonical window declared (not scattered across prose); named sub-windows each mapped to consuming task(s); every windowed source has a Required-vs-Actual coverage row (Actual may be "TBD — profiled in ds-plan", but Required must be filled = union of consuming tasks' sub-windows) |
 | Analysis Objectives | Clear, specific questions the analysis will answer |
 | Output Format | Expected deliverables specified (report, dashboard, model, tables) |
 | Success Criteria | Measurable, specific, with clear pass/fail (not vague) |
@@ -88,6 +89,7 @@ Read the spec file, then evaluate against ALL categories below.
 - Sections saying "to be defined later" or "will spec when data is explored"
 - Sections noticeably less detailed than others
 - Data sources listed without location or format
+- Sample period scattered across prose (a "measured" range here, a "scope" year there) with NO single canonical window — or a per-source coverage row whose Required window omits a task that will read the source (the reuse-truncation trap)
 - Analysis objectives that are vague ("explore the data", "find patterns")
 - Success criteria that are unmeasurable ("good model", "interesting results")
 - Missing replication/reproducibility strategy when replicating existing work

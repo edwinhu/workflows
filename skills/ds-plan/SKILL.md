@@ -227,8 +227,13 @@ df.duplicated(subset=DECLARED_PK).sum()          # MUST be 0, else extraction fa
 df.groupby(BUSINESS_KEY).size().gt(1).sum()      # business-key collisions = restatement/amendment signal
 
 # For time series
-df[date_col].min(), df[date_col].max()  # Date range
+df[date_col].min(), df[date_col].max()  # Date range → Actual coverage (constraint C6)
 df.groupby(date_col).size()              # Records per period
+# COVERAGE ASSERTION (C6): compare the measured min/max against this source's Required
+# window (union of the sub-windows of every task that reads it, from SPEC's Sample Period
+# section). If min > required_start or max < required_end, the source is truncated — record
+# the gap and a disposition in PLAN.md's "Sample Period & Coverage" table. A source pulled
+# for one task's window and reused by a wider-window task is the silent-truncation trap.
 ```
 
 #### Multiple Data Sources (Parallel Profiling)
@@ -271,7 +276,9 @@ Required checks:
    that df.duplicated() misses (e.g. Form 4 4/A re-filings).
 7. Summary statistics: df.describe()
 8. Unique value counts for categorical columns
-9. Date range if time series
+9. Date range if time series: report df[date_col].min() and max(). If SPEC declares a
+   Required window for this source (see its Sample Period & Coverage section), state
+   explicitly whether the measured range COVERS it, and name any uncovered span (gap).
 10. Memory usage: df.info()
 
 Output format:
@@ -832,12 +839,24 @@ tags: [planning, data-profiling]
 ## Spec Reference
 See: .planning/SPEC.md
 
+## Sample Period & Coverage
+<!-- Required (constraint C6, ds-sample-coverage). Carry the canonical window + sub-windows from SPEC.md; fill the Actual column from profiling (the df[date_col].min()/max() measured below) and assert it covers each source's Required window. Required = UNION of the sub-windows of every task that reads the source. -->
+
+**Canonical window:** [from SPEC] — **Sub-windows:** [measured …; counterfactual …]
+
+| Source | Required window | Actual (min–max, profiled) | Gap? | Disposition |
+|--------|-----------------|----------------------------|------|-------------|
+| mktcap_cache | 2005–2025 (Task 6 ∪ Task 8) | 2018–2026 | pre-2018 missing | **CLOSE** — re-pull from 2005 (Task 8 counterfactual needs it) |
+| returns | 2009–2024 | 2009–2024 | none | OK |
+
+Any row with an uncovered Gap and no disposition is a STOP — resolve before finalizing PLAN.md. No task reads a source until its row here shows Gap=none or a disposition.
+
 ## Data Profile
 
 ### Source 1: [name]
 - Location: [path/connection]
 - Shape: [rows] x [columns]
-- Date range: [start] to [end]
+- Date range: [start] to [end]  <!-- feeds the Actual column of Sample Period & Coverage above; assert it covers this source's Required window -->
 - Key columns: [list]
 
 #### Column Summary
