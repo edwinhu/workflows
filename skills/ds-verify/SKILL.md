@@ -312,7 +312,7 @@ Verify this analysis produces consistent results from a fresh run.
 Read the shared check definitions:
 Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` and follow its instructions.
 
-Run checks: DQ1-DQ4, DQ6, M1, R1
+Run checks: DQ1-DQ4, DQ6, COV, M1, R1
 
 ## Reproducibility Protocol
 
@@ -342,11 +342,13 @@ papermill notebook.ipynb output.ipynb -p seed 42
 2. CHECK: Verify outputs match SPEC.md success criteria
 3. REPRODUCE: Same inputs → same outputs (run twice, compare hashes)
 4. DATA INTEGRITY: Input data unchanged, row counts traceable
+5. COVERAGE (COV): each windowed source spans the Required window of every task reading it; gaps dispositioned
 
 ## Output
 Report:
 - Reproducibility: PASS/FAIL (with hash comparison)
 - Data quality checks: DQ1-DQ4, DQ6 results
+- Sample-period coverage: COV result (each windowed source spans its Required window; gaps dispositioned)
 - Spec compliance: M1 result
 - Any discrepancies found
 """)

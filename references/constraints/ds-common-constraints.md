@@ -25,6 +25,7 @@ After reading this index, load the specific constraint files needed for your cur
 | C3 | Deviation Rules | [constraints/ds-deviation-rules.md](constraints/ds-deviation-rules.md) | R1-R3 auto-fix, R4 STOP for user decision — track all deviations in LEARNINGS.md |
 | C4 | External Skill Discovery | [ds-external-skill-discovery.md](ds-external-skill-discovery.md) | Before drafting PLAN.md tasks that reference an external skill (wrds, gemini-batch, etc.), Glob its references/ and examples/, load domain refs, read example READMEs, prefer ADOPT/PATCH over greenfield |
 | C5 | Data Pull Profile | [ds-data-pull-profile.md](ds-data-pull-profile.md) | Before finalizing PLAN.md with any source >= 50M rows, >= 500 MB, or flagged large/bulk/TB/millions — dispatch read-only profiling subagent to quantify raw vs aggregate ship size, record decision table in PLAN.md |
+| C6 | Sample Coverage | [ds-sample-coverage.md](ds-sample-coverage.md) | ONE canonical sample window + sub-windows in SPEC; every windowed source has a Required-vs-Actual coverage row with a disposition per gap; no source used by a task until asserted against its required window (COV gate) |
 
 ## Phase Loading Guide
 
@@ -32,10 +33,10 @@ Not every phase needs every constraint. Load by relevance:
 
 | Phase | Must Load | Why |
 |-------|-----------|-----|
-| **ds (brainstorm)** | — | Brainstorm has no deterministic constraints (see conventions V1-V3) |
-| **ds-fix (midpoint)** | C1-C5 (all) | Midpoint can route to any phase — needs full constraint set |
-| **ds-plan** | C4, C5 | Before drafting external-skill tasks: External Skill Discovery; before finalizing with a large pull: Data Pull Profile |
-| **ds-implement** | C1, C2, C3 | Implementation: data quality, delegation boundary, deviation tracking |
-| **ds-review** | C1, C2 | Review: data quality checks, post-subagent boundary |
-| **ds-verify** | C2 | Verification: delegation boundary |
-| **ds-delegate** | C2, C3 | Delegation: post-subagent boundary, deviation rules |
+| **ds (brainstorm)** | C6 | Brainstorm writes the canonical sample window + sub-windows into SPEC (see also conventions V1-V3) |
+| **ds-fix (midpoint)** | C1-C6 (all) | Midpoint can route to any phase — needs full constraint set |
+| **ds-plan** | C4, C5, C6 | External Skill Discovery; Data Pull Profile; Sample Coverage — fill each source's Actual window from profiling and assert vs Required |
+| **ds-implement** | C1, C2, C3, C6 | Implementation: data quality, delegation boundary, deviation tracking, no windowed source used before COV-asserted |
+| **ds-review** | C1, C2, C6 | Review: data quality checks, post-subagent boundary, sample-coverage gate |
+| **ds-verify** | C2, C6 | Verification: delegation boundary, sample-coverage gate |
+| **ds-delegate** | C2, C3, C6 | Delegation: post-subagent boundary, deviation rules, coverage assertion in task prompts |

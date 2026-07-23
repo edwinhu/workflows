@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [5.76.1] - 2026-07-22
+## [5.77.1] - 2026-07-23
 
 ### Fixed
 - **Eleven false or imprecise claims in the 5.73-5.76 prose**, caught by two rounds of independent adversarial review and re-verified here by running the libraries rather than re-reading the docs. Nearly all of them sat in "Facts" and index descriptions — the sections written to be trusted without checking, which is exactly what makes a wrong one expensive.

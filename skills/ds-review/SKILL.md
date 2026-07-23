@@ -770,6 +770,13 @@ Auto-load all constraints matching `applies-to: ds-review`:
 - [ ] The dataset-construction mermaid diagram matches the code that actually ran — masters, merges, and filters in the diagram exist in the pipeline; the diagram is not stale
 - [ ] Each master dataset is unique at its declared grain (run the keyed dedup; a fan-out here corrupts every downstream exhibit)
 
+### Sample Period Coverage (COV)
+<!-- Per the sample-coverage constraint C6 (loaded above) and check COV in ds-checks.md. Applies to any analysis with a windowed source. -->
+- [ ] SPEC declares ONE canonical sample window plus named sub-windows, each mapped to the task(s) that consume it — the period is NOT scattered across prose with no single authoritative window
+- [ ] Every windowed source (raw pull, cache, intermediate, master) has a Required-vs-Actual coverage row; Required is the UNION of the sub-windows of every task that reads it (not just the task it was first pulled for)
+- [ ] Run COV yourself: for each windowed source, compute `df[date_col].min()/max()` and confirm it covers that source's Required window — a source pulled for one task's window and reused by a wider-window task silently truncates (uncovered span = zero data, still plausible numbers) (a high-confidence issue if uncovered and undispositioned)
+- [ ] Every coverage gap (Actual narrower than Required) is either CLOSED (re-pulled) or has an explicit disposition (task doesn't need the span, or vendor legitimately lacks it) — "the series looked fine" is not a disposition
+
 ### Parameter Transparency
 <!-- Per the parameter-transparency constraint (loaded above). Applies to any analysis with filters/parameters. -->
 - [ ] No magic numbers: filter thresholds, caps, bands, winsorization levels, date windows, and min-obs counts come from a single named config location, not inline literals (grep the pipeline for stray numeric literals in filter/clip/winsorize/date comparisons — any found is a high-confidence issue)

@@ -14,6 +14,7 @@ Shared check definitions for data quality verification. Referenced by ds-validat
 | DQ4 | Row count traceability (vs LEARNINGS.md) | ✅ | ✅ | ✅ | ✅ |
 | DQ5 | Cardinality check on categoricals | ✅ | ✅ | ✅ | ❌ |
 | DQ6 | Output-first verification (shape before/after) | ❌ | ❌ | ✅ | ✅ |
+| COV | Sample-period coverage (each windowed source spans its Required window) | ✅ | ✅ | ✅ | ✅ |
 | R1 | Reproducibility (same inputs → same outputs) | ❌ | ❌ | ❌ | ✅ |
 | M1 | Spec compliance (all SPEC.md objectives addressed) | ✅ | ✅ | ✅ | ✅ |
 
@@ -130,6 +131,23 @@ df.head()
 | Groupby | result shape, sample groups |
 | Model fit | metrics, convergence |
 
+### COV: Sample-Period Coverage
+
+Verify every windowed data source (raw pull, cache, intermediate, master) covers the Required window of every task that reads it. This catches the silent-truncation trap: a source pulled for one task's window and reused by a task with a *wider* window, leaving the uncovered span with zero data — a truncated series still produces plausible numbers, so nothing fails loudly. Definition and gate: constraint C6 (`references/constraints/ds-sample-coverage.md`).
+
+```python
+# required = (start, end) for THIS source = union of the sub-windows of every task that
+# reads it, taken from SPEC.md's "Sample Period & Coverage Requirements" table.
+lo, hi = df[date_col].min(), df[date_col].max()
+req_lo, req_hi = required  # e.g. ("2005-01-01", "2025-12-31")
+if lo > pd.Timestamp(req_lo) or hi < pd.Timestamp(req_hi):
+    print(f"FAIL [COV]: {source} covers {lo:%Y-%m}–{hi:%Y-%m} but is required to cover "
+          f"{req_lo}–{req_hi}. Uncovered span has ZERO data. "
+          f"Must be dispositioned in the coverage table (CLOSE=re-pull, or documented reason).")
+```
+
+**Confidence if triggered:** >= 85 unless the gap has an explicit disposition in SPEC/PLAN's coverage table (task genuinely doesn't need the span, or the vendor legitimately lacks it). An undispositioned gap is a high-confidence issue.
+
 ## Methodology Checks
 
 ### M1: Spec Compliance
@@ -164,7 +182,7 @@ assert hash1 == hash2, "Results not reproducible!"
 When dispatching a review or verification subagent, reference checks by ID:
 
 ```
-"Run checks DQ1-DQ5, M1 from references/ds-checks.md on the final analysis data.
+"Run checks DQ1-DQ5, COV, M1 from references/ds-checks.md on the final analysis data.
 Report any WARNING as confidence >= 80."
 ```
 
