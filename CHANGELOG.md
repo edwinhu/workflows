@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.78.0] - 2026-07-24
+
+### Added
+- **`bmll` skill — BMLL Data Lab** (`bmll2` / `bmll` Python APIs over BMLL's Level 3 market data), as a **private submodule** at `skills/bmll` pointing at [`edwinhu/bmll-skill`](https://github.com/edwinhu/bmll-skill). Covers Trades Plus, reference data, whole-market and per-listing access, order-book rebuilding, event-time market impact, retail flow, Data Feed analytics, compute/storage, per-venue datasets and the schema layer — 14 reference files, tested helper scripts, and a worked execution-quality example.
+  - **Private deliberately.** The reference material is derived from BMLL's login-gated documentation — schema field descriptions, enum and MMT value tables, the classified-trade taxonomy, per-venue detail — and the submodule vendors the 23 tutorial notebooks and 445 extracted doc pages as the provenance record, since the source cannot be re-fetched without an authenticated session. That content is licensed to the account holder and is not ours to republish from a public marketplace. Field names, types, MIC codes and enum *values* are facts; the prose and notebook code are BMLL's expression.
+  - **Consequence, intended:** installing this plugin without access to `edwinhu/bmll-skill` yields an empty `skills/bmll` and no `bmll` skill. The plugin installer does recurse submodules (verified against the existing `skills/marimo/marimo-pair` and `external/anthropic-skills`, both fully populated in the plugin cache), so it resolves normally for those with access.
+  - `ds-tools` registers `/bmll` in the data-access table with the access requirement noted.
+  - The two helper scripts exist because the logic is deterministic and fails silently when hand-rolled: markout sign normalisation (buy- and sell-initiated impact cancel to ~0 without it) and event-time impact. Both are covered by tests against synthetic frames built to the documented schema — **the live BMLL API is not exercised**, so API behaviour and entitlement handling remain unverified against reality.
+
 ## [5.77.1] - 2026-07-23
 
 ### Fixed
