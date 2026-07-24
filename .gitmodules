@@ -4,3 +4,6 @@
 [submodule "skills/marimo/marimo-pair"]
 	path = skills/marimo/marimo-pair
 	url = https://github.com/marimo-team/marimo-pair.git
+[submodule "skills/bmll"]
+	path = skills/bmll
+	url = git@github.com:edwinhu/bmll-skill.git
