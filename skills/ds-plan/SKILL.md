@@ -456,7 +456,7 @@ AskUserQuestion(questions=[{
    - Output schema/format matches expectations (non-empty, correct structure)
    - Success rate above threshold (≥90% for test, ≥95% for intermediate)
    - Spot-check: manually inspect N outputs for quality/correctness
-   - Cost/time extrapolation is acceptable for next stage
+   - Cost/time extrapolation is acceptable for next stage — **benchmark the DENSEST / most-recent slice, not a convenient old or small one.** Per-unit cost usually grows with time (volume, row counts, universe size), so an old-period or light-day benchmark silently under-sizes the full run. Extrapolate from the heaviest representative unit, not the first one that runs.
 3. **Document in PLAN.md:** Scale-up testing plan table for each expensive task.
 
 #### ETL Strategy Section for PLAN.md

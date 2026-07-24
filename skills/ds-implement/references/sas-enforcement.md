@@ -45,7 +45,7 @@ Before writing ANY SAS code, validate against these rules:
 - [ ] Hash used for all lookup merges
 - [ ] SGE array for multi-year processing
 - [ ] Double quotes where macro resolution needed
-- [ ] Single-year benchmark before full array
+- [ ] Single-year benchmark before full array — on the **most RECENT / densest** period, never a convenient old one. Data density grows over time, and these engines are volume-dominated, so an old-period benchmark under-sizes the full run by the growth factor (measured: a 2021 TAQ day = 7M trades / ~31 min vs a 2025 day = 113M trades / ~85 min — 16× more trades on a similar quote scan; benchmarking the 2021 day would have projected the array ~2.7× too fast).
 ```
 
 **Skipping WHERE clause pattern checks is NOT HELPFUL — unverified SAS code fails silently and wastes the user's compute time.**
