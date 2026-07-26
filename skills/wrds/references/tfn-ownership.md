@@ -477,7 +477,7 @@ collapsed to 0.9% after the fix). Note the *level* of the null rate is not the s
 ~54% is correct and expected, because 13F legitimately holds ADRs and closed-end funds
 with no CRSP common-stock match. The **spread across buckets** is the signal.
 
-### D9. Held shares exceeding shares outstanding — PARTIAL (two causes; one fixed, one open)
+### D9. Held shares exceeding shares outstanding — RESOLVED (two parser defects, then real short lending)
 
 Surfaced by `detect_impossible_ratio` on the rebuilt EDGAR panel: **7.0% of non-zero
 observations exceed 100% ownership, 2.9% exceed 120%**, concentrated in the pre-XML
@@ -590,7 +590,11 @@ rather than waiting for the aggregate to breach 100%, and also catches the inver
 `value`-unit error (cik 93751 reports 9.78M shares against `value = 202,656,145`, an
 implied $20.7M per share).
 
-#### Status: PARTIAL — the `value=0` fix is real but explains only the extreme tail
+#### Status at the time: PARTIAL — the `value=0` fix is real but explains only the extreme tail
+
+> Superseded by the RESOLVED section below. Kept because the reasoning that got there
+> matters: two hypotheses were killed by a clean-cell control, and reading only the
+> conclusion would lose that.
 
 Validated independently against Thomson (a different pipeline, so it can distinguish
 "removed fabricated mass" from "removed real holdings"):
