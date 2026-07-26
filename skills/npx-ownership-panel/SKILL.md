@@ -67,6 +67,32 @@ Thomson's share adjustments are made to"), so there the correct factor is at
 **`fdate`**. Changing either to match the other introduces a bug. The SAS header
 says so at the join site.
 
+## One entry point, and what is reachable from it
+
+`run_pipeline.sh` is the only pipeline entry point. Everything in `scripts/` is
+reachable from it, or from the documented crosswalk prerequisite below — there is
+no second DAG and no dead script. If you add one, keep that true; an orphan
+script in a skill is an invitation to run the wrong thing, and this skill shipped
+three builders of one quantity before it was cleaned up.
+
+Two roots, deliberately:
+
+| Root | What it is |
+|---|---|
+| `run_pipeline.sh` | the DAG. Submits everything with `qsub -hold_jid` and returns |
+| `npx_linking/build_npx_crsp_link.py` | the crosswalk, built **locally** and scp'd in (below). Not part of the DAG because leg 3 hard-gates on its output existing |
+
+`npx_link_to_csv.py` and `npx_linking/family_overlay.example.csv` are used by hand
+in that prerequisite step, not invoked by the DAG.
+
+**Legs 2 and 5 are Python and need `polars`; every other leg is SAS.** The
+preflight imports them before submitting anything, so a missing package fails in
+one second instead of thirty minutes into a grid run.
+
+For S12 data-quality controls (the 2017Q4 feed change, coverage end, the MFLINKS
+gap) use the `wrds` skill's `references/tfn-ownership.md` **D5**, and the detectors
+in `skills/wrds/scripts/ownership_dq.py`. Deliberately not duplicated here.
+
 ## Before you run: build the crosswalk
 
 Leg 4's input is a `fundid → block` crosswalk you build once, locally. It is the

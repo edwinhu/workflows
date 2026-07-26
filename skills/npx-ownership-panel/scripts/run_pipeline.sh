@@ -62,11 +62,32 @@ read -r -a YEAR_RANGES <<< "$(sed -n 's/^%let S12_RANGES *= *\([^;]*\);.*/\1/p' 
 # Cheap, local, and it costs nothing to be strict. A missing crosswalk discovered
 # 40 minutes in is 40 minutes of grid time and a confusing log.
 preflight_fail=0
-for f in pipeline_config.sas build_meetings.sas build_inst_own.sas build_mflinks.sas \
-         split_s12.sas tfn_holdings_parallel.sas stage_npx_link.sas build_npx.sas \
-         merge_panel.sas run_sas.sh run_npx_stage.sh run_npx_array.sh; do
+for f in pipeline_config.sas build_meetings.sas build_inst_own.py build_short_interest.py \
+         build_mflinks.sas split_s12.sas tfn_holdings_parallel.sas stage_npx_link.sas \
+         build_npx.sas merge_panel.sas run_sas.sh run_python.sh run_npx_stage.sh \
+         run_npx_array.sh; do
     [ -f "$f" ] || { echo "PREFLIGHT ERROR: missing $f" >&2; preflight_fail=1; }
 done
+
+# Legs 2 and 5 are Python and need polars; the SAS legs do not. Check the
+# interpreter HERE rather than discovering it in a job log 30 minutes in — a
+# missing import is the cheapest possible failure and the most expensive one to
+# diagnose late. run_python.sh names the interpreter, so read it from there
+# instead of hardcoding a second copy of the path.
+PYBIN=$(awk '/^[^#]*python3/ {print $1; exit}' run_python.sh)
+PYBIN=${PYBIN:-/usr/local/bin/python3}
+if ! "$PYBIN" -c 'import polars, pyarrow, psycopg2' 2>/dev/null; then
+    echo "PREFLIGHT ERROR: $PYBIN cannot import polars/pyarrow/psycopg2" >&2
+    echo "  Legs 2 (build_inst_own.py) and 5 (build_short_interest.py) need them." >&2
+    echo "  Install into that interpreter, or point run_python.sh at one that has them." >&2
+    preflight_fail=1
+fi
+# Leg 2 reads the EDGAR 13F parquet. Absent, it would build an empty panel and
+# every downstream ownership column would be silently null.
+[ -d "${HOLDINGS_13F:-holdings_13f}" ] || {
+    echo "PREFLIGHT ERROR: EDGAR holdings not found at ${HOLDINGS_13F:-holdings_13f}" >&2
+    echo "  Set HOLDINGS_13F, or run the 13F scrape first (wrds skill, parse_13f)." >&2
+    preflight_fail=1; }
 if [ ! -f "$LINKCSV" ]; then
     echo "PREFLIGHT ERROR: crosswalk not found at $LINKCSV" >&2
     echo "  Build it locally (npx_linking/) and scp it here:" >&2
@@ -91,9 +112,21 @@ JOB_MTG=$(qsub -terse -N meetings -o logs/build_meetings.log -j y \
 echo "  [A] build_meetings:  job $JOB_MTG  (~12 sec)"
 
 # --- Leg 2: institutional ownership ------------------------------------------
-JOB_IO=$(qsub -terse -N inst_own -o logs/build_inst_own.log -j y \
-    run_sas.sh build_inst_own.sas | cut -d. -f1)
-echo "  [2] build_inst_own:  job $JOB_IO  (~3 min)"
+# Leg 5 first: leg 2 nets securities lending out of ownership using it, so the
+# short-interest table has to exist before build_inst_own.py runs.
+JOB_SI=$(qsub -terse -N short_int -o logs/build_short_interest.log -j y \
+    run_python.sh build_short_interest.py | cut -d. -f1)
+echo "  [5] short_interest:  job $JOB_SI  (~10 sec)"
+
+# Leg 2: the CANONICAL builder is build_inst_own.py (SEC EDGAR 13F). It carries
+# the data-quality fixes; build_inst_own.sas (Thomson S34) is fallback-only and
+# is deliberately NOT in this DAG. Do not swap them back without reading the
+# header of the .sas — the two use different cfacshr join dates and each is
+# correct for its own source.
+JOB_IO=$(qsub -terse -N inst_own -hold_jid "$JOB_SI" \
+    -o logs/build_inst_own.log -j y \
+    run_python.sh build_inst_own.py | cut -d. -f1)
+echo "  [2] build_inst_own:  job $JOB_IO  (~3 min, held on short_interest)"
 
 # --- Leg 1: mutual-fund holdings ---------------------------------------------
 JOB_MFL=$(qsub -terse -N mflinks -o logs/build_mflinks.log -j y \
