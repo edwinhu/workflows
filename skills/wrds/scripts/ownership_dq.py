@@ -44,6 +44,9 @@ __all__ = [
     "detect_bridge_rate_regression",
     "detect_duplicate_grain",
     "detect_unresolved_overlap",
+    "detect_calendar_bucket_gap",
+    "detect_join_gap_clustering",
+    "detect_impossible_ratio",
     "COMMON_SPLIT_FACTORS",
 ]
 
@@ -821,6 +824,223 @@ def detect_unresolved_overlap(
             by_period.setdefault(_as_date(rec[period_col]), []).append(rec)
         for period in sorted(by_period):
             _emit(period, by_period[period])
+    return findings
+
+
+def detect_calendar_bucket_gap(
+    records: Sequence[dict],
+    *,
+    period_col: str = "rdate",
+    expected_months: Sequence[int] = (3, 6, 9, 12),
+    thin_share: float = 0.5,
+) -> list[Finding]:
+    """A periodic panel missing an entire calendar bucket (e.g. no June, no September).
+
+    THE ROOT-CAUSE DETECTOR. Every other detector in this module catches a *symptom*
+    downstream of a broken source table; this one catches the source table itself, and
+    it is cheap enough to run on every reference panel at build time.
+
+    Grounded in a real incident (mirror `build_inst_own.py`, 2026-07). polars'
+    `dt.month()` returns Int8, so the common idiom
+
+        dt.year() * 10000 + dt.month() * 100 + dt.day()
+
+    overflows for every month >= 2 (2 * 100 = 200 > 127) and wraps NEGATIVE, silently.
+    February 2020 became 20199973 and March became 20200075 instead of 20200229 /
+    20200331. A quarter-snap then read those as "month 99" and "month 0" and bucketed
+    them into Q4-of-the-prior-year and Q1, so the CRSP reference panel held ONLY March
+    and December quarter-ends -- 193,335 rows where 370,630 were correct.
+
+    Nothing raised. The output was a full-looking table of plausible eight-digit
+    integers. Downstream, every June and September holdings quarter missed the join,
+    fell back to an unadjusted split factor and a null denominator, and produced an
+    ownership ratio of exactly 0 for 49% of the panel. That surfaced as a 4.5x seasonal
+    swing with a flat owner count -- which reads as a *vendor* defect, and was attributed
+    to one for weeks before being traced back here.
+
+    The lesson generalizes past polars: any date arithmetic on a narrow integer type can
+    silently produce a valid-looking key. Assert the buckets, do not eyeball the head.
+
+    `thin_share` also catches the softer version -- a bucket present but far smaller than
+    its peers, which is a partial join failure rather than a total one.
+    """
+    findings: list[Finding] = []
+    counts: dict[int, int] = {m: 0 for m in expected_months}
+    unexpected: dict[int, int] = {}
+    for rec in records:
+        value = rec.get(period_col)
+        if value is None:
+            continue
+        month = _as_date(value).month
+        if month in counts:
+            counts[month] += 1
+        else:
+            unexpected[month] = unexpected.get(month, 0) + 1
+
+    present = {m: n for m, n in counts.items() if n > 0}
+    for month in expected_months:
+        if counts[month] == 0:
+            findings.append(
+                Finding(
+                    kind="calendar_bucket_gap",
+                    entity=period_col,
+                    period=month,
+                    detail=(
+                        f"no rows in calendar month {month}; expected months "
+                        f"{list(expected_months)}. A whole bucket is missing, so every "
+                        f"downstream join keyed on it silently falls back to a default"
+                    ),
+                    metrics={"month": month, "rows": 0, "present_months": sorted(present)},
+                )
+            )
+
+    if present:
+        mean_present = sum(present.values()) / len(present)
+        for month, n in sorted(present.items()):
+            if n < mean_present * thin_share:
+                findings.append(
+                    Finding(
+                        kind="calendar_bucket_thin",
+                        entity=period_col,
+                        period=month,
+                        detail=(
+                            f"month {month} has {n:,} rows against a {mean_present:,.0f} "
+                            f"average across present months -- partial join failure"
+                        ),
+                        metrics={"month": month, "rows": n, "mean_rows": mean_present},
+                    )
+                )
+
+    for month, n in sorted(unexpected.items()):
+        findings.append(
+            Finding(
+                kind="calendar_bucket_unexpected",
+                entity=period_col,
+                period=month,
+                detail=(
+                    f"{n:,} rows in month {month}, which is not in the expected set "
+                    f"{list(expected_months)} -- a corrupted date key can land anywhere"
+                ),
+                metrics={"month": month, "rows": n},
+            )
+        )
+    return findings
+
+
+def detect_join_gap_clustering(
+    records: Sequence[dict],
+    *,
+    period_col: str = "rdate",
+    joined_col: str = "tso",
+    max_spread: float = 0.25,
+) -> list[Finding]:
+    """A join whose failure rate is wildly uneven across calendar buckets.
+
+    A left join that misses is not an error -- 13F holds ADRs and closed-end funds that
+    legitimately have no CRSP common-stock match, so a flat ~54% null rate is expected
+    and fine. What is NOT fine is that rate differing by bucket: real non-matches do not
+    know what month it is.
+
+    On the broken mirror panel the null rate for `tso` was 1.00 in June and September
+    against 0.53 in March and December -- a spread of 0.47. After the fix it was 0.537 to
+    0.546, a spread of 0.009. The absolute level moved barely at all; the *spread* is the
+    signal, which is why this is a separate detector from a null-rate threshold.
+
+    Use this wherever a reference table is joined in: a silent default is much harder to
+    notice than a missing column, because the arithmetic downstream still succeeds.
+    """
+    by_month: dict[int, list[int]] = {}
+    for rec in records:
+        value = rec.get(period_col)
+        if value is None:
+            continue
+        month = _as_date(value).month
+        bucket = by_month.setdefault(month, [0, 0])
+        bucket[1] += 1
+        if rec.get(joined_col) is None:
+            bucket[0] += 1
+
+    rates = {m: miss / total for m, (miss, total) in by_month.items() if total}
+    if len(rates) < 2:
+        return []
+    lo_month, lo = min(rates.items(), key=lambda kv: kv[1])
+    hi_month, hi = max(rates.items(), key=lambda kv: kv[1])
+    if hi - lo < max_spread:
+        return []
+    return [
+        Finding(
+            kind="join_gap_clustering",
+            entity=joined_col,
+            period=hi_month,
+            detail=(
+                f"{joined_col} is null for {hi:.1%} of rows in month {hi_month} but only "
+                f"{lo:.1%} in month {lo_month} (spread {hi - lo:.1%}) -- the join is "
+                f"failing for a calendar subset, not for genuinely unmatched entities"
+            ),
+            metrics={
+                "max_null_rate": hi,
+                "min_null_rate": lo,
+                "spread": hi - lo,
+                "worst_month": hi_month,
+                "best_month": lo_month,
+                "null_rate_by_month": dict(sorted(rates.items())),
+            },
+        )
+    ]
+
+
+def detect_impossible_ratio(
+    records: Sequence[dict],
+    *,
+    entity_col: str = "permno",
+    period_col: str = "rdate",
+    numerator_col: str = "io_total",
+    denominator_col: str = "tso",
+    max_ratio: float = 1.0,
+    tolerance: float = 0.02,
+) -> list[Finding]:
+    """Held shares exceed shares outstanding -- an arithmetic impossibility, not an outlier.
+
+    Institutions cannot own 239% of a company. When they appear to, the shares are being
+    double-counted or mis-scaled, and no amount of winsorizing makes the number mean
+    something.
+
+    This is the check that survives a source swap. Vendor panels often clip the ratio at
+    100% so the defect is invisible in them; a panel built from raw filings does not clip,
+    so the violations are visible and countable. On the rebuilt mirror 13F panel this
+    fires on 7.0% of non-zero observations (2.9% above 120%), concentrated in the
+    pre-XML text-parse era -- e.g. AAPL 2003-09-30 with 4.90e10 shares held against
+    2.05e10 outstanding, bracketed by quarters at a sane 45% and 60%.
+
+    `tolerance` allows a small band for genuine timing mismatch: holdings are reported at
+    quarter-end while shares outstanding come from a monthly file, so a real 100.5% is
+    a stale denominator rather than a defect.
+    """
+    findings: list[Finding] = []
+    limit = max_ratio * (1.0 + tolerance)
+    for rec in records:
+        numer = rec.get(numerator_col)
+        denom = rec.get(denominator_col)
+        if numer is None or denom is None or denom <= 0:
+            continue
+        ratio = numer / denom
+        if ratio > limit:
+            findings.append(
+                Finding(
+                    kind="impossible_ratio",
+                    entity=rec.get(entity_col),
+                    period=_as_date(rec[period_col]) if rec.get(period_col) else None,
+                    detail=(
+                        f"{numerator_col} / {denominator_col} = {ratio:.1%}, above the "
+                        f"{max_ratio:.0%} bound -- shares double-counted or mis-scaled"
+                    ),
+                    metrics={
+                        "ratio": ratio,
+                        "numerator": numer,
+                        "denominator": denom,
+                    },
+                )
+            )
     return findings
 
 

@@ -418,6 +418,83 @@ filings start 1999 and XML only in 2013.
 
 ---
 
+### D8. Your own date arithmetic — the defect that imitates a vendor defect
+
+**Not a WRDS issue at all.** Recorded here because it cost weeks of misattribution: the
+symptom is indistinguishable from D1 (Thomson's split double-adjustment), and it was
+blamed on Thomson before being traced home.
+
+polars' `dt.month()` returns **Int8**. The ubiquitous date-key idiom
+
+```python
+pl.col("date").dt.year() * 10000 + pl.col("date").dt.month() * 100 + pl.col("date").dt.day()
+```
+
+overflows for every month ≥ 2 — `2 * 100 = 200 > 127` — and wraps **negative**, silently.
+Only January survives:
+
+| date | produced | correct |
+|---|---|---|
+| 2020-01-31 | 20200131 | ✓ |
+| 2020-02-29 | 20199973 | 20200229 |
+| 2020-03-31 | 20200075 | 20200331 |
+| 2020-12-31 | 20199951 | 20201231 |
+
+A quarter-snap downstream read `20199973` as "month 99" and `20200075` as "month 0",
+bucketing them into Q4-of-the-prior-year and Q1. The CRSP reference panel ended up
+holding **only March and December** quarter-ends: 193,335 rows where 370,630 were
+correct.
+
+**What made it expensive is that nothing raised.** The output was a full-looking table of
+plausible eight-digit integers. Every June and September holdings quarter missed the
+join, fell back to `cfacshr = 1` and a null denominator, and produced `ior = 0` for
+**49% of the panel** — while March and December carried 4× and 28× split factors. Net
+effect on AAPL: quarter means of 1.41e10 / 3.11e9 / 3.31e9 / 1.41e10 with `numowners`
+flat at ~2,200, because owner counts do not depend on `cfacshr` so only the shares moved.
+That is exactly the D1 signature.
+
+**Fix:** cast before the multiply, and cast back afterwards if a downstream frame is
+typed Int32 (`vstack` raises on a widened type).
+
+```python
+(pl.col("date").dt.year().cast(pl.Int64) * 10000
+ + pl.col("date").dt.month().cast(pl.Int64) * 100
+ + pl.col("date").dt.day().cast(pl.Int64)).cast(pl.Int32)
+```
+
+`dt.quarter()` is Int8 too — the same trap caught the *comparison script written to check
+this very bug*, which is a fair measure of how easy it is to hit.
+
+**Guard, do not eyeball.** Assert bucket coverage on every reference panel at build time,
+and assert it again on load — a cached input accepted without a coverage check is how a
+March/December-only panel survived into production.
+
+→ Detectors: `detect_calendar_bucket_gap` (run it on the **reference table**, where it
+catches the root cause; it is silent on the output panel, whose holdings side was always
+complete) and `detect_join_gap_clustering` (run it on the **output**, where the null rate
+for the joined column was 100% in Jun/Sep against 53% in Mar/Dec — a 47.5% spread that
+collapsed to 0.9% after the fix). Note the *level* of the null rate is not the signal:
+~54% is correct and expected, because 13F legitimately holds ADRs and closed-end funds
+with no CRSP common-stock match. The **spread across buckets** is the signal.
+
+### D9. Held shares exceeding shares outstanding — open, in EDGAR 13F
+
+Surfaced by `detect_impossible_ratio` on the rebuilt EDGAR panel: **7.0% of non-zero
+observations exceed 100% ownership, 2.9% exceed 120%**, concentrated in the pre-XML
+`parse_mode = "text"` era. AAPL 2003-09-30 shows 4.90e10 shares held against 2.05e10
+outstanding (239%), bracketed by quarters at a sane 45% and 60%.
+
+The aggregation sums `shares` within `(cik, cusip8, rdate)`, so duplicate rows *inside* a
+single accession inflate rather than deduplicate. Candidate causes not yet separated:
+text-parser row duplication, one manager filing under multiple CIKs, and 13F
+double-counting proper — `investment_discretion` (SOLE/DFND/OTR) and `other_manager`
+exist precisely so shares reported by both a sub-advisor and its parent are not counted
+twice, and the current build ignores both.
+
+Worth knowing: **vendor panels often clip this ratio at 100%, so the defect is invisible
+in them.** A panel built from raw filings does not clip, which is why the violations are
+visible and countable here. Do not read the clip as cleanliness.
+
 ## The S12 alternative: `crsp.holdings` (verified on the WRDS grid)
 
 **S12 does not need an EDGAR/N-PORT parser.** WRDS already carries CRSP Mutual Fund

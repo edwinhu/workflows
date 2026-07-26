@@ -673,5 +673,111 @@ check(
     == 1,
 )
 
+
+# ---------------------------------------------------------------------------
+# F6  A reference panel silently missing whole calendar buckets, and the
+#     symptoms it produces downstream.
+#
+#     Measured, not synthesized: mirror's CRSP reference panel held only March
+#     and December quarter-ends (193,335 rows where 370,630 were correct)
+#     because `dt.year()*10000 + dt.month()*100 + dt.day()` overflows polars'
+#     Int8 month. Feb 2020 became 20199973, March became 20200075. Nothing
+#     raised. Downstream, ior was exactly 0 for 49% of the panel.
+#
+#     Validated against the real artifacts before being written down here:
+#       calendar_bucket_gap  stale CRSP 2 findings -> fixed 0
+#       join_gap_clustering  broken panel 1 (47.5% spread) -> fixed 0
+#       impossible_ratio     2.8% of the rebuilt panel (a separate, open defect)
+# ---------------------------------------------------------------------------
+
+_quarters = ["03-31", "06-30", "09-30", "12-31"]
+full_panel = [
+    {"permno": 1, "rdate": f"20{y:02d}-{q}", "tso": 1e9, "io_total": 5e8}
+    for y in range(10, 20)
+    for q in _quarters
+]
+mar_dec_only = [r for r in full_panel if r["rdate"][5:7] in ("03", "12")]
+
+check(
+    "F6 calendar_bucket_gap fires on a March/December-only reference panel",
+    {f.metrics["month"] for f in dq.detect_calendar_bucket_gap(mar_dec_only)} == {6, 9},
+)
+check(
+    "F6 calendar_bucket_gap is silent on a complete quarterly panel",
+    dq.detect_calendar_bucket_gap(full_panel) == [],
+)
+# One lonely June against ten of every other quarter: the bucket exists, so
+# calendar_bucket_gap must not fire, but it is far below its peers -- a partial
+# join failure rather than a total one.
+one_thin_june = [r for r in full_panel if r["rdate"][5:7] != "06"] + [full_panel[1]]
+_thin = dq.detect_calendar_bucket_gap(one_thin_june)
+check(
+    "F6 calendar_bucket_gap flags a bucket that is present but far too thin",
+    [f.kind for f in _thin] == ["calendar_bucket_thin"]
+    and _thin[0].metrics["month"] == 6,
+)
+check(
+    "F6 calendar_bucket_gap reports a month outside the expected set",
+    any(
+        f.kind == "calendar_bucket_unexpected"
+        for f in dq.detect_calendar_bucket_gap(
+            full_panel + [{"permno": 1, "rdate": "2015-07-31", "tso": 1e9}]
+        )
+    ),
+)
+
+# A join that fails for a calendar subset vs one that fails uniformly. The
+# uniform case MUST stay silent: 13F legitimately holds ADRs and closed-end
+# funds with no CRSP match, so a flat ~54% null rate is correct behaviour.
+joined_by_month = [
+    {"permno": i, "rdate": f"2015-{q}", "tso": None if q[:2] in ("06", "09") else 1e9}
+    for q in _quarters
+    for i in range(50)
+]
+joined_uniform = [
+    {"permno": i, "rdate": f"2015-{q}", "tso": None if i % 2 else 1e9}
+    for q in _quarters
+    for i in range(50)
+]
+check(
+    "F6 join_gap_clustering fires when null rate is bucketed by calendar month",
+    len(dq.detect_join_gap_clustering(joined_by_month)) == 1,
+)
+check(
+    "F6 join_gap_clustering stays silent on a uniformly high null rate",
+    dq.detect_join_gap_clustering(joined_uniform) == [],
+)
+check(
+    "F6 join_gap_clustering needs at least two buckets to compare",
+    dq.detect_join_gap_clustering(
+        [{"permno": 1, "rdate": "2015-03-31", "tso": None}]
+    )
+    == [],
+)
+
+check(
+    "F6 impossible_ratio fires when held shares exceed shares outstanding",
+    [f.metrics["ratio"] for f in dq.detect_impossible_ratio(
+        [{"permno": 14593, "rdate": "2003-09-30", "io_total": 4.90e10, "tso": 2.05e10}]
+    )][0] > 2.0,
+)
+check(
+    "F6 impossible_ratio tolerates a marginally stale denominator",
+    dq.detect_impossible_ratio(
+        [{"permno": 1, "rdate": "2015-03-31", "io_total": 1.005e9, "tso": 1e9}]
+    )
+    == [],
+)
+check(
+    "F6 impossible_ratio ignores a zero or missing denominator",
+    dq.detect_impossible_ratio(
+        [
+            {"permno": 1, "rdate": "2015-03-31", "io_total": 1e9, "tso": 0},
+            {"permno": 2, "rdate": "2015-03-31", "io_total": 1e9, "tso": None},
+        ]
+    )
+    == [],
+)
+
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)
