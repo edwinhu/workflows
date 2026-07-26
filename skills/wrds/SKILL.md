@@ -5,6 +5,11 @@ description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/E
 user-invocable: false
 ---
 
+> **Building a proxy-voting panel?** Use the **`npx-ownership-panel`** skill, not
+> this one. It owns `risk.voteanalysis_npx` (238M rows / 329 GB), the ISS->CRSP
+> fund crosswalk, and the four-leg SGE pipeline that produces the analysis-ready
+> panel. This skill covers WRDS access patterns generally.
+
 ## Contents
 
 - [WRDS Login Node Enforcement](#wrds-login-node-enforcement)
@@ -32,7 +37,7 @@ The WRDS login node is shared infrastructure. Running parsers, bulk file reads, 
 
 The login node is for: `qsub`, `qstat`, `qdel`, `scp`, `ls`, `head`, short `psql` queries.
 
-Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index_rga/submit_array.sh`, `scripts/parse_13f/sge/submit_array.sh`, and `examples/voting_ownership_pipeline/run_pipeline.sh`.
+Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index_rga/submit_array.sh`, `scripts/parse_13f/sge/submit_array.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
 </EXTREMELY-IMPORTANT>
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
@@ -360,13 +365,13 @@ Working code from real projects:
 - **`examples/sdc_ma_eda.ipynb`** - SDC M&A: annual deal counts, PE/LBO vs strategic, public vs private target trends
 - **`examples/fund_formation_eda.ipynb`** - Fund formation: Form D 3C.1/3C.7 counts, EDGAR N-2 closed-end fund IPOs, Form ADV RIA registrations
 - **`examples/pitchbook_eda.ipynb`** - PitchBook: PE deal activity, VC rounds by stage, fund formation by vintage, IRR/TVPI by strategy
-- **`examples/voting_ownership_pipeline/`** - Self-contained hybrid SAS+Python pipeline: ISS votes, 13-F inst. ownership, MF holdings via MFLINKS, merged panel. Canonical example of PostgreSQL vs SAS decision-making on WRDS. See `README.md` for architecture and usage.
+- **`npx-ownership-panel` SKILL** (promoted out of this skill's examples) - the full meeting-level proxy-voting x ownership panel: ISS N-PX fund votes reduced to (item x block) cells on the grid, joined to 13-F institutional and MF holdings. One bash command, verified end to end on 2026-07-25. Also carries the ISS->CRSP fund crosswalk. Use it for any N-PX or fund-level voting work.
 - **`examples/blockholders_pipeline/`** - 13D/13G → Volkova blockholder panel, end-to-end Python. `redo_bridge.py` is the reference implementation of TR `personid` → SEC `rptOwnerCik` name bridging (97.4% hit rate).
 - **`examples/form4_pipeline/`** - Two parallel Form 3/4/5 pipelines: the annualized SAS ownership panel and the XML owner bridge built from the raw filings.
 - **`examples/proxy_advisors_pipeline/`** - 485BPOS/485APOS scan for ISS / Glass Lewis / Egan-Jones customer relationships via the `scan_covers` Go framework + SGE.
 - **`examples/fjc_eda.ipynb`** - FJC Integrated Database: securities cases (`nos = 850`), filing trends, court distribution
 - **`examples/lpc_dealscan_eda.ipynb`** (paired script: `examples/lpc_dealscan_eda.py`) - LPC DealScan: ~171K US facilities 1990-2020 (the normalized facility table; queries are capped at 2020-12-31), volume by year, loan type and purpose mix
-- **`examples/voting_ownership_eda.py`** - Standalone Python/PostgreSQL EDA of the same ISS-votes + ownership merge. For production work prefer `voting_ownership_pipeline/`, which is the SGE-ready version of this analysis.
+- **`examples/voting_ownership_eda.py`** - Standalone Python/PostgreSQL EDA of the same ISS-votes + ownership merge. For production work use the **`npx-ownership-panel` skill**, which is the SGE-ready, verified-end-to-end version of this analysis.
 
 ### Scripts
 

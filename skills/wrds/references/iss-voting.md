@@ -69,6 +69,13 @@ One row per fund per agenda item. Links to `vavoteresults` via `itemonagendaid`.
   Resolve: when an `itemonagendaid` has >1 row, drop the `'Pending'` copy. After that, `itemonagendaid`
   is the unique agenda-item key. Dataset page (variable definitions):
   https://wrds-www.wharton.upenn.edu/pages/get-data/institutional-shareholder-services-iss/voting-analytics/company-vote-results-us/
+- **`vavoteresults` is NOT unique on `itemonagendaid`, so joining it to NPX FANS OUT.** Measured
+  2005–2025: 848,736 rows / 848,506 distinct items (230 versioning pairs). An
+  `INNER JOIN risk.vavoteresults ON itemonagendaid` therefore returns **144,376,253** rows where a
+  `WHERE EXISTS` semi-join returns **144,375,860** — 393 duplicated rows. Small, and a downstream
+  dedup collapses it, but a pipeline that joins and does not dedup inherits it silently. Prefer a
+  semi-join (or a hash keyed on `itemonagendaid`, which cannot fan out) whenever you only need
+  `vavoteresults` as a filter.
 - **Row PK `risk.voteanalysis_npx`:** none — table has 238,445,215 rows. `(fundid, itemonagendaid)` —
   SAMPLED 2023 meetingdate slice: 7,010 dupes over 16,485,811 rows (0.04%). Inspected collisions are
   **split votes**: the same fund voting e.g. `For` AND `Withhold` on the same item (different share lots).
@@ -191,9 +198,69 @@ Director elections use these ISS agenda item codes:
 
 ## ETL Performance Notes
 
-**Recommended approach:** PostgreSQL with server-side filtering. The full `vavoteresults` table for 2003–2024 is ~834K rows and downloads in ~13.5 seconds with a simple `WHERE meetingdate BETWEEN ...` filter. No chunking or SAS needed.
+**The two tables need completely different strategies. Do not generalise from one to the other.**
 
-**Use `uv run python3 -u`** when running via `qsub` on WRDS — Python stdout is fully buffered when redirected to a log file, hiding all progress output until the script finishes.
+| Table | Size | Approach |
+|-------|------|----------|
+| `risk.vavoteresults` | 848,736 rows (2005–2025), 835 MB SAS | **PostgreSQL, single query.** ~15s. No chunking, no SAS. |
+| `risk.voteanalysis_npx` | **238,445,215 rows, 329 GB SAS** (+15 GB index) | **Year-parallel SGE array, aggregate on the grid.** Never download it whole. |
+
+### `vavoteresults` — just query it
+
+```python
+votes = pd.read_sql("""
+    SELECT ... FROM risk.vavoteresults
+    WHERE meetingdate BETWEEN '2005-01-01' AND '2025-12-31'
+""", conn)      # 848,736 rows in ~15s
+```
+
+### `voteanalysis_npx` — do not ship the rows
+
+The joined fund-level result for 2005–2025 is **144,376,253 rows**. Measured
+2026-07-25, pulling that sequentially year-by-year to a local machine takes
+**~35 minutes** (~304 MB parquet), and the bottleneck is the wire, not server
+compute — so firing the year queries in parallel *from the local machine* does
+not help; they funnel through the same link.
+
+Three things are wrong with downloading it at all:
+
+1. **The item columns are ~170x redundant.** `cusip`, `sponsor`, `voteresult`,
+   `meetingtype`, `mgmtrec` (avg 33.7 text bytes) have only 848,736 distinct
+   values but get shipped 144M times. Pull `vavoteresults` once (15s) and join
+   locally.
+2. **The fund columns are redundant too.** `fundname` / `institutionname` are
+   per-fund attributes repeated across millions of vote rows.
+3. **You probably don't want the rows.** What a fund-level voting panel needs is
+   per-`(itemonagendaid, group)` For/Against/Abstain cells — **2.25M rows, a 64x
+   reduction**. Push the small `fundid → group` crosswalk *up* to the grid and
+   aggregate there.
+
+**Use the year-parallel SGE array pattern:**
+`../npx-ownership-panel/scripts/build_npx.sas` + `run_npx_array.sh`. One task
+per year, `SGE_TASK_ID` *is* the year, hash-merge the pushed-up crosswalk,
+accumulate to `(itemonagendaid, block)`, ship ~21 MB back. **Measured: 839s wall
+for 21 years including one straggler node; ~234s without it, vs the 35-minute
+sequential baseline.** Row count reconciles exactly to 144,375,860.
+
+Two traps that pattern already solves:
+
+- **Index-friendly WHERE.** Write `meetingdate between "01jan&year."d and
+  "31dec&year."d`, never `year(meetingdate) = &year.`. A function on the indexed
+  column defeats `voteanalysis_npx.sas7bndx` and makes every task full-scan
+  329 GB.
+- **The date range is not the analysis universe.** `n.meetingdate` in 2005–2025
+  is **237,057,808 rows**; restricting to items present in `vavoteresults` gives
+  **144,375,860**. The 92.7M difference is N-PX rows whose item has no US
+  vote-results record. Filtering on the date alone inflates every denominator by
+  ~64%. Carry an `itemonagendaid` hash (848,506 keys) as a semi-join filter.
+
+For building the `fundid → block` crosswalk itself, see
+[`npx-crsp-linking.md`](../../npx-ownership-panel/references/npx-crsp-linking.md) — that is the genuinely hard half.
+
+**Use `python3 -u`** when running via `qsub` on WRDS — Python stdout is fully
+buffered when redirected to a log file, hiding all progress until the script
+finishes. Same for wide SAS `put` statements: `linesize=100` silently truncates
+them mid-number.
 
 ## Common Gotchas
 

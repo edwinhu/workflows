@@ -20,6 +20,7 @@
  *   2019-2024: ~22-27M / 3.6-4.2GB each (1 year per chunk, post-explosion)
  */
 
+%include "pipeline_config.sas";
 %put NOTE: split_s12 started at %sysfunc(datetime(),datetime19.);
 
 /* --- Read PostgreSQL credentials from .pgpass --- */
@@ -58,14 +59,17 @@ run;
     %put NOTE: s12_&y1._&y2.: &cnt rows;
 %mend;
 
-%extract_partition(2003, 2010);
-%extract_partition(2011, 2016);
-%extract_partition(2017, 2018);
-%extract_partition(2019, 2019);
-%extract_partition(2020, 2020);
-%extract_partition(2021, 2021);
-%extract_partition(2022, 2022);
-%extract_partition(2023, 2023);
-%extract_partition(2024, 2024);
+/* Ranges come from pipeline_config.sas (&S12_RANGES) so this script and
+ * run_pipeline.sh cannot disagree about which partitions exist. */
+%macro extract_all;
+    %local i r;
+    %let i = 1;
+    %do %while (%scan(&S12_RANGES., &i., %str( )) ne );
+        %let r = %scan(&S12_RANGES., &i., %str( ));
+        %extract_partition(%scan(&r., 1, -), %scan(&r., 2, -));
+        %let i = %eval(&i. + 1);
+    %end;
+%mend;
+%extract_all
 
 %put NOTE: split_s12 complete at %sysfunc(datetime(),datetime19.);

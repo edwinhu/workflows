@@ -167,7 +167,7 @@ merged = pd.merge_asof(
 
 **Recommended approach:** SAS with SGE parallelism + PostgreSQL for bulk reads. The MFLINKS join chain (fundno → wficn → crsp_fundno → portnomap) creates large intermediates that PostgreSQL cannot store (read-only, no temp tables), so SAS handles the ETL. But the initial S12 read uses PostgreSQL to avoid NFS contention.
 
-**Working pipeline:** `examples/voting_ownership_pipeline/` in the WRDS skill — see `README.md` for architecture, `run_pipeline.sh` for orchestration.
+**Working pipeline:** `../npx-ownership-panel/scripts/` in the WRDS skill — see `README.md` for architecture, `run_pipeline.sh` for orchestration.
 
 **Pipeline pattern:**
 1. SAS: Build mfl2/mfl3 prereqs (`build_mflinks.sas`, ~1 min)

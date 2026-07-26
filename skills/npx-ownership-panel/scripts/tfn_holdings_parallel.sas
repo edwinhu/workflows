@@ -10,11 +10,21 @@
 %let year_start=%scan(&sysparm.,1,'-');
 %let year_end=%scan(&sysparm.,2,'-');
 
-%if &year_start.= or &year_end.= %then %do;
-    %put ERROR: Must specify year_start-year_end in sysparm parameter;
-    %put ERROR: Example: -sysparm 2003-2008;
-    %abort;
-%end;
+/* Open-code %IF/%THEN is a 9.4M5+ feature with restrictions on what may follow
+ * %THEN, and on this WRDS SAS deployment it fails outright with
+ *     ERROR: Expected %DO not found.
+ * Both validations below therefore live inside a macro. As shipped this script
+ * carried them in open code, which means it errored out before reading a single
+ * row — the mf_own_* outputs were never produced and merge_panel's prerequisite
+ * gate is what surfaced it. */
+%macro _tfn_setup;
+    %if %superq(year_start) =  or %superq(year_end) =  %then %do;
+        %put ERROR: Must specify year_start-year_end in sysparm parameter;
+        %put ERROR: Example: -sysparm 2003-2008;
+        %abort cancel;
+    %end;
+%mend;
+%_tfn_setup
 
 %put NOTE: Processing TFN holdings for years &year_start to &year_end;
 %put NOTE: Job started at %sysfunc(datetime(),datetime19.);
@@ -23,7 +33,10 @@
 /* Falls back to full tfn.s12 scan if partition doesn't exist */
 %let s12_part = s12_&year_start._&year_end.;
 %let use_partition = 0;
-%if %sysfunc(exist(out.&s12_part.)) %then %let use_partition = 1;
+%macro _tfn_probe;
+    %if %sysfunc(exist(out.&s12_part.)) %then %let use_partition = 1;
+%mend;
+%_tfn_probe
 
 %macro load_s12;
     %if &use_partition. %then %do;
@@ -33,8 +46,22 @@
             keep rdate fdate fundno cusip shares fundname;
         run;
     %end;
+    %else %if not %sysfunc(putc(%superq(S12_ALLOW_FULLSCAN), $1.)) %then %do;
+        /* A missing partition almost always means the S12 array lost a task to a
+         * REFUSED POSTGRESQL CONNECTION (per-role cap is 7). Silently falling back
+         * to a full tfn.s12 scan produces plausible output from a 47.4 GB scan and
+         * hides the fact that a partition is gone — the ownership columns end up
+         * built over a different universe than the one the array intended.
+         * Fail instead. Set S12_ALLOW_FULLSCAN=1 to opt back in deliberately. */
+        %put ERROR: Partition out.&s12_part. not found.;
+        %put ERROR- The S12 array did not produce this range. Do NOT full-scan around it —;
+        %put ERROR- re-run the task: qsub -t <line> -tc 6 -o logs/ -j y run_s12_array.sh;
+        %put ERROR- To override deliberately: %nrstr(%let) S12_ALLOW_FULLSCAN=1;
+        data _null_; abort abend; run;
+    %end;
     %else %do;
-        %put WARNING: Partition out.&s12_part. not found — falling back to full tfn.s12 scan;
+        %put WARNING: Partition out.&s12_part. not found — S12_ALLOW_FULLSCAN set,;
+        %put WARNING- falling back to a full tfn.s12 scan. This reads 47.4 GB.;
         proc sql;
             create table tfn_s12_subset as
                 select a.rdate, a.fdate, a.fundno, a.cusip, a.shares, a.fundname

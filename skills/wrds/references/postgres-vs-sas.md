@@ -163,6 +163,38 @@ Step 3 (after all):
 
 **Critical: SAS should output aggregated data, not raw holdings.** Move CUSIP→PERMNO mapping, TSO joins, and permno-quarter aggregation into the SAS script itself. The SAS output should be the small analytical dataset (~50K rows per chunk), not intermediate holdings.
 
+## Aggregate on the Grid, Ship the Result
+
+The strongest version of the hybrid is not "read faster" — it is **do not ship
+rows at all**. If the analysis consumes an aggregate, compute the aggregate
+server-side and transfer that.
+
+The blocker is usually that the grouping key lives in a *locally built* lookup
+(fuzzy name matching, hand adjudication) rather than in WRDS. That lookup is
+almost always tiny. **Push it up.**
+
+**Worked example** (`../npx-ownership-panel/scripts/build_npx.sas`, measured
+2026-07-25): `risk.voteanalysis_npx` is 238,445,215 rows / **329 GB**. A
+sequential local pull of the 144,376,253-row filtered slice takes ~35 min and
+returns 304 MB. Staging a 26,686-row / 660 KB `fundid → block` crosswalk to
+/scratch, hash-merging it inside a 21-task year-parallel array, and accumulating
+to `(itemonagendaid, block)` returns **2,254,660 cells / 20.8 MB in 839s** — a
+64× row reduction and a 15× byte reduction, reconciling exactly to the
+PostgreSQL semi-join count.
+
+| Pattern | When |
+|---|---|
+| Ship joined rows | you genuinely need row-level data locally |
+| Semi-join + ship narrow columns, join dimensions locally | dimension columns are replicated across millions of fact rows |
+| **Push lookup up, aggregate on grid, ship cells** | the analysis consumes an aggregate — usually the right answer |
+
+Two caveats the benchmark exposed:
+
+- **SGE concurrency is not your task count.** 21 tasks ran ~10 at a time.
+- **Budget for a straggler.** One task took 742s against a 60s median and was
+  the difference between a 234s and an 839s wall. Always reconcile output
+  coverage explicitly — that same run silently produced 20 of 21 files.
+
 **NFS contention pattern:** Large SAS files on NFS (e.g., `tfn.s12` at 44GB) cause severe I/O contention when read by multiple parallel jobs (~40 min each vs ~5 min solo). Solution: read once via PostgreSQL (`split_s12.sas`), write partitions to `/scratch`, then parallel jobs read their own partition. PostgreSQL schema names differ from SAS libnames: `tfn.s12` → `tr_mutualfunds.s12`, `tfn.s34` → `tr_13f.s34`.
 
 ## WRDS PostgreSQL Constraints
@@ -194,6 +226,7 @@ Actual timings from WRDS cloud (2024), processing 2003–2024:
 | Task | PostgreSQL (Python) | SAS (qsas/SGE) | Winner |
 |------|-------------------|-----------------|--------|
 | ISS proxy votes (filtered read) | **13.5s** | ~30s (startup overhead) | PostgreSQL |
+| ISS N-PX fund votes → (item×block) cells, 2005-2025 | 2,100s sequential local | **839s** (21-task array, aggregate on grid) | SAS (2.5×) |
 | 13-F inst. ownership (per-year CTE) | **5.2 min** | ~8 min | PostgreSQL |
 | MF holdings via MFLINKS (S12, 250M rows) | ~3.5 hours (est.) | **20 min** (9× parallel + PG split) | SAS (10×) |
 | S12 bulk read (split_s12.sas via PG) | N/A | **15 min** (single PG read, ~40GB) | Hybrid |
@@ -202,10 +235,11 @@ Actual timings from WRDS cloud (2024), processing 2003–2024:
 
 ## Code Examples
 
-Working implementations are in `examples/voting_ownership_pipeline/` in the WRDS skill — copy and customize rather than rewriting:
+Working implementations are in `../npx-ownership-panel/scripts/` in the WRDS skill — copy and customize rather than rewriting:
 
 | Task | File | Approach |
 |------|------|----------|
+| ISS N-PX fund votes → (item×block) cells | `build_npx.sas` + `run_npx_array.sh` | Year-parallel SGE array over a 329 GB table; hash-merge a pushed-up crosswalk, aggregate in place (~839s for 21 years) |
 | ISS proxy votes | `build_meetings.sas` | SAS with optional SharkRepellent/ISS recs (~12s) |
 | 13-F institutional ownership | `build_inst_own.sas` | SAS crspmerge + cfacshr + DBREADTH/HHI (~3 min) |
 | S12 bulk read + partition | `split_s12.sas` | PostgreSQL read → year-range partitions on /scratch (~15 min) |
