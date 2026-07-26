@@ -74,8 +74,13 @@ WHERE b.shares > 0
 ### Step 3: Adjust shares via CRSP factors
 
 ```python
-shares_adj = shares * cfacshr  # CRSP adjustment factor aligned at vintage date
+shares_adj = shares * cfacshr  # CRSP adjustment factor aligned at vintage date (fdate)
 ```
+
+> **This step is where the panel breaks around splits.** Thomson has *already*
+> pre-adjusted `shares` to the FDATE vintage, and does so incorrectly in a documented
+> fraction of cases. Multiplying by `cfacshr` again compounds the error rather than
+> fixing it. See **Known Data Defects → D1** below before trusting any split-era quarter.
 
 ### Step 4: Aggregate to permno-quarter
 
@@ -226,3 +231,400 @@ See `postgres-vs-sas.md` for the full decision framework.
     - For post-2017 analysis: expect ~40% of "US country" s12 funds unbridged; report coverage alongside MF aggregates
     - For global analysis: build your own bridge (by fund name, ticker, or manager ID)
 13. **passive_pct 100× scaling in `pass.sas7bdat`** -- `1-make.sas` line 705 multiplies `PASSIVE_PCT` by 100 when merging `index_own` into the panel. If `index_own.PASSIVE_PCT` is already in percent scale (0-100) rather than fraction (0-1), the stored value ends up at 0-10000 scale. Always inspect `describe()` after loading; divide by 100 if max > 100.
+
+---
+
+## Known Data Defects (WRDS research notes + measured)
+
+WRDS publishes its S12/S34 defect notes at
+[Manuals and Overviews → LSEG → Mutual Fund and Investment Company](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/lseg/mutual-fund-and-investment-company/)
+(institutional auth required). The notes are filed under Thomson Reuters, Refinitiv, and
+LSEG interchangeably — same feed, three vendor names, `tfn` libname throughout.
+
+**Detectors for every defect below:** `skills/wrds/scripts/ownership_dq.py`.
+**Tests:** `tests/ownership_dq_test.py` (stdlib only — `uv run python3 tests/ownership_dq_test.py`).
+
+### D1. Split adjustment is wrong around split dates — the big one
+
+**Source:** *Note on Splits in TR Mutual Funds and 13F: S12 and S34*, WRDS Research,
+March 7 2017.
+
+The note's running example is **permno 14593 (Apple)** — the same firm where our panel
+breaks. Documented failure modes:
+
+| Case | What Thomson reports | What is correct |
+|------|---------------------|-----------------|
+| Double adjustment | 226,331 = 4,619 × 7 × 7 | 32,333 = 4,619 × 7 |
+| Adjustment at the wrong date | MasterCard shares adjusted at 2013-12-31, before the 2014-01-21 ex-date | adjust at ex-date |
+| Compounded on carry-forward | stale rows re-adjusted each vintage | adjust once |
+
+**This is primarily an S12 finding.** Every worked example in the note is drawn from
+mutual-fund data — "These cases are selected from Mutual Fund data, though the 13F data
+demonstrate similar patterns" — and funds fare *worse* than 13Fs at large splits:
+
+| Split factor | Mutual funds | 13F |
+|---|---|---|
+| 2 | 12.2% | 13.3% |
+| 3 | 15.2% | 14.8% |
+| 4 | 35.1% | 32.4% |
+| >4 | **40.7%** | 34.5% |
+
+Around split quarters generally, outlier rates run **13.8% at Qtr(0) and 14.1% at Qtr(−1)
+for 13Fs** (12.9% / 11.5% for funds) against a 5% null. The note's own tests rule out the
+obvious explanations: restricting to `rdate == fdate` (no carry-forwards) does *not*
+help, and neither does restricting to splits whose ex-date and record date share a
+quarter.
+
+**WRDS's own conclusion: there is no clean systemic fix.** Their suggestion is to trim or
+winsorize Qtr(−1), Qtr(0), Qtr(+1) around each split.
+
+**This explains measured finding #1** — the AAPL 4.5× swing with a flat owner count.
+AAPL's split ex-dates (2014-06-09, 7:1; 2020-08-31, 4:1) both fall in Jun/Sep quarters,
+and a handful of catastrophically over-adjusted quarters is enough to move a 23-quarter
+mean by 4.5× while the set of reporting managers never changes. The owner count is flat
+because the filers are all still there — only the share *units* are wrong.
+
+**Consequence for the build:** repairing `HAVING fdate = MIN(fdate)` vintage selection
+alone will **not** fix this. The defect is in Thomson's pre-adjustment of `shares`, not in
+which vintage you pick. Winsorizing split-adjacent quarters is the documented mitigation;
+sourcing post-2013 holdings from EDGAR 13F is the alternative.
+
+### D2. FDATE vs RDATE — and a contradiction between two WRDS documents
+
+- `RDATE` = report date, the date the holdings are actually valid for.
+- `FDATE` = **vintage** date; the primary key for table joins and the date Thomson's
+  share adjustments are made *to*.
+
+*WRDS Overview of Thomson Reuters Mutual Fund and Investment Company Data* is explicit:
+"SHARES values are adjusted for stock splits that occur between the linked RDATE and
+FDATE… the pre-adjustment may not be correct in all cases." The May 2017 S34 note agrees:
+"Thomson's FDATE is a vintage date, and is used primarily for share adjustments using
+CRSP cumulative share adjustment factors."
+
+⚠️ **The splits note contradicts both.** Its table legend reads "Column 1 is the vintage
+date of the holding data, Rdate… Column 2, Fdate, is the date when holdings are valid" —
+exactly backwards. The Overview and the S34 note agree with each other and with the
+observed data, so **FDATE = vintage** is the reading to use; the splits note's legend is
+an error in the note. Recorded here because acting on the splits note's legend inverts
+your join and silently produces the D1 defect on purpose.
+
+### D3. Coverage collapses after ~2013, then again in 2019
+
+**Source:** *Research Note Regarding Thomson-Reuters Ownership Data Issues*, May 2017.
+
+- **Stale and dropped filers.** BlackRock (mgrno 9385) carried forward stale from 2013Q3,
+  then **entirely missing 2014-06 through 2015-03**, then returned at $48B against a true
+  ~$700B+. Fixed in the 2018 regeneration.
+- **Excluded securities.** ~30% of the universe / ~15% of market cap dropped after June
+  2013; **all ETFs gone by 2015**. Do not use S34 for ETF holdings, ever.
+- **AAPL specifically: zero institutional owners from 2015-06-30 onward** in the vintage
+  current at that time — and the 2014-06-30 row jumps 516,786,227 → 3,665,520,154, the
+  unadjusted 7:1 split (D1 again).
+- Aggregate error: 2015 institutional ownership is 58.25% in S34 against 71.8% in the
+  actual 13F filings — **19.4% of total institutional ownership missing**.
+
+**Feb 2022 note** (*Thomson/Refinitiv Data Issues 13F (S34) and Mutual Fund Holdings
+(S12)*): 13F holdings largely missing in **2019Q3–Q4** — filers per stock fell from 1,500+
+to under 500 for AAPL/IBM/MSFT; 1,386 of 12,224 stocks lost >10% of institutional
+ownership, median −48%. Also flags **2011-03 to 2013-03** as significantly incomplete
+(consistent with the Koijen–Yogo footnote). WRDS froze the web query at 2019Q2 and moved
+later data to `/wrds/tfn/sasdata/s34/incomplete`.
+**April/August 2022 notes:** Refinitiv patched 2019Q3–Q4 and the S12 2017Q4/2019Q4 gaps.
+Pre-2011 issues are **permanently unfixable** — "the data vendor no longer provide the
+support for the vintage raw data."
+
+→ Detector: `detect_owner_dropout` (owners collapse = feed defect) as opposed to
+`detect_flat_owner_share_swing` (owners flat = units defect). Run both; the pair
+*classifies* the break.
+
+### D4. 2010–2016 was regenerated; an archive of the corrupt data exists
+
+**Source:** *S12/S34 Regenerated Data (2010–2016)*, June 2018. Thomson's legacy systems
+were "losing and corrupting data" from 2010. The regenerated data is in `/wrds/tfn/sasdata`;
+the corrupted original is preserved at **`/wrds/tfn/sasdata_archive`** — use it to
+reconcile against results published before 2018. Residual known issues: S12TYPE8 lost a
+third of its coverage after 2013; a 2014 mutual-fund ownership blip (29%→35%→30%) likely
+from double-counted funds; S34TYPE2 still excludes ~$1T of CRSP securities; a 5% ownership
+drop at the 2010-12→2011-03 feed migration.
+
+### D5. S12 feed change at 2017Q4 — a coverage *increase* that looks like a defect
+
+**Source:** *Thomson/Refinitiv Data Feed Change from Legacy SP to Strategic Collection in
+S12*, 2023-01-24. From 2017Q4 the S12 feed switched from legacy SP to "strategic
+collection", backfilled in 2022Q4. **CUSIPs in fund holdings +613%, unique funds +113%,
+fund-CUSIP observations +265%**, and 34,385 funds appear that did not exist in the old
+feed. Cause: overseas holdings, ADRs, preferreds and bonds got CUSIPs assigned that the
+legacy feed lacked — it is a genuine coverage expansion, not corruption. But any
+level-comparison spanning 2017Q4 is invalid, and **MFLINKS was not backfilled** for
+2017Q4–2020Q2, so `wficn` bridge rates drop precisely there. WRDS's own advice is to use
+Factset or CRSP to identify US equity funds over that window.
+
+This corroborates the measured MFLINKS bridge-rate cliff (§Common Gotchas #12: ~77%
+pre-2017 → ~58–66% after).
+
+→ Detectors: `detect_coverage_step` (counts step while values do not — the signature of a
+feed migration, and it fires in both directions so it also catches the 2019Q3–Q4 S34
+contraction) and `detect_bridge_rate_regression` (a join that quietly stops matching).
+
+### D5b. S12 duplicate reporting
+
+The June 2018 note attributes the 2014 mutual-fund ownership blip (29% → 35% → 30%) to
+funds being **listed twice**. Separately, `fundno` is frequently a *share-class*
+identifier rather than a fund: one `wficn` maps to a mean ~3.5 `crsp_fundno`, so
+deduplicating on the wrong key inflates `MF_TOTAL` by **~3.95×** (§Common Gotchas #6).
+Both are the same class of defect — a grain that is not unique where the code assumes it
+is — and neither is visible in a spot check.
+
+→ Detector: `detect_duplicate_grain`, which reports the resulting inflation factor rather
+than just a duplicate count.
+
+### D6. 13F `value` units change at 2023Q1 — measured, NOT documented by WRDS
+
+Form 13F `value` moves from thousands to whole dollars. Measured on the EDGAR panel:
+mean value per holding 152,644 (2022Q4) → 12,794,119 (2023Q1); **median 442×, p90 494×,
+p10 only 38×**.
+
+The break is **not a clean 1000×**. The post-2023Q1 population is mixed — filers converted
+on different schedules — so **no scalar repairs it**, and any sum or average of `value`
+spanning 2023Q1 is meaningless. Note the legacy S34 spec still labels the field
+"Holding Value (x$1000)".
+
+**No WRDS note documents this.** The gap is itself worth knowing: the S12/S34 defect notes
+stop at the 2023 S12 feed change and say nothing about 13F value units. Treated as a
+source property to detect and refuse to aggregate across, not to repair.
+
+→ Detector: `detect_unit_discontinuity`, which reports `clean_break=False` when the
+quantile shifts disagree — the signal that rescaling is not an option.
+
+### D7. Encoding-driven silent parse failures — measured, parser-side
+
+Windows-1252 filings parsed to **zero** holdings rows: 7,023 filings / 2,628,463 rows /
+768 institutions across all 38 quarters, with a **3.47× step at 2023Q3** (5.54% of
+holdings dropped after vs 1.60% before), concentrated by filing agent. Now fixed, but the
+class recurs with any new vendor encoding — a parser that yields nothing is
+indistinguishable from a filer that held nothing.
+
+→ Detector: `detect_zero_row_cohort`, grouped by encoding *or* filing agent, with
+per-period rates so a time-varying step is visible rather than averaged away.
+
+### Cross-check: EDGAR 13F is clean where Thomson is not
+
+Same firm (AAPL), EDGAR `13F-HR` / `shares_type=SH` / no amendments: quarterly variation
+of a few percent, filer counts monotone, and the 2020 4:1 split appearing exactly once and
+correctly unadjusted (2.59bn → 9.70bn at 2020Q3). The defect is Thomson's, not the
+concept's. Thomson's remaining advantage is history: it starts 1980, EDGAR electronic
+filings start 1999 and XML only in 2013.
+
+
+---
+
+## The S12 alternative: `crsp.holdings` (verified on the WRDS grid)
+
+**S12 does not need an EDGAR/N-PORT parser.** WRDS already carries CRSP Mutual Fund
+portfolio holdings, and it dominates Thomson S12 on every axis that matters. Verified
+directly against `crsp_q_mutualfunds.holdings` (PG) / `/wrds/crsp/sasdata/q_mutualfunds/holdings.sas7bdat`:
+
+| Property | Thomson S12 | `crsp.holdings` |
+|---|---|---|
+| Coverage | ~2003 → 2024-12-31 (mirror) | **2001-12-31 → 2026-03-31** |
+| Rows | — | ~450M (131 GB) |
+| Frequency | quarterly (N-Q / N-CSR) | **monthly** (N-PORT) |
+| Security id | CUSIP → needs `msenames` join | **`permno` and `permco` pre-mapped** |
+| Fund id | `fundno` → MFLINKS chain | `crsp_portno` → `portnomap` directly |
+| Share adjustment | pre-adjusted to FDATE, **incorrectly** (D1) | **as-reported, unadjusted** |
+
+Columns: `crsp_portno, report_dt, security_rank, eff_dt, percent_tna, nbr_shares,
+market_val, crsp_company_key, security_name, cusip, permno, permco, ticker, coupon,
+maturity_dt`.
+
+### Why this resolves D1 for S12
+
+`nbr_shares` is **as-reported at the report date and not back-adjusted** — the same
+property that made EDGAR 13F a clean S34 replacement. Verified on AAPL (permno 14593)
+across the 2020-08-31 4:1 split:
+
+| report_dt | n_funds | total shares |
+|---|---|---|
+| 2020-07-31 | 1,168 | 807,880,873 |
+| 2020-08-31 | 1,142 | 3,109,430,371 |
+
+A 3.85× step with the fund count *flat* — the split appearing exactly once, unadjusted,
+as it should. There is no cumulative pre-adjustment, so there is nothing to double-apply.
+Apply `cfacshr` yourself, once, at a date convention you control.
+
+### It also removes the MFLINKS dependency
+
+Holdings key on `crsp_portno`, so the `fundno → wficn → crsp_fundno → crsp_portno` chain
+disappears. That eliminates **D5's bridge-rate cliff** and **D5b's ~3.95× share-class
+dedup inflation** at the source, rather than detecting them after the fact.
+
+### ⚠️ The one trap: quarter-end months carry a different fund population
+
+`report_dt` is monthly, but **not every fund reports every month**. From the AAPL check:
+quarter-end months carry ~1,600 funds, intermediate months ~1,140 — roughly **40% more
+funds at quarter-ends** — and total shares run ~1.2–1.4× higher at quarter-ends as a
+result.
+
+That is a *benign cadence effect*, not a defect, and `detect_seasonal_alternation` does
+**not** flag it at the 1.5× default — correctly, since alarming on N-PORT's reporting
+rhythm would cry wolf on every fund panel. (Lower `ratio_threshold` to ~1.3 and it becomes
+visible.) The contrast is the point: the Thomson defect runs **4.5×**, far above this, so
+one default cleanly separates a real defect from normal cadence.
+
+It is still large enough to contaminate a regression that mixes cadences.
+**Filter to quarter-end months for a quarterly panel.** Do not treat intermediate months
+as comparable observations.
+
+### Recommendation
+
+| Era | Source |
+|---|---|
+| 2001-12 → present | **`crsp.holdings`**, quarter-end months only |
+| pre-2001-12 | Thomson S12, winsorized at split quarters (D1) — the only source |
+
+Never compare levels across 2017Q4 if Thomson is in the series (D5). Cross-checking
+Thomson against CRSP over the overlap is worthwhile, but expect a gap rather than a
+match: per the Jan 2023 note, CRSP sources monthly N-PORT while Thomson sources quarterly
+N-Q/N-CSR, so holdings "should be close, but not exact."
+
+---
+
+## Coalescing S12 into `crsp.holdings` at the holding level
+
+Use `crsp.holdings` as primary and Thomson S12 as *additive* coverage, merged at the
+individual fund-holding grain. Aggregate-level coalescing is not safe — the two sources
+differ in share units (D1), fund population, and filing basis, so a filled series
+confounds source with signal.
+
+### The bridge is the constraint, and it is not fixable by better identifiers
+
+S12 `fundno` → `crsp_portno` (via `mflink2` → `mflink1` → `portnomap`), measured:
+
+| Quarter | S12 funds | Bridged | Rate |
+|---|---|---|---|
+| 2010-12-31 | 7,494 | 3,647 | 48.7% |
+| 2016-12-31 | 14,427 | 4,982 | 34.5% |
+| 2022-12-31 | 60,136 | 7,325 | **12.2%** |
+
+**Thomson S12 carries no CIK** — there is no SEC identifier anywhere in the
+`tr_mutualfunds` schema, so a CIK bridge is impossible. The only exact alternative key is
+`s12type8.fticker`, and it is a dead end twice over: the table **ends 2018-12-31**, and
+where it does exist it is almost entirely redundant with MFLINKS:
+
+| Quarter | MFLINKS | Ticker | **Incremental** | Combined |
+|---|---|---|---|---|
+| 2010-12-31 | 48.7% | 38.3% | **+17 funds** | 48.9% |
+| 2016-12-31 | 34.5% | 19.1% | **+71 funds** | 35.0% |
+| 2018-12-31 | 15.7% | 6.6% | **+218 funds** | 16.2% |
+
+That redundancy is the important result: **the unbridged mass is not unbridged for want
+of an identifier — those funds are simply not in CRSP.** Expect fuzzy name matching to
+fail for the same reason, and scope it accordingly (below).
+
+### The 12% headline is misleading — split by domicile
+
+| 2022-12-31 | Funds | Bridged | Unbridged |
+|---|---|---|---|
+| non-US | 48,355 | **0.3%** | 48,210 — CRSP never covered these; **safe to add** |
+| US | 11,829 | **60.7%** | **4,649 — genuinely ambiguous** |
+
+(2016-12-31: non-US 2.0% bridged; US 78.5%, 1,321 ambiguous.)
+
+True double-count exposure is **~7.7% of funds**, not 88%.
+
+### Recipe
+
+Classify every S12 fund into exactly one of three buckets, then merge:
+
+| Bucket | Rule | Action |
+|---|---|---|
+| `crsp` | bridges to a `crsp_portno` | take the **CRSP** holding — as-reported shares, `permno` pre-mapped |
+| `s12_additive` | unbridged **and** positively CRSP-excluded (non-US `country`, closed-end, VA separate account, UCITS) | take the **Thomson** holding |
+| `s12_ambiguous` | unbridged, US-domiciled, no positive classification | **exclude by default; report the mass** |
+
+Non-negotiables:
+
+1. **Normalize share units before merging, never after.** CRSP is as-reported; Thomson is
+   pre-adjusted to FDATE and wrongly so (D1). Apply `cfacshr` yourself, once, to the
+   merged column. Merging raw `shares` mixes units inside one column and manufactures the
+   exact discontinuity `detect_unit_discontinuity` exists to catch.
+2. **Winsorize split quarters on `source='s12'` rows only.** D1 is a Thomson defect; CRSP
+   rows do not need it and winsorizing them discards real data.
+3. **Dedup after bridging, at the `wficn`/`crsp_portno` grain — never `fundno`.** One
+   `wficn` maps to a mean ~3.5 `crsp_fundno`; the wrong key inflates ~3.95× (D5b).
+   Verify with `detect_duplicate_grain`.
+4. **Carry a `source` column into the output.** A merged panel that cannot say where each
+   row came from cannot be audited, and every check below needs it.
+
+→ Guard: `detect_unresolved_overlap` reports the ambiguous mass and fails above 5%. Run it
+per period — exposure grows over time as S12's non-US population expands.
+
+### Where fuzzy name matching is worth it
+
+Not against all 48K unbridged funds — they are not in CRSP and no matcher will find them.
+Point it **only at the ~4,649 US-domiciled unbridged funds**, matching
+`s12type1.fundname` / `mflink2.fundname_full` against `portnomap.fund_name` + `mgmt_name`.
+That is a small, high-value problem: every fund it resolves moves a row out of
+`s12_ambiguous` and shrinks the union's error term. See the `fuzzy-name-matching` skill.
+
+### Fuzzy name matching: calibrated, and worth doing
+
+Use **`S12_Full_Fund_Names`** (the `S12_Names_20250630.xlsx` on the WRDS index page:
+`FUNDNO, START_DATE, END_DATE, FUNDNAME`, ~238K date-bounded rows), **not**
+`s12type1.fundname`. The latter is truncated to 24 chars and abbreviated; the xlsx carries
+the full and sometimes wholly different canonical name. It covers **95.1%** of the
+ambiguous funds and is strictly longer for **92.0%** of them:
+
+| `s12type1.fundname` | xlsx `FUNDNAME` |
+|---|---|
+| `FIDELITY CNDN GROWTH CO` | `FIDELITY CANADIAN GROWTH COMPANY FUND` |
+| `HERZFELD CARIBBEAN BAS F` | `HERZFELD CARIBBEAN BASIN FUND INCORPORATED` |
+| `DIVERSIFIED INV-BALANCED` | `TRANSAMERICA PARTNERS BALANCED PORTFOLIO` |
+
+Calibration at 2022-12-31 — char_wb 2-4gram TF-IDF + cosine, top-1, against
+`portnomap.fund_name` (55,213 candidates), with **non-US unbridged funds as a negative
+control** (they bridge at 0.3%, so a "match" there is a false positive):
+
+| Threshold | False-positive rate | Ambiguous resolved | Implied precision |
+|---|---|---|---|
+| 0.70 | 3.9% | 51.3% | ~92% |
+| **0.80** | **1.2%** | **32.5%** | **~96%** |
+| 0.90 | 0.4% | 13.7% | ~97% |
+
+**Always calibrate against a negative control, not against ground truth alone.** Top-1
+accuracy measured only on funds that bridge is 92.4% at 0.90 — but every fund there has a
+true match by construction, so that figure cannot transfer to a population where most
+funds have none. The negative control is what makes the precision estimate honest.
+
+⚠️ **These are *implied* precisions, and implied is not end-to-end.** The negative control
+proves a match is not spurious; it does **not** prove the match went to the *right* fund.
+End-to-end ("combined") precision is `implied × top-1 accuracy`, and the follow-up
+investigation measured top-1 directly: at thr 0.80 the direct-to-`portnomap` route has
+top-1 accuracy ~0.92, so combined precision is **~0.89, not ~0.96**. Quote combined
+precision when deciding whether to admit a match.
+
+**Superseded — use the SEC series-ID route instead.** Routing the name match through the
+SEC's published series universe (then `series_cik → crsp_fundno` via `crsp_cik_map`)
+resolves **4.5× more of the ambiguous set at equal precision**: 26.5% vs 5.9% at combined
+precision ~0.95, replicated at 2017. It is still fuzzy at the first hop — S12 has no CIK
+or usable ticker, so no exact key exists — and the gain comes from **grain alignment**:
+SEC series names sit at portfolio grain, the same grain as an S12 fund, whereas
+`portnomap.fund_name` is share-class grain. Ambiguous mass falls 7.72% → 5.70%.
+
+See `docs/investigations/2026-07-26_mflinks-rebuild.md` and
+`skills/wrds/scripts/mflinks_sec_bridge.py` (PR #78). Holdings-content matching was tested
+and **rejected**: it plateaus at 79% top-1 — a portfolio is not a fingerprint.
+
+### ⚠️ Resolving a fund is not the same as being allowed to add it
+
+**27.4% of newly-resolved funds land on a `crsp_portno` that another bridged `fundno`
+already claims.** That is a live double-count: two S12 `fundno`s pointing at one CRSP
+portfolio, either because the resolution is wrong or because Thomson carries the same
+portfolio twice (share classes, or duplicate records — cf. D5b).
+
+So the bridge needs a **claim check**, not just a match score. After resolving, group by
+`crsp_portno` and assert one `fundno` per portfolio per period; on collision, keep the
+higher-confidence link and push the loser back to `s12_ambiguous` rather than admitting
+both. Verify with `detect_duplicate_grain(grain=("crsp_portno", "rdate"))` on the resolved
+map — a bridge that raises coverage while quietly doubling portfolios is worse than no
+bridge at all.

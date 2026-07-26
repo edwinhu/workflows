@@ -342,7 +342,8 @@ Detailed query patterns and table documentation:
 - **`references/execucomp.md`** - ExecuComp: CEO anncomp, legacy codirfin vs current directorcomp, firm-year aggregation
 - **`references/iss-directors.md`** - ISS Directors: risk.directors + risk.rmdirectors, type harmonization, 1996 gender backfill, S&P 1500 filter
 - **`references/iss-voting.md`** - ISS Voting Analytics: vavoteresults, voteanalysis_npx, base-conditional turnout/forpct, agenda codes
-- **`references/tfn-ownership.md`** - Thomson 13-F (S34) institutional ownership and S12 mutual-fund holdings via MFLINKS, passive/index classification
+- **`references/tfn-ownership.md`** - Thomson 13-F (S34) institutional ownership and S12 mutual-fund holdings via MFLINKS, passive/index classification, and **Known Data Defects** (WRDS research notes D1-D7: split mis-adjustment, post-2013 coverage collapse, 2017Q4 S12 feed change, 13F value unit break). Read the defects section before trusting any split-era or post-2013 quarter.
+  - Detectors: `scripts/ownership_dq.py` (10 detectors, S12 and S34) — run these against any holdings panel before analysis. Tests: `tests/ownership_dq_test.py`.
 - **`references/lpc-dealscan.md`** - LPC DealScan: legacy vs 2021+ flat schema, borrower ids, the gvkey link and its grain caveats
 - **`references/muni-bonds.md`** - Municipal bonds: MSRB RTRS trades, SDC municipals
 - **`references/wrds-forms-tables.md`** - `wrdssec_all.wrds_forms` and friends: filing metadata tables and their columns
