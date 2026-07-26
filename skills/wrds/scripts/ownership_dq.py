@@ -44,6 +44,7 @@ __all__ = [
     "detect_bridge_rate_regression",
     "detect_duplicate_grain",
     "detect_unresolved_overlap",
+    "detect_implied_price_outlier",
     "detect_calendar_bucket_gap",
     "detect_join_gap_clustering",
     "detect_impossible_ratio",
@@ -1041,6 +1042,83 @@ def detect_impossible_ratio(
                     },
                 )
             )
+    return findings
+
+
+def detect_implied_price_outlier(
+    records: Sequence[dict],
+    *,
+    value_col: str = "value",
+    shares_col: str = "shares",
+    value_scale: float = 1000.0,
+    min_price: float = 0.01,
+    max_price: float = 10_000.0,
+    min_shares: int = 100_000,
+    id_cols: Sequence[str] = ("cik", "cusip8", "period_of_report"),
+) -> list[Finding]:
+    """Rows whose reported value and share count cannot both be true.
+
+    A 13F row carries two numbers describing one position, so they cross-check each other:
+    `value x value_scale / shares` is an implied price, and a position whose implied price
+    is impossible is a parse failure regardless of how reasonable either field looks alone.
+
+    This catches the D9 defect at ROW level rather than waiting for the aggregate to breach
+    100% of shares outstanding -- which matters, because by then the bad row is pooled with
+    hundreds of good ones and the only available remedy is a cap that leaves the fabrication
+    standing. Reference case: one row reporting 719,257,141 shares of AAPL with `value = 0`
+    drove that firm-quarter to 239% ownership; the next-largest holder reported 19.8M.
+
+    `min_shares` keeps the check off legitimately tiny positions. A holding genuinely worth
+    under $1,000 rounds to `value = 0` in $1000s, and there are 2.8M such rows carrying
+    almost no share mass -- dropping them all costs 33x the rows for no additional benefit.
+    Requiring a large share count isolates the 86,509 rows that carry 13.88% of the mass.
+
+    Also catches the inverse: `value` reported in dollars rather than thousands shows up as
+    an absurdly HIGH implied price (9.78M shares against `value = 202,656,145` implies
+    $20,720 per share against an actual 2003 AAPL price near $10).
+
+    ⚠️ **The high side is weaker than the low side, and the default reflects that.** A
+    constant ceiling cannot separate a units error from a genuinely expensive security --
+    BRK.A trades near $700,000 and will flag at any threshold that catches a 1000x error.
+    Treat high-side hits as "check this", not "this is wrong", and raise `max_price` or
+    exclude known high-priced issues when sweeping a broad cross-section. The low side has
+    no such ambiguity: no security has a price below a cent and a hundred-thousand-share
+    position at zero value.
+    """
+    findings: list[Finding] = []
+    for rec in records:
+        value, shares = rec.get(value_col), rec.get(shares_col)
+        if value is None or shares is None or shares <= 0:
+            continue
+        if shares < min_shares:
+            continue
+        implied = (float(value) * value_scale) / float(shares)
+        if min_price <= implied <= max_price:
+            continue
+        ident = {c: rec.get(c) for c in id_cols if c in rec}
+        findings.append(
+            Finding(
+                kind="implied_price_outlier",
+                entity=ident or None,
+                period=rec.get("period_of_report"),
+                detail=(
+                    f"{shares:,.0f} shares against {value_col}={value:,} implies "
+                    f"{implied:,.4g} per share -- "
+                    + (
+                        "zero/near-zero value with a large position is a parse failure"
+                        if implied < min_price
+                        else "implausibly high; check whether value is in dollars "
+                        "rather than thousands"
+                    )
+                ),
+                metrics={
+                    "implied_price": implied,
+                    "shares": shares,
+                    "value": value,
+                    "too_low": implied < min_price,
+                },
+            )
+        )
     return findings
 
 

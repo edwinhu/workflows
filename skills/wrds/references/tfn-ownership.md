@@ -477,23 +477,118 @@ collapsed to 0.9% after the fix). Note the *level* of the null rate is not the s
 ~54% is correct and expected, because 13F legitimately holds ADRs and closed-end funds
 with no CRSP common-stock match. The **spread across buckets** is the signal.
 
-### D9. Held shares exceeding shares outstanding — open, in EDGAR 13F
+### D9. Held shares exceeding shares outstanding — DIAGNOSED (EDGAR 13F parser)
 
 Surfaced by `detect_impossible_ratio` on the rebuilt EDGAR panel: **7.0% of non-zero
 observations exceed 100% ownership, 2.9% exceed 120%**, concentrated in the pre-XML
-`parse_mode = "text"` era. AAPL 2003-09-30 shows 4.90e10 shares held against 2.05e10
-outstanding (239%), bracketed by quarters at a sane 45% and 60%.
+`parse_mode = "text"` era. AAPL 2003-09-30 showed 239%, bracketed by quarters at a sane
+45% and 60%.
 
-The aggregation sums `shares` within `(cik, cusip8, rdate)`, so duplicate rows *inside* a
-single accession inflate rather than deduplicate. Candidate causes not yet separated:
-text-parser row duplication, one manager filing under multiple CIKs, and 13F
-double-counting proper — `investment_discretion` (SOLE/DFND/OTR) and `other_manager`
-exist precisely so shares reported by both a sub-advisor and its parent are not counted
-twice, and the current build ignores both.
+**Root cause: mis-parsed rows in the text parser, identifiable by `value = 0` with a large
+`shares`.** Not any of the three original suspects.
 
-Worth knowing: **vendor panels often clip this ratio at 100%, so the defect is invisible
-in them.** A panel built from raw filings does not clip, which is why the violations are
-visible and countable here. Do not read the clip as cleanliness.
+AAPL 2003-09-30, decomposed at the row level, is one row:
+
+| cik | shares | value | form | parse_mode | issuer |
+|---|---|---|---|---|---|
+| 728100 | **719,257,141** | **0** | 13F-HR/A | text | `APPLE COMPUTER, INC.` |
+
+The next-largest holder that quarter reports 19.8M. The same CIK reports 3,038,253,827
+shares of Exxon Mobil with `value = 0` — more than Exxon's entire float. A 13F holding
+with zero value and hundreds of millions of shares is not a holding; it is a parse
+failure, and `value` is what exposes it.
+
+#### The three candidate causes were tested and all three are ruled out
+
+| Candidate | Test | Result |
+|---|---|---|
+| Duplicate rows within an accession | dedup on `(accession, cusip8, shares, discretion, other_manager)` | removes **~0.0%** — not duplication |
+| `shares_type` contamination (PRN) | filter `shares_type = 'SH'` | removes **0.0%** — every AAPL row is already `SH` |
+| Sub-advisor double-counting | `other_manager` populated? | **0.0% of text-era rows populate it** |
+
+The third deserves emphasis: **`other_manager` is never populated in `parse_mode = "text"`,
+and `investment_discretion` is NULL on ~70% of those rows.** The text parser does not
+extract either column. So no discretion-based dedup rule — WRDS's or anyone's — can be
+applied before 2013. The columns are not merely unused; the data is absent. Filtering to
+`investment_discretion = 'SOLE'` "fixes" the violating quarters only because it discards
+70–94% of all rows, including in quarters that were already clean (2003-06-30 falls from
+45% to 13.5%). That is data destruction, not a fix.
+
+#### The fix, measured
+
+Drop rows where `value = 0 AND shares > 100,000`. A genuine holding worth under $1,000
+(value is in $1000s) cannot carry 100,000 shares at any plausible price.
+
+| Quarter | before | after | rows dropped |
+|---|---|---|---|
+| 2003-09-30 | 239% | **47.8%** | 1 |
+| 2004-06-30 | 262% | **58.8%** | 1 |
+| 2004-12-31 | 194% | **65.1%** | 2 |
+| 2003-06-30 (clean) | 45% | **45.0%** | 0 |
+| 2003-12-31 (clean) | 60% | **60.0%** | 0 |
+
+Violating quarters fall below 100%; already-clean quarters are untouched. Panel-wide the
+rule removes **86,509 rows** carrying **13.88% of all share mass** — the mass is real and
+enormous, the row count is tiny.
+
+**Choose the threshold, do not drop all `value = 0` rows.** At `T = 0` the rule removes
+2,820,455 rows for the same 13.89% of mass: 33× the rows for no additional benefit,
+because a legitimate sub-$1,000 holding rounds to `value = 0` (median such row is 479
+shares). `T = 100,000` captures 99.9% of the bad mass at 3% of the row cost.
+
+**Safe to apply panel-wide.** The pathology is text-specific: `text` + `value=0` carries
+13.87% of all share mass, `xml` + `value=0` carries **0.02%** (p99 of 100,000 shares, so
+the threshold barely bites). Applying it everywhere costs almost nothing after 2013 and
+needs no era switch.
+
+Proposed change to `mirror scripts/build_inst_own.py`, in `load_13f_holdings` alongside
+the existing F6 safety net — **proposed, not landed; that repo has its own open PR**:
+
+```python
+# F8: drop parse-failure rows — zero value with a large share count is not a
+# holding. Text parser only in practice; harmless post-2013.
+.filter(~((pl.col("value") == 0) & (pl.col("shares") > 100_000)))
+```
+
+#### What WRDS prescribes — and why it is not enough here
+
+*Research Note Regarding Thomson-Reuters Ownership Data Issues*, WRDS Research, May 2017
+(`/documents/533/Research_Note_-Thomson_S34_Data_Issues.pdf`) does address this, in the
+Data Fix Code rather than the prose. Step 3 is titled "using CRSP shares outstanding to
+winsorize holdings values at the 50% level of total shares outstanding":
+
+```sas
+if pct>0.5 then pct=0.5;   /* pct = shares / (shrout*1000), per cik-rdate-permno */
+```
+
+Three things to note, and each one matters:
+
+1. **It is a cap, not a repair, and WRDS says so.** Their comment: *"Further investigation
+   is warranted to determine if a single institution is truely holding more than 50% of
+   total shares outstanding."* They screen the symptom without diagnosing it — the same
+   posture as the splits note. Our row-level diagnosis goes further than the note does.
+2. **It is scoped to 2013+.** The surrounding code runs `%crspmerge(start=01JAN2013…)` —
+   the XML era. It was never validated on the text era, which is exactly where our
+   violations live.
+3. **A 50% cap would mask this defect, not remove it.** Capping the 719M AAPL row leaves a
+   fabricated 50% holding standing. This is precisely the clipping behaviour that makes
+   the defect invisible in vendor panels — WRDS's own pipeline clips at 50% per manager.
+   **Do not read a clipped series as a clean one.**
+
+WRDS scale estimate for their screen: "about 300 cases per quarter … out of 1.4 million
+holding records" (~0.02%). Our text-era incidence is far higher, consistent with the
+defect being our parser's rather than Thomson's.
+
+⚠️ I could not search the WRDS site for a *dedicated* note on this topic — the browser
+session's WRDS authentication expired mid-task (`/documents/` now returns the login page).
+The above is from the May 2017 note already retrieved. If a dedicated note exists, it has
+not been ruled out.
+
+→ Detector: `detect_implied_price_outlier` — flags rows whose implied price
+(`value × 1000 / shares`) is outside a plausible band. It catches this defect at row level
+rather than waiting for the aggregate to breach 100%, and also catches the inverse
+`value`-unit error (cik 93751 reports 9.78M shares against `value = 202,656,145`, an
+implied $20.7M per share).
 
 ## The S12 alternative: `crsp.holdings` (verified on the WRDS grid)
 

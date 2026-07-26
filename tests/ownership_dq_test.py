@@ -779,5 +779,61 @@ check(
     == [],
 )
 
+# ===========================================================================
+# D9. Implied-price outlier -- the row-level catch for >100% ownership
+# ===========================================================================
+print("\nD9: implied-price outlier detector")
+
+# The actual AAPL 2003-09-30 row that drove that firm-quarter to 239%.
+aapl_bad = {"cik": "728100", "cusip8": "03783310", "period_of_report": "20030930",
+            "shares": 719_257_141, "value": 0}
+# ...and a normal row from the same quarter.
+aapl_ok = {"cik": "315066", "cusip8": "03783310", "period_of_report": "20030930",
+           "shares": 19_798_710, "value": 408_447}
+hits = dq.detect_implied_price_outlier([aapl_bad, aapl_ok])
+check("catches the zero-value mega-position", len(hits) == 1, f"got {len(hits)}")
+check("flags it as too-low, i.e. a parse failure", hits and hits[0].metrics["too_low"])
+check("leaves the legitimate holding alone", hits and hits[0].metrics["shares"] == 719_257_141)
+
+# A sub-$1,000 holding legitimately rounds to value=0. Dropping these costs 33x the
+# rows for no extra mass, so the detector must NOT fire on them.
+check(
+    "silent on legitimately tiny value=0 holdings",
+    dq.detect_implied_price_outlier(
+        [{"shares": 479, "value": 0, "cik": "x", "period_of_report": "20030930"}]
+    )
+    == [],
+)
+check(
+    "min_shares is what separates the two -- lower it and the tiny row does flag",
+    len(
+        dq.detect_implied_price_outlier(
+            [{"shares": 479, "value": 0, "cik": "x", "period_of_report": "20030930"}],
+            min_shares=100,
+        )
+    )
+    == 1,
+)
+# The inverse defect: value reported in dollars, not thousands.
+dollars = dq.detect_implied_price_outlier(
+    [{"cik": "93751", "cusip8": "03783310", "period_of_report": "20030930",
+      "shares": 9_780_702, "value": 202_656_145}]
+)
+check("catches value-in-dollars as an implausibly high price", len(dollars) == 1)
+check("labels the high case distinctly", dollars and dollars[0].metrics["too_low"] is False)
+check(
+    "says to check the value units",
+    dollars and "dollars" in dollars[0].detail,
+)
+# A normal panel produces nothing.
+check(
+    "silent on a plausible cross-section",
+    dq.detect_implied_price_outlier(
+        [{"shares": 1_000_000 + i, "value": 20_000 + i, "cik": str(i),
+          "period_of_report": "20200630"} for i in range(50)]
+    )
+    == [],
+)
+
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)
