@@ -1001,22 +1001,49 @@ def detect_impossible_ratio(
     max_ratio: float = 1.0,
     tolerance: float = 0.02,
 ) -> list[Finding]:
-    """Held shares exceed shares outstanding -- an arithmetic impossibility, not an outlier.
+    """Held shares exceed shares outstanding. A TRIAGE signal, not a verdict.
 
-    Institutions cannot own 239% of a company. When they appear to, the shares are being
-    double-counted or mis-scaled, and no amount of winsorizing makes the number mean
-    something.
+    READ THIS BEFORE ACTING ON A FINDING. The name is a historical artifact and it
+    overstates the case: above 100% is not automatically impossible, and roughly a third
+    of what this detector flags on a raw 13F panel is CORRECT.
 
-    This is the check that survives a source swap. Vendor panels often clip the ratio at
-    100% so the defect is invisible in them; a panel built from raw filings does not clip,
-    so the violations are visible and countable. On the rebuilt mirror 13F panel this
-    fires on 7.0% of non-zero observations (2.9% above 120%), concentrated in the
-    pre-XML text-parse era -- e.g. AAPL 2003-09-30 with 4.90e10 shares held against
-    2.05e10 outstanding, bracketed by quarters at a sane 45% and 60%.
+    Form 13F reports LONG positions only and has no short side, so a lent share is
+    reported twice -- once by the lender, who still carries it, and once by whoever
+    bought it from the short seller. For a heavily shorted stock, summed 13F ownership
+    above 100% is the arithmetically right answer, and WRDS's own support article
+    ("Institutional Ownership Exceeding 100%", S34 knowledge base) leads with exactly
+    this cause. Measured against Compustat `sec_shortint` via CCM, the violation rate
+    rises 0.51% -> 2.16% -> 6.99% -> 22.95% across short-interest buckets of 0-2 / 2-5 /
+    5-10 / >10% of shares outstanding: a 45x dose-response.
+
+    So the finding list is a population to be SPLIT, not repaired:
+
+      real defects, worth fixing      parse failures (value = 0 with huge shares);
+                                      a fallback join mapping other share classes onto
+                                      the common permno
+      real economics, leave alone     securities lending
+
+    Two things separate them, and neither is the ratio itself:
+      - short interest. Join it if you have it; it is the direct test.
+      - CONCENTRATION. A parse failure is usually one row dominating one cell, so
+        top-filer mass share RISES. Lending is economy-wide, so it FALLS -- measured at
+        12.33% for lending-driven violators vs 18.11% for clean cells, with 172
+        contributing filers vs 85. Direction distinguishes them; magnitude does not.
+
+    DO NOT CLIP AT 100%. Capping destroys the short-lending information, and it is the
+    same clipping that hid the parse defect in vendor panels for years -- a clipped
+    series looks clean because the evidence has been deleted, not because it is.
+
+    CONSEQUENCE FOR VOTING WORK. A lent share carries no vote for the lender; the vote
+    passes to the borrower unless the loan is recalled before the record date. So the
+    double-count inflates OWNERSHIP but not VOTABLE SHARES. Anything using institutional
+    ownership as a voting weight overstates the block by roughly the lending rate, and
+    short interest is not random with respect to governance conflict -- borrowing spikes
+    around record dates specifically to acquire votes.
 
     `tolerance` allows a small band for genuine timing mismatch: holdings are reported at
     quarter-end while shares outstanding come from a monthly file, so a real 100.5% is
-    a stale denominator rather than a defect.
+    a stale denominator rather than either story above.
     """
     findings: list[Finding] = []
     limit = max_ratio * (1.0 + tolerance)
@@ -1034,7 +1061,8 @@ def detect_impossible_ratio(
                     period=_as_date(rec[period_col]) if rec.get(period_col) else None,
                     detail=(
                         f"{numerator_col} / {denominator_col} = {ratio:.1%}, above the "
-                        f"{max_ratio:.0%} bound -- shares double-counted or mis-scaled"
+                        f"{max_ratio:.0%} bound -- triage against short interest and "
+                        f"filer concentration before treating it as a defect"
                     ),
                     metrics={
                         "ratio": ratio,
