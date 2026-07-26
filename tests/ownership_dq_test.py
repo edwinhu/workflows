@@ -835,5 +835,48 @@ check(
     == [],
 )
 
+# ===========================================================================
+# D9 residual. Fallback-join contamination
+# ===========================================================================
+print("\nD9: fallback-join contamination detector")
+
+# Measured xml-era split: violating cells draw 16.5% of io from the cusip6 fallback,
+# clean cells 0.8%.
+cells = (
+    [{"permno": 100 + i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9,
+      "io_fallback": 1.65e8, "clean": False} for i in range(20)]
+    + [{"permno": 200 + i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9,
+        "io_fallback": 8e6, "clean": True} for i in range(200)]
+)
+fb = dq.detect_fallback_join_contamination(cells, control_col="clean")
+check("flags only the contaminated cells", len(fb) == 20, f"got {len(fb)}")
+check(
+    "measures the enrichment against the control (~21x)",
+    fb and 18.0 <= fb[0].metrics["enrichment"] <= 24.0,
+    f"{fb[0].metrics.get('enrichment')}" if fb else "",
+)
+check("reports the control mean in the detail", fb and "control population" in fb[0].detail)
+check(
+    "silent when the fallback is used lightly everywhere",
+    dq.detect_fallback_join_contamination(
+        [{"permno": i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9, "io_fallback": 8e6}
+         for i in range(50)]
+    )
+    == [],
+)
+# Usage rate alone is the weak signal -- 53.7% vs 13.8% -- so a detector keyed on the
+# flag rather than the mass would separate far worse. Same cells, tiny fallback mass.
+check(
+    "keys on mass, not on whether the fallback was merely used",
+    dq.detect_fallback_join_contamination(
+        [{"permno": i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9,
+          "io_fallback": 1e6, "used_fallback": True} for i in range(50)]
+    )
+    == [],
+)
+check("handles zero-total cells without dividing by zero",
+      dq.detect_fallback_join_contamination(
+          [{"permno": 1, "rdate": dt.date(2015, 6, 30), "io_total": 0, "io_fallback": 5}]) == [])
+
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)

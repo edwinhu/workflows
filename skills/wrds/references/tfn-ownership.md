@@ -477,7 +477,7 @@ collapsed to 0.9% after the fix). Note the *level* of the null rate is not the s
 ~54% is correct and expected, because 13F legitimately holds ADRs and closed-end funds
 with no CRSP common-stock match. The **spread across buckets** is the signal.
 
-### D9. Held shares exceeding shares outstanding — DIAGNOSED (EDGAR 13F parser)
+### D9. Held shares exceeding shares outstanding — PARTIAL (two causes; one fixed, one open)
 
 Surfaced by `detect_impossible_ratio` on the rebuilt EDGAR panel: **7.0% of non-zero
 observations exceed 100% ownership, 2.9% exceed 120%**, concentrated in the pre-XML
@@ -589,6 +589,107 @@ not been ruled out.
 rather than waiting for the aggregate to breach 100%, and also catches the inverse
 `value`-unit error (cik 93751 reports 9.78M shares against `value = 202,656,145`, an
 implied $20.7M per share).
+
+#### Status: PARTIAL — the `value=0` fix is real but explains only the extreme tail
+
+Validated independently against Thomson (a different pipeline, so it can distinguish
+"removed fabricated mass" from "removed real holdings"):
+
+| | no filter | with filter |
+|---|---|---|
+| impossible ratio | 6.111% | 5.205% |
+| Pearson vs Thomson | 0.4291 | **0.5843** |
+| Spearman vs Thomson | 0.9097 | 0.9116 |
+| median ratio | 0.9830 | 0.9823 |
+
+Outlier-sensitive Pearson rises 36% while the robust median moves 0.0007 — the signature
+of deleting fabricated tail mass. Deleting *real* holdings would have moved the median and
+left Pearson flat. Landed in mirror as `b69ca18` (PR #3), gated behind `--d9-threshold` /
+`--no-d9-filter`.
+
+**But the residual is era-agnostic, which a text-parser cause cannot explain:**
+
+| era | violators | of total | rate |
+|---|---|---|---|
+| text (<2013) | 9,528 | 180,555 | 5.28% |
+| xml (≥2013) | 9,501 | 185,062 | 5.13% |
+
+Median residual ratio 1.145; 40.7% above 120%, 8.2% above 200%.
+
+#### Residual cause 1 — sub-advisor double-counting: RULED OUT, including post-2013
+
+The text-era result does not transfer, so the test was re-run restricted to `rdate ≥ 2013`,
+where `other_manager` *is* populated. **It fails on the control.**
+
+| | violators | clean (control) |
+|---|---|---|
+| any `other_manager` populated | **99.9%** | **98.9%** |
+
+There is no discrimination — essentially every cell in both groups has it populated.
+Excluding those rows "fixes" 86.9% of violators, but removes **48.5% of mass from clean
+cells** and halves their median ratio (0.636 → 0.297). `SOLE`-only is the same story:
+87.6% fixed, 41.0% of clean mass destroyed.
+
+This is the identical trap as the text era, one layer up: a rule that looks like an 87%
+fix is deleting half the panel. **The clean-cell control is what exposes it** — the
+violator-only number alone would have shipped this.
+
+#### Residual cause 2 — cusip6 fallback collapsing securities onto one permno: CONFIRMED
+
+`load_13f_holdings` matches `cusip8 → ncusip`, then falls back to **`cusip6`** (issuer
+level) for unmatched rows. That fallback attributes *any* security of the issuer —
+another share class, preferred, warrants, units — to one common-stock `permno`, while the
+denominator is that one permno's shares outstanding.
+
+| | violators | clean | enrichment |
+|---|---|---|---|
+| >1 distinct `cusip8` → one permno | **55.6%** | 18.8% | 3.0× |
+| used cusip6 fallback | **53.7%** | 13.8% | 3.9× |
+| share of cell's `io` from fallback (xml) | **16.5%** | 0.8% | **21×** |
+| share of cell's `io` from fallback (text) | **20.9%** | 1.8% | 12× |
+
+Within violators, multi-cusip8 cells run a higher median ratio than single-cusip8 cells
+(1.191 vs 1.047). The text era is even more enriched (64.1% vs 17.8%).
+
+**Policy comparison, measured panel-wide:**
+
+| policy | panel violation rate | violators fixed | clean mass removed |
+|---|---|---|---|
+| A: keep all fallback (current) | 6.18% | — | — |
+| **B: drop all cusip6 fallback** | **3.74%** | **39.5%** | 1.67% |
+| C: drop only *ambiguous* fallback (cusip6 → >1 permno) | 5.97% | 3.5% | 0.07% |
+
+**C is the surgical fix and it does not work.** The failure is not map ambiguity — it is
+that a cusip6 match pulls in a genuinely different security even when the issuer has
+exactly one permno. Only B moves the needle.
+
+B is a real trade, not a free win: the 1.67% of clean mass it removes is holdings the
+fallback recovered *correctly*. Coverage versus correctness — which is why it belongs
+behind a flag, like the D9 filter itself.
+
+Proposed for `mirror scripts/build_inst_own.py` — **proposed, not landed; mirror PR #3 is
+Edwin's**:
+
+```python
+# F9: the cusip6 fallback is issuer-level, so it attributes other share classes,
+# preferreds and warrants to one common-stock permno while the denominator stays
+# single-class. Gate it. Restricting to unambiguous cusip6 does NOT help (3.5% of
+# violators vs 39.5% for dropping it outright) — the bad matches are to different
+# securities, not to ambiguous permnos.
+if not use_cusip6_fallback:          # default off; --cusip6-fallback to restore
+    h = matched8
+```
+
+**Residual after B: 3.74% of cells, median ratio 1.057** — down from 1.115, and now
+marginal rather than extreme. That remainder is consistent with the benign causes already
+documented in §Common Gotchas #4: rdate-vs-shrout timing around splits and issuance
+(#4a), and genuine dual-class per-class numerators (#4c). D9 stays **PARTIAL** until that
+is confirmed rather than assumed.
+
+→ Detector: `detect_fallback_join_contamination` — flags cells drawing an outsized share
+of their value from a degraded/fallback join path. The 16.5%-vs-0.8% split above is
+exactly what it keys on, and it generalises to any pipeline with a primary and a
+looser secondary match.
 
 ## The S12 alternative: `crsp.holdings` (verified on the WRDS grid)
 

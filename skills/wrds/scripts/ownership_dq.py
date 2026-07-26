@@ -45,6 +45,7 @@ __all__ = [
     "detect_duplicate_grain",
     "detect_unresolved_overlap",
     "detect_implied_price_outlier",
+    "detect_fallback_join_contamination",
     "detect_calendar_bucket_gap",
     "detect_join_gap_clustering",
     "detect_impossible_ratio",
@@ -1117,6 +1118,85 @@ def detect_implied_price_outlier(
                     "value": value,
                     "too_low": implied < min_price,
                 },
+            )
+        )
+    return findings
+
+
+def detect_fallback_join_contamination(
+    records: Sequence[dict],
+    *,
+    total_col: str = "io_total",
+    fallback_col: str = "io_fallback",
+    entity_col: str = "permno",
+    period_col: str = "rdate",
+    max_fallback_share: float = 0.05,
+    control_col: str | None = None,
+) -> list[Finding]:
+    """Cells drawing an outsized share of their value from a degraded join path.
+
+    Pipelines that fail a primary key match often retry on a looser one -- cusip8 falling
+    back to cusip6, exact name falling back to fuzzy. The fallback recovers real rows, so
+    it looks like pure gain, and the rows it recovers WRONGLY are invisible: they arrive as
+    ordinary values in the same column.
+
+    Reference case: `cusip8 -> ncusip` falling back to issuer-level `cusip6` attributes
+    other share classes, preferreds and warrants to one common-stock permno while the
+    denominator stays single-class. Cells breaching 100% ownership drew **16.5%** of their
+    value from the fallback against **0.8%** for clean cells -- a 21x enrichment, and a far
+    sharper discriminator than the join's overall usage rate (53.7% vs 13.8%).
+
+    That gap is the point: *whether* a cell used the fallback separates weakly, *how much
+    it leans on it* separates strongly. Key on the mass, not the flag.
+
+    Restricting a fallback to unambiguous keys is the tempting surgical fix and is usually
+    the wrong one -- measured here it recovered 3.5% of violators against 39.5% for
+    dropping the fallback outright, because the bad matches are to genuinely different
+    securities, not to ambiguous identifiers.
+
+    Pass `control_col` (a bool marking known-good cells) to have the finding report the
+    contamination gap against that control rather than an absolute threshold alone.
+    """
+    findings: list[Finding] = []
+    control_shares: list[float] = []
+    if control_col is not None:
+        for rec in records:
+            if not rec.get(control_col):
+                continue
+            total = rec.get(total_col)
+            if total:
+                control_shares.append(float(rec.get(fallback_col) or 0.0) / float(total))
+    control_mean = (
+        sum(control_shares) / len(control_shares) if control_shares else None
+    )
+
+    for rec in records:
+        total = rec.get(total_col)
+        if not total:
+            continue
+        share = float(rec.get(fallback_col) or 0.0) / float(total)
+        if share <= max_fallback_share:
+            continue
+        detail = (
+            f"{share:.1%} of {total_col} comes from the fallback join path "
+            f"(threshold {max_fallback_share:.0%})"
+        )
+        metrics: dict[str, Any] = {
+            "fallback_share": share,
+            "total": total,
+            "fallback": rec.get(fallback_col),
+        }
+        if control_mean is not None:
+            metrics["control_mean_share"] = control_mean
+            metrics["enrichment"] = (share / control_mean) if control_mean else None
+            detail += f" vs {control_mean:.1%} in the control population"
+        findings.append(
+            Finding(
+                kind="fallback_join_contamination",
+                entity=rec.get(entity_col),
+                period=rec.get(period_col),
+                detail=detail,
+                metrics=metrics,
             )
         )
     return findings
