@@ -49,31 +49,20 @@ Outputs
 
 Usage
 -----
-  # Download the annual CSVs first (SEC page linked above), then:
-  SEC_SERIES_RAW=data/raw/sec_series_class \
-  SEC_SERIES_OUT=data/processed \
-      python build_sec_series_master.py
-
-This is L1 of the crosswalk ladder — see `npx_linking/README.md` and
-`references/npx-crsp-linking.md`. Its output feeds L2 (ISS fundid -> seriesId),
-whose output feeds L3 (seriesId -> CRSP), whose output is the fundid -> block
-crosswalk that `stage_npx_link.sas` pushes to the grid.
+  python scripts/linking/build_sec_series_master.py
 """
 
 from __future__ import annotations
 
-import os
 import re
 import unicodedata
 from pathlib import Path
 
 import pandas as pd
 
-# Paths are overridable so this drops into any project. Defaults follow the
-# standard layout (data/raw/, data/processed/) relative to the repo root.
-_ROOT = Path(os.environ.get("NPX_LINK_ROOT", Path(__file__).resolve().parents[1]))
-RAW = Path(os.environ.get("SEC_SERIES_RAW", _ROOT / "data" / "raw" / "sec_series_class"))
-OUT = Path(os.environ.get("SEC_SERIES_OUT", _ROOT / "data" / "processed"))
+PROJ = Path(__file__).resolve().parents[2]
+RAW = PROJ / "data" / "raw" / "sec_series_class"
+OUT = PROJ / "data" / "processed"
 
 RAW_GLOB = "investment_company_series_class_*.csv"
 YEAR_RE = re.compile(r"(20\d{2})")
@@ -184,49 +173,6 @@ def clean_str(s: pd.Series) -> pd.Series:
     return out.mask(out.str.upper().isin(NULL_SENTINELS))
 
 
-def repair_comma_shift(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
-    """Undo the one-field right-shift caused by an unquoted comma in `series_name`.
-
-    The 2014 vintage is not fully quoted, so a series name containing a comma --
-    "Jefferies, TR/J CRB Global Commodity Equity Index Fund", "ALPS, JPMorgan ETF
-    Efficiente 5 TR Index Portfolio" -- is emitted as TWO fields, and every column
-    from `class_id` rightward lands one position too far right.
-
-    Without this the rows are not corrupted, they are DELETED: the
-    `class_id.startswith("C")` filter in read_year drops them silently, because the
-    shifted `class_id` holds the tail of a fund name rather than a C-number. Silent
-    deletion is the worse failure of the two -- the row count still looks plausible
-    and nothing in the output says anything is missing.
-
-    Detection is self-checking rather than positional: repair only where `class_id`
-    fails the C-number format AND `class_name` matches it. A row with a genuinely
-    absent class -- a closed-end fund carrying a series but no class -- has nothing
-    in the next column and is correctly left alone.
-
-    Measured: 4 of 40,532 rows in 2014, 0 in every other vintage. Small, but two of
-    the four are index/commodity funds, which is exactly what this table is used to
-    classify.
-    """
-    cid, cname = df["class_id"].astype("string"), df["class_name"].astype("string")
-    is_c = lambda x: x.str.match(r"^C\d{6,}$", na=False)  # noqa: E731
-    shifted = ~is_c(cid) & is_c(cname)
-    n = int(shifted.sum())
-    if not n:
-        return df, 0
-
-    tail = CANONICAL_COLUMNS[CANONICAL_COLUMNS.index("class_id"):]
-    fixed = df.copy()
-    fixed.loc[shifted, "series_name"] = (
-        df.loc[shifted, "series_name"].astype("string").str.rstrip()
-        + ", "
-        + df.loc[shifted, "class_id"].astype("string").str.strip()
-    )
-    for src, dst in zip(tail[1:], tail[:-1]):
-        fixed.loc[shifted, dst] = df.loc[shifted, src]
-    fixed.loc[shifted, tail[-1]] = pd.NA
-    return fixed, n
-
-
 def read_year(path: Path, year: int) -> pd.DataFrame:
     """Read one annual CSV into the canonical schema, adding `file_year`."""
     skiprows = find_header_row(path)
@@ -252,12 +198,6 @@ def read_year(path: Path, year: int) -> pd.DataFrame:
 
     for col in CANONICAL_COLUMNS:
         df[col] = clean_str(df[col])
-
-    # Repair the unquoted-comma field shift BEFORE the format filters below --
-    # those filters would otherwise delete the affected rows without a word.
-    df, n_shift = repair_comma_shift(df)
-    if n_shift:
-        print(f"  [{year}] repaired {n_shift} comma-shifted row(s)")
 
     # 2012 puts a row of dashes under the header; drop it and any id-less rows.
     df = df[df["series_id"].notna() & df["class_id"].notna()]

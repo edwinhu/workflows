@@ -1,135 +1,112 @@
-#!/usr/bin/env python3
-"""download_sec_series_class.py — fetch the SEC Investment Company Series/Class masters.
+"""L1.4 — Download SEC Investment Company Series/Class annual masters (2010-2025).
 
-L0 for the SEC leg. Public data, no credentials — this is what makes the
-`via_sec_ticker` and SEC-name tiers portable to any project.
+The SEC publishes one file per year with basic identification info for all active
+registered investment-company series and classes (CIK, Series ID S000..., Series
+Name, Class ID C000..., Class Name, Ticker). This is the `fundname/ticker -> seriesId`
+bridge for pre-2023 ISS funds (LINK-02).
 
-    https://www.sec.gov/data-research/sec-markets-data/investment-company-series-class-information
+URL naming is inconsistent across years (three different folder/file conventions),
+so we scrape the live landing page for the CSV hrefs and map each to its year rather
+than hard-coding a single pattern. 2016 is absent from the page; we try fallback
+patterns and log the outcome.
 
-URL naming is inconsistent across vintages — three different folder conventions
-(`...-series-class-...` vs `...-series-and-class-...`), two filename conventions
-(`investment_company_series_class_YYYY` vs `investment-company-series-class-YYYY`
-vs `investmentcompanyseriesclass2010`), and the 2016 file carries NO year at all
-(`investment_company_series_class.csv`). So the URLs are SCRAPED from the landing
-page rather than constructed, and the year for an unlabelled file is read from
-the page text next to its link.
+Output: data/raw/sec_series_class/investment_company_series_class_<YYYY>.csv
 
-    ./download_sec_series_class.py --out data/raw/sec_series_class
-    ./download_sec_series_class.py --out data/raw/sec_series_class --list-only
-
-SEC requires a descriptive User-Agent with contact info. Set SEC_USER_AGENT, or
-pass --user-agent; requests without one get blocked.
+Usage:
+  python scripts/download_sec_series_class.py
 """
 
 from __future__ import annotations
 
-import argparse
-import os
 import re
-import sys
 import time
-import urllib.request
 from pathlib import Path
 
-LANDING = ("https://www.sec.gov/data-research/sec-markets-data/"
-           "investment-company-series-class-information")
+import requests
 
-CSV_HREF_RE = re.compile(r'href="([^"]*\.csv)"', re.I)
-YEAR_RE = re.compile(r"(20\d{2})")
-# "…8.18 MB 2016 Updated 09/23/2016" — the year label, not any nearby year.
-LABEL_YEAR_RE = re.compile(r"(20\d{2})\s+Updated")
-TAG_RE = re.compile(r"<[^>]+>")
-
-
-def fetch(url: str, ua: str, timeout: int = 120) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": ua})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+PROJ = Path(__file__).parent.parent
+OUT = PROJ / "data" / "raw" / "sec_series_class"
+LANDING = "https://www.sec.gov/data-research/sec-markets-data/investment-company-series-class-information"
+UA = "mirror-voting research eddyhu@gmail.com"
+YEARS = list(range(2010, 2026))  # 2010-2025 inclusive
+HEADERS = {"User-Agent": UA, "Accept-Encoding": "gzip, deflate"}
 
 
-def scrape(ua: str) -> dict[int, str]:
-    """{year: absolute_url} for every annual CSV on the landing page."""
-    html = fetch(LANDING, ua).decode("utf-8", errors="replace")
-    out: dict[int, str] = {}
-    for m in CSV_HREF_RE.finditer(html):
-        href = m.group(1)
-        fname = href.rsplit("/", 1)[-1]
+def scrape_csv_urls() -> dict[int, str]:
+    """Return {year: absolute_url} for the annual series/class CSVs on the SEC page."""
+    r = requests.get(LANDING, headers=HEADERS, timeout=60)
+    r.raise_for_status()
+    hrefs = re.findall(r'href="([^"]+\.csv)"', r.text, flags=re.I)
+    by_year: dict[int, str] = {}
+    for h in hrefs:
+        if "series" not in h.lower() and "class" not in h.lower():
+            continue
+        m = re.search(r"(20\d{2})", h)
+        if not m:
+            continue
+        yr = int(m.group(1))
+        if yr not in YEARS:
+            continue
+        url = h if h.startswith("http") else f"https://www.sec.gov{h}"
+        by_year.setdefault(yr, url)  # first hit wins (page lists CSV before XML)
+    return by_year
 
-        yr_m = YEAR_RE.search(fname)
-        if yr_m:
-            year = int(yr_m.group(1))
-        else:
-            # 2016 ships as `investment_company_series_class.csv`. Its year is
-            # only in the LINK TEXT, which FOLLOWS the href:
-            #     <a href="...series_class.csv" download>2016 Updated 09/23/2016
-            # Scan FORWARD, and anchor on "<year> Updated" — the byte size sits
-            # before the link, so scanning backwards picks up the neighbouring
-            # row's label and silently mis-dates the file (it dated 2016 as
-            # 2017, where setdefault then dropped it entirely).
-            text = TAG_RE.sub(" ", html[m.end():m.end() + 400])
-            labelled = LABEL_YEAR_RE.findall(text)
-            if not labelled:
-                print(f"  ?? cannot date {fname} — skipped")
-                continue
-            year = int(labelled[0])
-            print(f"  note: {fname} has no year in its name; page labels it {year}")
 
-        url = href if href.startswith("http") else f"https://www.sec.gov{href}"
-        out.setdefault(year, url)   # first hit wins (CSV listed before XML)
-    return dict(sorted(out.items()))
+# Fallback URL patterns for years missing from the landing page (e.g. 2016).
+FALLBACK_DIRS = [
+    "https://www.sec.gov/files/investment/data/other/investment-company-series-and-class-information",
+    "https://www.sec.gov/files/investment/data/other/investment-company-series-class-information",
+]
+FALLBACK_NAMES = [
+    "investment_company_series_class_{y}.csv",
+    "investment-company-series-class-{y}.csv",
+    "investmentcompanyseriesclass{y}.csv",
+]
+
+
+def fallback_urls(year: int) -> list[str]:
+    return [f"{d}/{n.format(y=year)}" for d in FALLBACK_DIRS for n in FALLBACK_NAMES]
+
+
+def download(url: str, dest: Path) -> tuple[bool, int, str]:
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=120)
+    except Exception as e:  # noqa: BLE001
+        return False, 0, f"error {e}"
+    if r.status_code != 200 or not r.content:
+        return False, r.status_code, f"http {r.status_code}"
+    dest.write_bytes(r.content)
+    nrows = r.text.count("\n")
+    return True, r.status_code, f"{len(r.content):,} bytes, ~{nrows:,} lines"
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="data/raw/sec_series_class")
-    ap.add_argument("--user-agent",
-                    default=os.environ.get("SEC_USER_AGENT",
-                                           "academic-research contact@example.edu"))
-    ap.add_argument("--list-only", action="store_true")
-    ap.add_argument("--force", action="store_true")
-    ap.add_argument("--sleep", type=float, default=0.5,
-                    help="pause between requests; SEC rate-limits at ~10/s")
-    args = ap.parse_args()
+    OUT.mkdir(parents=True, exist_ok=True)
+    urls = scrape_csv_urls()
+    print(f"Scraped {len(urls)} year-tagged CSV URLs from SEC landing page.")
 
-    if "example.edu" in args.user_agent:
-        print("WARNING: set SEC_USER_AGENT to a real contact address — "
-              "SEC blocks generic agents.", file=sys.stderr)
+    ok, missing = [], []
+    for year in YEARS:
+        dest = OUT / f"investment_company_series_class_{year}.csv"
+        candidates = [urls[year]] if year in urls else []
+        candidates += fallback_urls(year)
+        succeeded = False
+        for url in candidates:
+            good, code, msg = download(url, dest)
+            if good:
+                print(f"  {year}: OK  {msg}\n        <- {url}")
+                ok.append(year)
+                succeeded = True
+                break
+            time.sleep(0.3)  # be polite to SEC
+        if not succeeded:
+            print(f"  {year}: MISSING (all {len(candidates)} candidates 404/err)")
+            missing.append(year)
+        time.sleep(0.3)
 
-    urls = scrape(args.user_agent)
-    print(f"Found {len(urls)} annual CSV(s): {min(urls)}-{max(urls)}")
-    if args.list_only:
-        for y, u in urls.items():
-            print(f"  {y}  {u}")
-        return
-
-    dest_dir = Path(args.out)
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    ok = 0
-    for year, url in urls.items():
-        # Filename normalised to what build_sec_series_master.py globs for.
-        dest = dest_dir / f"investment_company_series_class_{year}.csv"
-        if dest.exists() and not args.force:
-            print(f"  {year}: cached ({dest.stat().st_size/1e6:.1f} MB)")
-            ok += 1
-            continue
-        try:
-            body = fetch(url, args.user_agent)
-        except Exception as e:                      # noqa: BLE001
-            print(f"  {year}: FAILED {e}\n        <- {url}")
-            continue
-        # An SEC error page is HTML and would otherwise be parsed as a 0-row CSV.
-        if body[:200].lstrip().lower().startswith(b"<!doctype html"):
-            print(f"  {year}: FAILED (got an HTML error page)\n        <- {url}")
-            continue
-        dest.write_bytes(body)
-        print(f"  {year}: OK {len(body)/1e6:.1f} MB")
-        ok += 1
-        time.sleep(args.sleep)
-
-    print(f"\n{ok}/{len(urls)} year(s) available in {dest_dir}")
-    print("Next: build_sec_series_master.py")
-    if ok == 0:
-        sys.exit("no files downloaded")
+    print(f"\nDownloaded {len(ok)}/{len(YEARS)} years: {ok}")
+    if missing:
+        print(f"Missing years (logged, continuing): {missing}")
 
 
 if __name__ == "__main__":

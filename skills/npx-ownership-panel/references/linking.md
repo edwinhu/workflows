@@ -113,7 +113,7 @@ not in a systematically different classification.
 | `pull_crsp_funds.py` | CRSP fund dimension (`fund_hdr` + `fund_summary2` + `crsp_cik_map`) |
 | `build_npx_crsp_link.py` | **the ladder** + the coverage report |
 | `matching.py` | the engine — normalisers, digit guard, TF-IDF, cross-family verdict |
-| `linking_config.py` | every threshold and stoplist, with the failure it prevents |
+| `config_obs.py` (vendored) | every threshold, regex and stoplist, with the failure it prevents |
 | `smoke_test.sh` | one year, 8 assertions — run this first |
 | `family_overlay.example.csv` | schema example for the optional overlay |
 

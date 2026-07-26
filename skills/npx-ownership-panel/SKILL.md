@@ -80,7 +80,7 @@ Two roots, deliberately:
 | Root | What it is |
 |---|---|
 | `run_pipeline.sh` | the DAG. Submits everything with `qsub -hold_jid` and returns |
-| `npx_linking/build_npx_crsp_link.py` | the crosswalk, built **locally** and scp'd in (below). Not part of the DAG because leg 3 hard-gates on its output existing |
+| `npx_linking/` (`python -m npx_linking run`) | the crosswalk, built **locally** and scp'd in (below). Not part of the DAG because leg 3 hard-gates on its output existing |
 
 `npx_link_to_csv.py` and `npx_linking/family_overlay.example.csv` are used by hand
 in that prerequisite step, not invoked by the DAG.
@@ -92,6 +92,36 @@ one second instead of thirty minutes into a grid run.
 For S12 data-quality controls (the 2017Q4 feed change, coverage end, the MFLINKS
 gap) use the `wrds` skill's `references/tfn-ownership.md` **D5**, and the detectors
 in `skills/wrds/scripts/ownership_dq.py`. Deliberately not duplicated here.
+
+### The linking chain is vendored, not reimplemented
+
+`npx_linking/` is a copy of mirror's `scripts/linking/` — the implementation that
+produced the frozen `npx_crsp_link` baseline. It replaced a second, flattened
+single-file linker that shared **zero function names** with it: not drift, a
+reimplementation of the same six-tier ladder. Two rival linkers deciding every
+fund's block is the one duplication worth paying to remove.
+
+Verified on adoption: the vendored package reproduces mirror's fingerprints
+exactly — `npx_crsp_link` `4fdf9818…`, `fundid_seriesid` `93583072…`,
+`sec_series_master_series` `5919545e…`.
+
+`config_obs.py` is vendored **with** it. The chain reads 26 symbols from it: 15
+paths/scalars and 11 `L2_`/`L3B_` tuning constants — the TF-IDF n-gram range and
+candidate threshold, the legal-suffix and "formerly" regexes, family stopwords,
+the succession share bar. Those constants *are* the matching behaviour, so
+re-declaring them would fork the ladder's semantics while looking like config.
+
+**Sync the directory and `config_obs.py` together.** A partial sync is how the
+two forked the first time.
+
+Run it standalone with:
+
+```bash
+NPX_LINK_ROOT=/path/to/project python -m npx_linking run
+python -m npx_linking stages        # what runs, in dependency order
+python -m npx_linking fingerprint   # byte-identity of each stage output
+python -m npx_linking verify        # rebuild in a sandbox and diff
+```
 
 ## Before you run: build the crosswalk
 

@@ -412,7 +412,7 @@ same problem is 16 fundids × millions of rows and is not auditable.
 
 | File | Role |
 |---|---|
-| `linking_config.py` | every threshold, regex and stoplist, with its rationale |
+| `config_obs.py` (vendored) | every threshold, regex and stoplist, with its rationale |
 | `matching.py` | the reusable engine: normalisers, digit guard, TF-IDF candidates, cross-family verdict |
 | `download_sec_series_class.py` | fetch the SEC annual masters (URLs are scraped — they are inconsistent across vintages, and the 2016 file carries no year in its name) |
 | `build_sec_series_master.py` | L1 — consolidate them |
