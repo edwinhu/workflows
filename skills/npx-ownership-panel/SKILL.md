@@ -42,9 +42,9 @@ the chain; nothing local stays alive. Disconnect, come back, collect the panel.
 |---|---|---|---|
 | 1 | Mutual-fund holdings | `split_s12.sas` → `tfn_holdings_parallel.sas` ×N | — |
 | 2 | Institutional holdings | **`build_inst_own.py` (SEC EDGAR 13F) — canonical.** `build_inst_own.sas` (Thomson S34) is fallback-only | — |
-| 5 | Short interest | `build_short_interest.py` — `comp.sec_shortint` × CCM, feeds `ior_net` | — |
 | 3 | N-PX fund votes | `build_npx.sas` (SGE array, one task per year) | **leg 4** |
 | 4 | ISS→CRSP crosswalk | `npx_linking/` → `stage_npx_link.sas` | — |
+| 5 | Short interest | `build_short_interest.py` — `comp.sec_shortint` × CCM, feeds `ior_net` | — |
 
 Legs 1, 2, 4 start together. **Leg 4 hard-gates leg 3** — the array hash-merges
 the crosswalk; without it every task opens a missing dataset and exits 0 having
