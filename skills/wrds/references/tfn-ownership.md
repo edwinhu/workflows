@@ -680,11 +680,41 @@ if not use_cusip6_fallback:          # default off; --cusip6-fallback to restore
     h = matched8
 ```
 
-**Residual after B: 3.74% of cells, median ratio 1.057** — down from 1.115, and now
-marginal rather than extreme. That remainder is consistent with the benign causes already
-documented in §Common Gotchas #4: rdate-vs-shrout timing around splits and issuance
-(#4a), and genuine dual-class per-class numerators (#4c). D9 stays **PARTIAL** until that
-is confirmed rather than assumed.
+**Residual after B: 3.74% of cells, median ratio 1.057** (3.016% in mirror's own
+pipeline, which landed policy B as `15b598c`, default-on with `--cusip6-fallback` to
+restore). Validated against Thomson: impossible rate 5.205% → 3.016%, **both** correlations
+up (Pearson 0.5843 → 0.5999, Spearman 0.9116 → 0.9127), median slipping only 0.3pp — the
+coverage cost showing honestly and small against the gain.
+
+#### The benign explanation was tested and does NOT hold
+
+The natural reading of a 1.057 median is that the remainder is ordinary noise —
+rdate-vs-shrout timing (#4a) and dual-class per-class numerators (#4c). **Both were tested
+against the clean population and neither survives as an explanation.**
+
+| | residual violators | clean (control) | enrichment |
+|---|---|---|---|
+| permco carries >1 common-stock permno (dual-class) | 8.24% | 5.48% | 1.5× |
+| \|Δshrout\| > 2% between rdate and rdate+2m (filing) | 12.46% | 9.77% | 1.3× |
+| median \|Δshrout\| | 0.129% | 0.046% | — |
+| **explained by either** | **19.3%** | **14.5%** | **1.3×** |
+
+Both enrichments are small — compare the 21× that identified the cusip6 fallback. Against
+a 14.5% clean baseline, the two mechanisms account for roughly **5 excess percentage
+points** of the residual. **80.7% of residual violators (3.02% of the whole panel) show
+neither.**
+
+The clincher: if these mechanisms drove the violations, cells they explain should be the
+extreme ones. They are not — median ratio 1.069 where explained versus 1.054 where not.
+The two populations are indistinguishable in severity.
+
+So D9 stays **PARTIAL**, and now for a stronger reason than "unconfirmed": a third
+numerator defect, not yet identified, sits behind roughly **3% of cells** at a median
+ratio near 1.05. Do not write the residual up as timing or dual-class noise — that has
+been checked and it isn't.
+
+The panel is usable at this level with the caveat documented; the excess is small and
+non-extreme. But it is a defect, not an artifact of the denominator.
 
 → Detector: `detect_fallback_join_contamination` — flags cells drawing an outsized share
 of their value from a degraded/fallback join path. The 16.5%-vs-0.8% split above is
