@@ -688,33 +688,81 @@ coverage cost showing honestly and small against the gain.
 
 #### The benign explanation was tested and does NOT hold
 
-The natural reading of a 1.057 median is that the remainder is ordinary noise —
-rdate-vs-shrout timing (#4a) and dual-class per-class numerators (#4c). **Both were tested
-against the clean population and neither survives as an explanation.**
+Dual-class (#4c) and rdate-vs-shrout timing (#4a) were both tested against the clean
+population. Neither survives:
 
 | | residual violators | clean (control) | enrichment |
 |---|---|---|---|
-| permco carries >1 common-stock permno (dual-class) | 8.24% | 5.48% | 1.5× |
-| \|Δshrout\| > 2% between rdate and rdate+2m (filing) | 12.46% | 9.77% | 1.3× |
-| median \|Δshrout\| | 0.129% | 0.046% | — |
+| permco carries >1 common-stock permno | 8.24% | 5.48% | 1.5× |
+| \|Δshrout\| > 2% between rdate and rdate+2m | 12.46% | 9.77% | 1.3× |
 | **explained by either** | **19.3%** | **14.5%** | **1.3×** |
 
-Both enrichments are small — compare the 21× that identified the cusip6 fallback. Against
-a 14.5% clean baseline, the two mechanisms account for roughly **5 excess percentage
-points** of the residual. **80.7% of residual violators (3.02% of the whole panel) show
-neither.**
+80.7% of residual violators show neither. **The severity test settles it:** if these
+mechanisms drove the violations, the cells they explain would be *more* severe. They are
+not — median ratio 1.069 where explained versus 1.054 where not. That is not a weak
+signal, it is the absence of one.
 
-The clincher: if these mechanisms drove the violations, cells they explain should be the
-extreme ones. They are not — median ratio 1.069 where explained versus 1.054 where not.
-The two populations are indistinguishable in severity.
+#### RESOLVED — the residual is short interest, and it is not a defect
 
-So D9 stays **PARTIAL**, and now for a stronger reason than "unconfirmed": a third
-numerator defect, not yet identified, sits behind roughly **3% of cells** at a median
-ratio near 1.05. Do not write the residual up as timing or dual-class noise — that has
-been checked and it isn't.
+**WRDS documents this directly.** Support article *"Institutional Ownership Exceeding
+100%"* (`/pages/support/support-articles/lseg/institutional-holdings-s34/`) gives four
+causes, and the first is not a data error at all:
 
-The panel is usable at this level with the caveat documented; the excess is small and
-non-extreme. But it is a defect, not an artifact of the denominator.
+> "Special cases with high levels of institutional ownership and high short interest
+> ratios around calendar quarter ends. 13F filings report only stock holdings and do not
+> report short positions."
+
+A lent share is reported twice — the lender still reports it, and so does the buyer who
+bought it from the short seller. Aggregate 13F ownership above 100% is the *correct*
+result for a heavily shorted stock, not an artifact.
+
+Tested against Compustat `sec_shortint` linked to permno via CCM:
+
+| | residual violators | clean (control) |
+|---|---|---|
+| median short interest / TSO | **12.44%** | 1.57% |
+| short interest > 5% | **82.9%** | 22.8% |
+| short interest > 10% | **60.5%** | 9.5% |
+
+And the dose-response is monotone, which is the strongest form of the evidence:
+
+| short interest / TSO | violation rate |
+|---|---|
+| 0–2% | 0.51% |
+| 2–5% | 2.16% |
+| 5–10% | 6.99% |
+| **>10%** | **22.95%** |
+
+A 45× spread in violation rate across the short-interest gradient, and
+`corr(excess over 100%, short interest) = 0.355` among violators.
+
+**The row-level test rules out a second parse pathology, in the opposite direction.**
+Violating cells are *less* concentrated than clean ones — median top-filer mass share
+12.33% vs 18.11%, `>50%` share in 5.3% vs 12.4%, median contributing filers 172 vs 85.
+The `value=0` defect was one row dominating a cell; this is the mirror image, excess
+spread thinly across *more* filers. That is what an economy-wide lending effect looks
+like and what a parse bug does not.
+
+**Do not repair this.** Clipping the ratio at 100% destroys real information — it is
+precisely the vendor clipping that hid the `value=0` defect (D9 above) and it would now
+also erase a genuine signal. 13F cannot capture shorts, so the excess is irreducible.
+Document it, and when a bounded ratio is required, cap explicitly and record that
+high-short-interest names are being truncated.
+
+The remaining WRDS causes map cleanly onto findings already recorded here: shared
+investment discretion double-counting (cause 2 — see the control test above, which shows
+the `other_manager` flag cannot isolate it even though the phenomenon is real), incorrect
+vendor shares outstanding (cause 3 — already handled, we use CRSP), and mis-applied
+adjustment factors joined at `fdate` (cause 4 — this is D1).
+
+**D9 status: the numerator defects are fixed (`value=0`, cusip6 fallback); the ~3%
+residual is explained and is not a defect.** What remains is a documentation obligation,
+not a repair.
+
+⚠️ One nuance worth preserving: the control test shows the `other_manager` flag has no
+discriminating power (99.9% vs 98.9%), which means it cannot be *used* as a fix. It does
+not prove shared-discretion double-counting never occurs — WRDS says it does. The two
+statements are compatible and the distinction matters.
 
 → Detector: `detect_fallback_join_contamination` — flags cells drawing an outsized share
 of their value from a degraded/fallback join path. The 16.5%-vs-0.8% split above is
