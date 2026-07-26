@@ -44,6 +44,12 @@ __all__ = [
     "detect_bridge_rate_regression",
     "detect_duplicate_grain",
     "detect_unresolved_overlap",
+    "detect_implied_price_outlier",
+    "detect_fallback_join_contamination",
+    "detect_calendar_bucket_gap",
+    "detect_join_gap_clustering",
+    "detect_join_coverage_tail",
+    "detect_impossible_ratio",
     "COMMON_SPLIT_FACTORS",
 ]
 
@@ -821,6 +827,486 @@ def detect_unresolved_overlap(
             by_period.setdefault(_as_date(rec[period_col]), []).append(rec)
         for period in sorted(by_period):
             _emit(period, by_period[period])
+    return findings
+
+
+def detect_calendar_bucket_gap(
+    records: Sequence[dict],
+    *,
+    period_col: str = "rdate",
+    expected_months: Sequence[int] = (3, 6, 9, 12),
+    thin_share: float = 0.5,
+) -> list[Finding]:
+    """A periodic panel missing an entire calendar bucket (e.g. no June, no September).
+
+    THE ROOT-CAUSE DETECTOR. Every other detector in this module catches a *symptom*
+    downstream of a broken source table; this one catches the source table itself, and
+    it is cheap enough to run on every reference panel at build time.
+
+    Grounded in a real incident (mirror `build_inst_own.py`, 2026-07). polars'
+    `dt.month()` returns Int8, so the common idiom
+
+        dt.year() * 10000 + dt.month() * 100 + dt.day()
+
+    overflows for every month >= 2 (2 * 100 = 200 > 127) and wraps NEGATIVE, silently.
+    February 2020 became 20199973 and March became 20200075 instead of 20200229 /
+    20200331. A quarter-snap then read those as "month 99" and "month 0" and bucketed
+    them into Q4-of-the-prior-year and Q1, so the CRSP reference panel held ONLY March
+    and December quarter-ends -- 193,335 rows where 370,630 were correct.
+
+    Nothing raised. The output was a full-looking table of plausible eight-digit
+    integers. Downstream, every June and September holdings quarter missed the join,
+    fell back to an unadjusted split factor and a null denominator, and produced an
+    ownership ratio of exactly 0 for 49% of the panel. That surfaced as a 4.5x seasonal
+    swing with a flat owner count -- which reads as a *vendor* defect, and was attributed
+    to one for weeks before being traced back here.
+
+    The lesson generalizes past polars: any date arithmetic on a narrow integer type can
+    silently produce a valid-looking key. Assert the buckets, do not eyeball the head.
+
+    `thin_share` also catches the softer version -- a bucket present but far smaller than
+    its peers, which is a partial join failure rather than a total one.
+    """
+    findings: list[Finding] = []
+    counts: dict[int, int] = {m: 0 for m in expected_months}
+    unexpected: dict[int, int] = {}
+    for rec in records:
+        value = rec.get(period_col)
+        if value is None:
+            continue
+        month = _as_date(value).month
+        if month in counts:
+            counts[month] += 1
+        else:
+            unexpected[month] = unexpected.get(month, 0) + 1
+
+    present = {m: n for m, n in counts.items() if n > 0}
+    for month in expected_months:
+        if counts[month] == 0:
+            findings.append(
+                Finding(
+                    kind="calendar_bucket_gap",
+                    entity=period_col,
+                    period=month,
+                    detail=(
+                        f"no rows in calendar month {month}; expected months "
+                        f"{list(expected_months)}. A whole bucket is missing, so every "
+                        f"downstream join keyed on it silently falls back to a default"
+                    ),
+                    metrics={"month": month, "rows": 0, "present_months": sorted(present)},
+                )
+            )
+
+    if present:
+        mean_present = sum(present.values()) / len(present)
+        for month, n in sorted(present.items()):
+            if n < mean_present * thin_share:
+                findings.append(
+                    Finding(
+                        kind="calendar_bucket_thin",
+                        entity=period_col,
+                        period=month,
+                        detail=(
+                            f"month {month} has {n:,} rows against a {mean_present:,.0f} "
+                            f"average across present months -- partial join failure"
+                        ),
+                        metrics={"month": month, "rows": n, "mean_rows": mean_present},
+                    )
+                )
+
+    for month, n in sorted(unexpected.items()):
+        findings.append(
+            Finding(
+                kind="calendar_bucket_unexpected",
+                entity=period_col,
+                period=month,
+                detail=(
+                    f"{n:,} rows in month {month}, which is not in the expected set "
+                    f"{list(expected_months)} -- a corrupted date key can land anywhere"
+                ),
+                metrics={"month": month, "rows": n},
+            )
+        )
+    return findings
+
+
+def detect_join_gap_clustering(
+    records: Sequence[dict],
+    *,
+    period_col: str = "rdate",
+    joined_col: str = "tso",
+    max_spread: float = 0.25,
+) -> list[Finding]:
+    """A join whose failure rate is wildly uneven across calendar buckets.
+
+    A left join that misses is not an error -- 13F holds ADRs and closed-end funds that
+    legitimately have no CRSP common-stock match, so a flat ~54% null rate is expected
+    and fine. What is NOT fine is that rate differing by bucket: real non-matches do not
+    know what month it is.
+
+    On the broken mirror panel the null rate for `tso` was 1.00 in June and September
+    against 0.53 in March and December -- a spread of 0.47. After the fix it was 0.537 to
+    0.546, a spread of 0.009. The absolute level moved barely at all; the *spread* is the
+    signal, which is why this is a separate detector from a null-rate threshold.
+
+    Use this wherever a reference table is joined in: a silent default is much harder to
+    notice than a missing column, because the arithmetic downstream still succeeds.
+    """
+    by_month: dict[int, list[int]] = {}
+    for rec in records:
+        value = rec.get(period_col)
+        if value is None:
+            continue
+        month = _as_date(value).month
+        bucket = by_month.setdefault(month, [0, 0])
+        bucket[1] += 1
+        if rec.get(joined_col) is None:
+            bucket[0] += 1
+
+    rates = {m: miss / total for m, (miss, total) in by_month.items() if total}
+    if len(rates) < 2:
+        return []
+    lo_month, lo = min(rates.items(), key=lambda kv: kv[1])
+    hi_month, hi = max(rates.items(), key=lambda kv: kv[1])
+    if hi - lo < max_spread:
+        return []
+    return [
+        Finding(
+            kind="join_gap_clustering",
+            entity=joined_col,
+            period=hi_month,
+            detail=(
+                f"{joined_col} is null for {hi:.1%} of rows in month {hi_month} but only "
+                f"{lo:.1%} in month {lo_month} (spread {hi - lo:.1%}) -- the join is "
+                f"failing for a calendar subset, not for genuinely unmatched entities"
+            ),
+            metrics={
+                "max_null_rate": hi,
+                "min_null_rate": lo,
+                "spread": hi - lo,
+                "worst_month": hi_month,
+                "best_month": lo_month,
+                "null_rate_by_month": dict(sorted(rates.items())),
+            },
+        )
+    ]
+
+
+def detect_join_coverage_tail(
+    records: Sequence[dict],
+    *,
+    period_col: str = "rdate",
+    joined_col: str = "tso",
+    null_threshold: float = 0.99,
+    min_periods: int = 2,
+) -> list[Finding]:
+    """A joined column goes (near-)entirely null for a contiguous TAIL of periods.
+
+    The signature of a reference table that FROZE while the fact table kept going.
+    Vendors retire products without retiring the tables: the old one simply stops
+    receiving rows, every join against it silently falls back to null or a default, and
+    the fact table looks complete because its own row counts never move.
+
+    Grounded in a real incident. `crsp.msf` is frozen at 2024-12-31 while the 13F panel
+    ran to 2025Q4, so all four 2025 quarters carried `tso = NULL` and an ownership ratio
+    of exactly 0 for 100% of their rows -- 43,000 permno-quarters of silently missing
+    ownership. The fix was to splice `crsp.msf_v2`, which continues.
+
+    NEITHER of the obvious guards catches this, which is why it is its own detector:
+      - a "months present" assertion passes, because [3, 6, 9, 12] all still exist.
+        Only the RANGE is short.
+      - `detect_join_gap_clustering` passes, because it keys on spread ACROSS calendar
+        buckets and a tail truncation fails all four buckets EQUALLY. Zero spread.
+
+    Deliberately requires an EARLIER period below the threshold. A column that is null
+    everywhere is a different defect -- a reference table that was never joined at all --
+    and reporting it here would bury the one this detector is for.
+    """
+    by_period: dict[_dt.date, list[int]] = {}
+    for rec in records:
+        value = rec.get(period_col)
+        if value is None:
+            continue
+        bucket = by_period.setdefault(_as_date(value), [0, 0])
+        bucket[1] += 1
+        if rec.get(joined_col) is None:
+            bucket[0] += 1
+
+    periods = sorted(by_period)
+    if len(periods) < min_periods + 1:
+        return []
+    rates = {p: by_period[p][0] / by_period[p][1] for p in periods if by_period[p][1]}
+
+    tail: list[_dt.date] = []
+    for p in reversed(periods):
+        if rates.get(p, 0.0) >= null_threshold:
+            tail.append(p)
+        else:
+            break
+    tail.reverse()
+
+    # No tail, too short, or the whole panel is null (a different defect entirely).
+    if len(tail) < min_periods or len(tail) == len(periods):
+        return []
+
+    healthy = [p for p in periods if p not in set(tail)]
+    return [
+        Finding(
+            kind="join_coverage_tail",
+            entity=joined_col,
+            period=tail[0],
+            detail=(
+                f"{joined_col} is null for >={null_threshold:.0%} of rows in the last "
+                f"{len(tail)} periods ({tail[0]} onward) but only "
+                f"{rates[healthy[-1]]:.1%} in {healthy[-1]} -- the reference table "
+                f"looks frozen while the fact table kept going"
+            ),
+            metrics={
+                "tail_periods": len(tail),
+                "tail_start": tail[0],
+                "last_healthy_period": healthy[-1],
+                "last_healthy_null_rate": rates[healthy[-1]],
+            },
+        )
+    ]
+
+
+def detect_impossible_ratio(
+    records: Sequence[dict],
+    *,
+    entity_col: str = "permno",
+    period_col: str = "rdate",
+    numerator_col: str = "io_total",
+    denominator_col: str = "tso",
+    max_ratio: float = 1.0,
+    tolerance: float = 0.02,
+) -> list[Finding]:
+    """Held shares exceed shares outstanding. A TRIAGE signal, not a verdict.
+
+    READ THIS BEFORE ACTING ON A FINDING. The name is a historical artifact and it
+    overstates the case: above 100% is not automatically impossible, and roughly a third
+    of what this detector flags on a raw 13F panel is CORRECT.
+
+    Form 13F reports LONG positions only and has no short side, so a lent share is
+    reported twice -- once by the lender, who still carries it, and once by whoever
+    bought it from the short seller. For a heavily shorted stock, summed 13F ownership
+    above 100% is the arithmetically right answer, and WRDS's own support article
+    ("Institutional Ownership Exceeding 100%", S34 knowledge base) leads with exactly
+    this cause. Measured against Compustat `sec_shortint` via CCM, the violation rate
+    rises 0.51% -> 2.16% -> 6.99% -> 22.95% across short-interest buckets of 0-2 / 2-5 /
+    5-10 / >10% of shares outstanding: a 45x dose-response.
+
+    So the finding list is a population to be SPLIT, not repaired:
+
+      real defects, worth fixing      parse failures (value = 0 with huge shares);
+                                      a fallback join mapping other share classes onto
+                                      the common permno
+      real economics, leave alone     securities lending
+
+    Two things separate them, and neither is the ratio itself:
+      - short interest. Join it if you have it; it is the direct test.
+      - CONCENTRATION. A parse failure is usually one row dominating one cell, so
+        top-filer mass share RISES. Lending is economy-wide, so it FALLS -- measured at
+        12.33% for lending-driven violators vs 18.11% for clean cells, with 172
+        contributing filers vs 85. Direction distinguishes them; magnitude does not.
+
+    DO NOT CLIP AT 100%. Capping destroys the short-lending information, and it is the
+    same clipping that hid the parse defect in vendor panels for years -- a clipped
+    series looks clean because the evidence has been deleted, not because it is.
+
+    CONSEQUENCE FOR VOTING WORK. A lent share carries no vote for the lender; the vote
+    passes to the borrower unless the loan is recalled before the record date. So the
+    double-count inflates OWNERSHIP but not VOTABLE SHARES. Anything using institutional
+    ownership as a voting weight overstates the block by roughly the lending rate, and
+    short interest is not random with respect to governance conflict -- borrowing spikes
+    around record dates specifically to acquire votes.
+
+    `tolerance` allows a small band for genuine timing mismatch: holdings are reported at
+    quarter-end while shares outstanding come from a monthly file, so a real 100.5% is
+    a stale denominator rather than either story above.
+    """
+    findings: list[Finding] = []
+    limit = max_ratio * (1.0 + tolerance)
+    for rec in records:
+        numer = rec.get(numerator_col)
+        denom = rec.get(denominator_col)
+        if numer is None or denom is None or denom <= 0:
+            continue
+        ratio = numer / denom
+        if ratio > limit:
+            findings.append(
+                Finding(
+                    kind="impossible_ratio",
+                    entity=rec.get(entity_col),
+                    period=_as_date(rec[period_col]) if rec.get(period_col) else None,
+                    detail=(
+                        f"{numerator_col} / {denominator_col} = {ratio:.1%}, above the "
+                        f"{max_ratio:.0%} bound -- triage against short interest and "
+                        f"filer concentration before treating it as a defect"
+                    ),
+                    metrics={
+                        "ratio": ratio,
+                        "numerator": numer,
+                        "denominator": denom,
+                    },
+                )
+            )
+    return findings
+
+
+def detect_implied_price_outlier(
+    records: Sequence[dict],
+    *,
+    value_col: str = "value",
+    shares_col: str = "shares",
+    value_scale: float = 1000.0,
+    min_price: float = 0.01,
+    max_price: float = 10_000.0,
+    min_shares: int = 100_000,
+    id_cols: Sequence[str] = ("cik", "cusip8", "period_of_report"),
+) -> list[Finding]:
+    """Rows whose reported value and share count cannot both be true.
+
+    A 13F row carries two numbers describing one position, so they cross-check each other:
+    `value x value_scale / shares` is an implied price, and a position whose implied price
+    is impossible is a parse failure regardless of how reasonable either field looks alone.
+
+    This catches the D9 defect at ROW level rather than waiting for the aggregate to breach
+    100% of shares outstanding -- which matters, because by then the bad row is pooled with
+    hundreds of good ones and the only available remedy is a cap that leaves the fabrication
+    standing. Reference case: one row reporting 719,257,141 shares of AAPL with `value = 0`
+    drove that firm-quarter to 239% ownership; the next-largest holder reported 19.8M.
+
+    `min_shares` keeps the check off legitimately tiny positions. A holding genuinely worth
+    under $1,000 rounds to `value = 0` in $1000s, and there are 2.8M such rows carrying
+    almost no share mass -- dropping them all costs 33x the rows for no additional benefit.
+    Requiring a large share count isolates the 86,509 rows that carry 13.88% of the mass.
+
+    Also catches the inverse: `value` reported in dollars rather than thousands shows up as
+    an absurdly HIGH implied price (9.78M shares against `value = 202,656,145` implies
+    $20,720 per share against an actual 2003 AAPL price near $10).
+
+    ⚠️ **The high side is weaker than the low side, and the default reflects that.** A
+    constant ceiling cannot separate a units error from a genuinely expensive security --
+    BRK.A trades near $700,000 and will flag at any threshold that catches a 1000x error.
+    Treat high-side hits as "check this", not "this is wrong", and raise `max_price` or
+    exclude known high-priced issues when sweeping a broad cross-section. The low side has
+    no such ambiguity: no security has a price below a cent and a hundred-thousand-share
+    position at zero value.
+    """
+    findings: list[Finding] = []
+    for rec in records:
+        value, shares = rec.get(value_col), rec.get(shares_col)
+        if value is None or shares is None or shares <= 0:
+            continue
+        if shares < min_shares:
+            continue
+        implied = (float(value) * value_scale) / float(shares)
+        if min_price <= implied <= max_price:
+            continue
+        ident = {c: rec.get(c) for c in id_cols if c in rec}
+        findings.append(
+            Finding(
+                kind="implied_price_outlier",
+                entity=ident or None,
+                period=rec.get("period_of_report"),
+                detail=(
+                    f"{shares:,.0f} shares against {value_col}={value:,} implies "
+                    f"{implied:,.4g} per share -- "
+                    + (
+                        "zero/near-zero value with a large position is a parse failure"
+                        if implied < min_price
+                        else "implausibly high; check whether value is in dollars "
+                        "rather than thousands"
+                    )
+                ),
+                metrics={
+                    "implied_price": implied,
+                    "shares": shares,
+                    "value": value,
+                    "too_low": implied < min_price,
+                },
+            )
+        )
+    return findings
+
+
+def detect_fallback_join_contamination(
+    records: Sequence[dict],
+    *,
+    total_col: str = "io_total",
+    fallback_col: str = "io_fallback",
+    entity_col: str = "permno",
+    period_col: str = "rdate",
+    max_fallback_share: float = 0.05,
+    control_col: str | None = None,
+) -> list[Finding]:
+    """Cells drawing an outsized share of their value from a degraded join path.
+
+    Pipelines that fail a primary key match often retry on a looser one -- cusip8 falling
+    back to cusip6, exact name falling back to fuzzy. The fallback recovers real rows, so
+    it looks like pure gain, and the rows it recovers WRONGLY are invisible: they arrive as
+    ordinary values in the same column.
+
+    Reference case: `cusip8 -> ncusip` falling back to issuer-level `cusip6` attributes
+    other share classes, preferreds and warrants to one common-stock permno while the
+    denominator stays single-class. Cells breaching 100% ownership drew **16.5%** of their
+    value from the fallback against **0.8%** for clean cells -- a 21x enrichment, and a far
+    sharper discriminator than the join's overall usage rate (53.7% vs 13.8%).
+
+    That gap is the point: *whether* a cell used the fallback separates weakly, *how much
+    it leans on it* separates strongly. Key on the mass, not the flag.
+
+    Restricting a fallback to unambiguous keys is the tempting surgical fix and is usually
+    the wrong one -- measured here it recovered 3.5% of violators against 39.5% for
+    dropping the fallback outright, because the bad matches are to genuinely different
+    securities, not to ambiguous identifiers.
+
+    Pass `control_col` (a bool marking known-good cells) to have the finding report the
+    contamination gap against that control rather than an absolute threshold alone.
+    """
+    findings: list[Finding] = []
+    control_shares: list[float] = []
+    if control_col is not None:
+        for rec in records:
+            if not rec.get(control_col):
+                continue
+            total = rec.get(total_col)
+            if total:
+                control_shares.append(float(rec.get(fallback_col) or 0.0) / float(total))
+    control_mean = (
+        sum(control_shares) / len(control_shares) if control_shares else None
+    )
+
+    for rec in records:
+        total = rec.get(total_col)
+        if not total:
+            continue
+        share = float(rec.get(fallback_col) or 0.0) / float(total)
+        if share <= max_fallback_share:
+            continue
+        detail = (
+            f"{share:.1%} of {total_col} comes from the fallback join path "
+            f"(threshold {max_fallback_share:.0%})"
+        )
+        metrics: dict[str, Any] = {
+            "fallback_share": share,
+            "total": total,
+            "fallback": rec.get(fallback_col),
+        }
+        if control_mean is not None:
+            metrics["control_mean_share"] = control_mean
+            metrics["enrichment"] = (share / control_mean) if control_mean else None
+            detail += f" vs {control_mean:.1%} in the control population"
+        findings.append(
+            Finding(
+                kind="fallback_join_contamination",
+                entity=rec.get(entity_col),
+                period=rec.get(period_col),
+                detail=detail,
+                metrics=metrics,
+            )
+        )
     return findings
 
 

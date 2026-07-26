@@ -418,6 +418,357 @@ filings start 1999 and XML only in 2013.
 
 ---
 
+### D8. Your own date arithmetic — the defect that imitates a vendor defect
+
+**Not a WRDS issue at all.** Recorded here because it cost weeks of misattribution: the
+symptom is indistinguishable from D1 (Thomson's split double-adjustment), and it was
+blamed on Thomson before being traced home.
+
+polars' `dt.month()` returns **Int8**. The ubiquitous date-key idiom
+
+```python
+pl.col("date").dt.year() * 10000 + pl.col("date").dt.month() * 100 + pl.col("date").dt.day()
+```
+
+overflows for every month ≥ 2 — `2 * 100 = 200 > 127` — and wraps **negative**, silently.
+Only January survives:
+
+| date | produced | correct |
+|---|---|---|
+| 2020-01-31 | 20200131 | ✓ |
+| 2020-02-29 | 20199973 | 20200229 |
+| 2020-03-31 | 20200075 | 20200331 |
+| 2020-12-31 | 20199951 | 20201231 |
+
+A quarter-snap downstream read `20199973` as "month 99" and `20200075` as "month 0",
+bucketing them into Q4-of-the-prior-year and Q1. The CRSP reference panel ended up
+holding **only March and December** quarter-ends: 193,335 rows where 370,630 were
+correct.
+
+**What made it expensive is that nothing raised.** The output was a full-looking table of
+plausible eight-digit integers. Every June and September holdings quarter missed the
+join, fell back to `cfacshr = 1` and a null denominator, and produced `ior = 0` for
+**49% of the panel** — while March and December carried 4× and 28× split factors. Net
+effect on AAPL: quarter means of 1.41e10 / 3.11e9 / 3.31e9 / 1.41e10 with `numowners`
+flat at ~2,200, because owner counts do not depend on `cfacshr` so only the shares moved.
+That is exactly the D1 signature.
+
+**Fix:** cast before the multiply, and cast back afterwards if a downstream frame is
+typed Int32 (`vstack` raises on a widened type).
+
+```python
+(pl.col("date").dt.year().cast(pl.Int64) * 10000
+ + pl.col("date").dt.month().cast(pl.Int64) * 100
+ + pl.col("date").dt.day().cast(pl.Int64)).cast(pl.Int32)
+```
+
+`dt.quarter()` is Int8 too — the same trap caught the *comparison script written to check
+this very bug*, which is a fair measure of how easy it is to hit.
+
+**Guard, do not eyeball.** Assert bucket coverage on every reference panel at build time,
+and assert it again on load — a cached input accepted without a coverage check is how a
+March/December-only panel survived into production.
+
+→ Detectors: `detect_calendar_bucket_gap` (run it on the **reference table**, where it
+catches the root cause; it is silent on the output panel, whose holdings side was always
+complete) and `detect_join_gap_clustering` (run it on the **output**, where the null rate
+for the joined column was 100% in Jun/Sep against 53% in Mar/Dec — a 47.5% spread that
+collapsed to 0.9% after the fix). Note the *level* of the null rate is not the signal:
+~54% is correct and expected, because 13F legitimately holds ADRs and closed-end funds
+with no CRSP common-stock match. The **spread across buckets** is the signal.
+
+### D9. Held shares exceeding shares outstanding — PARTIAL (two causes; one fixed, one open)
+
+Surfaced by `detect_impossible_ratio` on the rebuilt EDGAR panel: **7.0% of non-zero
+observations exceed 100% ownership, 2.9% exceed 120%**, concentrated in the pre-XML
+`parse_mode = "text"` era. AAPL 2003-09-30 showed 239%, bracketed by quarters at a sane
+45% and 60%.
+
+**Root cause: mis-parsed rows in the text parser, identifiable by `value = 0` with a large
+`shares`.** Not any of the three original suspects.
+
+AAPL 2003-09-30, decomposed at the row level, is one row:
+
+| cik | shares | value | form | parse_mode | issuer |
+|---|---|---|---|---|---|
+| 728100 | **719,257,141** | **0** | 13F-HR/A | text | `APPLE COMPUTER, INC.` |
+
+The next-largest holder that quarter reports 19.8M. The same CIK reports 3,038,253,827
+shares of Exxon Mobil with `value = 0` — more than Exxon's entire float. A 13F holding
+with zero value and hundreds of millions of shares is not a holding; it is a parse
+failure, and `value` is what exposes it.
+
+#### The three candidate causes were tested and all three are ruled out
+
+| Candidate | Test | Result |
+|---|---|---|
+| Duplicate rows within an accession | dedup on `(accession, cusip8, shares, discretion, other_manager)` | removes **~0.0%** — not duplication |
+| `shares_type` contamination (PRN) | filter `shares_type = 'SH'` | removes **0.0%** — every AAPL row is already `SH` |
+| Sub-advisor double-counting | `other_manager` populated? | **0.0% of text-era rows populate it** |
+
+The third deserves emphasis: **`other_manager` is never populated in `parse_mode = "text"`,
+and `investment_discretion` is NULL on ~70% of those rows.** The text parser does not
+extract either column. So no discretion-based dedup rule — WRDS's or anyone's — can be
+applied before 2013. The columns are not merely unused; the data is absent. Filtering to
+`investment_discretion = 'SOLE'` "fixes" the violating quarters only because it discards
+70–94% of all rows, including in quarters that were already clean (2003-06-30 falls from
+45% to 13.5%). That is data destruction, not a fix.
+
+#### The fix, measured
+
+Drop rows where `value = 0 AND shares > 100,000`. A genuine holding worth under $1,000
+(value is in $1000s) cannot carry 100,000 shares at any plausible price.
+
+| Quarter | before | after | rows dropped |
+|---|---|---|---|
+| 2003-09-30 | 239% | **47.8%** | 1 |
+| 2004-06-30 | 262% | **58.8%** | 1 |
+| 2004-12-31 | 194% | **65.1%** | 2 |
+| 2003-06-30 (clean) | 45% | **45.0%** | 0 |
+| 2003-12-31 (clean) | 60% | **60.0%** | 0 |
+
+Violating quarters fall below 100%; already-clean quarters are untouched. Panel-wide the
+rule removes **86,509 rows** carrying **13.88% of all share mass** — the mass is real and
+enormous, the row count is tiny.
+
+**Choose the threshold, do not drop all `value = 0` rows.** At `T = 0` the rule removes
+2,820,455 rows for the same 13.89% of mass: 33× the rows for no additional benefit,
+because a legitimate sub-$1,000 holding rounds to `value = 0` (median such row is 479
+shares). `T = 100,000` captures 99.9% of the bad mass at 3% of the row cost.
+
+**Safe to apply panel-wide.** The pathology is text-specific: `text` + `value=0` carries
+13.87% of all share mass, `xml` + `value=0` carries **0.02%** (p99 of 100,000 shares, so
+the threshold barely bites). Applying it everywhere costs almost nothing after 2013 and
+needs no era switch.
+
+Proposed change to `mirror scripts/build_inst_own.py`, in `load_13f_holdings` alongside
+the existing F6 safety net — **proposed, not landed; that repo has its own open PR**:
+
+```python
+# F8: drop parse-failure rows — zero value with a large share count is not a
+# holding. Text parser only in practice; harmless post-2013.
+.filter(~((pl.col("value") == 0) & (pl.col("shares") > 100_000)))
+```
+
+#### What WRDS prescribes — and why it is not enough here
+
+*Research Note Regarding Thomson-Reuters Ownership Data Issues*, WRDS Research, May 2017
+(`/documents/533/Research_Note_-Thomson_S34_Data_Issues.pdf`) does address this, in the
+Data Fix Code rather than the prose. Step 3 is titled "using CRSP shares outstanding to
+winsorize holdings values at the 50% level of total shares outstanding":
+
+```sas
+if pct>0.5 then pct=0.5;   /* pct = shares / (shrout*1000), per cik-rdate-permno */
+```
+
+Three things to note, and each one matters:
+
+1. **It is a cap, not a repair, and WRDS says so.** Their comment: *"Further investigation
+   is warranted to determine if a single institution is truely holding more than 50% of
+   total shares outstanding."* They screen the symptom without diagnosing it — the same
+   posture as the splits note. Our row-level diagnosis goes further than the note does.
+2. **It is scoped to 2013+.** The surrounding code runs `%crspmerge(start=01JAN2013…)` —
+   the XML era. It was never validated on the text era, which is exactly where our
+   violations live.
+3. **A 50% cap would mask this defect, not remove it.** Capping the 719M AAPL row leaves a
+   fabricated 50% holding standing. This is precisely the clipping behaviour that makes
+   the defect invisible in vendor panels — WRDS's own pipeline clips at 50% per manager.
+   **Do not read a clipped series as a clean one.**
+
+WRDS scale estimate for their screen: "about 300 cases per quarter … out of 1.4 million
+holding records" (~0.02%). Our text-era incidence is far higher, consistent with the
+defect being our parser's rather than Thomson's.
+
+⚠️ I could not search the WRDS site for a *dedicated* note on this topic — the browser
+session's WRDS authentication expired mid-task (`/documents/` now returns the login page).
+The above is from the May 2017 note already retrieved. If a dedicated note exists, it has
+not been ruled out.
+
+→ Detector: `detect_implied_price_outlier` — flags rows whose implied price
+(`value × 1000 / shares`) is outside a plausible band. It catches this defect at row level
+rather than waiting for the aggregate to breach 100%, and also catches the inverse
+`value`-unit error (cik 93751 reports 9.78M shares against `value = 202,656,145`, an
+implied $20.7M per share).
+
+#### Status: PARTIAL — the `value=0` fix is real but explains only the extreme tail
+
+Validated independently against Thomson (a different pipeline, so it can distinguish
+"removed fabricated mass" from "removed real holdings"):
+
+| | no filter | with filter |
+|---|---|---|
+| impossible ratio | 6.111% | 5.205% |
+| Pearson vs Thomson | 0.4291 | **0.5843** |
+| Spearman vs Thomson | 0.9097 | 0.9116 |
+| median ratio | 0.9830 | 0.9823 |
+
+Outlier-sensitive Pearson rises 36% while the robust median moves 0.0007 — the signature
+of deleting fabricated tail mass. Deleting *real* holdings would have moved the median and
+left Pearson flat. Landed in mirror as `b69ca18` (PR #3), gated behind `--d9-threshold` /
+`--no-d9-filter`.
+
+**But the residual is era-agnostic, which a text-parser cause cannot explain:**
+
+| era | violators | of total | rate |
+|---|---|---|---|
+| text (<2013) | 9,528 | 180,555 | 5.28% |
+| xml (≥2013) | 9,501 | 185,062 | 5.13% |
+
+Median residual ratio 1.145; 40.7% above 120%, 8.2% above 200%.
+
+#### Residual cause 1 — sub-advisor double-counting: RULED OUT, including post-2013
+
+The text-era result does not transfer, so the test was re-run restricted to `rdate ≥ 2013`,
+where `other_manager` *is* populated. **It fails on the control.**
+
+| | violators | clean (control) |
+|---|---|---|
+| any `other_manager` populated | **99.9%** | **98.9%** |
+
+There is no discrimination — essentially every cell in both groups has it populated.
+Excluding those rows "fixes" 86.9% of violators, but removes **48.5% of mass from clean
+cells** and halves their median ratio (0.636 → 0.297). `SOLE`-only is the same story:
+87.6% fixed, 41.0% of clean mass destroyed.
+
+This is the identical trap as the text era, one layer up: a rule that looks like an 87%
+fix is deleting half the panel. **The clean-cell control is what exposes it** — the
+violator-only number alone would have shipped this.
+
+#### Residual cause 2 — cusip6 fallback collapsing securities onto one permno: CONFIRMED
+
+`load_13f_holdings` matches `cusip8 → ncusip`, then falls back to **`cusip6`** (issuer
+level) for unmatched rows. That fallback attributes *any* security of the issuer —
+another share class, preferred, warrants, units — to one common-stock `permno`, while the
+denominator is that one permno's shares outstanding.
+
+| | violators | clean | enrichment |
+|---|---|---|---|
+| >1 distinct `cusip8` → one permno | **55.6%** | 18.8% | 3.0× |
+| used cusip6 fallback | **53.7%** | 13.8% | 3.9× |
+| share of cell's `io` from fallback (xml) | **16.5%** | 0.8% | **21×** |
+| share of cell's `io` from fallback (text) | **20.9%** | 1.8% | 12× |
+
+Within violators, multi-cusip8 cells run a higher median ratio than single-cusip8 cells
+(1.191 vs 1.047). The text era is even more enriched (64.1% vs 17.8%).
+
+**Policy comparison, measured panel-wide:**
+
+| policy | panel violation rate | violators fixed | clean mass removed |
+|---|---|---|---|
+| A: keep all fallback (current) | 6.18% | — | — |
+| **B: drop all cusip6 fallback** | **3.74%** | **39.5%** | 1.67% |
+| C: drop only *ambiguous* fallback (cusip6 → >1 permno) | 5.97% | 3.5% | 0.07% |
+
+**C is the surgical fix and it does not work.** The failure is not map ambiguity — it is
+that a cusip6 match pulls in a genuinely different security even when the issuer has
+exactly one permno. Only B moves the needle.
+
+B is a real trade, not a free win: the 1.67% of clean mass it removes is holdings the
+fallback recovered *correctly*. Coverage versus correctness — which is why it belongs
+behind a flag, like the D9 filter itself.
+
+Proposed for `mirror scripts/build_inst_own.py` — **proposed, not landed; mirror PR #3 is
+Edwin's**:
+
+```python
+# F9: the cusip6 fallback is issuer-level, so it attributes other share classes,
+# preferreds and warrants to one common-stock permno while the denominator stays
+# single-class. Gate it. Restricting to unambiguous cusip6 does NOT help (3.5% of
+# violators vs 39.5% for dropping it outright) — the bad matches are to different
+# securities, not to ambiguous permnos.
+if not use_cusip6_fallback:          # default off; --cusip6-fallback to restore
+    h = matched8
+```
+
+**Residual after B: 3.74% of cells, median ratio 1.057** (3.016% in mirror's own
+pipeline, which landed policy B as `15b598c`, default-on with `--cusip6-fallback` to
+restore). Validated against Thomson: impossible rate 5.205% → 3.016%, **both** correlations
+up (Pearson 0.5843 → 0.5999, Spearman 0.9116 → 0.9127), median slipping only 0.3pp — the
+coverage cost showing honestly and small against the gain.
+
+#### The benign explanation was tested and does NOT hold
+
+Dual-class (#4c) and rdate-vs-shrout timing (#4a) were both tested against the clean
+population. Neither survives:
+
+| | residual violators | clean (control) | enrichment |
+|---|---|---|---|
+| permco carries >1 common-stock permno | 8.24% | 5.48% | 1.5× |
+| \|Δshrout\| > 2% between rdate and rdate+2m | 12.46% | 9.77% | 1.3× |
+| **explained by either** | **19.3%** | **14.5%** | **1.3×** |
+
+80.7% of residual violators show neither. **The severity test settles it:** if these
+mechanisms drove the violations, the cells they explain would be *more* severe. They are
+not — median ratio 1.069 where explained versus 1.054 where not. That is not a weak
+signal, it is the absence of one.
+
+#### RESOLVED — the residual is short interest, and it is not a defect
+
+**WRDS documents this directly.** Support article *"Institutional Ownership Exceeding
+100%"* (`/pages/support/support-articles/lseg/institutional-holdings-s34/`) gives four
+causes, and the first is not a data error at all:
+
+> "Special cases with high levels of institutional ownership and high short interest
+> ratios around calendar quarter ends. 13F filings report only stock holdings and do not
+> report short positions."
+
+A lent share is reported twice — the lender still reports it, and so does the buyer who
+bought it from the short seller. Aggregate 13F ownership above 100% is the *correct*
+result for a heavily shorted stock, not an artifact.
+
+Tested against Compustat `sec_shortint` linked to permno via CCM:
+
+| | residual violators | clean (control) |
+|---|---|---|
+| median short interest / TSO | **12.44%** | 1.57% |
+| short interest > 5% | **82.9%** | 22.8% |
+| short interest > 10% | **60.5%** | 9.5% |
+
+And the dose-response is monotone, which is the strongest form of the evidence:
+
+| short interest / TSO | violation rate |
+|---|---|
+| 0–2% | 0.51% |
+| 2–5% | 2.16% |
+| 5–10% | 6.99% |
+| **>10%** | **22.95%** |
+
+A 45× spread in violation rate across the short-interest gradient, and
+`corr(excess over 100%, short interest) = 0.355` among violators.
+
+**The row-level test rules out a second parse pathology, in the opposite direction.**
+Violating cells are *less* concentrated than clean ones — median top-filer mass share
+12.33% vs 18.11%, `>50%` share in 5.3% vs 12.4%, median contributing filers 172 vs 85.
+The `value=0` defect was one row dominating a cell; this is the mirror image, excess
+spread thinly across *more* filers. That is what an economy-wide lending effect looks
+like and what a parse bug does not.
+
+**Do not repair this.** Clipping the ratio at 100% destroys real information — it is
+precisely the vendor clipping that hid the `value=0` defect (D9 above) and it would now
+also erase a genuine signal. 13F cannot capture shorts, so the excess is irreducible.
+Document it, and when a bounded ratio is required, cap explicitly and record that
+high-short-interest names are being truncated.
+
+The remaining WRDS causes map cleanly onto findings already recorded here: shared
+investment discretion double-counting (cause 2 — see the control test above, which shows
+the `other_manager` flag cannot isolate it even though the phenomenon is real), incorrect
+vendor shares outstanding (cause 3 — already handled, we use CRSP), and mis-applied
+adjustment factors joined at `fdate` (cause 4 — this is D1).
+
+**D9 status: the numerator defects are fixed (`value=0`, cusip6 fallback); the ~3%
+residual is explained and is not a defect.** What remains is a documentation obligation,
+not a repair.
+
+⚠️ One nuance worth preserving: the control test shows the `other_manager` flag has no
+discriminating power (99.9% vs 98.9%), which means it cannot be *used* as a fix. It does
+not prove shared-discretion double-counting never occurs — WRDS says it does. The two
+statements are compatible and the distinction matters.
+
+→ Detector: `detect_fallback_join_contamination` — flags cells drawing an outsized share
+of their value from a degraded/fallback join path. The 16.5%-vs-0.8% split above is
+exactly what it keys on, and it generalises to any pipeline with a primary and a
+looser secondary match.
+
 ## The S12 alternative: `crsp.holdings` (verified on the WRDS grid)
 
 **S12 does not need an EDGAR/N-PORT parser.** WRDS already carries CRSP Mutual Fund

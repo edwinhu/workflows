@@ -673,5 +673,266 @@ check(
     == 1,
 )
 
+
+# ---------------------------------------------------------------------------
+# F6  A reference panel silently missing whole calendar buckets, and the
+#     symptoms it produces downstream.
+#
+#     Measured, not synthesized: mirror's CRSP reference panel held only March
+#     and December quarter-ends (193,335 rows where 370,630 were correct)
+#     because `dt.year()*10000 + dt.month()*100 + dt.day()` overflows polars'
+#     Int8 month. Feb 2020 became 20199973, March became 20200075. Nothing
+#     raised. Downstream, ior was exactly 0 for 49% of the panel.
+#
+#     Validated against the real artifacts before being written down here:
+#       calendar_bucket_gap  stale CRSP 2 findings -> fixed 0
+#       join_gap_clustering  broken panel 1 (47.5% spread) -> fixed 0
+#       impossible_ratio     2.8% of the rebuilt panel (a separate, open defect)
+# ---------------------------------------------------------------------------
+
+_quarters = ["03-31", "06-30", "09-30", "12-31"]
+full_panel = [
+    {"permno": 1, "rdate": f"20{y:02d}-{q}", "tso": 1e9, "io_total": 5e8}
+    for y in range(10, 20)
+    for q in _quarters
+]
+mar_dec_only = [r for r in full_panel if r["rdate"][5:7] in ("03", "12")]
+
+check(
+    "F6 calendar_bucket_gap fires on a March/December-only reference panel",
+    {f.metrics["month"] for f in dq.detect_calendar_bucket_gap(mar_dec_only)} == {6, 9},
+)
+check(
+    "F6 calendar_bucket_gap is silent on a complete quarterly panel",
+    dq.detect_calendar_bucket_gap(full_panel) == [],
+)
+# One lonely June against ten of every other quarter: the bucket exists, so
+# calendar_bucket_gap must not fire, but it is far below its peers -- a partial
+# join failure rather than a total one.
+one_thin_june = [r for r in full_panel if r["rdate"][5:7] != "06"] + [full_panel[1]]
+_thin = dq.detect_calendar_bucket_gap(one_thin_june)
+check(
+    "F6 calendar_bucket_gap flags a bucket that is present but far too thin",
+    [f.kind for f in _thin] == ["calendar_bucket_thin"]
+    and _thin[0].metrics["month"] == 6,
+)
+check(
+    "F6 calendar_bucket_gap reports a month outside the expected set",
+    any(
+        f.kind == "calendar_bucket_unexpected"
+        for f in dq.detect_calendar_bucket_gap(
+            full_panel + [{"permno": 1, "rdate": "2015-07-31", "tso": 1e9}]
+        )
+    ),
+)
+
+# A join that fails for a calendar subset vs one that fails uniformly. The
+# uniform case MUST stay silent: 13F legitimately holds ADRs and closed-end
+# funds with no CRSP match, so a flat ~54% null rate is correct behaviour.
+joined_by_month = [
+    {"permno": i, "rdate": f"2015-{q}", "tso": None if q[:2] in ("06", "09") else 1e9}
+    for q in _quarters
+    for i in range(50)
+]
+joined_uniform = [
+    {"permno": i, "rdate": f"2015-{q}", "tso": None if i % 2 else 1e9}
+    for q in _quarters
+    for i in range(50)
+]
+check(
+    "F6 join_gap_clustering fires when null rate is bucketed by calendar month",
+    len(dq.detect_join_gap_clustering(joined_by_month)) == 1,
+)
+check(
+    "F6 join_gap_clustering stays silent on a uniformly high null rate",
+    dq.detect_join_gap_clustering(joined_uniform) == [],
+)
+check(
+    "F6 join_gap_clustering needs at least two buckets to compare",
+    dq.detect_join_gap_clustering(
+        [{"permno": 1, "rdate": "2015-03-31", "tso": None}]
+    )
+    == [],
+)
+
+check(
+    "F6 impossible_ratio fires when held shares exceed shares outstanding",
+    [f.metrics["ratio"] for f in dq.detect_impossible_ratio(
+        [{"permno": 14593, "rdate": "2003-09-30", "io_total": 4.90e10, "tso": 2.05e10}]
+    )][0] > 2.0,
+)
+check(
+    "F6 impossible_ratio tolerates a marginally stale denominator",
+    dq.detect_impossible_ratio(
+        [{"permno": 1, "rdate": "2015-03-31", "io_total": 1.005e9, "tso": 1e9}]
+    )
+    == [],
+)
+check(
+    "F6 impossible_ratio ignores a zero or missing denominator",
+    dq.detect_impossible_ratio(
+        [
+            {"permno": 1, "rdate": "2015-03-31", "io_total": 1e9, "tso": 0},
+            {"permno": 2, "rdate": "2015-03-31", "io_total": 1e9, "tso": None},
+        ]
+    )
+    == [],
+)
+
+# ===========================================================================
+# D9. Implied-price outlier -- the row-level catch for >100% ownership
+# ===========================================================================
+print("\nD9: implied-price outlier detector")
+
+# The actual AAPL 2003-09-30 row that drove that firm-quarter to 239%.
+aapl_bad = {"cik": "728100", "cusip8": "03783310", "period_of_report": "20030930",
+            "shares": 719_257_141, "value": 0}
+# ...and a normal row from the same quarter.
+aapl_ok = {"cik": "315066", "cusip8": "03783310", "period_of_report": "20030930",
+           "shares": 19_798_710, "value": 408_447}
+hits = dq.detect_implied_price_outlier([aapl_bad, aapl_ok])
+check("catches the zero-value mega-position", len(hits) == 1, f"got {len(hits)}")
+check("flags it as too-low, i.e. a parse failure", hits and hits[0].metrics["too_low"])
+check("leaves the legitimate holding alone", hits and hits[0].metrics["shares"] == 719_257_141)
+
+# A sub-$1,000 holding legitimately rounds to value=0. Dropping these costs 33x the
+# rows for no extra mass, so the detector must NOT fire on them.
+check(
+    "silent on legitimately tiny value=0 holdings",
+    dq.detect_implied_price_outlier(
+        [{"shares": 479, "value": 0, "cik": "x", "period_of_report": "20030930"}]
+    )
+    == [],
+)
+check(
+    "min_shares is what separates the two -- lower it and the tiny row does flag",
+    len(
+        dq.detect_implied_price_outlier(
+            [{"shares": 479, "value": 0, "cik": "x", "period_of_report": "20030930"}],
+            min_shares=100,
+        )
+    )
+    == 1,
+)
+# The inverse defect: value reported in dollars, not thousands.
+dollars = dq.detect_implied_price_outlier(
+    [{"cik": "93751", "cusip8": "03783310", "period_of_report": "20030930",
+      "shares": 9_780_702, "value": 202_656_145}]
+)
+check("catches value-in-dollars as an implausibly high price", len(dollars) == 1)
+check("labels the high case distinctly", dollars and dollars[0].metrics["too_low"] is False)
+check(
+    "says to check the value units",
+    dollars and "dollars" in dollars[0].detail,
+)
+# A normal panel produces nothing.
+check(
+    "silent on a plausible cross-section",
+    dq.detect_implied_price_outlier(
+        [{"shares": 1_000_000 + i, "value": 20_000 + i, "cik": str(i),
+          "period_of_report": "20200630"} for i in range(50)]
+    )
+    == [],
+)
+
+# ===========================================================================
+# D9 residual. Fallback-join contamination
+# ===========================================================================
+print("\nD9: fallback-join contamination detector")
+
+# Measured xml-era split: violating cells draw 16.5% of io from the cusip6 fallback,
+# clean cells 0.8%.
+cells = (
+    [{"permno": 100 + i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9,
+      "io_fallback": 1.65e8, "clean": False} for i in range(20)]
+    + [{"permno": 200 + i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9,
+        "io_fallback": 8e6, "clean": True} for i in range(200)]
+)
+fb = dq.detect_fallback_join_contamination(cells, control_col="clean")
+check("flags only the contaminated cells", len(fb) == 20, f"got {len(fb)}")
+check(
+    "measures the enrichment against the control (~21x)",
+    fb and 18.0 <= fb[0].metrics["enrichment"] <= 24.0,
+    f"{fb[0].metrics.get('enrichment')}" if fb else "",
+)
+check("reports the control mean in the detail", fb and "control population" in fb[0].detail)
+check(
+    "silent when the fallback is used lightly everywhere",
+    dq.detect_fallback_join_contamination(
+        [{"permno": i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9, "io_fallback": 8e6}
+         for i in range(50)]
+    )
+    == [],
+)
+# Usage rate alone is the weak signal -- 53.7% vs 13.8% -- so a detector keyed on the
+# flag rather than the mass would separate far worse. Same cells, tiny fallback mass.
+check(
+    "keys on mass, not on whether the fallback was merely used",
+    dq.detect_fallback_join_contamination(
+        [{"permno": i, "rdate": dt.date(2015, 6, 30), "io_total": 1e9,
+          "io_fallback": 1e6, "used_fallback": True} for i in range(50)]
+    )
+    == [],
+)
+check("handles zero-total cells without dividing by zero",
+      dq.detect_fallback_join_contamination(
+          [{"permno": 1, "rdate": dt.date(2015, 6, 30), "io_total": 0, "io_fallback": 5}]) == [])
+
+
+# ---------------------------------------------------------------------------
+# F7  A reference table that FROZE while the fact table kept going.
+#     crsp.msf stops at 2024-12-31; the 13F panel ran to 2025Q4, so all four
+#     2025 quarters carried tso = NULL and ior = 0 for 100% of rows -- 43,000
+#     permno-quarters. Neither the months assertion nor join_gap_clustering
+#     catches it, which is why this is its own detector.
+# ---------------------------------------------------------------------------
+print("\nF7: frozen-reference-table detector")
+
+_qs = quarters(2022, 16)                      # 2022Q1 .. 2025Q4
+frozen = []
+for q in _qs:
+    dead = q >= dt.date(2025, 1, 1)           # reference table froze at 2024-12-31
+    for i in range(40):
+        frozen.append({
+            "permno": 1000 + i,
+            "rdate": q,
+            # ~50% null before the freeze: 13F legitimately holds ADRs and
+            # closed-end funds with no CRSP common-stock match.
+            "tso": None if (dead or i % 2) else 1e9,
+        })
+hits = dq.detect_join_coverage_tail(frozen)
+check("F7 fires on a reference table frozen mid-panel", len(hits) == 1, f"got {len(hits)}")
+check(
+    "F7 identifies the correct freeze point",
+    hits and hits[0].metrics["tail_start"] == dt.date(2025, 3, 31),
+    hits[0].metrics["tail_start"] if hits else "",
+)
+check("F7 counts the dead tail", hits and hits[0].metrics["tail_periods"] == 4)
+
+healthy = [
+    {"permno": 1000 + i, "rdate": q, "tso": None if i % 2 else 1e9}
+    for q in _qs
+    for i in range(40)
+]
+check("F7 silent when the null rate is steady to the end", dq.detect_join_coverage_tail(healthy) == [])
+
+# A column null EVERYWHERE is a different defect (never joined at all) and
+# reporting it here would bury the one this detector exists for.
+never = [{"permno": 1, "rdate": q, "tso": None} for q in _qs]
+check("F7 silent when the column is null in every period", dq.detect_join_coverage_tail(never) == [])
+
+# A single dead quarter at the end is more likely a not-yet-loaded period than
+# a frozen source; min_periods guards against crying wolf on it.
+one_dead = [
+    {"permno": 1000 + i, "rdate": q,
+     "tso": None if (q == _qs[-1] or i % 2) else 1e9}
+    for q in _qs for i in range(40)
+]
+check("F7 respects min_periods on a single trailing gap", dq.detect_join_coverage_tail(one_dead) == [])
+check(
+    "F7 flags that same single gap when min_periods=1",
+    len(dq.detect_join_coverage_tail(one_dead, min_periods=1)) == 1,
+)
+
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)

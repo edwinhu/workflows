@@ -342,8 +342,9 @@ Detailed query patterns and table documentation:
 - **`references/execucomp.md`** - ExecuComp: CEO anncomp, legacy codirfin vs current directorcomp, firm-year aggregation
 - **`references/iss-directors.md`** - ISS Directors: risk.directors + risk.rmdirectors, type harmonization, 1996 gender backfill, S&P 1500 filter
 - **`references/iss-voting.md`** - ISS Voting Analytics: vavoteresults, voteanalysis_npx, base-conditional turnout/forpct, agenda codes
-- **`references/tfn-ownership.md`** - Thomson 13-F (S34) institutional ownership and S12 mutual-fund holdings via MFLINKS, passive/index classification, and **Known Data Defects** (WRDS research notes D1-D7: split mis-adjustment, post-2013 coverage collapse, 2017Q4 S12 feed change, 13F value unit break). Read the defects section before trusting any split-era or post-2013 quarter.
-  - Detectors: `scripts/ownership_dq.py` (10 detectors, S12 and S34) — run these against any holdings panel before analysis. Tests: `tests/ownership_dq_test.py`.
+- **`references/tfn-ownership.md`** - Thomson 13-F (S34) institutional ownership and S12 mutual-fund holdings via MFLINKS, passive/index classification, and **Known Data Defects** (D1-D9: split mis-adjustment, post-2013 coverage collapse, 2017Q4 S12 feed change, 13F value unit break, and two that are *yours* not the vendor's — D8 silent Int8 date overflow, D9 ownership above 100%). Read the defects section before trusting any split-era or post-2013 quarter.
+  - Detectors: `scripts/ownership_dq.py` (14 detectors, S12 and S34) — run these against any holdings panel before analysis. Tests: `tests/ownership_dq_test.py` (79 assertions, stdlib only).
+  - Run `detect_calendar_bucket_gap` on every **reference/dimension table** at build time, not just on the output panel. It is the one detector that catches a root cause rather than a symptom: a reference table missing a whole calendar bucket makes every downstream join fall back to a default, silently, and the result looks like a vendor defect (see D8).
 - **`references/lpc-dealscan.md`** - LPC DealScan: legacy vs 2021+ flat schema, borrower ids, the gvkey link and its grain caveats
 - **`references/muni-bonds.md`** - Municipal bonds: MSRB RTRS trades, SDC municipals
 - **`references/wrds-forms-tables.md`** - `wrdssec_all.wrds_forms` and friends: filing metadata tables and their columns
