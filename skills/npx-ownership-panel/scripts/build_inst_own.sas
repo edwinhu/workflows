@@ -1,4 +1,25 @@
-/* build_inst_own.sas — 13-F institutional ownership with DBREADTH, HHI, AUM
+/* build_inst_own.sas — 13-F institutional ownership from THOMSON S34 (FALLBACK).
+ *
+ * ============================ READ THIS FIRST ============================
+ * THIS IS NOT THE CANONICAL BUILDER. `build_inst_own.py` (SEC EDGAR 13F) is.
+ * This path exists for the pre-2013 window and for cross-checking; Thomson S34
+ * decayed after 2013 and carries defects WRDS says have no clean fix (D1 split
+ * mis-adjustment, D3 coverage collapse). Prefer EDGAR. Never blend the two.
+ *
+ * DO NOT "FIX" THE cfacshr JOIN TO rdate. Step 4 joins on `a.fdate = b.qdate`
+ * and that is CORRECT HERE. Thomson pre-adjusts SHARES from rdate to fdate --
+ * fdate is the vintage, and per the WRDS Overview it is "the date Thomson's
+ * share adjustments are made to" (reference D2). Shares therefore arrive on the
+ * fdate basis, so completing the conversion to a current-share basis requires
+ * cfacshr AT fdate. Using rdate here would double-count the roll-forward.
+ *
+ * The opposite is true for EDGAR, which is AS-FILED and not pre-adjusted: there
+ * the correct factor is cfacshr at rdate, because fdate can be far later than
+ * the reporting period on a late filing or a carried-forward vintage, and a
+ * split in between would apply a factor from a date the shares were not held.
+ * build_inst_own.py does exactly that. The two are not inconsistent -- they
+ * match their sources.
+ * =========================================================================
  *
  * Prereqs: autoexec.sas loaded (provides libnames: out, tfn, crsp)
  *          /wrds/lib/sas/crspmerge.sas
@@ -103,7 +124,10 @@ proc sql;
         where a.cusip=b.ncusip;
 quit;
 
-/* --- Step 4: Adjust shares using CRSP cfacshr at vintage dates --- */
+/* --- Step 4: Adjust shares using CRSP cfacshr AT THE VINTAGE DATE (fdate) ---
+ * Deliberate, and correct for Thomson only. See the header. Thomson has already
+ * rolled shares forward from rdate to fdate; cfacshr(fdate) finishes the job.
+ * EDGAR is as-filed and uses rdate instead -- see build_inst_own.py. */
 proc sql;
     create table Holdings as
         select distinct a.rdate, a.mgrno, a.NumInst, a.first_report, a.last_report,

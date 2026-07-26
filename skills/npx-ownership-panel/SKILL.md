@@ -41,7 +41,8 @@ the chain; nothing local stays alive. Disconnect, come back, collect the panel.
 | # | Leg | Script | Depends on |
 |---|---|---|---|
 | 1 | Mutual-fund holdings | `split_s12.sas` → `tfn_holdings_parallel.sas` ×N | — |
-| 2 | Institutional holdings | `build_inst_own.sas` — native indexed read of `tfn.s34type1`/`s34type3` — + EDGAR 13F scrape | — |
+| 2 | Institutional holdings | **`build_inst_own.py` (SEC EDGAR 13F) — canonical.** `build_inst_own.sas` (Thomson S34) is fallback-only | — |
+| 5 | Short interest | `build_short_interest.py` — `comp.sec_shortint` × CCM, feeds `ior_net` | — |
 | 3 | N-PX fund votes | `build_npx.sas` (SGE array, one task per year) | **leg 4** |
 | 4 | ISS→CRSP crosswalk | `npx_linking/` → `stage_npx_link.sas` | — |
 
@@ -49,9 +50,22 @@ Legs 1, 2, 4 start together. **Leg 4 hard-gates leg 3** — the array hash-merge
 the crosswalk; without it every task opens a missing dataset and exits 0 having
 written nothing.
 
-**Leg 2 has two sources for one quantity.** Thomson S34 decayed after 2013 and
-undercounts; the EDGAR scrape exists for that reason. EDGAR wins where present,
-S34 is fallback-only, **never blended**.
+**Leg 2 has two sources for one quantity, and they are NOT interchangeable.**
+Thomson S34 decayed after 2013 and undercounts; the EDGAR scrape exists for that
+reason. EDGAR wins where present, S34 is fallback-only, **never blended**.
+
+`build_inst_own.py` (EDGAR) is the canonical builder and carries every
+data-quality fix. `build_inst_own.sas` reads `tfn.s34type3` only — despite what
+an earlier version of this table said, it does not consume EDGAR at all.
+
+**The two use different `cfacshr` join dates and both are right.** EDGAR is
+as-filed and not pre-adjusted, so the correct factor is at **`rdate`** — `fdate`
+can be far later on a late filing or a carried-forward vintage, and a split in
+between would apply a factor from a date the shares were not held. Thomson
+pre-adjusts shares from `rdate` to `fdate` (reference D2: `fdate` is "the date
+Thomson's share adjustments are made to"), so there the correct factor is at
+**`fdate`**. Changing either to match the other introduces a bug. The SAS header
+says so at the join site.
 
 ## Before you run: build the crosswalk
 
@@ -99,6 +113,24 @@ hid the gap. Override with `S12_ALLOW_FULLSCAN=1` only deliberately.
 Both fired during verification and caught real failures. That is the point.
 
 ## Verification
+
+> **STALE — re-measure before quoting.** The timings and the identity digest below
+> were measured 2026-07-25, before the data-quality pass. They describe a pipeline
+> that no longer matches the canonical builder: leg 2 is now EDGAR (`build_inst_own.py`)
+> rather than the Thomson SAS path, and leg 5 (short interest) did not exist.
+>
+> Wall time should be close to unchanged — this table's own conclusion is that the
+> critical path is `tfn_holdings` ×9 and the N-PX array, and leg 2 is not on it. The
+> fixes are cheap: the `msf_v2` splice is one extra query, the `value = 0` filter is
+> one predicate on an existing pass, disabling the cusip6 fallback *removes* 2.66M
+> rows of join work, and the short-interest pull ran 9.5s.
+>
+> **The identity digest WILL change and that is intended**, not a regression to chase:
+> disabling the cusip6 fallback removes rows and the `msf_v2` splice adds 2025. Re-freeze
+> it deliberately once the corrected DAG has run clean.
+>
+> A timed run should include the detector sweep (`ownership_dq.py`, seconds) so the
+> number means "a panel you can use", not "a panel that exists".
 
 Clean checkout on WRDS, one `bash run_pipeline.sh`, 2026-07-25. Two runs, both clean:
 
