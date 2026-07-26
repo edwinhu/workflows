@@ -878,5 +878,61 @@ check("handles zero-total cells without dividing by zero",
       dq.detect_fallback_join_contamination(
           [{"permno": 1, "rdate": dt.date(2015, 6, 30), "io_total": 0, "io_fallback": 5}]) == [])
 
+
+# ---------------------------------------------------------------------------
+# F7  A reference table that FROZE while the fact table kept going.
+#     crsp.msf stops at 2024-12-31; the 13F panel ran to 2025Q4, so all four
+#     2025 quarters carried tso = NULL and ior = 0 for 100% of rows -- 43,000
+#     permno-quarters. Neither the months assertion nor join_gap_clustering
+#     catches it, which is why this is its own detector.
+# ---------------------------------------------------------------------------
+print("\nF7: frozen-reference-table detector")
+
+_qs = quarters(2022, 16)                      # 2022Q1 .. 2025Q4
+frozen = []
+for q in _qs:
+    dead = q >= dt.date(2025, 1, 1)           # reference table froze at 2024-12-31
+    for i in range(40):
+        frozen.append({
+            "permno": 1000 + i,
+            "rdate": q,
+            # ~50% null before the freeze: 13F legitimately holds ADRs and
+            # closed-end funds with no CRSP common-stock match.
+            "tso": None if (dead or i % 2) else 1e9,
+        })
+hits = dq.detect_join_coverage_tail(frozen)
+check("F7 fires on a reference table frozen mid-panel", len(hits) == 1, f"got {len(hits)}")
+check(
+    "F7 identifies the correct freeze point",
+    hits and hits[0].metrics["tail_start"] == dt.date(2025, 3, 31),
+    hits[0].metrics["tail_start"] if hits else "",
+)
+check("F7 counts the dead tail", hits and hits[0].metrics["tail_periods"] == 4)
+
+healthy = [
+    {"permno": 1000 + i, "rdate": q, "tso": None if i % 2 else 1e9}
+    for q in _qs
+    for i in range(40)
+]
+check("F7 silent when the null rate is steady to the end", dq.detect_join_coverage_tail(healthy) == [])
+
+# A column null EVERYWHERE is a different defect (never joined at all) and
+# reporting it here would bury the one this detector exists for.
+never = [{"permno": 1, "rdate": q, "tso": None} for q in _qs]
+check("F7 silent when the column is null in every period", dq.detect_join_coverage_tail(never) == [])
+
+# A single dead quarter at the end is more likely a not-yet-loaded period than
+# a frozen source; min_periods guards against crying wolf on it.
+one_dead = [
+    {"permno": 1000 + i, "rdate": q,
+     "tso": None if (q == _qs[-1] or i % 2) else 1e9}
+    for q in _qs for i in range(40)
+]
+check("F7 respects min_periods on a single trailing gap", dq.detect_join_coverage_tail(one_dead) == [])
+check(
+    "F7 flags that same single gap when min_periods=1",
+    len(dq.detect_join_coverage_tail(one_dead, min_periods=1)) == 1,
+)
+
 print(f"\n{P} passed, {F} failed")
 sys.exit(1 if F else 0)

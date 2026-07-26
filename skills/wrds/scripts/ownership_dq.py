@@ -48,6 +48,7 @@ __all__ = [
     "detect_fallback_join_contamination",
     "detect_calendar_bucket_gap",
     "detect_join_gap_clustering",
+    "detect_join_coverage_tail",
     "detect_impossible_ratio",
     "COMMON_SPLIT_FACTORS",
 ]
@@ -986,6 +987,85 @@ def detect_join_gap_clustering(
                 "worst_month": hi_month,
                 "best_month": lo_month,
                 "null_rate_by_month": dict(sorted(rates.items())),
+            },
+        )
+    ]
+
+
+def detect_join_coverage_tail(
+    records: Sequence[dict],
+    *,
+    period_col: str = "rdate",
+    joined_col: str = "tso",
+    null_threshold: float = 0.99,
+    min_periods: int = 2,
+) -> list[Finding]:
+    """A joined column goes (near-)entirely null for a contiguous TAIL of periods.
+
+    The signature of a reference table that FROZE while the fact table kept going.
+    Vendors retire products without retiring the tables: the old one simply stops
+    receiving rows, every join against it silently falls back to null or a default, and
+    the fact table looks complete because its own row counts never move.
+
+    Grounded in a real incident. `crsp.msf` is frozen at 2024-12-31 while the 13F panel
+    ran to 2025Q4, so all four 2025 quarters carried `tso = NULL` and an ownership ratio
+    of exactly 0 for 100% of their rows -- 43,000 permno-quarters of silently missing
+    ownership. The fix was to splice `crsp.msf_v2`, which continues.
+
+    NEITHER of the obvious guards catches this, which is why it is its own detector:
+      - a "months present" assertion passes, because [3, 6, 9, 12] all still exist.
+        Only the RANGE is short.
+      - `detect_join_gap_clustering` passes, because it keys on spread ACROSS calendar
+        buckets and a tail truncation fails all four buckets EQUALLY. Zero spread.
+
+    Deliberately requires an EARLIER period below the threshold. A column that is null
+    everywhere is a different defect -- a reference table that was never joined at all --
+    and reporting it here would bury the one this detector is for.
+    """
+    by_period: dict[_dt.date, list[int]] = {}
+    for rec in records:
+        value = rec.get(period_col)
+        if value is None:
+            continue
+        bucket = by_period.setdefault(_as_date(value), [0, 0])
+        bucket[1] += 1
+        if rec.get(joined_col) is None:
+            bucket[0] += 1
+
+    periods = sorted(by_period)
+    if len(periods) < min_periods + 1:
+        return []
+    rates = {p: by_period[p][0] / by_period[p][1] for p in periods if by_period[p][1]}
+
+    tail: list[_dt.date] = []
+    for p in reversed(periods):
+        if rates.get(p, 0.0) >= null_threshold:
+            tail.append(p)
+        else:
+            break
+    tail.reverse()
+
+    # No tail, too short, or the whole panel is null (a different defect entirely).
+    if len(tail) < min_periods or len(tail) == len(periods):
+        return []
+
+    healthy = [p for p in periods if p not in set(tail)]
+    return [
+        Finding(
+            kind="join_coverage_tail",
+            entity=joined_col,
+            period=tail[0],
+            detail=(
+                f"{joined_col} is null for >={null_threshold:.0%} of rows in the last "
+                f"{len(tail)} periods ({tail[0]} onward) but only "
+                f"{rates[healthy[-1]]:.1%} in {healthy[-1]} -- the reference table "
+                f"looks frozen while the fact table kept going"
+            ),
+            metrics={
+                "tail_periods": len(tail),
+                "tail_start": tail[0],
+                "last_healthy_period": healthy[-1],
+                "last_healthy_null_rate": rates[healthy[-1]],
             },
         )
     ]
