@@ -367,6 +367,13 @@ First load spawns the server ("Preparing your CodeBook environment", a minute or
 two) and the URL sits at `/hub/spawn-pending/<user>` until ready. Shut the kernel
 down (`DELETE api/kernels/<id>`) when finished; the server itself idle-culls.
 
+`amers1` is the Americas region — read it from `cfg.wsUrl`, never hardcode it.
+
+The full copy-pasteable recipe lives in **`references/codebook.md`** (added by
+PR #95), together with the spawn/XSRF gotchas and why this failure mode is so
+easy to misread: the wrong host returns *no* handshake response at all, which is
+indistinguishable from a proxy blocking the upgrade.
+
 ## Date Awareness
 
 When querying market data, account for current date context and market data lag.
