@@ -272,6 +272,40 @@ data turnout;
     mgmt_for = (mgmtrec = 'For');
 run;
 
+/* TURNOUT IS THE ONLY INDEPENDENT AUDIT OF ISS `tso`, AND THE STEP ABOVE
+ * DESTROYS IT. turnout = votes cast / tso is computed from ISS votes over ISS
+ * shares outstanding — no 13F, no CRSP — so it is the one number here that can
+ * say whether the ISS denominator is right. But rows above 120 are DELETED and
+ * the rest CLIPPED to 100, so by the time anyone looks turnout reads a clean
+ * max of 100.0% with 0.00% above, on a panel whose denominators are
+ * demonstrably broken on 6.8% of rows.
+ *
+ * The delete and the clip both stay — a 300% turnout is not usable as a turnout
+ * and downstream expects [0,100]. What changes is that the EVIDENCE SURVIVES.
+ * Measured on turnout_raw, before either, and printed as a gate line. A clipped
+ * value with no record of what was clipped is indistinguishable from one that
+ * never needed clipping.
+ *
+ * Deliberately NOT a new column: out.meetings feeds digests A and B, and a
+ * diagnostic is not worth moving a frozen schema for. */
+proc sql noprint;
+    select sum(case when outstandingshare > 0 and 100*sum(votedabstain,votedagainst,votedfor,
+                                             brokernonvote,votedwithheld)/outstandingshare > 100
+                    then 1 else 0 end),
+           sum(case when outstandingshare > 0 and 100*sum(votedabstain,votedagainst,votedfor,
+                                             brokernonvote,votedwithheld)/outstandingshare > 120
+                    then 1 else 0 end),
+           count(*),
+           max(case when outstandingshare > 0 then 100*sum(votedabstain,votedagainst,votedfor,
+                                              brokernonvote,votedwithheld)/outstandingshare end)
+      into :n_to100 trimmed, :n_to120 trimmed, :n_torows trimmed, :max_to trimmed
+      from turnout_raw;
+quit;
+%put NOTE: TURNOUT rows=&n_torows. over100=&n_to100. over120=&n_to120. max_raw=&max_to.;
+%put NOTE- TURNOUT over120 are DELETED and 100-120 are CLIPPED, so the panel max reads 100.0;
+%put NOTE- TURNOUT this is the only ISS-only check on ISS tso — a rising over100 count;
+%put NOTE- TURNOUT means the ISS denominator is drifting, and nothing else here can see it.;
+
 /* --- Join ISS/GL recommendations (if available) --- */
 %macro build_turnout;
     %if &have_recs. %then %do;
