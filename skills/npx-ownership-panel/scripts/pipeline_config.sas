@@ -84,9 +84,25 @@
  * log is not a signal.
  *
  * So the absence has to be DECLARED rather than discovered:
- *   1  (default) missing optional input is FATAL — matches how this pipeline
- *      treats every other missing input (a lost N-PX year aborts the merge)
- *   0  absence is accepted; you are saying you want the degraded panel
+ *   1  missing optional input is FATAL — matches how this pipeline treats every
+ *      other missing input (a lost N-PX year aborts the merge)
+ *   0  (default) absence is accepted; you are saying you want the degraded panel
+ *
+ * WHY 0 IS THE DEFAULT, given the argument above is for stopping loudly.
+ * The NOTE and the WARNINGs below print at BOTH settings. Declaration is what
+ * fixes the defect — a panel whose `fight` column is all zero because nobody
+ * chose that is the bug, not a panel whose `fight` column is all zero because
+ * someone did. This flag only decides whether the declaration is also a HARD
+ * STOP, and stopping the whole pipeline over an input that legitimately may not
+ * exist punishes the ordinary case to catch the careless one. Set it to 1 for
+ * anything whose digest you intend to freeze, where an unnoticed degraded panel
+ * is expensive; leave it at 0 for exploratory runs.
+ *
+ * The current deployment runs at 0 deliberately: the SharkRepellent workbook that
+ * matches the expected filename is unreadable (no header row), the other stops
+ * partway through 2025, and `fight` is not on the critical path for the present
+ * work. Digests A-C were all frozen with `fight` = 0, and that is now a stated
+ * property of them rather than an accident.
  *
  * `shark` here means USABLE, not merely present. One of the two workbooks in the
  * raw directory imports cleanly and contributes nothing — no header row, so no
@@ -101,7 +117,7 @@
  * others reports which panel this is — and `shark_through` short of year2 raises
  * a WARNING naming the years that will be silently unflagged.
  */
-%let REQUIRE_OPTIONAL_INPUTS = 1;
+%let REQUIRE_OPTIONAL_INPUTS = 0;
 
 /* MEASURED EFFECT of these two filters on the item frame, 2005-2025 (2026-07-25):
  *
