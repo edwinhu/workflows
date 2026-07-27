@@ -210,6 +210,45 @@ run;
 
 proc sort data=out.index_own nodupkey; by rqdate permno; run;
 
+/* --- D5: the S12 feed changed at 2017Q4, and levels do not compare across it -
+ *
+ * Thomson switched S12 from legacy SP to "strategic collection" from 2017Q4
+ * (backfilled 2022Q4): CUSIPs in fund holdings +613%, unique funds +113%,
+ * fund-CUSIP observations +265%, and 34,385 funds appear that did not exist in
+ * the old feed. It is a genuine coverage EXPANSION, not corruption — which is
+ * exactly why it is dangerous: every level series through 2017Q4 has a step in
+ * it that looks like a finding about funds rather than about the feed.
+ *
+ * MFLINKS was NOT backfilled for 2017Q4-2020Q2, so `wficn` bridge rates drop
+ * precisely there and the expansion does not reach the panel evenly. WRDS's own
+ * advice for that window is to identify US equity funds from Factset or CRSP
+ * rather than from MFLINKS.
+ *
+ * Reported, not corrected. There is no correction to make — the later data is
+ * better, and truncating the panel to the worse era would be the wrong trade.
+ * What can be done is refuse to let the step be invisible: print the counts
+ * either side of the boundary as a gate line, so anyone comparing mf ownership
+ * levels across it sees the discontinuity in the same grep as every other gate.
+ *
+ * See skills/wrds/references/tfn-ownership.md D5. */
+/* NOT %local — this is OPEN CODE and %LOCAL is only valid inside a macro.
+ * Written as %local it errors, the variables are never created, and every
+ * %put below prints the ampersand literally while the run carries on. See
+ * #111: that exact mistake cost a 32-minute run and produced no panel. */
+proc sql noprint;
+    select sum(case when rqdate <  '01oct2017'd then 1 else 0 end),
+           sum(case when rqdate >= '01oct2017'd then 1 else 0 end),
+           count(distinct case when rqdate <  '01oct2017'd then permno end),
+           count(distinct case when rqdate >= '01oct2017'd then permno end)
+      into :d5_pre_rows trimmed, :d5_post_rows trimmed,
+           :d5_pre_permno trimmed, :d5_post_permno trimmed
+    from out.index_own;
+quit;
+%put NOTE: D5 s12_pre2017Q4 rows=&d5_pre_rows. permnos=&d5_pre_permno. | post rows=&d5_post_rows. permnos=&d5_post_permno.;
+%put NOTE- D5 the S12 feed changed at 2017Q4 (legacy SP -> strategic collection);
+%put NOTE- D5 a coverage EXPANSION, so any mf-ownership LEVEL comparison spanning;
+%put NOTE- D5 2017Q4 is invalid; MFLINKS was not backfilled 2017Q4-2020Q2 either.;
+
 /* --- Sort inputs for MERGE_ASOF --- */
 proc sort data=out.inst_own;  by permno rdate;                     run;
 proc sort data=out.index_own; by permno rqdate;                    run;
