@@ -281,10 +281,13 @@ def main() -> int:
     # data defect and is mostly a universe boundary. The ~1.7% residual is the
     # part that would be a real gap.
     print(
-        "NOTE: DQ untestable rows are 98.3% OUT-OF-UNIVERSE holdings (ETF, ADR, "
-        "foreign, CEF), not failed matches — only ~1.7% of the unlinked permnos "
-        "are NS/EQTY/COM/Y. Bridge rate falls 74.1% (2005) to 38.0% (2025) as "
-        "institutions shift into ETFs. Classified 2026-07-27; re-derive against "
+        "NOTE: DQ untestable rows are OUT-OF-UNIVERSE holdings (ETF, ADR, foreign, "
+        "CEF), not failed matches. 98.3% of unlinked permnos are outside "
+        "NS/EQTY/COM/Y outright; of the 1.7% that look in-universe, 99.3% were in "
+        "it at a DIFFERENT DATE (share class is interval-based, the filter is "
+        "per-date). True residual: 47 rows, ONE permno, 0.0012% of panel 13F "
+        "shares. Bridge rate falls 74.1% (2005) to 38.0% (2025) as institutions "
+        "shift into ETFs. Classified 2026-07-27; re-derive against "
         "crsp.stksecurityinfohist if the panel window moves.",
         flush=True,
     )
