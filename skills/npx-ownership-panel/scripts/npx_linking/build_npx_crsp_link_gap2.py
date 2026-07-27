@@ -449,14 +449,14 @@ def agg_classes(pairs, key):
             d.filter(pl.col(col).is_not_null())
             .group_by([key, col]).agg(n=pl.len())
             .sort([key, "n", col], descending=[False, True, False])
-            .group_by(key).head(1)
+            .group_by(key, maintain_order=True).head(1)
             .select(key, pl.col(col).alias(out))
         )
 
     rep = (
         d.sort([key, "tna_latest", "crsp_fundno"], descending=[False, True, False],
                nulls_last=True)
-        .group_by(key).head(1)
+        .group_by(key, maintain_order=True).head(1)
         .select(key, crsp_fundno=pl.col("crsp_fundno"),
                 crsp_fund_name=pl.col("fund_name"))
     )
@@ -1100,7 +1100,7 @@ def best(df, mask, thresh):
               descending=[False, True, True, True, False])
         .unique(subset=["fundid", "unit"], keep="first", maintain_order=True)
     )
-    top = sub.group_by("fundid").head(1)
+    top = sub.group_by("fundid", maintain_order=True).head(1)
     second = (
         sub.join(top.select("fundid", top_unit="unit"), on="fundid", how="left")
         .filter(pl.col("unit") != pl.col("top_unit"))

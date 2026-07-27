@@ -488,12 +488,12 @@ def modal(col, out):
     return (d.filter(pl.col(col).is_not_null())
             .group_by(["unit", col]).agg(n=pl.len())
             .sort(["unit", "n", col], descending=[False, True, False])
-            .group_by("unit").head(1).select("unit", pl.col(col).alias(out)))
+            .group_by("unit", maintain_order=True).head(1).select("unit", pl.col(col).alias(out)))
 
 
 rep = (d.sort(["unit", "tna_latest", "crsp_fundno"], descending=[False, True, False],
               nulls_last=True)
-       .group_by("unit").head(1)
+       .group_by("unit", maintain_order=True).head(1)
        .select("unit", crsp_fundno="crsp_fundno", crsp_fund_name="fund_name"))
 agg = d.group_by("unit").agg(
     n_crsp_classes=pl.col("crsp_fundno").n_unique(),

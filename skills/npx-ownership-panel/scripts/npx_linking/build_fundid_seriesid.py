@@ -257,7 +257,7 @@ sid_counts = (
     .collect(engine="streaming")
     .sort(["fundid", "n", "yr_max", "seriesid"], descending=[False, True, True, False])
 )
-modal_sid = sid_counts.group_by("fundid").head(1).select(
+modal_sid = sid_counts.group_by("fundid", maintain_order=True).head(1).select(
     "fundid", pl.col("seriesid").alias("iss_seriesid")
 )
 
@@ -269,7 +269,7 @@ cik_counts = (
     .collect(engine="streaming")
     .sort(["fundid", "n", "fundcik"], descending=[False, True, False])
 )
-modal_cik = cik_counts.group_by("fundid").head(1).select(
+modal_cik = cik_counts.group_by("fundid", maintain_order=True).head(1).select(
     "fundid", pl.col("fundcik").alias("iss_fundcik")
 )
 
@@ -654,7 +654,7 @@ def best(df, mask, thresh, tier):
         .unique(subset=["fundid", "name"], keep="first", maintain_order=True)
     )
     # margin over the next-best candidate pointing at a DIFFERENT series
-    top = sub.group_by("fundid").head(1)
+    top = sub.group_by("fundid", maintain_order=True).head(1)
     second = (
         sub.join(top.select("fundid", top_series="series_id"), on="fundid", how="left")
         .filter(pl.col("series_id") != pl.col("top_series"))
@@ -803,7 +803,7 @@ unres_cand = (
     cand.filter(pl.col("fundid").is_in(list(remaining)))
     .sort(["fundid", "score"], descending=[False, True])
     .unique(subset=["fundid", "series_id"], keep="first", maintain_order=True)
-    .group_by("fundid").head(3)
+    .group_by("fundid", maintain_order=True).head(3)
     .sort(["n_vote_rows", "fundid", "score"], descending=[True, False, True])
     .select("fundid", "fundname_modal", "institutionname_modal", "n_vote_rows",
             "iss_nonregistrant", "series_id", "entity_name", "name", "src", "score",
@@ -822,11 +822,11 @@ alt_top = (
     .join(corpus.with_row_index("col").with_columns(pl.col("col").cast(pl.Int32))
           .select("col", "series_id"), on="col", how="left")
     .sort(["fundid", "score"], descending=[False, True])
-    .group_by("fundid").head(1).select("fundid", alt_series="series_id")
+    .group_by("fundid", maintain_order=True).head(1).select("fundid", alt_series="series_id")
 )
 base_top = (
     cand.sort(["fundid", "score"], descending=[False, True])
-    .group_by("fundid").head(1).select("fundid", "series_id")
+    .group_by("fundid", maintain_order=True).head(1).select("fundid", "series_id")
 )
 sens = base_top.join(alt_top, on="fundid", how="inner")
 print(f"n-gram sensitivity: top-1 series differs between {L2_TFIDF_NGRAM} and "

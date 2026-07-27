@@ -105,6 +105,16 @@
         %let missing = &missing. out.s12_[&missing_s12.];
     %end;
 
+    /* The concat below names its partitions from S12_RANGES, so a stray MF_OWN%
+     * dataset is inert. Say so anyway: an operator reading `mf_own_chunks=11`
+     * against a 9-partition config should be told which two are being ignored,
+     * not left to wonder whether they went into the panel. */
+    %if &n_mf. ne &want_s12. %then %do;
+        %put WARNING: &n_mf. MF_OWN%% datasets in the out library but &want_s12. partitions in S12_RANGES.;
+        %put WARNING- The concat names its partitions explicitly, so the extras are IGNORED, not stacked.;
+        %put WARNING- Clean them up if they are leftovers from an ad-hoc run.;
+    %end;
+
     %put NOTE: PREREQ mf_own_chunks=&n_mf. npx_cell_years=&n_cells./%eval(&year2. - &year1. + 1) s12_partitions=&n_s12./&want_s12.;
 
     %if %length(&missing_years.) > 0 %then %do;
@@ -124,9 +134,30 @@
 %mend;
 %require_prereqs
 
-/* --- Concatenate parallel MF ownership outputs --- */
+/* --- Concatenate parallel MF ownership outputs -------------------------------
+ * The partition list comes from S12_RANGES, the SAME list run_pipeline.sh uses to
+ * submit the tfn jobs and the gate above uses to check them. It used to be
+ * `set out.mf_own_:;` — a bare wildcard, which stacks in ANY dataset whose name
+ * starts with MF_OWN. An analysis leaves `mf_own_2021_pre` and `mf_own_2021_a` in
+ * the library and 2021 is silently counted three times; the gate reports
+ * `mf_own_chunks=11` and nothing says that is wrong, because the gate COUNTS what
+ * the wildcard does not CONSTRAIN.
+ *
+ * Observed: both of those datasets were sitting in the out library from an
+ * afternoon's work when this was found. Naming the partitions makes a stray
+ * dataset inert instead of load-bearing. */
+%macro mf_own_list;
+    %local i r;
+    %let i = 1;
+    %do %while (%scan(&S12_RANGES., &i., %str( )) ne );
+        %let r = %scan(&S12_RANGES., &i., %str( ));
+        out.mf_own_%scan(&r., 1, -)_%scan(&r., 2, -)
+        %let i = %eval(&i. + 1);
+    %end;
+%mend;
+
 data index_own;
-    set out.mf_own_:;
+    set %mf_own_list;
 run;
 
 proc sort data=index_own nodupkey; by qtr permno; run;

@@ -221,7 +221,7 @@ def agg_classes(pairs, key):
             d.filter(pl.col(col).is_not_null())
             .group_by([key, col]).agg(n=pl.len())
             .sort([key, "n", col], descending=[False, True, False])
-            .group_by(key).head(1)
+            .group_by(key, maintain_order=True).head(1)
             .select(key, pl.col(col).alias(out))
         )
 
@@ -232,7 +232,7 @@ def agg_classes(pairs, key):
     rep = (
         d.sort([key, "tna_latest", "crsp_fundno"], descending=[False, True, False],
                nulls_last=True)
-        .group_by(key).head(1)
+        .group_by(key, maintain_order=True).head(1)
         .select(key, crsp_fundno=pl.col("crsp_fundno"), crsp_fund_name=pl.col("fund_name"))
     )
     base = d.group_by(key).agg(
@@ -535,7 +535,7 @@ def best(df, mask, thresh, tier):
               descending=[False, True, True, True, False])
         .unique(subset=["fundid", "name"], keep="first", maintain_order=True)
     )
-    top = sub.group_by("fundid").head(1)
+    top = sub.group_by("fundid", maintain_order=True).head(1)
     second = (
         sub.join(top.select("fundid", top_unit="unit"), on="fundid", how="left")
         .filter(pl.col("unit") != pl.col("top_unit"))
@@ -946,7 +946,7 @@ unl = (
     cand.filter(pl.col("fundid").is_in(list(remaining)))
     .sort(["fundid", "score"], descending=[False, True])
     .unique(subset=["fundid", "unit"], keep="first", maintain_order=True)
-    .group_by("fundid").head(3)
+    .group_by("fundid", maintain_order=True).head(3)
     .sort(["n_vote_rows", "fundid", "score"], descending=[True, False, True])
     .select("fundid", "fundname_modal", "institutionname_modal", "n_vote_rows", "first_year",
             "last_year", "unit", "crsp_fund_name", "mgmt_name", "name", "score",

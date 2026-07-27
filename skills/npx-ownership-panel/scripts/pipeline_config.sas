@@ -70,6 +70,30 @@
  */
 %let S12_RANGES = 2003-2010 2011-2016 2017-2018 2019-2019 2020-2020 2021-2021 2022-2022 2023-2023 2024-2024;
 
+/* OPTIONAL INPUTS: present or absent CHANGES THE PANEL, so say which you meant.
+ *
+ * build_meetings.sas reads two files behind `fileexist` guards — SharkRepellent
+ * (the `fight` flag) and the ISS/GL recommendations. If either is missing it
+ * emits a WARNING and carries on: `fight` becomes 0 for every observation and
+ * the recommendation columns go null. The run succeeds, the panel is different,
+ * and nothing downstream can tell which panel it is holding.
+ *
+ * That happened here. A /scratch purge removed the SharkRepellent workbook and
+ * four separate frozen digests were taken afterwards, all silently carrying
+ * `fight = 0` everywhere. Nobody noticed, because a WARNING in a 90,000-line SAS
+ * log is not a signal.
+ *
+ * So the absence has to be DECLARED rather than discovered:
+ *   1  (default) missing optional input is FATAL — matches how this pipeline
+ *      treats every other missing input (a lost N-PX year aborts the merge)
+ *   0  absence is accepted; you are saying you want the degraded panel
+ *
+ * Either way build_meetings prints  NOTE: OPTIONAL shark=<0|1> recs=<0|1>
+ * next to the PREREQ and UNIVERSE gate lines, so the same grep that checks the
+ * others reports which panel this is.
+ */
+%let REQUIRE_OPTIONAL_INPUTS = 1;
+
 /* MEASURED EFFECT of these two filters on the item frame, 2005-2025 (2026-07-25):
  *
  *   filters            distinct items   raw rows   fanout

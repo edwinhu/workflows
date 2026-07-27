@@ -86,10 +86,28 @@ if ! "$PYBIN" -c 'import polars, pyarrow, psycopg2' 2>/dev/null; then
 fi
 # Leg 2 reads the EDGAR 13F parquet. Absent, it would build an empty panel and
 # every downstream ownership column would be silently null.
-[ -d "${HOLDINGS_13F:-holdings_13f}" ] || {
-    echo "PREFLIGHT ERROR: EDGAR holdings not found at ${HOLDINGS_13F:-holdings_13f}" >&2
+# The default must be where build_inst_own.py ACTUALLY looks: it resolves
+# PROJ/data/processed/holdings_13f with PROJ = <script dir>/.., and this script
+# has already cd'd to the script dir. The old default was a bare `holdings_13f`,
+# i.e. scripts/holdings_13f, which exists in no correct layout — so the preflight
+# failed on a tree that was in fact complete, and the only way to run was to set
+# HOLDINGS_13F by hand. Note this file passes ../data/processed/inst_own.csv a
+# few lines below, so the rest of the script already assumed the right layout.
+HOLDINGS_13F="${HOLDINGS_13F:-../data/processed/holdings_13f}"
+[ -d "$HOLDINGS_13F" ] || {
+    echo "PREFLIGHT ERROR: EDGAR holdings not found at $HOLDINGS_13F" >&2
     echo "  Set HOLDINGS_13F, or run the 13F scrape first (wrds skill, parse_13f)." >&2
     preflight_fail=1; }
+# A directory that exists but is EMPTY is the /scratch purge signature: it deletes
+# files by mtime (~7 days) and leaves the directory shells, so the glob still
+# resolves and the failure surfaces downstream as "0 rows" instead of here.
+if [ -d "$HOLDINGS_13F" ] && [ -z "$(find "$HOLDINGS_13F" -name '*.parquet' -print -quit)" ]; then
+    echo "PREFLIGHT ERROR: $HOLDINGS_13F exists but contains no .parquet files." >&2
+    echo "  This is the /scratch purge signature (files removed, shells left)." >&2
+    echo "  Re-ship with 'tar xmf -' so extraction time becomes the mtime;" >&2
+    echo "  tar's default preserves the source mtimes and re-arms the purge." >&2
+    preflight_fail=1
+fi
 if [ ! -f "$LINKCSV" ]; then
     echo "PREFLIGHT ERROR: crosswalk not found at $LINKCSV" >&2
     echo "  Build it locally (npx_linking/) and scp it here:" >&2

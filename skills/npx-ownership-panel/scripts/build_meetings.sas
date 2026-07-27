@@ -91,6 +91,39 @@
 %mend;
 %load_recs;
 
+/* --- OPTIONAL-INPUT GATE ---------------------------------------------------
+ * Both loads above degrade silently: absent file -> WARNING -> `fight` is 0 for
+ * every row / recommendation columns null -> run succeeds -> panel is different
+ * and nothing says so. A /scratch purge removed the SharkRepellent workbook and
+ * four frozen digests were taken afterwards, every one of them carrying an
+ * all-zero `fight` column that nobody had chosen.
+ *
+ * The NOTE prints unconditionally and in the same shape as the PREREQ/UNIVERSE
+ * gates, so `grep -E 'PREREQ|UNIVERSE|OPTIONAL|ERROR'` says which panel this is.
+ * Whether absence is fatal is REQUIRE_OPTIONAL_INPUTS in pipeline_config.sas. */
+%put NOTE: OPTIONAL shark=&have_shark. recs=&have_recs.;
+
+%macro require_optional_inputs;
+    %if &REQUIRE_OPTIONAL_INPUTS. = 1 %then %do;
+        %local missing_opt;
+        %let missing_opt = ;
+        %if not &have_shark. %then %let missing_opt = &missing_opt. SharkRepellent(&shark_file.);
+        %if not &have_recs.  %then %let missing_opt = &missing_opt. recs(&recs_file.);
+        %if %length(&missing_opt.) > 0 %then %do;
+            %put ERROR: OPTIONAL INPUT(S) MISSING —&missing_opt.;
+            %put ERROR- These are not decorative: without SharkRepellent every `fight`;
+            %put ERROR- is 0, and without recs the recommendation columns are null. The;
+            %put ERROR- run would SUCCEED and produce a different panel with no marker;
+            %put ERROR- on it, which is how four digests were frozen on an all-zero;
+            %put ERROR- `fight` column without anyone choosing that.;
+            %put ERROR- Either stage the file(s), or set REQUIRE_OPTIONAL_INPUTS = 0 in;
+            %put ERROR- pipeline_config.sas to say you meant the degraded panel.;
+            data _null_; abort abend; run;
+        %end;
+    %end;
+%mend;
+%require_optional_inputs
+
 /* --- ISS vote results, native indexed read --- */
 /* %vaFilterSAS is the SAS-literal form of the same predicate stage_npx_link.sas
  * uses, from pipeline_config.sas — one universe, both legs. The date range is a
