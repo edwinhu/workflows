@@ -109,6 +109,11 @@ proc sql;
         c.wficn,
         a.cusip as cusip8 length=8,
         a.shares,
+        /* rdate/fdate are carried ONLY to order the dedup below. Without them
+         * `select distinct` collapses agreeing vintages and leaves the
+         * disagreeing ones with no basis for choosing between them. */
+        a.rdate,
+        a.fdate,
         (c.index_fund_flag^='' or
         (prxmatch('/Index|Idx|Indx|Ind |Russell|S \& P|S and P|S\&P|SP|Dow|DJ|MSCI|Bloomberg|KBW|Nasdaq|NYSE|STOXX|FTSE|Wilshire|Morningstar|[14569]00|(10|15|20|50)00/i',
         a.fundname)>0)) as passive,
@@ -126,8 +131,53 @@ quit;
 
 proc sql; drop table tfn_s12_subset; quit;
 
-proc sort data=tfn_holdings nodupkey;
+/* --- Step 3b: DETERMINISTIC dedup — keep the vintage closest to the report date
+ *
+ * One Rdate can carry several Fdates (delayed or carried-forward filing); WRDS
+ * Research, "Note on Splits in TR Mutual Funds and 13F: S12 and S34", case 1b.
+ * Where those rows AGREE on shares, `select distinct` above already collapsed
+ * them and nothing here matters. Where they DISAGREE, the difference is
+ * typically Thomson's split re-adjustment applied to a carried-forward row —
+ * measured on the 2021 partition, 36,966 of 20,358,667 (rdate, fundno, cusip)
+ * triples disagree, and the hi/lo ratios land on split factors: 5,264 at ~2x,
+ * 3,337 at ~3x, 70 at ~7x and 22 at ~49x — that last being exactly the 7x7
+ * double adjustment the note documents for Apple.
+ *
+ * This used to be `by wficn rqdate cusip8` with `shares` NOT in the sort key, so
+ * which of a correct and a mis-adjusted value survived was decided by whatever
+ * order the join happened to emit. Same shape as the (permno, rdate, cik)
+ * coin-flip in leg 2, at 1/100th the scale.
+ *
+ * Ordering by fgap keeps the LEAST carried-forward vintage: the row whose fdate
+ * is closest to its rdate is the one least exposed to the note's re-adjustment
+ * errors, which accumulate with each carry-forward. fdate and shares complete
+ * the key so the order is total and the result cannot move between runs. */
+data tfn_holdings;
+    set tfn_holdings;
+    fgap = fdate - rdate;
+    label fgap = "days from report date to filing vintage";
+run;
+
+proc sql noprint;
+    select count(*), sum(n_sh > 1)
+      into :n_grp trimmed, :n_amb trimmed
+      from (select wficn, rqdate, cusip8, count(distinct shares) as n_sh
+              from tfn_holdings group by wficn, rqdate, cusip8);
+quit;
+%put NOTE: S12DEDUP groups=&n_grp. ambiguous_shares=&n_amb.;
+
+proc sort data=tfn_holdings;
+    by wficn rqdate cusip8 fgap fdate shares;
+run;
+/* NOT `proc sort nodupkey by wficn rqdate cusip8` — that RE-SORTS on the short
+ * key and would throw away the fgap ordering unless SAS's sort happened to be
+ * stable, which is exactly the kind of assumption this fix exists to remove.
+ * Taking the first row of each group off the fully-ordered dataset does not
+ * depend on sort stability. */
+data tfn_holdings;
+    set tfn_holdings;
     by wficn rqdate cusip8;
+    if first.cusip8;
 run;
 
 /* Save fund-level detail */
