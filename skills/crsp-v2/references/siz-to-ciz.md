@@ -4,6 +4,11 @@ Transcribed from CRSP's *Cross-Reference Guide Legacy FIZ/SIZ to CIZ* (document 
 modified 2025-12-03) and reconciled against the live WRDS schema. Mappings are organised
 by **legacy** file, because that is the direction you port code in.
 
+**One CRSP naming trap before you start:** the Cross-Reference Guide PDF spells the daily
+primary file *both* `StkDlyPrimarySecurityData` and `StkDlySecurityPrimaryData`. Only the
+second exists — the table is `crsp.stkdlysecurityprimarydata`. Transcribing the PDF's first
+spelling yields `relation does not exist`.
+
 The machine-readable version of this crosswalk is `crsp.metasiztociz` — query it when you
 need a column this file does not list:
 
@@ -33,7 +38,7 @@ ORDER BY sizcolposition, sizcolmapseq;
 
 | Legacy (SIZ/FIZ) | CIZ | Notes |
 |------------------|-----|-------|
-| `Sfz_dp_dly` | `StkDlyPrimarySecurityData` | Primary daily items |
+| `Sfz_dp_dly` | `StkDlySecurityPrimaryData` | Primary daily items |
 | `Sfz_ds_dly` | `StkDlySecurityData` | Superset of all daily items |
 | `Sfz_mth` | `StkMthSecurityData` | Return methodology changed |
 | `Sfz_agg_mth` | `StkMthSecurityData` | Adds `MthCompFlg`, `MthCompSubFlg` |

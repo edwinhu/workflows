@@ -57,11 +57,11 @@ format before writing the first `SELECT`.
 
 ### Format Facts
 
-- The CIZ format shipped in July 2022 and became the only updated format in February 2025 (December 2024 data was the last SIZ release). Both formats sit in the **same** `crsp` schema in Postgres and the same `crsp` library in SAS — the schema name does not tell you which format you are in. The table name does.
-- WRDS-built convenience tables keep their legacy names with a `_v2` suffix: `crsp.dsf_v2`, `crsp.msf_v2`, `crsp.stocknames_v2`. CRSP-built tables use the new CIZ names (`crsp.stkdlysecuritydata`). Both are CIZ; the `_v2` ones are pre-joined and wider.
+- The CIZ format shipped in July 2022 and became the only updated format in February 2025 (December 2024 data was the last SIZ release). Both formats sit in the **same** `crsp` schema in Postgres and the same `crsp` library in SAS — the schema name does not tell you which format you are in. The table name does. Reporting "I queried the `crsp` schema, so this is v2 data" is an unverified claim presented as fact.
+- WRDS-built convenience tables keep their legacy names with a `_v2` suffix: `crsp.dsf_v2`, `crsp.msf_v2`, `crsp.stocknames_v2`. CRSP-built tables use the new CIZ names (`crsp.stkdlysecuritydata`). Both are CIZ; the `_v2` ones are pre-joined and wider. Treating the absence of a `_v2` suffix as evidence a table is legacy sends you back to the frozen data.
 - On the WRDS Cloud filesystem, SIZ stays at `/wrds/crsp/sasdata/a_stock` and CIZ is at `/wrds/crsp/sasdata/a_stock_v2`.
 - Column names carry their frequency as a prefix: `Dly`, `Mth`, `Qtr`, `Ann`. There is no frequency-agnostic `ret` or `prc` in CIZ — `DlyRet` and `MthRet` are different columns in different tables, not the same column read from two files.
-- The `62` suffix (`crsp.stkdlysecuritydata62`) is the 1962-start subset product; the `_ind` suffix (`crsp.stkindmembership_ind`) is the full Index database. Stock-only products carry just 4 index series; `crsp.indseriesinfohdr_ind` carries 274.
+- The `62` suffix (`crsp.stkdlysecuritydata62`) is the 1962-start subset product; the `_ind` suffix (`crsp.stkindmembership_ind`) is the full Index database. Stock-only products carry just 4 index series; `crsp.indseriesinfohdr_ind` carries 274. Querying the wrong one returns zero rows rather than an error, so "that index isn't in CRSP" is usually the wrong suffix, not a missing index.
 
 ## Universe Enforcement
 
@@ -235,6 +235,6 @@ still keyed on `lpermno`, so existing CCM code ports as-is once the CRSP side is
 - **`references/queries.md`** — verified query recipes (universe, delisting, factors, indexes, CCM, MSE-style rebuilds)
 - **`references/indexes.md`** — INDNO/INDFAM conventions, the +400 monthly rule, S&P 500 series, decile statistics
 - **`examples/ciz_panel.py`** — end-to-end Python pull of a CIZ common-stock panel
-- **`skills/wrds/SKILL.md`** — connection, `.pgpass`, WRDS Cloud/SGE rules (this skill assumes them)
+- **`${CLAUDE_SKILL_DIR}/../../skills/wrds/SKILL.md`** — connection, `.pgpass`, WRDS Cloud/SGE rules (this skill assumes them)
 - CRSP source PDFs (WRDS login required): [User Guide](https://wrds-www.wharton.upenn.edu/documents/1996/CRSP_US_Stock__Indexes_Database_Guide_Flat_File_Format_2.0.pdf), [Cross-Reference Guide](https://wrds-www.wharton.upenn.edu/documents/1942/CRSP_Cross_Reference_Guide_1.0_to_2.0.pdf), [Metadata Guide](https://wrds-www.wharton.upenn.edu/documents/1941/CRSP_Metadata_Guide_Flat_File_Format_2.0.pdf), [Executive Summary](https://wrds-www.wharton.upenn.edu/documents/1943/Executive_Summary_File_Format_1.0_SIZ_to_File_Format_2.0_CIZ.pdf)
 - WRDS transition pages: [Announcement](https://wrds-www.wharton.upenn.edu/pages/data-announcements/changes-to-crsp-data/), [Transition FAQ](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/crsp/stocks-and-indices/crsp-ciz-faq/), [Index Overview](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/crsp/stocks-and-indices/siz-to-ciz-wrds-overview-of-index/), [Recreate MSE Tables](https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/crsp/stocks-and-indices/recreate-legacy-mse-style-tables/)

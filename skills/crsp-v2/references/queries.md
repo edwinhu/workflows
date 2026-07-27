@@ -2,7 +2,7 @@
 
 Every query in this file was executed against `wrds-pgdata.wharton.upenn.edu:9737` on
 2026-07-26. Where output is shown, it is real output. Connection setup, `.pgpass`, and
-the WRDS Cloud / SGE rules live in `skills/wrds/SKILL.md`.
+the WRDS Cloud / SGE rules live in `${CLAUDE_SKILL_DIR}/../../skills/wrds/SKILL.md`.
 
 ## Contents
 
@@ -398,4 +398,4 @@ tables.
 - Filter on `dlycaldt`/`mthcaldt` ranges before joining. Push the universe predicate into
   the same `WHERE` clause rather than filtering in pandas after the pull.
 - Bulk pulls belong on the WRDS Cloud via `qsub`, never on the login node. See
-  `skills/wrds/SKILL.md`.
+  `${CLAUDE_SKILL_DIR}/../../skills/wrds/SKILL.md`.
