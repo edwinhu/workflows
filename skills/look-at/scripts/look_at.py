@@ -10,17 +10,17 @@ based on the provided goal. It's designed to be used by Claude Code as a tool fo
 files that require interpretation beyond raw text.
 
 Usage:
-    uv run python3 look_at.py --file <path> --goal "<what to extract>" [--model <model_name>]
+    uv run --script look_at.py --file <path> --goal "<what to extract>" [--model <model_name>]
 
 Examples:
     # Extract title from PDF
-    uv run python3 look_at.py --file report.pdf --goal "Extract the title and date"
+    uv run --script look_at.py --file report.pdf --goal "Extract the title and date"
 
     # Describe diagram
-    uv run python3 look_at.py --file diagram.png --goal "Explain the architecture shown"
+    uv run --script look_at.py --file diagram.png --goal "Explain the architecture shown"
 
     # Extract table data
-    uv run python3 look_at.py --file data.pdf --goal "Extract the table as JSON"
+    uv run --script look_at.py --file data.pdf --goal "Extract the table as JSON"
 
 Environment (checked in order):
     GOOGLE_API_KEY: Google API key for Gemini access.

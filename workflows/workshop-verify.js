@@ -300,7 +300,7 @@ if (diagramsToReview.length && disc.lookAtPath) {
   diagramReviews = (await parallel(diagramsToReview.map(d => () =>
     agent(
       `You are a READ-ONLY visual reviewer. Do NOT edit files. Render the slides.pdf page containing the diagram on slide "${d.slideTitle}" and score it for visual defects.
-Use: \`uv run python3 ${disc.lookAtPath} --file ${disc.presentationDir}/slides.pdf --goal "Inspect the ${d.kind} diagram on the slide titled '${d.slideTitle}' for: clipped/cut-off text, overlapping elements, bad arrow routing, label anchoring, cramped spacing, illegible text size"\`.
+Use: \`uv run --script ${disc.lookAtPath} --file ${disc.presentationDir}/slides.pdf --goal "Inspect the ${d.kind} diagram on the slide titled '${d.slideTitle}' for: clipped/cut-off text, overlapping elements, bad arrow routing, label anchoring, cramped spacing, illegible text size"\`.
 Set diagram="${d.id}". defectsFound = count of distinct visual defects. Each defect is a finding (severity major) with a short description. Return VISUAL_SCHEMA.`,
       { label: `${d.id}:visual`, phase: 'Review', schema: VISUAL_SCHEMA, model: 'sonnet' }
     )

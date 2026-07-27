@@ -206,7 +206,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 
 2. **Extract metadata** using look-at:
    ```bash
-   uv run python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+   uv run --script "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
        --file "/path/to/paper.pdf" \
        --goal "Extract: (1) full title, (2) subtitle if any, (3) all author names, (4) each author's affiliation/institution, (5) abstract summary in 2-3 sentences"
    ```
@@ -238,7 +238,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 
 7. **Inventory the paper's figures, tables, and key results:**
    ```bash
-   uv run python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+   uv run --script "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
        --file "/path/to/paper.pdf" \
        --goal "List ALL: (1) figures with figure numbers and captions, (2) tables with table numbers and captions, (3) key empirical results with specific numbers (coefficients, percentages, sample sizes), (4) main theoretical propositions or hypotheses"
    ```
@@ -371,7 +371,7 @@ Sources gathered and verified. Paper metadata extracted from source document.
 
 2. **Read the paper's structure** — use look-at to get the table of contents / section headings:
    ```bash
-   uv run python3 "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
+   uv run --script "${CLAUDE_SKILL_DIR}/../look-at/scripts/look_at.py" \
        --file "/path/to/paper.pdf" \
        --goal "List all section headings and subheadings in order"
    ```

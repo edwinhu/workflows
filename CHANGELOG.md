@@ -3,6 +3,14 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.87.4] - 2026-07-27
+
+### Fixed
+- **Every documented `look-at` invocation in the repo was unrunnable — 82 call sites across 10 files.** v5.87.2 repaired both vision backends but left the callers on `uv run python3 look_at.py`, the exact form that release's own commit message identifies as broken: passing `python3` as the command makes uv provision the ambient environment, so the script's inline PEP 723 metadata is never read and `google-genai` is never installed. Every one of them died with `google-genai package not installed` — a message that reads like an unauthenticated backend and is actually the wrong launcher. All corrected to `uv run --script`, which is what `scripts/look_at.sh` already used, with a comment explaining why.
+  - **Two of the ten are not documentation.** `hooks/image-read-guard.py` denies every `Read` of an image and hands the agent a replacement command to run; `workflows/workshop-verify.js` tells its visual-verify agents how to inspect diagrams. Both emitted a command that could not succeed, so the guard sent agents into a dead end and workshop-verify's visual leg had no working path — which is the likely origin of its `look_at.py not resolved → visual-verify skipped` degradation.
+  - Remaining eight are docs and examples: `skills/look-at/references/use-cases.md` (50), `skills/using-skills/SKILL.md` (6), `skills/look-at/README.md` (5), the three `skills/look-at/examples/*.sh` (4 each), `skills/look-at/scripts/look_at.py`'s own docstring and error text (4), `skills/workshop/SKILL.md` (3).
+  - **`uv run python3 X.py` and `uv run --script X.py` are not interchangeable**, and the failure is silent until the import. Only `--script` honours PEP 723. Verified after the change: the corrected form and `look_at.sh --backend api` both return correct output from a 46-page PDF; all four edited code files pass `ast.parse` / `node --check` / `bash -n`.
+
 ## [Unreleased]
 
 > Version files are deliberately **not** bumped in this entry. The concurrent

@@ -49,7 +49,7 @@ def main():
                 "Reading images directly wastes context tokens. "
                 "Use the look-at skill to extract only relevant information:\n\n"
                 "```bash\n"
-                f"uv run python3 {look_at_script} \\\n"
+                f"uv run --script {look_at_script} \\\n"
                 f'    --file "{tool_input.get("file_path", "")}" \\\n'
                 '    --goal "Describe what is in this image"\n'
                 "```\n\n"

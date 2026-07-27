@@ -38,7 +38,7 @@ echo 'export GOOGLE_API_KEY="your-api-key-here"' >> ~/.bashrc
 ### 3. Use the Skill
 
 ```bash
-uv run python3 scripts/look_at.py \
+uv run --script scripts/look_at.py \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date"
 ```
@@ -81,28 +81,28 @@ look-at/
 
 ### Extract from PDF
 ```bash
-uv run python3 scripts/look_at.py \
+uv run --script scripts/look_at.py \
     --file "/home/user/report.pdf" \
     --goal "Extract the executive summary section"
 ```
 
 ### Describe Image
 ```bash
-uv run python3 scripts/look_at.py \
+uv run --script scripts/look_at.py \
     --file "/home/user/diagram.png" \
     --goal "Describe the system architecture and data flow"
 ```
 
 ### Extract Table Data
 ```bash
-uv run python3 scripts/look_at.py \
+uv run --script scripts/look_at.py \
     --file "/home/user/data.pdf" \
     --goal "Extract the table as JSON: {name, value, date}"
 ```
 
 ### With Custom Model
 ```bash
-uv run python3 scripts/look_at.py \
+uv run --script scripts/look_at.py \
     --file "/home/user/complex_doc.pdf" \
     --goal "Extract methodology section" \
     --model "gemini-2.5-flash"
