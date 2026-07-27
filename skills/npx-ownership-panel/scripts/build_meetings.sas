@@ -29,12 +29,14 @@
 
 /* --- SharkRepellent campaign data (optional) --- */
 %let shark_file = /scratch/nyu/hue/SharkRepellent 5.21.24.xlsx;
-%global have_shark;
+/* have_shark means USABLE, not merely PRESENT — see the validation below. */
+%global have_shark shark_pairs shark_max_yr;
 %let have_shark = 0;
+%let shark_pairs = 0;
+%let shark_max_yr = .;
 
 %macro load_shark;
     %if %sysfunc(fileexist("&shark_file.")) %then %do;
-        %let have_shark = 1;
         PROC IMPORT DATAFILE="&shark_file."
             DBMS=xlsx REPLACE OUT=out.shark;
             sheet="Campaign Details";
@@ -59,18 +61,116 @@
         %mend;
         %removeMultipleUnderscores(out.shark);
 
-        data out.shark2;
-            set out.shark;
-            ticker=scan(scan(Company_Ticker,1,'-'),1,'.');
-            meetingdate=input(Campaign_Meeting_Date,??anydtdte10.);
-            format meetingdate yymmddn8.;
-        run;
+        /* VALIDATE THE CONTENT, NOT THE FILENAME.
+         *
+         * `fileexist` is the wrong test and one of the two workbooks in the raw
+         * directory proves it. `20240521 SharkRepellent.xlsx` (33.4 MB, and the
+         * one whose NAME matches &shark_file — 20240521 IS 5.21.24) has no header
+         * row on the Campaign Details sheet: SAS takes the first column name from
+         * a banner cell (FactSet_Universal_Screening) and falls back to
+         * spreadsheet letters B, C, D … for the rest. It carries neither
+         * Company_Ticker nor Campaign_Meeting_Date. Imported: 16,658 rows,
+         * 0 parsed dates, 0 tickers.
+         *
+         * Staged blind, that file is WORSE than no file. fileexist succeeds, the
+         * import succeeds, ticker and meetingdate come out uninitialised, the
+         * fight join matches nothing, and `fight` is 0 for every row — while the
+         * run asserts the input is present. An undeclared zero becomes a falsely
+         * declared one, which is the same defect wearing a better disguise.
+         *
+         * So a workbook that cannot answer the question is treated as ABSENT,
+         * and REQUIRE_OPTIONAL_INPUTS then decides whether that is fatal. */
+        %local has_tick has_date;
+        proc sql noprint;
+            select count(*) into :has_tick trimmed from dictionary.columns
+              where libname = "OUT" and memname = "SHARK"
+                and upcase(name) = "COMPANY_TICKER";
+            select count(*) into :has_date trimmed from dictionary.columns
+              where libname = "OUT" and memname = "SHARK"
+                and upcase(name) = "CAMPAIGN_MEETING_DATE";
+        quit;
+
+        %if &has_tick. = 0 or &has_date. = 0 %then %do;
+            %put WARNING: SharkRepellent workbook at &shark_file. is not usable.;
+            %put WARNING- Company_Ticker present=&has_tick. Campaign_Meeting_Date present=&has_date.;
+            %put WARNING- The Campaign Details sheet has no header row, so PROC IMPORT;
+            %put WARNING- named the columns B, C, D ... Treating it as ABSENT rather than;
+            %put WARNING- letting it assert presence while contributing nothing.;
+        %end;
+        %else %do;
+            data out.shark2;
+                set out.shark;
+                ticker=scan(scan(Company_Ticker,1,'-'),1,'.');
+                meetingdate=input(Campaign_Meeting_Date,??anydtdte10.);
+                format meetingdate yymmddn8.;
+            run;
+
+            /* Rows that actually reach the join. Campaign_Meeting_Date is '@NA'
+             * — FactSet's not-available sentinel — for campaigns with no meeting,
+             * so a large unparsed count is expected and is NOT a parse failure:
+             * 9,629 of 17,469 in the 1995-2024 extract. What matters is how many
+             * usable (ticker, meetingdate) pairs survive, and how far they run. */
+            proc sql noprint;
+                select count(*), max(year(meetingdate))
+                  into :shark_pairs trimmed, :shark_max_yr trimmed
+                  from (select distinct ticker, meetingdate from out.shark2
+                        where not missing(meetingdate) and ticker ne "");
+                create table shark_yr as
+                    select year(meetingdate) as yr, count(*) as n
+                    from (select distinct ticker, meetingdate from out.shark2
+                          where not missing(meetingdate) and ticker ne "")
+                    group by calculated yr;
+            quit;
+
+            %if &shark_pairs. = 0 %then %do;
+                %put WARNING: SharkRepellent workbook parsed 0 usable (ticker, meetingdate) pairs.;
+                %put WARNING- Treating it as ABSENT — it cannot set `fight` for any row.;
+            %end;
+            %else %let have_shark = 1;
+        %end;
     %end;
     %else %do;
         %put WARNING: SharkRepellent file not found at &shark_file. — fight flag will be 0 for all obs;
     %end;
 %mend;
 %load_shark;
+
+/* COVERAGE, not just presence. A workbook that stops before the end of the
+ * window sets `fight` = 0 for every meeting after it — not because there were no
+ * campaigns, but because the extract does not reach them. Undeclared, that is the
+ * same defect one level down. Measured on the 1995-2024 extract: 755 campaigns
+ * with a 2024 meeting date, 99 with a 2025 one. */
+%macro shark_coverage_check;
+    %if not &have_shark. %then %return;
+
+    /* Reaching year2 is NOT the same as covering it. The 1995-2024 extract has a
+     * 2025-12-03 meeting date in it, so any max-year test passes — while 2025
+     * holds 99 campaigns against 755 in 2024. A stop-short test would have
+     * reported this file as complete. So test the TAIL VOLUME too, against the
+     * three preceding years. */
+    %local n_last n_prior;
+    proc sql noprint;
+        select sum(case when yr = &year2. then n else 0 end),
+               mean(case when yr between %eval(&year2. - 3) and %eval(&year2. - 1)
+                         then n else . end)
+          into :n_last trimmed, :n_prior trimmed
+        from shark_yr;
+    quit;
+
+    %if %eval(&shark_max_yr.) < &year2. %then %do;
+        %put WARNING: SharkRepellent coverage ends &shark_max_yr. but the window runs to &year2.;
+        %put WARNING- `fight` will be 0 for every meeting in %eval(&shark_max_yr. + 1)-&year2.;
+        %put WARNING- because this extract does not reach them, not because no campaigns occurred.;
+        %put WARNING- Stage an extract covering &year2., or narrow year2 in pipeline_config.sas.;
+    %end;
+    %else %if %sysevalf(&n_prior. > 0) and %sysevalf(&n_last. < 0.5 * &n_prior.) %then %do;
+        %put WARNING: SharkRepellent reaches &year2. but thinly — &n_last. campaign-meetings;
+        %put WARNING- against a %eval(&year2. - 3)-%eval(&year2. - 1) average of %sysfunc(round(&n_prior.)).;
+        %put WARNING- The extract stops partway through &year2., so `fight` is understated;
+        %put WARNING- there. Reaching a year is not the same as covering it.;
+    %end;
+%mend;
+%shark_coverage_check
 
 /* --- ISS proxy advisor recommendations (optional) --- */
 %let recs_file = ~/projects/pass/recs_2005_2024.csv;
@@ -101,7 +201,7 @@
  * The NOTE prints unconditionally and in the same shape as the PREREQ/UNIVERSE
  * gates, so `grep -E 'PREREQ|UNIVERSE|OPTIONAL|ERROR'` says which panel this is.
  * Whether absence is fatal is REQUIRE_OPTIONAL_INPUTS in pipeline_config.sas. */
-%put NOTE: OPTIONAL shark=&have_shark. recs=&have_recs.;
+%put NOTE: OPTIONAL shark=&have_shark. shark_pairs=&shark_pairs. shark_through=&shark_max_yr. recs=&have_recs.;
 
 %macro require_optional_inputs;
     %if &REQUIRE_OPTIONAL_INPUTS. = 1 %then %do;

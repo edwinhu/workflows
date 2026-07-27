@@ -88,9 +88,18 @@
  *      treats every other missing input (a lost N-PX year aborts the merge)
  *   0  absence is accepted; you are saying you want the degraded panel
  *
- * Either way build_meetings prints  NOTE: OPTIONAL shark=<0|1> recs=<0|1>
+ * `shark` here means USABLE, not merely present. One of the two workbooks in the
+ * raw directory imports cleanly and contributes nothing — no header row, so no
+ * Company_Ticker and no Campaign_Meeting_Date — and it is the one whose FILENAME
+ * matches. A file-exists test would pass it and report a present input while
+ * every `fight` stayed 0, so build_meetings validates the columns and the parsed
+ * pair count and treats an unusable workbook as absent.
+ *
+ * Either way build_meetings prints
+ *   NOTE: OPTIONAL shark=<0|1> shark_pairs=<n> shark_through=<year> recs=<0|1>
  * next to the PREREQ and UNIVERSE gate lines, so the same grep that checks the
- * others reports which panel this is.
+ * others reports which panel this is — and `shark_through` short of year2 raises
+ * a WARNING naming the years that will be silently unflagged.
  */
 %let REQUIRE_OPTIONAL_INPUTS = 1;
 
