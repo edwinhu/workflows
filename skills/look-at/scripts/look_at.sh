@@ -53,9 +53,61 @@ FILE="$(cd "$(dirname "$FILE")" && pwd)/$(basename "$FILE")"
 IMAGE_DIR="$(dirname "$FILE")"
 FULL_PROMPT="Read the image at $FILE. $GOAL"
 
+# Resolve a Gemini API key from the usual places, in priority order.
+# Echoes the key, or nothing if none is available.
+resolve_gemini_key() {
+  if [[ -n "${GEMINI_API_KEY:-}" ]]; then
+    printf '%s' "$GEMINI_API_KEY"
+  elif [[ -n "${GOOGLE_API_KEY:-}" ]]; then
+    printf '%s' "$GOOGLE_API_KEY"
+  elif [[ -n "${GEMINI_API_KEY_FILE:-}" && -r "${GEMINI_API_KEY_FILE}" ]]; then
+    tr -d '\n' < "$GEMINI_API_KEY_FILE"
+  fi
+}
+
 run_gemini() {
   if $VERBOSE; then echo "[look-at] backend=gemini" >&2; fi
-  gemini -y --include-directories "$IMAGE_DIR" -p "$FULL_PROMPT"
+
+  # gemini-cli picks its auth method from GEMINI_API_KEY specifically; it does
+  # not accept GOOGLE_API_KEY as an auth *selector* (only as the key value once
+  # a method is chosen). Bridge whatever key we have into that variable.
+  local key
+  key="$(resolve_gemini_key)"
+  if [[ -z "$key" ]]; then
+    echo "Error: no Gemini API key found. Set GEMINI_API_KEY, GOOGLE_API_KEY, or GEMINI_API_KEY_FILE." >&2
+    return 1
+  fi
+
+  # gemini-cli cannot ingest PDFs -- it reliably dies with "Invalid stream: the
+  # model returned an empty response or malformed tool call". Rasterize to PNG
+  # first (poppler) and point it at those instead. The api backend needs no such
+  # help: it uploads PDFs natively.
+  local dir="$IMAGE_DIR" prompt="$FULL_PROMPT" tmpdir=""
+  if [[ "${FILE,,}" == *.pdf ]]; then
+    if command -v pdftoppm >/dev/null 2>&1; then
+      tmpdir="$(mktemp -d)"
+      # shellcheck disable=SC2064
+      trap "rm -rf '$tmpdir'" RETURN
+      if $VERBOSE; then echo "[look-at] rasterizing PDF -> PNG for gemini backend" >&2; fi
+      pdftoppm -r 200 -png "$FILE" "$tmpdir/page" >/dev/null 2>&1 || {
+        echo "Error: failed to rasterize PDF for the gemini backend." >&2
+        return 1
+      }
+      local pages=("$tmpdir"/page*.png)
+      [[ -e "${pages[0]}" ]] || { echo "Error: PDF produced no pages." >&2; return 1; }
+      dir="$tmpdir"
+      prompt="The document has been rendered to ${#pages[@]} page image(s): ${pages[*]}. Read them all. $GOAL"
+    else
+      echo "Warning: pdftoppm not found; the gemini backend cannot read PDFs." >&2
+      echo "Install poppler-utils, or use --backend api (handles PDFs natively)." >&2
+      return 1
+    fi
+  fi
+
+  # Non-interactive runs can't answer the trusted-folder prompt, which otherwise
+  # aborts the call in any directory the user hasn't trusted interactively.
+  GEMINI_API_KEY="$key" GEMINI_CLI_TRUST_WORKSPACE=true \
+    gemini -y --include-directories "$dir" -p "$prompt"
 }
 
 run_copilot() {
@@ -69,7 +121,9 @@ run_api() {
   [[ -n "$MODEL" ]] && args+=(--model "$MODEL")
   $AGENTIC && args+=(--agentic)
   $VERBOSE && args+=(--verbose)
-  uv run python3 "$SCRIPT_DIR/look_at.py" "${args[@]}"
+  # --script honors look_at.py's inline PEP 723 metadata, so uv provisions
+  # google-genai into an ephemeral env instead of relying on the ambient python.
+  uv run --script "$SCRIPT_DIR/look_at.py" "${args[@]}"
 }
 
 if $CONSENSUS; then

@@ -1,4 +1,8 @@
-#!/usr/bin/env -S uv run python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["google-genai"]
+# ///
 """Analyze media files using Gemini 2.5 Flash Lite for fast, cost-effective interpretation.
 
 This script uploads a local file to Google's Gemini API and extracts specific information
@@ -38,7 +42,8 @@ try:
     from google.genai import types
 except ImportError:
     print("Error: google-genai package not installed", file=sys.stderr)
-    print("Install with: pip install google-genai", file=sys.stderr)
+    print("Run this script with `uv run --script look_at.py` so uv can", file=sys.stderr)
+    print("provision the inline PEP 723 dependencies automatically.", file=sys.stderr)
     sys.exit(1)
 
 
