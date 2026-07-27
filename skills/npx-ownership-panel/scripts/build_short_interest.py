@@ -92,7 +92,7 @@ WHERE sharetype = 'NS'
   AND usincflg = 'Y'
   AND mthcaldt BETWEEN %(start)s AND %(end)s
   AND shrout IS NOT NULL
-  AND EXTRACT(MONTH FROM a.date) IN (3, 6, 9, 12)
+  AND EXTRACT(MONTH FROM mthcaldt) IN (3, 6, 9, 12)
 """
 
 

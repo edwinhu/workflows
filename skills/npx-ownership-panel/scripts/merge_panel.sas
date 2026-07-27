@@ -61,9 +61,42 @@
     %local missing;
     %let missing = ;
 
-    %if not %sysfunc(exist(out.meetings)) %then %let missing = &missing. out.meetings;
-    %if not %sysfunc(exist(out.inst_own)) %then %let missing = &missing. out.inst_own;
-    %if not %sysfunc(exist(out.npx_items)) %then %let missing = &missing. out.npx_items;
+    /* EXISTENCE IS NOT CONTENT. This gate checked exist() alone, and an EMPTY
+     * dataset exists. Observed 2026-07-27: leg 5 died on a SQL error, so leg 2's
+     * own guard correctly refused to write its CSV, so import_inst_own created
+     * out.inst_own with ZERO rows — and this gate passed it. merge_panel then
+     * built a complete-looking 2,019,563 x 81 panel with NO institutional
+     * ownership in it, and every gate line in the run reported clean:
+     *
+     *     PREREQ   mf_own_chunks=9 npx_cell_years=21/21 s12_partitions=9/9
+     *     UNIVERSE meetings_items=624,162 npx_items=712,466 orphans=0
+     *
+     * That is precisely the failure this gate exists to prevent, one level down:
+     * `hold_jid` releases on COMPLETION not success, so the gate has to check
+     * what arrived — and "it is there" was never the question. Row counts are the
+     * question. */
+    %local n_meet_rows n_io_rows n_item_rows;
+    %macro _rows(ds, into);
+        %if %sysfunc(exist(&ds.)) %then %do;
+            %local dsid;
+            %let dsid = %sysfunc(open(&ds.));
+            %let &into. = %sysfunc(attrn(&dsid., nlobs));
+            %let dsid = %sysfunc(close(&dsid.));
+        %end;
+        %else %let &into. = -1;
+    %mend;
+    %_rows(out.meetings,  n_meet_rows)
+    %_rows(out.inst_own,  n_io_rows)
+    %_rows(out.npx_items, n_item_rows)
+
+    %if &n_meet_rows. < 0 %then %let missing = &missing. out.meetings(absent);
+    %else %if &n_meet_rows. = 0 %then %let missing = &missing. out.meetings(EMPTY);
+    %if &n_io_rows. < 0 %then %let missing = &missing. out.inst_own(absent);
+    %else %if &n_io_rows. = 0 %then %let missing = &missing. out.inst_own(EMPTY);
+    %if &n_item_rows. < 0 %then %let missing = &missing. out.npx_items(absent);
+    %else %if &n_item_rows. = 0 %then %let missing = &missing. out.npx_items(EMPTY);
+
+    %put NOTE: PREREQ rows meetings=&n_meet_rows. inst_own=&n_io_rows. npx_items=&n_item_rows.;
 
     /* At least one mutual-fund ownership chunk from tfn_holdings_parallel. */
     %local n_mf;

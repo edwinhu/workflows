@@ -168,15 +168,23 @@ WHERE sharetype = 'NS'
 # Same shape as every other defect in this file: a join that silently
 # over-matches and returns plausible numbers. Note the CRSP monthly query above
 # ALREADY does the dated join correctly -- it was simply never propagated here.
+# DELIBERATELY UNFILTERED, as the msenames version was. This map answers "which
+# permno did this cusip8 belong to on this date", and a 13F position in a
+# security that is not NS/EQTY/COM/Y still has an answer. The universe filter
+# belongs on the CRSP monthly join, which is where it is: filtering here does not
+# reclassify those holdings, it makes them UNRESOLVABLE and drops them.
+#
+# Measured cost of getting this wrong: adding the share-class filter here cut the
+# map from 191,048 windows to 109,273 and took leg 2 from 675,639 rows to 396,771
+# — a 41% loss that read like an improvement, because the DQ line then reported
+# `testable=98.9%_of_panel` against 56.0%. The unknown-denominator rows had not
+# acquired denominators; they had been deleted. A coverage statistic rising
+# because the uncovered rows left is the most flattering possible way to lose data.
 CUSIP8_PERMNO_QUERY = """
 SELECT DISTINCT cusip AS ncusip, permno,
        secinfostartdt AS namedt, secinfoenddt AS nameendt
 FROM crsp.stksecurityinfohist
 WHERE cusip IS NOT NULL AND cusip != ''
-  AND sharetype = 'NS'
-  AND securitytype = 'EQTY'
-  AND securitysubtype = 'COM'
-  AND usincflg = 'Y'
 """
 
 # crsp.stksecurityinfohist IS the CIZ replacement for msenames/stocknames — the
