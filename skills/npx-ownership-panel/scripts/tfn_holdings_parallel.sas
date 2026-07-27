@@ -187,12 +187,23 @@ run;
 
 %put NOTE: Fund-level holdings saved. Starting aggregation...;
 
-/* --- Step 4: CUSIP -> PERMNO mapping --- */
+/* --- Step 4: CUSIP -> PERMNO mapping ---------------------------------------
+ * crsp.stksecurityinfohist, not crsp.msenames: the legacy SIZ tables are frozen
+ * at 2024-12-31 and will never advance, so every year on them widens the gap
+ * against the CIZ tables the rest of the pipeline reads.
+ *
+ * DELIBERATELY UNFILTERED, as it was before. This map is cusip6 -> permno for
+ * Thomson S12 holdings, and narrowing it to NS/EQTY/COM/Y here would drop
+ * holdings rather than classify them. The cusip6 grain is itself coarse — it
+ * maps other share classes and preferreds onto the common permno, which is D9
+ * cause 2 and the reason leg 2 disables its cusip6 fallback. That is a
+ * pre-existing property of this leg, not something the CIZ swap introduces, and
+ * it is not changed here. */
 proc sql;
     create table cusip_permno as
-        select distinct substr(ncusip,1,6) as cusip6 length=6, permno
-        from crsp.msenames
-        where ncusip is not null;
+        select distinct substr(cusip,1,6) as cusip6 length=6, permno
+        from crsp.stksecurityinfohist
+        where cusip is not null;
 quit;
 
 /* --- Step 5: Map holdings to PERMNO --- */
@@ -211,17 +222,27 @@ data holdings_permno;
     index_shares = shares * pure_index;
 run;
 
-/* --- Step 6: Get shares outstanding from CRSP MSF --- */
+/* --- Step 6: Shares outstanding from CRSP monthly (CIZ) ---------------------
+ * crsp.msf_v2, not crsp.msf: the legacy monthly file is frozen at 2024-12-31, so
+ * on it every quarter after that silently produced NO tso row and the mutual-fund
+ * ownership percentages for those quarters came out null — the same failure leg 2
+ * hit, in the leg next door.
+ *
+ * `having date = max(date)` takes the LAST month in the quarter, which is the
+ * end-of-quarter snapshot this join wants. It is a correlated HAVING over the
+ * group, so it states the rule rather than relying on arrival order. */
 proc sql;
     create table msf_qtr as
         select permno,
-               intnx('quarter', date, 0, 'E') as qtr format yymmddn8.,
+               intnx('quarter', mthcaldt, 0, 'E') as qtr format yymmddn8.,
                shrout * 1000 as tso
-        from crsp.msf
-        where date between "01jan&year_start."d and "31dec&year_end."d
+        from crsp.msf_v2
+        where mthcaldt between "01jan&year_start."d and "31dec&year_end."d
         and shrout > 0
+        and sharetype = 'NS' and securitytype = 'EQTY'
+        and securitysubtype = 'COM' and usincflg = 'Y'
         group by permno, calculated qtr
-        having date = max(date);
+        having mthcaldt = max(mthcaldt);
 quit;
 
 /* --- Step 7: Aggregate to permno-quarter --- */

@@ -84,15 +84,14 @@ WHERE a.datadate BETWEEN %(start)s AND %(end)s
 # cold start and the check that depended on it silently did nothing — see the
 # comment at the call site. Quarter-end months only, so this stays small.
 TSO_CHECK_QUERY = """
-SELECT a.permno, a.date, a.shrout, a.cfacshr
-FROM crsp.msf a
-INNER JOIN crsp.msenames b
-  ON a.permno = b.permno
-  AND b.namedt <= a.date
-  AND a.date <= COALESCE(b.nameendt, '2099-12-31')
-WHERE b.shrcd IN (10, 11)
-  AND a.date BETWEEN %(start)s AND %(end)s
-  AND a.shrout IS NOT NULL
+SELECT permno, mthcaldt AS date, shrout, mthcumfacshr AS cfacshr
+FROM crsp.msf_v2
+WHERE sharetype = 'NS'
+  AND securitytype = 'EQTY'
+  AND securitysubtype = 'COM'
+  AND usincflg = 'Y'
+  AND mthcaldt BETWEEN %(start)s AND %(end)s
+  AND shrout IS NOT NULL
   AND EXTRACT(MONTH FROM a.date) IN (3, 6, 9, 12)
 """
 

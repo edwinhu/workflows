@@ -348,28 +348,37 @@ proc sort data=meetings1 nodupkey;
 run;
 
 /* --- CRSP permno: CUSIP match then ticker fallback --- */
-/* msenames.nameendt at the data vintage is "still current" — extend those records
- * to an open interval so post-vintage meetings (e.g. current-year) match their
- * latest name record instead of being dropped. Vintage is read dynamically. */
+/* crsp.stksecurityinfohist, not crsp.msenames: legacy SIZ froze at 2024-12-31
+ * and will never advance, so every additional year on it widens the gap against
+ * the CIZ tables the ownership legs read. A meetings leg on the legacy universe
+ * joined to an ownership leg on the CIZ universe is a 3-5% disagreement INSIDE
+ * one panel, which is worse than either universe on its own.
+ *
+ * The open-interval trick is UNCHANGED and still load-bearing. CIZ closes every
+ * interval at its data vintage exactly as SIZ did — crsp.stksecurityinfohist has
+ * 191,048 rows and ZERO null secinfoenddt — so a record ending at the vintage
+ * means "still current", not "expired". Without this, post-vintage meetings
+ * match nothing and drop silently. Vintage is read dynamically so it follows the
+ * data instead of a constant someone has to remember to bump. */
 proc sql noprint;
-    select max(nameendt) format=date9. into :crsp_vintage trimmed
-        from crsp.msenames;
+    select max(secinfoenddt) format=date9. into :crsp_vintage trimmed
+        from crsp.stksecurityinfohist;
 quit;
-%put NOTE: crsp.msenames vintage max nameendt = &crsp_vintage;
+%put NOTE: crsp.stksecurityinfohist vintage max secinfoenddt = &crsp_vintage;
 
 proc sql;
     create table meetings2 as
         select distinct b.permno, a.*
-        from meetings1 a, crsp.msenames b
-        where substr(a.cusip,1,6)=substr(b.ncusip,1,6)
-        and a.meetingdate >= b.namedt
-        and (a.meetingdate <= b.nameendt or b.nameendt >= "&crsp_vintage"d);
+        from meetings1 a, crsp.stksecurityinfohist b
+        where substr(a.cusip,1,6)=substr(b.cusip,1,6)
+        and a.meetingdate >= b.secinfostartdt
+        and (a.meetingdate <= b.secinfoenddt or b.secinfoenddt >= "&crsp_vintage"d);
     create table meetings3 as
         select distinct b.permno, a.*
-        from meetings1 a, crsp.msenames b
-        where a.ticker = coalescec(b.ticker,b.tsymbol)
-        and a.meetingdate >= b.namedt
-        and (a.meetingdate <= b.nameendt or b.nameendt >= "&crsp_vintage"d)
+        from meetings1 a, crsp.stksecurityinfohist b
+        where a.ticker = coalescec(b.ticker,b.tradingsymbol)
+        and a.meetingdate >= b.secinfostartdt
+        and (a.meetingdate <= b.secinfoenddt or b.secinfoenddt >= "&crsp_vintage"d)
         and a.meetingid not in (select distinct meetingid from meetings2);
 quit;
 
