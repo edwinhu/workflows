@@ -251,11 +251,33 @@ data out.pass;
         ior_net = min(100, max(0, io_total_net / tso * 100));
     else ior_net = .;
 
-    /* Pivotalness: forpct and the pcts are both on [0,100] */
-    inst_pivotal    = abs(forpct-50) <= coalesce(ior,0);
-    mf_pivotal      = abs(forpct-50) <= coalesce(mf_pct,0);
-    passive_pivotal = abs(forpct-50) <= coalesce(passive_pct,0);
-    index_pivotal   = abs(forpct-50) <= coalesce(index_pct,0);
+    /* Pivotalness: forpct and the pcts are both on [0,100].
+     *
+     * NULL WHERE THE OWNERSHIP IS UNKNOWN, NOT 0. These were
+     * `<= coalesce(ior,0)`, which turns "we have no denominator for this firm"
+     * into "this firm's owners hold nothing" at the moment the flag is set —
+     * so a row with no measurable ownership was recorded as KNOWN NOT PIVOTAL,
+     * indistinguishable from one measured at 0.4% and genuinely not pivotal.
+     * The coalesce re-conflated downstream exactly what the null upstream
+     * exists to protect: leg 2 stopped writing ior = 0.0 for an unknown
+     * denominator, and this put the zero back.
+     *
+     * It is not rare. 42.85% of leg-2 rows have no CRSP denominator, and the
+     * ISS-side `tso` used here has its own gaps, so a false 0 here is a false
+     * "not pivotal" on a large minority of the panel.
+     *
+     * `inst_pivotal_net` immediately below already did this correctly, and its
+     * comment says why in one line — "null where lending is unknown, so it
+     * cannot quietly fall back to the gross measure". Same argument, four
+     * columns earlier. */
+    if not missing(ior)         then inst_pivotal    = abs(forpct-50) <= ior;
+    else inst_pivotal = .;
+    if not missing(mf_pct)      then mf_pivotal      = abs(forpct-50) <= mf_pct;
+    else mf_pivotal = .;
+    if not missing(passive_pct) then passive_pivotal = abs(forpct-50) <= passive_pct;
+    else passive_pivotal = .;
+    if not missing(index_pct)   then index_pivotal   = abs(forpct-50) <= index_pct;
+    else index_pivotal = .;
     /* Reported ALONGSIDE inst_pivotal, not instead of it: null where lending
      * is unknown, so it cannot quietly fall back to the gross measure. */
     if not missing(ior_net) then inst_pivotal_net = abs(forpct-50) <= ior_net;
