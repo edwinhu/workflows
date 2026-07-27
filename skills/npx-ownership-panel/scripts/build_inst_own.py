@@ -136,15 +136,38 @@ def quarter_index(rdate_int: pl.Expr) -> pl.Expr:
 # boundary differs ~0.5% (15,040,731 vs 15,115,823) — a vintage revision between
 # products, which is why crsp_src is still stamped on every row even though it
 # now carries one value.
+# NO SHARE-CLASS FILTER ON THE DENOMINATOR. This query used to carry
+# sharetype/securitytype/securitysubtype/usincflg = NS/EQTY/COM/Y, the same
+# predicate as the identifier pull below. That is the universe definition, and
+# applying it HERE conflated two different questions:
+#
+#   "is this security in the panel's universe?"   <- a scope question
+#   "how many shares does it have outstanding?"   <- a fact, true regardless
+#
+# The result was 300,515 permno-quarters (43.7% of leg 2) with tso NULL and
+# therefore ior NULL. Measured: CRSP has shrout for ALL 300,515 of them once the
+# filter is dropped — ZERO are genuinely absent. The denominator was never
+# missing; we declined to read it.
+#
+# AND THE FILTER WAS MOSTLY REDUNDANT ANYWAY. The panel is meetings-driven
+# (merge_panel MERGE_ASOFs out.meetings on the LEFT), so a permno with no ISS
+# meeting never reaches out.pass whatever leg 2 does. Of those 300,515 rows,
+# 226,604 (75.4%) are dropped at that join regardless — for them this filter only
+# manufactured nulls in an intermediate artifact.
+#
+# The remaining 73,911 rows on 1,657 permnos are the reason this is a fix rather
+# than a tidy-up: they DO reach the panel — they have ISS meetings, so the panel
+# says they are in scope — and leg 2 was refusing them a denominator anyway.
+# Dual-class share classes, foreign-incorporated issuers with US listings and
+# real proxy votes, units. The panel called them in scope; leg 2 called them out.
+#
+# Scope still gets decided, just once and in the right place: by the ISS meetings
+# join, and by the identifier query below, which keeps its filter.
 CRSP_MONTHLY_QUERY = """
 SELECT permno, mthcaldt AS date, mthprc AS prc, shrout,
        mthcumfacpr AS cfacpr, mthcumfacshr AS cfacshr, cusip AS ncusip
 FROM crsp.msf_v2
-WHERE sharetype = 'NS'
-  AND securitytype = 'EQTY'
-  AND securitysubtype = 'COM'
-  AND usincflg = 'Y'
-  AND mthcaldt BETWEEN %(start)s AND %(end)s
+WHERE mthcaldt BETWEEN %(start)s AND %(end)s
   AND shrout IS NOT NULL
 """
 

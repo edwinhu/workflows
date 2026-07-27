@@ -265,30 +265,25 @@ def main() -> int:
         ),
         flush=True,
     )
-    # WHAT THE UNTESTABLE ROWS ACTUALLY ARE. Classified 2026-07-27 against
-    # crsp.stksecurityinfohist: of the 16,675 (permno, class) rows behind the
-    # unlinked population, ZERO are absent from the names table and only 278
-    # (1.7%) are in NS/EQTY/COM/Y — 98.3% are OUTSIDE the universe this panel
-    # measures. The top classes are ETFs (6,827 permnos), foreign-incorporated
-    # common (2,420), ADRs (1,029) and closed-end funds (1,039).
+    # WHAT THE UNTESTABLE ROWS ACTUALLY ARE.
     #
-    # So the missing denominators are overwhelmingly 13F filers holding things
-    # that are NOT US common stock, not CRSP failing to match. The bridge rate
-    # falls monotonically 74.1% (2005) -> 38.0% (2025), which is the secular rise
-    # of ETFs in institutional portfolios, not a degrading join.
+    # This used to report that 98.3% of them were out-of-universe holdings (ETF,
+    # ADR, foreign, CEF) and therefore not a defect. That was true of the DATA and
+    # false about the CAUSE: leg 2 was applying the universe filter to the
+    # DENOMINATOR pull, so those rows had no tso because we declined to read one,
+    # not because CRSP lacked it. Measured: CRSP had shrout for all 300,515 of
+    # them. The filter is gone from CRSP_MONTHLY_QUERY; scope is now decided once,
+    # by the ISS meetings join and by the identifier query.
     #
-    # This matters for how the number is read: "43.7% invisible" sounds like a
-    # data defect and is mostly a universe boundary. The ~1.7% residual is the
-    # part that would be a real gap.
+    # So an untestable row now means the denominator is GENUINELY absent — no
+    # crsp.msf_v2 row for that permno-quarter at all — which should be rare and is
+    # worth looking at rather than explaining away. If this count is large again,
+    # something reintroduced a filter upstream.
     print(
-        "NOTE: DQ untestable rows are OUT-OF-UNIVERSE holdings (ETF, ADR, foreign, "
-        "CEF), not failed matches. 98.3% of unlinked permnos are outside "
-        "NS/EQTY/COM/Y outright; of the 1.7% that look in-universe, 99.3% were in "
-        "it at a DIFFERENT DATE (share class is interval-based, the filter is "
-        "per-date). True residual: 47 rows, ONE permno, 0.0012% of panel 13F "
-        "shares. Bridge rate falls 74.1% (2005) to 38.0% (2025) as institutions "
-        "shift into ETFs. Classified 2026-07-27; re-derive against "
-        "crsp.stksecurityinfohist if the panel window moves.",
+        "NOTE: DQ untestable rows now mean the denominator is GENUINELY absent from "
+        "crsp.msf_v2, not filtered out — the share-class predicate was removed from "
+        "the denominator pull because it is the ISS meetings join, not leg 2, that "
+        "decides scope. A large count here means a filter came back.",
         flush=True,
     )
     return 0
