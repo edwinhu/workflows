@@ -419,6 +419,54 @@ def pull_cusip8_permno_map(user: str) -> pl.DataFrame:
 # Step 1: Load and clean 13F holdings
 # ---------------------------------------------------------------------------
 
+def _assert_holdings_present(pattern: str, min_files: int = 100) -> None:
+    """Fail with the RIGHT diagnosis if the holdings input has been purged.
+
+    WRDS /scratch purges by mtime on roughly a 7-day window, and it removes FILES
+    while leaving the directory shells — so a glob still resolves, the scan still
+    plans, and the failure surfaces downstream as "0 rows" or "year N resolved 0
+    matches". Every guard in this file would fire correctly and blame the DATA.
+
+    The trap that caused it is worth naming: `tar` preserves mtimes by default, so
+    a 3.3 GB holdings tree shipped from a workstation arrives carrying its ORIGINAL
+    dates. Ours landed ~80 days old and was purged at ~00:01 the same night,
+    untouched by anything in the pipeline. Ship with `tar -m` so extraction time
+    becomes the mtime.
+
+    This can also strike MID-RUN, which is the case that most needs naming: legs
+    that already read the input succeed, later legs see nothing, and the panel
+    looks internally inconsistent rather than truncated.
+
+    So check the input before planning any work, and say "purge" rather than
+    letting a data guard take the blame.
+    """
+    import glob as _glob
+
+    files = _glob.glob(pattern)
+    if len(files) >= min_files:
+        oldest = min(Path(f).stat().st_mtime for f in files)
+        age_days = (time.time() - oldest) / 86400
+        print(f"[13f] {len(files)} partition files, oldest mtime {age_days:.1f}d old")
+        if age_days > 5:
+            print(
+                f"[13f] WARNING: oldest input file is {age_days:.1f} days old. WRDS "
+                f"/scratch purges around 7 days BY MTIME — re-ship with `tar -m`, or "
+                f"touch the tree, before this run or a later one loses its input "
+                f"mid-flight."
+            )
+        return
+
+    raise FileNotFoundError(
+        f"holdings input has {len(files)} files at {pattern}, expected >= {min_files}. "
+        "The directory shells surviving with no parquet inside them is the signature "
+        "of the WRDS /scratch mtime purge (~7 days), NOT a data defect — check "
+        "`ls -la` and the mtimes before treating this as a pipeline bug. Re-ship the "
+        "tree with `tar -m` so extraction time becomes the mtime; without -m tar "
+        "preserves the ORIGINAL dates and a freshly shipped tree can be purged the "
+        "same night."
+    )
+
+
 def load_13f_holdings(
     start_int: int, end_int: int, zero_value_shares_threshold: int | None = 100_000
 ) -> pl.DataFrame:
@@ -449,8 +497,10 @@ def load_13f_holdings(
         "cik", "period_of_report", "filed_date",
         "form_type", "accession", "cusip8", "shares", "value",
     ]
+    _pattern = str(PROC / "holdings_13f" / "year=*" / "Q*.parquet")
+    _assert_holdings_present(_pattern)
     lf = (
-        pl.scan_parquet(str(PROC / "holdings_13f" / "year=*" / "Q*.parquet"))
+        pl.scan_parquet(_pattern)
         .select(NEEDED)
         .with_columns(
             pl.col("period_of_report").cast(pl.Int64).alias("rdate_raw"),
