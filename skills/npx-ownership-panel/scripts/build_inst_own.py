@@ -1328,10 +1328,28 @@ def add_net_of_lending(panel: pl.DataFrame) -> pl.DataFrame:
         # institutional holdings, which happens when a large share of the lendable
         # supply is retail or non-13F. That is informative about the assumption, not
         # about the firm, so it is flagged rather than propagated as a negative block.
-        pl.max_horizontal(
-            pl.col("io_total") - pl.col("shortint_adj").fill_null(0.0),
-            pl.lit(0.0),
-        ).alias("io_total_net"),
+        #
+        # THE CLAMP MUST NOT SWALLOW A NULL. `max_horizontal` IGNORES nulls, so
+        # `max_horizontal(null, 0.0)` returns 0.0 — and with io_total null that
+        # made io_total_net = 0.0, asserting ZERO net institutional ownership on a
+        # firm-quarter whose GROSS ownership is unknown. Measured on the CIZ
+        # panel: 4,331 rows of 697,239 (0.62%), and 647 of them have a KNOWN
+        # short interest, so the row claimed a net computed from a real lending
+        # figure and an absent holdings figure.
+        #
+        # Same defect as `ior = 0.0` on an unknown denominator, one column over:
+        # unknown rendered as zero, with the missingness flag (io_missing) correct
+        # beside it and the VALUE contradicting it. The zero floor applies to the
+        # arithmetic, not to the question of whether there is any arithmetic to do.
+        pl.when(pl.col("io_total").is_null())
+        .then(pl.lit(None, dtype=pl.Float64))
+        .otherwise(
+            pl.max_horizontal(
+                pl.col("io_total") - pl.col("shortint_adj").fill_null(0.0),
+                pl.lit(0.0),
+            )
+        )
+        .alias("io_total_net"),
         pl.when(pl.col("tso") > 0)
         .then(pl.col("shortint_adj") / pl.col("tso"))
         .otherwise(None)

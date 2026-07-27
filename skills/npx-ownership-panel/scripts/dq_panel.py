@@ -145,6 +145,24 @@ def main() -> int:
     pct = (100.0 * n_imp / n_testable) if n_testable else 0.0
     cov = (100.0 * n_testable / d.height) if d.height else 0.0
 
+    # NET OF LENDING, because most of the gross exceedance is not a defect.
+    # A lent share sits in the borrower's account and STILL appears in the
+    # lender's 13F, so gross institutional holdings legitimately exceed shares
+    # outstanding. detect_impossible_ratio's own docstring says to "triage
+    # against short interest ... before treating as" a defect — leg 2 already
+    # computes io_total_net, so the sweep was reporting the untriaged number.
+    #
+    # Measured on the CIZ panel: gross 12,950/392,393 = 3.300%, net
+    # 4,266/392,393 = 1.087%. Lending accounts for 8,684 of the 12,950 — 67.1%.
+    # p99 falls from 1.134 to 1.026. The gross figure is a triage signal that is
+    # two-thirds false alarm; the net figure is the one worth acting on.
+    net = ir.filter(pl.col("io_total_net").is_not_null())
+    n_net_imp = int(
+        (net["io_total_net"] / net["tso"] > 1.02).sum()
+    ) if net.height else 0
+    net_pct = (100.0 * n_net_imp / net.height) if net.height else 0.0
+    n_si_missing = int(d.select(pl.col("si_missing").sum()).item()) if "si_missing" in d.columns else 0
+
     print(flush=True)
     print(
         "NOTE: DQ rows={:,} coverage_end={} duplicate_grain={} join_coverage_tail={} "
@@ -165,6 +183,21 @@ def main() -> int:
         "NOTE: DQ the impossible_ratio denominator is rows with BOTH io_total and "
         "tso>0, not the panel; {:,} rows ({:.1f}%) are invisible to it".format(
             d.height - n_testable, 100.0 - cov
+        ),
+        flush=True,
+    )
+    print(
+        "NOTE: DQ impossible_ratio_NET={:,}/{:,}={:.3f}% (io_total_net/tso) — a lent "
+        "share is in the borrower's account AND the lender's 13F, so gross "
+        "exceedance is expected; lending explains {:,} of the {:,} gross flags".format(
+            n_net_imp, net.height, net_pct, max(n_imp - n_net_imp, 0), n_imp
+        ),
+        flush=True,
+    )
+    print(
+        "NOTE: DQ si_missing={:,} of {:,} ({:.1f}%) — no lending figure there, so the "
+        "NET ratio cannot be formed and those rows fall back to gross".format(
+            n_si_missing, d.height, 100.0 * n_si_missing / d.height if d.height else 0.0
         ),
         flush=True,
     )
