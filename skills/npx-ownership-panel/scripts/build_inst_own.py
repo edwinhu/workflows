@@ -25,9 +25,31 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
+
+# DETERMINISM: pin polars to one thread BEFORE importing it.
+#
+# Multi-threaded float summation reduces partial sums in whatever order the
+# threads finish, so io_total lands within ~1 ULP of a different value run to
+# run. That is not a rounding curiosity you can hash your way around: measured
+# on two runs of this leg, canonical_hash.py disagreed (49ef9268 vs e7dcd716)
+# with 101 cells still differing at 12 significant digits — and at 8 digits it
+# was WORSE, 311 cells, because coarser rounding puts MORE values exactly on a
+# half-way boundary where a 1-ULP nudge flips which way they go. Reducing
+# precision makes this worse, not better.
+#
+# Single-threaded, the digest is identical across runs. It costs ~2.1x on this
+# leg, which is off the critical path (the DAG is bounded by tfn_holdings x9
+# and the N-PX array), so reproducibility is the better trade.
+#
+# It is set HERE rather than in the job script because polars reads the value
+# at import: an env var exported by a wrapper is one forgotten line away from a
+# panel whose digest silently stops reproducing. Override deliberately with
+# POLARS_MAX_THREADS if you want the speed and do not need a frozen digest.
+os.environ.setdefault("POLARS_MAX_THREADS", "1")
 
 import numpy as np
 import pandas as pd
@@ -972,54 +994,6 @@ def finalize_io_metrics(io: pl.DataFrame) -> pl.DataFrame:
 # Step 5: Final panel
 # ---------------------------------------------------------------------------
 
-def _assert_no_dead_tail(panel: pl.DataFrame, col: str = "io_total",
-                         null_threshold: float = 0.99, min_periods: int = 1) -> None:
-    """Fail if `col` is (near-)entirely null for a contiguous TAIL of quarters.
-
-    THIS GUARD EXISTS BECAUSE I BUILT ITS DETECTOR AND THEN SHIPPED THE BUG IT
-    DETECTS. crsp.msf is frozen at 2024-12-31, which silently nulled every 2025
-    quarter; that was found, fixed by splicing msf_v2, and generalised into
-    `detect_join_coverage_tail` in the wrds skill. Then the dated cusip->permno
-    join reintroduced exactly the same failure through a DIFFERENT frozen table:
-    crsp.msenames also stops at 2024-12-31 and has ZERO null nameendt, so every
-    validity window closes there and `rdate <= nameendt` dropped all of 2025 —
-    0 cusip8 matches, io_total null for all 15,546 rows. Fixed by splicing
-    crsp.stocknames_v2.
-
-    A detector that lives in a test suite catches nothing at build time. So the
-    check runs HERE, on the output, where it is blind to which upstream table
-    froze — which is the point: the next frozen reference table will be a third
-    one nobody has looked at.
-
-    Deliberately silent when the column is null in EVERY period: that is a
-    reference table never joined at all, a different defect, and reporting it
-    here would bury this one.
-    """
-    per = (
-        panel.group_by("rdate")
-        .agg(pl.col(col).is_null().mean().alias("null_rate"))
-        .sort("rdate")
-    )
-    rates = list(zip(per["rdate"].to_list(), per["null_rate"].to_list()))
-    tail = []
-    for rdate, rate in reversed(rates):
-        if rate >= null_threshold:
-            tail.append(rdate)
-        else:
-            break
-    if len(tail) >= min_periods and len(tail) < len(rates):
-        tail.reverse()
-        raise ValueError(
-            f"{col} is null for >={null_threshold:.0%} of rows in the last "
-            f"{len(tail)} quarter(s) ({tail[0]}..{tail[-1]}) but not before. A "
-            f"reference table is frozen while the holdings kept going. Known "
-            f"culprits, both already spliced once: crsp.msf (-> msf_v2) and "
-            f"crsp.msenames (-> stocknames_v2, which also has ZERO null "
-            f"nameendt, so every window closes at its last date). Extend the "
-            f"source or lower --end deliberately."
-        )
-    print(f"[guard] no dead tail in {col} — checked {len(rates)} quarters")
-
 
 def build_final_panel(
     io_metrics: pl.DataFrame, crsp_m: pl.DataFrame
@@ -1147,6 +1121,55 @@ def add_split_flags(panel: pl.DataFrame, crsp_m: pl.DataFrame) -> pl.DataFrame:
         f"({n_a / max(len(panel), 1):.2%} of panel) — flagged, not dropped"
     )
     return panel
+
+
+def _assert_no_dead_tail(panel: pl.DataFrame, col: str = "io_total",
+                         null_threshold: float = 0.99, min_periods: int = 1) -> None:
+    """Fail if `col` is (near-)entirely null for a contiguous TAIL of quarters.
+
+    THIS GUARD EXISTS BECAUSE I BUILT ITS DETECTOR AND THEN SHIPPED THE BUG IT
+    DETECTS. crsp.msf is frozen at 2024-12-31, which silently nulled every 2025
+    quarter; that was found, fixed by splicing msf_v2, and generalised into
+    `detect_join_coverage_tail` in the wrds skill. Then the dated cusip->permno
+    join reintroduced exactly the same failure through a DIFFERENT frozen table:
+    crsp.msenames also stops at 2024-12-31 and has ZERO null nameendt, so every
+    validity window closes there and `rdate <= nameendt` dropped all of 2025 —
+    0 cusip8 matches, io_total null for all 15,546 rows. Fixed by splicing
+    crsp.stocknames_v2.
+
+    A detector that lives in a test suite catches nothing at build time. So the
+    check runs HERE, on the output, where it is blind to which upstream table
+    froze — which is the point: the next frozen reference table will be a third
+    one nobody has looked at.
+
+    Deliberately silent when the column is null in EVERY period: that is a
+    reference table never joined at all, a different defect, and reporting it
+    here would bury this one.
+    """
+    per = (
+        panel.group_by("rdate")
+        .agg(pl.col(col).is_null().mean().alias("null_rate"))
+        .sort("rdate")
+    )
+    rates = list(zip(per["rdate"].to_list(), per["null_rate"].to_list()))
+    tail = []
+    for rdate, rate in reversed(rates):
+        if rate >= null_threshold:
+            tail.append(rdate)
+        else:
+            break
+    if len(tail) >= min_periods and len(tail) < len(rates):
+        tail.reverse()
+        raise ValueError(
+            f"{col} is null for >={null_threshold:.0%} of rows in the last "
+            f"{len(tail)} quarter(s) ({tail[0]}..{tail[-1]}) but not before. A "
+            f"reference table is frozen while the holdings kept going. Known "
+            f"culprits, both already spliced once: crsp.msf (-> msf_v2) and "
+            f"crsp.msenames (-> stocknames_v2, which also has ZERO null "
+            f"nameendt, so every window closes at its last date). Extend the "
+            f"source or lower --end deliberately."
+        )
+    print(f"[guard] no dead tail in {col} — checked {len(rates)} quarters")
 
 
 def add_net_of_lending(panel: pl.DataFrame) -> pl.DataFrame:
