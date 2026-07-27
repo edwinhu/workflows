@@ -142,7 +142,21 @@ def main() -> None:
     si = si.with_columns(snap_to_quarter_end(pl.col("datadate")).alias("rdate"))
     si = (
         si.sort(["permno", "rdate", "datadate"])
-        .group_by(["permno", "rdate"])
+        # maintain_order=True is what makes `.last()` mean "latest datadate".
+        # polars' group_by is not documented to read rows in sorted order, so
+        # without it "last" means "whichever row a thread happened to see last"
+        # and the intent above — closest to but not after quarter-end — lives
+        # only in the sort, where nothing enforces it. Short interest is
+        # semi-monthly, so a permno-quarter carries ~6 rows and there is always
+        # a tie to break. Same defect class as the (permno, rdate, cik) dedup in
+        # leg 2 and the (wficn, rqdate, cusip8) dedup in the S12 leg; this is the
+        # third instance and the cheapest to close.
+        #
+        # Note this leg is NOT exposed to the float-sum-order problem that forced
+        # POLARS_MAX_THREADS=1 in build_inst_own.py — it selects whole rows and
+        # sums nothing. Thread pinning would MASK this rather than fix it, and
+        # this file is pinned by nothing in mirror, so the guard has to be here.
+        .group_by(["permno", "rdate"], maintain_order=True)
         .last()
         .rename({"datadate": "si_datadate"})
     )
