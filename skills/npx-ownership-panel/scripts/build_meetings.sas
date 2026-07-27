@@ -404,7 +404,14 @@ proc sql;
     create table meetings2 as
         select distinct b.permno, a.*
         from meetings1 a, crsp.stksecurityinfohist b
-        where substr(a.cusip,1,6)=substr(b.cusip,1,6)
+        /* CUSIP8, NOT CUSIP6. cusip6 is issuer-level and maps preferreds and
+         * other share classes onto the common permno — D9 cause 2, which leg 2
+         * disables in its own fallback. ISS `cusip` is uniformly 9 characters
+         * (886,995 of 886,995), so substr(,1,8) is a real cusip8 and not a
+         * truncation artefact. Measured cost of tightening across the S12 leg:
+         * 1.69pp of matched rows, against fan-out risk on 5.87%. The ticker
+         * fallback in meetings3 below still catches items this drops. */
+        where substr(a.cusip,1,8)=substr(b.cusip,1,8)
         and a.meetingdate >= b.secinfostartdt
         and (a.meetingdate <= b.secinfoenddt or b.secinfoenddt >= "&crsp_vintage"d);
     create table meetings3 as
