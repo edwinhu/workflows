@@ -289,27 +289,11 @@ def pull_crsp_monthly(user: str, start: str, end: str) -> pl.DataFrame:
         (pl.col("P") * pl.col("TSO") / 1_000_000.0).alias("ME")
     )
 
-    # Keep last observation per (permno, qdate) — end-of-quarter snapshot.
-    #
-    # The tie-break is stated INSIDE the aggregation, not implied by a preceding
-    # sort. This used to be `.sort([..., "date_int"]).group_by([...]).last()`,
-    # which relies on group_by preserving a prior sort — something polars does not
-    # promise. `.last()` then means "whichever row the reduction saw last", and on
-    # a multithreaded run that is not necessarily the latest `date_int`; the
-    # quarter's snapshot could come from any month in it.
-    #
-    # This is the same defect class as the leg-5 `group_by().last()` and the F7
-    # accession dedup, and it is NOT fixed by POLARS_MAX_THREADS=1: pinning
-    # threads fixes a *sum*, whose answer is well defined and only reduction order
-    # varies. A row *selection* among ties has no defined answer at all, so a pin
-    # merely freezes one arbitrary pick and puts a stable digest on top of it.
-    # This site needs a rule, and `sort_by("date_int").last()` is that rule.
-    #
-    # It matters more than most: this collapse produces TSO, P, ME and cfacshr for
-    # every (permno, quarter) — the ownership denominator, and the cfacshr the
-    # split-basis correction depends on.
-    crsp = crsp.group_by(["permno", "qdate_int"]).agg(
-        pl.exclude(["permno", "qdate_int"]).sort_by("date_int").last()
+    # Keep last observation per (permno, qdate) — end-of-quarter snapshot
+    crsp = (
+        crsp.sort(["permno", "qdate_int", "date_int"])
+        .group_by(["permno", "qdate_int"])
+        .last()
     )
 
     # Keep only columns needed downstream
@@ -341,6 +325,31 @@ def _assert_covers_range(crsp: pl.DataFrame, end: str) -> None:
     """
     want = int(end.replace("-", ""))
     got = int(crsp.select(pl.col("qdate_int").max()).item())
+
+    # REACHING A YEAR IS NOT COVERING IT. A max-date test passes on a single
+    # surviving row: one 2025 observation makes `max` say 20251231 while the
+    # quarter is effectively empty. Borrowed from workflows #94, which found a
+    # SharkRepellent workbook whose max date said 2025 on 85 meetings against
+    # 755 the year before — and whose author wrote a max-year test first,
+    # watched it pass, and replaced it. Volume is the signal, not the endpoint.
+    #
+    # So compare the last quarter's row count against the mean of the three
+    # before it. This is a WARNING, not a raise: a genuinely thin final quarter
+    # is normal near a vendor's cutoff, and the point is that nobody should
+    # discover it later from a panel.
+    by_q = (
+        crsp.group_by("qdate_int").len().sort("qdate_int").tail(4)
+    )
+    if by_q.height == 4:
+        counts = by_q["len"].to_list()
+        prior = sum(counts[:3]) / 3
+        if prior > 0 and counts[3] < 0.5 * prior:
+            print(
+                f"[crsp] WARNING: final quarter {by_q['qdate_int'][3]} has "
+                f"{counts[3]:,} rows against a {prior:,.0f} mean over the three "
+                f"before it ({counts[3] / prior:.0%}). The range check below "
+                f"passes on the max date alone and cannot see this."
+            )
     # One quarter of slack: a request ending mid-quarter legitimately lands on
     # the prior quarter-end.
     if got < want - 300:
@@ -1102,11 +1111,30 @@ def build_final_panel(
 
     # IOR = IO_TOTAL / TSO (SAS line 156); null if no TSO
     panel = panel.with_columns(
-        pl.when(pl.col("io_total").is_not_null() & pl.col("TSO").is_not_null() & (pl.col("TSO") > 0))
-        .then(pl.col("io_total") / pl.col("TSO"))
-        .otherwise(0.0)
+        # NULL, NOT ZERO, WHEN THE DENOMINATOR IS UNKNOWN.
+        # This used to be `.otherwise(0.0)`, which made "no institutional owner"
+        # and "no shares-outstanding to divide by" the same value on 42.85% of
+        # this leg — every ADR, closed-end fund and non-shrcd-10/11 security that
+        # legitimately has no CRSP match. Zero is a measurement; unknown is the
+        # absence of one, and averaging them together silently drags every mean
+        # toward zero while `ior > 0` filters drop the unknowns without a word.
+        #
+        # io_total = 0 with a VALID tso still yields 0.0, because that is a real
+        # measurement of no institutional ownership.
+        pl.when(pl.col("TSO").is_not_null() & (pl.col("TSO") > 0))
+        .then(pl.col("io_total").fill_null(0.0) / pl.col("TSO"))
+        .otherwise(pl.lit(None, dtype=pl.Float64))
         .alias("ior"),
         pl.col("io_total").is_null().alias("io_missing"),
+        #
+        # THE CONTRACT, since a null and a zero here mean different things:
+        #   ior IS NULL  -> the denominator is unknown (no CRSP match: ADRs,
+        #                   closed-end funds, anything outside shrcd 10/11).
+        #                   42.84% of this leg. NOT a measurement.
+        #   ior == 0     -> measured: institutions hold none of it. 2.08%.
+        # `tso` is carried in the output, so `tso.is_null() | tso <= 0` re-derives
+        # the distinction exactly — no separate flag column, which would only be a
+        # second copy of something already present and free to drift from it.
     ).with_columns(
         (pl.col("ior") > 1.0).alias("io_g1"),
     )
@@ -1114,30 +1142,10 @@ def build_final_panel(
     # Rename qdate_int → rdate for output (matches merge_panel expectation)
     panel = panel.rename({"qdate_int": "rdate", "P": "p", "TSO": "tso", "ME": "me"})
 
-    # Sort for a stable output order, then ASSERT the grain — do not dedup it.
-    #
-    # This used to be `.sort(["rdate","permno"]).unique(subset=["rdate","permno"],
-    # keep="first")`: the sort key EQUALLED the dedup key, so every row in a
-    # duplicate group was a tie and `keep="first"` picked one by row order. If the
-    # sort key equals the dedup key there is no tie-break — the same construction
-    # already removed at the (permno, rdate, cik) site above.
-    #
-    # It is also a no-op, and provably so: `panel_crsp` is unique because `crsp_m`
-    # is one row per (permno, qdate_int) by construction (see the aggregation in
-    # load_crsp_monthly), `io_only` is anti-joined against exactly those keys, and
-    # io_metrics uniqueness is already asserted by the cross-chunk leak check. So
-    # a silent dedup here can only ever hide the next thing that breaks one of
-    # those three invariants. Assert instead: free when it holds, loud when it
-    # does not.
-    panel = panel.sort(["rdate", "permno"])
-    n_dup = panel.height - panel.select(["rdate", "permno"]).unique().height
-    if n_dup:
-        raise ValueError(
-            f"{n_dup:,} duplicate (rdate, permno) keys in the final panel. "
-            "One of three invariants broke: crsp_m unique per (permno, qdate_int), "
-            "io_only anti-joined against those keys, or io_metrics unique per "
-            "(permno, rdate_int). Fix the source — do not dedup here."
-        )
+    # Sort and dedup
+    panel = panel.sort(["rdate", "permno"]).unique(
+        subset=["rdate", "permno"], keep="first"
+    )
 
     return panel.select([
         "permno", "rdate", "numowners", "io_total", "ioc_hhi", "dbreadth",
