@@ -12,7 +12,8 @@
 # DAG (hold_jid edges are real dependencies, not decoration):
 #
 #   build_meetings ─────────────────────────────────────────────────┐
-#   build_inst_own ─────────────────────────────────────────────────┤
+#   short_interest ──→ build_inst_own ──→ import_inst_own ──────────┤
+#                        (EDGAR, py)      (csv → out.inst_own)      │
 #   build_mflinks ──┐                                               │
 #   split_s12 ──────┴──→ tfn_holdings_parallel ×N ──────────────────┤
 #   npx_stage ───────────→ npx_array ×M (one task per year) ────────┤
@@ -63,6 +64,7 @@ read -r -a YEAR_RANGES <<< "$(sed -n 's/^%let S12_RANGES *= *\([^;]*\);.*/\1/p' 
 # 40 minutes in is 40 minutes of grid time and a confusing log.
 preflight_fail=0
 for f in pipeline_config.sas build_meetings.sas build_inst_own.py build_short_interest.py \
+         import_inst_own.sas run_import.sh \
          build_mflinks.sas split_s12.sas tfn_holdings_parallel.sas stage_npx_link.sas \
          build_npx.sas merge_panel.sas run_sas.sh run_python.sh run_npx_stage.sh \
          run_npx_array.sh; do
@@ -97,7 +99,7 @@ fi
 [ -f ~/.pgpass ] || { echo "PREFLIGHT ERROR: ~/.pgpass missing (WRDS PG credentials)" >&2; preflight_fail=1; }
 [ "$preflight_fail" = "0" ] || { echo "Preflight failed — nothing submitted." >&2; exit 1; }
 
-chmod +x run_sas.sh run_npx_stage.sh run_npx_array.sh 2>/dev/null || true
+chmod +x run_sas.sh run_npx_stage.sh run_npx_array.sh run_import.sh 2>/dev/null || true
 
 echo "=========================================="
 echo "N-PX x Ownership Pipeline"
@@ -127,6 +129,17 @@ JOB_IO=$(qsub -terse -N inst_own -hold_jid "$JOB_SI" \
     -o logs/build_inst_own.log -j y \
     run_python.sh build_inst_own.py | cut -d. -f1)
 echo "  [2] build_inst_own:  job $JOB_IO  (~3 min, held on short_interest)"
+
+# Leg 2 writes parquet + CSV; merge_panel reads out.inst_own from the SAS `out`
+# library. The SAS leg used to write that directly, and when leg 2 became Python
+# nothing replaced it — merge_panel aborted its prerequisite gate on an
+# otherwise-clean run. This step is that bridge, and it is a REAL DAG edge:
+# merge waits on it, not on build_inst_own.
+JOB_IMP=$(qsub -terse -N imp_io -hold_jid "$JOB_IO" \
+    -o logs/import_inst_own.sge.log -j y \
+    -v "INST_OWN_CSV=$(pwd)/../data/processed/inst_own.csv" \
+    run_import.sh | cut -d. -f1)
+echo "  [2] import_inst_own: job $JOB_IMP  (held on build_inst_own → out.inst_own)"
 
 # --- Leg 1: mutual-fund holdings ---------------------------------------------
 JOB_MFL=$(qsub -terse -N mflinks -o logs/build_mflinks.log -j y \
@@ -163,7 +176,9 @@ JOB_NPX=$(qsub -terse -N npx_cells -hold_jid "$JOB_STAGE" \
 echo "  [3] npx_array:       job $JOB_NPX  (${NTASKS} tasks) — held on npx_stage"
 
 # --- Merge: waits on everything ----------------------------------------------
-ALL_DEPS="$JOB_MTG,$JOB_IO,$TFN_JOBS,$JOB_NPX"
+# $JOB_IMP, not $JOB_IO: out.inst_own exists only after the import step, and
+# merge_panel's prerequisite gate checks for exactly that dataset.
+ALL_DEPS="$JOB_MTG,$JOB_IMP,$TFN_JOBS,$JOB_NPX"
 JOB_MERGE=$(qsub -terse -N merge -hold_jid "$ALL_DEPS" \
     -o logs/merge_panel.log -j y \
     run_sas.sh merge_panel.sas | cut -d. -f1)

@@ -110,6 +110,9 @@ WHERE b.shrcd IN (10, 11)
 # 2020-09-30 is 16,976,763 / 1.0 / 115.81 in both. Verified before adopting.
 # shrout at the boundary differs ~0.5% (15,040,731 vs 15,115,823) — a vintage
 # revision between products, which is why crsp_src is stamped on every row.
+# crsp.msenames and crsp.msf freeze on the same date; keep it in one place.
+LEGACY_NAMES_END = "2024-12-31"
+
 CRSP_MONTHLY_V2_QUERY = """
 SELECT permno, mthcaldt AS date, mthprc AS prc, shrout,
        mthcumfacpr AS cfacpr, mthcumfacshr AS cfacshr, cusip AS ncusip
@@ -122,11 +125,68 @@ WHERE sharetype = 'NS'
   AND shrout IS NOT NULL
 """
 
+# DATE-BOUNDED. The undated form of this query -- SELECT DISTINCT ncusip, permno
+# -- maps EVERY historical CUSIP a permno ever carried to it, for all time. A
+# 2020 holding tagged with the 1985 ALLIED SIGNAL cusip (01951210) then resolves
+# to Honeywell's permno 10145, because CRSP records both under it:
+#
+#   permno 10145  01951210  ALLIED SIGNAL INC          1985-09-19 .. 1999-12-01
+#   permno 10145  43851610  HONEYWELL INTERNATIONAL    1999-12-02 ..
+#   permno 10401  00195710  A T & T CORP               1994-04-21 .. 2002-11-18
+#   permno 10401  00195750  A T & T CORP               2002-11-19 .. 2005-11-18
+#
+# Those are SUCCESSIONS, never concurrent. The undated join manufactured a
+# second row per (permno, rdate, cik), which the downstream
+# unique(subset=[permno,rdate,cik], keep="first") then resolved BY COIN FLIP --
+# sorting on exactly the dedup key leaves ties in arbitrary order. Measured on
+# 2018-2022: 8,804 such groups, 44.5% with a second position over half the size
+# of the first. So io_total for those cells was one draw, not an answer.
+#
+# Same shape as every other defect in this file: a join that silently
+# over-matches and returns plausible numbers. Note the CRSP monthly query above
+# ALREADY does the dated join correctly -- it was simply never propagated here.
 CUSIP8_PERMNO_QUERY = """
-SELECT DISTINCT ncusip, permno
+SELECT DISTINCT ncusip, permno, namedt, nameendt
 FROM crsp.msenames
 WHERE ncusip IS NOT NULL AND ncusip != ''
 """
+
+# THE NAMES TABLE IS FROZEN TOO, AND DATING THE JOIN IS WHAT EXPOSED IT.
+#
+# crsp.msenames stops with the legacy product: max(nameendt) = 2024-12-31 and
+# NOT ONE of its 83,815 common-stock rows has a NULL nameendt. So the
+# `nameendt IS NULL -> 29991231` branch above never fires, every validity window
+# closes on or before 2024-12-31, and `rdate_int <= nameendt_int` drops every
+# 2025 holding. Measured before this splice: 2025 got 0 cusip8 matches and all
+# 15,546 of its panel rows carried io_total = NULL.
+#
+# That is the SAME hole the msf/msf_v2 splice above exists to close, one table
+# over — and it is invisible without the date bound, because the undated join
+# matched 2025 rows on a stale window and returned plausible numbers. Fixing the
+# over-match uncovered an under-match.
+#
+# crsp.stocknames_v2 is the CIZ successor and runs to 2025-12-31. Spliced on the
+# same terms as the monthly: EXTEND, never replace. Only windows reaching past
+# the legacy boundary are taken and their start is clamped to it, so every
+# historical quarter keeps its legacy window and the difference is confined to
+# dates that had no window at all. Share-class filter is byte-identical to
+# CRSP_MONTHLY_V2_QUERY so the names and the prices admit the same universe.
+CUSIP8_PERMNO_V2_QUERY = """
+SELECT DISTINCT cusip AS ncusip, permno, namedt, nameenddt AS nameendt
+FROM crsp.stocknames_v2
+WHERE cusip IS NOT NULL AND cusip != ''
+  AND sharetype = 'NS'
+  AND securitytype = 'EQTY'
+  AND securitysubtype = 'COM'
+  AND usincflg = 'Y'
+  AND COALESCE(nameenddt, '2099-12-31') >= %(v2_start)s
+"""
+
+# First date the CIZ names table owns. The legacy table's windows CLOSE on
+# LEGACY_NAMES_END, and 2024-12-31 is itself a 13F quarter-end, so a v2 window
+# clamped to the boundary rather than the day after would double-match Q4 2024
+# and reintroduce exactly the duplicate this file now asserts against.
+V2_NAMES_START = "2025-01-01"
 
 
 def pull_crsp_monthly(user: str, start: str, end: str) -> pl.DataFrame:
@@ -286,16 +346,50 @@ def pull_cusip8_permno_map(user: str) -> pl.DataFrame:
     t0 = time.time()
     conn = wrds_pull.connect(user=user)
     df = pd.read_sql(CUSIP8_PERMNO_QUERY, conn)
+    df2 = pd.read_sql(CUSIP8_PERMNO_V2_QUERY, conn,
+                      params={"v2_start": V2_NAMES_START})
     conn.close()
+    if len(df2):
+        # COLLAPSE TO ONE WINDOW PER (cusip, permno), THEN clamp. stocknames_v2
+        # carries a separate row per name segment, so clamping first and
+        # concatenating would hand the join several windows for the same pair,
+        # all starting on the same day — overlapping windows that fan a single
+        # holding into several rows. Collapsing to [min(namedt), max(nameenddt)]
+        # is safe because every segment resolves to the SAME permno, so widening
+        # within the pair cannot change which permno a cusip maps to.
+        df2["namedt"] = pd.to_datetime(df2["namedt"])
+        df2["nameendt"] = pd.to_datetime(df2["nameendt"])
+        df2 = (df2.groupby(["ncusip", "permno"], as_index=False)
+                  .agg(namedt=("namedt", "min"), nameendt=("nameendt", "max")))
+        df2["namedt"] = df2["namedt"].clip(lower=pd.Timestamp(V2_NAMES_START))
+        df = pd.concat([df, df2], ignore_index=True)
+    print(f"[cusip] {len(df2):,} CIZ name windows from {V2_NAMES_START} "
+          f"(crsp.msenames ends {LEGACY_NAMES_END})")
 
     cmap = pl.from_pandas(df).with_columns(
         pl.col("ncusip").cast(pl.Utf8),
         pl.col("permno").cast(pl.Int64),
+        # YYYYMMDD ints so the validity window compares directly against
+        # rdate_int without a date cast on 97M rows.
+        (pl.col("namedt").cast(pl.Date).dt.year().cast(pl.Int64) * 10000
+         + pl.col("namedt").cast(pl.Date).dt.month().cast(pl.Int64) * 100
+         + pl.col("namedt").cast(pl.Date).dt.day().cast(pl.Int64)
+         ).cast(pl.Int32).alias("namedt_int"),
+        pl.when(pl.col("nameendt").is_null())
+        .then(pl.lit(29991231, dtype=pl.Int32))
+        .otherwise(
+            (pl.col("nameendt").cast(pl.Date).dt.year().cast(pl.Int64) * 10000
+             + pl.col("nameendt").cast(pl.Date).dt.month().cast(pl.Int64) * 100
+             + pl.col("nameendt").cast(pl.Date).dt.day().cast(pl.Int64)
+             ).cast(pl.Int32)
+        ).alias("nameendt_int"),
     )
-    # A cusip8 may map to multiple permnos; keep all (dedup after join)
-    cmap = cmap.unique(subset=["ncusip", "permno"])
+    # A cusip8 may map to multiple permnos ACROSS TIME; the window is what
+    # separates them, so it is part of the key.
+    cmap = cmap.select(["ncusip", "permno", "namedt_int", "nameendt_int"]).unique()
     cmap.write_parquet(CUSIP_MAP_CACHE)
-    print(f"[cusip] {len(cmap):,} unique (ncusip, permno) pairs ({time.time() - t0:.1f}s)")
+    print(f"[cusip] {len(cmap):,} unique (ncusip, permno) pairs "
+          f"(max window end {cmap['nameendt_int'].max()}) ({time.time() - t0:.1f}s)")
     return cmap
 
 
@@ -306,23 +400,34 @@ def pull_cusip8_permno_map(user: str) -> pl.DataFrame:
 def load_13f_holdings(
     start_int: int, end_int: int, zero_value_shares_threshold: int | None = 100_000
 ) -> pl.DataFrame:
-    """Load 13F parser output, apply F1 (rdate snap) and F2 (amendment dedup)."""
+    """Load 13F parser output, apply F1 (rdate snap) and F2/F7 (amendment dedup).
+
+    LAZY END TO END, collected once with the streaming engine. This is a memory
+    constraint, not a style choice: the WRDS grid caps a job at 48 GB (cgroups),
+    and the eager version peaked at 106.5 GB maxrss and was killed there — it
+    only ever fit on a 251 GB workstation. Column projection alone (24 -> 8) took
+    it from 198.8 GB to 106.5 GB, which was enough locally and not enough on the
+    grid.
+
+    What made it eager was the DIAGNOSTICS, not the arithmetic. Every
+    `len(holdings)` between steps forced the full 153M-row frame to materialise
+    just to print a row count. They are now separate cheap `select(pl.len())`
+    collects against the lazy plan, so the counts still print and nothing is
+    held.
+
+    Deliberately NOT chunked by year. build_manager_markers uses
+    shift(1).over(cik_int) ACROSS quarters, so a year-chunked run would reset
+    every manager's first_report each January and silently corrupt DBREADTH —
+    a wrong number rather than a crash.
+    """
     print(f"[13f] loading holdings ({start_int} to {end_int})...")
     t0 = time.time()
 
-    # Project to the seven columns this function actually uses BEFORE collecting.
-    # The parquet has 24, including filepath and name_of_issuer — long strings
-    # that are never read here but dominate the in-memory footprint. Collecting
-    # all of them over the full 2003-2025 range peaked at 198.8 GB RSS and was
-    # OOM-killed (SIGKILL/137); the projection is what makes the full-range
-    # build fit. Deliberately NOT chunked by year: build_manager_markers uses
-    # shift(1).over(cik_int) across quarters, so a year-chunked run would reset
-    # every manager's first_report each January and silently corrupt DBREADTH.
     NEEDED = [
         "cik", "period_of_report", "filed_date",
         "form_type", "accession", "cusip8", "shares", "value",
     ]
-    holdings = (
+    lf = (
         pl.scan_parquet(str(PROC / "holdings_13f" / "year=*" / "Q*.parquet"))
         .select(NEEDED)
         .with_columns(
@@ -333,102 +438,110 @@ def load_13f_holdings(
         .filter(
             (pl.col("rdate_raw") >= start_int) & (pl.col("rdate_raw") <= end_int)
         )
-        .collect()
+        # F1: snap rdate to quarter-end
+        .with_columns(snap_to_quarter_end(pl.col("rdate_raw")).alias("rdate_int"))
+        .with_columns(
+            pl.col("form_type")
+            .replace_strict(FORM_PRIORITY, default=0)
+            .alias("form_priority")
+        )
     )
-    print(f"[13f] {len(holdings):,} raw rows ({time.time() - t0:.1f}s)")
 
-    # F1: snap rdate to quarter-end
-    holdings = holdings.with_columns(
-        snap_to_quarter_end(pl.col("rdate_raw")).alias("rdate_int")
-    )
+    def _n(frame: pl.LazyFrame) -> int:
+        """Row count without materialising the frame."""
+        return int(frame.select(pl.len()).collect(engine="streaming").item())
 
-    # F2+F7: filing-level dedup — one accession per (cik, rdate).
-    # F2 (v1) deduped at the (cik, cusip8, rdate) level, which could mix
-    # holdings from different accessions for the same manager-quarter.
-    # F7 selects the single best accession per (cik, rdate) — the latest
-    # filing supersedes all prior filings for that quarter.  This resolves
-    # ~130K share-mismatch rows from multi-accession double/triple-counting.
+    n_raw = _n(lf)
+    print(f"[13f] {n_raw:,} raw rows ({time.time() - t0:.1f}s)")
+
+    # Exclude filings >365 days after the reporting period.
+    lf = lf.filter((pl.col("fdate_int") - pl.col("rdate_int")) <= 10000)
+    n_recent = _n(lf)
+    print(f"[13f]   dropped {n_raw - n_recent:,} rows filed >~1yr after period")
+
+    # F2+F7: one accession per (cik, rdate) — the latest filing supersedes all
+    # earlier ones for that quarter. Resolves ~130K share-mismatch rows from
+    # multi-accession double counting.
+    #
+    # `sort_by(...).last()` INSIDE the aggregation rather than a global sort
+    # followed by group_by().last(). The old form relied on group_by preserving
+    # a prior sort, which polars does not guarantee and the streaming engine
+    # certainly does not — it happened to hold, which is not the same as being
+    # correct. This states the tie-break where it is applied:
+    # latest fdate -> highest form_priority -> latest accession string.
     print("[13f] deduplicating filings (F7: one accession per cik×rdate)...")
-    holdings = holdings.with_columns(
-        pl.col("form_type")
-        .replace_strict(FORM_PRIORITY, default=0)
-        .alias("form_priority")
-    )
-
-    # Exclude filings >365 days after reporting period
-    before = len(holdings)
-    holdings = holdings.filter(
-        (pl.col("fdate_int") - pl.col("rdate_int")) <= 10000
-    )
-    print(f"[13f]   dropped {before - len(holdings):,} rows filed >~1yr after period")
-
-    # Select best accession per (cik, rdate): latest fdate → highest
-    # form_priority (HR/A > HR) → latest accession string.
     best_filing = (
-        holdings
-        .select(["cik_int", "rdate_int", "fdate_int", "form_priority", "accession"])
+        lf.select(["cik_int", "rdate_int", "fdate_int", "form_priority", "accession"])
         .unique(subset=["cik_int", "rdate_int", "accession"])
-        .sort(["cik_int", "rdate_int", "fdate_int", "form_priority", "accession"])
         .group_by(["cik_int", "rdate_int"])
-        .last()
-        .select(["cik_int", "rdate_int", pl.col("accession").alias("best_acc")])
+        .agg(
+            pl.col("accession")
+            .sort_by(["fdate_int", "form_priority", "accession"])
+            .last()
+            .alias("best_acc")
+        )
     )
-    n_multi = best_filing.join(
-        holdings.select(["cik_int", "rdate_int", "accession"]).unique(),
-        on=["cik_int", "rdate_int"],
-    ).filter(pl.col("accession") != pl.col("best_acc")).select(
-        ["cik_int", "rdate_int"]
-    ).unique().height
+
+    n_multi = _n(
+        best_filing.join(
+            lf.select(["cik_int", "rdate_int", "accession"]).unique(),
+            on=["cik_int", "rdate_int"],
+        )
+        .filter(pl.col("accession") != pl.col("best_acc"))
+        .select(["cik_int", "rdate_int"])
+        .unique()
+    )
     print(f"[13f]   {n_multi:,} (cik, rdate) pairs had multiple accessions → kept latest")
 
-    holdings = holdings.join(
-        best_filing, on=["cik_int", "rdate_int"]
-    ).filter(
-        pl.col("accession") == pl.col("best_acc")
-    ).drop(["best_acc", "form_priority"])
-
-    print(f"[13f]   after dedup: {len(holdings):,} rows")
+    lf = (
+        lf.join(best_filing, on=["cik_int", "rdate_int"])
+        .filter(pl.col("accession") == pl.col("best_acc"))
+        .drop(["best_acc", "form_priority"])
+    )
+    n_dedup = _n(lf)
+    print(f"[13f]   after dedup: {n_dedup:,} rows")
 
     # D9: drop text-parser rows carrying value = 0 with a large share count.
     # `value` is reported in $1000s, so a genuine holding worth under $1,000
-    # cannot also carry 100,000 shares at any plausible price. These rows are
-    # parse failures, not holdings: AAPL 2003-09-30 was ONE such row (cik
-    # 728100, 719,257,141 shares, value 0) against a next-largest holder of
-    # 19.8M, and the same filer reports 3,038,253,827 shares of Exxon Mobil --
-    # more than Exxon's entire float.
+    # cannot also carry 100,000 shares at any plausible price. These are parse
+    # failures, not holdings: AAPL 2003-09-30 was ONE such row (cik 728100,
+    # 719,257,141 shares, value 0) against a next-largest holder of 19.8M, and
+    # the same filer reports 3,038,253,827 shares of Exxon Mobil — more than
+    # Exxon's entire float.
     #
-    # The threshold is load-bearing, not cosmetic. At T = 0 the rule removes
-    # 2,820,455 rows for the SAME 13.9% of share mass -- 33x the rows for no
-    # additional benefit -- because a legitimate sub-$1,000 holding rounds to
-    # value = 0 (median such row: 479 shares). T = 100,000 captures 99.9% of
-    # the bad mass at 3% of the row cost.
+    # The threshold is load-bearing. At T = 0 the rule removes 2,820,455 rows
+    # for the SAME 13.9% of share mass — 33x the rows for no extra benefit —
+    # because a legitimate sub-$1,000 holding rounds to value = 0 (median such
+    # row: 479 shares). T = 100,000 captures 99.9% of the bad mass at 3% of the
+    # row cost.
     #
-    # NOT WRDS's rule. The May 2017 note prescribes `if pct > 0.5 then pct =
-    # 0.5` -- a cap, not a repair, scoped to 2013+ and explicitly provisional
-    # ("further investigation is warranted"). Capping leaves a fabricated 50%
-    # holding standing, which is exactly the clipping that makes this defect
-    # invisible in vendor panels.
+    # NOT WRDS's rule. Their May 2017 note prescribes `if pct > 0.5 then
+    # pct = 0.5` — a cap, not a repair, scoped to 2013+ and explicitly
+    # provisional. Capping leaves a fabricated 50% holding standing, which is
+    # the clipping that makes this defect invisible in vendor panels.
     if zero_value_shares_threshold is not None:
-        before = len(holdings)
-        holdings = holdings.filter(
+        lf = lf.filter(
             ~((pl.col("value") == 0) & (pl.col("shares") > zero_value_shares_threshold))
         )
+        n_d9 = _n(lf)
         print(
-            f"[13f]   D9: dropped {before - len(holdings):,} rows with value=0 and "
+            f"[13f]   D9: dropped {n_dedup - n_d9:,} rows with value=0 and "
             f"shares>{zero_value_shares_threshold:,}"
         )
 
-    # Aggregate sub-managers to (cik, cusip8, rdate) level
+    # Aggregate sub-managers to (cik, cusip8, rdate). This is the one collect
+    # that produces the working frame, and it is the point of the whole lazy
+    # chain: ~97M aggregated rows instead of ~153M raw ones, with the wide
+    # string columns already dropped.
     agg = (
-        holdings
-        .group_by(["cik_int", "cusip8", "rdate_int"])
+        lf.group_by(["cik_int", "cusip8", "rdate_int"])
         .agg(pl.col("shares").sum().alias("shares"))
         .filter(pl.col("shares") > 0)
         # F6 safety net: drop concatenated value+shares (parser bug residual)
         .filter(pl.col("shares") < 10_000_000_000)
+        .with_columns(pl.col("cusip8").str.slice(0, 6).alias("cusip6"))
+        .collect(engine="streaming")
     )
-    # Derive cusip6 for fallback matching
-    agg = agg.with_columns(pl.col("cusip8").str.slice(0, 6).alias("cusip6"))
     print(f"[13f]   after aggregation: {len(agg):,} unique (cik, cusip, rdate)")
     return agg
 
@@ -486,6 +599,7 @@ def join_and_adjust(
     cusip6_map: pl.DataFrame,
     crsp_m: pl.DataFrame,
     use_cusip6_fallback: bool = True,
+    stats: dict | None = None,
 ) -> pl.DataFrame:
     """Map cusip8→permno (with cusip6 fallback), adjust shares by cfacshr, dedup.
 
@@ -493,13 +607,39 @@ def join_and_adjust(
     Fallback: cusip6 = ncusip[:6] for unmatched holdings (matches SAS
     build_meetings.sas line 236: substr(cusip,1,6)=substr(ncusip,1,6)).
     """
-    # Attach manager markers
-    h = holdings.join(mgr_markers, on=["cik_int", "rdate_int"], how="left")
+    # LAZY from here. The eager form peaked at 79.4 GB against the WRDS grid's
+    # 48 GB cgroup cap, and the RSS trace put the spike HERE, not in the load:
+    # the frame roughly doubles across the permno join and the cfacshr join.
+    h = holdings.lazy().join(mgr_markers.lazy(), on=["cik_int", "rdate_int"], how="left")
+
+    def _n(frame: pl.LazyFrame) -> int:
+        return int(frame.select(pl.len()).collect(engine="streaming").item())
 
     # Primary: CUSIP8 → PERMNO
-    matched8 = h.join(cusip_map, left_on="cusip8", right_on="ncusip", how="inner")
-    unmatched = h.join(cusip_map, left_on="cusip8", right_on="ncusip", how="anti")
-    print(f"[join] cusip8 match: {len(matched8):,}, unmatched: {len(unmatched):,}")
+    matched8 = (
+        h.join(cusip_map.lazy(), left_on="cusip8", right_on="ncusip", how="inner")
+        # The date window is the whole point of the dated map: keep only the
+        # permno this cusip belonged to AT the reporting date.
+        .filter(
+            (pl.col("rdate_int") >= pl.col("namedt_int"))
+            & (pl.col("rdate_int") <= pl.col("nameendt_int"))
+        )
+        .drop(["namedt_int", "nameendt_int"])
+    )
+
+    # The anti-join is only needed to FEED the fallback. Computing it
+    # unconditionally meant a second full pass over ~97M rows purely to print a
+    # number that, with the fallback off (the default since D9 cause 2), nothing
+    # then consumed.
+    if use_cusip6_fallback:
+        unmatched = h.join(
+            matched8.select(["cik_int", "rdate_int", "cusip8"]).unique(),
+            on=["cik_int", "rdate_int", "cusip8"], how="anti",
+        )
+        print(f"[join] cusip8 match: {_n(matched8):,}, unmatched: {_n(unmatched):,}")
+    else:
+        unmatched = None
+        print(f"[join] cusip8 match: {_n(matched8):,}")
 
     # Fallback: CUSIP6 → PERMNO for unmatched.
     #
@@ -577,43 +717,94 @@ def join_and_adjust(
     # net out securities lending or report robustness excluding high-SI
     # firm-quarters. Tracked, not solved here.
     if use_cusip6_fallback:
-        matched6 = unmatched.join(cusip6_map, on="cusip6", how="inner")
-        print(f"[join] cusip6 fallback: {len(matched6):,} recovered")
+        matched6 = unmatched.join(cusip6_map.lazy(), on="cusip6", how="inner")
+        _c6 = _n(matched6)
+        if stats is None:
+            print(f"[join] cusip6 fallback: {_c6:,} recovered")
+        else:
+            stats["m6"] = stats.get("m6", 0) + _c6
         h = pl.concat([matched8, matched6])
     else:
-        print(
-            f"[join] cusip6 fallback DISABLED — {len(unmatched):,} unmatched rows dropped "
-            f"(D9 cause 2: cusip6 maps other share classes/preferreds onto the common permno)"
-        )
+        if stats is None:
+            print(
+                "[join] cusip6 fallback DISABLED (D9 cause 2: cusip6 maps other share "
+                "classes/preferreds onto the common permno)"
+            )
         h = matched8
-    print(f"[join] after cusip→permno: {len(h):,} rows")
+    _cus = _n(h)
+    if stats is None:
+        print(f"[join] after cusip→permno: {_cus:,} rows")
+    else:
+        stats["after_cusip"] = stats.get("after_cusip", 0) + _cus
 
     # Join with CRSP for cfacshr at rdate (LEFT — keep holdings without CRSP;
     # default cfacshr=1 for permnos not in CRSP monthly panel, since the
     # canonical IOR is recomputed in merge_panel using ISS tso anyway)
     h = h.join(
-        crsp_m.select(["permno", "qdate_int", "cfacshr", "P"]),
+        crsp_m.lazy().select(["permno", "qdate_int", "cfacshr", "P"]),
         left_on=["permno", "rdate_int"],
         right_on=["permno", "qdate_int"],
         how="left",
     )
-    n_no_crsp = h.filter(pl.col("cfacshr").is_null()).shape[0]
+    # Both counts in ONE streaming pass. Two separate scans (a filtered .shape[0]
+    # then a len()) meant materialising the widest frame in the pipeline twice,
+    # which is where the 79.4 GB peak came from.
+    _stats = (
+        h.select(
+            pl.len().alias("n_rows"),
+            pl.col("cfacshr").is_null().sum().alias("n_no_crsp"),
+        )
+        .collect(engine="streaming")
+    )
+    n_rows, n_no_crsp = int(_stats["n_rows"][0]), int(_stats["n_no_crsp"][0])
     h = h.with_columns(
         pl.col("cfacshr").fill_null(1.0),
         pl.col("P").fill_null(0.0),
     )
-    print(f"[join] after crsp join: {len(h):,} rows ({n_no_crsp:,} without CRSP, cfacshr=1)")
+    if stats is None:
+        print(f"[join] after crsp join: {n_rows:,} rows ({n_no_crsp:,} without CRSP, cfacshr=1)")
+    else:
+        stats["after_crsp"] = stats.get("after_crsp", 0) + n_rows
+        stats["no_crsp"] = stats.get("no_crsp", 0) + n_no_crsp
 
     # Share adjustment (SAS line 117)
     h = h.with_columns(
         (pl.col("shares").cast(pl.Float64) * pl.col("cfacshr")).alias("shares_adj")
     )
 
-    # Dedup (permno, rdate, cik) — matches SAS sort nodupkey
-    h = h.sort(["permno", "rdate_int", "cik_int"]).unique(
-        subset=["permno", "rdate_int", "cik_int"], keep="first"
+    # (permno, rdate, cik) must already be unique — ASSERT it, do not dedup it.
+    #
+    # This used to be `.sort([...]).unique(subset=[...], keep="first")`, sorting
+    # on EXACTLY the dedup key, which leaves ties in arbitrary order and picked
+    # a survivor by coin flip. It had ties to resolve only because the undated
+    # cusip->permno map manufactured them: 8,804 groups in 2018-2022, 44.5% with
+    # a second position over half the size of the first. With the dated join the
+    # duplicates are gone at source and this removes zero rows.
+    #
+    # So keeping a silent dedup here would only hide the NEXT thing that
+    # reintroduces duplicates. Assert instead: cheap (a group-by count rather
+    # than a full sort of 86M rows, which was the memory peak), and a future
+    # regression fails loudly instead of resolving itself at random.
+    h = h.collect(engine="streaming")
+    n_dup = (
+        h.group_by(["permno", "rdate_int", "cik_int"])
+        .len()
+        .filter(pl.col("len") > 1)
+        .height
     )
-    print(f"[join] after dedup: {len(h):,} rows")
+    if n_dup:
+        raise ValueError(
+            f"{n_dup:,} (permno, rdate, cik) groups carry multiple rows. That key "
+            "must be unique before aggregation. The historical cause was an "
+            "undated cusip->permno join mapping a superseded CUSIP onto the "
+            "successor's permno; check the namedt/nameendt window before "
+            "reaching for a dedup, because a dedup here picks a survivor at "
+            "random."
+        )
+    if stats is None:
+        print(f"[join] {len(h):,} rows, (permno, rdate, cik) unique — asserted, not deduped")
+    else:
+        stats["final"] = stats.get("final", 0) + len(h)
     return h
 
 
@@ -621,20 +812,130 @@ def join_and_adjust(
 # Step 4: IO metrics
 # ---------------------------------------------------------------------------
 
-def compute_io_metrics(holdings: pl.DataFrame) -> pl.DataFrame:
-    """Aggregate to permno-quarter level: NumOwners, IO_TOTAL, HHI, DBREADTH.
+def io_partial(holdings: pl.DataFrame) -> pl.DataFrame:
+    """Per-(permno, rdate) aggregate half of compute_io_metrics.
 
-    Matches SAS build_inst_own.sas lines 126-148.
+    Year-safe: every key contains rdate_int and every aggregate is a within-cell
+    sum/max/n_unique. The part that is NOT year-safe — the DBREADTH lag — lives
+    in finalize_io_metrics and runs once over the whole panel.
     """
     h = holdings.filter(pl.col("shares_adj") > 0)
-
-    io = h.group_by(["permno", "rdate_int"]).agg(
+    return h.group_by(["permno", "rdate_int"]).agg(
         pl.col("cik_int").n_unique().alias("numowners"),
         pl.col("NumInst").max().alias("NumInst"),
         pl.col("first_report").sum().alias("NewInst"),
         pl.col("last_report").sum().alias("OldInst"),
         pl.col("shares_adj").sum().alias("io_total"),
         (pl.col("shares_adj") ** 2).sum().alias("io_ss"),
+    )
+
+
+def join_adjust_and_aggregate(
+    holdings: pl.DataFrame,
+    mgr_markers: pl.DataFrame,
+    cusip_map: pl.DataFrame,
+    cusip6_map: pl.DataFrame,
+    crsp_m: pl.DataFrame,
+    use_cusip6_fallback: bool = True,
+) -> pl.DataFrame:
+    """join_and_adjust + io_partial, ONE REPORTING YEAR AT A TIME.
+
+    The RSS trace peaks at the end of join_and_adjust, not in the load: the 86M
+    x ~12 joined frame is materialised in full and nothing downstream needs it —
+    compute_io_metrics immediately reduces it to ~675K permno-quarter rows. Going
+    lazy end-to-end took the leg 106.5 -> 79.4 -> ~51 GB, still over the grid's
+    48 GB cgroup cap. Slicing the join by year removes the peak instead of
+    shrinking it: only ~1/23 of the joined frame exists at once, and what
+    accumulates is the aggregate.
+
+    Exact, for the same reason the loader's per-year pass is: every lookup joined
+    in is small and global (cusip_map, cusip6_map, crsp_m, mgr_markers — all
+    built over the WHOLE panel and passed in whole), and the only grouped
+    operations key on (permno, rdate_int, ...) with rdate_int in the key, so no
+    group straddles a year boundary. mgr_markers in particular carries the
+    cross-quarter shift(1).over(cik_int) and is computed by the CALLER before
+    this runs — the chunking never sees it.
+    """
+    years = sorted(
+        holdings.select((pl.col("rdate_int") // 10000).alias("y"))
+        .unique()["y"].to_list()
+    )
+    stats: dict = {}
+    parts: list[pl.DataFrame] = []
+    for y in years:
+        hy = holdings.filter((pl.col("rdate_int") // 10000) == y)
+        j = join_and_adjust(
+            hy, mgr_markers, cusip_map, cusip6_map, crsp_m,
+            use_cusip6_fallback, stats=stats,
+        )
+        # A year that resolves NOTHING is the shape of a frozen reference table,
+        # not of thin data: crsp.msenames ending 2024-12-31 gave 2025 exactly
+        # this — 0 matches and a full year of null ownership that still looked
+        # like a complete panel. Cheap to check here because the chunking
+        # already gives per-year counts.
+        if j.height == 0:
+            raise ValueError(
+                f"reporting year {y} resolved 0 rows through cusip8->permno. "
+                f"A whole year matching nothing means the reference window does "
+                f"not cover it — check that the cusip map extends past "
+                f"{LEGACY_NAMES_END} (crsp.msenames freezes there; "
+                f"crsp.stocknames_v2 continues)."
+            )
+        parts.append(io_partial(j))
+        del hy, j
+
+    if use_cusip6_fallback:
+        print(f"[join] cusip6 fallback: {stats.get('m6', 0):,} recovered")
+    else:
+        print("[join] cusip6 fallback DISABLED (D9 cause 2: cusip6 maps other share "
+              "classes/preferreds onto the common permno)")
+    print(f"[join] after cusip→permno: {stats.get('after_cusip', 0):,} rows")
+    print(f"[join] after crsp join: {stats.get('after_crsp', 0):,} rows "
+          f"({stats.get('no_crsp', 0):,} without CRSP, cfacshr=1)")
+    print(f"[join] {stats.get('final', 0):,} rows, (permno, rdate, cik) unique — "
+          f"asserted, not deduped, over {len(years)} reporting years")
+
+    out = pl.concat(parts, how="vertical")
+
+    # THE PER-CHUNK UNIQUENESS ASSERTION IS ONLY AS GOOD AS THE CHUNK BOUNDARY.
+    # join_and_adjust asserts (permno, rdate_int, cik_int) uniqueness inside each
+    # year, which is equivalent to asserting it globally ONLY BECAUSE the chunk
+    # key (rdate_int // 10000) is a function of rdate_int, which is itself part
+    # of the assertion key — so two rows sharing that key necessarily share a
+    # chunk and cannot slip past by straddling one.
+    #
+    # That is an argument, and finalize_io_metrics re-groups by
+    # (permno, rdate_int), which would SILENTLY SUM a leak rather than fail. So
+    # check the argument instead of trusting it: after concatenation each
+    # (permno, rdate_int) must appear exactly once. Cheap — this frame is ~675K
+    # rows, not 91M.
+    leaked = out.height - out.select(["permno", "rdate_int"]).unique().height
+    if leaked:
+        raise ValueError(
+            f"{leaked:,} (permno, rdate_int) keys appear in more than one year "
+            f"chunk. The per-year uniqueness assertion is therefore not "
+            f"equivalent to a global one, and finalize_io_metrics would sum the "
+            f"duplicates silently. Chunking must partition on a function of "
+            f"rdate_int for that equivalence to hold."
+        )
+    return out
+
+
+def finalize_io_metrics(io: pl.DataFrame) -> pl.DataFrame:
+    """HHI + DBREADTH over the WHOLE permno-quarter panel.
+
+    Must not be chunked: the DBREADTH lag is shift(1).over(permno) across
+    quarters, so a per-year pass would make every January look like a permno's
+    first observation. Safe here because io_partial has already collapsed the
+    panel to ~675K rows.
+    """
+    io = io.group_by(["permno", "rdate_int"]).agg(
+        pl.col("numowners").sum().alias("numowners"),
+        pl.col("NumInst").max().alias("NumInst"),
+        pl.col("NewInst").sum().alias("NewInst"),
+        pl.col("OldInst").sum().alias("OldInst"),
+        pl.col("io_total").sum().alias("io_total"),
+        pl.col("io_ss").sum().alias("io_ss"),
     )
 
     # HHI
@@ -660,14 +961,65 @@ def compute_io_metrics(holdings: pl.DataFrame) -> pl.DataFrame:
         .alias("dbreadth")
     )
 
-    return io.select([
+    io = io.select([
         "permno", "rdate_int", "numowners", "io_total", "ioc_hhi", "dbreadth",
     ])
+    # The one collect for this stage: the aggregate, not the 86M-row input.
+    return io.collect(engine="streaming") if isinstance(io, pl.LazyFrame) else io
 
 
 # ---------------------------------------------------------------------------
 # Step 5: Final panel
 # ---------------------------------------------------------------------------
+
+def _assert_no_dead_tail(panel: pl.DataFrame, col: str = "io_total",
+                         null_threshold: float = 0.99, min_periods: int = 1) -> None:
+    """Fail if `col` is (near-)entirely null for a contiguous TAIL of quarters.
+
+    THIS GUARD EXISTS BECAUSE I BUILT ITS DETECTOR AND THEN SHIPPED THE BUG IT
+    DETECTS. crsp.msf is frozen at 2024-12-31, which silently nulled every 2025
+    quarter; that was found, fixed by splicing msf_v2, and generalised into
+    `detect_join_coverage_tail` in the wrds skill. Then the dated cusip->permno
+    join reintroduced exactly the same failure through a DIFFERENT frozen table:
+    crsp.msenames also stops at 2024-12-31 and has ZERO null nameendt, so every
+    validity window closes there and `rdate <= nameendt` dropped all of 2025 —
+    0 cusip8 matches, io_total null for all 15,546 rows. Fixed by splicing
+    crsp.stocknames_v2.
+
+    A detector that lives in a test suite catches nothing at build time. So the
+    check runs HERE, on the output, where it is blind to which upstream table
+    froze — which is the point: the next frozen reference table will be a third
+    one nobody has looked at.
+
+    Deliberately silent when the column is null in EVERY period: that is a
+    reference table never joined at all, a different defect, and reporting it
+    here would bury this one.
+    """
+    per = (
+        panel.group_by("rdate")
+        .agg(pl.col(col).is_null().mean().alias("null_rate"))
+        .sort("rdate")
+    )
+    rates = list(zip(per["rdate"].to_list(), per["null_rate"].to_list()))
+    tail = []
+    for rdate, rate in reversed(rates):
+        if rate >= null_threshold:
+            tail.append(rdate)
+        else:
+            break
+    if len(tail) >= min_periods and len(tail) < len(rates):
+        tail.reverse()
+        raise ValueError(
+            f"{col} is null for >={null_threshold:.0%} of rows in the last "
+            f"{len(tail)} quarter(s) ({tail[0]}..{tail[-1]}) but not before. A "
+            f"reference table is frozen while the holdings kept going. Known "
+            f"culprits, both already spliced once: crsp.msf (-> msf_v2) and "
+            f"crsp.msenames (-> stocknames_v2, which also has ZERO null "
+            f"nameendt, so every window closes at its last date). Extend the "
+            f"source or lower --end deliberately."
+        )
+    print(f"[guard] no dead tail in {col} — checked {len(rates)} quarters")
+
 
 def build_final_panel(
     io_metrics: pl.DataFrame, crsp_m: pl.DataFrame
@@ -945,14 +1297,18 @@ def main():
     # Step 2: manager entry/exit markers
     mgr_markers = build_manager_markers(holdings)
 
-    # Step 3: join and adjust
-    adjusted = join_and_adjust(
+    # Step 3 + 4a: join, adjust and aggregate to permno-quarter, one reporting
+    # year at a time. mgr_markers is built above over the WHOLE panel and passed
+    # in whole, so the cross-quarter window it carries is untouched by chunking.
+    io_parts = join_adjust_and_aggregate(
         holdings, mgr_markers, cusip_map, cusip6_map, crsp_m,
         use_cusip6_fallback=args.cusip6_fallback,
     )
+    del holdings
 
-    # Step 4: IO metrics
-    io_metrics = compute_io_metrics(adjusted)
+    # Step 4b: HHI + DBREADTH over the whole panel (the lag must see every
+    # quarter in sequence).
+    io_metrics = finalize_io_metrics(io_parts)
     print(f"[io] {len(io_metrics):,} permno-quarter IO observations")
 
     # Step 5: final panel
@@ -960,6 +1316,7 @@ def main():
     print(f"[panel] {len(panel):,} rows in final panel")
 
     # Step 5b: D1 split-adjacent flags, then net securities lending out
+    _assert_no_dead_tail(panel, "io_total")
     panel = add_split_flags(panel, crsp_m)
     panel = add_net_of_lending(panel)
 
@@ -979,20 +1336,42 @@ def main():
     print(f"[out] wrote {out_path} ({len(panel):,} rows)")
 
     if not args.no_sas:
-        sas_path = out_path.with_suffix(".xpt")
-        # pyreadstat writes SAS transport (xport) format; no sas7bdat writer
-        pdf = panel.to_pandas()
-        pdf["rdate"] = pd.to_datetime(pdf["rdate"].astype(str), format="%Y%m%d")
-        # xport has 8-char column name limit — truncate
-        col_map = {
-            "numowners": "NUMOWN", "io_total": "IO_TOT", "ioc_hhi": "IOC_HHI",
-            "dbreadth": "DBREADTH", "io_missing": "IO_MISS", "io_g1": "IO_G1",
-            "cfacshr": "CFACSHR", "permno": "PERMNO", "rdate": "RDATE",
-            "ior": "IOR", "tso": "TSO", "me": "ME", "p": "P",
-        }
-        pdf = pdf.rename(columns=col_map)
-        pyreadstat.write_xport(pdf, str(sas_path))
-        print(f"[out] wrote {sas_path}")
+        # SAS-facing handoff for import_inst_own.sas, which lands out.inst_own
+        # for merge_panel. THE COLUMN ORDER BELOW IS THE INTERFACE — the SAS side
+        # reads positionally and verifies this header, so change the two together.
+        #
+        # NOT xport, which is what this wrote before and why leg 2's output never
+        # reached merge_panel at all. Two independent failures:
+        #   1. SAS 9.4 rejects pyreadstat's file outright — `libname xin xport`
+        #      then `set xin.dataset` gives
+        #      "ERROR: File XIN.DATASET.DATA is not a SAS data set."
+        #   2. xport's 8-char limit forced a rename map turning `numowners` into
+        #      NUMOWN and `io_total` into IO_TOT — exactly the names
+        #      merge_panel's MERGE_ASOF(num_vars=...) asks for — and it covered
+        #      only 13 of the 22 columns.
+        # CSV keeps full names, and polars writes shortest-roundtrip floats, so
+        # SAS's best32. informat reads back bit-identical doubles.
+        SAS_COLUMNS = [
+            "permno", "rdate", "numowners", "io_total", "ioc_hhi", "dbreadth",
+            "ior", "tso", "me", "p", "cfacshr", "io_missing", "io_g1",
+            "split_quarter", "split_adjacent", "shortint", "si_missing",
+            "shortint_adj", "io_total_net", "si_frac", "ior_net", "net_clamped",
+        ]
+        missing = [c for c in SAS_COLUMNS if c not in panel.columns]
+        extra = [c for c in panel.columns if c not in SAS_COLUMNS]
+        if missing or extra:
+            raise ValueError(
+                f"SAS_COLUMNS is out of sync with the panel — missing {missing}, "
+                f"unexpected {extra}. Update it and import_inst_own.sas together."
+            )
+        csv_path = out_path.with_suffix(".csv")
+        sas_out = panel.select(SAS_COLUMNS).with_columns(
+            # SAS has no boolean; emit 0/1 not the strings "true"/"false"
+            [pl.col(c).cast(pl.Int8)
+             for c, t in panel.schema.items() if t == pl.Boolean]
+        )
+        sas_out.write_csv(csv_path)
+        print(f"[out] wrote {csv_path} ({len(sas_out):,} rows) → import_inst_own.sas")
 
     print(f"[done] total time: {time.time() - t_start:.1f}s")
 

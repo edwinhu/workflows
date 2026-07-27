@@ -1,4 +1,31 @@
-/* merge_panel.sas — Merge meetings + inst_own + index_own, compute pivotalness
+/* merge_panel.sas — CANONICAL. Merge meetings + inst_own + index_own, compute
+ * pivotalness, join the N-PX cells.
+ *
+ * CONSOLIDATED FROM THREE DIVERGENT COPIES (2026-07-26). There were:
+ *   mirror scripts/merge_panel.py   — R2 tso convention, ior_raw/ior_capped/
+ *                                     ior_net/inst_pivotal_net, split_adjacent,
+ *                                     si_missing, dbreadth
+ *   mirror sas/merge_panel.sas      — R2 tso convention, no prerequisite gates
+ *   skills/.../merge_panel.sas      — the gates, but NO R2 and none of the
+ *                                     above columns  <- what the grid ran
+ * and the two .sas files were not even the same file. This is the union: the
+ * gates from the grid copy, the R2 convention and the CRSP/ISS diagnostic from
+ * mirror, the derived columns from the .py.
+ *
+ * WHY IT MATTERS, and it is not cosmetic. The grid copy took `ior` straight from
+ * leg 2, where it is denominated by CRSP `shrout * 1000` — per-permno, a SINGLE
+ * SHARE CLASS. ISS `outstandingshare` is COMPANY-WIDE. For dual-class firms
+ * (STZ, BRK.B, BF.B, MOG.A, RUSHA) that mismatch inflated implied share counts
+ * 5-15x, and every pivotalness flag is derived from those pcts. The correct
+ * denominator was already sitting in out.meetings as `tso` and simply went
+ * unused, so the panel looked complete and plausible — the same shape as every
+ * other defect in this pipeline.
+ *
+ * R2 (TSO denominator): ior, mf_pct, passive_pct and index_pct are ALL
+ * recomputed here from raw totals over ISS tso. The CRSP-denominated values are
+ * retained behind a `_crsp` suffix for diagnostics only. Do not reintroduce a
+ * pct that divides by CRSP tso.
+ *
  *
  * Prereqs: autoexec.sas loaded (provides libnames: out)
  *          out.meetings (from build_meetings.sas)
@@ -104,9 +131,14 @@ run;
 
 proc sort data=index_own nodupkey; by qtr permno; run;
 
-/* Rename to match original variable names */
+/* Rename to match original variable names, and segregate the CRSP-denominated
+ * pcts behind a `_crsp` suffix — they are diagnostics now, not the answer.
+ * See the R2 note in the header. */
 data out.index_own;
-    set index_own;
+    set index_own (rename=(mf_pct=mf_pct_crsp
+                           passive_pct=passive_pct_crsp
+                           index_pct=index_pct_crsp
+                           tso=tso_crsp));
     rqdate = qtr;
     format rqdate yymmddn8.;
     drop qtr;
@@ -124,19 +156,19 @@ data _meetings / view=_meetings;
     set out.meetings;
 run;
 
+/* IOR/TSO here are CRSP-denominated; keep them as diagnostics under `_crsp`
+ * and derive the canonical ior below from io_total / ISS tso. The >1.2 drop
+ * stays on the CRSP ratio: it flags broken 13F coverage or CUSIP misalignment
+ * at the permno level, which recomputing against ISS tso cannot recover. */
 data _inst_own / view=_inst_own;
-    set out.inst_own;
+    set out.inst_own (rename=(IOR=ior_crsp TSO=tso_crsp_inst));
     recorddate = rdate;
-    if IOR > 1.2 then delete;
-    IOR = min(max(IOR,0.0),1.0)*100;
+    if ior_crsp > 1.2 then delete;
 run;
 
 data _index_own / view=_index_own;
     set out.index_own;
     recorddate = rqdate;
-    MF_PCT = 100 * MF_PCT;
-    PASSIVE_PCT = 100 * PASSIVE_PCT;
-    INDEX_PCT = 100 * INDEX_PCT;
 run;
 
 /* --- As-of merges --- */
@@ -146,22 +178,68 @@ run;
     merged=pass1,
     idvar=permno,
     datevar=recorddate,
-    num_vars=numowners io_total ioc_hhi me ior);
+    num_vars=numowners io_total ioc_hhi dbreadth me ior_crsp tso_crsp_inst
+             io_total_net si_missing split_adjacent cfacshr);
 
 %MERGE_ASOF(a=pass1, b=_index_own,
     merged=pass2,
     idvar=permno,
     datevar=recorddate,
-    num_vars=num_mf_owners mf_total passive_total pure_index_total mf_pct passive_pct index_pct);
+    num_vars=num_mf_owners mf_total passive_total pure_index_total
+             mf_pct_crsp passive_pct_crsp index_pct_crsp tso_crsp);
 
-/* --- Pivotalness indicators --- */
+/* --- Canonical pcts from raw totals and ISS tso (R2), then pivotalness ----- */
 data out.pass;
     set pass2;
-    inst_pivotal = abs(forpct-50) <= ior;
-    mf_pivotal = abs(forpct-50) <= mf_pct;
-    passive_pivotal = abs(forpct-50) <= passive_pct;
-    index_pivotal = abs(forpct-50) <= index_pct;
+
+    /* R2. Every ownership pct uses ISS `outstandingshare` (carried into
+     * out.meetings as `tso`) as the denominator. */
+    if not missing(tso) and tso > 0 then do;
+        mf_pct      = min(100, max(0, coalesce(mf_total,0)         / tso * 100));
+        passive_pct = min(100, max(0, coalesce(passive_total,0)    / tso * 100));
+        index_pct   = min(100, max(0, coalesce(pure_index_total,0) / tso * 100));
+        ior         = min(100, max(0, coalesce(io_total,0)         / tso * 100));
+        /* The cap above is load-bearing for pivotalness — a lent share carries
+         * no vote, so votable ownership cannot exceed 100% — but on its own it
+         * HIDES what it caps. Keep the uncapped ratio and a flag beside it, so
+         * a parse artifact cannot masquerade as a clean 100.0. */
+        ior_raw    = coalesce(io_total,0) / tso * 100;
+        ior_capped = (ior_raw > 100);
+    end;
+    else do;
+        mf_pct = .; passive_pct = .; index_pct = .; ior = .;
+        ior_raw = .; ior_capped = 0;
+    end;
+
+    /* Institutional ownership with securities lending netted out — the measure
+     * to use when ownership stands in for VOTING power, since the vote on a
+     * lent share belongs to the borrower unless recalled before the record
+     * date. Null where short interest did not match, NEVER silently equal to
+     * ior. */
+    if not missing(tso) and tso > 0 and si_missing = 0 then
+        ior_net = min(100, max(0, io_total_net / tso * 100));
+    else ior_net = .;
+
+    /* Pivotalness: forpct and the pcts are both on [0,100] */
+    inst_pivotal    = abs(forpct-50) <= coalesce(ior,0);
+    mf_pivotal      = abs(forpct-50) <= coalesce(mf_pct,0);
+    passive_pivotal = abs(forpct-50) <= coalesce(passive_pct,0);
+    index_pivotal   = abs(forpct-50) <= coalesce(index_pct,0);
+    /* Reported ALONGSIDE inst_pivotal, not instead of it: null where lending
+     * is unknown, so it cannot quietly fall back to the gross measure. */
+    if not missing(ior_net) then inst_pivotal_net = abs(forpct-50) <= ior_net;
+    else inst_pivotal_net = .;
 run;
+
+/* --- Diagnostic: how far apart are the CRSP and ISS denominators? ---------- */
+proc sql;
+    select
+        sum(case when abs(tso_crsp_inst - tso) / tso > 0.10 then 1 else 0 end)
+            as n_crsp_iss_gap_gt_10pct format comma12.,
+        count(*) as n_total format comma12.
+    from out.pass
+    where tso > 0 and tso_crsp_inst > 0;
+quit;
 
 proc contents data=out.pass order=varnum; run;
 

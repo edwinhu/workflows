@@ -78,6 +78,24 @@ WHERE a.datadate BETWEEN %(start)s AND %(end)s
   AND a.shortint IS NOT NULL
 """
 
+# Denominator for the units check below. Deliberately its own small query rather
+# than a read of leg 2's crsp_monthly_13f.parquet cache: leg 5 runs BEFORE leg 2
+# in the DAG (leg 2 consumes short_interest), so that cache does not exist on any
+# cold start and the check that depended on it silently did nothing — see the
+# comment at the call site. Quarter-end months only, so this stays small.
+TSO_CHECK_QUERY = """
+SELECT a.permno, a.date, a.shrout, a.cfacshr
+FROM crsp.msf a
+INNER JOIN crsp.msenames b
+  ON a.permno = b.permno
+  AND b.namedt <= a.date
+  AND a.date <= COALESCE(b.nameendt, '2099-12-31')
+WHERE b.shrcd IN (10, 11)
+  AND a.date BETWEEN %(start)s AND %(end)s
+  AND a.shrout IS NOT NULL
+  AND EXTRACT(MONTH FROM a.date) IN (3, 6, 9, 12)
+"""
+
 
 def snap_to_quarter_end(d: pl.Expr) -> pl.Expr:
     """Quarter-end YYYYMMDD int for a date column.
@@ -140,36 +158,70 @@ def main() -> None:
             f"short interest covers quarter-end months {months}, expected [3, 6, 9, 12]"
         )
 
-    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    si.select(["permno", "rdate", "si_datadate", "shortint"]).write_parquet(args.out)
-    print(f"[si] wrote {args.out}")
-
     # Units sanity check. `shortint` must be in SHARES to be subtractable from
     # io_total. If Compustat ever reported it in thousands, median SI/TSO would come
     # out near 0.00x% rather than the ~1-2% every published short-interest study finds,
     # and the netting would quietly do nothing. Fail loudly rather than silently
     # subtract a rounding error.
+    #
+    # THIS RUNS UNCONDITIONALLY AND BEFORE THE WRITE, and both matter. It used to be
+    # wrapped in `if crsp_monthly_13f.parquet exists`, reading leg 2's cache — but
+    # leg 5 runs BEFORE leg 2 in the DAG (leg 2 consumes short_interest), so on a
+    # cold start that cache never exists and the check silently no-opped. Verified:
+    # the 2026-07-26 cold run's leg 5 log contains no "units check" line at all. A
+    # guard that only fires on a warm re-run is not a guard. It also sat AFTER the
+    # write, so a bad file landed on disk before anything was validated.
     crsp_cache = PROC / "crsp_monthly_13f.parquet"
     if crsp_cache.exists():
         crsp = pl.read_parquet(crsp_cache).select(
             ["permno", "qdate_int", "TSO", "cfacshr"]
         )
-        chk = (
-            si.join(crsp, left_on=["permno", "rdate"], right_on=["permno", "qdate_int"])
-            .filter(pl.col("TSO") > 0)
-            .with_columns(
-                (pl.col("shortint") * pl.col("cfacshr") / pl.col("TSO")).alias("si_frac")
-            )
+        src = "leg-2 cache"
+    else:
+        cdf = pd.read_sql(
+            TSO_CHECK_QUERY, wrds_pull.connect(user=args.user),
+            params={"start": args.start, "end": args.end},
         )
-        med = chk.select(pl.col("si_frac").median()).item()
-        p99 = chk.select(pl.col("si_frac").quantile(0.99)).item()
-        print(f"[si] units check: median SI/TSO = {med:.4%}, p99 = {p99:.2%}, n={len(chk):,}")
-        if not (0.001 < med < 0.15):
-            raise ValueError(
-                f"median SI/TSO = {med:.6%} is outside the plausible 0.1%-15% band. "
-                "`shortint` is probably not in shares, or the cfacshr basis is wrong. "
-                "Refusing to publish a netting input that would silently do nothing."
+        crsp = (
+            pl.from_pandas(cdf)
+            .with_columns(
+                pl.col("permno").cast(pl.Int64),
+                pl.col("date").cast(pl.Date),
+                (pl.col("shrout").cast(pl.Float64) * 1000).alias("TSO"),
+                pl.col("cfacshr").cast(pl.Float64),
             )
+            .with_columns(snap_to_quarter_end(pl.col("date")).alias("qdate_int"))
+            .select(["permno", "qdate_int", "TSO", "cfacshr"])
+            .unique(subset=["permno", "qdate_int"], keep="first", maintain_order=True)
+        )
+        src = "direct CRSP pull"
+
+    chk = (
+        si.join(crsp, left_on=["permno", "rdate"], right_on=["permno", "qdate_int"])
+        .filter(pl.col("TSO") > 0)
+        .with_columns(
+            (pl.col("shortint") * pl.col("cfacshr") / pl.col("TSO")).alias("si_frac")
+        )
+    )
+    if chk.is_empty():
+        raise ValueError(
+            "units check joined 0 rows against CRSP — cannot validate that "
+            "`shortint` is in shares. Refusing to publish an unvalidated netting input."
+        )
+    med = chk.select(pl.col("si_frac").median()).item()
+    p99 = chk.select(pl.col("si_frac").quantile(0.99)).item()
+    print(f"[si] units check ({src}): median SI/TSO = {med:.4%}, "
+          f"p99 = {p99:.2%}, n={len(chk):,}")
+    if not (0.001 < med < 0.15):
+        raise ValueError(
+            f"median SI/TSO = {med:.6%} is outside the plausible 0.1%-15% band. "
+            "`shortint` is probably not in shares, or the cfacshr basis is wrong. "
+            "Refusing to publish a netting input that would silently do nothing."
+        )
+
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+    si.select(["permno", "rdate", "si_datadate", "shortint"]).write_parquet(args.out)
+    print(f"[si] wrote {args.out}")
 
     print(f"[done] {time.time() - t0:.1f}s")
 
