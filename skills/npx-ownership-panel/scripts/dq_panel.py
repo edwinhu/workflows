@@ -126,6 +126,70 @@ def main() -> int:
     run("unit_discontinuity", odq.detect_unit_discontinuity,
         d.select(["rd", "io_total"]).rename({"io_total": "value"}), period_col="rd")
 
+    # --- feed shape over time ------------------------------------------------
+    # These take a PER-PERIOD frame, not the row-level panel: they ask whether the
+    # feed's coverage steps, alternates, or clusters its join failures. The first
+    # version of this script ran seven detectors — the seven I happened to have
+    # used by hand — and never asked what else was in the library. Ten were
+    # sitting unused, including the one that would have found the 2025 regime
+    # break automatically instead of by inspection.
+    per_period = (
+        d.group_by("rd")
+        .agg(
+            n_rows=pl.len(),
+            n_funds=pl.col("permno").n_unique(),
+            n_cusips=pl.col("permno").n_unique(),
+            n_linked=pl.col("tso").is_not_null().sum(),
+            n_total=pl.len(),
+            tso=pl.col("tso").is_not_null().sum(),  # join_gap_clustering reads nullity
+        )
+        .sort("rd")
+    )
+    run("coverage_step", odq.detect_coverage_step, per_period, period_col="rd")
+    run("bridge_rate_regression", odq.detect_bridge_rate_regression,
+        per_period, period_col="rd")
+    run("calendar_bucket_gap", odq.detect_calendar_bucket_gap,
+        d.select(["rd"]), period_col="rd")
+    run("join_gap_clustering", odq.detect_join_gap_clustering,
+        d.select(["rd", "tso"]), period_col="rd", joined_col="tso")
+
+    # --- entity-level shape --------------------------------------------------
+    # The complement of owner_dropout. Together they CLASSIFY a break: shares move
+    # but owners do not -> adjustment bug; owners move too -> the feed. We were
+    # running only half the pair, so every break was landing in one bucket by
+    # default rather than by evidence.
+    run("flat_owner_share_swing", odq.detect_flat_owner_share_swing,
+        d.select(["permno", "rd", "io_total", "numowners"]).sort(["permno", "rd"]),
+        period_col="rd")
+    run("seasonal_alternation", odq.detect_seasonal_alternation,
+        d.select(["permno", "rd", "io_total"]).sort(["permno", "rd"]),
+        period_col="rd")
+
+    # Implied price from market equity and shares outstanding. `me` is in $M and
+    # `tso` in shares, so a row whose me/tso implies a price outside [0.01, 10000]
+    # cannot have both fields right. This is the check that speaks to the
+    # default-fill rows where p is exactly 0.0.
+    pr = d.filter(pl.col("me").is_not_null() & pl.col("tso").is_not_null() & (pl.col("tso") > 0))
+    run("implied_price_outlier", odq.detect_implied_price_outlier,
+        pr.select(["me", "tso"]).rename({"me": "value", "tso": "shares"}),
+        value_scale=1_000_000.0)
+
+    # --- NOT APPLICABLE, said out loud ---------------------------------------
+    # Silence here would be indistinguishable from a pass. Two detectors have no
+    # input in this panel, and saying so is the result:
+    #
+    #   fallback_join_contamination — needs an io_fallback column measuring how
+    #     much of a cell came from the degraded cusip6 path. Leg 2 DISABLES that
+    #     fallback (D9 cause 2), so the column does not exist and cannot. Note
+    #     legs 1 and A still match on cusip6, where this WOULD apply if their
+    #     output carried the split.
+    #   zero_row_cohort — document-level (a cohort of filings parsing to zero
+    #     rows). Leg 2's grain is permno-quarter; the filing-level cohort is
+    #     upstream in the 13F parser, not here.
+    print("[dq] NOT APPLICABLE: fallback_join_contamination (no io_fallback column "
+          "— leg 2 disables the cusip6 path), zero_row_cohort (document-grain, "
+          "upstream of this panel)", flush=True)
+
     # --- the headline ratio --------------------------------------------------
     # ITS DENOMINATOR IS NOT d.height AND MUST NOT BE PRINTED AS IF IT WERE.
     # Only rows carrying both io_total and a positive tso can trip this at all;
@@ -199,6 +263,29 @@ def main() -> int:
         "NET ratio cannot be formed and those rows fall back to gross".format(
             n_si_missing, d.height, 100.0 * n_si_missing / d.height if d.height else 0.0
         ),
+        flush=True,
+    )
+    # WHAT THE UNTESTABLE ROWS ACTUALLY ARE. Classified 2026-07-27 against
+    # crsp.stksecurityinfohist: of the 16,675 (permno, class) rows behind the
+    # unlinked population, ZERO are absent from the names table and only 278
+    # (1.7%) are in NS/EQTY/COM/Y — 98.3% are OUTSIDE the universe this panel
+    # measures. The top classes are ETFs (6,827 permnos), foreign-incorporated
+    # common (2,420), ADRs (1,029) and closed-end funds (1,039).
+    #
+    # So the missing denominators are overwhelmingly 13F filers holding things
+    # that are NOT US common stock, not CRSP failing to match. The bridge rate
+    # falls monotonically 74.1% (2005) -> 38.0% (2025), which is the secular rise
+    # of ETFs in institutional portfolios, not a degrading join.
+    #
+    # This matters for how the number is read: "43.7% invisible" sounds like a
+    # data defect and is mostly a universe boundary. The ~1.7% residual is the
+    # part that would be a real gap.
+    print(
+        "NOTE: DQ untestable rows are 98.3% OUT-OF-UNIVERSE holdings (ETF, ADR, "
+        "foreign, CEF), not failed matches — only ~1.7% of the unlinked permnos "
+        "are NS/EQTY/COM/Y. Bridge rate falls 74.1% (2005) to 38.0% (2025) as "
+        "institutions shift into ETFs. Classified 2026-07-27; re-derive against "
+        "crsp.stksecurityinfohist if the panel window moves.",
         flush=True,
     )
     return 0
