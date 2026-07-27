@@ -22,7 +22,9 @@
 #                                                     │      merge_panel.sas      │
 #                                                     │ prereq gate → universe    │
 #                                                     │ assert → join → pass_npx  │
-#                                                     └───────────────────────────┘
+#                                                     └─────────────┬─────────────┘
+#                                                                   ▼
+#                                                            dq_sweep (reports)
 #
 # npx_stage gates npx_array: the array hash-merges out.npx_link and out.npx_items,
 # and without them every task opens a missing dataset and exits 0 having written
@@ -67,9 +69,21 @@ for f in pipeline_config.sas build_meetings.sas build_inst_own.py build_short_in
          import_inst_own.sas run_import.sh \
          build_mflinks.sas split_s12.sas tfn_holdings_parallel.sas stage_npx_link.sas \
          build_npx.sas merge_panel.sas run_sas.sh run_python.sh run_npx_stage.sh \
-         run_npx_array.sh; do
+         run_npx_array.sh dq_panel.py run_dq.sh; do
     [ -f "$f" ] || { echo "PREFLIGHT ERROR: missing $f" >&2; preflight_fail=1; }
 done
+
+# The detector module lives in the `wrds` skill and is deliberately NOT duplicated
+# here, so a deployment that ships only this directory will not have it. WARN
+# rather than fail: the sweep is the last node and holds nothing, so a missing
+# module costs a report, not a panel. Better to say so now than 35 minutes in.
+if [ -z "$OWNERSHIP_DQ" ] \
+   && [ ! -f ../../wrds/scripts/ownership_dq.py ] \
+   && [ ! -f ownership_dq.py ]; then
+    echo "PREFLIGHT WARNING: ownership_dq.py not found — the post-merge detector" >&2
+    echo "  sweep will fail (the panel will still build). Set OWNERSHIP_DQ, or scp" >&2
+    echo "  skills/wrds/scripts/ownership_dq.py next to these scripts." >&2
+fi
 
 # Legs 2 and 5 are Python and need polars; the SAS legs do not. Check the
 # interpreter HERE rather than discovering it in a job log 30 minutes in — a
@@ -202,6 +216,21 @@ JOB_MERGE=$(qsub -terse -N merge -hold_jid "$ALL_DEPS" \
     run_sas.sh merge_panel.sas | cut -d. -f1)
 echo "  [M] merge_panel:     job $JOB_MERGE — held on everything"
 
+# --- Detector sweep: the number that says the panel is usable ----------------
+# SKILL.md: "A timed run should include the detector sweep (ownership_dq.py,
+# seconds) so the number means 'a panel you can use'." Nothing referenced it, so
+# every wall time quoted for this pipeline was the time to build a panel of
+# unmeasured quality. It costs seconds and holds nothing.
+#
+# Held on the MERGE rather than on leg 2 so it reports against the same panel the
+# run actually produced. It REPORTS and does not gate — no detector count fails
+# it, because the thresholds are not this DAG's to enforce.
+JOB_DQ=$(qsub -terse -N dq_sweep -hold_jid "$JOB_MERGE" \
+    -o logs/dq_panel.log -j y \
+    -v "OWNERSHIP_DQ=${OWNERSHIP_DQ:-},YEAR2=${Y2}" \
+    run_dq.sh | cut -d. -f1)
+echo "  [Q] dq_sweep:        job $JOB_DQ — held on merge (reports, does not gate)"
+
 cat <<MSG
 
 ==========================================
@@ -210,7 +239,7 @@ Expected wall: ~25 min (split_s12 ~15 min and the TFN chunks dominate).
 
   qstat -u \$USER                                        # progress
   grep -h NPXSTAT logs/build_npx_*.log                   # N-PX per-year reconciliation
-  grep -E 'PREREQ|UNIVERSE|ERROR' logs/merge_panel.log   # the gates
+  grep -rE 'PREREQ|UNIVERSE|OPTIONAL|DQ|ERROR' logs/     # every gate, one grep
 
 Output:
   out.pass      grain = itemonagendaid            (item-level ownership panel)

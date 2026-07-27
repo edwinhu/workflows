@@ -185,8 +185,11 @@ Both fired during verification and caught real failures. That is the point.
 > disabling the cusip6 fallback removes rows and the `msf_v2` splice adds 2025. Re-freeze
 > it deliberately once the corrected DAG has run clean.
 >
-> A timed run should include the detector sweep (`ownership_dq.py`, seconds) so the
-> number means "a panel you can use", not "a panel that exists".
+> A timed run includes the detector sweep (`dq_panel.py`, seconds, held on the merge)
+> so the number means "a panel you can use", not "a panel that exists". This was a
+> standing instruction that nothing implemented — no script referenced
+> `ownership_dq.py` at all — so every wall time quoted before 2026-07-27 was the
+> time to build a panel of unmeasured quality.
 
 Clean checkout on WRDS, one `bash run_pipeline.sh`, 2026-07-25. Two runs, both clean:
 
@@ -305,11 +308,32 @@ This skill builds the panel; it does not certify the numbers in it. The sources
 have documented defects, several of which produce a **complete-looking panel with
 plausible values**, so they cannot be caught by eyeballing output.
 
-Before analysis, run the detectors in the `wrds` skill against what you built:
+**`run_pipeline.sh` now does this for you** — `dq_sweep` is the last node, held on
+the merge, and it reports rather than gates. Read it out of the run:
+
+```bash
+grep -rE 'PREREQ|UNIVERSE|OPTIONAL|DQ|ERROR' logs/    # every gate, one grep
+```
+
+Measured on the 2026-07-27 run (675,639 × 22 leg-2 panel):
+
+```
+DQ rows=675,639 coverage_end=0 duplicate_grain=0 join_coverage_tail=0
+   unit_discontinuity=0 split_factor_ratio=2747 owner_dropout=5577
+DQ impossible_ratio=11,761/378,129=3.110% testable=56.0%_of_panel
+```
+
+**Read that denominator.** `impossible_ratio` can only fire on rows carrying both
+`io_total` and a positive `tso` — 378,129 of 675,639. The remaining 297,510 (44%)
+are invisible to it, so "3.110%" does not mean "the panel is 96.9% clean". The
+check is also one-sided: a denominator that is too *small* trips >100%, one that is
+too *large* never trips anything and just biases ownership downward.
+
+To run it by hand, or against a panel built elsewhere:
 
 ```bash
 uv run python3 tests/ownership_dq_test.py          # 105 assertions, stdlib only
-# then, on your panel, via skills/wrds/scripts/ownership_dq.py
+qsub -v OWNERSHIP_DQ=/path/to/ownership_dq.py run_dq.sh    # on the grid
 ```
 
 Read `skills/wrds/references/tfn-ownership.md` → **Known Data Defects (D1-D9)**
