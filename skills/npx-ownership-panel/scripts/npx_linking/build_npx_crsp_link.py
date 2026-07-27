@@ -194,7 +194,30 @@ print(f"\ncrsp_cik_map                       : {cikmap.height:,} rows, "
       f"{sid2fno['series_cik'].n_unique():,} series_ciks, "
       f"{sid2fno.height:,} (series, fundno) pairs")
 
-mflink = pl.read_parquet(MFLINK1).unique(subset=["crsp_fundno"], keep="first")
+# A crsp_fundno can carry MORE THAN ONE wficn in MFLINK1, and `keep="first"` with
+# no preceding sort picks by whatever row order the parquet happens to have —
+# an undefined choice on the linking critical path, since wficn is how S12
+# holdings reach a fund. Measured on mflink1_cache: 50,380 rows, 49,975 distinct
+# crsp_fundno, and 341 fundnos (0.68%) mapping to more than one wficn.
+#
+# There is no discriminator in this file to break the tie ON — it has exactly two
+# columns — so this cannot be resolved into a *right* answer here. What it can be
+# is DECLARED: sort first so the pick is stated (lowest wficn) rather than
+# inherited from row order, and print the count so the magnitude is visible
+# instead of silent. The remaining question, which wficn is correct for those 341,
+# is a domain question for MFLINK and is flagged, not guessed.
+_mf_raw = pl.read_parquet(MFLINK1)
+_mf_amb = int(
+    _mf_raw.group_by("crsp_fundno").agg(pl.col("wficn").n_unique().alias("k"))
+    .filter(pl.col("k") > 1).height
+)
+mflink = (
+    _mf_raw.sort(["crsp_fundno", "wficn"])
+    .unique(subset=["crsp_fundno"], keep="first", maintain_order=True)
+)
+print(f"mflink1 dedup                      : {_mf_raw.height:,} rows -> "
+      f"{mflink.height:,} crsp_fundno; {_mf_amb:,} map to >1 wficn and are "
+      f"resolved by lowest wficn (stated, not row order)")
 print(f"mflink1 (deduped on fundno)        : {mflink.height:,} rows")
 
 # ---------------------------------------------------------------------------
@@ -379,7 +402,14 @@ if "crsp_fundno" in fund.columns:
     # aggregated exactly as the other tiers are -- otherwise an L2-sourced fund
     # would carry one class's TNA while a seriesId-sourced one carries the
     # whole fund's, and the two would not be comparable as vote weights.
-    fno2unit = named.select("crsp_fundno", "unit").unique(subset=["crsp_fundno"], keep="first")
+    # Same undefined choice as the mflink1 dedup above: no sort, so `keep="first"`
+    # picks a unit for a fundno that spans units by row order. Sort so the pick is
+    # stated (lowest unit) rather than inherited.
+    fno2unit = (
+        named.select("crsp_fundno", "unit")
+        .sort(["crsp_fundno", "unit"])
+        .unique(subset=["crsp_fundno"], keep="first", maintain_order=True)
+    )
     l2c = (
         fund.join(exact.select("fundid"), on="fundid", how="anti")
         .filter(pl.col("crsp_fundno").is_not_null() & ~pl.col("iss_nonregistrant"))
@@ -795,7 +825,13 @@ print(f"  median TNA ($M)                  : {lk['tna_latest'].median():,.1f}")
 # ISS fundid is often share-class-grained, so several fundids share one CRSP
 # fund and its TNA. Summing over fundids double-counts; the magnitude check has
 # to be done over DISTINCT crsp_fundnos.
-uniq = lk.unique(subset=["crsp_fundno"], keep="first")
+# Not merely a count: the SURVIVING row's tna_latest is summed below, so which
+# row wins changes the printed total. Sorted so it is the largest TNA for that
+# fundno rather than whichever row came first.
+uniq = (
+    lk.sort(["crsp_fundno", "tna_latest"], descending=[False, True], nulls_last=True)
+    .unique(subset=["crsp_fundno"], keep="first", maintain_order=True)
+)
 print(f"  total TNA over distinct crsp_fundnos: ${uniq['tna_latest'].sum() / 1e6:,.2f}T "
       f"across {uniq.height:,} funds (summing over fundids would double-count to "
       f"${lk['tna_latest'].sum() / 1e6:,.2f}T -- {lk.height:,} fundids map to "

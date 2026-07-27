@@ -239,7 +239,12 @@ print("  (L3 nulls `seriesid` on npx_crsp_link only for ISS non-registrants, "
 
 fs = pl.read_parquet(FUND_SUMMARY2)
 snl = pl.read_parquet(SEC_SERIES_NAMES_LONG)
-mflink = pl.read_parquet(MFLINK1).unique(subset=["crsp_fundno"], keep="first")
+# A crsp_fundno can carry more than one wficn in MFLINK1 (measured: 341 of
+# 49,975). `keep="first"` with no sort picks by row order — an undefined
+# choice on the linking critical path. Sorted so the pick is STATED.
+mflink = (pl.read_parquet(MFLINK1)
+          .sort(["crsp_fundno", "wficn"])
+          .unique(subset=["crsp_fundno"], keep="first", maintain_order=True))
 print(f"\nfund_summary2 (CLASS grain)        : {fs.height:,} crsp_fundnos")
 print(f"sec_series_names_long              : {snl.height:,} rows")
 

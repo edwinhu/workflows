@@ -336,7 +336,12 @@ print(f"  of those seriesIds, present in crsp_cik_map: {in_map.height:,} "
 fund = pl.read_parquet(FUNDID_SERIESID).select(
     "fundid", "institutionid", "first_year", "last_year")
 fs = pl.read_parquet(FUND_SUMMARY2)
-mflink = pl.read_parquet(MFLINK1).unique(subset=["crsp_fundno"], keep="first")
+# A crsp_fundno can carry more than one wficn in MFLINK1 (measured: 341 of
+# 49,975). `keep="first"` with no sort picks by row order — an undefined
+# choice on the linking critical path. Sorted so the pick is STATED.
+mflink = (pl.read_parquet(MFLINK1)
+          .sort(["crsp_fundno", "wficn"])
+          .unique(subset=["crsp_fundno"], keep="first", maintain_order=True))
 print(f"\nfund_summary2 (CLASS grain)        : {fs.height:,} crsp_fundnos")
 
 # ---------------------------------------------------------------------------
