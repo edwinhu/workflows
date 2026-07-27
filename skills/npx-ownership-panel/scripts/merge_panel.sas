@@ -317,15 +317,39 @@ data out.pass;
     else inst_pivotal_net = .;
 run;
 
-/* --- Diagnostic: how far apart are the CRSP and ISS denominators? ---------- */
-proc sql;
-    select
-        sum(case when abs(tso_crsp_inst - tso) / tso > 0.10 then 1 else 0 end)
-            as n_crsp_iss_gap_gt_10pct format comma12.,
-        count(*) as n_total format comma12.
+/* --- Diagnostic: how far apart are the CRSP and ISS denominators, AND WHICH WAY
+ *
+ * THE ABS() WAS THE PROBLEM. This counted |tso_crsp - tso|/tso > 10% — symmetric,
+ * so it could not distinguish the two failure modes, which are not equally
+ * visible:
+ *
+ *   ISS tso TOO SMALL -> ior too big  -> trips detect_impossible_ratio (>100%)
+ *   ISS tso TOO LARGE -> ior too small -> trips NOTHING, ever
+ *
+ * Every ratio check in the suite is one-sided in exactly this way: a denominator
+ * that is too large just biases ownership downward, silently, and no threshold
+ * anywhere fires on it. This is the ONLY place both denominators exist on the
+ * same row, so it is the only place the invisible direction can be counted at all.
+ *
+ * Emitted as a gate line so the same grep picks it up as PREREQ / UNIVERSE /
+ * OPTIONAL / DQ / TURNOUT. A number that only reaches the .lst is a number
+ * nobody reads. */
+%local n_dboth n_iss_hi n_iss_hi3 n_crsp_hi n_crsp_hi3;
+proc sql noprint;
+    select count(*),
+           sum(case when tso > tso_crsp_inst * 1.10 then 1 else 0 end),
+           sum(case when tso > tso_crsp_inst * 3.00 then 1 else 0 end),
+           sum(case when tso_crsp_inst > tso * 1.10 then 1 else 0 end),
+           sum(case when tso_crsp_inst > tso * 3.00 then 1 else 0 end)
+      into :n_dboth trimmed, :n_iss_hi trimmed, :n_iss_hi3 trimmed,
+           :n_crsp_hi trimmed, :n_crsp_hi3 trimmed
     from out.pass
     where tso > 0 and tso_crsp_inst > 0;
 quit;
+%put NOTE: DENOM rows_with_both=&n_dboth. iss_gt_crsp_10pct=&n_iss_hi. iss_gt_crsp_3x=&n_iss_hi3. crsp_gt_iss_10pct=&n_crsp_hi. crsp_gt_iss_3x=&n_crsp_hi3.;
+%put NOTE- DENOM iss_gt_crsp means ior is UNDERSTATED and NO ratio check can see it;
+%put NOTE- DENOM crsp_gt_iss means ior is OVERSTATED and detect_impossible_ratio catches it;
+%put NOTE- DENOM the >100%% rate is therefore only HALF a denominator test, by construction;
 
 proc contents data=out.pass order=varnum; run;
 
