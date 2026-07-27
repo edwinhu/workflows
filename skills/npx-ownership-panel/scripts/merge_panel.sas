@@ -334,7 +334,18 @@ run;
  * Emitted as a gate line so the same grep picks it up as PREREQ / UNIVERSE /
  * OPTIONAL / DQ / TURNOUT. A number that only reaches the .lst is a number
  * nobody reads. */
-%local n_dboth n_iss_hi n_iss_hi3 n_crsp_hi n_crsp_hi3;
+/* NOT %local: this is OPEN CODE, and `%LOCAL` is only valid inside a macro.
+ * Written as %local it raised "The %LOCAL statement is not valid in open
+ * code", the five macro variables were never created, every %put below
+ * printed &n_dboth. literally, and the cascade took out the UNIVERSE gate and
+ * out.pass_npx with it — a 32-minute run that produced no panel.
+ *
+ * Exactly the defect #100 fixed in import_inst_own.sas (`%abort cancel` in
+ * open code), reintroduced by me three PRs later. The tell is the same: SAS
+ * reports it as an ERROR and keeps going, so the log names the construct and
+ * the run continues into wreckage.
+ *
+ * I tested the SQL standalone and it passed. The SQL was never the risk. */
 proc sql noprint;
     select count(*),
            sum(case when tso > tso_crsp_inst * 1.10 then 1 else 0 end),
