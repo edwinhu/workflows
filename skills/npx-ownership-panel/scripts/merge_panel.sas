@@ -247,7 +247,12 @@ quit;
 %put NOTE: D5 s12_pre2017Q4 rows=&d5_pre_rows. permnos=&d5_pre_permno. | post rows=&d5_post_rows. permnos=&d5_post_permno.;
 %put NOTE- D5 the S12 feed changed at 2017Q4 (legacy SP -> strategic collection);
 %put NOTE- D5 a coverage EXPANSION, so any mf-ownership LEVEL comparison spanning;
-%put NOTE- D5 2017Q4 is invalid; MFLINKS was not backfilled 2017Q4-2020Q2 either.;
+/* No bare `;` inside a %put — it TERMINATES the statement, and everything
+ * after it parses as a stray statement. That is what broke this file: the
+ * semicolon in "2017Q4 is invalid; MFLINKS..." ended the %put, the rest
+ * raised ERROR 180-322, and the cascade emptied out.pass_npx (0 obs, 17
+ * vars) while the log still showed the D5 gate printing correctly. */
+%put NOTE- D5 2017Q4 is invalid. MFLINKS was not backfilled 2017Q4-2020Q2 either.;
 
 /* --- Sort inputs for MERGE_ASOF --- */
 proc sort data=out.inst_own;  by permno rdate;                     run;
