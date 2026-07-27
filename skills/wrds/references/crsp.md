@@ -1,5 +1,13 @@
 # CRSP Stock Data
 
+> **The legacy SIZ tables below stop at 2024-12-31.** CRSP discontinued Flat File
+> Format 1.0 (SIZ) after the December 2024 release; only the CIZ / v2 format is
+> updated. For any data after 2024, the CIZ column semantics (no `shrcd`, no
+> `exchcd`, positive-only prices, delisting returns embedded in `dlyret`/`mthret`,
+> monthly returns compounded from daily), or migration of SIZ code, **use the
+> `crsp-v2` skill** — `skills/crsp-v2/SKILL.md`. This file covers the legacy format
+> and the CCM link, which CIZ did not change.
+
 ## Contents
 
 - [Tables](#tables)
@@ -12,21 +20,27 @@
 
 ## Tables
 
-### Legacy Format
+### Legacy Format (SIZ — frozen at 2024-12-31)
 | Table | Description |
 |-------|-------------|
 | `crsp.dsf` | Daily stock file |
 | `crsp.msf` | Monthly stock file |
 | `crsp.dse` | Daily stock events |
 | `crsp.stocknames` | Security names/identifiers |
-| `crsp.ccmxpf_linkhist` | CRSP-Compustat link |
+| `crsp.ccmxpf_lnkhist` | CRSP-Compustat link |
 
-### v2 (CIZ) Format
+### v2 (CIZ) Format — the only updated format
 | Table | Description |
 |-------|-------------|
-| `crsp.dsf_v2` | Daily stock file (CIZ) |
-| `crsp.msf_v2` | Monthly stock file (CIZ) |
-| `crsp.stocknames_v2` | Security names (CIZ) |
+| `crsp.dsf_v2` | Daily stock file (WRDS-built, CIZ) |
+| `crsp.msf_v2` | Monthly stock file (WRDS-built, CIZ) |
+| `crsp.stocknames_v2` | Security names (WRDS-built, CIZ) |
+| `crsp.stkdlysecurityprimarydata` | Daily, CRSP-native, 12 cols |
+| `crsp.stkdlysecuritydata` | Daily, CRSP-native, 32 cols |
+| `crsp.stkmthsecuritydata` | Monthly, CRSP-native |
+| `crsp.stksecurityinfohist` | Security attribute history (universe filters) |
+
+Full catalog, crosswalk, flag dictionary, and verified queries: **`skills/crsp-v2/`**.
 
 ## Key Fields
 
@@ -88,7 +102,7 @@ sql = """
     SELECT a.gvkey, a.datadate, a.at, a.sale,
            b.lpermno as permno, c.mthret
     FROM comp.funda a
-    INNER JOIN crsp.ccmxpf_linkhist b
+    INNER JOIN crsp.ccmxpf_lnkhist b
         ON a.gvkey = b.gvkey
         AND b.linktype IN ('LU', 'LC')
         AND b.linkprim IN ('P', 'C')
@@ -130,8 +144,14 @@ collapsed = df.drop_duplicates(subset=['gvkey', 'lpermno', 'linkdt'], keep='last
 
 ## Market Equity
 
+In CIZ, do **not** compute market equity — `mthcap` / `dlycap` is CRSP's own
+capitalization in $ thousands and is already on the row. Recomputing it reintroduces
+the documented share-rounding and bid/ask-precision differences. `abs()` is also
+unnecessary: CIZ prices are always positive (see `skills/crsp-v2/`). The legacy
+pattern below applies to SIZ data only.
+
 ```python
-# Calculate market equity
+# Legacy (SIZ) market equity
 crsp['me'] = abs(crsp['mthprc']) * crsp['shrout']
 
 # Aggregate to PERMCO level (sum across share classes)
