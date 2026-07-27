@@ -403,7 +403,7 @@ def get_crsp_permno(pool, gvkey: str) -> str | None:
     with pool.cursor() as cursor:
         cursor.execute("""
             SELECT lpermno
-            FROM crsp.ccmxpf_linkhist
+            FROM crsp.ccmxpf_lnkhist
             WHERE gvkey = %s
               AND linktype IN ('LC', 'LU')
               AND linkprim IN ('P', 'C')

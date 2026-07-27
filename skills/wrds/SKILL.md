@@ -219,7 +219,7 @@ See **`references/sas-etl.md`** for complete patterns:
 |---------|--------|------------|
 | Compustat | `comp` | `company`, `funda`, `fundq`, `secd` |
 | ExecuComp | `comp_execucomp` | `anncomp` |
-| CRSP | `crsp` | `dsf`, `msf`, `stocknames`, `ccmxpf_linkhist` |
+| CRSP | `crsp` | `dsf`, `msf`, `stocknames`, `ccmxpf_lnkhist` |
 | CRSP v2 | `crsp` | `dsf_v2`, `msf_v2`, `stocknames_v2` |
 | Form 4 Insiders | `tr_insiders` | `table1`, `header`, `company` |
 | ISS Incentive Lab | `iss_incentive_lab` | `comppeer`, `sumcomp`, `participantfy` |
@@ -326,7 +326,8 @@ cursor.execute("""
 Detailed query patterns and table documentation:
 
 - **`references/compustat.md`** - Compustat tables, ExecuComp, financial variables
-- **`references/crsp.md`** - CRSP stock data, CCM linking, v2 format
+- **`references/crsp.md`** - CRSP legacy (SIZ) stock data and CCM linking
+- **`${CLAUDE_SKILL_DIR}/../../skills/crsp-v2/SKILL.md`** - CRSP CIZ / v2 format (required for any data after 2024-12-31)
 - **`references/insider-form4.md`** - Thomson Reuters Form 4, rolecodes, insider types
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
 - **`references/formd.md`** - Form D / Reg D (canonical): two sources (WRDS `wrds_vc_formd` + SEC EDGAR TSV/XML), grain & keys, denormalization gotcha, exemption + industry codes, post-2020 gap, validated benchmarks
