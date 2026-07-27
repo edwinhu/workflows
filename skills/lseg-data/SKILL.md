@@ -111,6 +111,60 @@ ld.close_session()
 
 ## Authentication
 
+### On this setup: use the agenix secret
+
+Credentials live in agenix as `lseg-credentials`, decrypted to
+`$LSEG_CREDENTIALS_FILE` (mode 400). It is a shell-sourceable file, so **source
+it, do not `cat` it into a variable**:
+
+```bash
+set -a; . "$LSEG_CREDENTIALS_FILE"; set +a   # exports LSEG_APP_KEY / LSEG_USERNAME / LSEG_PASSWORD
+```
+
+**THE VARIABLE NAMES DO NOT MATCH THE LIBRARY'S.** The secret exports `LSEG_*`;
+everything below documents `RDP_*`. You must map them at the call site. Reading
+this section and exporting `RDP_APP_KEY` from a file that defines `LSEG_APP_KEY`
+gets you an empty environment and a session that fails on first query.
+
+Before 2026-07-27 these existed only as plaintext in `mbp:~/projects/<project>/.envrc`,
+so anything running on another machine had no credentials at all. If a lookup
+comes back empty, check that host's rebuild is current before concluding the
+account is unentitled.
+
+### `platform.Password` DOES NOT EXIST
+
+The config-file example below hides the programmatic form, and the obvious guess
+is wrong. In `lseg-data` 2.1.1 the class is **`GrantPassword`**:
+
+```python
+import lseg.data as ld
+from lseg.data.session import platform
+
+s = platform.Definition(
+        app_key=os.environ["LSEG_APP_KEY"],
+        grant=platform.GrantPassword(username=os.environ["LSEG_USERNAME"],
+                                     password=os.environ["LSEG_PASSWORD"]),
+    ).get_session()
+s.open()
+ld.session.set_default(s)
+```
+
+`platform` exports exactly three names — `ClientCredentials`, `Definition`,
+`GrantPassword`. Check `dir()` before trusting a class name from the docs.
+
+### `open_session()` DOES NOT RAISE ON FAILURE
+
+With no config and no credentials it falls back to a **desktop** session, tries
+`http://localhost:9000/api/handshake` (LSEG Workspace running locally), logs the
+connection failure, and **returns normally**. The error only surfaces on the
+first query as `ValueError: Session is not opened`.
+
+So `open_session()` returning is NOT evidence of a session. This is the same
+silent-failure shape as the Iron Law above, one layer earlier: verify by issuing
+a cheap query (`TR.PriceClose` on a liquid RIC) and inspecting the value.
+
+### Config file / environment variables (upstream documentation)
+
 Configure LSEG authentication using either a config file or environment variables.
 
 ### Config File Method
