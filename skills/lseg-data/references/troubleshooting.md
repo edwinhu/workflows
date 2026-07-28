@@ -66,11 +66,11 @@ LDError: Authentication failed - invalid credentials
 LDError: Cannot connect to desktop session
 ```
 
-**Solutions:**
+**On Linux this is expected and unfixable.** The desktop session talks to the local
+Workspace/Eikon desktop application, which ships for Windows and macOS only. There is no
+Linux build to run, so a desktop session can never connect. Use one of:
 
-1. Ensure Eikon or Workspace is running
-2. Check Eikon/Workspace is logged in
-3. Try explicit platform session instead:
+1. **Platform session** — the only `lseg.data` session type available on Linux:
    ```python
    import lseg.data as ld
 
@@ -78,6 +78,15 @@ LDError: Cannot connect to desktop session
        config_name="platform.ldp"  # Use platform instead of desktop
    )
    ```
+2. **Borrowed browser session** — no machine credentials required; lifts the access token
+   from a signed-in Workspace Web tab. See `workspace-web-cdp.md` and
+   `scripts/workspace_cdp.py`.
+
+**On Windows/macOS**, where the desktop session is a real option:
+
+1. Ensure Eikon or Workspace is running
+2. Check Eikon/Workspace is logged in
+3. Fall back to a platform session as above
 
 ## Missing/Empty Data
 
@@ -435,6 +444,49 @@ print(ld.get_config())  # Shows current configuration
 print(ld.session)       # Current session object
 ```
 
+## Workspace Web / CDP Issues
+
+### "Cannot reach CDP on port 9222"
+
+Chromium is not running with remote debugging. See the `browser-automation` skill for the
+standard Linux setup. Verify with `curl -s http://localhost:9222/json/version`.
+
+### "No open tab matching workspace.refinitiv.com/web"
+
+Open `https://workspace.refinitiv.com/web` in that browser and sign in once. The session
+persists in cookies across browser restarts.
+
+### "No edp-token in the Workspace tab"
+
+The Workspace session is signed out. Reload the tab and sign in. `localStorage` should then
+contain `edp-token`, plus `TokenManager:AuthState` = `FR:OnCloud:LOGGED_IN`.
+
+### 401 from api.refinitiv.com mid-run
+
+The lifted token expired — it lives ~10 minutes. Do not cache the token string across a
+long job; call `workspace_cdp.token()` per request batch so it re-reads automatically.
+
+### 403 `insufficient_scope`
+
+The dataset is not in your Workspace token's entitlements (news is 403 on the verified
+account). Scopes are encrypted in the JWT and cannot be listed. Try the same data via the
+`lseg.data` platform session, or via a Workspace-internal endpoint with `in_page_fetch()`.
+
+### "Failed to fetch" in the Workspace tab
+
+CORS. Cross-origin requests from the Workspace page are blocked. Use
+`workspace_cdp.in_page_fetch()`, which runs the request from a tab on the target origin.
+
+### datagrid `error 218: The formula must contain at least one field or function`
+
+You passed a deal-level `SCREEN(U(IN(DEALS)) ...)` universe to the public API, which does
+not support it. Use `workspace_cdp.sdc_screen()`.
+
+### Codebook cell stuck at `[*]`
+
+Expected — the kernel WebSocket is refused server-side (close 1006), including in
+Codebook's own UI. Codebook cannot execute code from here. See `codebook.md`.
+
 ## Getting Help
 
 1. **LSEG Developer Community**: https://community.developers.refinitiv.com/
@@ -444,6 +496,8 @@ print(ld.session)       # Current session object
 
 ## See Also
 
-- [SKILL.md](SKILL.md) - Main documentation
-- [modules/symbology.md](modules/symbology.md) - Symbol conversion details
-- [WRDS_COMPARISON.md](WRDS_COMPARISON.md) - WRDS field mapping
+- [../SKILL.md](../SKILL.md) - Main documentation
+- [workspace-web-cdp.md](workspace-web-cdp.md) - Driving Workspace Web over CDP
+- [codebook.md](codebook.md) - Codebook REST surface and execution blocker
+- [symbology.md](symbology.md) - Symbol conversion details
+- [wrds-comparison.md](wrds-comparison.md) - WRDS field mapping

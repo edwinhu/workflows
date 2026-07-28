@@ -55,6 +55,8 @@ def test_connection():
         print("  1. lseg-data.config.json exists with valid credentials")
         print("  2. Or environment variables RDP_USERNAME, RDP_PASSWORD, RDP_APP_KEY are set")
         print("  3. Network connectivity to LSEG servers")
+        print("  4. On Linux there is no desktop session — use a platform session,")
+        print("     or the browser path: python3 workspace_cdp.py token")
         try:
             ld.close_session()
         except:
@@ -62,6 +64,37 @@ def test_connection():
         return False
 
 
+def test_browser_path():
+    """Test the CDP/Workspace-Web path (no machine credentials required)."""
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import workspace_cdp as w
+    except ImportError as exc:
+        print(f"ERROR: cannot import workspace_cdp ({exc})")
+        return False
+
+    try:
+        print("Reading token from the Workspace Web tab...")
+        w.token()
+        print("SUCCESS: token retrieved")
+
+        print("\nTesting datagrid...")
+        r = w.datagrid(["AAPL.O"], ["TR.CommonName", "TR.Revenue"])
+        if r.get("data"):
+            print(f"SUCCESS: {r['data'][0]}")
+        else:
+            print(f"WARNING: no data — {r}")
+            return False
+        return True
+    except SystemExit as exc:      # workspace_cdp raises SystemExit with guidance
+        print(f"ERROR: {exc}")
+        return False
+
+
 if __name__ == '__main__':
-    success = test_connection()
-    sys.exit(0 if success else 1)
+    if "--browser" in sys.argv:
+        ok = test_browser_path()
+    else:
+        ok = test_connection()
+    sys.exit(0 if ok else 1)

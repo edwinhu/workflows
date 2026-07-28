@@ -8,6 +8,25 @@ M&A data comes from SDC Platinum (now integrated into LSEG). Like other deal dat
 
 **Field count**: 2,683 fields available with TR.MnA* prefix.
 
+> **Verify field names before trusting this file.** Spot-checks on 2026-07-27 found several
+> field names below to be invalid. An invalid TR.* field is **silently dropped** — the
+> column vanishes from `headers` and rows come back shorter than the field list, with no
+> error. Queried alone it returns `error 218`, which is the cheapest single-field check.
+>
+> | Documented here | Reality |
+> |---|---|
+> | `TR.MnAAcquirorName` | **invalid** → use **`TR.MnAAcquiror`** ("Acquiror Full Name") |
+> | `TR.MnATargetName` | **invalid** → use **`TR.MnATarget`** ("Target Full Name") |
+> | `TR.MnAAcquirorTicker`, `TR.MnAAcquirorCusip`, `TR.MnATargetTicker` | invalid; correct names not established |
+> | `TR.MnAEnterpriseValue`, `TR.MnAPricePerShare`, `TR.MnAPremium1Day`, `TR.MnAPremium1Week`, `TR.MnAPremium4Weeks`, `TR.MnAAcquirorMarketCap` | invalid; correct names not established |
+>
+> Confirmed working: `TR.MnAAcquiror`, `TR.MnATarget`, `TR.MnAAcquirorNation`,
+> `TR.MnAAcquirorSIC`, `TR.MnAAcquirorPublicStatus`, `TR.MnATargetNation`,
+> `TR.MnATargetPublicStatus`, `TR.MnAStatus`, `TR.MnADealValue`, `TR.MnAAnnDate`.
+>
+> The authoritative field list is the IndexedDB dump (`api-discovery.md`), not this table.
+> For deal-level universes rather than per-company queries, see `workspace-web-cdp.md`.
+
 ## Quick Start
 
 ```python
@@ -19,8 +38,8 @@ df = ld.get_data(
     universe=[‘MSFT.O’, ‘GOOGL.O’, ‘META.O’],
     fields=[
         ‘TR.MnAAnnouncementDate’,
-        ‘TR.MnAAcquirorName’,
-        ‘TR.MnATargetName’,
+        ‘TR.MnAAcquiror’,
+        ‘TR.MnATarget’,
         ‘TR.MnADealValue’,
         ‘TR.MnADealStatus’,
         ‘TR.MnADealType’,
@@ -67,7 +86,7 @@ ld.close_session()
 
 | Field | Description |
 |-------|-------------|
-| `TR.MnAAcquirorName` | Acquiror company name |
+| `TR.MnAAcquiror` | Acquiror company name ("Acquiror Full Name") |
 | `TR.MnAAcquirorTicker` | Acquiror ticker symbol |
 | `TR.MnAAcquirorCusip` | Acquiror CUSIP |
 | `TR.MnAAcquirorNation` | Acquiror country |
@@ -88,7 +107,7 @@ ld.close_session()
 
 | Field | Description |
 |-------|-------------|
-| `TR.MnATargetName` | Target company name |
+| `TR.MnATarget` | Target company name ("Target Full Name") |
 | `TR.MnATargetTicker` | Target ticker symbol |
 | `TR.MnATargetCusip` | Target CUSIP |
 | `TR.MnATargetNation` | Target country |
@@ -166,8 +185,8 @@ for i in range(0, len(rics), batch_size):
         universe=batch,
         fields=[
             ‘TR.MnAAnnouncementDate’,
-            ‘TR.MnAAcquirorName’,
-            ‘TR.MnATargetName’,
+            ‘TR.MnAAcquiror’,
+            ‘TR.MnATarget’,
             ‘TR.MnADealValue’,
             ‘TR.MnADealStatus’,
         ]

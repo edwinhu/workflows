@@ -1,25 +1,34 @@
 # API Discovery via Network Monitoring
 
-When LSEG/Refinitiv data is available in Workspace but not documented in the Python API, you can reverse-engineer the API by monitoring network traffic from the Electron app.
+When LSEG/Refinitiv data is available in Workspace but not documented in the Python API, you can reverse-engineer the API by monitoring the web client's network traffic.
 
 ## Overview
 
-Refinitiv Workspace is an Electron app (Chromium-based), which means you can:
-1. Launch it with remote debugging enabled
+Workspace Web is a normal Chromium page, which means you can:
+1. Run Chromium with remote debugging enabled
 2. Connect via Chrome DevTools Protocol (CDP)
 3. Monitor network requests to discover API endpoints
 4. Replicate the API calls in Python
 
+For calling the endpoints you discover, see `workspace-web-cdp.md` — `scripts/workspace_cdp.py` already wraps the token-lift and the same-origin fetch, so most discoveries need no new plumbing.
+
 ## Step-by-Step Process
 
-### Step 1: Launch Workspace with Remote Debugging
+### Step 1: Open Workspace Web in a CDP browser
+
+The web client at `https://workspace.refinitiv.com/web` is the target on every platform, and the only one on Linux. Chromium should already be listening on port 9222 (see the `browser-automation` skill); sign in to Workspace once by hand.
+
+```bash
+curl -s http://localhost:9222/json/version | jq -r .Browser
+```
+
+**Legacy — desktop app (Windows/macOS only).** If you are on a machine with the Workspace desktop app, it is an Electron shell and can be launched with the same flag. This does not exist on Linux:
 
 ```bash
 # macOS
 /Applications/Refinitiv\ Workspace.app/Contents/MacOS/Refinitiv\ Workspace --remote-debugging-port=9222
-
 # Windows
-“C:\Program Files\Refinitiv\Refinitiv Workspace\Refinitiv Workspace.exe” --remote-debugging-port=9222
+"C:\Program Files\Refinitiv\Refinitiv Workspace\Refinitiv Workspace.exe" --remote-debugging-port=9222
 ```
 
 ### Step 2: Find the WebSocket Debugger URL
@@ -41,10 +50,12 @@ import websockets
 import json
 
 async def monitor_network():
-    # Get debugger URL
+    # Get debugger URL for the Workspace tab specifically — targets[0] is
+    # whatever tab happens to be first, which is usually not Workspace.
     import urllib.request
     targets = json.loads(urllib.request.urlopen(‘http://localhost:9222/json’).read())
-    ws_url = targets[0][‘webSocketDebuggerUrl’]
+    ws_url = next(t[‘webSocketDebuggerUrl’] for t in targets
+                  if t[‘type’] == ‘page’ and ‘workspace.refinitiv.com’ in t[‘url’])
 
     async with websockets.connect(ws_url) as ws:
         # Enable network monitoring
@@ -254,11 +265,11 @@ SDC Platinum caches complete field definitions in the browser’s IndexedDB. Thi
 
 ### Extraction Process
 
-#### Step 1: Open SDC Platinum in Chrome
+#### Step 1: Open SDC Platinum in the CDP browser
 
-Navigate to SDC Platinum in a browser (not the Electron app):
+Navigate to SDC Platinum:
 - URL: `https://amers1-apps.platform.refinitiv.com/Apps/SDCPlatinum/`
-- Log in with your Refinitiv credentials
+- Log in with your Refinitiv credentials (or open the app from inside Workspace Web, which reuses the existing session)
 
 #### Step 2: Open Each Dataset Type
 
@@ -349,12 +360,15 @@ Each cached field has this structure:
 
 ### Extracted Field Data Location
 
-Complete field extractions are stored at:
-`/Users/vwh7mb/projects/lseg-exploration/data/sdc_fields/`
+Complete field extractions live in the `lseg-exploration` project under
+`data/sdc_fields/` (originally captured on the macOS machine at
+`~/projects/lseg-exploration/`):
 
-Files include:
 - `sdc_platinum_complete_fields.json` (5.0 MB) - All datasets
 - `*_fields.csv` - Individual dataset CSV files
+
+If that project is not present on the current machine, re-extract with the IndexedDB
+method above — it takes a few minutes per dataset.
 
 ## FSCREEN (Fund Reporting) API
 
@@ -500,7 +514,7 @@ fetch(“https://workspace.refinitiv.com/Apps/FundReporting/1.2.188/l3”, {
 
 - **Chrome DevTools Protocol (CDP)**: Network monitoring via WebSocket
 - **IndexedDB**: Browser storage containing cached field definitions
-- **websockets**: Python library for WebSocket connections
+- **websocket-client**: Python WebSocket library (installed; `websockets` is not)
 - **jq**: JSON parsing for session files and API responses
-- **Refinitiv Workspace**: Electron app with `--remote-debugging-port` flag
-- **Chrome DevTools Network tab**: For FSCREEN and browser-based Workspace apps
+- **Workspace Web**: `https://workspace.refinitiv.com/web` in Chromium on `--remote-debugging-port=9222`
+- **`scripts/workspace_cdp.py`**: replays discovered endpoints without hand-rolling auth

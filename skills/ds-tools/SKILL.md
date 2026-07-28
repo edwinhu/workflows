@@ -23,7 +23,7 @@ These are skills, not plugins - already available:
 | Skill | Description |
 |-------|-------------|
 | `/wrds` | WRDS (Wharton Research Data Services) queries |
-| `/lseg-data` | LSEG Data Library (formerly Refinitiv) |
+| `/lseg-data` | LSEG Data Library (formerly Refinitiv), plus driving Workspace Web over CDP |
 | `/bmll` | BMLL Data Lab — Level 3 order book, Trades Plus, markouts, venue analysis (`bmll2`/`bmll`). Private submodule; needs access to `edwinhu/bmll-skill` |
 | `/gemini-batch` | Gemini Batch API for large-scale LLM processing |
 | `/data-context` | Extract tribal knowledge about datasets, generate data context skills |

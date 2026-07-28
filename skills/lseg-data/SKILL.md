@@ -1,12 +1,13 @@
 ---
 name: lseg-data
-version: 1.0
-description: Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "municipal bonds", "Lipper fund details", "stock screening (fscreen)", "Refinitiv news", or any use of the `lseg.data` Python API. (For academic loan/PE data, WRDS DealScan/PitchBook may be the better source — the wrds skill covers those.)
+version: 2.0
+description: Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "municipal bonds", "Lipper fund details", "stock screening (fscreen)", "Refinitiv news", "Workspace web client", "Codebook", or any use of the `lseg.data` Python API. (For academic loan/PE data, WRDS DealScan/PitchBook may be the better source — the wrds skill covers those.)
 user-invocable: false
 ---
 
 ## Contents
 
+- [Access Paths](#access-paths)
 - [Query Enforcement](#query-enforcement)
 - [Quick Start](#quick-start)
 - [Authentication](#authentication)
@@ -18,7 +19,38 @@ user-invocable: false
 
 # LSEG Data Library
 
-Access financial data from LSEG (London Stock Exchange Group), formerly Refinitiv, via the `lseg.data` Python library.
+Access financial data from LSEG (London Stock Exchange Group), formerly Refinitiv, via the `lseg.data` Python library **or** by driving the Workspace web client over CDP.
+
+## Access Paths
+
+Pick the lowest-numbered path that can serve the request.
+
+| # | Path | Use for | Auth | Reference |
+|---|------|---------|------|-----------|
+| 1 | `lseg.data` Python library | anything it covers; batch and production work | RDP machine credentials | this file + `references/*` |
+| 2 | Token-lift → RDP REST from Python | the same data with **no machine credentials** — borrows the browser session | Workspace tab's `edp-token` | `references/workspace-web-cdp.md` |
+| 3 | In-page `fetch()` on the target origin | Workspace-internal endpoints only (SDC deal universes, FSCREEN) | browser cookies | `references/workspace-web-cdp.md` |
+
+Path 1 remains preferred where it works — `pip install lseg-data` is available on every platform. Paths 2 and 3 exist because **some data is only reachable through the web client**, and because the token-lift avoids needing machine credentials at all.
+
+**The desktop Workspace app is Windows/macOS only.** On Linux there is no desktop session and no Electron binary to launch with `--remote-debugging-port`; the web client at `https://workspace.refinitiv.com/web` is the only Workspace surface. Never emit a `session.desktop.workspace` config or an app path on Linux.
+
+The helper for paths 2 and 3 is `scripts/workspace_cdp.py`:
+
+```bash
+python3 scripts/workspace_cdp.py token       # verify the browser session
+python3 scripts/workspace_cdp.py datagrid --universe AAPL.O,MSFT.O \
+        --fields TR.CommonName,TR.Revenue
+```
+
+```python
+import sys; sys.path.insert(0, "scripts")
+import workspace_cdp as w
+df = w.datagrid_df(["AAPL.O"], ["TR.Revenue", "TR.Revenue.fperiod"],
+                   {"SDate": "0", "EDate": "-4", "Frq": "FY"})
+```
+
+Requires Chromium on CDP port 9222 with a signed-in Workspace Web tab — see the `browser-automation` skill for the browser, and `references/workspace-web-cdp.md` for session setup.
 
 ## Query Enforcement
 
@@ -43,10 +75,21 @@ This is not negotiable. Skipping result inspection is NOT HELPFUL — the user b
 - Market data has T-1 availability — today's data arrives tomorrow. Querying through today produces silent gaps; see the Date Awareness section.
 - Rate limits bind per session (500 requests/minute) and per request (`get_data()` 10,000 data points, `get_history()` 3,000 rows) — many small queries still hit the session cap. Batch instead of looping.
 
+### Workspace Web / CDP Facts
+
+- The lifted `edp-token` lives **~10 minutes**. A script that reads it once and runs for an hour dies mid-batch with a 401. `workspace_cdp.token()` re-reads within 60s of expiry — use it per request rather than caching the string.
+- **Entitlements are per-account and cannot be enumerated** — the token's scopes are encrypted inside the JWT. On the verified account, news is `403 insufficient_scope` and CUSIP/ISIN symbology is unentitled. Probe the endpoint and read the error; never assume a dataset is available because it exists in the docs.
+- **A 200 is not proof of success.** Symbology returns HTTP 200 with a per-identifier `errors` array when unentitled, and datagrid returns `null` data with `messages.codes` of `-2 ("empty")` for fields that do not apply. Read `errors` and `messages.codes`, not just the status line.
+- Cross-origin `fetch()` from the Workspace tab is **CORS-blocked** and fails as a bare "Failed to fetch" that looks like a network outage. Workspace-internal endpoints must be called from a tab on their own origin — that is what `in_page_fetch()` does.
+- Deal-level `SCREEN(U(IN(DEALS)) ...)` universes are **rejected by the public datagrid** (`error 218`) and only work through the internal datacloud endpoint via path 3.
+- **Codebook could not execute code** on the one account/machine tested — the kernel WebSocket is killed before it reaches JupyterHub (no handshake response; a bogus kernel ID fails identically to a valid one), including through Codebook's own JupyterLab UI. Do not debug headers or subprotocols; the two things actually worth trying are a full session reset (clear site data + re-login) and a supported browser. Its contents/kernels REST API does work. See `references/codebook.md`.
+
 ### Red Flags — STOP If About To:
 
 - Execute a query without validating field names and RIC suffixes first → STOP. The API will not error for you.
 - Return a dataframe without `.head()` or `.sample()` inspection → STOP. Handing over uninspected data gives the user undetected quality problems — unhelpful on its own terms.
+- Write a `session.desktop.workspace` config, or reference `/Applications/Refinitiv Workspace.app`, on Linux → STOP. There is no desktop session on this platform; the config will fail at connect time.
+- Navigate or reload the user's signed-in Workspace tab → STOP. It destroys their layout and can drop the session that every CDP path depends on. Open your own tab instead.
 
 ### Data Validation Checklist
 
@@ -110,6 +153,23 @@ ld.close_session()
 ```
 
 ## Authentication
+
+Four options. The first two are for the `lseg.data` library; the last two need no credentials of your own.
+
+**Platform session (works on every OS)** — config file or environment variables, below. This is the only `lseg.data` session type available on Linux.
+
+**Desktop session** — requires the Refinitiv Workspace desktop app running locally. Windows/macOS only; not an option on Linux.
+
+**Borrowed browser session** — no credentials at all: `scripts/workspace_cdp.py` lifts the access token out of a signed-in Workspace Web tab. Use this when machine credentials are unavailable or expired. See `references/workspace-web-cdp.md`.
+
+**Codebook (hosted)** — LSEG's own JupyterHub inside Workspace Web. Its kernels
+open a pre-authenticated `DesktopSession` named `codebook` on LSEG's servers, so
+it needs no local credentials and no local Workspace app, and it does not consume
+the one-session platform quota below. Same entitlements as the platform session,
+not broader. See `references/codebook.md`.
+
+The rest of this section is about getting a **platform session** working, which is
+where all the sharp edges are.
 
 ### On this setup: use the agenix secret
 
@@ -242,7 +302,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 | Prefix | Type | Example |
 |--------|------|---------|
 | `TR.` | Refinitiv fields | `TR.Revenue`, `TR.EPS` |
-| `TR.MnA` | Mergers & Acquisitions | `TR.MnAAcquirorName`, `TR.MnADealValue` |
+| `TR.MnA` | Mergers & Acquisitions | `TR.MnAAcquiror`, `TR.MnADealValue` |
 | `TR.NI` | Equity/New Issues (IPOs) | `TR.NIIssuer`, `TR.NIOfferPrice` |
 | `TR.JV` | Joint Ventures/Alliances | `TR.JVDealName`, `TR.JVStatus` |
 | `TR.SACT` | Shareholder Activism | `TR.SACTLeadDissident` |
@@ -291,6 +351,8 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/infrastructure.md`** - Infrastructure/project finance deals (SDC Platinum)
 - **`references/private-equity.md`** - Private equity/venture capital investments (SDC Platinum)
 - **`references/municipal-bonds.md`** - Municipal bond issuances (SDC Platinum)
+- **`references/workspace-web-cdp.md`** - Driving the Workspace web client over CDP: session setup, token lifting, endpoint matrix, entitlement gotchas
+- **`references/codebook.md`** - Codebook (hosted JupyterHub): REST surface, and the kernel-execution blocker
 - **`references/api-discovery.md`** - Reverse-engineering APIs via CDP network monitoring
 - **`references/troubleshooting.md`** - Common issues and solutions
 - **`references/wrds-comparison.md`** - LSEG vs WRDS data mapping
@@ -303,7 +365,10 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 
 ### Scripts
 
-- **`scripts/test_connection.py`** - Validate LSEG connectivity
+- **`scripts/test_connection.py`** - Validate connectivity. No args tests the `lseg.data` platform session; `--browser` tests the CDP/Workspace-Web path.
+- **`scripts/workspace_cdp.py`** - Drive Workspace Web over CDP: `token`, `datagrid`, `history`, `symbology`, `search`, `sdc-screen`, `deal-data`, `fetch`. Importable as a module or usable as a CLI.
+
+Deal-level SDC work is two steps — `sdc_deal_ids()` resolves a `SCREEN(U(IN(DEALS)) ...)` universe to deal IDs, then `deal_data()` fetches field values for them as `<id>@DEALID`. See `references/workspace-web-cdp.md`.
 
 ### Local Sample Repositories
 
@@ -314,20 +379,20 @@ LSEG API samples at `~/resources/lseg-samples/`:
 
 ### Refinitiv Codebook
 
-Interactive JupyterLab environment with pre-configured LSEG access:
+Hosted JupyterLab with a pre-authenticated, fully entitled `refinitiv.data` session:
 
 - **URL**: `https://workspace.refinitiv.com/codebook/`
-- **Environment**: JupyterHub with Python 3.8, pre-installed `refinitiv.data` library
-- **Session**: Auto-authenticated via Workspace credentials (`{name=’codebook’}`)
+- **Environment**: JupyterHub 1.5.0dev, kernels `python3` and `python3_legacy`
+- **Session**: auto-authenticated via Workspace cookies (`{name='codebook'}`)
 
 ```python
-# In Codebook, session opens automatically with Workspace auth
+# Inside a Codebook notebook, the session opens with Workspace auth
 import refinitiv.data as rd
-rd.open_session()  # Returns session with name=’codebook’
-
-# Query data immediately
-df = rd.news.get_headlines(‘R:AAPL.O AND SUGGAC’, count=10)
+rd.open_session()                                   # name='codebook'
+df = rd.news.get_headlines('R:AAPL.O AND SUGGAC', count=10)
 ```
+
+**Codebook cannot be driven for computation.** Its contents/kernels/sessions REST API works with the browser's cookies, but the kernel WebSocket is refused server-side (close 1006) — including through Codebook's own JupyterLab UI, where a submitted cell sits at `[*]` forever. Use it as a file exchange (push a notebook, the user runs it, pull back the outputs) and read the user's existing notebooks as worked examples. Full detail and the re-test diagnostic: `references/codebook.md`.
 
 **Note**: Codebook uses `refinitiv.data` (older name) rather than `lseg.data`. Both APIs are equivalent.
 
