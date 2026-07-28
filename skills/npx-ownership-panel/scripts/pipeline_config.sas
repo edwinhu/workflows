@@ -119,6 +119,40 @@
  */
 %let REQUIRE_OPTIONAL_INPUTS = 0;
 
+/* WHICH SharkRepellent workbook. Declared here, with the other optional inputs,
+ * rather than buried at line 31 of build_meetings.sas — the choice changes the
+ * panel, so it belongs where the panel-changing choices are stated.
+ *
+ * Two extracts exist and NEITHER is clean. Measured, not assumed:
+ *
+ *   A  `20240521 SharkRepellent.xlsx` (33.4 MB) — the one whose filename matched
+ *      the historical default (20240521 IS 5.21.24). Campaign Details has NO
+ *      header row: PROC IMPORT takes column 1's name from a banner cell and falls
+ *      back to B, C, D... for the rest. No Company_Ticker, no
+ *      Campaign_Meeting_Date. 16,658 rows, 0 parsed dates, 0 tickers. Useless,
+ *      and worse than absent because fileexist succeeds on it.
+ *
+ *   B  `SharkRepellent 1995-2024.xlsx` (64.9 MB) — parses. 12,785 US campaigns,
+ *      3,984 non-US, 700 with no exchange suffix. Campaign_Meeting_Date is '@NA'
+ *      for campaigns with no meeting (9,629 of 17,469), which is expected. Its
+ *      defect is the TAIL: 755 campaign-meetings in 2024 against 99 in 2025, so
+ *      it reaches year2=2025 while barely covering it — which is exactly what the
+ *      tail-volume check in build_meetings fires on.
+ *
+ * DEFAULT IS EMPTY — no workbook staged. That is deliberate, and it is what makes
+ * `fight = 0` a stated property of digests A-C rather than an accident. The
+ * previous default named a path that does not exist on the grid, which reached
+ * the same all-zero panel by accident while looking like a choice.
+ *
+ * Point this at B to populate `fight` / `fight_definitive`, expect the 2025
+ * coverage WARNING, and re-freeze afterwards — the digests change.
+ *
+ * Staged on the grid for comparison:
+ *   A  /scratch/nyu/hue/shark_eval/A_20240521.xlsx
+ *   B  /scratch/nyu/hue/shark_eval/B_1995_2024.xlsx
+ */
+%let SHARK_FILE = ;
+
 /* MEASURED EFFECT of these two filters on the item frame, 2005-2025 (2026-07-25):
  *
  *   filters            distinct items   raw rows   fanout

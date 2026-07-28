@@ -28,12 +28,24 @@
  */
 
 /* --- SharkRepellent campaign data (optional) --- */
-%let shark_file = /scratch/nyu/hue/SharkRepellent 5.21.24.xlsx;
+/* The path is DECLARED in pipeline_config.sas (%let SHARK_FILE), next to
+ * REQUIRE_OPTIONAL_INPUTS, because which workbook is staged changes the panel.
+ * This only forwards it. pipeline_config.sas is %included at line 15 above,
+ * unconditionally, so SHARK_FILE is always defined here — no %symexist guard,
+ * because an open-code %if is the exact shape of the last two macro bugs in this
+ * pipeline (#111 %local in open code, #112 bare semicolon in %put) and this file
+ * has no other open-code %if to lean on. */
+%let shark_file = &SHARK_FILE.;
 /* have_shark means USABLE, not merely PRESENT — see the validation below. */
-%global have_shark shark_pairs shark_max_yr;
+%global have_shark shark_pairs shark_max_yr has_def;
 %let have_shark = 0;
 %let shark_pairs = 0;
 %let shark_max_yr = .;
+/* has_def is GLOBAL, not %local to load_shark: the OPTIONAL NOTE that reports it
+ * is emitted in open code further down, where a %local would resolve to nothing —
+ * the same silent-empty-macro-var shape as #111/#112. Initialised so the NOTE is
+ * well-defined even when no workbook is staged. */
+%let has_def = 0;
 
 %macro load_shark;
     %if %sysfunc(fileexist("&shark_file.")) %then %do;
@@ -80,7 +92,7 @@
          *
          * So a workbook that cannot answer the question is treated as ABSENT,
          * and REQUIRE_OPTIONAL_INPUTS then decides whether that is fatal. */
-        %local has_tick has_date;
+        %local has_tick has_date;   /* has_def is %global — declared above */
         proc sql noprint;
             select count(*) into :has_tick trimmed from dictionary.columns
               where libname = "OUT" and memname = "SHARK"
@@ -88,6 +100,13 @@
             select count(*) into :has_date trimmed from dictionary.columns
               where libname = "OUT" and memname = "SHARK"
                 and upcase(name) = "CAMPAIGN_MEETING_DATE";
+            /* Proxy_Fight_Definitive is a BONUS column, not a usability
+             * requirement: a workbook without it still answers the `fight`
+             * question. Probed separately so its absence degrades ONE column
+             * instead of discarding the whole workbook. */
+            select count(*) into :has_def trimmed from dictionary.columns
+              where libname = "OUT" and memname = "SHARK"
+                and upcase(name) = "PROXY_FIGHT_DEFINITIVE";
         quit;
 
         %if &has_tick. = 0 or &has_date. = 0 %then %do;
@@ -100,9 +119,41 @@
         %else %do;
             data out.shark2;
                 set out.shark;
-                ticker=scan(scan(Company_Ticker,1,'-'),1,'.');
+                length _exch $8;
+
+                /* THE EXCHANGE SUFFIX IS LOAD-BEARING. FactSet writes tickers as
+                 * `AHT-US`, `S-CA`, `AGL-AU`. Stripping at the first '-' without
+                 * testing the suffix silently merges a foreign issuer into the US
+                 * issuer that shares the base symbol.
+                 *
+                 * Measured on the 1995-2024 extract: 12,785 US campaigns, 3,984
+                 * non-US, 700 with no suffix — and 279 distinct non-US base
+                 * tickers COLLIDE with a US base ticker (AAL, AGN, AGO, AEE, ...).
+                 * Each collision would attribute an Australian or Canadian proxy
+                 * fight to an unrelated US company's meeting.
+                 *
+                 * ISS `ticker` in turnout2 is US-listed, so a non-US row can only
+                 * ever produce a false positive. Blank the KEY rather than
+                 * subsetting, so the row still counts toward the coverage
+                 * diagnostics below and only the join is suppressed. */
+                _exch = upcase(scan(Company_Ticker, -1, '-'));
+                if _exch = 'US'
+                    then ticker = scan(scan(Company_Ticker,1,'-'),1,'.');
+                    else ticker = '';
+
                 meetingdate=input(Campaign_Meeting_Date,??anydtdte10.);
                 format meetingdate yymmddn8.;
+
+                %if &has_def. %then %do;
+                fight_definitive_src = (Proxy_Fight_Definitive = 1);
+                %end;
+                %else %do;
+                /* Column absent in this extract — the flag stays 0 and the
+                 * OPTIONAL NOTE reports shark_def=0, rather than the run failing
+                 * over a bonus column. */
+                fight_definitive_src = 0;
+                %end;
+                drop _exch;
             run;
 
             /* Rows that actually reach the join. Campaign_Meeting_Date is '@NA'
@@ -201,7 +252,11 @@
  * The NOTE prints unconditionally and in the same shape as the PREREQ/UNIVERSE
  * gates, so `grep -E 'PREREQ|UNIVERSE|OPTIONAL|ERROR'` says which panel this is.
  * Whether absence is fatal is REQUIRE_OPTIONAL_INPUTS in pipeline_config.sas. */
-%put NOTE: OPTIONAL shark=&have_shark. shark_pairs=&shark_pairs. shark_through=&shark_max_yr. recs=&have_recs.;
+/* shark_pairs counts US-listed pairs only — non-US tickers are blanked in the
+ * shark2 step, so this is smaller than it was before that fix and is the count
+ * that can actually join. shark_def=0 alongside shark=1 means the extract lacks
+ * Proxy_Fight_Definitive, so fight_definitive is 0 everywhere by absence. */
+%put NOTE: OPTIONAL shark=&have_shark. shark_pairs=&shark_pairs. shark_through=&shark_max_yr. shark_def=&has_def. recs=&have_recs.;
 
 %macro require_optional_inputs;
     %if &REQUIRE_OPTIONAL_INPUTS. = 1 %then %do;
@@ -357,16 +412,40 @@ proc sql;
             c.cik,
             %if &have_shark. %then %do;
             coalesce(b.fight,0) as fight,
+            coalesce(b.fight_definitive,0) as fight_definitive,
             %end;
             %else %do;
             0 as fight,
+            0 as fight_definitive,
             %end;
             year(a.meetingdate) as yyyy
         from turnout2 a
         %if &have_shark. %then %do;
+        /* TWO FLAGS, NOT ONE REDEFINED.
+         *
+         *   fight             any campaign whose Campaign_Meeting_Date equals
+         *                     this meeting date. The original definition.
+         *   fight_definitive  that campaign went to a definitive vote
+         *                     (Proxy_Fight_Definitive = 1). Strictly narrower.
+         *
+         * `fight` is NOT redefined in place because it is a named column in four
+         * frozen digests where "fight is 0 everywhere" is a DECLARED property
+         * (pipeline_config.sas). Changing what a name means, under a name that
+         * something else asserts a property about, is the exact failure that
+         * declaration block exists to prevent. A narrower definition is a NEW
+         * column; consumers opt in.
+         *
+         * Both use the same exact-meetingdate join. mirror's build_fight_flags.py
+         * instead matches announce-year +/-1 at meeting grain and propagates to
+         * every agenda item — a LOOSER match that would raise the hit rate. Not
+         * adopted here without a measurement of its false-positive cost. */
         left join
-            (select distinct ticker, meetingdate, 1 as fight from out.shark2
-             where meetingdate is not null) b
+            (select ticker, meetingdate,
+                    1 as fight,
+                    max(fight_definitive_src) as fight_definitive
+             from out.shark2
+             where meetingdate is not null and ticker ne ''
+             group by ticker, meetingdate) b
             on a.ticker=b.ticker and a.meetingdate=b.meetingdate
         %end;
         left join
