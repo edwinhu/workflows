@@ -181,9 +181,8 @@ Both fired during verification and caught real failures. That is the point.
 > one predicate on an existing pass, disabling the cusip6 fallback *removes* 2.66M
 > rows of join work, and the short-interest pull ran 9.5s.
 >
-> **The identity digest WILL change and that is intended**, not a regression to chase:
-> disabling the cusip6 fallback removes rows and the `msf_v2` splice adds 2025. Re-freeze
-> it deliberately once the corrected DAG has run clean.
+> ~~**The identity digest WILL change and that is intended.** Re-freeze it deliberately
+> once the corrected DAG has run clean.~~ **DONE — re-frozen 2026-07-28, see below.**
 >
 > A timed run includes the detector sweep (`dq_panel.py`, seconds, held on the merge)
 > so the number means "a panel you can use", not "a panel that exists". This was a
@@ -199,11 +198,41 @@ Clean checkout on WRDS, one `bash run_pipeline.sh`, 2026-07-25. Two runs, both c
 | Full | 9 of 9, sequential PG split | 34m 46s | 0 |
 | **Full + S12 array, `build_meetings` native** | **9 of 9** | **36m 1s** | **0** |
 
-**Identity: PASS.** The last run's canonical dump is byte-identical to the
-frozen baseline — same 2,018,866 lines, same
-`sha256 22f13e7679a3f9c15843116195625620dfe835a661ba6c593b1bd9d93503a955`.
-Converting `build_meetings` from a PostgreSQL pass-through to a native indexed
-read moved **no value at 12 significant digits**.
+**Identity (2026-07-25 baseline, now superseded):** that run's dump was
+byte-identical to its frozen baseline — 2,018,866 lines,
+`sha256 22f13e7679…955`. Converting `build_meetings` from a PostgreSQL
+pass-through to a native indexed read moved **no value at 12 significant digits**.
+
+### Re-frozen 2026-07-28
+
+```
+sha256  8ae22b4af350be27889b26b6d09b2f3ee77b7a81a00dd55eea4cac2907f1be3a
+lines   1,994,945          (was 2,018,866, -23,921)
+run     34m26s, orphans=0, 0 ERROR, mf_own_chunks=9 npx_cell_years=21/21
+```
+
+**What moved the digest**, all deliberate, none a regression to chase:
+
+| change | effect |
+|---|---|
+| leg 2 Thomson S34 → SEC EDGAR | universe and level shift |
+| CRSP SIZ → CIZ (#99/#100) | +3.2–5.0% distinct permnos per year-end; **`cfacshr` basis changes, so `io_total` LEVELS are not comparable across this boundary — ratios are** |
+| denominator no longer filtered by the analysis universe (#115) | untestable rows **50.9% → 1.1%** |
+| cusip8 not cusip6 (#109) | drops spurious issuer-level attachments |
+| `__no_fund_votes__` block label (#126) | the `block` column now carries a label where it was null on 26,924 rows |
+
+**Known and open at freeze time**, stated so the baseline is not read as
+"everything reconciles":
+
+- Against mirror's previous artifact the panel has **53,555 fewer vote-carrying
+  cells** and **22,473 fewer items with vote data**. Consistent with the tighter
+  universe, but that is an expectation, not a measurement — undecomposed.
+- **15 rows** in the `inst_own` reconciliation are unexplained (0.002%), recorded
+  WONT-FIX.
+
+Both are differences from a *superseded* artifact rather than internal
+inconsistencies, which is why they do not block the freeze. Full detail:
+mirror `docs/investigations/2026-07-28_grid_run_reconciliation.md`.
 
 The S12 array cut the partition write from **910s sequential to ~270s** (9 tasks,
 `-tc 6`), but total wall did not drop: the critical path is `tfn_holdings` ×9 and
