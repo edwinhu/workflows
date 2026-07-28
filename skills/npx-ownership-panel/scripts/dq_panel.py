@@ -227,6 +227,32 @@ def main() -> int:
     net_pct = (100.0 * n_net_imp / net.height) if net.height else 0.0
     n_si_missing = int(d.select(pl.col("si_missing").sum()).item()) if "si_missing" in d.columns else 0
 
+    # SPLIT THE FLAGS: LENDING-EXPLAINABLE vs ARITHMETICALLY IMPOSSIBLE.
+    #
+    # Everything above 1.02 used to be one bucket, under a message telling you to
+    # triage against short interest. That is the right advice at 1.05x and useless
+    # at 1,141x, and the two were indistinguishable in the output.
+    #
+    # 5x is the line because lending genuinely CAN exceed 100% — a lent share sits
+    # in the borrower's account and still appears in the lender's 13F, and
+    # re-lending compounds it. Utilisation that high is unusual but real to roughly
+    # 2-3x. Past 5x there is no lending story left.
+    #
+    # TRACED 2026-07-27, and deliberately NOT fixed:
+    #   1,114 rows / 3,034 filing lines out of 172.9M holdings lines (0.0018%)
+    #   633 filers, no concentration; large filers are BETTER than average
+    #     (>=100k lines: 0.0016%) and small ones 7.8x worse (<1k lines: 0.0124%)
+    #   value/shares corroborates the share counts once 13F's $000s convention is
+    #     applied, so the numerator is correctly reported and correctly parsed
+    #   a permco (issuer-level) denominator would fix 365 of them and BREAK
+    #     138,024 correctly-measured multi-class rows — measured, not assumed
+    # What is left is cusip8->permno attachment: real positions on the wrong
+    # security. Surfaced rather than filtered, because dropping them would improve
+    # the coverage statistic by deleting the evidence.
+    extreme = ir.filter((pl.col("io_total") / pl.col("tso")) > 5.0)
+    n_extreme = extreme.height
+    ext_pct = (100.0 * n_extreme / n_testable) if n_testable else 0.0
+
     print(flush=True)
     print(
         "NOTE: DQ rows={:,} coverage_end={} duplicate_grain={} join_coverage_tail={} "
@@ -255,6 +281,15 @@ def main() -> int:
         "share is in the borrower's account AND the lender's 13F, so gross "
         "exceedance is expected; lending explains {:,} of the {:,} gross flags".format(
             n_net_imp, net.height, net_pct, max(n_imp - n_net_imp, 0), n_imp
+        ),
+        flush=True,
+    )
+    print(
+        "NOTE: DQ impossible_ratio_EXTREME={:,}/{:,}={:.3f}% (>5x shares outstanding) "
+        "— lending cannot explain these; the other {:,} of the {:,} gross flags are "
+        "within a range lending can reach. Traced to cusip8->permno attachment on "
+        "3,034 filing lines of 172.9M; won't-fix, surfaced not filtered.".format(
+            n_extreme, n_testable, ext_pct, max(n_imp - n_extreme, 0), n_imp
         ),
         flush=True,
     )
