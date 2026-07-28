@@ -473,8 +473,31 @@ run;
 
 /* --- The join --------------------------------------------------------------
  * LEFT join from the panel: every panel item is kept, whether or not any fund
- * disclosed a vote on it. Items with no N-PX coverage get a single row with a
- * null block, so their absence is visible rather than silently dropped. */
+ * disclosed a vote on it. Items with no N-PX coverage get a single row labelled
+ * `&NO_FUND_VOTES.`, so their absence is visible rather than silently dropped.
+ *
+ * THE LABEL IS NOT COSMETIC. These rows were previously left with a NULL block,
+ * and a null in a categorical column reads as "missing" — which is the one thing
+ * they are not. Measured on the 2026-07-28 run: 26,924 such items, of which
+ * 26,804 have `votedfor > 0`, 24,392 a `tso`, 26,380 institutional ownership,
+ * mean turnout 65.8%. They are REAL shareholder votes on which no fund in the
+ * N-PX universe voted — a measured zero, and a fact about fund coverage rather
+ * than about the item.
+ *
+ * Blank invited exactly two wrong readings in review: that these were votes by
+ * funds the crosswalk failed to link (they are not — every fundid in the
+ * crosswalk already carries a block), and that they should therefore be netted
+ * against real cells (they should not — they carry NULL n_rows and no votes).
+ *
+ * DO NOT DROP THEM. For a mirror-voting counterfactual an item where no tracked
+ * fund voted is one where the counterfactual is a no-op. Deleting them selects
+ * on the outcome and inflates every pivotal-share statistic, because the deleted
+ * items are precisely those where the block could not have been pivotal.
+ *
+ * They are also NOT cells. n_rows is null, so exclude them from cell-grain
+ * aggregations — `where block ne "&NO_FUND_VOTES."` — and remember that
+ * count(distinct itemonagendaid) over this table is items-in-panel, not
+ * items-with-vote-data. The two differ by exactly this count. */
 proc sql;
     create table out.pass_npx as
         select a.*,
@@ -494,6 +517,8 @@ quit;
  * usable count rather than as a confident-looking split. */
 data out.pass_npx;
     set out.pass_npx;
+    /* Name the zero. See the note above the LEFT JOIN for why this is not blank. */
+    if missing(block) then block = "&NO_FUND_VOTES.";
     n_usable = sum(n_for, n_against, n_abstain);
     if n_usable > 0 then do;
         for_frac     = n_for     / n_usable;
@@ -512,14 +537,14 @@ run;
 proc sql;
     select count(*)                        as n_rows        format=comma14.,
            count(distinct itemonagendaid)  as n_items       format=comma14.,
-           sum(block is null)              as items_no_npx  format=comma14.,
+           sum(block = "&NO_FUND_VOTES.")  as items_no_npx  format=comma14.,
            sum(n_rows)                     as vote_rows     format=comma18.
     from out.pass_npx;
 
     select block,
            count(*)    as cells     format=comma12.,
            sum(n_rows) as vote_rows format=comma18.
-    from out.pass_npx where block is not null
+    from out.pass_npx where block ne "&NO_FUND_VOTES."
     group by block order by vote_rows desc;
 quit;
 

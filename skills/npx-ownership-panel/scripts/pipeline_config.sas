@@ -153,6 +153,34 @@
  */
 %let SHARK_FILE = ;
 
+/* BLOCK SENTINELS. Two, and they mean different things — keeping them distinct is
+ * the point.
+ *
+ *   &UNLINKED.        (build_npx.sas) a FUND whose fundid is not in the crosswalk,
+ *                     so its votes exist but cannot be attributed to a block.
+ *   &NO_FUND_VOTES.   (merge_panel.sas) an ITEM on which no fund in the universe
+ *                     voted at all. There are no votes to attribute.
+ *
+ * The second was previously represented by a NULL block, which reads as "missing"
+ * — the one thing it is not. Measured 2026-07-28: 26,924 such items, 26,804 with
+ * `votedfor > 0`, mean turnout 65.8%. Real shareholder votes, zero fund
+ * participation: a measured zero and a fact about fund coverage, not the item.
+ *
+ * Both are $24-safe (block is `length $24` in every leg).
+ *
+ * CONSEQUENCE FOR ANALYSIS, stated because both readings were got wrong in review:
+ *   - `&NO_FUND_VOTES.` rows carry NULL n_rows. They are NOT cells; exclude them
+ *     from cell-grain aggregation.
+ *   - Do NOT drop them from the item panel. For a mirror-voting counterfactual an
+ *     item nobody tracked voted on is one where the counterfactual is a no-op.
+ *     Deleting them selects on the outcome and inflates every pivotal-share
+ *     statistic, because they are exactly the items where no block could be
+ *     pivotal.
+ *   - count(distinct itemonagendaid) over out.pass_npx is items-in-panel, not
+ *     items-with-vote-data. The two differ by exactly this count.
+ */
+%let NO_FUND_VOTES = __no_fund_votes__;
+
 /* MEASURED EFFECT of these two filters on the item frame, 2005-2025 (2026-07-25):
  *
  *   filters            distinct items   raw rows   fanout
