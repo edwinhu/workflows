@@ -123,7 +123,7 @@ func formAllowed(form string, allowed []string) bool {
 	return false
 }
 
-func processFile(path string, prof *Profile) []string {
+func processFile(path string, prof *Profile) [][]string {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil
@@ -169,7 +169,7 @@ func processFile(path string, prof *Profile) []string {
 			// Small file — straight FullBody read.
 			rest, _ := io.ReadAll(f)
 			buf = append(buf, rest...)
-			return extract(buf, prof.Fields)
+			return expand(prof, buf, extract(buf, prof.Fields))
 		}
 		// Read the back half.
 		if _, err := f.Seek(backOff, 0); err != nil {
@@ -182,22 +182,22 @@ func processFile(path string, prof *Profile) []string {
 		backBuf = append(backBuf, back...)
 		result := extract(backBuf, prof.Fields)
 		if hasAnyHit(result, prof.Fields) {
-			return result
+			return expand(prof, backBuf, result)
 		}
 		// Miss — read the gap between head and backOff.
 		if _, err := f.Seek(int64(headLen), 0); err != nil {
-			return result // best-effort; return back-only result if seek fails
+			return expand(prof, backBuf, result) // best-effort; back-only if seek fails
 		}
 		gapLen := backOff - int64(headLen)
 		gap := make([]byte, gapLen)
 		if _, err := io.ReadFull(f, gap); err != nil {
-			return result
+			return expand(prof, backBuf, result)
 		}
 		full := make([]byte, 0, headLen+int(gapLen)+len(back))
 		full = append(full, buf...)
 		full = append(full, gap...)
 		full = append(full, back...)
-		return extract(full, prof.Fields)
+		return expand(prof, full, extract(full, prof.Fields))
 	}
 
 	// FullBody mode: append the rest of the file. Header pre-filter has
@@ -208,7 +208,7 @@ func processFile(path string, prof *Profile) []string {
 		if err == nil && len(rest) > 0 {
 			buf = append(buf, rest...)
 		}
-		return extract(buf, prof.Fields)
+		return expand(prof, buf, extract(buf, prof.Fields))
 	}
 
 	// Head-only mode: truncate at last newline if buffer filled (avoid
@@ -219,7 +219,7 @@ func processFile(path string, prof *Profile) []string {
 		}
 	}
 
-	return extract(buf, prof.Fields)
+	return expand(prof, buf, extract(buf, prof.Fields))
 }
 
 func readFilelist(path string) ([]string, error) {
@@ -307,8 +307,8 @@ func main() {
 				if root != "" && !strings.HasPrefix(p, "/") {
 					full = strings.TrimRight(root, "/") + "/" + p
 				}
-				vals := processFile(full, prof)
-				if vals != nil {
+				rows := processFile(full, prof)
+				for _, vals := range rows {
 					results <- outRow{path: p, vals: vals}
 				}
 			}

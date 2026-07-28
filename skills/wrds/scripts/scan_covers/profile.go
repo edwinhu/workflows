@@ -70,6 +70,42 @@ type Profile struct {
 	BackMinFileSize int64   // files smaller than this skip BackFirst (default 200 KB)
 	Forms           []string
 	Fields          []Field // determines output TSV column order
+
+	// Expand turns the one extracted row into N rows. OPT-IN: leave it nil and
+	// the profile emits exactly one row per file — what every profile did
+	// before this existed, and what all of them still do today.
+	//
+	// WHY IT EXISTS. Fields/Reduce can describe only ONE value per column per
+	// file, so a filing naming several entities collapses to whichever one the
+	// Reduce picked. For SC 13D/G that is wrong in a way that matters: a joint
+	// filing under §13(d)(3) has N filers acting as a group, each with its own
+	// Item 12 classification, and Reduce:First keeps only the first. mirror's
+	// src/blockholders/parser.py emits one row per (subject, filer) pair for
+	// exactly that reason, which is why the Go port did not supersede it.
+	//
+	// CONTRACT:
+	//   - `base` is the row Fields produced. TREAT IT AS READ-ONLY and copy
+	//     before mutating — hand the same slice back twice and both "rows"
+	//     share one backing array, so the last write wins on every one of them.
+	//   - nil or empty return emits nothing; a one-row return is identical to
+	//     not setting Expand.
+	//   - every returned row must have len(Fields) columns, or the TSV
+	//     desynchronises against the header `-list` advertises.
+	//   - `buf` is the same buffer Fields saw, so Expand can re-scan for the
+	//     per-entity detail the flattened row could not carry.
+	Expand func(buf []byte, base []string) [][]string
+}
+
+// expand applies the profile's opt-in row multiplier. A nil Expand — the case
+// for every profile that has not asked for this — is the identity.
+func expand(p *Profile, buf []byte, row []string) [][]string {
+	if row == nil {
+		return nil
+	}
+	if p.Expand == nil {
+		return [][]string{row}
+	}
+	return p.Expand(buf, row)
 }
 
 // registry holds all compiled profiles; populated via init() calls in

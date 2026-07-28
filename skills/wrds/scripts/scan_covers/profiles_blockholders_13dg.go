@@ -28,10 +28,12 @@ import "regexp"
 // which are precisely the ones blockholder work cares about: N filers acting
 // together, each with its own Item 12 classification.
 //
-// Use this profile for scale and for the single-filer majority; use parser.py
-// when joint filings matter. Do NOT delete parser.py assuming this replaces it.
-// Making it a true replacement means letting the framework emit multiple rows
-// per file, which the Field/Reduce contract cannot express today.
+// RESOLVED. The framework now has an opt-in Expand hook (profile.go) and this
+// profile sets it: expandBlockholders emits one row per (subject, filer) pair,
+// with the Fidelity Item 12 override applied per filer, matching parser.py.
+//
+// The expansion is a NO-OP when a filing names one filer and one subject — the
+// overwhelming majority — so output for those is byte-identical to before.
 func init() {
 	register(&Profile{
 		Name:      "blockholders_13dg",
@@ -60,5 +62,7 @@ func init() {
 			// cusip6: pattern-based, first 6 of any 9-char CUSIP token.
 			{Name: "cusip6", Pattern: regexp.MustCompile(`(?i)CUSIP\s*(?:NO\.?|NUMBER)?[^\w]*([0-9A-Z]{6})[0-9A-Z]{3}?`), Reduce: First},
 		},
+		// One row per (subject, filer) pair — see expand_blockholders.go.
+		Expand: expandBlockholders,
 	})
 }

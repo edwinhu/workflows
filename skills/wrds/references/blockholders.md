@@ -50,19 +50,25 @@ Year assignment differs from filing date:
 
 ## Script locations
 
-Two extractors exist and **neither supersedes the other** — pick by whether joint
-filings matter (verified 2026-07-28):
+**The multi-filer gap is closed.** `scan_covers -profile blockholders_13dg` now
+emits **one row per (subject, filer) pair**, matching `parser.py`, via the opt-in
+`Profile.Expand` hook added for exactly this (see `expand_blockholders.go`).
 
-| | Rows per filing | Item 12 | Use when |
-|---|---|---|---|
-| `scan_covers -profile blockholders_13dg` (this skill) | **one** — `fil_cik`/`sbj_cik` are `Reduce:First` | one, the first filer's | scale; the single-filer majority |
-| `mirror/src/blockholders/parser.py` | **one per (subject, filer) pair** | **per filer** | group filings under §13(d)(3) |
+It had emitted one row per *filing* with `fil_cik`/`sbj_cik` on `Reduce:First`, so
+a joint filing under §13(d)(3) — N filers acting as a group, each with its own
+Item 12 — collapsed to whichever filer came first. That is the case blockholder
+work is most interested in.
 
-The Go profile is a parity port of `parser.py`'s *body* extraction (line windows,
-two-pass code matching) and is much faster, but the `Field`/`Reduce` contract can
-only emit one row per file, so a joint 13G collapses to its first filer. Group
-filings are exactly what blockholder analysis cares about, so this is a capability
-gap rather than drift.
+Two properties worth knowing:
+
+- **No-op on the common case.** A filing naming one filer and one subject returns
+  the row untouched, so output for the overwhelming majority is byte-identical to
+  before. Verified against the pre-change binary.
+- **Opt-in for everything else.** `Expand` is nil on all five other profiles, so
+  none of them changed. Also verified.
+
+`parser.py` remains the reference implementation and the parity target; the Go
+profile is the one to run at scale.
 
 - Parser (multi-filer): `~/projects/mirror/src/blockholders/parser.py`
 - Aggregator: `~/projects/mirror/src/blockholders/aggregate.py`
