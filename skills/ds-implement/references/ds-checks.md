@@ -219,11 +219,23 @@ for name, src in sources.items():
 A filter on a *lookup* (a denominator, a crosswalk) is not scope, it is data loss.
 
 > Measured instance: an ownership panel applied its universe predicate to the
-> share-count lookup as well as the entity selection. 300,515 rows (43.7%) carried
-> a null denominator. CRSP held a value for **all 300,515** — none were missing.
-> 75% of them were discarded later by the primary join anyway; the filter only
-> manufactured nulls. The remaining 25% were entities the panel *did* include and
-> had silently refused to measure.
+> share-count lookup as well as the entity selection. 401,002 of 787,178 rows
+> (50.9%) carried a null denominator — and **every one of them had a real
+> numerator**, a holding the panel was declining to divide.
+>
+> Two teams then published opposite readings of that number, both defensible,
+> because they measured **different artifacts**. At the intermediate table the
+> nulls were manufactured by the filter. At the analysis panel there were *zero*
+> null denominators, because a second source supplied one and the affected
+> securities were mostly outside that source's universe anyway (12% pass-through
+> vs 78% for unaffected ones). Neither reading was wrong; neither named its
+> artifact. **State which table a coverage number is measured on** — "43.7% of
+> rows are untestable" is not a property of a pipeline, it is a property of one
+> step in it.
+>
+> The residue is the real finding: 1,512 entities that *never* get a denominator
+> from the first source reach the panel via the second. They are **single-sourced,
+> not unmeasured** — a third category both framings had collapsed away.
 
 **Confidence if sources disagree:** >= 85
 
@@ -277,6 +289,28 @@ if after_pct > before_pct and n_after < n_before:
 > caught it was the one printing its own denominator.
 
 **Confidence if coverage rises while base falls:** >= 90
+
+### DEL in its time-series form: the base moves on its own
+
+A coverage share quoted as a single number is a **sample average over a trend**, and
+the trend is usually the finding. Print coverage per period before quoting it once.
+
+```python
+print(df.group_by("year").agg(
+    pl.len().alias("n"),
+    (100 * pl.col("no_denom").mean()).round(1).alias("pct_uncovered")).sort("year"))
+```
+
+> Measured instance: an "43.7% untestable" figure was carried through a project as a
+> constant. Per year it ran 37.7% → 63.8%, monotone, never reversing — a 26pp drift in
+> how much of the reported population was measurable at all. Two sessions quoting
+> 43.7% and 50.9% were both correct; they had averaged over different windows. Every
+> ratio in the study inherited that drift, so a level change and a coverage change were
+> not separable in any before/after comparison.
+
+**A before/after on a ratio must report the base's coverage at BOTH ends.**
+
+**Confidence if a coverage share is quoted without its per-period profile:** >= 80
 
 ---
 
