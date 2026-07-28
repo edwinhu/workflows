@@ -37,7 +37,7 @@ The WRDS login node is shared infrastructure. Running parsers, bulk file reads, 
 
 The login node is for: `qsub`, `qstat`, `qdel`, `scp`, `ls`, `head`, short `psql` queries.
 
-Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index_rga/submit_array.sh`, `scripts/parse_13f/sge/submit_array.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
+Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index/submit_array.sh`, `scripts/parse_13f/sge/submit_array.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
 </EXTREMELY-IMPORTANT>
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
@@ -379,7 +379,7 @@ Working code from real projects:
 - **`scripts/test_connection.py`** - Validate WRDS connectivity
 - **`scripts/inventory_schemas.py`** - Inventory every accessible WRDS PostgreSQL schema, its tables, and row counts — run this before guessing at a table name
 - **`scripts/scan_covers/`** - Generic profile-based Go framework for EDGAR extraction (SGE sharding, NFS concurrency, path construction, form-type filtering). Add a `profiles_*.go`, never a new standalone binary — see the Iron Law above.
-- **`scripts/parse_13f/`, `scripts/scan_headers/`, `scripts/sec_index_rga/`** - Companion EDGAR tooling: 13F table parsing, SEC header scanning, index building
+- **`scripts/parse_13f/`, `scripts/scan_headers/`, `scripts/sec_index/`** - Companion EDGAR tooling: 13F table parsing, SEC header scanning, index building
 
 ### Local Sample Notebooks
 

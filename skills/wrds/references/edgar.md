@@ -736,13 +736,32 @@ Role values: `FILER`, `REPORTING-OWNER`, `ISSUER`, `SUBJECT COMPANY`, `FILED BY`
 `SECURITIZER`, `DEPOSITOR`, `SERIAL COMPANY`. (Old 2000-era Form 4s may leak the role `COMPANY DATA`
 — filter post-hoc.)
 
-### Use the Go scanner (recommended)
+### Use the Go scanner (the default)
+
+> **`rga` is not used here and never was**, despite the directory once being named
+> `sec_index_rga`. ripgrep-all exists to search *inside* PDF/DOCX/zip/SQLite by shelling
+> out to extractors; EDGAR filings are plain text, so it would add per-file adapter cost
+> for nothing. Directory renamed to `sec_index`.
+>
+> **`rg` alone is not sufficient either, and that is structural, not a tuning problem.**
+> The parser must stop at `</SEC-HEADER>` or 4 KB and never touch the filing body. `awk`
+> gets that from `nextfile`; **`rg` has no per-file byte limit**, so it scans to EOF and
+> multi-role filings leak header-shaped lines out of the body. The +12.9% row count in
+> the table below is 46,759 junk rows, not extra coverage. `rg` being only 8% faster than
+> `awk` (539 s vs 583 s) is itself the tell: swapping in a much faster regex engine bought
+> almost nothing, because matching was never the bottleneck. That variant is kept as the
+> evidence for choosing Go; the correct-but-slow fallback is `scan_shard.sh`.
+>
+> **`submit_array.sh` now defaults to `scan_shard_go.sh`.** It previously exec'd the awk
+> baseline while this section said "recommended" — so the documented recommendation and
+> the thing that actually ran disagreed by 26×, and every full 164-shard run took the slow
+> path unless someone set `SCAN_BIN` by hand.
 
 **26× faster than awk-per-file** (~22 s/shard vs ~583 s), exact parity, identical output
 contract. NFS open latency — not CPU — is the bottleneck; a goroutine pool of 16 workers
 hides the latency that serial `awk FILENAME` cannot.
 
-Scripts live at `skills/wrds/scripts/sec_index_rga/`:
+Scripts live at `skills/wrds/scripts/sec_index/`:
 
 | File | Role |
 |------|------|
@@ -751,12 +770,20 @@ Scripts live at `skills/wrds/scripts/sec_index_rga/`:
 | `submit_array.sh` | `#$ -t 1-N -l m_mem_free=2G` wrapper; `exec`s the scanner |
 | `build_index.py` | Local driver: refresh shard list, qsub, poll qstat, rclone TSVs back, concat to parquet |
 | `scan_shard.sh` | Legacy awk-per-file baseline (kept as fallback) |
+| `scan_shard_rg_awk.sh` | Variant A (`rg \| awk`) — the parity FAILURE in the table below. Kept because it is the evidence for choosing Go, not a usable scanner |
+| `benchmark.sh` | Runs all three variants on one shard and diffs `(path, role, cik)` fingerprints. This is what produced the numbers below; re-run it before changing any concurrency default |
+
+**Paths:** nothing in these scripts names a user or an institution. All honour
+`WRDS_SCRATCH` (default `/scratch/${WRDS_INST:-nyu}/$(whoami)`), plus the narrower
+`SHARD_LIST` / `OUT_DIR` / `GO_BIN` / `SCAN_BIN` / `ARCHIVE_ROOT` overrides. The one
+exception is `#$ -o logs/` in `submit_array.sh`: SGE parses `#$` directives before the
+shell runs, so a variable there is a literal — override with `qsub -o <dir>` instead.
 
 **Build & deploy:**
 
 ```bash
 # Local cross-compile (macOS/Linux dev → Linux amd64 WRDS node)
-cd skills/wrds/scripts/sec_index_rga/scan_shard_go
+cd skills/wrds/scripts/sec_index/scan_shard_go
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o scan_shard_go
 
 # Upload once (3.0 MB, statically linked)
@@ -767,12 +794,12 @@ scp scan_shard_go wrds:/scratch/nyu/$USER/bin/
 
 ```bash
 # On WRDS:
-cd /scratch/nyu/$USER/sec_index_rga
+cd /scratch/nyu/$USER/sec_index
 ls -d /wrds/sec/archives/*/ | sed 's|/wrds/sec/archives/||;s|/$||' | sort > shards.txt
 qsub -t 1-$(wc -l < shards.txt) submit_array.sh     # 164 tasks, ~5 min wall
 
 # Locally:
-python scripts/sec_index_rga/build_index.py --all
+python scripts/sec_index/build_index.py --all
 ```
 
 ### Benchmarks (shard `000000`, 219,196 files, WRDS login node)
@@ -796,6 +823,14 @@ at opens but loses parity because `rg` has no per-file byte limit equivalent to 
 **Concurrency:** the wrapper defaults to `$NSLOTS × 8` with a floor of 16. Bump via
 `GO_CONCURRENCY=32` if you request more slots. NFS open is I/O-bound so over-subscribing
 past CPU count helps.
+
+`GOMAXPROCS` and `GO_CONCURRENCY` are different knobs and only the second is the throughput
+lever. `GOMAXPROCS` is pinned to `$NSLOTS` purely so Go does not size its thread pool from
+the *host's* core count and take cores the scheduler promised other jobs. `scan_shard_go.sh`
+carried a comment asserting the reverse — that the work is CPU-bound and "goroutine count
+barely matters" — which contradicted the measurements three paragraphs above it in this very
+file. Corrected; if you change either default, re-run `benchmark.sh` and update the table
+rather than the prose.
 
 ### Correctness traps (hard-earned)
 

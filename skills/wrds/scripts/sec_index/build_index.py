@@ -1,32 +1,61 @@
 #!/usr/bin/env -S uv run python3
-"""Driver for the rga+SGE SEC index pipeline.
+"""Driver for the SGE-sharded SEC full-text index.
+
+NOTE ON THE NAME: this was once called `sec_index_rga` after ripgrep-all.
+`rga` is NOT used and never was in the shipped path — it exists to search
+inside PDF/DOCX/zip/SQLite by shelling out to extractors, and EDGAR filings
+are plain text, so it would add per-file adapter cost for nothing. The three
+scanners are awk-per-file (baseline), rg|awk (rejected, fails parity) and a
+Go helper (shipped default).
 
 Steps:
 1. Refresh shard list on WRDS.
 2. Submit SGE array (default: 5 shards; --all for 1-N).
 3. Poll qstat until array finishes.
 4. rclone gzipped TSVs back to local.
-5. Concatenate to parquet at data/processed/sec_index_rga.parquet.
+5. Concatenate to parquet at data/processed/sec_index.parquet.
 
 Usage:
-    python scripts/sec_index_rga/build_index.py --tasks 5              # submit+wait 5 shards
-    python scripts/sec_index_rga/build_index.py --all                   # submit all 164
-    python scripts/sec_index_rga/build_index.py --concat-only           # just concat whatever is present
+    python scripts/sec_index/build_index.py --tasks 5              # submit+wait 5 shards
+    python scripts/sec_index/build_index.py --all                   # submit all 164
+    python scripts/sec_index/build_index.py --concat-only           # just concat whatever is present
 """
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import time
 from pathlib import Path
 
-WRDS = "wrds"
-REMOTE_BIN = "/scratch/nyu/eddyhu/sec_index_rga/bin"
-REMOTE_ROOT = "/scratch/nyu/eddyhu/sec_index_rga"
-REMOTE_OUT = "/scratch/nyu/eddyhu/sec_index"
-LOCAL_OUT = Path("data/processed/sec_index_rga")
-PARQUET_PATH = Path("data/processed/sec_index_rga.parquet")
+WRDS = os.environ.get("WRDS_HOST", "wrds")
+
+# PATHS. No user or institution is baked in. The remote scratch root is derived
+# on the REMOTE side (the local account name is not necessarily the WRDS one),
+# so `WRDS_SCRATCH` is resolved by asking the remote shell once rather than by
+# assuming `whoami` here matches.
+_WRDS_INST = os.environ.get("WRDS_INST", "nyu")
+
+
+def _remote_scratch() -> str:
+    """Resolve the remote scratch root, honouring $WRDS_SCRATCH if already set."""
+    override = os.environ.get("WRDS_SCRATCH")
+    if override:
+        return override
+    r = subprocess.run(
+        ["ssh", WRDS, f'echo "${{WRDS_SCRATCH:-/scratch/{_WRDS_INST}/$(whoami)}}"'],
+        check=True, capture_output=True, text=True,
+    )
+    return r.stdout.strip()
+
+
+REMOTE_SCRATCH = _remote_scratch()
+REMOTE_ROOT = f"{REMOTE_SCRATCH}/sec_index"
+REMOTE_BIN = f"{REMOTE_ROOT}/bin"
+REMOTE_OUT = f"{REMOTE_SCRATCH}/sec_index"
+LOCAL_OUT = Path(os.environ.get("SEC_INDEX_LOCAL_OUT", "data/processed/sec_index"))
+PARQUET_PATH = Path(os.environ.get("SEC_INDEX_PARQUET", "data/processed/sec_index.parquet"))
 
 
 def ssh(cmd: str) -> str:
@@ -69,7 +98,7 @@ def wait_for(job_id: str, poll_s: int = 30) -> None:
         if "Following jobs do not exist" in out or out.strip() == "":
             break
         # Show task state summary
-        summary = ssh(f"qstat -u eddyhu | grep '{job_id}' | head -5 || true").strip()
+        summary = ssh(f'qstat -u "$(whoami)" | grep \'{job_id}\' | head -5 || true').strip()
         print(f"  {time.strftime('%H:%M:%S')} {summary or '(no tasks in queue)'}")
         time.sleep(poll_s)
     print(f"[qstat] job {job_id} done")

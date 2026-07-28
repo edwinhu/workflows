@@ -45,7 +45,7 @@ names X in any role.
 
 - **Default to `wrdssec_all.forms`.** Use `SELECT DISTINCT fname, …` if you need accession-level output.
 - **Use `wrds_forms` only when you specifically want the primary-filer-only, one-row-per-accession view** and you are not filtering by CIK.
-- If you need role labels (`FILER`, `SUBJECT COMPANY`, `ISSUER`, …) as well as CIK, neither table exposes them — self-build via `scan_covers` / `sec_index_rga` SGE scanners. See `references/edgar.md` §"Self-built SEC index via SGE".
+- If you need role labels (`FILER`, `SUBJECT COMPANY`, `ISSUER`, …) as well as CIK, neither table exposes them — self-build via `scan_covers` / `sec_index` SGE scanners. See `references/edgar.md` §"Self-built SEC index via SGE".
 
 ## Staleness myth
 

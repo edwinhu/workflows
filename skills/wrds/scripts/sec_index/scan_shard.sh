@@ -6,7 +6,8 @@
 # Environment:
 #   SGE_TASK_ID   — 1-based task index into SHARD_LIST
 #   SHARD_LIST    — path to newline-separated shard prefixes (default: ./shards.txt)
-#   OUT_DIR       — gzipped TSV output dir (default: /scratch/nyu/eddyhu/sec_index)
+#   WRDS_SCRATCH  — scratch root (default: /scratch/${WRDS_INST:-nyu}/$(whoami))
+#   OUT_DIR       — gzipped TSV output dir (default: $WRDS_SCRATCH/sec_index)
 #   ARCHIVE_ROOT  — (default: /wrds/sec/archives)
 #
 # Invoke manually:
@@ -21,8 +22,9 @@
 
 set -uo pipefail
 
+WRDS_SCRATCH="${WRDS_SCRATCH:-/scratch/${WRDS_INST:-nyu}/$(whoami)}"
 SHARD_LIST="${SHARD_LIST:-shards.txt}"
-OUT_DIR="${OUT_DIR:-/scratch/nyu/eddyhu/sec_index}"
+OUT_DIR="${OUT_DIR:-$WRDS_SCRATCH/sec_index}"
 ARCHIVE_ROOT="${ARCHIVE_ROOT:-/wrds/sec/archives}"
 TASK_ID="${SGE_TASK_ID:?SGE_TASK_ID must be set}"
 

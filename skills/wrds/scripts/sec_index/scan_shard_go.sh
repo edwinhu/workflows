@@ -8,19 +8,35 @@
 #
 # Environment:
 #   SGE_TASK_ID, SHARD_LIST, OUT_DIR, ARCHIVE_ROOT  — same as baseline
-#   GO_BIN        — path to scan_shard_go (default: /scratch/nyu/eddyhu/bin/scan_shard_go)
+#   WRDS_SCRATCH  — scratch root (default: /scratch/${WRDS_INST:-nyu}/$(whoami))
+#   GO_BIN        — path to scan_shard_go (default: $WRDS_SCRATCH/bin/scan_shard_go)
 #   GO_CONCURRENCY — worker goroutines (default: $NSLOTS*8, min 16)
 
 set -uo pipefail
 
+WRDS_SCRATCH="${WRDS_SCRATCH:-/scratch/${WRDS_INST:-nyu}/$(whoami)}"
 SHARD_LIST="${SHARD_LIST:-shards.txt}"
-OUT_DIR="${OUT_DIR:-/scratch/nyu/eddyhu/sec_index}"
+OUT_DIR="${OUT_DIR:-$WRDS_SCRATCH/sec_index}"
 ARCHIVE_ROOT="${ARCHIVE_ROOT:-/wrds/sec/archives}"
 TASK_ID="${SGE_TASK_ID:?SGE_TASK_ID must be set}"
-GO_BIN="${GO_BIN:-/scratch/nyu/eddyhu/bin/scan_shard_go}"
+GO_BIN="${GO_BIN:-$WRDS_SCRATCH/bin/scan_shard_go}"
 
-# Go regex parsing is CPU-bound: GOMAXPROCS scales linearly.
-# Goroutine count barely matters (NFS is not the bottleneck).
+# THE WORKLOAD IS I/O-BOUND, NOT CPU-BOUND. This comment previously claimed the
+# opposite ("Go regex parsing is CPU-bound ... goroutine count barely matters,
+# NFS is not the bottleneck"), which contradicted this skill's OWN measurements
+# in references/edgar.md §Benchmarks: on shard 000000 (219,196 files) the Go
+# helper used 28 s CPU against awk's 68 s CPU, yet ran 22 s wall against 583 s.
+# CPU was never the constraint; the 26x win is entirely concurrent NFS opens
+# overlapping per-file open latency. Two knobs, two different jobs:
+#
+#   GOMAXPROCS      OS threads. Pinned to the slot allocation for GRID
+#                   CITIZENSHIP: Go otherwise sizes its P count from the HOST's
+#                   core count, so a 2-slot job on a 64-core node spawns 64
+#                   threads and takes cores the scheduler promised other jobs.
+#                   It is NOT the throughput lever here.
+#   GO_CONCURRENCY  goroutines. THIS is the throughput lever. Over-subscribing
+#                   past the CPU count is deliberate and helps, because the
+#                   goroutines are parked on NFS opens, not computing.
 export GOMAXPROCS="${NSLOTS:-2}"
 
 _default_concurrency=$(( ${NSLOTS:-2} * 8 ))
