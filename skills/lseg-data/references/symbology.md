@@ -70,6 +70,43 @@ For `symbol_conversion.Definition()`:
 | `from_symbol_type` | Source identifier type | `'RIC'`, `'ISIN'`, `'CUSIP'` |
 | `to_symbol_types` | Target identifier types | `['ISIN', 'CUSIP', 'SEDOL']` |
 
+### `'Ticker'` is not a valid symbol type — it is `'TickerSymbol'`
+
+The parser accepts either the enum **name** or its **value**, which is why
+`'ISIN'` works even though the wire value is `'IssueISIN'`. But there is no member
+named `TICKER`, so the natural guess `'Ticker'` raises at construction time:
+
+```
+AttributeError: Value 'Ticker' must be in
+['RIC', 'IssueISIN', 'CUSIP', 'SEDOL', 'TickerSymbol', 'IssuerOAPermID', 'FundClassLipperID']
+```
+
+Verified against `SymbolTypes` in `lseg-data` 2.1.1:
+
+| enum member | accepted name | wire value |
+|---|---|---|
+| `SymbolTypes.RIC` | `'RIC'` | `RIC` |
+| `SymbolTypes.ISIN` | `'ISIN'` | `IssueISIN` |
+| `SymbolTypes.CUSIP` | `'CUSIP'` | `CUSIP` |
+| `SymbolTypes.SEDOL` | `'SEDOL'` | `SEDOL` |
+| `SymbolTypes.TICKER_SYMBOL` | **`'TickerSymbol'`** (not `'Ticker'`) | `TickerSymbol` |
+| `SymbolTypes.OA_PERM_ID` | `'IssuerOAPermID'` | `IssuerOAPermID` |
+| `SymbolTypes.LIPPER_ID` | `'FundClassLipperID'` | `FundClassLipperID` |
+
+Passing the enum avoids the guessing entirely, and is what to prefer:
+
+```python
+from lseg.data.content.symbol_conversion import Definition, SymbolTypes
+
+Definition(symbols=cusips, from_symbol_type=SymbolTypes.CUSIP,
+           to_symbol_types=[SymbolTypes.RIC, SymbolTypes.ISIN,
+                            SymbolTypes.TICKER_SYMBOL])
+```
+
+This fails at `Definition(...)` construction, before any network call — so it is a
+loud error rather than a silent one. It is listed here because two examples below
+carried `'Ticker'` and could never have run.
+
 ## RIC Exchange Suffixes
 
 ### Major US Exchanges
@@ -139,7 +176,7 @@ result = symbol_conversion.Definition(
         'US02079K3059'   # Alphabet
     ],
     from_symbol_type='ISIN',
-    to_symbol_types=['RIC', 'Ticker', 'CUSIP']
+    to_symbol_types=['RIC', 'TickerSymbol', 'CUSIP']
 ).get_data()
 
 print(result.data.df)
@@ -159,7 +196,7 @@ ld.open_session()
 result = symbol_conversion.Definition(
     symbols=['037833100', '594918104'],  # Apple, Microsoft
     from_symbol_type='CUSIP',
-    to_symbol_types=['RIC', 'ISIN', 'SEDOL', 'Ticker']
+    to_symbol_types=['RIC', 'ISIN', 'SEDOL', 'TickerSymbol']
 ).get_data()
 
 print(result.data.df)

@@ -152,6 +152,38 @@ ld.session.set_default(s)
 `platform` exports exactly three names — `ClientCredentials`, `Definition`,
 `GrantPassword`. Check `dir()` before trusting a class name from the docs.
 
+### ONE concurrent platform session — pass `signon_control=True`
+
+The machine ID allows a single concurrent platform session, and the library
+default is `signon_control=False`, which does not queue — it fails:
+
+```
+LDError: You authorised with signon_control=False. Session quota is reached.
+If you want to open session close the previous opened.
+```
+
+Any earlier session that was not closed cleanly (a crashed script, another shell,
+a background job) holds the quota until it times out. Pass `signon_control=True`
+to take the signon over instead:
+
+```python
+s = platform.Definition(
+        app_key=os.environ["LSEG_APP_KEY"],
+        grant=platform.GrantPassword(username=os.environ["LSEG_USERNAME"],
+                                     password=os.environ["LSEG_PASSWORD"]),
+        signon_control=True,          # <- take over rather than fail
+    ).get_session()
+s.open()
+if str(s.open_state) != "OpenState.Opened":     # open() does not raise; see above
+    raise RuntimeError(f"session failed: {s.open_state}")
+ld.session.set_default(s)
+```
+
+Corollary: **two local scripts cannot query at once.** If you need a second
+concurrent path — an interactive query while a long batch runs — use Codebook,
+which authenticates as a separate `DesktopSession` and does not draw on this
+quota (see Refinitiv Codebook below).
+
 ### `open_session()` DOES NOT RAISE ON FAILURE
 
 With no config and no credentials it falls back to a **desktop** session, tries
@@ -245,6 +277,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/fundamentals.md`** - Financial statement fields, ratios, estimates
 - **`references/esg.md`** - ESG scores, pillars, controversies
 - **`references/symbology.md`** - RIC/ISIN/CUSIP conversion
+- **`references/short-interest.md`** - `TR.ShortInterest`: the only working field, the delisted-instrument coverage cliff, and the gap vs Compustat
 - **`references/pricing.md`** - Historical prices, real-time data
 - **`references/screening.md`** - Stock screening with Screener object
 - **`references/fscreen.md`** - Fund screening (ETFs, mutual funds) with FSCREEN app
@@ -297,6 +330,49 @@ df = rd.news.get_headlines(‘R:AAPL.O AND SUGGAC’, count=10)
 ```
 
 **Note**: Codebook uses `refinitiv.data` (older name) rather than `lseg.data`. Both APIs are equivalent.
+
+**Confirmed working 2026-07-27.** `rd.open_session()` there returns a
+**`DesktopSession` named `codebook`** — a different session class from the
+`PlatformSession` a local `lseg-data` script opens against the RDP machine ID.
+Two practical consequences:
+
+- **It does not consume the one-session platform quota** (see Authentication
+  above), so Codebook can be queried while a local batch is running.
+- **It is not better entitled.** Same user, different auth path, but identical
+  content: spot-checked on short interest, where Codebook returned IBM
+  33,088,057 and TXN 2025-03-31 16,647,062 — the same values to the digit as the
+  platform session — and returned empty for the same delisted RICs. Do not reach
+  for Codebook expecting data the API refuses; see `references/short-interest.md`.
+
+### Driving Codebook programmatically (CDP)
+
+Codebook is a JupyterLab in the browser, so it can be driven over CDP without
+clicking, via the Jupyter REST + WebSocket API. One trap makes this fail
+silently on the first try:
+
+**The kernel WebSocket host is NOT the page host.** Read `wsUrl` from the
+`jupyter-config-data` element rather than assuming `location.host` — it points at
+`wss://amers1-streaming-io.platform.refinitiv.com/...`, and connecting to
+`workspace.refinitiv.com` just errors with no message. The same element carries
+the `token` the socket needs as a `?token=` query param.
+
+```js
+const cfg = JSON.parse(document.getElementById('jupyter-config-data').textContent);
+// POST {name:'python3'} to cfg.baseUrl + 'api/kernels' with X-XSRFToken from the _xsrf cookie,
+// then open:  `${cfg.wsUrl}api/kernels/${kernelId}/channels?token=${cfg.token}`
+// send an execute_request on channel 'shell'; collect 'stream' msgs until status.execution_state === 'idle'
+```
+
+First load spawns the server ("Preparing your CodeBook environment", a minute or
+two) and the URL sits at `/hub/spawn-pending/<user>` until ready. Shut the kernel
+down (`DELETE api/kernels/<id>`) when finished; the server itself idle-culls.
+
+`amers1` is the Americas region — read it from `cfg.wsUrl`, never hardcode it.
+
+The full copy-pasteable recipe lives in **`references/codebook.md`** (added by
+PR #95), together with the spawn/XSRF gotchas and why this failure mode is so
+easy to misread: the wrong host returns *no* handshake response at all, which is
+indistinguishable from a proxy blocking the upgrade.
 
 ## Date Awareness
 
