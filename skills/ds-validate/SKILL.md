@@ -217,7 +217,7 @@ Each requirement is validated at four levels, in order:
 |-------|-------|---------|
 | 1. Exists | Output file/variable present | `output/results.csv` exists |
 | 2. Substantive | Real data, not empty | >0 rows, expected columns present |
-| 3. DQ Passes | DQ1-DQ5 pass | No dupes on key, nulls handled, row counts trace |
+| 3. DQ Passes | DQ1-DQ5 + UNI/DEN/DEL/ENUM pass | No dupes on key, nulls handled, row counts trace, sources agree on the universe, every rate carries its base |
 | 4. Answers Question | Addresses SPEC.md requirement | Table includes specified variables |
 
 ## Classification
@@ -229,6 +229,38 @@ For each requirement, assign a classification:
 | **COVERED** | All 4 validation levels pass |
 | **PARTIAL** | Output exists but DQ issues found or doesn't fully address requirement |
 | **MISSING** | No output found for this requirement |
+| **CANNOT-FIX** | A real defect, investigated, with the remedies eliminated by measurement |
+
+## CANNOT-FIX Is A Result, And It Must Be Recorded
+
+The loop is *fix until fixed, or until shown unfixable* — and "unfixable" is a
+finding with evidence, not a place to stop trying. A defect closed this way is
+re-opened by the next person unless the eliminations are written down **with
+their numbers**.
+
+A CANNOT-FIX entry must carry, for each candidate remedy, what was measured and
+why it was rejected:
+
+```markdown
+### CF-1: <defect>, <size> (<share of the data>)
+
+| candidate remedy | verdict | measurement |
+|---|---|---|
+| <remedy A> | ruled out | fixes 365 rows, BREAKS 138,024 |
+| <remedy B> | ruled out | source has no rows before 2006-07; 36% of the gap |
+| <remedy C> | ruled out | 633 entities, no concentration; large ones cleaner |
+
+**Left in place, not filtered.** Removing the rows would improve the coverage
+statistic by deleting the evidence (see DEL).
+```
+
+**Rejecting a remedy requires a measurement, not an argument.** Every remedy
+rejected on reasoning alone in the source session was later found to be wrong in
+one direction or the other — including three of the assistant's own.
+
+**Prefer surfacing to filtering.** A known-bad row that is visible is worth more
+than a clean statistic that hides it, and the honest move when a defect resists
+repair is a separate reporting tier, not a `WHERE` clause.
 
 ## VALIDATION.md Template
 
@@ -319,7 +351,13 @@ last_gaps: [REQ-ID, ...]  # requirement IDs still PARTIAL/MISSING
 ```
 
 - On each re-validate, increment `iteration`.
-- **After 3 cycles still in `gaps_found`, STOP looping.** Escalate to the user with a structured choice (AskUserQuestion): **fix again** (override the cap with explicit instruction), **accept remaining gaps** (flip to validated + Accepted Gaps), or **rethink** (return to /ds for re-planning). Do not silently start a 4th fix cycle — repeated failure to close the same gap is a signal the plan or data is wrong, not that one more pass will help.
+- **After 3 cycles still in `gaps_found`, STOP looping.** Escalate to the user with a structured choice (AskUserQuestion): **fix again** (override the cap with explicit instruction), **accept remaining gaps** (flip to validated + Accepted Gaps), **record CANNOT-FIX** (see below — requires eliminations), or **rethink** (return to /ds for re-planning). Do not silently start a 4th fix cycle — repeated failure to close the same gap is a signal the plan or data is wrong, not that one more pass will help.
+
+- **`accept remaining gaps` and `CANNOT-FIX` are not the same option.** "Accepted" means the gap is
+  tolerable and nobody looked further. CANNOT-FIX means the gap was *investigated* and each candidate
+  remedy was **rejected by a measurement**. Only the second closes the question; the first leaves it
+  open under a friendlier name. If the loop is terminating because remedies were tried and failed,
+  record CANNOT-FIX — otherwise the next session re-opens it from scratch, having lost the reason.
 
 <EXTREMELY-IMPORTANT>
 **Do NOT auto-fill gaps. Do NOT silently proceed past gaps. Present them and wait for user decision.**

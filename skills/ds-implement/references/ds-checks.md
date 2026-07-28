@@ -17,6 +17,10 @@ Shared check definitions for data quality verification. Referenced by ds-validat
 | COV | Sample-period coverage (each windowed source spans its Required window) | ✅ | ✅ | ✅ | ✅ |
 | R1 | Reproducibility (same inputs → same outputs) | ❌ | ❌ | ❌ | ✅ |
 | M1 | Spec compliance (all SPEC.md objectives addressed) | ✅ | ✅ | ✅ | ✅ |
+| UNI | Universe agreement (every source admits the SAME entities) | ✅ | ✅ | ✅ | ✅ |
+| DEN | Every reported rate states its denominator | ✅ | ✅ | ✅ | ✅ |
+| DEL | Coverage improved because the BASE shrank | ✅ | ✅ | ✅ | ✅ |
+| ENUM | Every check above RUN, or marked N/A with a reason | ✅ | ✅ | ✅ | ✅ |
 
 ## Data Quality Checks (DQ1-DQ6)
 
@@ -187,3 +191,113 @@ Report any WARNING as confidence >= 80."
 ```
 
 This ensures both ds-review and ds-fix run identical checks from a single source of truth.
+
+---
+
+## UNI: Universe Agreement Across Sources
+
+Every source must admit the **same entities**. `COV` asks whether each source spans
+the window; `UNI` asks whether they agree about who is in it.
+
+A universe predicate applied independently in more than one place is the defect.
+It looks like local correctness and produces a global disagreement no single
+script can see.
+
+```python
+# The universe is ONE declared object (PLAN.md), read by every leg.
+UNIVERSE = {"start": "2003-01-01", "end": "2025-12-31",
+            "entity_filter": "sharetype='NS' AND securitytype='EQTY' ..."}
+
+# Then assert the legs agree, per source, on ENTITIES not just rows:
+for name, src in sources.items():
+    extra = set(src.entities) - set(primary.entities)
+    missing = set(primary.entities) - set(src.entities)
+    print(f"[UNI] {name}: +{len(extra):,} not in primary, -{len(missing):,} absent")
+```
+
+**Apply the filter where scope is decided, ONCE — not everywhere it is available.**
+A filter on a *lookup* (a denominator, a crosswalk) is not scope, it is data loss.
+
+> Measured instance: an ownership panel applied its universe predicate to the
+> share-count lookup as well as the entity selection. 300,515 rows (43.7%) carried
+> a null denominator. CRSP held a value for **all 300,515** — none were missing.
+> 75% of them were discarded later by the primary join anyway; the filter only
+> manufactured nulls. The remaining 25% were entities the panel *did* include and
+> had silently refused to measure.
+
+**Confidence if sources disagree:** >= 85
+
+---
+
+## DEN: Every Rate States Its Denominator
+
+A percentage whose base is not printed beside it is not a finding. Report
+`numerator/denominator = rate`, and state what the base excludes.
+
+```python
+n_flag, n_base, n_total = flagged.height, testable.height, df.height
+print(f"[DEN] rate={n_flag:,}/{n_base:,}={100*n_flag/n_base:.3f}%")
+if n_base < n_total:
+    print(f"[DEN] base is {100*n_base/n_total:.1f}% of rows — "
+          f"{n_total-n_base:,} are INVISIBLE to this check, not passing it")
+```
+
+**Also state the GROUPING KEY.** A rate computed at the wrong grain is not a
+smaller error than a wrong numerator; it is a different statistic wearing the
+right name.
+
+> Measured instance: an ambiguity rate published as 0.010% was computed at
+> `fundno`; the pipeline grouped at `wficn`. At the correct key the same quantity
+> was ~180x larger. Two offsetting errors made the wrong number look like an
+> independent reproduction of the right one.
+
+**Confidence if a rate is reported without its base:** >= 80
+
+---
+
+## DEL: Coverage That Improved By Deletion
+
+**A coverage metric can improve because the uncovered rows left.** This is the
+most flattering possible way to lose data and reads as progress in every summary.
+
+Any favourable move in a coverage/quality metric MUST be reported with the change
+in its base:
+
+```python
+print(f"[DEL] coverage {before_pct:.1f}% -> {after_pct:.1f}%   "
+      f"base {n_before:,} -> {n_after:,} ({100*(n_after-n_before)/n_before:+.1f}%)")
+if after_pct > before_pct and n_after < n_before:
+    print("[DEL] WARNING: coverage rose while the base SHRANK — "
+          "confirm rows were fixed, not dropped")
+```
+
+> Measured instance: adding a share-class filter to a crosswalk raised
+> "testable" from 56.0% to 98.9% — by deleting 41% of the rows. The uncovered
+> rows had not acquired the missing field; they had been removed. The metric that
+> caught it was the one printing its own denominator.
+
+**Confidence if coverage rises while base falls:** >= 90
+
+---
+
+## ENUM: Every Check Run, Or Explicitly Not Applicable
+
+Silence is indistinguishable from a pass. A check that is simply absent from the
+output looks exactly like one that ran clean.
+
+Emit a line for **every** check in the matrix. A check with no applicable input
+says so, and why:
+
+```
+[ENUM] DQ1 run  DQ2 run  DQ3 run  DQ4 run  DQ5 run  COV run  UNI run
+[ENUM] N/A: DQ6 (no before/after shape — single-pass build)
+[ENUM] N/A: R1  (reproducibility is a verify-phase check)
+```
+
+> Measured instance: a pipeline's own SKILL.md said timed runs should include the
+> detector sweep. Nothing referenced the detector module at all, so every runtime
+> ever quoted described a dataset of unmeasured quality. Once wired, the sweep ran
+> 7 of 17 available detectors — the seven that happened to be familiar. Four of
+> the other ten fired immediately.
+
+**Confidence if a matrix check produced no line:** >= 85

@@ -91,6 +91,33 @@ This applies even when YOU think:
 - "The code is straightforward"
 
 **If you're about to write code without outputting results, STOP.**
+
+### The step's output MUST include its DQ line
+
+"Visible output" means the numbers a reader needs to judge the step, not just
+that it ran. Every step that filters, joins or aggregates emits the checks from
+`references/ds-checks.md` that apply to it — **inline, as the step runs** — not
+deferred to a validation phase that may never reference them.
+
+```python
+# after every filter / join / aggregate:
+print(f"[DQ] {name}: {n_before:,} -> {n_after:,} rows ({100*(n_after-n_before)/n_before:+.1f}%)")
+print(f"[DEN] rate={n_flag:,}/{n_base:,}={100*n_flag/n_base:.3f}%  base={100*n_base/n_total:.1f}% of rows")
+print(f"[ENUM] ran: DQ1 DQ3 DQ4 UNI  |  N/A: DQ6 (no before/after shape here)")
+```
+
+**A check that exists but is never invoked is worth nothing.** The failure this
+prevents is not a missing check — it is a documented one that nothing calls:
+
+> A pipeline's own SKILL.md instructed that timed runs include the detector sweep.
+> No script referenced the detector module, so every runtime ever published
+> described a dataset of unmeasured quality. When finally wired, the sweep ran 7
+> of 17 available detectors; four of the remaining ten fired on first execution,
+> one of which had been diagnosed by hand, days earlier, as a novel finding.
+
+So the scaffold **generates the invocation**, not a note asking someone to add it.
+If a step cannot emit a DQ line, say which check is N/A and why (see ENUM) —
+silence is indistinguishable from a pass.
 </EXTREMELY-IMPORTANT>
 
 ## Delegation

@@ -15,6 +15,7 @@ hooks:
 - [The Iron Law of DS Brainstorming](#the-iron-law-of-ds-brainstorming)
 - [What Brainstorm Does](#what-brainstorm-does)
 - [Critical Questions to Ask](#critical-questions-to-ask)
+  - [Universe Questions](#universe-questions--ask-these-do-not-infer-them)
 - [Process](#process)
 - [Output](#output)
 
@@ -87,6 +88,29 @@ Before loading data, before exploring, before proposing approaches, you MUST:
 - Where is the data located (files, database, API)?
 - What time period does the data cover?
 - How frequently is the data updated?
+
+### Universe Questions — ask these, do not infer them
+
+The sample period and the entity universe are **elicited**, never assumed from
+whatever the first query happened to return. They go into PLAN.md as ONE declared
+object that every later step reads.
+
+- What is the sample period, and **what bounds it** — a research choice, or the
+  earliest date some source happens to carry? (These have different consequences
+  when a source is later replaced.)
+- What is the unit of observation, and what is its **key**? Rates computed at the
+  wrong grain are a different statistic wearing the right name.
+- Which entities are IN the universe, by what predicate?
+- **Where is that predicate applied?** It belongs at the one place scope is
+  decided. Applying it again to a lookup — a denominator, a crosswalk, a
+  reference join — is not scope, it is silent data loss, and it looks like local
+  correctness at every individual site.
+- If two sources disagree about who is in the universe, which one decides?
+
+> A panel applied its universe predicate to both the entity selection and the
+> share-count lookup. 43.7% of rows carried a null denominator; the source held a
+> value for every one of them. It survived a full day of plausible explanations
+> before anyone asked whether the data was actually missing.
 
 ### Objective Questions
 - What question are you trying to answer?
