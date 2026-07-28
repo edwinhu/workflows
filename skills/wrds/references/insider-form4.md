@@ -249,10 +249,18 @@ The Volkova blockholders port (script 8) needs per-year aggregation, so
 we pull bulk via SAS on the WRDS SGE cluster rather than streaming over
 Postgres from a laptop.
 
-- SAS script: `mirror/sas/pull_tr_insiders.sas` — one year per SGE task.
-- SGE wrapper: `mirror/sas/run_insider_array.sh` (`#$ -t 1994-2024 -l m_mem_free=8G`).
+- SAS script: `scripts/form4/pull_tr_insiders.sas` — one year per SGE task.
+- SGE wrapper: `scripts/form4/run_insider_array.sh` (`#$ -t 1994-2024 -l m_mem_free=8G`;
+  the range is an SGE directive so it cannot read a variable — override with
+  `qsub -t 2005-2025`).
 - Fallback Python puller for quick iteration:
-  `mirror/scripts/pull_insider_ownership.py` (server-side filters, year chunking).
+  `scripts/form4/pull_insider_ownership.py` (server-side filters, year chunking).
+- Three-step XML route when TR coverage is short: `scripts/form4/step1_query_filings.py`
+  -> `step2_download_xmls.sh` -> `step3_parse_xmls.py`. See `scripts/form4/README.md`.
+
+These were vendored from mirror and generalised (no user, institution or project
+tree baked in; `FORM4_ROOT` / `WRDS_SCRATCH` override). mirror keeps its copies
+because its counterfactual stack consumes the outputs, so the two can drift.
 
 ### Index hints used server-side
 
@@ -323,6 +331,7 @@ None of the above resolve `tr_personid` to SEC owner CIK.
 access, build a `(company_CIK, normalized_name) → blockholder_CIK` dict
 from an external source with real SEC owner CIKs (e.g., Volkova's
 published blockholder CSV, or a one-off scrape of SEC own-disp) and
-join on `(cusip6→company_CIK, normalize(owner))`. See
-`mirror/scripts/bridge_insider_names.py` for the normalization rules
-(suffixes stripped, punctuation removed, uppercase).
+join on `(cusip6→company_CIK, normalize(owner))`. The normalization rules
+(suffixes stripped, punctuation removed, uppercase) live in mirror's
+`scripts/redo_bridge.py` — the file this previously cited,
+`mirror/scripts/bridge_insider_names.py`, no longer exists.
