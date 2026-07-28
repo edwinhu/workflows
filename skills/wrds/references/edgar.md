@@ -932,8 +932,19 @@ qsub -t 1-20 \
 
 | Parser | Source | Extracts | Input | Accuracy |
 |--------|--------|----------|-------|----------|
-| `parse_quorum` | `mirror/scripts/bylaw_quorum/parse_quorum_go/` | Quorum threshold from DEF 14A | DEF 14A filings | Per-firm bylaw thresholds |
-| `state_incorp` (profile) | `workflows/wrds/scripts/scan_covers/profiles_state_incorp.go` | State of incorp + HQ state from 10-K SGML header | 10-K filings | 98.4% vs Barzuza et al. |
-| `parse_state_incorp` (standalone) | `mirror/scripts/state_incorp_go/` | Same as above (original version) | 10-K filings | 98.4% vs Barzuza et al. |
+| `quorum` (profile) | `scan_covers/profiles_quorum.go` + `profiles/quorum/` | Bylaw quorum threshold from DEF 14A | DEF 14A, DEFM14A | 96.6% explicit parse |
+| `state_incorp` (profile) | `scan_covers/profiles_state_incorp.go` | State of incorp + HQ state from 10-K SGML header | 10-K filings | 98.4% vs Barzuza et al. |
+| `blockholders_13dg` (profile) | `scan_covers/profiles_blockholders_13dg.go` | Item 12 + max ownership % | SC 13D/G | — |
+| `proxy_advisors` (profile) | `scan_covers/profiles_proxy_advisors.go` | ISS/GL/EJ mentions | 485BPOS/APOS | — |
+| `tender_sc_to` (profile) | `scan_covers/profiles_tender_sc_to.go` | Tender offer cover fields | SC TO-* | — |
 
-**Prefer `scan_covers -profile state_incorp`** over the standalone parser. The scan_covers framework handles SGE sharding, path construction, and concurrency generically.
+**Everything is a profile now.** Two rows here previously pointed into
+`~/projects/mirror` — `bylaw_quorum/parse_quorum_go/` and `state_incorp_go/` — and
+the second was already dead (that directory does not exist). The quorum parser has
+been ported to `-profile quorum`, verified identical to the standalone on fixtures
+covering every confidence tier; see `profiles/quorum/README.md`.
+
+Reaching for a standalone binary is the documented Red Flag: `scan_covers` handles
+SGE sharding, path construction and concurrency generically, so a new extraction is
+a `profiles_*.go` file plus a `profiles/<name>/` directory for staging and panel
+building.
