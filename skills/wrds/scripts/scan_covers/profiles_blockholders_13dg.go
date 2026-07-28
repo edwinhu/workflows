@@ -12,6 +12,26 @@ import "regexp"
 // Header fields use the shared pattern-based path. Body fields (item12,
 // max_prc) use Custom extractors that mirror parser.py line-window and
 // two-pass code-matching logic for full Python parity.
+//
+// THIS PROFILE DOES NOT SUPERSEDE mirror's src/blockholders/parser.py, and the
+// gap is structural rather than drift. Checked 2026-07-28:
+//
+//	parser.py emits ONE ROW PER (subject, filer) PAIR and computes item12
+//	PER FILER — parse_item12(body, fil_cik=fil["cik"]).
+//
+//	This profile emits one row per FILING. fil_cik / fil_name / sbj_cik /
+//	sbj_name are Reduce:First, so a joint filing collapses to its first
+//	filer and the single item12 is that filer's.
+//
+// One row per filing is right for the common case — most 13D/Gs have exactly
+// one filer and one subject. It is wrong for group filings under §13(d)(3),
+// which are precisely the ones blockholder work cares about: N filers acting
+// together, each with its own Item 12 classification.
+//
+// Use this profile for scale and for the single-filer majority; use parser.py
+// when joint filings matter. Do NOT delete parser.py assuming this replaces it.
+// Making it a true replacement means letting the framework emit multiple rows
+// per file, which the Field/Reduce contract cannot express today.
 func init() {
 	register(&Profile{
 		Name:      "blockholders_13dg",

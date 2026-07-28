@@ -50,11 +50,32 @@ Year assignment differs from filing date:
 
 ## Script locations
 
-- Parser: `~/projects/mirror/src/blockholders/parser.py`
+Two extractors exist and **neither supersedes the other** — pick by whether joint
+filings matter (verified 2026-07-28):
+
+| | Rows per filing | Item 12 | Use when |
+|---|---|---|---|
+| `scan_covers -profile blockholders_13dg` (this skill) | **one** — `fil_cik`/`sbj_cik` are `Reduce:First` | one, the first filer's | scale; the single-filer majority |
+| `mirror/src/blockholders/parser.py` | **one per (subject, filer) pair** | **per filer** | group filings under §13(d)(3) |
+
+The Go profile is a parity port of `parser.py`'s *body* extraction (line windows,
+two-pass code matching) and is much faster, but the `Field`/`Reduce` contract can
+only emit one row per file, so a joint 13G collapses to its first filer. Group
+filings are exactly what blockholder analysis cares about, so this is a capability
+gap rather than drift.
+
+- Parser (multi-filer): `~/projects/mirror/src/blockholders/parser.py`
 - Aggregator: `~/projects/mirror/src/blockholders/aggregate.py`
 - Driver: `~/projects/mirror/scripts/pull_blockholders.py`
-- Comparison: `~/projects/mirror/scripts/compare_blockholders.py`
+- Comparison vs the published Volkova baseline: `~/projects/mirror/scripts/compare_blockholders.py`
 - Investigation: `~/projects/mirror/docs/investigations/2026-04-18_volkova_pipeline.md`
+
+**Known open defect**, currently recorded only in mirror's `sas/README.md`:
+`aggregate.py` computes `prc_own = 100 * Num_Own / (1000 * SHROUT)` from CRSP
+`SHROUT`. For 13D/G the filer reports a specific security class, so the per-class
+CRSP value is normally correct — but when multiple permnos share a CIK and the
+`crsp_shrout` frame has one row per permno-month, the `merge(on="year_month")`
+can double-count.
 
 ## How to run
 
