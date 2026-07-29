@@ -1,0 +1,77 @@
+{
+  "hook": "pr-url-logger",
+  "cases": [
+    {
+      "name": "allow-non-bash-tool",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "command": "gh pr create --fill" },
+        "tool_result": { "stdout": "https://github.com/edwinhu/workflows/pull/128" }
+      },
+      "fixture": { ".claude/LEARNINGS.md": "# Learnings\n" }
+    },
+    {
+      "name": "allow-bash-not-gh-pr-create",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "git status --short" },
+        "tool_result": { "stdout": "https://github.com/edwinhu/workflows/pull/128" }
+      },
+      "fixture": { ".claude/LEARNINGS.md": "# Learnings\n" }
+    },
+    {
+      "name": "allow-empty-output",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "gh pr create --fill" },
+        "tool_result": { "stdout": "", "output": "" }
+      },
+      "fixture": { ".claude/LEARNINGS.md": "# Learnings\n" }
+    },
+    {
+      "name": "allow-output-without-pr-url",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "gh pr create --fill" },
+        "tool_result": { "stdout": "pull request create failed: no commits between main and feature\n" }
+      },
+      "fixture": { ".claude/LEARNINGS.md": "# Learnings\n" }
+    },
+    {
+      "name": "allow-url-but-no-learnings-file",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "gh pr create --fill" },
+        "tool_result": { "stdout": "https://github.com/edwinhu/workflows/pull/128\n" }
+      },
+      "fixture": { "README.md": "no .claude dir here\n" }
+    },
+    {
+      "name": "effect-appends-pr-url-from-stdout",
+      "kind": "effect",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "gh pr create --fill --base main" },
+        "tool_result": {
+          "stdout": "Creating pull request for feature into main in edwinhu/workflows\n\nhttps://github.com/edwinhu/workflows/pull/128\n"
+        }
+      },
+      "fixture": { ".claude/LEARNINGS.md": "# Learnings\n" }
+    },
+    {
+      "name": "effect-appends-pr-url-from-output-fallback",
+      "kind": "effect",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "gh pr create --fill" },
+        "tool_result": { "stdout": "", "output": "https://github.com/edwinhu/workflows/pull/129" }
+      },
+      "fixture": { ".claude/LEARNINGS.md": "# Learnings\n" }
+    }
+  ]
+}

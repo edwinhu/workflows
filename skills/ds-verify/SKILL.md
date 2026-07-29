@@ -8,36 +8,36 @@ hooks:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.ts"
   PreToolUse:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.ts"
     - matcher: "Read"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Grep"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Glob"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Agent"
       hooks:
         - type: command
@@ -48,7 +48,7 @@ hooks:
             GATE_DESCRIPTION="Review verdict"
             GATE_REMEDY="Complete ds-review until REVIEW_STATE.md verdict is APPROVED; verification is gated until then. REVIEW_STATE.md must also record codex_second_pass: completed (Codex returned a verdict) | declined (user opted out) | unavailable (Codex not installed/ready, or no git repo). codex_second_pass: requested means the second pass was launched but has not returned — join it (read the file named by codex_output_file) before verifying; a launched-but-unjoined pass is not a completed one. codex_second_pass: error is an absence of evidence, not an approval — retry it or have the user explicitly decline."
             GATE_BLOCKED_TOOLS=Agent
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ---
 
 Announce: "Using ds-verify (Phase 5) to confirm reproducibility and completion."
@@ -86,7 +86,7 @@ Final verification with reproducibility checks and user acceptance interview.
 
 Auto-load all constraints matching `applies-to: ds-verify`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-verify`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts ds-verify`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

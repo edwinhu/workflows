@@ -1,0 +1,120 @@
+{
+  "hook": "writing-precis-guard",
+  "cases": [
+    {
+      "name": "context-missing-all-three-sections",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": ".planning/PRECIS.md" }
+      },
+      "fixture": {
+        ".planning/PRECIS.md": "# Precis\n\nSome notes about the paper, but no required headings.\n"
+      }
+    },
+    {
+      "name": "context-missing-claims-only",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": ".planning/PRECIS.md" }
+      },
+      "fixture": {
+        ".planning/PRECIS.md": "# Precis\n\n## Thesis\n\nThe main argument.\n\n## Audience\n\nLaw review editors.\n"
+      }
+    },
+    {
+      "name": "context-bold-thesis-audience-still-missing-claims",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "MultiEdit",
+        "tool_input": { "file_path": ".planning/PRECIS.md" }
+      },
+      "fixture": {
+        ".planning/PRECIS.md": "**Thesis:** disclosure rules bind.\n\n**Audience:** practitioners.\n\nClaim one has no ID.\n"
+      }
+    },
+    {
+      "name": "allow-complete-precis",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": ".planning/PRECIS.md" }
+      },
+      "fixture": {
+        ".planning/PRECIS.md": "# Precis\n\n## Thesis\n\nThe main argument.\n\n## Key Claims\n\n- CLAIM-01: first claim.\n- CLAIM-02: second claim.\n\n## Audience\n\nLaw review editors.\n\n## Scope\n\nUS only.\n"
+      }
+    },
+    {
+      "name": "allow-non-write-tool",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Read",
+        "tool_input": { "file_path": ".planning/PRECIS.md" }
+      },
+      "fixture": {
+        ".planning/PRECIS.md": "# Precis\n\nno sections at all\n"
+      }
+    },
+    {
+      "name": "allow-no-file-path-in-tool-input",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "command": "ls" }
+      },
+      "fixture": {
+        ".planning/PRECIS.md": "# Precis\n\nno sections at all\n"
+      }
+    },
+    {
+      "name": "allow-different-filename-in-planning",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": ".planning/SPEC.md" }
+      },
+      "fixture": {
+        ".planning/SPEC.md": "# Spec\n\nno sections at all\n"
+      }
+    },
+    {
+      "name": "allow-precis-outside-planning-dir",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "docs/PRECIS.md" }
+      },
+      "fixture": {
+        "docs/PRECIS.md": "# Precis\n\nno sections at all\n"
+      }
+    },
+    {
+      "name": "allow-target-file-does-not-exist",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": ".planning/PRECIS.md" }
+      },
+      "fixture": {
+        ".planning/SPEC.md": "placeholder so the dir exists\n"
+      }
+    },
+    {
+      "name": "allow-unparseable-stdin",
+      "kind": "allow",
+      "fixture": {
+        ".planning/PRECIS.md": "# Precis\n\nno sections at all\n"
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "hook": "typst-convention-guard",
+  "cases": [
+    {
+      "name": "non-edit-tool-ignored",
+      "kind": "allow",
+      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "deck.typ" } },
+      "fixture": { "deck.typ": "- a\n- b\n" }
+    },
+    {
+      "name": "non-typ-file-ignored",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "notes.md" } },
+      "fixture": { "notes.md": "- a\n- b\n" }
+    },
+    {
+      "name": "missing-typ-file-silent",
+      "kind": "allow",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "absent.typ" } }
+    },
+    {
+      "name": "clean-typ-file-no-violations",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "clean.typ" } },
+      "fixture": { "clean.typ": "= Heading\n\n- first bullet\n\n- second bullet\n\nPlain prose line.\n" }
+    },
+    {
+      "name": "consecutive-top-level-bullets",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "bullets.typ" } },
+      "fixture": { "bullets.typ": "= Heading\n\n- first bullet\n- second bullet\n" }
+    },
+    {
+      "name": "fake-sub-bullet-double-dash",
+      "kind": "context",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "sub.typ" } },
+      "fixture": { "sub.typ": "- parent bullet\n\n  -- fake child\n" }
+    },
+    {
+      "name": "cetz-plot-import-banned",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "chart.typ" } },
+      "fixture": { "chart.typ": "#import \"@preview/cetz-plot:0.1.0\": plot\n" }
+    },
+    {
+      "name": "slides-config-info-missing-qr",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "slides.typ" } },
+      "fixture": { "slides.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n" }
+    },
+    {
+      "name": "non-slides-stem-skips-qr-check",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "notes-doc.typ" } },
+      "fixture": { "notes-doc.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n" }
+    },
+    {
+      "name": "uncentered-image",
+      "kind": "context",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "fig.typ" } },
+      "fixture": { "fig.typ": "#image(\"figure.png\", width: 80%)\n" }
+    },
+    {
+      "name": "centered-image-passes",
+      "kind": "allow",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "fig2.typ" } },
+      "fixture": { "fig2.typ": "#align(center)[\n#image(\"figure.png\", width: 80%)\n]\n" }
+    },
+    {
+      "name": "smart-apostrophe-after-paren",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "apos.typ" } },
+      "fixture": { "apos.typ": "The firm (Acme)'s board voted.\n" }
+    },
+    {
+      "name": "unescaped-dollar-before-number",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "money.typ" } },
+      "fixture": { "money.typ": "Damages of $5 million were awarded.\n" }
+    },
+    {
+      "name": "table-inset-too-small",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "tbl.typ" } },
+      "fixture": { "tbl.typ": "#table(columns: 2, inset: 4pt)[a][b]\n" }
+    },
+    {
+      "name": "cetz-canvas-length-in-cm",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "canvas.typ" } },
+      "fixture": { "canvas.typ": "#import \"@preview/cetz:0.3.1\"\n\n#cetz.canvas(length: 1.5cm, {})\n" }
+    },
+    {
+      "name": "cetz-canvas-length-em-too-small",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "canvas2.typ" } },
+      "fixture": { "canvas2.typ": "#import \"@preview/cetz:0.3.1\"\n\n#cetz.canvas(length: 1em, {})\n" }
+    },
+    {
+      "name": "violations-capped-at-five",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "many.typ" } },
+      "fixture": { "many.typ": "- one\n- two\n- three\n- four\n- five\n- six\n- seven\n- eight\n" }
+    }
+  ]
+}

@@ -8,24 +8,24 @@ hooks:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.ts"
   PreToolUse:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.ts"
     - matcher: "Read"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Grep"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Glob"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Write|Edit|Agent"
       hooks:
         - type: command
@@ -35,23 +35,23 @@ hooks:
             GATE_DESCRIPTION="Spec review"
             GATE_REMEDY="Run /ds (brainstorm), which dispatches ds-spec-reviewer; planning is gated until SPEC.md is APPROVED."
             GATE_BLOCKED_TOOLS=Write,Edit,Agent
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-plan-executable-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-plan-executable-guard.ts"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
 ---
 
 Announce: "Using ds-plan (Phase 2) to profile data and create task breakdown."
@@ -81,7 +81,7 @@ Profile the data and create an analysis plan based on the spec.
 
 Auto-load all constraints matching `applies-to: ds-plan`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-plan`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts ds-plan`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.** The `ds-external-skill-discovery` constraint governs Step 5b (External Skill Discovery Gate); `ds-data-pull-profile` governs Step 5c (Data Pull Profiling Gate); `ds-master-datasets` governs Step 5d (Master Dataset Design); `ds-parameter-transparency` governs Step 5e (Parameter Inventory).
 

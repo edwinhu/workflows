@@ -7,7 +7,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
 ---
 
 **Announce:** "I'm using dev-debug for systematic debugging."
@@ -18,7 +18,7 @@ hooks:
 
 Auto-load all constraints matching `applies-to: dev-debug`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-debug`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev-debug`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

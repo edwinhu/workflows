@@ -12,7 +12,7 @@ hooks:
             GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Writing review"
             GATE_REMEDY="Run /writing-review first to produce .planning/REVIEW.md before revising"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
           # GATE_STATUS intentionally omitted: REVIEW.md carries no status frontmatter,
           # and revise must run whenever REVIEW.md exists (it consumes both CLEAN and
           # ISSUES-FOUND reviews). Existence is the correct trigger; a status gate would
@@ -21,9 +21,9 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.ts"
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.ts"
 ---
 
 # Writing Revise
@@ -34,7 +34,7 @@ The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced
 
 Auto-load all constraints matching `applies-to: writing-revise`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-revise`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-revise`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

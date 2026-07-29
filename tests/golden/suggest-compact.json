@@ -1,0 +1,76 @@
+{
+  "hook": "suggest-compact",
+  "_notes": [
+    "suggest-compact keeps its counter at tempfile.gettempdir()/claude-tool-count-<CLAUDE_SESSION_ID>.",
+    "Every case sets TMPDIR=. so the counter lands inside the sandbox cwd: that (a) keeps the Python",
+    "run and the TS run from sharing one counter and contaminating each other, and (b) makes the",
+    "counter write visible in the harness filesystem delta. Each case also uses a distinct",
+    "CLAUDE_SESSION_ID. A TS port must honor TMPDIR the same way (os.tmpdir() / process.env.TMPDIR).",
+    "The Python source has no deny path — this is a context/effect hook, so no deny case exists."
+  ],
+  "cases": [
+    {
+      "name": "threshold-hit-emits-first-suggestion",
+      "kind": "context",
+      "stdin": { "tool_name": "Edit", "hook_event_name": "PreToolUse" },
+      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "golden-a" },
+      "fixture": { "claude-tool-count-golden-a": "49" }
+    },
+    {
+      "name": "interval-hit-emits-checkpoint-suggestion-and-echoes-posttooluse",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "hook_event_name": "PostToolUse" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "golden-b",
+        "COMPACT_THRESHOLD": "4",
+        "COMPACT_INTERVAL": "3"
+      },
+      "fixture": { "claude-tool-count-golden-b": "9" }
+    },
+    {
+      "name": "below-threshold-increments-silently",
+      "kind": "effect",
+      "stdin": { "tool_name": "Edit", "hook_event_name": "PreToolUse" },
+      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "golden-c" },
+      "fixture": { "claude-tool-count-golden-c": "2" }
+    },
+    {
+      "name": "non-edit-tool-is-ignored-and-counter-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Bash", "hook_event_name": "PreToolUse" },
+      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "golden-d" },
+      "fixture": { "claude-tool-count-golden-d": "49" }
+    },
+    {
+      "name": "unparseable-stdin-exits-clean",
+      "kind": "allow",
+      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "golden-e" },
+      "fixture": { "claude-tool-count-golden-e": "49" }
+    },
+    {
+      "name": "missing-hook-event-name-defaults-to-pretooluse-and-creates-counter",
+      "kind": "context",
+      "stdin": { "tool_name": "Edit" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "golden-f",
+        "COMPACT_THRESHOLD": "1",
+        "COMPACT_INTERVAL": "1"
+      },
+      "fixture": {}
+    },
+    {
+      "name": "corrupt-counter-file-resets-to-zero",
+      "kind": "effect",
+      "stdin": { "tool_name": "Edit", "hook_event_name": "PreToolUse" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "golden-g",
+        "COMPACT_THRESHOLD": "1",
+        "COMPACT_INTERVAL": "1"
+      },
+      "fixture": { "claude-tool-count-golden-g": "nope" }
+    }
+  ]
+}

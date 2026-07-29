@@ -1,0 +1,98 @@
+{
+  "hook": "ds-plan-executable-guard",
+  "_notes": [
+    "Branches pinned here are exactly the ones reachable from outside the repo tree.",
+    "validate_plan() returns ['PLAN.md not found at <p>'] BEFORE it lazily imports the",
+    "domain parser, so the missing-PLAN.md deny is fully exercisable. Any branch that needs",
+    "the parser itself (scripts/ds/ds_plan_table.py -> scripts/lib/plan_table_core.py) is NOT",
+    "reachable under the parity harness: it extracts only hooks/*.py into a temp dir, so",
+    "hooks_dir.parent/scripts/ds does not exist and the import raises ModuleNotFoundError",
+    "(exit 1, traceback on stderr). That covers 'deny: table row incomplete' and",
+    "'allow: plan is executable' — see the report notes."
+  ],
+  "cases": [
+    {
+      "name": "deny-plan-md-missing-next-to-approval-artifact",
+      "kind": "deny",
+      "stdin": {
+        "session_id": "parity-ds-plan-01",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/PLAN_REVIEWED.md",
+          "content": "APPROVED\n"
+        }
+      },
+      "fixture": {
+        ".planning/SPEC.md": "# Spec\n\nplaceholder so .planning/ exists without a PLAN.md\n"
+      }
+    },
+    {
+      "name": "deny-nested-planning-dir-with-dash-argv",
+      "kind": "deny",
+      "argv": ["-"],
+      "stdin": {
+        "session_id": "parity-ds-plan-02",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "studies/alpha/.planning/PLAN_REVIEWED.md",
+          "old_string": "PENDING",
+          "new_string": "APPROVED"
+        }
+      },
+      "fixture": {
+        "studies/alpha/.planning/SPEC.md": "# Alpha spec\n"
+      }
+    },
+    {
+      "name": "allow-non-write-tool",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "parity-ds-plan-03",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": ".planning/PLAN_REVIEWED.md"
+        }
+      },
+      "fixture": {
+        ".planning/SPEC.md": "# Spec\n"
+      }
+    },
+    {
+      "name": "allow-write-to-plan-md-itself-not-the-approval-artifact",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "parity-ds-plan-04",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/PLAN.md",
+          "content": "### Task 1\n\nprose, no Task Breakdown table at all\n"
+        }
+      },
+      "fixture": {
+        ".planning/PLAN.md": "### Task 1\n\nprose, no Task Breakdown table at all\n"
+      }
+    },
+    {
+      "name": "allow-missing-file-path-in-tool-input",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "parity-ds-plan-05",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": {}
+      }
+    },
+    {
+      "name": "cli-mode-reports-missing-plan-and-exits-1",
+      "kind": "context",
+      "argv": [".planning/PLAN.md"],
+      "fixture": {
+        ".planning/SPEC.md": "# Spec, no PLAN.md\n"
+      }
+    }
+  ]
+}

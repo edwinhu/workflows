@@ -6,7 +6,7 @@ hooks:
     - matcher: "Read"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.ts"
     - matcher: "Edit|Write"
       hooks:
         - type: command
@@ -15,29 +15,29 @@ hooks:
             GATE_STATUS=VERIFIED
             GATE_DESCRIPTION="Phase 1 sources gate"
             GATE_REMEDY="Return to Phase 1 (workshop skill) and complete source gathering before editing any files"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.ts"
   PostToolUse:
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.ts"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.ts"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.ts"
     - matcher: "*"
       hooks:
         - type: command
           command: >-
             COMPACT_THRESHOLD=40
             COMPACT_INTERVAL=20
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.ts
 ---
 
 **Announce:** "I'm using workshop-revise to apply changes to the workshop presentation."
@@ -48,7 +48,7 @@ hooks:
 
 Load ALL Typst conventions before touching any files:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workshop-revise`
 
 **You MUST have these constraints loaded before any edits. No claiming you "remember" them.**
 
@@ -129,7 +129,7 @@ last_updated: [timestamp]
 
 1. **Read `.planning/SOURCES.md`** — paper metadata (title, authors, affiliations)
 2. **Read `.planning/OUTLINE.md`** — section structure and timing
-3. **Constraints are already loaded** — the bang-invoked auto-loader at the top of this skill fires at skill-load time (no separate load needed). If you are resuming in a fresh session and skipped that, re-run it: `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop-revise`
+3. **Constraints are already loaded** — the bang-invoked auto-loader at the top of this skill fires at skill-load time (no separate load needed). If you are resuming in a fresh session and skipped that, re-run it: `bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workshop-revise`
 4. **Read existing `slides.typ`** — current slide content
 5. **Read existing `notes.typ`** — current speaker notes
 

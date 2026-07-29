@@ -8,7 +8,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
 ---
 
 Announce: "Using dev-handoff to capture session state for clean resumption."

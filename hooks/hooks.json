@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.ts"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.ts"
           }
         ]
       },
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.ts"
           }
         ]
       }
@@ -37,23 +37,23 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts"
           },
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.ts"
           },
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/atomic-constraint-guard.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/atomic-constraint-guard.ts"
           },
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-prose-check.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-prose-check.ts"
           },
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/cite-fidelity-lint.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/cite-fidelity-lint.ts"
           }
         ]
       },
@@ -62,12 +62,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/pr-url-logger.py",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pr-url-logger.ts",
             "async": true
           },
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.ts"
           }
         ]
       }
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.ts"
           }
         ]
       }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-end.py",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/session-end.ts",
             "async": true
           }
         ]
@@ -101,7 +101,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/pattern-scan.py",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pattern-scan.ts",
             "async": true
           }
         ]
@@ -112,7 +112,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/subagent-start.py"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/subagent-start.ts"
           }
         ]
       }

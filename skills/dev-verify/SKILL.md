@@ -8,7 +8,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
     - matcher: "Agent"
       hooks:
         - type: command
@@ -19,9 +19,9 @@ hooks:
             GATE_BLOCKED_TOOLS=Agent
             GATE_DESCRIPTION="Code review approved"
             GATE_REMEDY="Return to dev-review (Phase 6). Review must complete with verdict APPROVED (REVIEW_STATE.md status: APPROVED) before verification. A CHANGES_REQUIRED/ESCALATE/BLOCKED review does not admit verify. REVIEW_STATE.md must also record codex_second_pass: completed (Codex returned a verdict) | declined (user opted out) | unavailable (Codex not installed/ready, or no git repo). codex_second_pass: requested means the second pass was launched but has not returned — join it (read the file named by codex_output_file) before verifying; a launched-but-unjoined pass is not a completed one. codex_second_pass: error is an absence of evidence, not an approval — retry it or have the user explicitly decline."
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
         - type: command
-          command: "FLOOR=dev uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.py"
+          command: "FLOOR=dev bun ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.ts"
 ---
 
 Announce: "Using dev-verify (Phase 7) to confirm completion with fresh evidence."
@@ -44,7 +44,7 @@ At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md
 
 Auto-load all constraints matching `applies-to: dev-verify`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-verify`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev-verify`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

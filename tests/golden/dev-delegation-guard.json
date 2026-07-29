@@ -1,0 +1,88 @@
+{
+  "hook": "dev-delegation-guard",
+  "cases": [
+    {
+      "name": "deny-write-relative-project-file",
+      "kind": "deny",
+      "stdin": {
+        "session_id": "sess-parity-1",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "src/pipeline.py",
+          "content": "def run():\n    pass\n"
+        }
+      },
+      "fixture": {
+        "src/pipeline.py": "old\n",
+        ".planning/SPEC.md": "# Spec\n"
+      }
+    },
+    {
+      "name": "deny-edit-absolute-project-file",
+      "kind": "deny",
+      "stdin": {
+        "session_id": "sess-parity-2",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/home/eh/projects/workflows/hooks/dev-delegation-guard.ts",
+          "old_string": "a",
+          "new_string": "b"
+        }
+      }
+    },
+    {
+      "name": "allow-planning-state-file",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-3",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/SPEC_REVIEWED.md",
+          "content": "status: APPROVED\n"
+        }
+      },
+      "fixture": {
+        ".planning/SPEC.md": "# Spec\n"
+      }
+    },
+    {
+      "name": "allow-claude-dir-nested-anywhere-in-path",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-4",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/home/eh/projects/workflows/.claude/settings.json",
+          "old_string": "a",
+          "new_string": "b"
+        }
+      }
+    },
+    {
+      "name": "allow-non-write-tool",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-5",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "src/pipeline.py"
+        }
+      }
+    },
+    {
+      "name": "allow-write-with-no-file-path",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-6",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {}
+      }
+    }
+  ]
+}

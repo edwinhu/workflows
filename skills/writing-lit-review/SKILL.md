@@ -14,7 +14,7 @@ hooks:
             GATE_BLOCKED_TOOLS=Write,Edit,Agent,Bash
             GATE_DESCRIPTION="Brainstorm completion"
             GATE_REMEDY="Return to the /writing brainstorm phase: gather sources, confirm angle/audience via AskUserQuestion, then write .planning/BRAINSTORM_COMPLETE.md"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ---
 
 # Literature Review & Source Materialization

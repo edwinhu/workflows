@@ -8,7 +8,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/find-slide-page-inject.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/find-slide-page-inject.ts"
 ---
 
 **Announce:** "I'm using visual-verify to set up a render-vision-fix loop."

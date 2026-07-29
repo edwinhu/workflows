@@ -1,0 +1,156 @@
+{
+  "hook": "validate-skill-paths",
+  "_notes": [
+    "PostToolUse hook. Two observable outcomes only: silent exit 0, or a PostToolUse",
+    "additionalContext JSON report on stdout (still exit 0). The source has NO deny path — no",
+    "deny(...) and no \"deny\" anywhere — so there is no deny case to write; every case is 'allow'",
+    "(silent) or 'context' (report emitted).",
+    "Every path in stdin is RELATIVE on purpose: the hook re-reads the edited file from disk and",
+    "resolves ${CLAUDE_SKILL_DIR}/${CLAUDE_PLUGIN_ROOT} against the discovered plugin root, so the",
+    "fixture must live at the path stdin names. The harness runs both implementations at the same",
+    "sandbox cwd, so relative paths resolve into the fixture and the emitted report (which embeds the",
+    "resolved path verbatim) is comparable. Absolute paths would be unwritable from a golden file.",
+    "find_plugin_root walks up from the file and stops at the sandbox root, where the fixture puts",
+    ".claude-plugin/plugin.json, so plugin_root == Path('.') and the report's rel path is the",
+    "sandbox-relative one.",
+    "Silent branches covered: non-Edit/Write tool, missing file_path, non-.md suffix, no plugin root,",
+    "unreadable file, and a file whose refs all resolve / are skipped. Report branches covered:",
+    "broken ${CLAUDE_SKILL_DIR} ref, broken ${CLAUDE_PLUGIN_ROOT} ref, skill dir inferred by walking",
+    "up to the nearest SKILL.md, the !`cat` multi-argument extraction+dedup ordering, and the",
+    "FENCED_BANG_BACKTICK danger path (which fires even when the referenced file exists)."
+  ],
+  "cases": [
+    {
+      "name": "non-edit-tool-ignored",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "Read !`cat ${CLAUDE_SKILL_DIR}/references/missing.md` here.\n"
+      }
+    },
+    {
+      "name": "missing-file-path-ignored",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": {} },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n"
+      }
+    },
+    {
+      "name": "non-markdown-file-ignored",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "file_path": "skills/demo/scripts/run.py" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/scripts/run.py": "# ${CLAUDE_PLUGIN_ROOT}/scripts/nope.py\n"
+      }
+    },
+    {
+      "name": "markdown-outside-any-plugin-ignored",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "notes/loose.md" }
+      },
+      "fixture": {
+        "notes/loose.md": "Broken but unplugged: ${CLAUDE_PLUGIN_ROOT}/references/nope.md\n"
+      }
+    },
+    {
+      "name": "unreadable-file-ignored",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "file_path": "skills/demo/DELETED.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "unrelated\n"
+      }
+    },
+    {
+      "name": "resolvable-and-skippable-refs-emit-nothing",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "Load !`cat ${CLAUDE_SKILL_DIR}/references/real.md` first.\nThen ${CLAUDE_PLUGIN_ROOT}/scripts/real.py runs.\nUser project file: ${CLAUDE_SKILL_DIR}/.planning/SPEC.md is skipped.\nTemplate: ${CLAUDE_PLUGIN_ROOT}/skills/other-skill/SKILL.md is skipped.\nPlaceholder: ${CLAUDE_SKILL_DIR}/{SECTION}/notes.md is skipped.\nBare backtick command !`cat plain.md` has no env var.\n",
+        "skills/demo/references/real.md": "real reference\n",
+        "scripts/real.py": "print('real')\n"
+      }
+    },
+    {
+      "name": "broken-skill-dir-ref-reported",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "Intro line.\nLoad !`cat ${CLAUDE_SKILL_DIR}/references/missing.md` before starting.\nAnd see ${CLAUDE_SKILL_DIR}/references/real.md too.\n",
+        "skills/demo/references/real.md": "real reference\n"
+      }
+    },
+    {
+      "name": "broken-plugin-root-ref-reported",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "Run ${CLAUDE_PLUGIN_ROOT}/scripts/gone.py to check.\nQuoted: \"${CLAUDE_PLUGIN_ROOT}/references/gone.md\" is also broken.\n"
+      }
+    },
+    {
+      "name": "skill-dir-inferred-from-parent-skill-md",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "skills/demo/phases/plan.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "parent skill\n",
+        "skills/demo/phases/plan.md": "Phase file referencing ${CLAUDE_SKILL_DIR}/references/absent.md here.\n"
+      }
+    },
+    {
+      "name": "bang-cat-multi-argument-extraction-order",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "!`cat ${CLAUDE_PLUGIN_ROOT}/a.md ${CLAUDE_PLUGIN_ROOT}/b.md`\n"
+      }
+    },
+    {
+      "name": "fenced-bang-backtick-is-dangerous-even-when-path-exists",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
+        "skills/demo/SKILL.md": "Example usage:\n\n```markdown\n!`cat ${CLAUDE_SKILL_DIR}/references/real.md`\n```\n\nDone.\n",
+        "skills/demo/references/real.md": "real reference\n"
+      }
+    }
+  ]
+}

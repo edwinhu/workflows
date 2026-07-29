@@ -8,11 +8,11 @@ hooks:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.ts"
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.ts"
 ---
 
 # Spec Document Reviewer (Data Science)

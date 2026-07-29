@@ -1,0 +1,101 @@
+{
+  "hook": "lint-check",
+  "cases": [
+    {
+      "name": "context-ruff-reports-violations",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "bad.py" }
+      },
+      "fixture": {
+        "bad.py": "import os\n\n\nx = 1\n"
+      }
+    },
+    {
+      "name": "context-ruff-errors-on-missing-file",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "gone.py" }
+      },
+      "fixture": {
+        "placeholder.txt": "the .py named in tool_input is deliberately absent; ruff exits nonzero with E902\n"
+      }
+    },
+    {
+      "name": "allow-clean-python-file",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "clean.py" }
+      },
+      "fixture": {
+        "clean.py": "x = 1\n"
+      }
+    },
+    {
+      "name": "allow-marimo-notebook-routed-away-from-ruff",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "notebook.py" }
+      },
+      "fixture": {
+        "notebook.py": "import marimo\n\napp = marimo.App()\n\nimport os\nimport sys\n"
+      }
+    },
+    {
+      "name": "allow-non-edit-tool",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Read",
+        "tool_input": { "file_path": "bad.py" }
+      },
+      "fixture": {
+        "bad.py": "import os\n\n\nx = 1\n"
+      }
+    },
+    {
+      "name": "allow-missing-file-path",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {}
+      },
+      "fixture": {
+        "bad.py": "import os\n\n\nx = 1\n"
+      }
+    },
+    {
+      "name": "allow-unsupported-extension",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "notes.md" }
+      },
+      "fixture": {
+        "notes.md": "# notes\n\nimport os\n"
+      }
+    },
+    {
+      "name": "allow-js-routed-to-eslint-not-ruff",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "app.js" }
+      },
+      "fixture": {
+        "app.js": "var x = 1\n"
+      }
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "hook": "phase-gate-guard",
+  "cases": [
+    {
+      "name": "no-gate-configured-allows",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": { "GATE_ARTIFACT": "" }
+    },
+    {
+      "name": "unblocked-tool-allows",
+      "kind": "allow",
+      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Run dev-spec-reviewer"
+      }
+    },
+    {
+      "name": "matcher-tool-not-in-blocked-tools-allows",
+      "kind": "allow",
+      "stdin": { "tool_name": "Agent", "tool_input": { "prompt": "fan out" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_BLOCKED_TOOLS": "Write,Edit",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Run dev-spec-reviewer"
+      }
+    },
+    {
+      "name": "planning-dir-write-allowed",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": ".planning/SPEC_REVIEWED.md" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Run dev-spec-reviewer"
+      }
+    },
+    {
+      "name": "claude-dir-write-allowed",
+      "kind": "allow",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": ".claude/settings.json" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Run dev-spec-reviewer"
+      }
+    },
+    {
+      "name": "empty-payload-allows",
+      "kind": "allow",
+      "stdin": {},
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Run dev-spec-reviewer"
+      }
+    },
+    {
+      "name": "deny-artifact-missing",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Return to dev-design and run dev-spec-reviewer"
+      },
+      "fixture": {
+        "src/app.py": "print('hi')\n"
+      }
+    },
+    {
+      "name": "deny-artifact-missing-no-file-path-target",
+      "kind": "deny",
+      "stdin": { "tool_name": "Agent", "tool_input": { "prompt": "fan out" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_BLOCKED_TOOLS": "Write,Edit,Agent",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Return to dev-design and run dev-spec-reviewer"
+      }
+    },
+    {
+      "name": "deny-frontmatter-not-flat",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Return to dev-design and run dev-spec-reviewer"
+      },
+      "fixture": {
+        ".planning/SPEC_REVIEWED.md": "---\nbroken: [\nstatus: APPROVED\n---\n\n# Spec review\n"
+      }
+    },
+    {
+      "name": "deny-wrong-status",
+      "kind": "deny",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Return to dev-design and run dev-spec-reviewer"
+      },
+      "fixture": {
+        ".planning/SPEC_REVIEWED.md": "---\nstatus: NEEDS_REVISION\n---\n\n# Spec review\n"
+      }
+    },
+    {
+      "name": "deny-status-nested-fails-closed",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Return to dev-design and run dev-spec-reviewer"
+      },
+      "fixture": {
+        ".planning/SPEC_REVIEWED.md": "---\nprior:\n  status: APPROVED\n---\n\n# Spec review\n"
+      }
+    },
+    {
+      "name": "deny-required-field-missing",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/PLAN_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_REQUIRE_FIELDS": "codex_second_pass:enabled|declined|unavailable",
+        "GATE_DESCRIPTION": "Plan review",
+        "GATE_REMEDY": "Return to dev-design and run dev-plan-reviewer"
+      },
+      "fixture": {
+        ".planning/PLAN_REVIEWED.md": "---\nstatus: APPROVED\n---\n\n# Plan review\n"
+      }
+    },
+    {
+      "name": "deny-required-field-placeholder-value",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/PLAN_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_REQUIRE_FIELDS": "codex_second_pass:enabled|declined|unavailable,reviewer",
+        "GATE_DESCRIPTION": "Plan review",
+        "GATE_REMEDY": "Return to dev-design and run dev-plan-reviewer"
+      },
+      "fixture": {
+        ".planning/PLAN_REVIEWED.md": "---\nstatus: APPROVED\ncodex_second_pass: maybe\n---\n\n# Plan review\n"
+      }
+    },
+    {
+      "name": "allow-status-and-fields-satisfied",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/PLAN_REVIEWED.md",
+        "GATE_STATUS": "APPROVED",
+        "GATE_REQUIRE_FIELDS": "codex_second_pass:enabled|declined|unavailable",
+        "GATE_DESCRIPTION": "Plan review",
+        "GATE_REMEDY": "Return to dev-design and run dev-plan-reviewer"
+      },
+      "fixture": {
+        ".planning/PLAN_REVIEWED.md": "---\nstatus: APPROVED # signed off\ncodex_second_pass: declined\n---\n\n# Plan review\n"
+      }
+    },
+    {
+      "name": "allow-artifact-exists-no-status-required",
+      "kind": "allow",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "src/app.py" } },
+      "env": {
+        "GATE_ARTIFACT": ".planning/SPEC_REVIEWED.md",
+        "GATE_DESCRIPTION": "Spec review",
+        "GATE_REMEDY": "Return to dev-design and run dev-spec-reviewer"
+      },
+      "fixture": {
+        ".planning/SPEC_REVIEWED.md": "no frontmatter at all\n"
+      }
+    }
+  ]
+}

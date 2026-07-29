@@ -7,23 +7,23 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/wc-step-gate-guard.ts"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.ts"
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts"
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/wc-constraint-check.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/wc-constraint-check.ts"
 ---
 
 **Announce:** "Using workflow-creator to design/audit/improve a structured workflow."
 
 **Load workflow-creator's own constraints** (auto-discovered + `applies-to`-filtered — surfaces the `wc-*` behavioral rules at load time, complementing the `wc-constraint-check.py` post-edit hook):
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workflow-creator`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workflow-creator`
 
 Detect mode from user request, then follow the corresponding process below:
 - **Mode 1 (Create)** — "create/design a workflow", "break a task into phases"
@@ -352,7 +352,7 @@ hooks:
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
             GATE_BLOCKED_TOOLS=Agent
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ```
 
 **Landmine: `matcher` and `GATE_BLOCKED_TOOLS` are two separate lists that must agree.** `matcher` only decides which calls invoke the script; `phase-gate-guard.py` only actually blocks tools named in `GATE_BLOCKED_TOOLS` (default `Write,Edit` — Agent is NOT blocked unless you list it). A matcher of `Write|Edit|Agent` with no `GATE_BLOCKED_TOOLS=...,Agent` fires on every `Agent` call but silently lets it through — a gate that looks wired but never blocks the fan-out it names.
@@ -1004,7 +1004,7 @@ Skills use a bang to auto-load all applicable constraints at skill load time:
 
 ```
 # In a skill's SKILL.md:
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts skill-name`
 ```
 
 This mirrors `check-all.py`'s auto-discovery but for `.md` prose:
@@ -1715,7 +1715,7 @@ If verification only checks Level 1 (exists), it's theater. A workflow that clai
 **P21 — Auto-loader usage for constraints:**
 - Do phase skills that load constraint prose use the bang-invoked auto-loader?
   ```
-  !`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py skill-name`
+  !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts skill-name`
   ```
 - Or do they list `Read()` calls for each constraint `.md` file manually?
 - **Why this matters:** The auto-loader + `applies-to` frontmatter is the wiring that makes atomic constraints work. Manual `Read()` lists mean adding a new constraint requires editing every skill that should load it — silent drift is the default failure mode.

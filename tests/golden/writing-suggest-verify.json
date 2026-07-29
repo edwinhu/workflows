@@ -1,0 +1,191 @@
+{
+  "hook": "writing-suggest-verify",
+  "cases": [
+    {
+      "name": "unparseable-stdin-noop",
+      "kind": "allow",
+      "_branch": "json.load(sys.stdin) raises -> sys.exit(0). stdin omitted so the harness attaches /dev/null and the reader sees EOF. Fixture is a live writing workflow at edits 9/10, so ONLY the parse guard can stop the counter from moving — a port that treats empty stdin as {} would still no-op here, but a port that defaults the payload to something truthy would write the file and fail on the fs delta.",
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
+      }
+    },
+    {
+      "name": "non-edit-tool-noop",
+      "kind": "allow",
+      "_branch": "tool_name not in (Write, Edit, MultiEdit) -> sys.exit(0). Everything else about the payload is a firing case (.md path, writing workflow one edit below threshold), so only the tool-name gate can stop it.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Read",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n",
+        "draft.md": "# Draft\n"
+      }
+    },
+    {
+      "name": "non-markdown-path-noop",
+      "kind": "allow",
+      "_branch": "file_path.endswith('.md') is False -> sys.exit(0). Deliberate near-miss: `notes.markdown` contains the substring '.md' but does not END with it, so a port that uses `includes('.md')` instead of endsWith writes the counter here and fails the fs delta.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "notes.markdown" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
+      }
+    },
+    {
+      "name": "no-active-workflow-noop",
+      "kind": "allow",
+      "_branch": "(cwd/.planning/ACTIVE_WORKFLOW.md).exists() is False -> sys.exit(0). The fixture supplies a decoy `.planning/OUTLINE.md` so the .planning directory itself exists; only the specific state file is missing. Pins that nothing is CREATED on this path (a port that opens the file for read-write would leave an empty file behind and show in the fs delta).",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Outline\n",
+        "draft.md": "# Draft\n"
+      }
+    },
+    {
+      "name": "workflow-type-not-writing-noop",
+      "kind": "allow",
+      "_branch": "parse_yaml_value(content, 'workflow') != 'writing' -> sys.exit(0). State file is a `workflow: dev` project otherwise identical to the firing fixture (counter one below threshold), so only the type check stops it.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "docs/design.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: dev\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
+      }
+    },
+    {
+      "name": "workflow-key-absent-noop",
+      "kind": "allow",
+      "_branch": "Same exit as above but through parse_yaml_value's DEFAULT arm: the state file has no `workflow:` key at all, so the regex misses and the helper returns None, which != 'writing'. Pins that a missing key is not read as an empty-but-matching value, and that the counter is untouched.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
+      }
+    },
+    {
+      "name": "under-threshold-increments-counter",
+      "kind": "effect",
+      "_branch": "edits(3)+1 = 4 < threshold(10) -> else arm: update_yaml_value rewrites `edits_since_verify: 3` to `4`, writes the file, exits 0 with NO stdout. The whole observable is the fs delta on .planning/ACTIVE_WORKFLOW.md — the branch where a port that silently skips the write, or writes `edits` instead of `edits+1`, is invisible in stdout and caught only here.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "sections/02-analysis.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nproject_root: .\nedits_since_verify: 3\nverify_threshold: 10\n---\n"
+      }
+    },
+    {
+      "name": "counter-key-missing-inserted-before-closing-delimiter",
+      "kind": "effect",
+      "_branch": "Same else arm, but through update_yaml_value's count==0 path: no `edits_since_verify:` key exists, so re.subn matches nothing and the helper inserts `edits_since_verify: 1` on the line BEFORE the closing `---` (the first line whose strip()=='---' at i>0). Defaults also exercised: edits defaults to '0' (so 0+1=1) and threshold to '10' since neither key is present. Pins insertion POSITION, not just presence.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: econ\nphase: draft\n---\n\n# Notes\n\nBody text after the front matter.\n"
+      }
+    },
+    {
+      "name": "counter-key-missing-no-closing-delimiter-appended",
+      "kind": "effect",
+      "_branch": "update_yaml_value's LAST resort: key absent AND no line with strip()=='---' at index > 0 (the opening delimiter at i==0 is deliberately skipped by the `i > 0` guard), so the pair is appended as a trailing `\\nedits_since_verify: 1`. Distinguishes the two count==0 sub-branches, which are easy to collapse into one in a port.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "MultiEdit",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: general\nphase: revise\n"
+      }
+    },
+    {
+      "name": "threshold-reached-resets-and-suggests",
+      "kind": "context",
+      "_branch": "edits(9)+1 = 10 >= threshold(10) -> the nudge arm: counter RESET to 0 (not to 10) and written, then context('PostToolUse', ...) prints the additionalContext JSON and exits 0. Both halves are pinned: the exact stdout envelope (hookEventName PostToolUse, the emoji, the count 10, style `legal`, phase `draft`, the /writing-revise pointer) and the fs delta showing the reset. style/phase are read from the ORIGINAL content, before the rewrite.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "sections/03-doctrine.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nproject_root: .\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
+      }
+    },
+    {
+      "name": "over-threshold-with-style-and-phase-defaults",
+      "kind": "context",
+      "_branch": "Same nudge arm entered STRICTLY over the line (12+1=13 >= 3) and with neither `style:` nor `phase:` present, so parse_yaml_value falls back to 'general' and 'edit' in the message. Two things pinned that the equality case cannot: the comparison is >= (not ==, which a port could write and still pass the 9->10 case), and the message defaults.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nedits_since_verify: 12\nverify_threshold: 3\n---\n"
+      }
+    },
+    {
+      "name": "non-numeric-counter-crashes-uncaught",
+      "kind": "effect",
+      "_branch": "int(parse_yaml_value(content, 'edits_since_verify')) raises ValueError on `many` and NOTHING catches it: the process dies with a traceback on stderr, exit code 1, EMPTY stdout, and the state file UNCHANGED. Pins the unhandled-crash contract — a port that defensively coerces a bad value to 0 (or wraps main in try/catch and exits 0) differs on both exit code and fs delta.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "draft.md" }
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: many\nverify_threshold: 10\n---\n"
+      }
+    }
+  ]
+}

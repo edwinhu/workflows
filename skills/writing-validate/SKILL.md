@@ -15,12 +15,12 @@ hooks:
             GATE_BLOCKED_TOOLS=Write,Edit,Bash
             GATE_DESCRIPTION="Draft completion (required before validation)"
             GATE_REMEDY="All sections must be drafted before validation runs. Return to writing-draft and write .planning/DRAFT_COMPLETE.md after every OUTLINE section has a substantive draft."
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
   PostToolUse:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.ts"
 ---
 
 Announce: "Using writing-validate (Phase 3.5) to validate draft sections against PRECIS.md claims."
@@ -69,7 +69,7 @@ This phase sits between writing-draft and writing-review. It runs the **same con
 
 Auto-load all constraints matching `applies-to: writing-validate`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-validate`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-validate`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

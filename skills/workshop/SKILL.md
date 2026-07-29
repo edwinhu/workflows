@@ -6,7 +6,7 @@ hooks:
     - matcher: "Read"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.ts"
     - matcher: "Edit|Write|Workflow"
       hooks:
         - type: command
@@ -16,7 +16,7 @@ hooks:
             GATE_DESCRIPTION="Phase 1 sources gate"
             GATE_REMEDY="Return to Phase 1 and complete source gathering before writing any files"
             GATE_BLOCKED_TOOLS=Write,Edit
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
         - type: command
           # workshop-phase-gate-guard.py is bespoke (not built on the GATE_BLOCKED_TOOLS env-var
           # pattern) — it hardcodes its own tool-name check to Write|Edit|Workflow so it can gate BOTH
@@ -24,29 +24,29 @@ hooks:
           # dispatch that actually produces them (a Workflow call carries no file_path, so the
           # Edit|Write-only check alone never saw it — the OUTLINE_APPROVED gate could be bypassed by
           # generation starting via Workflow before any Edit/Write landed).
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-phase-gate-guard.ts"
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.ts"
   PostToolUse:
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.ts"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.ts"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.ts"
     - matcher: "*"
       hooks:
         - type: command
           command: >-
             COMPACT_THRESHOLD=40
             COMPACT_INTERVAL=20
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.ts
 ---
 
 **Announce:** "I'm using workshop to create academic presentation slides and speaker notes."
@@ -55,7 +55,7 @@ hooks:
 
 Load ALL Typst conventions before any slide or notes work:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py workshop`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workshop`
 
 **You MUST have these constraints loaded before proceeding to Phase 3. No claiming you "remember" them.**
 

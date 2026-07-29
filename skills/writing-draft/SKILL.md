@@ -14,22 +14,22 @@ hooks:
             GATE_BLOCKED_TOOLS=Write,Edit,Agent,Workflow
             GATE_DESCRIPTION="Outline review"
             GATE_REMEDY="Return to writing-outline and run the outline reviewer before drafting"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-outline-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-outline-guard.ts"
     - matcher: "Workflow"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.ts"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.ts"
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.ts"
 ---
 
 # Writing Draft
@@ -42,7 +42,7 @@ Expand detailed section outlines into prose via the `writing-draft` ultracode wo
 
 Auto-load all constraints matching `applies-to: writing-draft` (includes constraint-loading-protocol, source-anchored-citations, no-bold-lead, topic-sentences, and all shared writing constraints):
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-draft`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-draft`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

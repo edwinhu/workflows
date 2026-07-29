@@ -1,0 +1,284 @@
+{
+  "hook": "workshop-outline-executable-guard",
+  "_notes": [
+    "IMPORT PATH — READ THIS BEFORE EDITING. This hook does a MODULE-TOP-LEVEL import of the",
+    "shared parser: sys.path.insert(<hook dir>/../scripts/workshop) then",
+    "`from workshop_slide_table import build_index`. The parity harness extracts only hooks/*.py",
+    "into a temp dir, so that relative path does not exist there and EVERY case would die with",
+    "ModuleNotFoundError (exit 1, empty stdout) — pinning nothing at all, and letting a TS port",
+    "that merely crashes pass. Every case therefore sets PYTHONPATH to the LIVE repo's",
+    "scripts/workshop + scripts/lib so the Python side loads the same parser the TS port will",
+    "mirror. PYTHONDONTWRITEBYTECODE=1 keeps CPython from dropping __pycache__/ into the fixture",
+    "dir, which would otherwise show up as a Python-only filesystem delta.",
+    "If the repo is checked out elsewhere, PYTHONPATH here must be updated — a stale path fails",
+    "LOUDLY (py exits 1, ts does not), it never silently passes.",
+    "",
+    "The hook itself is pure: no files written, no subprocesses. Every case's expected fs delta",
+    "is empty.",
+    "",
+    "Branch map (all 9 outcome branches of the source are covered and were verified by running",
+    "the HEAD .py against these exact fixtures):",
+    "  argv form  -> violations (exit 1 report) | stale_approval (WARN, exit 0) | clean (exit 0)",
+    "  stdin form -> unreadable stdin (silent 0) | non-Write/Edit tool (silent 0) |",
+    "                file_path not *OUTLINE_APPROVED.md (silent 0) | violations (deny JSON) |",
+    "                stale_approval (allow JSON + warning) | clean (silent 0)",
+    "",
+    "deny-outline-md-missing pins a real quirk worth locking down: fp.parent/'OUTLINE.md' is fed",
+    "to build_index(), which — because that path is not an existing file — treats it as a",
+    "DIRECTORY and reports 'OUTLINE.md not found at .planning/OUTLINE.md/OUTLINE.md'. The doubled",
+    "segment is the actual HEAD behavior; the port must reproduce it byte for byte."
+  ],
+  "cases": [
+    {
+      "name": "deny-table-row-incomplete-and-dangling-inventory-id",
+      "kind": "deny",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-01",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "content": "status: APPROVED\nslide_count: 2\n"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup | N/A | none | Open warm. |\n| 2. Data | Part 1: Motivation | The panel covers 2010-2020. | coverage | R9 | N/A | Walk it. |\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: /papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+      }
+    },
+    {
+      "name": "deny-outline-md-missing-next-to-approval-artifact",
+      "kind": "deny",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-02",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "old_string": "PENDING",
+          "new_string": "APPROVED"
+        }
+      },
+      "fixture": {
+        ".planning/SOURCES.md": "# sources only — no OUTLINE.md sibling\n"
+      }
+    },
+    {
+      "name": "deny-no-slide-spec-found-neither-table-nor-prose",
+      "kind": "deny",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-03",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "content": "ok"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nSome prose about the talk.\n\n- Intro\n- Data\n- Results\n"
+      }
+    },
+    {
+      "name": "allow-clean-canonical-table-outline",
+      "kind": "allow",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-04",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "content": "status: APPROVED\nslide_count: 2\nsection_count: 1\n"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n## Slide Spec\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n## Inventory\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n- A1 — appendix\n"
+      }
+    },
+    {
+      "name": "allow-legacy-prose-form-outline",
+      "kind": "allow",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-05",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "content": "status: APPROVED\nslide_count: 2\n"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n### Part 1: Motivation\n\n= Motivation\n\n- Slide: \"Proxy advisors move votes.\" — setup; stakes → [F1]\n\n== The Data\n\n- Slide: \"The panel covers 2010-2020.\" — coverage; cleaning → [T1, R1]\n",
+        ".planning/SOURCES.md": "## Source Paper\n- **Path:** ~/papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+      }
+    },
+    {
+      "name": "allow-stale-approval-emits-warning-json",
+      "kind": "allow",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-06",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "old_string": "slide_count: 5",
+          "new_string": "slide_count: 2"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n",
+        ".planning/OUTLINE_APPROVED.md": "status: APPROVED\nslide_count: 5\nsection_count: 3\n"
+      }
+    },
+    {
+      "name": "allow-non-write-tool-short-circuits",
+      "kind": "allow",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-07",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nnot executable, but the tool is not Write/Edit so the guard never looks\n"
+      }
+    },
+    {
+      "name": "allow-unrelated-file-path-short-circuits",
+      "kind": "allow",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-08",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "notes.md",
+          "content": "unrelated write"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nnot executable, but the write target is not OUTLINE_APPROVED.md\n"
+      }
+    },
+    {
+      "name": "deny-dash-argv-falls-through-to-stdin",
+      "kind": "deny",
+      "argv": ["-"],
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "stdin": {
+        "session_id": "parity-workshop-outline-09",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/OUTLINE_APPROVED.md",
+          "content": "status: APPROVED\n"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nSome prose about the talk — no Slide Spec at all.\n"
+      }
+    },
+    {
+      "name": "allow-unreadable-stdin-exits-silently",
+      "kind": "allow",
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nno stdin is supplied, so json.load raises and the guard exits 0\n"
+      }
+    },
+    {
+      "name": "context-argv-clean-table-prints-report",
+      "kind": "context",
+      "argv": [".planning/OUTLINE.md"],
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n"
+      }
+    },
+    {
+      "name": "context-argv-prose-form-prints-prose-report",
+      "kind": "context",
+      "argv": [".planning/OUTLINE.md"],
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n### Part 1: Motivation\n\n= Motivation\n\n- Slide: \"Proxy advisors move votes.\" — setup; stakes → [F1]\n\n== The Data\n\n- Slide: \"The panel covers 2010-2020.\" — coverage; cleaning → [T1, R1]\n",
+        ".planning/SOURCES.md": "## Source Paper\n- **Path:** ~/papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+      }
+    },
+    {
+      "name": "context-argv-violations-exits-1-with-report",
+      "kind": "context",
+      "argv": [".planning/OUTLINE.md"],
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup | N/A | none | Open warm. |\n| 2. Data | Part 1: Motivation | The panel covers 2010-2020. | coverage | R9 | N/A | Walk it. |\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: /papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+      }
+    },
+    {
+      "name": "context-argv-stale-approval-warns-exit-0",
+      "kind": "context",
+      "argv": [".planning/OUTLINE.md"],
+      "env": {
+        "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "fixture": {
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n",
+        ".planning/OUTLINE_APPROVED.md": "status: APPROVED\nslide_count: 5\nsection_count: 3\n"
+      }
+    }
+  ]
+}

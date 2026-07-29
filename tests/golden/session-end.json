@@ -1,0 +1,73 @@
+{
+  "hook": "session-end",
+  "_notes": [
+    "Stop hook. Never blocks: stdout is always empty and exit is always 0 on every reachable branch.",
+    "The ONLY observable signal is the filesystem delta on .claude/LEARNINGS.md, so every case here is pinned on the fs half of parity.",
+    "The footer carries datetime.now() to the minute; py and ts runs happen milliseconds apart, so the hashes match except across a minute boundary (rare re-run flake, not a port defect).",
+    "Source has no deny path (no deny( / \"deny\" anywhere), so no deny case exists.",
+    "The IOError/OSError write-failure branch needs an unwritable LEARNINGS.md; the harness fixture format only materializes readable/writable regular files, so it is not reachable from outside.",
+    "The json.JSONDecodeError branch is reached by omitting stdin (harness gives /dev/null -> empty read); malformed raw bytes cannot be sent because the harness JSON.stringify's stdin."
+  ],
+  "cases": [
+    {
+      "name": "no-learnings-file-noop",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "6f0c1b2a-0f3d-4c7e-9a11-2b3c4d5e6f70",
+        "transcript_path": "/home/user/.claude/projects/demo/6f0c1b2a.jsonl",
+        "cwd": "/home/user/demo",
+        "hook_event_name": "Stop",
+        "stop_hook_active": false
+      },
+      "fixture": {
+        ".claude/PLAN.md": "# Plan\n\n- [x] ship it\n"
+      }
+    },
+    {
+      "name": "appends-footer-when-absent",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "6f0c1b2a-0f3d-4c7e-9a11-2b3c4d5e6f70",
+        "transcript_path": "/home/user/.claude/projects/demo/6f0c1b2a.jsonl",
+        "cwd": "/home/user/demo",
+        "hook_event_name": "Stop",
+        "stop_hook_active": false
+      },
+      "fixture": {
+        ".claude/LEARNINGS.md": "# Learnings\n\n- hooks are enforcement, not decoration\n- trailing blank lines are stripped before the footer\n\n\n",
+        ".claude/PLAN.md": "# Plan\n\n- [x] ship it\n"
+      }
+    },
+    {
+      "name": "replaces-stale-footer-no-duplicate",
+      "kind": "effect",
+      "stdin": {
+        "sessionId": "6f0c1b2a-0f3d-4c7e-9a11-2b3c4d5e6f70",
+        "hook_event_name": "Stop",
+        "stop_hook_active": false
+      },
+      "fixture": {
+        ".claude/LEARNINGS.md": "# Learnings\n\n- hooks are enforcement, not decoration\n\n---\nLast updated: 2020-01-01 00:00\n---\n"
+      }
+    },
+    {
+      "name": "mid-file-footer-text-is-not-stripped",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "6f0c1b2a-0f3d-4c7e-9a11-2b3c4d5e6f70",
+        "hook_event_name": "Stop",
+        "stop_hook_active": false
+      },
+      "fixture": {
+        ".claude/LEARNINGS.md": "# Learnings\n\n---\nLast updated: 2019-05-05 09:00\n---\n\n- a later entry landed after that old footer\n"
+      }
+    },
+    {
+      "name": "no-stdin-still-updates",
+      "kind": "effect",
+      "fixture": {
+        ".claude/LEARNINGS.md": "# Learnings\n\n- json decode failure must not stop the update\n"
+      }
+    }
+  ]
+}

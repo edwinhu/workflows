@@ -14,7 +14,7 @@ hooks:
             GATE_BLOCKED_TOOLS=Agent
             GATE_DESCRIPTION="Spec reviewed"
             GATE_REMEDY="SPEC.md must exist AND have passed dev-spec-reviewer (which writes SPEC_REVIEWED.md status: APPROVED) before clarifying. Complete brainstorm + spec review first."
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ---
 
 **Announce:** "I'm using dev-clarify (Phase 3) to resolve ambiguities."

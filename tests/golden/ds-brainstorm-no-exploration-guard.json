@@ -1,0 +1,46 @@
+{
+  "hook": "ds-brainstorm-no-exploration-guard",
+  "cases": [
+    {
+      "name": "non-bash-tool-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "data/raw/panel.parquet" } }
+    },
+    {
+      "name": "bash-without-exploration-pattern-allowed",
+      "kind": "allow",
+      "stdin": { "tool_name": "Bash", "tool_input": { "command": "git status --short" } }
+    },
+    {
+      "name": "bash-missing-command-key-allowed",
+      "kind": "allow",
+      "stdin": { "tool_name": "Bash", "tool_input": {} }
+    },
+    {
+      "name": "exploration-allowed-once-spec-exists",
+      "kind": "allow",
+      "stdin": { "tool_name": "Bash", "tool_input": { "command": "python3 -c 'import pandas as pd; print(pd.read_parquet(\"data/raw/panel.parquet\").head())'" } },
+      "fixture": {
+        ".planning/SPEC.md": "# SPEC\n\nBrainstorm complete.\n"
+      }
+    },
+    {
+      "name": "deny-python-dash-c-during-brainstorm",
+      "kind": "deny",
+      "stdin": { "tool_name": "Bash", "tool_input": { "command": "python3 -c 'print(1)'" } }
+    },
+    {
+      "name": "deny-pixi-run-python-with-non-spec-planning-file",
+      "kind": "deny",
+      "stdin": { "tool_name": "Bash", "tool_input": { "command": "pixi run python scripts/peek.py" } },
+      "fixture": {
+        ".planning/BRAINSTORM.md": "# Brainstorm in progress\n"
+      }
+    },
+    {
+      "name": "deny-dotted-read-csv-substring",
+      "kind": "deny",
+      "stdin": { "tool_name": "Bash", "tool_input": { "command": "uv run scripts/peek.py --loader pl.read_csv" } }
+    }
+  ]
+}

@@ -8,7 +8,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
     - matcher: "Agent"
       hooks:
         - type: command
@@ -18,7 +18,7 @@ hooks:
             GATE_BLOCKED_TOOLS=Agent
             GATE_DESCRIPTION="Test gap validation"
             GATE_REMEDY="Return to dev-implement and run dev-test-gaps (Phase 5.5). VALIDATION.md must have status: validated (not gaps_found) before review starts."
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ---
 
 **Iteration topology:** parallel multi-reviewer fan-out (fresh read-only subagents; main chat reconciles)
@@ -67,7 +67,7 @@ If the message could be EITHER a new topic OR part of the review, ask before ass
 
 Auto-load all constraints matching `applies-to: dev-review`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-review`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev-review`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

@@ -1,0 +1,88 @@
+{
+  "hook": "overflow-check",
+  "notes": [
+    "PostToolUse hook. Every gate in main() is a silent `sys.exit(0)`; the ONLY branch that emits stdout is the final one (check-overflow.sh returned rc==1 with stdout), which prints a hookSpecificOutput.additionalContext blob.",
+    "That emitting branch is NOT reachable under scripts/parity.ts: the harness runs the Python original from a mkdtemp copy of hooks/, so find_plugin_root() (which requires <hookdir>/../.claude-plugin/plugin.json) always returns None and the Python side exits before ever spawning check-overflow.sh. A faithful TS port living at <repo>/hooks/*.ts WILL find the plugin root, so any case whose fixture contains a resolvable slides*.typ would make py and ts diverge for a reason that is an artifact of the harness, not a port bug.",
+    "Therefore: no fixture below contains a slides*.typ file. Cases 4 and 5 exercise the trigger regex and the stem filter positively and then stop at the plugin-root gate (py) / the slides_path.exists() gate (ts) — both silent, both exit 0.",
+    "The source's `except Exception: sys.exit(0)` around json.load is unreachable through this harness: parity.ts JSON.stringify's the `stdin` field, so the hook can never receive syntactically invalid JSON. What IS reachable is well-formed JSON that is not an object — case 'non-object-json-stdin-crashes-exit-1' sends a bare JSON string, json.load succeeds, and hook_input.get() raises AttributeError OUTSIDE the try, so the Python original exits 1 with empty stdout. Verified against the original. A TS port that defensively returns 0 on a non-object payload FAILS parity here, and that is intentional: exit 1 is the observed contract.",
+    "No deny path exists in the source (no deny() call, no \"deny\" literal), so no deny case is required."
+  ],
+  "cases": [
+    {
+      "name": "non-bash-tool-ignored",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "slides.typ",
+          "content": "#set page(width: 16cm)\n= typst compile slides.typ\n"
+        },
+        "tool_response": { "success": true }
+      },
+      "fixture": {}
+    },
+    {
+      "name": "non-object-json-stdin-crashes-exit-1",
+      "kind": "effect",
+      "stdin": "this is not a hook payload object",
+      "fixture": {}
+    },
+    {
+      "name": "typ-token-outside-trigger-segment",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "typst compile --root . ; echo wrote slides.typ"
+        },
+        "tool_response": { "stdout": "wrote slides.typ\n", "stderr": "", "interrupted": false }
+      },
+      "fixture": {}
+    },
+    {
+      "name": "bash-command-without-typst-compile",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "ls -la slides.typ && typst --version"
+        },
+        "tool_response": { "stdout": "slides.typ\n", "stderr": "", "interrupted": false }
+      },
+      "fixture": {}
+    },
+    {
+      "name": "typst-compile-non-slides-target-filtered-out",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "cd .planning && typst compile --root . notes.typ notes.pdf"
+        },
+        "tool_response": { "stdout": "", "stderr": "", "interrupted": false }
+      },
+      "fixture": {
+        ".planning/notes.typ": "#set page(paper: \"a4\")\n= Speaker notes\n"
+      }
+    },
+    {
+      "name": "tinymist-compile-slides-with-flags-target-unresolvable",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "cd .planning && tinymist compile --root . --input handout=true slides.typ slides.pdf"
+        },
+        "tool_response": { "stdout": "", "stderr": "", "interrupted": false }
+      },
+      "fixture": {
+        ".planning/notes.typ": "#set page(paper: \"a4\")\n= Speaker notes\n"
+      }
+    }
+  ]
+}

@@ -14,12 +14,12 @@ hooks:
             GATE_BLOCKED_TOOLS=Write,Edit,Agent,Bash
             GATE_DESCRIPTION="Lit review completion"
             GATE_REMEDY="Return to writing-lit-review: materialize sources into references/, run gap analysis, then write .planning/LIT_REVIEW_COMPLETE.md"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
   PostToolUse:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-precis-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-precis-guard.ts"
 ---
 
 # Writing Setup
@@ -44,7 +44,7 @@ Before starting, check for an existing handoff:
 
 Auto-load all constraints matching `applies-to: writing-setup`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-setup`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-setup`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

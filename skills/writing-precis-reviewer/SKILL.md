@@ -14,7 +14,7 @@ allowed-tools: Read, Grep, Glob, Agent
 
 Auto-load all constraints matching `applies-to: writing-precis-reviewer`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-precis-reviewer`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-precis-reviewer`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

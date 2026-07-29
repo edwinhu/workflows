@@ -104,11 +104,14 @@ def test_repo_constraints_scope_sanely():
     """
     import re
 
+    # Both extensions: the loader was ported to TypeScript on 2026-07-29 and the bang lines now read
+    # `bun .../load-constraints.ts <skill>`. Matching only .py silently emptied the caller set, which
+    # made every constraint look unreachable — caught by this test immediately after the retarget.
     callers = set()
     read_reached = set()
     for skill_md in (ROOT / "skills").glob("*/SKILL.md"):
         text = skill_md.read_text()
-        for m in re.finditer(r"load-constraints\.py\s+([a-z0-9\-]+)", text):
+        for m in re.finditer(r"load-constraints\.(?:py|ts)\s+([a-z0-9\-]+)", text):
             callers.add(m.group(1))
         # A skill may also deliver a constraint by naming its file directly — ds-delegate does
         # this deliberately, because auto-load reaches main chat but its analysis/engineering

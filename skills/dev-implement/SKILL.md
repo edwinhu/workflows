@@ -9,7 +9,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
     - matcher: "Agent|Workflow"
       hooks:
         - type: command
@@ -19,7 +19,7 @@ hooks:
             GATE_BLOCKED_TOOLS=Agent,Workflow
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval."
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ---
 
 **Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
@@ -33,7 +33,7 @@ full-suite checkpoints. No per-level workflow round-trip, no LLM re-parse of PLA
 
 Auto-load all constraints matching `applies-to: dev-implement`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py dev-implement`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev-implement`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

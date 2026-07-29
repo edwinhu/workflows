@@ -1,0 +1,138 @@
+{
+  "hook": "writing-mechanical-gate",
+  "cases": [
+    {
+      "name": "non-workflow-tool-ignored",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "drafts/01-intro.md", "content": "# Intro" }
+      }
+    },
+    {
+      "name": "empty-payload-ignored",
+      "kind": "allow",
+      "stdin": {}
+    },
+    {
+      "name": "non-writing-workflow-ignored",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/dev-verify.ts",
+          "name": "dev-verify",
+          "args": { "projectDir": "." }
+        }
+      }
+    },
+    {
+      "name": "draft-without-section-index-warns",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-draft.ts",
+          "name": "writing-draft",
+          "args": { "projectDir": "." }
+        }
+      }
+    },
+    {
+      "name": "draft-with-section-index-silent",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-draft.ts",
+          "name": "writing-draft",
+          "args": { "projectDir": ".", "sectionIndex": { "sections": [{ "name": "01-intro" }] } }
+        }
+      }
+    },
+    {
+      "name": "review-hard-failures-denies",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-review.ts",
+          "name": "writing-review",
+          "args": { "projectDir": "." }
+        }
+      },
+      "fixture": {
+        ".planning/.checkall-cache.json": "{\"exit_ok\": false, \"failed\": [\"bold-lead\", \"topic-sentences\"], \"errors\": [\"pdf-widow\"], \"summary\": \"2 failed, 1 error\", \"hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}"
+      }
+    },
+    {
+      "name": "review-clean-without-section-index-warns",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-review.ts",
+          "name": "writing-review",
+          "args": { "projectDir": "." }
+        }
+      },
+      "fixture": {
+        ".planning/.checkall-cache.json": "{\"exit_ok\": true, \"failed\": [], \"errors\": [], \"summary\": \"all clean\", \"hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}"
+      }
+    },
+    {
+      "name": "review-clean-with-section-index-silent",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-review.ts",
+          "name": "writing-review",
+          "args": { "projectDir": ".", "sectionIndex": { "sections": [{ "name": "01-intro" }] } }
+        }
+      },
+      "fixture": {
+        ".planning/.checkall-cache.json": "{\"exit_ok\": true, \"failed\": [], \"errors\": [], \"summary\": \"all clean\", \"hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}"
+      }
+    },
+    {
+      "name": "review-args-as-json-string-parsed",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-review.ts",
+          "name": "writing-review",
+          "args": "{\"projectDir\": \".\", \"sectionIndex\": [{\"name\": \"01-intro\"}]}"
+        }
+      },
+      "fixture": {
+        ".planning/.checkall-cache.json": "{\"exit_ok\": true, \"failed\": [], \"errors\": [], \"summary\": \"all clean\", \"hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}"
+      }
+    },
+    {
+      "name": "review-unparseable-string-args-falls-back-to-warn",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/writing-review.ts",
+          "name": "writing-review",
+          "args": "not json"
+        }
+      },
+      "fixture": {
+        ".planning/.checkall-cache.json": "{\"exit_ok\": true, \"failed\": [], \"errors\": [], \"summary\": \"all clean\", \"hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}"
+      }
+    }
+  ]
+}

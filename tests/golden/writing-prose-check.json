@@ -1,0 +1,176 @@
+{
+  "hook": "writing-prose-check",
+  "cases": [
+    {
+      "name": "skip-malformed-stdin",
+      "kind": "allow",
+      "note": "No stdin at all -> json.load raises -> sys.exit(0) with no output."
+    },
+    {
+      "name": "skip-non-edit-write-tool",
+      "kind": "allow",
+      "note": "tool_name not in (Edit, Write) -> exit 0 even though the file is a violating draft.",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "drafts/bad.md"
+        }
+      },
+      "fixture": {
+        "drafts/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+      }
+    },
+    {
+      "name": "skip-missing-file-path",
+      "kind": "allow",
+      "note": "Empty tool_input.file_path -> exit 0.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {}
+      }
+    },
+    {
+      "name": "skip-unhandled-suffix",
+      "kind": "allow",
+      "note": "Suffix is neither .md nor .typ -> exit 0.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/bad.txt"
+        }
+      },
+      "fixture": {
+        "drafts/bad.txt": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+      }
+    },
+    {
+      "name": "skip-md-outside-drafts-dir",
+      "kind": "allow",
+      "note": ".md whose parent dir is not 'drafts' -> exit 0.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "notes/bad.md"
+        }
+      },
+      "fixture": {
+        "notes/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+      }
+    },
+    {
+      "name": "skip-typ-deck-by-directory",
+      "kind": "allow",
+      "note": "_is_typ_deck: a parent dir matching ^(slides|presentation) -> exit 0.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "slides/deck.typ"
+        }
+      },
+      "fixture": {
+        "slides/deck.typ": "#import \"@preview/touying:0.5.2\": *\n\nIt is important to note that this delves into things.\n"
+      }
+    },
+    {
+      "name": "skip-typ-deck-by-marker",
+      "kind": "allow",
+      "note": "_is_typ_deck: '#slide(' marker in the text -> exit 0 even outside a slides dir.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "memo.typ"
+        }
+      },
+      "fixture": {
+        "memo.typ": "#slide(title: \"x\")[hi]\n\nIt is important to note that this delves into things.\n"
+      }
+    },
+    {
+      "name": "allow-clean-draft-no-violations",
+      "kind": "allow",
+      "note": "Reaches all three engines but collects zero violations -> exit 0, no stdout.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/clean.md"
+        }
+      },
+      "fixture": {
+        "drafts/clean.md": "The quick brown fox jumps over the lazy dog. Rain fell all night.\n"
+      }
+    },
+    {
+      "name": "allow-edit-range-scopes-out-violation",
+      "kind": "allow",
+      "note": "Edit -> _edit_ranges finds new_string at line 9 (7-11); the line-3 violations fall outside -> no output.",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "drafts/mixed.md",
+          "new_string": "Rain fell all night and the river rose."
+        }
+      },
+      "fixture": {
+        "drafts/mixed.md": "# Draft\n\nIt is important to note that the market delves into a robust landscape.\n\nfiller\n\nfiller\n\nRain fell all night and the river rose.\n"
+      }
+    },
+    {
+      "name": "context-md-draft-violations",
+      "kind": "context",
+      "note": "Full path: prose-lint + style_metrics + check-all all contribute; additionalContext printed.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/bad.md"
+        }
+      },
+      "fixture": {
+        "drafts/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+      }
+    },
+    {
+      "name": "context-edit-range-includes-violation",
+      "kind": "context",
+      "note": "Same file as the scoped-out case, but new_string lands on line 3 -> violations survive the range filter.",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "drafts/mixed.md",
+          "new_string": "It is important to note that the market delves into a robust landscape."
+        }
+      },
+      "fixture": {
+        "drafts/mixed.md": "# Draft\n\nIt is important to note that the market delves into a robust landscape.\n\nfiller\n\nfiller\n\nRain fell all night and the river rose.\n"
+      }
+    },
+    {
+      "name": "context-typ-letter-violations",
+      "kind": "context",
+      "note": ".typ letter branch: prose-lint + style only, run_check_all is False (no 'drafts/...' lines).",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "letter.typ"
+        }
+      },
+      "fixture": {
+        "letter.typ": "Dear Chair,\n\nIt is important to note that the proposal delves into a robust landscape — a testament to the effort.\n"
+      }
+    },
+    {
+      "name": "context-style-legal-adds-category",
+      "kind": "context",
+      "note": "_detect_style reads style: legal -> writing-legal category added; output gains the [writing-legal] prose-lint line the no-style run lacks.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/legal.md"
+        }
+      },
+      "fixture": {
+        "drafts/legal.md": "The trustee acted pursuant to the agreement and gave notice thereof.\n",
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\n---\n"
+      }
+    }
+  ]
+}

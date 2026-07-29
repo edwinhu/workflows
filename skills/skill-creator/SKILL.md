@@ -6,9 +6,9 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.ts"
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts"
 ---
 
 # Skill Creator (with Superpowers Enforcement)

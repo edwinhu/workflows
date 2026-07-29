@@ -1,0 +1,100 @@
+{
+  "hook": "pre-compact",
+  "cases": [
+    {
+      "name": "no-planning-dir-no-plan-no-learnings",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "auto",
+        "custom_instructions": ""
+      },
+      "fixture": {
+        "README.md": "unrelated file so the sandbox is not empty\n"
+      }
+    },
+    {
+      "name": "planning-dev-workflow-with-learnings-state-and-spec-skills",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "auto",
+        "custom_instructions": ""
+      },
+      "fixture": {
+        ".planning/PLAN.md": "## Dev Workflow\n\nRED-GREEN-REFACTOR loop for the gate.\n",
+        ".planning/LEARNINGS.md": "# Learnings\n\n- prior note\n",
+        ".planning/STATE.md": "# STATE (stale, will be overwritten)\n",
+        ".planning/SPEC.md": "## Skills Touched\n\n- `wrds` -- TAQ millisecond data, SAS on the WRDS grid\n- `crsp-v2` -- CIZ column names\n- `wrds` -- duplicate, must be deduped\n"
+      }
+    },
+    {
+      "name": "ds-workflow-detected-dev-patterns-absent",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "manual",
+        "custom_instructions": "focus on the gate"
+      },
+      "fixture": {
+        ".planning/PLAN.md": "# Analysis Plan\n\nEDA first, then the draft.\n",
+        ".planning/STATE.md": "# STATE\n"
+      }
+    },
+    {
+      "name": "legacy-claude-dir-writing-workflow-no-state-written",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "auto",
+        "custom_instructions": ""
+      },
+      "fixture": {
+        ".claude/PLAN.md": "## Writing\n\nRevision pass on section 3.\n",
+        ".claude/LEARNINGS.md": "# Learnings legacy\n"
+      }
+    },
+    {
+      "name": "plan-exists-but-matches-no-workflow-pattern",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "auto",
+        "custom_instructions": ""
+      },
+      "fixture": {
+        ".planning/PLAN.md": "# Notes\n\nNothing recognizable here.\n"
+      }
+    },
+    {
+      "name": "learnings-only-no-plan-marker-has-no-workflow-note",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "manual",
+        "custom_instructions": ""
+      },
+      "fixture": {
+        ".planning/LEARNINGS.md": "# Learnings\n"
+      }
+    }
+  ]
+}

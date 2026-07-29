@@ -8,36 +8,36 @@ hooks:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-post-subagent-guard.ts"
   PreToolUse:
     - matcher: "Agent"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-pre-subagent-clear.ts"
     - matcher: "Read"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Grep"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Glob"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-read-after-subagent-guard.ts"
     - matcher: "Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
     - matcher: "Agent|Workflow"
       hooks:
         - type: command
@@ -47,11 +47,11 @@ hooks:
             GATE_DESCRIPTION="Implementation complete"
             GATE_REMEDY="Finish ds-implement (all PLAN.md tasks verified in LEARNINGS.md) before validating outputs."
             GATE_BLOCKED_TOOLS=Agent,Workflow
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
     - matcher: "Workflow"
       hooks:
         - type: command
-          command: "FLOOR=ds uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.py"
+          command: "FLOOR=ds bun ${CLAUDE_PLUGIN_ROOT}/hooks/mechanical-floor-gate.ts"
 ---
 
 Announce: "Using ds-validate (Phase 3.5) to validate analysis outputs against SPEC.md requirements."
@@ -98,7 +98,7 @@ DS validation does NOT auto-fill gaps. Dev's test-gap-auditor can write missing 
 
 Auto-load all constraints matching `applies-to: ds-validate`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-validate`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts ds-validate`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

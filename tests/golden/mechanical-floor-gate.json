@@ -1,0 +1,81 @@
+{
+  "hook": "mechanical-floor-gate",
+  "notes": [
+    "The hook resolves its runners RELATIVE TO ITS OWN FILE (REPO = hooks/../): references/constraints/check-all.py (FLOOR=dev) and scripts/check-all-ds.sh (FLOOR=ds). The parity harness extracts the Python original into a temp hooks/ dir, so on the Python side those runners DO NOT EXIST, while the .ts side sits in the real repo and they DO. Any case whose outcome depends on what the runner actually reported is therefore location-dependent and cannot be pinned.",
+    "The deny case works around that by making the runner invocation fail IDENTICALLY on both sides: UV_OFFLINE=1 + UV_NO_CACHE=1 makes the inner `uv run --with lxml python3 ...` fail during dependency resolution before it ever touches check-all.py. Verified byte-identical output from both the git-extracted copy (runner missing) and the in-repo copy (runner present). Do NOT use UV_PYTHON for this — it also breaks the harness's own outer `uv run python3 <hook>.py` invocation.",
+    "Two branches are deliberately NOT covered, because their output is location-dependent (see above): (a) FLOOR=ds + Workflow + failing floor -> deny (extracted copy denies with '(no output)'; in-repo copy denies with the real '- ds-determinism / - ds-error-handling / ...' list), and (b) the ok=True passing-floor allow for FLOOR=dev (the extracted copy can never pass, since a missing check-all.py always lands in the failure branch). The ds deny message text is exercised only in the real repo; a port must be reviewed by hand for it."
+  ],
+  "cases": [
+    {
+      "name": "dev-allow-non-agent-tool",
+      "kind": "allow",
+      "why": "FLOOR=dev gates ONLY the Agent spawn; every other tool exits 0 silently without spawning check-all.",
+      "env": { "FLOOR": "dev" },
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "src/thing.py", "content": "x = 1\n" },
+        "cwd": "."
+      },
+      "fixture": { ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: dev\n---\n" }
+    },
+    {
+      "name": "ds-allow-agent-never-blocked",
+      "kind": "allow",
+      "why": "FLOOR=ds gates the Workflow fan-out ONLY and must never block Agent — fix subagents are the only legal way to repair a failing ds floor. Exits 0 before running check-all-ds.sh at all.",
+      "env": { "FLOOR": "ds" },
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Agent",
+        "tool_input": { "prompt": "fix the determinism failures" },
+        "cwd": "."
+      },
+      "fixture": { ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: ds\n---\n" }
+    },
+    {
+      "name": "dev-deny-failing-constraint-floor",
+      "kind": "deny",
+      "why": "FLOOR=dev + Agent + a check-all run that reports failures -> PreToolUse deny JSON on stdout, exit 0. UV_OFFLINE/UV_NO_CACHE force the inner uv invocation to fail identically whether or not check-all.py is present, so the JSON body is pinned exactly.",
+      "env": { "FLOOR": "dev", "UV_OFFLINE": "1", "UV_NO_CACHE": "1" },
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Agent",
+        "tool_input": { "prompt": "goal-backward verifier: verify the implementation against GOAL.md" },
+        "cwd": "."
+      },
+      "fixture": {
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: dev\n---\n",
+        ".planning/GOAL.md": "# Goal\n\nShip the feature.\n"
+      }
+    },
+    {
+      "name": "allow-on-unreadable-stdin",
+      "kind": "allow",
+      "why": "No stdin payload (json.load raises) -> fail-open exit 0 with no output. Pins the bare `except: sys.exit(0)` around the payload parse; a port that throws here would break every hook invocation with a malformed payload.",
+      "env": { "FLOOR": "dev" },
+      "fixture": { "README.md": "fixture\n" }
+    },
+    {
+      "name": "dash-argv-falls-through-to-stdin-mode",
+      "kind": "allow",
+      "why": "argv[1] == '-' is explicitly excluded from CLI debug mode, so the hook still parses stdin and applies the FLOOR=dev tool filter (Write -> silent exit 0). A port that treats any argv as CLI mode would print a summary line here.",
+      "argv": ["-"],
+      "env": { "FLOOR": "dev" },
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "notes.md", "content": "hi\n" },
+        "cwd": "."
+      },
+      "fixture": { "README.md": "fixture\n" }
+    },
+    {
+      "name": "cli-debug-mode-dev-failing-floor",
+      "kind": "effect",
+      "why": "argv[1] = a project path enters CLI debug mode: runs the FLOOR runner as a subprocess and prints the human summary + the FAILED (blocking) list, exiting 1 when not ok. Note the Python-style `ok=False` capitalization in the summary line — a JS `false` would diverge.",
+      "argv": ["."],
+      "env": { "FLOOR": "dev", "UV_OFFLINE": "1", "UV_NO_CACHE": "1" },
+      "fixture": { ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: dev\n---\n" }
+    }
+  ]
+}

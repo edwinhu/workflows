@@ -15,11 +15,11 @@ hooks:
             GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Claim validation"
             GATE_REMEDY="Run writing-validate first to validate claim coverage before review"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
     - matcher: "Workflow"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.ts"
 ---
 
 # Writing Review
@@ -32,7 +32,7 @@ Hierarchical bottom-up review that diagnoses structural problems across a drafte
 
 Auto-load all constraints matching `applies-to: writing-review`:
 
-!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py writing-review`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-review`
 
 **You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
 

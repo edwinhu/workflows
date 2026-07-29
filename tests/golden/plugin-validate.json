@@ -1,0 +1,171 @@
+{
+  "hook": "plugin-validate",
+  "_notes": [
+    "plugin-validate has NO deny path — it is a PostToolUse context injector that always exits 0.",
+    "Its three observable outcomes are: (1) silent exit 0, (2) a FAILED additionalContext block,",
+    "(3) a warnings additionalContext block. The description string ('plugin.json',",
+    "'marketplace.json', 'plugin (skill changed)', 'plugin (hooks changed)',",
+    "'plugin (agents changed)', 'plugin (commands changed)') is embedded in the emitted context and",
+    "is pinned per branch.",
+    "Cases that must produce NON-EMPTY output use ABSOLUTE file paths, because `claude plugin",
+    "validate` echoes the resolved absolute path of its target into stdout. The harness runs the",
+    "python and the ts implementation in two DIFFERENT temp sandboxes, so any output containing the",
+    "sandbox path would differ spuriously. Absolute targets outside the sandbox are identical for",
+    "both runs. Fixture-based cases are therefore restricted to the branches whose output is empty."
+  ],
+  "cases": [
+    {
+      "name": "context-plugin-json-validation-failed",
+      "kind": "context",
+      "stdin": {
+        "session_id": "sess-parity-pv-1",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/nonexistent-parity/.claude-plugin/plugin.json"
+        }
+      }
+    },
+    {
+      "name": "context-marketplace-json-validation-failed",
+      "kind": "context",
+      "stdin": {
+        "session_id": "sess-parity-pv-2",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "/nonexistent-parity/.claude-plugin/marketplace.json"
+        }
+      }
+    },
+    {
+      "name": "context-skill-md-warnings",
+      "kind": "context",
+      "stdin": {
+        "session_id": "sess-parity-pv-3",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/skills/demo/SKILL.md"
+        }
+      }
+    },
+    {
+      "name": "context-hooks-json-warnings",
+      "kind": "context",
+      "stdin": {
+        "session_id": "sess-parity-pv-4",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/hooks/hooks.json"
+        }
+      }
+    },
+    {
+      "name": "context-agent-md-warnings",
+      "kind": "context",
+      "stdin": {
+        "session_id": "sess-parity-pv-5",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/agents/demo.md"
+        }
+      }
+    },
+    {
+      "name": "context-command-md-warnings",
+      "kind": "context",
+      "stdin": {
+        "session_id": "sess-parity-pv-6",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/commands/demo.md"
+        }
+      }
+    },
+    {
+      "name": "allow-clean-manifest-validates-silently",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-pv-7",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "/home/eh/projects/workflows/.claude-plugin/plugin.json"
+        }
+      }
+    },
+    {
+      "name": "allow-skill-in-clean-plugin-relative-path",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-pv-8",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\n  \"name\": \"sandboxplug\",\n  \"version\": \"1.0.0\",\n  \"description\": \"clean sandbox plugin\",\n  \"author\": { \"name\": \"parity\" }\n}\n",
+        "skills/demo/SKILL.md": "---\nname: demo\ndescription: A demo skill used only as a parity fixture.\n---\n\n# Demo\n\nBody.\n"
+      }
+    },
+    {
+      "name": "allow-skill-md-outside-any-plugin",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-pv-9",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
+      },
+      "fixture": {
+        "skills/demo/SKILL.md": "---\nname: demo\ndescription: no .claude-plugin/plugin.json anywhere above this file.\n---\n\nBody.\n"
+      }
+    },
+    {
+      "name": "allow-plain-markdown-not-agent-or-command",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-pv-10",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "docs/notes.md"
+        }
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\n  \"name\": \"sandboxplug\",\n  \"version\": \"1.0.0\",\n  \"description\": \"clean sandbox plugin\",\n  \"author\": { \"name\": \"parity\" }\n}\n",
+        "docs/notes.md": "# notes\n"
+      }
+    },
+    {
+      "name": "allow-non-edit-tool",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-pv-11",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "/nonexistent-parity/.claude-plugin/plugin.json"
+        }
+      }
+    },
+    {
+      "name": "allow-missing-file-path",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-parity-pv-12",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {}
+      }
+    }
+  ]
+}

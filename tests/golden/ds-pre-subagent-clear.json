@@ -1,0 +1,101 @@
+{
+  "hook": "ds-pre-subagent-clear",
+  "_notes": [
+    "The hook never reads stdin; the payload is supplied only so the run matches a real PreToolUse invocation.",
+    "The flag file lives under tempfile.gettempdir()/ds-workflow-flags, which is OUTSIDE the harness sandbox.",
+    "Every case therefore sets TMPDIR='.'; Python's tempfile abspath()s it at import time, so the flag dir",
+    "resolves to <sandbox>/ds-workflow-flags and the delete becomes an observable fs delta. A TS port must",
+    "resolve its temp dir the same way (honor TMPDIR, relative to process cwd) or these cases will diverge.",
+    "The hook has no deny path: it imports deny from _gate_common but never calls it — every branch ends in allow().",
+    "CLAUDE_SESSION_ID='' is read literally (filename 'subagent-returned-'), NOT coerced to 'default' — os.environ.get",
+    "only falls back when the var is ABSENT. The absent-var 'default' branch is not reachable from this harness: it",
+    "spreads the ambient process.env, which already carries CLAUDE_SESSION_ID, and an env map cannot unset a key."
+  ],
+  "cases": [
+    {
+      "name": "effect-clears-flag-for-this-session",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "sess-abc",
+        "hook_event_name": "PreToolUse",
+        "cwd": ".",
+        "tool_name": "Task",
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "description": "run ds analysis",
+          "prompt": "analyze the panel"
+        }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "sess-abc"
+      },
+      "fixture": {
+        "ds-workflow-flags/subagent-returned-sess-abc": "1\n"
+      }
+    },
+    {
+      "name": "effect-empty-session-id-is-used-literally-not-default",
+      "kind": "effect",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "cwd": ".",
+        "tool_name": "Task",
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "prompt": "dispatch"
+        }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": ""
+      },
+      "fixture": {
+        "ds-workflow-flags/subagent-returned-": "1\n",
+        "ds-workflow-flags/subagent-returned-default": "1\n"
+      }
+    },
+    {
+      "name": "allow-other-session-flag-untouched",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-abc",
+        "hook_event_name": "PreToolUse",
+        "cwd": ".",
+        "tool_name": "Task",
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "prompt": "dispatch"
+        }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "sess-abc"
+      },
+      "fixture": {
+        "ds-workflow-flags/subagent-returned-other-session": "1\n"
+      }
+    },
+    {
+      "name": "allow-no-flag-dir-at-all",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "sess-none",
+        "hook_event_name": "PreToolUse",
+        "cwd": ".",
+        "tool_name": "Task",
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "prompt": "dispatch"
+        }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "sess-none"
+      },
+      "fixture": {
+        "keep.txt": "sandbox must not be empty\n"
+      }
+    }
+  ]
+}

@@ -14,7 +14,7 @@ hooks:
             GATE_BLOCKED_TOOLS=Grep,Glob,Agent
             GATE_DESCRIPTION="Spec reviewed"
             GATE_REMEDY="Return to /dev (Phase 1 brainstorm). Run dev-spec-reviewer; on APPROVED it writes SPEC_REVIEWED.md. Existence of SPEC.md alone is not enough — the review must have passed."
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ---
 
 **Announce:** "I'm using dev-explore (Phase 2) to map the codebase."

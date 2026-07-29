@@ -1,0 +1,85 @@
+{
+  "hook": "ds-post-subagent-guard",
+  "_comment": [
+    "PostToolUse guard fired after Agent/Task returns. It has NO deny path: it never prints a",
+    "decision, it always exits 0 on a parseable payload, and its entire observable behavior is one",
+    "side effect — writing the flag file that the PreToolUse counterpart later reads to block",
+    "Read/Grep on non-.planning paths. So the branch a broken port would silently destroy is not a",
+    "'deny' string, it is the FLAG FILE'S PATH. If the port writes it under a different name, the",
+    "PreToolUse guard never finds it and simply stops guarding.",
+    "",
+    "The flag lands in tempfile.gettempdir(), which is outside the harness's cwd snapshot and would",
+    "therefore be invisible. Every case sets TMPDIR='.' so gettempdir() resolves to the sandbox cwd",
+    "and the write shows up in the filesystem delta. Verified against the Python original: with",
+    "TMPDIR='.' the file appears at ./ds-workflow-flags/subagent-returned-<session>."
+  ],
+  "cases": [
+    {
+      "name": "task-returned-writes-session-flag",
+      "kind": "allow",
+      "_comment": "Main path. Silence + exit 0 is how a PostToolUse hook says 'carry on'; the real output is the flag file. Pins the exact filename ds-workflow-flags/subagent-returned-<CLAUDE_SESSION_ID> and its contents ('1'). Verified: exit 0, empty stdout, ./ds-workflow-flags/subagent-returned-sess-abc created.",
+      "stdin": {
+        "session_id": "sess-abc",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Task",
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "description": "explore dataset",
+          "prompt": "Summarize the columns in data/raw/panel.parquet"
+        },
+        "tool_response": {
+          "content": [{ "type": "text", "text": "Panel has 412 columns." }]
+        }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "sess-abc"
+      }
+    },
+    {
+      "name": "empty-session-id-is-not-defaulted",
+      "kind": "effect",
+      "_comment": "os.environ.get('CLAUDE_SESSION_ID', 'default') returns the EMPTY STRING when the var is set but blank — the 'default' fallback only fires when the key is absent. The idiomatic TS port (process.env.CLAUDE_SESSION_ID || 'default') gets this wrong and writes 'subagent-returned-default' instead, desynchronizing the flag name from the PreToolUse reader. Verified against Python: file is ./ds-workflow-flags/subagent-returned- (trailing hyphen, no 'default'). The genuinely-absent-env variant is not expressible here — see notes.",
+      "stdin": {
+        "session_id": "",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Task",
+        "tool_input": { "subagent_type": "general-purpose", "prompt": "check schema" },
+        "tool_response": { "content": [{ "type": "text", "text": "done" }] }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": ""
+      }
+    },
+    {
+      "name": "stale-flag-truncated-not-appended",
+      "kind": "effect",
+      "_comment": "Second subagent return in the same session: the flag dir already exists (os.makedirs exist_ok=True must not raise) and the flag file already holds stale content. open(...,'w') truncates, so the result is exactly '1'. A port that appends, or that skips the write when the file exists, diverges here. Verified: exit 0, content becomes '1', no error from the pre-existing directory.",
+      "stdin": {
+        "session_id": "sess-abc",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Task",
+        "tool_input": { "subagent_type": "general-purpose", "prompt": "second subagent" },
+        "tool_response": { "content": [{ "type": "text", "text": "done" }] }
+      },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "sess-abc"
+      },
+      "fixture": {
+        "ds-workflow-flags/subagent-returned-sess-abc": "STALE-CONTENT-0"
+      }
+    },
+    {
+      "name": "non-object-payload-exits-1-without-flag",
+      "kind": "effect",
+      "_comment": "Malformed-payload branch: the hook dies before reaching the write, so exit 1, empty stdout, NO flag file. The harness JSON-stringifies `stdin`, so a bare string arrives as the valid JSON document \"not json\"; json.loads() succeeds and the crash lands one line later on tool_input.get -> AttributeError: 'str' object has no attribute 'get'. Same observable outcome as a true parse error, and it is the only way to reach this branch through the harness (see notes). It matters because it is the one case where the guard legitimately leaves NO flag: a port that defensively coerces a non-object payload to {} would write the flag anyway and wrongly arm the PreToolUse blocker. Verified: exit 1, empty stdout, zero filesystem delta.",
+      "stdin": "not json",
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "sess-abc"
+      }
+    }
+  ]
+}

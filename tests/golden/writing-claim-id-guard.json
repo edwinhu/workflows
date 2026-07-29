@@ -1,0 +1,71 @@
+{
+  "hook": "writing-claim-id-guard",
+  "cases": [
+    {
+      "name": "non-edit-tool-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "drafts/section-1.md" } },
+      "fixture": { ".planning/PRECIS.md": "CLAIM-01: x\n", "drafts/section-1.md": "No ids here.\n" }
+    },
+    {
+      "name": "no-file-path-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "content": "body" } },
+      "fixture": { ".planning/PRECIS.md": "CLAIM-01: x\n" }
+    },
+    {
+      "name": "path-outside-outlines-and-drafts-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "notes/scratch.md" } },
+      "fixture": { ".planning/PRECIS.md": "CLAIM-01: x\n", "notes/scratch.md": "No ids here.\n" }
+    },
+    {
+      "name": "draft-file-missing-on-disk-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "drafts/never-written.md" } },
+      "fixture": { ".planning/PRECIS.md": "CLAIM-01: x\n" }
+    },
+    {
+      "name": "draft-with-claim-ids-untouched",
+      "kind": "allow",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "drafts/section-1.md" } },
+      "fixture": {
+        ".planning/PRECIS.md": "CLAIM-01: x\n",
+        "drafts/section-1.md": "---\nimplements: [CLAIM-01, CLAIM-02]\n---\n\nProse.\n"
+      }
+    },
+    {
+      "name": "draft-without-claims-in-writing-project-blocked",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "drafts/section-1.md" } },
+      "fixture": {
+        ".planning/PRECIS.md": "CLAIM-01: x\n",
+        "drafts/section-1.md": "Prose with no claim trace at all.\n"
+      }
+    },
+    {
+      "name": "edit-to-draft-without-claims-blocked",
+      "kind": "deny",
+      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "paper/drafts/intro.md" } },
+      "fixture": {
+        "paper/.planning/PRECIS.md": "CLAIM-01: x\n",
+        "paper/drafts/intro.md": "Intro prose, no ids.\n"
+      }
+    },
+    {
+      "name": "draft-without-claims-outside-writing-project-warns",
+      "kind": "context",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "drafts/section-1.md" } },
+      "fixture": { "drafts/section-1.md": "Prose with no claim trace at all.\n" }
+    },
+    {
+      "name": "outline-without-claims-warns-only",
+      "kind": "context",
+      "stdin": { "tool_name": "MultiEdit", "tool_input": { "file_path": "outlines/section-1.md" } },
+      "fixture": {
+        ".planning/PRECIS.md": "CLAIM-01: x\n",
+        "outlines/section-1.md": "- point one\n- point two\n"
+      }
+    }
+  ]
+}

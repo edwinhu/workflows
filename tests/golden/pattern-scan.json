@@ -1,0 +1,116 @@
+{
+  "hook": "pattern-scan",
+  "_notes": [
+    "SessionEnd hook. Never writes stdout and always exits 0 — the ONLY observable behavior is the",
+    "filesystem effect on the pending-patterns.json file, so every case here is kind 'effect' or",
+    "'allow'. The source has no deny path (no deny(...) / \"deny\" anywhere), so no deny case exists.",
+    "HOME is set to '.' in every case on purpose: get_pending_file() resolves under Path.home(), which",
+    "is outside the harness sandbox by default and would make the write invisible to the fs-delta",
+    "comparison. HOME='.' makes Path.home() relative, so the write lands inside the sandbox cwd and is",
+    "actually pinned. A port that resolves home differently (e.g. os.homedir() ignoring HOME) fails here.",
+    "transcript_path is likewise relative so it resolves against the sandbox cwd."
+  ],
+  "cases": [
+    {
+      "name": "no-transcript-path-is-a-noop",
+      "kind": "allow",
+      "env": { "HOME": "." },
+      "stdin": { "cwd": "/proj/foo", "hook_event_name": "SessionEnd" },
+      "fixture": {
+        ".claude/projects/-proj-foo/pending-patterns.json": "{\"correction_count\": 9}\n"
+      }
+    },
+    {
+      "name": "unreadable-transcript-is-a-noop",
+      "kind": "allow",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "does-not-exist.jsonl",
+        "cwd": "/proj/foo",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "decoy.txt": "the transcript is missing; scan_transcript swallows the IOError\n"
+      }
+    },
+    {
+      "name": "one-correction-below-threshold-no-write",
+      "kind": "effect",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "transcript.jsonl",
+        "cwd": "/proj/foo",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "transcript.jsonl": "{\"type\": \"human\", \"content\": \"no, don't do that\"}\n{\"type\": \"human\", \"content\": \"sounds good, please continue\"}\n{\"type\": \"assistant\", \"content\": \"that is wrong and you keep asking\"}\n"
+      }
+    },
+    {
+      "name": "below-threshold-deletes-stale-pending-file",
+      "kind": "effect",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "transcript.jsonl",
+        "cwd": "/proj/foo",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "transcript.jsonl": "{\"type\": \"human\", \"content\": \"you keep doing that\"}\n{\"type\": \"human\", \"content\": \"ok thanks\"}\n",
+        ".claude/projects/-proj-foo/pending-patterns.json": "{\n  \"session_transcript\": \"old.jsonl\",\n  \"correction_count\": 7,\n  \"samples\": [],\n  \"cwd\": \"/proj/foo\"\n}"
+      }
+    },
+    {
+      "name": "two-corrections-writes-project-scoped-pending-file",
+      "kind": "effect",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "transcript.jsonl",
+        "cwd": "/proj/foo",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "transcript.jsonl": "{\"type\": \"human\", \"content\": \"no, don't do that\"}\n{\"type\": \"human\", \"content\": \"you keep ignoring me\"}\n"
+      }
+    },
+    {
+      "name": "content-blocks-and-malformed-lines-and-non-human-turns",
+      "kind": "effect",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "t.jsonl",
+        "cwd": "",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "t.jsonl": "{\"type\": \"human\", \"content\": [{\"type\": \"text\", \"text\": \"I already told you to stop editing that file\"}, {\"type\": \"tool_result\", \"text\": \"ignored\"}]}\ngarbage-not-json\n{\"type\": \"assistant\", \"content\": \"that is wrong\"}\n{\"type\": \"human\", \"content\": \"   \"}\n{\"type\": \"human\", \"content\": 12345}\n{\"type\": \"human\", \"content\": \"how many times do I have to ask\"}\n"
+      }
+    },
+    {
+      "name": "non-ascii-text-is-escaped-ensure-ascii",
+      "kind": "effect",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "transcript.jsonl",
+        "cwd": "/proj/foo",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "transcript.jsonl": "{\"type\": \"human\", \"content\": \"no, dont do that \\u2014 caf\\u00e9 \\ud83d\\ude21\"}\n{\"type\": \"human\", \"content\": \"you keep \\u9020\\u6210\\u554f\\u984c\"}\n"
+      }
+    },
+    {
+      "name": "samples-capped-at-five-and-text-truncated-to-200",
+      "kind": "effect",
+      "env": { "HOME": "." },
+      "stdin": {
+        "transcript_path": "transcript.jsonl",
+        "cwd": "/proj/deep/nest",
+        "hook_event_name": "SessionEnd"
+      },
+      "fixture": {
+        "transcript.jsonl": "{\"type\": \"human\", \"content\": \"  wrong. AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA  \"}\n{\"type\": \"human\", \"content\": \"i keep telling you the same thing\"}\n{\"type\": \"human\", \"content\": \"how many times\"}\n{\"type\": \"human\", \"content\": \"again, please stop\"}\n{\"type\": \"human\", \"content\": \"that's not what i meant\"}\n{\"type\": \"human\", \"content\": \"i just said no, stop\"}\n{\"type\": \"human\", \"content\": \"you keep going\"}\n"
+      }
+    }
+  ]
+}

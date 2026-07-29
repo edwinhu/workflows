@@ -1,0 +1,362 @@
+{
+  "hook": "wc-step-gate-guard",
+  "cases": [
+    {
+      "name": "allow-non-write-tool",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": { "command": "echo hi" }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-no-file-path-in-tool-input",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": { "content": "# Design\n" }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-no-active-wc-state",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/DESIGN.md",
+          "content": "# Design\n"
+        }
+      },
+      "fixture": {
+        "README.md": "no .planning/wc state dir here\n"
+      }
+    },
+    {
+      "name": "allow-unrelated-file-path",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "src/util.py",
+          "content": "x = 1\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-design-before-interview-step",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/DESIGN.md",
+          "content": "# Design\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-design-after-interview-step",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/DESIGN.md",
+          "content": "# Design\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n- step: 2-interview\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-comma-form-completed-step-does-not-register",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/DESIGN.md",
+          "content": "# Design\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy, status: completed\n- step: 2-interview, status: completed\n"
+      }
+    },
+    {
+      "name": "deny-interview-md-before-philosophy-step",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/INTERVIEW.md",
+          "content": "# Interview\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: in_progress\n"
+      }
+    },
+    {
+      "name": "deny-audit-md-before-generate-step",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/AUDIT.md",
+          "content": "# Audit\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-skill-file-before-entry-points",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "skills/newflow/SKILL.md",
+          "content": "---\nname: newflow\n---\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-constraint-file-before-entry-points",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "skills/newflow/constraints/no-stub.py",
+          "old_string": "a",
+          "new_string": "b"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-skill-file-after-entry-points",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "skills/newflow/SKILL.md",
+          "content": "---\nname: newflow\n---\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 5-entry-points\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-skill-file-in-audit-mode",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "skills/newflow/SKILL.md",
+          "content": "---\nname: newflow\n---\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/audit-run/STATE.md": "# WC State\n\nmode: audit\n\n- step: 1-read\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-state-chain-predecessor-incomplete",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: create\n\n- step: 3-decomposition, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-state-chain-missing-review-marker",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: create\n\n- step: 3-decomposition, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n- step: 2-interview\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-state-chain-review-marker-not-approved",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: create\n\n- step: 3-decomposition, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n- step: 2-interview\n  status: completed\n",
+        ".planning/wc/myflow/INTERVIEW_REVIEWED.md": "---\nstatus: NEEDS_REVISION\n---\n\nThree gaps remain.\n"
+      }
+    },
+    {
+      "name": "allow-state-chain-marker-approved",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: create\n\n- step: 3-decomposition, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n- step: 2-interview\n  status: completed\n",
+        ".planning/wc/myflow/INTERVIEW_REVIEWED.md": "---\nstatus: APPROVED\n---\n\nLooks good.\n"
+      }
+    },
+    {
+      "name": "deny-state-chain-audit-mode",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": ".planning/wc/audit-run/STATE.md",
+          "old_string": "step: 1-read",
+          "new_string": "step: 3-enforcement, status: in_progress"
+        }
+      },
+      "fixture": {
+        ".planning/wc/audit-run/STATE.md": "# WC State\n\nmode: audit\n\n- step: 1-read\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-state-chain-audit-mode-predecessor-done",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": ".planning/wc/audit-run/STATE.md",
+          "old_string": "step: 2-score",
+          "new_string": "step: 3-enforcement, status: in_progress"
+        }
+      },
+      "fixture": {
+        ".planning/wc/audit-run/STATE.md": "# WC State\n\nmode: audit\n\n- step: 1-read\n  status: completed\n- step: 2-score\n  status: completed\n"
+      }
+    },
+    {
+      "name": "deny-state-chain-improve-mode",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/improve-run/STATE.md",
+          "content": "mode: improve\n\n- step: 1-audit-loop, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/improve-run/STATE.md": "# WC State\n\nmode: improve\n\n- step: 1-initial-audit\n  status: in_progress\n"
+      }
+    },
+    {
+      "name": "allow-state-chain-first-step-of-chain",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: create\n\n- step: 1-philosophy, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n"
+      }
+    },
+    {
+      "name": "allow-handoff-md-exempt",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/HANDOFF.md",
+          "content": "handoff notes\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-state-write-with-no-step-field",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: create\n\njust a note, no step field here\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-state-file-has-no-mode",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "- step: 3-decomposition, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-unknown-mode-in-state-file",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/wc/myflow/STATE.md",
+          "content": "mode: refactor\n\n- step: 3-decomposition, status: in_progress\n"
+        }
+      },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: refactor\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    },
+    {
+      "name": "allow-payload-without-tool-name",
+      "kind": "allow",
+      "stdin": { "session_id": "abc123", "cwd": "." },
+      "fixture": {
+        ".planning/wc/myflow/STATE.md": "# WC State\n\nmode: create\n\n- step: 1-philosophy\n  status: completed\n"
+      }
+    }
+  ]
+}

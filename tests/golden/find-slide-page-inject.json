@@ -1,0 +1,107 @@
+{
+  "hook": "find-slide-page-inject",
+  "cases": [
+    {
+      "name": "unparseable-stdin-noop",
+      "kind": "allow",
+      "_branch": "json.load(sys.stdin) raises -> sys.exit(0). stdin omitted so the harness attaches /dev/null; the reader sees EOF.",
+      "fixture": {
+        "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      }
+    },
+    {
+      "name": "non-bash-tool-noop",
+      "kind": "allow",
+      "_branch": "tool_name != \"Bash\" -> sys.exit(0). Payload otherwise names a real .typ so only the tool-name gate can stop it.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "slides.typ"
+        }
+      },
+      "fixture": {
+        "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      }
+    },
+    {
+      "name": "bash-command-does-not-match-trigger",
+      "kind": "allow",
+      "_branch": "TRIGGER_RE.search(command) is None -> sys.exit(0). Deliberate near-miss: a bare `typst compile` of an existing .typ. Only `tinymist compile` may fire; a port that loosens the regex to `compile .*\\.typ` breaks here.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "typst compile slides.typ --root .",
+          "description": "Compile the deck"
+        }
+      },
+      "fixture": {
+        "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      }
+    },
+    {
+      "name": "trigger-matches-but-target-not-on-disk",
+      "kind": "allow",
+      "_branch": "os.path.exists(cwd/target) is False -> sys.exit(0). The generated/temp-target skip: command matches TRIGGER_RE, capture group is `build/generated.typ`, which the fixture does not create.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "tinymist compile build/generated.typ --output out.pdf",
+          "description": "Compile a generated deck"
+        }
+      },
+      "fixture": {
+        "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      }
+    },
+    {
+      "name": "trigger-matches-flat-target-exists",
+      "kind": "allow",
+      "_branch": "Deepest externally reachable branch: regex matched, `slides.typ` exists in cwd, so control reaches find_scripts_dir(). With no course-materials/teaching plugin installed the lookup returns None -> sys.exit(0), no stdout, and crucially NO cwd/output/ directory and no typst/uv subprocess. Pins that the port stops before the side-effecting stage.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "tinymist compile slides.typ --output output/slides.pdf",
+          "description": "Compile the deck for visual verification"
+        }
+      },
+      "fixture": {
+        "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n\n== First slide\n"
+      }
+    },
+    {
+      "name": "trigger-matches-subdir-target-exists",
+      "kind": "allow",
+      "_branch": "Same terminal branch as above but through a nested path (`presentation/slides.typ`), pinning that the capture group is used verbatim and joined against cwd rather than basenamed or forced under a literal `slides/` directory.",
+      "stdin": {
+        "session_id": "sess-parity",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "tinymist compile presentation/slides.typ",
+          "description": "Compile the nested deck"
+        }
+      },
+      "fixture": {
+        "presentation/slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Nested deck\n"
+      }
+    }
+  ]
+}

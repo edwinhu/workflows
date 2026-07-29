@@ -1,0 +1,143 @@
+{
+  "hook": "workshop-phase-gate-guard",
+  "cases": [
+    {
+      "name": "allow-unrelated-tool",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Bash",
+        "tool_input": { "command": "ls -la" }
+      }
+    },
+    {
+      "name": "allow-non-content-write",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "paper.typ", "content": "= Paper\n" }
+      }
+    },
+    {
+      "name": "allow-planning-dir-carveout",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": ".planning/slides.typ", "content": "draft" }
+      }
+    },
+    {
+      "name": "deny-slides-typ-no-outline-artifact",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "slides.typ", "content": "= Intro\n" }
+      }
+    },
+    {
+      "name": "deny-notes-typ-outline-status-not-approved",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "deck/notes.typ", "old_string": "a", "new_string": "b" }
+      },
+      "fixture": {
+        ".planning/OUTLINE_APPROVED.md": "---\nstatus: DRAFT\nreviewer: user\n---\n\nOutline still under revision.\n"
+      }
+    },
+    {
+      "name": "allow-notes-typ-outline-approved",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": { "file_path": "deck/notes.typ", "content": "notes" }
+      },
+      "fixture": {
+        ".planning/OUTLINE_APPROVED.md": "---\nstatus: \"approved\"\nreviewer: user\n---\n\nOutline approved by the user.\n"
+      }
+    },
+    {
+      "name": "deny-workflow-dispatch-workshop-generate-no-artifact",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/workshop-generate.ts",
+          "name": "workshop-generate"
+        }
+      }
+    },
+    {
+      "name": "deny-workflow-dispatch-outline-artifact-missing-frontmatter",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": { "name": "workflows:workshop-generate" }
+      },
+      "fixture": {
+        ".planning/OUTLINE_APPROVED.md": "status: APPROVED\n\nNo frontmatter fence, so the gate must not pass.\n"
+      }
+    },
+    {
+      "name": "allow-workflow-dispatch-outline-approved",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": { "name": "workflows:workshop-generate" }
+      },
+      "fixture": {
+        ".planning/OUTLINE_APPROVED.md": "---\nstatus: APPROVED\n---\n\nApproved.\n"
+      }
+    },
+    {
+      "name": "allow-workflow-dispatch-other-workflow",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "scriptPath": "scripts/workflows/workshop-verify.ts",
+          "name": "workshop-verify"
+        }
+      }
+    },
+    {
+      "name": "deny-validation-md-no-slides-reviewed",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/VALIDATION.md",
+          "content": "# Validation\n"
+        }
+      },
+      "fixture": {
+        ".planning/OUTLINE_APPROVED.md": "---\nstatus: APPROVED\n---\n\nApproved.\n"
+      }
+    },
+    {
+      "name": "allow-validation-md-slides-reviewed-approved",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/VALIDATION.md",
+          "content": "# Validation\n"
+        }
+      },
+      "fixture": {
+        ".planning/SLIDES_REVIEWED.md": "---\nstatus: APPROVED\noverallPass: true\n---\n\nworkshop-verify returned overallPass=true.\n"
+      }
+    }
+  ]
+}

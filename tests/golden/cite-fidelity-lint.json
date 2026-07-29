@@ -1,0 +1,122 @@
+{
+  "hook": "cite-fidelity-lint",
+  "cases": [
+    {
+      "name": "unparseable-stdin-default-approves",
+      "kind": "allow",
+      "fixture": {
+        "drafts/a.md": "Some claim.[^1]\n\n[^1]: Smith v. Jones, 123 U.S. 456 (1999).\n"
+      }
+    },
+    {
+      "name": "non-edit-tool-skipped",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-1",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Bash",
+        "tool_input": { "command": "ls drafts" },
+        "tool_response": { "stdout": "a.md" }
+      },
+      "fixture": {
+        "drafts/a.md": "Some claim.[^1]\n\n[^1]: Smith v. Jones, 123 U.S. 456 (1999).\n"
+      }
+    },
+    {
+      "name": "write-without-file-path-skipped",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-2",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": { "content": "no path key at all" }
+      },
+      "fixture": {
+        "drafts/a.md": "Some claim.[^1]\n"
+      }
+    },
+    {
+      "name": "non-markdown-suffix-skipped",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-3",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/a.txt",
+          "content": "plain text, not a draft"
+        }
+      },
+      "fixture": {
+        "drafts/a.txt": "plain text, not a draft\n"
+      }
+    },
+    {
+      "name": "uppercase-md-suffix-is-not-dot-md",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-4",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/a.MD",
+          "content": "suffix compare is case-sensitive in the original"
+        }
+      },
+      "fixture": {
+        "drafts/a.MD": "suffix compare is case-sensitive in the original\n"
+      }
+    },
+    {
+      "name": "markdown-outside-drafts-skipped",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-5",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "notes/draftsy/a.md",
+          "old_string": "x",
+          "new_string": "y"
+        }
+      },
+      "fixture": {
+        "notes/draftsy/a.md": "not under a drafts/ path component\n",
+        ".planning/ACTIVE_WORKFLOW.md": "# writing\ncite-fidelity: on\n"
+      }
+    },
+    {
+      "name": "edit-of-draft-md-no-active-workflow-found",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-6",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "drafts/section-1.md",
+          "old_string": "old",
+          "new_string": "new"
+        }
+      },
+      "fixture": {
+        "drafts/section-1.md": "Claim without a bibkey.[^1]\n\n[^1]: Smith v. Jones, 123 U.S. 456 (1999).\n"
+      }
+    },
+    {
+      "name": "multiedit-nested-drafts-md-no-active-workflow-found",
+      "kind": "allow",
+      "stdin": {
+        "session_id": "s-parity-7",
+        "hook_event_name": "PostToolUse",
+        "tool_name": "MultiEdit",
+        "tool_input": {
+          "file_path": "paper/drafts/section-2.md",
+          "edits": [{ "old_string": "a", "new_string": "b" }]
+        }
+      },
+      "fixture": {
+        "paper/drafts/section-2.md": "Bundled cite.[^2]\n\n[^2]: See [@smith2020]; [@jones2021].\n"
+      }
+    }
+  ]
+}
