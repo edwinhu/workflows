@@ -240,8 +240,10 @@ The bug is at the FIRST step where output diverges from expected. Find that step
 
 ### Reviewer Feedback → Revision Protocol
 
-1. Document each piece of feedback as a task
-2. For each task:
+1. `TaskCreate` one task per distinct piece of feedback, **before acting on any of it** — see the
+   `user-feedback-capture` constraint, auto-loaded above. "Document as a task" without the tool call
+   is an intention, not a record.
+2. For each task, in ID order:
    - Locate the relevant code/output
    - Apply the change
    - Verify with output-first protocol

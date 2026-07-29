@@ -92,6 +92,16 @@ ds-review MUST NOT start until `.planning/VALIDATION.md` confirms all requiremen
 
 DS validation does NOT auto-fill gaps. Dev's test-gap-auditor can write missing tests. DS gaps require human judgment — a wrong output means a wrong analysis, not just a missing test. When gaps are found, present them to the user and let the user decide: fix (return to implement) or accept (proceed to review).
 
+## Shared Enforcement
+
+**Load shared ds constraints before validating.**
+
+Auto-load all constraints matching `applies-to: ds-validate`:
+
+!`uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.py ds-validate`
+
+**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
+
 ## Static Analysis (Constraint Check Scripts)
 
 Before running runtime DQ checks, run the static analysis constraint check suite:
