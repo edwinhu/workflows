@@ -87,6 +87,19 @@ def _applies(applies_to, workflow) -> bool:
       - else RUN iff some entry == workflow OR startswith(workflow + "-")
         (APPLIES_TO entries are SKILL names; a skill belongs to its workflow by name prefix:
          'writing-draft' ∈ 'writing', 'workshop-revise' ∈ 'workshop').
+
+    DELIBERATELY DIFFERENT from load-constraints.py's `skill_matches()`, which dropped exactly this
+    prefix rule on 2026-07-29. The two answer different questions and must not be unified:
+
+      _applies(applies_to, WORKFLOW)   → "should this check RUN in this project?"
+                                          A writing project must run writing-draft's checks, so
+                                          family-prefix matching is correct here.
+      skill_matches(applies_to, SKILL) → "should this skill LOAD this constraint's text?"
+                                          /ds is brainstorm; loading ds-implement's rules costs
+                                          context for a phase it never runs.
+
+    Making these agree would stop a writing project from running its own phases' checks. If you are
+    here because the two look inconsistent: that is intentional, and this comment is the reason.
     """
     if not applies_to:
         return True

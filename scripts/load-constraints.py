@@ -49,13 +49,26 @@ def skill_matches(applies_to: list[str], skill_name: str) -> bool:
     """Check if a skill name matches the applies-to list.
 
     Matching is name-boundary aware, mirroring check-all.py's `_applies`:
-      - "all"                        → matches everything
-      - entry == skill               → exact match ("ds-plan" ⊃ ds-plan)
-      - entry startswith skill + "-" → workflow entry point picks up its own
-                                       phase constraints ("ds" ⊃ ds-implement)
+      - "all"          → matches everything
+      - entry == skill → exact match ("ds-plan" ⊃ ds-plan)
+      - "ds-*"         → family glob: the ds entry point AND every ds-<phase>
+
+    A constraint reaches only the skills it NAMES. Family scope is opt-in via
+    the `-*` glob, never implied.
 
     A bare substring test would be wrong: it made "ds" match "wrds", so the
     /ds entry point silently loaded wrds-sge-enforcement.
+
+    REMOVED 2026-07-29 — reverse inheritance (`entry.startswith(skill + "-")`,
+    i.e. `applies-to: [ds-plan]` also matching skill `ds`). Its stated rationale
+    was "the workflow entry point picks up its own phase constraints", but the
+    entry points do not RUN those phases: /ds is brainstorm, and it was being
+    handed ds-data-pull-profile, ds-join-audits and ds-table-figure-pairing —
+    64 KB of rules for phases it never executes, including rules about touching
+    data, which its own hook-enforced Iron Law forbids. Measured cost of the
+    implicit rule: 69% of /ds's constraint load (64,158 of 92,586 bytes), 63% of
+    /writing's, 45% of /dev's. No phase skill was affected either way, because
+    every phase names itself explicitly.
     """
     skill_lower = skill_name.lower()
     for entry in applies_to:
@@ -64,8 +77,11 @@ def skill_matches(applies_to: list[str], skill_name: str) -> bool:
             return True
         if entry_lower == skill_lower:
             return True
-        if entry_lower.startswith(skill_lower + "-"):
-            return True
+        if entry_lower.endswith("-*"):
+            prefix = entry_lower[:-2]
+            # "ds-*" covers the entry point itself and every ds-<phase>
+            if skill_lower == prefix or skill_lower.startswith(prefix + "-"):
+                return True
     return False
 
 

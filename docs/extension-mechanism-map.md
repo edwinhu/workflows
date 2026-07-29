@@ -199,6 +199,15 @@ and 7 `workflows/*.js`. TS is appropriate where the runtime is already JS (workf
 | 6 | File-type knowledge → `~/.claude/rules/` in dotfiles | typst/qmd/sas knowledge currently needs a skill invocation | small |
 | 7 | Dedup: `course-materials` consumes the loader via plugin dependency | it maintains a fork that has already diverged | medium |
 | 8 | Collapse 6 inline Context Monitoring copies into the existing constraint | `applies-to:` merely omits `ds-*` | small |
+| 9 | **Convert everything to `.ts`** — requested 2026-07-29 | `bun 1.3.14` runs `.ts` directly, so this is *not* a self-containment loss as §8 originally claimed (that argument assumed no JS runtime; correction recorded there). Existing TS: `cite-check/*.ts`, `deep-research.ts`, run via `bun x.ts` | large |
+
+**On #9, the tradeoffs as measured** — recorded so the decision is made with them, not against them:
+
+- **48 hooks are stdlib-only Python.** No `node_modules`, no bundler, no lockfile today. TS needs a dependency story even if bun removes the build step.
+- **`phase-gate-guard.py` is 568 lines of hardened YAML edge-case handling** that documents its own past bugs (it must reject `'APPROVED'' # invalid'` as a passing value). Rewriting it re-opens closed bugs in the code that gates every phase transition.
+- **Two frontmatter parsers that must agree is a new drift surface** — the same class of bug as the `ds-delegate` template split, and this repo has now been bitten by that twice.
+- **Migration order matters if pursued:** integrations first (already TS), then `scripts/` (where the third-party deps live and TS has real ecosystem wins), and hooks last or never — they are the highest-risk, lowest-reward leg.
+- The PEP 723 gap (#5) is independent: fix it regardless, since it bites today and a migration would take time.
 
 **Rejected on evidence:** output styles for domain conventions (§6) — wrong category, session-global,
 does not reach subagents. Adopting it would be feature-use that makes things worse.
