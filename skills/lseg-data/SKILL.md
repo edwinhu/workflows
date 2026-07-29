@@ -356,6 +356,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/api-discovery.md`** - Reverse-engineering APIs via CDP network monitoring
 - **`references/troubleshooting.md`** - Common issues and solutions
 - **`references/wrds-comparison.md`** - LSEG vs WRDS data mapping
+- **`${CLAUDE_SKILL_DIR}/../crsp-lseg-splice/SKILL.md`** - using LSEG to extend a stale CRSP panel to T-1: CUSIP9→RIC linking, measured coverage, and the foreign-venue RIC trap (~4% of US CUSIPs resolve to a EUR-quoted cross-listing with no error)
 
 ### Example Files
 
