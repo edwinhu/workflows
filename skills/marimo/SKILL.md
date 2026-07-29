@@ -226,8 +226,52 @@ echo $! > /tmp/marimo.pid
 kill "$(cat /tmp/marimo.pid)"
 ```
 
+### IRON LAW #3: `import marimo` GOES IN THE FIRST ~400 BYTES
+
+**Never put a module docstring, licence header, or comment block in front of
+`import marimo`. This is not negotiable.**
+
+marimo decides whether a `.py` file is a notebook by scanning only the head of
+the file. Push the signature past that window and the file is still a perfectly
+valid notebook that runs, checks, and exports — it simply **stops appearing in
+the workspace listing**, and there is no error anywhere to explain why.
+
+Measured on 0.23.4 by bisection, identical files differing only in a leading
+docstring:
+
+| `import marimo` at byte | workspace listing |
+|---|---|
+| 0, 167, 246, 325, 404 | **listed** |
+| 483, 562, 641 | **hidden** |
+
+Put explanatory prose in an `mo.md` intro cell instead — a module docstring is
+invisible in the rendered notebook anyway, so the "documentation" it buys costs
+the file its discoverability and shows the reader nothing.
+
+**If a notebook you just wrote is missing from the workspace, check the byte
+offset of `import marimo` before anything else:**
+
+```bash
+python3 -c "print(open('nb.py').read().index('import marimo'))"   # want < 400
+```
+
+Diagnose the listing directly rather than guessing at the server — the API
+answers precisely, including the root it is scanning:
+
+```bash
+TOK=$(curl -s "http://$HOST:$PORT" | grep -oP '(?<=data-token=")[^"]+' | head -1)
+curl -s -X POST -H 'Content-Type: application/json' -H "Marimo-Server-Token: $TOK" \
+  -d '{}' "http://$HOST:$PORT/api/home/workspace_files"
+```
+
 ### Server Lifecycle Facts
 
+- marimo's workspace file browser roots at the process **cwd**, not at the path argument. Running
+  `marimo edit notebooks/` from the repo root serves that directory but browses the root, so the
+  workspace lists nothing while "recent notebooks" still shows whatever was opened before — which
+  reads as a marimo bug rather than a launch mistake. `cd` into the directory first.
+- A notebook whose `import marimo` sits past ~400 bytes is invisible in the workspace listing while
+  remaining fully valid — it runs, `marimo check` passes, `export` works. Iron Law #3 above.
 - `marimo edit` binds `127.0.0.1` unless told otherwise. On a remote host that is invisible to an
   SSH-connected user, and answering "set up a LocalForward" spends their reconnect to buy what
   `--host <tailnet-ip>` gives for free. Verified: `LISTEN 127.0.0.1:2718` before, `HTTP 200` on the
