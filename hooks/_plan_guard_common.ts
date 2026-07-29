@@ -17,7 +17,7 @@
 
 import { existsSync, statSync } from "node:fs";
 import { dirname } from "node:path";
-import { deny } from "./_gate_common.ts";
+import { deny, parsePayload } from "./_gate_common.ts";
 
 export type PlanGuardConfig = {
   /** this hook file's own directory (import.meta.dir of the guard) */
@@ -100,7 +100,7 @@ export function run(cfg: PlanGuardConfig, argv: string[], stdinText: () => Promi
     // Hook mode.
     let hookInput: Record<string, unknown>;
     try {
-      hookInput = JSON.parse(await stdinText());
+      hookInput = parsePayload(await stdinText());
     } catch {
       process.exit(0);
     }

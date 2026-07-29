@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { parsePayload } from "./_gate_common.ts";
 /**
  * Stop hook: Update LEARNINGS.md timestamp when session ends.
  *
@@ -56,7 +57,7 @@ async function updateLearningsTimestamp(learningsPath: string): Promise<boolean>
 async function main(): Promise<never> {
   // Read hook input (optional - may not have session info)
   try {
-    JSON.parse(await Bun.stdin.text());
+    parsePayload(await Bun.stdin.text());
   } catch {
     // json.JSONDecodeError / KeyError fallback: session_id is unused past this point.
   }

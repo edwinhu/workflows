@@ -15,7 +15,7 @@
 import { existsSync, readFileSync, readdirSync, statSync, appendFileSync, unlinkSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
-import { pyJson } from "./_gate_common.ts";
+import { parsePayload, pyJson } from "./_gate_common.ts";
 
 /** Process-local mirror of os.environ — mutated by the loaders exactly as Python mutates os.environ. */
 const env: Record<string, string> = { ...(process.env as Record<string, string>) };
@@ -532,7 +532,7 @@ Consider running \`/pattern-capture\` to classify these and create appropriate e
 
 async function main(): Promise<void> {
   try {
-    JSON.parse(await Bun.stdin.text());
+    parsePayload(await Bun.stdin.text());
   } catch {
     // session_id defaults to 'unknown' — never used downstream, kept for parity.
   }

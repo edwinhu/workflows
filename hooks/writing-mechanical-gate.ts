@@ -123,7 +123,13 @@ function freshnessHash(project: string): string | null {
     for (const p of drafts.concat(constraintFiles())) {
       if (!isFile(p)) continue;
       const st = statSync(p, { bigint: true });
-      const mtime = Number(st.mtime as unknown as bigint) + Number(st.mtimeNs % 1000000000n) * 1e-9;
+      // Python's os.stat().st_mtime is SECONDS as a float. With { bigint: true } node still returns
+      // a Date for `.mtime`, so Number(st.mtime) is MILLISECONDS — the previous form produced
+      // 1784829199831.83 where Python gives 1784829199.831764, and then added a nanosecond
+      // fraction on top of milliseconds. The freshness cache was cross-incompatible: a cache
+      // written by Python was never honoured here and vice versa, so one side would allow while
+      // the other emitted a full deny on identical inputs. mtimeNs is the only exact source.
+      const mtime = Number(st.mtimeNs) / 1e9;
       stamps.push([p, mtime]);
     }
     stamps.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : a[1] - b[1]));
@@ -194,6 +200,15 @@ function runCheckAll(project: string): CheckResult {
     });
     stdout = new TextDecoder().decode(proc.stdout);
     returncode = proc.exitCode ?? 1;
+    // Python's subprocess.run(timeout=180) RAISES TimeoutExpired, which its `except Exception`
+    // catches and turns into ok=True — the gate fails OPEN on a slow check-all, deliberately
+    // ("never hard-block the workflow on a harness error"). Bun.spawnSync does NOT throw on
+    // timeout; it returns a killed process, whose non-zero exit fell through to the returncode
+    // branch below and emitted a DENY. That inverted fail-open into fail-closed: a check-all
+    // exceeding 180s would block writing-review instead of waving it through.
+    if (proc.signalCode || (proc.exitCode === null && !stdout)) {
+      return { ok: true, failed: [], errors: [], summary: "(check-all could not run: timeout)" };
+    }
   } catch (e) {
     // Never hard-block the workflow on a harness error running the gate.
     return { ok: true, failed: [], errors: [], summary: `(check-all could not run: ${e})` };

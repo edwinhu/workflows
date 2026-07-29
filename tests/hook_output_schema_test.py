@@ -98,8 +98,20 @@ def _wirings_from_skills() -> list[tuple[str, str, str, str]]:
 
 
 def _script_of(command: str) -> str | None:
+    """Extract the hook script filename from a wiring command.
+
+    MATCHES BOTH .py AND .ts. The hooks were ported to TypeScript on 2026-07-29 and every wiring
+    became `bun .../hooks/x.ts`. This matched only `.py`, so discovery returned [] — the
+    parametrised test went SKIPPED[NOTSET], its sibling passed over an empty list, and
+    `check-hooks.sh` exited 0 while validating 56 -> 0 wirings.
+
+    That is the precise failure this suite exists to catch, quoted from the enforcement checklist:
+    a broken gate "still runs, still exits 0, prints nothing anyone sees, and its `deny` silently
+    becomes an allow." The port switched off the only detector for it, and an exit-0 was reported
+    four times as a passing gate. If you are adding a third runtime, add it here FIRST.
+    """
     for token in command.split():
-        if token.endswith('.py') and '/hooks/' in token:
+        if (token.endswith('.py') or token.endswith('.ts')) and '/hooks/' in token:
             return token.rsplit('/hooks/', 1)[1]
     return None
 
@@ -216,8 +228,14 @@ def run_hook(script: str, payload: dict, cwd: str) -> tuple[int, str, str]:
     # Some hooks read tool input from this env var instead of stdin. Populate it so the
     # test exercises whatever path they take -- the point is the OUTPUT shape.
     env['CLAUDE_TOOL_INPUT'] = json.dumps(payload.get('tool_input', {}))
+    # Dispatch on extension: hooks were ported to TypeScript on 2026-07-29 and now run under bun.
+    # Hardcoding `uv run python3` made every .ts wiring fail to execute, so all 56 reported INVALID
+    # the moment discovery was fixed — a broken runner is indistinguishable from a broken hook in
+    # the report, and the previous state (0/0, exit 0) hid both.
+    argv = (['bun', str(HOOKS / script)] if script.endswith('.ts')
+            else ['uv', 'run', 'python3', str(HOOKS / script)])
     proc = subprocess.run(
-        ['uv', 'run', 'python3', str(HOOKS / script)],
+        argv,
         input=json.dumps(payload), capture_output=True, text=True,
         cwd=cwd, env=env, timeout=TIMEOUT,
     )

@@ -117,7 +117,44 @@ export function projectFromArgs(toolInput: Record<string, unknown>, hookInput?: 
   return ".";
 }
 
-/** Read the whole hook payload from stdin. */
+/**
+ * Enforce the payload-is-an-object precondition by EXITING, not throwing.
+ *
+ * Throwing was not enough: the hooks mirror Python's shape, where only `json.load` sat inside the
+ * try — so they wrap the read in `try { ... } catch { return 0 }`, and that catch swallowed the
+ * TypeError, restoring the silent allow this is meant to prevent. In Python the AttributeError from
+ * `.get()` on a non-dict is raised OUTSIDE the try and propagates all the way out, exiting 1.
+ * Exiting here reproduces that: no local catch can intercept it, which is the entire point.
+ */
+function requireObject(parsed: unknown): Record<string, unknown> {
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    const got = Array.isArray(parsed) ? "array" : parsed === null ? "null" : typeof parsed;
+    console.error(`AttributeError: hook payload must be an object, got ${got}`);
+    process.exit(1);
+  }
+  return parsed as Record<string, unknown>;
+}
+
+/** Read the whole hook payload from stdin.
+ *
+ * THROWS on a payload that parses to a non-object, matching the Python originals.
+ *
+ * Python wrapped only `json.load` in try/except; the subsequent `hook_input.get(...)` sat OUTSIDE
+ * it, so stdin that is valid JSON but not a dict (`null`, `"str"`, `[1,2]`) raised AttributeError
+ * and exited 1. The first ports used optional chaining and returned an ALLOW instead — turning a
+ * fail-closed crash into a silent permit across 10 hooks, with no golden covering it because the
+ * "unparseable-stdin" cases omit the stdin key entirely and both sides then agree on empty input.
+ *
+ * A guard that exits 0 on garbage it does not understand is worse than one that dies loudly.
+ */
 export async function readPayload(): Promise<Record<string, unknown>> {
-  return JSON.parse(await Bun.stdin.text());
+  return requireObject(JSON.parse(await Bun.stdin.text()));
+}
+
+/**
+ * Parse a hook payload with the same non-object strictness as readPayload, for hooks that read
+ * stdin themselves rather than awaiting it.
+ */
+export function parsePayload(text: string): Record<string, unknown> {
+  return requireObject(JSON.parse(text));
 }

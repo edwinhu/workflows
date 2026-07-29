@@ -10,7 +10,7 @@
  * lowered string for both is the obvious port bug and is invisible until a `.PNG` payload arrives.
  */
 import { resolve } from "node:path";
-import { allow, deny } from "./_gate_common.ts";
+import { allow, deny, parsePayload } from "./_gate_common.ts";
 
 const IMAGE_EXTENSIONS = [
   ".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif",
@@ -19,7 +19,7 @@ const IMAGE_EXTENSIONS = [
 
 let hookInput: Record<string, unknown>;
 try {
-  hookInput = JSON.parse(await Bun.stdin.text());
+  hookInput = parsePayload(await Bun.stdin.text());
 } catch {
   // Python: `except Exception: sys.exit(0)` around json.load — unparseable stdin is a silent allow.
   process.exit(0);

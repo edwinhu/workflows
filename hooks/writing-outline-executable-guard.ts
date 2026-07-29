@@ -29,7 +29,7 @@
  *
  * CLI:  bun writing-outline-executable-guard.ts /abs/project   # lint mode (exit 1 if bad)
  */
-import { deny, pyJson } from "./_gate_common.ts";
+import { deny, parsePayload, pyJson } from "./_gate_common.ts";
 
 /** The Python original's module-level `sys.path.insert(parents[1]/scripts/writing)`. */
 const SCRIPTS_DIR = `${import.meta.dir.replace(/\/[^/]*$/, "")}/scripts/writing`;
@@ -83,7 +83,7 @@ if (argv.length > 0 && argv[0] !== "-") {
 
 let hookInput: Record<string, unknown>;
 try {
-  hookInput = JSON.parse(await Bun.stdin.text());
+  hookInput = parsePayload(await Bun.stdin.text());
 } catch {
   process.exit(0);
 }

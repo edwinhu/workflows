@@ -23,7 +23,7 @@
  * Standalone:  bun workshop-outline-executable-guard.ts path/to/OUTLINE.md
  */
 
-import { deny, pyJson } from "./_gate_common.ts";
+import { deny, parsePayload, pyJson } from "./_gate_common.ts";
 import { buildIndex, pyJoin, pyParent } from "./_workshop_slide_table.ts";
 
 const argv = process.argv.slice(2);
@@ -44,7 +44,7 @@ if (argv.length > 0 && argv[0] !== "-") {
 
 let hookInput: Record<string, unknown>;
 try {
-  hookInput = JSON.parse(await Bun.stdin.text());
+  hookInput = parsePayload(await Bun.stdin.text());
 } catch {
   process.exit(0);
 }

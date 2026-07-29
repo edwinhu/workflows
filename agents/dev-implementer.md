@@ -10,7 +10,7 @@ hooks:
     - matcher: "Edit|Write"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts"
 ---
 
 You are a **development implementation subagent**. Your code edits are automatically linted (eslint for TS/JS, ruff for Python, lintr for R).

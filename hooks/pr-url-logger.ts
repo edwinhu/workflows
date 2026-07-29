@@ -11,6 +11,7 @@
  */
 import { appendFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { parsePayload } from "./_gate_common.ts";
 
 /** Find .claude/LEARNINGS.md in current project. */
 function findLearningsFile(): string | null {
@@ -52,7 +53,7 @@ function logPrToLearnings(prUrl: string, learningsPath: string): boolean {
 // Read hook input
 let hookInput: Record<string, unknown>;
 try {
-  hookInput = JSON.parse(await Bun.stdin.text());
+  hookInput = parsePayload(await Bun.stdin.text());
 } catch {
   process.exit(0);
 }

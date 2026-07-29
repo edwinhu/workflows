@@ -23,7 +23,7 @@
  * CLI (debug):  FLOOR=dev bun mechanical-floor-gate.ts /abs/project
  */
 import { resolve, dirname, join } from "node:path";
-import { deny, projectFromArgs } from "./_gate_common.ts";
+import { deny, parsePayload, projectFromArgs } from "./_gate_common.ts";
 
 const HOOKS_DIR = resolve(import.meta.dir);
 const REPO = dirname(HOOKS_DIR);
@@ -125,7 +125,7 @@ async function main(): Promise<never> {
 
   let hookInput: Record<string, unknown>;
   try {
-    hookInput = JSON.parse(await Bun.stdin.text());
+    hookInput = parsePayload(await Bun.stdin.text());
     if (hookInput === null || typeof hookInput !== "object") throw new Error("bad payload");
   } catch {
     process.exit(0);
