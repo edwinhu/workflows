@@ -55,6 +55,7 @@ This is not negotiable. Skipping execution and output inspection is NOT HELPFUL 
 - Wrong dependencies or missing returns break reactivity silently: no error at edit time, only a NameError when a dependent cell runs. Validate that all used variables are in params AND all created variables are in returns.
 - A variable created but not returned raises NameError in every cell that depends on it.
 - Python treats `return var` as returning the bare value, which breaks unpacking — single returns require the trailing comma (`return var,`).
+- Marimo re-runs a cell when a **variable** in its dependency DAG changes. Regenerating a data file changes no variable — `t("table7")` is the same call on the same code — so the runtime correctly re-runs nothing, and `--watch` watches the notebook `.py`, not the data directory. A data-only change is therefore completely invisible to a live session until you re-run the cells yourself. Worse, every check you can run still passes: the parquet on disk is correct, `t("table7")` called from the kernel re-reads disk and returns the NEW data, all cells report `status=idle` with no errors, and a fresh HTML export is correct. Only the rendered output already sitting in the user's browser is stale — so "I queried the kernel and it's correct" is not evidence the user can see it, and you can verify a change thoroughly and report it truthfully while the person watching the screen sees the old numbers.
 
 ### Red Flags — STOP If About To:
 
@@ -62,6 +63,7 @@ This is not negotiable. Skipping execution and output inspection is NOT HELPFUL 
 - Claim done after only `marimo check` → STOP. Execution with `--include-outputs` is required.
 - Claim the notebook works from reading the code → STOP. Reactive correctness shows only at runtime.
 - Define a variable that another cell already defines → STOP. One variable = one cell.
+- Report a regenerated data file as something the user can see, without having re-run the cells → STOP. Nothing re-ran; their browser still shows the old numbers.
 
 ### Editing Checklist
 
@@ -288,6 +290,31 @@ curl -s -X POST -H 'Content-Type: application/json' -H "Marimo-Server-Token: $TO
   formats leaves the first one older than the source — any "is the export newer than the source?"
   freshness check fails for whichever ran first. Export the format you will actually gate on
   **last**. Discovering this at the gate, after the work is done, is the expensive way to learn it.
+
+### Refreshing After a Data-Only Change
+
+When you regenerate data a notebook reads, re-run **every** cell, not the ones you judge
+affected. Guessing which cells a data change touches is exactly what lets a stale render
+through — the dependency DAG cannot tell you, because no variable changed. For a thin-reader
+notebook (cells that just `pl.read_parquet(...)`) a full re-run is cheap.
+
+```bash
+bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/execute-code.sh <<'EOF'
+import marimo._code_mode as cm
+
+async with cm.get_context() as ctx:
+    for c in ctx.cells:
+        ctx.run_cell(c.id)
+EOF
+```
+
+Better still, wrap regenerate + refresh + export in one project script so the refresh cannot
+be lost by forgetting it — this project does, at `scripts/repro/refresh.sh`.
+
+`ctx.screenshot()` is not a shortcut for confirming what the user sees: it is a **coroutine**
+(needs `await`, unlike every other `ctx.*` method) *and* it requires Playwright installed in
+the environment. Re-run the cells instead. Note `cm.get_context()` likewise needs
+`async with`, not `with`.
 
 ### Discovery and Execution
 
