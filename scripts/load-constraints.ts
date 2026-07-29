@@ -33,7 +33,7 @@ type Meta = Record<string, string | string[]>;
  * it DROPS the remainder rather than keeping it in the last element, which would silently truncate
  * every constraint body at its first horizontal rule.
  */
-function parseFrontmatter(text: string): [Meta, string] {
+export function parseFrontmatter(text: string): [Meta, string] {
   if (!text.startsWith("---")) return [{}, text];
 
   const first = text.indexOf("---");
@@ -146,6 +146,10 @@ function loadConstraints(skillName: string, constraintsDir?: string): string {
   return header + outputParts.join("\n");
 }
 
+// CLI entry point. Guarded by import.meta.main so importing this module for its exported
+// parseFrontmatter/skillMatches (the test does) does not execute the loader and dump 29 KB of
+// constraint prose into the test output.
+if (import.meta.main) {
 const argv = process.argv.slice(2);
 if (!argv.length || argv[0] === "-h" || argv[0] === "--help") {
   console.log(
@@ -164,3 +168,4 @@ const skillName = argv[0];
 const constraintsDir = argv.length >= 3 && argv[1] === "--dir" ? argv[2] : undefined;
 const output = loadConstraints(skillName, constraintsDir);
 if (output) console.log(output);
+}

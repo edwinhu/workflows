@@ -189,8 +189,29 @@ function pythonHooksDir(base: string): string | null {
   const root = mkdtempSync(join(tmpdir(), "parity-py-"));
   // Mirror the plugin layout so PLUGIN_ROOT (= <hooks>/..) resolves to a repo-shaped tree.
   for (const entry of readdirSync(REPO, { withFileTypes: true })) {
-    if (entry.name === ".git" || entry.name === "hooks") continue;
+    if (entry.name === ".git" || entry.name === "hooks" || entry.name === "scripts") continue;
     symlinkSync(join(REPO, entry.name), join(root, entry.name));
+  }
+
+  // scripts/ is REBUILT rather than symlinked, because the Python originals have dependencies there
+  // that the worktree no longer has. wc-constraint-check.py imports scripts/load-constraints.py BY
+  // PATH as "the SINGLE SOURCE OF TRUTH for applies-to parsing"; once that file was ported and
+  // deleted, a symlinked scripts/ made the Python reference die at import — reported as a parity
+  // failure when the port was fine and only the reference had lost a dependency. Current entries are
+  // linked, then base-ref .py files are written over the top so originals see the world they expect.
+  const scriptsDir = join(root, "scripts");
+  mkdirSync(scriptsDir, { recursive: true });
+  for (const name of readdirSync(join(REPO, "scripts"))) {
+    symlinkSync(join(REPO, "scripts", name), join(scriptsDir, name));
+  }
+  const lsScripts = Bun.spawnSync(["git", "ls-tree", "--name-only", `${base}:scripts`], { cwd: REPO });
+  if (lsScripts.exitCode === 0) {
+    for (const name of new TextDecoder().decode(lsScripts.stdout).split("\n").filter((n) => n.endsWith(".py"))) {
+      const r = Bun.spawnSync(["git", "show", `${base}:scripts/${name}`], { cwd: REPO });
+      if (r.exitCode !== 0) continue;
+      rmSync(join(scriptsDir, name), { force: true }); // drop the symlink before shadowing it
+      writeFileSync(join(scriptsDir, name), r.stdout);
+    }
   }
   const dir = join(root, "hooks");
   mkdirSync(dir, { recursive: true });
@@ -277,8 +298,19 @@ async function checkHook(hook: string, base: string): Promise<{ ok: boolean; lin
 }
 
 const args = process.argv.slice(2);
+/**
+ * The last commit where hooks/*.py and hooks/*.ts BOTH exist.
+ *
+ * Once the Python originals are deleted from the worktree, `HEAD:hooks/x.py` no longer resolves, so
+ * defaulting to HEAD would make every parity check fail with "no original to compare against" — the
+ * harness would look broken rather than the port looking wrong. Pinning the base keeps parity
+ * permanently checkable against the reference implementation, which is the whole point of having it.
+ * Override with --base for a different ref.
+ */
+const PARITY_BASE = "4bd5349";
+
 const baseIdx = args.indexOf("--base");
-const base = baseIdx >= 0 ? args[baseIdx + 1] : "HEAD";
+const base = baseIdx >= 0 ? args[baseIdx + 1] : PARITY_BASE;
 const targets = args.includes("--all")
   ? readdirSync(GOLDEN_DIR).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, "")).sort()
   : args.filter((a) => !a.startsWith("--") && a !== base);
