@@ -108,7 +108,17 @@ wrong connections) and the pdftotext pre-screen finds no fused labels
 gate. Stop after 5 turns.
 ```
 
-Hand the literal condition to the user (or run via `claude -p "/goal …"`). Each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar).
+**Getting it set** — you cannot `Skill(goal)` (it is a built-in UI command, not a skill), and printing the line is a no-op (slash commands dispatch only on the user input path). Probe, then branch:
+
+```bash
+if agent-msg resolve "$CLAUDE_CODE_SESSION_ID" >/dev/null 2>&1; then
+    agent-msg send "$CLAUDE_CODE_SESSION_ID" "/goal <condition>"   # RC session: self-inject
+else
+    :   # no cse_* — hand the literal condition to the user and STOP until they confirm
+fi
+```
+
+`claude -p "/goal …"` also works when launching a fresh session. Once active, each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar). With no active goal there is no loop at all — one pass, no gate.
 
 ### Score Tracking
 
