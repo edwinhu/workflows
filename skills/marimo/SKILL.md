@@ -194,6 +194,57 @@ uvx marimo@latest edit notebook.py --no-token --watch --sandbox
 
 **Always start as a background task** (`run_in_background`) so the server doesn't block the conversation. Do NOT use `--headless` unless asked — let marimo open the browser.
 
+### Remote Box? Bind to the Tailnet, Don't Ask for SSH Forwarding
+
+`marimo edit` binds **127.0.0.1** by default. When the notebook runs on a remote host and the user
+is on SSH, that is unreachable — they get nothing, and the obvious next move (tell them to set up
+`LocalForward`) costs them a config edit *and* a reconnect before they can look at anything.
+
+Bind to the machine's Tailscale address instead. It works immediately, from any tailnet device
+including a phone, with no client-side change:
+
+```bash
+TS_IP=$(tailscale ip -4 2>/dev/null | head -1)
+setsid nohup marimo edit notebook.py --no-token --watch --headless \
+  --host "$TS_IP" --port 2718 > /tmp/marimo.log 2>&1 < /dev/null & disown
+
+# confirm it is actually reachable — a bind is not a connection
+ss -ltn | grep 2718
+curl -s -o /dev/null -w '%{http_code}\n' "http://$TS_IP:2718"    # want 200
+```
+
+Then hand the user `http://$TS_IP:2718`. `--headless` is correct here (the opposite of the
+local-box default above): a remote host has no browser to open.
+
+**Tear it down when the review closes.** A `--no-token` server left running is an open notebook
+kernel on the tailnet, and the next session's `discover-servers.sh` finds a stale one bound to a
+notebook nobody is reviewing.
+
+```bash
+# record the pid at launch — this is the safe handle
+echo $! > /tmp/marimo.pid
+kill "$(cat /tmp/marimo.pid)"
+```
+
+### Server Lifecycle Facts
+
+- `marimo edit` binds `127.0.0.1` unless told otherwise. On a remote host that is invisible to an
+  SSH-connected user, and answering "set up a LocalForward" spends their reconnect to buy what
+  `--host <tailnet-ip>` gives for free. Verified: `LISTEN 127.0.0.1:2718` before, `HTTP 200` on the
+  tailnet address after.
+- Bind to the **specific tailnet IP**, never `0.0.0.0`. With `--no-token` there is no auth at all,
+  so the bind address *is* the access control — `0.0.0.0` exposes an executing kernel to every
+  interface the box has.
+- `pkill -f 'marimo edit notebook.py'` **matches the shell running it**, because `-f` sees the full
+  command line including your own. Measured: it killed the launching shell and took the new server
+  with it, leaving nothing listening and an empty log that reads like a startup failure. Record the
+  PID at launch, or use `pkill -x marimo` / a `[m]arimo` character class.
+- **`marimo export` rewrites the source `.py` it exports.** Measured with the server idle: one
+  `export html` moved the notebook's mtime by 39 seconds without touching content. So exporting two
+  formats leaves the first one older than the source — any "is the export newer than the source?"
+  freshness check fails for whichever ran first. Export the format you will actually gate on
+  **last**. Discovering this at the gate, after the work is done, is the expensive way to learn it.
+
 ### Discovery and Execution
 
 ```bash

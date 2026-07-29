@@ -224,7 +224,13 @@
 %shark_coverage_check
 
 /* --- ISS proxy advisor recommendations (optional) --- */
-%let recs_file = ~/projects/pass/recs_2005_2024.csv;
+/* The filename carries the coverage end-year and IS load-bearing. The 2026-07-28
+ * run pointed at recs_2005_2024.csv while recs_2005_2025.csv existed: have_recs
+ * was 1, the gate passed, the LEFT JOIN below did exactly what it promises — and
+ * rec_iss came out 0.0% populated for 2025 and 79.9% for 2024 against the current
+ * file's 97.5% and 96.3%. A present-but-stale input is invisible to a fileexist
+ * check, so RECSCOV below reports match rates per year and the reader must look. */
+%let recs_file = ~/projects/pass/recs_2005_2025.csv;
 %global have_recs;
 %let have_recs = 0;
 
@@ -232,7 +238,7 @@
     %if %sysfunc(fileexist("&recs_file.")) %then %do;
         %let have_recs = 1;
         PROC IMPORT DATAFILE="&recs_file."
-            OUT=recs_2005_2024 DBMS=csv REPLACE;
+            OUT=recs DBMS=csv REPLACE;
             GETNAMES=YES;
         RUN;
     %end;
@@ -371,9 +377,29 @@ quit;
             create table turnout1 as
                 select a.*, b.rec_iss, b.rec_gl, b.prob_iss_1, b.prob_gl_1
                 from turnout a
-                left join recs_2005_2024 b
+                left join recs b
                   on a.itemonagendaid = b.itemonagendaid;
         quit;
+
+        /* Per-year match rate. A stale recs file passes every existence check and
+         * fails only here, as a coverage cliff in the final years. */
+        proc sql;
+            create table _recscov as
+                select year(meetingdate) as yr,
+                       count(*) as items,
+                       round(100*sum(rec_iss is not null)/count(*), 0.1) as pct_iss,
+                       round(100*sum(rec_gl  is not null)/count(*), 0.1) as pct_gl
+                from turnout1
+                group by calculated yr
+                order by calculated yr;
+        quit;
+        data _null_;
+            set _recscov end=last;
+            put "NOTE: RECSCOV yr=" yr " items=" items " pct_iss=" pct_iss " pct_gl=" pct_gl;
+            if last and pct_iss < 50 then
+                put "ERROR: RECSCOV — the final year has pct_iss=" pct_iss
+                    ". The recs file is stale or truncated: &recs_file.";
+        run;
     %end;
     %else %do;
         data turnout1;
