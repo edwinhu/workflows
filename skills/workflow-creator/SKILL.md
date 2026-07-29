@@ -2084,7 +2084,7 @@ enforcing while still appearing wired.)
 
 **Render score trend** (if SCORES.md exists from a prior audit):
 ```bash
-uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
+bun ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.ts .planning/wc/{name}/SCORES.md
 ```
 
 **Traceability (self-applied P18):** write or update `.planning/wc/{name}/VALIDATION.md` mapping each `WC-NN` requirement to the audit evidence that verifies it (the gate/principle that confirms it) + its scope tag — the same closure Mode 1 Step 7 performs, applied to an audit-only run.
@@ -2272,7 +2272,7 @@ The workflow's reviewers have no context from the fix phase — they read the fi
 Read `.planning/wc/{name}/SCORES.md`. Render the score trend for visual context:
 
 ```bash
-uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.py .planning/wc/{name}/SCORES.md
+bun ${CLAUDE_SKILL_DIR}/../../scripts/render-audit-scores.ts .planning/wc/{name}/SCORES.md
 ```
 
 Check the **substrate gate**, then the calibrated composite + flatness. "Flat" = this iteration's composite is within ±0.2 of the prior SCORES.md row.
