@@ -115,6 +115,11 @@ alt.themes.enable("house")
   which is more conspicuous than leaving the whole figure sans.
 - Observable Plot's default `observable10` scheme is not colorblind-safe. A chart
   that never sets `color.range` has silently opted out of this guide.
+- **A year axis needs an explicit integer format.** Plotting a numeric year
+  column renders ticks as `2,005` — the axis applies a thousands separator
+  because the values are numbers, not dates. Pass `tickFormat: "d"` (Observable
+  Plot / d3) or `FuncFormatter(lambda v, _: f"{v:.0f}")` (matplotlib). It looks
+  like a typo in the data and is the fastest way to make a figure look unfinished.
 - Viridis is perceptually uniform; `jet`/`rainbow` are not, and manufacture a
   bright band mid-scale that readers interpret as a feature of the data. This is
   a false finding introduced by the palette, not a matter of taste.
@@ -128,6 +133,7 @@ alt.themes.enable("house")
 | About to accept a library's default categorical palette | `observable10`, matplotlib's `tab10` and Altair's `category10` are none of them CVD-safe | Pass Okabe-Ito or an explicit range |
 | About to set `font.family="serif"` and stop | Math text stays sans, so every superscript mismatches | Also set `mathtext.fontset` |
 | About to plot more than ~8 categories in color | No palette separates that many | Facet, aggregate a tail, or label directly |
+| About to plot a numeric year on an axis without formatting it | Renders as `2,005` — a thousands separator on a year | `tickFormat: "d"`, or make the column a date |
 
 ## Checking a figure before it ships
 
