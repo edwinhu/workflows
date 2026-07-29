@@ -12,13 +12,14 @@ wrong so much as unusable at the point it matters: in a printed journal, in a
 reviewer's greyscale printout, or projected in a room where a tenth of the
 audience cannot separate your two series.
 
-## The four rules
+## The five rules
 
 | | Rule | Why it is not negotiable |
 |---|---|---|
 | **Type** | **Serif** faces for all text (labels, ticks, legends, annotations) | Figures sit inside serif body text. A sans-serif figure reads as pasted in from somewhere else, and journals increasingly ask for the match. |
 | **Format** | **Vector** (PDF/SVG/EPS). Raster only when the figure genuinely needs it — heatmaps, scatter with >50k points, images | Vector stays sharp at any zoom and prints at the press's resolution, not yours. A raster figure in a PDF is the one element a reader can visibly degrade by zooming. |
 | **Resolution** | If raster is unavoidable, **300 DPI minimum** at final print size | 300 DPI is the floor most journals accept. Note DPI is meaningless without physical size: 300 DPI at 3 inches is 900px. Set figure size in inches, then DPI. |
+| **Scale** | Use **log** when the series span more than ~1 decade — but then name the ticks | A linear axis over a 77x range collapses everything below the largest series into one band at the baseline. Log fixes that and introduces its own problem: unreadable automatic ticks. |
 | **Color** | **Colorblind-safe throughout.** Sequential → `viridis`. Two-category contrast → **blue/orange**. Never red/green | ~8% of men have red-green color vision deficiency. A red/green figure is not "harder" for them — it carries zero information. |
 
 ## Palettes
@@ -120,6 +121,16 @@ alt.themes.enable("house")
   because the values are numbers, not dates. Pass `tickFormat: "d"` (Observable
   Plot / d3) or `FuncFormatter(lambda v, _: f"{v:.0f}")` (matplotlib). It looks
   like a typo in the data and is the fastest way to make a figure look unfinished.
+- **A log axis needs explicit, human-readable ticks.** Over less than ~2 decades
+  the automatic ticks are unusable — minor ticks appear unlabelled, or values
+  arrive as `1e-1` and `2.5e0`. Name them and format them plainly:
+  `"ticks": [0.1, 0.25, 0.5, 1, 2, 5], "tickFormat": "~f"` (Observable Plot), or
+  `ax.set_yticks([...])` with `ScalarFormatter` (matplotlib, whose default
+  `LogFormatterSciNotation` also produces scientific notation). An axis that is
+  technically correct and unreadable is not a working axis.
+- **Say "log scale" in the axis label**, not only in the caption. A reader who
+  starts at the figure will otherwise read a log plot as linear and conclude the
+  gaps are far smaller than they are — a misreading the figure caused.
 - Viridis is perceptually uniform; `jet`/`rainbow` are not, and manufacture a
   bright band mid-scale that readers interpret as a feature of the data. This is
   a false finding introduced by the palette, not a matter of taste.
@@ -134,6 +145,7 @@ alt.themes.enable("house")
 | About to set `font.family="serif"` and stop | Math text stays sans, so every superscript mismatches | Also set `mathtext.fontset` |
 | About to plot more than ~8 categories in color | No palette separates that many | Facet, aggregate a tail, or label directly |
 | About to plot a numeric year on an axis without formatting it | Renders as `2,005` — a thousands separator on a year | `tickFormat: "d"`, or make the column a date |
+| About to set a log scale and accept the default ticks | Under ~2 decades they come out unlabelled or in scientific notation | Name the ticks and format them plainly; put "log scale" in the label |
 
 ## Checking a figure before it ships
 
