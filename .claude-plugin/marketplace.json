@@ -3,16 +3,19 @@
   "owner": {
     "name": "Edwin Hu"
   },
+  "allowCrossMarketplaceDependenciesOn": [
+    "claude-plugins-official"
+  ],
   "metadata": {
     "description": "Development, data science, and writing workflows for Claude Code",
-    "version": "5.92.0"
+    "version": "5.92.1"
   },
   "plugins": [
     {
       "name": "workflows",
       "source": "./",
       "description": "Unified development, data science, and writing workflows with TDD enforcement, output-first verification, GSD-style deviation rules, test gap validation, and session handoff",
-      "version": "5.92.0",
+      "version": "5.92.1",
       "category": "development",
       "tags": [
         "development",

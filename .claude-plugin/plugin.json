@@ -1,9 +1,12 @@
 {
   "name": "workflows",
-  "version": "5.92.0",
+  "version": "5.92.1",
   "description": "Development, data science, writing, and workshop presentation workflows with TDD enforcement, output-first verification, agent team parallelization, and GSD-style deviation rules, test gap validation, and session handoff.",
   "author": {
     "name": "edwinhu"
   },
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "dependencies": [
+    { "name": "skill-creator", "marketplace": "claude-plugins-official" }
+  ]
 }
