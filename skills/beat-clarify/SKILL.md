@@ -10,11 +10,11 @@ disable-model-invocation: true
 `clarify = ASK + criteria`
 
 The opening beat of any workflow phase that starts with the user rather than with the code. Read by
-`ds` (brainstorm), `dev-clarify`, `writing-setup`, `workshop`, and `mini` beat 1, so the shape is
-written once instead of five times drifting apart.
+`ds` (brainstorm), `dev-clarify`, `writing-setup`, `workshop`, and `work`, so the shape is written once
+instead of five times drifting apart.
 
 **The caller supplies:** the question axes for its domain and the durable target for clarified intent.
-That target may be a workflow artifact (`.planning/MINI.md`) or the native plan the caller will enter
+That target may be a workflow artifact (`.planning/WORK.md`) or the native plan the caller will enter
 next. Everything below is domain-agnostic.
 
 <EXTREMELY-IMPORTANT>

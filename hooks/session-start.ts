@@ -288,7 +288,7 @@ function buildInProgressSection(): string {
   }
 
   const stateFiles: string[] = [];
-  const keyFiles = ["PLAN.md", "ACTIVE_WORKFLOW.md", "HANDOFF.md", "PRECIS.md", "OUTLINE.md",
+  const keyFiles = ["PLAN.md", "WORK.md", "ACTIVE_WORKFLOW.md", "HANDOFF.md", "PRECIS.md", "OUTLINE.md",
     "VALIDATION.md", "REVIEW.md", "REVIEW_STATE.md", "PHASE_SUMMARY.md"];
   for (const name of keyFiles) {
     if (existsSync(join(stateDir, name))) stateFiles.push(name);
@@ -367,6 +367,9 @@ function buildInProgressSection(): string {
           lines.push(`- Style: ${style}`);
           if (truthy(wf["current_part"] ?? "")) lines.push(`- Current part: ${currentPart}`);
           lines.push("- Resume: `/writing-revise`");
+        } else if (wfType === "work") {
+          lines.push("- State: `.planning/WORK.md`");
+          lines.push("- Resume: `/work`");
         } else if (wfType === "dev" || wfType === "ds") {
           lines.push(`- Resume: \`/${wfType}\` or \`/${wfType}-debug\``);
         }

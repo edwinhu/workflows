@@ -56,9 +56,9 @@ const GOLDEN_DIR = join(REPO, "tests", "golden");
 const LEGACY_TS_EXPECTATIONS: Record<string, TsExpectation> = {
   "pre-compact/ds-workflow-detected-dev-patterns-absent": { stdoutSha256: "f7d6f2bb56dc66816747445e826e828293b9039046c60ed2fcaf09774d2b16ff", exit: 0, fs: {} },
   "pre-compact/native-ds-plan-without-keywords-never-writes-state": { stdoutSha256: "f7d6f2bb56dc66816747445e826e828293b9039046c60ed2fcaf09774d2b16ff", exit: 0, fs: {} },
-  "session-start/planning-plan-progress-with-next-task": { stdoutSha256: "c75ff84c27349724ad39ccd3112a4d3f313891facdcee8561bc04616fe971dbf", exit: 0, fs: {} },
-  "session-start/planning-dev-workflow-all-tasks-complete": { stdoutSha256: "e7baa9bccbb56f3e8ccb6f97185d7409b7f0d77a649e266b86299ff51aebab32", exit: 0, fs: {} },
-  "session-start/legacy-claude-dir-plan-without-checkboxes": { stdoutSha256: "9253b67d1b4e874d4f99ce504dffcb7a3ca3c83a580ae78280f2ebcf54f8250e", exit: 0, fs: {} },
+  "session-start/planning-plan-progress-with-next-task": { stdoutSha256: "07e839850dac220efc17ef73c11558b43fcc919935e3c02bb08c2bb674c09976", exit: 0, fs: {} },
+  "session-start/planning-dev-workflow-all-tasks-complete": { stdoutSha256: "1e66fe8e58002c97524d42a1ad6c4e8345c9ece58d77ffa4a1bb85bf2318aead", exit: 0, fs: {} },
+  "session-start/legacy-claude-dir-plan-without-checkboxes": { stdoutSha256: "59b970418f6703f370641ecb8d3815118c613c66746dce42b7fefcb966281e21", exit: 0, fs: {} },
   "subagent-start/active-workflow-only": { stdoutSha256: "92f7c2777260574d918b907072e08b60e42504422a22607249c880b126a2f0eb", exit: 0, fs: {} },
   "subagent-start/skills-with-reference-files-only": { stdoutSha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", exit: 0, fs: {} },
   "subagent-start/workflow-and-skills-merged-across-state-spec-plan": { stdoutSha256: "a8bc42829d751f61205e60ba8910458d59842a217878ba323e70ef70e85cb7f5", exit: 0, fs: {} },

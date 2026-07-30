@@ -13,13 +13,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-> Version files are deliberately **not** bumped in this entry. The concurrent
-> `npx-parallel-pull` branch has already claimed 5.79.0–5.83.0, so picking a
-> number here either collides with it or regresses the marketplace version
-> depending on merge order. Bump once, at merge.
+> Version `5.97.0` is reserved for the `/work` migration and the plan-checker changes below. All three
+> plugin and marketplace version fields are kept aligned.
+
+### Added
+- **`workflows:work` — the canonical lightweight generic workflow.** Bounded cross-domain tasks now have a shared-beat adapter for clarify → native plan approval → budgeted `/goal` + work → independent verification → human review. It uses `.planning/WORK.md`, defaults to inline execution, escalates mechanically by task shape, resumes the same verifier after failures, and sends `REJECT:` back to clarification with a two-rejection cap.
+- Added contract and routing tests for `/work`, including negative coverage that keeps trivial tasks direct, specialized task shapes in their domain workflows, and the DS approved-plan runner/hooks DS-only.
 
 ### Changed
-- Replaced the dev-specific plan-checker with `workflows:plan-checker`. Dev and DS adapters now dispatch the same domain-parameterized reviewer, which deterministically loads atomic common and domain review constraints before writing the existing guarded verdict. No version bump; release remains pending.
+- Updated `using-skills` routing and `beat-clarify` to make `/work` the bounded generic entry point and remove the external standalone-mini terminology. Legacy `.planning/MINI.md` artifacts are offered an explicit, provenance-preserving conversion; there is no `/mini` alias.
+- Replaced the dev-specific plan-checker with `workflows:plan-checker`. Dev and DS adapters now dispatch the same domain-parameterized reviewer, which deterministically loads atomic common and domain review constraints before writing the existing guarded verdict.
 - **13F EDGAR scrape (`skills/wrds/scripts/parse_13f/`) — 3.32× faster, output byte-identical.** Full 38-quarter run (248,500 filings, 45.31 GB, 86,444,026 holdings rows) measured end to end on the WRDS grid: **8m 23s → 2m 32s**.
   - **The wall-clock claim it replaces was wrong by 6×.** `npx-ownership-panel` reported this leg at **1m 23s**, extrapolated by dividing a 13.9 min serial estimate by "10 concurrent, the observed slot count". The per-slot measurement underneath was sound and reproduces here (284 filings/s at 4 slots → 273–291 measured), but the divisor conflates *ten slots* with *ten tasks*: `qconf -srqs` caps each user at **10 slots** in `all.q`, so 4-slot tasks run **two** at a time, not ten. A full run of the unmodified code took **8m 23s**. Two further limits found by submission: `-pe onenode` rejects `N > 8`, and `ssdwork.q` is JSV-blocked despite having 300 free slots.
   - **Parser: a hand-rolled information-table scanner** (`xml_fast.go`), after `runtime/pprof` attributed **63.4%** of CPU to `encoding/xml.(*Decoder).Token`. It reproduces the exact token sequence `encoding/xml` emits and **refuses** anything it cannot mirror — CDATA, DOCTYPE, multi-colon names, unknown entities, mismatched end tags, non-UTF-8 declarations — falling back to `encoding/xml` for those, so correctness never depends on the scanner being complete. Measured fallback rate 2.6–4.8%. Plus `gzip.BestSpeed`, which halves the only serial stage (`compress/flate` was 9.2% of CPU, exactly the Amdahl serial fraction) for +14.0% bytes on disk. Stdlib only; no new dependencies.

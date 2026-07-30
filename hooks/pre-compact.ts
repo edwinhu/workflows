@@ -50,6 +50,17 @@ function findStateFile(): string | null {
   return isFile(statePath) ? statePath : null;
 }
 
+function activeWorkflowMarker(): string | null {
+  const marker = join(cwd(), ".planning", "ACTIVE_WORKFLOW.md");
+  if (!isFile(marker)) return null;
+  try {
+    const match = readFileSync(marker, "utf-8").match(/^workflow:\s*([a-z0-9_-]+)\s*$/m);
+    return match?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function detectActiveWorkflow(planPath: string): string | null {
   let content: string;
   try {
@@ -171,9 +182,9 @@ async function main(): Promise<void> {
     /* hook_input = {} */
   }
 
-  // Detect active workflow from PLAN.md
+  // An explicit lifecycle marker wins; legacy workflows fall back to PLAN.md prose detection.
   const planPath = findPlanFile();
-  const activeWorkflow = planPath ? detectActiveWorkflow(planPath) : null;
+  const activeWorkflow = activeWorkflowMarker() ?? (planPath ? detectActiveWorkflow(planPath) : null);
 
   // Authenticated native DS metadata, rather than plan prose, proves this is a DS lifecycle.
   const hasNativeDsPlan = isFile(join(cwd(), ".planning", "PLAN.meta.json"));

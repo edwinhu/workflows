@@ -29,20 +29,25 @@ Requires `gh` (GitHub CLI). Tools already on your `$PATH` are skipped.
 
 ---
 
-## User Commands (17)
+## User Commands
 
 These are the skills you invoke directly with `/name`:
 
 ### Core Workflows
 
-Four primary workflows, each with a fresh-start entry and a midpoint re-entry:
+`/work` is the lightweight generic entry point; the domain workflows retain their specialized
+planning and execution guarantees:
 
 | Start Fresh | Midpoint Re-entry | Domain |
 |-------------|-------------------|--------|
+| `/work` | Resume `.planning/WORK.md` | Bounded cross-domain work: clarify, approve a proportional plan, execute under `/goal`, independently verify, and obtain human review |
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
 | `/ds` | `/ds-implement` | Native-plan data science: plan, implement, and independent review |
 | `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 | `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
+
+`/work` composes the shared clarify, implementation/verification, and human-review doctrine but stays
+prompt-procedural: it does not use the DS-only approved-plan hooks or `beat-implement.js` runner.
 
 ### Document Formats
 
@@ -182,12 +187,13 @@ workflows/
 ├── .claude-plugin/             # Plugin manifest
 │   ├── plugin.json             # Version and metadata
 │   └── marketplace.json        # Marketplace listing
-├── agents/                     # Specialized subagents (19)
-├── skills/                     # All skills (15 user-facing + 60+ internal)
-│   ├── dev/, ds/, writing*/, workshop*/  # Core workflow entry points
+├── agents/                     # Specialized subagents
+├── skills/                     # User-facing and internal skills
+│   ├── work/, dev/, ds/, writing*/, workshop*/  # Workflow entry points
+│   ├── beat-clarify/, beat-implement/, beat-review/  # Shared lifecycle primitives
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   └── ...                     # Internal phases and auto-invoked skills
-├── hooks/                      # Hook scripts (11)
+├── hooks/                      # Hook scripts
 │   ├── hooks.json              # Hook configuration
 │   └── *.py                    # Hook implementations
 ├── references/                 # Shared constraint and reference docs
@@ -198,7 +204,7 @@ workflows/
 
 **Key Points:**
 - `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false`)
-- `agents/` contains specialized subagents (19, auto-discovered by Claude Code)
+- `agents/` contains specialized subagents, auto-discovered by Claude Code
 - `hooks/` contains hook entry points called directly by hooks.json
 - `references/` contains shared constraint and enforcement docs
 

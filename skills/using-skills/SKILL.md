@@ -56,6 +56,7 @@ Each workflow has two entry points — start fresh or re-enter mid-workflow:
 
 | Start Fresh | Mid-Workflow | Purpose |
 |-------------|-------------|---------|
+| `/work` | resume incomplete `.planning/WORK.md` | Lightweight structured work: clarify, plan, verify, human review |
 | `/dev` | `/dev-debug` | Feature development (7 phases) / debug, fix, re-test |
 | `/ds` | `/ds-fix` | Data analysis (5 phases) / wrong results, notebook errors, revisions |
 | `/writing` | `/writing-revise` | Writing projects / apply review fixes, polish |
@@ -91,6 +92,7 @@ RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
 | User Intent | Command | Trigger Words |
 |-------------|---------|---------------|
 | **Session/companion** | **companion** | **companion session, new session, separate session, background session, hand off, in a new session** |
+| Lightweight structured work | `/work` | do this properly, clarify and plan this, plan and verify this, small structured task, don't just wing it |
 | Bug/fix | `/dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
 | Wrong results | `/ds-fix` | results wrong, notebook error, reviewer feedback, data changed |
 | Writing | `/writing` | write, draft, document, essay, paper |
@@ -131,14 +133,21 @@ INSTEAD:
 When multiple skills could apply:
 
 1. **Transport skills first** - companion session routes EVERYTHING else inside the session prompt
-2. **Process skills next** - debugging, brainstorming determine approach
-3. **Then implementation** - dev, ds, writing execute the approach
+2. **Specialized task shape next** - bugs use dev-debug; analysis uses ds; long-form writing uses writing; workshop decks use workshop
+3. **Generic structure next** - use work only for the bounded middle category that needs criteria, verification, and human review
+4. **Direct execution for trivial work** - a lookup, one-line answer, or tiny edit does not earn workflow ceremony
+5. **Then implementation** - follow the selected workflow's execution adapter
+
+`/work` is not a universal wrapper. Specialized workflows win when the task clearly has their shape.
 
 ## How to Invoke
 
 Use the Skill tool to invoke skills:
 
 ```bash
+# work: Lightweight cross-domain workflow with independent verification and human review
+Skill(skill="workflows:work")
+
 # dev-debug: Midpoint entry for dev workflow - debug, fix, re-test
 Skill(skill="dev-debug")
 
