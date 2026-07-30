@@ -124,7 +124,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 | `dev-implementer` | Feature implementation with automatic linting |
 | `dev-debugger` | Hypothesis-driven debugging with serial iteration |
 | `dev-verifier` | Goal-backward verification (4-level: exists, substantive, wired, functional) |
-| `dev-plan-checker` | Plan review before implementation |
+| `plan-checker` | Generic domain-loaded plan review before implementation |
 | `test-gap-auditor` | Requirement-to-test coverage mapping and gap filling |
 | `ds-analyst` | Data analysis with output-first verification |
 | `ds-engineer` | Data engineering pipelines, ETL, and transformations |

@@ -29,9 +29,11 @@ cannot authorize reads. Fresh `/dev` uses `beat-clarify` for opening outcome/sco
 ness/evidence questions; `dev-clarify` remains post-recon clarification for ambiguities discovered
 from the codebase.
 
-Both reviewers write the same four-field YAML frontmatter: `plan_hash`, `status`,
-`reviewer_session_id`, and `reviewed_at`. The hash binds approval to the exact current `PLAN.md`
-bytes, and the guard permits no mutation other than that canonical verdict artifact.
+Both adapters dispatch the generic `workflows:plan-checker` with an explicit domain and concrete
+reference root. The agent deterministically loads common plus domain constraint files, then writes the
+same four-field YAML frontmatter: `plan_hash`, `status`, `reviewer_session_id`, and `reviewed_at`.
+The hash binds approval to the exact current `PLAN.md` bytes, and the shared verdict guard permits no
+mutation other than that canonical verdict artifact.
 
 ## Execution boundary and next migration
 

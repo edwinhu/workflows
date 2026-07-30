@@ -24,7 +24,7 @@ Model profiles control which Claude model each agent uses, balancing quality vs 
 | dev-implementer | opus | sonnet | sonnet | Code execution, follows explicit plans |
 | build-error-resolver | sonnet | sonnet | sonnet | Build/type error resolution |
 | dev-verifier | sonnet | sonnet | haiku | Goal-backward verification (read-only) |
-| dev-plan-checker | sonnet | sonnet | haiku | Plan quality gate (read-only) |
+| plan-checker | sonnet | sonnet | haiku | Plan quality gate (read-only) |
 | test-gap-auditor | sonnet | sonnet | haiku | Test gap filling (tests only) |
 | ds-analyst | sonnet | sonnet | haiku | Data analysis tasks |
 | e2e-runner | sonnet | sonnet | haiku | End-to-end test execution |
@@ -86,8 +86,8 @@ Architecture and planning involve design judgment, goal decomposition, and trade
 **Why Sonnet for dev-implementer in balanced?**
 Implementers follow explicit PLAN.md instructions. The plan already contains the reasoning; execution is implementation. Sonnet handles this well at lower cost.
 
-**Why read-only tools for verifiers?**
-Verification agents (dev-verifier, dev-plan-checker) have no Write/Edit tools. This prevents them from "fixing" issues instead of reporting them, which would defeat the purpose of independent verification.
+**Why restricted tools for verifiers?**
+Verification agents cannot Edit. `plan-checker` retains a mechanically guarded Write only for its exact hash-bound `.planning/PLAN_REVIEWED.md` verdict, so it cannot "fix" the plan or mutate arbitrary artifacts instead of reporting issues.
 
 **Why Haiku for explorers?**
 data-explorer, doc-updater, and librarian do read-only exploration and structured output extraction. No reasoning required, just pattern matching from file contents.

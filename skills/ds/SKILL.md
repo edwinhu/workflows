@@ -168,13 +168,10 @@ obtain approval through `ExitPlanMode`, and let the hook replace it atomically.
 
 ## 4. Independent plan review
 
-Immediately read `${CLAUDE_SKILL_DIR}/../ds-plan-reviewer/SKILL.md`, then dispatch a **fresh,
-read-only** `general-purpose` reviewer. Give the reviewer the skill, `.planning/PLAN.md`, and only
-read-only inspection tools; it must have no planning or implementation transcript and may use Bash
-solely to compute the SHA-256 body hash. The planner reads the verdict but never self-approves.
-
-Dispatch one fresh reviewer for the complete current plan and require its one durable hash-bound
-verdict to approve. Dispatch the reviewer directly, never through a dispatcher agent.
+Immediately read `${CLAUDE_SKILL_DIR}/../ds-plan-reviewer/SKILL.md` and follow its dispatch
+instructions. It dispatches a fresh `workflows:plan-checker` reviewer with the DS domain, concrete
+reference root, immutable plan, and approval metadata. The planner reads the reviewer-owned verdict
+but never self-approves. One reviewer produces one durable hash-bound verdict for the complete plan.
 
 - If any reviewer returns **ISSUES_FOUND**, re-enter native Plan mode, revise there, obtain fresh
   approval through `ExitPlanMode`, and review the newly persisted copy. Repeat at most five times;

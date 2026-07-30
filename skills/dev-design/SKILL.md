@@ -463,10 +463,9 @@ chosen-approach: [one-liner describing selected approach]
 1. **Plan Review Gate (MANDATORY — produces `.planning/PLAN_REVIEWED.md`):**
    Discover and read the plan reviewer skill:Read `${CLAUDE_SKILL_DIR}/../../skills/dev-plan-reviewer/SKILL.md` and follow its instructions.
    Follow the plan reviewer's instructions:
-   - If >15 tasks → chunk the plan first, review per-chunk
-   - Dispatch reviewer subagent
+   - Dispatch one reviewer for the complete plan
    - If ISSUES_FOUND → fix PLAN.md → re-dispatch (max 5 iterations)
-   - If APPROVED → **write `.planning/PLAN_REVIEWED.md`** (per dev-plan-reviewer instructions) → proceed to worktree question
+   - If APPROVED → the reviewer writes `.planning/PLAN_REVIEWED.md` → proceed to worktree question
 
    <EXTREMELY-IMPORTANT>
    **`.planning/PLAN_REVIEWED.md` is the structural handoff artifact.**
