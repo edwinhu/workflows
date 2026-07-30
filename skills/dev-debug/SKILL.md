@@ -7,7 +7,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
 ---
 
 **Announce:** "I'm using dev-debug for systematic debugging."

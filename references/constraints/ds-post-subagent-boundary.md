@@ -1,71 +1,72 @@
 ---
 name: post-subagent-boundary
-description: After subagent returns, main chat MUST NOT read source/data — verify via state files only
-applies-to: [ds, ds-fix, ds-implement, ds-review, ds-verify, ds-delegate]
+description: After an agent returns, the DS orchestrator verifies from returned reports, the approved PLAN, and project auto-memory — never by investigating source or data
+applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
 ---
 
 <EXTREMELY-IMPORTANT>
 
 ## Rule
 
-**After ANY Task agent returns, main chat MUST NOT read source files, notebooks, or data. This is not negotiable.**
+**After ANY task agent returns, the DS orchestrator MUST NOT read source files, notebooks, or data. This is not negotiable.**
 
-When a subagent completes its work, the main chat (orchestrator) is in the highest-risk moment for protocol violation. The temptation to "quickly verify" by reading code or data is the #1 escape pattern observed in delegated workflows.
+The orchestrator coordinates work. It reads the agent's returned report, the immutable approved PLAN, project auto-memory, and the live `TaskList`; agents investigate and implement. Technical `VERIFY` belongs to `ds-implement`, not to the orchestrator or `ds-review`.
 
 ### Verification vs Investigation
 
-| Category | Main Chat CAN Do (Verification) | Main Chat CANNOT Do (Investigation) |
-|----------|----------------------------------|--------------------------------------|
-| **State files** | Read SPEC.md, PLAN.md, LEARNINGS.md, REVIEW_STATE.md | Read project source code, analysis scripts, notebooks |
-| **Subagent output** | Read the subagent's returned report/summary | Re-run the analysis code to "check" |
-| **Data** | Check output file exists (`ls -la output/`) | Read CSV/parquet contents, run `head`, query databases |
-| **Diagnostics** | Compare task counts (PLAN vs LEARNINGS) | Run diagnostic code, profile data, inspect intermediate files |
-| **Scope** | Re-read task specification from PLAN.md | Grep/Glob project files for patterns |
+| Category | Orchestrator CAN Do | Orchestrator CANNOT Do |
+|----------|---------------------|------------------------|
+| **Workflow records** | Read the immutable approved PLAN, project auto-memory, live `TaskList`, and the agent's returned report | Rewrite the approved PLAN or reconstruct implementation detail from source |
+| **Technical verification** | Dispatch `ds-implement` to run it and read its returned evidence | Read project source, analysis scripts, notebooks, or data; re-run analysis code |
+| **Data** | Ask an agent whether an output exists and read its report | Read CSV/parquet contents, run `head`, query databases |
+| **Diagnostics** | Compare Plan task identities to `TaskList` and returned reports | Run diagnostic code, profile data, inspect intermediate files |
+| **Scope** | Re-read a task in the approved PLAN | Grep/Glob project files to infer what happened |
 
 ### The Rule
 
 ```
-Subagent returns
+Task agent returns
     ↓
-Read subagent's report (ALLOWED)
+Read its returned report (ALLOWED)
     ↓
-Need more information?
+Need technical evidence or investigation?
     ↓
-YES → Spawn a NEW Task agent to investigate (REQUIRED)
-NO  → Log to LEARNINGS.md and proceed to next task (ALLOWED)
+YES → Dispatch ds-implement to investigate or VERIFY (REQUIRED)
+NO  → Curate reusable returned facts into project auto-memory; proceed through TaskList (ALLOWED)
     ↓
-NEVER: Read source files, run analysis code, or explore data yourself
+NEVER: Read source files, run analysis code, explore data, or alter the approved PLAN yourself
 ```
 
-**If you need to investigate, DELEGATE. If you need to verify, use STATE FILES.**
+**If you need to investigate or technically verify, delegate to `ds-implement`. If you need to coordinate, use returned reports, the approved PLAN, project auto-memory, and `TaskList`.**
 
-- **Verification** = checking that work was done (state files, file existence, task counts)
-- **Investigation** = understanding HOW work was done (reading code, running queries, exploring data)
+- **Coordination** = tracking approved work, task status, returned evidence, and reusable facts.
+- **Technical verification** = checking how work behaves or whether technical acceptance criteria pass; `ds-implement` owns it.
+- **Investigation** = understanding how work was done by reading code, querying data, or inspecting artifacts; an implementation agent owns it.
 
-Main chat does verification. Subagents do investigation.
-
-**Exception: Answering subagent questions.** When a subagent asks for clarification ("Should I drop or impute nulls?"), you MUST answer directly. This is orchestration, not investigation. Answer the question, then re-dispatch. Do NOT read source code to formulate your answer — use SPEC.md and PLAN.md context.
+**Exception: Answering agent questions.** When an agent asks for clarification ("Should I drop or impute nulls?"), answer directly from the approved PLAN and returned context, then re-dispatch. Do not inspect source or data to formulate the answer.
 
 </EXTREMELY-IMPORTANT>
 
 ## Rationale
 
-**Why this exists** — The post-subagent moment is the highest-risk point in any delegated workflow. Main chat "verifies" by investigating — reading code, running queries, exploring data. This is investigation disguised as verification. It bypasses the delegation model and produces biased, unstructured results.
+**Why this exists** — The post-agent moment is the highest-risk point in a delegated workflow. An orchestrator that "quickly verifies" by investigating has collapsed the role boundary, duplicated work, and biased the next agent. A human-feedback review that performs technical verification similarly stops being a review. The user benefits from independent technical evidence and a stable approved PLAN, not a coordinator improvising a second implementation.
 
 ## Examples
 
 ### Correct
 ```
-# After subagent returns:
-Read(".planning/LEARNINGS.md")  # Check subagent logged completion
-ls -la output/                   # Verify output file exists
-# Proceed to next task
+# After a task agent returns:
+Read(returned_report)                    # Check reported evidence
+TaskList()                                # Check remaining approved work
+# Need a technical check? Dispatch ds-implement with the acceptance criterion.
+# Curate any reusable returned fact into project auto-memory.
 ```
 
 ### Incorrect
 ```
-# After subagent returns:
-Read("src/analysis.py")          # INVESTIGATION — reading source code
-head -20 output/results.csv      # INVESTIGATION — reading data contents
-python3 -c "import pandas..."    # INVESTIGATION — running analysis code
+# After a task agent returns:
+Read("src/analysis.py")                  # INVESTIGATION — reading source code
+head -20 output/results.csv               # INVESTIGATION — reading data contents
+python3 -c "import pandas..."             # TECHNICAL VERIFICATION — belongs to ds-implement
+Edit(".planning/PLAN.md", ...)           # The approved PLAN is immutable
 ```

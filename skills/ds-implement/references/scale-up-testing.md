@@ -1,6 +1,6 @@
 # Scale-Up Testing Protocol (Batch/ETL Operations)
 
-**Triggers when PLAN.md includes a Scale-Up Testing Plan table** (created by ds-plan when tasks involve batch APIs, irreversible operations, or >500 items through external services).
+**Triggers when PLAN.md includes a Scale-Up Testing Plan table** (created by /ds planning stage when tasks involve batch APIs, irreversible operations, or >500 items through external services).
 
 <EXTREMELY-IMPORTANT>
 ### The Iron Law of Scale-Up Testing
@@ -37,7 +37,7 @@ For each task with a scale-up plan in PLAN.md:
 
 **Full Batch — Submit with confidence.**
 - Only after all required stages pass their gates
-- Document final batch parameters in LEARNINGS.md
+- Return final batch parameters and observed evidence to the orchestrator for project auto-memory curation
 
 ### Scale-Up Facts
 

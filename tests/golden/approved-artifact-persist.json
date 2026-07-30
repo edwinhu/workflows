@@ -1,0 +1,40 @@
+{
+  "hook": "approved-artifact-persist",
+  "cases": [
+    {
+      "name": "ignore-non-plan-tool-without-writes",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "reject-malformed-plan-input-without-writes",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "ExitPlanMode",
+        "session_id": "approval-session",
+        "tool_input": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 2,
+        "fs": {}
+      }
+    }
+  ]
+}

@@ -1,14 +1,12 @@
 #!/usr/bin/env -S uv run python3
 """Constraint: ds-data-pull-profile.
 
-If SPEC.md or PLAN.md indicates a data pull from a large external source
-(estimated ≥50M rows, ≥500 MB ship size, or uses large-source keywords like
-"large", "bulk", "TB", "millions"), PLAN.md MUST contain a "## Data Pull
-Profile" section with a decision table documenting raw vs aggregate size per
-source, ratio, and recommended strategy.
+If the immutable copied native PLAN.md indicates a large external pull
+(estimated ≥50M rows, ≥500 MB ship size, or large-source keywords), it must
+record the read-only profile's raw-versus-aggregate decision and rationale.
 
-Runs against `.planning/SPEC.md` and `.planning/PLAN.md` in the caller's cwd.
-If PLAN.md does not yet exist, the check is a no-op (pre-plan state).
+Runs against `.planning/PLAN.md` in the caller's cwd. If the approved copy does
+not yet exist, planning has not reached this post-approval audit point.
 """
 
 from __future__ import annotations
@@ -18,7 +16,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "ds-data-pull-profile"
-APPLIES_TO = ["ds-plan", "ds-fix"]
+APPLIES_TO = ["ds", "ds-fix"]
 SEVERITY = "hard"
 
 # Numeric-size triggers. Match rows first (more specific), then MB.
@@ -177,48 +175,35 @@ def _extract_profile_section(plan_text: str) -> str | None:
 
 def check(context: dict) -> list[str]:
     cwd = Path(context.get("cwd", "."))
-    spec = cwd / ".planning" / "SPEC.md"
     plan = cwd / ".planning" / "PLAN.md"
+    if not plan.exists():
+        return []  # Native planning has not yet produced an approved copy.
 
-    # Collect trigger text from whichever files exist
-    trigger_text = ""
-    if spec.exists():
-        trigger_text += spec.read_text(encoding="utf-8", errors="replace")
-    if plan.exists():
-        trigger_text += "\n" + plan.read_text(encoding="utf-8", errors="replace")
-
-    if not trigger_text:
-        return []  # No spec/plan yet — nothing to check
+    trigger_text = plan.read_text(encoding="utf-8", errors="replace")
 
     reasons = _triggers(trigger_text)
     if not reasons:
         return []  # No large-source triggers → Data Pull Profile not required
 
-    # Triggered. PLAN.md must exist and contain the Data Pull Profile section.
-    if not plan.exists():
-        # SPEC.md triggered but no PLAN.md yet — no-op (pre-plan state).
-        # The gate fires when PLAN.md is drafted.
-        return []
-
-    plan_text = plan.read_text(encoding="utf-8", errors="replace")
+    # Triggered. The approved native plan must contain the profile decision.
+    plan_text = trigger_text
     violations = []
 
     section = _extract_profile_section(plan_text)
     if section is None:
         violations.append(
-            "PLAN.md is missing the required '## Data Pull Profile' section. "
+            "The approved native PLAN.md is missing the required '## Data Pull Profile' section. "
             f"Triggered by: {'; '.join(reasons)}. "
-            "Dispatch a read-only profiling subagent to quantify raw vs "
-            "aggregate ship size per source, write "
-            "docs/investigations/YYYY-MM-DD_pull_profile.md, and record the "
-            "decision table in PLAN.md before finalizing."
+            "Return to native Plan mode, dispatch a read-only profiler to quantify raw versus "
+            "aggregate ship size per source, then record the decision table and rationale before "
+            "obtaining a replacement approval."
         )
         return violations
 
     missing = [tok for tok in REQUIRED_TOKENS if tok.lower() not in section.lower()]
     if missing:
         violations.append(
-            f"PLAN.md '## Data Pull Profile' section is a stub — missing "
+            f"Approved native PLAN.md '## Data Pull Profile' section is a stub — missing "
             f"required tokens: {', '.join(missing)}. The section must contain "
             "a decision table with columns: Source, Raw rows, Raw MB, "
             "Aggregate level, Aggregate rows, Aggregate MB, Ratio, "
@@ -228,11 +213,9 @@ def check(context: dict) -> list[str]:
     # Additional check: investigation file reference
     if "docs/investigations/" not in section and "pull_profile" not in section.lower():
         violations.append(
-            "PLAN.md '## Data Pull Profile' section should reference the "
-            "investigation file at docs/investigations/YYYY-MM-DD_pull_profile.md "
-            "where the profiling subagent recorded COUNT(*), bytes/row "
-            "calibration, aggregate cardinality queries, and "
-            "information-preservation notes."
+            "Approved native PLAN.md '## Data Pull Profile' section should record the "
+            "profile's COUNT(*), bytes-per-row calibration, aggregate-cardinality queries, and "
+            "information-preservation notes or point to their durable project documentation."
         )
 
     return violations

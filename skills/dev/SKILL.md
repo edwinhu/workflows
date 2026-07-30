@@ -4,13 +4,29 @@ description: "This skill should be used when the user asks to 'start a feature',
 allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
 hooks:
   PreToolUse:
+    - matcher: "Read|Glob|Grep|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow dev"
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
 ---
 
 **Announce:** "I'm using dev (Phase 1) to gather requirements."
+
+## Opening clarification sentinel
+
+`.planning/DEV_CLARIFIED.json` is an intentionally narrow, session-bound gate record. It is not a
+requirements artifact and carries no product facts: it proves only that this session received the
+user's opening answers before inspecting the codebase. For a fresh workflow, write exactly
+`{"status":"pending","sessionId":"[current session]"}` before questioning. Use `beat-clarify` to
+batch independent questions about outcome, scope, constraints, done-ness, and test evidence. After
+the user replies, replace it with exactly `{"status":"clarified","sessionId":"[current session]"}`.
+The hook rejects a stale, malformed, or other-session record so a previous workflow cannot authorize
+reconnaissance here. `dev-clarify` remains the separate post-recon phase for ambiguities discovered
+from the codebase.
 
 **Iteration topology:** one-shot (conversational Q&A — no fan-out)
 
@@ -18,13 +34,9 @@ hooks:
 
 **BEFORE creating any new state, check for a previous session handoff.**
 
-Check if `.planning/HANDOFF.md` exists:
+Attempt `Read(".planning/HANDOFF.md")`. If it is missing, this is a fresh workflow; otherwise, treat the successfully read file as the previous-session handoff.
 
-```bash
-test -f .planning/HANDOFF.md && echo "HANDOFF_EXISTS" || echo "NO_HANDOFF"
-```
-
-**If HANDOFF_EXISTS:**
+**If the handoff was read:**
 
 1. Read `.planning/HANDOFF.md`
 2. Present the user with a status summary:

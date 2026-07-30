@@ -9,8 +9,8 @@
  *   - the `## Active workflow:` value is rejected only when it upper-cases to exactly UNKNOWN.
  *
  * WHY THIS EXISTS
- *     Domain references (e.g. wrds/references/taq.md) are globbed ONCE by ds-plan Step 5b
- *     while drafting the plan. Nothing re-reads them during implementation, so a subagent
+ *     Domain references (e.g. wrds/references/taq.md) are discovered by /ds while drafting
+ *     the native plan. Nothing re-reads them during implementation, so a subagent
  *     spawned to write code starts with no idea that verified, project-specific facts exist
  *     -- and re-derives (or contradicts) them.
  *
@@ -41,10 +41,10 @@ function isDir(p: string): boolean {
   }
 }
 
-/** Skill names listed in .planning/SPEC.md or PLAN.md (the 'Skills Touched' section). */
+/** Skill names listed in workflow state or the approved native PLAN ('Skills Touched'). */
 function domainSkills(): string[] {
   const skills: string[] = [];
-  for (const name of ["STATE.md", "SPEC.md", "PLAN.md"]) {
+  for (const name of ["PLAN.md"]) {
     const text = read(join(process.cwd(), ".planning", name));
     const re = /^\s*[-*]\s+`([a-z0-9][a-z0-9:_-]*)`\s*[-—]/gm;
     let m: RegExpExecArray | null;
@@ -64,11 +64,13 @@ function referenceFiles(skill: string): string[] {
 }
 
 function activeWorkflow(): string | null {
+  const plan = read(join(process.cwd(), ".planning", "PLAN.md"));
+  if (/## DS Workflow|\/ds\b|data science|\bEDA\b/i.test(plan)) return "ds";
+
+  // Legacy workflows still persist STATE.md until they migrate to native-plan state.
   const text = read(join(process.cwd(), ".planning", "STATE.md"));
   const m = /^## Active workflow:\s*\/?(\S+)/m.exec(text);
-  if (m && m[1].toUpperCase() !== "UNKNOWN") {
-    return m[1].replace(/^\/+/, ""); // str.lstrip('/')
-  }
+  if (m && m[1].toUpperCase() !== "UNKNOWN") return m[1].replace(/^\/+/, "");
   return null;
 }
 
@@ -87,8 +89,9 @@ async function main(): Promise<void> {
   if (wf) {
     parts.push(
       `ACTIVE WORKFLOW: /${wf}. This task is part of that workflow -- follow its ` +
-        `conventions, and read .planning/STATE.md, SPEC.md and PLAN.md for the ` +
-        `current phase, constraints and decisions already made.`,
+        `conventions, and read .planning/PLAN.md for approved decisions and evidence. ` +
+        `Call TaskList for live work and consult project auto-memory for durable technical facts ` +
+        `from earlier tasks.`,
     );
   }
 

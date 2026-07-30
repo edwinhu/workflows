@@ -1,5 +1,7 @@
 # Refactor brief: `spec → plan → compiled run.js`
 
+> **Superseded (2026-07-29).** This refactor brief records a retired DS architecture. In the current architecture, the copied `PLAN.md` is immutable, native `TaskList` is the live state, auto-memory holds reusable facts, and `REVIEW.md` is the human review ledger. No compiler or generated `run.js` remains.
+
 > Handoff from a full `/ds` run (muni-pennying: materialize masters + parallelize, then a
 > figures/analysis enhancement round). This brief distills the lived experience into a concrete
 > refactor direction for the ds workflow, and a hypothesis for generalizing to dev / writing /

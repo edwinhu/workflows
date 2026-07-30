@@ -1,5 +1,7 @@
 # Proposal: canonical Task-Breakdown format (the ds-plan emitter spec)
 
+> **Superseded (2026-07-29).** This compiler-era emitter specification is preserved for provenance. The current DS workflow uses an immutable copied plan, native task state, project auto-memory, and a human review ledger—not a custom task-table parser or compiler.
+
 > For muni's ergonomics pass. Principle (the resume-leg finding applied to format):
 > **strictness at the EMITTER, tolerance at the PARSER.** `ds-plan` *emits* one canonical
 > form; the parser/guard *accept* a wider tolerated set so a hand-edit is never blocked.

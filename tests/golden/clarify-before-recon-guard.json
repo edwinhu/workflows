@@ -1,0 +1,304 @@
+{
+  "hook": "clarify-before-recon-guard",
+  "cases": [
+    {
+      "name": "instruction-read-allowed-before-clarification",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "skills/beat-clarify/SKILL.md"
+        },
+        "session_id": "current-session"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "data-read-denied-before-clarification",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "data/raw/panel.parquet"
+        },
+        "session_id": "current-session"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "data-glob-denied-before-clarification",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Glob",
+        "tool_input": {
+          "pattern": "data/**/*.parquet"
+        },
+        "session_id": "current-session"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "code-grep-denied-before-clarification",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Grep",
+        "tool_input": {
+          "pattern": "load_data",
+          "path": "src"
+        },
+        "session_id": "current-session"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "non-exploration-bash-allowed",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "git status --short"
+        },
+        "session_id": "current-session"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "missing-sentinel-denies-exploration",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "python3 -c 'import pandas as pd; print(pd.read_parquet(\"data/raw/panel.parquet\").head())'"
+        },
+        "session_id": "current-session"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "pending-sentinel-denies-exploration",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "python3 -c 'import pandas'"
+        },
+        "session_id": "current-session"
+      },
+      "fixture": {
+        ".planning/DS_CLARIFIED.json": "{\"status\":\"pending\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "malformed-sentinel-denies-exploration",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "pixi run python scripts/profile.py"
+        },
+        "session_id": "current-session"
+      },
+      "fixture": {
+        ".planning/DS_CLARIFIED.json": "not json\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "stale-session-sentinel-denies-exploration",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "uv run scripts/profile.py --loader pl.read_csv"
+        },
+        "session_id": "current-session"
+      },
+      "fixture": {
+        ".planning/DS_CLARIFIED.json": "{\"status\":\"clarified\",\"sessionId\":\"previous-session\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "f105e955dcbd2535192e4e523c5cd96d6b9ebabc1c70ebc133c10081596630c9",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "current-session-clarified-sentinel-allows-data-read",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "data/raw/panel.parquet"
+        },
+        "session_id": "current-session"
+      },
+      "fixture": {
+        ".planning/DS_CLARIFIED.json": "{\"status\":\"clarified\",\"sessionId\":\"current-session\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "current-session-clarified-sentinel-allows-exploration",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "python3 -c 'import pandas as pd; print(pd.read_parquet(\"data/raw/panel.parquet\").head())'"
+        },
+        "session_id": "current-session"
+      },
+      "fixture": {
+        ".planning/DS_CLARIFIED.json": "{\"status\":\"clarified\",\"sessionId\":\"current-session\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ]
+    },
+    {
+      "name": "dev-handoff-read-allowed-before-clarification",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": ".planning/HANDOFF.md"
+        },
+        "session_id": "dev-session"
+      },
+      "argv": [
+        "--workflow",
+        "dev"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "dev-source-read-denied-before-clarification",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "src/app.ts"
+        },
+        "session_id": "dev-session"
+      },
+      "argv": [
+        "--workflow",
+        "dev"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "5a5a4f2c17dd9fd1148af6ab9652e8ec1913401255e9bdd460c322d29fb4c13c",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "dev-current-session-allows-source-read",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "src/app.ts"
+        },
+        "session_id": "dev-session"
+      },
+      "argv": [
+        "--workflow",
+        "dev"
+      ],
+      "fixture": {
+        ".planning/DEV_CLARIFIED.json": "{\"status\":\"clarified\",\"sessionId\":\"dev-session\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    }
+  ]
+}

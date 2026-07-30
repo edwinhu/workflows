@@ -1,8 +1,7 @@
 """
 compile_core: shared deterministic PLAN.md -> run.js compile driver.
 
-Both scripts/dev/dev_compile.py and scripts/ds/ds_compile.py are >90% identical:
-splice __TASK_BODIES__ (exactly-once), fill the remaining data holes (exactly-once
+The compiled-plan domains use this shared driver to splice __TASK_BODIES__ (exactly-once), fill the remaining data holes (exactly-once
 each, over the SPLICED template), node --check the result, write the banner, and
 resolve the project dir from PLAN.md's location the same way. This module extracts
 that shared driver; each domain supplies a small CompileConfig with its own
@@ -45,7 +44,7 @@ def node_check(path: Path) -> bool:
 @dataclass
 class CompileConfig:
     domain: str                                   # "dev" | "ds" — used only for defaults/messages
-    default_fragment_name: str                    # e.g. "dev-task.js" / "ds-task.js"
+    default_fragment_name: str                    # e.g. "dev-task.js"
     parse_plan: Callable[[str], object]            # -> ParseResult with .ok/.violations/.tasks/.global_constraints
     toposort: Callable[[list], list]               # tasks -> levels
     spec_dict: Callable[[object], dict]            # Task -> per-task literal dict

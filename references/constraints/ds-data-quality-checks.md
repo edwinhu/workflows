@@ -1,7 +1,7 @@
 ---
 name: data-quality-checks
 description: Canonical DQ1-DQ6, COV, M1, R1 check definitions — load from ds-checks.md, never inline
-applies-to: [ds-fix, ds-implement, ds-review, ds-verify, ds-delegate]
+applies-to: [ds-fix, ds-implement, ds-delegate]
 ---
 
 ## Rule
@@ -10,7 +10,7 @@ All skills that evaluate data quality MUST Read() the canonical checks file at `
 
 ## Rationale
 
-**Why this exists** — When check definitions are inlined in multiple skills, each skill's version drifts independently. ds-review runs DQ3 one way while ds-fix runs it another. The canonical file is the single source of truth.
+**Why this exists** — When check definitions are inlined in multiple technical roles, each version drifts independently. The canonical file is the single source of truth.
 
 ## Examples
 

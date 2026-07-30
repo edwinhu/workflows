@@ -1,5 +1,7 @@
 # DESIGN: `spec → plan → compiled run.js` for the ds workflow
 
+> **Superseded (2026-07-29).** This document describes a retired compiler-era DS design. The current three-skill DS architecture relies on immutable copied plan records, native tasks, project auto-memory, and a human review ledger rather than custom execution machinery.
+
 Status: **DRAFT — awaiting sign-off before any engine change.**
 Companion to `docs/ds-refactor-spec-plan-js.md` (the muni-pennying handoff brief).
 
@@ -66,7 +68,7 @@ but it is low-frequency and lower priority — **out of scope for v1.**
   user acceptance). These are where every real muni bug was caught. **Untouched by this refactor.**
 - **`ds-implement` skill** is the only one that drives `ds-implement.js`. It becomes a **thin
   runner** (§5).
-- Gates are hook-enforced: `phase-gate-guard.py` blocks each phase on a sentinel
+- Gates are hook-enforced: `phase-gate-guard.ts` blocks each phase on a sentinel
   (`PLAN_REVIEWED.md` APPROVED, `IMPLEMENT_COMPLETE.md` COMPLETE, `VALIDATION.md` validated).
   **These sentinels and hooks are preserved.**
 
@@ -330,7 +332,7 @@ LOOP under /goal:
 5. if r.done && !overallPass: read r.findings, fix, re-invoke with onlyChecks=r.tasksThatFailed
 ```
 
-All existing hooks (`ds-no-main-chat-code-guard`, `phase-gate-guard`, the subagent guards) and
+All existing hooks (`orchestrator-mutation-guard (--workflow ds)`, `phase-gate-guard`, the subagent guards) and
 sentinels stay. The skill still NEVER writes analysis code; the implementers do.
 
 ---
@@ -401,7 +403,7 @@ workflows; each step tested before the next.**
 | R4 escalation surfaces (don't autopilot a methodology pivot) | template dynamic pause + skill loop step 2 | **improved** (explicit pause + decision injection, was a critical finding) |
 | Skill drives the loop; engine never self-declares "done" | skill run/pause loop; runner returns `paused`/`done` | preserved |
 | `onlyChecks` re-run support | template `ONLY` | preserved |
-| Hooks/sentinels (`ds-no-main-chat-code-guard`, `phase-gate-guard`, `IMPLEMENT_COMPLETE.md`) | skill frontmatter + loop step 3 | preserved (untouched) |
+| Hooks/sentinels (`orchestrator-mutation-guard (--workflow ds)`, `phase-gate-guard`, `IMPLEMENT_COMPLETE.md`) | skill frontmatter + loop step 3 | preserved (untouched) |
 | Discovery DAG parse | `ds_compile.py` (deterministic) | **improved** (no LLM, no misparse, tolerant of real formats) |
 
 1. **wc-audit** `ds-implement.js` (Mode 2) — baseline score + the gates it must preserve. Record in

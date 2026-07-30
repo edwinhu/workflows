@@ -13,8 +13,9 @@ The opening beat of any workflow phase that starts with the user rather than wit
 `ds` (brainstorm), `dev-clarify`, `writing-setup`, `workshop`, and `mini` beat 1, so the shape is
 written once instead of five times drifting apart.
 
-**The caller supplies:** the question axes for its domain, and the artifact path to write
-(`.planning/SPEC.md`, `.planning/MINI.md`, …). Everything below is domain-agnostic.
+**The caller supplies:** the question axes for its domain and the durable target for clarified intent.
+That target may be a workflow artifact (`.planning/MINI.md`) or the native plan the caller will enter
+next. Everything below is domain-agnostic.
 
 <EXTREMELY-IMPORTANT>
 ## Ask before you look
@@ -65,8 +66,9 @@ fact.
    read after this beat. Ambiguity you can resolve is not a question; it is a decision you are
    avoiding.
 
-2. **Write the artifact** the caller named: intent in the user's terms, what is explicitly out of
-   scope, and the criteria table with a non-empty Evidence cell on every row.
+2. **Persist into the caller's target.** If it names a file, write it. If it names native Plan mode,
+   carry intent, explicit exclusions, and the evidence-bearing criteria into that plan; the caller's
+   ExitPlanMode hook owns durable persistence.
 
 3. **Deferred evidence is allowed, and must be marked.** Some domains genuinely cannot name evidence
    yet — a DS spec cannot state actual row coverage before the profiling phase, which the brainstorm

@@ -62,7 +62,7 @@ Which constraints are CRITICAL vs contextual in each phase:
 
 Structural enforcement (Layer 2). Two PreToolUse guards are declared in skill frontmatter; one PostToolUse guard fires globally via `hooks/hooks.json`. Coverage is intentionally uneven — each gap is justified below.
 
-| Skill | `dev-delegation-guard` (PreToolUse Write\|Edit) | `phase-gate-guard` (PreToolUse, artifact gate) | Gate artifact |
+| Skill | `orchestrator-mutation-guard (--workflow dev)` (PreToolUse Write\|Edit) | `phase-gate-guard` (PreToolUse, artifact gate) | Gate artifact |
 |-------|:---:|:---:|---|
 | dev (brainstorm) | ✅ | ➖ | — (entry phase; no upstream gate). Writes `SPEC_REVIEWED.md` (status: APPROVED) on spec-review pass. |
 | dev-explore | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
@@ -81,12 +81,12 @@ Structural enforcement (Layer 2). Two PreToolUse guards are declared in skill fr
 
 **Justified gaps (intentional, not drift):**
 - **`phase-gate-guard` only on artifact-consuming phases.** explore/clarify/design gate on the upstream `SPEC.md`; implement on `PLAN_REVIEWED.md`; review on `VALIDATION.md`; verify on `REVIEW_STATE.md`. Brainstorm/debug/handoff have no linear upstream artifact to gate, so they declare no phase gate.
-- **`dev-delegation-guard` only on main-chat orchestration phases** (dev, implement, test-gaps, review, verify, debug, handoff) where main chat must delegate code-writing to subagents. explore/clarify/design are read-only or `.planning/`-writing planning phases — main chat legitimately writes SPEC.md/PLAN.md there (the guard allows `.planning/` writes), so the guard is unnecessary.
+- **`orchestrator-mutation-guard (--workflow dev)` only on main-chat orchestration phases** (dev, implement, test-gaps, review, verify, debug, handoff) where main chat must delegate code-writing to subagents. explore/clarify/design are read-only or `.planning/`-writing planning phases — main chat legitimately writes SPEC.md/PLAN.md there (the guard allows `.planning/` writes), so the guard is unnecessary.
 - **Reviewer/tool/test sub-skills declare no hooks** because they execute inside dispatched Task agents (whose tools are restricted at dispatch via `allowed-tools`) or are reference skills, not main-chat orchestration phases. The enforcing hook fires in the parent orchestrating skill.
 
-**Maintenance rule:** when adding a new dev phase that orchestrates code-writing, add `dev-delegation-guard`. When it consumes an upstream artifact, add `phase-gate-guard` with the correct `GATE_ARTIFACT`, `GATE_STATUS`, **and `GATE_BLOCKED_TOOLS`**. Update this matrix in the same edit.
+**Maintenance rule:** when adding a new dev phase that orchestrates code-writing, add `orchestrator-mutation-guard (--workflow dev)`. When it consumes an upstream artifact, add `phase-gate-guard` with the correct `GATE_ARTIFACT`, `GATE_STATUS`, **and `GATE_BLOCKED_TOOLS`**. Update this matrix in the same edit.
 
-> **Load-bearing detail — `GATE_BLOCKED_TOOLS` is mandatory.** `phase-gate-guard.py` defaults `blocked_tools={Write,Edit}` and `exit(0)`s for any tool not in that set. A phase whose first action is `Agent` (subagent dispatch) MUST set `GATE_BLOCKED_TOOLS=Agent` (dev-explore, which also greps/globs, sets `Grep,Glob,Agent`) or the hook fires on the `Agent` call, finds it un-blocked, and silently allows it — the gate becomes a no-op. Verify every gate with: `echo '{"tool_name":"Agent","tool_input":{}}' | GATE_ARTIFACT=.planning/MISSING.md GATE_BLOCKED_TOOLS=Agent uv run python3 hooks/phase-gate-guard.py` → must emit a `deny`.
+> **Load-bearing detail — `GATE_BLOCKED_TOOLS` is mandatory.** `phase-gate-guard.ts` defaults `blocked_tools={Write,Edit}` and `exit(0)`s for any tool not in that set. A phase whose first action is `Agent` (subagent dispatch) MUST set `GATE_BLOCKED_TOOLS=Agent` (dev-explore, which also greps/globs, sets `Grep,Glob,Agent`) or the hook fires on the `Agent` call, finds it un-blocked, and silently allows it — the gate becomes a no-op. Verify every gate with: `echo '{"tool_name":"Agent","tool_input":{}}' | GATE_ARTIFACT=.planning/MISSING.md GATE_BLOCKED_TOOLS=Agent uv run python3 hooks/phase-gate-guard.ts` → must emit a `deny`.
 
 ## Verification
 

@@ -30,17 +30,17 @@ The RL framing gives precise vocabulary for workflow design decisions. **The wor
 | RL Concept | Workflow Equivalent | Where It Fits |
 |---|---|---|
 | Policy | The workflow itself | All domains |
-| State | Current phase + artifacts (SPEC.md, PLAN.md) | All domains — state is in files, not context |
-| Action masking | Iron Laws — actions removed from the space | Dev (strong), DS/Writing (weaker) |
+| State | Domain-appropriate durable records | State must have one clear authority |
+| Action masking | Workflow boundaries | Varies by domain |
 | Reward hacking | "Looks done" without being done | All domains — the core failure mode |
-| Reward shaping | Gate functions (intermediate checkpoints) | Dev (deterministic), DS/Writing (judgment-based) |
+| Reward shaping | Meaningful checkpoints | Varies by domain |
 | High ε / Low ε | Brainstorm (explore) vs. Implement (exploit) | All domains |
-| Replay buffer | LEARNINGS.md + continuous-learning | All domains |
+| Replay buffer | Reusable project memory | All domains |
 | Policy transfer | Workflow creator skill | Cross-domain |
 
 ### Where the Lens Breaks Down
 
-- **Every domain's gate has a deterministic floor; the *judgment* differs in where it lives.** The original framing here — "dev gates are deterministic, writing/DS gates are judgment-based" — was superseded by the compiled-runner work (see "Deterministic Execution" above). The sharper statement: the runner-side gate is *always* deterministic (an exit code, or a mechanical floor like "the section index parses / the deck compiles"); what varies is whether that floor is *sufficient* (dev/DS: the exit code IS the gate) or merely *necessary* (writing/workshop: the floor proves structure, and the semantic authority — "does the argument hold?" — is an adversarial reviewer *outside* the runner). So writing/DS don't have "weaker, judgment-based gates" — they have a deterministic floor plus an external judge, never an LLM judging inside the machine.
+- **Evidence and judgment belong in different places.** Automated checks can establish narrow, reproducible facts, while an independent reviewer and the human decide whether those facts establish quality. The current DS workflow makes this distinction through native task execution and a separate review ledger rather than a custom runner.
 - **Action masking is clean in dev** (you literally can't edit code before design). In writing, the equivalent ("you can't draft before outlining") is softer — the agent can always produce *something* without an outline.
 - **Reward is sparse everywhere** (only know quality when the human reviews), but the signal quality differs: a failing test is unambiguous, "this paragraph is weak" is not.
 
@@ -54,22 +54,14 @@ Break work into phases with single responsibilities. Each phase answers ONE ques
 
 The shape varies by domain:
 - **Dev**: 7 linear phases (brainstorm → explore → clarify → design → implement → review → verify)
-- **DS**: 5 linear phases (brainstorm → plan → implement → review → verify)
+- **DS**: three skills — `/ds` plans, `/ds-implement` executes native tasks, and `/ds-review` records independent review for a human decision
 - **Writing**: Branching (quick vs. project, domain routing, progressive expansion)
 
 ### Gates (Deterministic and Judgment-Based)
 
-Gates prevent drift. The strongest gates are machine-verifiable:
-- SPEC.md exists → can enter explore
-- All tests pass → can enter verify
+Workflows prevent drift by making the current status legible. Use reproducible evidence where it is meaningful, and reserve quality decisions for independent review and the human.
 
-But not all domains have machine-verifiable gates. Writing and DS rely on **judgment gates** — the agent or human evaluates quality:
-- Outline covers all thesis points → can enter draft
-- Results pass sanity checks → can enter review
-
-Judgment gates are weaker than deterministic gates but stronger than no gates. The design principle: **use the strongest gate available for the domain.** Deterministic when possible, judgment-based when not, honor-system never.
-
-**Sharpened by the compiled-runner work (see "Deterministic Execution" below):** even in a "judgment" domain, the *automated* gate is a deterministic **floor** (does it structurally hold?), and the judgment is an adversarial reviewer *outside* the runner — never an LLM grading its own output inside it. And a gate's "pass" and the *artifact actually existing* are separate facts (a check can pass on a stale output), so confirm both. "Honor-system never" now also means: never let the implementer's self-reported `passed: true` be the gate.
+For the DS workflow, the approved plan is preserved in `.planning/PLAN.md`; native `TaskList` status is the live execution record; and `.planning/REVIEW.md` carries findings and dispositions for the human decision. These are distinct records because plan approval, live task state, and review judgment are distinct facts.
 
 ### Structural Gate Artifacts
 
@@ -84,7 +76,7 @@ The pattern:
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
-**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools (Write, Edit, Agent) until the gate artifact exists. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Use the generic `phase-gate-guard.py` hook with environment variables to configure per-phase gates:
+**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools (Write, Edit, Agent) until the gate artifact exists. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Use the generic `phase-gate-guard.ts` hook with environment variables to configure per-phase gates:
 
 ```yaml
 # In consuming phase's SKILL.md frontmatter:
@@ -98,7 +90,7 @@ hooks:
             GATE_STATUS=APPROVED
             GATE_DESCRIPTION="Plan review"
             GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.py
+            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ```
 
 **The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks can't express the constraint.
@@ -222,7 +214,9 @@ Shared constraints (the section above) address only one layer of cross-skill enf
 
 ### Deterministic Execution: Compile, Don't Interpret
 
-The sections above describe how a workflow *decomposes* and *gates* work. This one is about how the mechanical work between the human gates actually *runs* — the largest correction the program has made to its own design.
+> **Historical note for DS (2026-07-29):** The compiler-era material in this section records a retired DS design. DS now uses an immutable copied native plan, native `TaskList` for live execution state, project auto-memory for reusable facts, and `REVIEW.md` for human review.
+
+The sections below preserve the prior compiler-era rationale for domains that still use it.
 
 **Two execution shapes.** Look at what a workflow does between its human gates:
 - If it runs a **DAG of mechanical work driven by a structured plan** (an implement/transform phase whose tasks have dependencies and a per-task check), that plan is a machine-readable artifact. **Compile it into a deterministic runner; do not have an LLM re-interpret it on every run.**
@@ -243,6 +237,17 @@ The sections above describe how a workflow *decomposes* and *gates* work. This o
 **Born-canonical producers.** Tolerance in the parser is a back-compat shim, not the primary defense. The real fix is upstream: the phase that *emits* the plan emits it in the canonical format, so the parser rarely needs to tolerate anything and the guard can be strict. One format spec, shared by the emitter, the parser, and the guard.
 
 This is the *why*; the *how* (the compile step, the shared runner, the gate contract, the pause/resume protocol) is documented in `docs/compiled-runner-architecture.md` (a visual walkthrough) and the seam list in `docs/common-infra-candidates.md`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
+
+### Lifecycle mechanisms are shared; policies are not
+
+A gate's mechanism should be reusable when its proof is domain-neutral: session-bound opening
+clarification, exact approved-artifact hashes, reviewer-owned hash-bound verdicts, canonical mutation
+boundaries, and task identities. The policy decides what counts as reconnaissance and which paths or
+commands are legitimate. The execution adapter remains independent: DS native plans and dev's
+executable table/compiler do not become equivalent merely because they share lifecycle proof.
+
+See [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md) for the before/after
+boundary and the DATA task-IR → sequential Workflow migration seam.
 
 ## 5. Enforcement and Its Limits
 
@@ -304,7 +309,7 @@ Fresh subagents achieve the same effect within a single session. Each subagent g
 
 **Core principle: Progress lives in files, not in conversation.**
 
-**Refinement — the *orchestration* loop should be deterministic, not an LLM.** "Not loops" targets the *Ralph Wiggum LLM loop* (re-feeding a prompt, polluting context). It does **not** mean "no loop at all": for a DAG of mechanical work, the right loop is a **compiled deterministic script** (a `run.js`) that topo-sorts the tasks, runs each, gates it, and pauses for the human — see "Deterministic Execution" in §4. The script holds the loop in *code variables*, not conversation, so there is no context pollution to escape. Each *task* still gets a fresh subagent (the principle holds); what changed is that the *driver around them* is deterministic JS, not a skill re-reading the plan and dispatching a level at a time. So: fresh subagent per task, deterministic loop around them.
+For DS, orchestration is native rather than custom: Claude Code's `TaskList` is the live loop and status authority, while the immutable plan explains the approved work. This removes a duplicate execution driver without changing the value of fresh perspectives and independent review. Other domains may use different orchestration mechanisms when their needs justify them.
 
 ### The Three Topologies
 

@@ -48,6 +48,31 @@ import { createHash } from "node:crypto";
 const REPO = resolve(import.meta.dir, "..");
 const GOLDEN_DIR = join(REPO, "tests", "golden");
 
+/**
+ * The Python base predates the approved native-PLAN/TaskList DS migration. These are the only
+ * behavior changes deliberately superseding it; every unlisted case remains byte-for-byte parity.
+ * Each expectation hashes complete stdout and enumerates the complete filesystem delta.
+ */
+const LEGACY_TS_EXPECTATIONS: Record<string, TsExpectation> = {
+  "pre-compact/ds-workflow-detected-dev-patterns-absent": { stdoutSha256: "f7d6f2bb56dc66816747445e826e828293b9039046c60ed2fcaf09774d2b16ff", exit: 0, fs: {} },
+  "pre-compact/native-ds-plan-without-keywords-never-writes-state": { stdoutSha256: "f7d6f2bb56dc66816747445e826e828293b9039046c60ed2fcaf09774d2b16ff", exit: 0, fs: {} },
+  "session-start/planning-plan-progress-with-next-task": { stdoutSha256: "c75ff84c27349724ad39ccd3112a4d3f313891facdcee8561bc04616fe971dbf", exit: 0, fs: {} },
+  "session-start/planning-dev-workflow-all-tasks-complete": { stdoutSha256: "e7baa9bccbb56f3e8ccb6f97185d7409b7f0d77a649e266b86299ff51aebab32", exit: 0, fs: {} },
+  "session-start/legacy-claude-dir-plan-without-checkboxes": { stdoutSha256: "9253b67d1b4e874d4f99ce504dffcb7a3ca3c83a580ae78280f2ebcf54f8250e", exit: 0, fs: {} },
+  "subagent-start/active-workflow-only": { stdoutSha256: "92f7c2777260574d918b907072e08b60e42504422a22607249c880b126a2f0eb", exit: 0, fs: {} },
+  "subagent-start/skills-with-reference-files-only": { stdoutSha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", exit: 0, fs: {} },
+  "subagent-start/workflow-and-skills-merged-across-state-spec-plan": { stdoutSha256: "a8bc42829d751f61205e60ba8910458d59842a217878ba323e70ef70e85cb7f5", exit: 0, fs: {} },
+  "subagent-start/empty-stdin-still-injects": { stdoutSha256: "75600f29044bd8da8fdfd5a8ad9d603e5d347572f235fc73bab191f102d19546", exit: 0, fs: {} },
+};
+
+type TsExpectation = {
+  /** SHA-256 of the complete TS stdout, not a substring or permissive matcher. */
+  stdoutSha256: string;
+  exit: number;
+  /** Complete filesystem delta, keyed by path with the snapshot's content hash. */
+  fs: Record<string, string>;
+};
+
 type Case = {
   name: string;
   kind: "allow" | "deny" | "context" | "effect";
@@ -55,6 +80,11 @@ type Case = {
   env?: Record<string, string>;
   fixture?: Record<string, string>;
   argv?: string[];
+  /**
+   * Native-PLAN migration exception to Python parity. This remains an exact TS contract:
+   * stdout SHA-256, exit code, and every filesystem change must all match.
+   */
+  tsExpected?: TsExpectation;
 };
 type Golden = { hook: string; cases: Case[] };
 type RunResult = { stdout: string; stderr: string; exit: number; fs: Record<string, string> };
@@ -186,7 +216,11 @@ function pythonHooksDir(base: string): string | null {
   if (pyDirCache) return pyDirCache;
   const ls = Bun.spawnSync(["git", "ls-tree", "--name-only", `${base}:hooks`], { cwd: REPO });
   if (ls.exitCode !== 0) return null;
-  const root = mkdtempSync(join(tmpdir(), "parity-py-"));
+  // A stable extracted root makes context hooks that inject their plugin path hash-stable across
+  // harness invocations. It is recreated for each run, so it cannot retain prior state.
+  const root = join(tmpdir(), `parity-py-${base}`);
+  rmSync(root, { recursive: true, force: true });
+  mkdirSync(root, { recursive: true });
   // Mirror the plugin layout so PLUGIN_ROOT (= <hooks>/..) resolves to a repo-shaped tree.
   for (const entry of readdirSync(REPO, { withFileTypes: true })) {
     if (entry.name === ".git" || entry.name === "hooks" || entry.name === "scripts") continue;
@@ -233,6 +267,41 @@ function pythonOriginal(hook: string, base: string): string | null {
   return existsSync(p) ? p : null;
 }
 
+/** Check a deliberately new TypeScript hook against its exact golden contract. */
+async function checkTypeScriptOnlyHook(hook: string, golden: Golden): Promise<{ ok: boolean; lines: string[] }> {
+  const lines: string[] = [];
+  const ts = join(REPO, "hooks", `${hook}.ts`);
+  let ok = true;
+  for (const c of golden.cases) {
+    if (!c.tsExpected) {
+      return { ok: false, lines: [`  ✗ ${hook}: TypeScript-only case ${c.name} lacks tsExpected`] };
+    }
+    const dir = materialize(c.fixture);
+    try {
+      const actual = await run(["bun", ts, ...(c.argv ?? [])], c, dir);
+      const stdoutSha256 = createHash("sha256").update(actual.stdout).digest("hex");
+      const expected = c.tsExpected;
+      const diffs: string[] = [];
+      if (stdoutSha256 !== expected.stdoutSha256) {
+        diffs.push(`stdout-sha256: expected=${expected.stdoutSha256} ts=${stdoutSha256}`);
+      }
+      if (actual.exit !== expected.exit) diffs.push(`exit: expected=${expected.exit} ts=${actual.exit}`);
+      const fsActual = JSON.stringify(actual.fs), fsExpected = JSON.stringify(expected.fs);
+      if (fsActual !== fsExpected) diffs.push(`fs-delta\n      expected: ${fsExpected}\n      ts: ${fsActual}`);
+      if (diffs.length) {
+        ok = false;
+        lines.push(`  ✗ ${hook} [${c.kind}] ${c.name}`);
+        for (const diff of diffs) lines.push(`      ${diff}`);
+      } else {
+        lines.push(`  ✓ ${hook} [${c.kind}] ${c.name}`);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  return { ok, lines };
+}
+
 async function checkHook(hook: string, base: string): Promise<{ ok: boolean; lines: string[] }> {
   const lines: string[] = [];
   const goldenPath = join(GOLDEN_DIR, `${hook}.json`);
@@ -242,7 +311,19 @@ async function checkHook(hook: string, base: string): Promise<{ ok: boolean; lin
   const golden: Golden = JSON.parse(await Bun.file(goldenPath).text());
 
   const py = pythonOriginal(hook, base);
-  if (!py) return { ok: false, lines: [`  ✗ ${hook}: no ${base}:hooks/${hook}.py to compare against`] };
+  if (!py) {
+    const tsPath = join(REPO, "hooks", `${hook}.ts`);
+    if (!existsSync(tsPath)) return { ok: false, lines: [`  ✗ ${hook}: no ${base}:hooks/${hook}.py or hooks/${hook}.ts`] };
+    const source = readFileSync(tsPath, "utf8");
+    const kinds = new Set(golden.cases.map((c) => c.kind));
+    if (/\bdeny\s*\(|"deny"/.test(source) && !kinds.has("deny")) {
+      return { ok: false, lines: [`  ✗ ${hook}: source has a deny path but no deny case — the branch most likely to break is untested`] };
+    }
+    if (golden.cases.length < 2) {
+      return { ok: false, lines: [`  ✗ ${hook}: needs ≥2 cases covering distinct outcomes (has ${golden.cases.length})`] };
+    }
+    return checkTypeScriptOnlyHook(hook, golden);
+  }
 
   // Coverage rule, DERIVED FROM THE SOURCE rather than imposed uniformly. Only 12 of 39 hooks have
   // a deny path at all — the other 27 inject context, write files, or run at session boundaries.
@@ -278,10 +359,27 @@ async function checkHook(hook: string, base: string): Promise<{ ok: boolean; lin
       const b = await run(["bun", ts, ...(c.argv ?? [])], c, dir);
 
       const diffs: string[] = [];
-      if (a.stdout !== b.stdout) diffs.push(`stdout\n      py: ${JSON.stringify(a.stdout)}\n      ts: ${JSON.stringify(b.stdout)}`);
-      if (a.exit !== b.exit) diffs.push(`exit: py=${a.exit} ts=${b.exit}`);
-      const fsA = JSON.stringify(a.fs), fsB = JSON.stringify(b.fs);
-      if (fsA !== fsB) diffs.push(`fs-delta\n      py: ${fsA}\n      ts: ${fsB}`);
+      const centralExpected = LEGACY_TS_EXPECTATIONS[`${hook}/${c.name}`];
+      if (c.tsExpected && centralExpected) {
+        return { ok: false, lines: [`  ✗ ${hook}/${c.name}: use either inline tsExpected or a legacy central expectation, never both`] };
+      }
+      const expected = c.tsExpected ?? centralExpected;
+      if (expected) {
+        // These named cases deliberately supersede a retired Python contract. Do not weaken them
+        // into a substring check: native PLAN/TaskList behavior is a stable TS contract in full.
+        const actualStdoutSha256 = createHash("sha256").update(b.stdout).digest("hex");
+        if (actualStdoutSha256 !== expected.stdoutSha256) {
+          diffs.push(`stdout-sha256: expected=${expected.stdoutSha256} ts=${actualStdoutSha256}`);
+        }
+        if (b.exit !== expected.exit) diffs.push(`exit: expected=${expected.exit} ts=${b.exit}`);
+        const fsExpected = JSON.stringify(expected.fs), fsB = JSON.stringify(b.fs);
+        if (fsExpected !== fsB) diffs.push(`fs-delta\n      expected: ${fsExpected}\n      ts: ${fsB}`);
+      } else {
+        if (a.stdout !== b.stdout) diffs.push(`stdout\n      py: ${JSON.stringify(a.stdout)}\n      ts: ${JSON.stringify(b.stdout)}`);
+        if (a.exit !== b.exit) diffs.push(`exit: py=${a.exit} ts=${b.exit}`);
+        const fsA = JSON.stringify(a.fs), fsB = JSON.stringify(b.fs);
+        if (fsA !== fsB) diffs.push(`fs-delta\n      py: ${fsA}\n      ts: ${fsB}`);
+      }
 
       if (diffs.length) {
         ok = false;

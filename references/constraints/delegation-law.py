@@ -63,7 +63,7 @@ def check(context):
     # This is a heuristic — in a running workflow, uncommitted source changes
     # in main chat context may indicate delegation violation
     # Note: This check is advisory since we can't determine WHO made the changes
-    # from the filesystem alone — the hook (dev-delegation-guard.py) is the
+    # from the filesystem alone — the hook (orchestrator-mutation-guard (--workflow dev).py) is the
     # real-time structural enforcement
 
     return violations

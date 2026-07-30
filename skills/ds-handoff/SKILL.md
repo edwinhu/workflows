@@ -1,180 +1,124 @@
 ---
 name: ds-handoff
-description: "Create structured handoff document for DS workflow session pause/resume."
+description: "Internal DS workflow session handoff helper."
 user-invocable: false
 disable-model-invocation: true
 ---
 
-Announce: "Using ds-handoff to capture session state for clean resumption."
-
-## Contents
-
-- [The Iron Law of Handoff](#the-iron-law-of-handoff)
-- [Handoff Facts](#handoff-facts)
-- [Process](#process)
-- [Handoff Template](#handoff-template)
-
 # Session Handoff
 
-Capture current DS workflow state into `.planning/HANDOFF.md` so a fresh session can resume exactly where this one left off.
+Create `.planning/HANDOFF.md` when a DS workflow must pause. The handoff gives a new session concise transient context; it does not replace the native workflow sources.
 
-<EXTREMELY-IMPORTANT>
 ## The Iron Law of Handoff
 
-**NO HANDOFF WITHOUT READING STATE FIRST. This is not negotiable.**
+<EXTREMELY-IMPORTANT>
+**NO HANDOFF WITHOUT READING THE AUTHORITATIVE SOURCES FIRST.** Read the approved `.planning/PLAN.md` and `.planning/PLAN.meta.json`, call `TaskList`, and read relevant project auto-memory before writing.
 
-Before writing `.planning/HANDOFF.md`, you MUST:
-1. READ `.planning/SPEC.md` (if exists) — understand the requirements
-2. READ `.planning/PLAN.md` (if exists) — understand task breakdown and progress
-3. READ `.planning/LEARNINGS.md` (if exists) — understand pipeline state and discoveries
-4. ASSESS what is actually done vs. what remains
-5. Only THEN write the handoff document
-
-**About to write the handoff without having read the state files first → STOP (read them, then write).**
+A handoff based on recollection silently converts guesses into workflow state. That is not helpful to the next session; it creates rework and can resume the wrong task.
 </EXTREMELY-IMPORTANT>
 
-## Handoff Facts
-
-- The next session knows NOTHING — it cannot reconstruct this session's decisions, rejected approaches, or pipeline discoveries from a task number. A handoff that says "continue task 3" forces full re-discovery.
-- State files track the plan, not the session: LEARNINGS.md has facts; the handoff carries intent, decisions, dead ends, and next steps. Neither git history (WHAT changed, not WHY or WHAT'S NEXT) nor the state files substitute for it.
-- A vague handoff costs the next session ~30 minutes of re-orientation — pipeline knowledge (row counts, data shape, join behavior) is expensive to re-derive and cheap to write down.
+Do not create or read `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or agent-specific memory. `PLAN.md` is the immutable approved plan; TaskList is the live task lifecycle; project auto-memory holds curated, reusable facts. Resolve project auto-memory through the session's canonical project-memory path; do not create directories or topic files from this helper.
 
 ## Process
 
-### Step 1: Read Current State
+### 1. Gather Current Context
 
-Read all available state files to understand where we are:
+1. Read `.planning/PLAN.md` exactly as approved and `.planning/PLAN.meta.json` for its hash identity. Do not edit either artifact.
+2. Call `TaskList` and, where needed, `TaskGet` for live task status, ownership, dependencies, and current blockers.
+3. Read only relevant topic files in the project's auto-memory directory. Treat these as reusable technical facts, not a transcript of every task.
+4. Inspect `git status --short` and `git log --oneline -10` to identify in-flight and committed work.
+5. Capture any session-only decisions, rejected approaches, or unanswered questions that are not represented by the sources above.
 
-```
-1. Read .planning/SPEC.md → requirements and success criteria
-2. Read .planning/PLAN.md → task breakdown and approach
-3. Read .planning/LEARNINGS.md → pipeline state, row counts, discoveries
-4. Scan recent git log → what's been committed
-5. Check for uncommitted changes → what's in-flight
-```
+### 2. Assess Progress
 
-**Run:**
-```bash
-# Check for uncommitted work
-git status --short 2>/dev/null
+Determine:
 
-# Recent commits in this session
-git log --oneline -10 2>/dev/null
-```
+- The active workflow stage (`ds`, `ds-implement`, or `ds-review`).
+- Completed, in-progress, blocked, and pending tasks from **TaskList**, not plan mutation.
+- The next unblocked task and its dependencies.
+- Verified pipeline state from project auto-memory and task evidence.
+- Uncommitted changes, blockers, and exact unresolved decisions.
 
-**Description:** ds-handoff: read current workflow and git state
+If a fact seems durable and reusable but is absent from project auto-memory, include it in the handoff under `Candidate Reusable Facts`; the main orchestrator decides whether to curate it later. Do not write project auto-memory yourself from this helper.
 
-### Step 2: Assess Progress
+### 3. Write `.planning/HANDOFF.md`
 
-From the state files and git history, determine:
-- **Current phase** (brainstorm / plan / implement / validate / review / verify)
-- **Which tasks are complete** (from git history and PLAN.md)
-- **Which task is in progress** (from uncommitted changes)
-- **Pipeline state** (from LEARNINGS.md — row counts, data shape, latest stage)
-- **Decisions made during this session** (from session context)
-- **Blockers encountered** (from session context)
-
-### Step 3: Write Handoff Document
-
-Write `.planning/HANDOFF.md` using the template below. Every field is mandatory.
-
-<EXTREMELY-IMPORTANT>
-**The next session starts with ZERO context. If it's not in the handoff, it doesn't exist.**
-
-Write as if briefing a colleague who has never seen this project. Include:
-- The specific file you were editing and why
-- The approach you chose and alternatives you rejected
-- Any data surprises discovered during this session (unexpected nulls, row count changes, schema issues)
-- The EXACT next action (not "continue working" — what specifically to do first)
-</EXTREMELY-IMPORTANT>
-
-### Step 4: Verify Handoff
-
-**Checkpoint type:** human-verify (handoff completeness is machine-verifiable)
-
-After writing, verify the handoff is complete:
-
-```
-1. IDENTIFY: .planning/HANDOFF.md exists
-2. READ: Re-read the handoff document
-3. VERIFY: Contains all sections (Current State, Completed Work, Remaining Work, Decisions, Next Action)
-4. VERIFY: "Next Action" is specific enough to start immediately
-5. VERIFY: Frontmatter phase/task numbers are accurate
-```
-
-**If any section is empty or vague, fix it before confirming handoff.**
-
-## Handoff Template
+Use this template. Replace every bracketed field; write `(none)` where appropriate.
 
 ```markdown
 ---
-phase: [current phase number]
-phase_name: [brainstorm|plan|implement|validate|review|verify]
-task: [current task number, 0 if between tasks]
-total_tasks: [N from PLAN.md]
+stage: [ds|ds-implement|ds-review]
+active_task: [TaskList ID or none]
+open_tasks: [count of pending, in_progress, and blocked TaskList items]
+plan_hash: [PLAN.meta.json planHash for the currently approved PLAN.md]
 status: paused
-context_remaining: [approx % context left when handing off — lets a resuming session triage scope]
-decisions_count: [N — number of entries in the Decisions Made section below]
 last_updated: [ISO 8601]
 ---
 # Session Handoff
 
+## Authoritative Sources Read
+- Plan: `.planning/PLAN.md` + `.planning/PLAN.meta.json` ([planHash])
+- TaskList: [summary of statuses and task IDs]
+- Project auto-memory: [topic files consulted]
+
 ## Current State
-[Where exactly we are — the immediate context a new session needs.
-Include: current file being edited, current pipeline stage,
-current phase gate status. Be specific.]
+[The active workflow stage, current task, current file/output, and specific current position.]
 
-## Completed Work
-- [x] Task 1: [name] — Done ([brief note on what was done])
-- [x] Task 2: [name] — Done
-- [ ] Task 3: [name] — In progress ([what's done, what's not])
+## Task Lifecycle
+- Completed: [TaskList IDs and short evidence]
+- In progress: [TaskList IDs, what is done, what remains]
+- Blocked: [TaskList IDs and exact blocker]
+- Next unblocked: [TaskList ID and dependency status]
 
-## Remaining Work
-- Task 3: [what specifically remains]
-- Task 4: [name] — Not started
-- Task 5: [name] — Not started
+## Verified Project Facts
+- [Relevant reusable fact already supported by project auto-memory or task evidence, with source/location]
+- (none)
 
-## Decisions Made
-- [Decision]: [what was decided and WHY]
-- [Decision]: [what was decided and WHY]
+## Candidate Reusable Facts
+- [Short durable fact for the main orchestrator to consider curating into project auto-memory]
+- (none)
 
-## Master Datasets & Construction Diagram
-<!-- For multi-exhibit projects. Lets the next session resume without re-deriving the data architecture. -->
-- Master datasets and their grain/keys: [e.g. firm_quarter.parquet (gvkey, yearq) — BUILT; trade_file.parquet (cusip, trade_dt, seqnum) — NOT YET BUILT]
-- Construction diagram location + currency: [e.g. docs/INVESTIGATION.md — current through Task 5; Task 6's filter not yet reflected]
-- Exhibits still unmapped / unbuilt: [list, or "all exhibits map to a built master"]
-- Parameter config location + open robustness checks: [e.g. src/config.py; MAX_TRADE_SIZE sensitivity {500K,2M} not yet run]
-
-## Rejected Approaches
-- [Approach]: [why it was rejected — saves the next session from re-exploring dead ends]
-
-## Blockers
-- [Blocker]: [status/workaround found]
-- (none) — if no blockers
+## Decisions and Rejected Approaches
+- [Decision or rejected approach]: [why]
+- (none)
 
 ## Uncommitted Changes
-- [file]: [what was changed and why]
-- (none) — if all work is committed
+- [file]: [what changed and why]
+- (none)
 
-## Next Action
-Start with: [specific first action when resuming — not "continue task 3" but
-"load data/processed/merged_panel.parquet and verify the winsorization in
-src/clean.py produced expected row counts per LEARNINGS.md, then run DQ3
-on the output"]
+## Exact Next Action
+[One concrete first action, including the TaskList ID, relevant input/output path, and verification required.]
 ```
 
-## Completion
+### 4. Verify the Handoff
 
-After writing and verifying `.planning/HANDOFF.md`:
+Before announcing success:
 
-Announce: "Session handoff saved to .planning/HANDOFF.md. Next session will detect it automatically and offer to resume."
+1. **IDENTIFY** — `.planning/HANDOFF.md` exists.
+2. **READ** — reread it after writing.
+3. **VERIFY** — it names the PLAN hash, TaskList status, auto-memory sources consulted, task lifecycle, blockers, and one concrete next action.
+4. **VERIFY** — no section substitutes `STATE.md`, `SPEC.md`, `LEARNINGS.md`, or agent memory for an authoritative source.
+5. **CLAIM** — report the saved path, active stage, open-task count, and exact next action only if all checks pass.
 
-Report to user:
-```
-Handoff saved:
-- Phase: [phase_name]
-- Task: [N] of [total]
-- Next action: [one-line summary]
+## Red Flags — STOP
 
-Resume by starting /ds in this project — it will detect the handoff.
+| About to | STOP because | Do instead |
+|---|---|---|
+| Infer task progress from PLAN text | PLAN is immutable approved intent, not lifecycle state | Call TaskList. |
+| Treat auto-memory as a full execution log | It contains curated reusable facts only | Use TaskList, task evidence, and git state for execution progress. |
+| Write a durable technical fact directly to memory | Curation belongs to the main orchestrator | Add it as a candidate reusable fact in the handoff. |
+| Write a vague next action such as “continue task 3” | The new session must rediscover the actual work | Name the TaskList ID, concrete operation, relevant path, and verification. |
+| Create STATE, SPEC, LEARNINGS, or agent-memory files | They conflict with the native architecture | Use PLAN, TaskList, project auto-memory, and this temporary handoff only. |
+
+## Resume Rule
+
+On resumption, treat `.planning/HANDOFF.md` as orientation only. First reread the current immutable PLAN, call TaskList, and read relevant project auto-memory; if the handoff conflicts with any of them, the authoritative source wins. Once that check succeeds, replace or delete the stale handoff as part of the resumed workflow.
+
+After verification, announce:
+
+```text
+Handoff saved: .planning/HANDOFF.md
+- Stage: [stage]
+- Open tasks: [count]
+- Next action: [one-line exact action]
 ```

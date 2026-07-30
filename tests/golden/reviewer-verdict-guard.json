@@ -1,0 +1,214 @@
+{
+  "hook": "reviewer-verdict-guard",
+  "cases": [
+    {
+      "name": "read-is-untouched",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "src/app.py"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "plan-review-sentinel-write-allowed",
+      "kind": "allow",
+      "env": {
+        "CLAUDE_SESSION_ID": "reviewer-456"
+      },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/PLAN_REVIEWED.md",
+          "content": "---\nplan_hash: 98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\nstatus: APPROVED\nreviewer_session_id: reviewer-456\nreviewed_at: 2026-01-01T00:00:00.000Z\n---\n\nreview"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "8edc78fac008f850848ce21eb6c67c28db543fbbdc99a808128a553e7df4d300",
+        "exit": 0,
+        "fs": {}
+      },
+      "fixture": {
+        ".planning/PLAN.md": "# plan\n"
+      }
+    },
+    {
+      "name": "plan-review-sentinel-traversal-denied",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/../src/app.py"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "plan-itself-denied",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": ".planning/PLAN.md"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "plan-review-sentinel-dot-relative-allowed",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "./.planning/PLAN_REVIEWED.md",
+          "content": "---\nplan_hash: 98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\nstatus: APPROVED\nreviewer_session_id: reviewer-456\nreviewed_at: 2026-01-01T00:00:00.000Z\n---\n\nreview"
+        }
+      },
+      "env": {
+        "CLAUDE_SESSION_ID": "reviewer-456"
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "8edc78fac008f850848ce21eb6c67c28db543fbbdc99a808128a553e7df4d300",
+        "exit": 0,
+        "fs": {}
+      },
+      "fixture": {
+        ".planning/PLAN.md": "# plan\n"
+      }
+    },
+    {
+      "name": "plan-review-sentinel-absolute-allowed",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "/tmp/hook-golden/.planning/PLAN_REVIEWED.md",
+          "content": "---\nplan_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nstatus: APPROVED\nreviewer_session_id: reviewer-456\nreviewed_at: 2026-01-01T00:00:00.000Z\n---\n\nreview"
+        },
+        "cwd": "/tmp/hook-golden"
+      },
+      "env": {
+        "CLAUDE_SESSION_ID": "reviewer-456"
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "plan-review-sentinel-traversal-to-target-denied",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "src/../.planning/PLAN_REVIEWED.md"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "plan-review-sentinel-traversal-elsewhere-denied",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/../../outside.md"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "write-to-source-denied",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "src/app.py"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "edit-to-source-denied",
+      "kind": "deny",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "analysis/model.R"
+        }
+      },
+      "argv": [
+        "--workflow",
+        "ds"
+      ],
+      "tsExpected": {
+        "stdoutSha256": "08b0bbba67fef5d290418f30aff6389b481841e008f6625ba25194daea56d72a",
+        "exit": 0,
+        "fs": {}
+      }
+    }
+  ]
+}

@@ -3,7 +3,13 @@ name: dev-plan-reviewer
 description: "Internal skill used by dev-design at Phase 4 exit gate. Dispatches a reviewer subagent to verify PLAN.md quality before implementation. NOT user-facing."
 user-invocable: false
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Bash, Write
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/reviewer-verdict-guard.ts --workflow dev"
 ---
 
 # Plan Document Reviewer
@@ -56,12 +62,12 @@ Use this Task invocation to dispatch the plan reviewer:
 ```
 Agent(
   subagent_type="workflows:dev-plan-checker",
-  allowed_tools=["Read", "Glob", "Grep", "Bash(read-only)"],
+  allowed_tools=["Read", "Glob", "Grep", "Bash", "Write"],
   description="Review plan document",
   prompt="""
 You are a plan document reviewer. Verify this plan is complete, matches the spec, and is ready for implementation.
 
-**Tool Restrictions:** You are READ-ONLY. You MUST NOT use Write or Edit tools. You read `.planning/PLAN.md` and `.planning/SPEC.md`, evaluate against the checklist, and return a verdict. If you find issues, you report them — the main chat fixes them.
+**Tool Restrictions:** You may read evidence and write exactly one guarded `.planning/PLAN_REVIEWED.md` YAML-frontmatter verdict after review. You MUST NOT Edit or modify any other artifact. If you find issues, report them — main chat fixes them.
 
 **Plan to review:** .planning/PLAN.md [— Chunk N only, if chunked]
 **Spec for reference:** .planning/SPEC.md
@@ -116,27 +122,23 @@ Read BOTH files, then evaluate the plan against ALL categories below.
 
 ### If APPROVED
 
-**Write the approval marker (MANDATORY):**
+**Reviewer-owned approval verdict (MANDATORY):**
 
-Before proceeding, you MUST create `.planning/PLAN_REVIEWED.md` with the reviewer's approval evidence. This file is the structural gate that dev-implement checks before starting.
+The fresh reviewer — not main chat — hashes the exact `PLAN.md` bytes and writes exactly one guarded
+`.planning/PLAN_REVIEWED.md` verdict. Its frontmatter has exactly these four fields:
 
 ```markdown
 ---
+plan_hash: [64-char SHA-256 of exact PLAN.md bytes]
 status: APPROVED
-reviewed_at: [ISO timestamp]
-reviewer: dev-plan-reviewer
-iteration: [N]
+reviewer_session_id: [actual reviewer CLAUDE_SESSION_ID]
+reviewed_at: [strict ISO UTC timestamp]
 ---
 # Plan Review: APPROVED
-
-## Spec Coverage Check
-[Paste the reviewer's full spec coverage check output here — every requirement ID with ✅/❌]
-
-## Issues Fixed (if any)
-[List any issues fixed during review iterations]
 ```
 
-**If you skip writing this file, dev-implement will REFUSE to start. This is intentional.**
+The shared guard rejects any extra/missing field, wrong session, unsafe path, or other mutation.
+Any later PLAN.md edit makes the hash stale, so executable validation and independent review must rerun.
 
 Then proceed to Phase 5 (implement):
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env -S uv run python3
-"""Tests for hooks/phase-gate-guard.py.
+"""Tests for hooks/phase-gate-guard.ts.
 
 Focus: GATE_REQUIRE_FIELDS (the recorded-decision check) and the backward
 compatibility of the 12+ skills that wire this hook without it.
@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-HOOK = Path(__file__).resolve().parent.parent / 'hooks' / 'phase-gate-guard.py'
+HOOK = Path(__file__).resolve().parent.parent / 'hooks' / 'phase-gate-guard.ts'
 
 F = []
 
@@ -24,15 +24,15 @@ def run_hook(env_extra, tool_name='Agent', tool_input=None):
     env = {**os.environ, **env_extra}
     payload = json.dumps({'tool_name': tool_name, 'tool_input': tool_input or {}})
     proc = subprocess.run(
-        [sys.executable, str(HOOK)],
-        input=payload, capture_output=True, text=True, env=env,
+        ['bun', str(HOOK)],
+        input=payload, capture_output=True, text=True, env=env, check=False,
     )
     out = proc.stdout.strip()
     if not out:
         return True, ''
     try:
         decision = json.loads(out)['hookSpecificOutput']
-    except Exception:
+    except (json.JSONDecodeError, KeyError, TypeError):
         return True, ''
     allowed = decision.get('permissionDecision') != 'deny'
     return allowed, decision.get('permissionDecisionReason', '')
@@ -461,7 +461,6 @@ codex_second_pass: declined
 # YAML would not catch that — only running the command as a shell does.
 
 import re
-import shlex
 
 REPO = Path(__file__).resolve().parent.parent
 
@@ -472,25 +471,25 @@ def gate_command(skill_path):
     frontmatter = text.split('---', 2)[1]
     for block in re.findall(r'command: >-\n((?:\s{12,}.*\n)+)', frontmatter):
         joined = ' '.join(line.strip() for line in block.strip().splitlines())
-        if 'phase-gate-guard.py' in joined:
+        if 'phase-gate-guard.ts' in joined:
             return joined
     return ''
 
 
 with tempfile.TemporaryDirectory() as td:
-    for skill in ('skills/dev-verify/SKILL.md', 'skills/ds-verify/SKILL.md'):
-        cmd = gate_command(skill)
-        check(f'{skill}: gate command found', bool(cmd))
-        if not cmd:
-            continue
-
+    # DS no longer uses a separate verify phase or phase-gate sentinel. Its copied native PLAN
+    # carries immutable approval frontmatter and ds-implement performs technical VERIFY inline.
+    skill = 'skills/dev-verify/SKILL.md'
+    cmd = gate_command(skill)
+    check(f'{skill}: gate command found', bool(cmd))
+    if cmd:
         check(f'{skill}: GATE_REQUIRE_FIELDS present', 'GATE_REQUIRE_FIELDS' in cmd)
 
         # Replace the interpreter invocation with `env` so the shell reports the
         # environment the hook would actually receive.
-        env_probe = re.sub(r'uv run python3 \S+phase-gate-guard\.py', 'env', cmd)
+        env_probe = re.sub(r'bun \S+phase-gate-guard\.ts', 'env', cmd)
         env_probe = env_probe.replace('${CLAUDE_PLUGIN_ROOT}', str(REPO))
-        proc = subprocess.run(['bash', '-c', env_probe], capture_output=True, text=True)
+        proc = subprocess.run(['bash', '-c', env_probe], capture_output=True, text=True, check=False)
 
         got = [l for l in proc.stdout.splitlines() if l.startswith('GATE_REQUIRE_FIELDS=')]
         check(f'{skill}: GATE_REQUIRE_FIELDS survives shell parsing (quoted)', len(got) == 1)

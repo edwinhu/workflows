@@ -1,6 +1,6 @@
 ---
 name: ds-delegate
-description: "Subagent delegation for data analysis. Dispatches fresh Task agents with output-first verification."
+description: "Compatibility-only helper for legacy or ad-hoc DS delegation."
 user-invocable: false
 disable-model-invocation: true
 hooks:
@@ -29,498 +29,165 @@ hooks:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
     - matcher: "Edit"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-no-main-chat-code-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
 ---
 
+# DS Delegate Compatibility Path
 
-## Contents
+`ds-delegate` is retained only for legacy or explicitly ad-hoc work. It is **not** the normal DS
+implementation path: approved native-plan work must use `ds-implement` and its shared sequential
+ready-wave runner plus independent verifier loop.
 
-- [The Iron Law of Delegation](#the-iron-law-of-delegation)
-- [Core Principle](#core-principle)
-- [The Process](#the-process)
-- [Delegation Facts](#delegation-facts)
-
-<EXTREMELY-IMPORTANT>
 ## The Iron Law of Delegation
 
-**YOU MUST route EVERY ANALYSIS STEP THROUGH A TASK AGENT. This is not negotiable.**
-
-You MUST NOT:
-- Write analysis code directly
-- Run "quick" data checks
-- Edit notebooks or scripts
-- Make "just this one plot"
-
-**If you're about to write analysis code in main chat, STOP. Spawn a Task agent instead.**
-</EXTREMELY-IMPORTANT>
-
-## Core Principle
-
-**Fresh subagent per task + output-first verification = reliable analysis**
-
-- Analyst subagent does the work
-- Must produce visible output at each step
-- Methodology reviewer checks approach
-- Loop until output verified
-
-## When to Use
-
-Called by `ds-implement` for each task in PLAN.md. Don't invoke directly.
-
-## The Process
-
-```
-For each task:
-    1. Dispatch analyst subagent
-       - If questions → answer, re-dispatch
-       - Implements with output-first protocol
-    2. Verify outputs are present and reasonable
-    3. Dispatch methodology reviewer (if complex)
-    4. Mark task complete, log to LEARNINGS.md
-```
-
-## Task Type Detection
-
-Each task in PLAN.md should have a `type` field. Detect and route accordingly:
-
-| Task Type | Agent | Constraints | Example Tasks |
-|-----------|-------|-------------|---------------|
-| `engineering` | `workflows:ds-engineer` | ds-engineering-constraints.md index + atomic E1-E5 files | ETL, merge, clean, transform, pipeline, schema, join |
-| `analysis` | `workflows:ds-analyst` | ds-analysis-constraints.md index + atomic A1-A7 files | regression, test, model, visualize, estimate, summarize |
-
-**Detection heuristic (when type field is missing):**
-
-| Task contains these keywords | Type |
-|------------------------------|------|
-| merge, join, clean, ETL, transform, pipeline, ingest, schema, deduplicate, normalize | engineering |
-| regression, estimate, test, model, plot, chart, visualize, summarize, correlate, panel | analysis |
-| ambiguous | Default to `analysis` (safer — analysis constraints are stricter) |
-
-## Step 1: Dispatch Analyst/Engineer
-
-**Pattern:** Use structured delegation template from `references/delegation-template.md`
-
-Every delegation MUST include:
-1. TASK - What to analyze
-2. EXPECTED OUTCOME - Success criteria
-3. REQUIRED SKILLS - Statistical/ML methods needed
-4. REQUIRED TOOLS - Data access and analysis tools
-5. MUST DO - Output-first verification
-6. MUST NOT DO - Methodology violations
-7. CONTEXT - Data sources and previous work
-8. VERIFICATION - Output requirements
-
-Use this Task invocation (fill in brackets). **Route based on task type detected above:**
-
-*All paths below are relative to this skill's base directory.*
-
-**For `analysis` tasks:**
-```
-Task(subagent_type="workflows:ds-analyst", prompt="""
-# TASK
-
-Analyze: [TASK NAME]
-
-## EXPECTED OUTCOME
-
-You will have successfully completed this task when:
-- [ ] [Specific analysis output 1]
-- [ ] [Specific analysis output 2]
-- [ ] Output-first verification at each step
-- [ ] Results documented with evidence
-
-## REQUIRED SKILLS
-
-This task requires:
-- [Statistical method]: [Why needed]
-- [Programming language]: Data manipulation
-- Output-first verification (mandatory)
-- SQL reference: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/references/sql-patterns.md` for dialect-specific patterns
-- Data quality checks: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
-- Analysis constraints: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md` for the constraint index, then load:
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-robustness-checks.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-standard-error-spec.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-visualization-integrity.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-table-figure-pairing.md`
-- Analysis conventions: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md` for the convention index, then load:
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-statistical-validity.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-p-hacking-prevention.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-sample-selection.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-deviation-rules-analysis.md`
-
-## REQUIRED TOOLS
-
-You will need:
-- Read: Load datasets and existing code
-- Write: Create analysis scripts/notebooks
-- Bash: Run analysis and verify outputs
-
-**Tools denied:** None (full analysis access)
-
-## MUST DO
-
-- [ ] Print state BEFORE each operation (shape, head)
-- [ ] Print state AFTER each operation (nulls, sample)
-- [ ] Verify outputs are reasonable at each step
-- [ ] Document methodology decisions
-
-## MUST NOT DO
-
-- ❌ Skip verification outputs
-- ❌ Proceed with questionable data without flagging
-- ❌ Guess on methodology (ask if unclear)
-- ❌ Claim completion without visible outputs
-
-## CONTEXT
-
-### Task Description
-[PASTE FULL TASK TEXT FROM PLAN.md]
-
-### Analysis Context
-- Analysis objective: [from SPEC.md]
-- Data sources: [list with paths]
-- Previous steps: [summary from LEARNINGS.md]
-
-## Output-First Protocol (MANDATORY)
-For EVERY operation:
-1. Print state BEFORE (shape, head)
-2. Execute operation
-3. Print state AFTER (shape, nulls, sample)
-4. Verify output is reasonable
-
-Example:
-```python
-print(f"Before: {df.shape}")
-df = df.merge(other, on='key')
-print(f"After: {df.shape}")
-print(f"Nulls introduced: {df.isnull().sum().sum()}")
-df.head()
-```
-
-## Required Outputs by Operation
-| Operation | Required Output |
-|-----------|-----------------|
-| Load data | shape, dtypes, head() |
-| Filter | shape before/after, % removed |
-| Merge/Join | shape, null check, sample |
-| Groupby | result shape, sample groups |
-| Model fit | metrics, convergence |
-
-## If Unclear
-Ask questions BEFORE implementing. Don't guess on methodology.
-
-## Output
-Report: what you did, key outputs observed, any data quality issues found.
-""")
-```
-
-**For `engineering` tasks:**
-```
-Task(subagent_type="workflows:ds-engineer", prompt="""
-# TASK
-
-Engineer: [TASK NAME]
-
-## EXPECTED OUTCOME
-
-You will have successfully completed this task when:
-- [ ] [Specific engineering output 1]
-- [ ] [Specific engineering output 2]
-- [ ] Output-first verification at each step
-- [ ] Results documented with evidence
-
-## REQUIRED SKILLS
-
-This task requires:
-- [Engineering method]: [Why needed]
-- [Programming language]: Data manipulation
-- Output-first verification (mandatory)
-- SQL reference: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-delegate/references/sql-patterns.md` for dialect-specific patterns
-- Data quality checks: Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md` for DQ1-DQ6 verification patterns (mandatory)
-- Engineering constraints: Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-engineering-constraints.md` for the constraint index, then load:
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-determinism.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-schema-contracts.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-join-audits.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-idempotency.md`
-  Read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-error-handling.md`
-
-## REQUIRED TOOLS
-
-You will need:
-- Read: Load datasets and existing code
-- Write: Create ETL scripts/pipelines
-- Bash: Run transformations and verify outputs
-
-**Tools denied:** None (full engineering access)
-
-## MUST DO
-
-- [ ] Print state BEFORE each operation (shape, head)
-- [ ] Print state AFTER each operation (nulls, sample)
-- [ ] Verify schema contracts at each step
-- [ ] Validate determinism (same input → same output)
-- [ ] Check join key uniqueness before merging
-- [ ] Document pipeline decisions
-
-## MUST NOT DO
-
-- ❌ Skip verification outputs
-- ❌ Proceed with non-deterministic transforms without flagging
-- ❌ Introduce silent data loss (row drops without logging)
-- ❌ Claim completion without visible outputs
-
-## CONTEXT
-
-### Task Description
-[PASTE FULL TASK TEXT FROM PLAN.md]
-
-### Engineering Context
-- Pipeline objective: [from SPEC.md]
-- Data sources: [list with paths]
-- Previous steps: [summary from LEARNINGS.md]
-
-## Output-First Protocol (MANDATORY)
-For EVERY operation:
-1. Print state BEFORE (shape, head)
-2. Execute operation
-3. Print state AFTER (shape, nulls, sample)
-4. Verify output is reasonable
-
-Example:
-```python
-print(f"Before: {df.shape}")
-df = df.merge(other, on='key')
-print(f"After: {df.shape}")
-print(f"Nulls introduced: {df.isnull().sum().sum()}")
-df.head()
-```
-
-## Required Outputs by Operation
-| Operation | Required Output |
-|-----------|-----------------|
-| Load data | shape, dtypes, head() |
-| Filter | shape before/after, % removed |
-| Merge/Join | shape, null check, key uniqueness |
-| Transform | before/after sample, determinism check |
-| Pipeline step | input shape → output shape, schema validation |
-
-## If Unclear
-Ask questions BEFORE implementing. Don't guess on architecture.
-
-## Output
-Report: what you did, key outputs observed, any data quality or schema issues found.
-""")
-```
-
-**If agent asks questions:** Answer clearly, especially about methodology choices (analysis) or architecture decisions (engineering).
-
-**If agent completes task:** Verify outputs, then proceed or review.
-
-## Step 2: Verify Outputs (Post-Subagent Boundary)
-
 <EXTREMELY-IMPORTANT>
-**After analyst returns, you are at the post-subagent boundary. Constraint C2 (Post-Subagent Boundary) from ds-common-constraints.md applies.**
+**NO IMPLEMENTATION OUTSIDE A TASK AGENT.** The orchestrator delegates each approved task; it does not write analysis code, edit notebooks, run quick data checks, or make a one-off plot.
 
-**ALLOWED (Verification):**
-- [ ] Read the analyst's returned report/summary
-- [ ] Check LEARNINGS.md for output documentation
-- [ ] Confirm output files exist (`ls -la`)
-- [ ] Compare task counts (expected vs actual)
-
-**FORBIDDEN (Investigation):**
-- ❌ Read project source code, notebooks, or data files
-- ❌ Run analysis code to "confirm" results
-- ❌ Query databases or inspect intermediate files
-- ❌ Grep/Glob project files
-
-**If the analyst's report shows problems, re-dispatch a Task agent. Do NOT investigate yourself.**
+A shortcut that bypasses the agent's output evidence and technical review is not helpful: it leaves the user with an unverified analysis result.
 </EXTREMELY-IMPORTANT>
 
-Upon verification failure, re-dispatch analyst with specific fix instructions. **Bound this loop: at most 3 fix-and-re-dispatch cycles per task.** If the reviewer still returns ISSUES after 3 cycles, STOP and escalate to the user (the task is harder than the plan assumed — a 4th identical re-dispatch rarely converges). This mirrors ds-review's max-3 cycle cap; a per-task loop with no limit can spin or be silently abandoned.
+Never call this from `ds-implement` for an approved native-plan task. Use it only when an explicit
+legacy/ad-hoc compatibility request cannot use the native runner.
 
-## Step 3: Dispatch Methodology Reviewer (Complex Tasks)
+## Authoritative Context
 
-For statistical analysis, modeling, or methodology-sensitive tasks, dispatch a methodology reviewer. **Tailor the review checklist to the task type:**
+Before dispatching, read:
 
-```
-Task(subagent_type="general-purpose",
-  allowed_tools=["Read", "Glob", "Grep", "Bash(read-only)"],
-  prompt="""
-Review methodology for: [TASK NAME]
-Task type: [engineering | analysis]
+1. `.planning/PLAN.md` — the exact, approved task text and acceptance criteria. **Do not edit it.**
+2. `TaskList` — the live task ID, status, dependencies, and any task comments.
+3. The project's auto-memory topic files — reusable, curated technical facts relevant to this task.
 
-## What Was Done
-[SUMMARY FROM ANALYST/ENGINEER OUTPUT]
+`PLAN.md` is the approved specification, TaskList is live workflow state, and project auto-memory is reusable project knowledge. The main orchestrator supplies exact relevant auto-memory topic-file paths; do not discover, create, or write auto-memory files. Do not create or use `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or agent-specific memory files.
 
-## Original Requirements
-[FROM SPEC.md - especially any replication requirements]
+## Flowchart: Per-Task Implementation
 
-**Tool Restrictions:** The methodology reviewer is READ-ONLY. It reads code, verifies outputs, and returns a verdict. It MUST NOT use Write or Edit.
+This flowchart is authoritative.
 
-## CRITICAL: Do Not Trust the Report
-
-The agent may have:
-- Reported success without actually running the code
-- Cherry-picked output that looks correct
-- Glossed over data quality issues
-- Made methodology choices without justification
-
-**DO:**
-- Read the actual code or notebook cells
-- Verify outputs exist and match claims
-- Check for silent failures (empty DataFrames, all nulls)
-- Confirm assumptions were checked
-
-## Review Checklist — Engineering Tasks
-Use this checklist when task type is `engineering`:
-1. Are schema contracts validated at each pipeline stage?
-2. Is the pipeline deterministic (same input → same output)?
-3. Is the transform idempotent (safe to re-run)?
-4. Are error handling and edge cases covered (empty inputs, missing keys)?
-5. Are join keys validated for uniqueness before merge?
-6. Is data loss accounted for (row counts before/after, logged drops)?
-
-## Review Checklist — Analysis Tasks
-Use this checklist when task type is `analysis`:
-1. Is the statistical method appropriate for the data type?
-2. Are assumptions documented and checked?
-3. Is sample size adequate for conclusions?
-4. Is the specification justified (why these controls, why this functional form)?
-5. Are robustness checks included (alternative specs, subsamples)?
-6. Is the standard error specification appropriate (clustered, HC, bootstrap)?
-7. Are there data leakage or p-hacking concerns?
-8. Is the approach reproducible (seeds, versions)?
-
-## Confidence Scoring
-Rate each issue 0-100. Only report issues >= 80 confidence.
-
-## Output Format
-- APPROVED: Methodology sound (after verifying code/outputs yourself)
-- ISSUES: List concerns with confidence scores and file:line references
-""")
+```text
+Read immutable PLAN + TaskList + relevant project auto-memory
+                         |
+                         v
+              Dispatch appropriate implementer
+                         |
+              needs clarification? -- yes --> Record in TaskList; route scope changes through planning
+                         |
+                        no
+                         v
+            Read returned evidence and reusableFacts
+                         |
+                         v
+       Technical PASS inside ds-implement? -- no --> Fix-and-verify loop (max 3)
+                         |                                          |
+                        yes                                    still failing
+                         v                                          v
+          Update TaskList / offer reusableFacts              Escalate to user
+                         |
+                         v
+    Continue ds-implement; human ds-review only after all implementation tasks finish
 ```
 
-## Step 4: Log to LEARNINGS.md
+## Select the Implementer
 
-Append to `.planning/LEARNINGS.md` after each task:
+Use the full task text from `PLAN.md`, never a summary.
 
-```markdown
-## Task N: [Name] - COMPLETE
+| Task type | Dispatch |
+|---|---|
+| `engineering` — ETL, schema, joins, pipelines, cleaning, transformations | `workflows:ds-engineer` |
+| `analysis` — estimation, modeling, tests, visualization, summaries | `workflows:ds-analyst` |
+| Missing or ambiguous | Default to `workflows:ds-analyst`; record the ambiguity in the task report. |
 
-**Input:** [describe input state]
+Match the model tier to the task: cheapest capable for mechanical one-file work, standard for integration, and the most capable available for methodology design or technical review.
 
-**Operation:** [what was done]
+## Dispatch Template
 
-**Output:**
-- Shape: [final shape]
-- Key findings: [observations]
+Dispatch one fresh implementation agent with the applicable constraints and this information:
 
-**Verification:**
-- [how you confirmed it worked]
+```text
+# Approved Task
+[Paste the complete task text and acceptance criteria from .planning/PLAN.md]
 
-**Next:** [what comes next]
+# Live Task
+TaskList ID: [id]
+Status and dependencies: [live TaskList details]
+
+# Project Context
+[Only relevant, curated facts from project auto-memory]
+[Relevant data/source paths and prior verified outputs]
+
+# Required Work
+- Implement only this approved task.
+- Follow output-first verification: show the relevant before/after state, checks, and output locations.
+- Load the applicable DS constraints and data-quality checks.
+- Do not invent requirements. If the plan is ambiguous, stop and ask a precise question.
+- Operational clarification may be recorded in TaskList. If it changes scope, acceptance criteria, methodology, deliverables, or data treatment, block the task and route it through planning for a newly approved PLAN.md; TaskList is not a substitute specification.
+- Do not modify .planning/PLAN.md or create SPEC.md, STATE.md, LEARNINGS.md, or agent-memory.
+
+# Return exactly
+1. status: COMPLETE | BLOCKED | NEEDS_CLARIFICATION
+2. evidence: commands/checks run, their salient results, and output file paths
+3. changedFiles: files created or changed
+4. blockersOrQuestions: [] or precise blockers/questions
+5. reusableFacts: [] or short, durable project facts worth the main orchestrator considering for project auto-memory
 ```
 
-## Gate: Exit Delegation (Per-Task)
+For analysis tasks, require the agent to read:
 
-**Checkpoint type:** human-verify (task completion is machine-verifiable)
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md`
+- `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md`
 
-Before marking any task as complete, execute this gate:
+For engineering tasks, require the agent to read:
 
-```
-1. IDENTIFY → What proves this task is done?
-   - Task agent returned output (not just "done")
-   - Output matches PLAN.md expected output for this task
-2. RUN      → Read the agent's actual output (not just the summary)
-3. READ     → Verify: shapes reasonable? No unexpected nulls? Sample looks correct?
-4. VERIFY   → If statistical task: methodology reviewer approved
-5. CLAIM    → Only log "Task N: COMPLETE" in LEARNINGS.md if ALL checks pass
-```
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-engineering-constraints.md`
+- `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md`
 
-**If agent returned no visible output, this gate FAILS. Re-dispatch with explicit output requirements.**
+Add the task-specific atomic constraint files named by those indexes. Require deterministic schema and join checks for engineering work; require assumption, specification, robustness, and standard-error checks when applicable for analysis work.
 
-**Skipping output verification is NOT HELPFUL — unverified results lead the user to act on wrong analysis.**
+## Post-Subagent Boundary
 
-## Delegation Facts
+After an agent returns, read its returned report and evidence. Main chat may check that named outputs exist and may update TaskList, but it must not inspect source/data, run implementation code, query data stores, or repair the work. A failure or doubt goes back to a fresh implementation agent.
 
-<EXTREMELY-IMPORTANT>
-"Step complete" asserts four things at once: a Task agent ran the analysis, output was visible, you personally verified it (not just trusted the agent's word), and the methodology reviewer approved (for statistical tasks). If any of these didn't happen, the claim is unverified — it gives the user false confidence in work no one checked.
-</EXTREMELY-IMPORTANT>
+### Technical Verification Loop
 
-- A Task agent dispatched without SPEC/PLAN context guesses — and executes its guess literally. A summarized PLAN.md strips details the analyst needs; provide the full task text.
-- An agent's "completion" is a claim, not a result — accepting it without reading the actual output is an unverified claim passed to the user as fact.
+`ds-implement` owns technical PASS. For each attempt:
 
-### Delete & Restart
+1. **IDENTIFY** — map the returned evidence to the task's PLAN acceptance criteria.
+2. **READ** — read the actual returned evidence, not a bare completion claim.
+3. **VERIFY** — dispatch a fresh, read-only technical verifier for every task. For mechanical tasks its review may be limited to named PLAN acceptance checks and output evidence; for complex work it checks implementation and outputs in depth. It returns explicit `PASS` or actionable `ISSUES` with file references.
+4. **CLAIM** — only a technical `PASS` permits the task to be marked complete in TaskList.
 
-**If you wrote analysis code in the main chat instead of delegating to a task agent, DELETE it immediately and dispatch a Task agent.**
+If evidence is absent, incomplete, or the verifier returns `ISSUES`, redispatch a fresh implementation agent with the exact findings. There are **at most three total fix-and-verify cycles per task**. After the third unresolved cycle, mark or retain the task as blocked in TaskList and escalate the specific evidence and blocker to the user.
 
-Code written in main chat is contaminated by orchestrator context, skips the output-first protocol, and bypasses methodology review. It cannot be salvaged — it must be replaced.
+Do not dispatch the human `ds-review` during this loop. `ds-review` is the post-implementation human review phase, after all implementation tasks have technical PASS.
+
+## Close the Task
+
+On technical PASS:
+
+1. Update the corresponding TaskList item to completed, with concise evidence and output locations.
+2. Return `reusableFacts` unchanged to the main orchestrator. The main orchestrator alone decides whether a fact is durable enough to curate into project auto-memory.
+3. Immediately proceed to the next unblocked TaskList task. Do not pause between approved tasks.
+
+## Red Flags — STOP
+
+| About to | STOP because | Do instead |
+|---|---|---|
+| Edit or infer a new requirement from an implementation result | The immutable plan is the approved scope | Escalate the ambiguity or create a new TaskList task only through the approved planning path. |
+| Mark a task complete from an agent's prose alone | A completion claim is not evidence | Read evidence and obtain technical PASS. |
+| Write `LEARNINGS.md`, `STATE.md`, `SPEC.md`, or agent memory | These conflict with the native PLAN/TaskList/project-memory architecture | Return reusableFacts for the main orchestrator to curate. |
+| Send work to `ds-review` before technical PASS | Human review cannot replace implementation verification | Finish the bounded technical loop inside `ds-implement`. |
+| Fix an agent's work in main chat | It defeats delegated, evidence-based implementation | Redispatch a fresh task agent with precise findings. |
 
 ## Failure Handling
 
-**When analyst produces no visible output:**
-- You must re-dispatch with explicit output requirements
-- Treat this as a hard failure, not something to work around
-
-**When analyst fails a task:**
-- You must dispatch a fix subagent with specific instructions
-- Don't fix it yourself in main chat—you'll pollute context and hide the real issue
-
-## Example Flow
-
-```
-Me: Implementing Task 1: Load and clean transaction data
-
-[Dispatch analyst with full task text]
-
-Analyst:
-- Loaded transactions.csv: (50000, 12)
-- Found 5% nulls in amount column
-- "Should I drop or impute nulls?"
-
-Me: "Impute with median, flag imputed rows"
-
-[Re-dispatch with answer]
-
-Analyst:
-- Imputed 2,500 rows with median ($45.50)
-- Added is_imputed flag column
-- Final shape: (50000, 13)
-- Sample output: [shows head with flag]
-
-[Verify: shapes match, flag exists, no unexpected changes]
-
-[Log to LEARNINGS.md]
-
-[Mark Task 1 complete, move to Task 2]
-```
-
-## Model Tier Hints
-
-When dispatching subagents, match model capability to task complexity via the Agent tool's `model` parameter (omit it to inherit the session model -- the right default for judgment-heavy work).
-
-| Task Complexity | Model Tier | Signals | Example |
-|----------------|------------|---------|---------|
-| **Mechanical** | Cheapest capable | Data loading, simple filtering, descriptive stats, file format conversion | "Load CSV and compute summary statistics" |
-| **Integration** | Standard | Merges/joins across sources, aggregations, visualization, data reshaping | "Merge transaction and customer tables, create pivot summary" |
-| **Architecture/Review** | Most capable | Feature engineering strategy, model selection, statistical assumption validation, methodology review | "Select appropriate model family and validate distributional assumptions" |
-
-**Complexity signals:**
-- Reads/writes 1 file with clear spec -> mechanical
-- Joins/reshapes across sources or produces visualizations -> integration
-- Requires statistical judgment or methodology design -> architecture
-
-**When in doubt, use the standard tier.** Over-allocating is wasteful; under-allocating produces poor results.
-
-## Integration
-
-This skill is invoked by `ds-implement` during the output-first implementation phase.
-After all tasks complete, `ds-implement` proceeds to `ds-review`.
+- **Needs clarification:** record the precise question and status in TaskList. Resolve an operational question before redispatching; if its answer changes scope, acceptance criteria, methodology, deliverables, or data treatment, block the task and route it through planning for a newly approved PLAN.md.
+- **Missing outputs or failed checks:** redispatch with the missing evidence or verifier findings; do not investigate independently.
+- **Task is no longer suitable for the approved plan:** do not mutate PLAN.md. Escalate or route the proposed change through the planning workflow.
+- **Protocol violation:** if implementation was performed in main chat, delete that unverified work and restart the task through a fresh agent.

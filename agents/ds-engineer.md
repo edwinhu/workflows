@@ -2,7 +2,7 @@
 name: ds-engineer
 description: |
   Data engineering subagent for pipeline, ETL, and data transformation tasks.
-  Spawned by ds-delegate for engineering-type tasks. Enforces determinism, schema validation, and idempotency.
+  Compatibility-only agent for legacy/ad-hoc DS delegation; the main path uses ds-implement's shared sequential runner. Enforces determinism, schema validation, and idempotency.
 model: inherit
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
 hooks:
@@ -49,7 +49,12 @@ Run these after EVERY transformation step:
 After EVERY operation:
 1. Show the output (df.shape, df.dtypes, df.head(), df.describe())
 2. Run DQ checks
-3. Log to .planning/LEARNINGS.md
+3. Include reusable technical facts explicitly in your final report
 4. THEN proceed to next step
 
 **Never claim "pipeline works" without showing output.**
+
+Your final report must separate reusable technical facts—source quirks, schema/grain facts,
+row-count baselines, and failed approaches—from transient narration. The main orchestrator decides
+what belongs in project auto-memory before closing the TaskList item. The approved PLAN is immutable
+intent, TaskList is the live queue, and the main orchestrator curates reusable returned facts into project auto-memory.

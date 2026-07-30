@@ -23,7 +23,7 @@ print(f"POST-JOIN KEY DUPES: {result.duplicated(subset=key).sum():,}")
 | Join Issue | Severity | Action |
 |-----------|----------|--------|
 | Many-to-many producing row explosion | R4 | STOP — user decides |
-| >10% unmatched rows | R2 | Log warning, add to LEARNINGS.md |
+| >10% unmatched rows | R2 | Log warning in the implementation report; return it for project auto-memory curation |
 | 0 matched rows | R1 | Bug — investigate key mismatch |
 | Duplicate keys after join | R1 | Bug — deduplicate or fix join type |
 

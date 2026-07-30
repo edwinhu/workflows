@@ -1,5 +1,7 @@
 # Common-infra candidates: the shared run-core seams (EXTRACTED — pass #9 landed, v5.61.0)
 
+> **Superseded for DS (2026-07-29).** This is a historical compiler-era seam record. It does not describe the current DS workflow, which uses an immutable copied plan, native task state, project auto-memory, and a human review ledger rather than a shared runner.
+
 > 📊 This file is the *what/why* seam list. For the *how it runs* companion — a visual, code-grounded walkthrough with mermaid diagrams — see **`docs/compiled-runner-architecture.md`**.
 >
 > **Canonical** cross-workflow seam list for the compiled-runner pattern. Owned here (ds vantage);

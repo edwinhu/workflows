@@ -1,194 +1,148 @@
 ---
 name: ds-plan-reviewer
-description: "Internal skill used by ds-plan at Phase 2 exit gate. Dispatches a reviewer subagent to verify PLAN.md quality before implementation. NOT user-facing."
+description: "Internal DS plan-review gate. Use after /ds exits native Plan mode and the plan-persistence hook has copied the approved plan to .planning/PLAN.md."
 user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
-    - matcher: "Write"
+    - matcher: "Write|Edit|Bash"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.ts"
-    - matcher: "Edit"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-reviewer-readonly-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/reviewer-verdict-guard.ts --workflow ds"
 ---
 
-# Plan Document Reviewer (Data Science)
+# Data-Science Native Plan Reviewer
 
-**Purpose:** Catch plan gaps BEFORE they survive into implementation. Bad task decomposition, missing data profiling, and spec misalignment cost 10x more to fix during implementation than during review.
-
-## When to Dispatch
-
-After Phase 2 (ds-plan) writes `.planning/PLAN.md` and before Phase 3 (ds-implement) begins.
-
-```
-Phase 2: ds-plan -> PLAN.md written
-  -> [THIS SKILL] Dispatch plan reviewer subagent
-  -> For plans with >15 tasks: review per-chunk
-  -> Issues found? Fix PLAN.md -> re-dispatch reviewer
-  -> Approved? -> Phase 3: ds-implement
-```
+Review the immutable native plan before `/ds-implement` starts. The user approves the approach when
+native Plan mode exits; this review checks whether the approved plan is executable for data work. It
+never alters the copy, creates a parallel state file, or substitutes a custom plan format.
 
 <EXTREMELY-IMPORTANT>
-## The Iron Law of Plan Review
+## The Iron Law of DS Plan Review
 
-**NO IMPLEMENTATION WITHOUT REVIEWED PLAN. This is not negotiable.**
+**NO IMPLEMENTATION WITHOUT AN INTACT, REVIEWED NATIVE PLAN. This is not negotiable.**
 
-A bad plan that survives into implementation means:
-- Subagents struggling with tasks that lack intermediate output definitions
-- Missing data profiling steps discovered mid-analysis
-- Spec requirements silently dropped
-- Rework when task ordering ignores data dependencies
-
-**Catching a plan gap NOW costs 1 minute. Catching it during implementation costs hours.**
+An immutable plan that is missing, modified, or too vague to execute is not a small documentation
+problem. It makes workers guess about source grain, evidence, and data quality — precisely the
+rework this workflow is meant to prevent. Starting anyway is anti-helpful.
 </EXTREMELY-IMPORTANT>
 
-### Plan-Review Facts
+## Inputs and authority
 
-- User approval covers the approach, not task granularity — an approved plan can still have vague tasks, missing profiling steps, and silently dropped requirements. The reviewer checks what the user didn't.
-- Implementation subagents receive only the task text — they don't know the spec, and they execute vague tasks literally, producing wrong analysis. Every task must define what it produces and what proves completion.
-- ds-implement enforces output-first per step, but a task with no task-level verification criterion has no one checking its overall outcome — per-step output discipline does not substitute for it.
-- A plan that resembles a prior analysis is not thereby complete — prior plans had different data sources; each task is checked against THIS spec's requirements.
+| Input | Use |
+|---|---|
+| `.planning/PLAN.md` | Exact approved native-plan copy; immutable authority for intent and tasks. |
+| `.planning/PLAN.meta.json` | Approval identity and integrity hash for the exact `PLAN.md` bytes. |
+| `TaskList` | Live work status only; never infer it from the plan. |
+| Project auto-memory | Reusable, durable facts only; not a plan or a progress log. |
 
-## Chunking Rule
+## Dispatch an independent reviewer
 
-**If PLAN.md has >15 tasks:** Break into ordered chunks using `## Chunk N: <name>` headings. Each chunk should be logically self-contained (e.g., "data cleaning", "feature engineering", "analysis", "visualization"). Review each chunk separately.
+`/ds` dispatches one fresh `general-purpose` reviewer after `ExitPlanMode` and gives it only this
+skill, the immutable plan, and read-only project inspection tools. The reviewer must not have a
+planning or implementation transcript **and must run in a different Claude session from the plan
+approval and later implementation**. It may use `Bash` only to compute the plan-body SHA-256; it must
+not run mutating commands. It may write only the durable verdict artifact.
 
-**If PLAN.md has <=15 tasks:** Review the entire plan in one pass.
+The orchestrator reads the verdict but never substitutes its own review. Dispatch one reviewer for the
+complete current plan so its one hash-bound durable verdict covers every task; do not split a review
+into artifacts the runner cannot verify as one current approval.
 
-**Why chunk:** Monolithic review of large documents produces shallow feedback. Focused review per chunk catches more issues.
+## Procedure
 
-## Dispatch Template (Single Plan or Per-Chunk)
+1. **Read `.planning/PLAN.md` and `.planning/PLAN.meta.json`.** `PLAN.md` must be the exact native
+   approval body, with no generated frontmatter. Hash those exact bytes with SHA-256 and compare them
+   to `PLAN.meta.json`:
 
-Use this Task invocation to dispatch the plan reviewer:
+   ```json
+   {
+     "planHash": "<64 lowercase hexadecimal characters matching exact PLAN.md bytes>",
+     "approvedSession": "<non-empty>",
+     "approvedAt": "<strict UTC ISO-8601 timestamp ending in .sssZ>"
+   }
+   ```
 
-```
-Agent(
-  subagent_type="general-purpose",
-  description="Review DS plan document",
-  allowed_tools=["Read", "Glob", "Grep", "Bash(read-only)"],
-  prompt="""
-You are a data science plan document reviewer. Verify this plan is complete, matches the spec, and is ready for implementation.
+   A missing, malformed, or mismatched integrity value is blocking. Do not alter either artifact.
+2. **Read the approved plan content.** Check it is concrete enough to create or reconcile native
+   tasks: goal, source/data-access approach, analysis scope and exclusions, ordered work, expected
+   outputs, and evidence for completion.
+3. **Apply DS judgment.** Flag material omissions when relevant to the stated analysis:
+   - source location/access and expected grain or unit of observation;
+   - profiling before cleaning, joining, modeling, or claims from the data;
+   - nulls, duplicates, type drift, coverage, and join-key checks;
+   - reproducibility (environment, seed, snapshots/versioning) where results depend on them;
+   - an explicit strategy for large or multi-source work, including source-side filtering and safe
+     incremental scale-up;
+   - a named configuration location and rationale for analytic thresholds or sample filters;
+   - a canonical dataset/grain when multiple outputs must share a sample;
+   - outputs with concrete evidence, not merely "analyze" or "validate";
+   - a **Review Surfaces** section naming the actual tables, figures, exports, diagnostics, or
+     decisions the user will inspect. Missing review surfaces is blocking, because `ds-review`
+     cannot manufacture the user's acceptance contract after implementation.
+4. **Write one durable verdict.** After completing the independent review, write only
+   `.planning/PLAN_REVIEWED.md` (the scoped read-only guard permits no other mutation). It must be
+   bound to the exact hash and include the actual review:
 
-**Tool Restrictions:** The plan reviewer is READ-ONLY. It reads `.planning/PLAN.md` and `.planning/SPEC.md`, evaluates against checklist, returns verdict. It MUST NOT use Write or Edit.
+   ```markdown
+   ---
+   plan_hash: <PLAN.meta.json planHash>
+   status: APPROVED | ISSUES_FOUND
+   reviewer_session_id: ${CLAUDE_SESSION_ID}
+   reviewed_at: <strict UTC ISO-8601 timestamp ending in Z>
+   ---
 
-**Plan to review:** .planning/PLAN.md [-- Chunk N only, if chunked]
-**Spec for reference:** .planning/SPEC.md
+   ## DS Native Plan Review
+   ...actual integrity evidence, blocking issues, and advisory suggestions...
+   ```
 
-Read BOTH files, then evaluate the plan against ALL categories below.
+   Set `reviewer_session_id` to the actual `${CLAUDE_SESSION_ID}` and reject the review if it equals
+   `PLAN.meta.json.approvedSession`. `reviewed_at` must be a strict UTC timestamp ending in `Z`. Never
+   edit the plan or write any other state file. `ISSUES_FOUND` is a durable failed verdict, not
+   permission to implement.
 
-## What to Check
+   This is a fail-closed workflow gate, not cryptographic provenance: the platform supplies session
+   IDs, and the runner rejects missing, equal, malformed, or stale identity records rather than
+   treating a local file alone as proof of reviewer identity.
 
-| Category | What to Look For |
-|----------|------------------|
-| **Executable table (BLOCKING)** | The Task Breakdown MUST be the machine-executable table `Task \| Deps \| Outputs \| Expected Output \| Verify \| Implements`, one row per task, every column filled. Tasks recorded as prose `### Task N` headers, or any row missing Deps/Outputs/Expected Output/Verify/Implements, is **BLOCKING** — ds-implement can't parse a data-flow DAG or per-task verify gate from it. (`ds-plan-executable-guard.py` also blocks the approval write; flag it here so it's fixed first.) |
-| Completeness | TODOs, placeholders, incomplete tasks, missing steps |
-| Spec Alignment | Plan covers ALL spec requirements, no scope creep, no requirements silently dropped |
-| **Master Datasets** | For any project with 3+ shared-sample exhibits: a `## Master Datasets` table names the minimal canonical datasets with grain + unique keys; an `## Exhibit → Dataset Map` maps EVERY planned exhibit to a master (none reading raw sources directly); a mermaid `## Dataset Construction Diagram` shows raw → merges → filters → masters → exhibits with keys/filters on edges. Each master must be built by a real Task Breakdown row. Per-exhibit ad-hoc pulls (exhibits not tracing to a shared master) is a flag — it manufactures exhibits that disagree. |
-| **Parameter Transparency** | If the analysis has any sample filters or tuning parameters: a `## Filters & Parameters` table names a single config location and lists every parameter (constant · value · applied in · rationale/source · principled? · disposition). Principled (✓) requires a cited source OR a validation result — not "seemed reasonable". Every convenience (⚠) row MUST carry a disposition (robustness panel / verified-redundant / display-only) tracing to a Task Breakdown task. Missing table, no named config location, or ⚠ parameters with no disposition is a flag — scattered magic numbers are a replication hazard. |
-| Data Profiling | Data profile section present with shape, types, quality issues documented |
-| Task Decomposition | Tasks atomic enough for a single subagent, clear boundaries, steps actionable |
-| Task Ordering | Dependencies correct (cleaning before analysis), no circular dependencies |
-| Intermediate Outputs | Each task defines what it produces and what proves completion |
-| Output-First Verification | Each task includes verification steps (print shape, check nulls, sample output) |
-| ETL Strategy | If data > 1M rows or multiple sources: filter strategy, parallelism plan, caching documented |
-| Reproducibility | Random seeds, package versions, data snapshots documented where relevant |
+### Review output
 
-## CRITICAL - Look Especially Hard For:
-
-- Any TODO markers or placeholder text
-- Steps that say "similar to X" without actual content
-- Tasks missing intermediate output definitions (what does this task produce?)
-- Tasks missing verification steps (how do you know it worked?)
-- Missing data profiling tasks (should always come before analysis)
-- Data cleaning tasks that lack strategy for each quality issue found in profiling
-- Spec requirements not covered by ANY task (silently dropped)
-- Exhibits that read raw sources directly instead of a declared master dataset (per-exhibit pulls that will silently disagree)
-- A master dataset named in the map with no Task Breakdown row that builds it, or a planned exhibit absent from the Exhibit → Dataset Map
-- A Dataset Construction Diagram whose edges omit the merge keys / filter row-drops (decoration, not a spec)
-- Inline numeric literals implied by task descriptions instead of a named config location (magic numbers)
-- Parameters marked principled (✓) on "seemed reasonable" rather than a cited source or a validation result
-- Convenience (⚠) parameters with no disposition (robustness panel / verified-redundant / display-only) in the Task Breakdown
-- Tasks too large for a single subagent (>100 lines of change or multiple distinct operations)
-- ETL strategy missing when data is large (>1M rows) or from multiple sources
-- Missing output verification plan section
-
-## Output Format
-
-## Plan Review
+```markdown
+## DS Native Plan Review
 
 **Status:** APPROVED | ISSUES_FOUND
 
-**Issues (if any):**
-- [Task X, Step Y]: [specific issue] - [why it matters for implementation]
+**Integrity:** PASS | FAIL — [evidence]
 
-**Spec Coverage Check:**
-- [Requirement 1]: Covered by Task N | NOT COVERED
-- [Requirement 2]: Covered by Task N | NOT COVERED
+**Blocking issues:**
+- [plan section or task]: [specific missing/inconsistent item and implementation consequence]
 
-**Recommendations (advisory - don't block approval):**
-- [suggestions for improvement that aren't blocking]
-""")
+**Advisory suggestions:**
+- [optional improvement]
 ```
 
-## Handling Reviewer Output
+## Resolution
 
-### If APPROVED
+- **APPROVED:** `/ds-implement` may run only from a genuinely different implementation session; the
+  runner fail-closes on distinct session IDs. This is workflow provenance checking, not cryptographic
+  attestation.
+- **ISSUES_FOUND or integrity FAIL:** Return to **native Plan mode**. Revise the plan there, obtain
+  user approval through `ExitPlanMode`, let the persistence hook atomically replace `PLAN.md` and
+  `PLAN.meta.json` (which stales the review record), and run this reviewer again. Do not patch
+  `.planning/PLAN.md` or create `SPEC.md`, a compiler, or a custom task table.
 
-**1. Write the structural gate sentinel** (ds-implement refuses to start without it — a PreToolUse `phase-gate-guard.py` hook checks this file):
+## Gate
 
-```
-Write(".planning/PLAN_REVIEWED.md", """---
-status: APPROVED
-reviewed: plan
-date: [ISO 8601]
----
-Plan reviewed and APPROVED by ds-plan-reviewer. ds-implement may proceed.
-""")
-```
+1. **IDENTIFY:** `.planning/PLAN.md` and `.planning/PLAN.meta.json` exist.
+2. **RUN:** Hash the exact `PLAN.md` bytes with SHA-256 and compare them to `planHash`; validate strict UTC-Z metadata and that this reviewer session differs from `approvedSession`.
+3. **READ:** Inspect the actual approved content against the DS checks above.
+4. **VERIFY:** Write `PLAN_REVIEWED.md` with exactly `plan_hash`, `status`, `reviewed_at`, and `reviewer_session_id`; it states `APPROVED`, the same exact `plan_hash`, strict UTC-Z `reviewed_at`, and the actual nonempty `${CLAUDE_SESSION_ID}`.
+5. **CLAIM:** Only then hand the immutable plan to `/ds-implement` in another genuinely distinct session.
 
-**2. Proceed immediately to Phase 3 (ds-implement).** Discover and load:
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/SKILL.md` and follow its instructions.
+## Red flags
 
-### If ISSUES_FOUND
-1. **Clear any stale sentinel** so the gate cannot pass on an old approval:
-   `Write(".planning/PLAN_REVIEWED.md", "---\nstatus: ISSUES_FOUND\nreviewed: plan\n---\nPlan has open issues; ds-implement is gated.")`
-2. Fix the specific issues in `.planning/PLAN.md`
-3. Re-dispatch the reviewer (same template)
-4. Repeat until APPROVED or max 5 iterations
-
-### If 5 Iterations Without Approval
-Escalate to user:
-```
-"Plan reviewer has flagged issues 5 times. Remaining issues:
-[list issues]
-Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the plan?"
-```
-
-## Model Tier Hints
-
-When the reviewed plan proceeds to implementation, add model tier guidance to task dispatch:
-
-| Task Complexity | Model Tier | Signals |
-|----------------|------------|---------|
-| Mechanical | Cheapest capable | Data loading, simple filtering, descriptive stats, file format conversion |
-| Integration | Standard | Merges/joins across sources, aggregations, visualization, data reshaping |
-| Architecture/Review | Most capable | Feature engineering strategy, model selection, statistical assumption validation, methodology review |
-
-**Routing is real** -- apply via the Agent tool's `model` parameter at dispatch (omit to inherit the session model for judgment-heavy tasks).
-
-## Gate Function
-
-**Checkpoint type:** human-verify (plan quality is machine-verifiable)
-
-```
-1. IDENTIFY: `.planning/PLAN.md` exists
-2. DISPATCH: Send to reviewer subagent (per-chunk if >15 tasks)
-3. READ: Reviewer returns APPROVED or ISSUES_FOUND
-4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)
-5. CLAIM: When ALL chunks APPROVED, write `.planning/PLAN_REVIEWED.md` (`status: APPROVED`), THEN proceed to ds-implement
-
-**This gate is hook-enforced, not advisory:** ds-implement declares a PreToolUse `phase-gate-guard.py` hook that blocks Write/Edit/Agent until `.planning/PLAN_REVIEWED.md` exists with `status: APPROVED`. A user who invokes `/ds-implement` directly without a reviewed plan is structurally blocked.
-```
+| About to | Stop because | Do instead |
+|---|---|---|
+| Edit `PLAN.md` to address an issue | That destroys the approved native-plan record | Return to Plan mode and obtain a new approved copy |
+| Treat plan checkboxes as live progress | The plan is immutable; this fabricates state | Read `TaskList` |
+| Write anything besides the one hash-bound `PLAN_REVIEWED.md` verdict | Review must be durable without recreating a workflow runtime | Write only the verdict artifact permitted by the guard |
+| Require a custom DS task table or `SPEC.md` | Native Plan mode owns plan structure and intent | Review the native plan's actual content |

@@ -18,7 +18,7 @@ Every sample restriction must be documented and justified. Undocumented restrict
 
 **Pattern:**
 ```
-## Sample Construction (in LEARNINGS.md)
+## Sample Construction (in the implementation report)
 
 Starting universe: N observations
 - Drop [reason]: -X obs (Y%)
@@ -26,7 +26,7 @@ Starting universe: N observations
 - Final sample: N observations (Z% of starting)
 ```
 
-**If total dropped > 20% of starting universe, flag as potential selection bias in LEARNINGS.md.**
+**If total dropped > 20% of starting universe, flag as potential selection bias in the implementation report.**
 
 ## Rationale
 

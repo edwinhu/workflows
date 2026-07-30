@@ -10,7 +10,7 @@ Specification curves (A2) are the primary robustness mechanism. A3 covers additi
 
 **Minimum standard:** Spec curve (A2) + at least 1 additional robustness check from A3 where applicable.
 
-**If main result is sensitive to any spec curve choice OR any A3 check, flag as fragile in LEARNINGS.md.**
+**If the main result is sensitive to any specification-curve choice or A3 check, flag it as fragile in the implementation report for project auto-memory curation.**
 
 ## What A3 Covers (Beyond Spec Curves)
 

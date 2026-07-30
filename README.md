@@ -40,7 +40,7 @@ Four primary workflows, each with a fresh-start entry and a midpoint re-entry:
 | Start Fresh | Midpoint Re-entry | Domain |
 |-------------|-------------------|--------|
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
-| `/ds` | `/ds-fix` | 6-phase data science with output-first verification and DQ validation |
+| `/ds` | `/ds-implement` | Native-plan data science: plan, implement, and independent review |
 | `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 | `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
 
@@ -104,7 +104,7 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 ### Internal Workflow Phases
 Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`)
 
-DS: `ds-plan`, `ds-delegate`, `ds-implement`, `ds-review`, `ds-validate`, `ds-verify`, `ds-handoff`, `ds-spec-reviewer`, `ds-plan-reviewer`
+DS: `/ds` plans, `/ds-implement` executes native tasks, and `/ds-review` independently reviews the resulting analysis.
 
 Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, `writing-review`, `writing-validate`, `writing-handoff`
 
@@ -139,6 +139,10 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 ---
 
+## Workflow lifecycle architecture
+
+Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, approved-artifact, reviewer-verdict, mutation-boundary, and task-contract mechanisms from DS/dev policy and their distinct execution adapters.
+
 ## Hooks (11)
 
 Hooks auto-run at specific lifecycle events:
@@ -161,7 +165,7 @@ Hooks auto-run at specific lifecycle events:
 
 ## Session Continuity
 
-Workflows use a `.planning/` state folder (SPEC.md, PLAN.md, LEARNINGS.md, HANDOFF.md, VALIDATION.md) for cross-session persistence. The `/continuous-learning` skill extracts reusable patterns, and hooks automatically save session state.
+The DS workflow separates durable records by purpose: `.planning/PLAN.md` is an immutable copy of the approved native plan, Claude Code's `TaskList` is the live task record, project auto-memory retains reusable facts, and `.planning/REVIEW.md` is the human-readable review ledger.
 
 For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 

@@ -1,367 +1,209 @@
 ---
 name: ds
-description: "This skill should be used when the user asks to 'start data analysis', 'brainstorm analysis approach', 'plan a data project', 'clarify analysis requirements', 'explore this dataset', 'what's in this data', 'what should I analyze here', 'set up a new study', or needs the data science workflow (exploration starts with questions, not data pulls — the workflow enforces that ordering)."
-allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
+description: "This skill should be used when the user asks to 'start data analysis', 'plan a data project', 'explore this dataset', 'what should I analyze', 'set up a new study', or needs the data-science workflow."
 hooks:
   PreToolUse:
-    - matcher: "Bash"
+    - matcher: "Read|Glob|Grep|Bash"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/ds-brainstorm-no-exploration-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow ds"
+  PostToolUse:
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow ds"
 ---
 
-## Contents
+# Data Science Workflow
 
-- [The Iron Law of DS Brainstorming](#the-iron-law-of-ds-brainstorming)
-- [What Brainstorm Does](#what-brainstorm-does)
-- [Critical Questions to Ask](#critical-questions-to-ask)
-  - [Universe Questions](#universe-questions--ask-these-do-not-infer-them)
-- [Process](#process)
-- [Output](#output)
+`/ds` is the DS planning adapter: clarify the research question, gather only the profile and domain
+facts needed to plan responsibly, use native Plan mode, then independently review the approved plan.
+Claude Code owns the live task list; the native plan-persistence hook owns the immutable approved
+copy at `.planning/PLAN.md`.
 
-## Session Resume Detection
+```
+clarify with user → read-only profile / domain discovery → native Plan mode
+       → ExitPlanMode approval → immutable PLAN.md copy → independent plan review
+       → /ds-implement
+```
 
-Before starting, check for an existing handoff:
-
-1. Check if `.planning/HANDOFF.md` exists
-2. **If found:** Read it and present to user:
-   - Show the phase, task progress, and Next Action from the handoff
-   - Ask: "Resume from handoff, or start fresh?"
-   - If resume: skip to the recorded phase
-   - If fresh: proceed with brainstorm
-3. **If not found:** Proceed normally with Phase 1 (brainstorm)
-
-## Context Monitoring
-
-| Level | Remaining Context | Action |
-|-------|------------------|--------|
-| Normal | >35% | Proceed normally |
-| Warning | 25-35% | Complete current question round, then trigger ds-handoff |
-| Critical | ≤25% | Immediately trigger ds-handoff — do not start new question rounds |
-
-# Brainstorming (Questions Only)
-
-Refine vague analysis requests into clear objectives through Socratic questioning.
-**NO data exploration, NO coding** - just questions and objectives.
-
-**Load shared enforcement first.**
-
-Auto-load all constraints matching `applies-to: ds`:
-
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts ds`
-
-**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
+This flowchart is authoritative. There is no DS `SPEC.md`, `STATE.md`, `LEARNINGS.md`, compiler,
+generated runner, custom task-table schema, or custom verification phase.
 
 <EXTREMELY-IMPORTANT>
-## The Iron Law of DS Brainstorming
+## The Iron Law of DS Planning
 
-**ASK QUESTIONS BEFORE ANYTHING ELSE. This is not negotiable.**
+**ASK BEFORE YOU LOOK; PLAN ONLY FROM EVIDENCE YOU ACTUALLY GATHERED. This is not negotiable.**
 
-Before loading data, before exploring, before proposing approaches, you MUST:
-1. Ask clarifying questions using AskUserQuestion
-2. Understand what the user actually wants to learn
-3. Identify data sources and constraints
-4. Define success criteria
-5. Only THEN propose analysis approaches
-
-**STOP - You're about to load data or explore before asking questions. Don't do this.**
+Loading a dataset or proposing a method before the user has stated the outcome anchors the work to
+whatever data happens to be nearby. Skipping a necessary profile replaces evidence with a convenient
+guess. Neither shortcut is helpful: it creates an analysis that is fast to start and expensive to
+correct.
 </EXTREMELY-IMPORTANT>
 
-## What Brainstorm Does
+## 1. Clarify
 
-| DO | DON'T |
-|-------|----------|
-| Ask clarifying questions | Load or explore data |
-| Understand analysis objectives | Run queries |
-| Identify data sources | Profile data (that's /ds-plan) |
-| Define success criteria | Create visualizations |
-| Ask about constraints | Write analysis code |
-| Check if replicating existing analysis | Propose specific methodology |
+At `/ds` entry, before asking any question, overwrite the narrow session sentinel with this exact
+non-authorizing JSON (create `.planning/` if needed):
 
-**Brainstorm answers: WHAT and WHY**
-**Plan answers: HOW (data profile + tasks)** (separate skill)
-
-## Critical Questions to Ask
-
-### Data Source Questions
-- What data sources are available?
-- Where is the data located (files, database, API)?
-- What time period does the data cover?
-- How frequently is the data updated?
-
-### Universe Questions — ask these, do not infer them
-
-The sample period and the entity universe are **elicited**, never assumed from
-whatever the first query happened to return. They go into PLAN.md as ONE declared
-object that every later step reads.
-
-- What is the sample period, and **what bounds it** — a research choice, or the
-  earliest date some source happens to carry? (These have different consequences
-  when a source is later replaced.)
-- What is the unit of observation, and what is its **key**? Rates computed at the
-  wrong grain are a different statistic wearing the right name.
-- Which entities are IN the universe, by what predicate?
-- **Where is that predicate applied?** It belongs at the one place scope is
-  decided. Applying it again to a lookup — a denominator, a crosswalk, a
-  reference join — is not scope, it is silent data loss, and it looks like local
-  correctness at every individual site.
-- If two sources disagree about who is in the universe, which one decides?
-
-> A panel applied its universe predicate to both the entity selection and the
-> share-count lookup. 43.7% of rows carried a null denominator; the source held a
-> value for every one of them. It survived a full day of plausible explanations
-> before anyone asked whether the data was actually missing.
-
-### Objective Questions
-- What question are you trying to answer?
-- Who is the audience for this analysis?
-- What decisions will be made based on results?
-- What would a successful outcome look like?
-
-### Constraint Questions
-- **Are you replicating an existing analysis?** (Critical for methodology)
-- Are there specific methodologies required?
-- What is the timeline for this analysis?
-- Are there computational resource constraints?
-
-### Output Questions
-- What format should results be in (report, dashboard, model)?
-- **What tables and figures will the final output contain?** (The planned-exhibits list — ds-plan maps every exhibit to a canonical "master" dataset so they all share one methodology. Capturing it here, even roughly, is what lets the plan be built around the smallest set of datasets feeding every exhibit.)
-- What visualizations are expected?
-- How will results be validated?
-
-## Process
-
-### 1. Ask Questions First
-
-Employ `AskUserQuestion` immediately:
-- **One question at a time** - never batch
-- **Multiple-choice preferred** - easier to answer
-- Focus on: objectives, data sources, constraints, replication requirements
-
-### Smart-Discuss: Batch Ambiguities
-
-When multiple analysis questions arise, batch them into ONE AskUserQuestion call:
-
-**Batched (fast — 1 round-trip):**
-```python
-AskUserQuestion(questions=[
-  {"question": "Primary dataset?", "options": [{"label": "CRSP"}, {"label": "Compustat"}, {"label": "Both merged"}]},
-  {"question": "Sample period?", "options": [{"label": "2000-2024"}, {"label": "2010-2024"}, {"label": "Custom"}]},
-  {"question": "Frequency?", "options": [{"label": "Monthly"}, {"label": "Quarterly"}, {"label": "Annual"}]}
-])
+```bash
+mkdir -p .planning && printf '%s\n' '{"status":"pending"}' > .planning/DS_CLARIFIED.json
 ```
 
-**When to batch:** After understanding the research question, if 3+ independent questions arise, batch them.
-**When NOT to batch:** If a question's answer changes what other questions to ask (e.g., dataset choice affects available variables).
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files,
+data, code, or prior analysis artifacts. Immediately after the user responds to the first
+clarification questions, overwrite the sentinel with this exact strict JSON; it contains only the
+current session identity and authorization status, never user requirements:
 
-### 2. Identify Replication Requirements
-
-**CRITICAL:** Ask early if replicating existing work:
-
-```
-AskUserQuestion:
-  question: "Are you replicating or extending existing analysis?"
-  options:
-    - label: "Replicating existing"
-      description: "Must match specific methodology/results"
-    - label: "Extending existing"
-      description: "Building on prior work with modifications"
-    - label: "New analysis"
-      description: "Fresh analysis, methodology flexible"
+```bash
+printf '%s\n' "{\"status\":\"clarified\",\"sessionId\":\"${CLAUDE_SESSION_ID}\"}" > .planning/DS_CLARIFIED.json
 ```
 
-When replicating:
-- Obtain reference to original (paper, code, report)
-- Document exact methodology requirements
-- Define acceptable deviation from original results
+Supply the DS-specific axes the primitive needs:
 
-### 3. Propose Approaches
+| Axis | Establish with the user |
+|---|---|
+| Outcome | Question, audience, decision the analysis informs, and deliverables |
+| Universe | Unit of observation, entity inclusion rule, sample period, and authoritative source when sources disagree |
+| Sources | Available data, access/location, expected refresh/vintage, and known restrictions |
+| Constraints | Replication target, required methods, deadline, compute/cost limits, and reproducibility needs |
+| Evidence | What makes each planned output credible: a check, an inspectable exhibit, a source comparison, or user judgment |
 
-After objectives are clear:
-- Propose **2-3 different approaches** with trade-offs
-- **Lead with recommendation** (mark as "Recommended")
-- Use `AskUserQuestion` for the user to select the preferred approach
+Ask in one `AskUserQuestion` call when answers are independent. Ask cascading questions separately:
+a source choice that determines available variables must be answered before variable questions.
 
-### 4. Write Spec Doc
+### DS clarification facts
 
-After selecting an approach:
-- Write to `.planning/SPEC.md`
-- Include: objectives, data sources, success criteria, constraints
-- **NO implementation details** - reserve those for /ds-plan
+- A sample period and an entity universe are research choices, not properties inferred from the first
+  query result. A rate at the wrong grain is a different statistic with a familiar label.
+- The universe predicate belongs where scope is decided. Applying it to a lookup or denominator can
+  turn available values into nulls; a 43.7% null-denominator incident came from exactly that duplicate
+  filtering mistake.
+- A criterion that cannot name evidence is a wish. Use the primitive's explicit `TBD (<phase>)`
+  convention only when profiling is the scheduled evidence-producing phase; never invent coverage.
 
-```markdown
-# Spec: [Analysis Name]
+Record the user-approved intent and evidence criteria in the native plan when entering Plan mode —
+not in a preliminary DS artifact.
 
-> **For Claude:** After writing this spec, discover and load the ds-plan skill for Phase 2:
->Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan/SKILL.md` and follow its instructions.
+## 2. Gather planning evidence without implementing
 
-## Objective
-[What question this analysis answers]
+After clarification, gather the minimum evidence needed to choose a feasible plan. This is
+reconnaissance, not analysis implementation.
 
-## Data Sources
-- [Source 1]: [location, format] — coverage asserted in "Sample Period & Coverage Requirements" below
-- [Source 2]: [location, format] — coverage asserted in "Sample Period & Coverage Requirements" below
+### Read-only data profile
 
-## Sample Period & Coverage Requirements
-<!-- AUTHORITATIVE. This is the ONE place the sample period lives. Do NOT scatter the period across prose elsewhere (a "measured" range here, a "scope" year there) — every phase reviews data pulls against THIS section. See constraint C6 (ds-sample-coverage). -->
+For each source that materially affects the plan, collect or dispatch a read-only profile covering:
 
-**Canonical window:** [start] to [end]
-<!-- The single outer window that bounds the whole study. Every source and task lives inside it unless a row below declares a legitimate extension (lags/leads). -->
+- location/access, approximate shape, columns/types, date coverage, and likely row grain/key;
+- nulls, duplicates, type drift, category/distribution anomalies, and likely join risks;
+- raw size and whether source-side filtering, caching, partitioning, or server-side computation is
+  needed;
+- a small representative sample only when access and project policy permit it.
 
-**Sub-windows** (narrower windows a specific task/exhibit uses; each names the task(s) that consume it):
-| Sub-window | Range | Consumed by |
-|------------|-------|-------------|
-| [measured] | [2023H2–2025H1] | [Task/Exhibit] |
-| [counterfactual] | [2005–2025] | [Task/Exhibit] |
+Use direct read-only inspection for one small local source. For independent sources, dispatch all
+read-only profilers directly in parallel and consolidate their reports. Do not make a profiling agent
+implement a pipeline, mutate project files, or spawn further agents.
 
-**Per-source coverage** (Required = UNION of the sub-windows of EVERY task that reads the source — not just the task it was first pulled for; reuse by a wider-window task is exactly what silently truncates data):
-| Source | Required window | Actual (min–max) | Gap? | Disposition |
-|--------|-----------------|------------------|------|-------------|
-| [source1] | [2005–2025 (Task 6 ∪ Task 8)] | TBD (profiled in ds-plan) | TBD | TBD |
-| [source2] | [2009–2024] | TBD (profiled in ds-plan) | TBD | TBD |
+If a source may be large (roughly 50M rows, 500 MB to ship, or described as bulk/large/uncertain),
+read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.md` and follow it. The
+profile must compare filtered raw and candidate aggregate/server-side paths before native planning
+commits to one. Do not pull a full source merely to estimate it.
 
-**COV gate:** no windowed source is used by a task until its Actual coverage is asserted against that task's Required window. Every gap (Actual narrower than Required) is CLOSED (re-pull) or dispositioned (documented reason it is acceptable). An undispositioned gap is a STOP.
+### Domain and example discovery
 
-## Planned Exhibits
-<!-- The tables and figures the final output will contain. Rough is fine — ds-plan Step 5d maps each to a canonical master dataset so all exhibits share one methodology. Omit only for a genuine single-table one-off. -->
-- Table 1: [what it shows]
-- Table 2: [what it shows]
-- Figure 1: [what it shows]
+When the plan will use another workflow skill or data provider, discover its relevant references and
+examples before choosing an approach. Read
+`${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.md` and follow it.
+Record the resulting ADOPT, PATCH, or GREENFIELD decision in the native plan itself.
 
-## Requirements
+For multi-output work that shares a sample, read
+`${CLAUDE_SKILL_DIR}/../../references/constraints/ds-master-datasets.md`. Plan the minimal canonical
+analysis dataset(s), their grain and keys, and which planned outputs consume each one. For analytic
+filters or tunable thresholds, read
+`${CLAUDE_SKILL_DIR}/../../references/constraints/ds-parameter-transparency.md`; name one
+configuration location, rationale, and treatment of convenience choices in the native plan.
 
-Assign each requirement a unique ID using `CATEGORY-NN` format (e.g., `DATA-01`, `VIZ-02`, `STAT-03`). Categories come from natural groupings in the analysis.
+### Boundary
 
-| ID | Requirement | Scope |
-|----|-------------|-------|
-| [CAT-01] | [Requirement 1] | v1 |
-| [CAT-02] | [Requirement 2] | v1 |
+Do not write production analysis code, create task trackers, or claim findings in this step. If an
+answer depends on implementation, state it as a planned evidence task rather than pretending the
+profile established it.
 
-Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly excluded.
+## 3. Use native Plan mode
 
-## Success Criteria
-- [ ] [CAT-01] [Criterion]
-- [ ] [CAT-02] [Criterion]
+Enter native Plan mode after the clarification and planning evidence are sufficient. The plan must
+express, in the user's terms:
 
-## Constraints
-- Replication: [yes/no - if yes, reference source]
-- Timeline: [deadline]
-- Methodology: [required approaches]
+1. the goal, scope, exclusions, and evidence criteria;
+2. the source/access strategy and profile-derived data-quality or scale risks;
+3. ordered, dependency-aware native tasks with concrete outputs and completion evidence;
+4. reproducibility decisions appropriate to the work (source vintages, seeds, environments, and
+   config);
+5. a **Review Surfaces** section naming the concrete tables, figures, notebook exports, diagnostics,
+   or decisions the user will inspect during human review; and
+6. any domain-example decision, canonical dataset/grain, parameter rationale, or large-source
+   decision required by the planning evidence above.
 
-## Chosen Approach
-[Description of selected approach]
+Use the native plan's natural structure. Do not manufacture a DS-specific executable table, a
+`SPEC.md`, or a second task list. Native Plan mode and `TaskList` are the sources of intent and
+live progress respectively.
 
-## External Skills Likely In Play
-<!-- List plugin skills whose data/tools will be touched. ds-plan Step 5b will Glob their references/ and examples/ before drafting tasks. -->
-- [e.g. wrds — holdings/voting data via SAS on WRDS grid]
-- [e.g. gemini-batch — LLM extraction for text fields]
-- [none]
+Before `ExitPlanMode`, ensure the user has had the opportunity to approve the approach. On exit, the
+native plan-persistence hook writes `.planning/PLAN.md` as a byte-for-byte copy of the approved native
+body and writes its approval identity separately to `.planning/PLAN.meta.json`:
 
-## Rejected Alternatives
-- Option B: [why rejected]
-- Option C: [why rejected]
+```json
+{
+  "schemaVersion": 1,
+  "planHash": "<SHA-256 of exact PLAN.md bytes>",
+  "approvedSession": "<ExitPlanMode payload session_id>",
+  "approvedAt": "<strict ISO-8601 UTC timestamp ending in .sssZ>"
+}
 ```
 
-## Gate: Exit Brainstorm
+The hook deletes any prior hash-bound review when it replaces the plan.
 
-**Checkpoint type:** human-verify (SPEC.md content is machine-verifiable)
+Never write, patch, or regenerate this copy yourself. If the plan changes, re-enter native Plan mode,
+obtain approval through `ExitPlanMode`, and let the hook replace it atomically.
 
-Before transitioning to ds-plan, execute this gate:
+## 4. Independent plan review
 
-```
-1. IDENTIFY → SPEC.md exists at `.planning/SPEC.md`
-2. RUN      → Read(".planning/SPEC.md")
-3. READ     → Verify it contains: Objectives, Data Sources, Sample Period & Coverage Requirements (canonical window + sub-windows + per-source table), Requirements (with CATEGORY-NN IDs), Success Criteria sections
-4. VERIFY   → User has confirmed the objectives via AskUserQuestion response (not agent self-assessment).
-              Check: was AskUserQuestion called and did user respond affirmatively?
-5. CLAIM    → Only proceed to ds-plan if ALL checks pass
-```
+Immediately read `${CLAUDE_SKILL_DIR}/../ds-plan-reviewer/SKILL.md`, then dispatch a **fresh,
+read-only** `general-purpose` reviewer. Give the reviewer the skill, `.planning/PLAN.md`, and only
+read-only inspection tools; it must have no planning or implementation transcript and may use Bash
+solely to compute the SHA-256 body hash. The planner reads the verdict but never self-approves.
 
-**If ANY check fails, do NOT proceed. Fix the gap first.**
+Dispatch one fresh reviewer for the complete current plan and require its one durable hash-bound
+verdict to approve. Dispatch the reviewer directly, never through a dispatcher agent.
 
-**Self-assessment is not user confirmation. If the user hasn't explicitly approved the objectives via AskUserQuestion, you haven't finished brainstorm.**
+- If any reviewer returns **ISSUES_FOUND**, re-enter native Plan mode, revise there, obtain fresh
+  approval through `ExitPlanMode`, and review the newly persisted copy. Repeat at most five times;
+  then show the unresolved issues to the user and ask how to proceed.
+- If every reviewer returns **APPROVED**, immediately read
+  `${CLAUDE_SKILL_DIR}/../ds-implement/SKILL.md` and follow it. Do not ask a redundant
+  “should I continue?” question: approval is the transition.
 
-## Output
+## Gate: ready for implementation
 
-Declare brainstorm complete when:
-- Analysis objectives clearly understood
-- Data sources identified
-- Sample period declared: one canonical window + named sub-windows, each mapped to the task(s) that consume it (per-source Actual coverage is filled later in ds-plan)
-- Success criteria defined
-- Constraints documented (especially replication requirements)
-- Approach chosen from alternatives
-- `.planning/SPEC.md` written
-- User confirms ready for data exploration
+1. **IDENTIFY:** `.planning/PLAN.md`, `.planning/PLAN.meta.json`, and `.planning/PLAN_REVIEWED.md`
+   exist after `ExitPlanMode` and independent review.
+2. **RUN:** Recompute SHA-256 over exact `PLAN.md` bytes and compare it with metadata `planHash`.
+3. **READ:** Verify `approvedSession` and strict UTC-Z `approvedAt`; then read the actual plan and the
+   hash-bound reviewer verdict. This is fail-closed workflow provenance based on session IDs, not
+   cryptographic attestation.
+4. **VERIFY:** The review artifact is `APPROVED` for the exact plan hash, records a strict-Z timestamp
+   and a reviewer session distinct from approval and implementation, and profile-derived risks and every
+   declared output have a concrete task/evidence path. Implementation begins only in a new session
+   distinct from approval and review. PreCompact state supports recovery, not authorization.
+5. **CLAIM:** Only then invoke `/ds-implement`.
 
-## Workflow Context
+## Red flags
 
-This skill is Phase 1 of the 5-phase `/ds` workflow:
-
-```
-┌──────────────┐    ┌──────────┐    ┌──────────────┐    ┌───────────┐    ┌───────────┐
-│ ds-brainstorm│───→│ ds-plan  │───→│ ds-implement │───→│ ds-review │───→│ ds-verify │
-│  SPEC.md     │    │ PLAN.md  │    │ LEARNINGS.md │    │ APPROVED? │    │ COMPLETE? │
-└──────────────┘    └──────────┘    └──────────────┘    └─────┬─────┘    └─────┬─────┘
-                                         ↑                    │                │
-                                         └── CHANGES REQ'D ───┘                │
-                                         ↑                                     │
-                                         └──── NEEDS WORK ────────────────────┘
-```
-
-1. **Phase 1: ds-brainstorm** (current) - Clarify objectives through Socratic questioning
-2. **Phase 2: ds-plan** - Profile data and break analysis into tasks
-3. **Phase 3: ds-implement** - Execute analysis tasks with output-first verification
-4. **Phase 4: ds-review** - Review methodology, data quality, and statistical validity (max 3 cycles)
-5. **Phase 5: ds-verify** - Check reproducibility and obtain user acceptance
-
-## No Pause After Brainstorm
-
-<EXTREMELY-IMPORTANT>
-**After user confirms objectives, IMMEDIATELY proceed to ds-plan. Do NOT ask "should I continue?" or "ready to proceed?"**
-
-DO NOT:
-- Ask "should I continue?" (the user already confirmed objectives — a second confirmation request is a stall, not courtesy)
-- Summarize what was agreed (SPEC.md IS the summary; repeating it wastes context)
-- Treat this as a stopping point (the workflow is sequential — brainstorm done = plan starts, no gap)
-</EXTREMELY-IMPORTANT>
-
-## Phase Summary
-
-After writing SPEC.md, update it with structured frontmatter:
-
-```yaml
----
-phase: ds-brainstorm
-status: completed
-implements: [all requirement IDs assigned in this phase]
-requires: [user input]
-provides: [.planning/SPEC.md]
-affects: [.planning/]
-tags: [brainstorm, objectives, requirements]
----
-```
-
-**One-liner rule:** Must be SUBSTANTIVE. Good: "Panel regression study of CEO pay-performance sensitivity using CRSP-Compustat 2000-2024". Bad: "Brainstorm complete".
-
-## Phase Complete
-
-After completing brainstorm, dispatch the spec reviewer before proceeding:
-
-```
-Phase 1: Brainstorm -> SPEC.md written
-  -> Dispatch ds-spec-reviewer subagent
-  -> If APPROVED -> proceed to ds-plan
-  -> If ISSUES_FOUND -> fix SPEC.md -> re-dispatch reviewer (max 5 iterations)
-```
-
-**Step 1:** Discover and load the spec reviewer skill:
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-spec-reviewer/SKILL.md` and follow its instructions.
-
-**Step 2:** Only after reviewer returns APPROVED, discover and load the next phase:
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-plan/SKILL.md` and follow its instructions.
-
-Fallback (if Read fails): `/ds-plan`
-
-**CRITICAL:** Do not skip to analysis implementation. Phase 2 profiles data and breaks down the analysis into discrete, manageable tasks.
-**CRITICAL:** Do not skip spec review. An unreviewed spec means profiling the wrong data and planning the wrong analysis.
+| About to | Stop because | Do instead |
+|---|---|---|
+| Explore data before the user answers | Existing files will frame the question for the user | Run the CLARIFY beat first |
+| Treat a head sample as a data profile | Nulls, grain failures, and type drift often live outside the head | Profile shape, tail/coverage, keys, and quality signals |
+| Pull a huge source to see how big it is | The transfer is the failure you are supposed to prevent | Profile filtered counts and aggregate candidates read-only |
+| Write `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or a custom plan | It creates competing state and makes progress ambiguous | Use native Plan mode, immutable `PLAN.md`, TaskList, and project auto-memory |
+| Patch `.planning/PLAN.md` after review finds a gap | That falsifies the approved record and its hash | Re-enter Plan mode and obtain a new approved copy |
+| Infer live progress from plan checkboxes | The copied plan is immutable | Read `TaskList` |

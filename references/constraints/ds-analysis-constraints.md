@@ -1,7 +1,7 @@
 ---
 name: ds-analysis-constraints
 description: Data-analysis constraints for ds analysis phases
-applies-to: [ds, ds-fix, ds-plan, ds-implement, ds-review, ds-verify, ds-validate, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-delegate]
 ---
 
 # DS Analysis Constraints

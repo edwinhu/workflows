@@ -50,8 +50,8 @@ TIMEOUT = 90
 
 # --------------------------------------------------------------------------- wiring
 
-def _wirings_from_hooks_json() -> list[tuple[str, str, str, str]]:
-    """(source, event, matcher, script) from hooks/hooks.json."""
+def _wirings_from_hooks_json() -> list[tuple[str, str, str, str, str]]:
+    """(source, event, matcher, script, complete command) from hooks/hooks.json."""
     out = []
     cfg = json.loads((HOOKS / 'hooks.json').read_text())
     for event, entries in cfg.get('hooks', {}).items():
@@ -60,12 +60,12 @@ def _wirings_from_hooks_json() -> list[tuple[str, str, str, str]]:
             for h in entry.get('hooks', []):
                 script = _script_of(h.get('command', ''))
                 if script:
-                    out.append(('hooks.json', event, matcher, script))
+                    out.append(('hooks.json', event, matcher, script, h.get('command', '')))
     return out
 
 
-def _wirings_from_skills() -> list[tuple[str, str, str, str]]:
-    """(source, event, matcher, script) from every skills/*/SKILL.md `hooks:` frontmatter."""
+def _wirings_from_skills() -> list[tuple[str, str, str, str, str]]:
+    """(source, event, matcher, script, complete command) from skill frontmatter."""
     out = []
     for skill_md in sorted((REPO / 'skills').glob('*/SKILL.md')):
         text = skill_md.read_text(encoding='utf-8')
@@ -93,7 +93,7 @@ def _wirings_from_skills() -> list[tuple[str, str, str, str]]:
                         continue
                     script = _script_of(h.get('command', ''))
                     if script:
-                        out.append((f'skills/{skill_md.parent.name}', event, str(matcher), script))
+                        out.append((f'skills/{skill_md.parent.name}', event, str(matcher), script, h.get('command', '')))
     return out
 
 
@@ -111,7 +111,7 @@ def _script_of(command: str) -> str | None:
     four times as a passing gate. If you are adding a third runtime, add it here FIRST.
     """
     for token in command.split():
-        if (token.endswith('.py') or token.endswith('.ts')) and '/hooks/' in token:
+        if (token.endswith(('.py', '.ts'))) and '/hooks/' in token:
             return token.rsplit('/hooks/', 1)[1]
     return None
 
@@ -119,7 +119,7 @@ def _script_of(command: str) -> str | None:
 def all_wirings() -> list[tuple[str, str, str, str]]:
     seen, out = set(), []
     for w in _wirings_from_hooks_json() + _wirings_from_skills():
-        key = (w[1], w[2], w[3])  # dedupe on event+matcher+script, keep first source
+        key = (w[1], w[2], w[4])  # complete command identifies a parameterized wiring
         if key not in seen:
             seen.add(key)
             out.append(w)
@@ -220,7 +220,7 @@ def make_project(root: Path) -> None:
     )
 
 
-def run_hook(script: str, payload: dict, cwd: str) -> tuple[int, str, str]:
+def run_hook(script: str, command: str, payload: dict, cwd: str) -> tuple[int, str, str]:
     env = dict(os.environ)
     env['CLAUDE_PLUGIN_ROOT'] = str(REPO)
     env['CLAUDE_PROJECT_DIR'] = cwd
@@ -232,17 +232,21 @@ def run_hook(script: str, payload: dict, cwd: str) -> tuple[int, str, str]:
     # Hardcoding `uv run python3` made every .ts wiring fail to execute, so all 56 reported INVALID
     # the moment discovery was fixed — a broken runner is indistinguishable from a broken hook in
     # the report, and the previous state (0/0, exit 0) hid both.
-    argv = (['bun', str(HOOKS / script)] if script.endswith('.ts')
-            else ['uv', 'run', 'python3', str(HOOKS / script)])
+    expanded = command.replace('${CLAUDE_PLUGIN_ROOT}', str(REPO))
+    # Run the whole configured shell command, including leading environment assignments and argv.
+    # Extracting only a filename silently drops `--workflow` policy selection.
+    argv = ['bash', '-lc', expanded] if expanded else (
+        ['bun', str(HOOKS / script)] if script.endswith('.ts') else ['uv', 'run', 'python3', str(HOOKS / script)]
+    )
     proc = subprocess.run(
         argv,
         input=json.dumps(payload), capture_output=True, text=True,
-        cwd=cwd, env=env, timeout=TIMEOUT,
+        cwd=cwd, env=env, timeout=TIMEOUT, check=False,
     )
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def check_one(script: str, event: str, matcher: str) -> list[str]:
+def check_one(script: str, event: str, matcher: str, command: str) -> list[str]:
     """Run every payload for this wiring; return schema/exit violations."""
     problems: list[str] = []
     tmp = tempfile.mkdtemp(prefix='hookcheck-')
@@ -250,7 +254,7 @@ def check_one(script: str, event: str, matcher: str) -> list[str]:
         for payload in payloads_for(event, matcher, tmp):
             make_project(Path(tmp))
             try:
-                code, stdout, stderr = run_hook(script, payload, tmp)
+                code, stdout, stderr = run_hook(script, command, payload, tmp)
             except subprocess.TimeoutExpired:
                 problems.append(f'{script} [{event}] timed out after {TIMEOUT}s')
                 continue
@@ -282,9 +286,9 @@ def check_one(script: str, event: str, matcher: str) -> list[str]:
 
 _parametrize = (
     pytest.mark.parametrize(
-        'source,event,matcher,script',
+        'source,event,matcher,script,command',
         WIRINGS,
-        ids=[f'{w[1]}:{w[3]}:{w[2]}' for w in WIRINGS],
+        ids=[f'{w[1]}:{w[4]}:{w[2]}' for w in WIRINGS],
     )
     if pytest is not None
     else (lambda fn: fn)
@@ -292,10 +296,10 @@ _parametrize = (
 
 
 @_parametrize
-def test_wired_hook_emits_valid_payload(source, event, matcher, script):
+def test_wired_hook_emits_valid_payload(source, event, matcher, script, command):
     assert event in EVENTS, f'{source} wires an unknown event {event!r}'
     assert (HOOKS / script).exists(), f'{source} wires a missing script hooks/{script}'
-    problems = check_one(script, event, matcher)
+    problems = check_one(script, event, matcher, command)
     assert not problems, (
         f'{script} wired to {event} (matcher {matcher!r}, from {source}) emits payloads '
         f'the harness will reject:\n  - ' + '\n  - '.join(problems)
@@ -306,7 +310,7 @@ def test_every_wiring_names_a_real_event_and_script():
     """Cheap structural check -- catches typos in an event name or a renamed script."""
     bad = [
         f'{src}: {ev}/{scr}'
-        for src, ev, _m, scr in WIRINGS
+        for src, ev, _m, scr, _cmd in WIRINGS
         if ev not in EVENTS or not (HOOKS / scr).exists()
     ]
     assert not bad, 'invalid hook wiring:\n  ' + '\n  '.join(bad)
@@ -321,7 +325,7 @@ def test_hookeventname_matches_wired_event():
     going to trip it.
     """
     by_script: dict[str, set[str]] = {}
-    for _src, ev, _m, scr in WIRINGS:
+    for _src, ev, _m, scr, _cmd in WIRINGS:
         by_script.setdefault(scr, set()).add(ev)
     bad = []
     for script, events in sorted(by_script.items()):
@@ -416,12 +420,12 @@ def test_wc_audit_has_a_hook_contract_dimension():
 
 def _report() -> int:
     rows, failed = [], 0
-    for source, event, matcher, script in WIRINGS:
+    for source, event, matcher, script, command in WIRINGS:
         if event not in EVENTS or not (HOOKS / script).exists():
             rows.append((script, event, matcher, 'WIRING ERROR', source))
             failed += 1
             continue
-        problems = check_one(script, event, matcher)
+        problems = check_one(script, event, matcher, command)
         rows.append((script, event, matcher, 'VALID' if not problems else 'INVALID', source))
         if problems:
             failed += 1

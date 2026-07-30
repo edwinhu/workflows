@@ -1,6 +1,6 @@
 # ETL Strategy Enforcement
 
-Enforcement patterns for ETL decisions made during ds-plan. Each section corresponds to a subsection of PLAN.md's `## ETL Strategy`.
+Enforcement patterns for ETL decisions made during /ds planning stage. Each section corresponds to a subsection of PLAN.md's `## ETL Strategy`.
 
 For SAS-specific enforcement, see `../../../skills/wrds/references/sas-etl.md`. (relative to this skill's base directory)
 For Gemini batch scale-up, see `../../../skills/gemini-batch/references/scale-up-testing.md`.
@@ -9,8 +9,8 @@ For Gemini batch scale-up, see `../../../skills/gemini-batch/references/scale-up
 
 ## Key & Grain Carry-Through
 
-**Enforces:** the row primary key and business/event key that ds-plan profiling identified and
-recorded in PLAN.md (`row_pk`, `event_key`). Discovery (ds-plan) and verification (DQ3) are
+**Enforces:** the row primary key and business/event key that /ds planning stage profiling identified and
+recorded in PLAN.md (`row_pk`, `event_key`). Discovery (/ds planning stage) and verification (DQ3) are
 useless if the implementation drops the key columns between stages.
 
 **The rule: identify the grain once, then carry its key columns through EVERY stage. Never drop
@@ -111,7 +111,7 @@ Before implementing each task, check the Parallelism Plan table in PLAN.md. The 
 For each task in PLAN.md Parallelism Plan:
 
 ### If Method = "Background Task agents":
-- Spawn parallel Task agents for independent groups/years
+- Use the shared sequential ready-wave runner; do not fan out independent groups/years until worker filesystem isolation exists
 - Each agent gets its own data scope (e.g., one year, one sector)
 - Reconcile results after all agents complete
 - DO NOT process sequentially "because it's simpler"
@@ -226,7 +226,7 @@ Load the appropriate scale-up reference based on the batch operation type:
 - [ ] Scale-up stages match PLAN.md table (number of stages, batch sizes)
 - [ ] Each stage gate passed before proceeding to next
 - [ ] Domain-specific reference loaded for the operation type
-- [ ] Cost extrapolation documented in LEARNINGS.md before full batch
+- [ ] Cost extrapolation returned with task evidence before the full batch
 
 ---
 

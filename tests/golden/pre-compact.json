@@ -51,6 +51,22 @@
       }
     },
     {
+      "name": "native-ds-plan-without-keywords-never-writes-state",
+      "kind": "effect",
+      "stdin": {
+        "session_id": "abc123",
+        "transcript_path": "/tmp/transcript.jsonl",
+        "cwd": ".",
+        "hook_event_name": "PreCompact",
+        "trigger": "manual",
+        "custom_instructions": ""
+      },
+      "fixture": {
+        ".planning/PLAN.md": "# Research contract\n\nOnly native task prose.\n",
+        ".planning/PLAN.meta.json": "{\n  \"schemaVersion\": 1,\n  \"planHash\": \"bad\",\n  \"approvedSession\": \"approved\",\n  \"approvedAt\": \"2026-01-01T00:00:00.000Z\"\n}\n"
+      }
+    },
+    {
       "name": "legacy-claude-dir-writing-workflow-no-state-written",
       "kind": "effect",
       "stdin": {

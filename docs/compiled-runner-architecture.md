@@ -1,5 +1,7 @@
 # How the compiled-runner workflows actually work
 
+> **Superseded for DS (2026-07-29).** This compiler-era design is retained as historical context only. The current DS workflow uses an immutable copied `PLAN.md`, native `TaskList` for live state, project auto-memory for reusable facts, and `REVIEW.md` as the human review ledger. It has no custom compiler, generated `run.js`, validator, or verify phase.
+
 > A visual, code-grounded explainer for the `spec → plan → compile → run.js` machinery shared by
 > **ds, dev, writing, workshop, teaching** (and any workflow the **birther** scaffolds). This is the
 > *how it runs* companion to `docs/common-infra-candidates.md` (the *what/why* seam list) and the

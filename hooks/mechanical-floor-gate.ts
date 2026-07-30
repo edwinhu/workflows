@@ -13,7 +13,7 @@
  *   FLOOR=dev  → gate the Agent spawn (the goal-backward verifier in dev-verify, Leg 2).
  *                Runs references/constraints/check-all.py. Denies on HARD failures only.
  *
- *   FLOOR=ds   → gate the Workflow spawn (the ds-validate-coverage per-requirement fan-out).
+ *   FLOOR=ds   → gate the shared beat-implement Workflow spawn.
  *                Runs scripts/check-all-ds.sh; denies on non-zero exit. Gates the WORKFLOW only —
  *                NOT Agent — so fix subagents stay free.
  *
@@ -134,7 +134,7 @@ async function main(): Promise<never> {
   const toolInput = (hookInput.tool_input as Record<string, unknown>) ?? {};
 
   if (floor === "ds") {
-    // Gate the ds-validate-coverage Workflow fan-out ONLY (never Agent — fix subagents must run).
+    // Gate the shared DS implementation Workflow ONLY (never Agent — fix subagents must run).
     if (toolName !== "Workflow") process.exit(0);
     const project = projectFromArgs(toolInput, hookInput);
     const { ok, failed, summary } = runDs(project);
@@ -142,7 +142,7 @@ async function main(): Promise<never> {
       deny(
         "GATE BLOCKED: the DS static-analysis floor (check-all-ds.sh — determinism, join " +
           "audits, idempotency, error handling, schema contracts, standard errors, viz " +
-          "integrity) has failures, so the per-requirement validation fan-out must not run " +
+          "integrity) has failures, so the shared implementation fan-out must not run " +
           "yet. These are code-quality defects in the analysis scripts. Dispatch a FIX " +
           "SUBAGENT (an Agent — not blocked) to fix them, then re-invoke:\n- " +
           (failed.length ? failed : [summary]).join("\n- ") +

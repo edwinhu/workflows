@@ -1,7 +1,7 @@
 ---
 name: assumption-over-evidence
 description: Treating assumptions as evidence — profile/verify fresh every time
-applies-to: [ds, ds-fix, ds-plan, ds-implement, ds-review, ds-verify, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-delegate]
 ---
 
 ## Rule

@@ -9,7 +9,6 @@ These are the compile **targets** for workflow-creator's compiled-runner pattern
 | File | Role |
 |------|------|
 | `run-core.js` | **THE shared driver core (pass #9).** ONE copy of the topo/level/`runTask`/`returnReason`/`intraLevel` driver + helpers + unified `TRANSFORM_SCHEMA` + the six doctrine invariants. The compiler SPLICES it with a per-domain fragment into a self-contained `<project>/.planning/run.js`. Holes: `__META__/__PROJECT__/__TASKS__/__GLOBAL_CONSTRAINTS__/__LEVEL_MODES__/__TASK_BODIES__`. |
-| `ds-task.js` | ds FRAGMENT (spliced into `__TASK_BODIES__`) — the injected fns: `gateProbe` (output-first / outputs-exist), `implementerPrompt` (no `recheckTrigger`). |
 | `dev-task.js` | dev FRAGMENT — `gateProbe` (TDD / files+test → `artifactsPresent`), `implementerPrompt` (Global Constraints + Interfaces), `recheckTrigger` (cross-level overlap → full suite). |
 | `compiled-runner-template.js` | **Generic FRAGMENT skeleton (birther).** Copy to `<domain>-task.js` and fill the three injected fns (`gateProbe`/`implementerPrompt`/optional `recheckTrigger`) + write `<domain>_compile.py` per its header recipe. Carries NO driver — the driver is `run-core.js`, spliced at compile time. (`ds-run-template.js`/`dev-run-template.js` were the pre-pass-#9 monolithic copies — **deleted** in the birther-convergence pass; the compilers use `run-core.js` + `<domain>-task.js`.) |
 
@@ -28,6 +27,9 @@ SPEC ──▶ PLAN-EMITTER phase  ← emits BORN-CANONICAL table format (doctri
             └─ scripts/<domain>/<domain>_compile.py       ← produce the work-list; deterministic, NO LLM
                   └─ emit CODE (<project>/.planning/run.js)  OR  DATA (a work-list a generic runner consumes)
                         └─ Workflow({ scriptPath: ".planning/run.js" })  or the generic engine reads the work-list
+
+DS no longer uses this compiler/parser path. Its native approved plan is adapted directly to
+`workflows/beat-implement.js` by `skills/ds-implement/SKILL.md`.
 ```
 
 There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; wc-audit flags it `executionClass=generic-interpreter` → critical). **Emitting only parser + guard (no canonical emitter) half-applies the rule — it relocates the tolerance into regex instead of removing it.**
@@ -37,9 +39,9 @@ There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the
 1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, artifactsPresent, evidence, scope}` (canonical names; `pass` ⊥ `artifactsPresent` — the core ANDs them). **`pass` is ALWAYS deterministic** (exit code or mechanical floor — never a returned judgment, so nothing in the runner to game). The fork is *sufficiency*: exit-code (ds/dev — the gate IS the probe) vs a **necessary-not-sufficient floor** (writing — the sufficient authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3). Pick the trust-class via interview Q7.
 2. **D2 `implementerPrompt(t)`** — how one task is produced (output-first vs TDD failing-test-first + the domain's R4 assumption-change list). Keep the mandatory-R4 block + stale-gate backstop verbatim.
 3. **D3 `columns` / task-spec shape** — what the plan table carries (`__TASKS__`): `id, name, deps, outputs, expectedOutput, verify, implements, kind, tier, effort, done, pauseAfter, taskText`.
-4. **D4 tier/effort policy** — `t.tier`/`t.effort` (ds: heuristic by task weight · dev: inherit session model). Pull out of the shared compiler.
+4. **D4 tier/effort policy** — `t.tier`/`t.effort` (dev inherits session model). Pull out of the shared compiler.
 
-**NOT a seam — intra-level parallel-vs-sequential is CORE, compiler-DERIVED:** parallel IFF a level's declared outputs are provably **disjoint** (ds's parquets qualify; dev's shared tree never does → sequential by construction). Never hand-set it; never ask the author. (This killed the earlier `D5` proposal.)
+**NOT a seam — intra-level parallel-vs-sequential is CORE, compiler-DERIVED:** parallel IFF a level's declared outputs are provably **disjoint**; a shared tree runs sequentially by construction. Never hand-set it; never ask the author. (This killed the earlier `D5` proposal.)
 
 ## The doctrine invariants (baked into the core — do NOT re-derive them)
 
@@ -52,7 +54,7 @@ There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the
 
 ## The runner yields on a RETURN-REASON (the skill loop branches on it)
 
-`done` · `hard-fail` · `pause-human` (declared ⏸ or dynamic R4 — a human decision) · `yield-for-recheck` (an AUTOMATED cross-cutting gate — dev's full-suite, ds's validate-coverage; NO human). Never model a `yield-for-recheck` as a human pause.
+`done` · `hard-fail` · `pause-human` (declared ⏸ or dynamic R4 — a human decision) · `yield-for-recheck` (an automated cross-cutting gate, such as a full suite; no human). Never model a `yield-for-recheck` as a human pause.
 
 ## Discipline
 

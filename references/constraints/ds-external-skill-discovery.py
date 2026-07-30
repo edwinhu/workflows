@@ -1,10 +1,9 @@
 #!/usr/bin/env -S uv run python3
 """Constraint: ds-external-skill-discovery.
 
-If PLAN.md references an external plugin skill (WRDS, gemini-batch, lseg-data,
-nlm, readwise, etc.), it must contain an "External Skill Discovery" section
-documenting the Glob+Read+decision flow. Runs against `.planning/PLAN.md` in the
-caller's cwd.
+If the immutable copied native PLAN.md references an external plugin skill, it
+must record the discovery and ADOPT/PATCH/GREENFIELD decision. Runs against
+`.planning/PLAN.md` in the caller's cwd.
 """
 
 from __future__ import annotations
@@ -14,7 +13,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "ds-external-skill-discovery"
-APPLIES_TO = ["ds-plan", "ds-fix"]
+APPLIES_TO = ["ds", "ds-fix"]
 SEVERITY = "hard"
 
 # External skills that have examples/ or references/ directories worth checking.
@@ -67,11 +66,10 @@ def check(context: dict) -> list[str]:
     if not DISCOVERY_HEADER.search(text):
         skills = ", ".join(sorted(set(referenced)))
         violations.append(
-            f"PLAN.md references external skills ({skills}) but has no "
-            f'"## External Skill Discovery" section. Before drafting task '
-            f"breakdown, Glob each skill's references/ and examples/ "
-            f"directories, load domain-specific refs, read matching example "
-            f"READMEs, and record ADOPT/PATCH/GREENFIELD decisions."
+            f"Approved native PLAN.md references external skills ({skills}) but has no "
+            f'"## External Skill Discovery" section. Return to native Plan mode, enumerate each '
+            f"skill's references/ and examples/, load domain-specific refs, read matching example "
+            f"READMEs, and record ADOPT/PATCH/GREENFIELD decisions before replacement approval."
         )
     else:
         # Weak check: the section must mention Glob or examples/ or a decision
@@ -83,9 +81,9 @@ def check(context: dict) -> list[str]:
         required_tokens = ["examples/", "Glob", "ADOPT", "PATCH", "GREENFIELD"]
         if not any(tok.lower() in section_body.lower() for tok in required_tokens):
             violations.append(
-                'PLAN.md "External Skill Discovery" section is a stub — it '
-                "must document Glob results, loaded references, example READMEs "
-                "read, and an ADOPT/PATCH/GREENFIELD decision per task."
+                'Approved native PLAN.md "External Skill Discovery" section is a stub — it '
+                "must document enumeration results, loaded references, example READMEs "
+                "read, and an ADOPT/PATCH/GREENFIELD decision per planned task."
             )
     return violations
 

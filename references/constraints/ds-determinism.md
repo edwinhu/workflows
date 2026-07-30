@@ -10,7 +10,7 @@ Every pipeline step must be deterministic. Non-determinism is a bug, not a featu
 
 | Source of Non-Determinism | Fix |
 |--------------------------|-----|
-| Random sampling without seed | Set explicit seed, document in PLAN.md |
+| Random sampling without seed | Set explicit seed, document in the approved PLAN |
 | Dictionary/set ordering | Sort before output |
 | Timestamp in output | Freeze timestamp or exclude from comparison |
 | Floating point accumulation | Use decimal types or round to fixed precision |

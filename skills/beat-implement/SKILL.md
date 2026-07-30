@@ -1,47 +1,57 @@
 ---
 name: beat-implement
-description: "Shared IMPLEMENT primitive — one active /goal, work, then a fresh verifier that never wrote the code. Read by any phase that executes against a criteria table."
+description: "Shared IMPLEMENT primitive. Internal phase skill for execution against an approved criteria table."
 user-invocable: false
 disable-model-invocation: true
 ---
 
 # Beat primitive — IMPLEMENT
 
-`implement = GOAL + VERIFY`
+`IMPLEMENT = GOAL + WORK + independent VERIFY`
 
-**This is the one beat that composes by plain concatenation, and the reason is measurable:** across
-`dev-implement`, `ds-implement`, `writing-draft`, and `workshop`, every implement-shaped phase has
-`/goal` and a verifier and **zero `AskUserQuestion` sites**. No human gate sits inside it, so nothing
-has to yield mid-run. Every other beat interleaves an ask — `ds-plan` is profile → ask → plan, with
-the asks triggered by measurements the phase just took — and interleaving is what a `.js` workflow
-cannot express, because a workflow takes no mid-run user input.
-
-So this primitive is also the only one that could compile to a workflow script unchanged.
-
-**The caller supplies:** the criteria artifact, the turn budget, and what "the work" is.
+The orchestration chat owns the active `/goal`, selects the ready wave, and owns the verifier loop.
+The checked-in runner at `${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js` owns only direct
+implementation dispatch. It receives a complete, approved work list; it never parses a plan, invents
+a task, sets a goal, or verifies the work.
 
 <EXTREMELY-IMPORTANT>
-## The verifier is never the doer
+## The Iron Law of implementation and verification
 
-**The agent that did the work does not get to grade it.**
+**NO IMPLEMENTATION RESULT IS A VERIFIED RESULT. The doer never grades its own work.**
 
-Verification runs in a **fresh subagent with no implementation context** — it sees the criteria and
-the artifacts, not your reasoning, not your intentions, not the reasons a shortcut seemed fine.
-Self-verification is rubber-stamping with extra steps: you already believe it works, which is exactly
-why you stopped.
-
-A verdict produced with your own context in the transcript is void. Re-run it fresh. A tainted PASS
-is worse than no verification — it converts an open question into a false assurance the user acts on.
+A task report says what the agent believes it did. Only a fresh verifier can establish that the
+criteria hold. Treating a report as a pass ships untested assumptions to the user; that is not
+helpful speed, it is deferred rework.
 </EXTREMELY-IMPORTANT>
 
-## Procedure
+## Authoritative flow
 
-### 1. GOAL — one, confirmed, budgeted
+```text
+Orchestrator: select complete ready wave + start/maintain one /goal
+       │
+       ▼
+Workflow(beat-implement.js): direct doer per supplied task
+       │                         └─ sequential until filesystem isolation exists
+       ▼
+Orchestrator: curate reusableFacts → project auto-memory
+       │
+       ▼
+Fresh verifier: VERIFY criteria
+       │
+       ├─ PASS → phase gate
+       └─ FAIL → fix → resume the SAME verifier → re-check
+```
 
-Get exactly one `/goal` active, pinned to the criteria artifact, carrying a turn budget.
+This diagram is the specification. If surrounding prose conflicts with it, follow the diagram.
 
-`/goal` is a built-in UI command: `Skill(goal)` fails and printing the line is a silent no-op,
-because slash commands dispatch only on the **user input** path. In an RC session, self-inject:
+## 1. GOAL — one, confirmed, budgeted
+
+Get exactly one `/goal` active, pinned to the criteria artifact and carrying a turn budget. Its
+condition must be restated in the turn itself, not only in a file: the evaluator reads the transcript
+and cannot inspect disk.
+
+`/goal` is a UI command, not a skill. `Skill(goal)` fails and emitted text is a no-op. In an RC
+session, self-inject only when you own that session:
 
 ```bash
 if agent-msg resolve "$CLAUDE_CODE_SESSION_ID" >/dev/null 2>&1; then
@@ -49,75 +59,121 @@ if agent-msg resolve "$CLAUDE_CODE_SESSION_ID" >/dev/null 2>&1; then
 fi
 ```
 
-**If another agent spawned you, do not run that probe at all.** `$CLAUDE_CODE_SESSION_ID` resolves to
-your *parent's* session, so the send injects into someone else's conversation, arriving as if its
-owner had typed it. Report the literal line to your caller instead.
+If another agent spawned you, do not probe or inject: the inherited session id can target the
+parent's conversation. Give the literal `/goal` line to the caller instead.
 
-Two clauses the condition must carry:
+## 2. Curate the complete ready-wave spec
 
-- **A turn budget.** A loop with no floor is how a stuck task burns an afternoon unattended.
-- **"Restated in the turn itself, not only in the file."** The evaluator reads the transcript and
-  cannot open files — a condition provable only on disk can never be confirmed, so the goal refires
-  until the budget burns out while the work sits finished.
+Before invoking the runner, the orchestrator constructs every task itself. Each item must contain:
 
-### 2. Delegate when the work overflows
+```js
+{
+  id: "stable-task-id",
+  name: "short task name",
+  work: "complete approved implementation instruction",
+  criteria: "task-local success criteria and evidence",
+  outputs: ["concrete/project-relative/output-path"],
+  // "independent" only after the orchestrator established no task consumes another's output.
+  dependencyProof: "independent",
+  model: "model supplied by the orchestrator",
+  effort: "effort supplied by the orchestrator",
+}
+```
 
-At **≥5 substantial files or ≥8 steps**, implementation goes to subagents and your job becomes
-orchestration. A file is substantial only if you must read it in full or its change runs past a line
-or two — six one-line fixes across six files is not five substantial files.
+Also copy **only** this immutable hash/session identity from separate `.planning/PLAN.meta.json`
+metadata:
 
-**Delegation thins your criteria, and that cost is paid deliberately.** Editing a file yourself, you
-see how it behaves; dispatching it, you see a report, and the criterion you write tends to check the
-*shape* of the change rather than whether it works. So write each criterion's Evidence **before**
-dispatching, and prefer running the thing over inspecting it.
+```js
+planReset: {
+  approvedBodyHash: "<approved body hash>",
+  session: "<approval session>",
+}
+```
 
-Delegating does not relax the Iron Law: a subagent that implemented something still cannot verify it.
+Do not give a fresh doer `.planning/STATE.md`, `.planning/SPEC.md`, `.planning/LEARNINGS.md`, or
+agent memory. These mutable artifacts smuggle prior interpretation into a approval boundary that is supposed to
+be anchored solely to the approved plan identity.
 
-### 3. VERIFY — fresh, adversarial, gated
+### Dispatch safety
 
-Dispatch a verifier with no implementation context. For each criterion it must *run or inspect the
-named evidence* — actually run it, not reason about what it would output — record the raw result, and
-return PASS or FAIL per row plus one `OVERALL:` line.
+- Select dependency-satisfied ready tasks as one wave, but dispatch every mutation sequentially in
+  stable ready-wave order until workers have enforced filesystem isolation.
+- `writablePaths` and reported `changedFiles` remain defense-in-depth: every task must declare writable
+  paths and every reported change must stay within them.
+- Post-return manifests cannot authorize concurrency. Do not hand-roll parallel fan-out from apparently
+  disjoint paths.
 
-A criterion whose evidence could not be checked is **FAIL**, not PASS.
+## 3. Invoke the checked-in runner
 
-**From round 2, resume the same verifier** rather than spawning a replacement. A resumed verifier can
-confirm its own findings were fixed; a replacement re-derives everything and can never close a loop
-it did not open — which is where defects *introduced by the fixes* hide. Give it a name at spawn, or
-record the raw `agentId` where the harness refuses names. Every resume must say **"assume nothing
-landed, re-check from scratch"** and **"do not soften because you raised the finding."**
+```js
+const run = await Workflow({
+  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js",
+  args: {
+    projectDir: "<absolute project path>",
+    readyWave,
+    planReset,
+    // Only for a retry: do not send untouched work back through the runner.
+    // attemptRecords are the preceding runner's result records; they prove retry scope.
+    resume: {
+      attemptedTaskIds: ["<previously-attempted-task-id>"],
+      attemptRecords: previousRun.results,
+    },
+  },
+})
+```
 
-This does not weaken the Iron Law: a verifier accumulates *verification* context, never
-*implementation* context, and never acquires a stake in the work passing.
+The runner returns `{ executionMode, executionReason, resumedAttemptedWorkOnly, results,
+reusableFacts, counts }`. Each result is exactly `implemented`, `blocked`, or `failed` and carries
+its task id, summary, task-scoped reusable facts, the approved plan hash/session, and a deterministic
+task-spec fingerprint. The retry gate matches those identity fields before it accepts an attempted id.
 
-### 4. On FAIL, end the turn
+The runner uses flat dispatch: every doer is dispatched directly by the workflow. A doer may not
+spawn a dispatcher or further implementation agents; nested delegation loses results and makes the
+orchestrator unable to account for actual work.
 
-Fix worst-first, then **end the turn immediately** so the goal refires and verification re-runs. Do
-not summarize, do not ask whether to continue — the evaluator decides when this is done.
+After the return, curate `reusableFacts` before adding durable, project-specific facts to project
+auto-memory. Returned facts are candidates, not automatic truth.
 
-## Gate
+## 4. VERIFY — fresh, adversarial, and outside the workflow
 
-The criteria artifact's verify log contains a run whose `OVERALL` is PASS, from a verifier dispatched
-**after the last change**. Write the verdict into the artifact, not only into the conversation: a
-gate that reads a file cannot pass on a verdict that lives only in chat.
+Dispatch a fresh verifier after the runner returns. The verifier sees the criteria and artifacts, not
+the doer's reasoning. It must run or inspect each named evidence source, record the raw result, and
+return PASS or FAIL per row plus `OVERALL:`. Evidence it cannot check is FAIL.
 
-PASS does not mean done. It says the work matches the criteria — nothing has yet checked the criteria
-against what the user wanted. That is beat 5.
+On round two and later, resume the **same verifier**. Tell it: “assume nothing landed; re-check from
+scratch” and “do not soften because you raised the finding.” A resumed verifier can confirm its own
+finding was fixed; a replacement has to rediscover it and misses defects introduced during repair.
 
-## Red flags
+On a verifier FAIL, fix worst-first, then end the turn so the goal refires. Do not summarize or ask
+whether to continue. If retrying implementation, pass only `attemptedTaskIds` for work previously
+attempted; untouched tasks remain untouched.
 
-| Action | Why wrong | Do instead |
+## Gate: exit IMPLEMENT
+
+1. **IDENTIFY:** The criteria artifact's verify log is the proof artifact.
+2. **RUN:** The independent verifier runs after the last change.
+3. **READ:** Read every row and its raw evidence.
+4. **VERIFY:** `OVERALL: PASS` and no criterion was unchecked.
+5. **CLAIM:** Only then record the PASS in the criteria artifact and leave IMPLEMENT.
+
+PASS means the work matches current criteria. Goal-level validation remains a later beat.
+
+## Red flags — STOP
+
+| About to | Why wrong | Do instead |
 |---|---|---|
-| About to verify the work yourself | You already believe it works; that belief is why you stopped | Fresh subagent |
-| About to accept a PASS on a criterion the verifier could not check | An unchecked criterion reported as passing is a false assurance the user acts on | Treat "couldn't check" as FAIL |
-| About to spawn a replacement verifier on round 2+ | It cannot confirm the previous round's findings were fixed, so defects introduced BY those fixes go unseen | Resume the named one |
-| About to record the verdict only in chat | The gate reads the artifact; a verdict it cannot see is not a gate | Write the verify log |
-| About to summarize and pause after fixing a FAIL | Every pause is a chance to lose the loop; the goal is waiting to refire | End the turn silently |
+| Pass a plan path and ask the workflow to discover tasks | The runner is deliberately not a plan interpreter; it would make authority and retry scope ambiguous | Construct the complete ready wave in the orchestrator |
+| Parallelize because tasks “look separate” | Post-return manifests cannot isolate concurrent mutations | Select the wave, then dispatch sequentially until filesystem isolation exists |
+| Give a doer STATE, SPEC, LEARNINGS, or agent memory | Mutable context defeats the approval boundary and turns the approved plan into a suggestion | Pass only immutable PLAN identity fields |
+| Treat `implemented` as PASS | The implementer is not an independent judge | Run the fresh verifier outside the workflow |
+| Spawn a replacement verifier after a FAIL | It cannot close the findings it did not raise | Resume the named verifier |
+| Retry every task after a localized failure | Replaying untouched work creates needless changes and fresh interference | Resume only previously attempted ids |
 
 ## Facts
 
-- `/goal` is a UI command, not a skill. `Skill(goal)` is rejected; emitted text is never dispatched.
-- The `/goal` evaluator judges from the transcript and cannot open files.
-- Measured across four workflow families: implement-shaped phases contain zero `AskUserQuestion`
-  sites. That absence is what makes this beat concatenable — and what makes it the only beat
-  expressible as a workflow script.
+- `/goal` is a UI command, not a skill; emitted `/goal` text is never dispatched.
+- The `/goal` evaluator reads the transcript and cannot open artifacts.
+- A workflow cannot accept mid-run human input. IMPLEMENT is workflow-safe because it contains no
+  human gate; GOAL and VERIFY remain owned by the conversational orchestrator.
+- The runner returns reusable facts for curation because automatically persisting an agent report
+  would turn unreviewed output into project memory.

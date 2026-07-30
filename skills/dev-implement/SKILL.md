@@ -9,17 +9,11 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-delegation-guard.ts"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
     - matcher: "Agent|Workflow"
       hooks:
         - type: command
-          command: >-
-            GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
-            GATE_STATUS=APPROVED
-            GATE_BLOCKED_TOOLS=Agent,Workflow
-            GATE_DESCRIPTION="Plan review"
-            GATE_REMEDY="Return to dev-design Phase Complete and run dev-plan-reviewer. It writes PLAN_REVIEWED.md on approval."
-            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow dev"
 ---
 
 **Announce:** "I'm using dev-implement (Phase 5) to orchestrate implementation."
@@ -88,7 +82,7 @@ dev-implement (this skill)
 **Main chat orchestrates COMPILE + the run/pause loop + the full-suite ground-truth + the `/goal`.**
 The runner's implementers write the code (TDD); the gate is an **independent probe** that actually
 runs each `Verify Command` and reports the real exit code (plus that the failing test + declared files
-exist) — completion is not honor-system, and the dev-delegation-guard still forbids you from writing
+exist) — completion is not honor-system, and the orchestrator-mutation-guard (--workflow dev) still forbids you from writing
 project code yourself.
 
 <EXTREMELY-IMPORTANT>
@@ -154,7 +148,7 @@ The per-task implementer protocol (TDD test-first, Global Constraints + Task Int
 deviation rules R1–R4, the stale-gate backstop, the no-phantom-RED rule) lives in the fragment's
 implementer prompt (`workflows/templates/dev-task.js`, spliced into the shared `run-core.js`); `dev-delegate` remains for ad-hoc
 single-task dispatch outside this phase. **If you're about to write project code directly, STOP — the
-runner's implementers do that, and `dev-delegation-guard` forbids you (you may only touch
+runner's implementers do that, and `orchestrator-mutation-guard (--workflow dev)` forbids you (you may only touch
 `.planning/`).**
 </EXTREMELY-IMPORTANT>
 

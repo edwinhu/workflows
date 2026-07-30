@@ -1,26 +1,27 @@
 # DS Common Checks
 
-Shared check definitions for data quality verification. Referenced by ds-validate, ds-review, ds-fix, and ds-verify.
+Shared starter definitions for data-quality verification. `ds-implement`, `ds-review`, and `ds-fix`
+load the checks relevant to their approved task or review surface.
 
-**Iron Law: Both entry and midpoint MUST Read() this file before evaluating data quality. Inlined copies will drift.**
+**Iron Law: Read this file before evaluating a data-quality claim. Inlined copies drift.**
 
 ## Check Matrix
 
-| Check ID | Description | ds-validate | ds-review | ds-fix | ds-verify |
-|----------|-------------|-------------|-----------|--------|-----------|
-| DQ1 | Empty/constant columns | ✅ | ✅ | ✅ | ✅ |
-| DQ2 | High-null columns (>50%) | ✅ | ✅ | ✅ | ✅ |
-| DQ3 | Duplicate rows on key columns | ✅ | ✅ | ✅ | ✅ |
-| DQ4 | Row count traceability (vs LEARNINGS.md) | ✅ | ✅ | ✅ | ✅ |
-| DQ5 | Cardinality check on categoricals | ✅ | ✅ | ✅ | ❌ |
-| DQ6 | Output-first verification (shape before/after) | ❌ | ❌ | ✅ | ✅ |
-| COV | Sample-period coverage (each windowed source spans its Required window) | ✅ | ✅ | ✅ | ✅ |
-| R1 | Reproducibility (same inputs → same outputs) | ❌ | ❌ | ❌ | ✅ |
-| M1 | Spec compliance (all SPEC.md objectives addressed) | ✅ | ✅ | ✅ | ✅ |
-| UNI | Universe agreement (every source admits the SAME entities) | ✅ | ✅ | ✅ | ✅ |
-| DEN | Every reported rate states its denominator | ✅ | ✅ | ✅ | ✅ |
-| DEL | Coverage improved because the BASE shrank | ✅ | ✅ | ✅ | ✅ |
-| ENUM | Every check above RUN, or marked N/A with a reason | ✅ | ✅ | ✅ | ✅ |
+| Check ID | Description | Implement | Review | Fix |
+|----------|-------------|-----------|--------|-----|
+| DQ1 | Empty/constant columns | ✅ | ✅ | ✅ |
+| DQ2 | High-null columns (>50%) | ✅ | ✅ | ✅ |
+| DQ3 | Duplicate rows on key columns | ✅ | ✅ | ✅ |
+| DQ4 | Row-count traceability against task-local evidence | ✅ | ✅ | ✅ |
+| DQ5 | Cardinality check on categoricals | ✅ | ✅ | ✅ |
+| DQ6 | Output-first verification (shape before/after) | ✅ | ✅ | ✅ |
+| COV | Sample-period coverage (each windowed source spans its Required window) | ✅ | ✅ | ✅ |
+| R1 | Reproducibility (same inputs → same outputs) | ✅ | ✅ | ✅ |
+| M1 | Approved-plan criterion compliance | ✅ | ✅ | ✅ |
+| UNI | Universe agreement (every source admits the same entities) | ✅ | ✅ | ✅ |
+| DEN | Every reported rate states its denominator | ✅ | ✅ | ✅ |
+| DEL | Coverage improved because the base shrank | ✅ | ✅ | ✅ |
+| ENUM | Every applicable check ran or is N/A with a reason | ✅ | ✅ | ✅ |
 
 ## Data Quality Checks (DQ1-DQ6)
 
@@ -87,13 +88,15 @@ if n_collide > 0:
 
 ### DQ4: Row Count Traceability
 
-Verify final row count matches the chain documented in LEARNINGS.md.
+Verify the final row count against the task-local evidence and declared upstream outputs in the approved
+native plan. Record the input → transform → output count chain with the verification evidence; do not
+create a separate learnings log.
 
 ```python
 print(f"Final row count: {len(df)}")
-# Compare against LEARNINGS.md pipeline:
-# raw → cleaned → joined → final
-# Each step should show row count
+# Compare against task-local evidence:
+# declared upstream output → transform → declared final output
+# Each transition should show a row count.
 ```
 
 **Confidence if mismatch:** >= 90 (critical — rows appeared or disappeared without explanation)
@@ -140,8 +143,8 @@ df.head()
 Verify every windowed data source (raw pull, cache, intermediate, master) covers the Required window of every task that reads it. This catches the silent-truncation trap: a source pulled for one task's window and reused by a task with a *wider* window, leaving the uncovered span with zero data — a truncated series still produces plausible numbers, so nothing fails loudly. Definition and gate: constraint C6 (`references/constraints/ds-sample-coverage.md`).
 
 ```python
-# required = (start, end) for THIS source = union of the sub-windows of every task that
-# reads it, taken from SPEC.md's "Sample Period & Coverage Requirements" table.
+# required = (start, end) for THIS source = union of the sub-windows named by every approved
+# native-plan task that reads it.
 lo, hi = df[date_col].min(), df[date_col].max()
 req_lo, req_hi = required  # e.g. ("2005-01-01", "2025-12-31")
 if lo > pd.Timestamp(req_lo) or hi < pd.Timestamp(req_hi):
@@ -150,15 +153,15 @@ if lo > pd.Timestamp(req_lo) or hi < pd.Timestamp(req_hi):
           f"Must be dispositioned in the coverage table (CLOSE=re-pull, or documented reason).")
 ```
 
-**Confidence if triggered:** >= 85 unless the gap has an explicit disposition in SPEC/PLAN's coverage table (task genuinely doesn't need the span, or the vendor legitimately lacks it). An undispositioned gap is a high-confidence issue.
+**Confidence if triggered:** >= 85 unless the approved native plan explicitly dispositions the gap (the task genuinely does not need the span, or the vendor legitimately lacks it). An undispositioned gap is a high-confidence issue.
 
 ## Methodology Checks
 
-### M1: Spec Compliance
+### M1: Approved-Plan Compliance
 
-Verify all objectives from .planning/SPEC.md are addressed in the analysis output.
+Verify the approved native-plan goal, task criteria, and constraints are addressed in the analysis output.
 
-- [ ] Each objective has corresponding output
+- [ ] Each approved task criterion has a corresponding output
 - [ ] Success criteria can be verified against actual results
 - [ ] Constraints were respected (especially replication requirements)
 - [ ] Analysis answers the original question

@@ -324,7 +324,7 @@ runner; the once-at-end full suite catches cross-level regressions, and a regres
 `onlyChecks` fix loop. (Trade-off: a cross-level regression surfaces at end-of-DAG, not mid-DAG. See
 D-dev-2 for the alternative.)
 
-All existing hooks (`dev-delegation-guard`, `phase-gate-guard` on `PLAN_REVIEWED.md`) and the
+All existing hooks (`orchestrator-mutation-guard (--workflow dev)`, `phase-gate-guard` on `PLAN_REVIEWED.md`) and the
 progress ledger stay. The skill still NEVER writes project code; the implementers do.
 
 ---

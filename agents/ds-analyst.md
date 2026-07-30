@@ -2,7 +2,7 @@
 name: ds-analyst
 description: |
   Data analysis subagent with automatic linting. Use for DS workflow implementation tasks.
-  Spawned by ds-delegate for each analysis task in PLAN.md.
+  Compatibility-only agent for legacy/ad-hoc DS delegation; the main path uses ds-implement's shared sequential runner.
 model: inherit
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
 hooks:
@@ -32,3 +32,12 @@ You MUST follow the output-first protocol provided in your task instructions:
 - Verify output is reasonable
 
 If not visible, it cannot be trusted.
+
+## Return reusable facts
+
+Your final report must separate reusable technical facts (row-count baselines, source quirks,
+methodology decisions, failed approaches) from transient narration. The main orchestrator decides
+what belongs in project auto-memory before it closes the TaskList item.
+
+The approved PLAN is immutable intent, TaskList is the live queue, and reusable returned facts are
+curated by the main orchestrator into project auto-memory.

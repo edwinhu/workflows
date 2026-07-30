@@ -1,62 +1,57 @@
 ---
 name: ds-external-skill-discovery
-description: Before drafting PLAN.md tasks that reference an external skill (wrds, gemini-batch, lseg-data, nlm, readwise, etc.), main chat MUST glob that skill's references/ and examples/ directories, load domain-specific references matching the data/task at hand, read the README of any matching example, and prefer adopting/patching an existing example over greenfield drafting.
-applies-to: [ds-plan, ds-fix]
+description: Before /ds commits native-plan work that uses another skill or data provider, discover its relevant references and examples, then record an ADOPT, PATCH, or GREENFIELD decision in the approved plan.
+applies-to: [ds, ds-fix]
 ---
 
 ## Rule
 
-When ds-plan determines that one or more external plugin skills will be used (WRDS, gemini-batch, lseg-data, nlm, readwise, etc.), complete the External Skill Discovery checklist BEFORE drafting the Task Breakdown section of PLAN.md.
+When `/ds` expects a task to use an external skill or provider — for example WRDS, gemini-batch,
+LSEG, NLM, Readwise, document tooling, or an API — perform discovery before entering native Plan
+mode. Rule references describe syntax; domain references explain the data recipe; examples preserve
+working implementations. All three can change the plan.
 
-Loading only the rule references (e.g. `sas-etl.md`, `postgres-vs-sas.md`) is necessary but NOT sufficient. Rule references teach *how* to write code; domain references teach the *recipe*; example directories contain *battle-tested implementations*. All three layers are required.
+For each skill in scope:
 
-**The checklist, per external skill `X` in play:**
+1. Enumerate `skills/<skill>/references/*.md`.
+2. Read the domain references that match the contemplated data or task, not only generic rules.
+3. Enumerate `skills/<skill>/examples/**`.
+4. Read the README or entrypoint for every example that plausibly matches the work.
+5. Select **ADOPT**, **PATCH**, or **GREENFIELD**. Record the example path and, for PATCH or
+   GREENFIELD, the exact delta or reason in the native plan before `ExitPlanMode`.
 
-1. `Glob skills/X/references/*.md` — enumerate all references.
-2. Load the domain-specific reference(s) matching the data/task at hand (not just the generic rule refs). Map task domain → reference filename by name. Examples: WRDS holdings/ownership → `tfn-ownership.md`; WRDS voting → `iss-voting.md`; WRDS TAQ → `taq.md`; WRDS Compustat → `compustat.md`.
-3. `Glob skills/X/examples/**` — enumerate prior pipelines.
-4. For every example whose name matches the task domain, Read its `README.md` in full (or the top-level file if no README).
-5. Decide ADOPT / PATCH / GREENFIELD and record the decision in PLAN.md with the example path and the delta.
+**NO APPROVED NATIVE PLAN WITH EXTERNAL-SKILL WORK UNTIL DISCOVERY IS RECORDED.** “I will look for
+examples if I get stuck” does not happen: greenfield work can look plausible without ever revealing
+that a production pattern already exists. Recreating it is anti-helpful to the user and the later
+implementer.
 
-**NO PLAN.md TASK BREAKDOWN WITHOUT EXTERNAL SKILL DISCOVERY COMPLETED. This is not negotiable.** You don't know what you don't know. Sibling `examples/` directories are where prior projects crystallized hard-won knowledge — skipping them means re-paying the cost of every mistake those examples already solved.
+Use the native plan's natural section structure. Do not create a separate discovery ledger or a
+custom plan table. The immutable copied `.planning/PLAN.md` records the approved choice; reusable
+provider facts may be curated into project auto-memory only when they will help later work.
 
-## Rationale
+## Native-plan record
 
-Mid-2026 mirror-voting v12 project: ds-plan loaded `sas-etl.md` and `postgres-vs-sas.md`, then drafted greenfield `sas/build_classification.sas`, `sas/build_mf_own.sas`, `sas/stack_mf_own.sas`. The user prompted "check wrds skills and references for ownership" — which surfaced `skills/wrds/examples/voting_ownership_pipeline/` (7 files, complete SGE pipeline, production-proven) covering nearly every greenfield task verbatim. Days of reinvention avoided only because the user caught it.
+```markdown
+## External skill decisions
 
-Rule references teach syntax. Domain references teach the recipe. Examples ARE the recipe, already tested.
-
-## Examples
-
-Correct — wrds skill in play, task is S12 institutional holdings:
-
-```
-1. Glob skills/wrds/references/*.md
-   → tfn-ownership.md matches "holdings" → load
-   → sas-etl.md (rule ref) → load
-2. Glob skills/wrds/examples/**
-   → voting_ownership_pipeline/ matches "ownership" → Read its README.md
-3. Decision: ADOPT voting_ownership_pipeline/build_inst_own.sas + build_mflinks.sas verbatim;
-   PATCH merge_panel.py for the new date window.
-4. PLAN.md "External Skill Discovery" section records the adoption and path.
+| Skill | Domain references read | Example examined | Decision | Reuse path / delta |
+|---|---|---|---|---|
+| wrds | `tfn-ownership.md`, `sas-etl.md` | `examples/voting_ownership_pipeline/README.md` | PATCH | Reuse pipeline; change date window and add classification field |
 ```
 
-Incorrect — same task:
+A plan that declares no external skills may state that explicitly.
 
-```
-1. Load sas-etl.md and postgres-vs-sas.md (rule refs only).
-2. Draft greenfield sas/build_mf_own.sas — reinventing voting_ownership_pipeline.
-3. PLAN.md has no External Skill Discovery section.
-```
+## Facts
 
-## Facts (incident-derived)
+- In mirror-voting v12, planning loaded generic SAS rules and drafted three greenfield ownership
+  scripts. The later discovery of `skills/wrds/examples/voting_ownership_pipeline/` covered nearly
+  every task. The user caught days of avoidable reinvention.
+- Battle-tested examples already encode SGE parameters, hash sizes, and filtering patterns. PATCH
+  is usually safer than recreating those decisions.
+- The filesystem is the source of truth: references are renamed and examples are added. A two-second
+  enumeration beats an unverified memory claim.
 
-- "I'll search examples if I get stuck" never fires: greenfield drafting doesn't get stuck — it silently produces worse code than the existing example, and it passes review because no one knows it could have been better. Discovery is a planning-time obligation, not a fallback.
-- Patching a battle-tested example beats greenfielding ~9 times out of 10: SGE parameters, hash table sizes, and WHERE patterns are already tuned. PATCH and document the delta in PLAN.md.
-- The filesystem, not memory of it, is ground truth — new examples get added and references get renamed, so "I know what's in the skill" without globbing is an unverified competence claim. The glob takes 2 seconds.
-- A comment noting the example creates no enforcement; the PLAN.md External Skill Discovery section does — the plan reviewer checks it and implementers follow it.
-- The pattern is skill-agnostic: a `gemini_batch_*.py`, LSEG, or NotebookLM task drafted without reading `skills/<skill>/examples/` repeats the same reinvention as the SAS case.
+## Cross-reference
 
-## Cross-references
-
-- **ds-data-pull-profile** — Step 5c fires AFTER this Step 5b. An external skill example may already encode the correct pull strategy (server-side pipeline, SQL GROUP BY, or documented pull-raw). When the discovered example is a server-side pipeline (e.g. `skills/wrds/examples/voting_ownership_pipeline/`), the profiling subagent's recommendation should be ADOPT/PATCH that pipeline rather than a greenfield pull. When the example is a raw pull, profiling still fires to confirm the example's scale assumptions still hold for your date range / filter.
+Run **ds-data-pull-profile** after discovery when a source is large or uncertain. A discovered
+server-side example is a candidate in the raw-versus-aggregate comparison, not an excuse to skip it.

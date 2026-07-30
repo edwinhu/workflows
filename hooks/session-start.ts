@@ -171,30 +171,6 @@ function buildEnvSection(ctx: EnvContext, persistedVars: string[]): string {
   return lines.join("\n");
 }
 
-type PlanProgress = { completed: number; total: number; current_task: string | null; recent_completed: string[] };
-
-function extractPlanProgress(content: string): PlanProgress {
-  let completed = 0;
-  let total = 0;
-  let currentTask: string | null = null;
-  let recentCompleted: string[] = [];
-
-  for (const line of content.split("\n")) {
-    const stripped = line.trim();
-    if (stripped.startsWith("- [x]") || stripped.startsWith("- [X]")) {
-      total += 1;
-      completed += 1;
-      recentCompleted.push(stripped.slice(5).trim());
-      recentCompleted = recentCompleted.slice(-2);
-    } else if (stripped.startsWith("- [ ]")) {
-      total += 1;
-      if (currentTask === null) currentTask = stripped.slice(5).trim();
-    }
-  }
-
-  return { completed, total, current_task: currentTask, recent_completed: recentCompleted };
-}
-
 function extractFirstHeadingAndSummary(content: string, maxLines = 5): string {
   let inFrontmatter = false;
   const bodyLines: string[] = [];
@@ -312,9 +288,8 @@ function buildInProgressSection(): string {
   }
 
   const stateFiles: string[] = [];
-  const keyFiles = ["PLAN.md", "SPEC.md", "ACTIVE_WORKFLOW.md", "HANDOFF.md",
-    "PRECIS.md", "OUTLINE.md", "VALIDATION.md", "REVIEW.md",
-    "REVIEW_STATE.md", "PHASE_SUMMARY.md"];
+  const keyFiles = ["PLAN.md", "ACTIVE_WORKFLOW.md", "HANDOFF.md", "PRECIS.md", "OUTLINE.md",
+    "VALIDATION.md", "REVIEW.md", "REVIEW_STATE.md", "PHASE_SUMMARY.md"];
   for (const name of keyFiles) {
     if (existsSync(join(stateDir, name))) stateFiles.push(name);
   }
@@ -342,9 +317,9 @@ function buildInProgressSection(): string {
     try {
       const content = readFileSync(handoffPath, "utf8");
       const fm = parseYamlSimple(content);
-      const phaseName = str(fm["phase_name"], "unknown");
+      const phaseName = str(fm["stage"] ?? fm["phase_name"], "unknown");
       const task = str(fm["task"], "?");
-      const totalTasks = str(fm["total_tasks"], "?");
+      const totalTasks = str(fm["open_tasks"] ?? fm["total_tasks"], "?");
       const lastUpdated = str(fm["last_updated"], "unknown");
 
       let nextAction = "";
@@ -403,49 +378,18 @@ function buildInProgressSection(): string {
     }
   }
 
-  // --- Plan progress ---
+  // --- Approved native plan summary ---
+  // PLAN.md is the exact ExitPlanMode hook copy. It is immutable, so never infer progress from checkboxes.
   const planPath = join(stateDir, "PLAN.md");
   if (existsSync(planPath)) {
     try {
       const content = readFileSync(planPath, "utf8");
-      const progress = extractPlanProgress(content);
-
-      if (progress.total > 0) {
-        const pct = Math.trunc((100 * progress.completed) / progress.total);
-        lines.push(`### Plan progress: ${progress.completed}/${progress.total} tasks (${pct}%)`);
-        if (progress.recent_completed.length) {
-          lines.push(`- Last completed: ${progress.recent_completed[progress.recent_completed.length - 1]}`);
-        }
-        if (progress.current_task) {
-          lines.push(`- **Next task: ${progress.current_task}**`);
-        } else {
-          lines.push("- All tasks completed");
-        }
-      } else {
-        const summary = extractFirstHeadingAndSummary(content, 3);
-        lines.push("### Plan exists (no checkbox tasks)");
-        if (summary) lines.push("```\n" + summary + "\n```");
-      }
-
+      const summary = extractFirstHeadingAndSummary(content, 3);
+      lines.push("### Approved native plan");
+      if (summary) lines.push("```\n" + summary + "\n```");
+      lines.push("- Progress is in TaskList; the copied plan is immutable.");
       lines.push(`- Full plan: \`${statePrefix}/PLAN.md\``);
       lines.push("");
-    } catch {
-      // pass
-    }
-  }
-
-  // --- Spec summary ---
-  const specPath = join(stateDir, "SPEC.md");
-  if (existsSync(specPath)) {
-    try {
-      const content = readFileSync(specPath, "utf8");
-      const summary = extractFirstHeadingAndSummary(content, 3);
-      if (summary) {
-        lines.push("### Spec");
-        lines.push("```\n" + summary + "\n```");
-        lines.push(`- Full spec: \`${statePrefix}/SPEC.md\``);
-        lines.push("");
-      }
     } catch {
       // pass
     }

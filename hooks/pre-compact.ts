@@ -93,13 +93,15 @@ function appendCompactionMarker(learningsPath: string, workflow: string | null):
 /**
  * Skills listed under a 'Skills Touched'-style section of SPEC.md / PLAN.md.
  *
- * ds-plan Step 5b globs these skills' references/ ONCE while drafting the plan. That is
- * plan-time only -- nothing re-reads them during implementation, which is how stale
+ * /ds planning evidence discovery reads these skills' references/ while drafting the native plan.
+ * That is planning-time only -- nothing re-reads them during implementation, which is how stale
  * domain knowledge slips through. Persisting them here lets SubagentStart re-assert it.
  */
-function domainSkillsFromSpec(): string[] {
+function domainSkillsFromState(workflow: string | null): string[] {
   const skills: string[] = [];
-  for (const name of ["SPEC.md", "PLAN.md"]) {
+  // Native DS has one canonical plan. Legacy workflows retain their SPEC input until migrated.
+  const names = workflow === "ds" ? ["PLAN.md"] : ["SPEC.md", "PLAN.md"];
+  for (const name of names) {
     const p = join(cwd(), ".planning", name);
     if (!isFile(p)) continue;
     let text: string;
@@ -129,7 +131,7 @@ function writeStateFile(workflow: string | null, instructions: string[]): void {
     isDir = false;
   }
   if (!isDir) return;
-  const skills = domainSkillsFromSpec();
+  const skills = domainSkillsFromState(workflow);
   const ts = ymdHhmm(new Date());
   const lines: string[] = [
     "# STATE (auto-written by pre-compact.py -- safe to edit by hand)",
@@ -173,8 +175,11 @@ async function main(): Promise<void> {
   const planPath = findPlanFile();
   const activeWorkflow = planPath ? detectActiveWorkflow(planPath) : null;
 
-  // Update LEARNINGS.md with compaction marker
-  const learningsPath = findLearningsFile();
+  // Authenticated native DS metadata, rather than plan prose, proves this is a DS lifecycle.
+  const hasNativeDsPlan = isFile(join(cwd(), ".planning", "PLAN.meta.json"));
+  const dsLifecycle = activeWorkflow === "ds" || hasNativeDsPlan;
+  // Legacy dev/writing state still uses LEARNINGS.md. DS uses project auto-memory instead.
+  const learningsPath = dsLifecycle ? null : findLearningsFile();
   if (learningsPath) appendCompactionMarker(learningsPath, activeWorkflow);
 
   // Build reload instructions
@@ -197,21 +202,25 @@ async function main(): Promise<void> {
     reloadInstructions.push("Read .planning/STATE.md for current workflow phase and decisions.");
   }
 
-  // Always remind about LEARNINGS.md
-  if (learningsPath) {
+  // Remind legacy workflows about their ledger; DS reloads PLAN + TaskList + project auto-memory.
+  if (dsLifecycle) {
+    reloadInstructions.push("Call TaskList for live work and consult project auto-memory for durable technical facts.");
+  } else if (learningsPath) {
     const learningsLoc = relative(cwd(), learningsPath);
     reloadInstructions.push(`Read ${learningsLoc} for session context and recent progress.`);
   }
 
-  // PreCompact does NOT support hookSpecificOutput.additionalContext -- the harness rejects the
-  // whole payload ("Hook JSON output validation failed"). So PERSIST state to .planning/STATE.md.
+  // PreCompact does NOT support hookSpecificOutput.additionalContext. Legacy workflows persist
+  // STATE.md; DS deliberately does not — its copied PLAN + TaskList + project auto-memory suffice.
   if (reloadInstructions.length) {
-    writeStateFile(activeWorkflow, reloadInstructions);
+    if (!dsLifecycle) writeStateFile(activeWorkflow, reloadInstructions);
     console.log(
       pyJson({
         systemMessage:
-          "Workflow state saved to .planning/STATE.md" +
-          (activeWorkflow ? ` (/${activeWorkflow} active)` : ""),
+          dsLifecycle
+            ? "DS context compacted; resume from .planning/PLAN.md, TaskList, and project auto-memory"
+            : "Workflow state saved to .planning/STATE.md" +
+              (activeWorkflow ? ` (/${activeWorkflow} active)` : ""),
       }),
     );
   }

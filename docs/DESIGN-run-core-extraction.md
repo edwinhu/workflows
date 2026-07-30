@@ -1,5 +1,7 @@
 # DESIGN: `templates/run-core.js` — extracting the shared compiled-runner core (pass #9)
 
+> **Superseded for DS (2026-07-29).** This retained design records the former shared-runner approach. The current DS workflow uses an immutable copied plan, native task state, project auto-memory, and a human review ledger.
+
 > **Status:** DRAFT for USER sign-off (pre-cutover). Extraction of PROVEN code across three shipped
 > instances (ds PR#7, dev v5.56.0/PR#8, writing v5.57.0/PR#18). Seam list
 > (`docs/common-infra-candidates.md`, CLOSED at PR#15) is the authoritative spec; this is the concrete

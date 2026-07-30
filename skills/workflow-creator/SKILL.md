@@ -293,8 +293,8 @@ Before choosing any fan-out mechanism, ask of the workflow as a whole: **does it
   3. a compiler (`scripts/<domain>/<domain>_compile.py`) = **produce the work-list** (S5) → emit `run.js` (CODE) **or** a data work-list (DATA, if a generic engine already consumes it — e.g. writing). Don't hardcode codegen.
   4. a `workflows/templates/<domain>-run-template.js` carrying the **shared CORE + the doctrine invariants baked in** (payload>pass/fail · mandatory R4 block on assumption change · probe corroborates artifacts-exist · adversarial layer OUTSIDE run.js — PRIMARY when the gate is a judgment) + two-kinds-of-decision routing + stale-gate backstop + gate-first short-circuit, with the **four INJECTED seams D1-D4** the author fills: `gateProbe(t)` (trust-class: exit-code vs judgment), `implementerPrompt(t)`, task-spec columns, tier/effort policy (gate kind from interview Q7). **Intra-level parallel-vs-sequential is CORE, compiler-DERIVED (parallel iff declared outputs are provably disjoint) — NOT a seam to hand-set, and NOT an author question.**
   5. the executable-guard whose `validate_plan()` imports parser #2 and asserts **STRUCTURE only** (cycles / missing cells / dangling deps), never format (S6) — it can be strict because the emitter is canonical.
-  6. a **slim** skill (COMPILE → run/pause loop, flowchart-as-spec — NOT a per-level dispatch loop) that **branches on the runner's RETURN-REASON**: `done` · `hard-fail` · `pause-human` (declared ⏸ or dynamic R4) · `yield-for-recheck` (an AUTOMATED cross-cutting gate — dev's full-suite, ds's validate-coverage; NO human). Never model a `yield-for-recheck` as a human pause.
-  **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** (shared S1-S7, injected D1-D4, 6 doctrine invariants, return-reason taxonomy). The shared driver is **`workflows/templates/run-core.js`** (one copy, pass #9) — the compiler **splices** it with a per-domain FRAGMENT; you scaffold only the fragment + the compiler. Reference impls in-repo: `run-core.js` (shared driver) + `ds-task.js` / `dev-task.js` (live fragments) + `workflows/templates/compiled-runner-template.js` (the generic fragment skeleton to copy); `scripts/ds/` + `scripts/dev/` (the `_compile.py` splicers + `_plan_table.py` parsers).
+  6. a **slim** skill (COMPILE → run/pause loop, flowchart-as-spec — NOT a per-level dispatch loop) that **branches on the runner's RETURN-REASON**: `done` · `hard-fail` · `pause-human` (declared ⏸ or dynamic R4) · `yield-for-recheck` (an automated cross-cutting gate; no human). Never model a `yield-for-recheck` as a human pause.
+  **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** (shared S1-S7, injected D1-D4, 6 doctrine invariants, return-reason taxonomy). The shared driver is **`workflows/templates/run-core.js`** (one copy, pass #9) — the compiler **splices** it with a per-domain fragment; you scaffold only the fragment + the compiler. Active reference implementation: `run-core.js` (shared driver) + `dev-task.js` (live fragment) + `workflows/templates/compiled-runner-template.js` (the generic fragment skeleton to copy); `scripts/dev/` supplies the active compiler.
   **If compile output is DATA (a work-list a generic engine consumes — writing/workshop/teaching), read `${CLAUDE_SKILL_DIR}/references/dynamic-workflow-migration.md` §A.1** (the data-variant deepenings: the JOIN trust-class predictive test — *"does verify enumerate from a different source than generate? → the join is semantic, keep it OUTSIDE the parser"* — emitter two-shapes + golden-test-vs-REAL-artifact, phantom-canonical, gate-all-outputs, floor-vs-assist, n≥3 variance, and the `applies-to`/`ACTIVE_WORKFLOW.md` scaffolding rules).
 - **NO → use the fan-out / conversational patterns below.** A pure per-item fan-out with no plan-table DAG (review or transform) is the `already-a-fan-out` shape — correct as-is; do NOT bolt a compiled runner onto it.
 
@@ -767,14 +767,14 @@ Skills and agents can declare `PreToolUse` and `PostToolUse` hooks in their fron
 | Quality/judgment call | Prompt enforcement (Iron Law, Red Flags) |
 | Incident-learned domain knowledge | Prompt enforcement (Fact Rows with drive-consequence vocabulary) |
 
-**Write the hook as a Python script** in `skills/[phase]/scripts/` and reference it in the skill's frontmatter:
+**Write the hook as a TypeScript script** in `hooks/` and reference it in the skill's frontmatter:
 ```yaml
 hooks:
   PreToolUse:
     - matcher: "Read"
       hooks:
         - type: command
-          command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/[phase]/scripts/guard-media-files.py"
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/guard-media-files.ts"
 ```
 
 **Design rule:** Hook first. If the hook can't express the constraint (requires judgment, context, or semantics), fall back to prompt enforcement.
@@ -1920,8 +1920,8 @@ went unexamined for another year.
 all. Its "the `/ds` workflow was active before compaction — reload it" instruction was dropped
 after **every** compaction, so the workflow's Iron Laws stopped being enforced for the rest of
 each session. Running the harness for the first time found **8 more broken scripts** in the same
-repo, including `ds-no-main-chat-code-guard.py` — the hook enforcing "YOU MUST NOT WRITE ANALYSIS
-CODE IN MAIN CHAT" — which emitted `{"decision": "block", "message": …}` on `PreToolUse`, an
+repo, including the superseded DS main-chat mutation guard — now
+`orchestrator-mutation-guard.ts --workflow ds` — which emitted `{"decision": "block", "message": …}` on `PreToolUse`, an
 event with no top-level `decision` field. Every `deny` it ever issued was discarded.
 
 **How to score it — execute, do not eyeball:**
@@ -2485,7 +2485,7 @@ GOOD: orchestrator → 5× agents directly in parallel (all return reliably)
 ### NO LLM STEP BETWEEN A STRUCTURED PRODUCER AND A STRICT CHECKER
 When a structured artifact (a plan table, a typed spec) feeds a strict checker (an executable-guard, a deterministic parser), NEVER scaffold an LLM step between them. An LLM "discovery" agent that re-reads the table doesn't just cost tokens — it **silently tolerates format drift the checker rejects**, masking a spec-drift bug while looking like it works. If the input is a structured table, scaffold a **deterministic parser** (shared by the compiler AND the guard, so "compiles ⇔ passes gate"), not an agent that re-reads it.
 
-**The ds incident (June 2026):** the generic-interpreter `ds-implement.js` ran an LLM discovery agent between `ds-plan` (a structured producer) and `ds-plan-executable-guard.py` (a strict checker). Real plans used `**T1**`/em-dash deps that the guard rejected on *every row* — but the LLM tolerated them, so the workflow ran while the guard was silently dead. The drift was invisible until the LLM was removed. The accompanying re-analysis verifier "caught zero substantive bugs." Fix: deterministic parser+compiler shared with the guard; the discovery LLM and the re-analysis verifier were both deleted. (`docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`.) This is enforced at audit time as **executionClass=generic-interpreter ⇒ critical** (Mode 2 P22-P26).
+**The DS incident (June 2026):** a generic interpreter ran an LLM discovery agent between a structured plan and a strict checker. Real plans used `**T1**`/em-dash dependencies that the strict checker rejected, while the LLM tolerated them; the workflow appeared to run while its gate was dead. The durable lesson is not a particular DS compiler: use a deterministic parser shared by any active compiler and guard, or keep a native plan as the direct orchestrator input. (`docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`.) This is enforced at audit time as **executionClass=generic-interpreter ⇒ critical** (Mode 2 P22-P26).
 
 **Layer-agnostic:** this applies to ANY structured-producer → strict-checker boundary, not just the data/plan layer — the **spec layer** too (an `OUTLINE.md` / `*_REVIEWED.md` sentinel a downstream phase parses). The full remedy is the emitter-canonical triple (born-canonical emitter + strict guard + tolerant-parser shim, doctrine #6). The **stale-gate backstop** is likewise layer-agnostic: a gate-changing decision that leaves a stale UPSTREAM artifact must fail loud at whatever layer the gate lives (data Verify or spec sentinel), never be quietly reshaped to pass.
 </EXTREMELY-IMPORTANT>

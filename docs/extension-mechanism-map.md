@@ -51,7 +51,7 @@ This single fact explains three things previously diagnosed separately:
 
 ### Open risk: no hook checks `agent_id`
 
-Zero of 48 hooks read `agent_id` or `agent_type`. `hooks/ds-no-main-chat-code-guard.py` denies any
+Zero of 48 hooks read `agent_id` or `agent_type`. `hooks/orchestrator-mutation-guard (--workflow ds).py` denies any
 Write to `.py/.ipynb/.R/.sas/.qmd` with "delegate to a subagent" — advice a subagent cannot follow,
 because it *is* the subagent.
 
@@ -176,7 +176,7 @@ AST scan of `hooks/` + `scripts/`, 2026-07-29:
 - Shebang is `#!/usr/bin/env -S uv run python3`; hook `command:` fields use the same form.
 
 So hooks currently require **nothing installed** beyond `uv`. Converting them to TS would *reduce*
-self-containment by adding a node/bun runtime. `phase-gate-guard.py` is additionally 568 lines of
+self-containment by adding a node/bun runtime. `phase-gate-guard.ts` is additionally 568 lines of
 hardened YAML edge-case handling (it rejects `'APPROVED'' # invalid'` as a passing value) — rewriting
 it re-introduces bugs it already documents.
 
@@ -204,7 +204,7 @@ and 7 `workflows/*.js`. TS is appropriate where the runtime is already JS (workf
 **On #9, the tradeoffs as measured** — recorded so the decision is made with them, not against them:
 
 - **48 hooks are stdlib-only Python.** No `node_modules`, no bundler, no lockfile today. TS needs a dependency story even if bun removes the build step.
-- **`phase-gate-guard.py` is 568 lines of hardened YAML edge-case handling** that documents its own past bugs (it must reject `'APPROVED'' # invalid'` as a passing value). Rewriting it re-opens closed bugs in the code that gates every phase transition.
+- **`phase-gate-guard.ts` is 568 lines of hardened YAML edge-case handling** that documents its own past bugs (it must reject `'APPROVED'' # invalid'` as a passing value). Rewriting it re-opens closed bugs in the code that gates every phase transition.
 - **Two frontmatter parsers that must agree is a new drift surface** — the same class of bug as the `ds-delegate` template split, and this repo has now been bitten by that twice.
 - **Migration order matters if pursued:** integrations first (already TS), then `scripts/` (where the third-party deps live and TS has real ecosystem wins), and hooks last or never — they are the highest-risk, lowest-reward leg.
 - The PEP 723 gap (#5) is independent: fix it regardless, since it bites today and a migration would take time.

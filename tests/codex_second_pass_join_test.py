@@ -30,7 +30,7 @@ import tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-HOOK = REPO / 'hooks' / 'phase-gate-guard.py'
+HOOK = REPO / 'hooks' / 'phase-gate-guard.ts'
 FIELDS = 'codex_second_pass:completed|declined|unavailable'
 
 F = []
@@ -50,9 +50,9 @@ def gate_allows(body):
         env = {**os.environ, 'GATE_ARTIFACT': str(art), 'GATE_STATUS': 'APPROVED',
                'GATE_BLOCKED_TOOLS': 'Agent', 'GATE_REQUIRE_FIELDS': FIELDS}
         proc = subprocess.run(
-            [sys.executable, str(HOOK)],
+            ['bun', str(HOOK)],
             input=json.dumps({'tool_name': 'Agent', 'tool_input': {}}),
-            capture_output=True, text=True, env=env,
+            capture_output=True, text=True, env=env, check=False,
         )
         out = proc.stdout.strip()
         if not out:

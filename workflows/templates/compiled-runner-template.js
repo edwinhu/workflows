@@ -28,9 +28,9 @@
 //   function recheckTrigger(results, li) -> { recheckKind, atLevel, payload } | null
 //                           OPTIONAL — return a recheck only for an AUTOMATED cross-cutting
 //                           gate (dev's full-suite on cross-level file overlap). OMIT the
-//                           whole function for domains with no mid-run recheck (ds/writing).
+//                           whole function for domains with no mid-run recheck.
 //
-// ── How <domain>_compile.py splices it (copy scripts/ds/ds_compile.py) ───────
+// ── How <domain>_compile.py splices it (copy an active domain compiler) ──────
 //   1. read run-core.js (template) + this fragment;
 //   2. replace the SINGLE `/*__TASK_BODIES__*/` hole with the fragment FIRST
 //      (so the exactly-once assertion below runs over the spliced text);
@@ -42,14 +42,14 @@
 //      isolation-safe, else 'sequential' — never an author knob, never asked;
 //   5. `node --check` the emitted .planning/run.js.
 //
-// LIVE reference impls on main: workflows/templates/{run-core.js, ds-task.js,
-// dev-task.js}; scripts/{ds,dev}/{ds,dev}_compile.py + {ds,dev}_plan_table.py.
+// LIVE reference implementations on main: workflows/templates/{run-core.js,
+// dev-task.js}; scripts/dev/dev_compile.py + scripts/lib/plan_table_core.py.
 // Canonical seam list: docs/common-infra-candidates.md.
 // ============================================================================
 
 // ▼ D1 — gateProbe(t): how ONE task is gated. An INDEPENDENT cheap agent runs the
 //   gate; run-core ANDs pass && artifactsPresent. Return the CANONICAL contract.
-//   Default below = the exit-code/artifact shape (copy ds-task.js); for a semantic
+//   Default below = the exit-code/artifact shape; for a semantic
 //   floor, `pass` is the mechanical floor and the evidence states scope.notChecked
 //   (copy scripts/writing/writing_gate_probe.py).
 const GATE_PROBE_SCHEMA = {
@@ -115,7 +115,7 @@ Return TRANSFORM_SCHEMA.`
 //   gate; NO human). Return { recheckKind, atLevel, payload } to make run-core yield so the
 //   SKILL runs the recheck (e.g. dev's full suite when a level re-touched an earlier level's
 //   file) and auto-resumes on green. OMIT THIS FUNCTION ENTIRELY for domains with no mid-run
-//   recheck (ds/writing) — run-core checks `typeof recheckTrigger === 'function'`.
+//   recheck — run-core checks `typeof recheckTrigger === 'function'`.
 //
 // function recheckTrigger(results, li) {
 //   const wrote = results.flatMap(r => (r.impl && r.impl.filesTouched) || [])
