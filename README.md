@@ -12,16 +12,16 @@ A curated collection of development, data science, writing, workshop, legal, and
 bash ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/bin/install-deps.sh
 ```
 
-The core workflows (`/dev`, `/ds`, `/writing`, `/workshop`, document formats) work without any CLI dependencies. The install script is only needed for skills that use external tools.
+The install script is only needed for skills that use the external tools below. The plugin's own TypeScript hooks and JavaScript/TypeScript workflow runners use Bun; the core workflows do not require the optional CLIs installed by this script.
 
-This downloads pre-built binaries for your platform (macOS arm64, Linux x64, Windows x64) from GitHub Releases:
+The script recognizes macOS, Linux, and Windows-like environments on x64 or arm64 and attempts to download matching pre-built binaries from GitHub Releases. If a tool does not publish an asset for the detected platform, the script warns and skips it:
 
 | Tool | Purpose | Used by |
 |------|---------|---------|
-| [nlm](https://github.com/edwinhu/nlm) | NotebookLM CLI | `librarian` agent, `/nlm` |
-| [readwise-custom](https://github.com/edwinhu/readwise-cli) | Readwise RAG/chat/upload | `librarian` agent, `/readwise-chat` |
-| [scholar](https://github.com/edwinhu/google-scholar-cli) | Google Scholar search | `librarian` agent, `/google-scholar` |
-| [consensus](https://github.com/edwinhu/consensus-cli) | Academic paper search | `librarian` agent, `/consensus` |
+| [nlm](https://github.com/edwinhu/nlm) | NotebookLM CLI | `librarian` agent, internal `nlm` skill |
+| [readwise-custom](https://github.com/edwinhu/readwise-cli) | Readwise RAG/chat/upload | `librarian` agent, internal `readwise-chat` skill |
+| [scholar](https://github.com/edwinhu/google-scholar-cli) | Google Scholar search | `librarian` agent, internal `google-scholar` skill |
+| [consensus](https://github.com/edwinhu/consensus-cli) | Academic paper search | `librarian` agent, internal `consensus` skill |
 | [morgen](https://github.com/edwinhu/morgen-cli) | Calendar & tasks | Direct Bash, or session in `~/areas/assistant/` |
 | [superhuman](https://github.com/edwinhu/superhuman-cli) | Email | `email-handling` skill (via Bash) |
 
@@ -42,7 +42,7 @@ planning and execution guarantees:
 |-------------|-------------------|--------|
 | `/work` | Resume `.planning/WORK.md` | Bounded cross-domain work: clarify, approve a proportional plan, execute under `/goal`, independently verify, and obtain human review |
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
-| `/ds` | `/ds-implement` | Native-plan data science: plan, implement, and independent review |
+| `/ds` | `/ds-fix` | Native-plan data science: plan, implement, independently review, and correct wrong results or notebook failures |
 | `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 | `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
 
@@ -61,9 +61,9 @@ Anthropic Office skills with this project's repair/build/render tooling.
 | `/pdf` | PDF extraction, creation, form filling |
 | `/pptx` | Presentation creation and editing |
 | `/xlsx` | Spreadsheet creation and analysis |
-| `/docx-render`, `/pptx-render` | Faithful export to PDF/PNG (Word/x2t/LibreOffice) |
-| `/docx-repair` | Repair a Google Docs / Word Online-damaged .docx — package/XML wiring + footnote markup |
+| `/docx-render` | Faithful Word export to PDF/PNG |
 | `/law-review-docx` | Markdown/legal draft → law-review-styled Word doc |
+| `/law-econ-docx` | Markdown law-and-economics manuscript → author-date, journal-ready Word doc |
 
 > Office format skills sourced from [anthropics/skills](https://github.com/anthropics/skills) via git submodule. Shared converters + the Google-export **OOXML package repair** (`scripts/docx_repair.py`) live in `scripts/`. See **[references/document-skills.md](references/document-skills.md)** for the full group and how the stages decouple.
 
@@ -72,22 +72,32 @@ Anthropic Office skills with this project's repair/build/render tooling.
 | Skill | Purpose |
 |-------|---------|
 | `/ds-tables` | Publication tables in Python — `pyfixest.etable()` regression tables and `great_tables` GT formatting |
+| `/ds-figures` | Publication-ready, accessible figures for papers, slides, and notebooks |
+| `/crsp-lseg-splice` | Extend stale CRSP stock panels with current LSEG data |
+| `/npx-ownership-panel` | Build the WRDS proxy-voting × ownership panel |
 | `/fuzzy-name-matching` | Entity resolution / record linkage by name — char n-gram TF-IDF + `sparse_dot_topn` top-k cosine, normalize-first, scoped + global two-pass |
+
+### Writing, Research & Citation
+
+| Skill | Purpose |
+|-------|---------|
+| `/cite-check` | Verify academic citations against source PDFs |
+| `/de-ai-revise` | Revise flagged prose to remove corpus-validated AI writing tics |
 
 ### Meta
 
 | Skill | Purpose |
 |-------|---------|
 | `/skill-creator` | Skill creation with superpowers enforcement patterns |
+| `/plugin-creator` | Plugin-level creation and editing across manifests, hooks, and skills |
 | `/workflow-creator` | Create a new structured workflow through shared-v1 |
 | `/workflow-creator-improve` | Audit, repair, redesign, or migrate an existing workflow |
-| `/headline-card` | LWT-style headline cards for Typst presentations |
 
 ---
 
-## Auto-Invoked Skills (60+)
+## Auto-Invoked and Internal Skills
 
-These skills have `user-invocable: false` — Claude loads them automatically when relevant. You don't call them directly.
+These skills have `user-invocable: false` — Claude loads them automatically when relevant or a workflow dispatches them internally. You don't call them directly.
 
 ### Legal & Citation
 `bluebook`, `bluebook-audit`, `docx-repair`, `source-verify`
@@ -105,12 +115,12 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `marimo`, `jupytext`, `notebook-debug`
 
 ### Utilities
-`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `audit-fix-loop`, `plugin-creator`
+`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `headline-card`, `audit-fix-loop`
 
 ### Internal Workflow Phases
 Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`)
 
-DS: `/ds` plans, `/ds-implement` executes native tasks, and `/ds-review` independently reviews the resulting analysis.
+DS: `/ds` is the user-facing planning entry; internal `ds-implement` executes the approved tasks and internal `ds-review` handles terminal review. `/ds-fix` is the user-facing corrective re-entry for wrong results and notebook failures.
 
 Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-plan-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, internal `writing-review`, `writing-validate`, `writing-handoff`; `/writing-revise` is the corrective midpoint.
 
@@ -118,7 +128,7 @@ Workshop: `workshop-plan-reviewer` plus internal `workshop-generate`/`workshop-v
 
 ---
 
-## Agents (20)
+## Agents
 
 Specialized subagents auto-discovered by Claude Code from `agents/`:
 
@@ -142,30 +152,36 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 | `doc-updater` | Documentation sync and codemap updates |
 | `data-explorer` | EDA and data profiling |
 | `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar) |
+| `workflow-auditor` | Read-only workflow architecture and enforcement auditing |
+| `writing-prose-reviewer` | Read-only prose-quality grading against domain style rules |
+| `writing-source-fidelity-reviewer` | Read-only verification of citations against the writing source ledger |
 
 ---
 
 ## Workflow lifecycle architecture
 
-Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, exact approved-plan identity, reviewer verdicts, mutation boundaries, and human-review ledgers from DS, writing, and workshop execution/verification adapters; dev retains its compiler path.
+Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, exact approved-plan identity, reviewer verdicts, mutation boundaries, and human-review ledgers from the execution and verification adapters used by DS, writing, workshop, and workflow-creator. Dev retains its SPEC/compiler path, while `/work` remains lightweight and procedural.
 
-## Hooks (11)
+## Hooks
 
-Hooks auto-run at specific lifecycle events:
+Hooks auto-run at specific lifecycle events. The table has one row per command target registered in `hooks/hooks.json`:
 
 | Script | Event | Trigger | Purpose |
 |--------|-------|---------|---------|
-| `session-start.py` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill |
-| `session-end.py` | Stop | * | Update LEARNINGS.md timestamp |
-| `pre-compact.py` | PreCompact | * | Preserve state before compaction |
-| `suggest-compact.py` | PreToolUse | Edit/Write | Suggest compaction when context is large |
-| `image-read-guard.py` | PreToolUse | Read | Redirect to look-at for media files |
-| `lint-check.py` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
-| `writing-suggest-verify.py` | PostToolUse | Edit/Write | Suggest visual verification for writing |
-| `atomic-constraint-guard.py` | PostToolUse | Edit/Write | Validate atomic constraint file structure |
-| `pr-url-logger.py` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
-| `overflow-check.py` | PostToolUse | Bash | Detect Typst content overflow after compilation |
-| `pattern-scan.py` | SessionEnd | clear/logout | Scan session for reusable patterns |
+| `session-start.ts` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill |
+| `session-end.ts` | Stop | * | Update LEARNINGS.md timestamp |
+| `pre-compact.ts` | PreCompact | * | Preserve state before compaction |
+| `suggest-compact.ts` | PreToolUse | Edit/Write | Suggest compaction when context is large |
+| `image-read-guard.ts` | PreToolUse | Read | Redirect to look-at for media files |
+| `lint-check.ts` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
+| `writing-suggest-verify.ts` | PostToolUse | Edit/Write | Suggest visual verification for writing |
+| `atomic-constraint-guard.ts` | PostToolUse | Edit/Write | Validate atomic constraint file structure |
+| `writing-prose-check.ts` | PostToolUse | Edit/Write | Check edited prose for writing-quality violations |
+| `cite-fidelity-lint.ts` | PostToolUse | Edit/Write | Check edited writing for citation-ledger fidelity |
+| `pr-url-logger.ts` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
+| `overflow-check.ts` | PostToolUse | Bash | Detect Typst content overflow after compilation |
+| `pattern-scan.ts` | SessionEnd | clear/logout/prompt_input_exit/other | Scan session for reusable patterns |
+| `subagent-start.ts` | SubagentStart | * | Inject role-specific context when subagents start |
 
 ---
 
@@ -194,10 +210,17 @@ workflows/
 │   ├── beat-clarify/, beat-implement/, beat-review/  # Shared lifecycle primitives
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   └── ...                     # Internal phases and auto-invoked skills
+├── bin/                        # Optional dependency installer
+├── docs/                       # Architecture and investigation records
 ├── hooks/                      # Hook scripts
 │   ├── hooks.json              # Hook configuration
-│   └── *.py                    # Hook implementations
+│   └── *.ts                    # Hook implementations run with Bun
 ├── references/                 # Shared constraint and reference docs
+├── scripts/                    # Compilers, checks, renderers, and support tools
+├── tests/                      # Contract and regression tests
+├── workflows/                  # Shared and domain workflow runners
+│   ├── lib/                    # Runner libraries and task contracts
+│   └── templates/              # Dynamic workflow templates
 ├── external/
 │   └── anthropic-skills/       # Git submodule for document skills
 └── PHILOSOPHY.md               # Workflow design philosophy
@@ -206,7 +229,9 @@ workflows/
 **Key Points:**
 - `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false`)
 - `agents/` contains specialized subagents, auto-discovered by Claude Code
-- `hooks/` contains hook entry points called directly by hooks.json
+- `hooks/` contains TypeScript hook entry points called directly by `hooks.json`
+- `workflows/` contains the shared runner plus writing, workshop, and workflow-creator adapters
+- `scripts/` contains deterministic compilers, validation checks, renderers, and support tools
 - `references/` contains shared constraint and enforcement docs
 
 ## Updating External Skills
