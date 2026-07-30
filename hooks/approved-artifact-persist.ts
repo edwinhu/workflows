@@ -6,7 +6,7 @@ import { workflowFromArg } from "./_workflow_policies.ts";
 function fail(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(2); }
 
 const policy = workflowFromArg(Bun.argv.slice(2));
-if (!policy || policy.workflow === "dev") fail("requires a native-plan workflow: ds, writing, or workshop; dev has no native-plan producer yet");
+if (!policy || policy.workflow === "dev") fail("requires a native-plan workflow: ds, writing, workshop, or workflow-creator; dev has no native-plan producer yet");
 let payload: Record<string, unknown>;
 try { payload = JSON.parse(await Bun.stdin.text()); } catch { fail("hook payload is not valid JSON"); }
 if (!payload || typeof payload !== "object" || Array.isArray(payload)) fail("hook payload must be an object");

@@ -39,7 +39,7 @@ test("constraint discovery sorts both required constraint directories and fails 
 });
 
 test("skills dispatch generic checker with explicit domain and reference root", () => {
-  for (const [skill, domain, input] of [["dev-plan-reviewer", "dev", "SPEC.md"], ["ds-plan-reviewer", "ds", "PLAN.meta.json"]] as const) {
+  for (const [skill, domain, input] of [["dev-plan-reviewer", "dev", "SPEC.md"], ["ds-plan-reviewer", "ds", "PLAN.meta.json"], ["workflow-creator-plan-reviewer", "workflow-creator", "PLAN.meta.json"]] as const) {
     const text = read(`skills/${skill}/SKILL.md`);
     expect(text).toContain("subagent_type=\"workflows:plan-checker\"");
     expect(text).toContain(`Workflow/domain: ${domain}`);
@@ -63,7 +63,7 @@ test("atomic constraints keep common doctrine and domain policy separate", () =>
 });
 
 test("reviewer adapters retain verdict-only ownership without duplicated checklists", () => {
-  for (const skill of ["dev-plan-reviewer", "ds-plan-reviewer"]) {
+  for (const skill of ["dev-plan-reviewer", "ds-plan-reviewer", "workflow-creator-plan-reviewer"]) {
     expect(read(`skills/${skill}/SKILL.md`)).toContain(".planning/PLAN_REVIEWED.md");
   }
   expect(read("skills/ds-plan-reviewer/SKILL.md")).not.toContain("nulls, duplicates, type drift");

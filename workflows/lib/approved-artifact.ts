@@ -2,7 +2,7 @@ import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, re
 import { createHash, randomBytes } from "node:crypto";
 import { join } from "node:path";
 
-export type WorkflowName = "ds" | "dev" | "writing" | "workshop";
+export type WorkflowName = "ds" | "dev" | "writing" | "workshop" | "workflow-creator";
 export type ArtifactError = { code: string; message: string };
 export type ApprovalMetadata = { schemaVersion: 1; workflow: Exclude<WorkflowName, "dev">; planHash: string; approvedSession: string; approvedAt: string };
 export type ReviewerVerdict = { plan_hash: string; status: "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
@@ -19,7 +19,7 @@ export function parseMetadata(value: unknown): ApprovalMetadata | ArtifactError 
   const m = value as Record<string, unknown>;
   const keys = ["schemaVersion", "workflow", "planHash", "approvedSession", "approvedAt"];
   if (Object.keys(m).length !== keys.length || keys.some(key => !Object.hasOwn(m, key)) || m.schemaVersion !== 1
-    || !["ds", "writing", "workshop"].includes(String(m.workflow)) || typeof m.planHash !== "string" || !HASH.test(m.planHash) || typeof m.approvedSession !== "string" || !m.approvedSession.trim() || !strictUtc(m.approvedAt)) {
+    || !["ds", "writing", "workshop", "workflow-creator"].includes(String(m.workflow)) || typeof m.planHash !== "string" || !HASH.test(m.planHash) || typeof m.approvedSession !== "string" || !m.approvedSession.trim() || !strictUtc(m.approvedAt)) {
     return err("metadata-schema", "PLAN metadata has an invalid strict schema");
   }
   return m as ApprovalMetadata;

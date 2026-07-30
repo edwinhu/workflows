@@ -13,6 +13,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [5.99.0] - 2026-07-30
+
+### Added
+- Added the corrective `/workflow-creator-improve` entry, independent workflow-creator plan reviewer, deterministic TypeScript approved-plan compiler, and structurally read-only pre-approval audit agent.
+
+### Changed
+- Migrated workflow-creator from bespoke Create/Audit/Improve numeric state to fresh and corrective shared-v1 entries, shared `beat-implement` execution, evidence-gated independent verification, semantic resume, and terminal human review.
+- Retired `wc-generate`, the Python file-set enumerator, numeric workflow-creator step hooks, and automatic legacy `.planning/wc` resume behavior.
+
 ## [5.98.0] - 2026-07-30
 
 ### Added

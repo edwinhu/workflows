@@ -79,7 +79,8 @@ Anthropic Office skills with this project's repair/build/render tooling.
 | Skill | Purpose |
 |-------|---------|
 | `/skill-creator` | Skill creation with superpowers enforcement patterns |
-| `/workflow-creator` | Design structured multi-phase LLM workflows |
+| `/workflow-creator` | Create a new structured workflow through shared-v1 |
+| `/workflow-creator-improve` | Audit, repair, redesign, or migrate an existing workflow |
 | `/headline-card` | LWT-style headline cards for Typst presentations |
 
 ---

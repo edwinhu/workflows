@@ -98,7 +98,8 @@ RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
 | Writing | `/writing` | write, draft, document, essay, paper |
 | **Media analysis** | **look-at** | describe image, analyze PDF, what's in this, screenshot, diagram |
 | Create/edit skill | `workflows:skill-creator` | create skill, improve skill, edit skill, add enforcement, audit skill, SKILL.md |
-| Create/edit workflow | `workflows:workflow-creator` | create workflow, design workflow, edit workflow, audit workflow, improve workflow |
+| Create workflow | `workflows:workflow-creator` | create workflow, design new workflow, break a new workflow into phases |
+| Improve workflow | `workflows:workflow-creator-improve` | audit workflow, repair workflow, redesign workflow, migrate workflow, improve existing workflow |
 | Create/edit plugin | `workflows:plugin-creator` | create plugin, scaffold plugin, new plugin, plugin structure, edit plugin |
 | Workshop presentation | `/workshop` | workshop presentation, workshop slides, faculty workshop, workshop talk, slides from paper |
 | Revise workshop | `/workshop-revise` | revise workshop, fix slides, update presentation, workshop feedback |
@@ -335,7 +336,9 @@ What type of creator activity?
     ↓
     +---> Skill creation/editing ------> Invoke workflows:skill-creator
     |
-    +---> Workflow creation/editing ----> Invoke workflows:workflow-creator
+    +---> New workflow creation -------> Invoke workflows:workflow-creator
+    |
+    +---> Existing workflow change ----> Invoke workflows:workflow-creator-improve
     |
     +---> Plugin creation/editing ------> Invoke workflows:plugin-creator
     ↓
@@ -350,7 +353,8 @@ plugin-dev:skill-development, plugin-dev:plugin-structure, etc.)
 | Activity | Route To | Wraps |
 |----------|----------|-------|
 | Create/edit a skill | `workflows:skill-creator` | `skill-creator:skill-creator` |
-| Create/edit a workflow | `workflows:workflow-creator` | (standalone meta-tool) |
+| Create a workflow | `workflows:workflow-creator` | shared-v1 fresh entry |
+| Audit/edit/migrate a workflow | `workflows:workflow-creator-improve` | shared-v1 corrective entry |
 | Create/edit a plugin | `workflows:plugin-creator` | `plugin-dev:create-plugin` |
 
 Trigger words: see Skill Triggers table above.

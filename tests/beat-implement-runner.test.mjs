@@ -79,7 +79,7 @@ console.log('all implementation waves dispatch sequentially until filesystem iso
 }
 
 console.log('workflow authentication supports native-plan domains and rejects unsupported ones')
-for (const workflow of ['writing', 'workshop']) {
+for (const workflow of ['writing', 'workshop', 'workflow-creator']) {
   const project = projectFor({ workflow })
   const { result } = await exec({ workflow, readyWave: [task('a', ['src/a.js'])], planReset: reset }, label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/a.js'] }), { project })
   ok(`${workflow} authenticates through shared approved-plan lifecycle`, result.results[0]?.status === 'implemented')

@@ -7,7 +7,7 @@ import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, readPayload } from "./_gate_common.ts";
 
 const policy = workflowFromArg(Bun.argv.slice(2));
-if (!policy) { deny("Reviewer verdict guard requires exactly one known --workflow ds|dev|writing|workshop policy."); }
+if (!policy) { deny("Reviewer verdict guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};

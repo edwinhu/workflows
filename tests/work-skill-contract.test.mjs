@@ -57,7 +57,7 @@ describe("work workflow contract", () => {
     expect(work).toContain("does **not** execute\n`workflows/beat-implement.js`");
     expect(goalWork).toContain("authenticates\nDS approved-plan metadata");
     const runner = read("workflows/beat-implement.js");
-    expect(runner).toContain("['ds', 'writing', 'workshop'].includes(cfg.workflow)");
+    expect(runner).toContain("['ds', 'writing', 'workshop', 'workflow-creator'].includes(cfg.workflow)");
     expect(runner).toContain("validateApprovedArtifact(PROJECT, cfg.workflow");
     expect(runner).not.toContain("'work'");
     const persist = read("hooks/approved-artifact-persist.ts");

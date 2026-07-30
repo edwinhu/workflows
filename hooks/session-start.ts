@@ -373,6 +373,10 @@ function buildInProgressSection(): string {
           if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart or manually align through `/workshop`");
           else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
           else lines.push(["generate", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/workshop-revise`" : "- Resume: `/workshop`");
+        } else if (wfType === "workflow-creator") {
+          if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart through `/workflow-creator` or `/workflow-creator-improve`");
+          else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
+          else lines.push(["diagnose", "diagnosis", "compile", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/workflow-creator-improve`" : "- Resume: `/workflow-creator`");
         } else if (wfType === "work") {
           lines.push("- State: `.planning/WORK.md`");
           lines.push("- Resume: `/work`");

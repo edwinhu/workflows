@@ -1,15 +1,15 @@
 # Workflow lifecycle architecture
 
 The lifecycle layer separates enforcement mechanics from workflow-specific choices and execution
-adapters. DS, writing, and workshop use exact native-plan approval identity; dev retains its current
+adapters. DS, writing, workshop, and workflow-creator use exact native-plan approval identity; dev retains its current
 SPEC/compiler path; `/work` remains lightweight and procedural.
 
 ## Before and after
 
 | Concern | Before | After |
 |---|---|---|
-| Opening clarification | Domain-specific question rules | `clarify-before-recon-guard --workflow ds|dev|writing|workshop`; each profile supplies its sentinel and reconnaissance classifier |
-| Approval persistence | DS-specific hook owned hashing and atomic writes | `approved-artifact.ts` owns byte hashing, strict metadata, atomic persistence for DS, writing, and workshop |
+| Opening clarification | Domain-specific question rules | `clarify-before-recon-guard --workflow ds|dev|writing|workshop|workflow-creator`; each profile supplies its sentinel and reconnaissance classifier |
+| Approval persistence | DS-specific hook owned hashing and atomic writes | `approved-artifact.ts` owns byte hashing, strict metadata, atomic persistence for DS, writing, workshop, and workflow-creator |
 | Review evidence | Domain-specific approval markers | `reviewer-verdict-guard` uses one reviewer-owned current-hash YAML verdict across supported workflows |
 | Implementation admission | Mixed status and artifact gates | `approved-artifact-gate` validates current hash, reviewer identity, and profile-specific chronology |
 | Orchestrator mutation | Separate domain guards | `orchestrator-mutation-guard` and shared canonical path safety |
@@ -37,13 +37,14 @@ mutation other than that canonical verdict artifact.
 
 ## Execution and review adapters
 
-DS uses the shared sequential `beat-implement` runner. Writing and workshop authenticate the same
+DS and workflow-creator use the shared sequential `beat-implement` runner. Workflow-creator compiles the canonical approved-plan output manifest into exact task contracts before dispatch. Writing and workshop authenticate the same
 approved-plan identity and follow the same implementation/verifier doctrine, but retain controlled
 parallel domain adapters:
 
 ```text
 writing approved plan  → writing-draft section workflow → internal writing-review → /writing-revise
 workshop approved plan → workshop-generate sections     → workshop-verify       → /workshop-revise
+workflow-creator plan  → TypeScript manifest compiler   → beat-implement        → wc-audit → /workflow-creator-improve
 ```
 
 The domain generators are not plan interpreters: deterministic section/slide indexes provide their

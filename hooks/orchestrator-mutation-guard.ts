@@ -3,7 +3,7 @@ import { hasUnsafeCompoundCommand, safeProjectPath } from "./_path_safety.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
-if (!policy) { deny("Orchestrator mutation guard requires exactly one known --workflow ds|dev|writing|workshop policy."); }
+if (!policy) { deny("Orchestrator mutation guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
@@ -17,7 +17,7 @@ function allowedPath(raw: unknown): boolean {
   const path = safeProjectPath(cwd, raw);
   if (!path) return false;
   const relative = path.slice(cwd.endsWith("/") ? cwd.length : cwd.length + 1);
-  if (["writing", "workshop"].includes(policy.workflow) && IMMUTABLE_APPROVAL_ARTIFACTS.has(relative)) return false;
+  if (["writing", "workshop", "workflow-creator"].includes(policy.workflow) && IMMUTABLE_APPROVAL_ARTIFACTS.has(relative)) return false;
   return policy.allowedOrchestratorDirectories.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`));
 }
 if (tool === "Write" || tool === "Edit") {
@@ -32,10 +32,10 @@ if (tool === "Write" || tool === "Edit") {
   }
   allow();
 }
-if (tool === "Bash" && ["writing", "workshop"].includes(policy.workflow)) {
+if (tool === "Bash" && ["writing", "workshop", "workflow-creator"].includes(policy.workflow)) {
   const command = String(input.command ?? "").trim();
   if (hasUnsafeCompoundCommand(command) || /[<>\n\r]|\$\(|`/.test(command)) deny("Orchestrator Bash enforcement rejects chaining, redirection, and substitution; delegate mutations instead.");
-  const readOnly = /^(?:git (?:status|diff|log|show|rev-parse|ls-files)(?: [A-Za-z0-9._/@:=+\-,]+)*|git branch --show-current|rg(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|fd(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|bun scripts\/workshop\/workshop-slide-table\.ts [A-Za-z0-9._/@:=+\-,]+ --json|bun test(?: [A-Za-z0-9._/@:=+\-,]+)*|bash scripts\/check-hooks\.sh|bun scripts\/parity\.ts(?: --all| [A-Za-z0-9._-]+)*|python3 tests\/workflow_return_shape_test\.py|claude plugin validate [A-Za-z0-9._/@:=+\-,]+|git diff --check)$/;
+  const readOnly = /^(?:git (?:status|diff|log|show|rev-parse|ls-files)(?: [A-Za-z0-9._/@:=+\-,]+)*|git branch --show-current|rg(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|fd(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|bun scripts\/workshop\/workshop-slide-table\.ts [A-Za-z0-9._/@:=+\-,]+ --json|bun [A-Za-z0-9._/@:=+\-,]*scripts\/wc\/workflow-plan-compiler\.ts [A-Za-z0-9._/@:=+\-,]+ --project [A-Za-z0-9._/@:=+\-,]+ --json|bun test(?: [A-Za-z0-9._/@:=+\-,]+)*|bash scripts\/check-hooks\.sh|bun scripts\/parity\.ts(?: --all| [A-Za-z0-9._-]+)*|python3 tests\/workflow_return_shape_test\.py|claude plugin validate [A-Za-z0-9._/@:=+\-,]+|git diff --check)$/;
   if (!readOnly.test(command)) deny("DELEGATION VIOLATION: writing/workshop orchestration permits only named read-only checks and compilers in Bash; delegate all other commands.");
   allow();
 }

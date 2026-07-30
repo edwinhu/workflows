@@ -133,7 +133,7 @@ withProject((cwd) => {
   assert.ok(!existsSync(join(cwd, ".planning")));
 });
 
-for (const workflow of ["writing", "workshop"]) {
+for (const workflow of ["writing", "workshop", "workflow-creator"]) {
   withProject((cwd) => {
     const plan = `# ${workflow} plan\n`;
     const result = run({ tool_name: "ExitPlanMode", session_id: `${workflow}-approval`, tool_input: { plan } }, cwd, workflow);

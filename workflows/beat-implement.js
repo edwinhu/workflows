@@ -10,7 +10,7 @@ export const meta = {
 
 // args = {
 //   projectDir: "/absolute/project/path",             // REQUIRED
-//   workflow: "ds" | "writing" | "workshop",         // REQUIRED native-plan workflow
+//   workflow: "ds" | "writing" | "workshop" | "workflow-creator", // REQUIRED native-plan workflow
 //   readyWave: [{ id, name, work, criteria, outputs, model, effort }], // REQUIRED; complete, caller-curated work list
 //   planReset: { approvedBodyHash, session }, // REQUIRED hash/session cross-check against separate metadata
 //   resume?: { attemptedTaskIds: ["task-id", ...] },   // optional: re-dispatch ONLY previously attempted work
@@ -20,7 +20,7 @@ if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } 
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error('beat-implement requires args.projectDir')
-if (!['ds', 'writing', 'workshop'].includes(cfg.workflow)) throw new Error('beat-implement requires args.workflow as ds, writing, or workshop')
+if (!['ds', 'writing', 'workshop', 'workflow-creator'].includes(cfg.workflow)) throw new Error('beat-implement requires args.workflow as ds, writing, workshop, or workflow-creator')
 if (!Array.isArray(cfg.readyWave)) throw new Error('beat-implement requires args.readyWave as a complete task-spec array')
 
 // Shared libraries own approval identity and task-contract validation.

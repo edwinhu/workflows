@@ -9,7 +9,7 @@ Any workflow whose gate is **computed in JS** and returns:
   `/goal` fix-loop consumes as `onlyChecks` on the next iteration, alongside `priorReviews` for
   carry-forward.
 
-This is the shape of `wc-audit.js`, `wc-generate.js`, and every compiled-runner / review-fan-out
+This is the shape of the read-only `wc-audit.js` verifier and every compiled-runner or review-fan-out
 workflow this skill scaffolds (`workshop-verify`, `dev-verify`, teaching's exam/lecture gates,
 etc.). If a workflow you are creating or auditing matches this shape, the laws below are
 **mandatory reading** — they are lessons paid for twice, once in this repo (PRs #50-#55) and once
@@ -73,8 +73,8 @@ with a visibly distinct status, never a bare pass.
 **(b) Enforcement/verification must survive the ONLY path.** An `if (ONLY) continue` that disables
 adversarial verification on a re-audit is a convergence blocker — the loop appears to iterate but
 never re-checks the thing that mattered.
-- This repo: `wc-audit`'s own worst bug — the ONLY path disabled all verification on Mode-3
-  re-audits, meaning every re-audit after iteration 1 was unverified.
+- This repo: `wc-audit`'s own worst bug — the `onlyChecks` path disabled all verification on
+  selective re-audits, meaning every re-audit after iteration 1 was unverified.
 - course-materials: `workshop-verify` skipped all diagram review under `ONLY` and passed
   vacuously — a violating deck could ship clean simply by having survived to a re-run.
 

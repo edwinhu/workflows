@@ -66,8 +66,9 @@ console.log('(a) onlyChecks scopes gapsToVerify + verify agents to the LIVE clus
   ]
   let verifyCallCount = 0
   const onAgent = (label) => {
+    if (label === 'criteria-evidence') return { criteria: [{ id: 'C1', passed: true, evidence: 'observed pass' }], probes: [{ command: 'bun test focused', exit: 0, evidence: 'exit 0' }] }
     if (label === 'discover') return discoverMock
-    if (label === 'arch-decomp-gates') return { dimension: 'arch-decomp-gates', principles: freshPrincipals, findings: [] }
+    if (label === 'arch-decomp-gates') return { dimension: 'arch-decomp-gates', principles: freshPrincipals, findings: [{ severity: 'critical', location: '/p/skills/test-target/SKILL.md:40', detail: 'P02: no enforcing hook on the fan-out' }] }
     if (label === 'verify:arch-decomp-gates') {
       verifyCallCount++
       return { cluster: 'arch-decomp-gates', results: [{ id: 'P02', verdict: 'refuted', correctedScore: 9, rationale: 'a hook DOES exist at hooks/gate.py:3 — the reviewer missed it' }] }
@@ -75,7 +76,7 @@ console.log('(a) onlyChecks scopes gapsToVerify + verify agents to the LIVE clus
     return {}
   }
   const args = {
-    targetWorkflow: 'test-target', projectDir: '/p', workflowsRepo: '/wf', threshold: 9.0,
+    targetWorkflow: 'test-target', projectDir: '/p', workflowsRepo: '/wf', threshold: 9.0, targetFiles: discoverMock.skillFiles, phases: discoverMock.phases, mechanicalProbes: [{ command: 'bun test focused' }], criteriaRows: [{ id: 'C1', criterion: 'focused tests pass', evidence: 'bun test focused exits 0' }],
     onlyChecks: ['arch-decomp-gates'], priorReviews: PRIOR,
   }
   const { result, trace } = await exec(args, onAgent)
@@ -111,18 +112,45 @@ console.log('confirmed (not refuted) gap: score/gap are left as scored, NOT corr
     { id: 'P14', score: 10, evidence: 'ok', gap: '', domainCeiling: false },
   ]
   const onAgent = (label) => {
+    if (label === 'criteria-evidence') return { criteria: [{ id: 'C1', passed: true, evidence: 'observed pass' }], probes: [{ command: 'bun test focused', exit: 0, evidence: 'exit 0' }] }
     if (label === 'discover') return discoverMock
     if (label === 'arch-decomp-gates') return { dimension: 'arch-decomp-gates', principles: freshPrincipals, findings: [] }
     if (label === 'verify:arch-decomp-gates') return { cluster: 'arch-decomp-gates', results: [{ id: 'P02', verdict: 'confirmed', correctedScore: 0, rationale: 'gap holds — no hook found on re-check' }] }
     return {}
   }
-  const args = { targetWorkflow: 'test-target', projectDir: '/p', workflowsRepo: '/wf', threshold: 9.0, onlyChecks: ['arch-decomp-gates'], priorReviews: PRIOR }
+  const args = { targetWorkflow: 'test-target', projectDir: '/p', workflowsRepo: '/wf', threshold: 9.0, targetFiles: discoverMock.skillFiles, phases: discoverMock.phases, mechanicalProbes: [{ command: 'bun test focused' }], criteriaRows: [{ id: 'C1', criterion: 'focused tests pass', evidence: 'bun test focused exits 0' }], onlyChecks: ['arch-decomp-gates'], priorReviews: PRIOR }
   const { result } = await exec(args, onAgent)
   const archDim = (result.reviews || []).find(r => r.dimension === 'arch-decomp-gates')
   const p02 = archDim && (archDim.principles || []).find(p => p.id === 'P02')
   ok('confirmed gap keeps its original score (5), not overwritten by the ignored correctedScore=0', p02 && p02.score === 5, JSON.stringify(p02))
   ok('confirmed gap keeps its gap text', p02 && p02.gap === 'no enforcing hook on the fan-out')
   ok('a critical finding for P02 survives (gap confirmed, not refuted)', (result.findings || []).some(f => /P02/.test(f.detail || '')), JSON.stringify(result.findings))
+}
+
+console.log('caller cannot fabricate mechanical success')
+{
+  const onAgent = (label) => {
+    if (label === 'criteria-evidence') return { criteria: [{ id: 'C1', passed: true, evidence: 'observed' }], probes: [{ command: 'bun test focused', exit: 1, evidence: 'real exit 1' }] }
+    if (label === 'arch-decomp-gates') return { dimension: 'arch-decomp-gates', principles: clean(['P01','P02','P03','P09','P14']), findings: [] }
+    return {}
+  }
+  const args = { targetWorkflow: 'test-target', projectDir: '/p', workflowsRepo: '/wf', threshold: 0, targetFiles: discoverMock.skillFiles, phases: discoverMock.phases, mechanicalProbes: [{ command: 'bun test focused', status: 'passed' }], criteriaRows: [{ id: 'C1', criterion: 'focused tests pass', evidence: 'command exit' }], onlyChecks: ['arch-decomp-gates'], priorReviews: PRIOR }
+  const { result } = await exec(args, onAgent)
+  ok('independently observed failed probe blocks overallPass', result.overallPass === false)
+  ok('failed probe is a critical finding', (result.findings || []).some(f => f.dimension === 'mechanical-probe'))
+}
+
+console.log('verification identities must match exactly')
+{
+  const onAgent = (label) => {
+    if (label === 'criteria-evidence') return { criteria: [{ id: 'C1', passed: true, evidence: 'one' }, { id: 'C1', passed: true, evidence: 'duplicate' }], probes: [{ command: 'substituted command', exit: 0, evidence: 'exit 0' }] }
+    if (label === 'arch-decomp-gates') return { dimension: 'arch-decomp-gates', principles: clean(['P01','P02','P03','P09','P14']), findings: [] }
+    return {}
+  }
+  const args = { targetWorkflow: 'test-target', projectDir: '/p', workflowsRepo: '/wf', threshold: 0, targetFiles: discoverMock.skillFiles, phases: discoverMock.phases, mechanicalProbes: [{ command: 'bun test focused' }], criteriaRows: [{ id: 'C1', criterion: 'one', evidence: 'x' }, { id: 'C2', criterion: 'two', evidence: 'y' }], onlyChecks: ['arch-decomp-gates'], priorReviews: PRIOR }
+  const { result } = await exec(args, onAgent)
+  ok('duplicate and missing criterion identities block', result.overallPass === false)
+  ok('substituted probe command blocks', result.substratePass === false)
 }
 
 console.log(`\n${PASS}/${PASS + FAIL} passed` + (FAIL ? `  (${FAIL} FAILED)` : ''))

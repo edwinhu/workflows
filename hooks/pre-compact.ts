@@ -69,9 +69,13 @@ function activeWorkflowMarker(): ActiveWorkflow | null {
 }
 
 function sharedResumeCommand(active: ActiveWorkflow | null): string | null {
-  if (!active || active.lifecycle !== "shared-v1" || !["writing", "workshop"].includes(active.workflow)) return null;
+  if (!active || active.lifecycle !== "shared-v1" || !["writing", "workshop", "workflow-creator"].includes(active.workflow)) return null;
   const phase = active.phase ?? "";
   if (["human-review", "review", "human_review"].includes(phase)) return "reload the shared beat-review skill";
+  if (active.workflow === "workflow-creator") {
+    if (["diagnose", "diagnosis", "compile", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phase)) return "invoke /workflow-creator-improve";
+    return "invoke /workflow-creator";
+  }
   if (["draft", "generate", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phase)) return `invoke /${active.workflow}-revise`;
   return `invoke /${active.workflow}`;
 }
