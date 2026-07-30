@@ -38,7 +38,7 @@ Orchestrator: curate reusableFacts → project auto-memory
        ▼
 Fresh verifier: VERIFY criteria
        │
-       ├─ PASS → phase gate
+       ├─ PASS → clear `/goal` via `bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal clear"` → phase gate
        └─ FAIL → fix → resume the SAME verifier → re-check
 ```
 
@@ -50,17 +50,25 @@ Get exactly one `/goal` active, pinned to the criteria artifact and carrying a t
 condition must be restated in the turn itself, not only in a file: the evaluator reads the transcript
 and cannot inspect disk.
 
-`/goal` is a UI command, not a skill. `Skill(goal)` fails and emitted text is a no-op. In an RC
-session, self-inject only when you own that session:
+`/goal` is a UI command, not a skill. `Skill(goal)` fails and emitted text is a no-op. Only the
+top-level session may activate it:
 
 ```bash
-if agent-msg resolve "$CLAUDE_CODE_SESSION_ID" >/dev/null 2>&1; then
-    agent-msg send "$CLAUDE_CODE_SESSION_ID" "/goal <condition>"
-fi
+bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal <condition>"
 ```
 
-If another agent spawned you, do not probe or inject: the inherited session id can target the
-parent's conversation. Give the literal `/goal` line to the caller instead.
+Proceed only after the helper returns `{"status":"delivered",...}` or the user explicitly confirms the
+goal is active. Otherwise give the literal `/goal` line to the caller and stop. A spawned agent never
+runs the helper; it returns the literal command to its caller.
+
+After the terminal verifier PASS, only the top-level session clears the goal:
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal clear"
+```
+
+Enter the phase gate only after `status: delivered` or explicit user confirmation. Otherwise return the
+literal `/goal clear` command and stop.
 
 ## 2. Curate the complete ready-wave spec
 

@@ -10,6 +10,10 @@ const goalWork = read("skills/work/beats/goal-work.md");
 const verify = read("skills/work/beats/verify.md");
 const review = read("skills/work/beats/review-surface.md");
 const routing = read("skills/using-skills/SKILL.md");
+const beatImplement = read("skills/beat-implement/SKILL.md");
+const devImplement = read("skills/dev-implement/SKILL.md");
+const visualVerify = read("skills/visual-verify/SKILL.md");
+const goalSelfSend = 'bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts';
 
 function frontmatterName(text) {
   return text.match(/^---\n[\s\S]*?^name:\s*([^\n]+)$/m)?.[1]?.trim();
@@ -51,6 +55,21 @@ describe("work workflow contract", () => {
     expect(goalWork).toContain("REVIEW waits for user input outside the");
     expect(work).toContain("If it is already 1");
     expect(work).toContain("replace intent\n  and criteria");
+  });
+
+  test("uses the canonical helper for top-level goal activation and clearing", () => {
+    for (const text of [goalWork, beatImplement, devImplement, visualVerify]) {
+      expect(text).toContain(goalSelfSend);
+      expect(text).toContain('"/goal <condition>"');
+      expect(text).toContain('"/goal clear"');
+      expect(text).toContain("top-level session");
+      expect(text).toContain("explicitly confirms");
+      expect(text).not.toMatch(/\bagent-msg\b/i);
+      expect(text).not.toMatch(/\bRC session\b|remote control/i);
+      expect(text).toMatch(/top-level session[\s\S]*goal-self-send\.ts/);
+      expect(text).toMatch(/status[" :]+"?delivered"?[\s\S]*explicitly confirm/i);
+    }
+    expect(goalWork).toMatch(/otherwise,?\s+print the literal command and stop/i);
   });
 
   test("keeps work outside the native approved-plan execution boundary", () => {

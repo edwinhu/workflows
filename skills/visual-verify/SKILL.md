@@ -108,17 +108,13 @@ wrong connections) and the pdftotext pre-screen finds no fused labels
 gate. Stop after 5 turns.
 ```
 
-**Getting it set** — you cannot `Skill(goal)` (it is a built-in UI command, not a skill), and printing the line is a no-op (slash commands dispatch only on the user input path). Probe, then branch:
+**Getting it set** — you cannot `Skill(goal)` (it is a built-in UI command), and printing the line is a no-op (slash commands dispatch only on the user input path). Only the top-level session may run:
 
 ```bash
-if agent-msg resolve "$CLAUDE_CODE_SESSION_ID" >/dev/null 2>&1; then
-    agent-msg send "$CLAUDE_CODE_SESSION_ID" "/goal <condition>"   # RC session: self-inject
-else
-    :   # no cse_* — hand the literal condition to the user and STOP until they confirm
-fi
+bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal <condition>"
 ```
 
-`claude -p "/goal …"` also works when launching a fresh session. Once active, each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar). With no active goal there is no loop at all — one pass, no gate.
+Proceed only if the helper returns `{"status":"delivered",...}` or the user explicitly confirms activation. Otherwise hand the literal condition to the user and STOP. A spawned agent returns that literal command to its caller without running the helper. Once active, each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar). With no active goal there is no loop at all — one pass, no gate. After the terminal PASS, clear it with `bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal clear"`. Proceed only after `{"status":"delivered",...}` or the user explicitly confirms the goal is cleared; otherwise print `/goal clear` and stop.
 
 ### Score Tracking
 

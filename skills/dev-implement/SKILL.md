@@ -66,7 +66,7 @@ is corrected to match.
 ```
 Main Chat (you)                         compiled .planning/run.js (ONE invocation, whole DAG)
 ──────────────────────────────────────────────────────────────────────────
-/goal <condition>  ← set once at phase entry (self-inject if RC, else user types it — Step 1)
+/goal <condition>  ← set once at phase entry (canonical helper delivery or explicit user confirmation — Step 1)
 dev-implement (this skill)
   └─ COMPILE: dev_compile.py PLAN.md → .planning/run.js   (deterministic, no LLM)
   └─ RUN:     Workflow(scriptPath=".planning/run.js")  ─→ topo-sort DAG → per level,
@@ -362,18 +362,18 @@ Before working through PLAN.md, a `/goal` must be active whose condition encodes
 <EXTREMELY-IMPORTANT>
 **You CANNOT set `/goal` with the Skill tool.** `/goal` is a built-in UI command (`type: local-jsx`), and the Skill tool accepts only `type: "prompt"` commands — `Skill(goal)` fails with *"goal is a UI command, not a skill."* **Printing the line in your response does nothing either**: slash commands dispatch only on the **user input** path, and assistant text is never re-parsed.
 
-Probe for a cloud endpoint, then branch:
+Only in the top-level session, invoke the canonical helper:
 
 ```bash
-if agent-msg resolve "$CLAUDE_CODE_SESSION_ID" >/dev/null 2>&1; then
-    agent-msg send "$CLAUDE_CODE_SESSION_ID" "/goal <condition>"   # RC session: self-inject
-else
-    :   # no cse_* — print the literal line and STOP
-fi
+bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal <condition>"
 ```
 
-- **RC session** (`agent-msg resolve` prints a `cse_*`) → **self-inject.** The injected text lands on the input path and dispatches as a real `local_command`; the evaluator runs normally. `/goal clear` injects identically, so the undo path works.
-- **No `cse_*`** (plain `claude`, no Remote Control) → output the literal `/goal …` line and **STOP.** Do not start Step 2 until the user confirms the goal is active.
+- **Helper returns `status: delivered`** → proceed; delivery places the command on the input path.
+- **User explicitly confirms activation** → proceed.
+- **Any other helper result** → output the literal `/goal …` line and **STOP.** Do not start Step 2 until the user confirms the goal is active.
+- **Spawned agent** → do not run the helper; return the literal command to the caller.
+
+After the terminal PASS, clear the goal only in the top-level session with `bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal clear"`. Continue only after `status: delivered` or explicit user confirmation; otherwise print `/goal clear` and stop.
 
 **Never continue into Step 2 with no active goal.** The loop silently degrades into a single pass with no evaluator gate — every "the next turn fires automatically" downstream becomes false, and the phase ends half-done looking finished.
 </EXTREMELY-IMPORTANT>
@@ -392,7 +392,7 @@ Key constraints baked into the condition:
 - **VALIDATION.md gate** — covered by Test Gap Validation Gate below.
 - **Turn limit** — pick a budget that covers every task. Rough rule: 3–5 turns per task for routine work, more for debugging-heavy tasks.
 
-Set it by the probe-and-branch above — self-inject in an RC session, otherwise hand the user the literal condition string and stop. Never assume it is active because you emitted the text.
+Set it through the canonical helper above in the top-level session, otherwise hand the user the literal condition string and stop. Never assume it is active because you emitted the text.
 
 ### Step 2: COMPILE, then run the compiled runner (it executes the tasks)
 
@@ -534,7 +534,7 @@ End each task summary with: **Total deviations:** N auto-fixed (R1: X, R2: Y, R3
 
 | Skill | Purpose | Used By |
 |-------|---------|---------|
-| `/goal` (built-in UI command, NOT a skill) | Cross-turn iteration with separate-model evaluation | Set at phase entry — self-injected via `agent-msg` in an RC session, else typed by the user (Step 1) |
+| `/goal` (built-in UI command, NOT a skill) | Cross-turn iteration with separate-model evaluation | Set and clear at phase boundaries with `bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts`; proceed only after delivery or explicit user confirmation (Step 1) |
 | `dev-delegate` | Task agent templates | Main chat |
 | `dev-tdd` | TDD protocol (RED-GREEN-REFACTOR) | Task agent |
 | `dev-test` | Testing tools (pytest, Playwright, etc.) | Task agent |

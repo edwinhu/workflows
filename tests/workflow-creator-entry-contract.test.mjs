@@ -29,6 +29,10 @@ describe("workflow-creator shared-v1 entry contracts", () => {
     expect(fresh).toContain("workflow-plan-compiler.ts");
     expect(fresh).toContain("There is no LLM, Python, or legacy enumeration fallback");
   });
+  test("does not contain load-time shell interpolation", () => {
+    // A literal bang-backtick inside skill content is executed even in prose or fences.
+    expect(fresh).not.toContain("!`");
+  });
   test("keeps audit-only read-only and human review terminal", () => {
     expect(improve).toContain("Audit-only requests never receive mutation authority");
     expect(improve).toContain("Do not create `PLAN.md`");
