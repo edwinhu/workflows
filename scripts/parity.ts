@@ -54,8 +54,8 @@ const GOLDEN_DIR = join(REPO, "tests", "golden");
  * Each expectation hashes complete stdout and enumerates the complete filesystem delta.
  */
 const LEGACY_TS_EXPECTATIONS: Record<string, TsExpectation> = {
-  "pre-compact/ds-workflow-detected-dev-patterns-absent": { stdoutSha256: "f7d6f2bb56dc66816747445e826e828293b9039046c60ed2fcaf09774d2b16ff", exit: 0, fs: {} },
-  "pre-compact/native-ds-plan-without-keywords-never-writes-state": { stdoutSha256: "f7d6f2bb56dc66816747445e826e828293b9039046c60ed2fcaf09774d2b16ff", exit: 0, fs: {} },
+  "pre-compact/ds-workflow-detected-dev-patterns-absent": { stdoutSha256: "728581b9595c05b4ec3c332bf3d15d1cca17494fa7f505cf8af352f158f6dbbd", exit: 0, fs: {} },
+  "pre-compact/native-ds-plan-without-keywords-never-writes-state": { stdoutSha256: "156864016656d19c95cd65f4f7262a5e439192bcf2148137f54d89e8d9641e11", exit: 0, fs: {} },
   "session-start/planning-plan-progress-with-next-task": { stdoutSha256: "07e839850dac220efc17ef73c11558b43fcc919935e3c02bb08c2bb674c09976", exit: 0, fs: {} },
   "session-start/planning-dev-workflow-all-tasks-complete": { stdoutSha256: "1e66fe8e58002c97524d42a1ad6c4e8345c9ece58d77ffa4a1bb85bf2318aead", exit: 0, fs: {} },
   "session-start/legacy-claude-dir-plan-without-checkboxes": { stdoutSha256: "59b970418f6703f370641ecb8d3815118c613c66746dce42b7fefcb966281e21", exit: 0, fs: {} },

@@ -37,7 +37,7 @@ if (!PROJECT) throw new Error(`workshop-verify requires args.projectDir. Got "${
 const PLUGIN = cfg.pluginRoot || ''
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.slide), s]))
-// Deterministic side-table from scripts/workshop/workshop_slide_table.py (cfg.slideIndex).
+// Deterministic side-table from scripts/workshop/workshop-slide-table.ts (cfg.slideIndex).
 // DESIGN §3a/§3a-join — verify is the CARDINALITY-CORRECTION case: slide ENUMERATION stays sourced from
 // slides.typ (the built deck, e.g. 38 slides incl. 17 drifted appendix), and the OUTLINE-row↔built-slide
 // JOIN stays an UNBIASED SEMANTIC step. A parity variance-study (opv-parity, n=3) showed that injecting the
@@ -46,9 +46,10 @@ const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).
 // feed the join: the Discover prompt is byte-identical to the LLM-Discover (free OUTLINE read, []-is-common).
 // The parser's contribution is instead a DETERMINISTIC WHITELIST applied in JS AFTER Discover — drop any
 // inventoryRef that is not a real SOURCES.md id (the no-hallucination guard), without biasing the join.
-const SLIDE_INDEX = (cfg.slideIndex && Array.isArray(cfg.slideIndex.slides) && cfg.slideIndex.slides.length) ? cfg.slideIndex : null
-const INV_WHITELIST = SLIDE_INDEX && Array.isArray(SLIDE_INDEX.sourcesInventory) && SLIDE_INDEX.sourcesInventory.length
-  ? new Set(SLIDE_INDEX.sourcesInventory.map(String)) : null
+if (!cfg.slideIndex || !Array.isArray(cfg.slideIndex.slides) || !cfg.slideIndex.slides.length) throw new Error('workshop-verify requires the canonical TypeScript slideIndex with at least one slide')
+if (!Array.isArray(cfg.slideIndex.sourcesInventory)) throw new Error('workshop-verify requires slideIndex.sourcesInventory from the canonical TypeScript parser')
+const SLIDE_INDEX = cfg.slideIndex
+const INV_WHITELIST = new Set(SLIDE_INDEX.sourcesInventory.map(String))
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const FINDING = {

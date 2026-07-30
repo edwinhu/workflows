@@ -24,7 +24,7 @@ hooks:
 
 # Writing Review
 
-Hierarchical bottom-up review that diagnoses structural problems across a drafted document. Produces `.planning/REVIEW.md` — a structured diagnosis consumed by `/writing-revise`.
+Hierarchical bottom-up review that diagnoses structural problems across a drafted document. Produces `.planning/AUTOMATED_REVIEW.md` — a structured diagnosis consumed by `/writing-revise`.
 
 **Prerequisites:** PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md, and draft files in `drafts/` must exist.
 
@@ -53,7 +53,7 @@ Before starting, check for an existing handoff:
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of Reading
 
-**NO REVIEW WITHOUT READING. Every claim in REVIEW.md must cite specific text from the draft. This is not negotiable.**
+**NO REVIEW WITHOUT READING. Every claim in AUTOMATED_REVIEW.md must cite specific text from the draft. This is not negotiable.**
 
 If you find yourself writing a review comment without quoting the draft text it refers to:
 1. STOP immediately
@@ -80,7 +80,7 @@ If you find yourself marking something as "OK" or "no issues found":
 
 **Reporting "all checks pass" without evidence for every checkmark is NOT HELPFUL — undetected issues survive into the published document.**
 
-**The writing-review workflow now enforces this structurally:** its reviewers return quoted evidence per finding, and a mechanical Verify stage confirms each quote resolves to the draft — fabricated or misattributed quotes are dropped before they reach REVIEW.md. Evidence-grounding is no longer honor-system; it is built into the workflow.
+**The writing-review workflow now enforces this structurally:** its reviewers return quoted evidence per finding, and a mechanical Verify stage confirms each quote resolves to the draft — fabricated or misattributed quotes are dropped before they reach AUTOMATED_REVIEW.md. Evidence-grounding is no longer honor-system; it is built into the workflow.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -99,9 +99,9 @@ If you catch yourself in any of these violations, the review output is contamina
 
 | Violation | Why Contaminated | Action |
 |---|---|---|
-| Reviewed a section without reading its draft file | You fabricated a review from outline knowledge | DELETE REVIEW.md. Read every draft. Start Level 1 over. |
+| Reviewed a section without reading its draft file | You fabricated a review from outline knowledge | DELETE AUTOMATED_REVIEW.md. Read every draft. Start Level 1 over. |
 | Reviewed your own draft in the same context (no fresh subagent) | Self-review is rubber-stamping — you share the drafter's biases | DELETE the section review. Spawn a fresh subagent. Re-review. |
-| Wrote REVIEW.md without completing all 3 levels | Partial review misses cross-section issues | DELETE REVIEW.md. Complete all levels. Regenerate. |
+| Wrote AUTOMATED_REVIEW.md without completing all 3 levels | Partial review misses cross-section issues | DELETE AUTOMATED_REVIEW.md. Complete all levels. Regenerate. |
 
 **Partial fixes to contaminated reviews create worse outcomes than restarting.** A review built on fabricated evidence will misdirect writing-revise into "fixing" non-problems while real issues persist.
 
@@ -175,7 +175,7 @@ uv run --with pyyaml python3 ${CLAUDE_SKILL_DIR}/../de-ai-revise/scripts/de_ai_a
 ```
 
 Carry these into the review:
-- **`diction:always_flag` spans and `tic` spans with `sev_score >= 4`** → AI-ism findings. List them in REVIEW.md (as **minor** advisory polish, unless several cluster in one section → **major**). Each carries `line`, `text`, and `replace_with`.
+- **`diction:always_flag` spans and `tic` spans with `sev_score >= 4`** → AI-ism findings. List them in AUTOMATED_REVIEW.md (as **minor** advisory polish, unless several cluster in one section → **major**). Each carries `line`, `text`, and `replace_with`.
 - **`composite_human_likeness` + `tic_density` + `advisories`** → record per draft as context for the revise loop.
 - Do **not** elevate AI-prose spans to blocking criticals, and do **not** treat a mid-range composite as failure — a human legal draft scores ~55-65 with em-dashes as nearly the whole signal (see `de-ai-revise` Iron Law of Goodhart). The substrate gate (critical+major) is unchanged.
 
@@ -244,9 +244,9 @@ Workflow({
 
 ---
 
-## Render REVIEW.md
+## Render AUTOMATED_REVIEW.md
 
-Write `.planning/REVIEW.md` from `result.*` using the template in `references/review-template.md`:
+Write `.planning/AUTOMATED_REVIEW.md` from `result.*` using the template in `references/review-template.md`:
 
 - **Summary counts** ← `result.summary` (`critical`, `major`, `minor`, `total`)
 - **Verdict** ← `result.verdict`
@@ -255,11 +255,11 @@ Write `.planning/REVIEW.md` from `result.*` using the template in `references/re
 - **Section-Level Issues** ← `result.sections` — list each section's `issues` sorted by severity; each issue carries `source` (structure / prose / fidelity), `location` (file:line), `quote`, `detail`, and `fix`
 - **Boundary Summaries** ← `result.sections[].boundary`
 
-If `result.unreliableSections` is non-empty, mark those sections **UNRELIABLE** in REVIEW.md (a reviewer returned nothing for them) — do NOT fabricate findings or a clean verdict for them.
+If `result.unreliableSections` is non-empty, mark those sections **UNRELIABLE** in AUTOMATED_REVIEW.md (a reviewer returned nothing for them) — do NOT fabricate findings or a clean verdict for them.
 
 > The workflow's reviewers already cite verbatim quotes with file:line and a mechanical Verify stage drops any quote that does not resolve to the draft, so the findings you render are evidence-grounded by construction. Render them faithfully — do not add, invent, or soften.
 
-> **Full REVIEW.md template:** See `references/review-template.md`
+> **Full AUTOMATED_REVIEW.md template:** See `references/review-template.md`
 
 ---
 
@@ -267,19 +267,19 @@ If `result.unreliableSections` is non-empty, mark those sections **UNRELIABLE** 
 
 Before declaring review complete:
 
-1. **IDENTIFY**: `.planning/REVIEW.md` exists
-2. **RUN**: Read REVIEW.md, verify every section from OUTLINE.md has a review entry
+1. **IDENTIFY**: `.planning/AUTOMATED_REVIEW.md` exists
+2. **RUN**: Read AUTOMATED_REVIEW.md, verify every section from OUTLINE.md has a review entry
 3. **READ**: Confirm every issue has severity + location + quoted evidence + suggestion
 4. **VERIFY**: All three levels completed (section, transition, document)
 5. **CLAIM**: Only if steps 1-4 pass, announce review complete. **Gate type: `human-verify` — auto-advance to /writing-revise.**
 6. **SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
    - phase: review
-   - artifacts_produced: [.planning/REVIEW.md]
+   - artifacts_produced: [.planning/AUTOMATED_REVIEW.md]
    - implements: [CLAIM-XX ids the reviewed sections cover — the requirement→phase trace]
-   - provides: [.planning/REVIEW.md]
+   - provides: [.planning/AUTOMATED_REVIEW.md]
    - Include substantive one-liner with issue counts by severity (NOT "Review complete")
 
-**If any section is missing from REVIEW.md, the review is incomplete. Go back.**
+**If any section is missing from AUTOMATED_REVIEW.md, the review is incomplete. Go back.**
 
 ---
 
@@ -297,7 +297,7 @@ critical_issues: [critical count]
 ## Step 6: Announce and Suggest Next Step
 
 ```
-Review complete. Results written to .planning/REVIEW.md.
+Review complete. Results written to .planning/AUTOMATED_REVIEW.md.
 
 Found [N] issues ([critical] critical, [major] major, [minor] minor).
 
@@ -312,7 +312,7 @@ No issues found. Run /writing-revise to complete the workflow.
 
 ### Review Exit Facts
 
-- Subagents confabulate verbatim quotes — Round 1 proved this. Compiling subagent output without spot-checking 3+ quotes per agent against the source launders fabricated evidence into REVIEW.md.
+- Subagents confabulate verbatim quotes — Round 1 proved this. Compiling subagent output without spot-checking 3+ quotes per agent against the source launders fabricated evidence into AUTOMATED_REVIEW.md.
 - The Topic Sentence Inventory IS the paragraph-level review. A review without it covers headings, not prose — and presenting it as a prose review is dishonest about what was checked.
 - A long single-file document needs MORE structure, not less: build the Section Map and assign line ranges. Skipping it because the file is "too long to split" guarantees skimmed, shallow findings.
 
@@ -324,13 +324,13 @@ Tag each reported issue with a confidence level:
 |---|---|---|
 | **HIGH** | >= 90% certain this is a real problem | Main report — fix required |
 | **MEDIUM** | >= 80% certain | Main report — fix recommended |
-| **LOW** | < 80% certain | Separate "Possible Issues" section at end of REVIEW.md |
+| **LOW** | < 80% certain | Separate "Possible Issues" section at end of AUTOMATED_REVIEW.md |
 
 Only issues at HIGH or MEDIUM confidence appear in the main report. LOW confidence issues go in a separate **"Possible Issues"** section so they are visible but do not clutter actionable fixes. This prevents false positives from overwhelming `/writing-revise`.
 
 ## Red Flags
 
-- About to write REVIEW.md without reading all drafts → STOP. That is fabricating a review; read every draft file first.
+- About to write AUTOMATED_REVIEW.md without reading all drafts → STOP. That is fabricating a review; read every draft file first.
 - About to skip Level 2 (transitions) → STOP. Transitions are the primary reason this skill exists; always run all three levels.
 - About to record fewer than 3 issues on a multi-section document → STOP. Statistically implausible; review more carefully.
 - About to use vague language ("could be improved") → STOP. Unactionable for writing-revise; quote text, diagnose specifically, suggest specifically.
@@ -345,4 +345,4 @@ Only issues at HIGH or MEDIUM confidence appear in the main report. LOW confiden
 
 After review is complete:
 
-Invoke `/writing-revise` to fix issues identified in `.planning/REVIEW.md`.
+Invoke `/writing-revise` to fix issues identified in `.planning/AUTOMATED_REVIEW.md`.

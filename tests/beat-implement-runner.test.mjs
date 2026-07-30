@@ -28,7 +28,7 @@ function projectFor(options = {}) {
   const planning = join(project, '.planning')
   mkdirSync(planning)
   writeFileSync(join(planning, 'PLAN.md'), plan)
-  const metadata = { schemaVersion: 1, planHash: hash, approvedSession: 's-123', approvedAt: options.approvedAt || '2026-01-01T00:00:00.000Z', ...(options.metaExtra || {}) }
+  const metadata = { schemaVersion: 1, workflow: options.workflow || 'ds', planHash: hash, approvedSession: 's-123', approvedAt: options.approvedAt || '2026-01-01T00:00:00.000Z', ...(options.metaExtra || {}) }
   writeFileSync(join(planning, 'PLAN.meta.json'), JSON.stringify(metadata))
   writeFileSync(join(planning, 'PLAN_REVIEWED.md'), `---\nplan_hash: ${options.reviewHash || hash}\nstatus: ${options.reviewStatus || 'APPROVED'}\nreviewer_session_id: ${options.reviewerSession || 'reviewer-456'}\nreviewed_at: ${options.reviewedAt || '2026-01-01T00:00:01.000Z'}\n---\n\nreview`)
   return project
@@ -50,7 +50,7 @@ async function exec(args, onAgent, options = {}) {
   const originalSession = process.env.CLAUDE_SESSION_ID
   process.env.CLAUDE_SESSION_ID = options.session || 'different-session'
   try {
-    return { result: await fn(agent, parallel, log, phase, { ...args, projectDir: project }), trace }
+    return { result: await fn(agent, parallel, log, phase, { workflow: 'ds', ...args, projectDir: project }), trace }
   } finally {
     if (originalSession === undefined) delete process.env.CLAUDE_SESSION_ID
     else process.env.CLAUDE_SESSION_ID = originalSession
@@ -77,6 +77,21 @@ console.log('all implementation waves dispatch sequentially until filesystem iso
   ok('prompt excludes mutable planning files', !/STATE\.md|SPEC\.md|LEARNINGS\.md|agent-memory/.test(trace.prompts['implement:a']))
   ok('prompt requires caller-selected constraints', /ds-common-constraints\.md/.test(trace.prompts['implement:a']))
 }
+
+console.log('workflow authentication supports native-plan domains and rejects unsupported ones')
+for (const workflow of ['writing', 'workshop']) {
+  const project = projectFor({ workflow })
+  const { result } = await exec({ workflow, readyWave: [task('a', ['src/a.js'])], planReset: reset }, label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/a.js'] }), { project })
+  ok(`${workflow} authenticates through shared approved-plan lifecycle`, result.results[0]?.status === 'implemented')
+}
+try {
+  await exec({ workflow: 'work', readyWave: [], planReset: reset }, () => null)
+  ok('unsupported work workflow rejected', false)
+} catch (error) { ok('unsupported work workflow rejected', /args\.workflow/.test(String(error))) }
+try {
+  await exec({ workflow: 'workshop', readyWave: [], planReset: reset }, () => null)
+  ok('cross-workflow metadata rejected', false)
+} catch (error) { ok('cross-workflow metadata rejected', /authorizes ds, not workshop/.test(String(error))) }
 
 console.log('durable plan review and reset gates reject invalid state')
 for (const [name, options] of [

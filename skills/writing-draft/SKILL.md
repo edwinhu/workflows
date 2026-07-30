@@ -5,8 +5,12 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
-    - matcher: "Write|Edit|Agent|Workflow"
+    - matcher: "Write|Edit|Bash|Agent|Workflow"
       hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow writing"
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow writing"
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/OUTLINE_REVIEWED.md
@@ -74,7 +78,7 @@ START (all section outlines in outlines/ exist, OUTLINE_REVIEWED.md APPROVED)
   │
   └─ GATE: workflow overallPass=true AND source-verify clean?
      ├─ NO → keep the /goal loop running (no pause)
-     └─ YES → write DRAFT_COMPLETE.md → Load writing-validate → /writing-review
+     └─ YES → write DRAFT_COMPLETE.md → Load writing-validate → internal writing-review
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -244,7 +248,7 @@ It discovers the sections (deterministically when `sectionIndex` is passed), ass
 
 3. **`overallPass=true`** → proceed to Step 4.
 
-**The JS gate is authoritative.** Do not hand-wave it to true; fix a finding and let the next run recompute. Per-section minor prose nits are advisory here — document-quality polish is `/writing-review`'s job, not the draft gate's.
+**The JS gate is authoritative.** Do not hand-wave it to true; fix a finding and let the next run recompute. Per-section minor prose nits are advisory here — document-quality polish is the internal writing-review phase's job, not the draft gate's.
 
 ### Step 4: gate the citations — deterministic floor THEN semantic source-verify (two-tier)
 

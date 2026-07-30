@@ -13,6 +13,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [5.98.0] - 2026-07-30
+
+### Added
+- Migrated writing and workshop onto the shared clarify → native plan approval → independent plan review → domain execution/verification → human review lifecycle. Writing retains `/writing-revise`; workshop retains `/workshop-revise`; their review engines are internal verifiers.
+- Added writing and workshop plan-review constraint domains, exact approved-plan provenance, phase-aware resume behavior, `.planning/HUMAN_REVIEW.md`, and artifact-aware human review routing (Typora, LibreOffice, Neovim plus rendered preview).
+- Consolidated workshop Slide Spec parsing into the canonical TypeScript parser and CLI, removing the Python duplicate.
+
+### Changed
+- Writing automated findings now use `.planning/AUTOMATED_REVIEW.md`, separating machine diagnosis from human acceptance.
+
 > Version `5.97.0` is reserved for the `/work` migration and the plan-checker changes below. All three
 > plugin and marketplace version fields are kept aligned.
 

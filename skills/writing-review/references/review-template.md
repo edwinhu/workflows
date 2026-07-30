@@ -1,6 +1,6 @@
 # REVIEW.md Template
 
-Write the complete review to `.planning/REVIEW.md` using this template:
+Write the complete review to `.planning/AUTOMATED_REVIEW.md` using this template:
 
 ```markdown
 # Document Review

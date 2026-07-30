@@ -7,8 +7,12 @@ hooks:
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.ts"
-    - matcher: "Edit|Write"
+    - matcher: "Edit|Write|Bash|Agent|Workflow"
       hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow workshop"
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow workshop"
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/SOURCES_VERIFIED.md
@@ -42,7 +46,9 @@ hooks:
 
 **Announce:** "I'm using workshop-revise to apply changes to the workshop presentation."
 
-**GATE_REMEDY for decks built before the sources gate existed:** if `.planning/SOURCES_VERIFIED.md` is missing because the deck predates this gate (not because sources were never verified), and you have confirmed sources genuinely were verified, create the artifact by hand instead of routing back through Phase 1: `mkdir -p .planning && printf 'status: VERIFIED\n' > .planning/SOURCES_VERIFIED.md`. Writes to `.planning/` are gate-exempt (`hooks/phase-gate-guard.py` `ALWAYS_ALLOWED_DIRS`), so this write is never itself blocked.
+If the project lacks the shared-v1 approved plan, current plan review, or verified source artifacts,
+stop. Do not manufacture compatibility markers; restart through `/workshop` or manually establish the
+complete approved lifecycle.
 
 ## Shared Typst Constraints
 
@@ -68,7 +74,7 @@ Check if `.planning/HANDOFF.md` exists:
 [Step 1: Load Context] → [Step 2: Diagnose]
         → [Step 3: Apply edits  (+ workshop-verify /goal loop, max 3 turns, for content/structure)]
         → [Step 4: Verify (compile + widow + check-all.py)]
-              ├─ pass → report to user
+              ├─ pass → shared beat-review → HUMAN_REVIEW.md
               └─ unresolved after 3 cycles → ESCALATE to user
 ```
 
@@ -88,7 +94,7 @@ Check if `.planning/HANDOFF.md` exists:
 |-------|------|----------|
 | R4 structural change detected | decision | STOP — present to user, get approval before re-entering Phase 3 |
 | Step 3 artifact-review gate (content/structure) | human-verify | Auto-advanceable (independent workshop-verify reviewer) |
-| Step 4 revision verified | human-verify | Auto-advanceable; report to user at end |
+| Step 4 revision verified | human-review | Load the shared beat-review skill, preserve a current rendered preview, and record dispositions in `.planning/HUMAN_REVIEW.md` |
 
 ### Context Monitoring
 
@@ -103,7 +109,9 @@ A revision can itself be multi-turn and context-intensive (especially a content/
 `HANDOFF.md` template (same schema as the workshop entry skill):
 ```yaml
 ---
-workflow: workshop-revise
+workflow: workshop
+lifecycle: shared-v1
+phase: revision
 status: context_exhaustion
 last_updated: [timestamp]
 ---
@@ -208,16 +216,16 @@ Unplanned issues surface mid-revision. Apply the same 4-rule system as the works
 
 For content or structural changes (NOT simple formatting fixes), the edited deck is reviewed by the **`workshop-verify` ultracode workflow** — the same per-slide fan-out + JS gate the workshop skill uses — scoped to the slides you touched:
 
-1. **Compile** so `slides.pdf` reflects the edits: `cd [presentation directory] && typst compile slides.typ && typst compile notes.typ`
+1. **Delegate the edit and compilation** so `slides.pdf` reflects the changes; main chat does not mutate or compile project artifacts directly.
 2. **Invoke selectively** (review only the changed slides; carry the rest forward). Pass `slideIndex` =
-   the parsed `.planning/slide-index.json` (recompile via `uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_slide_table.py "<project>" --json`
-   if the OUTLINE changed) — the deterministic OUTLINE side-table; the workflow still enumerates the built
-   `slides.typ` and joins inventory semantically (DESIGN §3a-join). Omit to fall back to the LLM Discover.
+   the canonical stdout object from `bun ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop-slide-table.ts "<project>" --json`
+   (rerun if the OUTLINE changed). The deterministic OUTLINE side-table is required; the workflow still enumerates
+   the built `slides.typ` and joins inventory semantically (DESIGN §3a-join). Parser failure blocks the run.
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[absolute project root]",
      "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-     "slideIndex": <parsed .planning/slide-index.json, or omit>,
+     "slideIndex": <canonical parsed stdout slideIndex>,
      "onlyChecks": [<IDs of the slides you edited, e.g. "S4", "S5">]
    })
    ```
@@ -303,32 +311,27 @@ Never silently abandon the loop. An off-topic message is not permission to stop 
 - [ ] Label-bullet spacing correct (blank line after `*Label:*` before bullets)
 - [ ] Verbatim quotes preserved from source (no paraphrasing)
 
-**Report changes to user:**
-```
-Changes applied:
-- [what was changed]
-- slides.typ: [compiles ✓/✗]
-- notes.typ: [compiles ✓/✗]
-- Widow detection: [0 widows / N widows fixed]
-- Overflow detection: [clean / N slides fixed]
-- Visual-verify: [N diagrams verified / N/A]
-- Source fidelity: [verified / N claims flagged]
-```
+### Return to terminal human review
 
-### Record the revision (state + review pattern)
+After every automated verification item above passes:
 
-The midpoint leaves a durable record so a later session can see what changed and so recurring preferences accumulate:
-
-1. **Append a revision record to `.planning/LEARNINGS.md`** (create it if absent):
+1. Update `.planning/ACTIVE_WORKFLOW.md` to `phase: human-review`.
+2. Read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and follow it immediately.
+3. Keep `.typ` source open in Neovim with a current Tinymist or rendered PDF preview visible.
+4. Record each user disposition in `.planning/HUMAN_REVIEW.md`, including this evidence:
    ```markdown
-   ## Revision — [date]
-   - Request: [what the user asked to change]
-   - Files touched: [slides.typ / notes.typ / SOURCES.md / OUTLINE.md]
-   - Deviations: [R1: X, R2: Y, R3: Z]
-   - Gate: [overallPass / formatting-only fast path]
-   - Reviewed by: [how the user inspected the result — observe, don't infer]
+   Changes applied:
+   - [what was changed]
+   - slides.typ: [compiles ✓/✗]
+   - notes.typ: [compiles ✓/✗]
+   - Widow detection: [0 widows / N widows fixed]
+   - Overflow detection: [clean / N slides fixed]
+   - Visual-verify: [N diagrams verified / N/A]
+   - Source fidelity: [verified / N claims flagged]
    ```
-2. **Observe → record → offer:** if the **same** kind of revision request recurs 3+ times across sessions (e.g. "shrink the results table" every time), offer to encode it as a default — but only after the pattern proves itself. Do NOT pre-build automation for a one-off.
+5. Tactical feedback re-enters `/workshop-revise`; whole-deck `REJECT:` returns to `/workshop` CLARIFY.
+
+Do not write `.planning/LEARNINGS.md` or `REVIEW_STATE.md` for shared-v1 progress. TaskList tracks live work, project auto-memory holds reusable facts, and `.planning/HUMAN_REVIEW.md` is the terminal review ledger.
 
 ## Skill Dependencies
 

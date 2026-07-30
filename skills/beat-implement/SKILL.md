@@ -110,6 +110,7 @@ const run = await Workflow({
   scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js",
   args: {
     projectDir: "<absolute project path>",
+    workflow: "<ds|writing|workshop>",
     readyWave,
     planReset,
     // Only for a retry: do not send untouched work back through the runner.

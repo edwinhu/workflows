@@ -14,13 +14,14 @@ import { appendFileSync, existsSync, readFileSync, statSync, writeFileSync } fro
 import { join, relative } from "node:path";
 import { pyJson } from "./_gate_common.ts";
 
-// Workflow patterns to detect in PLAN.md. Insertion order matters: it is the detection
-// precedence (dev beats ds beats writing), matching Python dict ordering.
+// Legacy PLAN-prose fallback only. Shared-v1 writing/workshop route from ACTIVE_WORKFLOW.md.
 const WORKFLOW_PATTERNS: Array<[string, string[]]> = [
   ["dev", [String.raw`## Dev Workflow`, String.raw`/dev\b`, String.raw`TDD`, String.raw`RED-GREEN-REFACTOR`]],
   ["ds", [String.raw`## DS Workflow`, String.raw`/ds\b`, String.raw`data science`, String.raw`EDA`]],
   ["writing", [String.raw`## Writing`, String.raw`/writing\b`, String.raw`draft`, String.raw`revision`]],
 ];
+
+type ActiveWorkflow = { workflow: string; lifecycle: string | null; phase: string | null };
 
 function cwd(): string {
   return process.cwd();
@@ -50,15 +51,29 @@ function findStateFile(): string | null {
   return isFile(statePath) ? statePath : null;
 }
 
-function activeWorkflowMarker(): string | null {
+function activeWorkflowMarker(): ActiveWorkflow | null {
   const marker = join(cwd(), ".planning", "ACTIVE_WORKFLOW.md");
   if (!isFile(marker)) return null;
   try {
-    const match = readFileSync(marker, "utf-8").match(/^workflow:\s*([a-z0-9_-]+)\s*$/m);
-    return match?.[1] ?? null;
+    const content = readFileSync(marker, "utf-8");
+    const workflow = content.match(/^workflow:\s*([a-z0-9_-]+)\s*$/m)?.[1];
+    if (!workflow) return null;
+    return {
+      workflow,
+      lifecycle: content.match(/^lifecycle:\s*([a-z0-9_-]+)\s*$/m)?.[1] ?? null,
+      phase: content.match(/^phase:\s*([a-z0-9_-]+)\s*$/m)?.[1] ?? null,
+    };
   } catch {
     return null;
   }
+}
+
+function sharedResumeCommand(active: ActiveWorkflow | null): string | null {
+  if (!active || active.lifecycle !== "shared-v1" || !["writing", "workshop"].includes(active.workflow)) return null;
+  const phase = active.phase ?? "";
+  if (["human-review", "review", "human_review"].includes(phase)) return "reload the shared beat-review skill";
+  if (["draft", "generate", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phase)) return `invoke /${active.workflow}-revise`;
+  return `invoke /${active.workflow}`;
 }
 
 function detectActiveWorkflow(planPath: string): string | null {
@@ -182,15 +197,18 @@ async function main(): Promise<void> {
     /* hook_input = {} */
   }
 
-  // An explicit lifecycle marker wins; legacy workflows fall back to PLAN.md prose detection.
+  // A shared-v1 marker is authoritative. Legacy workflows fall back to PLAN.md prose detection.
+  const marker = activeWorkflowMarker();
   const planPath = findPlanFile();
-  const activeWorkflow = activeWorkflowMarker() ?? (planPath ? detectActiveWorkflow(planPath) : null);
+  const activeWorkflow = marker?.lifecycle === "shared-v1"
+    ? marker.workflow
+    : (planPath ? detectActiveWorkflow(planPath) : null);
+  const resumeCommand = sharedResumeCommand(marker);
 
-  // Authenticated native DS metadata, rather than plan prose, proves this is a DS lifecycle.
-  const hasNativeDsPlan = isFile(join(cwd(), ".planning", "PLAN.meta.json"));
-  const dsLifecycle = activeWorkflow === "ds" || hasNativeDsPlan;
-  // Legacy dev/writing state still uses LEARNINGS.md. DS uses project auto-memory instead.
-  const learningsPath = dsLifecycle ? null : findLearningsFile();
+  // Approval metadata proves a native approved-plan lifecycle; it is no longer DS-specific.
+  const nativePlanLifecycle = isFile(join(cwd(), ".planning", "PLAN.meta.json")) || activeWorkflow === "ds";
+  // Native-plan workflows use immutable PLAN + TaskList + project auto-memory.
+  const learningsPath = nativePlanLifecycle ? null : findLearningsFile();
   if (learningsPath) appendCompactionMarker(learningsPath, activeWorkflow);
 
   // Build reload instructions
@@ -199,7 +217,7 @@ async function main(): Promise<void> {
   if (activeWorkflow) {
     reloadInstructions.push(
       `IMPORTANT: The /${activeWorkflow} workflow was active before compaction. ` +
-        `After compaction completes, invoke /${activeWorkflow} to reload the workflow context.`,
+        `After compaction completes, ${resumeCommand ?? `invoke /${activeWorkflow}`} to reload the workflow context.`,
     );
   } else {
     reloadInstructions.push(
@@ -214,7 +232,7 @@ async function main(): Promise<void> {
   }
 
   // Remind legacy workflows about their ledger; DS reloads PLAN + TaskList + project auto-memory.
-  if (dsLifecycle) {
+  if (nativePlanLifecycle) {
     reloadInstructions.push("Call TaskList for live work and consult project auto-memory for durable technical facts.");
   } else if (learningsPath) {
     const learningsLoc = relative(cwd(), learningsPath);
@@ -224,12 +242,12 @@ async function main(): Promise<void> {
   // PreCompact does NOT support hookSpecificOutput.additionalContext. Legacy workflows persist
   // STATE.md; DS deliberately does not — its copied PLAN + TaskList + project auto-memory suffice.
   if (reloadInstructions.length) {
-    if (!dsLifecycle) writeStateFile(activeWorkflow, reloadInstructions);
+    if (!nativePlanLifecycle) writeStateFile(activeWorkflow, reloadInstructions);
     console.log(
       pyJson({
         systemMessage:
-          dsLifecycle
-            ? "DS context compacted; resume from .planning/PLAN.md, TaskList, and project auto-memory"
+          nativePlanLifecycle
+            ? `${activeWorkflow ? `/${activeWorkflow}` : "Native-plan workflow"} context compacted; ${resumeCommand ?? "resume"} from .planning/PLAN.md, TaskList, and project auto-memory`
             : "Workflow state saved to .planning/STATE.md" +
               (activeWorkflow ? ` (/${activeWorkflow} active)` : ""),
       }),

@@ -1,18 +1,18 @@
 # Workflow lifecycle architecture
 
 The lifecycle layer separates enforcement mechanics from workflow-specific choices and execution
-adapters. It protects a workflow transition without pretending DS and dev have the same plan format
-or executor.
+adapters. DS, writing, and workshop use exact native-plan approval identity; dev retains its current
+SPEC/compiler path; `/work` remains lightweight and procedural.
 
 ## Before and after
 
 | Concern | Before | After |
 |---|---|---|
-| Opening clarification | DS-only no-exploration hook | `clarify-before-recon-guard --workflow ds|dev`; each profile supplies its sentinel and reconnaissance classifier |
-| Approval persistence | DS-specific hook owned hashing and atomic writes | `approved-artifact.ts` owns byte hashing, strict metadata, atomic persistence; DS is its current producer |
-| Review evidence | DS-only provenance guard; dev main chat made a marker | `reviewer-verdict-guard --workflow ds|dev`; both use a reviewer-owned current-hash YAML verdict |
-| Implementation admission | DS runner parser and dev status-only marker gate | `approved-artifact-gate` validates current hash, reviewer identity, and profile-specific chronology |
-| Orchestrator mutation | Separate DS and dev guards with duplicated path logic | `orchestrator-mutation-guard --workflow ds|dev` and shared canonical path safety |
+| Opening clarification | Domain-specific question rules | `clarify-before-recon-guard --workflow ds|dev|writing|workshop`; each profile supplies its sentinel and reconnaissance classifier |
+| Approval persistence | DS-specific hook owned hashing and atomic writes | `approved-artifact.ts` owns byte hashing, strict metadata, atomic persistence for DS, writing, and workshop |
+| Review evidence | Domain-specific approval markers | `reviewer-verdict-guard` uses one reviewer-owned current-hash YAML verdict across supported workflows |
+| Implementation admission | Mixed status and artifact gates | `approved-artifact-gate` validates current hash, reviewer identity, and profile-specific chronology |
+| Orchestrator mutation | Separate domain guards | `orchestrator-mutation-guard` and shared canonical path safety |
 | Task interchange | `beat-implement` internal shapes | `task-contract.ts` gives task/result identity a reusable seam |
 
 ## Shared mechanism, domain policy, execution adapter
@@ -35,21 +35,21 @@ same four-field YAML frontmatter: `plan_hash`, `status`, `reviewer_session_id`, 
 The hash binds approval to the exact current `PLAN.md` bytes, and the shared verdict guard permits no
 mutation other than that canonical verdict artifact.
 
-## Execution boundary and next migration
+## Execution and review adapters
 
-DS currently persists its immutable native approved plan and passes a reviewed artifact to
-`beat-implement`. Dev still uses SPEC + executable plan table + compiler-generated `.planning/run.js`.
-That is intentional: this change does not introduce dev native-plan metadata, replace `dev_compile`,
-or change R4/TDD/full-suite behavior.
-
-The next seam is:
+DS uses the shared sequential `beat-implement` runner. Writing and workshop authenticate the same
+approved-plan identity and follow the same implementation/verifier doctrine, but retain controlled
+parallel domain adapters:
 
 ```text
-dev executable plan parser → DATA task IR → generic sequential Workflow
-DS native plan adapter      → DATA task IR → generic sequential Workflow
+writing approved plan  → writing-draft section workflow → internal writing-review → /writing-revise
+workshop approved plan → workshop-generate sections     → workshop-verify       → /workshop-revise
 ```
 
-`task-contract.ts` is the DATA-IR identity seam. Dispatch remains sequential. The runner performs a
-best-effort before/after filesystem-delta audit and validates observable changed files against each
-task's writable paths, but this is not sandbox isolation; mutation parallelism waits for runtime-
-enforceable worker isolation and merge semantics.
+The domain generators are not plan interpreters: deterministic section/slide indexes provide their
+work sets. Automated review is distinct from terminal human acceptance. Human feedback is recorded in
+`.planning/HUMAN_REVIEW.md`; Markdown opens in Typora, DOCX in LibreOffice, and Typst/TeX in Neovim
+with a current Tinymist or rendered preview.
+
+Workshop has one canonical TypeScript Slide Spec parser at `hooks/_workshop_slide_table.ts`, exposed
+through `scripts/workshop/workshop-slide-table.ts` for CLI consumers.

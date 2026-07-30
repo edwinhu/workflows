@@ -1,20 +1,24 @@
 ---
 name: writing-revise
 version: 1.0
-description: "This skill should be used when the user asks to 'revise writing', 'fix review issues', 'polish draft', 'apply review feedback', 'complete writing workflow', or after /writing-review produces REVIEW.md with issues to fix."
+description: "This skill should be used when the user asks to 'revise writing', 'fix review issues', 'polish draft', 'apply review feedback', 'complete writing workflow', or needs the corrective midpoint entry for an existing writing project."
 hooks:
   PreToolUse:
-    - matcher: "Edit|Write"
+    - matcher: "Edit|Write|Bash|Agent|Workflow"
       hooks:
         - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow writing"
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow writing"
+        - type: command
           command: >-
-            GATE_ARTIFACT=.planning/REVIEW.md
+            GATE_ARTIFACT=.planning/AUTOMATED_REVIEW.md
             GATE_BLOCKED_TOOLS=Write,Edit,Agent
             GATE_DESCRIPTION="Writing review"
-            GATE_REMEDY="Run /writing-review first to produce .planning/REVIEW.md before revising"
+            GATE_REMEDY="Run the internal writing-review phase first to produce .planning/AUTOMATED_REVIEW.md before revising"
             bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
-          # GATE_STATUS intentionally omitted: REVIEW.md carries no status frontmatter,
-          # and revise must run whenever REVIEW.md exists (it consumes both CLEAN and
+          # GATE_STATUS intentionally omitted: AUTOMATED_REVIEW.md carries no status frontmatter,
+          # and revise must run whenever AUTOMATED_REVIEW.md exists (it consumes both CLEAN and
           # ISSUES-FOUND reviews). Existence is the correct trigger; a status gate would
           # deadlock the phase. GATE_BLOCKED_TOOLS closes the Agent-dispatch bypass.
   PostToolUse:
@@ -28,7 +32,7 @@ hooks:
 
 # Writing Revise
 
-The revision loop for writing projects. Consumes `.planning/REVIEW.md` (produced by `/writing-review`) and applies targeted fixes, then completes when the **blocking** issues (critical + major) are resolved — residual minor polish notes are advisory and the writer accepts them at the iteration cap (they do not block completion).
+The revision loop for writing projects. Consumes `.planning/AUTOMATED_REVIEW.md` (produced by the internal writing-review phase) and applies targeted fixes, then completes when the **blocking** issues (critical + major) are resolved — residual minor polish notes are advisory and the writer accepts them at the iteration cap (they do not block completion).
 
 ## Shared Enforcement
 
@@ -59,8 +63,8 @@ START
   │
   ├─ Step 1: Load context (ACTIVE_WORKFLOW, PRECIS, OUTLINE, drafts)
   │
-  ├─ Step 2: REVIEW.md exists?
-  │  ├─ NO → REFUSE. Suggest /writing-review. EXIT.
+  ├─ Step 2: AUTOMATED_REVIEW.md exists?
+  │  ├─ NO → REFUSE. Suggest the internal writing-review phase. EXIT.
   │  └─ YES → Parse issues (critical → major → minor)
   │
   ├─ Step 3: Load constraint layers
@@ -82,7 +86,7 @@ START
      │     Do NOT loop to drive minors to literal 0 (the prose-reviewer regenerates subjective minors — treadmill).
      │
      ├─ iteration < 3 AND BLOCKING issues remain (critical/major) → CONTINUE
-     │  └─ Increment iteration → fix the criticals/majors → Re-invoke /writing-review → Loop
+     │  └─ Increment iteration → fix the criticals/majors → Re-invoke the internal writing-review phase → Loop
      │
      └─ ESCALATE (decision: user) when EITHER
         ├─ iteration >= 3 AND blocking issues still remain, OR
@@ -107,8 +111,8 @@ If text and flowchart disagree, the flowchart wins.
 
 **NO "FIXED" CLAIMS WITHOUT FRESH RE-REVIEW. This is not negotiable.**
 
-After applying fixes from REVIEW.md, you MUST:
-1. Re-invoke `/writing-review` to regenerate REVIEW.md with fresh diagnostics
+After applying fixes from AUTOMATED_REVIEW.md, you MUST:
+1. Re-invoke the internal writing-review phase to regenerate AUTOMATED_REVIEW.md with fresh diagnostics
 2. Verify issues are actually resolved (not assumed)
 3. Check for new issues introduced by edits (regressions, new problems)
 4. Only THEN claim fixes are complete
@@ -118,11 +122,11 @@ After applying fixes from REVIEW.md, you MUST:
 ### The Audit-Fix Loop (Max 3 Iterations)
 
 ```
-Iteration 1: Review → REVIEW.md → Revise → Re-Review
+Iteration 1: Review → AUTOMATED_REVIEW.md → Revise → Re-Review
               ↓
-Iteration 2: Re-Review → REVIEW.md → Revise → Re-Review
+Iteration 2: Re-Review → AUTOMATED_REVIEW.md → Revise → Re-Review
               ↓
-Iteration 3: Re-Review → REVIEW.md → Revise → Re-Review
+Iteration 3: Re-Review → AUTOMATED_REVIEW.md → Revise → Re-Review
               ↓
          Still issues? → ESCALATE to user
          All clean? → COMPLETE
@@ -140,8 +144,8 @@ issues_found_count: 5
 ```
 
 **Exit criteria** (gate on the SUBSTRATE — critical + major — not on driving subjective minors to zero):
-- **COMPLETE**: `result.substratePass` (0 critical, 0 major) in REVIEW.md. Apply any cheap residual minors, then archive. **Gate type: `human-verify` — auto-advance to archive.** Residual minor polish notes do NOT block completion.
-- **CONTINUE**: iteration < 3 AND **blocking** issues remain (critical/major) → fix them, re-invoke /writing-review. **Gate type: `human-verify` — auto-advance.**
+- **COMPLETE**: `result.substratePass` (0 critical, 0 major) in AUTOMATED_REVIEW.md. Apply any cheap residual minors, then archive. **Gate type: `human-verify` — auto-advance to archive.** Residual minor polish notes do NOT block completion.
+- **CONTINUE**: iteration < 3 AND **blocking** issues remain (critical/major) → fix them, re-invoke the internal writing-review phase. **Gate type: `human-verify` — auto-advance.**
 - **ESCALATE** `[decision — wait for user]`: iteration >= 3 AND blocking issues still remain (present options); OR substrate is clean but minor polish notes remain — present "accept as-is OR one more polish pass?" The writer decides; do NOT auto-loop on minors.
 
 **Note:** the review still FLAGS every severity (including minors — see the rationalization table; flagging is the reviewer's job). What changed is the loop *exit*: only critical+major **block**; minors are advisory. This is the writing analog of the wc substrate gate — drive the real, convergent findings to zero; don't treadmill on an LLM panel's inexhaustible subjective minors.
@@ -149,14 +153,14 @@ issues_found_count: 5
 **Before claiming "all fixed", check iteration count:**
 1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
 2. If iteration >= 3 and issues remain: ESCALATE (don't say "run review again")
-3. If iteration < 3 and issues remain: INCREMENT iteration, re-invoke /writing-review
+3. If iteration < 3 and issues remain: INCREMENT iteration, re-invoke the internal writing-review phase
 4. If no issues: COMPLETE
 
 **Claiming "all issues resolved" without re-reviewing is NOT HELPFUL — the user trusts a false "all clear" and publishes with remaining problems.**
 
 ### Re-Review Facts
 
-- Revision introduces new errors — fixes cascade into adjacent text, and your eyes glaze over your own edits, so spot-checks and "looks clean" miss what a fresh `/writing-review` catches. Shipping an unverified revised draft asserts a verification that never happened; an unverified claim presented as done is dishonest.
+- Revision introduces new errors — fixes cascade into adjacent text, and your eyes glaze over your own edits, so spot-checks and "looks clean" miss what a fresh the internal writing-review phase catches. Shipping an unverified revised draft asserts a verification that never happened; an unverified claim presented as done is dishonest.
 - The rejection-and-rewrite cost far exceeds the re-review cost (a 15-minute re-review vs hours of rework after reviewers reject). Skipping re-review to finish faster is counterproductive on its own terms.
 - Hitting the iteration cap with issues remaining means ESCALATE, not approve.
 </EXTREMELY-IMPORTANT>
@@ -170,7 +174,7 @@ issues_found_count: 5
 
 ## When to Use
 
-- After `/writing-review` produces `.planning/REVIEW.md`
+- After the internal writing-review phase produces `.planning/AUTOMATED_REVIEW.md`
 - When hook suggests it (after ~10 edits)
 - Before finishing a writing project
 
@@ -182,13 +186,13 @@ Before running edits, verify the workflow is ready:
 2. **RUN**: Check file existence
 3. **READ**: Confirm ACTIVE_WORKFLOW shows `workflow: writing`
 4. **VERIFY**: All required files present and draft content exists
-5. **CHECK FOR REVIEW.MD**: Look for `.planning/REVIEW.md`
+5. **CHECK FOR REVIEW.MD**: Look for `.planning/AUTOMATED_REVIEW.md`
 
 If any file is missing, report and suggest the appropriate phase:
 - No PRECIS.md -> `/writing` (start from brainstorm)
 - No OUTLINE.md -> writing-setup needed
 - No drafts -> writing-draft needed
-- **No REVIEW.md** -> suggest `/writing-review` first (see backward-compatibility below)
+- **No AUTOMATED_REVIEW.md** -> suggest the internal writing-review phase first; do not infer or convert legacy review state
 
 ## Process
 
@@ -203,19 +207,19 @@ Read([current draft files in drafts/])
 
 If any file is missing, report and suggest starting with `/writing`.
 
-### Step 2: Load REVIEW.md
+### Step 2: Load AUTOMATED_REVIEW.md
 
 <EXTREMELY-IMPORTANT>
-#### Iron Law: NO REVISION WITHOUT REVIEW.md
+#### Iron Law: NO REVISION WITHOUT AUTOMATED_REVIEW.md
 
-**NO REVISION WITHOUT REVIEW.md. This is not negotiable.**
+**NO REVISION WITHOUT AUTOMATED_REVIEW.md. This is not negotiable.**
 
-If `.planning/REVIEW.md` does not exist, REFUSE to proceed:
+If `.planning/AUTOMATED_REVIEW.md` does not exist, REFUSE to proceed:
 
 ```
-REVIEW.md not found. Cannot revise without a structured review diagnosis.
+AUTOMATED_REVIEW.md not found. Cannot revise without a structured review diagnosis.
 
-Run /writing-review first to produce .planning/REVIEW.md, then re-run /writing-revise.
+Run the internal writing-review phase first to produce .planning/AUTOMATED_REVIEW.md, then re-run /writing-revise.
 ```
 
 **STOP HERE. Do not fall back to inline review. Do not offer to "do a quick check instead."**
@@ -223,10 +227,10 @@ Run /writing-review first to produce .planning/REVIEW.md, then re-run /writing-r
 Why: Inline review is shallow by design — it misses cross-section issues, transition problems, and thesis drift that only hierarchical review catches. Allowing a fallback path means the full review is never run. The review-then-revise pipeline exists because revision without diagnosis produces random edits, not targeted fixes. Small fixes applied without review context create new issues the same way.
 </EXTREMELY-IMPORTANT>
 
-**When REVIEW.md exists:**
+**When AUTOMATED_REVIEW.md exists:**
 
 ```
-Read(".planning/REVIEW.md")
+Read(".planning/AUTOMATED_REVIEW.md")
 ```
 
 Parse the review into:
@@ -283,13 +287,13 @@ When applying fixes reveals unplanned issues, follow the deviation rules from `c
 
 Track deviations per fix batch. Report at Step 6: **Deviations during revision:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
 
-### Step 4: Fix Issues from REVIEW.md
+### Step 4: Fix Issues from AUTOMATED_REVIEW.md
 
-Work through REVIEW.md issues in priority order:
+Work through AUTOMATED_REVIEW.md issues in priority order:
 
 #### 4a: Critical Issues First
 
-For each critical issue in REVIEW.md:
+For each critical issue in AUTOMATED_REVIEW.md:
 1. Read the cited location in the draft
 2. Understand the diagnosis
 3. Apply the suggested fix (or a better one if you see it)
@@ -302,17 +306,17 @@ For each major issue:
 2. Apply fix
 3. Verify
 
-**Transition fixes** (from REVIEW.md "Transition Issues" section):
+**Transition fixes** (from AUTOMATED_REVIEW.md "Transition Issues" section):
 - Read the boundary summaries for context
 - Write bridge text that connects Section N's closing to Section N+1's opening
 - Ensure the bridge advances the argument, not just changes the topic
 
-**Repetition fixes** (from REVIEW.md "Cross-Section Repetition"):
+**Repetition fixes** (from AUTOMATED_REVIEW.md "Cross-Section Repetition"):
 - Decide which section should own the point
 - Remove or differentiate the duplicate
 - Ensure removing the duplicate doesn't leave a gap
 
-**Late introduction fixes** (from REVIEW.md "Concept Introduction Order"):
+**Late introduction fixes** (from AUTOMATED_REVIEW.md "Concept Introduction Order"):
 - Add foreshadowing in the Introduction or earlier section
 - Or restructure to move the concept's first substantive use earlier
 
@@ -327,10 +331,10 @@ For each minor issue:
 <EXTREMELY-IMPORTANT>
 **NO REVISE COMPLETES WITHOUT THE DE-AI PASS. This is not negotiable.**
 
-After fixing REVIEW.md issues, run the `de-ai-revise` skill (rewrite mode) on **every**
+After fixing AUTOMATED_REVIEW.md issues, run the `de-ai-revise` skill (rewrite mode) on **every**
 edited `drafts/*.md` so the prose reads less AI-generated. This is a standard step, not
 an optional polish — the AI-prose scorers (tics + always_flag diction + stylometrics)
-are corpus-validated and `/writing-review` already surfaced their spans (Step 2d).
+are corpus-validated and the internal writing-review phase already surfaced their spans (Step 2d).
 </EXTREMELY-IMPORTANT>
 
 ```
@@ -359,7 +363,7 @@ completion on its own.
 
 ### Step 5a (optional): Rhythm-and-flow pass
 
-After REVIEW.md issues are resolved AND the regex sweep (`workflows:ai-anti-patterns` + Strunk + McCloskey + Volokh via `prose-lint.py`) is clean, consider a sentence-level rhythm-and-flow pass for prose-quality issues regex cannot catch — choppy rhythm, weak topic sentences, paragraph closures that trail into roadmaps, sentence-variety deficits.
+After AUTOMATED_REVIEW.md issues are resolved AND the regex sweep (`workflows:ai-anti-patterns` + Strunk + McCloskey + Volokh via `prose-lint.py`) is clean, consider a sentence-level rhythm-and-flow pass for prose-quality issues regex cannot catch — choppy rhythm, weak topic sentences, paragraph closures that trail into roadmaps, sentence-variety deficits.
 
 **When to run:**
 - Regex sweep returns 0 hits OR only documented false positives
@@ -412,7 +416,7 @@ Before claiming completion, check the audit-fix loop state:
 1. READ `.planning/REVIEW_STATE.md` - what iteration are we on?
 2. Run final check - are there remaining issues?
 3. Determine verdict based on iteration + issues:
-   - iteration < 3 AND issues remain → CONTINUE (re-invoke /writing-review)
+   - iteration < 3 AND issues remain → CONTINUE (re-invoke the internal writing-review phase)
    - iteration >= 3 AND issues remain → ESCALATE (report to user)
    - no issues → COMPLETE (but first run Step 6a cite-fidelity gate)
 ```
@@ -479,11 +483,11 @@ verdict: CONTINUE
 ---
 ```
 
-**IMMEDIATELY re-invoke /writing-review** (no pause, no user prompt):
+**IMMEDIATELY re-invoke the internal writing-review phase** (no pause, no user prompt):
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/writing-review/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../writing-review/SKILL.md` and follow the internal review instructions.
 
-After /writing-review completes and regenerates REVIEW.md, /writing-revise will be invoked again automatically.
+After the internal writing-review phase completes and regenerates AUTOMATED_REVIEW.md, /writing-revise will be invoked again automatically.
 
 **This is a loop, not a checkpoint.** Do not pause for user input.
 
@@ -508,7 +512,7 @@ Writing Review Loop Escalation (3 iterations completed)
 
 After 3 review-revise cycles, [N] issues remain:
 
-[List issues from REVIEW.md]
+[List issues from AUTOMATED_REVIEW.md]
 
 Options:
 1. Accept current draft with documented limitations
@@ -560,7 +564,7 @@ Generate completion summary:
 ### Artifacts
 - `.planning/PRECIS.md` - Thesis, audience, claims
 - `.planning/OUTLINE.md` - Document structure
-- `.planning/REVIEW.md` - Final review diagnosis
+- `.planning/AUTOMATED_REVIEW.md` - Final review diagnosis
 - `outlines/` - Detailed section outlines
 - `drafts/` - Final prose
 

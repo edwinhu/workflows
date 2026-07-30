@@ -1,16 +1,16 @@
 {
   "hook": "workshop-outline-executable-guard",
   "_notes": [
-    "IMPORT PATH — READ THIS BEFORE EDITING. This hook does a MODULE-TOP-LEVEL import of the",
+    "IMPORT PATH \u2014 READ THIS BEFORE EDITING. This hook does a MODULE-TOP-LEVEL import of the",
     "shared parser: sys.path.insert(<hook dir>/../scripts/workshop) then",
     "`from workshop_slide_table import build_index`. The parity harness extracts only hooks/*.py",
     "into a temp dir, so that relative path does not exist there and EVERY case would die with",
-    "ModuleNotFoundError (exit 1, empty stdout) — pinning nothing at all, and letting a TS port",
+    "ModuleNotFoundError (exit 1, empty stdout) \u2014 pinning nothing at all, and letting a TS port",
     "that merely crashes pass. Every case therefore sets PYTHONPATH to the LIVE repo's",
     "scripts/workshop + scripts/lib so the Python side loads the same parser the TS port will",
     "mirror. PYTHONDONTWRITEBYTECODE=1 keeps CPython from dropping __pycache__/ into the fixture",
     "dir, which would otherwise show up as a Python-only filesystem delta.",
-    "If the repo is checked out elsewhere, PYTHONPATH here must be updated — a stale path fails",
+    "If the repo is checked out elsewhere, PYTHONPATH here must be updated \u2014 a stale path fails",
     "LOUDLY (py exits 1, ts does not), it never silently passes.",
     "",
     "The hook itself is pure: no files written, no subprocesses. Every case's expected fs delta",
@@ -24,7 +24,7 @@
     "                stale_approval (allow JSON + warning) | clean (silent 0)",
     "",
     "deny-outline-md-missing pins a real quirk worth locking down: fp.parent/'OUTLINE.md' is fed",
-    "to build_index(), which — because that path is not an existing file — treats it as a",
+    "to build_index(), which \u2014 because that path is not an existing file \u2014 treats it as a",
     "DIRECTORY and reports 'OUTLINE.md not found at .planning/OUTLINE.md/OUTLINE.md'. The doubled",
     "segment is the actual HEAD behavior; the port must reproduce it byte for byte."
   ],
@@ -47,7 +47,12 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup | N/A | none | Open warm. |\n| 2. Data | Part 1: Motivation | The panel covers 2010-2020. | coverage | R9 | N/A | Walk it. |\n",
-        ".planning/SOURCES.md": "## Source Paper\n- Path: /papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+        ".planning/SOURCES.md": "## Source Paper\n- Path: /papers/opv.pdf\n\n- F1 \u2014 figure\n- T1 \u2014 table\n- R1 \u2014 regression\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "ca72e53b4c703c0f79eca21a50b2e85e238b55804908962109a5a125e9162c13",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -68,7 +73,12 @@
         }
       },
       "fixture": {
-        ".planning/SOURCES.md": "# sources only — no OUTLINE.md sibling\n"
+        ".planning/SOURCES.md": "# sources only \u2014 no OUTLINE.md sibling\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "d49320fbe4e3a783bd193b0b8eb22366fee3894f81b1dc1a7ad0e043b4ccec12",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -89,6 +99,11 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\nSome prose about the talk.\n\n- Intro\n- Data\n- Results\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "49fa3febd2e1611297887b93606bf956f35c76b8f796db83e0ff70505d1c402a",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -109,11 +124,16 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\n## Slide Spec\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
-        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n## Inventory\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n- A1 — appendix\n"
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n## Inventory\n- F1 \u2014 headline figure\n- T1 \u2014 summary stats\n- R1 \u2014 main regression\n- A1 \u2014 appendix\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
-      "name": "allow-legacy-prose-form-outline",
+      "name": "deny-retired-prose-form-outline",
       "kind": "allow",
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
@@ -129,8 +149,13 @@
         }
       },
       "fixture": {
-        ".planning/OUTLINE.md": "# Workshop Outline\n\n### Part 1: Motivation\n\n= Motivation\n\n- Slide: \"Proxy advisors move votes.\" — setup; stakes → [F1]\n\n== The Data\n\n- Slide: \"The panel covers 2010-2020.\" — coverage; cleaning → [T1, R1]\n",
-        ".planning/SOURCES.md": "## Source Paper\n- **Path:** ~/papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n### Part 1: Motivation\n\n= Motivation\n\n- Slide: \"Proxy advisors move votes.\" \u2014 setup; stakes \u2192 [F1]\n\n== The Data\n\n- Slide: \"The panel covers 2010-2020.\" \u2014 coverage; cleaning \u2192 [T1, R1]\n",
+        ".planning/SOURCES.md": "## Source Paper\n- **Path:** ~/papers/opv.pdf\n\n- F1 \u2014 figure\n- T1 \u2014 table\n- R1 \u2014 regression\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "49fa3febd2e1611297887b93606bf956f35c76b8f796db83e0ff70505d1c402a",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -152,8 +177,13 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
-        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 \u2014 headline figure\n- T1 \u2014 summary stats\n- R1 \u2014 main regression\n",
         ".planning/OUTLINE_APPROVED.md": "status: APPROVED\nslide_count: 5\nsection_count: 3\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "5ccb95f0775f59e508b1322eda4b7db5d569494d2ae9203792d9457e2635d417",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -173,6 +203,11 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\nnot executable, but the tool is not Write/Edit so the guard never looks\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -193,12 +228,19 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\nnot executable, but the write target is not OUTLINE_APPROVED.md\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "deny-dash-argv-falls-through-to-stdin",
       "kind": "deny",
-      "argv": ["-"],
+      "argv": [
+        "-"
+      ],
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
         "PYTHONDONTWRITEBYTECODE": "1"
@@ -213,7 +255,12 @@
         }
       },
       "fixture": {
-        ".planning/OUTLINE.md": "# Workshop Outline\n\nSome prose about the talk — no Slide Spec at all.\n"
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nSome prose about the talk \u2014 no Slide Spec at all.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "49fa3febd2e1611297887b93606bf956f35c76b8f796db83e0ff70505d1c402a",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -225,59 +272,92 @@
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\nno stdin is supplied, so json.load raises and the guard exits 0\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "context-argv-clean-table-prints-report",
       "kind": "context",
-      "argv": [".planning/OUTLINE.md"],
+      "argv": [
+        ".planning/OUTLINE.md"
+      ],
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
         "PYTHONDONTWRITEBYTECODE": "1"
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
-        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n"
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 \u2014 headline figure\n- T1 \u2014 summary stats\n- R1 \u2014 main regression\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "ca0829159d3e3486a4bc2a0ce64ee7dcad2e8124bdd40ef3a6f144f2c39b0c8d",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
-      "name": "context-argv-prose-form-prints-prose-report",
+      "name": "context-argv-prose-form-reports-violation",
       "kind": "context",
-      "argv": [".planning/OUTLINE.md"],
+      "argv": [
+        ".planning/OUTLINE.md"
+      ],
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
         "PYTHONDONTWRITEBYTECODE": "1"
       },
       "fixture": {
-        ".planning/OUTLINE.md": "# Workshop Outline\n\n### Part 1: Motivation\n\n= Motivation\n\n- Slide: \"Proxy advisors move votes.\" — setup; stakes → [F1]\n\n== The Data\n\n- Slide: \"The panel covers 2010-2020.\" — coverage; cleaning → [T1, R1]\n",
-        ".planning/SOURCES.md": "## Source Paper\n- **Path:** ~/papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+        ".planning/OUTLINE.md": "# Workshop Outline\n\n### Part 1: Motivation\n\n= Motivation\n\n- Slide: \"Proxy advisors move votes.\" \u2014 setup; stakes \u2192 [F1]\n\n== The Data\n\n- Slide: \"The panel covers 2010-2020.\" \u2014 coverage; cleaning \u2192 [T1, R1]\n",
+        ".planning/SOURCES.md": "## Source Paper\n- **Path:** ~/papers/opv.pdf\n\n- F1 \u2014 figure\n- T1 \u2014 table\n- R1 \u2014 regression\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "393a6270b0fad28e8c416300850e213c9cb83a1a9ecdcd13ae4f9df17e6de27a",
+        "exit": 1,
+        "fs": {}
       }
     },
     {
       "name": "context-argv-violations-exits-1-with-report",
       "kind": "context",
-      "argv": [".planning/OUTLINE.md"],
+      "argv": [
+        ".planning/OUTLINE.md"
+      ],
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
         "PYTHONDONTWRITEBYTECODE": "1"
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup | N/A | none | Open warm. |\n| 2. Data | Part 1: Motivation | The panel covers 2010-2020. | coverage | R9 | N/A | Walk it. |\n",
-        ".planning/SOURCES.md": "## Source Paper\n- Path: /papers/opv.pdf\n\n- F1 — figure\n- T1 — table\n- R1 — regression\n"
+        ".planning/SOURCES.md": "## Source Paper\n- Path: /papers/opv.pdf\n\n- F1 \u2014 figure\n- T1 \u2014 table\n- R1 \u2014 regression\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "6987c7c03ddb012717e835b614a9439f6fae76bc27e6fc48116161e997a000bd",
+        "exit": 1,
+        "fs": {}
       }
     },
     {
       "name": "context-argv-stale-approval-warns-exit-0",
       "kind": "context",
-      "argv": [".planning/OUTLINE.md"],
+      "argv": [
+        ".planning/OUTLINE.md"
+      ],
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
         "PYTHONDONTWRITEBYTECODE": "1"
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Workshop Outline\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Part 1: Motivation | Proxy advisors move votes. | setup; stakes | F1 | none | Open warm. |\n| 2. Data | Part 1: Motivation `==` The Data | The panel covers 2010-2020. | coverage; cleaning | T1, R1 | table | Walk the panel. |\n",
-        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 — headline figure\n- T1 — summary stats\n- R1 — main regression\n",
+        ".planning/SOURCES.md": "## Source Paper\n- Path: ~/papers/opv.pdf\n\n- F1 \u2014 headline figure\n- T1 \u2014 summary stats\n- R1 \u2014 main regression\n",
         ".planning/OUTLINE_APPROVED.md": "status: APPROVED\nslide_count: 5\nsection_count: 3\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "474a3f6b3021f2a4fd29c8950123c4deda9501a4f8b25d4e30daa2c24ffafe05",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

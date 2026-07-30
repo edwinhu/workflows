@@ -1,7 +1,26 @@
 ---
 name: writing
 description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', 'brainstorm writing topics', 'gather sources for a paper', 'what should I write about', or needs the writing workflow entry point for any writing task."
-allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
+allowed-tools: Read, Grep, Glob, Bash, Skill, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Workflow
+hooks:
+  PreToolUse:
+    - matcher: "Read|Glob|Grep|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow writing"
+    - matcher: "Edit|Write|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow writing"
+    - matcher: "Agent|Workflow"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow writing"
+  PostToolUse:
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow writing"
 ---
 
 # Writing
@@ -16,17 +35,45 @@ Load the constraint index for the writing workflow:
 
 **Router loads index only.** Phase skills load specific atomic files relevant to their phase.
 
-## Session Resume Detection
+## Shared lifecycle entry
 
-Before starting, check for an existing handoff:
+Quick inline edits still route directly to `writing-general`. Project mode uses the shared lifecycle.
+Before task reconnaissance, overwrite the narrow sentinel with pending state:
 
-1. Check if `.planning/HANDOFF.md` exists
-2. **If found:** Read it and present to user:
-   - Show the phase, section in progress, and Next Action
-   - Ask: "Resume from handoff, or start fresh?"
-   - If resume: skip to the recorded phase
-   - If fresh: proceed with mode detection
-3. **If not found:** Proceed normally
+```bash
+mkdir -p .planning && printf '%s\n' '{"status":"pending"}' > .planning/WRITING_CLARIFIED.json
+```
+
+If existing writing state lacks `lifecycle: shared-v1`, stop and require a fresh restart or manual
+alignment with the new artifacts. There is no legacy resume or automatic conversion path.
+
+For a fresh project, create `.planning/ACTIVE_WORKFLOW.md` with:
+
+```yaml
+---
+workflow: writing
+lifecycle: shared-v1
+phase: clarify
+---
+```
+
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and ask, in one batched call where independent:
+
+- thesis or angle and desired outcome;
+- audience and domain/style;
+- scope and explicit exclusions;
+- source expectations and authoritative inputs;
+- deliverables and artifact formats;
+- observable completion evidence and human review surfaces.
+
+After the user responds, write the current-session sentinel:
+
+```bash
+printf '%s\n' "{\"status\":\"clarified\",\"sessionId\":\"${CLAUDE_SESSION_ID}\"}" > .planning/WRITING_CLARIFIED.json
+```
+
+Only then gather sources and build `PRECIS.md`, `OUTLINE.md`, detailed outlines, claim maps, and the
+deterministic section index as planning evidence.
 
 ## Decision Flowchart (This IS the Spec)
 
@@ -36,12 +83,16 @@ START
   ├─ Quick edit? ("check this paragraph", inline short text)
   │  YES → Load writing-general/SKILL.md → Apply rules → Return → EXIT
   │
-  ├─ Active workflow? (.planning/ACTIVE_WORKFLOW.md exists)
-  │  YES → Read ACTIVE_WORKFLOW.md → Resume at current phase → EXIT
+  ├─ Existing workflow state?
+  │  YES → require lifecycle: shared-v1; otherwise STOP for fresh restart
+  │       → resume by phase (/writing for plan; /writing-revise for correction)
   │
   └─ New project
-     → Phase 2: Detect Domain, Gather Sources
-     → Launch writing-setup
+     → CLARIFY before reconnaissance
+     → Gather sources + PRECIS + master/detailed outlines + claim map
+     → Native Plan mode → exact PLAN persistence → independent writing plan review
+     → writing-draft adapter → validate → internal writing-review
+     → /writing-revise corrections → human REVIEW
 ```
 
 If text and flowchart disagree, the flowchart wins.
@@ -159,33 +210,31 @@ echo “scratch/” >> .gitignore
 
 ## Writing Workflow Overview
 
+```text
+CLARIFY → source and outline evidence → native Plan approval → writing plan review
+        → writing-draft execution adapter → writing-validate + internal writing-review
+        → /writing-revise correction loop → human REVIEW
 ```
-/writing (entry point)
-    │
-    └── skills/writing/ (this skill)
-            │ Mode detect, source gathering, topic exploration
-            │ GATE: Sources gathered, domain detected
-            │
-            └── skills/writing-setup/ (project foundation)
-                    │ PRECIS.md, OUTLINE.md, ACTIVE_WORKFLOW.md
-                    │ GATE: All three files exist with required content
-                    │
-                    └── skills/writing-outline/ (per section)
-                            │ outlines/[Section] (Outline).md
-                            │ GATE: Outline cross-references PRECIS claims
-                            │
-                            └── skills/writing-draft/ (per section)
-                                    │ Domain skill loaded (legal/econ/general)
-                                    │ drafts/[Section] (Draft).md
-                                    │ GATE: All sections drafted with depth
-                                    │
-                                    └── /writing-review (diagnose → REVIEW.md)
-                                            │ Hierarchical review: section → transition → document
-                                            │ .planning/REVIEW.md
-                                            │ GATE: All sections reviewed, all levels complete
-                                            │
-                                            └── /writing-revise (fix from REVIEW.md + complete)
-```
+
+After the detailed outlines and section index are executable:
+
+1. Enter native Plan mode. The plan must include intent, exclusions, ordered section outputs, pinned
+   inputs, drafting evidence, automated verification, and a **Review Surfaces** section.
+2. `ExitPlanMode` persists exact approved bytes to `.planning/PLAN.md` and approval identity to
+   `.planning/PLAN.meta.json`; never edit those files directly.
+3. Read `${CLAUDE_SKILL_DIR}/../writing-plan-reviewer/SKILL.md` and dispatch the independent plan
+   reviewer. Issues return to native Plan mode for fresh approval.
+4. In a distinct implementation session, read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, set
+   one budgeted `/goal`, and invoke the existing writing-draft workflow as the domain execution
+   adapter under approved-artifact admission.
+5. Run writing validation and internal `writing-review`. Automated findings go to
+   `.planning/AUTOMATED_REVIEW.md`; `/writing-revise` fixes them and re-runs independent review.
+6. After automated PASS, read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and use
+   `.planning/HUMAN_REVIEW.md` for user feedback dispositions. Human-driven edits re-enter
+   `/writing-revise`; `REJECT:` returns to CLARIFY.
+
+`writing-review` is internal and read-only. `/writing-revise` remains the user-facing corrective
+midpoint entry.
 
 ## When to Use
 

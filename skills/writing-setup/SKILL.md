@@ -316,8 +316,10 @@ Create `.planning/ACTIVE_WORKFLOW.md` to track workflow state:
 ```yaml
 ---
 workflow: writing
+lifecycle: shared-v1
 style: [legal|econ|general]
-phase: outline
+phase: plan
+phase_name: outline
 project_root: [current directory]
 bibliography: references/sources.bib
 precis: .planning/PRECIS.md

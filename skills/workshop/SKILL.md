@@ -3,12 +3,20 @@ name: workshop
 description: "This skill should be used when the user asks to 'create a workshop presentation', 'prepare a workshop talk', 'make slides for a workshop', 'presentation for faculty workshop', 'workshop slides from paper', or needs to create academic workshop presentation slides and speaker notes from a research paper."
 hooks:
   PreToolUse:
+    - matcher: "Read|Glob|Grep|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow workshop"
     - matcher: "Read"
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.ts"
-    - matcher: "Edit|Write|Workflow"
+    - matcher: "Edit|Write|Bash|Agent|Workflow"
       hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow workshop"
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow workshop"
         - type: command
           command: >-
             GATE_ARTIFACT=.planning/SOURCES_VERIFIED.md
@@ -28,6 +36,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.ts"
   PostToolUse:
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow workshop"
     - matcher: "Edit"
       hooks:
         - type: command
@@ -59,13 +71,53 @@ Load ALL Typst conventions before any slide or notes work:
 
 **You MUST have these constraints loaded before proceeding to Phase 3. No claiming you "remember" them.**
 
-## Session Resume Detection
+## Shared lifecycle entry
 
-Check if `.planning/HANDOFF.md` exists:
-1. **If found:** Read it, show status, ask: "Resume from handoff, or start fresh?"
-2. **If not found:** Proceed normally
+Existing workshop lifecycle state without `lifecycle: shared-v1` is incompatible. Stop and require a
+fresh restart or manual alignment; do not resume or convert it automatically.
+
+Before paper or project reconnaissance, write pending clarification state:
+
+```bash
+mkdir -p .planning && printf '%s\n' '{"status":"pending"}' > .planning/WORKSHOP_CLARIFIED.json
+```
+
+Initialize `.planning/ACTIVE_WORKFLOW.md`:
+
+```yaml
+---
+workflow: workshop
+lifecycle: shared-v1
+phase: clarify
+---
+```
+
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and ask paper, audience/venue, duration, section
+proportions, required and excluded content, visual expectations, output formats, and observable review
+evidence. After the user answers, write the current-session clarified sentinel. Only then inspect the
+paper, predecessor materials, or project files.
 
 ## Workflow Overview
+
+```text
+CLARIFY → source and Slide-Spec evidence → native Plan approval → workshop plan review
+        → workshop-generate adapter → workshop-verify → human REVIEW
+```
+
+After source verification and the executable Slide Spec are complete, enter native Plan mode. The plan
+must name section-granular generation, the assembly barrier, both Typst outputs, compilation evidence,
+built-deck semantic and visual verification, and human Review Surfaces. `ExitPlanMode` persists exact
+approved bytes and metadata; read `${CLAUDE_SKILL_DIR}/../workshop-plan-reviewer/SKILL.md` and obtain
+the independent current-hash verdict before generation.
+
+In a distinct implementation session, read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, set one
+budgeted `/goal`, and use the existing workshop-generate workflow as the domain adapter. The external
+workshop-verify workflow remains the independent verifier. After automated PASS, read
+`${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`, open `.typ` source in Neovim with a current Tinymist or
+rendered PDF preview, and record user dispositions in `.planning/HUMAN_REVIEW.md`. Tactical feedback
+routes through `/workshop-revise`; `REJECT:` returns to CLARIFY.
+
+The detailed domain pipeline remains:
 
 ```
 Phase 1         Phase 2         Phase 3         Phase 4
@@ -118,8 +170,8 @@ Before starting each phase, check context availability:
 ```yaml
 ---
 workflow: workshop
-phase: [current phase number]
-phase_name: [current phase name]
+lifecycle: shared-v1
+phase: [clarify | planning | plan-review | implementation | verification | revision | human-review]
 status: context_exhaustion
 last_updated: [timestamp]
 ---
@@ -161,22 +213,21 @@ last_updated: [timestamp]
 
 ## Workflow Initialization
 
-Create `.planning/ACTIVE_WORKFLOW.md`:
+Maintain the canonical `.planning/ACTIVE_WORKFLOW.md` initialized at entry. After CLARIFY, update it
+without replacing its schema:
+
 ```yaml
 ---
 workflow: workshop
-phase: 1
-phase_name: gather
+lifecycle: shared-v1
+phase: evidence
 started: [current timestamp]
 project_root: [current directory]
-implements: "4-phase workshop creation (gather → structure → generate → verify)"
-requires: "source paper (PDF), user structure preferences"
 provides: "slides.typ, notes.typ, slides.pdf, notes.pdf"
-affects: "presentation/ directory"
 ---
 ```
 
-**`.planning/ACTIVE_WORKFLOW.md` is the live state file** — update its `phase`/`phase_name` at every gate transition (Phase 1→2→3→4), not just at startup. A stale `phase: 1` after Phase 3 means a resuming session restarts from the wrong place. The per-phase gate artifacts (SOURCES_VERIFIED / OUTLINE_APPROVED / SLIDES_REVIEWED / VALIDATION) are the immutable completion records; ACTIVE_WORKFLOW.md is the moving cursor.
+**`.planning/ACTIVE_WORKFLOW.md` is the live state file** — update its semantic `phase` at every gate transition, not just at startup. A stale planning phase after implementation means a resuming session restarts from the wrong place. The per-phase gate artifacts (SOURCES_VERIFIED / OUTLINE_APPROVED / SLIDES_REVIEWED / VALIDATION) are the immutable completion records; ACTIVE_WORKFLOW.md is the moving cursor.
 
 ---
 
@@ -325,7 +376,7 @@ Inferring metadata from filenames is fabrication. The user got burned by halluci
 ```yaml
 ---
 status: VERIFIED
-phase: gather
+phase: planning
 verified_at: [timestamp]
 title_source: look-at (NOT inferred)
 implements: "Phase 1 — source gathering and metadata extraction"
@@ -402,13 +453,12 @@ Sources gathered and verified. Paper metadata extracted from source document.
    ```
 
    **This table IS the canonical, born-canonical form** (doctrine #6). The ONE shared parser
-   `scripts/workshop/workshop_slide_table.py` reads it directly (the guard, `workshop-generate`, and
+   `scripts/workshop/workshop-slide-table.ts` reads it directly (the guard, `workshop-generate`, and
    `workshop-verify`'s side-table all consume *the same* parse — "parses ⇔ passes the guard"). Emit the
    table, not prose: the table pins **Visual + Notes per slide** (7 fields), so generation renders them
-   rather than *inventing* them. The parser also tolerates a legacy 4-field prose form
-   (`- Slide: "Takeaway." — bullets → [IDs]`) **only** as a back-compat shim for decks built before this
-   spec — new decks MUST emit the table so nothing is inferred. (After writing OUTLINE.md, the index is
-   compiled by Phase 3 step 0; a row missing a takeaway or an F/T/R/A id is a `violations` STOP.)
+   rather than *inventing* them. The retired prose form is rejected. After writing OUTLINE.md, the
+   index is compiled by Phase 3 step 0; a row missing a takeaway or an F/T/R/A id is a `violations`
+   STOP.
 
 5. **Independent OUTLINE.md review (read-only subagent) — before showing the user.** Don't make the user catch structural gaps. Dispatch ONE fresh read-only subagent (Read/Grep only) to check OUTLINE.md against its spec:
    ```
@@ -436,7 +486,7 @@ Sources gathered and verified. Paper metadata extracted from source document.
 ```yaml
 ---
 status: APPROVED
-phase: structure
+phase: planning
 approved_at: [timestamp]
 checkpoint_type: decision
 implements: "Phase 2 — outline structure with content allocation"
@@ -634,17 +684,17 @@ After completing Phase 3, report: **Total deviations:** N auto-fixed (R1: X, R2:
 Generation is the **`workshop-generate` ultracode workflow** — do NOT hand-write slides.typ in this session. It reads the approved Slide Spec table, groups slides by **Section**, and fans out one agent per section (each writes that subsection's whole run of `#slide[]` blocks + notes to a section fragment file, from the pinned rows, citing only the allowed inventory ids — section is the coherent unit, keeping intra-section flow), then an assembly agent concatenates the section files under their headers into slides.typ + notes.typ and compiles the deck.
 
 ```
-0. COMPILE THE SLIDE INDEX (the deterministic Discover — replaces the engine's LLM Discover, DESIGN §3):
-   uv run python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_slide_table.py "<project root>" --json > .planning/slide-index.json
-   Read it. If `ok` is true → pass the parsed object as `slideIndex` (below). If it carries `violations`
+0. BUILD THE SLIDE INDEX IN MEMORY (the deterministic Discover — replaces the engine's LLM Discover, DESIGN §3):
+   bun ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop-slide-table.ts "<project root>" --json
+   Parse stdout and pass the object directly as `slideIndex`; do not redirect it to a project file. If it carries `violations`
    (a slide missing inventory, a dangling F/T/R/A id, a malformed row) or `staleApproval` (OUTLINE_APPROVED.md's
    slide/section count disagrees with the live OUTLINE.md — a stale approval after a structure change),
    **STOP and surface them** — these are spec-integrity failures fixed in Phase 2 (re-edit OUTLINE + re-approve),
-   NOT papered over. If the script errors entirely, omit `slideIndex` and the workflow falls back to its LLM Discover.
+   NOT papered over. If the script errors, STOP: shared-v1 generation has no alternate enumerator.
 1. Workflow(name="workshop-generate", args={
      "projectDir": "<absolute presentation project root (cwd)>",
      "pluginRoot": "<resolve ${CLAUDE_SKILL_DIR}/../../workflows>",
-     "slideIndex": <the parsed .planning/slide-index.json object, or omit to use the LLM Discover>
+     "slideIndex": <the canonical parsed stdout object>
    })
    → returns { overallPass, sections, compiled, findings, sectionsThatFailed, assembledPaths }.
 2. Read the gate:
@@ -680,20 +730,17 @@ If convention violations persist after 3 fix-and-recheck cycles, escalate to use
 
 **Before proceeding to Phase 4, the slides and notes are reviewed by the `workshop-verify` ultracode workflow — a per-slide fan-out (one read-only reviewer per slide × {convention, notes-coverage, source-fidelity}) plus a global mechanical leg (compile + `check-all.py` + widow + overflow) and per-diagram visual-verify, with the CLEAN/ISSUES gate computed in pure JS from raw counts.** This replaces the former single monolithic reviewer: per-slide isolation keeps each slide's paper-reading in its own subagent transcript (the deck-review would otherwise blow the main conversation's context on a long deck), and the JS gate removes honor-system score inflation. It satisfies the Iron Law of Flat Dispatch — reviewer results land in script variables, never a middle dispatcher agent.
 
-1. **Compile first** so `slides.pdf` exists (the workflow's widow/visual legs need it):
-   ```bash
-   cd [presentation directory] && typst compile slides.typ && typst compile notes.typ
-   ```
+1. **Use the PDFs compiled by `workshop-generate`.** If they are missing or stale, re-invoke the delegated generator for the affected sections; main chat does not compile project artifacts directly.
 
 2. **Invoke the workflow** (read-only; never drafts, never fixes). Pass `slideIndex` = the parsed
-   `.planning/slide-index.json` (reuse Phase 3 step 0's, or recompile with `workshop_slide_table.py`).
+   stdout object from Phase 3 step 0 (or rerun the read-only `workshop-slide-table.ts` command in memory).
    In VERIFY this is the OUTLINE **side-table** only — the workflow still enumerates the built `slides.typ`
-   and joins inventory to slides SEMANTICALLY (DESIGN §3a-join); omit it to fall back to the LLM Discover.
+   and joins inventory to slides SEMANTICALLY (DESIGN §3a-join). The canonical side-table is required.
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[absolute project root]",
      "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-     "slideIndex": <parsed .planning/slide-index.json, or omit for the LLM Discover fallback>
+     "slideIndex": <canonical parsed stdout slideIndex>
    })
    ```
    It returns `{ overallPass, verdict, scoreTable, findings, reviews, slidesThatFlagged, inventoryCoverage }`.
@@ -708,7 +755,7 @@ If convention violations persist after 3 fix-and-recheck cycles, escalate to use
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[abs]", "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-     "slideIndex": <parsed .planning/slide-index.json, or omit>,
+     "slideIndex": <canonical parsed stdout slideIndex>,
      "onlyChecks": [<slidesThatFlagged from the prior run>],
      "priorReviews": [<reviews from the prior run>]
    })
@@ -747,7 +794,7 @@ Never silently abandon the loop. An off-topic message is not permission to stop 
 ```yaml
 ---
 status: APPROVED
-phase: generate
+phase: implementation
 reviewed_at: [timestamp]
 reviewer: workshop-verify ultracode workflow (per-slide fan-out + JS gate)
 implements: "Phase 3 — slide and notes generation with per-slide ultracode-workflow review"
@@ -796,13 +843,13 @@ Do not declare the presentation ready, do not present to the user, do not skip t
 ### Steps
 
 1. **Final full verification gate** — re-invoke the workflow over the whole deck (no `onlyChecks`). Pass
-   `slideIndex` = the parsed `.planning/slide-index.json` (recompile with `workshop_slide_table.py` if the
-   OUTLINE changed); omit to fall back to the LLM Discover:
+   `slideIndex` = the canonical parsed stdout from `workshop-slide-table.ts` (rerun it if the
+   OUTLINE changed). Parser failure blocks verification setup:
    ```
    Workflow(name="workshop-verify", args={
      "projectDir": "[absolute project root]",
      "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-     "slideIndex": <parsed .planning/slide-index.json, or omit>
+     "slideIndex": <canonical parsed stdout slideIndex>
    })
    ```
    - If `overallPass` is false → drive the `/goal workshop-verify returns overallPass=true. Stop after 3 turns.` loop (fix `findings` via subagent → recompile → re-invoke). The JS gate is authoritative.
@@ -815,7 +862,7 @@ Do not declare the presentation ready, do not present to the user, do not skip t
 3. **Write the inventory-coverage map** (`.planning/VALIDATION.md`) — render it **directly from the workflow's returned `coverageMap`** (each entry is `{slide, title, inventoryRefs, ungroundedClaims, status}`, already classified COVERED/PARTIAL in JS — no hand-inference). Requirement traceability:
    ```markdown
    ---
-   phase: verify
+   phase: verification
    status: validated
    implements: "Phase 4 — final verification, inventory coverage, metadata cross-check"
    requires: "SLIDES_REVIEWED.md, slides.typ, notes.typ"

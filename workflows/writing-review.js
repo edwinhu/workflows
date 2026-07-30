@@ -1,7 +1,7 @@
 export const meta = {
   name: 'writing-review',
-  description: 'Hierarchical document review (Levels 1-3) as an ultracode workflow: per-section fan-out (structure + prose-quality + source-fidelity), mechanical quote-verification, transition analysis, and whole-document checks. Returns structured findings the skill renders into REVIEW.md. Read-only; does NOT fix.',
-  whenToUse: 'Called by the writing-review skill after setup + the Leg-1 constraint hard gate. Returns structured findings (sections/transitions/document-level) + a CLEAN/ISSUES-FOUND verdict. The skill renders REVIEW.md and drives the /writing-revise /goal loop; on a re-review it passes onlyChecks (changed section names) + priorReviews.',
+  description: 'Hierarchical document review (Levels 1-3) as an ultracode workflow: per-section fan-out (structure + prose-quality + source-fidelity), mechanical quote-verification, transition analysis, and whole-document checks. Returns structured findings the skill renders into AUTOMATED_REVIEW.md. Read-only; does NOT fix.',
+  whenToUse: 'Called by the writing-review skill after setup + the Leg-1 constraint hard gate. Returns structured findings (sections/transitions/document-level) + a CLEAN/ISSUES-FOUND verdict. The skill renders AUTOMATED_REVIEW.md and drives the /writing-revise /goal loop; on a re-review it passes onlyChecks (changed section names) + priorReviews.',
   phases: [
     { title: 'Discover', detail: 'enumerate sections + resolve PRECIS/OUTLINE/domain/bib' },
     { title: 'L1-Review', detail: 'per-section: structure + prose + fidelity reviewers, in parallel' },
@@ -292,7 +292,7 @@ return {
   verdict,
   summary: { ...sev, total, blocking: sev.critical + sev.major, advisoryMinors: sev.minor },
   style: disc.style,
-  sections: allSections,            // per-section issues + boundary + argumentSummary (skill renders REVIEW.md from this)
+  sections: allSections,            // per-section issues + boundary + argumentSummary (skill renders AUTOMATED_REVIEW.md from this)
   transitions: l2?.transitions || [],
   documentLevel: l3 || null,
   unreliableSections,               // sections where a reviewer returned nothing — flag, don't trust

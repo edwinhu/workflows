@@ -47,7 +47,7 @@ planning and execution guarantees:
 | `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
 
 `/work` composes the shared clarify, implementation/verification, and human-review doctrine but stays
-prompt-procedural: it does not use the DS-only approved-plan hooks or `beat-implement.js` runner.
+prompt-procedural: it does not use the native-plan hooks shared by DS, writing, and workshop, or the `beat-implement.js` runner.
 
 ### Document Formats
 
@@ -111,9 +111,9 @@ Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`
 
 DS: `/ds` plans, `/ds-implement` executes native tasks, and `/ds-review` independently reviews the resulting analysis.
 
-Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, `writing-review`, `writing-validate`, `writing-handoff`
+Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-plan-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, internal `writing-review`, `writing-validate`, `writing-handoff`; `/writing-revise` is the corrective midpoint.
 
-Workshop: (no internal phase skills — `workshop` and `workshop-revise` are both user-facing entry points)
+Workshop: `workshop-plan-reviewer` plus internal `workshop-generate`/`workshop-verify`; `/workshop-revise` is the corrective midpoint.
 
 ---
 
@@ -146,7 +146,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 ## Workflow lifecycle architecture
 
-Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, approved-artifact, reviewer-verdict, mutation-boundary, and task-contract mechanisms from DS/dev policy and their distinct execution adapters.
+Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, exact approved-plan identity, reviewer verdicts, mutation boundaries, and human-review ledgers from DS, writing, and workshop execution/verification adapters; dev retains its compiler path.
 
 ## Hooks (11)
 
@@ -170,7 +170,7 @@ Hooks auto-run at specific lifecycle events:
 
 ## Session Continuity
 
-The DS workflow separates durable records by purpose: `.planning/PLAN.md` is an immutable copy of the approved native plan, Claude Code's `TaskList` is the live task record, project auto-memory retains reusable facts, and `.planning/REVIEW.md` is the human-readable review ledger.
+Native-plan workflows separate durable records by purpose: `.planning/PLAN.md` is the immutable approved plan, Claude Code's `TaskList` is the live task record, project auto-memory retains reusable facts, automated findings use domain-specific artifacts such as `.planning/AUTOMATED_REVIEW.md`, and terminal user dispositions live in `.planning/HUMAN_REVIEW.md`.
 
 For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 

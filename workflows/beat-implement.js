@@ -10,6 +10,7 @@ export const meta = {
 
 // args = {
 //   projectDir: "/absolute/project/path",             // REQUIRED
+//   workflow: "ds" | "writing" | "workshop",         // REQUIRED native-plan workflow
 //   readyWave: [{ id, name, work, criteria, outputs, model, effort }], // REQUIRED; complete, caller-curated work list
 //   planReset: { approvedBodyHash, session }, // REQUIRED hash/session cross-check against separate metadata
 //   resume?: { attemptedTaskIds: ["task-id", ...] },   // optional: re-dispatch ONLY previously attempted work
@@ -19,6 +20,7 @@ if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } 
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error('beat-implement requires args.projectDir')
+if (!['ds', 'writing', 'workshop'].includes(cfg.workflow)) throw new Error('beat-implement requires args.workflow as ds, writing, or workshop')
 if (!Array.isArray(cfg.readyWave)) throw new Error('beat-implement requires args.readyWave as a complete task-spec array')
 
 // Shared libraries own approval identity and task-contract validation.
@@ -29,7 +31,7 @@ const reset = cfg.planReset || {}
 if (!requiredText(reset.approvedBodyHash)) throw new Error('beat-implement requires nonempty immutable planReset.approvedBodyHash')
 if (!requiredText(reset.session)) throw new Error('beat-implement requires nonempty immutable planReset.session')
 if (Object.keys(reset).some(key => !['approvedBodyHash', 'session'].includes(key))) throw new Error('beat-implement planReset accepts only approvedBodyHash and session')
-const artifact = validateApprovedArtifact(PROJECT, 'ds', process.env.CLAUDE_SESSION_ID)
+const artifact = validateApprovedArtifact(PROJECT, cfg.workflow, process.env.CLAUDE_SESSION_ID)
 if (artifact.code) throw new Error(`beat-implement ${artifact.message}`)
 if (reset.approvedBodyHash !== artifact.hash || reset.session !== artifact.metadata.approvedSession) {
   throw new Error('beat-implement rejects caller planReset that differs from durable approved-plan metadata')

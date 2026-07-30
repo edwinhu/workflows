@@ -14,7 +14,9 @@ criteria against what the user actually wanted.** That is what this beat is for,
 replaced by another subagent, however adversarial.
 
 **The caller supplies:** the review target and its ledger path (`.planning/REVIEW.md`,
-`.planning/VALIDATION.md`, `.planning/edit.log`, …).
+`.planning/HUMAN_REVIEW.md`, `.planning/edit.log`, …). Read
+`${CLAUDE_SKILL_DIR}/references/artifact-surfaces.md` and route each artifact to the appropriate human
+review application while keeping required rendered evidence fresh.
 
 <EXTREMELY-IMPORTANT>
 ## A rejection invalidates the criteria, not just the work

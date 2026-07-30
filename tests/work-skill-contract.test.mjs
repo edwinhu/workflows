@@ -53,11 +53,16 @@ describe("work workflow contract", () => {
     expect(work).toContain("replace intent\n  and criteria");
   });
 
-  test("does not broaden the DS execution trust boundary", () => {
+  test("keeps work outside the native approved-plan execution boundary", () => {
     expect(work).toContain("does **not** execute\n`workflows/beat-implement.js`");
     expect(goalWork).toContain("authenticates\nDS approved-plan metadata");
-    expect(read("workflows/beat-implement.js")).toContain("validateApprovedArtifact(PROJECT, 'ds'");
-    expect(read("hooks/approved-artifact-persist.ts")).toMatch(/workflow !== ["']ds["']/);
+    const runner = read("workflows/beat-implement.js");
+    expect(runner).toContain("['ds', 'writing', 'workshop'].includes(cfg.workflow)");
+    expect(runner).toContain("validateApprovedArtifact(PROJECT, cfg.workflow");
+    expect(runner).not.toContain("'work'");
+    const persist = read("hooks/approved-artifact-persist.ts");
+    expect(persist).toContain("workflowFromArg");
+    expect(persist).not.toContain('workflow === "work"');
   });
 
   test("maintains resumable work lifecycle state", () => {

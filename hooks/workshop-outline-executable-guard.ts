@@ -16,9 +16,8 @@
  *
  * S6 reconciliation (DESIGN §3b): the guard and BOTH engines share ONE parser, so
  * "parses ⇔ passes the guard" is a property, not a hope. The parser lives in
- * ./_workshop_slide_table.ts (a behavior-exact port of scripts/workshop/workshop_slide_table.py,
- * which hooks/ cannot import at runtime — see that file's header). It is TOLERANT of the legacy
- * PROSE form and CANONICAL going forward.
+ * ./_workshop_slide_table.ts (the canonical workshop Slide Spec parser). Shared-v1 accepts only the
+ * canonical seven-column table; the retired prose form cannot authorize generation.
  *
  * Standalone:  bun workshop-outline-executable-guard.ts path/to/OUTLINE.md
  */
@@ -66,7 +65,7 @@ if (idx.violations.length) {
       idx.violations.join("\n- ") +
       "\n\n" +
       "workshop-generate fans out one fragment-agent per slide. Every slide needs a takeaway and " +
-      '≥1 F/T/R/A inventory id (a table row OR a `- Slide: "..." → [IDs]` prose line). Fix, then re-approve.',
+      "≥1 F/T/R/A inventory id in the canonical seven-column Slide Spec table. Fix, then re-approve.",
   );
 }
 // Stale approval (the live OUTLINE drifted from a prior APPROVED count) is allow+WARN, not a block:

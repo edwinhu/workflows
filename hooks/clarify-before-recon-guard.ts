@@ -4,7 +4,7 @@ import { sentinelPath, workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, readPayload } from "./_gate_common.ts";
 
 const policy = workflowFromArg(Bun.argv.slice(2));
-if (!policy) { deny("Clarification guard requires exactly one known --workflow ds|dev policy."); }
+if (!policy) { deny("Clarification guard requires exactly one known --workflow ds|dev|writing|workshop policy."); }
 const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
@@ -17,9 +17,10 @@ function clarified(): boolean {
 function reconPath(value: unknown): boolean {
   if (typeof value !== "string") return false;
   const path = value.replaceAll("\\", "/").toLowerCase();
-  return policy.workflow === "ds"
-    ? /(^|\/)(data|src|notebooks?|analysis|artifacts?|results?|outputs?|tasks?)(\/|$)/.test(path) || /\.ipynb(?:$|[/?*])/.test(path)
-    : /(^|\/)(src|test|tests|lib|app|config|scripts?)(\/|$)|\.(?:ts|tsx|js|jsx|py|go|rs|java|json|ya?ml)$/.test(path);
+  if (policy.workflow === "ds") return /(^|\/)(data|src|notebooks?|analysis|artifacts?|results?|outputs?|tasks?)(\/|$)/.test(path) || /\.ipynb(?:$|[/?*])/.test(path);
+  if (policy.workflow === "writing") return /(^|\/)(drafts?|outlines?|references?|sources?|scratch)(\/|$)|\.(?:md|docx|tex|typ|bib|ris)$/.test(path);
+  if (policy.workflow === "workshop") return /(^|\/)(presentation|figures?|slides?|notes?|references?|sources?)(\/|$)|\.(?:pdf|pptx|typ|tex|md)$/.test(path);
+  return /(^|\/)(src|test|tests|lib|app|config|scripts?)(\/|$)|\.(?:ts|tsx|js|jsx|py|go|rs|java|json|ya?ml)$/.test(path);
 }
 const dsPatterns = ["python3 -c", "python -c", "import pandas", "import numpy", "import polars", "pd.read_", "pd.DataFrame", "df.head", "df.describe", "df.info", "df.shape", "df.columns", "df.dtypes", ".read_csv", ".read_parquet", ".read_sql", ".read_excel", "pixi run python"];
 if (clarified()) allow();

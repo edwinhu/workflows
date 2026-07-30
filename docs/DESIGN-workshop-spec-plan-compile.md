@@ -38,8 +38,8 @@ the real 38-slide opv deck). So the three ds/dev wins land as:
 The honest, high-value port for workshop is **two surgical moves + one emitter move**, not a run.js
 rewrite:
 
-1. **Extract ONE shared parser** (`scripts/workshop/workshop_slide_table.py`) out of
-   `hooks/workshop-outline-executable-guard.py`'s `find_slide_table`, and point its consumers at it —
+1. **Extract ONE shared parser** (`scripts/workshop/workshop-slide-table.ts`) out of
+   `hooks/workshop-outline-executable-guard.ts`'s `find_slide_table`, and point its consumers at it —
    the guard (`validate = parse().violations`), `workshop-generate`'s Discover (**fully** replaced),
    and the **OUTLINE-reading PART** of `workshop-verify`'s Discover (an inventory/section **side-table**
    only — see §3a, the cardinality correction). Output = **DATA** (a slide work-list + a side-table).
@@ -69,7 +69,7 @@ is STALE/superseded — ignore it**). Findings that shape the design:
 - **The real `OUTLINE.md` is free-form PROSE, NOT a table.** It carries the same semantic fields
   (`- Slide: "Takeaway." — bullets → [A2, R1, ...]`, sections via `=`/`==`) but as bullet lines, not
   `|`-table rows. **Zero `|`-tables.**
-- **The strict guard `workshop-outline-executable-guard.py` FAILS (exit 1) on it** ("No executable
+- **The strict guard `workshop-outline-executable-guard.ts` FAILS (exit 1) on it** ("No executable
   Slide Spec table found … prose … which workshop-generate cannot fan out"). Same FAIL on
   `OUTLINE_APPROVED.md`.
 - **The OUTLINE is also INCOMPLETE relative to the built deck** (§3a): 21 OUTLINE rows vs **38**
@@ -102,7 +102,7 @@ not flatten this. Gate computation is untouched.
 |---|---|---|
 | **SPEC** (`SPEC.md`) | `SOURCES.md` (paper inventory: `F/T/R/A` IDs) | human-gated, look-at-extracted — unchanged |
 | **PLAN** (`PLAN.md` Task table) | `OUTLINE.md` **Slide Spec table** (per-slide rows) | **the spec to harden + the parser's input** (§3) |
-| **compile** (`ds_plan_table.py` → `run.js` literal) | `workshop_slide_table.py` → a **DATA** artifact (slide work-list + side-table) | **divergence:** workshop emits DATA, not code (§7) — *second* data instance after writing |
+| **compile** (`ds_plan_table.py` → `run.js` literal) | `workshop-slide-table.ts` → a **DATA** artifact (slide work-list + side-table) | **divergence:** workshop emits DATA, not code (§7) — *second* data instance after writing |
 | **run.js** (per-project compiled runner) | `workshop-generate.js` / `workshop-verify.js` (**already generic dynamic workflows**) | already exist; feed them compiled DATA instead of an LLM `Discover` |
 | **task** | **section** (a `=`/`==` run of slides; slide = sub-row) | no inter-section deps → no DAG, flat-parallel + a final **assembly barrier** (trivial 2-level, expressed directly in JS — not topo) |
 | **`implementerPrompt(t)`** | the per-**section** write-agent prompt (workshop-generate) | already exists; unchanged in shape |
@@ -127,12 +127,12 @@ not flatten this. Gate computation is untouched.
 ## 3. Move 1 — extract the ONE shared parser (the doubled drift-mask kill)
 
 The highest-value work and the doctrine-#5 sleeper, **doubled**: the Slide Spec parser already exists
-as `find_slide_table` **inside** `hooks/workshop-outline-executable-guard.py` — but
+as `find_slide_table` **inside** `hooks/workshop-outline-executable-guard.ts` — but
 `workshop-generate.js` *Discover* AND `workshop-verify.js` *Discover* **each re-parse the same OUTLINE
 with an independent LLM agent**. Three readers of one spec, only one deterministic; the two LLM readers
 can silently disagree with the guard **and with each other**.
 
-**`scripts/workshop/workshop_slide_table.py`** (single source of truth, mirrors
+**`scripts/workshop/workshop-slide-table.ts`** (single source of truth, mirrors
 `writing_section_index.py`):
 - **parse BOTH forms** (tolerant — the back-compat shim the real opv deck forces):
   - canonical **table** (`| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |`), via
@@ -266,7 +266,7 @@ Record, don't build.)*
 
 ### 3b. Guard reconciliation (S6)
 
-`workshop-outline-executable-guard.py` imports the new module and sets
+`workshop-outline-executable-guard.ts` imports the new module and sets
 `validate = parse(outline).violations`. ONE format spec; strict-at-emitter / tolerant-at-parser; the
 guard asserts only structural validity (every row complete, every inventory ID exists in `SOURCES.md`),
 never format. Because the parser is tolerant of prose, **the guard now PASSES on the real opv deck** (it
@@ -420,7 +420,7 @@ already-built shape and consumes the contracts, not the driver.)*
   VERIFY/REVISE.** The parser is tolerant of the real **prose** form; the guard PASSES on existing
   prose decks; verify/revise degrade exactly as today on prose/absent OUTLINE. **Zero regression on the
   shipped opv deck.** *(Recommended — the parity partner's flagged constraint.)*
-- **D-w-3 — ONE shared parser `scripts/workshop/workshop_slide_table.py`**, consumed by the guard
+- **D-w-3 — ONE shared parser `scripts/workshop/workshop-slide-table.ts`**, consumed by the guard
   (`validate = parse().violations`); **the GENERATE Discover is fully replaced** by it (its 21 rows ARE
   the generate work-list); **the VERIFY Discover keeps its own `slides.typ` enumeration** AND keeps the
   **OUTLINE-row↔slide JOIN semantic** — the parser supplies canonical candidate rows, the LLM does the
@@ -440,7 +440,7 @@ already-built shape and consumes the contracts, not the driver.)*
 - **D-w-6 — Do NOT extract `run-core` in this pass.** Workshop is the 4th data point (2nd "compile =
   data", new rich-floor gate-type, two-output work-list) that *informs* pass #9; consume the seams,
   don't build the core. *(Recommended.)*
-- **D-w-7 — Sequence:** (1) `workshop_slide_table.py` + golden test on the real opv prose `OUTLINE.md`
+- **D-w-7 — Sequence:** (1) `workshop-slide-table.ts` + golden test on the real opv prose `OUTLINE.md`
   (two-way parity oracle per §3a); (2) reconcile the GENERATE Discover (full) + the VERIFY OUTLINE-read
   (side-table only) to it (opv-parity runs the deterministic Mechanical leg for byte-parity, then a
   single-slide judgment triple via `onlyChecks:["S1"]`); (3) guard reconciliation + the stale-approval
@@ -559,11 +559,11 @@ architecture is already the target shape. Nothing in the audit reopens the "need
 
 User signed off ("ok" → D-w-1…D-w-7 approved; D-w-8 mechanical-floor cleanup = fast-follow after parity).
 
-- ✅ **Step 1 — `scripts/workshop/workshop_slide_table.py`** (the deterministic Discover, the ONE shared
+- ✅ **Step 1 — `scripts/workshop/workshop-slide-table.ts`** (the deterministic Discover, the ONE shared
   parser). Parses BOTH forms (canonical 7-col table + legacy 4-field prose); `build_index() → SlideIndex`
   with `.ok`/`.violations` (guard contract) + `.to_dict()` DATA work-list; prefix-tolerant columns (dev),
   unicode-safe slug (writing), inventory over-attach FIX (`[R1-R8]` → literal `['R1','R8']`),
-  stale-approval backstop. **30/30** (`tests/workshop_slide_table_test.py`: mixed-form fixtures + the
+  stale-approval backstop. **30/30** (`tests/workshop-slide-table.test.mjs`: mixed-form fixtures + the
   REAL-opv-deck parity block — THE TRAP). On the real opv prose deck: **form=prose, 21 slides, 5
   sections, ok=TRUE** (prose parses clean → parity-regression fixed), and the **stale-approval catch
   fired live** (approved 18/4 vs live 21/5).
@@ -586,11 +586,11 @@ User signed off ("ok" → D-w-1…D-w-7 approved; D-w-8 mechanical-floor cleanup
   no-LLM-discover-when-index path, per-group fan-out, verify-keeps-semantic-join-with-candidates,
   back-compat fallback — caught + fixed an unescaped-backtick bug in the fallback prompt).
 - ✅ **Step 2b — skills wired.** All 5 engine invocations (workshop Phase 3 generate; Phase 3/4 + selective
-  verify; workshop-revise verify) now run `workshop_slide_table.py --json > .planning/slide-index.json`,
+  verify; workshop-revise verify) now run `workshop-slide-table.ts --json > .planning/slide-index.json`,
   surface `violations`/`staleApproval` (STOP), and pass `args.slideIndex` (omit → LLM-Discover fallback).
-- ✅ **Step 3 — guard reconciled (S6).** `hooks/workshop-outline-executable-guard.py` now imports
+- ✅ **Step 3 — guard reconciled (S6).** `hooks/workshop-outline-executable-guard.ts` now imports
   `build_index` and sets `validate = build_index(outline).violations` — ONE parser shared by guard + both
-  engines ("parses ⇔ passes the guard"). The legacy **prose form now PASSES** (the parity-regression fix —
+  engines ("parses ⇔ passes the guard"). The former prose compatibility form is now rejected by the shared-v1 parser —
   was a hard deny); real defects (missing inventory, dangling id) still DENY; **stale approval is
   allow+WARN**, not a block. **6/6** (`tests/workshop_guard_test.py`, incl. the real opv deck passing the
   guard CLI). Full regression green: parser 30/30, engine-discover 12/12, guard 6/6.

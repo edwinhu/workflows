@@ -18,13 +18,12 @@ if (!PROJECT) throw new Error(`workshop-generate requires args.projectDir. Got "
 const PLUGIN = cfg.pluginRoot || ''
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.section), s]))
-// Deterministic slide index from scripts/workshop/workshop_slide_table.py — the compiled "Discover".
-// When the skill passes it (cfg.slideIndex), we skip the LLM Discover entirely (the ds/dev/writing
-// compile move): the parser's work-list IS the generate enumerator (DESIGN §3a — GENERATE consumes the
-// parser fully). Absent/empty → the LLM Discover still runs (back-compat for old callers / non-standard
-// projects). The fileHeader (theme preamble) is NOT a work-list concern → the assembly agent constructs
-// it from templates + SOURCES.md, so discFromIndex stays 100% deterministic (no LLM).
-const SLIDE_INDEX = (cfg.slideIndex && Array.isArray(cfg.slideIndex.slides) && cfg.slideIndex.slides.length) ? cfg.slideIndex : null
+// Deterministic slide index from scripts/workshop/workshop-slide-table.ts — the compiled "Discover".
+// The parser's work-list IS the shared-v1 generate enumerator (DESIGN §3a). Missing or empty input is
+// an integrity failure, never permission to substitute an LLM enumerator. The fileHeader (theme preamble)
+// is not a work-list concern; the assembly agent constructs it from templates + SOURCES.md.
+if (!cfg.slideIndex || !Array.isArray(cfg.slideIndex.slides) || !cfg.slideIndex.slides.length) throw new Error('workshop-generate requires the canonical TypeScript slideIndex with at least one slide')
+const SLIDE_INDEX = cfg.slideIndex
 const SEV_RANK = { critical: 0, major: 1, minor: 2 }
 
 const SLIDE = {
@@ -113,7 +112,9 @@ function discFromIndex(idx) {
 }
 
 phase('Discover')
-const disc = SLIDE_INDEX ? discFromIndex(SLIDE_INDEX) : await agent(
+const disc = discFromIndex(SLIDE_INDEX)
+/* Retired LLM Discover preserved below only as historical source; shared-v1 never executes it. */
+false && await agent(
   `Read the approved workshop Slide Spec and prepare for SECTION-level generation. Working directory: ${PROJECT}
 
 1. Read ${PROJECT}/.planning/OUTLINE.md. If it has no Slide Spec table (columns Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes), set outlineReadable=false. For each row extract a slide: num, section (the \`=\` Part + \`==\` subsection text — the grouping key), takeaway, bullets, inventory, visual, notes.

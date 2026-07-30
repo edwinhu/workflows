@@ -1,23 +1,16 @@
 #!/usr/bin/env bun
 /**
- * TypeScript port of scripts/workshop/workshop_slide_table.py (plus the slice of
- * scripts/lib/plan_table_core.py it consumes: split_row / col_index / cell / find_table).
- *
- * WHY THE PARSER IS PORTED, NOT SHELLED OUT
- *   The Python guard does a MODULE-TOP-LEVEL `sys.path.insert(<hooks>/../scripts/workshop)` +
- *   `from workshop_slide_table import build_index`. hooks/*.ts are deployed and parity-tested
- *   next to each other with no scripts/ tree in reach, so a shell-out would depend on a path that
- *   is not guaranteed to exist (the parity harness proves this: the Python side only survives
- *   because the golden injects an absolute PYTHONPATH). The parser is pure text processing with
- *   no external deps, so it is reproduced here verbatim in behavior.
+ * Canonical TypeScript parser for the workshop Slide Spec, including the small markdown-table core
+ * it needs. Hooks, CLI generation, and tests all consume this implementation so parser behavior has
+ * one source of truth.
  *
  *   Only ENUMERATION lives here (S5/P27, as in the Python): the parser never joins a work-item to
  *   a produced artifact.
  *
- * TWO INPUT FORMS, exactly as upstream:
- *   • CANONICAL TABLE: | Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |
- *   • LEGACY PROSE:    `### Part N` / `= Section` / `== Subsection` headings +
- *                      `- Slide: "Takeaway." — bullets → [A2, R1]` lines (4-field subset).
+ * CANONICAL INPUT:
+ *   | Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |
+ *
+ * Shared-v1 deliberately rejects the retired prose form.
  */
 
 import { readFileSync, statSync } from "node:fs";
@@ -35,6 +28,10 @@ export function pyPathStr(p: string): string {
 }
 
 /** str(Path(p) / name) */
+export function sectionSlug(name: string): string {
+  return name.normalize("NFC").trim().replace(/[^\p{L}\p{N}_]+/gu, "-").replace(/^-+|-+$/g, "");
+}
+
 export function pyJoin(p: string, name: string): string {
   return pyPathStr(p === "" ? name : `${p}/${name}`);
 }
@@ -427,14 +424,11 @@ export function buildIndex(arg: string): SlideIndex {
   if (findSlideTable(text)) {
     parseTable(text, idx);
   } else {
-    parseProse(text, idx);
-    if (!idx.slides.length) {
-      idx.violations.push(
-        "No executable Slide Spec found: neither a markdown table " +
-          "(Slide|Section|Takeaway|Bullets|Inventory|Visual|Notes) nor `- Slide: \"...\" → [IDs]` " +
-          "prose rows. workshop-generate cannot fan out.",
-      );
-    }
+    idx.form = "none";
+    idx.violations.push(
+      "No executable canonical Slide Spec table found: " +
+        "Slide|Section|Takeaway|Bullets|Inventory|Visual|Notes is required for shared-v1 workshop generation.",
+    );
   }
 
   // distinct section / group order (document order)

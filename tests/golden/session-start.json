@@ -200,7 +200,7 @@
       },
       "fixture": {
         ".planning/HANDOFF.md": "---\nphase_name: \"drafting\"\ntask: 3\ntotal_tasks: 7\nlast_updated: 2026-07-28\ntags:\n  - writing\n  - paused\n---\n\n# Handoff\n\n## Next Action\n\nResume section 4 and reconcile the citation list.\n\n## Notes\n\nIgnore.\n",
-        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nphase_name: draft\nstyle: law-review\ncurrent_part: \"Part II.B\"\n---\n\nbody ignored\n",
+        ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nlifecycle: shared-v1\nphase: draft\nstyle: law-review\ncurrent_part: \"Part II.B\"\n---\n\nbody ignored\n",
         ".planning/outlines/part-1.md": "# Part I\n",
         ".planning/outlines/part-2.md": "# Part II\n",
         ".planning/drafts/part-1.md": "draft text\n"

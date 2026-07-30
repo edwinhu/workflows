@@ -366,7 +366,13 @@ function buildInProgressSection(): string {
           const currentPart = str(wf["current_part"], "");
           lines.push(`- Style: ${style}`);
           if (truthy(wf["current_part"] ?? "")) lines.push(`- Current part: ${currentPart}`);
-          lines.push("- Resume: `/writing-revise`");
+          if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart or manually align through `/writing`");
+          else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
+          else lines.push(["draft", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/writing-revise`" : "- Resume: `/writing`");
+        } else if (wfType === "workshop") {
+          if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart or manually align through `/workshop`");
+          else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
+          else lines.push(["generate", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/workshop-revise`" : "- Resume: `/workshop`");
         } else if (wfType === "work") {
           lines.push("- State: `.planning/WORK.md`");
           lines.push("- Resume: `/work`");
