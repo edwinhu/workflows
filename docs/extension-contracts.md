@@ -1,12 +1,14 @@
 # Public Extension Contracts
 
-Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Consumers must resolve an installed dependency root supplied by their plugin host or installer; these contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
+Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Consumers resolve the installed dependency root from an explicit host/installer value or the `workflows-capability-root` executable that Claude Code publishes on `PATH` while the dependency is enabled. These contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
 
 ## Discovery
 
-1. Obtain the exact installed root of the declared `workflows` dependency from the host.
-2. Call `resolveDependencyCapability(dependencyRoot, capabilityName)` from the resolver implementation at that root.
-3. Read the returned canonical implementation path and verify the returned manifest schema and capability contract version before invoking the capability.
+1. Prefer an exact dependency root supplied explicitly by the host or installer. Otherwise locate `workflows-capability-root` on the host-provided `PATH`, require exactly one canonical executable, invoke it, and require exactly one absolute root line.
+2. Validate `.claude-plugin/capabilities.json` at that root, then load its declared `capability-resolver` implementation.
+3. Call `resolveDependencyCapability(dependencyRoot, capabilityName)` and verify the returned manifest schema and capability contract version before invoking the canonical implementation path.
+
+`workflows-capability-root` derives its root only from its own installed executable location. Consumers must fail closed when the broker is missing, duplicated on `PATH`, exits nonzero, or returns malformed output. They must not replace the broker with cache scanning or version selection.
 
 Resolution succeeds only when the manifest and implementation are contained by the canonical dependency root. Consumers must not reconstruct implementation paths independently.
 

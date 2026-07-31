@@ -8,14 +8,14 @@
   ],
   "metadata": {
     "description": "Generic structured work, development, data science, and writing workflows for Claude Code",
-    "version": "5.103.0"
+    "version": "5.103.1"
   },
   "plugins": [
     {
       "name": "workflows",
       "source": "./",
       "description": "Generic structured work plus development, data science, and writing workflows with evidence-driven verification, TDD enforcement, and session handoff",
-      "version": "5.103.0",
+      "version": "5.103.1",
       "category": "development",
       "tags": [
         "development",

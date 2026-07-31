@@ -3,7 +3,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
-const TARGET_VERSION = "5.103.0";
+const TARGET_VERSION = "5.103.1";
 
 type Capability = {
   name: string;
@@ -117,7 +117,7 @@ function parseContractRows(markdown: string): ContractRow[] {
 }
 
 describe("public extension contract integration", () => {
-  test("all three plugin version fields and capability identity agree at 5.103.0", () => {
+  test("all three plugin version fields and capability identity agree at 5.103.1", () => {
     const plugin = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/plugin.json"), "utf8"));
     const marketplace = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/marketplace.json"), "utf8"));
     const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8"));
@@ -146,6 +146,15 @@ describe("public extension contract integration", () => {
       expect(capability.implementation.split("/")).not.toContain("..");
       expect(existsSync(join(ROOT, capability.implementation))).toBe(true);
     }
+  });
+
+  test("publishes a PATH broker for the exact installed dependency root", () => {
+    const broker = join(ROOT, "bin/workflows-capability-root");
+    expect(existsSync(broker)).toBe(true);
+    const result = Bun.spawnSync([broker], { stdout: "pipe", stderr: "pipe" });
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr.toString()).toBe("");
+    expect(result.stdout.toString().trim()).toBe(ROOT);
   });
 
   test("ships without ignored planning files as public contract authority", () => {

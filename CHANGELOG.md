@@ -13,6 +13,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [5.103.1] - 2026-07-31
+
+### Added
+- Added the `workflows-capability-root` PATH broker so dependent plugins resolve the exact enabled workflows installation without cache scanning, latest-version selection, source-checkout fallbacks, or reconstructed install paths.
+
+### Changed
+- Documented strict broker discovery and fail-closed handling for missing, ambiguous, failing, or malformed dependency-root brokers.
+
 ## [5.103.0] - 2026-07-31
 
 ### Added
