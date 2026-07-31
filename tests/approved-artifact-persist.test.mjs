@@ -12,6 +12,15 @@ function run(payload, cwd, workflow = "ds") {
   return spawnSync("bun", [HOOK, "--workflow", workflow], { cwd, input: JSON.stringify(payload), encoding: "utf8" });
 }
 
+function runGate(payload, cwd, workflow = "writing", session = "implementation-session") {
+  return spawnSync("bun", [join(REPO, "hooks", "approved-artifact-gate.ts"), "--workflow", workflow], {
+    cwd,
+    env: { ...process.env, CLAUDE_SESSION_ID: session },
+    input: JSON.stringify(payload),
+    encoding: "utf8",
+  });
+}
+
 function withProject(test) {
   const cwd = mkdtempSync(join(tmpdir(), "native-plan-"));
   try { test(cwd); } finally { rmSync(cwd, { recursive: true, force: true }); }
@@ -70,6 +79,107 @@ withProject((cwd) => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(readFileSync(join(cwd, ".planning", "PLAN.md"), "utf8"), plan);
 });
+
+// Claude Code's observed native ExitPlanMode transcript stores the approved plan in
+// the matching tool_use input. Persist it, add an independent review verdict, then
+// ensure the writing workflow allows its review step after that independent approval.
+withProject(function writingToolUseTranscriptPersistsAndAllowsWritingReviewAfterIndependentApproval(cwd) {
+  const plan = "# Writing plan from tool use\n";
+  const toolUseId = "toolu-writing-native-plan";
+  const transcript = join(cwd, "writing-transcript.jsonl");
+  writeFileSync(transcript, JSON.stringify({
+    message: { content: [{ type: "tool_use", id: toolUseId, name: "ExitPlanMode", input: { plan } }] },
+  }));
+  const persisted = run({
+    tool_name: "ExitPlanMode", tool_use_id: toolUseId, tool_input: {},
+    session_id: "writing-approval", transcript_path: transcript,
+  }, cwd, "writing");
+  assert.equal(persisted.status, 0, persisted.stderr);
+  const hash = createHash("sha256").update(plan).digest("hex");
+  writeFileSync(join(cwd, ".planning", "PLAN_REVIEWED.md"), `---\nplan_hash: ${hash}\nstatus: APPROVED\nreviewer_session_id: writing-reviewer\nreviewed_at: 2030-01-01T00:00:00.000Z\n---\n\nreview\n`);
+  const gate = runGate({
+    tool_name: "Workflow", cwd, tool_input: { name: "workflows:writing-review", args: { projectDir: cwd } },
+  }, cwd);
+  assert.equal(gate.status, 0, gate.stderr);
+  assert.equal(gate.stdout, "", gate.stdout);
+});
+
+// Transcript recovery must scan every exact-ID record, reject ambiguous sources, and
+// ignore malformed or non-matching records rather than choosing the first match.
+for (const [name, prepare, expectedPlan] of [
+  ["malformed unrelated JSONL", (cwd, transcript) => {
+    const plan = "# Exact plan after malformed JSONL\n";
+    writeFileSync(transcript, [
+      "{ malformed unrelated record",
+      JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan } }] } }),
+    ].join("\n"));
+    return plan;
+  }, "# Exact plan after malformed JSONL\n"],
+  ["wrong tool name", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({
+    message: { content: [{ type: "tool_use", id: "toolu-exact", name: "Write", input: { plan: "# Decoy\n" } }] },
+  })), undefined],
+  ["wrong tool ID", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({
+    message: { content: [{ type: "tool_use", id: "toolu-other", name: "ExitPlanMode", input: { plan: "# Decoy\n" } }] },
+  })), undefined],
+  ["non-string tool-use plan", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({
+    message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: { text: "# Not a string\n" } } }] },
+  })), undefined],
+  ["matching tool-use and result plans", (cwd, transcript) => {
+    const plan = "# Matching plan\n";
+    const resultPath = join(cwd, "matching-result-plan.md");
+    writeFileSync(resultPath, plan);
+    writeFileSync(transcript, [
+      JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan } }] } }),
+      JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: resultPath } }),
+    ].join("\n"));
+    return plan;
+  }, "# Matching plan\n"],
+  ["conflicting tool-use and result plans", (cwd, transcript) => {
+    const resultPath = join(cwd, "result-plan.md");
+    writeFileSync(resultPath, "# Result plan\n");
+    writeFileSync(transcript, [
+      JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: "# Tool-use plan\n" } }] } }),
+      JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: resultPath } }),
+    ].join("\n"));
+  }, undefined],
+  ["malformed and valid matching tool-use records", (_cwd, transcript) => writeFileSync(transcript, [
+    JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: {} }] } }),
+    JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: "# Valid but ambiguous\n" } }] } }),
+  ].join("\n")), undefined],
+  ["duplicate matching tool-use records", (_cwd, transcript) => writeFileSync(transcript, [
+    JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: "# First\n" } }] } }),
+    JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: "# Second\n" } }] } }),
+  ].join("\n")), undefined],
+  ["duplicate matching tool-result records", (cwd, transcript) => {
+    const resultPath = join(cwd, "result-plan.md");
+    writeFileSync(resultPath, "# Result plan\n");
+    writeFileSync(transcript, [
+      JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: resultPath } }),
+      JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: resultPath } }),
+    ].join("\n"));
+  }, undefined],
+  ["invalid matching result path with valid tool-use", (_cwd, transcript) => writeFileSync(transcript, [
+    JSON.stringify({ message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: "# Tool-use plan\n" } }] } }),
+    JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: "relative.md" } }),
+  ].join("\n")), undefined],
+]) {
+  withProject((cwd) => {
+    const transcript = join(cwd, `${name}.jsonl`);
+    prepare(cwd, transcript);
+    const result = run({
+      tool_name: "ExitPlanMode", tool_use_id: "toolu-exact", tool_input: {},
+      session_id: name, transcript_path: transcript,
+    }, cwd);
+
+    if (expectedPlan) {
+      assert.equal(result.status, 0, `${name}: ${result.stderr}`);
+      assert.equal(readFileSync(join(cwd, ".planning", "PLAN.md"), "utf8"), expectedPlan);
+    } else {
+      assert.equal(result.status, 2, `${name}: ${result.stderr}`);
+      assert.ok(!existsSync(join(cwd, ".planning")), `${name}: must not create artifacts`);
+    }
+  });
+}
 
 // Recovery is bound to the exact tool_use_id; decoy and later result files must
 // never be selected by recency or filename heuristics.

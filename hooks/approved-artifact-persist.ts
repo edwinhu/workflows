@@ -18,10 +18,12 @@ if (typeof plan !== "string") {
   const transcriptPath = payload.transcript_path;
   const toolUseId = payload.tool_use_id;
   if (typeof transcriptPath !== "string" || typeof toolUseId !== "string" || !toolUseId) fail("ExitPlanMode tool input is missing string plan and transcript lookup identity");
+  let toolUsePlan: string | undefined;
+  let toolUseCount = 0;
   let approvedPath: unknown;
-  let foundResult = false;
+  let resultCount = 0;
   try {
-    scan: for (const line of readFileSync(transcriptPath, "utf8").split(/\r?\n/)) {
+    for (const line of readFileSync(transcriptPath, "utf8").split(/\r?\n/)) {
       if (!line.trim()) continue;
       let record: Record<string, unknown>;
       try {
@@ -34,36 +36,49 @@ if (typeof plan !== "string") {
       for (const block of content) {
         if (!block || typeof block !== "object") continue;
         const result = block as Record<string, unknown>;
+        if (result.type === "tool_use" && result.id === toolUseId && result.name === "ExitPlanMode") {
+          toolUseCount += 1;
+          const candidate = result.input;
+          if (candidate && typeof candidate === "object" && !Array.isArray(candidate) && typeof (candidate as Record<string, unknown>).plan === "string") {
+            toolUsePlan = (candidate as Record<string, unknown>).plan;
+          }
+        }
         if (result.type === "tool_result" && result.tool_use_id === toolUseId) {
-          foundResult = true;
+          resultCount += 1;
           const toolUseResult = record.toolUseResult;
           approvedPath = toolUseResult && typeof toolUseResult === "object" && !Array.isArray(toolUseResult)
             ? (toolUseResult as Record<string, unknown>).filePath
             : undefined;
-          break scan;
         }
       }
     }
   } catch { fail("ExitPlanMode approved plan could not be recovered from transcript"); }
-  if (!foundResult) fail("ExitPlanMode matching transcript tool-result was not found");
-  if (typeof approvedPath !== "string" || !isAbsolute(approvedPath)) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
-  try {
-    const fd = openSync(approvedPath, "r");
-    let bytes: Buffer;
+  if (toolUseCount > 1 || resultCount > 1) fail("ExitPlanMode transcript contains duplicate matching records");
+  if (resultCount === 1 && (typeof approvedPath !== "string" || !isAbsolute(approvedPath))) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+
+  let resultPlan: string | undefined;
+  let resultBytes: Buffer | undefined;
+  if (resultCount === 1) {
     try {
-      const status = fstatSync(fd);
-      if (!status.isFile() || status.size === 0) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
-      bytes = readFileSync(fd);
-    } finally {
-      closeSync(fd);
+      const fd = openSync(approvedPath, "r");
+      try {
+        const status = fstatSync(fd);
+        if (!status.isFile() || status.size === 0) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+        resultBytes = readFileSync(fd);
+      } finally {
+        closeSync(fd);
+      }
+      if (resultBytes.length === 0) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+      resultPlan = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(resultBytes);
+      if (!Buffer.from(resultPlan, "utf8").equals(resultBytes)) fail("ExitPlanMode approved plan file must contain exact valid UTF-8 bytes");
+    } catch (error) {
+      if (error instanceof TypeError) fail("ExitPlanMode approved plan file must contain exact valid UTF-8 bytes");
+      fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
     }
-    if (bytes.length === 0) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
-    plan = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
-    if (!Buffer.from(plan, "utf8").equals(bytes)) fail("ExitPlanMode approved plan file must contain exact valid UTF-8 bytes");
-  } catch (error) {
-    if (error instanceof TypeError) fail("ExitPlanMode approved plan file must contain exact valid UTF-8 bytes");
-    fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
   }
+  if (toolUsePlan !== undefined && resultPlan !== undefined && !Buffer.from(toolUsePlan, "utf8").equals(resultBytes)) fail("ExitPlanMode transcript tool-use and tool-result plans disagree");
+  plan = toolUsePlan ?? resultPlan;
+  if (typeof plan !== "string") fail("ExitPlanMode matching transcript tool-result was not found");
 }
 if (typeof plan !== "string") fail("ExitPlanMode tool input is missing string plan");
 if (typeof payload.session_id !== "string" || !payload.session_id.trim()) fail("ExitPlanMode payload is missing a nonempty session_id");
