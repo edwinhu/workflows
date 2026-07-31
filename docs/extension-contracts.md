@@ -1,6 +1,6 @@
 # Public Extension Contracts
 
-Version 5.101.0 exposes a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Consumers must resolve an installed dependency root supplied by their plugin host or installer; these contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
+Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Consumers must resolve an installed dependency root supplied by their plugin host or installer; these contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
 
 ## Discovery
 

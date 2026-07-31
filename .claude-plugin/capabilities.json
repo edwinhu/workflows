@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "plugin": {
     "name": "workflows",
-    "version": "5.101.0"
+    "version": "5.101.2"
   },
   "capabilities": [
     {

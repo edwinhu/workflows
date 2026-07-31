@@ -44,16 +44,19 @@ withProject((cwd) => {
   assert.equal(next.plan_file, "second.md"); assert.equal(next.status, "PENDING"); assert.equal(next.approved_session_id, "approval-two");
 });
 
-for (const [name, setup, pattern] of [
+for (const [name, setup, pattern, expectedStatus = 2] of [
   ["raw plan only", cwd => ({ tool_name: "ExitPlanMode", tool_input: { plan: "# raw" }, session_id: "s" }), /transcript lookup identity/],
-  ["outside plan", cwd => { const path = join(cwd, "outside.md"); writeFileSync(path, "# outside\n"); return payload(cwd, path); }, /direct child/],
-  ["reserved PLAN", cwd => { mkdirSync(join(cwd, ".planning")); const path = join(cwd, ".planning", "PLAN.md"); writeFileSync(path, "# fixed\n"); return payload(cwd, path); }, /direct child/],
-  ["missing result", cwd => { const transcript = join(cwd, "missing.jsonl"); writeFileSync(transcript, "{}"); return { tool_name: "ExitPlanMode", tool_use_id: "missing", tool_input: {}, session_id: "s", transcript_path: transcript }; }, /matching transcript/],
-]) withProject((cwd) => { const result = run(setup(cwd), cwd); assert.equal(result.status, 2, `${name}: ${result.stderr}`); assert.match(result.stderr, pattern); });
+  ["outside plan", cwd => { const path = join(cwd, "outside.md"); writeFileSync(path, "# outside\n"); return payload(cwd, path); }, /direct child/, 1],
+  ["reserved PLAN", cwd => { mkdirSync(join(cwd, ".planning")); const path = join(cwd, ".planning", "PLAN.md"); writeFileSync(path, "# fixed\n"); return payload(cwd, path); }, /direct child/, 1],
+  // ExitPlanMode has completed when PostToolUse runs. If its matching result is
+  // not in the transcript yet, return a non-blocking hook error and leave the
+  // approval gate closed rather than blocking the completed native tool call.
+  ["missing result", cwd => { const transcript = join(cwd, "missing.jsonl"); writeFileSync(transcript, "{}"); return { tool_name: "ExitPlanMode", tool_use_id: "missing", tool_input: {}, session_id: "s", transcript_path: transcript }; }, /matching transcript/, 1],
+]) withProject((cwd) => { const result = run(setup(cwd), cwd); assert.equal(result.status, expectedStatus, `${name}: ${result.stderr}`); assert.match(result.stderr, pattern); });
 
 withProject((cwd) => {
   mkdirSync(join(cwd, ".planning")); const outside = mkdtempSync(join(tmpdir(), "state-outside-"));
-  try { symlinkSync(outside, join(cwd, ".planning", ".state")); const path = join(cwd, ".planning", "safe.md"); writeFileSync(path, "# safe\n"); const result = run(payload(cwd, path), cwd); assert.equal(result.status, 2); assert.match(result.stderr, /real directory/); }
+  try { symlinkSync(outside, join(cwd, ".planning", ".state")); const path = join(cwd, ".planning", "safe.md"); writeFileSync(path, "# safe\n"); const result = run(payload(cwd, path), cwd); assert.equal(result.status, 1); assert.match(result.stderr, /real directory/); }
   finally { rmSync(outside, { recursive: true, force: true }); }
 });
 

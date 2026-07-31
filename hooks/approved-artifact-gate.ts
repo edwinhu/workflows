@@ -48,6 +48,11 @@ if (policy.approvalPolicy !== undefined) {
     deny(`APPROVED ARTIFACT GATE (${policy.workflow}): cannot load explicit approval policy: ${error instanceof Error ? error.message : String(error)}.`);
   }
 }
-const result = validateApprovedArtifact(projectDir, policy.workflow, process.env.CLAUDE_SESSION_ID, approvalPolicy);
+let result;
+try {
+  result = validateApprovedArtifact(projectDir, policy.workflow, process.env.CLAUDE_SESSION_ID, approvalPolicy);
+} catch (error) {
+  deny(`APPROVED ARTIFACT GATE (${policy.workflow}): validation failed: ${error instanceof Error ? error.message : String(error)}.`);
+}
 if ("code" in result) deny(`APPROVED ARTIFACT GATE (${policy.workflow}): ${result.message}. Re-run independent review after validating the current plan.`);
 allow();
