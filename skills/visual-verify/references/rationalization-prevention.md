@@ -16,6 +16,6 @@
 - About to declare done on a 9.5 score while you can see an arrow pointing to empty space → the score is necessary but not sufficient. Check the 9 defect categories; Gemini misses structural issues the user sees on first glance.
 - About to ship a defect-free diagram that doesn't match the design intent → a defect-free diagram that argues the wrong thing is still wrong. Check intent first, then defects.
 - About to ship after one clean pass → one pass catches bugs; a second pass catches composition (lopsided layout, cramped sections, inconsistent spacing). At least 2 clean passes.
-- About to page-hunt ("try page N, N+1, N+2...") or run pdftotext loops to find a slide → `Skill("teaching:find-slide-page")` returns ALL heading→page mappings in one `typst query`. Manual hunting wastes 5-15 tool calls and is the anti-pattern the skill was built to eliminate.
+- About to page-hunt ("try page N, N+1, N+2...") or run pdftotext loops to find a slide → the `find-slide-page` skill returns ALL heading→page mappings in one `typst query`. Manual hunting wastes 5-15 tool calls and is the anti-pattern the skill was built to eliminate.
 
 **The protocol is not overhead you pay. It is the service you provide.**

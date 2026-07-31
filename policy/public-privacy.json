@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "scanRoots": [
+    "."
+  ],
+  "exclusions": [
+    ".git/**",
+    ".planning/**",
+    "node_modules/**",
+    "scratch/**",
+    "bun.lock"
+  ],
+  "denyRules": [
+    {
+      "id": "private-identifier",
+      "pattern": "(?:course-materials|teaching:find-slide-page|teaching-plugin|private (?:repository|repo|plugin|consumer))",
+      "flags": "gi"
+    },
+    {
+      "id": "cache-path",
+      "pattern": "\\.claude\\/plugins\\/cache\\/course-materials\\/teaching\\/",
+      "flags": "g"
+    },
+    {
+      "id": "machine-path",
+      "pattern": "\\/(?:home|Users)\\/[A-Za-z0-9._-]+\\/[^\\s'\\\"\\x60]*course-materials[^\\s'\\\"\\x60]*",
+      "flags": "g"
+    },
+    {
+      "id": "course-name",
+      "pattern": "\\b[A-Z][A-Za-z& -]+ (?:Seminar|Course) 20\\d{2}\\b",
+      "flags": "g"
+    },
+    {
+      "id": "private-provenance",
+      "pattern": "\\b(?:developed|extracted|migrated|copied) (?:in|from|for) (?:the )?private (?:repository|repo|plugin|consumer)\\b",
+      "flags": "gi"
+    }
+  ],
+  "allowlist": [
+    {
+      "path": "hooks/find-slide-page-inject.ts",
+      "ruleId": "private-identifier",
+      "token": "teaching-plugin",
+      "rationale": "live reverse integration until private Stage 2 passes",
+      "removeStage": 3
+    },
+    {
+      "path": "hooks/find-slide-page-inject.ts",
+      "ruleId": "private-identifier",
+      "token": "course-materials",
+      "rationale": "live reverse integration until private Stage 2 passes",
+      "removeStage": 3
+    },
+    {
+      "path": "hooks/find-slide-page-inject.ts",
+      "ruleId": "cache-path",
+      "token": ".claude/plugins/cache/course-materials/teaching/",
+      "rationale": "live reverse integration until private Stage 2 passes",
+      "removeStage": 3
+    },
+    {
+      "path": "skills/visual-verify/SKILL.md",
+      "ruleId": "private-identifier",
+      "token": "teaching:find-slide-page",
+      "rationale": "live reverse integration until private Stage 2 passes",
+      "removeStage": 3
+    },
+    {
+      "path": "tests/golden/find-slide-page-inject.json",
+      "ruleId": "private-identifier",
+      "token": "course-materials",
+      "rationale": "live reverse integration until private Stage 2 passes",
+      "removeStage": 3
+    }
+  ]
+}

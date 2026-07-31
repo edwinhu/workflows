@@ -22,6 +22,9 @@ F = []
 def run_hook(env_extra, tool_name='Agent', tool_input=None):
     """Invoke the hook; return (allowed: bool, reason: str)."""
     env = {**os.environ, **env_extra}
+    artifact = env.get('GATE_ARTIFACT', '')
+    if artifact and Path(artifact).is_absolute():
+        env.setdefault('CLAUDE_PROJECT_DIR', str(Path(artifact).parent))
     payload = json.dumps({'tool_name': tool_name, 'tool_input': tool_input or {}})
     proc = subprocess.run(
         ['bun', str(HOOK)],

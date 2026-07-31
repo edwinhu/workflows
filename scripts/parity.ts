@@ -40,13 +40,21 @@
  *   }
  */
 
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readdirSync, readFileSync, statSync, existsSync, symlinkSync, utimesSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { createHash } from "node:crypto";
 
 const REPO = resolve(import.meta.dir, "..");
 const GOLDEN_DIR = join(REPO, "tests", "golden");
+const EXTRACTION_ROOT = mkdtempSync(join(tmpdir(), "parity-process-"));
+process.on("exit", () => rmSync(EXTRACTION_ROOT, { recursive: true, force: true }));
+
+function legacyContractStdout(stdout: string, base: string): string {
+  const localReferenceRoot = join(EXTRACTION_ROOT, "reference");
+  const historicalReferenceRoot = join(tmpdir(), `parity-py-${base}`);
+  return stdout.replaceAll(localReferenceRoot, historicalReferenceRoot);
+}
 
 /**
  * The Python base predates the approved native-PLAN/TaskList DS migration. These are the only
@@ -216,10 +224,8 @@ function pythonHooksDir(base: string): string | null {
   if (pyDirCache) return pyDirCache;
   const ls = Bun.spawnSync(["git", "ls-tree", "--name-only", `${base}:hooks`], { cwd: REPO });
   if (ls.exitCode !== 0) return null;
-  // A stable extracted root makes context hooks that inject their plugin path hash-stable across
-  // harness invocations. It is recreated for each run, so it cannot retain prior state.
-  const root = join(tmpdir(), `parity-py-${base}`);
-  rmSync(root, { recursive: true, force: true });
+  // Keep the reference path stable within this invocation while isolating concurrent processes.
+  const root = join(EXTRACTION_ROOT, "reference");
   mkdirSync(root, { recursive: true });
   // Mirror the plugin layout so PLUGIN_ROOT (= <hooks>/..) resolves to a repo-shaped tree.
   for (const entry of readdirSync(REPO, { withFileTypes: true })) {
@@ -256,6 +262,8 @@ function pythonHooksDir(base: string): string | null {
   for (const name of readdirSync(join(REPO, "hooks")).filter((n) => n.endsWith(".ts"))) {
     writeFileSync(join(dir, name), readFileSync(join(REPO, "hooks", name)));
   }
+  const hookLib = join(REPO, "hooks", "lib");
+  if (existsSync(hookLib)) cpSync(hookLib, join(dir, "lib"), { recursive: true });
   pyDirCache = dir;
   return dir;
 }
@@ -367,7 +375,7 @@ async function checkHook(hook: string, base: string): Promise<{ ok: boolean; lin
       if (expected) {
         // These named cases deliberately supersede a retired Python contract. Do not weaken them
         // into a substring check: native PLAN/TaskList behavior is a stable TS contract in full.
-        const actualStdoutSha256 = createHash("sha256").update(b.stdout).digest("hex");
+        const actualStdoutSha256 = createHash("sha256").update(legacyContractStdout(b.stdout, base)).digest("hex");
         if (actualStdoutSha256 !== expected.stdoutSha256) {
           diffs.push(`stdout-sha256: expected=${expected.stdoutSha256} ts=${actualStdoutSha256}`);
         }

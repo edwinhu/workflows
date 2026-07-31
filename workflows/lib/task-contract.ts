@@ -2,7 +2,7 @@ import { lstatSync, realpathSync } from "node:fs";
 import { resolve, sep } from "node:path";
 
 export type TaskContract = {
-  id: string; name: string; work: string; criteria: string; outputs?: string[]; writablePaths: string[];
+  id: string; name: string; work: string; criteria: string; outputs: string[]; writablePaths: string[];
   instructionFiles?: string[]; dependencyProof?: string; model: string; effort: string;
 };
 export type TaskResult = {
@@ -52,16 +52,54 @@ export function writablePathsWithin(projectRoot: string, writablePaths: unknown)
   return !!paths && [...paths].every(path => canonicalPathWithin(projectRoot, path));
 }
 
+export function normalizeExpectedOutputs(outputs: unknown): string[] {
+  const paths = concretePaths(outputs);
+  if (!paths) throw new Error("expected outputs must be a non-empty concrete project-relative inventory");
+  if ((outputs as unknown[]).length !== paths.size) throw new Error("expected outputs contain duplicate paths");
+  return [...paths].sort((left, right) => left.localeCompare(right, "en", { sensitivity: "variant" }));
+}
+
 export function validateTask(task: unknown): task is TaskContract {
   if (!task || typeof task !== "object") return false;
   const value = task as Record<string, unknown>;
-  return ["id", "name", "work", "criteria", "model", "effort"].every(key => requiredText(value[key])) && !!concretePaths(value.writablePaths)
+  let outputsValid = false;
+  try { normalizeExpectedOutputs(value.outputs); outputsValid = true; } catch { outputsValid = false; }
+  return ["id", "name", "work", "criteria", "model", "effort"].every(key => requiredText(value[key])) && !!concretePaths(value.writablePaths) && outputsValid
     && (value.instructionFiles === undefined || (Array.isArray(value.instructionFiles) && value.instructionFiles.every(path => requiredText(path) && path.startsWith("/"))));
 }
-export function fingerprint(task: TaskContract): string { return JSON.stringify({ id: task.id, name: task.name, work: task.work, criteria: task.criteria, outputs: task.outputs || [], writablePaths: task.writablePaths, dependencyProof: task.dependencyProof || "", model: task.model, effort: task.effort }); }
+export function fingerprint(task: TaskContract): string { return JSON.stringify({ id: task.id, name: task.name, work: task.work, criteria: task.criteria, outputs: normalizeExpectedOutputs(task.outputs), writablePaths: task.writablePaths, dependencyProof: task.dependencyProof || "", model: task.model, effort: task.effort }); }
 export function changedFilesWithin(task: TaskContract, changedFiles: unknown, projectRoot: string): changedFiles is string[] {
   const paths = concretePaths(task.writablePaths);
   return !!paths && writablePathsWithin(projectRoot, paths) && Array.isArray(changedFiles) && changedFiles.every(file =>
     typeof file === "string" && !!concretePaths([file]) && canonicalPathWithin(projectRoot, file)
       && [...paths].some(allowed => pathsOverlap(file, allowed)));
+}
+
+function exactReportedPaths(paths: unknown, label: string): string[] {
+  if (!Array.isArray(paths)) throw new Error(`${label} must be an array`);
+  const concrete = concretePaths(paths);
+  if (!concrete) throw new Error(`${label} must contain concrete project-relative paths`);
+  if (concrete.size !== paths.length) throw new Error(`${label} contains duplicate paths`);
+  return [...concrete].sort((left, right) => left.localeCompare(right, "en", { sensitivity: "variant" }));
+}
+
+export function enforceTaskOutputs(task: TaskContract, observedChangedFiles: unknown, reportedChangedFiles: unknown): string[] {
+  const expected = normalizeExpectedOutputs(task.outputs);
+  const writable = concretePaths(task.writablePaths);
+  if (!writable) throw new Error("task writable authority is invalid");
+  for (const output of expected) {
+    if (![...writable].some(allowed => pathsOverlap(output, allowed))) throw new Error(`expected output is outside writable authority: ${output}`);
+  }
+  const observed = exactReportedPaths(observedChangedFiles, "observed changed files");
+  const outsideAuthority = observed.filter(path => ![...writable].some(allowed => pathsOverlap(path, allowed)));
+  if (outsideAuthority.length) throw new Error(`observed output is outside writable authority: ${outsideAuthority.join(", ")}`);
+  const reported = exactReportedPaths(reportedChangedFiles, "reported changed files");
+  const expectedSet = new Set(expected);
+  const observedSet = new Set(observed);
+  const missing = expected.filter(path => !observedSet.has(path));
+  if (missing.length) throw new Error(`required output was not produced: ${missing.join(", ")}`);
+  const extra = observed.filter(path => !expectedSet.has(path));
+  if (extra.length) throw new Error(`unexpected output was produced: ${extra.join(", ")}`);
+  if (observed.length !== reported.length || observed.some((path, index) => path !== reported[index])) throw new Error("changed-file report mismatch");
+  return expected;
 }

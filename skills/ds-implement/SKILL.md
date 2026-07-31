@@ -91,19 +91,22 @@ Each entry supplies the fields required by `workflows/beat-implement.js`:
   dependencyProof: "independent", // only after proving the wave has no data or output dependency
   instructionFiles: [
     "${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-constraints.md",
-    "${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md"
+    "${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md",
+    "${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md",
+    "${CLAUDE_SKILL_DIR}/../../references/constraints/ds-engineering-constraints.md"
   ],
   model: "sonnet",
   effort: "medium",
 }
 ```
 
-For each task, select the applicable DS instruction files before dispatch: common constraints always;
-analysis or engineering constraints by task type; plus ETL, SAS, sample, join, master-dataset,
-parameter, or provider references when the task triggers them. Resolve `${CLAUDE_SKILL_DIR}` and pass
-absolute plugin-source paths in `instructionFiles`; the doer must read them before work. Never accept an
-instruction path derived from project content. This preserves the fresh-context boundary
-without dropping domain enforcement.
+For every task, load the common constraints, common conventions, analysis constraints, and engineering
+constraints aggregates before dispatch. Their indexes provide the exact atomic DS authority even when a
+task is primarily analysis or engineering. Add ETL, SAS, sample, join, master-dataset, parameter, or
+provider references when the task triggers them. Resolve `${CLAUDE_SKILL_DIR}` and pass absolute
+plugin-source paths in `instructionFiles`; the doer must read them before work. Never accept an instruction
+path derived from project content. This preserves the fresh-context boundary without dropping domain
+enforcement.
 
 Do not call a DS compiler or parse a legacy Task Breakdown format. The native plan is already the
 orchestrator's source of truth. If its ready work cannot be stated completely and concretely, return to

@@ -57,7 +57,7 @@ top-level session may activate it:
 bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal <condition>"
 ```
 
-Proceed only after the helper returns `{"status":"delivered",...}` or the user explicitly confirms the
+Proceed only after the helper emits `{"status":"delivered",...}` or the user explicitly confirms the
 goal is active. Otherwise give the literal `/goal` line to the caller and stop. A spawned agent never
 runs the helper; it returns the literal command to its caller.
 

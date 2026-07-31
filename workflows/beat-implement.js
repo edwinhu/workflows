@@ -10,31 +10,49 @@ export const meta = {
 
 // args = {
 //   projectDir: "/absolute/project/path",             // REQUIRED
-//   workflow: "ds" | "writing" | "workshop" | "workflow-creator", // REQUIRED native-plan workflow
+//   workflow: string,                                 // REQUIRED built-in or opaque external identity
+//   approvalPolicy?: { schemaVersion, workflow, planPath, metadataPath, verdictPath }, // REQUIRED only for external workflows
 //   readyWave: [{ id, name, work, criteria, outputs, model, effort }], // REQUIRED; complete, caller-curated work list
 //   planReset: { approvedBodyHash, session }, // REQUIRED hash/session cross-check against separate metadata
 //   resume?: { attemptedTaskIds: ["task-id", ...] },   // optional: re-dispatch ONLY previously attempted work
 // }
+function requiredWorkflowIdentity(value) {
+  return typeof value === 'string' && /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/.test(value)
+}
 let cfg = args
 if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } }
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error('beat-implement requires args.projectDir')
-if (!['ds', 'writing', 'workshop', 'workflow-creator'].includes(cfg.workflow)) throw new Error('beat-implement requires args.workflow as ds, writing, workshop, or workflow-creator')
+const BUILT_IN_WORKFLOWS = ['ds', 'writing', 'workshop', 'workflow-creator']
+if (!requiredWorkflowIdentity(cfg.workflow) || (!BUILT_IN_WORKFLOWS.includes(cfg.workflow) && cfg.approvalPolicy === undefined)) {
+  throw new Error('beat-implement requires args.workflow as ds, writing, workshop, workflow-creator, or an external workflow with explicit approval policy')
+}
 if (!Array.isArray(cfg.readyWave)) throw new Error('beat-implement requires args.readyWave as a complete task-spec array')
 
 // Shared libraries own approval identity and task-contract validation.
-const { validateApprovedArtifact } = await import(new URL('./lib/approved-artifact.ts', import.meta.url).href)
-const { changedFilesWithin, concretePaths, fingerprint, pathsOverlap, requiredText, validateTask, writablePathsWithin } = await import(new URL('./lib/task-contract.ts', import.meta.url).href)
+const { parseApprovalPolicyDescriptor, validateApprovedArtifact, validateBuiltInImplementationApproval, validateCapturedApprovalBundle } = await import(new URL('./lib/approved-artifact.ts', import.meta.url).href)
+const { concretePaths, enforceTaskOutputs, fingerprint, pathsOverlap, requiredText, validateTask, writablePathsWithin } = await import(new URL('./lib/task-contract.ts', import.meta.url).href)
+const { captureGitObservation, compareGitObservations } = await import(new URL('./lib/git-observation.ts', import.meta.url).href)
+const { failClosedCandidateState, markCandidateMutation, validateCandidateMutationConfiguration } = await import(new URL('./lib/candidate-state.ts', import.meta.url).href)
+const { createHash } = await import('node:crypto')
 
 const reset = cfg.planReset || {}
 if (!requiredText(reset.approvedBodyHash)) throw new Error('beat-implement requires nonempty immutable planReset.approvedBodyHash')
 if (!requiredText(reset.session)) throw new Error('beat-implement requires nonempty immutable planReset.session')
 if (Object.keys(reset).some(key => !['approvedBodyHash', 'session'].includes(key))) throw new Error('beat-implement planReset accepts only approvedBodyHash and session')
-const artifact = validateApprovedArtifact(PROJECT, cfg.workflow, process.env.CLAUDE_SESSION_ID)
-if (artifact.code) throw new Error(`beat-implement ${artifact.message}`)
-if (reset.approvedBodyHash !== artifact.hash || reset.session !== artifact.metadata.approvedSession) {
-  throw new Error('beat-implement rejects caller planReset that differs from durable approved-plan metadata')
+if (cfg.approvalPolicy !== undefined) {
+  if (BUILT_IN_WORKFLOWS.includes(cfg.workflow)) throw new Error('beat-implement built-in workflows cannot override approval policy')
+  const policy = parseApprovalPolicyDescriptor(cfg.approvalPolicy, cfg.workflow)
+  if (policy.code) throw new Error(`beat-implement ${policy.message}`)
+}
+let artifact = null
+if (cfg.capturedApprovalBundle === undefined) {
+  artifact = validateApprovedArtifact(PROJECT, cfg.workflow, process.env.CLAUDE_SESSION_ID, cfg.approvalPolicy)
+  if (artifact.code) throw new Error(`beat-implement ${artifact.message}`)
+  if (reset.approvedBodyHash !== artifact.hash || reset.session !== artifact.metadata.approvedSession) {
+    throw new Error('beat-implement rejects caller planReset that differs from durable approved-plan metadata')
+  }
 }
 
 const ids = new Set()
@@ -129,69 +147,88 @@ IMMUTABLE APPROVAL IDENTITY (copied from PLAN.meta.json; do not infer or load mu
 Read every REQUIRED INSTRUCTIONS file first, then implement the task and run the task-local evidence needed to support the criteria. You may modify only EXCLUSIVE WRITABLE PATHS. Do not parse or reinterpret PLAN.md; the caller already supplied this complete ready-wave spec. Do not perform final verification or grade the result; an independent verifier runs outside this workflow. Do not delegate. If you encounter a blocker requiring a decision, return status="blocked". If execution cannot complete, return status="failed". Return every modified project-relative path in changedFiles and only RESULT_SCHEMA.`
 }
 
-function sameChangedFiles(reported, observed) {
-  return new Set(reported).size === reported.length
-    && reported.length === observed.length
-    && reported.every(path => observed.includes(path))
+function contractDigest(task) {
+  return createHash('sha256').update(Buffer.from(taskFingerprint(task), 'utf8')).digest('hex')
 }
 
-// A doer's changedFiles is evidence, not authority. Snapshot the shared tree around each sequential
-// dispatch so an omitted, deleted, or untracked mutation cannot bypass writable-path enforcement.
-// Never traverse directory links: any link relevant to this task's authority fails the run closed.
-const { readdirSync, lstatSync, readFileSync, readlinkSync } = await import('node:fs')
-const { join } = await import('node:path')
-const { createHash } = await import('node:crypto')
-function projectSnapshot(root, relative = '', writablePaths = []) {
-  const result = new Map()
-  for (const entry of readdirSync(join(root, relative), { withFileTypes: true })) {
-    const path = relative ? `${relative}/${entry.name}` : entry.name
-    if (path === '.git' || path.startsWith('.git/')) continue
-    const full = join(root, path)
-    const stat = lstatSync(full)
-    if (stat.isSymbolicLink()) {
-      if (writablePaths.some(allowed => pathsOverlap(path, allowed))) throw new Error(`symlink intersects writable path: ${path}`)
-      result.set(path, `link:${readlinkSync(full)}`)
-    } else if (stat.isDirectory()) {
-      result.set(`${path}/`, 'directory')
-      for (const [child, fingerprint] of projectSnapshot(root, path, writablePaths)) result.set(child, fingerprint)
-    } else {
-      result.set(path, `${stat.mode}:${stat.size}:${createHash('sha256').update(readFileSync(full)).digest('hex')}`)
-    }
-  }
-  return result
-}
-function observedChanges(before, after) {
-  const names = new Set([...before.keys(), ...after.keys()])
-  return [...names].filter(name => before.get(name) !== after.get(name)).filter(name => !name.endsWith('/'))
-}
-
+let candidateState = cfg.candidateState
+const affectedChecks = cfg.affectedChecks
+if (candidateState !== undefined) validateCandidateMutationConfiguration(candidateState, affectedChecks)
+else if (affectedChecks !== undefined) throw new Error('beat-implement affectedChecks require candidateState')
+let nextPreObservation = cfg.preDispatchObservation
 async function run(task) {
+  let pre
+  let post
+  let delta
+  let approval = null
+  let raw = null
+  let dispatchError = null
   try {
-    const before = projectSnapshot(PROJECT, '', task.writablePaths)
-    const raw = await agent(promptFor(task), {
-      label: `implement:${task.id}`,
-      phase: 'Implement',
-      schema: RESULT_SCHEMA,
-      model: task.model,
-      effort: task.effort,
-    })
-    const reportedChanges = Array.isArray(raw.changedFiles) ? raw.changedFiles : []
-    const changedFiles = observedChanges(before, projectSnapshot(PROJECT, '', task.writablePaths))
-    const declaredWrites = changedFilesWithin(task, changedFiles, PROJECT)
-      && changedFilesWithin(task, reportedChanges, PROJECT)
-      // Some runtimes expose no filesystem delta to the workflow sandbox. When a delta is observable,
-      // it is authoritative; otherwise retain the structured agent manifest as the only evidence.
-      && (changedFiles.length === 0 || sameChangedFiles(reportedChanges, changedFiles))
-    const status = declaredWrites && ['implemented', 'blocked', 'failed'].includes(raw.status) ? raw.status : 'failed'
+    pre = captureGitObservation(PROJECT)
+    if (nextPreObservation !== undefined && nextPreObservation.digest !== pre.digest) {
+      throw new Error('pre-dispatch Git observation differs from the captured approved pre-state')
+    }
+    const approvalBinding = {
+      taskIdentity: task.id,
+      taskContractDigest: contractDigest(task),
+      preDispatchObservationDigest: pre.digest,
+      implementationSession: process.env.CLAUDE_SESSION_ID,
+    }
+    approval = cfg.capturedApprovalBundle !== undefined
+      ? validateCapturedApprovalBundle(cfg.capturedApprovalBundle, cfg.workflow, approvalBinding)
+      : validateBuiltInImplementationApproval(artifact, cfg.workflow, approvalBinding)
+    if (approval.code) throw new Error(approval.message)
+    if (approval.planDigest !== reset.approvedBodyHash || approval.approvalSession !== reset.session) {
+      throw new Error('captured approval differs from immutable planReset identity')
+    }
+    try {
+      raw = await agent(promptFor(task), {
+        label: `implement:${task.id}`,
+        phase: 'Implement',
+        schema: RESULT_SCHEMA,
+        model: task.model,
+        effort: task.effort,
+      })
+    } catch (error) {
+      dispatchError = error
+    }
+    try {
+      post = captureGitObservation(PROJECT)
+      delta = compareGitObservations(pre, post)
+      nextPreObservation = post
+    } catch (error) {
+      if (candidateState) candidateState = failClosedCandidateState(candidateState, affectedChecks)
+      throw new Error(`post-dispatch observation failed; candidate is release-ineligible: ${error instanceof Error ? error.message : String(error)}`)
+    }
+    const reportedChanges = Array.isArray(raw?.changedFiles) ? raw.changedFiles : []
+    if (candidateState && (delta.changedPaths.length || reportedChanges.length)) {
+      const declaredTargets = [...new Set(reportedChanges.filter(change => typeof change === 'string' && change.trim()))]
+      candidateState = markCandidateMutation(candidateState, {
+        declaredTargets,
+        observedTargets: delta.changedPaths,
+        affectedChecks,
+      })
+    }
+    if (dispatchError) throw dispatchError
+    const validatedOutputs = raw.status === 'implemented'
+      ? enforceTaskOutputs(task, delta.changedPaths, reportedChanges)
+      : (delta.changedPaths.length || reportedChanges.length ? enforceTaskOutputs(task, delta.changedPaths, reportedChanges) : [])
+    const status = ['implemented', 'blocked', 'failed'].includes(raw.status) ? raw.status : 'failed'
     return {
       taskId: task.id,
       taskFingerprint: taskFingerprint(task),
       approvedBodyHash: reset.approvedBodyHash,
       session: reset.session,
       status,
-      summary: declaredWrites ? String(raw.summary || '') : 'Observed project mutations are outside exclusive writablePaths or differ from the agent report.',
+      summary: String(raw.summary || ''),
       reusableFacts: Array.isArray(raw.reusableFacts) ? raw.reusableFacts.filter(fact => typeof fact === 'string' && fact.trim()) : [],
-      changedFiles,
+      changedFiles: [...delta.changedPaths],
+      approvalBundleDigest: approval?.approvalBundleDigest,
+      preObservationDigest: delta.preDigest,
+      postObservationDigest: delta.postDigest,
+      observedChanges: [...delta.changedPaths],
+      validatedOutputs,
+      candidateState,
     }
   } catch (error) {
     return {
@@ -202,7 +239,13 @@ async function run(task) {
       status: 'failed',
       summary: `Agent dispatch failed: ${error instanceof Error ? error.message : String(error)}`,
       reusableFacts: [],
-      changedFiles: [],
+      changedFiles: delta ? [...delta.changedPaths] : [],
+      approvalBundleDigest: approval?.approvalBundleDigest,
+      preObservationDigest: delta?.preDigest || pre?.digest,
+      postObservationDigest: delta?.postDigest,
+      observedChanges: delta ? [...delta.changedPaths] : [],
+      validatedOutputs: [],
+      candidateState,
     }
   }
 }

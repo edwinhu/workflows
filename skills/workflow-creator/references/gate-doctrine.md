@@ -10,11 +10,8 @@ Any workflow whose gate is **computed in JS** and returns:
   carry-forward.
 
 This is the shape of the read-only `wc-audit.js` verifier and every compiled-runner or review-fan-out
-workflow this skill scaffolds (`workshop-verify`, `dev-verify`, teaching's exam/lecture gates,
-etc.). If a workflow you are creating or auditing matches this shape, the laws below are
-**mandatory reading** — they are lessons paid for twice, once in this repo (PRs #50-#55) and once
-in a sibling course-materials campaign, and they recur because the failure mode is structural, not
-accidental.
+workflow this skill scaffolds (`workshop-verify`, `dev-verify`, and external self-grading gates). If a workflow you are creating or auditing matches this shape, the laws below are
+**mandatory reading** — they consolidate repeated incidents across independent workflow campaigns, and the failure mode is structural rather than accidental.
 
 **Cross-references, not duplicates** — these laws build on doctrine already in this SKILL.md;
 don't re-derive what's already there:
@@ -45,8 +42,7 @@ don't re-derive what's already there:
 **Evidence:**
 - This repo: a workshop SKILL documented `slidesThatFailed`; the JS actually returned
   `sectionsThatFailed`. Every "targeted re-run" silently regenerated the full deck.
-- course-materials: the same defect, third cross-repo sighting — `lecturesThatFailed` in the doc
-  vs `sectionsThatFailed` in the return.
+- An external data-variant consumer repeated the defect: the documented selector and returned selector used different keys.
 
 Also round-trip the **selector namespace**, not just the key name: the ids inside
 `*ThatFailed` must be the same id-space the script's `ONLY` filter matches against (dimension
@@ -75,16 +71,14 @@ adversarial verification on a re-audit is a convergence blocker — the loop app
 never re-checks the thing that mattered.
 - This repo: `wc-audit`'s own worst bug — the `onlyChecks` path disabled all verification on
   selective re-audits, meaning every re-audit after iteration 1 was unverified.
-- course-materials: `workshop-verify` skipped all diagram review under `ONLY` and passed
-  vacuously — a violating deck could ship clean simply by having survived to a re-run.
+- Another data-variant verifier skipped a review dimension under `ONLY` and passed vacuously, allowing a violating artifact to survive a re-run.
 
 **(c) Carry-forward is a union that writes verdicts back.** The returned `reviews` (which becomes
 next iteration's `priorReviews`) must be `[...live, ...carried]`, AND any verifier correction made
 during this run must be written back into the carried record.
 - This repo: without the write-back, a refuted finding phantom-reflags forever — the verifier
   corrects it every run but the correction never sticks in the carried state.
-- course-materials (R3-H2): without the union, results from an earlier run are silently dropped on
-  the 2nd+ re-run — `priorReviews` shrinks instead of accumulating.
+- In another implementation, omitting the union silently dropped earlier results on the second and later re-runs, so `priorReviews` shrank instead of accumulating.
 
 ---
 
@@ -95,12 +89,11 @@ during this run must be written back into the carried record.
 EVERYTHING," not "nothing to fix." A whole-artifact failure (compile error, alignment check) where
 every per-item row still passes yields an empty per-item selector on a `overallPass=false` run →
 full regen with no target. The selector must cover **every** path that can set `overallPass=false`,
-including whole-artifact-level failures that no single item owns (course-materials R3-H1, both
-lecture engines hit this).
+including whole-artifact-level failures that no single item owns; this recurred in multiple data-variant engines.
 
 **(b) Every fail condition must emit an actionable finding attributed to the owning check.** A
 binary gate that can flip `overallPass` to false but pushes nothing into `findings` leaves the
-`/goal` loop with "0 findings to fix" and nothing to target (course-materials R4-J1).
+`/goal` loop with "0 findings to fix" and nothing to target; an external verifier exposed this exact failure.
 
 **(c) The boolean that renders a status row must derive from the SAME data that produces blocking
 findings.** A display-only boolean is a probe-detectable smell.
@@ -120,7 +113,7 @@ pass/fail logic.
 Distinguish a **crash-drop** (an agent call threw or returned null unexpectedly → should fail or
 mark unreliable) from an **intentional selective-skip** (this dimension wasn't dispatched this
 round by design → should read `n/a`, not pass or fail). Track a `dispatchedPairs`-style set so the
-gate can tell these apart (course-materials R2-G2 / R4-J2 / R4-J3 conflated the two).
+gate can tell these apart; multiple independent incidents conflated the two states.
 
 Guard every **single** `await agent(...)` call (not a fan-out) with declared null semantics:
 - Discover-type calls → throw with a clear re-invoke message.
@@ -143,9 +136,7 @@ verification. Ground every self-certified field:
 - `grep -q '^status: APPROVED'` (anchored), never bare `grep APPROVED` — the latter matches
   unrelated text like `requires: [..._APPROVED]` in frontmatter and false-passes.
 
-**Evidence:** this repo's `workshop-generate` trusted a self-grepped `citedInventory` the JS never
-independently re-checked; course-materials R2-G8/G9/G10 and R1-D's `artifactsPresent` self-report
-had the same shape — a field the JS displayed but never verified.
+**Evidence:** this repo's `workshop-generate` trusted a self-grepped `citedInventory` the JS never independently re-checked; an external consumer repeated the same shape with an `artifactsPresent` self-report that the JS displayed but never verified.
 
 ---
 
@@ -156,8 +147,7 @@ the **doc that teaches authors how to write the artifact** produces the form the
 accepts. Emitter-canonical is the general fix; this is the specific failure mode to check for at
 audit time.
 
-**Evidence:** course-materials shipped an `issues.md` authoring template as a **table**; the
-parser rejected tables outright. The executable guard false-denied a valid, correctly-written
+**Evidence:** an external consumer shipped an `issues.md` authoring template as a **table**, while its parser rejected tables outright. The executable guard false-denied a valid, correctly-written
 spec. The parser's own docstring even admitted the table form "false-denied the real spec" — but
 the authoring doc was never migrated to match what the parser accepted (R2-G5). The bug was
 documented in the code and shipped anyway because nobody cross-referenced doc example ⇔ parser
@@ -171,8 +161,7 @@ acceptance.
 cases they don't already name.)
 
 - `matcher: Agent` while the phase actually fans out via `Workflow` (a Claude Code ultracode
-  workflow tool call, not an `Agent` tool call) → the hook never fires; ungated (course-materials
-  R2-G1). If your workflow migrated a fan-out phase to an ultracode `Workflow` per this skill's own
+  workflow tool call, not an `Agent` tool call) → the hook never fires; an external consumer exposed this silent ungated path. If your workflow migrated a fan-out phase to an ultracode `Workflow` per this skill's own
   migration playbook, its gate hooks must be re-matched to `Workflow`, not left on `Agent`.
 - A check keyed on the tool string `typst compile` while the pipeline actually invokes
   `tinymist compile` — a rename in the invoked tool silently orphans the hook.
@@ -234,8 +223,7 @@ propagates to every workflow scaffolded from it.
   double as free regression tests — keep them runnable.
 - **Adversarial verification is load-bearing and must itself be regression-tested.** Across both
   campaigns it refuted roughly a quarter of plausible finder claims — it is not a rubber stamp.
-  Verify it against REAL inputs, not synthetic ones: course-materials caught 3 finder claims that
-  had used fabricated inputs, which a synthetic-input verifier would have rubber-stamped.
+  Verify it against REAL inputs, not synthetic ones: one campaign caught three finder claims based on fabricated inputs that a synthetic-input verifier would have rubber-stamped.
 
 ---
 

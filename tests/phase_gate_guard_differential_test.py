@@ -1,5 +1,5 @@
 #!/usr/bin/env -S uv run python3
-"""Differential test: hooks/phase-gate-guard.py's frontmatter reader vs PyYAML.
+"""Differential test: extracted TypeScript phase-gate reader vs PyYAML.
 
 The reader is hand-rolled on purpose — every hook here is dependency-free, and
 this one fires on every tool call, so a gate that must resolve a package before
@@ -28,10 +28,10 @@ Run: uv run --with pyyaml python3 tests/phase_gate_guard_differential_test.py
 Skips cleanly when PyYAML isn't installed.
 """
 
-import importlib.util
 import itertools
+import json
+import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 try:
@@ -40,10 +40,31 @@ except ImportError:
     print('SKIP: PyYAML not installed (run with: uv run --with pyyaml python3 ...)')
     sys.exit(0)
 
-HOOK = Path(__file__).resolve().parent.parent / 'hooks' / 'phase-gate-guard.py'
-spec = importlib.util.spec_from_file_location('gate', HOOK)
-gate = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(gate)
+MODULE = Path(__file__).resolve().parent.parent / 'hooks' / 'lib' / 'phase-gate.ts'
+
+
+def typescript_values(documents):
+    """Read status values through the extracted TypeScript evaluator parser."""
+    script = r'''
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+const { phaseGateFrontmatter } = await import(process.argv[1]);
+const docs = JSON.parse(await Bun.stdin.text());
+const root = mkdtempSync(join(tmpdir(), "phase-gate-diff-"));
+const artifact = join(root, "state.md");
+const values = docs.map((doc) => {
+  writeFileSync(artifact, doc);
+  return phaseGateFrontmatter.value(phaseGateFrontmatter.read(artifact), "status");
+});
+rmSync(root, { recursive: true, force: true });
+process.stdout.write(JSON.stringify(values));
+'''
+    proc = subprocess.run(
+        ['bun', '-e', script, str(MODULE)],
+        input=json.dumps(documents), capture_output=True, text=True, check=True,
+    )
+    return json.loads(proc.stdout)
 
 # Values that would actually satisfy a real gate in this repo.
 GATE_VALUES = {'approved', 'enabled', 'declined', 'unavailable'}
@@ -160,34 +181,26 @@ MUST_ACCEPT = [
 buckets = {'exact': 0, 'fail-closed': 0, 'lenient': 0}
 unsafe = []
 
-with tempfile.TemporaryDirectory() as td:
-    artifact = Path(td) / 'REVIEW_STATE.md'
-    for doc in DOCS:
-        artifact.write_text(doc)
-        mine = gate.frontmatter_value(gate.read_frontmatter(str(artifact)), 'status')
-        truth = oracle(doc)
+for doc, mine in zip(DOCS, typescript_values(DOCS), strict=True):
+    truth = oracle(doc)
 
-        if mine == truth:
-            buckets['exact'] += 1
-        elif mine == '':
-            buckets['fail-closed'] += 1
-        elif doc in LENIENT and mine.lower() in GATE_VALUES:
-            buckets['lenient'] += 1
-        elif mine.lower() in GATE_VALUES:
-            unsafe.append((doc, mine, truth))       # would satisfy a gate
-        else:
-            buckets['fail-closed'] += 1             # junk value -> blocks anyway
+    if mine == truth:
+        buckets['exact'] += 1
+    elif mine == '':
+        buckets['fail-closed'] += 1
+    elif doc in LENIENT and mine.lower() in GATE_VALUES:
+        buckets['lenient'] += 1
+    elif mine.lower() in GATE_VALUES:
+        unsafe.append((doc, mine, truth))       # would satisfy a gate
+    else:
+        buckets['fail-closed'] += 1             # junk value -> blocks anyway
 
 # An allowlist's failure mode is over-blocking. Prove the reader still accepts
 # artifacts that are unremarkable and valid.
 over_blocked = []
-with tempfile.TemporaryDirectory() as td:
-    artifact = Path(td) / 'REVIEW_STATE.md'
-    for doc in MUST_ACCEPT:
-        artifact.write_text(doc)
-        mine = gate.frontmatter_value(gate.read_frontmatter(str(artifact)), 'status')
-        if mine != oracle(doc) or mine != 'APPROVED':
-            over_blocked.append((doc, mine, oracle(doc)))
+for doc, mine in zip(MUST_ACCEPT, typescript_values(MUST_ACCEPT), strict=True):
+    if mine != oracle(doc) or mine != 'APPROVED':
+        over_blocked.append((doc, mine, oracle(doc)))
 
 print(f"corpus            : {len(DOCS)} documents")
 print(f"  exact           : {buckets['exact']}")

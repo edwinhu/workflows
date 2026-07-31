@@ -9,7 +9,7 @@ Quick reference for rendering visual output to PNG for verification.
 **If the Typst file is a multi-page Touying presentation** (uses `#pause`, `===` headings, `#slide[]` blocks), you MUST run the `find-slide-page` skill first to get heading→page mappings. Touying creates multiple physical PDF pages per logical slide (one per `#pause` step), so page numbers are unpredictable from source.
 
 ```
-Skill(skill="teaching:find-slide-page")
+Skill(skill="find-slide-page")
 ```
 
 This returns a mapping like `Page  42: Morrison "F-cubed" diagram`. Use those page numbers for `--pages` below. **Never guess page numbers or iterate sequentially** — one query gives exact mappings.

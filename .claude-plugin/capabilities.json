@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "plugin": {
+    "name": "workflows",
+    "version": "5.100.0"
+  },
+  "capabilities": [
+    {
+      "name": "capability-resolver",
+      "contractVersion": 1,
+      "implementation": "workflows/lib/capability-resolver.ts"
+    },
+    {
+      "name": "constraint-loader",
+      "contractVersion": 1,
+      "implementation": "scripts/load-constraints.ts"
+    },
+    {
+      "name": "phase-gate-evaluator",
+      "contractVersion": 1,
+      "implementation": "hooks/lib/phase-gate.ts"
+    },
+    {
+      "name": "approved-artifact-policy",
+      "contractVersion": 1,
+      "implementation": "workflows/lib/approved-artifact.ts"
+    },
+    {
+      "name": "workflow-policy-loader",
+      "contractVersion": 1,
+      "implementation": "hooks/lib/workflow-policy.ts"
+    },
+    {
+      "name": "beat-implement-runner",
+      "contractVersion": 1,
+      "implementation": "workflows/beat-implement.js"
+    }
+  ]
+}

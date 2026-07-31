@@ -1,6 +1,6 @@
 # Ultracode-Workflow Migration Playbook
 
-> **For Claude:** Load this during shared-v1 native planning when deciding whether a closed fan-out belongs in a dynamic Workflow, or from `/workflow-creator-improve` when migrating an existing fan-out. Two kinds qualify: **read-only review/diagnosis** and **write/transform/generate** over an already-decided item set. The conversational skill retains clarification, plan approval, independent verification, and human review; the Workflow owns only the bounded fan-out and returns results. Grounded in a shipped migration (teaching plugin: `lecture-verify` + siblings).
+> **For Claude:** Load this during shared-v1 native planning when deciding whether a closed fan-out belongs in a dynamic Workflow, or from `/workflow-creator-improve` when migrating an existing fan-out. Two kinds qualify: **read-only review/diagnosis** and **write/transform/generate** over an already-decided item set. The conversational skill retains clarification, plan approval, independent verification, and human review; the Workflow owns only the bounded fan-out and returns results. Grounded in multiple shipped migrations across code- and data-variant consumers.
 
 A **dynamic Workflow** is a JS script that orchestrates subagents at scale: it holds the bounded loop, fan-out, and intermediate results in script variables, computes gates in code, runs in the background, and is resumable. Workflows may review or mutate; mutation requires approved task-local authority and filesystem isolation where parallel writes could collide. It is not the outer lifecycle. The shared-v1 skill remains the conversational shell and calls a Workflow only for the closed fan-out stage.
 
@@ -61,9 +61,9 @@ Does the workflow execute a DAG of MECHANICAL work between human gates
 
 Everything in §1-§6 below is the **FAN-OUT / conversational** path (the "NO" branch) — review or transform fan-out over a known list with no plan-table DAG. If you are building a compiled runner, use §A above and the reference impls; §1-§6 still apply to any *separate* fan-out review/transform phase the runner's skill wraps (e.g. an adversarial coverage pass).
 
-### §A.1 — Deepenings from the DATA-variant ports (writing / workshop / teaching)
+### §A.1 — Deepenings from DATA-variant ports
 
-The first three compiled runners (ds/dev) emit **CODE** (`run.js`). Writing, workshop, and teaching proved the **DATA variant** — the compiler emits a work-list/index a *generic* fan-out engine consumes via `args`, with **no `run.js` by design**. These are the lessons that variant + its semantic gates added (all in `docs/common-infra-candidates.md`); scaffold/score them:
+The first three compiled runners (ds/dev) emit **CODE** (`run.js`). Writing, workshop, and an external contract consumer proved the **DATA variant** — the compiler emits a work-list/index a *generic* fan-out engine consumes via `args`, with **no `run.js` by design**. These are the lessons that variant + its semantic gates added (all in `docs/common-infra-candidates.md`); scaffold/score them:
 
 1. **Compile = CODE or DATA — don't key anything on `run.js`.** `executionClass=compiled-runner` is defined by "a deterministic compile/parser replaced the LLM Discover AND the guard imports it" — NOT by a `run.js` file. Absent `run.js` is the data-variant emit form, never a gap (wc-audit P22).
 2. **JOIN trust-class (the predictive test).** A work-list row's downstream join (work-item ↔ produced artifact) is **mechanical** (a deterministic key) only when the work-list enumerates from a **single source**. **If it enumerates from >1 source** (generate←spec AND verify←built-artifact) **the join is semantic** — an LLM does it OUTSIDE the parser. The parser owns **enumeration, never a drifting-identifier join**. **Do NOT feed the deterministic artifact as a candidate MENU into the join-agent** — post-filter in JS *outside* the agent. **Menu vs assist (they look alike — both hand a deterministic list to an outside LLM; the line is per-item-judgment vs closed-set-matching):** an **assist** (§A.1.6) hands candidates for **per-item adjudication** (each judged independently — good); a **join-MENU** constrains a **correspondence to a closed set** ("match X to one of these") → risks **force-matching** (the agent always picks one, masking a dropped/−5-slides item). The menu bias is **workshop-measured**: appendix over-match n=3 [25,20,38] vs truth [21,21,21]. Resolution: a **born-canonical byte-stable join-key anchor** (doctrine #6 applied to the join key) converts semantic→mechanical for net-new artifacts (tolerate legacy). (wc-audit P27.)
@@ -82,7 +82,7 @@ The first three compiled runners (ds/dev) emit **CODE** (`run.js`). Writing, wor
 
 | Test | Migrate | Leave conversational |
 |------|---------|----------------------|
-| Shape (required) | Fan-out: "one agent per X" over a known list (section, lecture, question, source, footnote, **file, call-site**), whose results the skill consumes OR whose per-item **mutations are independent** | Single pass / single agent, or a few dependent steps |
+| Shape (required) | Fan-out: "one agent per X" over a known list (section, artifact, question, source, footnote, **file, call-site**), whose results the skill consumes OR whose per-item **mutations are independent** | Single pass / single agent, or a few dependent steps |
 | Worker mode | **Read-only reviewer** (verify/audit/diagnose) **OR write/transform agent** (migration, codemod, spec-driven generation). Write agents pass `isolation:'worktree'` so parallel mutations don't collide. | n/a — mode doesn't decide migrate-vs-leave |
 | Output | A computed gate / structured findings (review) **OR** transformed/generated artifacts + a verify pass (write) | Prose judgment with no structure, a *creative* artifact, a routing decision |
 
@@ -95,14 +95,14 @@ The first three compiled runners (ds/dev) emit **CODE** (`run.js`). Writing, wor
 **Strong "migrate" smell (driver 3):** the phase tells the model to **self-report a score and then "recompute it yourself"** / "verify the arithmetic." A JS gate eliminates it — the reviewer returns *raw counts*, the script computes the score.
 
 **The generation/drafting line — SPLIT it, do not blanket-leave:**
-- **Mechanical / spec-driven generation or transformation over a known list → MIGRATE** (write workflow, worktree). The "what each item should contain" is already pinned (an inventory, an outline, a transform rule), so per-item work is deterministic. Examples: per-lecture slide/notes creation from a 15–20-item inventory, per-section assembly from an outline, codemods, file migrations, regenerating N artifacts from a spec.
+- **Mechanical / spec-driven generation or transformation over a known list → MIGRATE** (write workflow, worktree). The "what each item should contain" is already pinned (an inventory, an outline, a transform rule), so per-item work is deterministic. Examples: per-artifact generation from a fixed inventory, per-section assembly from an outline, codemods, file migrations, regenerating N artifacts from a spec.
 - **Creative / judgment generation → LEAVE.** Brainstorming a thesis, choosing an argument, drafting novel prose where voice/judgment *is* the work, with no fixed per-item spec. Conversational.
 
 **A mid-run user *strategy* choice is NOT a disqualifier.** "Review sequentially or in parallel?" stays in the skill (it decides, then invokes the always-parallel workflow). Only a user *approval/judgment* gate on the phase's *content* keeps it conversational.
 
 **Anti-patterns — STOP if you catch yourself:**
 1. Migrating a "fan-out" that is actually a *single* agent (no parallelism/gate win).
-2. Deciding migrate-vs-leave from a one-line summary — **read the actual phase file** (a phase summarized "single coverage agent" actually fanned out one auditor *per lecture* — nearly skipped).
+2. Deciding migrate-vs-leave from a one-line summary — **read the actual phase file** (a phase summarized "single coverage agent" actually fanned out one auditor *per artifact* — nearly skipped).
 3. **Assuming workflows are read-only.** They are NOT. The *strongest* candidates are often write/transform fan-outs (migrations, codemods, per-item spec-driven generation) — the read-only lens wrongly dumps these into "leave." If a phase fans out per-item *creation/transformation* from a fixed spec, that's a prime workflow, not a skill-only phase.
 
 ---
@@ -136,13 +136,13 @@ Either shape: the skill wraps it — run workflow → read gate/verify → (if f
    if (!PROJECT) throw new Error(`<name> requires args.projectDir. Got type "${typeof args}": ${JSON.stringify(args)?.slice(0,200)}`)
    ```
 3. **Selective re-run** — accept `cfg.onlyChecks` (array of `"ID:check"`) + `cfg.priorReviews` (array of prior REVIEW objects). On a selective run, re-run only flagged pairs live; carry the rest forward from priorReviews so the gate still sees every check.
-4. **Discovery agent** (`model:'sonnet'`) — resolves check/agent files and **enumerates the items** to review. Never hardcode a count. **Scope limit (Iron Law):** a discovery agent is for enumerating a *fuzzy* work-list (sections of a paper, lectures, sources) — NOT for re-parsing a *structured plan table that already has a strict checker*. If the items come from a plan-table DAG, that is the COMPILED-RUNNER path (§0/§A): use a deterministic parser shared with the guard, never an LLM that re-reads the table (it absorbs spec-drift invisibly).
+4. **Discovery agent** (`model:'sonnet'`) — resolves check/agent files and **enumerates the items** to review. Never hardcode a count. **Scope limit (Iron Law):** a discovery agent is for enumerating a *fuzzy* work-list (sections of a paper, artifacts, sources) — NOT for re-parsing a *structured plan table that already has a strict checker*. If the items come from a plan-table DAG, that is the COMPILED-RUNNER path (§0/§A): use a deterministic parser shared with the guard, never an LLM that re-reads the table (it absorbs spec-drift invisibly).
 5. **Workers** — `model:'sonnet'`, schema-validated structured output. Two kinds:
    - **Read-only reviewer** (review workflow): prompt opens *"You are a READ-ONLY reviewer. Do NOT create, edit, or overwrite any files."*
    - **Write/transform agent** (transform workflow): edits/creates files per a fixed spec; pass `isolation:'worktree'` on the `agent()` call so parallel mutations don't collide, and return a structured summary of what it changed (files touched, status) for the verify stage. NEVER give write agents creative latitude — the "what" comes from the discovered spec, not the agent's judgment.
    Optional `cfg.use*Agents`-style flag routes to a real `agentType`.
 6. **Fan-out via `parallel()`** (barrier — the gate needs all results); flatten `(item × check)` into a task list.
-7. **Gate in pure JS** — the script computes every score/threshold from the **raw counts** the reviewers return. Reviewers MUST return counts, not scores. Reliability flag: a check is unreliable only if `itemsChecked === 0` (NEVER a findings/items ratio — a clean check has few findings and would false-positive). *(Divergence note: the shipped `lecture-verify.js` schema still carries a per-check `score` field for display, but the gate recomputes the composite from counts regardless. If you copy that example, drop or ignore the reviewer-supplied score — never let it feed the gate. This skeleton's counts-only contract is the stricter, preferred form.)*
+7. **Gate in pure JS** — the script computes every score/threshold from the **raw counts** the reviewers return. Reviewers MUST return counts, not scores. Reliability flag: a check is unreliable only if `itemsChecked === 0` (NEVER a findings/items ratio — a clean check has few findings and would false-positive). The gate must ignore any reviewer-supplied score; the counts-only contract is authoritative.
 8. **Return shape:** `{ overallPass, scoreTable (markdown w/ Gate column), findings (non-pass, severity-ordered), reviews (raw, for priorReviews), reviewersThatFlagged ("ID:check" pairs, for onlyChecks) }`.
 9. **Mechanical checks that already exist** (shell scripts, linters) run inside a reviewer/discovery agent's Bash — do NOT reimplement them in the script.
 10. `node --check <script>` MUST pass.
@@ -215,7 +215,7 @@ return {
 ### Transform-workflow variant (write fan-out)
 
 For a *write* migration (codemod / file migration / spec-driven per-item generation), keep the same skeleton spine but:
-- **Discover** enumerates the work-list AND the per-item spec (the call-sites to change + the rule; the lectures + their inventories; the sections + their outlines).
+- **Discover** enumerates the work-list AND the per-item spec (the call-sites to change + the rule; the artifacts + their inventories; the sections + their outlines).
 - **Transform stage** dispatches one write-agent per item with `isolation:'worktree'` — the agent edits/creates files per the spec and returns `{item, filesTouched[], status}`. Because each runs in its own worktree, parallel writes don't collide. Worktrees that the runtime sees unchanged are auto-cleaned; changed ones are surfaced for the skill to merge.
 - **Verify stage** (read-only, parallel) confirms each transform did what the spec required — this is the gate. A transform without a verify stage is unsafe; the docs' migrate pattern is literally `discover → transform → verify`.
 - The gate is "all items transformed AND all verifies pass"; `findings` = items that failed transform/verify; selective re-run keyed by item (re-transform only the failures).
@@ -225,16 +225,13 @@ For a *write* migration (codemod / file migration / spec-driven per-item generat
 
 ## 4. Packaging & invocation
 
-- The script lives in the plugin's **`workflows/` asset dir** (e.g. `workflows/X-verify.js`). It is NOT a distributable plugin component and NOT a `/command`; it ships in the plugin cache like any other file.
+- The script lives in the plugin's **`workflows/` asset dir** (e.g. `workflows/X-verify.js`). It is not a `/command`; callers resolve it from the explicit plugin root or a declared capability path.
 - **Do NOT put it in dotfiles or `~/.claude/workflows/`** — that decouples it from the plugin version it depends on.
-- The skill invokes it by resolving the cached path (same glob convention the plugin already uses) and calling the `Workflow` tool with `scriptPath`:
-  ```bash
-  WF=$(command ls -d ~/.claude/plugins/cache/<owner>/<plugin>/*/workflows/X-verify.js 2>/dev/null | sort -V | tail -1)
+- The skill invokes it using an explicitly resolved plugin root or declared capability implementation path, then calls the `Workflow` tool with `scriptPath`:
   ```
+  Workflow({ scriptPath: "<resolved-plugin-root>/workflows/X-verify.js", args: { projectDir: "<abs>", items: [...] } })
   ```
-  Workflow({ scriptPath: "<WF>", args: { projectDir: "<abs>", items: [...], useTeachingAgents: true } })
-  ```
-- **Local-plugin edge case:** when the plugin runs from its source dir (not installed to the cache), the `~/.claude/plugins/cache/...` glob resolves empty and `WF` is blank → the `Workflow` call fails. Guard it: if the glob is empty, fall back to the in-repo path (`<plugin-root>/workflows/X-verify.js`) or instruct the user to install/refresh the plugin. The `<owner>/<plugin>` slug is the plugin's marketplace identifier (e.g. `edwinhu-plugins/workflows`), not its display name.
+- **Resolution invariant:** never select an installed version with a cache glob, “latest” sort, upward ambient search, or hard-coded marketplace path. The caller supplies the dependency root explicitly or uses the public capability resolver, which authenticates the checked-in manifest and returns a canonical contained path.
 - Ships via the normal version-bump procedure (no nix rebuild). New workflow + skill wiring = minor bump.
 
 ---
@@ -242,7 +239,7 @@ For a *write* migration (codemod / file migration / spec-driven per-item generat
 ## 5. Wiring the skill
 
 In the target phase/SKILL file, **replace** (a) the section that hand-dispatches the parallel reviewers and (b) the section that computes/states the gate, with:
-1. **"Run the X-verify workflow"** — resolve the cached path + `Workflow({scriptPath, args})`.
+1. **"Run the X-verify workflow"** — resolve the explicit plugin root or declared capability path + `Workflow({scriptPath, args})`.
 2. **"Read the gate"** — print `result.scoreTable`; the gate is `result.overallPass`, computed in JS — *do not recompute or rationalize it*.
 3. **Rewrite the `/goal` fix loop** so each iteration calls the workflow: full pass first, then on re-runs pass `onlyChecks: <prev result.reviewersThatFlagged>` + `priorReviews: <prev result.reviews>`.
 
