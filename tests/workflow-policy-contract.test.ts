@@ -40,6 +40,13 @@ function writeDescriptor(value: unknown): string {
   return path;
 }
 
+function writeDescriptorText(value: string): string {
+  const root = mkdtempSync(join(tmpdir(), "workflow-policy-"));
+  const path = join(root, "policy.json");
+  writeFileSync(path, value);
+  return path;
+}
+
 describe("external workflow policy contract", () => {
   test("accepts an opaque explicit descriptor without public registration", () => {
     const path = writeDescriptor(descriptor());
@@ -106,9 +113,10 @@ describe("external workflow policy contract", () => {
     }
   });
 
-  test("rejects unknown keys and malformed descriptors", () => {
+  test("rejects unknown keys, duplicate keys, and malformed descriptors", () => {
     expect(() => loadExternalWorkflowPolicy(writeDescriptor(descriptor({ extra: true })))).toThrow(/unknown|only/i);
     expect(() => loadExternalWorkflowPolicy(writeDescriptor({ ...descriptor(), schemaVersion: 3 }))).toThrow(/schemaVersion/i);
+    expect(() => loadExternalWorkflowPolicy(writeDescriptorText('{"schemaVersion":2,"workflow":"teaching","workflow":"substituted","approvalMode":"generated-plan-receipt-v1","allowedOrchestratorDirectories":[".planning"]}'))).toThrow(/duplicate/i);
   });
 
   test.each(["ds", "dev", "work", "writing", "workshop", "workflow-creator"])("rejects external descriptors claiming built-in identity %s", (workflow) => {

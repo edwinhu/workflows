@@ -6,6 +6,7 @@ import {
   bindApprovedGeneratedPlan,
   classifyBuiltInArtifactLayout,
   classifyPlanningLifecycle,
+  finalizeGeneratedPlanReview,
   parseReviewState,
   sha256,
   validateApprovedArtifact,
@@ -531,6 +532,22 @@ describe("built-in generated-plan and legacy layouts", () => {
       expect(readdirSync(outside)).toEqual(["review.json"]);
       expect(readFileSync(join(outside, "review.json"), "utf8")).toBe("outside review sentinel\n");
     } finally { rmSync(outside, { recursive: true, force: true }); }
+  }));
+
+  test("review finalization refuses to overwrite a receipt changed at the write boundary", () => withProject((root) => {
+    const planning = join(root, ".planning");
+    const planPath = join(planning, "review-race.md");
+    mkdirSync(planning, { recursive: true });
+    writeFileSync(planPath, "# Review race\n");
+    const prior = bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z");
+    const competing = { ...prior, status: "ISSUES_FOUND" as const, reviewer_session_id: "competing-reviewer", reviewed_at: "2026-07-30T10:30:00.000Z" };
+    const result = finalizeGeneratedPlanReview(root, "work", prior, "APPROVED", "review-session", "2026-07-30T11:00:00.000Z", {
+      afterTemporaryOpen() {
+        writeFileSync(join(planning, ".state", "review.json"), `${JSON.stringify(competing, null, 2)}\n`);
+      },
+    });
+    expect(result).toEqual(expect.objectContaining({ code: "review-race" }));
+    expect(JSON.parse(readFileSync(join(planning, ".state", "review.json"), "utf8"))).toEqual(competing);
   }));
 
   test("PENDING authenticates exact approval identity but does not authorize implementation", () => withProject((root) => {

@@ -6,7 +6,7 @@ import { bindApprovedGeneratedPlan } from "../workflows/lib/approved-artifact";
 import { composePlanReview, finalizeComposedPlanReview } from "../workflows/lib/plan-review-composer";
 
 const roots: string[] = [];
-const policy = { workflow: "dev", approvalMode: "built-in-generated-plan-receipt-v1" as const };
+const policy = { workflow: "dev", approvalMode: "built-in-native" as const };
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), "plan-review-composer-")); roots.push(root);
   mkdirSync(join(root, ".planning"), { recursive: true });
@@ -54,5 +54,20 @@ describe("plan review composer public contract", () => {
     expect(receipt).toEqual({ ...composition.approvalReceipt, status: "APPROVED", reviewer_session_id: "review-session", reviewed_at: "2026-07-31T11:00:00.000Z" });
     expect(JSON.parse(readFileSync(join(root, ".planning/.state/review.json"), "utf8"))).toEqual(receipt);
     expect(finalizeComposedPlanReview({ projectDir: root, policy, composition, reviewerSessionId: "other" })).toEqual(expect.objectContaining({ code: "review-race" }));
+  });
+
+  test("rejects caller-cloned or verdict-tampered compositions", async () => {
+    const { root } = fixture();
+    const composition = await composePlanReview({
+      projectDir: root,
+      policy,
+      commonChecks: [{ id: "common", run: () => [] }],
+      domainChecks: [{ id: "domain", run: () => [{ severity: "blocker", message: "must fix" }] }],
+    });
+    if ("code" in composition) throw new Error(composition.message);
+    expect(composition.status).toBe("ISSUES_FOUND");
+    const tampered = { ...composition, status: "APPROVED" as const };
+    expect(finalizeComposedPlanReview({ projectDir: root, policy, composition: tampered, reviewerSessionId: "review-session", reviewedAt: "2026-07-31T11:00:00.000Z" }))
+      .toEqual(expect.objectContaining({ code: "review-composition" }));
   });
 });

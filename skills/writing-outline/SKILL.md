@@ -24,6 +24,8 @@ hooks:
 
 # Writing Outline
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-outline`
+
 Create detailed section outlines under `outlines/` from the authenticated writing PLAN. Detailed outlines are domain artifacts; they elaborate the plan but cannot replace or amend its stable structure.
 
 ## Iron Law

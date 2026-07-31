@@ -3,7 +3,7 @@
 topic-change-protocol, post-subagent-enforcement).
 
 They verify the REAL auto-load wiring — (a) the constraint .md's `applies-to` includes the
-skill AND (b) the skill invokes load-constraints.py — NOT a defunct inline `.md` string
+skill AND (b) the skill invokes load-constraints.ts — NOT a defunct inline `.md` string
 reference (which false-failed once check-all correctly scoped APPLIES_TO to writing projects).
 
 Run:  uv run python3 tests/test_writing_constraint_lints.py

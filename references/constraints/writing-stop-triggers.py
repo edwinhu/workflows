@@ -3,9 +3,9 @@
 
 Authoring lint (checks the plugin's own skills/, not a user's document). It verifies the REAL
 loading mechanism: a constraint reaches a skill when (a) writing-stop-triggers.md's `applies-to`
-frontmatter includes that skill AND (b) the skill's SKILL.md invokes `load-constraints.py`
+frontmatter includes that skill AND (b) the skill's SKILL.md invokes `load-constraints.ts`
 (the auto-loader that concatenates every applies-to-matching .md). The earlier version checked
-for a literal `writing-stop-triggers.md` STRING in SKILL.md — a mechanism the load-constraints.py
+for a literal `writing-stop-triggers.md` STRING in SKILL.md — a mechanism the load-constraints.ts
 auto-loader superseded (the skills never inline-referenced constraints), so it false-failed.
 """
 
@@ -50,9 +50,9 @@ def check(context):
             violations.append(
                 f"{CONSTRAINT}.md `applies-to` omits {skill_name} — it will NOT auto-load there "
                 "(add the skill to the .md frontmatter)")
-        elif 'load-constraints.py' not in skill_file.read_text():
+        elif 'load-constraints.ts' not in skill_file.read_text():
             violations.append(
-                f"{skill_name}/SKILL.md does not invoke load-constraints.py — {CONSTRAINT} "
+                f"{skill_name}/SKILL.md does not invoke load-constraints.ts — {CONSTRAINT} "
                 "won't auto-load (prose-producing skills must run the constraint auto-loader)")
     return violations
 

@@ -35,7 +35,6 @@ function itemKinds(task: ReconciledPlanTask): TaskItemKind[] {
   const values = task.itemKinds === undefined ? ["implementation" as const] : [...task.itemKinds];
   if (!values.length || values.some(value => !KINDS.has(value))) throw new Error(`plan task ${task.id} has invalid itemKinds`);
   if (new Set(values).size !== values.length) throw new Error(`plan task ${task.id} has duplicate itemKinds`);
-  if (!values.includes("implementation")) values.unshift("implementation");
   return values;
 }
 function dependencies(task: ReconciledPlanTask): string[] {
@@ -83,7 +82,10 @@ export function reconcileTaskList(args: Readonly<{
   for (const { task, identity } of desired) {
     const existing = liveByIdentity.get(taskListIdentity(identity))?.[0];
     if (existing) { if (identity.item_kind === "implementation") currentImplementationIds[identity.plan_task_id] = existing.id; continue; }
-    actions.push(freezeAction({ kind: "create", planTask: Object.freeze(task), metadata: Object.freeze(identity), blockedByPlanTaskIds: Object.freeze(identity.item_kind === "implementation" ? [...task.dependencies] : [task.id]) }));
+    const blockedByPlanTaskIds = identity.item_kind === "implementation"
+      ? [...task.dependencies]
+      : task.itemKinds.includes("implementation") ? [task.id] : [...task.dependencies];
+    actions.push(freezeAction({ kind: "create", planTask: Object.freeze(task), metadata: Object.freeze(identity), blockedByPlanTaskIds: Object.freeze(blockedByPlanTaskIds) }));
   }
   const desiredKeys = new Set(desired.map(item => taskListIdentity(item.identity)));
   for (const item of snapshots.sort((a, b) => a.id.localeCompare(b.id))) {

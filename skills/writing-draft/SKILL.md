@@ -30,6 +30,8 @@ hooks:
 
 # Writing Draft
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-draft`
+
 Expand each PLAN-bound detailed outline into prose through `workflows/writing-draft.js`. The workflow receives the authenticated `planPath` and deterministic section index; it never discovers canonical structure through an LLM or retired planning file.
 
 ## Iron Laws

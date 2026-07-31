@@ -21,6 +21,8 @@ hooks:
 
 # Writing Revise
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-revise`
+
 Apply targeted fixes from current-hash TaskList review findings, then obtain fresh independent re-review. Revise domain outputs without mutating stable PLAN structure.
 
 ## Iron Laws

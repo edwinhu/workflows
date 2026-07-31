@@ -1,15 +1,13 @@
-import { readFileSync } from "node:fs";
 import {
-  atomicWrite,
   err,
+  finalizeGeneratedPlanReview,
   resolveGeneratedPlanReviewState,
-  strictUtc,
   type ArtifactError,
   type ModernReviewReceipt,
 } from "./approved-artifact";
 
 export type PlanReviewSeverity = "blocker" | "advisory";
-export type PlanReviewApprovalMode = "built-in-generated-plan-receipt-v1" | "generated-plan-receipt-v1";
+export type PlanReviewApprovalMode = "built-in-native" | "generated-plan-receipt-v1";
 export type GeneratedPlanReviewPolicy = Readonly<{ workflow: string; approvalMode: PlanReviewApprovalMode }>;
 export type AuthenticatedPlanReviewContext = Readonly<{
   projectDir: string; workflow: string; planFile: string; planPath: string; planHash: string; plan: string;
@@ -27,11 +25,12 @@ export type PlanReviewComposition = Readonly<{
 
 const WORKFLOW = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
 const CHECK_ID = /^[a-z0-9][a-z0-9._-]*$/;
+const issuedCompositions = new WeakSet<object>();
 const isError = (value: unknown): value is ArtifactError => !!value && typeof value === "object" && typeof (value as ArtifactError).code === "string" && typeof (value as ArtifactError).message === "string";
 
 function validatePolicy(policy: GeneratedPlanReviewPolicy): ArtifactError | null {
   if (!policy || typeof policy !== "object" || !WORKFLOW.test(policy.workflow)) return err("review-policy", "validated generated-plan workflow policy is required");
-  if (policy.approvalMode !== "built-in-generated-plan-receipt-v1" && policy.approvalMode !== "generated-plan-receipt-v1") return err("review-policy", "workflow policy must select a generated-plan approval mode");
+  if (policy.approvalMode !== "built-in-native" && policy.approvalMode !== "generated-plan-receipt-v1") return err("review-policy", "workflow policy must select a generated-plan approval mode");
   return null;
 }
 function normalizeChecks(common: readonly PlanReviewCheck[], domain: readonly PlanReviewCheck[]): { scope: "common" | "domain"; check: PlanReviewCheck }[] | ArtifactError {
@@ -72,9 +71,7 @@ export async function composePlanReview(args: Readonly<{
   const checks = normalizeChecks(args.commonChecks, args.domainChecks); if (isError(checks)) return checks;
   const resolved = resolveGeneratedPlanReviewState(args.projectDir, args.policy.workflow); if (isError(resolved)) return resolved;
   if (resolved.receipt.status !== "PENDING") return err("review-state", "plan review composition requires a PENDING authenticated receipt");
-  let plan: string;
-  try { plan = readFileSync(resolved.planPath, "utf8"); } catch { return err("artifact-read", "authenticated plan could not be read for review"); }
-  const context = Object.freeze({ projectDir: args.projectDir, workflow: args.policy.workflow, planFile: resolved.planFile, planPath: resolved.planPath, planHash: resolved.hash, plan });
+  const context = Object.freeze({ projectDir: args.projectDir, workflow: args.policy.workflow, planFile: resolved.planFile, planPath: resolved.planPath, planHash: resolved.hash, plan: resolved.planText });
   const findings: PlanReviewFinding[] = []; const executed: string[] = [];
   for (const { scope, check } of checks) {
     let raw: unknown;
@@ -84,7 +81,9 @@ export async function composePlanReview(args: Readonly<{
   }
   const unchanged = resolveGeneratedPlanReviewState(args.projectDir, args.policy.workflow); if (isError(unchanged)) return unchanged;
   if (unchanged.hash !== resolved.hash || unchanged.planFile !== resolved.planFile || JSON.stringify(unchanged.receipt) !== JSON.stringify(resolved.receipt)) return err("review-race", "plan identity or approval receipt changed during review");
-  return Object.freeze({ workflow: args.policy.workflow, planFile: resolved.planFile, planHash: resolved.hash, approvalReceipt: Object.freeze({ ...resolved.receipt }), status: findings.some(f => f.severity === "blocker") ? "ISSUES_FOUND" : "APPROVED", findings: Object.freeze(findings), executedCheckIds: Object.freeze(executed) });
+  const composition = Object.freeze({ workflow: args.policy.workflow, planFile: resolved.planFile, planHash: resolved.hash, approvalReceipt: Object.freeze({ ...resolved.receipt }), status: findings.some(f => f.severity === "blocker") ? "ISSUES_FOUND" as const : "APPROVED" as const, findings: Object.freeze(findings), executedCheckIds: Object.freeze(executed) });
+  issuedCompositions.add(composition);
+  return composition;
 }
 
 /** Re-authenticates the composed plan and changes only receipt fields owned by plan review. */
@@ -92,15 +91,17 @@ export function finalizeComposedPlanReview(args: Readonly<{
   projectDir: string; policy: GeneratedPlanReviewPolicy; composition: PlanReviewComposition; reviewerSessionId: string; reviewedAt?: string;
 }>): ModernReviewReceipt | ArtifactError {
   const policyError = validatePolicy(args?.policy); if (policyError) return policyError;
-  if (!args.composition || args.composition.workflow !== args.policy.workflow || !Array.isArray(args.composition.executedCheckIds) || args.composition.executedCheckIds.length === 0) return err("review-composition", "complete matching plan review composition is required");
+  if (!args.composition || !issuedCompositions.has(args.composition) || args.composition.workflow !== args.policy.workflow || !Array.isArray(args.composition.executedCheckIds) || args.composition.executedCheckIds.length === 0) return err("review-composition", "complete matching plan review composition issued by this composer is required");
   if (typeof args.reviewerSessionId !== "string" || !args.reviewerSessionId.trim()) return err("review-session", "reviewerSessionId is required");
   const resolved = resolveGeneratedPlanReviewState(args.projectDir, args.policy.workflow); if (isError(resolved)) return resolved;
   const prior = args.composition.approvalReceipt;
   if (resolved.receipt.status !== "PENDING" || resolved.hash !== args.composition.planHash || resolved.planFile !== args.composition.planFile || JSON.stringify(resolved.receipt) !== JSON.stringify(prior)) return err("review-race", "plan identity or approval receipt changed before finalization");
-  if (args.reviewerSessionId === prior.approved_session_id) return err("review-session", "reviewer session must differ from approval session");
-  const reviewedAt = args.reviewedAt ?? new Date().toISOString();
-  if (!strictUtc(reviewedAt) || new Date(reviewedAt).getTime() <= new Date(prior.approved_at).getTime()) return err("review-time", "reviewedAt must be a strict UTC timestamp later than approvedAt");
-  const receipt: ModernReviewReceipt = { ...prior, status: args.composition.status, reviewer_session_id: args.reviewerSessionId, reviewed_at: reviewedAt };
-  atomicWrite(`${args.projectDir}/.planning/.state/review.json`, `${JSON.stringify(receipt, null, 2)}\n`);
-  return Object.freeze(receipt);
+  return finalizeGeneratedPlanReview(
+    args.projectDir,
+    args.policy.workflow,
+    prior,
+    args.composition.status,
+    args.reviewerSessionId,
+    args.reviewedAt,
+  );
 }

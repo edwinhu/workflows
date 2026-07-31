@@ -7,8 +7,15 @@ const snapshot = (id: string, status: TaskListSnapshot["status"], planHash: stri
 describe("TaskList reconciler public contract", () => {
   test("uses exactly planHash, plan_task_id, item_kind identity and creates explicit kinds", () => {
     expect(taskListIdentity({ planHash: NEXT, plan_task_id: "TASK-01", item_kind: "implementation" })).toBe(`${NEXT}:TASK-01:implementation`);
-    const result = reconcileTaskList({ planHash: NEXT, planTasks: [task("TASK-01", [], ["retry", "blocker", "review", "human-decision", "verification"])], existingItems: [] });
+    const result = reconcileTaskList({ planHash: NEXT, planTasks: [task("TASK-01", [], ["implementation", "retry", "blocker", "review", "human-decision", "verification"])], existingItems: [] });
     expect(result.actions.filter(a => a.kind === "create").map(a => a.kind === "create" && a.metadata.item_kind)).toEqual(["blocker", "human-decision", "implementation", "retry", "review", "verification"]);
+  });
+
+  test("does not invent implementation work for standalone human decisions", () => {
+    const result = reconcileTaskList({ planHash: NEXT, planTasks: [task("DECIDE-01", [], ["human-decision"])], existingItems: [] });
+    expect(result.actions).toEqual([
+      expect.objectContaining({ kind: "create", metadata: expect.objectContaining({ item_kind: "human-decision" }), blockedByPlanTaskIds: [] }),
+    ]);
   });
 
   test("reuses same-hash tasks, validates dependencies, and emits tool-neutral creates", () => {

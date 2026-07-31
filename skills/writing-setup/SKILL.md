@@ -13,6 +13,8 @@ hooks:
 
 # Writing Setup
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-setup`
+
 Build the sole writing specification through native Plan mode. This phase does not mutate domain paths or create précis, master-outline, workflow-marker, or review-marker files.
 
 ## Prerequisites

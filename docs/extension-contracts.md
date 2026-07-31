@@ -40,11 +40,11 @@ Resolution succeeds only when the manifest and implementation are contained by t
 
 ### Approved-artifact policy
 
-External workflows remain descriptor-v1 and supply `ApprovalPolicyDescriptor` schema 1 with exactly `schemaVersion`, `workflow`, `planPath`, `metadataPath`, and `verdictPath`. Built-in modern workflows use no descriptor: a hook-owned receipt selects one generated plan by `{planFile, planHash}`. Success returns the authenticated current `ApprovedArtifact`; rejection returns `ArtifactError { code, message }`. Neither shape can disable current-byte hashing, workflow/session separation, chronology, strict UTC timestamps, review matching, or canonical containment.
+Fixed external workflows retain `ApprovalPolicyDescriptor` schema 1 with exactly `schemaVersion`, `workflow`, `planPath`, `metadataPath`, and `verdictPath`. Built-ins and validated external-native workflows use a hook-owned receipt that selects one generated plan by `{planFile, planHash}`. External-native callers must arrive through a strict workflow-policy schema-2 descriptor with `approvalMode: "generated-plan-receipt-v1"`; an opaque name alone never selects this mode. Success returns the authenticated current `ApprovedArtifact`; rejection returns `ArtifactError { code, message }`. No mode can disable exact-byte hashing, workflow/session separation, chronology, strict UTC timestamps, review matching, canonical containment, symlink rejection, or race checks.
 
 ### Workflow-policy loader
 
-`loadExternalWorkflowPolicy(descriptorPath)` requires an explicit descriptor file. Schema 1 contains only workflow identity, clarify/reviewer paths and reason, and allowed orchestrator directories. It returns a frozen policy. Unknown keys, built-in replacement, invalid or duplicate paths, malformed JSON, and unsupported schema throw an error prefixed `Invalid workflow policy descriptor:`. `workflowPolicyFromArg` accepts exactly one built-in workflow selection or one explicit external descriptor selection.
+`loadExternalWorkflowPolicy(descriptorPath)` requires an explicit descriptor file and returns a frozen policy with an explicit approval mode. Schema 1 preserves the fixed-artifact workflow identity, clarification/reviewer/policy paths, reason, and allowed orchestrator directories, normalized to `external-fixed-v1`. Schema 2 contains exactly `schemaVersion`, opaque external `workflow`, `approvalMode: "generated-plan-receipt-v1"`, and nonempty `allowedOrchestratorDirectories`; it has no fixed lifecycle paths. Built-ins normalize to `built-in-native`. Unknown keys, built-in replacement, invalid or duplicate paths, malformed JSON, and unsupported schemas or modes throw an error prefixed `Invalid workflow policy descriptor:`. `workflowPolicyFromArg` accepts exactly one built-in workflow selection or one explicit external descriptor selection and performs no ambient lookup.
 
 ### Beat-implement runner
 
@@ -52,7 +52,7 @@ The runner requires explicit `projectDir`, a validated workflow policy, complete
 
 ### Plan-review composer
 
-`composePlanReview` accepts an explicit project root, a validated generated-plan workflow policy, and non-empty common and domain check sets. It authenticates the receipt-selected exact plan before dispatch, gives every check the same immutable whole-plan context, runs checks in deterministic common-then-domain lexical order, and re-authenticates plan bytes and receipt before returning one frozen composition. Any missing, duplicate, thrown, or malformed check fails closed as `ArtifactError` without partial evidence. `finalizeComposedPlanReview` re-authenticates again and changes only `status`, `reviewer_session_id`, and `reviewed_at`; it cannot finalize a stale composition.
+`composePlanReview` accepts an explicit project root, a validated generated-plan workflow policy, and non-empty common and domain check sets. It authenticates the receipt-selected exact plan before dispatch, gives every check the same immutable whole-plan context, runs checks in deterministic common-then-domain lexical order, and re-authenticates plan bytes and receipt before returning one frozen composition. Any missing, duplicate, thrown, or malformed check fails closed as `ArtifactError` without partial evidence. `finalizeComposedPlanReview` accepts only the exact in-process composition object issued by `composePlanReview`, re-authenticates again at the write boundary, and changes only `status`, `reviewer_session_id`, and `reviewed_at`; it cannot finalize a cloned, tampered, or stale composition.
 
 ### TaskList reconciler
 
@@ -60,7 +60,7 @@ The runner requires explicit `projectDir`, a validated workflow policy, complete
 
 ## Compatibility
 
-Manifest schema 1 and each capability contract version 1 are independently versioned. Additive documentation or implementation changes that preserve the documented inputs, evidence shapes, rejection categories, and fail-closed security invariants may ship under contract 1. A breaking change requires a new capability contract version (or manifest schema version when discovery itself changes). Existing built-in workflow entry points remain behavior-compatible; external descriptors only add explicit identity and project-relative path configuration.
+Manifest schema 1 and every capability contract are independently versioned. Additive documentation or implementation changes that preserve a capability's documented inputs, evidence shapes, rejection categories, and fail-closed security invariants may ship under its current contract version. A breaking change requires a new capability contract version (or manifest schema version when discovery itself changes). Existing built-in and schema-1 fixed-external entry points remain behavior-compatible; schema-2 external-native workflows receive generated-plan support only through explicit validated policy selection.
 
 ## Release boundary
 

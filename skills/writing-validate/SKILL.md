@@ -8,6 +8,8 @@ allowed-tools: Read, Grep, Glob, Bash, TaskCreate, TaskList, TaskUpdate
 
 # Claim Validation
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-validate`
+
 Validate each canonical writing-plan claim against its mapped draft output before prose review. The receipt-selected immutable `{planFile, planHash}` contains claims, structure, claim-to-section mapping, source plan, section outputs, and review surfaces. `TaskList` contains live validation gaps and resolution work. Do not create or consume retired writing planning ledgers.
 
 ## Iron Law

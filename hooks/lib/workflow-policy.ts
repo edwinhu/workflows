@@ -58,6 +58,62 @@ function descriptorError(message: string): Error {
   return new Error(`Invalid workflow policy descriptor: ${message}`);
 }
 
+function rejectDuplicateTopLevelKeys(text: string): void {
+  let index = 0;
+  const skipWhitespace = () => { while (/\s/.test(text[index] ?? "")) index++; };
+  const readString = (): string | null => {
+    skipWhitespace();
+    if (text[index] !== '"') return null;
+    const start = index++;
+    let escaped = false;
+    while (index < text.length) {
+      const character = text[index++];
+      if (escaped) { escaped = false; continue; }
+      if (character === "\\") { escaped = true; continue; }
+      if (character === '"') {
+        try { return JSON.parse(text.slice(start, index)); }
+        catch { return null; }
+      }
+    }
+    return null;
+  };
+  const skipValue = (): boolean => {
+    skipWhitespace();
+    if (text[index] === '"') return readString() !== null;
+    if (text[index] === "[" || text[index] === "{") {
+      const stack = [text[index++] === "[" ? "]" : "}"];
+      while (index < text.length && stack.length > 0) {
+        if (text[index] === '"') { if (readString() === null) return false; continue; }
+        if (text[index] === "[") { stack.push("]"); index++; continue; }
+        if (text[index] === "{") { stack.push("}"); index++; continue; }
+        if (text[index] === stack[stack.length - 1]) { stack.pop(); index++; continue; }
+        index++;
+      }
+      return stack.length === 0;
+    }
+    while (index < text.length && text[index] !== "," && text[index] !== "}") index++;
+    return true;
+  };
+
+  skipWhitespace();
+  if (text[index++] !== "{") return;
+  const seen = new Set<string>();
+  while (index < text.length) {
+    skipWhitespace();
+    if (text[index] === "}") return;
+    const key = readString();
+    if (key === null) return;
+    if (seen.has(key)) throw descriptorError(`duplicate field: ${key}`);
+    seen.add(key);
+    skipWhitespace();
+    if (text[index++] !== ":" || !skipValue()) return;
+    skipWhitespace();
+    if (text[index] === ",") { index++; continue; }
+    if (text[index] === "}") return;
+    return;
+  }
+}
+
 function isSafeProjectRelativePath(value: unknown): value is string {
   if (typeof value !== "string" || value.length === 0 || isAbsolute(value) || value.includes("\\")) return false;
   if (value.split("/").some((segment) => segment === "" || segment === "." || segment === "..")) return false;
@@ -88,6 +144,7 @@ function parseWorkflowIdentity(value: unknown): string {
 }
 
 function parseDescriptor(text: string): WorkflowPolicyDescriptor {
+  rejectDuplicateTopLevelKeys(text);
   let value: unknown;
   try { value = JSON.parse(text); }
   catch { throw descriptorError("malformed JSON"); }

@@ -3,7 +3,7 @@
 
 Authoring lint (checks the plugin's own skills/, not a user's document). Verifies the REAL
 loading mechanism: (a) topic-change-protocol.md's `applies-to` includes the phase skill AND
-(b) the skill invokes `load-constraints.py` (the auto-loader). The earlier version checked for a
+(b) the skill invokes `load-constraints.ts` (the auto-loader). The earlier version checked for a
 literal `.md` string reference in SKILL.md — a mechanism the auto-loader superseded — so it
 false-failed once check-all correctly scoped it to writing projects.
 """
@@ -49,9 +49,9 @@ def check(context):
         if skill_name.lower() not in applies:
             violations.append(
                 f"{CONSTRAINT}.md `applies-to` omits {skill_name} — it will NOT auto-load there.")
-        elif 'load-constraints.py' not in skill_file.read_text():
+        elif 'load-constraints.ts' not in skill_file.read_text():
             violations.append(
-                f"{skill_name}/SKILL.md does not invoke load-constraints.py — {CONSTRAINT} "
+                f"{skill_name}/SKILL.md does not invoke load-constraints.ts — {CONSTRAINT} "
                 "won't auto-load (workflow phases must run the constraint auto-loader).")
     return violations
 

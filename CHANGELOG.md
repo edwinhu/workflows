@@ -13,6 +13,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [5.103.0] - 2026-07-31
+
+### Added
+- Published schema-2 external native workflow policies, composable whole-plan review, and canonical TaskList reconciliation so dependent plugins can reuse the generated-plan receipt lifecycle without becoming built-ins.
+- Added external generated-plan support to approval persistence, reviewer/gate hooks, lifecycle resume, and the shared implementation runner while retaining fixed external schema-1 compatibility.
+
+### Changed
+- Renamed the teaching reverse-integration cache identity from `course-materials/teaching` to `teaching/teaching`.
+- Hardened descriptor parsing and review finalization against duplicate keys, stale bytes, symlink substitution, and directory races.
+
 ## [5.99.0] - 2026-07-30
 
 ### Added

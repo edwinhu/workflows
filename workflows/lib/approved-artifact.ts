@@ -8,7 +8,7 @@ export type ArtifactError = { code: string; message: string };
 export type ApprovalMetadata = { schemaVersion: 1; workflow: string; planHash: string; approvedSession: string; approvedAt: string };
 export type ReviewerVerdict = { plan_hash: string; status: "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
 export type ModernReviewReceipt = { workflow: string; plan_file: string; plan_hash: string; approved_session_id: string; approved_at: string; status: "PENDING" | "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
-export type ResolvedGeneratedPlan = { planFile: string; planPath: string; hash: string; receipt: ModernReviewReceipt };
+export type ResolvedGeneratedPlan = { planFile: string; planPath: string; planText: string; hash: string; receipt: ModernReviewReceipt };
 export type AuthenticatedPlan = { hash: string; planFile?: string; planPath?: string; receipt?: ModernReviewReceipt; metadata: ApprovalMetadata; layout: "canonical" | "canonical-with-legacy-provenance" | "external" };
 export type ApprovedArtifact = { hash: string; planFile?: string; planPath?: string; receipt?: ModernReviewReceipt; metadata?: ApprovalMetadata; verdict: ReviewerVerdict };
 export type BuiltInArtifactLayout = "canonical" | "canonical-with-legacy-provenance" | "legacy" | "conflict";
@@ -222,8 +222,11 @@ export function resolveGeneratedPlanReviewState(projectDir: string, expectedWork
   const planPath = join(root, ".planning", receipt.plan_file); if (!existsSync(planPath)) return err("missing-artifact", `selected generated plan is missing: ${receipt.plan_file}`);
   const planSnapshot = readArtifactSnapshot(root, planPath, "artifact-read", readOptions); if (isError(planSnapshot)) return planSnapshot;
   if (planSnapshot.length === 0) return err("empty-plan", `selected generated plan is empty: ${receipt.plan_file}`);
+  let planText: string;
+  try { planText = new TextDecoder("utf-8", { fatal: true }).decode(planSnapshot); }
+  catch { return err("plan-encoding", `selected generated plan is not valid UTF-8: ${receipt.plan_file}`); }
   const hash = sha256(planSnapshot); if (receipt.plan_hash !== hash) return err("stale-receipt", `review state does not authenticate current ${receipt.plan_file} bytes`);
-  return { planFile: receipt.plan_file, planPath, hash, receipt };
+  return { planFile: receipt.plan_file, planPath, planText, hash, receipt };
 }
 
 /**
@@ -377,7 +380,7 @@ export function atomicWrite(path: string, content: string): void {
   try { fd = openSync(temporary, "wx", 0o600); const bytes = Buffer.from(content, "utf8"); for (let offset = 0; offset < bytes.length;) { const written = writeSync(fd, bytes, offset, bytes.length - offset); if (written <= 0) throw new Error("write made no progress"); offset += written; } fsyncSync(fd); closeSync(fd); fd = undefined; renameSync(temporary, path); }
   finally { if (fd !== undefined) closeSync(fd); try { unlinkSync(temporary); } catch {} }
 }
-function atomicWriteOwnedDirectory(root: string, livePath: string, directory: OwnedDirectory, basename: string, content: string, afterTemporaryOpen?: () => void): void {
+function atomicWriteOwnedDirectory(root: string, livePath: string, directory: OwnedDirectory, basename: string, content: string, afterTemporaryOpen?: () => void, beforeRename?: () => void): void {
   if (directory.anchor === undefined) throw new Error("approval artifact directory does not support descriptor-anchored mutation");
   const base = directory.anchor;
   const target = join(base, basename);
@@ -397,6 +400,8 @@ function atomicWriteOwnedDirectory(root: string, livePath: string, directory: Ow
       offset += written;
     }
     fsyncSync(fd); closeSync(fd); fd = undefined;
+    requireLiveDirectory(root, livePath, directory);
+    beforeRename?.();
     requireLiveDirectory(root, livePath, directory);
     renameSync(temporary, target);
     requireLiveDirectory(root, livePath, directory);
@@ -453,6 +458,67 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: string, 
     unlinkOwnedDirectory(root, state, stateDirectory, "plan.json");
     requireLiveDirectory(root, planning, planningDirectory); requireLiveDirectory(root, state, stateDirectory);
     return receipt;
+  } finally {
+    if (stateDirectory !== undefined) closeSync(stateDirectory.fd);
+    if (planningDirectory !== undefined) closeSync(planningDirectory.fd);
+  }
+}
+
+export function finalizeGeneratedPlanReview(
+  projectDir: string,
+  workflow: string,
+  priorReceipt: ModernReviewReceipt,
+  status: "APPROVED" | "ISSUES_FOUND",
+  reviewerSession: string,
+  reviewedAt = new Date().toISOString(),
+  options: ArtifactWriteOptions = {},
+): ModernReviewReceipt | ArtifactError {
+  if (!isWorkflowIdentity(workflow) || (status !== "APPROVED" && status !== "ISSUES_FOUND") || typeof reviewerSession !== "string" || !reviewerSession.trim() || !strictUtc(reviewedAt)) {
+    return err("review-schema", "generated-plan review finalization identity is invalid");
+  }
+  const parsedPrior = parseReviewState(JSON.stringify(priorReceipt), workflow);
+  if (isError(parsedPrior) || parsedPrior.status !== "PENDING") return err("review-schema", "generated-plan review finalization requires the exact PENDING receipt");
+  if (reviewerSession === parsedPrior.approved_session_id) return err("session-separation", "approval and review sessions must differ");
+  if (Date.parse(reviewedAt) <= Date.parse(parsedPrior.approved_at)) return err("approval-chronology", "review must be strictly later than approval");
+
+  let root: string;
+  try { root = realpathSync(projectDir); }
+  catch { return err("project-root", "project root must exist and be accessible"); }
+  const planning = join(root, ".planning");
+  const state = join(planning, ".state");
+  const first = resolveGeneratedPlanReviewState(root, workflow);
+  if (isError(first)) return first;
+  if (JSON.stringify(first.receipt) !== JSON.stringify(parsedPrior)) return err("review-race", "approval receipt changed before review finalization");
+
+  let planningDirectory: OwnedDirectory | undefined;
+  let stateDirectory: OwnedDirectory | undefined;
+  let writeBoundaryRace = false;
+  try {
+    planningDirectory = openOwnedDirectory(root, planning, options.forceNoDescriptorAnchor);
+    stateDirectory = openOwnedDirectory(root, state, options.forceNoDescriptorAnchor);
+    requireLiveDirectory(root, planning, planningDirectory);
+    requireLiveDirectory(root, state, stateDirectory);
+    options.afterStateOpen?.(stateDirectory.anchor === undefined ? "pathname" : "descriptor");
+    if (stateDirectory.anchor === undefined) return err("review-write", "approval artifact directory does not support descriptor-anchored mutation");
+    const unchanged = resolveGeneratedPlanReviewState(root, workflow);
+    if (isError(unchanged)) return unchanged;
+    if (unchanged.hash !== first.hash || JSON.stringify(unchanged.receipt) !== JSON.stringify(parsedPrior)) return err("review-race", "plan identity or approval receipt changed during review finalization");
+    const receipt: ModernReviewReceipt = { ...parsedPrior, status, reviewer_session_id: reviewerSession, reviewed_at: reviewedAt };
+    atomicWriteOwnedDirectory(root, state, stateDirectory, "review.json", `${JSON.stringify(receipt, null, 2)}\n`, options.afterTemporaryOpen, () => {
+      const boundary = resolveGeneratedPlanReviewState(root, workflow);
+      if (isError(boundary) || boundary.hash !== first.hash || JSON.stringify(boundary.receipt) !== JSON.stringify(parsedPrior)) {
+        writeBoundaryRace = true;
+        throw new Error("plan identity or approval receipt changed at the review write boundary");
+      }
+    });
+    requireLiveDirectory(root, planning, planningDirectory);
+    requireLiveDirectory(root, state, stateDirectory);
+    const finalized = resolveGeneratedPlanReviewState(root, workflow);
+    if (isError(finalized) || finalized.hash !== first.hash || JSON.stringify(finalized.receipt) !== JSON.stringify(receipt)) return err("review-race", "finalized review receipt could not be re-authenticated");
+    return Object.freeze(receipt);
+  } catch (error) {
+    if (writeBoundaryRace) return err("review-race", "plan identity or approval receipt changed at the review write boundary");
+    return err("review-write", `could not finalize generated-plan review: ${error instanceof Error ? error.message : String(error)}`);
   } finally {
     if (stateDirectory !== undefined) closeSync(stateDirectory.fd);
     if (planningDirectory !== undefined) closeSync(planningDirectory.fd);

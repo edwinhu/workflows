@@ -1,10 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
-import { captureCandidate, serializeCandidateManifest } from "../workflows/lib/candidate-manifest";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
-const TARGET_VERSION = "5.102.0";
+const TARGET_VERSION = "5.103.0";
 
 type Capability = {
   name: string;
@@ -118,7 +117,7 @@ function parseContractRows(markdown: string): ContractRow[] {
 }
 
 describe("public extension contract integration", () => {
-  test("all three plugin version fields and capability identity agree at 5.102.0", () => {
+  test("all three plugin version fields and capability identity agree at 5.103.0", () => {
     const plugin = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/plugin.json"), "utf8"));
     const marketplace = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/marketplace.json"), "utf8"));
     const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8"));
@@ -149,52 +148,10 @@ describe("public extension contract integration", () => {
     }
   });
 
-  test("binds terminal integration evidence to the one canonical candidate", () => {
-    const evidence = readFileSync(join(ROOT, ".planning/STAGE1_EVIDENCE.md"), "utf8");
-    const migration = readFileSync(join(ROOT, ".planning/MIGRATION.md"), "utf8");
-    const validation = readFileSync(join(ROOT, ".planning/VALIDATION.md"), "utf8");
+  test("ships without ignored planning files as public contract authority", () => {
     const documentation = readFileSync(join(ROOT, "docs/extension-contracts.md"), "utf8");
-    const match = evidence.match(/<!-- canonical-stage1-evidence\n([\s\S]*?)\n-->/);
-    expect(match).not.toBeNull();
-    const record = JSON.parse(match![1]) as {
-      schemaVersion: number;
-      finalManifestDigest: string;
-      canonicalManifest: string;
-      terminal: Record<string, string>;
-      supersededCaptures: { digest: string; releaseEligible: boolean; reason: string }[];
-      recapture: { status: string; affectedChecks: string[]; completedChecks: string[] };
-      historicalTraceLinks: { approvals: string; observations: string };
-      release: { independentVerification: string; humanApproval: string };
-    };
-    const candidate = captureCandidate({ repositoryRoot: ROOT, baseRef: "HEAD" });
-    const manifestText = new TextDecoder().decode(serializeCandidateManifest(candidate.manifest));
-
-    expect(record.schemaVersion).toBe(1);
-    expect(record.finalManifestDigest).toBe(candidate.manifestDigest);
-    expect(record.canonicalManifest).toBe(manifestText);
-    expect(Object.values(record.terminal)).toEqual([
-      candidate.manifestDigest,
-      candidate.manifestDigest,
-      candidate.manifestDigest,
-      candidate.manifestDigest,
-      candidate.manifestDigest,
-    ]);
-    expect(record.supersededCaptures.length).toBeGreaterThan(0);
-    expect(record.supersededCaptures.every((capture) => !capture.releaseEligible && capture.reason.length > 0)).toBe(true);
-    expect(record.recapture.status).toBe("eligible");
-    expect(record.recapture.affectedChecks.length).toBeGreaterThan(0);
-    expect(record.recapture.completedChecks).toEqual(record.recapture.affectedChecks);
-    expect(record.historicalTraceLinks.approvals).toContain("#historical-approval-and-observation-traces");
-    expect(record.historicalTraceLinks.observations).toContain("#historical-approval-and-observation-traces");
-    expect(record.release.independentVerification).toBe("pending");
-    expect(record.release.humanApproval).toBe("pending-after-independent-pass");
-
-    for (const text of [migration, validation]) {
-      expect(text).toContain(candidate.manifestDigest);
-      expect(text).toContain(".planning/STAGE1_EVIDENCE.md");
-    }
-    expect(documentation).toContain(".planning/STAGE1_EVIDENCE.md");
-    expect(documentation).toContain("transient paths created and removed entirely during dispatch");
-    expect(documentation).toContain("malicious same-user process");
+    expect(documentation).not.toContain(".planning/STAGE1_EVIDENCE.md");
+    expect(documentation).toContain("exact-byte");
+    expect(documentation).toContain("TaskList");
   });
 });
