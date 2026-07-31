@@ -24,7 +24,7 @@ Inputs: <one or more paths>
 2. Require concrete `Reference root`, `Plan`, and `Inputs`; never infer or substitute paths.
 3. Load and lexically sort every common and domain constraint, then read the exact plan and inputs.
 4. Missing, unreadable, or empty constraint sets and inputs fail closed without a verdict write.
-5. Apply every loaded constraint to the complete plan.
+5. Apply every loaded constraint to the complete plan. Public adapters may use `plan-review-composer` v1 to enforce this same authenticated whole-plan, common-before-domain composition; they must use its sole finalizer rather than writing a verdict independently.
 
 ## Exact-path review protocol
 

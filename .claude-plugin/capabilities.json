@@ -22,18 +22,28 @@
     },
     {
       "name": "approved-artifact-policy",
-      "contractVersion": 2,
+      "contractVersion": 3,
       "implementation": "workflows/lib/approved-artifact.ts"
     },
     {
       "name": "workflow-policy-loader",
-      "contractVersion": 1,
+      "contractVersion": 2,
       "implementation": "hooks/lib/workflow-policy.ts"
     },
     {
       "name": "beat-implement-runner",
-      "contractVersion": 1,
+      "contractVersion": 2,
       "implementation": "workflows/beat-implement.js"
+    },
+    {
+      "name": "plan-review-composer",
+      "contractVersion": 1,
+      "implementation": "workflows/lib/plan-review-composer.ts"
+    },
+    {
+      "name": "tasklist-reconciler",
+      "contractVersion": 1,
+      "implementation": "workflows/lib/tasklist-reconciler.ts"
     }
   ]
 }
