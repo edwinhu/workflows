@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
-import { readFileSync } from "node:fs";
+import { closeSync, fstatSync, openSync, readFileSync } from "node:fs";
+import { isAbsolute } from "node:path";
 import { persistApprovedPlan } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 
@@ -17,6 +18,8 @@ if (typeof plan !== "string") {
   const transcriptPath = payload.transcript_path;
   const toolUseId = payload.tool_use_id;
   if (typeof transcriptPath !== "string" || typeof toolUseId !== "string" || !toolUseId) fail("ExitPlanMode tool input is missing string plan and transcript lookup identity");
+  let approvedPath: unknown;
+  let foundResult = false;
   try {
     scan: for (const line of readFileSync(transcriptPath, "utf8").split(/\r?\n/)) {
       if (!line.trim()) continue;
@@ -30,15 +33,37 @@ if (typeof plan !== "string") {
       const content = Array.isArray(message?.content) ? message.content : [];
       for (const block of content) {
         if (!block || typeof block !== "object") continue;
-        const tool = block as Record<string, unknown>;
-        const toolInput = tool.input as Record<string, unknown> | undefined;
-        if (tool.type === "tool_use" && tool.id === toolUseId && tool.name === "ExitPlanMode" && typeof toolInput?.plan === "string") {
-          plan = toolInput.plan;
+        const result = block as Record<string, unknown>;
+        if (result.type === "tool_result" && result.tool_use_id === toolUseId) {
+          foundResult = true;
+          const toolUseResult = record.toolUseResult;
+          approvedPath = toolUseResult && typeof toolUseResult === "object" && !Array.isArray(toolUseResult)
+            ? (toolUseResult as Record<string, unknown>).filePath
+            : undefined;
           break scan;
         }
       }
     }
   } catch { fail("ExitPlanMode approved plan could not be recovered from transcript"); }
+  if (!foundResult) fail("ExitPlanMode matching transcript tool-result was not found");
+  if (typeof approvedPath !== "string" || !isAbsolute(approvedPath)) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+  try {
+    const fd = openSync(approvedPath, "r");
+    let bytes: Buffer;
+    try {
+      const status = fstatSync(fd);
+      if (!status.isFile() || status.size === 0) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+      bytes = readFileSync(fd);
+    } finally {
+      closeSync(fd);
+    }
+    if (bytes.length === 0) fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+    plan = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+    if (!Buffer.from(plan, "utf8").equals(bytes)) fail("ExitPlanMode approved plan file must contain exact valid UTF-8 bytes");
+  } catch (error) {
+    if (error instanceof TypeError) fail("ExitPlanMode approved plan file must contain exact valid UTF-8 bytes");
+    fail("ExitPlanMode toolUseResult.filePath must name an absolute regular nonempty file");
+  }
 }
 if (typeof plan !== "string") fail("ExitPlanMode tool input is missing string plan");
 if (typeof payload.session_id !== "string" || !payload.session_id.trim()) fail("ExitPlanMode payload is missing a nonempty session_id");
