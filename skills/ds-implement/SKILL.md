@@ -16,7 +16,7 @@ hooks:
 
 `ds-implement` adapts an approved native plan to the shared IMPLEMENT primitive. It does not compile
 plans, maintain a DS state machine, or create `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or agent-memory.
-The approved `.planning/PLAN.md` is the sole planning input.
+The receipt-selected generated plan is the sole planning input.
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/beat-implement/SKILL.md` and follow its verifier doctrine. The
 shared workflow dispatches doers; this adapter selects the ready work, independently verifies it, and
@@ -28,7 +28,7 @@ curates returned facts into project auto-memory.
 
 **DO NOT reinterpret, compile, or mutate the approved plan while implementing it.**
 
-Copy only the immutable approval fields from `.planning/PLAN.meta.json` into `planReset`.
+Copy only the authenticated receipt-selected `planFile` and `planHash` into `planReset`.
 Never feed mutable state, a SPEC, a learnings log, or prior agent memory to a doer. A doer receives its
 caller-curated task, criteria, declared outputs, and immutable reset identity only. Adding stale context
 is not helpful: it lets old guesses override the approved task.
@@ -38,24 +38,13 @@ is not helpful: it lets old guesses override the approved task.
 
 ### 1. Read the native plan
 
-Read `.planning/PLAN.md`, `.planning/PLAN.meta.json`, and `.planning/PLAN_REVIEWED.md`. `PLAN.md`
-must be an exact native approved body. The metadata must authenticate its exact SHA-256 bytes and
-provide the immutable runner identity:
-
-```json
-{
-  "planHash": "<non-empty SHA-256 hex matching exact PLAN.md bytes>",
-  "approvedSession": "<non-empty>",
-  "approvedAt": "<strict UTC ISO-8601 timestamp ending in .sssZ>"
-}
-```
-
-`PLAN_REVIEWED.md` must contain exactly `plan_hash`, `status`, `reviewed_at`, and `reviewer_session_id`;
-it must state `APPROVED`, the same `plan_hash`, a strict UTC-Z timestamp, and the actual reviewer session.
-The current `CLAUDE_SESSION_ID` must be nonempty and genuinely distinct from both `approvedSession` and
-`reviewer_session_id`. There is no compaction or marker fallback. The runner checks this fail-closed
-workflow provenance by session IDs; it is not cryptographic attestation. If any condition fails, start a
-genuinely separate reviewer or implementation session. Do not manufacture any identity.
+Resolve the hidden review receipt and read only its selected generated plan. The receipt must authenticate
+that exact plan's SHA-256 bytes and provide the immutable runner identity: `{ planFile, planHash,
+approvedSession, approvedAt, reviewerSession, reviewedAt, status: APPROVED }`. The current
+`CLAUDE_SESSION_ID` must be nonempty and genuinely distinct from approval and reviewer sessions. There
+is no compaction, visible-plan, or marker fallback. The runner checks fail-closed workflow provenance by
+session IDs; it is not cryptographic attestation. If any condition fails, start a genuinely separate
+reviewer or implementation session. Do not manufacture any identity.
 
 ### Reconcile the approved plan into TaskList
 
@@ -124,8 +113,9 @@ Workflow({
     projectDir: "<absolute project path>",
     readyWave: [/* complete ready-wave task specs */],
     planReset: {
-      approvedBodyHash: "<PLAN.meta.json planHash>",
-      session: "<PLAN.meta.json approvedSession>",
+      planFile: "<receipt-selected generated plan basename>",
+      approvedBodyHash: "<receipt-selected planHash>",
+      session: "<receipt approval session>",
     },
   },
 })

@@ -24,19 +24,11 @@
       },
       "fixture": {
         ".planning/STATE.md": "# State\n\n## Active workflow: unknown\n\n## Phase: 1\n\nNotes:\n- plain bullet with no backticks\n- `not-a-skill-bullet` because no dash follows\n"
-      }
-    },
-    {
-      "name": "active-workflow-only",
-      "kind": "context",
-      "stdin": {
-        "hook_event_name": "SubagentStart",
-        "session_id": "sess-3",
-        "agent_type": "general-purpose",
-        "prompt": "implement phase 2"
       },
-      "fixture": {
-        ".planning/STATE.md": "# State\n\n## Active workflow: /ds-implement\n\n## Phase: 2 of 4\n"
+      "tsExpected": {
+        "stdoutSha256": "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -52,7 +44,25 @@
       }
     },
     {
-      "name": "skill-with-no-references-directory",
+      "name": "modern-active-workflow-only",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "SubagentStart",
+        "session_id": "sess-3",
+        "agent_type": "general-purpose",
+        "prompt": "implement phase 2"
+      },
+      "fixture": {
+        ".planning/STATE.md": "# State\n\n## Active workflow: /ds-implement\n\n## Phase: 2 of 4\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "modern-skill-with-no-references-directory",
       "kind": "context",
       "stdin": {
         "hook_event_name": "SubagentStart",
@@ -61,10 +71,15 @@
       },
       "fixture": {
         ".planning/PLAN.md": "# Plan\n\n## Skills Touched\n\n- `consensus` - literature search, no references/ dir\n- `no-such-skill-xyz` — skill directory does not exist at all\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
-      "name": "workflow-and-skills-merged-across-state-spec-plan",
+      "name": "modern-workflow-and-skills-merged-across-state-spec-plan",
       "kind": "context",
       "stdin": {
         "hook_event_name": "SubagentStart",
@@ -76,13 +91,55 @@
         ".planning/STATE.md": "# State\n\n## Active workflow: ds\n\n## Phase: 3\n\n- `marimo` - already listed in STATE\n",
         ".planning/SPEC.md": "# Spec\n\n- `marimo` - repeated, deduped\n- `consensus` — no references dir\n",
         ".planning/PLAN.md": "# Plan\n\n- `jupytext` - added last\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
-      "name": "empty-stdin-still-injects",
+      "name": "modern-empty-stdin-still-injects",
       "kind": "context",
       "fixture": {
         ".planning/STATE.md": "# State\n\n## Active workflow: /writing-draft\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "receipt-selected-plan-skills-inject",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "SubagentStart"
+      },
+      "fixture": {
+        ".planning/ds-native.md": "## Skills Touched\n\n- `consensus` -- verified evidence\n",
+        ".planning/.state/review.json": "{\"workflow\":\"ds\",\"plan_file\":\"ds-native.md\",\"plan_hash\":\"a0fb9d16a0ffee6f462610bfbbbf4cb2419faba536ddcf55c42727e2a3153e93\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}"
+      },
+      "tsExpected": {
+        "stdoutSha256": "53524f7c90bc7ba2fe678d39a8a22c1ea0642f2e410ff133865167775be6af4e",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "invalid-receipt-does-not-revive-state",
+      "kind": "context",
+      "stdin": {
+        "hook_event_name": "SubagentStart"
+      },
+      "fixture": {
+        ".planning/.state/review.json": "{}",
+        ".planning/STATE.md": "## Active workflow: /ds\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

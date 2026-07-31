@@ -13,6 +13,7 @@
 import { appendFileSync, existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { pyJson } from "./_gate_common.ts";
+import { classifyPlanningLifecycle } from "../workflows/lib/approved-artifact.ts";
 
 // Legacy PLAN-prose fallback only. Shared-v1 writing/workshop route from ACTIVE_WORKFLOW.md.
 const WORKFLOW_PATTERNS: Array<[string, string[]]> = [
@@ -129,8 +130,10 @@ function appendCompactionMarker(learningsPath: string, workflow: string | null):
  */
 function domainSkillsFromState(workflow: string | null): string[] {
   const skills: string[] = [];
-  // Native DS has one canonical plan. Legacy workflows retain their SPEC input until migrated.
-  const names = workflow === "ds" ? ["PLAN.md"] : ["SPEC.md", "PLAN.md"];
+  // The shared classifier selects a receipt-authenticated modern plan or the isolated /dev
+  // compatibility path. Blocked residue is never parsed for skill hints.
+  const lifecycle = classifyPlanningLifecycle(cwd());
+  const names = lifecycle.kind === "canonical" ? [lifecycle.resolved.planFile] : [];
   for (const name of names) {
     const p = join(cwd(), ".planning", name);
     if (!isFile(p)) continue;
@@ -201,17 +204,26 @@ async function main(): Promise<void> {
     /* hook_input = {} */
   }
 
-  // A shared-v1 marker is authoritative. Legacy workflows fall back to PLAN.md prose detection.
+  const lifecycle = classifyPlanningLifecycle(cwd());
+  if (lifecycle.kind === "blocked") {
+    console.log(pyJson({
+      systemMessage: "Planning state is blocked; do not read or write visible planning files. Convert the retired state or create a fresh approved generated plan.",
+    }));
+    process.exit(0);
+  }
+
   const marker = activeWorkflowMarker();
   const planPath = findPlanFile();
-  const activeWorkflow = marker?.lifecycle === "shared-v1"
-    ? marker.workflow
-    : (planPath ? detectActiveWorkflow(planPath) : null);
-  const resumeCommand = sharedResumeCommand(marker);
+  const activeWorkflow = lifecycle.kind === "canonical"
+    ? lifecycle.resolved.receipt.workflow
+    : (marker?.lifecycle === "shared-v1" || marker?.workflow === "work"
+      ? marker.workflow
+      : (planPath ? detectActiveWorkflow(planPath) : null));
+  const resumeCommand = lifecycle.kind === "canonical" ? null : sharedResumeCommand(marker);
 
-  // Approval metadata proves a native approved-plan lifecycle; it is no longer DS-specific.
-  const nativePlanLifecycle = isFile(join(cwd(), ".planning", "PLAN.meta.json")) || activeWorkflow === "ds";
-  // Native-plan workflows use immutable PLAN + TaskList + project auto-memory.
+  // Canonical lifecycle state is receipt-selected; the authenticated /dev compatibility path and
+  // pre-.planning legacy state retain their historical persistence behavior.
+  const nativePlanLifecycle = lifecycle.kind === "canonical";
   const learningsPath = nativePlanLifecycle ? null : findLearningsFile();
   if (learningsPath) appendCompactionMarker(learningsPath, activeWorkflow);
 
@@ -251,7 +263,7 @@ async function main(): Promise<void> {
       pyJson({
         systemMessage:
           nativePlanLifecycle
-            ? `${activeWorkflow ? `/${activeWorkflow}` : "Native-plan workflow"} context compacted; ${resumeCommand ?? "resume"} from .planning/PLAN.md, TaskList, and project auto-memory`
+            ? `${activeWorkflow ? `/${activeWorkflow}` : "Native-plan workflow"} context compacted; ${resumeCommand ?? "resume"} from the receipt-selected generated plan, TaskList, and project auto-memory`
             : "Workflow state saved to .planning/STATE.md" +
               (activeWorkflow ? ` (/${activeWorkflow} active)` : ""),
       }),

@@ -7,7 +7,9 @@
       "stdin": {
         "hook_event_name": "PreToolUse",
         "tool_name": "Bash",
-        "tool_input": { "command": "ls -la" }
+        "tool_input": {
+          "command": "ls -la"
+        }
       }
     },
     {
@@ -16,85 +18,10 @@
       "stdin": {
         "hook_event_name": "PreToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "paper.typ", "content": "= Paper\n" }
-      }
-    },
-    {
-      "name": "allow-planning-dir-carveout",
-      "kind": "allow",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Write",
-        "tool_input": { "file_path": ".planning/slides.typ", "content": "draft" }
-      }
-    },
-    {
-      "name": "deny-slides-typ-no-outline-artifact",
-      "kind": "deny",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Write",
-        "tool_input": { "file_path": "slides.typ", "content": "= Intro\n" }
-      }
-    },
-    {
-      "name": "deny-notes-typ-outline-status-not-approved",
-      "kind": "deny",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Edit",
-        "tool_input": { "file_path": "deck/notes.typ", "old_string": "a", "new_string": "b" }
-      },
-      "fixture": {
-        ".planning/OUTLINE_APPROVED.md": "---\nstatus: DRAFT\nreviewer: user\n---\n\nOutline still under revision.\n"
-      }
-    },
-    {
-      "name": "allow-notes-typ-outline-approved",
-      "kind": "allow",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Write",
-        "tool_input": { "file_path": "deck/notes.typ", "content": "notes" }
-      },
-      "fixture": {
-        ".planning/OUTLINE_APPROVED.md": "---\nstatus: \"approved\"\nreviewer: user\n---\n\nOutline approved by the user.\n"
-      }
-    },
-    {
-      "name": "deny-workflow-dispatch-workshop-generate-no-artifact",
-      "kind": "deny",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Workflow",
         "tool_input": {
-          "scriptPath": "scripts/workflows/workshop-generate.ts",
-          "name": "workshop-generate"
+          "file_path": "paper.typ",
+          "content": "= Paper\n"
         }
-      }
-    },
-    {
-      "name": "deny-workflow-dispatch-outline-artifact-missing-frontmatter",
-      "kind": "deny",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Workflow",
-        "tool_input": { "name": "workflows:workshop-generate" }
-      },
-      "fixture": {
-        ".planning/OUTLINE_APPROVED.md": "status: APPROVED\n\nNo frontmatter fence, so the gate must not pass.\n"
-      }
-    },
-    {
-      "name": "allow-workflow-dispatch-outline-approved",
-      "kind": "allow",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Workflow",
-        "tool_input": { "name": "workflows:workshop-generate" }
-      },
-      "fixture": {
-        ".planning/OUTLINE_APPROVED.md": "---\nstatus: APPROVED\n---\n\nApproved.\n"
       }
     },
     {
@@ -110,21 +37,6 @@
       }
     },
     {
-      "name": "deny-validation-md-no-slides-reviewed",
-      "kind": "deny",
-      "stdin": {
-        "hook_event_name": "PreToolUse",
-        "tool_name": "Write",
-        "tool_input": {
-          "file_path": ".planning/VALIDATION.md",
-          "content": "# Validation\n"
-        }
-      },
-      "fixture": {
-        ".planning/OUTLINE_APPROVED.md": "---\nstatus: APPROVED\n---\n\nApproved.\n"
-      }
-    },
-    {
       "name": "allow-validation-md-slides-reviewed-approved",
       "kind": "allow",
       "stdin": {
@@ -137,6 +49,62 @@
       },
       "fixture": {
         ".planning/SLIDES_REVIEWED.md": "---\nstatus: APPROVED\noverallPass: true\n---\n\nworkshop-verify returned overallPass=true.\n"
+      }
+    },
+    {
+      "name": "deny-workshop-generate-missing-receipt",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "name": "workflows:workshop-generate"
+        }
+      },
+      "tsExpected": {
+        "stdoutSha256": "4242ae37587c3f9337590a0a1d8432113e682006324508c10644a12b1b993654",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "allow-workshop-generate-approved-receipt-selected-plan",
+      "kind": "allow",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "name": "workflows:workshop-generate"
+        }
+      },
+      "fixture": {
+        ".planning/workshop-native.md": "## Presentation Intent\n\n- Teach the result.\n\n## Audience, Venue, Duration, and Proportions\n\n- Faculty workshop; 30 minutes.\n\n## Source Paper\n\n- Path: /papers/source.pdf\n\n## Source Inventory\n\n- F1 \u2014 headline figure\n\n## Slide Spec\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Motivation | The result matters. | setup; stakes | F1 | none | Open clearly. |\n\n## Outputs and Verification\n\n- Produce slides.typ.\n\n## Review Surfaces\n\n- Review the complete plan independently.\n",
+        ".planning/.state/review.json": "{\"workflow\":\"workshop\",\"plan_file\":\"workshop-native.md\",\"plan_hash\":\"1afc98542d61ac5eb8dda6382ac6276c2b7645f64a6ce0075f86f9f6c952aec9\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "deny-pending-receipt-selected-workshop-plan",
+      "kind": "deny",
+      "stdin": {
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Workflow",
+        "tool_input": {
+          "name": "workflows:workshop-generate"
+        }
+      },
+      "fixture": {
+        ".planning/workshop-native.md": "## Presentation Intent\n\n- Teach the result.\n\n## Audience, Venue, Duration, and Proportions\n\n- Faculty workshop; 30 minutes.\n\n## Source Paper\n\n- Path: /papers/source.pdf\n\n## Source Inventory\n\n- F1 \u2014 headline figure\n\n## Slide Spec\n\n| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |\n|---|---|---|---|---|---|---|\n| 1. Title | Motivation | The result matters. | setup; stakes | F1 | none | Open clearly. |\n\n## Outputs and Verification\n\n- Produce slides.typ.\n\n## Review Surfaces\n\n- Review the complete plan independently.\n",
+        ".planning/.state/review.json": "{\"workflow\":\"workshop\",\"plan_file\":\"workshop-native.md\",\"plan_hash\":\"1afc98542d61ac5eb8dda6382ac6276c2b7645f64a6ce0075f86f9f6c952aec9\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"PENDING\",\"reviewer_session_id\":\"\",\"reviewed_at\":\"\"}"
+      },
+      "tsExpected": {
+        "stdoutSha256": "04c97ed4b7c666b2eba4b2a0812ab59d62c7281077bce951f47895afbc43c07c",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

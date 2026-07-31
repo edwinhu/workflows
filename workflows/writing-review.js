@@ -1,9 +1,9 @@
 export const meta = {
   name: 'writing-review',
-  description: 'Hierarchical document review (Levels 1-3) as an ultracode workflow: per-section fan-out (structure + prose-quality + source-fidelity), mechanical quote-verification, transition analysis, and whole-document checks. Returns structured findings the skill renders into AUTOMATED_REVIEW.md. Read-only; does NOT fix.',
-  whenToUse: 'Called by the writing-review skill after setup + the Leg-1 constraint hard gate. Returns structured findings (sections/transitions/document-level) + a CLEAN/ISSUES-FOUND verdict. The skill renders AUTOMATED_REVIEW.md and drives the /writing-revise /goal loop; on a re-review it passes onlyChecks (changed section names) + priorReviews.',
+  description: 'Independent review of authenticated PLAN-bound drafts: per-section structure, prose, source fidelity, quote verification, transitions, and whole-document checks.',
+  whenToUse: 'Called after mechanical checks with planPath, planHash, and a deterministic sectionIndex. Findings return to TaskList and selective re-review requires the same plan hash.',
   phases: [
-    { title: 'Discover', detail: 'enumerate sections + resolve PRECIS/OUTLINE/domain/bib' },
+    { title: 'Discover', detail: 'load authenticated PLAN section, source, and output context' },
     { title: 'L1-Review', detail: 'per-section: structure + prose + fidelity reviewers, in parallel' },
     { title: 'Verify', detail: 'mechanically confirm quoted evidence resolves to the draft' },
     { title: 'L2-L3', detail: 'transition analysis + whole-document checks over L1 data' },
@@ -25,10 +25,207 @@ if (!PROJECT) throw new Error(`writing-review requires args.projectDir. Got "${t
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [s.section, s]))
 const PLUGIN = cfg.pluginRoot || ''
-// Deterministic section index from scripts/writing/writing_section_index.py — the compiled "Discover".
-// Same shared parser both writing engines consume, so they cannot drift from each other or from the
-// outline-executable guard. Absent ⇒ the LLM Discover still runs (back-compat).
+// Canonical review requires the authenticated PLAN-bound index. Missing, malformed,
+// stale, or alternate discovery inputs fail closed.
+const PLAN_PATH = typeof cfg.planPath === 'string' ? cfg.planPath : ''
+const PLAN_HASH = typeof cfg.planHash === 'string' ? cfg.planHash : ''
 const SECTION_INDEX = (cfg.sectionIndex && Array.isArray(cfg.sectionIndex.sections) && cfg.sectionIndex.sections.length) ? cfg.sectionIndex : null
+if (!PLAN_PATH || !PLAN_HASH || !SECTION_INDEX) {
+  throw new Error('writing-review requires args.planPath, args.planHash, and a non-empty deterministic args.sectionIndex; canonical review never falls back to an LLM or retired planning files.')
+}
+if (SECTION_INDEX.ok !== true || SECTION_INDEX.planPath !== PLAN_PATH || SECTION_INDEX.planHash !== PLAN_HASH) {
+  throw new Error('writing-review rejected a malformed or stale section index: ok, planPath, and planHash must match the authenticated PLAN input.')
+}
+if (cfg.style && cfg.style !== SECTION_INDEX.style) throw new Error('writing-review style override conflicts with authenticated PLAN Writing Intent.')
+for (const prior of (Array.isArray(cfg.priorReviews) ? cfg.priorReviews : [])) {
+  if (prior.planHash !== PLAN_HASH) throw new Error('writing-review rejected priorReviews from a different plan hash.')
+}
+for (const key of ['precisPath', 'outlinePath', 'activeWorkflowPath', 'legacyPlanPath']) {
+  if (cfg[key]) throw new Error(`writing-review rejected mixed active authority: args.${key} is retired.`)
+}
+if (SECTION_INDEX.precisPath || (SECTION_INDEX.outlinePath && SECTION_INDEX.outlinePath !== PLAN_PATH)) {
+  throw new Error('writing-review rejected an index carrying retired active planning authority.')
+}
+
+const { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync, realpathSync } = await import('node:fs')
+const { createHash } = await import('node:crypto')
+const { isAbsolute, join, relative, resolve } = await import('node:path')
+const PROJECT_REAL = realpathSync(PROJECT)
+const sameState = (left, right) => left.dev === right.dev && left.ino === right.ino && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs
+const snapshotArtifact = path => {
+  let fd
+  try {
+    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW)
+    const opened = fstatSync(fd, { bigint: true })
+    if (!opened.isFile()) throw new Error(`writing-review requires a regular non-symlink artifact: ${path}`)
+    const real = realpathSync(path); const rel = relative(PROJECT_REAL, real)
+    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error(`writing-review artifact escapes projectDir: ${path}`)
+    const beforePath = lstatSync(path, { bigint: true })
+    if (beforePath.isSymbolicLink() || !sameState(opened, beforePath)) throw new Error(`writing-review artifact identity changed before read: ${path}`)
+    const bytes = readFileSync(fd)
+    const afterFd = fstatSync(fd, { bigint: true })
+    const afterPath = lstatSync(path, { bigint: true })
+    if (afterPath.isSymbolicLink() || realpathSync(path) !== real || !sameState(opened, afterFd) || !sameState(opened, afterPath)) throw new Error(`writing-review artifact changed during read: ${path}`)
+    return { path, real, text: bytes.toString('utf8'), hash: createHash('sha256').update(bytes).digest('hex'), dev: opened.dev, ino: opened.ino, size: opened.size, mtimeNs: opened.mtimeNs, ctimeNs: opened.ctimeNs }
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('writing-review ')) throw error
+    throw new Error(`writing-review requires a stable regular non-symlink artifact: ${path}`)
+  } finally {
+    if (fd !== undefined) closeSync(fd)
+  }
+}
+const artifactMatchesSnapshot = snapshot => {
+  try {
+    const current = snapshotArtifact(snapshot.path)
+    return current.real === snapshot.real && current.hash === snapshot.hash && current.dev === snapshot.dev && current.ino === snapshot.ino && current.size === snapshot.size && current.mtimeNs === snapshot.mtimeNs && current.ctimeNs === snapshot.ctimeNs
+  } catch { return false }
+}
+const PLAN_FILE = typeof SECTION_INDEX.planFile === 'string' ? SECTION_INDEX.planFile : ''
+if (!/^\.planning\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(PLAN_FILE) || PLAN_FILE === '.planning/PLAN.md' || SECTION_INDEX.reviewStatus !== 'APPROVED') {
+  throw new Error('writing-review requires an APPROVED receipt-selected generated planFile; fixed PLAN.md and non-approved review state cannot authorize review.')
+}
+const EXPECTED_PLAN = resolve(PROJECT_REAL, PLAN_FILE)
+const PLAN_REAL = realpathSync(PLAN_PATH)
+const PLAN_RELATIVE = relative(join(PROJECT_REAL, '.planning'), PLAN_REAL)
+if (PLAN_REAL !== EXPECTED_PLAN || !PLAN_RELATIVE || PLAN_RELATIVE.startsWith('..') || isAbsolute(PLAN_RELATIVE)) {
+  throw new Error('writing-review planPath must equal the receipt-selected generated planFile and may not escape through a symlink.')
+}
+const parseFlatStringJson = raw => {
+  const text = raw.trim(); let index = 0
+  const skip = () => { while (/\s/.test(text[index] || '')) index++ }
+  const readString = () => {
+    skip(); if (text[index] !== '"') throw new Error('not a JSON string')
+    const start = index++; let escaped = false
+    while (index < text.length) {
+      const char = text[index++]
+      if (escaped) { escaped = false; continue }
+      if (char === '\\') { escaped = true; continue }
+      if (char === '"') return JSON.parse(text.slice(start, index))
+    }
+    throw new Error('unterminated JSON string')
+  }
+  skip(); if (text[index++] !== '{') throw new Error('not an object')
+  const value = {}; skip()
+  if (text[index] === '}') index++
+  else while (index < text.length) {
+    const key = readString(); if (Object.hasOwn(value, key)) throw new Error(`duplicate field ${key}`)
+    skip(); if (text[index++] !== ':') throw new Error('missing colon')
+    value[key] = readString(); skip()
+    if (text[index] === ',') { index++; continue }
+    if (text[index] === '}') { index++; break }
+    throw new Error('missing separator')
+  }
+  skip(); if (index !== text.length) throw new Error('trailing content')
+  return value
+}
+const RECEIPT_PATH = join(PROJECT_REAL, '.planning', '.state', 'review.json')
+const RECEIPT_SNAPSHOT = snapshotArtifact(RECEIPT_PATH)
+const receiptKeys = ['workflow', 'plan_file', 'plan_hash', 'approved_session_id', 'approved_at', 'status', 'reviewer_session_id', 'reviewed_at']
+const strictUtc = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
+const receiptApproved = value => Object.keys(value).length === receiptKeys.length && receiptKeys.every(key => Object.hasOwn(value, key)) && value.workflow === 'writing' && `.planning/${value.plan_file}` === PLAN_FILE && value.plan_hash === PLAN_HASH && value.status === 'APPROVED' && typeof value.approved_session_id === 'string' && !!value.approved_session_id.trim() && typeof value.reviewer_session_id === 'string' && !!value.reviewer_session_id.trim() && value.approved_session_id !== value.reviewer_session_id && strictUtc(value.approved_at) && strictUtc(value.reviewed_at) && Date.parse(value.reviewed_at) > Date.parse(value.approved_at)
+let receipt
+try { receipt = parseFlatStringJson(RECEIPT_SNAPSHOT.text) } catch { throw new Error('writing-review rejected malformed or duplicate combined review state.') }
+if (!receiptApproved(receipt)) {
+  throw new Error('writing-review combined review state does not authenticate the supplied generated plan identity.')
+}
+const receiptSnapshotMatches = () => {
+  try {
+    const current = snapshotArtifact(RECEIPT_PATH)
+    const parsed = parseFlatStringJson(current.text)
+    return current.real === RECEIPT_SNAPSHOT.real && current.hash === RECEIPT_SNAPSHOT.hash && current.dev === RECEIPT_SNAPSHOT.dev && current.ino === RECEIPT_SNAPSHOT.ino && current.size === RECEIPT_SNAPSHOT.size && current.mtimeNs === RECEIPT_SNAPSHOT.mtimeNs && current.ctimeNs === RECEIPT_SNAPSHOT.ctimeNs && receiptApproved(parsed)
+  } catch { return false }
+}
+const PLAN_SNAPSHOT = snapshotArtifact(PLAN_REAL)
+const PLAN_TEXT = PLAN_SNAPSHOT.text
+const ACTUAL_PLAN_HASH = PLAN_SNAPSHOT.hash
+if (ACTUAL_PLAN_HASH !== PLAN_HASH) throw new Error('writing-review generated plan bytes no longer match args.planHash.')
+const REQUIRED_H2 = ['Writing Intent', 'Claims', 'Counterarguments', 'Document Structure', 'Claim → Section Map', 'Source Plan', 'Section Outputs', 'Review Surfaces']
+const OBSERVED_H2 = [...PLAN_TEXT.matchAll(/^##\s+(.+?)\s*$/gm)].map(m => m[1])
+if (JSON.stringify(OBSERVED_H2) !== JSON.stringify(REQUIRED_H2)) throw new Error('writing-review PLAN grammar changed after compilation.')
+const structureBlock = PLAN_TEXT.match(/^## Document Structure\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedNames = [...structureBlock.matchAll(/^###\s+(.+?)\s*$/gm)].map(m => m[1])
+const indexedNames = SECTION_INDEX.sections.map(s => String(s.name))
+if (JSON.stringify(plannedNames) !== JSON.stringify(indexedNames)) throw new Error('writing-review section index is truncated, reordered, or not compiled from PLAN Document Structure.')
+const outputsBlock = PLAN_TEXT.match(/^## Section Outputs\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const tableLines = outputsBlock.split('\n').map(line => line.trim()).filter(line => line.startsWith('|'))
+const cells = line => line.slice(1, -1).split('|').map(cell => cell.trim())
+const artifactIdentity = text => {
+  const frontmatter = text.match(/^---\n([\s\S]*?)\n---(?:\n|$)/)?.[1] || ''
+  const implementMatches = [...frontmatter.matchAll(/^implements:\s*\[(.*?)\]\s*$/gm)]
+  const hashMatches = [...frontmatter.matchAll(/^plan_hash:\s*([0-9a-f]{64})\s*$/gm)]
+  if (implementMatches.length !== 1 || hashMatches.length !== 1) return { valid: false, implements: [], planHash: '' }
+  const raw = implementMatches[0][1].trim()
+  const implementsClaims = raw ? raw.split(',').map(value => value.trim()) : []
+  const valid = implementsClaims.every(value => /^CLAIM-[0-9]{2}$/.test(value)) && new Set(implementsClaims).size === implementsClaims.length
+  return { valid, implements: implementsClaims, planHash: hashMatches[0][1] }
+}
+const headers = tableLines.length ? cells(tableLines[0]).map(h => h.toLowerCase()) : []
+const outputRows = tableLines.slice(2).map(line => Object.fromEntries(headers.map((h, i) => [h, cells(line)[i] || ''])))
+const intentBlock = PLAN_TEXT.match(/^## Writing Intent\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedStyle = intentBlock.match(/^\s*(?:[-*]\s*)?(?:\*\*)?Domain(?:\*\*)?\s*:\s*(legal|econ|general)\s*$/mi)?.[1]?.toLowerCase() || ''
+if (SECTION_INDEX.style !== plannedStyle) throw new Error('writing-review section index style does not match PLAN Writing Intent.')
+const sourceBlock = PLAN_TEXT.match(/^## Source Plan\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedSourcePlan = {}
+for (const match of sourceBlock.matchAll(/^\s*(?:[-*]\s*)?(?:\*\*)?([A-Za-z][A-Za-z /_-]*?)(?:\*\*)?\s*:\s*(.+?)\s*$/gm)) {
+  plannedSourcePlan[match[1].trim().replace(/\s+/g, ' ').toLowerCase()] = match[2].trim()
+}
+const plannedBib = plannedSourcePlan.bibliography || ''
+const normalizedSourceEntries = value => JSON.stringify(Object.entries(value || {}).sort(([a], [b]) => a.localeCompare(b)))
+if (resolve(SECTION_INDEX.bibPath || '') !== resolve(PROJECT_REAL, plannedBib) || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
+  throw new Error('writing-review section index Source Plan context does not match the generated plan.')
+}
+const BIB_SNAPSHOT = snapshotArtifact(resolve(PROJECT_REAL, plannedBib))
+const bibSnapshotMatches = () => artifactMatchesSnapshot(BIB_SNAPSHOT)
+const reviewBlock = PLAN_TEXT.match(/^## Review Surfaces\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedSurfaces = [...reviewBlock.matchAll(/^\s*[-*]\s+(\S.*?)\s*$/gm)].map(match => match[1])
+if (JSON.stringify(SECTION_INDEX.reviewSurfaces || []) !== JSON.stringify(plannedSurfaces)) throw new Error('writing-review section index Review Surfaces do not match the generated plan.')
+const mapBlock = PLAN_TEXT.match(/^## Claim → Section Map\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const mapLines = mapBlock.split('\n').map(line => line.trim()).filter(line => line.startsWith('|'))
+const mapHeaders = mapLines.length ? cells(mapLines[0]).map(h => h.toLowerCase()) : []
+const mapRows = mapLines.slice(2).map(line => Object.fromEntries(mapHeaders.map((h, i) => [h, cells(line)[i] || ''])))
+const expectedClaims = Object.fromEntries(indexedNames.map(name => [name, []]))
+const artifactSnapshots = {}
+for (const row of mapRows) if (expectedClaims[row.section]) expectedClaims[row.section].push(row.claim)
+if (outputRows.length !== SECTION_INDEX.sections.length) throw new Error('writing-review section index does not contain every PLAN Section Outputs row.')
+for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
+  const section = SECTION_INDEX.sections[i]
+  const row = outputRows[i]
+  if (!row || row.section !== section.name) throw new Error('writing-review section index order does not match PLAN Section Outputs.')
+  const expectedOutline = resolve(PROJECT_REAL, row.outline)
+  const expectedDraft = resolve(PROJECT_REAL, row.draft)
+  for (const path of [expectedOutline, expectedDraft, resolve(section.outlineFile), resolve(section.draftFile)]) {
+    const rel = relative(PROJECT_REAL, path)
+    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error('writing-review rejected an artifact path outside projectDir.')
+  }
+  if (resolve(section.outlineFile) !== expectedOutline || resolve(section.draftFile) !== expectedDraft) {
+    throw new Error('writing-review section index artifact paths do not match PLAN Section Outputs.')
+  }
+  const expectedDependencies = !row['depends on'] || ['-', 'none', 'n/a'].includes(row['depends on'].toLowerCase()) ? [] : row['depends on'].split(/\s*(?:,|;)\s*/).filter(Boolean)
+  if (JSON.stringify(section.dependencies || []) !== JSON.stringify(expectedDependencies)) throw new Error('writing-review section index dependencies do not match PLAN Section Outputs.')
+  const claimsForSection = expectedClaims[section.name] || []
+  if (JSON.stringify(section.primaryClaims || []) !== JSON.stringify(claimsForSection)) throw new Error('writing-review section index claims do not match PLAN Claim → Section Map.')
+  if (section.outlineCurrent !== true || section.draftCurrent !== true) {
+    throw new Error(`writing-review requires current PLAN-bound outline and draft artifacts for ${section.name}.`)
+  }
+  const outlineSnapshot = snapshotArtifact(expectedOutline)
+  const draftSnapshot = snapshotArtifact(expectedDraft)
+  artifactSnapshots[section.name] = { outline: outlineSnapshot, draft: draftSnapshot }
+  const outlineText = outlineSnapshot.text
+  const draftText = draftSnapshot.text
+  const artifactCurrent = text => {
+    const identity = artifactIdentity(text)
+    return identity.valid && identity.planHash === PLAN_HASH && JSON.stringify(identity.implements) === JSON.stringify(claimsForSection)
+  }
+  if (!artifactCurrent(outlineText) || !artifactCurrent(draftText)) throw new Error(`writing-review artifacts for ${section.name} are stale or do not implement mapped PLAN claims.`)
+}
+const onlyInput = Array.isArray(cfg.onlyChecks) ? cfg.onlyChecks.map(String) : []
+if (new Set(onlyInput).size !== onlyInput.length || onlyInput.some(name => !indexedNames.includes(name))) {
+  throw new Error('writing-review onlyChecks must contain unique current PLAN section names.')
+}
+const priorInput = Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []
+if (new Set(priorInput.map(prior => String(prior.section))).size !== priorInput.length) {
+  throw new Error('writing-review priorReviews contains duplicate section records.')
+}
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const ISSUE = {
@@ -42,30 +239,15 @@ const ISSUE = {
   },
 }
 
-const DISCOVERY_SCHEMA = {
-  type: 'object', additionalProperties: false,
-  required: ['style', 'precisPath', 'outlinePath', 'sourcesBib', 'domainSkillPath', 'repetitionScript', 'sections'],
-  properties: {
-    style: { type: 'string', description: 'legal | econ | general' },
-    precisPath: { type: 'string' }, outlinePath: { type: 'string' },
-    sourcesBib: { type: 'string', description: 'references/sources.bib absolute path, or "" if absent' },
-    domainSkillPath: { type: 'string', description: 'absolute path to writing-{style}/SKILL.md' },
-    repetitionScript: { type: 'string', description: 'absolute path to bridge_repetition_check.py' },
-    sections: { type: 'array', items: {
-      type: 'object', additionalProperties: false, required: ['name', 'outlineFile', 'draftFile', 'precisClaim'],
-      properties: { name: { type: 'string' }, outlineFile: { type: 'string' }, draftFile: { type: 'string' }, precisClaim: { type: 'string' } } } },
-  },
-}
-
 // Structure reviewer — the rich one (carries boundary summary + concepts + argument summary for L2/L3).
 const STRUCTURE_SCHEMA = {
   type: 'object', additionalProperties: false,
-  required: ['section', 'check', 'itemsChecked', 'issues', 'precisClaimAdvanced', 'boundary', 'argumentSummary'],
+  required: ['section', 'check', 'itemsChecked', 'issues', 'planClaimAdvanced', 'boundary', 'argumentSummary'],
   properties: {
     section: { type: 'string' }, check: { type: 'string', enum: ['structure'] },
     itemsChecked: { type: 'integer' },
     issues: { type: 'array', items: ISSUE },
-    precisClaimAdvanced: { type: 'boolean' },
+    planClaimAdvanced: { type: 'boolean' },
     boundary: {
       type: 'object', additionalProperties: false,
       required: ['firstSentence', 'lastSentence', 'assumesFromPrev', 'handsOffToNext', 'argumentState', 'conceptsIntroduced', 'conceptsUsed', 'coreTerms'],
@@ -109,7 +291,7 @@ const TRANSITION_SCHEMA = {
 
 const DOCUMENT_SCHEMA = {
   type: 'object', additionalProperties: false,
-  required: ['conceptOrderIssues', 'repetition', 'thesisIssues', 'completeness'],
+  required: ['conceptOrderIssues', 'repetition', 'thesisIssues', 'completeness', 'reviewSurfaces'],
   properties: {
     conceptOrderIssues: { type: 'array', items: { type: 'string' } },
     repetition: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['quote', 'locations', 'verdict'],
@@ -120,18 +302,22 @@ const DOCUMENT_SCHEMA = {
       properties: { claimsAddressed: { type: 'string' }, counterargsConfronted: { type: 'string' },
         scopeHonored: { type: 'boolean' }, hookDelivered: { type: 'boolean' }, conclusionFollows: { type: 'boolean' },
         issues: { type: 'array', items: { type: 'string' } } } },
+    reviewSurfaces: { type: 'array', items: { type: 'object', additionalProperties: false,
+      required: ['surface', 'status', 'evidence'], properties: {
+        surface: { type: 'string' }, status: { type: 'string', enum: ['INSPECTED', 'MISSING'] }, evidence: { type: 'string' }
+      } } },
   },
 }
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
-// Map the deterministic section index → the review DISCOVERY_SCHEMA shape (no LLM). draftFile is
-// the existing draft (review does not write), precisClaim from the OUTLINE.md Claim→Section Map.
+// Map the authenticated PLAN index into the read-only review shape.
 function discFromIndex(idx) {
   const style = idx.style && idx.style !== 'unspecified' ? idx.style : 'general'
   return {
-    style: cfg.style || style,
-    precisPath: idx.precisPath || '',
-    outlinePath: idx.outlinePath || '',
+    style,
+    planPath: idx.planPath,
+    sourcePlan: idx.sourcePlan || {},
+    reviewSurfaces: idx.reviewSurfaces || [],
     sourcesBib: idx.bibPath || '',
     domainSkillPath: PLUGIN ? `${PLUGIN}/../skills/writing-${style}/SKILL.md` : '',
     repetitionScript: PLUGIN ? `${PLUGIN}/../skills/writing-review/scripts/bridge_repetition_check.py` : '',
@@ -139,63 +325,67 @@ function discFromIndex(idx) {
       name: String(s.name),
       outlineFile: s.outlineFile || '',
       draftFile: s.draftFile || '',
-      precisClaim: ((s.primaryClaims && s.primaryClaims.length ? s.primaryClaims : (s.implements || [])).join(', ')) || (s.draftFile ? String(s.name) : 'MISSING DRAFT'),
+      planClaims: (s.primaryClaims && s.primaryClaims.length ? s.primaryClaims : (s.implements || [])).join(', '),
     })),
   }
 }
 
 phase('Discover')
-const disc = SECTION_INDEX ? discFromIndex(SECTION_INDEX) : await agent(
-  `Enumerate the document's sections and resolve the review inputs. Working directory: ${PROJECT}
-
-1. Determine \`style\` (legal|econ|general): read .planning/ACTIVE_WORKFLOW.md if it exists; if it does NOT exist, infer from .planning/PRECIS.md's "Domain" line — pure law → legal, pure empirical → econ, and a **hybrid/mixed domain → general** (the safe baseline). ${cfg.style ? `Caller override: use style="${cfg.style}".` : ''}
-2. Resolve absolute paths: .planning/PRECIS.md, .planning/OUTLINE.md, references/sources.bib (or "" if absent).
-3. domainSkillPath = the writing-{style}/SKILL.md under the plugin. ${cfg.pluginRoot ? `Plugin root: ${cfg.pluginRoot}` : 'Resolve via: command ls -d ~/.claude/plugins/cache/*/workflows/*/skills/writing-{style}/SKILL.md or the in-repo skills/ dir.'}
-4. repetitionScript = the bridge_repetition_check.py under skills/writing-review/scripts/.
-5. From OUTLINE.md + Glob(outlines/*.md, drafts/*.md): list every section with its outlineFile, draftFile (absolute), and the PRECIS claim it advances. Every section MUST have both files — if a draft is missing, still list it but note in precisClaim "MISSING DRAFT".
-
-Return DISCOVERY_SCHEMA. Absolute paths.`,
-  { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
-)
-if (!disc.sections.length) throw new Error('No sections discovered — check OUTLINE.md / drafts/')
+const disc = discFromIndex(SECTION_INDEX)
+const REVIEW_IDENTITY = `IMMUTABLE RECEIPT-SELECTED PLAN IDENTITY\nPLAN_FILE: ${PLAN_FILE}\nPLAN_PATH: ${PLAN_PATH}\nPLAN_HASH: ${PLAN_HASH}`
+if (!disc.sections.length) throw new Error('No sections in the authenticated PLAN index.')
 let sections = disc.sections
-if (SECTION_INDEX) log(`Discover: deterministic section index (${sections.length} sections, ${disc.style}) — no LLM Discover`)
+log(`Discover: authenticated PLAN index (${sections.length} sections, ${disc.style}, ${PLAN_HASH})`)
 log(`Document: ${sections.length} sections (${disc.style}); ${ONLY ? `re-review ${ONLY.size}` : 'full review'}`)
 
 // ── Phase 2: L1 Section Review (per-section × 3 reviewers, parallel) ───────────
 phase('L1-Review')
 const reviewOne = (s) => {
-  const common = `Section: "${s.name}"\nOutline: ${s.outlineFile}\nDraft: ${s.draftFile}\nPRECIS claim: ${s.precisClaim}`
+  const snapshots = artifactSnapshots[s.name]
+  const outlineHash = snapshots.outline.hash
+  const draftHash = snapshots.draft.hash
+  const common = `Section: "${s.name}"\nOutline source: ${s.outlineFile}\nImmutable outline snapshot:\n${snapshots.outline.text}\nDraft source: ${s.draftFile}\nImmutable draft snapshot:\n${snapshots.draft.text}\nPLAN claim(s): ${s.planClaims || '(none; claimless section)'}`
   return parallel([
     // (a) Structure reviewer — runs the section checklist; carries boundary + argument summaries.
     () => agent(
-      `You are a READ-ONLY structure reviewer. Do NOT create, edit, or overwrite any files.
+      `${REVIEW_IDENTITY}
+You are a READ-ONLY structure reviewer. Do NOT create, edit, or overwrite any files.
 Set section="${s.name}", check="structure" verbatim in your record.
 ${common}
-Read the draft + outline. Run the section review checklist: outline compliance, a topic-sentence inventory (every paragraph), subsection boundaries, domain style (read ${disc.domainSkillPath}), prose-constraint and AI-anti-pattern checks. Every issue needs a verbatim quote + file:line location. Also produce the boundary summary (first/last sentence verbatim, what it assumes from prev / hands to next, argument state, concepts introduced/used, core terms) and argumentSummary (main points, for whole-doc repetition/thesis checks). itemsChecked = paragraphs reviewed. Return STRUCTURE_SCHEMA.`,
+Use the immutable draft and outline snapshots above; do not reread mutable artifact paths. Run the section review checklist: outline compliance, a topic-sentence inventory (every paragraph), subsection boundaries, domain style (read ${disc.domainSkillPath}), prose-constraint and AI-anti-pattern checks. Every issue needs a verbatim quote + file:line location. Also produce the boundary summary (first/last sentence verbatim, what it assumes from prev / hands to next, argument state, concepts introduced/used, core terms) and argumentSummary (main points, for whole-doc repetition/thesis checks). itemsChecked = paragraphs reviewed. Return STRUCTURE_SCHEMA.`,
       { label: `${s.name}:structure`, phase: 'L1-Review', schema: STRUCTURE_SCHEMA, model: 'sonnet' }),
     // (b) Prose-quality reviewer — the real agent.
     () => agent(
-      `Set section="${s.name}", check="prose". Grade prose quality for ${s.draftFile} (domain: ${disc.style}). Read the domain skill, ai-anti-patterns, and prose constraints first. Grade every paragraph; report violations with file:line + verbatim quote. Map grades to severity: F→critical, C→major, lesser→minor. itemsChecked = paragraphs graded. Return FINDINGS_SCHEMA.`,
+      `${REVIEW_IDENTITY}\nSet section="${s.name}", check="prose". Grade the immutable draft snapshot below (source location ${s.draftFile}; domain: ${disc.style}). Do not reread the mutable draft path. Read the domain skill, ai-anti-patterns, and prose constraints first. Grade every paragraph; report violations with file:line + verbatim quote. Map grades to severity: F→critical, C→major, lesser→minor. itemsChecked = paragraphs graded.\n${snapshots.draft.text}\nReturn FINDINGS_SCHEMA.`,
       { label: `${s.name}:prose`, phase: 'L1-Review', schema: FINDINGS_SCHEMA, model: 'sonnet', agentType: 'workflows:writing-prose-reviewer' }),
     // (c) Source-fidelity reviewer — the real agent.
     () => agent(
-      `Set section="${s.name}", check="fidelity". Verify citation fidelity for ${s.draftFile}. Read ${disc.sourcesBib || 'references/sources.bib'} first. Check every pandoc cite-key resolves to a bib entry; verify hand-written footnotes match. Severity: unanchored citation→critical, detail mismatch→major, claim-fidelity concern→minor. Each issue needs file:line + the citation text as quote. itemsChecked = citations checked. Return FINDINGS_SCHEMA.`,
+      `${REVIEW_IDENTITY}\nSet section="${s.name}", check="fidelity". Verify citation fidelity for this immutable draft snapshot (source location ${s.draftFile}); do not reread mutable artifact paths. Use this immutable authenticated bibliography snapshot (${disc.sourcesBib}) for resolution:\n${BIB_SNAPSHOT.text}\nPLAN Source Plan context: ${JSON.stringify(disc.sourcePlan)}. Check every pandoc cite-key resolves to a bib entry; verify hand-written footnotes match. Severity: unanchored citation→critical, detail mismatch→major, claim-fidelity concern→minor. Each issue needs file:line + the citation text as quote. itemsChecked = citations checked.\n${snapshots.draft.text}\nReturn FINDINGS_SCHEMA.`,
       { label: `${s.name}:fidelity`, phase: 'L1-Review', schema: FINDINGS_SCHEMA, model: 'sonnet', agentType: 'workflows:writing-source-fidelity-reviewer' }),
-  ]).then(([structure, prose, fidelity]) => ({
-    section: s.name,
-    precisClaim: s.precisClaim,
-    issues: [
-      ...(structure?.issues || []).map(i => ({ ...i, source: 'structure' })),
-      ...(prose?.issues || []).map(i => ({ ...i, source: 'prose' })),
-      ...(fidelity?.issues || []).map(i => ({ ...i, source: 'fidelity' })),
-    ],
-    boundary: structure?.boundary || null,
-    argumentSummary: structure?.argumentSummary || [],
-    precisClaimAdvanced: structure?.precisClaimAdvanced ?? null,
-    itemsChecked: (structure?.itemsChecked || 0) + (prose?.itemsChecked || 0) + (fidelity?.itemsChecked || 0),
-    unreliable: !(structure && prose && fidelity) || !((structure?.itemsChecked || 0) > 0),
-  }))
+  ]).then(([rawStructure, rawProse, rawFidelity]) => {
+    // Evidence is authorized by its dispatch target and reviewer role, not a
+    // self-reported section/check that could be swapped with a sibling result.
+    const structure = rawStructure && String(rawStructure.section) === s.name && rawStructure.check === 'structure' ? rawStructure : null
+    const prose = rawProse && String(rawProse.section) === s.name && rawProse.check === 'prose' ? rawProse : null
+    const fidelity = rawFidelity && String(rawFidelity.section) === s.name && rawFidelity.check === 'fidelity' ? rawFidelity : null
+    return {
+      section: s.name,
+      planHash: PLAN_HASH,
+      outlineHash,
+      draftHash,
+      planClaims: s.planClaims,
+      issues: [
+        ...(structure?.issues || []).map(i => ({ ...i, source: 'structure' })),
+        ...(prose?.issues || []).map(i => ({ ...i, source: 'prose' })),
+        ...(fidelity?.issues || []).map(i => ({ ...i, source: 'fidelity' })),
+      ],
+      boundary: structure?.boundary || null,
+      argumentSummary: structure?.argumentSummary || [],
+      planClaimAdvanced: structure?.planClaimAdvanced ?? null,
+      itemsChecked: (structure?.itemsChecked || 0) + (prose?.itemsChecked || 0) + (fidelity?.itemsChecked || 0),
+      unreliable: !(structure && prose && fidelity) || !((structure?.itemsChecked || 0) > 0),
+    }
+  })
 }
 
 const tasks = []
@@ -203,7 +393,14 @@ const carried = []
 let reran = 0, carriedCount = 0
 for (const s of sections) {
   if (ONLY && !ONLY.has(s.name)) {
-    if (PRIOR.has(s.name)) { carried.push(PRIOR.get(s.name)); carriedCount++ }
+    const prior = PRIOR.get(s.name)
+    const currentOutlineHash = artifactSnapshots[s.name].outline.hash
+    const currentDraftHash = artifactSnapshots[s.name].draft.hash
+    if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== currentOutlineHash || prior.draftHash !== currentDraftHash || prior.unreliable !== false || !Array.isArray(prior.issues) || !prior.boundary || !Array.isArray(prior.argumentSummary)) {
+      throw new Error(`writing-review selective re-review requires one complete reliable current-content prior review for ${s.name}.`)
+    }
+    carried.push(prior)
+    carriedCount++
     continue
   }
   reran++
@@ -215,20 +412,25 @@ if (ONLY) log(`Selective re-review: ${reran} section(s) live, ${carriedCount} ca
 // ── Phase 3: Verify quotes resolve to the draft (mechanical — kills fabrication) ─
 phase('Verify')
 const draftByName = Object.fromEntries(sections.map(s => [s.name, s.draftFile]))
-const verifs = (await parallel(liveSections.map(sec => () =>
+const verificationResults = (await parallel(liveSections.map(sec => () =>
   agent(
-    `READ-ONLY. Set section="${sec.section}". Verify the quoted evidence in these review issues actually appears in the draft file ${draftByName[sec.section]} at (or near) the cited location. Use grep/Read. List any quote that does NOT resolve (fabricated/misattributed) in \`fabricated\`. Issues to check (quote @ location):\n${JSON.stringify((sec.issues || []).map(i => ({ quote: i.quote, location: i.location })), null, 2)}\nReturn VERIFY_SCHEMA.`,
+    `${REVIEW_IDENTITY}\nREAD-ONLY. Set section="${sec.section}". Verify quoted evidence only against this immutable draft snapshot (source location ${draftByName[sec.section]}). Do not reread the mutable draft path. List any quote that does NOT resolve (fabricated/misattributed) in \`fabricated\`.\nSNAPSHOT:\n${artifactSnapshots[sec.section].draft.text}\nIssues to check (quote @ location):\n${JSON.stringify((sec.issues || []).map(i => ({ quote: i.quote, location: i.location })), null, 2)}\nReturn VERIFY_SCHEMA.`,
     { label: `${sec.section}:verify`, phase: 'Verify', schema: VERIFY_SCHEMA, model: 'sonnet' }
-  )
-))).filter(Boolean)
-const fabByName = Object.fromEntries(verifs.map(v => [v.section, v.fabricated || []]))
-// Drop fabricated-quote issues; flag the section as needing attention.
+  ).then(verify => ({ expectedSection: sec.section, verify }))
+))).filter(result => result.verify && String(result.verify.section) === result.expectedSection)
+// Bind verification evidence to the section captured at dispatch, never the
+// verifier's returned identifier; swapped echoes are treated as missing evidence.
+const fabByName = Object.fromEntries(verificationResults.map(result => [result.expectedSection, result.verify.fabricated || []]))
+const verifiedNames = new Set(verificationResults.map(result => result.expectedSection))
+// Drop fabricated-quote issues; flag missing or fabricated verification evidence.
 for (const sec of liveSections) {
+  if (!verifiedNames.has(sec.section)) sec.unreliable = true
   const fab = new Set((fabByName[sec.section] || []).map(f => `${f.quote}@@${f.location}`))
   if (fab.size) {
     const before = sec.issues.length
     sec.issues = sec.issues.filter(i => !fab.has(`${i.quote}@@${i.location}`))
     sec.quotesDropped = before - sec.issues.length
+    sec.unreliable = true
   }
 }
 
@@ -236,39 +438,77 @@ const allSections = [...liveSections, ...carried]
 // Stable document order from discovery.
 const order = Object.fromEntries(sections.map((s, i) => [s.name, i]))
 allSections.sort((a, b) => (order[a.section] ?? 99) - (order[b.section] ?? 99))
+if (JSON.stringify(allSections.map(section => section.section)) !== JSON.stringify(indexedNames)) {
+  throw new Error('writing-review did not assemble exactly one review for every current PLAN section.')
+}
 
 // ── Phase 4: L2 transitions + L3 whole-document (single agents over L1 data) ───
 phase('L2-L3')
 const boundaries = allSections.map(s => ({ section: s.section, boundary: s.boundary }))
-const argSummaries = allSections.map(s => ({ section: s.section, points: s.argumentSummary, claim: s.precisClaim }))
+const argSummaries = allSections.map(s => ({ section: s.section, points: s.argumentSummary, claim: s.planClaims }))
 
 const [l2, l3] = await parallel([
   () => agent(
-    `READ-ONLY transition reviewer (Level 2). Using these per-section boundary summaries (in document order), evaluate each adjacent boundary (Section N → N+1): does N+1's opening pick up N's close? verdict SMOOTH/ABRUPT/DISCONNECTED. Cross-check OUTLINE.md (${disc.outlinePath}) for the planned transition, and core-term consistency. Quote the actual closing/opening sentences from the boundary data.\nBoundaries:\n${JSON.stringify(boundaries, null, 2)}\nReturn TRANSITION_SCHEMA.`,
+    `${REVIEW_IDENTITY}\nREAD-ONLY transition reviewer (Level 2). Using these per-section boundary summaries (in document order), evaluate each adjacent boundary (Section N → N+1): does N+1's opening pick up N's close? verdict SMOOTH/ABRUPT/DISCONNECTED. Cross-check this immutable authenticated plan snapshot for planned transitions and core-term consistency (source ${disc.planPath}):\n${PLAN_TEXT} Quote the actual closing/opening sentences from the boundary data.\nBoundaries:\n${JSON.stringify(boundaries, null, 2)}\nReturn TRANSITION_SCHEMA.`,
     { label: 'L2:transitions', phase: 'L2-L3', schema: TRANSITION_SCHEMA, model: 'sonnet' }),
   () => agent(
-    `READ-ONLY document reviewer (Level 3). Working dir ${PROJECT}.
-1. Run the repetition detector and parse its file:line pairs: \`uv run ${disc.repetitionScript} drafts/*.md\` — classify each flagged pair REDUNDANT vs INTENTIONAL_CALLBACK.
-2. Concept introduction order: using the per-section concepts + argument summaries, flag concepts used before introduced.
-3. Thesis threading: read ${disc.precisPath}; for each section does it advance the thesis? flag drift.
-4. Structural completeness: all PRECIS claims addressed? all counterarguments confronted? scope honored? hook delivered? conclusion follows?
+    `${REVIEW_IDENTITY}\nREAD-ONLY document reviewer (Level 3). Working dir ${PROJECT}.
+Judge only the immutable authenticated plan and draft corpus embedded below; do not reread mutable plan or draft paths. Summaries below are navigation aids only and cannot substitute for reviewing the full snapshots.
+AUTHENTICATED PLAN SNAPSHOT (${disc.planPath}):\n${PLAN_TEXT}
+ORDERED FULL DRAFT SNAPSHOTS:\n${sections.map(section => `===== ${section.name} :: ${section.draftFile} =====\n${artifactSnapshots[section.name].draft.text}`).join('\n')}
+1. Detect repeated passages across the embedded draft snapshots and classify each pair REDUNDANT vs INTENTIONAL_CALLBACK.
+2. Concept introduction order: using the full drafts plus per-section concepts and argument summaries, flag concepts used before introduced.
+3. Thesis threading: for each full section does it advance the authenticated plan thesis? flag drift.
+4. Structural completeness: all plan claims addressed? all counterarguments confronted? scope honored? hook delivered? conclusion follows?\n5. Inspect every plan Review Surfaces bullet and return one reviewSurfaces record per exact surface, with status INSPECTED or MISSING and concrete evidence. Required surfaces: ${JSON.stringify(disc.reviewSurfaces)}. Source Plan context: ${JSON.stringify(disc.sourcePlan)}
 Per-section argument summaries + claims:\n${JSON.stringify(argSummaries, null, 2)}\nReturn DOCUMENT_SCHEMA.`,
     { label: 'L3:document', phase: 'L2-L3', schema: DOCUMENT_SCHEMA, model: 'sonnet' }),
 ])
 
 // ── Assemble structured findings + computed verdict (binary gate, in JS) ───────
+const artifactChanges = []
+for (const section of allSections) {
+  const snapshots = artifactSnapshots[section.section]
+  section.finalOutlineHash = artifactMatchesSnapshot(snapshots.outline) ? snapshots.outline.hash : ''
+  section.finalDraftHash = artifactMatchesSnapshot(snapshots.draft) ? snapshots.draft.hash : ''
+  if (!section.finalOutlineHash) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: `${section.section} outline path, identity, metadata, or bytes changed during asynchronous review.`, location: snapshots.outline.path })
+  if (!section.finalDraftHash) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: `${section.section} draft path, identity, metadata, or bytes changed during asynchronous review.`, location: snapshots.draft.path })
+}
+const finalPlanHash = artifactMatchesSnapshot(PLAN_SNAPSHOT) ? PLAN_SNAPSHOT.hash : ''
+if (finalPlanHash !== PLAN_HASH) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: 'Authenticated generated plan path, identity, metadata, or bytes changed during asynchronous review.', location: PLAN_REAL })
+if (!receiptSnapshotMatches()) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: 'Combined review receipt path, identity, metadata, or bytes changed during asynchronous review.', location: RECEIPT_PATH })
+if (!bibSnapshotMatches()) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: 'Authenticated Source Plan bibliography path, identity, metadata, or bytes changed during asynchronous review.', location: BIB_SNAPSHOT.path })
 const sev = { critical: 0, major: 0, minor: 0 }
 for (const s of allSections) for (const i of (s.issues || [])) if (sev[i.severity] !== undefined) sev[i.severity]++
 // Document + transition issues count toward severity too.
+const surfaceResults = Array.isArray(l3?.reviewSurfaces) ? l3.reviewSurfaces : []
+const surfaceByName = new Map(surfaceResults.map(surface => [surface.surface, surface]))
+const missingSurfaces = disc.reviewSurfaces.filter(surface => surfaceByName.get(surface)?.status !== 'INSPECTED' || !surfaceByName.get(surface)?.evidence)
+const expectedTransitions = indexedNames.slice(0, -1).map((from, index) => `${from}@@${indexedNames[index + 1]}`)
+const transitionRecords = Array.isArray(l2?.transitions) ? l2.transitions : []
+const observedTransitions = transitionRecords.map(transition => `${transition.from}@@${transition.to}`)
+const transitionCoverageOk = observedTransitions.length === expectedTransitions.length && new Set(observedTransitions).size === observedTransitions.length && expectedTransitions.every(pair => observedTransitions.includes(pair))
+const incompleteClaims = String(l3?.completeness?.claimsAddressed || '').trim().toLowerCase() !== 'all'
+const incompleteCounterarguments = String(l3?.completeness?.counterargsConfronted || '').trim().toLowerCase() !== 'all'
 const docIssues = [
+  ...artifactChanges,
+  ...missingSurfaces.map(surface => ({ severity: 'critical', area: 'review-surface', detail: `Review surface not inspected: ${surface}` })),
+  ...(!transitionCoverageOk ? [{ severity: 'major', area: 'transition-coverage', detail: 'Transition review did not return exactly one result for every adjacent PLAN section pair.' }] : []),
+  ...allSections.filter(section => section.planClaimAdvanced === false).map(section => ({ severity: 'critical', area: 'claim-coverage', detail: `${section.section} does not advance its mapped PLAN claim.` })),
+  ...(incompleteClaims ? [{ severity: 'critical', area: 'completeness', detail: 'Whole-document reviewer did not confirm all PLAN claims addressed.' }] : []),
+  ...(incompleteCounterarguments ? [{ severity: 'critical', area: 'completeness', detail: 'Whole-document reviewer did not confirm all counterarguments confronted.' }] : []),
+  ...(l3?.completeness?.scopeHonored === false ? [{ severity: 'major', area: 'scope', detail: 'Draft does not honor PLAN scope.' }] : []),
+  ...(l3?.completeness?.hookDelivered === false ? [{ severity: 'major', area: 'hook', detail: 'Draft does not deliver the PLAN hook.' }] : []),
+  ...(l3?.completeness?.conclusionFollows === false ? [{ severity: 'major', area: 'conclusion', detail: 'Conclusion does not follow from the reviewed argument.' }] : []),
   ...(l3?.conceptOrderIssues || []).map(d => ({ severity: 'major', area: 'concept-order', detail: d })),
   ...(l3?.repetition || []).filter(r => r.verdict === 'REDUNDANT').map(r => ({ severity: 'major', area: 'repetition', detail: r.quote, locations: r.locations })),
   ...(l3?.thesisIssues || []).map(d => ({ severity: 'major', area: 'thesis', detail: d })),
   ...((l3?.completeness?.issues) || []).map(d => ({ severity: 'critical', area: 'completeness', detail: d })),
 ]
 const transIssues = (l2?.transitions || []).filter(t => t.verdict !== 'SMOOTH')
+const unreliableSections = allSections.filter(s => s.unreliable).map(s => s.section)
 for (const d of docIssues) sev[d.severity]++
 for (const t of transIssues) sev.major++
+sev.critical += unreliableSections.length
 
 const total = sev.critical + sev.major + sev.minor
 // Substrate gate (the convergence signal): argument-breaking (critical) + structural (major) findings must be 0.
@@ -280,21 +520,30 @@ const total = sev.critical + sev.major + sev.minor
 const substratePass = sev.critical === 0 && sev.major === 0
 const verdict = !substratePass ? 'ISSUES FOUND' : (sev.minor === 0 ? 'CLEAN' : 'CLEAN (advisory polish notes)')
 const overallPass = substratePass
-const unreliableSections = allSections.filter(s => s.unreliable).map(s => s.section)
+const rank = { critical: 0, major: 1, minor: 2 }
+const findings = [
+  ...allSections.filter(section => section.unreliable).map(section => ({ severity: 'critical', planHash: PLAN_HASH, section: section.section, claimIds: String(section.planClaims || '').split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)), area: 'reviewer-integrity', detail: `${section.section} review evidence was missing or fabricated; a fresh independent review is required.`, location: draftByName[section.section], retryKey: `section:${section.section}:reviewer-unreliable` })),
+  ...allSections.flatMap(section => (section.issues || []).map((issue, index) => ({ ...issue, planHash: PLAN_HASH, section: section.section, claimIds: String(section.planClaims || '').split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)), retryKey: `section:${section.section}:${issue.source || 'review'}:${index}` }))),
+  ...transIssues.map((transition, index) => ({ severity: 'major', planHash: PLAN_HASH, area: 'transition', detail: transition.problem || `${transition.from} → ${transition.to} is ${transition.verdict}`, location: `${transition.from} → ${transition.to}`, retryKey: `transition:${index}` })),
+  ...docIssues.map((issue, index) => ({ ...issue, planHash: PLAN_HASH, retryKey: `document:${issue.area}:${index}` })),
+].sort((left, right) => (rank[left.severity] ?? 9) - (rank[right.severity] ?? 9))
 
 log(substratePass
   ? (sev.minor === 0 ? '✅ Review CLEAN — no issues' : `✅ Review CLEAN — 0 critical / 0 major; ${sev.minor} advisory minor polish note(s)`)
   : `Review: ISSUES FOUND — ${sev.critical} critical / ${sev.major} major (blocking) / ${sev.minor} minor (advisory)`)
 
 return {
+  planPath: PLAN_PATH,
+  planHash: PLAN_HASH,
   overallPass,                      // == substratePass: critical===0 && major===0 (minors are advisory, NOT blocking)
   substratePass,
   verdict,
   summary: { ...sev, total, blocking: sev.critical + sev.major, advisoryMinors: sev.minor },
   style: disc.style,
-  sections: allSections,            // per-section issues + boundary + argumentSummary (skill renders AUTOMATED_REVIEW.md from this)
+  sections: allSections,            // per-section issues + boundary + argumentSummary for TaskList reconciliation
   transitions: l2?.transitions || [],
   documentLevel: l3 || null,
+  findings,                         // normalized TaskList-ready section, transition, document, and integrity findings
   unreliableSections,               // sections where a reviewer returned nothing — flag, don't trust
   sectionsThatFlagged: allSections.filter(s => (s.issues || []).length || s.unreliable).map(s => s.section), // pass as onlyChecks on re-review
 }

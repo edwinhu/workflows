@@ -3,14 +3,22 @@
 // Static/extract-based like the sibling *-run-driver / *-engine-discover tests — no real agents spawned.
 //
 // Run:  node tests/workshop-verify-gate.test.mjs
-import { readFileSync } from 'fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { createHash } from 'crypto'
 
 const ROOT = new URL('..', import.meta.url).pathname
+const TEST_ROOT = '/tmp/workshop-verify-receipt-test'
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 let PASS = 0, FAIL = 0
 const ok = (n, c, x = '') => { if (c) { PASS++ } else { FAIL++; console.log(`FAIL  ${n} ${x}`) } }
 
 const verSrc = readFileSync(ROOT + 'workflows/workshop-verify.js', 'utf8').replace(/^export const meta/m, 'const meta')
+const PLAN_BYTES = '# workshop generated plan\n'
+const PLAN_HASH = createHash('sha256').update(PLAN_BYTES).digest('hex')
+mkdirSync(`${TEST_ROOT}/.planning/.state`, { recursive: true })
+writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, PLAN_BYTES)
+writeFileSync(`${TEST_ROOT}/.planning/.state/review.json`, JSON.stringify({ workflow: 'workshop', plan_file: 'workshop-generated.md', plan_hash: PLAN_HASH, approved_session_id: 'approval', approved_at: '2026-07-30T10:00:00.000Z', status: 'APPROVED', reviewer_session_id: 'review', reviewed_at: '2026-07-30T11:00:00.000Z' }))
+const INDEX = { ok: true, planPath: '/p/.planning/workshop-generated.md', planFile: 'workshop-generated.md', planHash: PLAN_HASH, reviewStatePath: '/p/.planning/.state/review.json', receipt: { workflow: 'workshop', plan_file: 'workshop-generated.md', plan_hash: PLAN_HASH, status: 'APPROVED' }, reviewStatus: 'APPROVED', violations: [], slides: [{ num: 1 }], sourcesInventory: [], groupOrder: [], sectionOrder: [] }
 
 async function exec(src, { args, onAgent }) {
   const trace = { labels: [], prompts: {} }
@@ -24,7 +32,10 @@ async function exec(src, { args, onAgent }) {
   const log = () => {}, phase = () => {}
   const fn = new AsyncFunction('agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget', src)
   let result, error
-  try { result = await fn(agent, parallel, pipeline, log, phase, args, { total: null, spent: () => 0, remaining: () => Infinity }) }
+  const portable = JSON.parse(JSON.stringify(args).replaceAll('/p', TEST_ROOT))
+  const fallback = JSON.parse(JSON.stringify(INDEX).replaceAll('/p', TEST_ROOT))
+  const normalized = { ...portable, slideIndex: portable.slideIndex || fallback, planPath: portable.planPath || (portable.slideIndex || fallback).planPath, planHash: portable.planHash || (portable.slideIndex || fallback).planHash }
+  try { result = await fn(agent, parallel, pipeline, log, phase, normalized, { total: null, spent: () => 0, remaining: () => Infinity }) }
   catch (e) { error = e }
   return { result, error, trace }
 }

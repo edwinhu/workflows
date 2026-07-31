@@ -1,3 +1,9 @@
 # Native plan integrity
 
-`PLAN.md` is the immutable approved native plan. Validate its exact bytes against `PLAN.meta.json` before judgment, including plan hash, approval session, and UTC approval time. The reviewer must be a different session from approval; issues return to native Plan mode for reapproval, never a patch to the plan.
+For DS, native Plan approval creates the hidden combined receipt `.planning/.state/review.json` in `PENDING` state. Its `plan_file` selects the safe direct-child basename of the exact generated Markdown plan returned by that completed native Plan interaction; `plan_hash` authenticates the plan's exact bytes. The receipt also binds the approval session and UTC approval time.
+
+The reviewer receives that exact generated plan path. Read the PENDING receipt and require the supplied path, after canonical normalization, to equal the safe receipt-derived `.planning/<plan_file>` path; matching the basename alone is insufficient. Hash that exact path before review and immediately before finalization. Never list or glob `.planning/`, choose a newest plan, infer a path from modification time, copy or rename a plan, or substitute another plan. Do not modify the plan bytes.
+
+The approval, review, and implementation sessions must be independent, and `reviewed_at` must be strictly later than `approved_at`. Finalize only by replacing `.planning/.state/review.json`, preserving every approval-owned field unchanged and setting the reviewer-owned verdict fields. An `ISSUES_FOUND` verdict returns to native Plan mode for a new approval; it never authorizes a plan patch or implementation.
+
+Legacy `dev` alone retains its fixed `.planning/PLAN.md` and visible four-field verdict; those legacy semantics do not apply to DS.

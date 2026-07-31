@@ -7,9 +7,11 @@
 //       OUTLINE-row↔slide JOIN are irreducibly semantic, §3a-join) BUT its prompt carries the
 //       deterministic CANDIDATE rows (no free OUTLINE re-parse); absent ⇒ prompt says read OUTLINE.md.
 // Run:  node tests/workshop-engine-discover.test.mjs
-import { readFileSync } from 'fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { createHash } from 'crypto'
 
 const ROOT = new URL('..', import.meta.url).pathname
+const TEST_ROOT = '/tmp/workshop-engine-receipt-test'
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 let PASS = 0, FAIL = 0
 const ok = (n, c, x = '') => { if (c) { PASS++ } else { FAIL++; console.log(`FAIL  ${n} ${x}`) } }
@@ -28,14 +30,22 @@ async function exec(src, { args, onAgent }) {
   const pipeline = async () => { throw new Error('pipeline unused') }
   const log = () => {}, phase = () => {}
   const fn = new AsyncFunction('agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget', src)
-  const result = await fn(agent, parallel, pipeline, log, phase, args,
+  const portable = JSON.parse(JSON.stringify(args).replaceAll('/p', TEST_ROOT))
+  const selected = portable.slideIndex || JSON.parse(JSON.stringify(INDEX).replaceAll('/p', TEST_ROOT))
+  const normalized = { ...portable, slideIndex: selected, planPath: portable.planPath || selected.planPath, planHash: portable.planHash || selected.planHash }
+  const result = await fn(agent, parallel, pipeline, log, phase, normalized,
     { total: null, spent: () => 0, remaining: () => Infinity })
   return { result, trace }
 }
 
 // Minimal real-shaped slide index (3 slides over 2 composite groups), mirrors the parser output.
+const PLAN_BYTES = '# workshop generated plan\n'
+const PLAN_HASH = createHash('sha256').update(PLAN_BYTES).digest('hex')
+mkdirSync(`${TEST_ROOT}/.planning/.state`, { recursive: true })
+writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, PLAN_BYTES)
+writeFileSync(`${TEST_ROOT}/.planning/.state/review.json`, JSON.stringify({ workflow: 'workshop', plan_file: 'workshop-generated.md', plan_hash: PLAN_HASH, approved_session_id: 'approval', approved_at: '2026-07-30T10:00:00.000Z', status: 'APPROVED', reviewer_session_id: 'review', reviewed_at: '2026-07-30T11:00:00.000Z' }))
 const INDEX = {
-  form: 'prose', ok: true, outlinePath: '/p/.planning/OUTLINE.md', sourcesPath: '/p/.planning/SOURCES.md',
+  form: 'table', ok: true, planPath: '/p/.planning/workshop-generated.md', planFile: 'workshop-generated.md', planHash: PLAN_HASH, reviewStatePath: '/p/.planning/.state/review.json', receipt: { workflow: 'workshop', plan_file: 'workshop-generated.md', plan_hash: PLAN_HASH, status: 'APPROVED' }, reviewStatus: 'APPROVED', layout: 'canonical', conversionRequired: false,
   paperPath: '/papers/x.pdf', sourcesInventory: ['A1', 'R1', 'T1'], sectionOrder: ['Motivation', 'Appendix'],
   groupOrder: ['Motivation / Intro', 'Appendix / Data'],
   slides: [
@@ -91,15 +101,9 @@ const INDEX = {
   ok('gen: notes compile-fail emits a critical finding', (result.findings || []).some(f => /notes\.typ did not compile/.test(f.detail)))
 }
 {
-  // index ABSENT: the LLM discover MUST run (back-compat). Mock returns a discovery object.
-  const onAgent = (label) => {
-    if (label === 'discover') return { outlineReadable: true, sourcesPath: '/p/.planning/SOURCES.md', paperPath: '', slidesPath: '/p/presentation/slides.typ', notesPath: '/p/presentation/notes.typ', fileHeader: '#import "x"', fragmentsDir: '/p/.planning/slide-fragments', sectionOrder: ['G1'], slides: [{ num: '1', section: 'G1', takeaway: 'A.', bullets: 'b', inventory: ['A1'], visual: 'none', notes: 'n' }] }
-    if (label.startsWith('section:')) return { section: '0', status: 'drafted', slidesPath: '/f/s0.typ', notesPath: '/f/n0.typ', slideNums: ['1'], citedInventory: ['A1'], summary: 'ok' }
-    if (label === 'assemble') return { slidesWritten: true, notesWritten: true, compiled: true, compileError: '', notesCompiled: true, notesCompileError: '', slidesPdf: '/p/slides.pdf' }
-    return {}
-  }
-  const { trace } = await exec(genSrc, { args: { projectDir: '/p' }, onAgent })
-  ok('gen: LLM discover runs when index ABSENT (back-compat)', trace.labels.includes('discover'))
+  // The harness supplies an authenticated index; the engine must not run its retired LLM discover path.
+  const { trace } = await exec(genSrc, { args: { projectDir: '/p' }, onAgent: label => label.startsWith('section:') ? { section: '0', status: 'drafted', slidesPath: '/f', notesPath: '/n', slideNums: ['1', '2'], citedInventory: [], summary: 'ok' } : label === 'assemble' ? { slidesWritten: true, notesWritten: true, compiled: true, compileError: '', notesCompiled: true, notesCompileError: '', slidesPdf: '/p/slides.pdf' } : {} })
+  ok('gen: native index path has no LLM discover fallback', !trace.labels.includes('discover'))
 }
 
 // ── VERIFY ────────────────────────────────────────────────────────────────────
@@ -123,7 +127,7 @@ function makeVerifyMock(extraSlides = []) {
   ok('verify: discover STILL runs with index (join is semantic)', trace.labels.includes('discover'))
   const dp = trace.prompts['discover'] || ''
   ok('verify: discover prompt does NOT inject a candidate menu (no over-match bias)', !/outlineRow|CANDIDATE OUTLINE ROW/.test(dp))
-  ok('verify: discover prompt is free OUTLINE read (parity with current)', /read \.planning\/OUTLINE\.md/.test(dp))
+  ok('verify: discover reads the authenticated native PLAN', /authenticated PLAN/.test(dp))
   ok('verify: discover prompt reinforces []-is-common for appendix', /\[\] is the correct and common answer|do not force a match/.test(dp))
   // JS whitelist dropped the out-of-SOURCES id Z9, kept A1 (short-circuits on compile-fail, but the
   // filter ran before Mechanical; assert via the returned findings carrying the surviving ref set is
@@ -134,7 +138,7 @@ function makeVerifyMock(extraSlides = []) {
   // index absent: discover prompt is the same free read (back-compat — byte-identical join).
   const { trace } = await exec(verSrc, { args: { projectDir: '/p' }, onAgent: makeVerifyMock() })
   const dp = trace.prompts['discover'] || ''
-  ok('verify: free OUTLINE read when no index (back-compat)', /read \.planning\/OUTLINE\.md/.test(dp))
+  ok('verify: native PLAN remains the only discovery authority', /authenticated PLAN/.test(dp))
   ok('verify: no candidate menu ever (index or not)', !/outlineRow|CANDIDATE OUTLINE ROW/.test(dp))
 }
 {
@@ -190,5 +194,29 @@ function makeVerifyMock(extraSlides = []) {
   ok('verify count: 2 errors → critical 2 === findings.length 2', result.summary.critical === 2 && result.findings.length === 2, JSON.stringify(result.summary))
 }
 
+// Engines must reject caller-forged receipt identity before dispatching any agent.
+for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
+  let error
+  const forged = { ...INDEX, planHash: 'b'.repeat(64) }
+  try { await exec(src, { args: { projectDir: '/p', planPath: INDEX.planPath, planHash: forged.planHash, slideIndex: forged }, onAgent: () => ({}) }) } catch (caught) { error = caught }
+  ok(`${name}: stale caller hash blocks before consumption`, /does not authenticate current plan bytes/.test(error?.message || ''))
+}
+
+// The engines must hash the receipt-selected on-disk plan, not accept a caller's otherwise-valid index.
+writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, '# bytes changed after approval\n')
+for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
+  let error
+  try { await exec(src, { args: { projectDir: '/p', planPath: INDEX.planPath, planHash: INDEX.planHash, slideIndex: INDEX }, onAgent: () => ({}) }) } catch (caught) { error = caught }
+  ok(`${name}: current plan-byte mutation blocks forged caller index before dispatch`, /does not authenticate current plan bytes/.test(error?.message || ''))
+}
+
+// JSON.parse would silently overwrite a duplicate key; receipt authentication must reject it.
+writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, PLAN_BYTES)
+writeFileSync(`${TEST_ROOT}/.planning/.state/review.json`, `{"workflow":"workshop","workflow":"workshop","plan_file":"workshop-generated.md","plan_hash":"${PLAN_HASH}","approved_session_id":"approval","approved_at":"2026-07-30T10:00:00.000Z","status":"APPROVED","reviewer_session_id":"review","reviewed_at":"2026-07-30T11:00:00.000Z"}`)
+for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
+  let error
+  try { await exec(src, { args: { projectDir: '/p', planPath: INDEX.planPath, planHash: INDEX.planHash, slideIndex: INDEX }, onAgent: () => ({}) }) } catch (caught) { error = caught }
+  ok(`${name}: duplicate receipt field blocks before dispatch`, /duplicate fields/.test(error?.message || ''))
+}
 console.log(`\n${PASS}/${PASS + FAIL} passed` + (FAIL ? `  (${FAIL} FAILED)` : ''))
 process.exit(FAIL ? 1 : 0)

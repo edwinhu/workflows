@@ -13,20 +13,32 @@ hooks:
 
 # Writing Native Plan Reviewer
 
-After `ExitPlanMode` persists `.planning/PLAN.md` and `.planning/PLAN.meta.json`, dispatch one fresh
-`workflows:plan-checker` session distinct from approval and implementation:
+After the approved native Plan interaction completes, retain its exact generated plan path and dispatch
+one fresh reviewer session distinct from implementation. If that exact path is unavailable, STOP; never
+list `.planning/`, choose the newest file, or infer a filename.
 
 ```text
+Agent(
+  subagent_type="workflows:plan-checker",
+  allowed_tools=["Read", "Glob", "Grep", "Bash", "Write"],
+  description="Review writing native plan",
+  prompt="""
 Workflow/domain: writing
 Reference root: ${CLAUDE_SKILL_DIR}/../../references
-Plan: .planning/PLAN.md
-Inputs: .planning/PLAN.meta.json, .planning/PRECIS.md, .planning/OUTLINE.md, outlines/
+Plan: <exact generated plan path returned by the completed native Plan interaction>
+Inputs: <one or more concrete source, reference, or output paths named by that plan>
+
+Review the exact supplied generated plan; never discover or substitute another plan file. Write only the guarded complete-plan verdict if the dispatch contract and all required files are valid.
+""")
 ```
 
-The reviewer deterministically loads common plus writing constraints and writes only the guarded
-`.planning/PLAN_REVIEWED.md` verdict.
+Replace both angle-bracket placeholders with concrete paths before dispatch. The reviewer deterministically
+loads common plus writing constraints, hashes the exact generated path before review and immediately before
+finalization, and may replace only `.planning/.state/review.json`. It must reproduce `workflow`, `plan_file`,
+`plan_hash`, `approved_session_id`, and `approved_at` unchanged, then set only `status`, its actual
+`reviewer_session_id`, and strict `reviewed_at`.
 
-- `APPROVED`: begin drafting in a distinct implementation session.
-- `ISSUES_FOUND`: return to native Plan mode, obtain fresh approval, then dispatch a fresh review.
+- `APPROVED`: begin outlining and drafting in a third, distinct implementation session.
+- `ISSUES_FOUND`: return to native Plan mode, create a new generated file, obtain fresh approval, then dispatch a fresh review.
 
-Never patch immutable `PLAN.md`, self-approve, or substitute automated document review for plan review.
+Never patch generated plan bytes, write `PLAN_REVIEWED.md`, self-approve, or substitute automated document review for whole-plan review.

@@ -32,38 +32,11 @@
         ".planning/LEARNINGS.md": "# Learnings\n\n- prior note\n",
         ".planning/STATE.md": "# STATE (stale, will be overwritten)\n",
         ".planning/SPEC.md": "## Skills Touched\n\n- `wrds` -- TAQ millisecond data, SAS on the WRDS grid\n- `crsp-v2` -- CIZ column names\n- `wrds` -- duplicate, must be deduped\n"
-      }
-    },
-    {
-      "name": "ds-workflow-detected-dev-patterns-absent",
-      "kind": "effect",
-      "stdin": {
-        "session_id": "abc123",
-        "transcript_path": "/tmp/transcript.jsonl",
-        "cwd": ".",
-        "hook_event_name": "PreCompact",
-        "trigger": "manual",
-        "custom_instructions": "focus on the gate"
       },
-      "fixture": {
-        ".planning/PLAN.md": "# Analysis Plan\n\nEDA first, then the draft.\n",
-        ".planning/STATE.md": "# STATE\n"
-      }
-    },
-    {
-      "name": "native-ds-plan-without-keywords-never-writes-state",
-      "kind": "effect",
-      "stdin": {
-        "session_id": "abc123",
-        "transcript_path": "/tmp/transcript.jsonl",
-        "cwd": ".",
-        "hook_event_name": "PreCompact",
-        "trigger": "manual",
-        "custom_instructions": ""
-      },
-      "fixture": {
-        ".planning/PLAN.md": "# Research contract\n\nOnly native task prose.\n",
-        ".planning/PLAN.meta.json": "{\n  \"schemaVersion\": 1,\n  \"planHash\": \"bad\",\n  \"approvedSession\": \"approved\",\n  \"approvedAt\": \"2026-01-01T00:00:00.000Z\"\n}\n"
+      "tsExpected": {
+        "stdoutSha256": "e1f92e984bc0c0fe51bbabfa8e654606e871dc2d1b9125169775fd881bb1eafd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -95,6 +68,11 @@
       },
       "fixture": {
         ".planning/PLAN.md": "# Notes\n\nNothing recognizable here.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e1f92e984bc0c0fe51bbabfa8e654606e871dc2d1b9125169775fd881bb1eafd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -110,6 +88,40 @@
       },
       "fixture": {
         ".planning/LEARNINGS.md": "# Learnings\n"
+      }
+    },
+    {
+      "name": "native-receipt-selected-plan-skips-legacy-state",
+      "kind": "effect",
+      "stdin": {
+        "hook_event_name": "PreCompact"
+      },
+      "fixture": {
+        ".planning/ds-native.md": "# Native DS plan\n",
+        ".planning/.state/review.json": "{\"workflow\":\"ds\",\"plan_file\":\"ds-native.md\",\"plan_hash\":\"62e7cfe904f078339f1b75ae4c850e3193d939ddcfdffea65e8e33f5293c1a07\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}",
+        ".planning/STATE.md": "old state\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "628045e72b73b5dd46962ebb06106e76e52d27d504b47a20e4fcf72e17c1083f",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "invalid-existing-receipt-never-revives-legacy-state",
+      "kind": "effect",
+      "stdin": {
+        "hook_event_name": "PreCompact"
+      },
+      "fixture": {
+        ".planning/.state/review.json": "{}",
+        ".planning/PLAN.md": "## DS Workflow\nEDA\n",
+        ".planning/STATE.md": "old state\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e1f92e984bc0c0fe51bbabfa8e654606e871dc2d1b9125169775fd881bb1eafd",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

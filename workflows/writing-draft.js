@@ -1,9 +1,9 @@
 export const meta = {
   name: 'writing-draft',
-  description: "writing-draft's prose generation as an ultracode TRANSFORM workflow: discover the section set from the approved outlines, assert each outline is paragraph-granular-with-sources (the executable-spec gate), then fan out one write-agent per section that EXPANDS its outline into prose — fed its own outline + the prior/next section outlines (for transitions) + PRECIS + the domain style rules. The 'what' comes from the outline; the agent adds only local prose craft, citations, and bridges — NO structural latitude. A read-only verify stage confirms each draft covers every outline point, cites only the outline's pinned sources, and connects to its neighbors. Returns per-section transform + verify records and a computed gate.",
-  whenToUse: "Called by the writing-draft skill AFTER outlines are complete and OUTLINE_REVIEWED.md is APPROVED. Returns { overallPass, verdict, scoreTable, sections, findings, reviews, sectionsThatFailed, underGranular }. The skill keeps context-loading, the domain-skill load, strategy choice, and the /goal loop conversational; it writes the DRAFT_COMPLETE gate artifact only when overallPass. On a re-run it passes onlyChecks (failed section names) + priorReviews. The workflow never reviews document quality — that is writing-review's job; here verify means execution-fidelity to the spec.",
+  description: "Expand authenticated PLAN-bound section outlines into prose, verify execution fidelity, and return a computed gate.",
+  whenToUse: "Called after authenticated whole-plan review and detailed outlines. Requires planPath, planHash, and a deterministic sectionIndex; never discovers alternate authority.",
   phases: [
-    { title: 'Discover', detail: 'enumerate sections from outlines/; resolve PRECIS/OUTLINE/domain; assert paragraph-granularity per outline (executable-spec gate)' },
+    { title: 'Discover', detail: 'load the authenticated PLAN-bound section index and assert paragraph granularity' },
     { title: 'Transform', detail: 'one write-agent per section — expands its outline to prose from the pinned spec + prior/next outlines for transitions, NOT from judgment' },
     { title: 'Verify', detail: 'read-only: every outline point expanded, only the outline-pinned sources cited, first/last sentences connect to neighbors' },
     { title: 'Gate', detail: 'all sections drafted AND coverage/fidelity/transition substrate clean — computed in JS' },
@@ -14,7 +14,7 @@ export const meta = {
 // args = {
 //   projectDir: "/abs/writing-project-dir",     // REQUIRED — holds .planning/, outlines/, drafts/
 //   pluginRoot: "/abs/.../workflows",            // optional — for resolving the domain skill (writing-{style})
-//   outputSubdir: "drafts",                      // optional — where draft files land (pilot can pass "drafts-pilot")
+//   outputSubdir: "drafts",                      // optional compatibility value; canonical execution rejects alternatives
 //   onlyChecks?: ["Part II", ...],                // re-run loop: re-draft only these sections; carry the rest
 //   priorReviews?: [<section objects>],           // re-run loop: prior per-section results to carry forward
 // }
@@ -25,13 +25,201 @@ const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error(`writing-draft requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const PLUGIN = cfg.pluginRoot || ''
 const OUTDIR = cfg.outputSubdir || 'drafts'
+if (OUTDIR !== 'drafts') throw new Error('writing-draft canonical execution must write the exact Draft paths in PLAN Section Outputs; alternate outputSubdir is not authoritative.')
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.section), s]))
-// Deterministic section index from scripts/writing/writing_section_index.py — the compiled "Discover".
-// When the skill passes it, we skip the LLM Discover entirely (the writing analog of ds/dev's compile
-// step, except the output is DATA — a section index — not a generated run.js). Back-compat: absent ⇒
-// the LLM Discover still runs, so old callers and projects without a compiled index keep working.
+// The caller must pass the authenticated PLAN-bound index. Canonical writing has no
+// LLM or retired-file discovery fallback: absent, malformed, or stale inputs fail closed.
+const PLAN_PATH = typeof cfg.planPath === 'string' ? cfg.planPath : ''
+const PLAN_HASH = typeof cfg.planHash === 'string' ? cfg.planHash : ''
 const SECTION_INDEX = (cfg.sectionIndex && Array.isArray(cfg.sectionIndex.sections) && cfg.sectionIndex.sections.length) ? cfg.sectionIndex : null
+if (!PLAN_PATH || !PLAN_HASH || !SECTION_INDEX) {
+  throw new Error('writing-draft requires args.planPath, args.planHash, and a non-empty deterministic args.sectionIndex; canonical discovery never falls back to an LLM or retired planning files.')
+}
+if (SECTION_INDEX.ok !== true || SECTION_INDEX.planPath !== PLAN_PATH || SECTION_INDEX.planHash !== PLAN_HASH) {
+  throw new Error('writing-draft rejected a malformed or stale section index: ok, planPath, and planHash must match the authenticated PLAN input.')
+}
+for (const prior of (Array.isArray(cfg.priorReviews) ? cfg.priorReviews : [])) {
+  if (prior.planHash !== PLAN_HASH) throw new Error('writing-draft rejected priorReviews from a different plan hash.')
+}
+for (const key of ['precisPath', 'outlinePath', 'activeWorkflowPath', 'legacyPlanPath']) {
+  if (cfg[key]) throw new Error(`writing-draft rejected mixed active authority: args.${key} is retired.`)
+}
+if (SECTION_INDEX.precisPath || (SECTION_INDEX.outlinePath && SECTION_INDEX.outlinePath !== PLAN_PATH)) {
+  throw new Error('writing-draft rejected an index carrying retired active planning authority.')
+}
+
+const { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync, realpathSync } = await import('node:fs')
+const { createHash } = await import('node:crypto')
+const { isAbsolute, join, relative, resolve } = await import('node:path')
+const PROJECT_REAL = realpathSync(PROJECT)
+const sameState = (left, right) => left.dev === right.dev && left.ino === right.ino && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs
+const snapshotArtifact = path => {
+  let fd
+  try {
+    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW)
+    const opened = fstatSync(fd, { bigint: true })
+    if (!opened.isFile()) throw new Error(`writing-draft requires a regular non-symlink artifact: ${path}`)
+    const real = realpathSync(path); const rel = relative(PROJECT_REAL, real)
+    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error(`writing-draft artifact escapes projectDir: ${path}`)
+    const beforePath = lstatSync(path, { bigint: true })
+    if (beforePath.isSymbolicLink() || !sameState(opened, beforePath)) throw new Error(`writing-draft artifact identity changed before read: ${path}`)
+    const bytes = readFileSync(fd)
+    const afterFd = fstatSync(fd, { bigint: true })
+    const afterPath = lstatSync(path, { bigint: true })
+    if (afterPath.isSymbolicLink() || realpathSync(path) !== real || !sameState(opened, afterFd) || !sameState(opened, afterPath)) throw new Error(`writing-draft artifact changed during read: ${path}`)
+    return { path, real, text: bytes.toString('utf8'), hash: createHash('sha256').update(bytes).digest('hex'), dev: opened.dev, ino: opened.ino, size: opened.size, mtimeNs: opened.mtimeNs, ctimeNs: opened.ctimeNs }
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('writing-draft ')) throw error
+    throw new Error(`writing-draft requires a stable regular non-symlink artifact: ${path}`)
+  } finally {
+    if (fd !== undefined) closeSync(fd)
+  }
+}
+const artifactMatchesSnapshot = snapshot => {
+  try {
+    const current = snapshotArtifact(snapshot.path)
+    return current.real === snapshot.real && current.hash === snapshot.hash && current.dev === snapshot.dev && current.ino === snapshot.ino && current.size === snapshot.size && current.mtimeNs === snapshot.mtimeNs && current.ctimeNs === snapshot.ctimeNs
+  } catch { return false }
+}
+const PLAN_FILE = typeof SECTION_INDEX.planFile === 'string' ? SECTION_INDEX.planFile : ''
+if (!/^\.planning\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(PLAN_FILE) || PLAN_FILE === '.planning/PLAN.md' || SECTION_INDEX.reviewStatus !== 'APPROVED') {
+  throw new Error('writing-draft requires an APPROVED receipt-selected generated planFile; fixed PLAN.md and non-approved review state cannot authorize implementation.')
+}
+const EXPECTED_PLAN = resolve(PROJECT_REAL, PLAN_FILE)
+const PLAN_REAL = realpathSync(PLAN_PATH)
+const PLAN_RELATIVE = relative(join(PROJECT_REAL, '.planning'), PLAN_REAL)
+if (PLAN_REAL !== EXPECTED_PLAN || !PLAN_RELATIVE || PLAN_RELATIVE.startsWith('..') || isAbsolute(PLAN_RELATIVE)) {
+  throw new Error('writing-draft planPath must equal the receipt-selected generated planFile and may not escape through a symlink.')
+}
+const parseFlatStringJson = raw => {
+  const text = raw.trim(); let index = 0
+  const skip = () => { while (/\s/.test(text[index] || '')) index++ }
+  const readString = () => {
+    skip(); if (text[index] !== '"') throw new Error('not a JSON string')
+    const start = index++; let escaped = false
+    while (index < text.length) {
+      const char = text[index++]
+      if (escaped) { escaped = false; continue }
+      if (char === '\\') { escaped = true; continue }
+      if (char === '"') return JSON.parse(text.slice(start, index))
+    }
+    throw new Error('unterminated JSON string')
+  }
+  skip(); if (text[index++] !== '{') throw new Error('not an object')
+  const value = {}; skip()
+  if (text[index] === '}') index++
+  else while (index < text.length) {
+    const key = readString(); if (Object.hasOwn(value, key)) throw new Error(`duplicate field ${key}`)
+    skip(); if (text[index++] !== ':') throw new Error('missing colon')
+    value[key] = readString(); skip()
+    if (text[index] === ',') { index++; continue }
+    if (text[index] === '}') { index++; break }
+    throw new Error('missing separator')
+  }
+  skip(); if (index !== text.length) throw new Error('trailing content')
+  return value
+}
+const RECEIPT_PATH = join(PROJECT_REAL, '.planning', '.state', 'review.json')
+const RECEIPT_SNAPSHOT = snapshotArtifact(RECEIPT_PATH)
+const receiptKeys = ['workflow', 'plan_file', 'plan_hash', 'approved_session_id', 'approved_at', 'status', 'reviewer_session_id', 'reviewed_at']
+const strictUtc = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
+const receiptApproved = value => Object.keys(value).length === receiptKeys.length && receiptKeys.every(key => Object.hasOwn(value, key)) && value.workflow === 'writing' && `.planning/${value.plan_file}` === PLAN_FILE && value.plan_hash === PLAN_HASH && value.status === 'APPROVED' && typeof value.approved_session_id === 'string' && !!value.approved_session_id.trim() && typeof value.reviewer_session_id === 'string' && !!value.reviewer_session_id.trim() && value.approved_session_id !== value.reviewer_session_id && strictUtc(value.approved_at) && strictUtc(value.reviewed_at) && Date.parse(value.reviewed_at) > Date.parse(value.approved_at)
+let receipt
+try { receipt = parseFlatStringJson(RECEIPT_SNAPSHOT.text) } catch { throw new Error('writing-draft rejected malformed or duplicate combined review state.') }
+if (!receiptApproved(receipt)) {
+  throw new Error('writing-draft combined review state does not authenticate the supplied generated plan identity.')
+}
+const receiptSnapshotMatches = () => {
+  try {
+    const current = snapshotArtifact(RECEIPT_PATH)
+    const parsed = parseFlatStringJson(current.text)
+    return current.real === RECEIPT_SNAPSHOT.real && current.hash === RECEIPT_SNAPSHOT.hash && current.dev === RECEIPT_SNAPSHOT.dev && current.ino === RECEIPT_SNAPSHOT.ino && current.size === RECEIPT_SNAPSHOT.size && current.mtimeNs === RECEIPT_SNAPSHOT.mtimeNs && current.ctimeNs === RECEIPT_SNAPSHOT.ctimeNs && receiptApproved(parsed)
+  } catch { return false }
+}
+const PLAN_SNAPSHOT = snapshotArtifact(PLAN_REAL)
+const PLAN_TEXT = PLAN_SNAPSHOT.text
+const ACTUAL_PLAN_HASH = PLAN_SNAPSHOT.hash
+if (ACTUAL_PLAN_HASH !== PLAN_HASH) throw new Error('writing-draft generated plan bytes no longer match args.planHash.')
+const REQUIRED_H2 = ['Writing Intent', 'Claims', 'Counterarguments', 'Document Structure', 'Claim → Section Map', 'Source Plan', 'Section Outputs', 'Review Surfaces']
+const OBSERVED_H2 = [...PLAN_TEXT.matchAll(/^##\s+(.+?)\s*$/gm)].map(m => m[1])
+if (JSON.stringify(OBSERVED_H2) !== JSON.stringify(REQUIRED_H2)) throw new Error('writing-draft PLAN grammar changed after compilation.')
+const structureBlock = PLAN_TEXT.match(/^## Document Structure\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedNames = [...structureBlock.matchAll(/^###\s+(.+?)\s*$/gm)].map(m => m[1])
+const indexedNames = SECTION_INDEX.sections.map(s => String(s.name))
+if (JSON.stringify(plannedNames) !== JSON.stringify(indexedNames)) throw new Error('writing-draft section index is truncated, reordered, or not compiled from PLAN Document Structure.')
+const outputsBlock = PLAN_TEXT.match(/^## Section Outputs\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const tableLines = outputsBlock.split('\n').map(line => line.trim()).filter(line => line.startsWith('|'))
+const cells = line => line.slice(1, -1).split('|').map(cell => cell.trim())
+const artifactIdentity = text => {
+  const frontmatter = text.match(/^---\n([\s\S]*?)\n---(?:\n|$)/)?.[1] || ''
+  const implementMatches = [...frontmatter.matchAll(/^implements:\s*\[(.*?)\]\s*$/gm)]
+  const hashMatches = [...frontmatter.matchAll(/^plan_hash:\s*([0-9a-f]{64})\s*$/gm)]
+  if (implementMatches.length !== 1 || hashMatches.length !== 1) return { valid: false, implements: [], planHash: '' }
+  const raw = implementMatches[0][1].trim()
+  const implementsClaims = raw ? raw.split(',').map(value => value.trim()) : []
+  const valid = implementsClaims.every(value => /^CLAIM-[0-9]{2}$/.test(value)) && new Set(implementsClaims).size === implementsClaims.length
+  return { valid, implements: implementsClaims, planHash: hashMatches[0][1] }
+}
+const headers = tableLines.length ? cells(tableLines[0]).map(h => h.toLowerCase()) : []
+const outputRows = tableLines.slice(2).map(line => Object.fromEntries(headers.map((h, i) => [h, cells(line)[i] || ''])))
+const intentBlock = PLAN_TEXT.match(/^## Writing Intent\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedStyle = intentBlock.match(/^\s*(?:[-*]\s*)?(?:\*\*)?Domain(?:\*\*)?\s*:\s*(legal|econ|general)\s*$/mi)?.[1]?.toLowerCase() || ''
+if (SECTION_INDEX.style !== plannedStyle) throw new Error('writing-draft section index style does not match PLAN Writing Intent.')
+const sourceBlock = PLAN_TEXT.match(/^## Source Plan\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedSourcePlan = {}
+for (const match of sourceBlock.matchAll(/^\s*(?:[-*]\s*)?(?:\*\*)?([A-Za-z][A-Za-z /_-]*?)(?:\*\*)?\s*:\s*(.+?)\s*$/gm)) {
+  plannedSourcePlan[match[1].trim().replace(/\s+/g, ' ').toLowerCase()] = match[2].trim()
+}
+const plannedBib = plannedSourcePlan.bibliography || ''
+const normalizedSourceEntries = value => JSON.stringify(Object.entries(value || {}).sort(([a], [b]) => a.localeCompare(b)))
+if (resolve(SECTION_INDEX.bibPath || '') !== resolve(PROJECT_REAL, plannedBib) || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
+  throw new Error('writing-draft section index Source Plan context does not match the generated plan.')
+}
+const BIB_SNAPSHOT = snapshotArtifact(resolve(PROJECT_REAL, plannedBib))
+const bibSnapshotMatches = () => artifactMatchesSnapshot(BIB_SNAPSHOT)
+const reviewBlock = PLAN_TEXT.match(/^## Review Surfaces\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const plannedSurfaces = [...reviewBlock.matchAll(/^\s*[-*]\s+(\S.*?)\s*$/gm)].map(match => match[1])
+if (JSON.stringify(SECTION_INDEX.reviewSurfaces || []) !== JSON.stringify(plannedSurfaces)) throw new Error('writing-draft section index Review Surfaces do not match the generated plan.')
+const mapBlock = PLAN_TEXT.match(/^## Claim → Section Map\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
+const mapLines = mapBlock.split('\n').map(line => line.trim()).filter(line => line.startsWith('|'))
+const mapHeaders = mapLines.length ? cells(mapLines[0]).map(h => h.toLowerCase()) : []
+const mapRows = mapLines.slice(2).map(line => Object.fromEntries(mapHeaders.map((h, i) => [h, cells(line)[i] || ''])))
+const expectedClaims = Object.fromEntries(indexedNames.map(name => [name, []]))
+const admittedOutlineSnapshots = {}
+for (const row of mapRows) if (expectedClaims[row.section]) expectedClaims[row.section].push(row.claim)
+if (outputRows.length !== SECTION_INDEX.sections.length) throw new Error('writing-draft section index does not contain every PLAN Section Outputs row.')
+for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
+  const section = SECTION_INDEX.sections[i]
+  const row = outputRows[i]
+  if (!row || row.section !== section.name) throw new Error('writing-draft section index order does not match PLAN Section Outputs.')
+  const expectedOutline = resolve(PROJECT_REAL, row.outline)
+  const expectedDraft = resolve(PROJECT_REAL, row.draft)
+  for (const path of [expectedOutline, expectedDraft, resolve(section.outlineFile), resolve(section.draftFile)]) {
+    const rel = relative(PROJECT_REAL, path)
+    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error('writing-draft rejected an artifact path outside projectDir.')
+  }
+  if (resolve(section.outlineFile) !== expectedOutline || resolve(section.draftFile) !== expectedDraft) {
+    throw new Error('writing-draft section index artifact paths do not match PLAN Section Outputs.')
+  }
+  const expectedDependencies = !row['depends on'] || ['-', 'none', 'n/a'].includes(row['depends on'].toLowerCase()) ? [] : row['depends on'].split(/\s*(?:,|;)\s*/).filter(Boolean)
+  if (JSON.stringify(section.dependencies || []) !== JSON.stringify(expectedDependencies)) throw new Error('writing-draft section index dependencies do not match PLAN Section Outputs.')
+  const claimsForSection = expectedClaims[section.name] || []
+  if (JSON.stringify(section.primaryClaims || []) !== JSON.stringify(claimsForSection)) throw new Error('writing-draft section index claims do not match PLAN Claim → Section Map.')
+  if (section.outlineCurrent !== true) throw new Error(`writing-draft requires a current PLAN-bound detailed outline for ${section.name}: ${(section.outlineIssues || []).join('; ')}`)
+  const outlineSnapshot = snapshotArtifact(expectedOutline)
+  admittedOutlineSnapshots[section.name] = outlineSnapshot
+  const outlineText = outlineSnapshot.text
+  const outlineIdentity = artifactIdentity(outlineText)
+  const outlineBullets = outlineText.split('\n').filter(line => /^\s*(?:[-*]|\d+\.)\s+\S/.test(line)).length
+  if (!outlineIdentity.valid || outlineIdentity.planHash !== PLAN_HASH || JSON.stringify(outlineIdentity.implements) !== JSON.stringify(claimsForSection) || outlineBullets < 3 || /\b(?:TBA|TBD|develop this|to be (?:written|drafted)|\d+\s*pgs?)\b/i.test(outlineText)) {
+    throw new Error(`writing-draft detailed outline for ${section.name} is stale, unmapped, or under-granular.`)
+  }
+}
+const onlyInput = Array.isArray(cfg.onlyChecks) ? cfg.onlyChecks.map(String) : []
+if (new Set(onlyInput).size !== onlyInput.length || onlyInput.some(name => !indexedNames.includes(name))) {
+  throw new Error('writing-draft onlyChecks must contain unique current PLAN section names.')
+}
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const FINDING = {
@@ -40,35 +228,6 @@ const FINDING = {
     severity: { type: 'string', enum: ['critical', 'major', 'minor'] },
     detail: { type: 'string' },
     location: { type: 'string', description: 'file:line or outline point id, if applicable' },
-  },
-}
-
-const DISCOVERY_SCHEMA = {
-  type: 'object', additionalProperties: false,
-  required: ['style', 'precisPath', 'outlinePath', 'domainSkillPath', 'bibPath', 'sections'],
-  properties: {
-    style: { type: 'string', description: 'legal | econ | general (from .planning/ACTIVE_WORKFLOW.md, else inferred)' },
-    precisPath: { type: 'string', description: 'absolute path to .planning/PRECIS.md, or "" if absent' },
-    outlinePath: { type: 'string', description: 'absolute path to .planning/OUTLINE.md, or "" if absent' },
-    domainSkillPath: { type: 'string', description: 'absolute path to writing-{style}/SKILL.md, or "" if pluginRoot unknown' },
-    bibPath: { type: 'string', description: 'absolute path to the project bibliography the draft must cite from (references/sources.bib, or a project .bib), or "" if none found — the transform agent draws real citations from here, never invents' },
-    sections: {
-      type: 'array', items: {
-        type: 'object', additionalProperties: false,
-        required: ['name', 'outlineFile', 'draftFile', 'precisClaim', 'outlineGranular', 'sourcesPinned', 'granularityNote', 'prevName', 'nextName'],
-        properties: {
-          name: { type: 'string', description: 'section label, e.g. "Part II" — the outline stem with " (Outline).md" stripped' },
-          outlineFile: { type: 'string', description: 'ABSOLUTE path to the section outline' },
-          draftFile: { type: 'string', description: `ABSOLUTE target path for the prose draft (under ${OUTDIR}/)` },
-          precisClaim: { type: 'string', description: 'which PRECIS claim this section advances (id or text)' },
-          outlineGranular: { type: 'boolean', description: 'STRUCTURE gate only: true iff the outline decomposes the section to roughly paragraph-level units (one bullet-group ≈ one paragraph, with a discernible point per group). Source-pinning is NOT required here — citations are assigned at draft time and verified separately. false ONLY for genuinely structureless outlines (a bare list of section headings, or explicit placeholders like "TBA / develop this").' },
-          sourcesPinned: { type: 'boolean', description: 'informational: does the outline already pin a source/citation to its substantive claims? If false, the transform agent must assign citations from the bib (and the fidelity check verifies them).' },
-          granularityNote: { type: 'string', description: 'if not granular: exactly what is missing structurally (e.g. "bare section headings, no paragraph-level points" or "placeholder: TBA—develop this section")' },
-          prevName: { type: 'string', description: 'name of the preceding section in document order, or "" for the first' },
-          nextName: { type: 'string', description: 'name of the following section in document order, or "" for the last' },
-        },
-      },
-    },
   },
 }
 
@@ -81,7 +240,7 @@ const TRANSFORM_SCHEMA = {
     status: { type: 'string', enum: ['drafted', 'skipped', 'error'] },
     content: { type: 'string', description: 'the full prose written (so verify can validate before any merge/read race)' },
     pointsExpanded: { type: 'integer', description: 'count of outline points expanded into prose' },
-    summary: { type: 'string', description: 'one line: which PRECIS claim this advances + R1-R3 deviations applied' },
+    summary: { type: 'string', description: 'one line: which PLAN claim this advances + R1-R3 deviations applied' },
   },
 }
 
@@ -121,22 +280,20 @@ function isContinuousSection(name) {
 }
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
-// Map the deterministic section index → the DISCOVERY_SCHEMA shape (no LLM). draftFile is
-// recomputed from OUTDIR so a pilot subdir (e.g. drafts-pilot) is honored; precisClaim comes
-// from the OUTLINE.md Claim→Section Map (primary claims), falling back to the draft's implements.
+// Map the authenticated PLAN index into the workflow shape. draftFile is recomputed from OUTDIR so pilot output directories remain supported.
 function discFromIndex(idx) {
   const style = idx.style && idx.style !== 'unspecified' ? idx.style : 'general'
   return {
     style,
-    precisPath: idx.precisPath || '',
-    outlinePath: idx.outlinePath || '',
+    planPath: idx.planPath,
     domainSkillPath: PLUGIN ? `${PLUGIN}/../skills/writing-${style}/SKILL.md` : '',
     bibPath: idx.bibPath || '',
+    sourcePlan: idx.sourcePlan || {},
     sections: idx.sections.map(s => ({
       name: String(s.name),
       outlineFile: s.outlineFile || '',
-      draftFile: `${PROJECT}/${OUTDIR}/${s.name} (Draft).md`,
-      precisClaim: ((s.primaryClaims && s.primaryClaims.length ? s.primaryClaims : (s.implements || [])).join(', ')) || String(s.name),
+      draftFile: s.draftFile,
+      precisClaim: (s.primaryClaims && s.primaryClaims.length ? s.primaryClaims : (s.implements || [])).join(', '),
       outlineGranular: s.granular !== false,
       sourcesPinned: !!s.sourcesPinned,
       granularityNote: s.granularityNote || '',
@@ -147,24 +304,14 @@ function discFromIndex(idx) {
 }
 
 phase('Discover')
-const disc = SECTION_INDEX ? discFromIndex(SECTION_INDEX) : await agent(
-  `Enumerate the sections the writing-draft phase must produce, reading the APPROVED outlines. Working directory: ${PROJECT}
-
-1. Set style: read ${PROJECT}/.planning/ACTIVE_WORKFLOW.md if present; if ABSENT, INFER style from the material (a law-review / legal paper → "legal"; an economics paper → "econ"; otherwise "general"). Read .planning/PRECIS.md and .planning/OUTLINE.md if present (set their absolute paths, or "" if absent). If OUTLINE.md is absent, derive document order from the outline filenames + their headings.
-2. Resolve domainSkillPath: ${PLUGIN ? `"${PLUGIN}/../skills/writing-{style}/SKILL.md" with {style} substituted` : 'leave "" (pluginRoot not provided)'}.
-3. Resolve bibPath: look for ${PROJECT}/references/sources.bib, else any *.bib under ${PROJECT}; if none, set "" (the draft agent will fall back to the user's Paperpile bib / mark CITE-NEEDED).
-4. List ${PROJECT}/outlines/*.md . Each file named "<Name> (Outline).md" is one section; set name=<Name> (strip " (Outline).md"). Order them in DOCUMENT order using OUTLINE.md (Introduction first, then Part I, II, III, IV, Conclusion — not lexical). Set prevName/nextName from that order ("" at the ends).
-5. For EACH section, set draftFile = ${PROJECT}/${OUTDIR}/<Name> (Draft).md (ABSOLUTE), and precisClaim = the claim it advances — from PRECIS/OUTLINE if present, else from the outline's own "Claim Supported" line, else a one-line summary of the section's thesis.
-6. The STRUCTURE gate (outlineGranular). Read each outline and judge outlineGranular = TRUE iff it decomposes the section to roughly paragraph-level units — one bullet-group ≈ one paragraph, each group carrying a discernible point. This is a STRUCTURE check ONLY; do NOT require sources to be pinned. Set outlineGranular=FALSE only for genuinely structureless outlines: a bare list of section headings with no paragraph-level points, or explicit placeholders ("TBA", "develop this section", "X pgs"). Also set sourcesPinned = whether the outline already attaches a source/citation to its substantive claims (informational — if false, the draft agent assigns citations from the bib and they get verified). For a non-granular section, set granularityNote with exactly what's missing structurally.
-
-Use ABSOLUTE paths. Return DISCOVERY_SCHEMA.`,
-  { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
-)
-if (!disc.sections.length) throw new Error(`writing-draft: no section outlines found under ${PROJECT}/outlines/. Outlines must exist (and OUTLINE_REVIEWED.md be APPROVED) before drafting.`)
-if (SECTION_INDEX) log(`Discover: deterministic section index (${disc.sections.length} sections, ${disc.style}) — no LLM Discover`)
+const disc = discFromIndex(SECTION_INDEX)
+if (!disc.sections.length) throw new Error(`writing-draft: no section outlines found under ${PROJECT}/outlines/. Detailed outlines must exist after authenticated whole-plan review before drafting.`)
+log(`Discover: authenticated PLAN index (${disc.sections.length} sections, ${disc.style}, ${PLAN_HASH})`)
 const underGranular = disc.sections.filter(s => s.outlineGranular === false)
 const draftable = disc.sections.filter(s => s.outlineGranular !== false)
 const outlineByName = Object.fromEntries(disc.sections.map(s => [String(s.name), s]))
+const outlineSnapshots = admittedOutlineSnapshots
+const draftSnapshots = {}
 log(`${disc.sections.length} section(s); ${draftable.length} structured, ${underGranular.length} structureless (bounce to outline)${ONLY ? `; re-run ${ONLY.size}` : ''}`)
 if (underGranular.length) log(`⚠️ structureless outlines (NOT drafted): ${underGranular.map(s => s.name).join(', ')} — add paragraph-level structure in writing-outline first`)
 const unpinned = draftable.filter(s => s.sourcesPinned === false).map(s => s.name)
@@ -185,13 +332,24 @@ const DOMAIN_RULE = {
 }
 const tasks = []
 const carried = []
+const liveDispatchNames = new Set()
 let drafted = 0, carriedCount = 0
 for (const s of draftable) {
   if (ONLY && !ONLY.has(String(s.name))) {
-    if (PRIOR.has(String(s.name))) { carried.push(PRIOR.get(String(s.name))); carriedCount++ }
+    const prior = PRIOR.get(String(s.name))
+    const outlineHash = outlineSnapshots[String(s.name)].hash
+    const draftSnapshot = snapshotArtifact(s.draftFile)
+    const verify = prior?.verify
+    if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== outlineHash || prior.draftHash !== draftSnapshot.hash || prior.status !== 'drafted' || !verify || verify.coverageOk !== true || verify.fidelityOk !== true || verify.transitionOk === false || !Array.isArray(verify.findings)) {
+      throw new Error(`writing-draft selective retry requires one complete current-content prior result for ${s.name}.`)
+    }
+    draftSnapshots[String(s.name)] = draftSnapshot
+    carried.push(prior)
+    carriedCount++
     continue
   }
   drafted++
+  liveDispatchNames.add(String(s.name))
   const prev = s.prevName ? outlineByName[String(s.prevName)] : null
   const next = s.nextName ? outlineByName[String(s.nextName)] : null
   // Section ROLE drives heading emission: only PARTS get lettered ## A./B./C. subsection headings;
@@ -205,35 +363,37 @@ Set section="${s.name}" verbatim in your record (the gate keys on it).
 DOMAIN STYLE (${disc.style}): ${DOMAIN_RULE[disc.style] || DOMAIN_RULE.general}
 ${disc.domainSkillPath ? `Read ${disc.domainSkillPath} and follow its Iron Laws + register before writing a word.` : ''}
 
-THIS SECTION'S OUTLINE (the spec to expand — read it in full): ${s.outlineFile}
-PRECIS claim it advances: ${s.precisClaim}
-${disc.precisPath ? `Full PRECIS for thesis context: ${disc.precisPath}` : ''}
+THIS SECTION'S IMMUTABLE OUTLINE SNAPSHOT (source path ${s.outlineFile}):
+${outlineSnapshots[String(s.name)].text}
+PLAN claim(s) it advances: ${s.precisClaim || '(none; claimless section)'}
+Full authenticated PLAN context: ${PLAN_TEXT}
 
-FOR TRANSITIONS ONLY (read the OUTLINES, not any draft):
-${prev ? `- Prior section "${prev.name}" outline: ${prev.outlineFile} — your FIRST sentence should connect to what it establishes.` : '- This is the FIRST section — open the document/argument cleanly (no "as discussed above").'}
-${next ? `- Next section "${next.name}" outline: ${next.outlineFile} — your LAST sentence should set it up.` : '- This is the LAST section — close cleanly, no dangling hand-off.'}
+FOR TRANSITIONS ONLY (use these immutable outline snapshots, not live files or any draft):
+${prev ? `- Prior section "${prev.name}" snapshot:\n${outlineSnapshots[String(prev.name)].text}\nYour FIRST sentence should connect to what it establishes.` : '- This is the FIRST section — open the document/argument cleanly (no "as discussed above").'}
+${next ? `- Next section "${next.name}" snapshot:\n${outlineSnapshots[String(next.name)].text}\nYour LAST sentence should set it up.` : '- This is the LAST section — close cleanly, no dangling hand-off.'}
 
 Drafting contract (the Iron Laws of writing-draft):
 - TOPIC-SENTENCE-LED, PROPORTIONAL development. Lead each unit with its TOPIC SENTENCE — the outline POINT sharpened into a claim that carries the argument — then develop it IN PROPORTION TO ITS WEIGHT: a minor point may be a single clause folded into a neighbor's paragraph; a pivotal one may run several paragraphs. COVER every point's claim and keep every subsection transition as an explicit bridge — but do NOT give every point its own paragraph and do NOT pad to a word-count target. **Uniform one-paragraph-per-point is the FAILURE MODE — it reads flat and machine-made.** A reader should be able to follow the whole argument from the topic sentences alone. (Drop a point entirely and that is a stub; pad a thin point to look complete and that is the flat tell — neither is the goal.)
 - RHYTHM (positive target, not just prohibitions): vary sentence and paragraph length deliberately. Mix short, punchy sentences with longer developed ones; let a pivotal claim land in a short sentence. High variance in sentence length (burstiness) is what human legal prose has and machine prose lacks. Use semicolons and colons where two clauses balance.
 - EM-DASHES, RARELY. The single most common machine tell in this pipeline is em-dash over-use. Cap them at roughly ONE per 400 words, and only for a genuine appositive or aside — NEVER as a default connector. A comma, colon, semicolon, or period almost always serves better; reach for those first. (Human legal prose averages ~0.25 em-dashes per 1,000 words; a draft with one every other sentence reads machine-made regardless of how good the rhythm is.)
 - HEADINGS — outline scaffolding is NOT document headings. The outline's \`## Opening\`, \`## Body\`, and \`## Closing\` are SCAFFOLDING LABELS that organize the outline; NEVER emit them — or any synonym like "Conclusion to Part II" / "Closing" — as a heading in the prose. ${continuous ? `THIS SECTION IS AN ${String(s.name).toUpperCase().includes('CONCLUSION') ? 'CONCLUSION' : 'INTRODUCTION'} — render it as CONTINUOUS UNHEADED PROSE. Emit NO lettered \`## A./B./C.\` subsection headings even though its outline groups the Body as A/B/C; those groupings guide paragraph ORDER only. The ONLY heading is the section TITLE (\`# ${s.name}\`).` : `This is a PART. The ONLY headings are the section TITLE (\`# <Section Name>\`) and the lettered subsection headings (\`## A. <Name>\`, \`## B. <Name>\`, …). Concretely: "Opening" → lead paragraph(s) with NO heading; "Body" → the lettered \`## A./B./C.\` subsections, which DO take headings; "Closing" → a trailing UNHEADED bridging paragraph after the last lettered subsection (a Part ends in an unheaded bridge, never a "Closing"/"Conclusion" heading).`}
-- CITATIONS: this outline may not pin sources to its claims. Where a substantive claim needs a citation, draw it from a REAL source: ${disc.bibPath ? `the project bibliography ${disc.bibPath}` : 'the user\'s Paperpile bibliography (~/Google Drive/My Drive/resources/Paperpile) or the project sources'}, and for legal claims a real, well-formed, verifiable authority (case/statute/article). Carry through any [@bibkey]/[CLAIM-XX] the outline DOES pin. **NEVER fabricate a citation, and NEVER attribute a claim to a source that does not support it.** If you cannot identify a real source for a claim, leave a literal \`[CITE-NEEDED: <what's needed>]\` marker instead of inventing one — the verify stage treats an invented cite as a critical failure but an honest CITE-NEEDED as a flag to resolve.
+- CITATIONS: this outline may not pin sources to its claims. Where a substantive claim needs a citation, draw it from a REAL source in this immutable authenticated bibliography snapshot (${disc.bibPath}):\n${BIB_SNAPSHOT.text}\nFor legal claims use a real, well-formed, verifiable authority (case/statute/article). Carry through any [@bibkey]/[CLAIM-XX] the outline DOES pin. **NEVER fabricate a citation, and NEVER attribute a claim to a source that does not support it.** If you cannot identify a real source for a claim, leave a literal \`[CITE-NEEDED: <what's needed>]\` marker instead of inventing one — the verify stage treats an invented cite as a critical failure but an honest CITE-NEEDED as a flag to resolve.
 - Apply R1-R3 deviations inline if drafting surfaces them (R1 factual fix, R2 add a real source, R3 structural bridge). If you hit an R4 (the argument itself needs restructuring), do NOT invent a fix — note it in summary and draft to the outline as written.
 
-Write the full prose to ${s.draftFile} with the Write tool (include frontmatter \`implements: [the outline's CLAIM ids]\`). Then return TRANSFORM_SCHEMA with status="drafted", content=the FULL prose you wrote, and pointsExpanded=the number of outline points you expanded.`
+Write the full prose to the exact PLAN-owned path ${s.draftFile} with the Write tool. Frontmatter MUST include \`implements: [${s.precisClaim}]\` (or an empty list when this section has no primary claim) and the exact \`plan_hash: ${PLAN_HASH}\`. Then return TRANSFORM_SCHEMA with draftFile exactly equal to that path, status="drafted", content=the FULL exact file content you wrote, and pointsExpanded=the number of outline points you expanded.`
   const buildVerifyPrompt = (t) =>
     `You are a READ-ONLY verifier. Do NOT create, edit, or overwrite any files. Confirm a drafted section faithfully EXECUTED its outline — this is execution-fidelity, NOT a document-quality review (writing-review does that later).
 Set section="${t.section}" verbatim.
 
-THE OUTLINE IT HAD TO EXPAND: ${s.outlineFile}
-GENERATED PROSE (as written by the draft agent):
-${(t.content || '').slice(0, 8000)}
-Also try to Read ${t.draftFile} (prefer on-disk content if present).
+IMMUTABLE OUTLINE SNAPSHOT IT HAD TO EXPAND (${s.outlineFile}):
+${outlineSnapshots[String(s.name)].text}
+GENERATED PROSE SNAPSHOT RETURNED BY THE DRAFT AGENT:
+${t.content || ''}
+Judge only these immutable snapshots. Do not reread mutable outline or draft paths during verification.
 
 Check, and report every gap in findings with severity:
 1. coverageOk — SUBSTANCE coverage: is every outline point's CLAIM made and its logic landed? Judge whether the ARGUMENT the outline specifies is fully present — NOT whether each point got its own paragraph or hit a word count. Proportional development is CORRECT: a minor point folded into a clause/sentence is covered, not cursory; a uniform one-paragraph-per-point draft is NOT better-covered than a well-paced one. coverageOk=false ONLY when a point or subsection is genuinely DROPPED (its claim is absent/unsupported) ⇒ major; a wholly missing subsection ⇒ critical. Do NOT flag proportional brevity or varied paragraph length as a coverage gap.
-2. fidelityOk — CITATION RESOLVABILITY (the chosen "mandatory source-verify" gate). Every citation in the prose must resolve to a REAL, identifiable source: an @bibkey must exist in ${disc.bibPath || 'the project / Paperpile bib'}; a legal authority must be well-formed and verifiable (a real case/statute/article, not a plausible-looking invention). Any citation you cannot confirm resolves — or any unfilled \`[CITE-NEEDED]\` marker left in the prose — ⇒ fidelityOk=false with a CRITICAL finding naming the cite. (Deep quote-in-source verification is the source-verify skill's job, run by the wrapping skill after this gate; here, confirm existence/resolvability and catch fabrication.)
+2. fidelityOk — CITATION RESOLVABILITY (the chosen "mandatory source-verify" gate). Every citation in the prose must resolve to a REAL, identifiable source: an @bibkey must exist in this immutable authenticated bibliography snapshot (${disc.bibPath}):\n${BIB_SNAPSHOT.text}\nA legal authority must be well-formed and verifiable (a real case/statute/article, not a plausible-looking invention). Any citation you cannot confirm resolves — or any unfilled \`[CITE-NEEDED]\` marker left in the prose — ⇒ fidelityOk=false with a CRITICAL finding naming the cite. (Deep quote-in-source verification is the source-verify skill's job, run by the wrapping skill after this gate; here, confirm existence/resolvability and catch fabrication.)
 3. transitionOk — ${prev ? `does the FIRST sentence connect to what "${prev.name}" (${prev.outlineFile}) establishes?` : 'is the opening clean (no "as discussed above" with nothing prior)?'} ${next ? `does the LAST sentence set up "${next.name}" (${next.outlineFile})?` : 'is the close clean (no dangling hand-off)?'} A seam (abrupt jump, repeated setup, dangling reference) ⇒ transitionOk=false (major).
 4. SCAFFOLDING HEADINGS — the outline's \`## Opening\`, \`## Body\`, \`## Closing\` are scaffolding, NOT document headings. If the prose contains a literal heading named "Opening", "Body", or "Closing" (or a synonym like "Conclusion to Part ${'X'}"), report it as a MAJOR finding ("scaffolding label emitted as a heading"): the section must end in an UNHEADED bridging paragraph, not a "Closing"/"Conclusion" heading.${continuous ? ` ALSO — this is an INTRODUCTION/CONCLUSION, which is CONTINUOUS UNHEADED prose: if the draft contains ANY lettered subsection heading (\`## A.\`, \`## B.\`, … — even though the outline groups its Body as A/B/C), report it as a MAJOR finding ("lettered subsections in an Introduction/Conclusion"). Only the section title (\`#\`) is a valid heading here.` : ` Only the section title (\`#\`) and the lettered \`## A./B./C.\` subsections are valid headings in a Part.`}
 Also return boundary.firstSentence and boundary.lastSentence verbatim (for the skill's seam audit).
@@ -241,33 +401,53 @@ Return VERIFY_SCHEMA.`
   tasks.push(() => (async () => {
     const t = await agent(draftPrompt, { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA })
     if (!t) return null
+    const draftSnapshot = snapshotArtifact(s.draftFile)
     const v = await agent(buildVerifyPrompt(t), { label: `verify:${s.name}`, phase: 'Verify', schema: VERIFY_SCHEMA, model: 'sonnet' })
-    return { transform: t, verify: v }
+    return { expectedSection: String(s.name), transform: t, verify: v, draftSnapshot }
   })())
 }
 const liveResults = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-draft: ${drafted} section(s) live, ${carriedCount} carried`)
-const liveTransforms = liveResults.map(r => r.transform)
-const verifyByName = Object.fromEntries(liveResults.filter(r => r.verify).map(r => [String(r.verify.section), r.verify]))
+for (const result of liveResults) draftSnapshots[result.expectedSection] = result.draftSnapshot
+// A verifier result is evidence only for the section captured when its dispatch was created.
+// Never let a swapped self-reported echo rebind it to a different section.
+const verifyByName = Object.fromEntries(liveResults
+  .filter(r => r.verify && String(r.verify.section) === r.expectedSection)
+  .map(r => [r.expectedSection, r.verify]))
 
 // ── Phase 4: Gate (pure JS — substrate split: drafted + coverage + fidelity + transitions) ─
 phase('Gate')
-const transformByName = Object.fromEntries([...liveTransforms, ...carried].map(t => [String(t.section), t]))
+const PLAN_STILL_CURRENT = artifactMatchesSnapshot(PLAN_SNAPSHOT)
+const RECEIPT_STILL_CURRENT = receiptSnapshotMatches()
+const BIB_STILL_CURRENT = bibSnapshotMatches()
+const transformByName = Object.fromEntries([
+  ...liveResults.map(result => [result.expectedSection, result.transform]),
+  ...carried.map(result => [String(result.section), result]),
+])
 const SEV_RANK = { critical: 0, major: 1, minor: 2 }
 const rows = []
 const findings = []
+if (!PLAN_STILL_CURRENT) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: 'PLAN', area: 'artifact-integrity', detail: 'Authenticated generated plan bytes changed during drafting review.', location: PLAN_PATH, retryKey: 'artifact:plan' })
+if (!RECEIPT_STILL_CURRENT) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: 'RECEIPT', area: 'artifact-integrity', detail: 'Combined review receipt path, identity, metadata, or bytes changed during drafting review.', location: RECEIPT_PATH, retryKey: 'artifact:receipt' })
+if (!BIB_STILL_CURRENT) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: 'BIBLIOGRAPHY', area: 'artifact-integrity', detail: 'Authenticated Source Plan bibliography path, identity, metadata, or bytes changed during drafting review.', location: BIB_SNAPSHOT.path, retryKey: 'artifact:bibliography' })
 
 // Structureless outlines are blocking: no paragraph-level spec to expand, so we did NOT draft — bounce to writing-outline.
 for (const s of underGranular) {
   rows.push({ section: s.name, drafted: false, coverage: false, fidelity: false, transition: false, pass: false, reason: 'outline lacks paragraph-level structure' })
-  findings.push({ severity: 'critical', section: s.name, detail: `${s.name}: outline lacks paragraph-level structure — ${s.granularityNote || 'bare headings / placeholder, no paragraph-level points'}. Add paragraph-level structure in writing-outline before drafting.` })
+  findings.push({ severity: 'critical', planHash: PLAN_HASH, section: s.name, area: 'outline-granularity', detail: `${s.name}: outline lacks paragraph-level structure — ${s.granularityNote || 'bare headings / placeholder, no paragraph-level points'}. Add paragraph-level structure in writing-outline before drafting.`, location: s.outlineFile, retryKey: `section:${s.name}:outline-granularity` })
 }
 
 for (const s of draftable) {
   const name = String(s.name)
   const t = transformByName[name]
-  const v = verifyByName[name] || (PRIOR.has(name) ? PRIOR.get(name).verify : null)
-  const isDrafted = !!t && t.status === 'drafted'
+  const v = verifyByName[name] || (!liveDispatchNames.has(name) && PRIOR.has(name) ? PRIOR.get(name).verify : null)
+  const draftSnapshot = draftSnapshots[name]
+  const draftUnchanged = !!draftSnapshot && artifactMatchesSnapshot(draftSnapshot)
+  const canonicalDraftText = draftSnapshot?.text || ''
+  const canonicalIdentity = artifactIdentity(canonicalDraftText)
+  const mappedClaims = s.precisClaim ? s.precisClaim.split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)) : []
+  const outlineUnchanged = artifactMatchesSnapshot(outlineSnapshots[name])
+  const isDrafted = !!t && String(t.section) === name && t.status === 'drafted' && resolve(t.draftFile) === resolve(s.draftFile) && draftUnchanged && t.content === canonicalDraftText && canonicalIdentity.valid && canonicalIdentity.planHash === PLAN_HASH && JSON.stringify(canonicalIdentity.implements) === JSON.stringify(mappedClaims) && outlineUnchanged
   const coverage = !!v && v.coverageOk === true
   const fidelity = !!v && v.fidelityOk === true
   const transition = !!v && v.transitionOk !== false   // no verify (e.g. not drafted) ⇒ false, matching coverage/fidelity
@@ -277,14 +457,26 @@ for (const s of draftable) {
   // Minor prose nits are advisory here — writing-review owns document-quality polish.
   const pass = isDrafted && coverage && fidelity && transition && blocking.length === 0
   rows.push({ section: name, drafted: isDrafted, coverage, fidelity, transition, pass })
-  if (!isDrafted) findings.push({ severity: 'critical', section: name, detail: `${name}: not drafted (status=${t ? t.status : 'missing'})` })
-  for (const f of vFindings) findings.push({ severity: f.severity, section: name, detail: `${name}: ${f.detail}`, location: f.location })
+  if (!isDrafted) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: name, area: 'draft-integrity', detail: `${name}: not drafted or exact path/content/frontmatter identity changed (status=${t ? t.status : 'missing'}).`, location: s.draftFile, retryKey: `section:${name}:draft-integrity` })
+  if (!v) {
+    findings.push({ severity: 'critical', planHash: PLAN_HASH, section: name, area: 'reviewer-integrity', detail: `${name}: independent draft verification was missing or returned the wrong section identity.`, location: s.draftFile, retryKey: `section:${name}:reviewer-missing` })
+  } else {
+    if (!coverage) findings.push({ severity: 'major', planHash: PLAN_HASH, section: name, area: 'coverage', detail: `${name}: verifier did not confirm outline coverage.`, location: s.draftFile, retryKey: `section:${name}:coverage` })
+    if (!fidelity) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: name, area: 'fidelity', detail: `${name}: verifier did not confirm citation fidelity.`, location: s.draftFile, retryKey: `section:${name}:fidelity` })
+    if (!transition) findings.push({ severity: 'major', planHash: PLAN_HASH, section: name, area: 'transition', detail: `${name}: verifier did not confirm the planned section transition.`, location: s.draftFile, retryKey: `section:${name}:transition` })
+  }
+  for (const [index, f] of vFindings.entries()) findings.push({ severity: f.severity, planHash: PLAN_HASH, section: name, area: 'verification', detail: `${name}: ${f.detail}`, location: f.location || s.draftFile, retryKey: `section:${name}:verification:${index}` })
 }
 findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])
 
-const blockingCount = findings.filter(f => f.severity === 'critical' || f.severity === 'major').length
-const minorCount = findings.filter(f => f.severity === 'minor').length
-const substratePass = rows.length > 0 && rows.every(r => r.pass)
+const severityCounts = {
+  critical: findings.filter(f => f.severity === 'critical').length,
+  major: findings.filter(f => f.severity === 'major').length,
+  minor: findings.filter(f => f.severity === 'minor').length,
+}
+const blockingCount = severityCounts.critical + severityCounts.major
+const minorCount = severityCounts.minor
+const substratePass = PLAN_STILL_CURRENT && RECEIPT_STILL_CURRENT && BIB_STILL_CURRENT && rows.length > 0 && rows.every(r => r.pass)
 const overallPass = substratePass
 const verdict = !substratePass ? 'GAPS FOUND' : (minorCount ? 'DRAFTED (advisory minor notes)' : 'DRAFTED')
 
@@ -300,15 +492,46 @@ log(overallPass
   : `❌ writing-draft: ${rows.filter(r => !r.pass).length}/${rows.length} section(s) failed — ${blockingCount} blocking finding(s)${underGranular.length ? ` (incl. ${underGranular.length} under-granular outline)` : ''}`)
 
 return {
+  planPath: PLAN_PATH,
+  planHash: PLAN_HASH,
   overallPass,
   substratePass,
   verdict,
-  summary: { total: rows.length, drafted: rows.filter(r => r.drafted).length, passed: rows.filter(r => r.pass).length, blocking: blockingCount, advisoryMinors: minorCount, underGranular: underGranular.length },
+  summary: { sectionsTotal: rows.length, drafted: rows.filter(r => r.drafted).length, passed: rows.filter(r => r.pass).length, ...severityCounts, total: severityCounts.critical + severityCounts.major + severityCounts.minor, blocking: blockingCount, advisoryMinors: minorCount, underGranular: underGranular.length },
   scoreTable,
   sections: rows,                     // per-section status the skill renders
   findings,                           // severity-ordered; blocking = critical+major
   underGranular: underGranular.map(s => ({ section: s.name, note: s.granularityNote })), // bounce-to-outline list
-  // raw per-section records (transform + verify) for priorReviews on a selective re-run
-  reviews: [...liveTransforms, ...carried].map(t => ({ ...t, verify: verifyByName[String(t.section)] || (PRIOR.get(String(t.section))?.verify ?? null) })),
+  // Raw per-section records for selective retries. Live evidence is keyed by
+  // the section captured at dispatch; a transform's self-reported section is
+  // never permitted to rename a record or select snapshots/verification.
+  reviews: [
+    ...liveResults.map(result => {
+      const section = result.expectedSection
+      const transformBound = String(result.transform?.section) === section
+      const snapshot = draftSnapshots[section]
+      return {
+        ...result.transform,
+        section,
+        status: transformBound ? result.transform?.status : 'error',
+        planHash: PLAN_HASH,
+        outlineHash: outlineSnapshots[section].hash,
+        draftHash: snapshot && artifactMatchesSnapshot(snapshot) ? snapshot.hash : '',
+        verify: transformBound ? (verifyByName[section] || null) : null,
+      }
+    }),
+    ...carried.map(record => {
+      const section = String(record.section)
+      const snapshot = draftSnapshots[section]
+      return {
+        ...record,
+        section,
+        planHash: PLAN_HASH,
+        outlineHash: outlineSnapshots[section].hash,
+        draftHash: snapshot && artifactMatchesSnapshot(snapshot) ? snapshot.hash : '',
+        verify: record.verify || null,
+      }
+    }),
+  ],
   sectionsThatFailed: rows.filter(r => !r.pass).map(r => r.section), // pass as onlyChecks on a re-run
 }

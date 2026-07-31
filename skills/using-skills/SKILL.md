@@ -56,7 +56,7 @@ Each workflow has two entry points — start fresh or re-enter mid-workflow:
 
 | Start Fresh | Mid-Workflow | Purpose |
 |-------------|-------------|---------|
-| `/work` | resume incomplete `.planning/WORK.md` | Lightweight structured work: clarify, plan, verify, human review |
+| `/work` | resume the receipt-selected generated plan (`{planFile, planHash}`) with TaskList | Lightweight structured work: clarify, plan, verify, human review |
 | `/dev` | `/dev-debug` | Feature development (7 phases) / debug, fix, re-test |
 | `/ds` | `/ds-fix` | Data analysis (5 phases) / wrong results, notebook errors, revisions |
 | `/writing` | `/writing-revise` | Writing projects / apply review fixes, polish |

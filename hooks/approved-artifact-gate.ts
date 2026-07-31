@@ -5,7 +5,7 @@ import { parseApprovalPolicyDescriptor, validateApprovedArtifact, type ApprovalP
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, projectFromArgs, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
-if (!policy) { deny("Approved artifact gate requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy."); }
+if (!policy) { deny("Approved artifact gate requires exactly one known --workflow ds|dev|work|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 if (tool !== "Agent" && tool !== "Workflow") allow();

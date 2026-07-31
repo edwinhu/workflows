@@ -13,7 +13,7 @@ export const meta = {
 //   workflow: string,                                 // REQUIRED built-in or opaque external identity
 //   approvalPolicy?: { schemaVersion, workflow, planPath, metadataPath, verdictPath }, // REQUIRED only for external workflows
 //   readyWave: [{ id, name, work, criteria, outputs, model, effort }], // REQUIRED; complete, caller-curated work list
-//   planReset: { approvedBodyHash, session }, // REQUIRED hash/session cross-check against separate metadata
+//   planReset: { planFile, planHash }, // REQUIRED exact generated-plan identity for built-ins; external v1 keeps approvedBodyHash/session
 //   resume?: { attemptedTaskIds: ["task-id", ...] },   // optional: re-dispatch ONLY previously attempted work
 // }
 function requiredWorkflowIdentity(value) {
@@ -24,35 +24,46 @@ if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } 
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error('beat-implement requires args.projectDir')
-const BUILT_IN_WORKFLOWS = ['ds', 'writing', 'workshop', 'workflow-creator']
+const BUILT_IN_WORKFLOWS = ['ds', 'work', 'writing', 'workshop', 'workflow-creator']
 if (!requiredWorkflowIdentity(cfg.workflow) || (!BUILT_IN_WORKFLOWS.includes(cfg.workflow) && cfg.approvalPolicy === undefined)) {
-  throw new Error('beat-implement requires args.workflow as ds, writing, workshop, workflow-creator, or an external workflow with explicit approval policy')
+  throw new Error('beat-implement requires args.workflow as ds, work, writing, workshop, workflow-creator, or an external workflow with explicit approval policy')
 }
 if (!Array.isArray(cfg.readyWave)) throw new Error('beat-implement requires args.readyWave as a complete task-spec array')
 
 // Shared libraries own approval identity and task-contract validation.
-const { parseApprovalPolicyDescriptor, validateApprovedArtifact, validateBuiltInImplementationApproval, validateCapturedApprovalBundle } = await import(new URL('./lib/approved-artifact.ts', import.meta.url).href)
+const { parseApprovalPolicyDescriptor, validateApprovedArtifact, validateBuiltInImplementationApproval, validateCapturedApprovalBundle, validateExternalImplementationApproval } = await import(new URL('./lib/approved-artifact.ts', import.meta.url).href)
 const { concretePaths, enforceTaskOutputs, fingerprint, pathsOverlap, requiredText, validateTask, writablePathsWithin } = await import(new URL('./lib/task-contract.ts', import.meta.url).href)
 const { captureGitObservation, compareGitObservations } = await import(new URL('./lib/git-observation.ts', import.meta.url).href)
 const { failClosedCandidateState, markCandidateMutation, validateCandidateMutationConfiguration } = await import(new URL('./lib/candidate-state.ts', import.meta.url).href)
 const { createHash } = await import('node:crypto')
 
 const reset = cfg.planReset || {}
-if (!requiredText(reset.approvedBodyHash)) throw new Error('beat-implement requires nonempty immutable planReset.approvedBodyHash')
-if (!requiredText(reset.session)) throw new Error('beat-implement requires nonempty immutable planReset.session')
-if (Object.keys(reset).some(key => !['approvedBodyHash', 'session'].includes(key))) throw new Error('beat-implement planReset accepts only approvedBodyHash and session')
+const builtInWorkflow = BUILT_IN_WORKFLOWS.includes(cfg.workflow)
 if (cfg.approvalPolicy !== undefined) {
-  if (BUILT_IN_WORKFLOWS.includes(cfg.workflow)) throw new Error('beat-implement built-in workflows cannot override approval policy')
+  if (builtInWorkflow) throw new Error('beat-implement built-in workflows cannot override approval policy')
   const policy = parseApprovalPolicyDescriptor(cfg.approvalPolicy, cfg.workflow)
   if (policy.code) throw new Error(`beat-implement ${policy.message}`)
+}
+if (builtInWorkflow) {
+  if (!requiredText(reset.planFile)) throw new Error('beat-implement requires nonempty immutable planReset.planFile')
+  if (!requiredText(reset.planHash)) throw new Error('beat-implement requires nonempty immutable planReset.planHash')
+  if (Object.keys(reset).some(key => !['planFile', 'planHash'].includes(key))) throw new Error('beat-implement built-in planReset accepts only planFile and planHash')
+} else {
+  if (!requiredText(reset.approvedBodyHash)) throw new Error('beat-implement external planReset requires nonempty approvedBodyHash')
+  if (!requiredText(reset.session)) throw new Error('beat-implement external planReset requires nonempty session')
+  if (Object.keys(reset).some(key => !['approvedBodyHash', 'session'].includes(key))) throw new Error('beat-implement external planReset accepts only approvedBodyHash and session')
 }
 let artifact = null
 if (cfg.capturedApprovalBundle === undefined) {
   artifact = validateApprovedArtifact(PROJECT, cfg.workflow, process.env.CLAUDE_SESSION_ID, cfg.approvalPolicy)
   if (artifact.code) throw new Error(`beat-implement ${artifact.message}`)
-  if (reset.approvedBodyHash !== artifact.hash || reset.session !== artifact.metadata.approvedSession) {
-    throw new Error('beat-implement rejects caller planReset that differs from durable approved-plan metadata')
+  if (builtInWorkflow) {
+    if (reset.planFile !== artifact.planFile || reset.planHash !== artifact.hash) throw new Error('beat-implement rejects caller planReset that differs from current receipt-selected generated plan')
+  } else if (reset.approvedBodyHash !== artifact.hash || reset.session !== artifact.metadata?.approvedSession) {
+    throw new Error('beat-implement rejects caller planReset that differs from durable external approval metadata')
   }
+} else if (builtInWorkflow) {
+  throw new Error('beat-implement built-in workflows do not accept captured approval bundles')
 }
 
 const ids = new Set()
@@ -70,11 +81,13 @@ const attemptRecords = cfg.resume?.attemptRecords
 if (attempted !== undefined && !Array.isArray(attempted)) throw new Error('beat-implement resume.attemptedTaskIds must be an array')
 if (attempted && !Array.isArray(attemptRecords)) throw new Error('beat-implement retry requires resume.attemptRecords from the preceding runner result')
 function isPriorResult(record) {
+  const sameApproval = builtInWorkflow
+    ? record?.planFile === reset.planFile && record?.planHash === reset.planHash
+    : record?.approvedBodyHash === reset.approvedBodyHash && record?.session === reset.session
   return record && typeof record === 'object'
     && requiredText(record.taskId)
     && requiredText(record.taskFingerprint)
-    && record.approvedBodyHash === reset.approvedBodyHash
-    && record.session === reset.session
+    && sameApproval
     && ['implemented', 'blocked', 'failed'].includes(record.status)
     && typeof record.summary === 'string'
     && Array.isArray(record.reusableFacts)
@@ -120,8 +133,10 @@ const RESULT_SCHEMA = {
 }
 
 function promptFor(task) {
-  // This approval identity is copied from separate PLAN.meta.json metadata by the caller. Mutable
-  // planning state is deliberately excluded: no STATE, SPEC, LEARNINGS, or previous agent memory enters a new doer.
+  const approvalIdentity = builtInWorkflow
+    ? `- plan_file: ${reset.planFile}\n- plan_hash: ${reset.planHash}`
+    : `- approved_body_hash: ${reset.approvedBodyHash}\n- approval_session: ${reset.session}`
+  // Mutable planning state is deliberately excluded: no phase cursor, TaskList history, or previous agent memory enters a new doer.
   return `You are the direct implementation agent for one already-approved task. Work only in ${PROJECT}.
 
 TASK ${task.id}: ${task.name}
@@ -140,11 +155,10 @@ ${(task.writablePaths || []).map(path => `- ${path}`).join('\n')}
 REQUIRED INSTRUCTIONS — read every file before work; they are part of this task's contract:
 ${(task.instructionFiles || []).map(path => `- ${path}`).join('\n') || '- None supplied'}
 
-IMMUTABLE APPROVAL IDENTITY (copied from PLAN.meta.json; do not infer or load mutable planning context):
-- approved_body_hash: ${reset.approvedBodyHash}
-- session: ${reset.session}
+IMMUTABLE APPROVAL IDENTITY (copied from validated approval state; do not infer or load mutable planning context):
+${approvalIdentity}
 
-Read every REQUIRED INSTRUCTIONS file first, then implement the task and run the task-local evidence needed to support the criteria. You may modify only EXCLUSIVE WRITABLE PATHS. Do not parse or reinterpret PLAN.md; the caller already supplied this complete ready-wave spec. Do not perform final verification or grade the result; an independent verifier runs outside this workflow. Do not delegate. If you encounter a blocker requiring a decision, return status="blocked". If execution cannot complete, return status="failed". Return every modified project-relative path in changedFiles and only RESULT_SCHEMA.`
+Read every REQUIRED INSTRUCTIONS file first, then implement the task and run the task-local evidence needed to support the criteria. You may modify only EXCLUSIVE WRITABLE PATHS. Do not parse or reinterpret a plan file; the caller already supplied this complete ready-wave spec. Do not perform final verification or grade the result; an independent verifier runs outside this workflow. Do not delegate. If you encounter a blocker requiring a decision, return status="blocked". If execution cannot complete, return status="failed". Return every modified project-relative path in changedFiles and only RESULT_SCHEMA.`
 }
 
 function contractDigest(task) {
@@ -176,10 +190,14 @@ async function run(task) {
     }
     approval = cfg.capturedApprovalBundle !== undefined
       ? validateCapturedApprovalBundle(cfg.capturedApprovalBundle, cfg.workflow, approvalBinding)
-      : validateBuiltInImplementationApproval(artifact, cfg.workflow, approvalBinding)
+      : builtInWorkflow
+        ? validateBuiltInImplementationApproval(artifact, cfg.workflow, approvalBinding)
+        : validateExternalImplementationApproval(artifact, cfg.workflow, approvalBinding)
     if (approval.code) throw new Error(approval.message)
-    if (approval.planDigest !== reset.approvedBodyHash || approval.approvalSession !== reset.session) {
-      throw new Error('captured approval differs from immutable planReset identity')
+    if (builtInWorkflow) {
+      if (approval.planFile !== reset.planFile || approval.planHash !== reset.planHash) throw new Error('current built-in approval differs from immutable planReset identity')
+    } else if (approval.planDigest !== reset.approvedBodyHash || approval.approvalSession !== reset.session) {
+      throw new Error('captured external approval differs from immutable planReset identity')
     }
     try {
       raw = await agent(promptFor(task), {
@@ -217,8 +235,7 @@ async function run(task) {
     return {
       taskId: task.id,
       taskFingerprint: taskFingerprint(task),
-      approvedBodyHash: reset.approvedBodyHash,
-      session: reset.session,
+      ...(builtInWorkflow ? { planFile: reset.planFile, planHash: reset.planHash } : { approvedBodyHash: reset.approvedBodyHash, session: reset.session }),
       status,
       summary: String(raw.summary || ''),
       reusableFacts: Array.isArray(raw.reusableFacts) ? raw.reusableFacts.filter(fact => typeof fact === 'string' && fact.trim()) : [],
@@ -234,8 +251,7 @@ async function run(task) {
     return {
       taskId: task.id,
       taskFingerprint: taskFingerprint(task),
-      approvedBodyHash: reset.approvedBodyHash,
-      session: reset.session,
+      ...(builtInWorkflow ? { planFile: reset.planFile, planHash: reset.planHash } : { approvedBodyHash: reset.approvedBodyHash, session: reset.session }),
       status: 'failed',
       summary: `Agent dispatch failed: ${error instanceof Error ? error.message : String(error)}`,
       reusableFacts: [],

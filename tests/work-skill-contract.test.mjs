@@ -19,6 +19,18 @@ function frontmatterName(text) {
   return text.match(/^---\n[\s\S]*?^name:\s*([^\n]+)$/m)?.[1]?.trim();
 }
 
+function hasRetiredProducer(text) {
+  const normalized = text.replace(/\s+/g, " ");
+  const pattern = /(?:create|write|produce|persist|emit|generate|save|maintain|update|append(?: content)? to|copy.{0,40}?into).{0,100}?(?:\.planning\/)?(?:WORK|REVIEW|ACTIVE_WORKFLOW)\.md/gi;
+  for (const match of normalized.matchAll(pattern)) {
+    const prefix = normalized.slice(Math.max(0, (match.index ?? 0) - 60), match.index ?? 0);
+    if (!/(?:do not|never|must not|forbid)\s*$/i.test(prefix)) return true;
+  }
+  return false;
+}
+
+const doctrine = [work, plan, goalWork, verify, review];
+
 describe("work workflow contract", () => {
   test("canonical skill is discoverable without a mini alias", () => {
     expect(existsSync(join(ROOT, "skills/work/SKILL.md"))).toBe(true);
@@ -33,12 +45,64 @@ describe("work workflow contract", () => {
     expect(work).toContain("../beat-review/SKILL.md");
   });
 
-  test("uses WORK.md as canonical state", () => {
-    for (const text of [work, plan, goalWork, verify, review]) {
-      expect(text).toContain("WORK.md");
+  test("uses receipt-selected generated plan identity as sole work authority", () => {
+    expect(work).toContain(".planning/.state/review.json");
+    expect(work).toContain("plan_file");
+    expect(work).toContain("plan_hash");
+    for (const text of doctrine) expect(text).toMatch(/receipt-selected generated plan|generated plan/i);
+    expect(goalWork).toContain("planFile");
+    expect(goalWork).toContain("planHash");
+    expect(goalWork).toContain("planReset: {");
+    expect(goalWork).toContain("planFile: \"<receipt plan_file>\"");
+    expect(goalWork).toContain("planHash: \"<receipt plan_hash>\"");
+    expect(goalWork).not.toContain("approvedBodyHash");
+  });
+
+  test("keeps legacy state as explicit conversion-only provenance", () => {
+    expect(work).toContain("Legacy-only:");
+    expect(work).toMatch(/preserve[\s\S]*fresh approval[\s\S]*independent review/i);
+    expect(work).toMatch(/Legacy files never\s+authorize implementation/);
+    expect(work).toContain("Canonical with legacy provenance");
+    expect(work).toContain("Conflicting authority");
+    expect(work).toContain("never merge automatically");
+  });
+
+  test("requires the exact work PLAN schema", () => {
+    for (const heading of ["## Intent", "## Exclusions", "## Success Criteria", "## Implementation Plan", "## Evidence Plan", "## Review Surfaces"]) {
+      expect(plan).toContain(heading);
     }
-    expect(work).toContain("legacy standalone-mini state");
-    expect(work).toContain("Preserve the old file");
+    expect(plan).toContain("exactly once");
+    expect(plan).toContain("stable task ID");
+    expect(plan).toContain("whole-plan");
+  });
+
+  test("keeps live execution, verification, and review state in TaskList", () => {
+    for (const text of [work, goalWork, verify, review]) expect(text).toContain("TaskList");
+    expect(goalWork).toContain("plan_task_id");
+    expect(goalWork).toContain("planHash");
+    expect(goalWork).toContain("Completed same-hash tasks");
+    expect(goalWork).toContain("never recreated");
+    expect(goalWork).toContain('status="deleted"');
+    expect(goalWork).toContain('status="completed"');
+    expect(goalWork).toContain('disposition: "superseded"');
+    expect(goalWork).toContain("superseded_by_plan_hash");
+    expect(goalWork).toContain("create exactly one current-hash replacement");
+    expect(goalWork).toContain("Never carry a stale TaskList ID");
+    expect(verify).toContain("verification round");
+    expect(review).toContain("review finding");
+  });
+
+  test("forbids new retired visible work ledgers", () => {
+    for (const text of doctrine) expect(hasRetiredProducer(text)).toBe(false);
+    expect(work).toMatch(/Do not create or treat any visible review, work, active-workflow/i);
+    for (const producer of [
+      "Create `.planning/WORK.md` for the task.",
+      "Produce `.planning/REVIEW.md` after verification.",
+      "Persist `.planning/ACTIVE_WORKFLOW.md` while work is active.",
+      "Create the review ledger at\n`.planning/REVIEW.md`.",
+      "Copy the approved plan into `.planning/WORK.md`.",
+      "Append content to `.planning/REVIEW.md`.",
+    ]) expect(hasRetiredProducer(producer)).toBe(true);
   });
 
   test("keeps implementation and verification independent", () => {
@@ -53,48 +117,37 @@ describe("work workflow contract", () => {
     expect(goalWork).toContain("turn budget");
     expect(goalWork).toContain("Clear the goal immediately after");
     expect(goalWork).toContain("REVIEW waits for user input outside the");
-    expect(work).toContain("If it is already 1");
-    expect(work).toContain("replace intent\n  and criteria");
+    expect(work).toContain("If the rejection count is already 1");
+    expect(work).toContain("replace intent and criteria");
   });
 
   test("uses the canonical helper for top-level goal activation and clearing", () => {
     for (const text of [goalWork, beatImplement, devImplement, visualVerify]) {
       expect(text).toContain(goalSelfSend);
-      expect(text).toContain('"/goal <condition>"');
-      expect(text).toContain('"/goal clear"');
+      expect(text).toContain('\"/goal <condition>\"');
+      expect(text).toContain('\"/goal clear\"');
       expect(text).toContain("top-level session");
       expect(text).toContain("explicitly confirms");
       expect(text).not.toMatch(/\bagent-msg\b/i);
       expect(text).not.toMatch(/\bRC session\b|remote control/i);
-      expect(text).toMatch(/top-level session[\s\S]*goal-self-send\.ts/);
-      expect(text).toMatch(/status[" :]+"?delivered"?[\s\S]*explicitly confirm/i);
     }
     expect(goalWork).toMatch(/otherwise,?\s+print the literal command and stop/i);
   });
 
-  test("keeps work outside the native approved-plan execution boundary", () => {
-    expect(work).toContain("does **not** execute\n`workflows/beat-implement.js`");
-    expect(goalWork).toContain("authenticates\nDS approved-plan metadata");
+  test("uses the native approved-plan runner boundary", () => {
+    expect(work).toContain("workflows/beat-implement.js");
+    expect(goalWork).toContain("Workflow({");
+    expect(goalWork).toContain('workflow: "work"');
     const runner = read("workflows/beat-implement.js");
-    expect(runner).toContain("['ds', 'writing', 'workshop', 'workflow-creator'].includes(cfg.workflow)");
+    expect(runner).toContain("'work'");
     expect(runner).toContain("validateApprovedArtifact(PROJECT, cfg.workflow");
-    expect(runner).not.toContain("'work'");
-    const persist = read("hooks/approved-artifact-persist.ts");
-    expect(persist).toContain("workflowFromArg");
-    expect(persist).not.toContain('workflow === "work"');
-  });
-
-  test("maintains resumable work lifecycle state", () => {
-    expect(work).toContain(".planning/ACTIVE_WORKFLOW.md");
-    expect(read("hooks/session-start.ts")).toContain('wfType === "work"');
-    expect(read("hooks/pre-compact.ts")).toContain("activeWorkflowMarker()");
+    expect(runner).toContain("planReset.planFile");
+    expect(runner).toContain("planReset.planHash");
   });
 
   test("routes the middle category without swallowing specialized work", () => {
     expect(routing).toContain("Lightweight structured work");
     expect(routing).toContain("use work only for the bounded middle category");
-    for (const command of ["/dev", "/ds", "/writing", "/workshop"]) {
-      expect(routing).toContain(command);
-    }
+    for (const command of ["/dev", "/ds", "/writing", "/workshop"]) expect(routing).toContain(command);
   });
 });

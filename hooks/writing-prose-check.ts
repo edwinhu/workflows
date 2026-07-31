@@ -20,7 +20,8 @@
  * Non-blocking: reports violations as an additionalContext message.
  */
 import { context, readPayload } from "./_gate_common";
-import { existsSync, readFileSync, statSync, writeFileSync, unlinkSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
+import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 
@@ -165,21 +166,6 @@ function runPy(args: string[], cwd?: string): { stdout: string; ok: boolean } {
     return { stdout: new TextDecoder().decode(proc.stdout), ok: true };
   } catch {
     return { stdout: "", ok: false };
-  }
-}
-
-function detectStyle(projectRoot: string): string | null {
-  const aw = join(projectRoot, ".planning", "ACTIVE_WORKFLOW.md");
-  try {
-    if (!statSync(aw).isFile()) return null;
-  } catch {
-    return null;
-  }
-  try {
-    const m = /^style:\s*([\p{L}\p{N}_]+)/mu.exec(readFileSync(aw, "utf8"));
-    return m ? m[1] : null;
-  } catch {
-    return null;
   }
 }
 
@@ -358,7 +344,11 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  const style = detectStyle(projectRoot);
+  const writingPlan = authenticatedWritingPlan(projectRoot);
+  // Canonical writing hooks run only for an authenticated APPROVED receipt-selected plan.
+  // Missing, pending, malformed, and legacy-only projects fail safe without lint output.
+  if (!writingPlan) process.exit(0);
+  const style = writingPlan.style || null;
   const ranges = editRanges(toolName, toolInput, path);
 
   let violations = runProseLint(path, style, ranges);

@@ -17,7 +17,7 @@
         }
       },
       "fixture": {
-        "drafts/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+        "drafts/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market \u2014 a testament to its robust nature.\n"
       }
     },
     {
@@ -40,7 +40,7 @@
         }
       },
       "fixture": {
-        "drafts/bad.txt": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+        "drafts/bad.txt": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market \u2014 a testament to its robust nature.\n"
       }
     },
     {
@@ -54,7 +54,7 @@
         }
       },
       "fixture": {
-        "notes/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+        "notes/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market \u2014 a testament to its robust nature.\n"
       }
     },
     {
@@ -125,7 +125,12 @@
         }
       },
       "fixture": {
-        "drafts/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market — a testament to its robust nature.\n"
+        "drafts/bad.md": "# Draft\n\nIt is important to note that this analysis delves into the multifaceted landscape of the market \u2014 a testament to its robust nature.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -141,6 +146,11 @@
       },
       "fixture": {
         "drafts/mixed.md": "# Draft\n\nIt is important to note that the market delves into a robust landscape.\n\nfiller\n\nfiller\n\nRain fell all night and the river rose.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -154,7 +164,12 @@
         }
       },
       "fixture": {
-        "letter.typ": "Dear Chair,\n\nIt is important to note that the proposal delves into a robust landscape — a testament to the effort.\n"
+        "letter.typ": "Dear Chair,\n\nIt is important to note that the proposal delves into a robust landscape \u2014 a testament to the effort.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -170,6 +185,74 @@
       "fixture": {
         "drafts/legal.md": "The trustee acted pursuant to the agreement and gave notice thereof.\n",
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\n---\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "context-approved-receipt-plan-legal-style-findings",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/legal.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{\"workflow\":\"writing\",\"plan_file\":\"writing-native.md\",\"plan_hash\":\"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "drafts/legal.md": "The trustee acted pursuant to the agreement and gave notice thereof.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "526c3bb6c8c4812547de8c82cfa6ff61bed9afe9bcf904e99da0ee8433a01126",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "allow-pending-receipt-no-prose-output",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/bad.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{\"workflow\":\"writing\",\"plan_file\":\"writing-native.md\",\"plan_hash\":\"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"PENDING\",\"reviewer_session_id\":\"\",\"reviewed_at\":\"\"}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "drafts/bad.md": "It is important to note that this analysis delves into the multifaceted landscape.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "allow-malformed-receipt-no-prose-output",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/bad.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "drafts/bad.md": "It is important to note that this analysis delves into the multifaceted landscape.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

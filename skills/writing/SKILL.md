@@ -1,7 +1,7 @@
 ---
 name: writing
-description: "This skill should be used when the user asks to 'write a paper', 'start a writing project', 'draft an article', 'write about', 'brainstorm writing topics', 'gather sources for a paper', 'what should I write about', or needs the writing workflow entry point for any writing task."
-allowed-tools: Read, Grep, Glob, Bash, Skill, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Workflow
+description: "Use when starting or resuming a writing project, gathering sources for a paper, or routing a document through planning, drafting, review, and revision."
+allowed-tools: Read, Grep, Glob, Bash, Skill, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Workflow, TaskCreate, TaskUpdate, TaskList, TaskGet
 hooks:
   PreToolUse:
     - matcher: "Read|Glob|Grep|Bash"
@@ -25,531 +25,89 @@ hooks:
 
 # Writing
 
-**Entry point for all writing tasks.** Routes to quick mode or project workflow.
+Entry point for writing projects. Quick inline edits may route directly to `writing-general`; project mode follows the authenticated native-plan lifecycle below.
 
-## Shared Enforcement
+## Iron Law: One Writing Specification
 
-Load the constraint index for the writing workflow:
+**NO WRITING IMPLEMENTATION WITHOUT THE EXACT GENERATED PLAN AUTHENTICATED AND INDEPENDENTLY APPROVED BY `.planning/.state/review.json`.**
 
-!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/writing-common-constraints.md`
+For a new writing episode:
 
-**Router loads index only.** Phase skills load specific atomic files relevant to their phase.
+- The safe generated `.planning/<native-name>.md` selected by `review.json` is the sole substantive planning specification.
+- The combined hidden receipt binds its exact `plan_file`, `plan_hash`, writing identity, native approval session/time, and independent review session/time.
+- TaskList owns phase, progress, blockers, verification, retries, and review findings.
+- `outlines/`, `drafts/`, and `references/` contain the domain artifacts.
+- `.planning/.state/writing.json` or `.planning/.state/writing-section-index.json` may hold narrow, disposable machine state only when a hook or runner needs filesystem-visible state.
 
-## Shared lifecycle entry
+Do not create new `PRECIS.md`, `OUTLINE.md`, `ACTIVE_WORKFLOW.md`, `PRECIS_REVIEWED.md`, `OUTLINE_REVIEWED.md`, review ledgers, phase summaries, or mutable status fields. Copying PLAN content into another file creates competing authority and is prohibited.
 
-Quick inline edits still route directly to `writing-general`. Project mode uses the shared lifecycle.
-Before task reconnaissance, overwrite the narrow sentinel with pending state:
+## Required PLAN Grammar
 
-```bash
-mkdir -p .planning && printf '%s\n' '{"status":"pending"}' > .planning/WRITING_CLARIFIED.json
-```
-
-If existing writing state lacks `lifecycle: shared-v1`, stop and require a fresh restart or manual
-alignment with the new artifacts. There is no legacy resume or automatic conversion path.
-
-For a fresh project, create `.planning/ACTIVE_WORKFLOW.md` with:
-
-```yaml
----
-workflow: writing
-lifecycle: shared-v1
-phase: clarify
----
-```
-
-Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and ask, in one batched call where independent:
-
-- thesis or angle and desired outcome;
-- audience and domain/style;
-- scope and explicit exclusions;
-- source expectations and authoritative inputs;
-- deliverables and artifact formats;
-- observable completion evidence and human review surfaces.
-
-After the user responds, write the current-session sentinel:
-
-```bash
-printf '%s\n' "{\"status\":\"clarified\",\"sessionId\":\"${CLAUDE_SESSION_ID}\"}" > .planning/WRITING_CLARIFIED.json
-```
-
-Only then gather sources and build `PRECIS.md`, `OUTLINE.md`, detailed outlines, claim maps, and the
-deterministic section index as planning evidence.
-
-## Decision Flowchart (This IS the Spec)
-
-```
-START
-  │
-  ├─ Quick edit? ("check this paragraph", inline short text)
-  │  YES → Load writing-general/SKILL.md → Apply rules → Return → EXIT
-  │
-  ├─ Existing workflow state?
-  │  YES → require lifecycle: shared-v1; otherwise STOP for fresh restart
-  │       → resume by phase (/writing for plan; /writing-revise for correction)
-  │
-  └─ New project
-     → CLARIFY before reconnaissance
-     → Gather sources + PRECIS + master/detailed outlines + claim map
-     → Native Plan mode → exact PLAN persistence → independent writing plan review
-     → writing-draft adapter → validate → internal writing-review
-     → /writing-revise corrections → human REVIEW
-```
-
-If text and flowchart disagree, the flowchart wins.
-
-## Step 1: Detect Mode
-
-**Quick Mode Indicators** (edit text directly, no workflow):
-- “Check this paragraph”
-- “Edit this text”
-- “Review my writing”
-- Short text provided inline
-- No mention of “project”, “paper”, “article”
-
-→ If quick mode: discover the writing-general skill path via `${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md`, then `Read()` the output path and apply rules to text.
-
-**Project Mode Indicators** (full workflow):
-- “Write a paper on...”
-- “Start a law review article”
-- “Draft an economics paper”
-- Mentions thesis, argument, research
-
-→ If project mode: Continue to Phase 2 below.
-
-## Step 2: Check for Active Workflow
-
-```
-if .planning/ACTIVE_WORKFLOW.md exists:
-    Read(“.planning/ACTIVE_WORKFLOW.md”)
-    Read(“.planning/PRECIS.md”)
-    Read(“.planning/OUTLINE.md”)
-    → Resume at current phase with appropriate domain skill
-else:
-    → Continue to Phase 3 (new project setup)
-```
-
----
-
-## Project Mode Workflow
-
-Creates PRECIS.md (thesis, audience, claims) and OUTLINE.md (structure), then hands off to domain-specific writing skill.
-
-## Project Structure
-
-Writing projects should follow this standardized structure:
-
-```
-project-name/
-├── .planning/
-│   ├── ACTIVE_WORKFLOW.md      # Workflow state (auto-created)
-│   ├── PRECIS.md               # Thesis, audience, claims, counterarguments
-│   ├── OUTLINE.md              # Master document structure
-│   └── LEARNINGS.md            # Append-only decision log (angle, rejected framings, R4s) — see writing-learnings-log.md
-├── outlines/                    # Detailed section/part outlines
-│   ├── Part I (Outline).md
-│   ├── Part II (Outline).md
-│   └── ...
-├── drafts/                      # Prose drafts (expanded from outlines)
-│   ├── Part I (Draft).md
-│   ├── Part II (Draft).md
-│   └── ...
-├── references/                  # Source materials, notes
-│   ├── sources.bib              # BibTeX bibliography (pandoc --citeproc reads this)
-│   └── [topic-notes].md         # Research notes by topic
-└── scratch/                     # Working files (gitignored)
-    └── brainstorm-notes.md
-```
-
-### Directory Purposes
-
-| Directory | Purpose | Tracked in Git |
-|-----------|---------|----------------|
-| `.planning/` | Workflow state + high-level docs (PRECIS, OUTLINE) | Yes |
-| `outlines/` | Detailed outlines per section/part | Yes |
-| `drafts/` | Prose versions of outlines | Yes |
-| `references/` | Sources, research notes | Yes |
-| `scratch/` | Temporary working files | No |
-
-### Progressive Expansion Workflow
-
-Writing proceeds through levels of detail:
-
-```
-.planning/PRECIS.md          # Level 1: Thesis, claims, audience
-       ↓
-.planning/OUTLINE.md         # Level 2: Master structure (sections, goals)
-       ↓
-outlines/Part I.md         # Level 3: Detailed section outline (bullets, sources)
-       ↓
-drafts/Part I.md           # Level 4: Prose expansion
-```
-
-**Each level expands the previous.** Don’t skip levels:
-- PRECIS before OUTLINE
-- Master OUTLINE before section outlines
-- Section outline before drafting prose
-
-### File Naming Convention
-
-For multi-part documents:
-- Section outlines: `outlines/Part I (Outline).md`
-- Prose drafts: `drafts/Part I (Draft).md`
-
-For single documents:
-- Master outline in `.planning/OUTLINE.md` is sufficient
-- Draft: `drafts/draft.md` or `drafts/[title].md`
-
-### Creating Project Structure
-
-When starting a new writing project, create the directories:
-
-```bash
-mkdir -p outlines drafts references scratch .planning
-echo “scratch/” >> .gitignore
-```
-
-## Writing Workflow Overview
-
-```text
-CLARIFY → source and outline evidence → native Plan approval → writing plan review
-        → writing-draft execution adapter → writing-validate + internal writing-review
-        → /writing-revise correction loop → human REVIEW
-```
-
-After the detailed outlines and section index are executable:
-
-1. Enter native Plan mode. The plan must include intent, exclusions, ordered section outputs, pinned
-   inputs, drafting evidence, automated verification, and a **Review Surfaces** section.
-2. `ExitPlanMode` persists exact approved bytes to `.planning/PLAN.md` and approval identity to
-   `.planning/PLAN.meta.json`; never edit those files directly.
-3. Read `${CLAUDE_SKILL_DIR}/../writing-plan-reviewer/SKILL.md` and dispatch the independent plan
-   reviewer. Issues return to native Plan mode for fresh approval.
-4. In a distinct implementation session, read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, set
-   one budgeted `/goal`, and invoke the existing writing-draft workflow as the domain execution
-   adapter under approved-artifact admission.
-5. Run writing validation and internal `writing-review`. Automated findings go to
-   `.planning/AUTOMATED_REVIEW.md`; `/writing-revise` fixes them and re-runs independent review.
-6. After automated PASS, read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and use
-   `.planning/HUMAN_REVIEW.md` for user feedback dispositions. Human-driven edits re-enter
-   `/writing-revise`; `REJECT:` returns to CLARIFY.
-
-`writing-review` is internal and read-only. `/writing-revise` remains the user-facing corrective
-midpoint entry.
-
-## When to Use
-
-Invoke this skill for:
-- Discovering what to write about from reading patterns
-- Gathering sources and references for a known topic
-- Finding thematic connections across highlights
-- Building an outline with supporting quotes
-
-## Prerequisites
-
-Source searching is handled by the **librarian agent** (`workflows:librarian`), which routes through NLM first, then Readwise via the official CLI. You do NOT need direct Readwise MCP access.
-
-## Critical: ALL Source Searches Go Through Librarian
-
-<EXTREMELY-IMPORTANT>
-**NEVER call Readwise MCP tools directly. NEVER spawn general-purpose agents for searches.**
-
-ALL source gathering MUST go through the librarian agent, which enforces:
-1. Check NLM first (curated knowledge)
-2. Readwise via official CLI (context-safe)
-3. Structured output (sources, quotes, synthesis)
-
-**If you're about to call `mcp__readwise__*` or spawn a `general-purpose` agent for search, STOP.**
-</EXTREMELY-IMPORTANT>
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Clarifying Intent
-
-**NO SEARCH WITHOUT CLARIFYING INTENT FIRST. This is not negotiable.**
-
-In Gathering Mode, you MUST use `AskUserQuestion` to understand angle and audience BEFORE launching any librarian searches. Searching without intent produces scattered results that don't serve an argument.
-
-If you find yourself about to search before the user has confirmed their angle:
-1. STOP immediately
-2. Ask the clarifying questions (Phase 1)
-3. THEN decompose into search themes
-4. THEN launch parallel librarian agents
-
-**Searching before clarifying is like outlining before having a thesis.** You'll gather sources for a topic, not an argument. The sources won't support any specific claim because you don't have one yet.
-</EXTREMELY-IMPORTANT>
-
-### Librarian Search Pattern
-
-For a topic with N distinct themes, launch N parallel librarian agents:
-
-```
-Task(
-  subagent_type="workflows:librarian",
-  prompt="""Search for highlights and sources about **[THEME]**.
-
-Check NLM notebooks first, then search Readwise.
-
-Return ONLY:
-- Top 3 most relevant sources (title, author)
-- Top 3 quotes worth citing (with source attribution)
-- 1-2 sentence theme summary"""
-)
-```
-
-### Example: Law Review on Private Equity Access
-
-Launch 5 parallel librarian agents:
-1. "private equity retail investors democratization"
-2. "accredited investor definition regulation"
-3. "401k retirement private markets"
-4. "interval fund tender offer evergreen"
-5. "investor protection paternalism securities"
-
-Each returns ~100 words instead of ~5000 words of raw highlights.
-
----
-
-## Two Modes
-
-### Discovery Mode
-
-When user wants to find topics ("what should I write about?"):
-
-1. **Survey knowledge base**
-   - Dispatch librarian: "List NLM notebooks and summarize what topics are covered"
-   - Dispatch librarian: "What are the most common tags and recent reading themes in Readwise?"
-
-2. **Analyze patterns**
-   - From librarian results, identify recurring themes, authors, or concepts
-   - Look for: tensions, debates, unanswered questions, surprising connections
-
-3. **Present topic candidates**
-   - For each potential topic, show:
-     - Theme description
-     - Supporting highlights (2-3 examples)
-     - Relevant tags
-     - Potential angle or thesis
-
-### Gathering Mode (Progressive Workflow)
-
-When user has a topic (“gather sources on X”), follow this **human-in-the-loop** workflow:
-
-#### Phase 1: Clarify Intent
-
-**BEFORE any search**, use `AskUserQuestion` to understand:
-
-```
-AskUserQuestion(questions=[
-  {
-    “question”: “What’s your primary angle or thesis for this piece?”,
-    “header”: “Angle”,
-    “options”: [
-      {“label”: “Critique existing framework”, “description”: “Argue current approach is flawed”},
-      {“label”: “Propose reform”, “description”: “Offer specific policy changes”},
-      {“label”: “Comparative analysis”, “description”: “Compare approaches across jurisdictions”},
-      {“label”: “Empirical analysis”, “description”: “Present data-driven findings”}
-    ],
-    “multiSelect”: false
-  },
-  {
-    “question”: “Who is your target audience?”,
-    “header”: “Audience”,
-    “options”: [
-      {“label”: “Law review”, “description”: “Academic legal audience”},
-      {“label”: “Practitioners”, “description”: “Lawyers, regulators, compliance”},
-      {“label”: “Policy makers”, “description”: “Legislators, agency staff”},
-      {“label”: “General educated”, “description”: “Informed non-specialists”}
-    ],
-    “multiSelect”: false
-  }
-])
-```
-
-#### Phase 2: Search Sources
-
-1. **Decompose into themes** based on clarified intent
-   - Break the topic into 3-6 distinct search themes
-   - Each theme becomes a parallel sub-agent search
-
-2. **Launch parallel librarian agents**
-   - Use the Task tool with `subagent_type="workflows:librarian"` for each theme
-   - Run all searches in a single message (parallel execution)
-   - See "Librarian Search Pattern" section above
-
-3. **Synthesize results**
-   - Deduplicate sources across agent responses
-   - Identify the strongest quotes from each theme
-   - Note gaps (themes with few/no highlights)
-
-#### Phase 3: Synthesize and Present
-
-Present a summary of findings to the user for confirmation:
-- **Topic and angle** confirmed
-- **Key themes** identified (3-6)
-- **Source coverage** - strong/weak areas noted
-- **Domain detected** (legal/econ/general)
-
-**Ask for feedback** before proceeding to project setup.
-
-The actual OUTLINE.md and PRECIS.md creation happens in the next phase (writing-setup), not here. Brainstorm's job is to gather and synthesize, not to create project artifacts.
-
-## Output Format
-
-Present brainstorm results as a summary:
+The native plan must contain each exact heading once:
 
 ```markdown
-# [Topic Title]
-
-## Thesis/Angle
-[One-sentence framing]
-
-## Key Sources
-- **[Source 1]** by [Author]
-  - “[Highlight quote]”
-  - Relevant to: [subtopic]
-
-## Outline
-### [Subtopic 1]
-- Point A (Source 1, Source 3)
-- Point B (Source 2)
-
-### [Subtopic 2]
-...
-
-## Open Questions
-- [Questions highlights don’t answer]
-
-## Next Steps
-- Suggested writing skill: /writing-[domain]
+## Writing Intent
+## Claims
+## Counterarguments
+## Document Structure
+## Claim → Section Map
+## Source Plan
+## Section Outputs
+## Review Surfaces
 ```
 
-## Domain Detection
+The grammar is deterministic:
 
-After gathering sources, detect the topic domain and load the appropriate skill:
+- **Writing Intent** defines `Thesis:`, `Audience:`, `Purpose:`, `Hook:`, `Scope:`, and `Domain:` (`legal`, `econ`, or `general`).
+- **Claims** defines unique stable `CLAIM-NN` identifiers.
+- **Counterarguments** states the strongest objections and planned responses.
+- **Document Structure** contains one ordered `### Section Name` heading per output section.
+- **Claim → Section Map** is a table with one primary section for every claim.
+- **Source Plan** defines `Bibliography:`, explicit `Notebook:` and `Notebook URL:` values (`none` is allowed), and `Key Sources:`.
+- **Section Outputs** is a table with `Section | Outline | Draft | Depends On`; dependencies must point backward to named sections.
+- **Review Surfaces** lists what independent reviewers and the user will inspect.
 
-| Domain Indicators | Style | Skill to Load |
-|-------------------|-------|---------------|
-| Legal cases, statutes, law reviews, constitutional | legal | `skills/writing-legal/SKILL.md` |
-| Economics, markets, policy, data, empirical | econ | `skills/writing-econ/SKILL.md` |
-| General/other | general | `skills/writing-general/SKILL.md` |
+`scripts/writing/writing_section_index.py` is the only canonical grammar parser. There is no LLM discovery fallback and no canonical fallback to retired files.
 
-Domain-specific enforcement rules are applied during the **draft phase** (writing-draft skill), not during brainstorm. Brainstorm only detects the domain; enforcement happens later.
+## Lifecycle
 
-## Source Access Quick Reference
-
-| Need | Action |
-|------|--------|
-| Survey topic landscape | Dispatch librarian: "What topics are in my NLM notebooks and Readwise tags?" |
-| Find highlights by keyword | Dispatch librarian: "Search for highlights about [topic]" |
-| Get book/article highlights | Dispatch librarian: "Get highlights from [title] and summarize" |
-| Full document text | Dispatch librarian: "Fetch full text of articles tagged [tag]" |
-
-## Workflow Examples
-
-### Discovery Mode Example
-
-**User:** “I want to write something but don’t know what”
-
-**Process:**
-1. Fetch tags → find clusters like “antitrust”, “market-power”, “regulation”
-2. Get recent highlights → notice many from economics sources
-3. Analyze → tension between “consumer welfare” and “market structure” keeps appearing
-4. Present → “Potential topic: The consumer welfare standard debate. You have 12 highlights across 4 sources discussing this tension. Angle: Why market structure matters beyond prices.”
-5. Domain detection → Economics sources detected → econ style will apply during drafting
-
-### Gathering Mode Example (Progressive)
-
-**User:** “Let’s brainstorm a law review article about retail access to private equity”
-
-**Process:**
-1. **Clarify** → AskUserQuestion: angle (critique/reform/comparative), audience (law review/practitioners)
-2. **User responds** → “Critique existing framework, law review audience”
-3. **Decompose** → 5 themes: PE retail access, accredited investor, 401(k) access, fund structures, investor protection
-4. **Search** → Launch 5 parallel librarian agents
-5. **Synthesize** → Dedupe sources, extract best quotes, note gaps
-6. **Present** → "Here are the themes and sources. Confirm topic and angle?"
-7. **User confirms** → "Yes, critique framework. Add comparative section on EU ELTIF."
-8. **Handoff** → Proceed to writing-setup for PRECIS.md and OUTLINE.md creation
-
----
-
-## Agent Team Pattern: Parallel Source Gathering
-
-For topics with many research themes, launch parallel librarian agents that each own a research angle:
-
-```
-# Launch 3 librarian agents in a SINGLE message (parallel)
-Task(subagent_type="workflows:librarian", prompt="Search for sources SUPPORTING the thesis: [thesis]. Return top quotes and sources.")
-Task(subagent_type="workflows:librarian", prompt="Search for sources OPPOSING the thesis: [thesis]. Steel-man the counterarguments.")
-Task(subagent_type="workflows:librarian", prompt="Search for empirical evidence and data related to: [thesis]. Focus on numbers and findings.")
+```text
+CLARIFY → gather/materialize sources → native Plan approval → independent whole-plan review
+        → detailed section outlines → deterministic section-index compile
+        → writing-draft → verification → independent writing-review
+        → /writing-revise → returned human review surface
 ```
 
-This produces better-grounded brainstorming than sequential searches because parallel agents find contradictions you'd otherwise miss.
+1. Clarify thesis or angle, audience, purpose, scope, exclusions, source expectations, deliverables, evidence, and review surfaces before reconnaissance.
+2. Gather sources through the librarian workflow and materialize real source artifacts under `references/`.
+3. Load `writing-setup` to enter native Plan mode and produce the required grammar. Do not write a substitute planning document.
+4. After approval, dispatch one independent whole-plan reviewer. Implementation waits for an `APPROVED` hash-bound `review.json` from a distinct reviewer session.
+5. Load `writing-outline` for detailed section outlines, then `writing-draft`. Its PLAN-based mechanical probe and semantic source verification replace the retired marker-based validation hop; proceed directly to independent `writing-review`, then `/writing-revise`.
+6. Represent live work as TaskList items bound to `planHash` and stable section/claim identifiers.
 
----
+## Resume and Compatibility
 
-## Gate: Exit Brainstorm
+Classify before resuming:
 
-Before proceeding to project setup:
+- **Canonical:** `review.json` selects and authenticates one generated plan path/hash. Resume from that identity plus TaskList. If review is pending, resume at whole-plan review; if approved, resume current-hash TaskList work.
+- **Legacy-only:** one or more retired writing planning files exist without an authenticated generated plan. Preserve them unchanged as conversion input, build a new native plan, obtain fresh approval, and obtain fresh independent review. Legacy files never authorize implementation.
+- **Canonical with legacy provenance:** canonical state remains the only authority; retired files may be read only to explain history. Never merge them into the live specification.
+- **Conflicting authority:** any caller, hook, or workflow attempts to use canonical PLAN and a retired file as active inputs. Stop and identify both paths; do not choose or merge automatically.
 
-1. **IDENTIFY**: What file-based evidence proves brainstorm is complete?
-   - Sources gathered: librarian sub-agent results returned with real quotes and source attributions
-   - Domain detected: indicators from source material (not guessed from topic name)
-   - User confirmation: AskUserQuestion response confirming topic, angle, and audience
-2. **RUN**: Verify file-based artifacts exist:
-   - At least one librarian sub-agent returned structured results (sources + quotes)
-   - OR (discovery mode) topic candidates were presented with supporting highlights
-   - AskUserQuestion was used to confirm angle and audience (not just conversation flow)
-3. **READ**: Check the evidence:
-   - Source results contain specific titles, authors, and quoted text (not summaries from training data)
-   - Domain indicators come from actual source material characteristics
-4. **VERIFY**: All three conditions met: (a) real sources gathered, (b) user confirmed via AskUserQuestion, (c) domain detected from evidence
-5. **CLAIM**: Only if steps 1-4 pass, write the gate artifact, THEN proceed to writing-lit-review. The artifact is what proves the gate ran — instructional text alone is not enforcement, and writing-lit-review's PreToolUse hook blocks until this file exists:
+Structural changes—including thesis, claim set, document order, claim homes, source configuration, section outputs, or dependencies—require a replacement native plan and fresh independent review. The immutable PLAN is never patched.
 
-   ```bash
-   mkdir -p .planning && cat > .planning/BRAINSTORM_COMPLETE.md <<'EOF'
-   ---
-   status: APPROVED
-   gate: brainstorm
-   ---
-   Brainstorm gate passed: sources gathered, angle/audience confirmed via AskUserQuestion, domain detected from source evidence.
-   EOF
-   ```
+## Source Gathering
 
-**"User seemed to agree" is not confirmation. AskUserQuestion response or explicit typed confirmation is confirmation.** Inferring agreement from silence or topic continuation is rubber-stamping the gate.
+All source searches go through the `workflows:librarian` agent. Clarify angle and audience first, decompose the question into independent themes, search in parallel, deduplicate results, and materialize the authoritative inputs under `references/`. Training-data recall is not a source.
 
-**Do not hand-write `status: APPROVED` to satisfy the hook when the gate did not actually pass.** The artifact certifies real sources + real user confirmation. Forging it produces a downstream lit review built on nothing.
+## Gate
 
-## Phase Complete → Proceed to Lit Review
+Before implementation:
 
-After brainstorm gate passes, immediately proceed to literature review and source materialization:
+1. **IDENTIFY** the exact generated `plan_file` and `plan_hash` in `.planning/.state/review.json` (exposed as `planFile` and `planHash` by the compiled section index).
+2. **RUN** approved-artifact admission for `writing` and compile the deterministic section index from that exact path.
+3. **READ** the exact path/hash, parser diagnostics, and whole-plan verdict.
+4. **VERIFY** required headings, stable claims, exact mappings, outputs, dependencies, workflow identity, chronology, and distinct sessions.
+5. **CLAIM** readiness only when admission and compilation both pass. Otherwise return to planning or conversion.
 
-Read `${CLAUDE_SKILL_DIR}/../writing-lit-review/SKILL.md` and follow its instructions.
-
-The lit review phase gathers academic papers (Scholar → Paperpile), personal reading (Readwise), and web sources (NLM → Obsidian), then materializes everything into `references/`. Only after sources are materialized does setup (PRECIS + OUTLINE) begin.
-
-## Source-Gathering Facts
-
-- Training data is not research and recall is not citation: from-memory citations come out wrong or outdated, and a draft built on them ships fabricated sources under the user's name — an unverified citation presented as real is dishonest, and it destroys the user's credibility when reviewers check.
-- A single search finds a single perspective; a paper built on it misses the most relevant recent sources that a 2-minute parallel librarian sweep would have found. Decompose into 3-6 parallel librarian searches.
-- An inferred angle is usually the wrong angle (a paper arguing critique when the user wanted reform gets rewritten from scratch). The 5-minute angle/audience interview is cheaper than the rewrite — skipping it to look fast is counterproductive.
-- Sources deferred are sources never gathered: drafting proceeds with whatever is on hand, so a PRECIS written before gathering produces a thin argument whose claims are assertions.
-
-## Red Flags
-
-The failure modes and their consequences are stated once, at the point of use — see [Source-Gathering Facts](#source-gathering-facts), the Iron Law of Clarifying Intent, and the librarian dispatch rule. If you are about to create PRECIS without sources, skip the angle/audience interview, run one search instead of parallel librarian agents, call Readwise MCP directly, guess the domain, or move to setup without user confirmation — those sections explain why that is counterproductive, and what to do instead.
-
-## Next Phase
-
-<EXTREMELY-IMPORTANT>
-### No Pause Between Brainstorm and Setup
-
-**After the user confirms topic and sources are gathered, IMMEDIATELY proceed to writing-setup. Do NOT ask "should I continue?" or "ready to proceed?" or any variant.**
-
-The gate passed. The user confirmed. Asking permission to continue is procrastination disguised as courtesy. Load the next skill and execute it.
-</EXTREMELY-IMPORTANT>
-
-After brainstorm is complete, proceed to project setup:
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/writing-setup/SKILL.md` and follow its instructions.
-
-Then follow its instructions immediately to create PRECIS.md, OUTLINE.md, and ACTIVE_WORKFLOW.md.
+Skipping authentication to appear faster is anti-helpful: it lets stale or competing prose silently control a document the user believes was approved.

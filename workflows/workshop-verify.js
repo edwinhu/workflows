@@ -3,7 +3,7 @@ export const meta = {
   description: 'Workshop slide-deck verification as an ultracode workflow: a global mechanical leg (compile + constraint check-all.py + PDF widow + overflow) then a per-slide fan-out (ONE agent runs convention + notes-coverage + source-fidelity, findings tagged by area) and per-diagram visual-verify. Returns structured findings + a computed CLEAN/ISSUES gate from raw counts. Read-only; does NOT fix.',
   whenToUse: 'Called by the workshop skill at the Phase 3->4 boundary (artifact review gate) and as Phase 4 verification, and by workshop-revise after edits. Returns {overallPass, verdict, scoreTable, findings, reviews, slidesThatFlagged}. The skill renders the gate, drives the /goal fix loop, and on a re-review passes onlyChecks (flagged slide IDs) + priorReviews. The workflow never drafts and never fixes.',
   phases: [
-    { title: 'Discover', detail: 'enumerate slides + diagrams; inline each slide\'s body + notes section once; resolve SOURCES/OUTLINE/check-all/detect_widows' },
+    { title: 'Discover', detail: 'enumerate slides + diagrams; inline each slide\'s body + notes section once; resolve authenticated PLAN/check-all/detect_widows' },
     { title: 'Mechanical', detail: 'compile both .typ; run check-all.py + widow + overflow (early-exit if compile fails)' },
     { title: 'Review', detail: 'one agent per slide runs convention + notes-coverage + fidelity (area-tagged findings), in parallel; per-diagram visual-verify' },
     { title: 'Gate', detail: 'aggregate raw counts -> severity totals -> CLEAN/ISSUES, computed in JS' },
@@ -35,19 +35,67 @@ cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error(`workshop-verify requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const PLUGIN = cfg.pluginRoot || ''
+const { readFileSync, lstatSync, realpathSync } = await import('node:fs')
+const { createHash } = await import('node:crypto')
+const RECEIPT_KEYS = ['workflow','plan_file','plan_hash','approved_session_id','approved_at','status','reviewer_session_id','reviewed_at']
+const HASH = /^[0-9a-f]{64}$/
+const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+const RESERVED_PLAN_FILES = new Set(['PLAN.md','PLAN_REVIEWED.md','REVIEW.md','AUTOMATED_REVIEW.md','HUMAN_REVIEW.md','IMPLEMENT_COMPLETE.md','VALIDATION.md'])
+function parseStrictReceipt(content) {
+  const text = String(content).trim(); let index = 0
+  const skip = () => { while (/\s/.test(text[index] || '')) index++ }
+  const string = () => {
+    skip(); if (text[index] !== '"') throw new Error('workshop generated-plan review.json values must be strings')
+    const start = index++; let escaped = false
+    while (index < text.length) {
+      const char = text[index++]
+      if (escaped) { escaped = false; continue }
+      if (char === '\\') { escaped = true; continue }
+      if (char === '"') return JSON.parse(text.slice(start, index))
+    }
+    throw new Error('workshop generated-plan review.json contains an unterminated string')
+  }
+  skip(); if (text[index++] !== '{') throw new Error('workshop generated-plan review.json must be one object')
+  const receipt = {}; skip()
+  while (text[index] !== '}') {
+    const key = string(); if (Object.hasOwn(receipt, key)) throw new Error('workshop generated-plan review.json contains duplicate fields')
+    skip(); if (text[index++] !== ':') throw new Error('workshop generated-plan review.json field is missing a colon')
+    receipt[key] = string(); skip()
+    if (text[index] === ',') { index++; skip(); continue }
+    if (text[index] !== '}') throw new Error('workshop generated-plan review.json fields must be comma separated')
+  }
+  index++; skip(); if (index !== text.length) throw new Error('workshop generated-plan review.json has trailing content')
+  return receipt
+}
+function authenticatePlan(projectDir, planPath, planHash) {
+  const root = realpathSync(projectDir), planning = `${root}/.planning`, state = `${planning}/.state/review.json`
+  for (const path of [planning, `${planning}/.state`, state]) if (lstatSync(path).isSymbolicLink()) throw new Error('workshop generated-plan authentication rejects symbolic links')
+  const receipt = parseStrictReceipt(readFileSync(state, 'utf8'))
+  const approvedAt = Date.parse(receipt.approved_at), reviewedAt = Date.parse(receipt.reviewed_at)
+  if (Object.keys(receipt).length !== RECEIPT_KEYS.length || RECEIPT_KEYS.some(key => typeof receipt[key] !== 'string') || receipt.workflow !== 'workshop' || receipt.status !== 'APPROVED' || !HASH.test(receipt.plan_hash) || !UTC.test(receipt.approved_at) || !UTC.test(receipt.reviewed_at) || new Date(approvedAt).toISOString() !== receipt.approved_at || new Date(reviewedAt).toISOString() !== receipt.reviewed_at || !receipt.approved_session_id.trim() || !receipt.reviewer_session_id.trim() || receipt.approved_session_id === receipt.reviewer_session_id || reviewedAt <= approvedAt || !/^[^./\\][^/\\]*\.md$/.test(receipt.plan_file) || RESERVED_PLAN_FILES.has(receipt.plan_file)) throw new Error('workshop generated-plan review.json has invalid strict receipt schema')
+  const selected = `${planning}/${receipt.plan_file}`
+  if (planPath !== selected || lstatSync(selected).isSymbolicLink()) throw new Error('workshop generated-plan path is not the receipt-selected safe direct child')
+  const current = createHash('sha256').update(readFileSync(selected)).digest('hex')
+  if (current !== receipt.plan_hash || current !== planHash) throw new Error('workshop generated-plan receipt does not authenticate current plan bytes')
+  return { state, receipt, hash: current, planPath: selected }
+}
+const AUTH = authenticatePlan(PROJECT, cfg.planPath, cfg.planHash)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.slide), s]))
 // Deterministic side-table from scripts/workshop/workshop-slide-table.ts (cfg.slideIndex).
 // DESIGN §3a/§3a-join — verify is the CARDINALITY-CORRECTION case: slide ENUMERATION stays sourced from
-// slides.typ (the built deck, e.g. 38 slides incl. 17 drifted appendix), and the OUTLINE-row↔built-slide
+// slides.typ (the built deck, e.g. 38 slides incl. 17 drifted appendix), and the PLAN Slide-Spec-row↔built-slide
 // JOIN stays an UNBIASED SEMANTIC step. A parity variance-study (opv-parity, n=3) showed that injecting the
-// parser's rows as a candidate MENU into the Discover prompt CONTAMINATES the join — the agent greedily
-// forces unspecced appendix slides onto the nearest row (false COVERED, once 38/38). So the parser does NOT
-// feed the join: the Discover prompt is byte-identical to the LLM-Discover (free OUTLINE read, []-is-common).
+// parser's rows as a candidate MENU into Discover CONTAMINATES the join — the agent greedily
+// forces unspecced appendix slides onto the nearest row (false COVERED, once 38/38). The parser therefore
+// does NOT feed a candidate menu; the reviewer reads the authenticated PLAN directly and treats [] as common.
 // The parser's contribution is instead a DETERMINISTIC WHITELIST applied in JS AFTER Discover — drop any
-// inventoryRef that is not a real SOURCES.md id (the no-hallucination guard), without biasing the join.
+// inventoryRef that is not a real authenticated Source Inventory id (the no-hallucination guard), without biasing the join.
+if (!cfg.planPath || !cfg.planHash) throw new Error('workshop-verify requires receipt-selected args.planPath and args.planHash')
 if (!cfg.slideIndex || !Array.isArray(cfg.slideIndex.slides) || !cfg.slideIndex.slides.length) throw new Error('workshop-verify requires the canonical TypeScript slideIndex with at least one slide')
 if (!Array.isArray(cfg.slideIndex.sourcesInventory)) throw new Error('workshop-verify requires slideIndex.sourcesInventory from the canonical TypeScript parser')
+if (cfg.slideIndex.planPath !== cfg.planPath || cfg.slideIndex.planHash !== cfg.planHash) throw new Error('workshop-verify planPath/planHash must match the canonical slideIndex')
+if (cfg.slideIndex.ok !== true || cfg.slideIndex.planPath !== AUTH.planPath || cfg.slideIndex.planHash !== AUTH.hash || cfg.slideIndex.planFile !== AUTH.receipt.plan_file || cfg.slideIndex.reviewStatePath !== AUTH.state || (cfg.slideIndex.violations || []).length) throw new Error('workshop-verify index disagrees with strict current review.json authentication')
 const SLIDE_INDEX = cfg.slideIndex
 const INV_WHITELIST = new Set(SLIDE_INDEX.sourcesInventory.map(String))
 
@@ -78,7 +126,7 @@ const DISCOVERY_SCHEMA = {
         properties: {
           id: { type: 'string', description: 'stable ID e.g. S1, S2 in document order' },
           title: { type: 'string', description: 'the === slide-title line verbatim' },
-          inventoryRefs: { type: 'array', items: { type: 'string' }, description: 'F/T/R/A inventory IDs this slide should cite per OUTLINE.md (may be empty)' },
+          inventoryRefs: { type: 'array', items: { type: 'string' }, description: 'F/T/R/A inventory IDs semantically mapped from the authenticated PLAN (may be empty)' },
           slideBody: { type: 'string', description: 'the verbatim text of this slide\'s #slide[ ... ] block (inlined so the per-slide reviewer does not re-Read slides.typ per check)' },
           notesBody: { type: 'string', description: 'the verbatim text of this slide\'s corresponding notes.typ section (by title/topic match), or "" if no section was found' },
         },
@@ -130,7 +178,7 @@ const SLIDE_REVIEW_SCHEMA = {
     itemsChecked: { type: 'integer', description: 'convention rules evaluated against this slide' },
     notesSectionFound: { type: 'boolean', description: 'does notes.typ contain a corresponding section for this slide?' },
     claimsChecked: { type: 'integer', description: 'factual claims on this slide (numbers, results, holdings, conclusions)' },
-    claimsGrounded: { type: 'integer', description: 'of those, how many trace to a SOURCES.md inventory ID / the paper' },
+    claimsGrounded: { type: 'integer', description: 'of those, how many trace to an authenticated PLAN Source Inventory ID / the paper' },
     findings: { type: 'array', items: SLIDE_FINDING },
   },
 }
@@ -154,11 +202,11 @@ const checkAllHint = PLUGIN
 const disc = await agent(
   `Enumerate the workshop deck's slides and diagrams and resolve the verification inputs. Working directory: ${PROJECT}
 
-1. presentationDir = the directory holding slides.typ (commonly ${PROJECT}/presentation). slidesPath/notesPath = absolute slides.typ / notes.typ. sourcesPath = ${PROJECT}/.planning/SOURCES.md.
+1. presentationDir = the directory holding slides.typ (commonly ${PROJECT}/presentation). slidesPath/notesPath = absolute slides.typ / notes.typ. sourcesPath = the authenticated PLAN at ${cfg.planPath}.
 2. checkAllPath = ${checkAllHint}.
 3. detectWidowsPath = \`command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1\` (or "" if none).
 4. lookAtPath = ${lookAtHint} (or "" if none).
-5. Read slides.typ and list every slide in document order. A slide is a \`#slide[ ... ]\` block; its title is the \`=== ...\` line inside it. Assign stable IDs S1, S2, ... in order. For each slide, read .planning/OUTLINE.md and record the F/T/R/A inventory IDs that outline maps to that slide (inventoryRefs; empty array if none listed — MANY built slides, especially appendix/Q&A backups, have NO outline row, so [] is the correct and common answer; do not force a match). ALSO capture slideBody = the verbatim text of that slide's \`#slide[ ... ]\` block, and notesBody = the verbatim text of its corresponding section in notes.typ (matched by title/topic; "" if no section is found) — inlining both here means the per-slide reviewer does not have to re-Read slides.typ/notes.typ for each of its three checks.
+5. Read slides.typ and list every slide in document order. A slide is a \`#slide[ ... ]\` block; its title is the \`=== ...\` line inside it. Assign stable IDs S1, S2, ... in order. Read the authenticated PLAN's Slide Spec and Source Inventory at ${cfg.planPath}; semantically map each built slide to its F/T/R/A inventory IDs (inventoryRefs; empty array is correct for unmatched appendix/Q&A slides — do not force a match). ALSO capture slideBody = the verbatim text of that slide's \`#slide[ ... ]\` block, and notesBody = the verbatim text of its corresponding section in notes.typ (matched by title/topic; "" if no section is found) — inlining both here means the per-slide reviewer does not re-read whole files per check.
 6. List every diagram: \`cetz.canvas\` blocks (kind "cetz") and \`fletcher-diagram\`/\`#diagram(\` blocks (kind "fletcher"), each tied to the slide title it appears under.
 
 Return DISCOVERY_SCHEMA. Absolute paths only.`,
@@ -167,8 +215,8 @@ Return DISCOVERY_SCHEMA. Absolute paths only.`,
 if (!disc) throw new Error('Discover agent returned null — re-invoke')
 if (!disc.slides.length) throw new Error('No slides discovered — check slides.typ exists with #slide[ ... ] blocks')
 
-// Deterministic inventory WHITELIST (DESIGN §3a-join): the join stayed unbiased (free OUTLINE read);
-// here we drop any inventoryRef the agent attributed that is NOT a real SOURCES.md id (no-hallucination
+// Deterministic inventory WHITELIST (DESIGN §3a-join): the semantic join remains unbiased;
+// here we drop any inventoryRef the agent attributed that is NOT a real Source Inventory id (no-hallucination
 // guard) — applied in JS, OUTSIDE the agent, so it cannot bias the join. No-op when no index is passed.
 if (INV_WHITELIST) {
   let dropped = 0
@@ -178,7 +226,7 @@ if (INV_WHITELIST) {
     dropped += refs.length - kept.length
     s.inventoryRefs = kept
   }
-  if (dropped) log(`Inventory whitelist: dropped ${dropped} non-SOURCES id(s) attributed by Discover`)
+  if (dropped) log(`Inventory whitelist: dropped ${dropped} non-PLAN-inventory id(s) attributed by Discover`)
 }
 log(`Deck: ${disc.slides.length} slides, ${disc.diagrams.length} diagrams; ${ONLY ? `re-review ${ONLY.size}` : 'full review'}`)
 
@@ -247,7 +295,7 @@ const reviewSlide = (s) => {
   const inlinedNotes = (s.notesBody && s.notesBody.trim())
     ? `\nNOTES SECTION (inlined verbatim from notes.typ):\n${s.notesBody}\n`
     : `\n(no notes section was inlined by Discover — Read ${disc.notesPath} directly to look for this slide's section before concluding notesSectionFound=false)\n`
-  const common = `Slide ${s.id}: "${s.title}"\nslides.typ: ${disc.slidesPath}\nnotes.typ: ${disc.notesPath}\nSOURCES.md: ${disc.sourcesPath}\nExpected inventory IDs for this slide (from OUTLINE.md): ${s.inventoryRefs.length ? s.inventoryRefs.join(', ') : '(none listed)'}${inlinedSlide}${inlinedNotes}`
+  const common = `Slide ${s.id}: "${s.title}"\nslides.typ: ${disc.slidesPath}\nnotes.typ: ${disc.notesPath}\nAuthenticated PLAN: ${disc.sourcesPath}\nExpected inventory IDs for this slide (from the PLAN Slide Spec): ${s.inventoryRefs.length ? s.inventoryRefs.join(', ') : '(none listed)'}${inlinedSlide}${inlinedNotes}`
   return agent(
     `You are a READ-ONLY workshop-slide reviewer. Do NOT create, edit, or overwrite any files.
 Set slide="${s.id}" verbatim. ${common}
@@ -257,7 +305,7 @@ Run all THREE checks below on this ONE slide in a single pass and tag every find
 
 (b) area="notes" — does the notes section above (or notes.typ if you had to fall back) cover this slide? Set notesSectionFound. If found, check the notes are flowing teleprompter prose (1-2 sentences per bullet, NOT slide-bullet recaps, NOT fragments) and that section transitions are present. If NOT found, that is a major finding (slide uncovered).
 
-(c) area="fidelity" — list every factual claim on this slide (empirical numbers, coefficients, percentages, sample sizes, case holdings, author conclusions). For each, verify it traces to a SOURCES.md inventory ID (F/T/R/A) — ideally one of the expected IDs above. claimsChecked = total factual claims; claimsGrounded = how many trace to an inventory ID. Any ungrounded claim is a critical finding with the claim text as quote + file:line.
+(c) area="fidelity" — list every factual claim on this slide (empirical numbers, coefficients, percentages, sample sizes, case holdings, author conclusions). For each, verify it traces to an authenticated PLAN Source Inventory ID (F/T/R/A) — ideally one of the expected IDs above. claimsChecked = total factual claims; claimsGrounded = how many trace to an inventory ID. Any ungrounded claim is a critical finding with the claim text as quote + file:line.
 
 Every finding needs area + file:line (+ verbatim quote where applicable). Return SLIDE_REVIEW_SCHEMA.`,
     { label: `${s.id}:review`, phase: 'Review', schema: SLIDE_REVIEW_SCHEMA, model: 'sonnet' }
@@ -399,11 +447,11 @@ const scope = {
     'check-all.py constraints — parsed JSON failed[] (real violations, blocking); errors[] reported separately as non-blocking constraint-infra minors (D-w-8: exit code alone conflated infra failures with deck defects)',
     'detect_widows.py — deterministic count',
     'overflow — handout page-count heuristic (CAVEAT: divider-naive, over-counts theme section/title pages; D-w-8)',
-    SLIDE_INDEX ? 'inventoryRefs whitelist — dropped non-SOURCES ids (no-hallucination guard)' : 'inventory ids — agent-attributed (no index whitelist this run)',
+    'inventoryRefs whitelist — dropped non-PLAN Source Inventory ids (no-hallucination guard)',
   ],
   notChecked: [
     'per-slide convention / notes-coverage / source-fidelity — SEMANTIC (LLM reviewers, OUTSIDE the deterministic floor; the primary arbiter)',
-    'OUTLINE-row↔slide JOIN — semantic (free read); appendix slides w/o a row are PARTIAL by design, not verified-absent',
+    'PLAN Slide Spec row↔slide JOIN — semantic; appendix slides without a row are PARTIAL by design, not verified-absent',
     disc.lookAtPath ? null : 'visual-defect detection — look_at.py UNRESOLVED → diagrams NOT visually verified (skipped, not passed)',
     'spelled-out / non-F·T·R·A-token claims — the inventory floor only sees F/T/R/A id tokens',
   ].filter(Boolean),

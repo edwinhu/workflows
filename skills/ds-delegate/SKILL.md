@@ -61,18 +61,18 @@ legacy/ad-hoc compatibility request cannot use the native runner.
 
 Before dispatching, read:
 
-1. `.planning/PLAN.md` — the exact, approved task text and acceptance criteria. **Do not edit it.**
+1. the receipt-selected generated plan — the exact, approved task text and acceptance criteria. **Do not edit it.**
 2. `TaskList` — the live task ID, status, dependencies, and any task comments.
 3. The project's auto-memory topic files — reusable, curated technical facts relevant to this task.
 
-`PLAN.md` is the approved specification, TaskList is live workflow state, and project auto-memory is reusable project knowledge. The main orchestrator supplies exact relevant auto-memory topic-file paths; do not discover, create, or write auto-memory files. Do not create or use `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or agent-specific memory files.
+The receipt-selected native generated plan, identified by its exact `{planFile, planHash}`, is the approved specification; TaskList is live workflow state; and project auto-memory is reusable project knowledge. The main orchestrator supplies exact relevant auto-memory topic-file paths; do not discover, create, or write auto-memory files. Do not create or use `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or agent-specific memory files.
 
 ## Flowchart: Per-Task Implementation
 
 This flowchart is authoritative.
 
 ```text
-Read immutable PLAN + TaskList + relevant project auto-memory
+Read receipt-selected `{planFile, planHash}` generated plan + TaskList + relevant project auto-memory
                          |
                          v
               Dispatch appropriate implementer
@@ -96,7 +96,7 @@ Read immutable PLAN + TaskList + relevant project auto-memory
 
 ## Select the Implementer
 
-Use the full task text from `PLAN.md`, never a summary.
+Use the full task text from the receipt-selected `{planFile, planHash}` generated plan, never a summary.
 
 | Task type | Dispatch |
 |---|---|
@@ -112,7 +112,7 @@ Dispatch one fresh implementation agent with the applicable constraints and this
 
 ```text
 # Approved Task
-[Paste the complete task text and acceptance criteria from .planning/PLAN.md]
+[Paste the complete task text and acceptance criteria from the receipt-selected generated plan]
 
 # Live Task
 TaskList ID: [id]
@@ -127,8 +127,8 @@ Status and dependencies: [live TaskList details]
 - Follow output-first verification: show the relevant before/after state, checks, and output locations.
 - Load the applicable DS constraints and data-quality checks.
 - Do not invent requirements. If the plan is ambiguous, stop and ask a precise question.
-- Operational clarification may be recorded in TaskList. If it changes scope, acceptance criteria, methodology, deliverables, or data treatment, block the task and route it through planning for a newly approved PLAN.md; TaskList is not a substitute specification.
-- Do not modify .planning/PLAN.md or create SPEC.md, STATE.md, LEARNINGS.md, or agent-memory.
+- Operational clarification may be recorded in TaskList. If it changes scope, acceptance criteria, methodology, deliverables, or data treatment, block the task and route it through planning for a newly approved receipt-selected generated plan; TaskList is not a substitute specification.
+- Do not modify the receipt-selected generated plan or create SPEC.md, STATE.md, LEARNINGS.md, or agent-memory.
 
 # Return exactly
 1. status: COMPLETE | BLOCKED | NEEDS_CLARIFICATION
@@ -155,9 +155,9 @@ After an agent returns, read its returned report and evidence. Main chat may che
 
 `ds-implement` owns technical PASS. For each attempt:
 
-1. **IDENTIFY** — map the returned evidence to the task's PLAN acceptance criteria.
+1. **IDENTIFY** — map the returned evidence to the task's receipt-selected generated-plan acceptance criteria.
 2. **READ** — read the actual returned evidence, not a bare completion claim.
-3. **VERIFY** — dispatch a fresh, read-only technical verifier for every task. For mechanical tasks its review may be limited to named PLAN acceptance checks and output evidence; for complex work it checks implementation and outputs in depth. It returns explicit `PASS` or actionable `ISSUES` with file references.
+3. **VERIFY** — dispatch a fresh, read-only technical verifier for every task. For mechanical tasks its review may be limited to the receipt-selected generated plan's named acceptance checks and output evidence; for complex work it checks implementation and outputs in depth. It returns explicit `PASS` or actionable `ISSUES` with file references.
 4. **CLAIM** — only a technical `PASS` permits the task to be marked complete in TaskList.
 
 If evidence is absent, incomplete, or the verifier returns `ISSUES`, redispatch a fresh implementation agent with the exact findings. There are **at most three total fix-and-verify cycles per task**. After the third unresolved cycle, mark or retain the task as blocked in TaskList and escalate the specific evidence and blocker to the user.
@@ -176,15 +176,15 @@ On technical PASS:
 
 | About to | STOP because | Do instead |
 |---|---|---|
-| Edit or infer a new requirement from an implementation result | The immutable plan is the approved scope | Escalate the ambiguity or create a new TaskList task only through the approved planning path. |
+| Edit or infer a new requirement from an implementation result | The receipt-selected `{planFile, planHash}` generated plan is the approved scope | Escalate the ambiguity or create a new TaskList task only through the approved planning path. |
 | Mark a task complete from an agent's prose alone | A completion claim is not evidence | Read evidence and obtain technical PASS. |
-| Write `LEARNINGS.md`, `STATE.md`, `SPEC.md`, or agent memory | These conflict with the native PLAN/TaskList/project-memory architecture | Return reusableFacts for the main orchestrator to curate. |
+| Write `LEARNINGS.md`, `STATE.md`, `SPEC.md`, or agent memory | These conflict with the receipt-selected generated-plan/TaskList/project-memory architecture | Return reusableFacts for the main orchestrator to curate. |
 | Send work to `ds-review` before technical PASS | Human review cannot replace implementation verification | Finish the bounded technical loop inside `ds-implement`. |
 | Fix an agent's work in main chat | It defeats delegated, evidence-based implementation | Redispatch a fresh task agent with precise findings. |
 
 ## Failure Handling
 
-- **Needs clarification:** record the precise question and status in TaskList. Resolve an operational question before redispatching; if its answer changes scope, acceptance criteria, methodology, deliverables, or data treatment, block the task and route it through planning for a newly approved PLAN.md.
+- **Needs clarification:** record the precise question and status in TaskList. Resolve an operational question before redispatching; if its answer changes scope, acceptance criteria, methodology, deliverables, or data treatment, block the task and route it through planning for a newly approved receipt-selected generated plan.
 - **Missing outputs or failed checks:** redispatch with the missing evidence or verifier findings; do not investigate independently.
-- **Task is no longer suitable for the approved plan:** do not mutate PLAN.md. Escalate or route the proposed change through the planning workflow.
+- **Task is no longer suitable for the approved scope:** do not mutate the receipt-selected generated plan. Escalate or route the proposed change through the planning workflow.
 - **Protocol violation:** if implementation was performed in main chat, delete that unverified work and restart the task through a fresh agent.

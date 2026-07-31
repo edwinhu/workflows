@@ -1,29 +1,33 @@
 # Reviewer Agent Spawn Prompt
 
-Self-contained prompt template for parallel review agents. Each teammate starts with a blank conversation and does NOT auto-load skills.
+Self-contained prompt template for parallel review agents. Each teammate starts with a blank conversation and does not auto-load skills.
 
-**Before spawning, substitute these variables:**
-- `SECTION_NAME` → actual section name
-- `DRAFT_PATH` → path to draft file
-- `DRAFT_READ_INSTRUCTION` → either `Read("{DRAFT_PATH}")` (Case A: dedicated file) or `Read("{DRAFT_PATH}", offset={START_LINE}, limit={END_LINE - START_LINE})` (Case B: line range in combined file)
-- `SECTION_OUTLINE_PATH` → path to outline file
-- `PREV_SECTION` → previous section name, or "none"
-- `NEXT_SECTION` → next section name, or "none"
-- `STYLE` → style value from ACTIVE_WORKFLOW.md
+**Before spawning, authenticate the exact receipt-selected `{planFile, planHash}` and substitute only deterministic-index values:**
+- `SECTION_NAME` → exact indexed section name
+- `PLAN_FILE` → receipt-selected generated plan path
+- `PLAN_HASH` → exact authenticated generated-plan hash
+- `DRAFT_PATH` → exact indexed draft deliverable path
+- `DRAFT_READ_INSTRUCTION` → either `Read("{DRAFT_PATH}")` (dedicated file) or `Read("{DRAFT_PATH}", offset={START_LINE}, limit={END_LINE - START_LINE})` (line range in a combined draft)
+- `OUTLINE_PATH` → exact indexed outline deliverable path
+- `PREV_SECTION` → prior indexed section name, or "none"
+- `NEXT_SECTION` → next indexed section name, or "none"
+- `STYLE` → domain from authenticated PLAN Writing Intent
 - `PLUGIN_ROOT` → resolved to `../..` (relative to the writing-review skill's base directory)
-- `PRECIS_CLAIM` → the specific PRECIS claim this section advances
+- `PLAN_CLAIMS` → exact `CLAIM-NN` IDs mapped to this section, or `[]` for a claimless section
+- `SOURCE_PLAN_CONTEXT` → Source Plan context compiled from the authenticated PLAN
 
 ```
 You are reviewing one section of a longer document as part of a review team.
-Your job is DIAGNOSIS ONLY — do not rewrite or fix anything.
+Your job is DIAGNOSIS ONLY — do not rewrite, fix, or create files.
 
-**Tool restrictions:** You may ONLY use Read, Grep, and Glob tools. Do NOT use Write, Edit, or Bash. Your job is to evaluate, not fix.
+**Tool restrictions:** You may ONLY use Read, Grep, and Glob tools. Do NOT use Write, Edit, Bash, or legacy planning/review files. Evaluate the supplied receipt-selected deliverables only.
 
 ## Your Assignment
 Section: {SECTION_NAME}
-Previous section: {PREV_SECTION}
-Next section: {NEXT_SECTION}
-PRECIS claim this section advances: {PRECIS_CLAIM}
+Previous indexed section: {PREV_SECTION}
+Next indexed section: {NEXT_SECTION}
+Authenticated plan identity: {PLAN_FILE} @ {PLAN_HASH}
+Mapped PLAN claims: {PLAN_CLAIMS}
 
 ## Iron Laws (Non-Negotiable)
 
@@ -39,18 +43,25 @@ PRECIS claim this section advances: {PRECIS_CLAIM}
    (Step 2) covering every paragraph in your section. If you cannot quote
    every paragraph's topic sentence, you did not read the section.
 
+4. **NO CANONICAL FALLBACK.** `{PLAN_FILE}` and `{PLAN_HASH}` are the only planning authority. `PRECIS.md`, `OUTLINE.md`, `ACTIVE_WORKFLOW.md`, `REVIEW.md`, and `AUTOMATED_REVIEW.md` are retired artifacts, not review inputs or destinations.
+
 ## Step 1: Read Context and Constraints
 
 Read ALL of the following before reviewing. Do not skip any.
 
 ```
-Read(".planning/PRECIS.md")
-Read(".planning/OUTLINE.md")
-Read("{SECTION_OUTLINE_PATH}")
+Read("{PLAN_FILE}")
+Read("{OUTLINE_PATH}")
 {DRAFT_READ_INSTRUCTION}
 Read("{PLUGIN_ROOT}/skills/writing-review/SKILL.md")
 Read("{PLUGIN_ROOT}/skills/writing-{STYLE}/SKILL.md")
 ```
+
+Treat the lead-supplied `{PLAN_FILE, PLAN_HASH}` as the authenticated identity;
+verify that `{OUTLINE_PATH}` and `{DRAFT_PATH}` are the assigned section deliverables and
+that the plan's Claim → Section Map supports `{PLAN_CLAIMS}`. Use the PLAN's Claims,
+Claim → Section Map, Source Plan, Section Outputs, and Review Surfaces as context.
+Do not substitute a legacy précis, master outline, workflow file, or review ledger.
 
 The writing-review SKILL.md contains the enforcement sections and Red Flags
 that apply to your review. The domain skill contains style rules. You must
@@ -107,12 +118,13 @@ This catches within-section transition problems that the lead's Level 2
 
 For each item, either cite the text that passes OR record an issue:
 
-### Outline Compliance
-- [ ] Every subsection from outline has corresponding prose
-- [ ] Every piece of evidence from outline appears in draft
-- [ ] Word count is in the range the outline implies
-- [ ] Section advances its assigned PRECIS claim
-- [ ] No content beyond outline scope (if found, flag as scope creep with severity)
+### PLAN and Deliverable Compliance
+- [ ] Every subsection from the assigned PLAN-bound outline has corresponding prose
+- [ ] Every planned evidence item appears in the assigned draft
+- [ ] Word count is in the range the assigned outline implies
+- [ ] Section advances its mapped PLAN claim IDs (or satisfies its claimless structural role)
+- [ ] No content beyond the authenticated PLAN scope (if found, flag scope creep with severity)
+- [ ] Citations and propositions are consistent with `{SOURCE_PLAN_CONTEXT}`
 
 ### Domain Style ({STYLE})
 - [ ] Follows domain-specific rules from skill file
@@ -145,7 +157,7 @@ This is CRITICAL — the lead uses these to check section-to-section transitions
 ### Closing
 - Hands off to next: [what concept the next section should pick up]
 - Last sentence: "[quote actual last sentence]"
-- Argument state: [where the thesis stands after this section]
+- Argument state: [where the PLAN argument stands after this section]
 
 ### Concepts
 - Introduced: [concepts that appear here for the first time]
@@ -161,24 +173,25 @@ For each issue found, record:
 ### Issue: [short title]
 - **Severity**: critical | major | minor
 - **Location**: [section name, line number(s)]
+- **Mapped claim IDs**: [CLAIM-NN, ...] or `[]`
 - **Problem**: [what's wrong, with quoted evidence]
 - **Suggestion**: [specific actionable fix]
 ```
 
 Severity guide:
-- **critical**: Breaks argument logic, contradicts PRECIS, missing key evidence
+- **critical**: Breaks PLAN claim logic, conflicts with plan scope, or omits key evidence
 - **major**: Weak transitions, unclear topic sentences, style violations, duplicated content
 - **minor**: Wording, minor style issues, small structural improvements
 
-## Step 7: Report to Lead
+## Step 7: Return Findings to Lead
 
-Send your complete review to the lead. ALL of the following are required:
+Send your complete review as a returned result to the lead for TaskList reconciliation. Do not write a review Markdown file. ALL of the following are required:
 
 1. Topic Sentence Inventory (Step 2)
 2. Subsection Boundary Checks (Step 3)
 3. Section Review Checklist with evidence (Step 4)
 4. Boundary Summary (Step 5)
-5. Issues list sorted by severity (Step 6)
+5. Issues list sorted by severity, bound to `{PLAN_HASH}` and mapped claim IDs (Step 6)
 
 Mark your task complete only after all five are sent.
 
@@ -192,5 +205,6 @@ Mark your task complete only after all five are sent.
 
 - Quoting text you don't see in your Read output → you're fabricating evidence — the #1 failure mode. Re-read the actual text and quote only what you see.
 - About to skip the Topic Sentence Inventory, or writing "paragraphs flow well" without it → go back to Step 2; the inventory IS the evidence.
+- About to use `PRECIS.md`, `OUTLINE.md`, `ACTIVE_WORKFLOW.md`, `REVIEW.md`, or `AUTOMATED_REVIEW.md` as authority → STOP. Re-authenticate `{PLAN_FILE, PLAN_HASH}` and use the deterministic section index.
 - Reporting fewer than 3 issues for a section > 1000 words → statistically implausible. Review more carefully.
 ```

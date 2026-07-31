@@ -18,12 +18,11 @@ Style guide for law review articles, seminar papers, and legal scholarship based
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/writing/SKILL.md` and follow its instructions.
 
-**Step 2: Check for active workflow**
+**Step 2: Resolve canonical writing context**
 
-If `.planning/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: legal`.
+For a modern writing episode, resolve the receipt-selected immutable `{planFile, planHash}` and read `## Writing Intent` for the style, thesis, audience, and claims. If the plan’s style is not `legal`, return control to the writing router rather than mutating configuration.
 
-If no `.planning/PRECIS.md` exists in the project:
-- Suggest: "No PRECIS.md found. Consider `/writing` to set up thesis, audience, and claims first."
+If no authenticated canonical writing plan exists, suggest `/writing` to create and approve one. A legacy-only layout is conversion input, not active authority.
 
 **Step 3: Apply legal-specific rules below**
 
@@ -115,7 +114,7 @@ these three body Parts before any decomposition:
 **Splitting a Part into two+ numbered Parts is an EXCEPTION, not the starting point.** Split
 ONLY when a Part has become genuinely too large to hold together as one — and that is a demonstrated
 condition you reach, never the initial decomposition. Begin three-part; expand only on demonstrated
-unwieldiness, and log the split as an R4 decision in LEARNINGS.md.
+unwieldiness, and record the rationale in the current TaskList work item or returned review decision.
 
 **Anti-pattern (do NOT do this):** opening by decomposing the body into 4–5 Parts — e.g. splitting
 the Proof into separate "Elimination" and "Window" Parts, or breaking counterarguments out as their

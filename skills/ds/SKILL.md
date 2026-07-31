@@ -18,12 +18,12 @@ hooks:
 
 `/ds` is the DS planning adapter: clarify the research question, gather only the profile and domain
 facts needed to plan responsibly, use native Plan mode, then independently review the approved plan.
-Claude Code owns the live task list; the native plan-persistence hook owns the immutable approved
-copy at `.planning/PLAN.md`.
+Claude Code owns the live task list; the native plan-persistence hook authenticates the exact generated
+plan selected by its hidden receipt. The receipt supplies the only `{planFile, planHash}` planning identity.
 
 ```
 clarify with user → read-only profile / domain discovery → native Plan mode
-       → ExitPlanMode approval → immutable PLAN.md copy → independent plan review
+       → ExitPlanMode approval → receipt-selected generated plan → independent plan review
        → /ds-implement
 ```
 
@@ -149,28 +149,19 @@ Use the native plan's natural structure. Do not manufacture a DS-specific execut
 live progress respectively.
 
 Before `ExitPlanMode`, ensure the user has had the opportunity to approve the approach. On exit, the
-native plan-persistence hook writes `.planning/PLAN.md` as a byte-for-byte copy of the approved native
-body and writes its approval identity separately to `.planning/PLAN.meta.json`:
+native plan-persistence hook binds the exact generated plan and creates its hook-owned receipt at
+`.planning/.state/review.json`. That private receipt selects exactly one direct-child generated plan and
+contains its authenticated `{plan_file, plan_hash}`, workflow, approval identity, and review status.
 
-```json
-{
-  "schemaVersion": 1,
-  "planHash": "<SHA-256 of exact PLAN.md bytes>",
-  "approvedSession": "<ExitPlanMode payload session_id>",
-  "approvedAt": "<strict ISO-8601 UTC timestamp ending in .sssZ>"
-}
-```
-
-The hook deletes any prior hash-bound review when it replaces the plan.
-
-Never write, patch, or regenerate this copy yourself. If the plan changes, re-enter native Plan mode,
-obtain approval through `ExitPlanMode`, and let the hook replace it atomically.
+Never inspect the state directory to choose a plan, write or patch its receipt, or recreate the generated
+plan yourself. If the plan changes, re-enter native Plan mode, obtain approval through `ExitPlanMode`, and
+let the hook bind the replacement atomically.
 
 ## 4. Independent plan review
 
 Immediately read `${CLAUDE_SKILL_DIR}/../ds-plan-reviewer/SKILL.md` and follow its dispatch
 instructions. It dispatches a fresh `workflows:plan-checker` reviewer with the DS domain, concrete
-reference root, immutable plan, and approval metadata. The planner reads the reviewer-owned verdict
+reference root, receipt-selected immutable plan, and authenticated approval receipt. The planner reads the reviewer-owned outcome
 but never self-approves. One reviewer produces one durable hash-bound verdict for the complete plan.
 
 - If any reviewer returns **ISSUES_FOUND**, re-enter native Plan mode, revise there, obtain fresh
@@ -182,16 +173,14 @@ but never self-approves. One reviewer produces one durable hash-bound verdict fo
 
 ## Gate: ready for implementation
 
-1. **IDENTIFY:** `.planning/PLAN.md`, `.planning/PLAN.meta.json`, and `.planning/PLAN_REVIEWED.md`
-   exist after `ExitPlanMode` and independent review.
-2. **RUN:** Recompute SHA-256 over exact `PLAN.md` bytes and compare it with metadata `planHash`.
-3. **READ:** Verify `approvedSession` and strict UTC-Z `approvedAt`; then read the actual plan and the
-   hash-bound reviewer verdict. This is fail-closed workflow provenance based on session IDs, not
-   cryptographic attestation.
-4. **VERIFY:** The review artifact is `APPROVED` for the exact plan hash, records a strict-Z timestamp
-   and a reviewer session distinct from approval and implementation, and profile-derived risks and every
-   declared output have a concrete task/evidence path. Implementation begins only in a new session
-   distinct from approval and review. PreCompact state supports recovery, not authorization.
+1. **IDENTIFY:** the hook-owned receipt selects one generated `planFile` and records its `planHash`.
+2. **RUN:** resolve that receipt; recompute SHA-256 over the selected generated plan and require an exact
+   match. Never infer a filename from `.planning/`.
+3. **READ:** verify approval identity, strict UTC-Z approval time, and the reviewer-finalized receipt.
+   This is fail-closed workflow provenance based on session IDs, not cryptographic attestation.
+4. **VERIFY:** receipt status is `APPROVED`, review identity/time are distinct and chronological, and
+   profile-derived risks and declared outputs have concrete TaskList/evidence paths. Implementation begins
+   only in a new session distinct from approval and review.
 5. **CLAIM:** Only then invoke `/ds-implement`.
 
 ## Red flags
@@ -201,6 +190,6 @@ but never self-approves. One reviewer produces one durable hash-bound verdict fo
 | Explore data before the user answers | Existing files will frame the question for the user | Run the CLARIFY beat first |
 | Treat a head sample as a data profile | Nulls, grain failures, and type drift often live outside the head | Profile shape, tail/coverage, keys, and quality signals |
 | Pull a huge source to see how big it is | The transfer is the failure you are supposed to prevent | Profile filtered counts and aggregate candidates read-only |
-| Write `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or a custom plan | It creates competing state and makes progress ambiguous | Use native Plan mode, immutable `PLAN.md`, TaskList, and project auto-memory |
-| Patch `.planning/PLAN.md` after review finds a gap | That falsifies the approved record and its hash | Re-enter Plan mode and obtain a new approved copy |
+| Write `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or a custom plan | It creates competing state and makes progress ambiguous | Use native Plan mode, the receipt-selected immutable generated plan, TaskList, and project auto-memory |
+| Patch a receipt-selected generated plan after review finds a gap | That falsifies the approved record and its hash | Re-enter Plan mode and obtain a new approved generated plan |
 | Infer live progress from plan checkboxes | The copied plan is immutable | Read `TaskList` |

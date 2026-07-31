@@ -1,12 +1,19 @@
 # Section Review Checklist (Sequential Mode)
 
+Authenticate the receipt-selected `{planFile, planHash}` and compile the deterministic section
+index before reviewing. For each indexed section, use only its exact PLAN-bound outline and draft
+deliverables, mapped claim IDs, dependencies, and Source Plan context. Do not use a visible précis,
+master outline, workflow state, or review ledger as authority.
+
 For each section, check ALL of the following. Every checkmark needs quoted evidence.
 
-## Outline Compliance
-- [ ] Every subsection from outline has corresponding prose
-- [ ] Every piece of evidence from outline appears in draft
-- [ ] Word count is in the range the outline implies
-- [ ] Section advances its assigned PRECIS claim
+## PLAN-Bound Outline Compliance
+- [ ] Every subsection from the assigned outline deliverable has corresponding prose
+- [ ] Every planned evidence item appears in the assigned draft deliverable
+- [ ] Word count is in the range the assigned outline implies
+- [ ] Section advances its mapped PLAN claim IDs, or satisfies its claimless structural role
+- [ ] No content exceeds authenticated PLAN scope
+- [ ] Citations and propositions remain consistent with the Source Plan
 
 ## Paragraph-Level Gate
 
@@ -50,7 +57,8 @@ section-to-section transitions.
 <!-- NOTE: This format is duplicated in the agent team spawn prompt
      (references/reviewer-agent-prompt.md). Keep both copies in sync. -->
 
-After reviewing each section, produce this structured summary:
+After reviewing each section, return this structured summary to the lead for TaskList
+reconciliation; do not write a review Markdown file:
 
 ```markdown
 ## Boundary Summary: [Section Name]
@@ -63,7 +71,7 @@ After reviewing each section, produce this structured summary:
 ### Closing
 - Hands off to next: [concept for next section to pick up]
 - Last sentence: "[quote actual last sentence of section]"
-- Argument state: [where the thesis stands after this section]
+- Argument state: [where the PLAN argument stands after this section]
 
 ### Concepts
 - Introduced: [first appearances of key concepts]

@@ -1,102 +1,92 @@
-# REVIEW.md Template
+# Returned Writing Review Result and TaskList Template
 
-Write the complete review to `.planning/AUTOMATED_REVIEW.md` using this template:
+> **Canonical-only.** This template is for returned workflow results and TaskList reconciliation.
+> It is not a Markdown review artifact: do not write `.planning/REVIEW.md`,
+> `.planning/AUTOMATED_REVIEW.md`, or `.planning/HUMAN_REVIEW.md`. Those paths are retired
+> as authority in canonical writing episodes.
+
+Use the exact authenticated `{planFile, planHash}` from the approved combined receipt and the
+matching deterministic section index. A malformed index, changed plan hash, or mismatched receipt
+blocks a clean result.
 
 ```markdown
-# Document Review
+# Returned Writing Review Result
 
-**Document**: [title from PRECIS]
-**Style**: [legal | econ | general]
+**Plan identity**: `{planFile, planHash}`
+**Document**: [title/purpose from PLAN Writing Intent]
+**Style**: [legal | econ | general from PLAN Writing Intent]
 **Reviewed**: [date]
-**Word count**: [approximate]
+**Draft corpus word count**: [approximate]
+**Review Surfaces**: [each PLAN Review Surfaces entry inspected with evidence]
 
 ## Summary
 
-| Severity | Count |
-|----------|-------|
-| Critical | [N] |
-| Major | [N] |
-| Minor | [N] |
-| **Total** | **[N]** |
+| Severity | Count | Gate effect |
+|----------|------:|-------------|
+| Critical | [N] | Blocks |
+| Major | [N] | Blocks |
+| Minor | [N] | Advisory |
+| **Total** | **[N]** | |
 
-**Verdict**: [ISSUES FOUND | CLEAN]
+**Overall pass**: [true | false]
+**Verdict**: [ISSUES FOUND | CLEAN | CLEAN (advisory polish notes)]
+**Unreliable sections**: [section names or `none`]
 
----
+## Normalized Findings for TaskList
 
-## Document-Level Issues
+For each finding, create or update the current-hash TaskList item:
 
-### Concept Introduction Order
-[Issues from Level 3, or "All concepts introduced before use (evidence: [concept map])"]
+### [stable retry identity]
+- **planHash**: [exact `planHash`]
+- **Severity**: [critical | major | minor]
+- **Disposition**: [open | fixed | accepted | superseded]
+- **Area**: [section | transition | source | whole-document | review-surface | artifact-integrity]
+- **Section / claim IDs**: [indexed section and `CLAIM-NN` IDs, or `[]`]
+- **Location**: [draft path and line, transition pair, or review surface]
+- **Evidence**: "[verbatim quote or concrete review-surface evidence]"
+- **Diagnosis**: [plan-bound issue]
+- **Suggested fix**: [actionable fix]
+- **Retry linkage**: [prior/current stable retry identity]
 
-### Cross-Section Repetition
-[Issues from Level 3, or "No redundant repetition found (evidence: [comparison summary])"]
+## Whole-Document Checks
 
-### Thesis Threading
-[Issues from Level 3, or "All sections advance thesis (evidence: [per-section claim check])"]
-
-### Structural Completeness
-- Claims addressed: [N/N]
-- Counterarguments confronted: [N/N]
-- Scope honored: [yes/no, with evidence]
+- Claims addressed: [all | list missing PLAN claim IDs]
+- Counterarguments confronted: [all | list missing PLAN counterarguments]
+- Scope honored: [yes/no, with authenticated PLAN evidence]
 - Hook delivered: [yes/no, with evidence]
 - Conclusion follows: [yes/no, with evidence]
+- Concept introduction order: [findings or evidence]
+- Cross-section repetition: [findings or comparison evidence]
 
----
+## Transition Checks
 
-## Transition Issues
-
-### [Section N] → [Section N+1]
+### [Indexed Section N] → [Indexed Section N+1]
 - **Verdict**: [SMOOTH | ABRUPT | DISCONNECTED]
 - **Closes with**: "[last sentence of Section N]"
 - **Opens with**: "[first sentence of Section N+1]"
-- **Problem**: [description]
-- **Planned transition**: [from OUTLINE.md]
-- **Suggestion**: [specific fix]
+- **PLAN dependency / transition context**: [from authenticated PLAN]
+- **Finding**: [none or normalized finding identity]
 
-[Repeat for each boundary]
+## Section Evidence
 
----
+### [Indexed Section Name]
+- **Outline and draft deliverables**: [exact indexed paths]
+- **Mapped PLAN claims**: [`CLAIM-NN`, ...] or `[]`
+- **Plan-bound outline compliance**: [pass/fail with evidence]
+- **Topic Sentence Inventory**: [returned inventory]
+- **Subsection boundaries**: [returned checks]
+- **Boundary Summary**: [returned summary]
+- **Source Plan fidelity**: [pass/fail with evidence]
+- **Quote verification**: [verified / unreliable, with evidence]
 
-## Section-Level Issues
+## Review-Surface Completion
 
-### [Section Name]
-
-#### Outline Compliance
-[Pass/fail with evidence for each item]
-
-#### Coherence
-[Issues found, or pass with evidence]
-
-#### Domain Style
-[Issues found, or pass with evidence]
-
-#### AI Anti-Patterns
-[Issues found, or pass with evidence]
-
-#### Issues
-[List all issues for this section, sorted by severity]
-
-[Repeat for each section]
-
----
-
-## Boundary Summaries
-
-[Raw boundary summaries from Level 1, preserved here as reference data for writing-revise]
-
-### [Section Name]
-#### Opening
-- Assumes from previous: [...]
-- First sentence: "[...]"
-- Tone: [...]
-#### Closing
-- Hands off to next: [...]
-- Last sentence: "[...]"
-- Argument state: [...]
-#### Concepts
-- Introduced: [...]
-- Used from earlier: [...]
-- Core terms: [...]
-
-[Repeat for each section]
+| Exact PLAN review surface | Status | Evidence |
+|---------------------------|--------|----------|
+| [surface] | INSPECTED | [concrete evidence] |
 ```
+
+A clean result requires zero critical findings, zero major findings, no unreliable sections,
+unchanged authenticated plan/outline/draft bytes, and every PLAN Review Surface completed.
+Return this structure to the caller and reconcile its findings into TaskList before routing to
+`/writing-revise`. Do not persist a competing review ledger.

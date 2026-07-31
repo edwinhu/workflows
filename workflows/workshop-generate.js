@@ -1,9 +1,9 @@
 export const meta = {
   name: 'workshop-generate',
-  description: "workshop Phase-3 slide+notes generation as an ultracode TRANSFORM workflow: read the approved per-slide Slide Spec table, group its slides by SECTION (the `=`/`==` heading), and fan out one agent per SECTION (each WRITES its whole subsection — every slide block + its notes — to a section fragment FILE under .planning/slide-fragments/, from the PINNED Slide Spec rows + the paper, citing ONLY the allowed inventory IDs). A single assembly agent then CONCATENATES the section files in order into slides.typ + notes.typ and COMPILES the deck. Section is the right unit — slide-level is too granular (loses intra-section flow), whole-deck too coarse. Gate = every section fragment written AND the deck compiles, in JS. Deep per-slide review remains workshop-verify's job (Phase 4).",
-  whenToUse: "Called by the workshop skill in Phase 3 (after OUTLINE_APPROVED.md) to generate slides.typ + notes.typ. Returns { overallPass, sections, compiled, findings, sectionsThatFailed, assembledPaths, reviews }. The skill then runs workshop-verify under /goal. On a re-run it passes onlyChecks (failed section ids) + priorReviews. The workflow never reviews content quality — only that each section is generated from its specs and the deck compiles.",
+  description: "Generate workshop slides and notes from the receipt-selected native PLAN's pinned seven-column Slide Spec. It groups rows by SECTION, fans out section rendering, assembles both Typst deliverables, and gates both compilations without discovering alternative planning authority.",
+  whenToUse: "Called after independent whole-plan review. Requires matching planPath, planHash, and canonical slideIndex; returns generation evidence for the independent workshop verifier.",
   phases: [
-    { title: 'Discover', detail: 'read the Slide Spec table + SOURCES inventory + paper + theme header; group slides by Section' },
+    { title: 'Discover', detail: 'read the authenticated PLAN Slide Spec + Source Inventory + paper + theme header; group slides by Section' },
     { title: 'Sections', detail: 'one agent per SECTION (parallel) — write the whole subsection (all its slide blocks + notes) to a fragment file from the pinned rows' },
     { title: 'Assemble', detail: 'one agent concatenates the section files in order into slides.typ + notes.typ and compiles the deck' },
     { title: 'Gate', detail: 'every section fragment written AND the deck compiles — computed in JS' },
@@ -16,13 +16,61 @@ cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error(`workshop-generate requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const PLUGIN = cfg.pluginRoot || ''
+const { readFileSync, lstatSync, realpathSync } = await import('node:fs')
+const { createHash } = await import('node:crypto')
+const RECEIPT_KEYS = ['workflow','plan_file','plan_hash','approved_session_id','approved_at','status','reviewer_session_id','reviewed_at']
+const HASH = /^[0-9a-f]{64}$/
+const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+const RESERVED_PLAN_FILES = new Set(['PLAN.md','PLAN_REVIEWED.md','REVIEW.md','AUTOMATED_REVIEW.md','HUMAN_REVIEW.md','IMPLEMENT_COMPLETE.md','VALIDATION.md'])
+function parseStrictReceipt(content) {
+  const text = String(content).trim(); let index = 0
+  const skip = () => { while (/\s/.test(text[index] || '')) index++ }
+  const string = () => {
+    skip(); if (text[index] !== '"') throw new Error('workshop generated-plan review.json values must be strings')
+    const start = index++; let escaped = false
+    while (index < text.length) {
+      const char = text[index++]
+      if (escaped) { escaped = false; continue }
+      if (char === '\\') { escaped = true; continue }
+      if (char === '"') return JSON.parse(text.slice(start, index))
+    }
+    throw new Error('workshop generated-plan review.json contains an unterminated string')
+  }
+  skip(); if (text[index++] !== '{') throw new Error('workshop generated-plan review.json must be one object')
+  const receipt = {}; skip()
+  while (text[index] !== '}') {
+    const key = string(); if (Object.hasOwn(receipt, key)) throw new Error('workshop generated-plan review.json contains duplicate fields')
+    skip(); if (text[index++] !== ':') throw new Error('workshop generated-plan review.json field is missing a colon')
+    receipt[key] = string(); skip()
+    if (text[index] === ',') { index++; skip(); continue }
+    if (text[index] !== '}') throw new Error('workshop generated-plan review.json fields must be comma separated')
+  }
+  index++; skip(); if (index !== text.length) throw new Error('workshop generated-plan review.json has trailing content')
+  return receipt
+}
+function authenticatePlan(projectDir, planPath, planHash) {
+  const root = realpathSync(projectDir), planning = `${root}/.planning`, state = `${planning}/.state/review.json`
+  for (const path of [planning, `${planning}/.state`, state]) if (lstatSync(path).isSymbolicLink()) throw new Error('workshop generated-plan authentication rejects symbolic links')
+  const receipt = parseStrictReceipt(readFileSync(state, 'utf8'))
+  const approvedAt = Date.parse(receipt.approved_at), reviewedAt = Date.parse(receipt.reviewed_at)
+  if (Object.keys(receipt).length !== RECEIPT_KEYS.length || RECEIPT_KEYS.some(key => typeof receipt[key] !== 'string') || receipt.workflow !== 'workshop' || receipt.status !== 'APPROVED' || !HASH.test(receipt.plan_hash) || !UTC.test(receipt.approved_at) || !UTC.test(receipt.reviewed_at) || new Date(approvedAt).toISOString() !== receipt.approved_at || new Date(reviewedAt).toISOString() !== receipt.reviewed_at || !receipt.approved_session_id.trim() || !receipt.reviewer_session_id.trim() || receipt.approved_session_id === receipt.reviewer_session_id || reviewedAt <= approvedAt || !/^[^./\\][^/\\]*\.md$/.test(receipt.plan_file) || RESERVED_PLAN_FILES.has(receipt.plan_file)) throw new Error('workshop generated-plan review.json has invalid strict receipt schema')
+  const selected = `${planning}/${receipt.plan_file}`
+  if (planPath !== selected || lstatSync(selected).isSymbolicLink()) throw new Error('workshop generated-plan path is not the receipt-selected safe direct child')
+  const current = createHash('sha256').update(readFileSync(selected)).digest('hex')
+  if (current !== receipt.plan_hash || current !== planHash) throw new Error('workshop generated-plan receipt does not authenticate current plan bytes')
+  return { root, state, receipt, hash: current, planPath: selected }
+}
+const AUTH = authenticatePlan(PROJECT, cfg.planPath, cfg.planHash)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.section), s]))
 // Deterministic slide index from scripts/workshop/workshop-slide-table.ts — the compiled "Discover".
 // The parser's work-list IS the shared-v1 generate enumerator (DESIGN §3a). Missing or empty input is
 // an integrity failure, never permission to substitute an LLM enumerator. The fileHeader (theme preamble)
-// is not a work-list concern; the assembly agent constructs it from templates + SOURCES.md.
+// is not a work-list concern; the assembly agent constructs it from templates + authenticated PLAN metadata.
+if (!cfg.planPath || !cfg.planHash) throw new Error('workshop-generate requires receipt-selected args.planPath and args.planHash')
 if (!cfg.slideIndex || !Array.isArray(cfg.slideIndex.slides) || !cfg.slideIndex.slides.length) throw new Error('workshop-generate requires the canonical TypeScript slideIndex with at least one slide')
+if (cfg.slideIndex.planPath !== cfg.planPath || cfg.slideIndex.planHash !== cfg.planHash) throw new Error('workshop-generate planPath/planHash must match the canonical slideIndex')
+if (cfg.slideIndex.ok !== true || cfg.slideIndex.planPath !== AUTH.planPath || cfg.slideIndex.planHash !== AUTH.hash || cfg.slideIndex.planFile !== AUTH.receipt.plan_file || cfg.slideIndex.reviewStatePath !== AUTH.state || (cfg.slideIndex.violations || []).length) throw new Error('workshop-generate index disagrees with strict current review.json authentication')
 const SLIDE_INDEX = cfg.slideIndex
 const SEV_RANK = { critical: 0, major: 1, minor: 2 }
 
@@ -62,7 +110,7 @@ const SECTION_SCHEMA = {
 }
 // Independent mechanical probe (mirrors run-core's gateProbe doctrine): the section agent's
 // citedInventory is self-reported (it greps its own fragment and echoes tokens) — nothing deterministic
-// re-checked it. workshop-verify's whitelist covers OUTLINE inventoryRefs, not grepped fragment tokens.
+// re-checked it. workshop-verify's whitelist covers authenticated PLAN inventoryRefs, not grepped fragment tokens.
 // This workflow has no filesystem access itself, so a second, CHEAP, low-effort agent re-runs the exact
 // grep independently and its tokens (not the section agent's self-report) are what the gate trusts.
 const PROBE_SCHEMA = {
@@ -85,19 +133,17 @@ const ASSEMBLE_SCHEMA = {
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
 // Map the deterministic slide index → the DISCOVERY_SCHEMA shape (no LLM). The parser's COMPOSITE
-// group ("<= section> / <== subsection>") is the fan-out key (mirrors the LLM Discover's "= Part + ==
-// subsection" grouping); fileHeader is left "" for the assembly agent to construct. Prose-form rows
-// carry no Visual/Notes — default Visual to "none" and let the section agent infer notes from bullets +
-// the paper (the same inference the LLM Discover path produces from a prose outline).
+// group ("<= section> / <== subsection>") is the fan-out key. The receipt-selected PLAN is the only
+// structure source; fileHeader is left "" for the assembly agent to construct.
 function discFromIndex(idx) {
   return {
     outlineReadable: true,
-    sourcesPath: idx.sourcesPath || `${PROJECT}/.planning/SOURCES.md`,
+    sourcesPath: idx.planPath,
     paperPath: idx.paperPath || '',
     slidesPath: `${PROJECT}/presentation/slides.typ`,
     notesPath: `${PROJECT}/presentation/notes.typ`,
     fileHeader: '',                                  // assembly agent constructs it (DESIGN §3a)
-    fragmentsDir: `${PROJECT}/.planning/slide-fragments`,
+    fragmentsDir: `${PROJECT}/presentation/.workshop-fragments`,
     sectionOrder: idx.groupOrder,                    // composite fan-out keys, document order
     slides: idx.slides.map(s => ({
       num: String(s.num),
@@ -113,21 +159,7 @@ function discFromIndex(idx) {
 
 phase('Discover')
 const disc = discFromIndex(SLIDE_INDEX)
-/* Retired LLM Discover preserved below only as historical source; shared-v1 never executes it. */
-false && await agent(
-  `Read the approved workshop Slide Spec and prepare for SECTION-level generation. Working directory: ${PROJECT}
-
-1. Read ${PROJECT}/.planning/OUTLINE.md. If it has no Slide Spec table (columns Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes), set outlineReadable=false. For each row extract a slide: num, section (the \`=\` Part + \`==\` subsection text — the grouping key), takeaway, bullets, inventory, visual, notes.
-2. sourcesPath = ${PROJECT}/.planning/SOURCES.md ; paperPath = the source-paper path from SOURCES.md (or "").
-3. slidesPath = ${PROJECT}/presentation/slides.typ ; notesPath = ${PROJECT}/presentation/notes.typ (adjust if the project uses a different presentation dir).
-4. fileHeader = the slides.typ preamble (import theme + #show + config-info incl qr:none) — read presentation/templates/ + any existing header, or reconstruct from SOURCES.md metadata. Must be a compilable preamble.
-5. fragmentsDir = ${PROJECT}/.planning/slide-fragments .
-6. sectionOrder = the distinct Section keys in presentation order.
-
-Return DISCOVERY_SCHEMA with absolute paths.`,
-  { label: 'discover', phase: 'Discover', schema: DISCOVERY_SCHEMA, model: 'sonnet' }
-)
-if (!disc.outlineReadable) throw new Error(`workshop-generate: ${PROJECT}/.planning/OUTLINE.md has no Slide Spec table. Phase 2 + workshop-outline-executable-guard must produce one first.`)
+if (!disc.outlineReadable) throw new Error('workshop-generate requires a readable receipt-selected native Slide Spec')
 if (SLIDE_INDEX) log(`Discover: deterministic slide index (${disc.slides.length} slides, ${disc.sectionOrder.length} groups) — no LLM Discover`)
 
 // Group slides by Section, in sectionOrder. Section id = its index in sectionOrder (stable for onlyChecks).

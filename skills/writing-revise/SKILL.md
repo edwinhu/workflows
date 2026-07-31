@@ -1,7 +1,7 @@
 ---
 name: writing-revise
 version: 1.0
-description: "This skill should be used when the user asks to 'revise writing', 'fix review issues', 'polish draft', 'apply review feedback', 'complete writing workflow', or needs the corrective midpoint entry for an existing writing project."
+description: "Use when revising PLAN-bound writing drafts, fixing independent review findings, or completing the writing correction loop."
 hooks:
   PreToolUse:
     - matcher: "Edit|Write|Bash|Agent|Workflow"
@@ -10,17 +10,6 @@ hooks:
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow writing"
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow writing"
-        - type: command
-          command: >-
-            GATE_ARTIFACT=.planning/AUTOMATED_REVIEW.md
-            GATE_BLOCKED_TOOLS=Write,Edit,Agent
-            GATE_DESCRIPTION="Writing review"
-            GATE_REMEDY="Run the internal writing-review phase first to produce .planning/AUTOMATED_REVIEW.md before revising"
-            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
-          # GATE_STATUS intentionally omitted: AUTOMATED_REVIEW.md carries no status frontmatter,
-          # and revise must run whenever AUTOMATED_REVIEW.md exists (it consumes both CLEAN and
-          # ISSUES-FOUND reviews). Existence is the correct trigger; a status gate would
-          # deadlock the phase. GATE_BLOCKED_TOOLS closes the Agent-dispatch bypass.
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:
@@ -32,548 +21,59 @@ hooks:
 
 # Writing Revise
 
-The revision loop for writing projects. Consumes `.planning/AUTOMATED_REVIEW.md` (produced by the internal writing-review phase) and applies targeted fixes, then completes when the **blocking** issues (critical + major) are resolved — residual minor polish notes are advisory and the writer accepts them at the iteration cap (they do not block completion).
+Apply targeted fixes from current-hash TaskList review findings, then obtain fresh independent re-review. Revise domain outputs without mutating stable PLAN structure.
 
-## Shared Enforcement
+## Iron Laws
 
-Auto-load all constraints matching `applies-to: writing-revise`:
+- **NO REVISION WITHOUT AN OPEN, EVIDENCE-GROUNDED REVIEW FINDING.**
+- **NO FIXED CLAIM WITHOUT FRESH INDEPENDENT RE-REVIEW.**
+- **NO STRUCTURAL REVISION UNDER THE OLD PLAN HASH.**
+- **NO COMPLETION WHILE CRITICAL OR MAJOR FINDINGS REMAIN.**
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-revise`
+## Inputs
 
-**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
+1. Authenticate the exact generated `plan_file` and `plan_hash` selected by the current approved combined receipt; the compiler exposes them as index `planFile` and `planHash`.
+2. Compile the deterministic section index and require its `planFile` and `planHash` to match TaskList findings.
+3. Load the domain skill, `workflows:ai-anti-patterns`, affected detailed outlines, drafts, and Source Plan context.
+4. Select open TaskList findings in severity order. Do not infer findings from a retired review ledger.
 
-**CRITICAL:** The `constraint-loading-protocol` above requires loading the domain skill (writing-legal/econ/general) and ai-anti-patterns before revising any prose.
+## Structural Boundary
 
-## Session Resume Detection
+The following require a replacement native plan, fresh approval, and fresh independent whole-plan review:
 
-Before starting, check for an existing handoff:
+- thesis or scope changes;
+- adding, removing, renaming, or reordering a section;
+- adding/removing claims or moving a claim's primary section;
+- changing bibliography/notebook configuration or key-source commitments;
+- changing Section Outputs paths or dependencies;
+- changing Review Surfaces.
 
-1. Check if `.planning/HANDOFF.md` exists
-2. **If found:** Read it and present to user:
-   - Show the phase, section in progress, and Next Action
-   - Ask: "Resume from handoff, or start fresh?"
-   - If resume: skip to the recorded phase
-   - If fresh: proceed with mode detection
-3. **If not found:** Proceed normally
+Stop and return to writing setup/native Plan mode. Do not edit the immutable PLAN. Existing current-hash execution and review items become `completed` with `disposition: superseded` and `superseded_by_plan_hash` when the replacement plan is approved.
 
-## Revise Flowchart (This IS the Spec)
+## Tactical Revision Loop
 
-```
-START
-  │
-  ├─ Step 1: Load context (ACTIVE_WORKFLOW, PRECIS, OUTLINE, drafts)
-  │
-  ├─ Step 2: AUTOMATED_REVIEW.md exists?
-  │  ├─ NO → REFUSE. Suggest the internal writing-review phase. EXIT.
-  │  └─ YES → Parse issues (critical → major → minor)
-  │
-  ├─ Step 3: Load constraint layers
-  │  ├─ Domain skill (legal/econ/general)
-  │  └─ ai-anti-patterns (universal)
-  │
-  ├─ Step 4: Fix issues in priority order
-  │  ├─ 4a: Critical issues (argument-breaking)
-  │  ├─ 4b: Major issues (transitions, repetition, late introductions)
-  │  ├─ 4c: Minor issues (polish)
-  │  └─ 4d: De-AI prose pass (MANDATORY — run /de-ai-revise on every edited draft)
-  │
-  ├─ Step 5: Formatting check
-  │
-  └─ Step 6: Check iteration state (.planning/REVIEW_STATE.md)
-     │
-     ├─ result.substratePass (0 critical, 0 major) → COMPLETE
-     │  └─ Residual MINORS are advisory polish — fix the cheap ones, then Archive → summary → EXIT.
-     │     Do NOT loop to drive minors to literal 0 (the prose-reviewer regenerates subjective minors — treadmill).
-     │
-     ├─ iteration < 3 AND BLOCKING issues remain (critical/major) → CONTINUE
-     │  └─ Increment iteration → fix the criticals/majors → Re-invoke the internal writing-review phase → Loop
-     │
-     └─ ESCALATE (decision: user) when EITHER
-        ├─ iteration >= 3 AND blocking issues still remain, OR
-        └─ substrate clean but minors remain → present them as "accept as-is OR one more polish pass?"
-```
+For nonstructural findings, dispatch an authorized implementation agent with exclusive write authority over the exact affected `drafts/`, `outlines/`, or `references/` paths. The orchestrator remains read-only and updates TaskList only from returned evidence.
 
-If text and flowchart disagree, the flowchart wins.
+Each delegated revision task must:
 
-<EXTREMELY-IMPORTANT>
-## IRON LAW: Critique Over Comfort
+1. Read the cited draft passage and exact finding evidence.
+2. Apply the smallest targeted fix to its authorized paths.
+3. Re-read the edited passage and adjacent boundaries.
+4. Run the PLAN-based deterministic gate probe and source verification.
+5. Run the mandatory `workflows:de-ai-revise` pass on edited drafts without chasing a score.
+6. Reinvoke independent writing review for affected sections, passing prior reviews only when the plan hash is unchanged.
+7. Update the TaskList finding disposition only from the fresh review result.
 
-**If the writing has problems, SAY SO. Being nice is NOT HELPFUL — the user publishes weak prose that gets rejected.**
+Retries remain bound to the same `planHash`, section, finding identity, and candidate fingerprint. A replacement plan cannot reuse them.
 
-### Critique Facts
+## Iteration Gate
 
-- "Overall flows well" hides section-level problems — each section must be checked against PRECIS claims, and a structural match to the outline says nothing about content quality.
-- A checkmark without evidence is an unverified claim presented as verification: reporting "all checks pass" without running every check means the user publishes with undetected problems.
-</EXTREMELY-IMPORTANT>
+- **COMPLETE:** zero critical and major current-hash findings, no unreliable reviewer, source verification clean, and every PLAN Review Surface inspected. Residual minors are advisory.
+- **CONTINUE:** blocking findings remain and fewer than three review-revise rounds have run. Start the next round immediately.
+- **ESCALATE:** blocking findings remain after three rounds, or the reviewer identifies a structural change. Present the evidence and options to the user.
 
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Re-Review
+Round counters and dispositions belong in TaskList or narrow hidden machine state, never in a Markdown planning ledger.
 
-**NO "FIXED" CLAIMS WITHOUT FRESH RE-REVIEW. This is not negotiable.**
+## Completion
 
-After applying fixes from AUTOMATED_REVIEW.md, you MUST:
-1. Re-invoke the internal writing-review phase to regenerate AUTOMATED_REVIEW.md with fresh diagnostics
-2. Verify issues are actually resolved (not assumed)
-3. Check for new issues introduced by edits (regressions, new problems)
-4. Only THEN claim fixes are complete
-
-"I fixed it" without re-reviewing is NOT HELPFUL — unverified fixes let broken prose reach the user.
-
-### The Audit-Fix Loop (Max 3 Iterations)
-
-```
-Iteration 1: Review → AUTOMATED_REVIEW.md → Revise → Re-Review
-              ↓
-Iteration 2: Re-Review → AUTOMATED_REVIEW.md → Revise → Re-Review
-              ↓
-Iteration 3: Re-Review → AUTOMATED_REVIEW.md → Revise → Re-Review
-              ↓
-         Still issues? → ESCALATE to user
-         All clean? → COMPLETE
-```
-
-**Track iterations in `.planning/REVIEW_STATE.md`:**
-
-```yaml
----
-iteration: 1
-max_iterations: 3
-last_review_date: 2026-03-09
-issues_found_count: 5
----
-```
-
-**Exit criteria** (gate on the SUBSTRATE — critical + major — not on driving subjective minors to zero):
-- **COMPLETE**: `result.substratePass` (0 critical, 0 major) in AUTOMATED_REVIEW.md. Apply any cheap residual minors, then archive. **Gate type: `human-verify` — auto-advance to archive.** Residual minor polish notes do NOT block completion.
-- **CONTINUE**: iteration < 3 AND **blocking** issues remain (critical/major) → fix them, re-invoke the internal writing-review phase. **Gate type: `human-verify` — auto-advance.**
-- **ESCALATE** `[decision — wait for user]`: iteration >= 3 AND blocking issues still remain (present options); OR substrate is clean but minor polish notes remain — present "accept as-is OR one more polish pass?" The writer decides; do NOT auto-loop on minors.
-
-**Note:** the review still FLAGS every severity (including minors — see the rationalization table; flagging is the reviewer's job). What changed is the loop *exit*: only critical+major **block**; minors are advisory. This is the writing analog of the wc substrate gate — drive the real, convergent findings to zero; don't treadmill on an LLM panel's inexhaustible subjective minors.
-
-**Before claiming "all fixed", check iteration count:**
-1. READ `.planning/REVIEW_STATE.md` (create if missing with iteration: 1)
-2. If iteration >= 3 and issues remain: ESCALATE (don't say "run review again")
-3. If iteration < 3 and issues remain: INCREMENT iteration, re-invoke the internal writing-review phase
-4. If no issues: COMPLETE
-
-**Claiming "all issues resolved" without re-reviewing is NOT HELPFUL — the user trusts a false "all clear" and publishes with remaining problems.**
-
-### Re-Review Facts
-
-- Revision introduces new errors — fixes cascade into adjacent text, and your eyes glaze over your own edits, so spot-checks and "looks clean" miss what a fresh the internal writing-review phase catches. Shipping an unverified revised draft asserts a verification that never happened; an unverified claim presented as done is dishonest.
-- The rejection-and-rewrite cost far exceeds the re-review cost (a 15-minute re-review vs hours of rework after reviewers reject). Skipping re-review to finish faster is counterproductive on its own terms.
-- Hitting the iteration cap with issues remaining means ESCALATE, not approve.
-</EXTREMELY-IMPORTANT>
-
-### Revision Facts
-
-- Rewriting an entire section instead of applying the minimum targeted fix introduces new issues and loses the author's voice — destructive ambition, not improvement.
-- A fix can break adjacent text; the paragraph before and after the edit must be re-read, and the edited passage itself re-read before the issue is marked fixed — marking it fixed unread is a false completion claim.
-- Combining multiple unrelated fixes in one pass makes per-fix verification impossible; one issue at a time.
-- "Remembering" the domain rules is guessing — Read() the domain skill every time.
-
-## When to Use
-
-- After the internal writing-review phase produces `.planning/AUTOMATED_REVIEW.md`
-- When hook suggests it (after ~10 edits)
-- Before finishing a writing project
-
-## Prerequisites Gate
-
-Before running edits, verify the workflow is ready:
-
-1. **IDENTIFY**: `.planning/ACTIVE_WORKFLOW.md`, `.planning/PRECIS.md`, `.planning/OUTLINE.md`, and at least one file in `drafts/` must exist
-2. **RUN**: Check file existence
-3. **READ**: Confirm ACTIVE_WORKFLOW shows `workflow: writing`
-4. **VERIFY**: All required files present and draft content exists
-5. **CHECK FOR REVIEW.MD**: Look for `.planning/AUTOMATED_REVIEW.md`
-
-If any file is missing, report and suggest the appropriate phase:
-- No PRECIS.md -> `/writing` (start from brainstorm)
-- No OUTLINE.md -> writing-setup needed
-- No drafts -> writing-draft needed
-- **No AUTOMATED_REVIEW.md** -> suggest the internal writing-review phase first; do not infer or convert legacy review state
-
-## Process
-
-### Step 1: Load Context
-
-```
-Read(".planning/ACTIVE_WORKFLOW.md")
-Read(".planning/PRECIS.md")
-Read(".planning/OUTLINE.md")
-Read([current draft files in drafts/])
-```
-
-If any file is missing, report and suggest starting with `/writing`.
-
-### Step 2: Load AUTOMATED_REVIEW.md
-
-<EXTREMELY-IMPORTANT>
-#### Iron Law: NO REVISION WITHOUT AUTOMATED_REVIEW.md
-
-**NO REVISION WITHOUT AUTOMATED_REVIEW.md. This is not negotiable.**
-
-If `.planning/AUTOMATED_REVIEW.md` does not exist, REFUSE to proceed:
-
-```
-AUTOMATED_REVIEW.md not found. Cannot revise without a structured review diagnosis.
-
-Run the internal writing-review phase first to produce .planning/AUTOMATED_REVIEW.md, then re-run /writing-revise.
-```
-
-**STOP HERE. Do not fall back to inline review. Do not offer to "do a quick check instead."**
-
-Why: Inline review is shallow by design — it misses cross-section issues, transition problems, and thesis drift that only hierarchical review catches. Allowing a fallback path means the full review is never run. The review-then-revise pipeline exists because revision without diagnosis produces random edits, not targeted fixes. Small fixes applied without review context create new issues the same way.
-</EXTREMELY-IMPORTANT>
-
-**When AUTOMATED_REVIEW.md exists:**
-
-```
-Read(".planning/AUTOMATED_REVIEW.md")
-```
-
-Parse the review into:
-- **Critical issues** -- fix first, these break the argument
-- **Major issues** -- fix second, these weaken the document
-- **Minor issues** -- fix last, these polish the prose
-
-### Step 3: Load Constraint Layers
-
-The midpoint must be self-contained. Load ALL constraint layers before touching the draft:
-
-#### 3a: Load Domain Skill
-
-Based on `style` in ACTIVE_WORKFLOW.md:
-
-| Style | Load |
-|-------|------|
-| legal | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-legal/SKILL.md")` |
-| econ | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-econ/SKILL.md")` |
-| general | `Read("${CLAUDE_SKILL_DIR}/../../skills/writing-general/SKILL.md")` |
-
-**You MUST Read() the domain skill before editing.** The domain skill contains the full rules, reference material, and enforcement patterns. Editing without it produces generic fixes.
-
-#### 3b: Load Universal Constraints
-
-```
-Skill(skill="workflows:ai-anti-patterns")
-```
-
-**You MUST load ai-anti-patterns before editing.** This catches AI writing smell (hedging, filler, false balance, weasel words) that domain skills don't cover. Revising without it means you'll fix structural issues while leaving AI-smell intact — the reviewer will flag the same draft again for different reasons.
-
-<EXTREMELY-IMPORTANT>
-### Iron Law: Full Constraint Loading
-
-**NO REVISION WITHOUT ALL CONSTRAINT LAYERS. This is not negotiable.**
-
-The midpoint cannot rely on constraints loaded during earlier phases. Prior context may be compressed or lost. You must load:
-1. `.planning/ACTIVE_WORKFLOW.md` → workflow state
-2. `.planning/PRECIS.md`, `.planning/OUTLINE.md` → structural intent
-3. Domain skill → domain-specific rules
-4. ai-anti-patterns → universal writing quality
-
-**Editing with only domain skill loaded is like reviewing with one eye closed.** You'll fix half the problems and miss the other half.
-</EXTREMELY-IMPORTANT>
-
-### Deviation Rules (Revise Phase)
-
-When applying fixes reveals unplanned issues, follow the deviation rules from `constraints/deviation-rules.md`:
-
-- **R1 (Factual):** Fix reveals a factual error elsewhere → auto-fix: correct and track
-- **R2 (Evidence):** Fix requires additional evidence not in the outline → auto-fix: add citation and track
-- **R3 (Structural):** Fix breaks a cross-reference or transition → auto-fix: repair and track
-- **R4 (Restructuring):** Fix reveals the argument structure is fundamentally broken → **STOP**, present to user, may require returning to outline or PRECIS
-
-Track deviations per fix batch. Report at Step 6: **Deviations during revision:** N auto-fixed (R1: X, R2: Y, R3: Z). **R4 escalations:** [list or "none"].
-
-### Step 4: Fix Issues from AUTOMATED_REVIEW.md
-
-Work through AUTOMATED_REVIEW.md issues in priority order:
-
-#### 4a: Critical Issues First
-
-For each critical issue in AUTOMATED_REVIEW.md:
-1. Read the cited location in the draft
-2. Understand the diagnosis
-3. Apply the suggested fix (or a better one if you see it)
-4. Verify the fix resolves the issue without creating new problems
-
-#### 4b: Major Issues
-
-For each major issue:
-1. Read the cited location
-2. Apply fix
-3. Verify
-
-**Transition fixes** (from AUTOMATED_REVIEW.md "Transition Issues" section):
-- Read the boundary summaries for context
-- Write bridge text that connects Section N's closing to Section N+1's opening
-- Ensure the bridge advances the argument, not just changes the topic
-
-**Repetition fixes** (from AUTOMATED_REVIEW.md "Cross-Section Repetition"):
-- Decide which section should own the point
-- Remove or differentiate the duplicate
-- Ensure removing the duplicate doesn't leave a gap
-
-**Late introduction fixes** (from AUTOMATED_REVIEW.md "Concept Introduction Order"):
-- Add foreshadowing in the Introduction or earlier section
-- Or restructure to move the concept's first substantive use earlier
-
-#### 4c: Minor Issues
-
-For each minor issue:
-1. Apply fix
-2. Quick verify
-
-#### 4d: De-AI prose pass (mandatory — always runs)
-
-<EXTREMELY-IMPORTANT>
-**NO REVISE COMPLETES WITHOUT THE DE-AI PASS. This is not negotiable.**
-
-After fixing AUTOMATED_REVIEW.md issues, run the `de-ai-revise` skill (rewrite mode) on **every**
-edited `drafts/*.md` so the prose reads less AI-generated. This is a standard step, not
-an optional polish — the AI-prose scorers (tics + always_flag diction + stylometrics)
-are corpus-validated and the internal writing-review phase already surfaced their spans (Step 2d).
-</EXTREMELY-IMPORTANT>
-
-```
-Skill(skill="workflows:de-ai-revise")   # or follow skills/de-ai-revise/SKILL.md
-```
-
-The de-ai-revise process: AUDIT (`de_ai_audit.py`) → rewrite flagged spans (swap
-`always_flag` diction for the plain replacement, fix tics, vary rhythm toward bursty,
-thin em-dash clusters) → one corrective 2nd pass → report.
-
-**Honor its Iron Law of Goodhart:** the scorers GUIDE which spans to revise; do NOT
-chase the composite. Preserve already-human passages, quoted/statutory text, and the
-author's deliberate em-dashes — a mid-range composite is a human who likes em-dashes,
-not an AI tell. Over-editing to win the number flattens voice.
-
-AI-prose spans are **advisory polish**, not blocking criticals — the substrate gate
-(critical + major) is unchanged. The de-AI pass runs every iteration but never blocks
-completion on its own.
-
-### Step 5: Formatting Check
-
-- [ ] Consistent heading styles
-- [ ] Citations formatted (Bluebook for legal, journal style for econ)
-- [ ] Footnotes properly numbered (if applicable)
-- [ ] No orphaned references
-
-### Step 5a (optional): Rhythm-and-flow pass
-
-After AUTOMATED_REVIEW.md issues are resolved AND the regex sweep (`workflows:ai-anti-patterns` + Strunk + McCloskey + Volokh via `prose-lint.py`) is clean, consider a sentence-level rhythm-and-flow pass for prose-quality issues regex cannot catch — choppy rhythm, weak topic sentences, paragraph closures that trail into roadmaps, sentence-variety deficits.
-
-**When to run:**
-- Regex sweep returns 0 hits OR only documented false positives
-- User reports the draft "reads choppy" or asks for rhythm review
-- Recent edits removed paragraph-closing sentences (roadmap deletions, sentence merges) — rhythm regressions are common after structural edits
-- Final pre-circulation polish on a `.docx`
-
-**When NOT to run:**
-- Regex sweep has unresolved hits — fix those first (cheaper, mechanical)
-- Draft is pre-structural (outline-stage rewrites pending) — rhythm fixes get undone
-
-**Pass infrastructure** (in this skill's directory):
-- `references/rhythm-rubric.md` — 5-dimension scoring rubric (rhythm, flow, topic, closure, variety) with geometric-mean overall
-- `references/rhythm-auditor-brief.md` — validated agent prompt template
-- `references/rhythm-lessons.md` — the 7 design lessons that govern correct execution (read this BEFORE running the pass)
-- `scripts/transactional_fix.py` — fix engine with iron-law-of-transactional-save + footnote-pin-respect + structured-fix-targeting enforcement
-
-**Iron Laws** (from `rhythm-lessons.md` — read it; do not run the pass without):
-1. Fresh `workflows:writing-prose-reviewer` subagent per iteration (read-only tools)
-2. Validate ALL fix needles → apply ALL → save once (no partial saves)
-3. Pre-flight footnote/bookmark pin scan; refuse fixes that would orphan citations
-4. Structured (paragraph, sentence, dimension, target_text, new_text) fix tuples — no natural-language descriptions
-5. Threshold default **8.5** (not 9.5; retrofit work has structural ceilings)
-6. Regression alarm distinguishes recalibration (no targeted fix) from collateral damage (targeted fix → drop)
-7. Geometric mean for overall score (penalizes worst dimension)
-
-**Invocation pattern:**
-
-```
-1. Read rhythm-lessons.md (mandatory — do not skip)
-2. Copy rhythm-rubric.md and rhythm-auditor-brief.md to <project>/.planning/prose-rhythm/
-3. Run setup: extract draft → CURRENT.md, scan pins → PINS.md, seed SCORES.md + AUDIT.md + CHANGELOG.md
-4. Set /goal pinned to "the prose-rhythm pass has CONVERGED — latest .planning/prose-rhythm/SCORES.md row shows ZERO blocking rhythm findings AND overall improved <0.2 vs the prior row (flat) — OR iter ≥ <max_iter>. Stop after <max_iter> turns." (Rhythm is pure judgment with no hard substrate; gate on convergence/flat + zero blocking, NOT on chasing overall ≥ a fixed threshold.)
-5. Loop body (one turn each):
-   a. Dispatch fresh workflows:writing-prose-reviewer (read-only Read/Grep/Glob)
-   b. Read SCORES.md latest row → check convergence (flat ±0.2) + blocking findings + iter + regression alarm
-   c. If CONTINUE: uv run --with pyyaml --with lxml python3 ${CLAUDE_SKILL_DIR}/scripts/transactional_fix.py \\
-        --draft <path> --state-dir .planning/prose-rhythm --iteration N
-   d. End turn (/goal refires)
-6. Exit on COMPLETE (zero blocking findings AND overall flat — converged) or ESCALATE (iter ≥ max_iter)
-```
-
-**Do NOT invoke as `/prose-rhythm` standalone — it's a subroutine of /writing-revise.** Future work may promote it to a standalone skill if usage demands.
-
-### Step 6: Check Iteration State and Generate Report
-
-Before claiming completion, check the audit-fix loop state:
-
-```
-1. READ `.planning/REVIEW_STATE.md` - what iteration are we on?
-2. Run final check - are there remaining issues?
-3. Determine verdict based on iteration + issues:
-   - iteration < 3 AND issues remain → CONTINUE (re-invoke the internal writing-review phase)
-   - iteration >= 3 AND issues remain → ESCALATE (report to user)
-   - no issues → COMPLETE (but first run Step 6a cite-fidelity gate)
-```
-
-#### Step 6a: Cite-fidelity hard gate (Stage 3)
-
-<EXTREMELY-IMPORTANT>
-**Iron Law: NO COMPLETE WITHOUT CITES-PASSED. Not negotiable.**
-
-If `.planning/ACTIVE_WORKFLOW.md` declares an `nlm_notebook`, every
-`drafts/*.md` MUST have a corresponding `.planning/CITES-{slug}.md`
-showing `status: PASSED` before the verdict can be COMPLETE.
-</EXTREMELY-IMPORTANT>
-
-Before declaring COMPLETE, run Stage 3:
-
-```bash
-uv run ${CLAUDE_SKILL_DIR}/../../scripts/cite-fidelity/check_section_cites.py --all
-```
-
-Then verify each section:
-
-```python
-# For each drafts/*.md, check the matching CITES file
-# Slug rule: "Part I (Draft).md" → "CITES-Part-I.md"
-import re
-from pathlib import Path
-
-drafts = list(Path("drafts").glob("*.md"))
-failures = []
-for d in drafts:
-    slug = re.sub(r"\s+", "-", re.sub(r"\s*\(Draft\)\s*$", "", d.stem).strip())
-    cites = Path(".planning") / f"CITES-{slug}.md"
-    if not cites.exists():
-        failures.append(f"{d.name}: missing CITES file")
-        continue
-    head = cites.read_text().split("---", 2)
-    if len(head) < 3 or "status: PASSED" not in head[1]:
-        failures.append(f"{d.name}: CITES status not PASSED")
-```
-
-If any failure: return to Step 4 (Fix Issues) addressing the UNSUPPORTED
-cites listed in the failing CITES file. Do NOT mark COMPLETE.
-
-If `ACTIVE_WORKFLOW.md` has no `nlm_notebook`, skip this gate (no notebook
-to verify against) and proceed with the normal verdict.
-
-See `references/constraints/cite-fidelity-section-gate.md` for the full
-doctrine.
-
-Generate report based on verdict:
-
-#### If CONTINUE (iteration < 3, issues remain)
-
-Update `.planning/REVIEW_STATE.md`:
-
-```yaml
----
-iteration: [N+1]
-max_iterations: 3
-last_review_date: [date]
-issues_found_count: [count]
-verdict: CONTINUE
----
-```
-
-**IMMEDIATELY re-invoke the internal writing-review phase** (no pause, no user prompt):
-
-Read `${CLAUDE_SKILL_DIR}/../writing-review/SKILL.md` and follow the internal review instructions.
-
-After the internal writing-review phase completes and regenerates AUTOMATED_REVIEW.md, /writing-revise will be invoked again automatically.
-
-**This is a loop, not a checkpoint.** Do not pause for user input.
-
-#### If ESCALATE (iteration >= 3, issues remain)
-
-Update `.planning/REVIEW_STATE.md`:
-
-```yaml
----
-iteration: 3
-max_iterations: 3
-last_review_date: [date]
-issues_found_count: [count]
-verdict: ESCALATE
----
-```
-
-Report to user:
-
-```
-Writing Review Loop Escalation (3 iterations completed)
-
-After 3 review-revise cycles, [N] issues remain:
-
-[List issues from AUTOMATED_REVIEW.md]
-
-Options:
-1. Accept current draft with documented limitations
-2. Extend review (manual approval for iteration 4+)
-3. Rethink structure (return to outline phase)
-4. Human editing (exit workflow, manual fixes)
-
-Which option do you prefer?
-```
-
-#### If COMPLETE (no issues found)
-
-Update `.planning/REVIEW_STATE.md`:
-
-```yaml
----
-iteration: [N]
-max_iterations: 3
-last_review_date: [date]
-issues_found_count: 0
-verdict: COMPLETE
----
-```
-
-**SUMMARY**: Append final phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
-- phase: revise
-- artifacts_produced: [list all modified drafts/*.md files]
-- implements: [CLAIM-XX ids the revised sections advance — the requirement→phase trace]
-- provides: [final drafts/*.md]
-- deviations: {r1: X, r2: Y, r3: Z, r4: W}
-- Include substantive one-liner with total iterations and final verdict (NOT "Revision complete")
-
-Archive workflow state:
-
-```bash
-mkdir -p .planning/completed-workflows
-mv .planning/ACTIVE_WORKFLOW.md ".planning/completed-workflows/$(date +%Y-%m-%d)-writing.md"
-```
-
-Generate completion summary:
-
-```markdown
-## Writing Workflow Complete
-
-**Project**: [directory name]
-**Completed**: [date]
-**Style**: [legal | econ | general]
-
-### Artifacts
-- `.planning/PRECIS.md` - Thesis, audience, claims
-- `.planning/OUTLINE.md` - Document structure
-- `.planning/AUTOMATED_REVIEW.md` - Final review diagnosis
-- `outlines/` - Detailed section outlines
-- `drafts/` - Final prose
-
-### Document Summary
-- **Thesis**: [from PRECIS.md]
-- **Sections**: [count]
-
-### Next Steps
-- Export to Word: `/docx`
-- Export to PDF: `/pdf`
-- Start new project: `/writing`
-```
+Return the final evidence and human review surfaces directly. Preserve PLAN, hidden authentication state, TaskList history, detailed outlines, drafts, and references in their assigned roles. Do not archive or move a visible workflow marker because new canonical episodes do not create one.

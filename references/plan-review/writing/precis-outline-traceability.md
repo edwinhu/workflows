@@ -1,6 +1,12 @@
-# Précis and outline traceability
+# Claims and section traceability
 
-The plan must state the thesis, audience, scope, exclusions, and document purpose in terms consistent
-with `.planning/PRECIS.md`. Every planned section must trace to a master-outline purpose and every
-material précis claim must have a planned section or an explicit exclusion. Missing or contradictory
-traceability is `ISSUES_FOUND`.
+The authenticated generated PLAN must state its thesis, audience, scope, exclusions, and document
+purpose in **Writing Intent**. Every material `CLAIM-NN` must map through **Claim → Section Map**
+to a planned section or be explicitly excluded. Every **Section Outputs** row must name the exact
+outline and draft deliverables that implement its mapped claims, with `[]` only for an explicitly
+claimless structural section.
+
+Reviewers authenticate the receipt-selected `{planFile, planHash}` and compile the deterministic
+section index before tracing. The PLAN's Claims, Document Structure, Claim → Section Map, and
+Section Outputs are authoritative; a visible précis, master outline, workflow state, or review
+ledger cannot fill a gap. Missing or contradictory traceability is `ISSUES_FOUND`.

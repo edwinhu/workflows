@@ -21,6 +21,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 import { pyJson } from "./_gate_common.ts";
+import { classifyPlanningLifecycle } from "../workflows/lib/approved-artifact.ts";
 
 const SKILLS_ROOT = join(homedir(), "projects", "workflows", "skills");
 
@@ -44,7 +45,10 @@ function isDir(p: string): boolean {
 /** Skill names listed in workflow state or the approved native PLAN ('Skills Touched'). */
 function domainSkills(): string[] {
   const skills: string[] = [];
-  for (const name of ["PLAN.md"]) {
+  const lifecycle = classifyPlanningLifecycle(process.cwd());
+  // Do not scan visible plan names: only the receipt-selected generated plan is modern authority.
+  const names = lifecycle.kind === "canonical" ? [lifecycle.resolved.planFile] : [];
+  for (const name of names) {
     const text = read(join(process.cwd(), ".planning", name));
     const re = /^\s*[-*]\s+`([a-z0-9][a-z0-9:_-]*)`\s*[-—]/gm;
     let m: RegExpExecArray | null;
@@ -64,10 +68,11 @@ function referenceFiles(skill: string): string[] {
 }
 
 function activeWorkflow(): string | null {
-  const plan = read(join(process.cwd(), ".planning", "PLAN.md"));
-  if (/## DS Workflow|\/ds\b|data science|\bEDA\b/i.test(plan)) return "ds";
+  const lifecycle = classifyPlanningLifecycle(process.cwd());
+  if (lifecycle.kind === "canonical") return lifecycle.resolved.receipt.workflow;
+  if (lifecycle.kind === "blocked") return null;
 
-  // Legacy workflows still persist STATE.md until they migrate to native-plan state.
+  // Only the explicitly authenticated /dev compatibility path may resume visible STATE.md.
   const text = read(join(process.cwd(), ".planning", "STATE.md"));
   const m = /^## Active workflow:\s*\/?(\S+)/m.exec(text);
   if (m && m[1].toUpperCase() !== "UNKNOWN") return m[1].replace(/^\/+/, "");
@@ -83,13 +88,24 @@ async function main(): Promise<void> {
 
   if (!isDir(join(process.cwd(), ".planning"))) process.exit(0);
 
+  const lifecycle = classifyPlanningLifecycle(process.cwd());
+  if (lifecycle.kind === "blocked") {
+    console.log(pyJson({
+      hookSpecificOutput: {
+        hookEventName: "SubagentStart",
+        additionalContext: "PLANNING STATE BLOCKED. Do not read or write visible planning files. Convert the retired state or create a fresh approved generated plan before resuming.",
+      },
+    }));
+    process.exit(0);
+  }
+
   const parts: string[] = [];
 
   const wf = activeWorkflow();
   if (wf) {
     parts.push(
       `ACTIVE WORKFLOW: /${wf}. This task is part of that workflow -- follow its ` +
-        `conventions, and read .planning/PLAN.md for approved decisions and evidence. ` +
+        `conventions, and read the receipt-selected generated plan for approved decisions and evidence. ` +
         `Call TaskList for live work and consult project auto-memory for durable technical facts ` +
         `from earlier tasks.`,
     );

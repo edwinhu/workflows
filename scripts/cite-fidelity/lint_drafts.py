@@ -15,13 +15,14 @@ Checks (defaults in **bold**):
      a preceding `<!-- nlm-quote @key: "..." -->` within 6 lines.
   4. **bibkey-not-in-nlm** (ERROR): a cited bibkey is not present in the NLM
      notebook under its bibkey-as-title (only runs if the project has
-     `nlm_notebook` set in ACTIVE_WORKFLOW.md).
+     `--nlm-notebook` is supplied from the authenticated generated plan).
 
-Project context comes from `.planning/ACTIVE_WORKFLOW.md`.
+Project context is supplied explicitly by the canonical hook or caller; this
+linter never reads retired workflow markers.
 
 Usage (run from inside the writing project):
-  uv run lint_drafts.py                              # all drafts/*.md
-  uv run lint_drafts.py "drafts/Part I (Draft).md"
+  uv run lint_drafts.py --project-root .             # all drafts/*.md
+  uv run lint_drafts.py --project-root . "drafts/Part I (Draft).md"
   uv run lint_drafts.py --strict                     # require nlm-quote evidence
   uv run lint_drafts.py --skip nlm                   # offline (no NLM listing)
   uv run lint_drafts.py --skip bundled               # turn off bundled warnings
@@ -34,12 +35,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import (  # noqa: E402
-    CROSSREF_PREFIXES,
-    ContextError,
-    load_active_workflow,
-    parse_sources_listing,
-)
+from _common import CROSSREF_PREFIXES, parse_sources_listing  # noqa: E402
 
 # Bluebook signal patterns. These appearing inside a footnote body without an
 # accompanying [@bibkey] suggest a hand-typed citation that bypasses the bib.
@@ -217,6 +213,10 @@ def render(issues: list[Issue]) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--project-root", type=Path, required=True,
+                    help="Authenticated writing project root (supplied by the hook).")
+    ap.add_argument("--nlm-notebook", default="",
+                    help="Notebook identifier from the authenticated generated plan.")
     ap.add_argument("files", nargs="*", type=Path,
                     help="Files to lint (default: all drafts/*.md).")
     ap.add_argument("--strict", action="store_true",
@@ -227,18 +227,17 @@ def main() -> int:
                     help="Suppress a check (repeatable).")
     args = ap.parse_args()
 
-    try:
-        ctx = load_active_workflow()
-    except ContextError as e:
-        print(f"error: {e}", file=sys.stderr)
+    project_root = args.project_root.resolve()
+    if not project_root.is_dir():
+        print(f"error: project root is not a directory: {project_root}", file=sys.stderr)
         return 2
 
-    files = [f if f.is_absolute() else (ctx["project_root"] / f) for f in args.files]
+    files = [f if f.is_absolute() else (project_root / f) for f in args.files]
     if not files:
-        files = sorted(ctx["drafts_dir"].glob("*.md"))
+        files = sorted((project_root / "drafts").glob("*.md"))
 
     nlm_titles: set[str] | None = None
-    notebook = ctx.get("nlm_notebook")
+    notebook = args.nlm_notebook.strip()
     if "nlm" not in args.skip and notebook:
         try:
             nlm_titles = set(parse_sources_listing(notebook).keys())

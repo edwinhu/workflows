@@ -11,16 +11,23 @@ const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
 const cwd = String(payload.cwd ?? process.cwd());
-const IMMUTABLE_APPROVAL_ARTIFACTS = new Set([
+// Modern workflows have one hidden, hook-owned receipt and one receipt-selected generated plan.
+// Visible predecessor artifacts are conversion input, never a second authority or a writable target.
+const RETIRED_MODERN_ARTIFACTS = new Set([
   ".planning/PLAN.md",
   ".planning/PLAN.meta.json",
   ".planning/PLAN_REVIEWED.md",
+  ".planning/STATE.md",
+  ".planning/SPEC.md",
+  ".planning/LEARNINGS.md",
 ]);
 function allowedPath(raw: unknown): boolean {
   const path = safeProjectPath(cwd, raw);
   if (!path) return false;
   const relative = path.slice(cwd.endsWith("/") ? cwd.length : cwd.length + 1);
-  if (["writing", "workshop", "workflow-creator"].includes(policy.workflow) && IMMUTABLE_APPROVAL_ARTIFACTS.has(relative)) return false;
+  // Descriptor-v1 external workflows retain the descriptor-declared legacy artifact layout.
+  const builtInModern = policy.approvalPolicy === undefined && policy.workflow !== "dev";
+  if (builtInModern && (RETIRED_MODERN_ARTIFACTS.has(relative) || relative.startsWith(".planning/.state/"))) return false;
   return policy.allowedOrchestratorDirectories.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`));
 }
 function allowedNativePlanPath(raw: unknown): boolean {

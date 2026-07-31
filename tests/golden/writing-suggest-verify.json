@@ -4,7 +4,7 @@
     {
       "name": "unparseable-stdin-noop",
       "kind": "allow",
-      "_branch": "json.load(sys.stdin) raises -> sys.exit(0). stdin omitted so the harness attaches /dev/null and the reader sees EOF. Fixture is a live writing workflow at edits 9/10, so ONLY the parse guard can stop the counter from moving — a port that treats empty stdin as {} would still no-op here, but a port that defaults the payload to something truthy would write the file and fail on the fs delta.",
+      "_branch": "json.load(sys.stdin) raises -> sys.exit(0). stdin omitted so the harness attaches /dev/null and the reader sees EOF. Fixture is a live writing workflow at edits 9/10, so ONLY the parse guard can stop the counter from moving \u2014 a port that treats empty stdin as {} would still no-op here, but a port that defaults the payload to something truthy would write the file and fail on the fs delta.",
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
       }
@@ -19,7 +19,9 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Read",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n",
@@ -36,7 +38,9 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "notes.markdown" }
+        "tool_input": {
+          "file_path": "notes.markdown"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
@@ -52,7 +56,9 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/OUTLINE.md": "# Outline\n",
@@ -69,7 +75,9 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "docs/design.md" }
+        "tool_input": {
+          "file_path": "docs/design.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: dev\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
@@ -85,7 +93,9 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nstyle: legal\nphase: draft\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
@@ -94,17 +104,24 @@
     {
       "name": "under-threshold-increments-counter",
       "kind": "effect",
-      "_branch": "edits(3)+1 = 4 < threshold(10) -> else arm: update_yaml_value rewrites `edits_since_verify: 3` to `4`, writes the file, exits 0 with NO stdout. The whole observable is the fs delta on .planning/ACTIVE_WORKFLOW.md — the branch where a port that silently skips the write, or writes `edits` instead of `edits+1`, is invisible in stdout and caught only here.",
+      "_branch": "edits(3)+1 = 4 < threshold(10) -> else arm: update_yaml_value rewrites `edits_since_verify: 3` to `4`, writes the file, exits 0 with NO stdout. The whole observable is the fs delta on .planning/ACTIVE_WORKFLOW.md \u2014 the branch where a port that silently skips the write, or writes `edits` instead of `edits+1`, is invisible in stdout and caught only here.",
       "stdin": {
         "session_id": "sess-parity",
         "transcript_path": "/tmp/transcript.jsonl",
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "sections/02-analysis.md" }
+        "tool_input": {
+          "file_path": "sections/02-analysis.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nproject_root: .\nedits_since_verify: 3\nverify_threshold: 10\n---\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -117,10 +134,17 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: econ\nphase: draft\n---\n\n# Notes\n\nBody text after the front matter.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -133,10 +157,17 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "MultiEdit",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: general\nphase: revise\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -149,10 +180,17 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "sections/03-doctrine.md" }
+        "tool_input": {
+          "file_path": "sections/03-doctrine.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nproject_root: .\nedits_since_verify: 9\nverify_threshold: 10\n---\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -165,26 +203,129 @@
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nedits_since_verify: 12\nverify_threshold: 3\n---\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "non-numeric-counter-crashes-uncaught",
       "kind": "effect",
-      "_branch": "int(parse_yaml_value(content, 'edits_since_verify')) raises ValueError on `many` and NOTHING catches it: the process dies with a traceback on stderr, exit code 1, EMPTY stdout, and the state file UNCHANGED. Pins the unhandled-crash contract — a port that defensively coerces a bad value to 0 (or wraps main in try/catch and exits 0) differs on both exit code and fs delta.",
+      "_branch": "int(parse_yaml_value(content, 'edits_since_verify')) raises ValueError on `many` and NOTHING catches it: the process dies with a traceback on stderr, exit code 1, EMPTY stdout, and the state file UNCHANGED. Pins the unhandled-crash contract \u2014 a port that defensively coerces a bad value to 0 (or wraps main in try/catch and exits 0) differs on both exit code and fs delta.",
       "stdin": {
         "session_id": "sess-parity",
         "transcript_path": "/tmp/transcript.jsonl",
         "cwd": ".",
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "draft.md" }
+        "tool_input": {
+          "file_path": "draft.md"
+        }
       },
       "fixture": {
         ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: writing\nstyle: legal\nphase: draft\nedits_since_verify: many\nverify_threshold: 10\n---\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "effect-approved-receipt-increments-hash-keyed-state",
+      "kind": "effect",
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "draft.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{\"workflow\":\"writing\",\"plan_file\":\"writing-native.md\",\"plan_hash\":\"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "draft.md": "# Draft\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".planning/.state/writing.json": "ea6e8ab9fd11f673"
+        }
+      }
+    },
+    {
+      "name": "context-approved-receipt-threshold-resets-hash-keyed-state",
+      "kind": "context",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "draft.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{\"workflow\":\"writing\",\"plan_file\":\"writing-native.md\",\"plan_hash\":\"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "draft.md": "# Draft\n",
+        ".planning/.state/writing.json": "{\"schemaVersion\": 1, \"planHash\": \"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\", \"editsSinceVerify\": 9}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "411a1127026c68e44ce75b33001d1867d4cae3475419d0b7bb3f21ce08e1e731",
+        "exit": 0,
+        "fs": {
+          ".planning/.state/writing.json": "2cd9d596821941e0"
+        }
+      }
+    },
+    {
+      "name": "allow-pending-receipt-does-not-write-state",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "draft.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{\"workflow\":\"writing\",\"plan_file\":\"writing-native.md\",\"plan_hash\":\"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"PENDING\",\"reviewer_session_id\":\"\",\"reviewed_at\":\"\"}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "draft.md": "# Draft\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "allow-malformed-receipt-does-not-write-state",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "draft.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "draft.md": "# Draft\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

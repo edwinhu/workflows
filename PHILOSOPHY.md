@@ -61,7 +61,7 @@ The shape varies by domain:
 
 Workflows prevent drift by making the current status legible. Use reproducible evidence where it is meaningful, and reserve quality decisions for independent review and the human.
 
-For the DS workflow, the approved plan is preserved in `.planning/PLAN.md`; native `TaskList` status is the live execution record; and `.planning/REVIEW.md` carries findings and dispositions for the human decision. These are distinct records because plan approval, live task state, and review judgment are distinct facts.
+For the DS workflow, a hook-authenticated receipt selects one generated plan by `{planFile, planHash}`; native `TaskList` status is the live execution record; and `.planning/HUMAN_REVIEW.md` records human feedback/dispositions. These are distinct records because plan approval, live task state, and human judgment are distinct facts.
 
 ### Structural Gate Artifacts
 
@@ -70,16 +70,16 @@ A gate that exists only as instructional text ("you must run X before Y") is adv
 **The principle: every mandatory inter-phase gate must produce a concrete artifact that the consuming phase checks before starting.** If the main chat skips the gate skill entirely and jumps straight to the next phase, the next phase must REFUSE to start.
 
 The pattern:
-1. Gate skill writes a marker file (e.g., `.planning/PLAN_REVIEWED.md`) with `status: APPROVED` frontmatter
-2. Consuming phase checks for the file at startup — missing file = STOP
-3. The marker contains the reviewer's actual output (not just a flag), so it can't be fabricated without running the reviewer
+1. A modern gate finalizes a hook-owned receipt that binds the selected generated plan hash and reviewer identity; legacy dev alone retains its historical `.planning/PLAN_REVIEWED.md` marker.
+2. Consuming phase authenticates the gate state at startup — missing or stale state = STOP.
+3. The state contains the reviewer's actual outcome (not just a flag), so it cannot be fabricated without running the reviewer.
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
 **Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools (Write, Edit, Agent) until the gate artifact exists. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Use the generic `phase-gate-guard.ts` hook with environment variables to configure per-phase gates:
 
 ```yaml
-# In consuming phase's SKILL.md frontmatter:
+# Legacy dev compatibility example only; modern workflows authenticate their receipt instead:
 hooks:
   PreToolUse:
     - matcher: "Write|Edit|Agent"
@@ -88,7 +88,7 @@ hooks:
           command: >-
             GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
             GATE_STATUS=APPROVED
-            GATE_DESCRIPTION="Plan review"
+            GATE_DESCRIPTION="Legacy dev plan review"
             GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
             uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
 ```
@@ -214,7 +214,7 @@ Shared constraints (the section above) address only one layer of cross-skill enf
 
 ### Deterministic Execution: Compile, Don't Interpret
 
-> **Historical note for DS (2026-07-29):** The compiler-era material in this section records a retired DS design. DS now uses an immutable copied native plan, native `TaskList` for live execution state, project auto-memory for reusable facts, and `REVIEW.md` for human review.
+> **Historical note for DS (2026-07-29):** The compiler-era material in this section records a retired DS design. DS now uses a receipt-selected immutable generated native plan, native `TaskList` for live execution state, project auto-memory for reusable facts, and `HUMAN_REVIEW.md` for human review.
 
 The sections below preserve the prior compiler-era rationale for domains that still use it.
 
@@ -309,7 +309,7 @@ Fresh subagents achieve the same effect within a single session. Each subagent g
 
 **Core principle: Progress lives in files, not in conversation.**
 
-For DS, orchestration is native rather than custom: Claude Code's `TaskList` is the live loop and status authority, while the immutable plan explains the approved work. This removes a duplicate execution driver without changing the value of fresh perspectives and independent review. Other domains may use different orchestration mechanisms when their needs justify them.
+For DS, orchestration is native rather than custom: Claude Code's `TaskList` is the live loop and status authority, while the receipt-selected immutable generated plan explains the approved work. This removes a duplicate execution driver without changing the value of fresh perspectives and independent review. Other domains may use different orchestration mechanisms when their needs justify them.
 
 ### The Three Topologies
 

@@ -53,8 +53,8 @@ current native plan + TaskList + project auto-memory
 
 ## 1. Load and diagnose
 
-1. Read `.planning/PLAN.md`, `.planning/PLAN.meta.json`, and `.planning/PLAN_REVIEWED.md`; call
-   `TaskList`; consult project auto-memory for reusable technical facts.
+1. Resolve the authenticated receipt-selected generated plan; call `TaskList`; consult project
+   auto-memory for reusable technical facts.
 2. Load applicable constraints:
 
    !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts ds-fix`
@@ -78,7 +78,7 @@ current native plan + TaskList + project auto-memory
 
 | About to | Stop because | Do instead |
 |---|---|---|
-| Edit `PLAN.md` or its metadata | It falsifies the approved native plan and its hash | Route R4 to `/ds` and obtain a new native approval |
+| Edit a generated plan or the hook-owned receipt | It falsifies the approved native plan identity | Route R4 to `/ds` and obtain a new native approval |
 | “Quickly” patch code in the orchestrator | It bypasses the shared ready-wave and independent verifier | State a tactical task, then use `ds-implement` |
 | Treat changed data as automatically tactical | Schema, grain, or coverage changes often change the contract | Profile first; route R4 when the plan changes |
 | Spawn a team to investigate or implement | Nested/direct delegation breaks the flat shared runner | Use one caller-curated `ds-implement` ready wave |
@@ -88,8 +88,8 @@ current native plan + TaskList + project auto-memory
 ### R4: return to native replanning
 
 Immediately invoke `/ds`. Re-enter native Plan mode with the diagnosis and evidence, obtain user
-approval through `ExitPlanMode`, and let the persistence hook atomically replace `PLAN.md` and
-`PLAN.meta.json`. That replacement stales the prior review record. Run independent plan review again,
+approval through `ExitPlanMode`, and let the persistence hook atomically bind a replacement generated
+plan and reset its receipt to `PENDING`. Run independent plan review again,
 then reconcile `TaskList` in a genuinely separate implementation session.
 
 ### Ordinary tactical fix: use the shared implementation loop

@@ -102,8 +102,8 @@
       }
     },
     {
-      "name": "allow-write-planning-path",
-      "kind": "allow",
+      "name": "deny-write-retired-planning-spec",
+      "kind": "deny",
       "stdin": {
         "hook_event_name": "PreToolUse",
         "tool_name": "Write",
@@ -117,7 +117,7 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutSha256": "d894f6abee0671d3fdbd705303cd59473bdc6ce2e87577c0ba2ffc2b2f24a847",
         "exit": 0,
         "fs": {}
       }

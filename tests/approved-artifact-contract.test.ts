@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  bindApprovedGeneratedPlan,
+  classifyBuiltInArtifactLayout,
   sha256,
   validateApprovedArtifact,
+  validateApprovedPlan,
   validateCapturedApprovalBundle,
   type ApprovalPolicyDescriptor,
 } from "../workflows/lib/approved-artifact";
@@ -61,6 +64,16 @@ describe("strict external approved-artifact policy", () => {
       hash: sha256("# Exact current bytes\n"),
       metadata: expect.objectContaining({ workflow: IDENTITY }),
       verdict: expect.objectContaining({ status: "APPROVED" }),
+    }));
+  }));
+
+  test("authenticates external plan metadata without requiring its review artifact", () => withProject((root) => {
+    writeApproved(root);
+    rmSync(join(root, DESCRIPTOR.verdictPath));
+    expect(validateApprovedPlan(root, IDENTITY, DESCRIPTOR)).toEqual(expect.objectContaining({
+      hash: sha256("# Exact current bytes\n"),
+      layout: "external",
+      metadata: expect.objectContaining({ workflow: IDENTITY }),
     }));
   }));
 
@@ -236,20 +249,61 @@ describe("strict external approved-artifact policy", () => {
     } finally { rmSync(outside, { recursive: true, force: true }); }
   }));
 
-  test("does not depend on O_NOFOLLOW availability or stable device/inode identity", () => withProject((root) => {
+  test("does not depend on caller-provided no-follow flags", () => withProject((root) => {
     writeApproved(root);
-    const replaced = new Set<string>();
+    const result = validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR, { noFollowFlag: undefined });
+    expect(result).toEqual(expect.objectContaining({ hash: sha256("# Exact current bytes\n") }));
+  }));
+
+  test("rejects pathname replacement after the protected descriptor is opened", () => withProject((root) => {
+    writeApproved(root);
+    const planPath = join(root, DESCRIPTOR.planPath);
+    let swapped = false;
     const result = validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR, {
-      noFollowFlag: undefined,
-      beforeOpen(path) {
-        if (replaced.has(path)) return;
-        replaced.add(path);
+      afterOpen(path) {
+        if (path !== planPath || swapped) return;
+        swapped = true;
         const bytes = readFileSync(path);
         rmSync(path);
         writeFileSync(path, bytes);
       },
     });
-    expect(result).toEqual(expect.objectContaining({ hash: sha256("# Exact current bytes\n") }));
+    expect(result).toEqual(expect.objectContaining({ code: "approval-race" }));
+  }));
+
+  test("validates the live canonical pathname on platforms without proc fd links", () => withProject((root) => {
+    writeApproved(root);
+    expect(validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR, {
+      forcePathnameFallback: true,
+    })).toEqual(expect.objectContaining({ hash: sha256("# Exact current bytes\n") }));
+
+    const planPath = join(root, DESCRIPTOR.planPath);
+    let swapped = false;
+    const result = validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR, {
+      forcePathnameFallback: true,
+      afterOpen(path) {
+        if (path !== planPath || swapped) return;
+        swapped = true;
+        const bytes = readFileSync(path);
+        rmSync(path);
+        writeFileSync(path, bytes);
+      },
+    });
+    expect(result).toEqual(expect.objectContaining({ code: "approval-race" }));
+  }));
+
+  test("rejects same-inode in-place mutation after the descriptor is opened", () => withProject((root) => {
+    writeApproved(root);
+    const planPath = join(root, DESCRIPTOR.planPath);
+    let rewritten = false;
+    const result = validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR, {
+      afterOpen(path) {
+        if (path !== planPath || rewritten) return;
+        rewritten = true;
+        writeFileSync(path, "# Mutated current byte\n");
+      },
+    });
+    expect(result).toEqual(expect.objectContaining({ code: "approval-race" }));
   }));
 
   test("rejects altered current-byte hash, metadata schema, and strict timestamps", () => withProject((root) => {
@@ -299,5 +353,173 @@ describe("strict external approved-artifact policy", () => {
       plan_hash: sha256("# Exact current bytes\n"), status: "APPROVED", reviewer_session_id: "review-session", reviewed_at: "2026-07-30T11:00:00.000Z", extra: "forbidden",
     } });
     expectError(validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR), "verdict-schema");
+  }));
+});
+
+describe("built-in generated-plan and legacy layouts", () => {
+  const receipt = (workflow: "ds" | "work" | "writing" | "workshop" | "workflow-creator", planFile: string, hash: string, status = "APPROVED") => ({
+    workflow, plan_file: planFile, plan_hash: hash,
+    approved_session_id: "approval-session", approved_at: "2026-07-30T10:00:00.000Z",
+    status, reviewer_session_id: status === "PENDING" ? "" : "review-session",
+    reviewed_at: status === "PENDING" ? "" : "2026-07-30T11:00:00.000Z",
+  });
+  const legacyMetadata = (workflow: string, hash: string) => ({ schemaVersion: 1, workflow, planHash: hash, approvedSession: "approval-session", approvedAt: "2026-07-30T10:00:00.000Z" });
+  const legacyReview = (hash: string) => ({ plan_hash: hash, status: "APPROVED", reviewer_session_id: "review-session", reviewed_at: "2026-07-30T11:00:00.000Z" });
+  const frontmatter = (value: Record<string, unknown>) => `---\n${Object.entries(value).map(([key, field]) => `${key}: ${field}`).join("\n")}\n---\n`;
+
+  test("authenticates receipt-selected generated plans for every modern built-in including work", () => withProject((root) => {
+    for (const workflow of ["ds", "work", "writing", "workshop", "workflow-creator"] as const) {
+      const planFile = `${workflow}-generated.md`; const plan = `# ${workflow} plan\n`; const hash = sha256(plan);
+      mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+      writeFileSync(join(root, ".planning", planFile), plan);
+      writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt(workflow, planFile, hash)));
+      expect(classifyBuiltInArtifactLayout(root, workflow)).toBe("canonical");
+      expect(validateApprovedArtifact(root, workflow, "implementation-session")).toEqual(expect.objectContaining({ hash, planFile, receipt: expect.objectContaining({ workflow }) }));
+      rmSync(join(root, ".planning"), { recursive: true });
+    }
+  }));
+
+  test("receipt binding cannot be redirected by a post-open state-directory swap", () => withProject((root) => {
+    const outside = mkdtempSync(join(tmpdir(), "approval-state-outside-"));
+    try {
+      const planning = join(root, ".planning");
+      const state = join(planning, ".state");
+      const displaced = join(planning, ".state-displaced");
+      const planPath = join(planning, "generated-secure.md");
+      mkdirSync(state, { recursive: true });
+      writeFileSync(planPath, "# Secure binding\n");
+      writeFileSync(join(outside, "review.json"), "outside review sentinel\n");
+      writeFileSync(join(outside, "plan.json"), "outside plan sentinel\n");
+
+      expect(() => bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z", {
+        afterStateOpen() {
+          renameSync(state, displaced);
+          symlinkSync(outside, state);
+        },
+      })).toThrow(/changed while binding/);
+      expect(readFileSync(join(outside, "review.json"), "utf8")).toBe("outside review sentinel\n");
+      expect(readFileSync(join(outside, "plan.json"), "utf8")).toBe("outside plan sentinel\n");
+    } finally { rmSync(outside, { recursive: true, force: true }); }
+  }));
+
+  test("fails closed when descriptor-anchored receipt mutation is unavailable", () => withProject((root) => {
+    const outside = mkdtempSync(join(tmpdir(), "approval-state-fallback-outside-"));
+    try {
+      const planning = join(root, ".planning");
+      const state = join(planning, ".state");
+      const displaced = join(planning, ".state-displaced");
+      const planPath = join(planning, "generated-fallback.md");
+      mkdirSync(state, { recursive: true });
+      writeFileSync(planPath, "# Portable binding\n");
+      writeFileSync(join(outside, "review.json"), "outside review sentinel\n");
+      writeFileSync(join(outside, "plan.json"), "outside plan sentinel\n");
+      writeFileSync(join(state, "plan.json"), "stale local state\n");
+
+      let strategy = "";
+      expect(() => bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z", {
+        forceNoDescriptorAnchor: true,
+        afterStateOpen(selected) { strategy = selected; },
+      })).toThrow(/does not support descriptor-anchored mutation/);
+      expect(strategy).toBe("pathname");
+      expect(existsSync(join(state, "review.json"))).toBe(false);
+      expect(readFileSync(join(state, "plan.json"), "utf8")).toBe("stale local state\n");
+
+      strategy = "";
+      expect(() => bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z", {
+        forceNoDescriptorAnchor: true,
+        afterStateOpen(selected) {
+          strategy = selected;
+          renameSync(state, displaced);
+          symlinkSync(outside, state);
+        },
+      })).toThrow(/does not support descriptor-anchored mutation/);
+      expect(strategy).toBe("pathname");
+      expect(readdirSync(outside).sort()).toEqual(["plan.json", "review.json"]);
+      expect(readFileSync(join(outside, "review.json"), "utf8")).toBe("outside review sentinel\n");
+      expect(readFileSync(join(outside, "plan.json"), "utf8")).toBe("outside plan sentinel\n");
+    } finally { rmSync(outside, { recursive: true, force: true }); }
+  }));
+
+  test("descriptorless receipt binding does not create missing state", () => withProject((root) => {
+    const planning = join(root, ".planning");
+    const state = join(planning, ".state");
+    const planPath = join(planning, "generated-no-state.md");
+    mkdirSync(planning);
+    writeFileSync(planPath, "# No descriptor anchor\n");
+
+    expect(() => bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z", {
+      forceNoDescriptorAnchor: true,
+    })).toThrow(/does not support descriptor-anchored mutation/);
+    expect(existsSync(state)).toBe(false);
+  }));
+
+  test("descriptor-anchored cleanup removes temporary state after pathname substitution", () => withProject((root) => {
+    const outside = mkdtempSync(join(tmpdir(), "approval-state-cleanup-outside-"));
+    try {
+      const planning = join(root, ".planning");
+      const state = join(planning, ".state");
+      const displaced = join(planning, ".state-displaced");
+      const planPath = join(planning, "generated-cleanup.md");
+      mkdirSync(state, { recursive: true });
+      writeFileSync(planPath, "# Cleanup binding\n");
+      writeFileSync(join(outside, "review.json"), "outside review sentinel\n");
+
+      expect(() => bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z", {
+        afterTemporaryOpen() {
+          renameSync(state, displaced);
+          symlinkSync(outside, state);
+        },
+      })).toThrow(/changed while binding/);
+      expect(readdirSync(displaced)).toEqual([]);
+      expect(readdirSync(outside)).toEqual(["review.json"]);
+      expect(readFileSync(join(outside, "review.json"), "utf8")).toBe("outside review sentinel\n");
+    } finally { rmSync(outside, { recursive: true, force: true }); }
+  }));
+
+  test("PENDING authenticates exact approval identity but does not authorize implementation", () => withProject((root) => {
+    const planFile = "pending-generated.md"; const plan = "# Pending\n"; const hash = sha256(plan);
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true }); writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt("work", planFile, hash, "PENDING")));
+    expect(validateApprovedPlan(root, "work")).toEqual(expect.objectContaining({ hash, planFile, receipt: expect.objectContaining({ status: "PENDING" }) }));
+    expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "review-pending" }));
+  }));
+
+  test("rejects stale hashes, duplicate keys, unsafe names, session reuse, and chronology", () => withProject((root) => {
+    const planFile = "strict-generated.md"; const plan = "# Strict\n"; const hash = sha256(plan); const path = join(root, ".planning", ".state", "review.json");
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true }); writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(path, JSON.stringify(receipt("work", planFile, "0".repeat(64)))); expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "stale-receipt" }));
+    const valid = JSON.stringify(receipt("work", planFile, hash)); writeFileSync(path, valid.replace('"workflow":', '"workflow":"work","workflow":'));
+    expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "review-duplicate" }));
+    writeFileSync(path, JSON.stringify({ ...receipt("work", planFile, hash), plan_file: "PLAN.md" })); expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "review-schema" }));
+    writeFileSync(path, JSON.stringify({ ...receipt("work", planFile, hash), reviewed_at: "2026-07-30T09:00:00.000Z" })); expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "approval-chronology" }));
+    writeFileSync(path, JSON.stringify(receipt("work", planFile, hash))); expect(validateApprovedArtifact(root, "work", "approval-session")).toEqual(expect.objectContaining({ code: "session-separation" }));
+  }));
+
+  test("rejects generated plan symlinks and path substitution", () => withProject((root) => {
+    const outside = mkdtempSync(join(tmpdir(), "generated-outside-"));
+    try {
+      const planFile = "linked-generated.md"; const plan = "# linked\n"; const hash = sha256(plan);
+      mkdirSync(join(root, ".planning", ".state"), { recursive: true }); writeFileSync(join(outside, planFile), plan); symlinkSync(join(outside, planFile), join(root, ".planning", planFile));
+      writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt("work", planFile, hash)));
+      expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: expect.stringMatching(/artifact-type|policy-path/) }));
+    } finally { rmSync(outside, { recursive: true, force: true }); }
+  }));
+
+  test("treats copied fixed PLAN as provenance and rejects active legacy authority", () => withProject((root) => {
+    const generated = "generated.md"; const plan = "# Generated\n"; const hash = sha256(plan); const legacy = "# Legacy\n"; const legacyHash = sha256(legacy);
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true }); writeFileSync(join(root, ".planning", generated), plan); writeFileSync(join(root, ".planning", "PLAN.md"), legacy);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt("work", generated, hash)));
+    expect(classifyBuiltInArtifactLayout(root, "work")).toBe("canonical-with-legacy-provenance");
+    writeFileSync(join(root, ".planning", "PLAN.meta.json"), JSON.stringify(legacyMetadata("work", legacyHash)));
+    writeFileSync(join(root, ".planning", "PLAN_REVIEWED.md"), frontmatter(legacyReview(legacyHash)));
+    expect(classifyBuiltInArtifactLayout(root, "work")).toBe("conflict");
+    expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "artifact-layout-conflict" }));
+  }));
+
+  test("preserves legacy modern conversion and fixed dev behavior", () => withProject((root) => {
+    const plan = "# Legacy\n"; const hash = sha256(plan); mkdirSync(join(root, ".planning"), { recursive: true });
+    writeFileSync(join(root, ".planning", "PLAN.md"), plan); writeFileSync(join(root, ".planning", "PLAN.meta.json"), JSON.stringify(legacyMetadata("work", hash))); writeFileSync(join(root, ".planning", "PLAN_REVIEWED.md"), frontmatter(legacyReview(hash)));
+    expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "conversion-required" }));
+    expect(validateApprovedArtifact(root, "dev", "implementation-session")).toEqual(expect.objectContaining({ hash, planFile: "PLAN.md" }));
   }));
 });

@@ -8,7 +8,7 @@ const REPO = new URL("..", import.meta.url).pathname;
 const HOOK = join(REPO, "hooks", "orchestrator-mutation-guard.ts");
 const WORKFLOWS = ["ds", "dev", "writing", "workshop", "workflow-creator"];
 
-function run({ cwd, configDir, homeDir = process.env.HOME, workflow = "writing", tool = "Write", permissionMode = "plan", filePath }) {
+function run({ cwd, configDir, homeDir = process.env.HOME, workflow = "writing", workflowPolicy, tool = "Write", permissionMode = "plan", filePath }) {
   const toolInput = tool === "Edit"
     ? { file_path: filePath, old_string: "old", new_string: "new" }
     : { file_path: filePath, content: "# Native plan\n" };
@@ -23,7 +23,8 @@ function run({ cwd, configDir, homeDir = process.env.HOME, workflow = "writing",
   const env = { ...process.env, HOME: homeDir };
   if (configDir === undefined) delete env.CLAUDE_CONFIG_DIR;
   else env.CLAUDE_CONFIG_DIR = configDir;
-  return spawnSync("bun", [HOOK, "--workflow", workflow], {
+  const policyArgs = workflowPolicy ? ["--workflow-policy", workflowPolicy] : ["--workflow", workflow];
+  return spawnSync("bun", [HOOK, ...policyArgs], {
     cwd,
     env,
     input: JSON.stringify(payload),
@@ -109,6 +110,22 @@ try {
   mkdirSync(overridePlans, { recursive: true });
   assertAllowed(run({ cwd: project, configDir: overrideConfig, filePath: join(overridePlans, "override.md") }), "CLAUDE_CONFIG_DIR plan directory should be honored");
   assertDenied(run({ cwd: project, configDir: overrideConfig, filePath: join(plans, "old-config.md") }), "non-configured plan directory should not be allowed");
+
+  const descriptorPath = join(project, ".planning", "external-policy.json");
+  mkdirSync(join(project, ".planning"), { recursive: true });
+  writeFileSync(descriptorPath, JSON.stringify({
+    schemaVersion: 1,
+    workflow: "external-v1",
+    clarifySentinel: ".planning/EXTERNAL_CLARIFIED.json",
+    clarifyReason: "External compatibility test",
+    reviewerVerdict: ".planning/PLAN_REVIEWED.md",
+    approvalPolicy: ".planning/approval-policy.json",
+    allowedOrchestratorDirectories: [".planning"],
+  }));
+  assertAllowed(
+    run({ cwd: project, configDir: config, workflowPolicy: descriptorPath, permissionMode: "default", filePath: join(project, ".planning", "PLAN.md") }),
+    "external descriptor-v1 policy should retain its declared visible plan path",
+  );
 } finally {
   rmSync(root, { recursive: true, force: true });
 }

@@ -16,6 +16,7 @@ import { existsSync, readFileSync, readdirSync, statSync, appendFileSync, unlink
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { parsePayload, pyJson } from "./_gate_common.ts";
+import { classifyPlanningLifecycle } from "../workflows/lib/approved-artifact.ts";
 
 /** Process-local mirror of os.environ — mutated by the loaders exactly as Python mutates os.environ. */
 const env: Record<string, string> = { ...(process.env as Record<string, string>) };
@@ -274,10 +275,32 @@ function truthy(v: string | string[] | undefined): boolean {
 function buildInProgressSection(): string {
   const planningDir = join(process.cwd(), ".planning");
   const legacyDir = join(process.cwd(), ".claude");
+  const lifecycle = classifyPlanningLifecycle(process.cwd());
+
+  // Modern episodes have a single source of authority. Missing, malformed, or stale receipts
+  // block conversion residue rather than letting this display revive a visible planning ledger.
+  if (lifecycle.kind === "canonical" || lifecycle.kind === "blocked") {
+    const lines = ["## IN-PROGRESS WORK DETECTED", ""];
+    if (lifecycle.kind === "blocked") {
+      lines.push("- Native planning state is blocked; do not resume from visible planning files.");
+      lines.push("- Convert the retired state or return to native Plan mode to create a fresh approved generated plan.");
+    } else {
+      const { resolved } = lifecycle;
+      lines.push(`- Approved generated plan: \`.planning/${resolved.planFile}\``);
+      lines.push(`- Authenticated plan hash: \`${resolved.hash}\``);
+      lines.push(`- Review state: ${resolved.receipt.status}`);
+      lines.push("- Live progress is in TaskList; consult project auto-memory for durable technical facts.");
+    }
+    lines.push("");
+    return lines.join("\n");
+  }
 
   let stateDir: string;
   let statePrefix: string;
-  if (existsSync(planningDir) && isDir(planningDir) && readdirSync(planningDir).length > 0) {
+  if (lifecycle.kind === "legacy-dev") {
+    stateDir = planningDir;
+    statePrefix = ".planning";
+  } else if (existsSync(planningDir) && isDir(planningDir) && readdirSync(planningDir).length > 0) {
     stateDir = planningDir;
     statePrefix = ".planning";
   } else if (existsSync(legacyDir) && existsSync(join(legacyDir, "PLAN.md"))) {

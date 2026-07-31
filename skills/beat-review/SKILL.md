@@ -1,6 +1,6 @@
 ---
 name: beat-review
-description: "Shared REVIEW primitive — beat 5, human review. Two feedback channels (tuicr annotations and chat), both dispositioned into one ledger. Read by any phase that hands work to a person."
+description: "Shared REVIEW primitive — present verified work to a person, capture actionable feedback in TaskList, and return the terminal decision to the caller."
 user-invocable: false
 disable-model-invocation: true
 ---
@@ -9,104 +9,60 @@ disable-model-invocation: true
 
 `review = human`
 
-The terminal beat. A verifier PASS says the work matches the criteria; **nothing has yet checked the
-criteria against what the user actually wanted.** That is what this beat is for, and why it cannot be
-replaced by another subagent, however adversarial.
+The terminal beat. A verifier PASS shows the work meets its criteria; only human review tests whether those criteria match what the user wanted. Modern workflows retain authority in the receipt-selected immutable `{planFile, planHash}`, TaskList, project auto-memory, project deliverables, and minimal `.planning/.state/` machine state. They do **not** create `REVIEW.md` or `HUMAN_REVIEW.md`.
 
-**The caller supplies:** the review target and its ledger path (`.planning/REVIEW.md`,
-`.planning/HUMAN_REVIEW.md`, `.planning/edit.log`, …). Read
-`${CLAUDE_SKILL_DIR}/references/artifact-surfaces.md` and route each artifact to the appropriate human
-review application while keeping required rendered evidence fresh.
+**The caller supplies:** rendered review surfaces, plan identity, and the return channel for the terminal human decision. A legacy `/dev` compatibility path may use its isolated legacy contract; it is not a modern workflow authority.
 
 <EXTREMELY-IMPORTANT>
 ## A rejection invalidates the criteria, not just the work
 
-**`REJECT:` returns to CLARIFY. Never to the code.**
-
-A verifier PASS means the work matches the criteria. So if the user rejects work that passed, the
-*criteria* are what encoded something other than what they wanted. Treating a rejection as a pile of
-tactical fixes patches the artifact and leaves the bad criteria in place; the next verifier run passes
-again, and you hand back the same wrong deliverable with more confidence and a cleaner audit trail.
-
-**That is the opposite of helpful: you converge, efficiently and verifiably, on the thing the user
-already told you they did not want.**
-
-On `REJECT:` — clear the goal, rewrite intent and criteria (do not append; the old rows are the ones
-that passed while the user rejected), and re-enter CLARIFY. Cap it: two rejections means the task
-needed a real spec, not a third guess.
+**`REJECT:` returns to CLARIFY, never directly to code.** If verified work is rejected, its criteria encoded the wrong outcome. Clear the goal, replace intent and criteria through a newly approved plan, and re-enter CLARIFY. Two rejections mean the task needs a real specification, not a third guess.
 </EXTREMELY-IMPORTANT>
 
-## Two channels, and only one is durable by construction
+## Feedback and decision contract
 
-Annotations land in a review tool with ids and a ledger. **Chat messages land nowhere** — the user
-notices something, types it, you act, and the next message displaces it, so the third thing they
-mentioned is the only one that survives.
+1. Present fresh review surfaces with the receipt-selected `{planFile, planHash}`.
+2. Convert each distinct actionable chat comment or annotation into one `TaskCreate` before acting. Work open feedback in TaskList ID order.
+3. Record each task’s disposition (`addressed`, `answered`, or user-authorized `waived`) in the caller’s returned review result at the moment the task closes. TaskList is the live queue; the returned result is the user-visible review account. Do not create a review ledger.
+4. Return one terminal decision to the caller:
 
-**Every user message during this beat is decomposed into one `TaskCreate` per distinct actionable
-item, before you act on any of it.** Mechanical, not a judgment call: not "if it's substantial," not
-"if there are several." The judgment about whether an item is worth writing down is exactly the
-judgment that loses items.
+```text
+Human review result
+- Plan: `{planFile, planHash}`
+- Decision: ACCEPT | REJECT | CONTINUE
+- Feedback tasks: [TaskList IDs with dispositions]
+- User words supporting the decision: [verbatim or concise quote]
+- Required next action: [none | TaskList ID | re-enter CLARIFY]
+```
 
-| Arrives as | Becomes |
-|---|---|
-| "the y-axis is wrong, and section 2 lost its footnote" | Two tasks |
-| "also fix the typo" (a later message) | One task, appended — never replacing the queue |
-| "why did you pick median here?" | One task; a question needs an answer |
-| "rest looks fine" | No task |
-
-Work the queue in **ID order** — the oldest open item is the one at risk — and call `TaskList` before
-saying a round is handled.
-
-**Write each item's ledger row in the same step that closes it.** Not at the end of the round: a
-completed task is *destroyed*, not archived. Measured — after closing 16 tasks, `TaskList` returned
-"No tasks found" and `TaskGet` on a closed id returned "Task not found," while the id counter kept
-climbing. An end-of-round write-up finds nothing to write.
-
-If the TaskList tools are unavailable, write the items straight into the ledger as a checklist. The
-tool is the convenient home for the queue, not the reason to have one.
+5. The caller may persist only the policy-approved minimal machine verdict in `.planning/.state/review.json`; review prose and findings remain in the returned result and TaskList.
 
 ## Dispositions
 
-| Disposition | Means | Closes as |
+| Disposition | Meaning | TaskList closure |
 |---|---|---|
-| `addressed` | You changed the work | `completed` |
-| `answered` | It was a question; you explained | `completed` |
-| `waived` | **The user** said no change is needed — their words, never your inference | `completed` + `metadata.disposition = "waived"` |
+| `addressed` | The work changed | `completed` |
+| `answered` | It was a question and was answered | `completed` |
+| `waived` | The user explicitly declined a change | `completed` with `metadata.disposition = "waived"` |
 
-**`completed` means resolved, not that work was done.** All three close the task; the disposition says
-how. What fabricates consent is closing an item *without* recording the disposition — the status alone
-cannot distinguish "I fixed it" from "they told me not to." **Never `deleted`**: that destroys the
-record of the user's decision, which is the one thing the ledger exists to keep.
-
-Leaving a waived item `pending` to avoid claiming credit deadlocks the round — the gate wants an empty
-queue, so one unresolvable item blocks every item behind it.
+Never `deleted`: it destroys the record. A completed task is not a durable ledger, so return the disposition at close time.
 
 ## Gate
 
-Every annotation id has a disposition; every chat item appears in the ledger with a disposition;
-`TaskList` reports nothing `pending` or `in_progress`; no `REJECT:` is outstanding; and the last
-relaunch produced no new ids.
-
-**The ledger is the evidence, not the queue.** An empty `TaskList` reads identically whether the round
-finished or was never captured — it can check that nothing is open, never that anything happened.
+Every actionable comment is captured and dispositioned; `TaskList` has no pending or in-progress review feedback; `REJECT:` is either absent or has returned to CLARIFY; and the caller receives the terminal decision tied to `{planFile, planHash}`. Do not claim acceptance from an empty queue alone.
 
 ## Red flags
 
 | Action | Why wrong | Do instead |
 |---|---|---|
-| About to act on the newest message while earlier items are `pending` | Recency is not priority; the displaced items are the ones that get lost, and the user already paid the cost of noticing them | `TaskList` first, work in ID order |
-| About to skip `TaskCreate` because an item is "quick" | Quick items are the ones you keep in your head, and your head is what a long round defeats | Capture first, then do it |
-| About to close an item without recording its disposition | The status cannot tell "I fixed it" from "they told me not to" | Close it *with* the disposition, and quote them |
-| About to close a batch and write the ledger "at the end" | The closed tasks are gone by then | Ledger row and close in the same step |
-| About to work a `REJECT:` as a list of tactical fixes | The criteria passed and the user rejected anyway — patching re-ships the same wrong thing with a cleaner audit trail | Return to CLARIFY |
-| About to mark something `waived` because it seemed minor | Waiving is the user's call; recording your dismissal as their decision fabricates consent | Ask. And do not reach for `addressed` instead — on an item you never fixed that is the same false claim in a different label |
+| Create `REVIEW.md` or `HUMAN_REVIEW.md` | It is retired modern authority | Use TaskList and the returned result. |
+| Act on a comment before `TaskCreate` | The feedback can be lost | Capture it first. |
+| Close an item without a disposition | Status cannot distinguish fixed from waived | Return its disposition when closing it. |
+| Treat a `REJECT:` as tactical fixes | The criteria, not merely implementation, failed | Return to CLARIFY and replace the approved plan. |
+| Mark a minor issue waived yourself | That fabricates user consent | Ask the user. |
 
 ## Facts
 
-- TaskList status is exactly `pending | in_progress | completed | deleted` — no `waived`, no
-  `rejected`. The vocabulary is thinner than the dispositions, which is why the ledger, not the queue,
-  is the record.
-- A completed task is destroyed, not archived. `TaskGet` on a closed id returns "Task not found."
-- An empty review session is not proof of review: it cannot distinguish "read it and had nothing to
-  add" from "never opened it." When the user says they reviewed, record **their words**, not your
-  inference from an empty ledger.
+- TaskList status is `pending | in_progress | completed | deleted`; dispositions are richer and must be returned when a task is closed.
+- A completed task may no longer be readable through `TaskGet`; do not defer recording its disposition.
+- An empty review session does not prove review occurred. Return the user’s actual words, not an inference.

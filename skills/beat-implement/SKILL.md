@@ -88,13 +88,13 @@ Before invoking the runner, the orchestrator constructs every task itself. Each 
 }
 ```
 
-Also copy **only** this immutable hash/session identity from separate `.planning/PLAN.meta.json`
-metadata:
+Also copy **only** this immutable receipt-selected identity:
 
 ```js
 planReset: {
-  approvedBodyHash: "<approved body hash>",
-  session: "<approval session>",
+  planFile: "<receipt-selected generated plan basename>",
+  approvedBodyHash: "<receipt-selected plan hash>",
+  session: "<receipt approval session>",
 }
 ```
 
@@ -131,8 +131,7 @@ const run = await Workflow({
 })
 ```
 
-The runner returns `{ executionMode, executionReason, resumedAttemptedWorkOnly, results,
-reusableFacts, counts }`. Each result is exactly `implemented`, `blocked`, or `failed` and carries
+The runner returns `{ executionMode, executionReason, resumedAttemptedWorkOnly, results, reusableFacts, counts }`. Each result is exactly `implemented`, `blocked`, or `failed` and carries
 its task id, summary, task-scoped reusable facts, the approved plan hash/session, and a deterministic
 task-spec fingerprint. The retry gate matches those identity fields before it accepts an attempted id.
 

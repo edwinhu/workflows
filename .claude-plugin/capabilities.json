@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "plugin": {
     "name": "workflows",
-    "version": "5.100.0"
+    "version": "5.101.0"
   },
   "capabilities": [
     {
@@ -22,7 +22,7 @@
     },
     {
       "name": "approved-artifact-policy",
-      "contractVersion": 1,
+      "contractVersion": 2,
       "implementation": "workflows/lib/approved-artifact.ts"
     },
     {

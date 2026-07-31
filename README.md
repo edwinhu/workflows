@@ -40,14 +40,15 @@ planning and execution guarantees:
 
 | Start Fresh | Midpoint Re-entry | Domain |
 |-------------|-------------------|--------|
-| `/work` | Resume `.planning/WORK.md` | Bounded cross-domain work: clarify, approve a proportional plan, execute under `/goal`, independently verify, and obtain human review |
+| `/work` | Resume the receipt-selected generated plan (`{planFile, planHash}`) with TaskList | Bounded cross-domain work: clarify, approve a proportional plan, execute under `/goal`, independently verify, and obtain human review |
 | `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
 | `/ds` | `/ds-fix` | Native-plan data science: plan, implement, independently review, and correct wrong results or notebook failures |
 | `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 | `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
 
-`/work` composes the shared clarify, implementation/verification, and human-review doctrine but stays
-prompt-procedural: it does not use the native-plan hooks shared by DS, writing, and workshop, or the `beat-implement.js` runner.
+`/work` composes the shared clarify, generated-plan authentication, implementation/verification, and
+human-review doctrine. It reconciles the receipt-selected plan into TaskList and dispatches approved
+ready waves through `beat-implement.js`.
 
 ### Document Formats
 
@@ -160,7 +161,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 ## Workflow lifecycle architecture
 
-Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, exact approved-plan identity, reviewer verdicts, mutation boundaries, and human-review ledgers from the execution and verification adapters used by DS, writing, workshop, and workflow-creator. Dev retains its SPEC/compiler path, while `/work` remains lightweight and procedural.
+Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, receipt-selected generated-plan identity (`{planFile, planHash}`), reviewer finalization, mutation boundaries, and human review from the execution and verification adapters used by DS, writing, workshop, and workflow-creator. Dev retains its legacy SPEC/compiler path, while `/work` remains lightweight and procedural.
 
 ## Hooks
 
@@ -187,7 +188,7 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 
 ## Session Continuity
 
-Native-plan workflows separate durable records by purpose: `.planning/PLAN.md` is the immutable approved plan, Claude Code's `TaskList` is the live task record, project auto-memory retains reusable facts, automated findings use domain-specific artifacts such as `.planning/AUTOMATED_REVIEW.md`, and terminal user dispositions live in `.planning/HUMAN_REVIEW.md`.
+Modern native-plan workflows separate durable records by purpose: a hook-owned receipt authenticates and selects one immutable generated plan by `{planFile, planHash}`, Claude Code's `TaskList` is the live task and review-finding record, project auto-memory retains reusable facts, project directories retain real inputs and deliverables, and `.planning/.state/` holds only narrow machine-owned state such as the hash-bound review verdict. Legacy dev keeps its descriptor-v1 artifacts in its isolated compatibility path.
 
 For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 

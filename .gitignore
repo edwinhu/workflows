@@ -28,7 +28,6 @@ scratch/
 
 # Local config
 *.local.md
-.claude/settings.json
 .env
 
 # Investigation reports (local only)

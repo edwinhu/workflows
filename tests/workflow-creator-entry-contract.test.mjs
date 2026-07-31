@@ -35,7 +35,7 @@ describe("workflow-creator shared-v1 entry contracts", () => {
   });
   test("keeps audit-only read-only and human review terminal", () => {
     expect(improve).toContain("Audit-only requests never receive mutation authority");
-    expect(improve).toContain("Do not create `PLAN.md`");
+    expect(improve).toContain("Do not create a generated plan or receipt");
     for (const text of [fresh, improve]) expect(text).toContain("HUMAN_REVIEW.md");
   });
 });

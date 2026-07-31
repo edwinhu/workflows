@@ -1,324 +1,48 @@
 ---
 name: writing-validate
-description: "Validate draft sections cover all PRECIS claims before review."
+description: "Validate canonical writing-plan claims against draft outputs before review; records live gaps in TaskList and returns coverage results."
 user-invocable: false
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob, Bash
-hooks:
-  PreToolUse:
-    - matcher: "Write|Edit|Bash"
-      hooks:
-        - type: command
-          command: >-
-            GATE_ARTIFACT=.planning/DRAFT_COMPLETE.md
-            GATE_STATUS=APPROVED
-            GATE_BLOCKED_TOOLS=Write,Edit,Bash
-            GATE_DESCRIPTION="Draft completion (required before validation)"
-            GATE_REMEDY="All sections must be drafted before validation runs. Return to writing-draft and write .planning/DRAFT_COMPLETE.md after every OUTLINE section has a substantive draft."
-            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
-  PostToolUse:
-    - matcher: "Write"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-claim-id-guard.ts"
+allowed-tools: Read, Grep, Glob, Bash, TaskCreate, TaskList, TaskUpdate
 ---
 
-Announce: "Using writing-validate (Phase 3.5) to validate draft sections against PRECIS.md claims."
-
-## Contents
-
-- [The Iron Law of Validation](#the-iron-law-of-validation)
-- [Red Flags](#red-flags)
-- [Purpose](#purpose)
-- [Validation Levels](#validation-levels)
-- [The Process](#the-process)
-- [Classification](#classification)
-- [VALIDATION.md Template](#validationmd-template)
-- [Gate](#gate)
-- [Validation Facts](#validation-facts)
-- [Phase Transition](#phase-transition)
-
-# Claim Validation Against PRECIS.md
-
-Phase between draft and review. Maps every PRECIS.md claim to a draft section and verifies coverage. This is the writing equivalent of DS's DQ validation — without it, review checks quality on prose that may not even address the argument.
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Validation
-
-**NO REVIEW WITHOUT CLAIM VALIDATION. This is not negotiable.**
-
-writing-review MUST NOT start until `.planning/VALIDATION.md` confirms all PRECIS claims are addressed in drafts. Validation is the writing equivalent of test coverage — without it, review is theater.
-</EXTREMELY-IMPORTANT>
-
-<EXTREMELY-IMPORTANT>
-## Red Flags
-
-- About to invoke writing-review without VALIDATION.md → STOP. Review checks quality, not coverage; unvalidated drafts may miss entire claims. Run validation first.
-- About to claim "all claims covered" without reading each draft section → STOP. Coverage cannot be verified without reading the prose; check every draft file against every PRECIS claim.
-- About to skip validation because the piece is short → STOP. Short pieces still drop claims — fewer sections means each must carry more weight. Validate every piece.
-- About to mark a claim COVERED when the draft only mentions it without arguing it → STOP. Mentioning is not arguing; a passing reference is not substantive coverage. Classify as PARTIAL and flag the gap.
-</EXTREMELY-IMPORTANT>
-
-## Purpose
-
-This phase sits between writing-draft and writing-review. It runs the **same constraint checks** that review uses — from the writing constraints, the domain skill, and `ai-anti-patterns` — but earlier, so gaps are caught before review begins. Review should NOT be discovering missing claims, broken expansion hierarchy, or AI writing smell.
-
-**The constraint checks ARE the validation.** This phase doesn't invent new checks — it systematically runs the existing ones against every draft section.
-
-## Shared Enforcement
-
-Auto-load all constraints matching `applies-to: writing-validate`:
-
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-validate`
-
-**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
-
-## Constraint Checks to Run
-
-Load and run checks from three sources:
-
-### Source 1: Writing Constraints (atomic files loaded above)
-
-Run these checks from the constraint files:
-
-| Check | From Constraint | What to Verify |
-|-------|----------------|----------------|
-| **Progressive Expansion** | Expansion Hierarchy | Every PRECIS claim → OUTLINE section → outlines/ file → drafts/ file. No gaps in the chain. |
-| **Claim Coverage** | NO DRAFT WITHOUT OUTLINE | Every PRECIS claim has a corresponding draft section that argues it (not just mentions it) |
-| **Thesis Threading** | Structural intent | Each draft section connects back to the PRECIS thesis. No tangential sections. |
-| **Constraint Loading** | Constraint Loading Protocol | Domain skill + ai-anti-patterns were loaded before drafting (check for violations in prose) |
-
-### Source 2: Domain Skill
-
-Read `.planning/ACTIVE_WORKFLOW.md` for the `style` field, then load the matching domain skill:
-
-| Style | Skill to Load |
-|-------|--------------|
-| legal | `skills/writing-legal/SKILL.md` |
-| econ | `skills/writing-econ/SKILL.md` |
-| general | `skills/writing-general/SKILL.md` |
-
-Run domain-specific checks against each draft section (citation format, style compliance, terminology).
-
-### Source 3: AI Anti-Patterns
-
-Invoke `Skill(skill="workflows:ai-anti-patterns")` and check each draft section for AI writing indicators.
-
-## Flowchart — This IS the Spec
-
-```
-┌────────────────────────────┐
-│  LOAD constraint checks    │
-│  (constraints + domain +   │
-│   ai-anti-patterns)        │
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│  READ .planning/PRECIS.md  │
-│  Extract all CLAIM-XX IDs  │
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│  READ .planning/OUTLINE.md │
-│  Map claims → sections     │
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│  For each claim:           │
-│  READ drafts/ file         │◄──┐
-│  RUN all constraint checks │   │
-│  CLASSIFY: COVERED /       │   │
-│    PARTIAL / MISSING       │   │
-└────────────┬───────────────┘   │
-             │                   │
-             │ more claims       │
-             └───────────────────┘
-             │ all claims checked
-             ▼
-┌────────────────────────────┐
-│  Run check-all.sh          │
-│  (mechanical constraint    │
-│   checks — hard block)     │
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│  WRITE .planning/          │
-│  VALIDATION.md             │
-└────────────┬───────────────┘
-             │
-        ┌────┴────┐
-        │ status? │
-        └────┬────┘
-     ┌───────┴───────┐
-     ▼               ▼
- validated      gaps_found
-     │               │
-     ▼               ▼
- → review      Present to user
-                     │
-              ┌──────┴──────┐
-              ▼             ▼
-           fix (→draft)  accept (→review)
-```
-
-### Step 1: Load Constraint Checks
-
-Load all three check sources before reading any drafts. This ensures every section is evaluated against the same criteria.
-
-### Step 2: Extract Claims from PRECIS
-
-Read `.planning/PRECIS.md` and extract every claim:
-- Main claims (thesis, sub-theses)
-- Counterarguments to be addressed
-- Audience-specific framing commitments
-- Evidence commitments ("I will show X using Y")
-
-### Step 3: Map Claims to Sections
-
-Read `.planning/OUTLINE.md` and map each claim to sections:
-- Which section(s) address this claim?
-- Is any claim orphaned (no section maps to it)?
-- Is any section present that doesn't serve a claim?
-
-### Step 4: Read and Validate Each Draft
-
-For each claim, read the corresponding draft file and run ALL constraint checks:
-
-| Check | PASS | FAIL |
-|-------|------|------|
-| Draft exists | File in `drafts/` present | MISSING — no draft for this claim |
-| Substantive | >200 words, real argument | Placeholder, stub, or outline-level content |
-| Evidence | Citations/sources present per claim | Unsupported assertions |
-| Thesis threading | Section argues the PRECIS claim | Tangent — section exists but doesn't address the claim |
-| Domain compliance | Passes domain skill checks | Style violations (citation format, terminology, etc.) |
-| AI anti-patterns | No AI writing indicators | AI smell detected |
-
-### Step 5: Classify
-
-| Classification | Criteria |
-|---------------|----------|
-| **COVERED** | All checks pass — section exists, argues the claim, has evidence, passes domain + AI checks |
-| **PARTIAL** | Section exists but fails one or more checks (weak evidence, AI smell, domain violation, tangent) |
-| **MISSING** | No draft section addresses this claim |
-
-### Step 5b: Run Mechanical Constraint Checks (First Leg)
-
-Run the constraint test suite as the first leg of two-legged verification:
-
-```bash
-bash ${CLAUDE_SKILL_DIR}/../../scripts/check-all.sh
-```
-
-This runs all constraint check scripts (progressive-expansion, claim-id-traceability, flowchart-authority, no-pause-between-phases). **Any failure is a hard block** — fix before proceeding to Step 6.
-
-The second leg (convention scoring via judgment) happens in Steps 4-5 above and in the writing-review phase.
-
-### Step 6: Flag Gaps to User
-
-<EXTREMELY-IMPORTANT>
-**Do NOT auto-draft or auto-fix. Writing requires human judgment on argument direction.**
-
-When gaps are found, present them with the specific check that failed:
-- **Fix**: Return to writing-draft to address the gap
-- **Accept**: Proceed to writing-review with known gaps
-
-Only the user can decide whether a gap means the claim should be rewritten, dropped, or restructured.
-</EXTREMELY-IMPORTANT>
-
-### Step 7: Write VALIDATION.md
-
-Compile all results into `.planning/VALIDATION.md` using the template below.
-
-## VALIDATION.md Template
-
-```markdown
----
-status: validated | gaps_found
-date: [ISO 8601]
-claims_total: N
-covered: N
-partial: N
-missing: N
----
 # Claim Validation
 
-## Claims Map
-| # | PRECIS Claim | Draft Section | Exists | Substantive | Evidence | Threading | Domain | AI Check | Classification |
-|---|-------------|---------------|--------|-------------|----------|-----------|--------|----------|----------------|
-| 1 | [from PRECIS] | [drafts/Section.md] | PASS | PASS | PASS | PASS | PASS | PASS | COVERED |
-| 2 | [from PRECIS] | [drafts/Section.md] | PASS | PASS | WARN | PASS | PASS | WARN | PARTIAL |
-| 3 | [from PRECIS] | — | FAIL | — | — | — | — | — | MISSING |
+Validate each canonical writing-plan claim against its mapped draft output before prose review. The receipt-selected immutable `{planFile, planHash}` contains claims, structure, claim-to-section mapping, source plan, section outputs, and review surfaces. `TaskList` contains live validation gaps and resolution work. Do not create or consume retired writing planning ledgers.
 
-## Gap Details
-[For any PARTIAL or MISSING claim, include:
-- Which constraint check failed
-- The specific finding
-- Suggested remediation (for user decision)]
+## Iron Law
 
-## Summary
-- Claims: N total
-- Covered: X
-- Partial: Y
-- Missing: Z
+**NO REVIEW WITHOUT CANONICAL CLAIM VALIDATION.** Authenticate and read the receipt-selected plan; parse its deterministic section index; read each mapped draft; then capture every missing or partial claim as TaskList work before review begins.
+
+A legacy-only layout may be converted into a fresh approved plan, but it cannot enter this validation flow as authority.
+
+## Process
+
+1. Authenticate the selected `{planFile, planHash}` and verify the canonical writing grammar/index. Missing or malformed canonical state fails closed.
+2. Load writing constraints, the style selected in `## Writing Intent`, and `ai-anti-patterns`.
+3. Read `## Claims`, `## Counterarguments`, `## Claim → Section Map`, `## Section Outputs`, and the corresponding `drafts/` deliverables.
+4. For every claim, assess: mapped output exists, substantive argument, source/evidence support, thesis threading, domain compliance, and AI-pattern compliance.
+5. Classify each claim as `COVERED`, `PARTIAL`, or `MISSING`. Create one TaskList item for every PARTIAL or MISSING finding, tied to the current plan hash and exact draft path.
+6. Return the coverage result to the caller. If no gaps are open, review may proceed. If gaps remain, present them for the user’s decision: revise through TaskList or explicitly proceed with known gaps.
+
+## Return contract
+
+```text
+Claim validation result
+- Plan: receipt-selected `{planFile, planHash}`
+- Coverage: [covered]/[total]
+- Covered claims: [CLAIM-NN list]
+- Open findings: [TaskList IDs, CLAIM-NN, draft path, exact gap]
+- Mechanical checks: [commands and results]
+- Review admission: READY | USER_DECISION_REQUIRED
 ```
 
-### Status Rules
+## Red flags
 
-| Condition | Status |
-|-----------|--------|
-| All claims COVERED | `validated` |
-| Any PARTIAL or MISSING remain | `gaps_found` |
-
-## Gate
-
-`.planning/VALIDATION.md` must exist before proceeding.
-
-- If status is `validated`: proceed to writing-review. **Gate type: `human-verify` — auto-advance.**
-- If status is `gaps_found`: present gaps to user before proceeding. **Gate type: `decision` — wait for user.**
-  - User decides: **fix** (return to writing-draft) or **accept** (proceed to writing-review with known gaps).
-
-**SUMMARY**: Append phase summary to `.planning/PHASE_SUMMARY.md` (see `constraints/phase-summary-frontmatter.md`):
-- phase: validate
-- artifacts_produced: [.planning/VALIDATION.md]
-- provides: [.planning/VALIDATION.md]
-- Include substantive one-liner with claim coverage stats (NOT "Validation complete")
-
-<EXTREMELY-IMPORTANT>
-**Do NOT silently proceed past gaps. Present them and wait for user decision.**
-
-Gaps in claim coverage are not cosmetic — they mean the argument has holes. Only the user can decide whether a gap is acceptable or requires returning to the draft phase.
-</EXTREMELY-IMPORTANT>
-
-### Validation Facts
-
-- Per-section drafting misses cross-section coverage gaps — a claim that spans two sections can fall between them. Treating per-section checks during drafting as coverage validation leaves exactly the holes this phase exists to catch.
-- Review checks prose quality, not claim coverage — a beautifully written section that never addresses its PRECIS claim passes review and fails the paper. Forwarding unvalidated drafts to review sends prose downstream that may not even address the argument the user committed to.
-
-## Visual Output for Decision Checkpoints
-
-When validation finds gaps (status: `gaps_found`), present a claim coverage summary table to help the user decide:
-
-```
-## Claim Coverage Summary
-
-| Claim | Section | Status | Issue |
-|-------|---------|--------|-------|
-| CLAIM-01 | Part I | COVERED | — |
-| CLAIM-02 | Part II | PARTIAL | Weak evidence (domain check failed) |
-| CLAIM-03 | — | MISSING | No draft section addresses this claim |
-
-Coverage: 1/3 COVERED, 1/3 PARTIAL, 1/3 MISSING
-```
-
-This table is generated from VALIDATION.md and presented inline. No separate script needed unless the user asks for the same view 3+ times.
-
-**Observe → record → offer:** record in `.planning/LEARNINGS.md` what the user attends to here (e.g., "user re-checked CLAIM-02 evidence"). Only after the *same* view is requested 3+ times, *offer* (do not impose) to script it — e.g., a coverage heatmap. Text is the default; visual output is never a hard requirement. See `references/constraints/writing-learnings-log.md`.
-
-## Phase Transition
-
-After validation is complete, discover and read the writing-review skill:
-Read `${CLAUDE_SKILL_DIR}/../../skills/writing-review/SKILL.md` and follow its instructions.
+| About to | Stop because | Do instead |
+|---|---|---|
+| Read retired précis or master-outline files | Canonical PLAN is the approved writing specification | Read the receipt-selected plan and deterministic index. |
+| Use an active-workflow marker for style | Stable configuration belongs in the plan | Read `## Writing Intent`. |
+| Write `VALIDATION.md`, phase summaries, or learning ledgers | They become competing lifecycle authority | Use TaskList and return the result. |
+| Claim full coverage without reading drafts | Mentioning is not arguing | Verify each mapped draft. |
+| Silently pass partial or missing claims | The user must decide whether gaps are acceptable | Create TaskList findings and return them. |

@@ -18,12 +18,11 @@ Style guide for economics journal articles, working papers, and finance analysis
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/writing/SKILL.md` and follow its instructions.
 
-**Step 2: Check for active workflow**
+**Step 2: Resolve canonical writing context**
 
-If `.planning/ACTIVE_WORKFLOW.md` exists and `workflow: writing`, update `style: econ`.
+For a modern writing episode, resolve the receipt-selected immutable `{planFile, planHash}` and read `## Writing Intent` for the style, thesis, audience, and claims. If the plan’s style is not `econ`, return control to the writing router rather than mutating configuration.
 
-If no `.planning/PRECIS.md` exists in the project:
-- Suggest: "No PRECIS.md found. Consider `/writing` to set up thesis, audience, and claims first."
+If no authenticated canonical writing plan exists, suggest `/writing` to create and approve one. A legacy-only layout is conversion input, not active authority.
 
 **Step 3: Apply econ-specific rules below**
 

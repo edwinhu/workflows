@@ -56,7 +56,7 @@ CLARIFY → read-only wc-audit diagnosis
 
 ### Audit-only
 
-Set `phase: diagnosis`. Invoke `wc-audit` with `auditOnly: true`, `readOnly: true`, a deterministic `targetFiles` manifest, semantic `phases`, approved `criteriaRows`, and `mechanicalProbes: []`. Pre-approval diagnosis dispatches only the `workflow-auditor` agent profile, whose tools are structurally limited to `Read`, `Grep`, and `Glob`; it never executes caller-supplied commands or project scripts. Hook-contract and mechanical-probe execution are explicitly deferred to an approved verification run. Render evidence-bearing findings into `.planning/AUTOMATED_REVIEW.md`, then set `phase: human-review` and load `beat-review`. Do not create `PLAN.md`, dispatch an implementation workflow, or mutate target files.
+Set `phase: diagnosis`. Invoke `wc-audit` with `auditOnly: true`, `readOnly: true`, a deterministic `targetFiles` manifest, semantic `phases`, approved `criteriaRows`, and `mechanicalProbes: []`. Pre-approval diagnosis dispatches only the `workflow-auditor` agent profile, whose tools are structurally limited to `Read`, `Grep`, and `Glob`; it never executes caller-supplied commands or project scripts. Hook-contract and mechanical-probe execution are explicitly deferred to an approved verification run. Render evidence-bearing findings into `.planning/AUTOMATED_REVIEW.md`, then set `phase: human-review` and load `beat-review`. Do not create a generated plan or receipt, dispatch an implementation workflow, or mutate target files.
 
 ### Repair, redesign, or migration
 

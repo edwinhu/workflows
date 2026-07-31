@@ -1,43 +1,31 @@
 #!/usr/bin/env bun
 /**
- * PreToolUse hook: block OUTLINE_APPROVED.md unless OUTLINE.md carries a machine-EXECUTABLE
- * per-slide Slide Spec table. TypeScript port of workshop-outline-executable-guard.py.
+ * PreToolUse/CLI guard for the receipt-selected generated workshop PLAN. The shared parser
+ * authenticates exact plan bytes and compiles Source Paper, Source Inventory, and the executable
+ * seven-column Slide Spec without a filename, directory-listing, or LLM fallback.
  *
- * `workshop-generate` (the transform workflow) reads the Slide Spec table directly: it fans out one
- * fragment-agent per row (each builds its `#slide[...]` block + notes from the pinned
- * Takeaway/Bullets/Inventory/Visual), then an assembly agent stitches the fragments under their
- * Section headers into slides.typ + notes.typ. A title-only outline
- * (`- Slide: title — source → IDs`) forces every agent to invent content and visuals — the failure
- * mode the spec exists to prevent.
- *
- * This guard fires when something writes `.planning/OUTLINE_APPROVED.md` (the Phase-2 approval
- * artifact Phase 3 checks). It validates the sibling OUTLINE.md's Slide Spec table and DENIES the
- * approval if the table is missing or any row is incomplete.
- *
- * S6 reconciliation (DESIGN §3b): the guard and BOTH engines share ONE parser, so
- * "parses ⇔ passes the guard" is a property, not a hope. The parser lives in
- * ./_workshop_slide_table.ts (the canonical workshop Slide Spec parser). Shared-v1 accepts only the
- * canonical seven-column table; the retired prose form cannot authorize generation.
- *
- * Standalone:  bun workshop-outline-executable-guard.ts path/to/OUTLINE.md
+ * Standalone: bun workshop-outline-executable-guard.ts <project-root>
  */
 
-import { deny, parsePayload, pyJson } from "./_gate_common.ts";
-import { buildIndex, pyJoin, pyParent } from "./_workshop_slide_table.ts";
+import { deny, parsePayload } from "./_gate_common.ts";
+import { buildIndex, pyParent } from "./_workshop_slide_table.ts";
 
 const argv = process.argv.slice(2);
+
+function failureMessage(idx: ReturnType<typeof buildIndex>): string {
+  if (idx.conversionRequired) {
+    return "GATE BLOCKED: legacy workshop planning files are conversion input only. Preserve them, create a fresh receipt-selected generated plan, and obtain independent whole-plan review.";
+  }
+  return "GATE BLOCKED: the receipt-selected workshop PLAN is not executable.\n\nProblems from the canonical workshop parser:\n- " + idx.violations.join("\n- ") + "\n\nReplace and re-review the native plan; do not create retired planning fragments or use a fallback parser.";
+}
 
 if (argv.length > 0 && argv[0] !== "-") {
   const idx = buildIndex(argv[0]);
   if (idx.violations.length) {
-    console.log("OUTLINE NOT EXECUTABLE:\n- " + idx.violations.join("\n- "));
+    console.log(failureMessage(idx));
     process.exit(1);
   }
-  if (idx.staleApproval.length) {
-    console.log("OUTLINE executable (WARN — stale approval):\n- " + idx.staleApproval.join("\n- "));
-    process.exit(0);
-  }
-  console.log(`OUTLINE executable (${idx.form} form, ${idx.slides.length} slides).`);
+  console.log(`Workshop PLAN executable: ${idx.slides.length} slides, hash ${idx.planHash}.`);
   process.exit(0);
 }
 
@@ -52,34 +40,17 @@ const toolName = (hookInput?.["tool_name"] ?? "") as unknown;
 if (toolName !== "Write" && toolName !== "Edit") process.exit(0);
 
 const toolInput = (hookInput["tool_input"] ?? {}) as Record<string, unknown>;
-const fp = (toolInput["file_path"] ?? "") as string;
-if (!fp || !String(fp).endsWith("OUTLINE_APPROVED.md")) process.exit(0);
+const filePath = String(toolInput["file_path"] ?? "");
+if (!filePath) process.exit(0);
 
-const outline = pyJoin(pyParent(String(fp)), "OUTLINE.md");
-const idx = buildIndex(outline);
-if (idx.violations.length) {
-  deny(
-    "GATE BLOCKED: OUTLINE.md is not machine-executable, so it cannot be approved " +
-      "for slide generation.\n\n" +
-      `\`${outline}\` problems:\n- ` +
-      idx.violations.join("\n- ") +
-      "\n\n" +
-      "workshop-generate fans out one fragment-agent per slide. Every slide needs a takeaway and " +
-      "≥1 F/T/R/A inventory id in the canonical seven-column Slide Spec table. Fix, then re-approve.",
-  );
+if (/(^|[\\/])\.planning[\\/](?:SOURCES|OUTLINE|OUTLINE_APPROVED|SOURCES_VERIFIED|SLIDES_REVIEWED|VALIDATION)\.md$/.test(filePath)) {
+  deny("GATE BLOCKED: workshop planning fragments are retired. The receipt-selected generated PLAN is the only authority for Source Paper, Source Inventory, Slide Spec, generation, verification, and review surfaces.");
 }
-// Stale approval (the live OUTLINE drifted from a prior APPROVED count) is allow+WARN, not a block:
-// the structure may legitimately have changed — surface it so the user re-confirms, don't hard-deny.
-if (idx.staleApproval.length) {
-  console.log(
-    pyJson({
-      hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "allow",
-        permissionDecisionReason:
-          "STALE APPROVAL (allowing — re-confirm the structure change):\n- " + idx.staleApproval.join("\n- "),
-      },
-    }),
-  );
+if (!/(^|[\\/])(?:presentation[\\/])?(?:slides|notes)\.typ$/.test(filePath)) process.exit(0);
+const root = pyParent(pyParent(filePath));
+const idx = buildIndex(root);
+if (idx.violations.length) deny(failureMessage(idx));
+if (idx.reviewStatus !== "APPROVED") {
+  deny(`GATE BLOCKED: the receipt-selected workshop plan is ${idx.reviewStatus || "unreviewed"}; slide or notes mutation requires APPROVED independent whole-plan review.`);
 }
 process.exit(0);

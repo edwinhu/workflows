@@ -87,7 +87,7 @@ Architecture and planning involve design judgment, goal decomposition, and trade
 Implementers follow explicit PLAN.md instructions. The plan already contains the reasoning; execution is implementation. Sonnet handles this well at lower cost.
 
 **Why restricted tools for verifiers?**
-Verification agents cannot Edit. `plan-checker` retains a mechanically guarded Write only for its exact hash-bound `.planning/PLAN_REVIEWED.md` verdict, so it cannot "fix" the plan or mutate arbitrary artifacts instead of reporting issues.
+Verification agents cannot Edit. `plan-checker` retains a mechanically guarded Write only for the exact hash-bound, least-privilege `.planning/.state/review.json` verdict, so it cannot "fix" the plan, alter approval identity, or mutate arbitrary artifacts instead of reporting issues.
 
 **Why Haiku for explorers?**
 data-explorer, doc-updater, and librarian do read-only exploration and structured output extraction. No reasoning required, just pattern matching from file contents.

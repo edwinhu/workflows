@@ -1,6 +1,6 @@
 ---
 name: beat-clarify
-description: "Shared CLARIFY primitive — AskUserQuestion then a criteria table where every row names its own evidence. Read by any phase that opens work with the user."
+description: "Shared CLARIFY primitive — ask the user, then carry evidence-bearing intent into the caller's authenticated generated-plan flow."
 user-invocable: false
 disable-model-invocation: true
 ---
@@ -9,90 +9,46 @@ disable-model-invocation: true
 
 `clarify = ASK + criteria`
 
-The opening beat of any workflow phase that starts with the user rather than with the code. Read by
-`ds` (brainstorm), `dev-clarify`, `writing-setup`, `workshop`, and `work`, so the shape is written once
-instead of five times drifting apart.
+The opening beat for a workflow phase that starts with the user. It is shared by `ds`, `dev-clarify`, `writing-setup`, `workshop`, and `work` so each caller asks before it investigates.
 
-**The caller supplies:** the question axes for its domain and the durable target for clarified intent.
-That target may be a workflow artifact (`.planning/WORK.md`) or the native plan the caller will enter
-next. Everything below is domain-agnostic.
+**The caller supplies:** domain question axes and whether it is in a legacy conversion episode. For modern episodes, clarified intent belongs in native Plan mode and persists only as the receipt-selected immutable `{planFile, planHash}`. `TaskList` later owns live work; project auto-memory holds reusable facts.
+
+A legacy `/dev` or legacy-only conversion path may read its isolated compatibility artifact, but it cannot use that artifact as authority for a newly started modern episode.
 
 <EXTREMELY-IMPORTANT>
 ## Ask before you look
 
-**No grep, no file read, no draft, no proposed approach until `AskUserQuestion` has run and the user
-has answered.**
-
-Looking first feels efficient and is not. What already exists anchors the questions you ask — you
-stop asking *what the user wants* and start asking *which of these existing shapes they want*. The
-questions narrow, the user ratifies a framing they never chose, and you build the wrong thing
-quickly. **Speed toward the wrong deliverable is not helpfulness; it is rework you authored on the
-user's behalf.**
-
-Loading your own procedure files is exempt. This bans reconnaissance into the task, not reading your
-own instructions.
+**No grep, task-file read, draft, or proposed approach until `AskUserQuestion` has run and the user has answered.** Existing shapes anchor the questions and can make the user ratify a framing they never chose. Loading this procedure is exempt.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
 ## Every criterion names its own evidence
 
-**A criterion you cannot check is not a criterion. It is a wish.**
-
-Each row carries the *specific* thing that will prove it — a command and its expected exit, a file
-that must contain a string, a rendered page someone looks at, a source that must be quotable, a
-question only the user can answer.
-
-"Works correctly," "reads well," "is clean," "is done" are unfalsifiable, which lets a verifier agree
-with you about nothing. A verdict on an unfalsifiable criterion is an unverified claim presented as
-fact.
+**A criterion without checkable evidence is a wish.** Each row names its proof: an expected command result, required content, rendered observation, quotable source, or user judgment.
 </EXTREMELY-IMPORTANT>
 
 ## Procedure
 
-1. **Ask first.** One `AskUserQuestion` call, up to four questions, 2–4 options each. Target the axes
-   where different answers produce *materially different work*:
-
-   | Axis | Ask when |
-   |---|---|
-   | **Outcome** | More than one plausible end state exists |
-   | **Scope** | The boundary between "this" and "also this" is unclear |
-   | **Constraint** | Format, tool, location, or style is unstated and not obvious |
-   | **Done-ness** | You cannot yet name what would prove it finished |
-
-   Always ask the done-ness question in some form — it becomes the criteria table, and it is the one
-   users most reliably have an opinion about once asked.
-
-   Do **not** ask what a careful colleague would decide themselves, or what sits in a file you may
-   read after this beat. Ambiguity you can resolve is not a question; it is a decision you are
-   avoiding.
-
-2. **Persist into the caller's target.** If it names a file, write it. If it names native Plan mode,
-   carry intent, explicit exclusions, and the evidence-bearing criteria into that plan; the caller's
-   ExitPlanMode hook owns durable persistence.
-
-3. **Deferred evidence is allowed, and must be marked.** Some domains genuinely cannot name evidence
-   yet — a DS spec cannot state actual row coverage before the profiling phase, which the brainstorm
-   phase is forbidden to run. Write `TBD (<phase that will fill it>)` rather than inventing a
-   number. An unmarked TBD is a missing criterion; a marked one is a scheduled one.
+1. **Ask first.** Make one `AskUserQuestion` call with up to four questions, each with 2–4 options. Cover outcome, scope, constraints, and done-ness where answers materially change work. Always establish done-ness.
+2. **Carry intent into canonical approval.** For modern workflows, place intent, exclusions, and evidence-bearing criteria in native Plan mode. The caller's approval/persistence flow creates the immutable generated plan and receipt; do not create `WORK.md`, `PRECIS.md`, `OUTLINE.md`, or another mutable planning ledger.
+3. **Mark truly deferred evidence.** Write `TBD (<phase that will fill it>)` only where the current phase cannot know the evidence. Never invent a target.
+4. **Handle legacy explicitly.** If a compatibility reader classifies the episode legacy-only, surface conversion to a fresh native plan and user approval. Preserve old files as provenance; never merge them with canonical authority.
 
 ## Gate
 
-The artifact exists, intent is written, and every criterion row has a non-empty Evidence cell —
-either concrete or an explicitly marked deferral. Missing evidence means go back and ask, never
-invent one.
+For a modern episode, native Plan mode contains the clarified intent and every criterion has concrete or explicitly deferred evidence. For a conversion episode, require a newly approved native plan before implementation. No modern continuation is admitted from a retired planning artifact.
 
 ## Red flags
 
 | Action | Why wrong | Do instead |
 |---|---|---|
-| About to read a task file before the first question | Existing shapes anchor the questions; the user ratifies a framing they never chose | Ask first |
-| About to skip asking because the task "is obvious" | Obvious tasks are where unstated scope hides; the ask took 30 seconds | Ask anyway — one question is a valid clarify |
-| About to write "works correctly" as evidence | Unfalsifiable; the verifier can only agree with nothing | Name the command, file, or observation |
-| About to hand-write an "Other" option | `AskUserQuestion` appends one automatically; you just burned a scarce option slot | Use the four slots for real alternatives |
+| Read task files before the first question | Existing shapes anchor the user’s choices | Ask first. |
+| Persist clarified intent into a retired Markdown ledger | It creates a competing source of truth | Carry it into native Plan mode. |
+| Resume a modern episode from a legacy file | It cannot authenticate current approved intent | Resolve the receipt-selected `{planFile, planHash}`. |
+| Write “works correctly” as evidence | It is unfalsifiable | Name the command, file, or observation. |
+| Hand-write an “Other” option | `AskUserQuestion` provides one | Use the slots for real alternatives. |
 
 ## Facts
 
-- `AskUserQuestion` appends an "Other" option to every question automatically.
-- Batch questions into ONE call **unless** an answer changes which questions follow — a dataset
-  choice that determines the available variables must be asked before the variable question, not
-  beside it.
+- `AskUserQuestion` appends an “Other” option automatically.
+- Batch questions into one call unless an answer determines the next question.

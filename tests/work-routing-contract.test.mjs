@@ -40,11 +40,14 @@ describe("work routing contract", () => {
     expect(description).not.toContain("analyze");
   });
 
-  test("active and legacy state behavior is fail-safe", () => {
-    expect(work).toContain("resume that workflow");
-    expect(work).toContain("offer to resume it");
-    expect(work).toContain("ask before\n   converting it");
-    expect(work).toContain("Never merge automatically");
+  test("canonical and legacy resume behavior is fail-safe", () => {
+    expect(work).toContain("Canonical:");
+    expect(work).toContain("Legacy-only:");
+    expect(work).toContain("Canonical with legacy provenance:");
+    expect(work).toContain("Conflicting authority:");
+    expect(work).toMatch(/Legacy files never\s+authorize implementation/);
+    expect(work).toContain("never merge automatically");
+    expect(work).toMatch(/`review\.json` selects and authenticates one generated\s+plan path\/hash/);
   });
 
   test("mechanical escalation thresholds remain explicit", () => {

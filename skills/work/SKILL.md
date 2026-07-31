@@ -14,16 +14,14 @@ evidence, independent verification, and human review without becoming a full dom
  ┌──── OUTER LOOP: REJECT: → criteria were wrong → CLARIFY ──────────────────────┐
  │                                                                                │
  ▼                                                                                │
-CLARIFY ──► PLAN ──► GOAL + WORK ──► independent VERIFY ──PASS──► human REVIEW ──┤
-   │          │              ▲                  │                     │             │
-   │          │              └──── fix ◄────FAIL                     ├─ clean → done
-   │          │                                     tactical fix ────┘
-   ▼          ▼
-WORK.md     approved plan
+CLARIFY ──► native PLAN ──► GOAL + WORK ──► independent VERIFY ──PASS──► REVIEW ─┤
+   │                    ▲                 │                              │          │
+   │                    └──── fix ◄──────FAIL                            ├─ clean → done
+   └──────────────────────────────────────────── REJECT: ────────────────┘
 ```
 
-**This diagram is the specification.** The inner loop repairs work that fails current criteria. The
-outer loop handles `REJECT:`, which means the criteria encoded the wrong outcome and must be replaced.
+**This diagram is the specification.** Tactical failures repair work against the approved criteria.
+`REJECT:` replaces the interpretation through a freshly approved plan.
 
 ## Selection boundary
 
@@ -40,123 +38,101 @@ outer loop handles `REJECT:`, which means the criteria encoded the wrong outcome
 | Existing artifact improved against a score | `/audit-fix-loop` |
 
 Work's floor is “I would otherwise start typing and hope.” Its ceiling is “this now needs its own
-specialized specification.” Escalate by task shape rather than silently stretching this workflow.
+specialized specification.” Escalate by task shape rather than stretching this workflow.
 
 ## Canonical state
 
-Use `.planning/WORK.md`:
+**NO WORK IMPLEMENTATION WITHOUT THE EXACT GENERATED PLAN AUTHENTICATED AND INDEPENDENTLY APPROVED BY `.planning/.state/review.json`.**
 
-```markdown
----
-workflow: work
-task: <one line>
-started: <YYYY-MM-DD>
-status: clarified|planned|implementing|verified|complete
-rejections: 0
----
+For a modern work episode:
 
-## Intent
+- The safe generated `.planning/<native-name>.md` selected by `review.json` is the sole substantive
+  planning specification.
+- The receipt binds its exact `plan_file`, `plan_hash`, workflow identity, native approval session/time,
+  and independent review session/time. Use the exposed `planFile` and `planHash` unchanged.
+- TaskList owns phase, task status, dependencies, attempts, verification rounds, review findings,
+  rejection disposition, and completion.
+- Project auto-memory receives only reusable facts; normal project directories hold deliverables.
 
-## Out of scope
+Do not create or treat any visible review, work, active-workflow, phase-summary, copied-plan, or mutable
+status document as authority. Copying the generated plan into another specification creates competing
+authority and is prohibited.
 
-## Success Criteria
+### Startup and compatibility
 
-| # | Criterion | Evidence |
-|---|---|---|
+Classify before resuming:
 
-## Plan
-
-## Verify log
-```
-
-Use `.planning/REVIEW.md` for the human-review ledger. While status is not `complete`, also maintain
-`.planning/ACTIVE_WORKFLOW.md`:
-
-```markdown
----
-workflow: work
-phase: clarify|plan|implement|verify|review
-state: .planning/WORK.md
----
-```
-
-Update `phase` at each transition. Remove the marker only after the REVIEW gate sets `status: complete`.
-
-### Startup and legacy state
-
-1. If `.planning/ACTIVE_WORKFLOW.md` names an active specialized workflow, resume that workflow. Do
-   not fork state by starting `/work` beside it.
-2. If an incomplete `.planning/WORK.md` exists, offer to resume it.
-3. If only `.planning/MINI.md` exists, explain that it is legacy standalone-mini state and ask before
-   converting it. Preserve the old file; copy its intent, exclusions, criteria, approved plan, verify
-   log, status, and rejection count into `WORK.md` only after confirmation.
-4. If both exist, `WORK.md` is canonical. Never merge automatically.
+1. **Canonical:** `review.json` selects and authenticates one generated plan path/hash. If its review is
+   pending, resume at independent whole-plan review. If it is approved, reconcile and resume only
+   current-hash TaskList work.
+2. **Legacy-only:** retired planning or lifecycle files exist without an authenticated generated plan.
+   Explain the conversion, preserve them unchanged as provenance, reconstruct the required native plan
+   schema, and require fresh approval and independent review before implementation. Legacy files never
+   authorize implementation.
+3. **Canonical with legacy provenance:** the receipt-selected generated plan and TaskList remain the only
+   authority. Retired files may be read only to explain history; never merge them into the live
+   specification.
+4. **Conflicting authority:** a legacy approval layout competes with the generated receipt for current
+   authority. Stop, identify both layouts, and require explicit resolution; never merge automatically.
+5. On the same authenticated plan hash, reconcile TaskList and continue without duplicate tasks. A new
+   plan hash supersedes old open authority according to the deterministic rollover rules in GOAL + WORK.
 
 ## 1. CLARIFY
 
 Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before task reconnaissance. Supply
-these generic axes: desired outcome, scope and exclusions, material constraints, and observable
-completion evidence. Persist the answers and evidence-bearing criteria into `WORK.md` with
-`status: clarified`.
+these generic axes: desired outcome, exclusions, material constraints, observable completion evidence,
+and required human review surfaces. Keep clarification in the conversation until it is incorporated
+into the native plan.
 
-**Gate:** `WORK.md` exists; Intent and Out of scope are explicit; every criterion has concrete Evidence
-or an explicitly scheduled `TBD (<phase>)`.
+**Gate:** intent, exclusions, evidence-bearing success criteria, and review surfaces are explicit enough
+to enter native Plan mode without guessing.
 
 ## 2. PLAN
 
-Read `${CLAUDE_SKILL_DIR}/beats/plan.md` and follow it. Use native Plan mode, get approval, then copy
-the approved plan into `WORK.md` and set `status: planned`.
+Read `${CLAUDE_SKILL_DIR}/beats/plan.md` and follow it. Use native Plan mode and obtain approval. The
+PostToolUse persistence hook binds the exact generated plan bytes in the receipt and invalidates stale
+review state. Then obtain one independent whole-plan review bound to the same hash.
 
-**Gate:** `ExitPlanMode` returned approved and the approved plan appears in `WORK.md`.
+**Gate:** the receipt-selected `planFile` and `planHash` form an approved artifact for workflow `work`.
 
 ## 3. GOAL + WORK
 
 Read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` for its implementation/verification doctrine,
-then read `${CLAUDE_SKILL_DIR}/beats/goal-work.md` for this adapter's execution procedure.
+then read `${CLAUDE_SKILL_DIR}/beats/goal-work.md` for this adapter's reconciliation and dispatch.
 
-**Gate:** exactly one `/goal` is confirmed active, names `.planning/WORK.md`, restates transcript-visible
-evidence requirements, and has a turn budget. Set `status: implementing` before changing the target.
+**Gate:** exactly one `/goal` is confirmed active, names the authenticated generated plan identity,
+restates transcript-visible evidence requirements, and has a turn budget. TaskList contains the complete
+current plan task set before `workflows/beat-implement.js` receives a ready wave.
 
 ## 4. VERIFY
 
 Read `${CLAUDE_SKILL_DIR}/beats/verify.md` and follow it. The verifier is never the doer.
 
-**Gate:** `WORK.md` has a verify run dispatched after the last change with a bare `OVERALL: PASS` and
-no unchecked criterion. Set `status: verified`, clear the implementation `/goal`, and advance to human
-review outside the autonomous loop.
+**Gate:** every current-plan task has a post-change independent verification round recorded in TaskList,
+all criteria pass, and the implementation `/goal` is cleared before human review.
 
 ## 5. REVIEW
 
 Read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`, then
-`${CLAUDE_SKILL_DIR}/beats/review-surface.md`. The shared primitive owns chat capture, dispositions,
-ledger semantics, and rejection re-entry; the adapter supplies the review target and rendered surface.
+`${CLAUDE_SKILL_DIR}/beats/review-surface.md`. The shared primitive owns feedback capture and disposition;
+the adapter supplies the receipt-selected target and rendered surface.
 
-**Gate:** every annotation and actionable chat item is dispositioned in `.planning/REVIEW.md`, no task
-is pending or in progress, no `REJECT:` is outstanding, the final relaunch has no new annotations, and
-any required durable rendered artifact is fresh. Then set `status: complete` and remove
-`.planning/ACTIVE_WORKFLOW.md`.
+**Gate:** TaskList has no open current-plan implementation, verification, or review item; the final
+review relaunch has no new annotations; required rendered artifacts are fresh; and no `REJECT:` remains.
 
 ## Escalation and rejection cap
 
-- Same treatment over independent pinned items: offer an explicitly approved dynamic Workflow for
-  that closed fan-out stage; `/work` keeps `/goal`, verification, and human review.
-- At least five substantial files or eight implementation steps: dispatch scoped implementation
-  subagents; keep mutations sequential unless genuine filesystem isolation exists.
-- Round two and later: resume the original verifier.
+- Same treatment over independent pinned items may use an explicitly approved closed fan-out stage;
+  `/work` keeps `/goal`, verification, and human review.
+- At least five substantial files or eight implementation steps: dispatch scoped implementation tasks
+  through the shared authenticated runner. Mutations remain sequential without filesystem isolation.
+- Round two and later resumes the original verifier.
 - More than roughly ten plan steps or real sub-phases: move to the appropriate specialized workflow.
-- Before handling `REJECT:`, read `rejections` from `WORK.md`. Clear the active goal, replace intent
-  and criteria, increment the count, and re-enter CLARIFY. If it is already 1, stop and escalate or
-  descope; two rejected interpretations require a real spec, not a third guess.
-- If the turn budget expires without PASS, report the failing criteria, evidence, and attempted fixes;
-  offer a new approach, criterion revision, or specialized workflow.
-
-## Trust boundary
-
-`/work` follows the shared `beat-implement` doctrine procedurally. It does **not** execute
-`workflows/beat-implement.js`: that runner currently authenticates DS's immutable approved-plan
-metadata. Do not generalize the runner, plan-persistence hooks, or reviewer-verdict boundary from this
-skill. Inline work is the default; delegated work receives complete task-local instructions and is
-verified independently afterward.
+- On `REJECT:`, clear the goal, preserve findings in TaskList, replace intent and criteria through a new
+  native plan, and increment the TaskList rejection count. If the rejection count is already 1, stop and
+  escalate or descope; two rejected interpretations require a real spec, not a third guess.
+- If the turn budget expires without PASS, report failing criteria, evidence, and attempted fixes; offer
+a new approach, criterion revision, or specialized workflow.
 
 ## Red flags — STOP
 
@@ -164,8 +140,9 @@ verified independently afterward.
 |---|---|
 | Read or grep a task file before CLARIFY | Ask first; procedure files are the only exemption |
 | Run `/work` for a trivial edit | Do it directly |
-| Let the plan acquire a real spec or many sub-phases | Escalate to the specialized workflow |
+| Let the plan acquire real sub-phases | Escalate to the specialized workflow |
 | Treat implementer output as verification | Dispatch an independent verifier |
 | Spawn a replacement verifier after a failure | Resume the same verifier |
-| Patch work after `REJECT:` | Clear the goal and replace intent and criteria |
+| Mutate the receipt-selected generated plan after approval | Replace it through native Plan mode and fresh review |
+| Treat legacy state as implementation authority | Convert explicitly and require fresh approval |
 | Start a third interpretation after two rejections | Escalate or descope |

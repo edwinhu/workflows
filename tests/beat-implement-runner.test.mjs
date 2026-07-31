@@ -29,16 +29,29 @@ const source = readFileSync(ROOT + 'workflows/beat-implement.js', 'utf8')
   .replace('lstatSync(full)', 'snapshotLstat(full)')
 const plan = '# Approved plan\n'
 const hash = createHash('sha256').update(plan).digest('hex')
-const reset = { approvedBodyHash: hash, session: 's-123' }
+const planFile = 'jazzy-leaping-scroll.md'
+const reset = { planFile, planHash: hash }
 
 function projectFor(options = {}) {
   const project = mkdtempSync(join(tmpdir(), 'beat-implement-'))
   const planning = join(project, '.planning')
-  mkdirSync(planning)
-  writeFileSync(join(planning, 'PLAN.md'), plan)
-  const metadata = { schemaVersion: 1, workflow: options.workflow || 'ds', planHash: hash, approvedSession: 's-123', approvedAt: options.approvedAt || '2026-01-01T00:00:00.000Z', ...(options.metaExtra || {}) }
-  writeFileSync(join(planning, 'PLAN.meta.json'), JSON.stringify(metadata))
-  writeFileSync(join(planning, 'PLAN_REVIEWED.md'), `---\nplan_hash: ${options.reviewHash || hash}\nstatus: ${options.reviewStatus || 'APPROVED'}\nreviewer_session_id: ${options.reviewerSession || 'reviewer-456'}\nreviewed_at: ${options.reviewedAt || '2026-01-01T00:00:01.000Z'}\n---\n\nreview`)
+  const state = join(planning, '.state')
+  const approvedPlan = options.plan || plan
+  const approvedHash = createHash('sha256').update(approvedPlan).digest('hex')
+  mkdirSync(state, { recursive: true })
+  const selectedPlanFile = options.planFile || planFile
+  writeFileSync(join(planning, selectedPlanFile), approvedPlan)
+  writeFileSync(join(state, 'review.json'), JSON.stringify({
+    workflow: options.workflow || 'ds',
+    plan_file: options.statePlanFile || selectedPlanFile,
+    plan_hash: options.reviewHash || approvedHash,
+    approved_session_id: options.approvedSession || 's-123',
+    approved_at: options.approvedAt || '2026-01-01T00:00:00.000Z',
+    status: options.reviewStatus || 'APPROVED',
+    reviewer_session_id: options.reviewStatus === 'PENDING' ? '' : (options.reviewerSession || 'reviewer-456'),
+    reviewed_at: options.reviewStatus === 'PENDING' ? '' : (options.reviewedAt || '2026-01-01T00:00:01.000Z'),
+    ...(options.metaExtra || {}),
+  }))
   Bun.spawnSync(['git', 'init', '-q'], { cwd: project })
   Bun.spawnSync(['git', 'config', 'user.email', 'test@example.invalid'], { cwd: project })
   Bun.spawnSync(['git', 'config', 'user.name', 'Test'], { cwd: project })
@@ -103,7 +116,7 @@ console.log('all implementation waves dispatch sequentially until filesystem iso
   ok('records implemented results', result.results.every(r => r.status === 'implemented'), JSON.stringify(result.results))
   ok('built-in dispatches carry task-specific captured approval evidence', result.results.every(r => /^[0-9a-f]{64}$/.test(r.approvalBundleDigest || '')), JSON.stringify(result.results))
   ok('returns reusable facts for caller curation', result.reusableFacts.length === 2, JSON.stringify(result.reusableFacts))
-  ok('prompt includes only immutable reset identity', new RegExp(hash).test(trace.prompts['implement:a']) && /s-123/.test(trace.prompts['implement:a']))
+  ok('prompt includes only immutable filename/hash identity', new RegExp(hash).test(trace.prompts['implement:a']) && new RegExp(planFile).test(trace.prompts['implement:a']))
   ok('prompt excludes mutable planning files', !/STATE\.md|SPEC\.md|LEARNINGS\.md|agent-memory/.test(trace.prompts['implement:a']))
   ok('prompt requires caller-selected constraints', /ds-common-constraints\.md/.test(trace.prompts['implement:a']))
 }
@@ -153,76 +166,73 @@ console.log('mutation observation hashes current bytes after every task')
 }
 
 console.log('workflow authentication supports native-plan domains and rejects unsupported ones')
-for (const workflow of ['writing', 'workshop', 'workflow-creator']) {
+for (const workflow of ['work', 'writing', 'workshop', 'workflow-creator']) {
   const project = projectFor({ workflow })
   const { result } = await exec({ workflow, readyWave: [task('a', ['src/a.js'])], planReset: reset }, label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/a.js'] }), { project })
   ok(`${workflow} authenticates through shared approved-plan lifecycle`, result.results[0]?.status === 'implemented')
 }
-try {
-  await exec({ workflow: 'work', readyWave: [], planReset: reset }, () => null)
-  ok('unsupported work workflow rejected', false)
-} catch (error) { ok('unsupported work workflow rejected', /args\.workflow/.test(String(error))) }
+{
+  let dispatched = false
+  try {
+    await exec({ workflow: 'unknown', readyWave: [], planReset: reset }, () => { dispatched = true; return null })
+    ok('unsupported workflow without explicit policy rejected', false)
+  } catch (error) { ok('unsupported workflow without explicit policy rejected before dispatch', !dispatched && /args\.workflow/.test(String(error))) }
+}
 try {
   await exec({ workflow: 'workshop', readyWave: [], planReset: reset }, () => null)
   ok('cross-workflow metadata rejected', false)
-} catch (error) { ok('cross-workflow metadata rejected', /authorizes ds, not workshop/.test(String(error))) }
+} catch (error) { ok('cross-workflow receipt rejected', /review state|workflow/.test(String(error))) }
 try {
   await exec({ workflow: 'ds', approvalPolicy: { schemaVersion: 1, workflow: 'ds', planPath: 'PLAN.md', metadataPath: 'PLAN.meta.json', verdictPath: 'PLAN_REVIEWED.md' }, readyWave: [], planReset: reset }, () => null)
   ok('built-in approval paths cannot be overridden', false)
 } catch (error) { ok('built-in approval paths cannot be overridden', /cannot override/.test(String(error))) }
-
-console.log('built-in captured approvals bind exact task, contract, and pre-state without changing the built-in API')
 {
-  const approvedTask = task('approved', ['src/approved.js'])
-  const project = projectFor({ workflow: 'ds' })
-  Bun.spawnSync(['git', 'rm', '-qr', '--cached', '.planning'], { cwd: project })
-  writeFileSync(join(project, '.gitignore'), '.planning/\n')
-  Bun.spawnSync(['git', 'add', '.gitignore'], { cwd: project })
-  Bun.spawnSync(['git', 'commit', '-qm', 'isolate approval artifacts'], { cwd: project })
-  const pre = captureGitObservation(project)
-  const policy = { schemaVersion: 1, workflow: 'ds', planPath: '.planning/PLAN.md', metadataPath: '.planning/PLAN.meta.json', verdictPath: '.planning/PLAN_REVIEWED.md' }
-  const metadataPath = join(project, policy.metadataPath)
-  writeFileSync(metadataPath, JSON.stringify({
+  const workflow = 'opaque-extension-7f3a'
+  const project = mkdtempSync(join(tmpdir(), 'beat-implement-external-'))
+  const approval = join(project, '.approval')
+  const externalPlan = '# External approved plan\n'
+  const externalHash = createHash('sha256').update(externalPlan).digest('hex')
+  const approvalPolicy = {
     schemaVersion: 1,
-    workflow: 'ds',
-    planHash: hash,
-    approvedSession: reset.session,
+    workflow,
+    planPath: '.approval/CURRENT.md',
+    metadataPath: '.approval/CURRENT.meta.json',
+    verdictPath: '.approval/CURRENT_REVIEWED.md',
+  }
+  mkdirSync(approval, { recursive: true })
+  writeFileSync(join(project, approvalPolicy.planPath), externalPlan)
+  writeFileSync(join(project, approvalPolicy.metadataPath), JSON.stringify({
+    schemaVersion: 1,
+    workflow,
+    planHash: externalHash,
+    approvedSession: 'external-approval-session',
     approvedAt: '2026-01-01T00:00:00.000Z',
-    taskIdentity: approvedTask.id,
-    taskContractDigest: createHash('sha256').update(Buffer.from(fingerprint(approvedTask), 'utf8')).digest('hex'),
-    preDispatchObservationDigest: pre.digest,
   }))
-  const bundle = captureApprovalBundle(project, Buffer.from(JSON.stringify(policy)), policy)
-  const successful = await exec({ workflow: 'ds', readyWave: [approvedTask], planReset: reset, capturedApprovalBundle: bundle, preDispatchObservation: pre }, label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/approved.js'] }), { project })
-  ok('built-in accepts exact captured task approval with existing workflow arguments', successful.result.results[0].status === 'implemented', JSON.stringify(successful.result.results))
-}
-for (const [name, mutate] of [
-  ['task substitution', value => ({ ...value, taskIdentity: 'other-task' })],
-  ['contract substitution', value => ({ ...value, taskContractDigest: 'f'.repeat(64) })],
-  ['pre-state substitution', value => ({ ...value, preDispatchObservationDigest: 'e'.repeat(64) })],
-]) {
-  const approvedTask = task('approved', ['src/approved.js'])
-  const project = projectFor({ workflow: 'ds' })
-  Bun.spawnSync(['git', 'rm', '-qr', '--cached', '.planning'], { cwd: project })
-  writeFileSync(join(project, '.gitignore'), '.planning/\n')
-  Bun.spawnSync(['git', 'add', '.gitignore'], { cwd: project })
-  Bun.spawnSync(['git', 'commit', '-qm', 'isolate approval artifacts'], { cwd: project })
-  const pre = captureGitObservation(project)
-  const policy = { schemaVersion: 1, workflow: 'ds', planPath: '.planning/PLAN.md', metadataPath: '.planning/PLAN.meta.json', verdictPath: '.planning/PLAN_REVIEWED.md' }
-  const metadata = mutate({
-    schemaVersion: 1,
-    workflow: 'ds',
-    planHash: hash,
-    approvedSession: reset.session,
-    approvedAt: '2026-01-01T00:00:00.000Z',
-    taskIdentity: approvedTask.id,
-    taskContractDigest: createHash('sha256').update(Buffer.from(fingerprint(approvedTask), 'utf8')).digest('hex'),
-    preDispatchObservationDigest: pre.digest,
+  writeFileSync(join(project, approvalPolicy.verdictPath), `---\nplan_hash: ${externalHash}\nstatus: APPROVED\nreviewer_session_id: external-review-session\nreviewed_at: 2026-01-01T00:00:01.000Z\n---\n`)
+  Bun.spawnSync(['git', 'init', '-q'], { cwd: project })
+  Bun.spawnSync(['git', 'config', 'user.email', 'test@example.invalid'], { cwd: project })
+  Bun.spawnSync(['git', 'config', 'user.name', 'Test'], { cwd: project })
+  Bun.spawnSync(['git', 'add', '.'], { cwd: project })
+  Bun.spawnSync(['git', 'commit', '-qm', 'fixture'], { cwd: project })
+  const { result } = await exec({
+    workflow,
+    approvalPolicy,
+    readyWave: [task('external', ['src/external.js'])],
+    planReset: { approvedBodyHash: externalHash, session: 'external-approval-session' },
+  }, () => ({ taskId: 'external', status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/external.js'] }), {
+    project,
+    session: 'external-implementation-session',
   })
-  writeFileSync(join(project, policy.metadataPath), JSON.stringify(metadata))
-  const bundle = captureApprovalBundle(project, Buffer.from(JSON.stringify(policy)), policy)
-  const { result, trace } = await exec({ workflow: 'ds', readyWave: [approvedTask], planReset: reset, capturedApprovalBundle: bundle, preDispatchObservation: pre }, () => ({ taskId: approvedTask.id, status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: [] }), { project })
-  ok(`built-in rejects ${name} before dispatch`, result.results[0].status === 'failed' && trace.labels.length === 0, JSON.stringify(result.results))
+  ok('external schema-v1 live approval dispatches without a captured bundle', result.results[0]?.status === 'implemented', JSON.stringify(result.results))
+}
+
+console.log('built-in generated-plan workflows reject caller-supplied captured bundles')
+{
+  let dispatched = false
+  try {
+    await exec({ workflow: 'ds', readyWave: [task('approved', ['src/approved.js'])], planReset: reset, capturedApprovalBundle: { schemaVersion: 1 } }, () => { dispatched = true; return {} })
+    ok('built-in captured bundle rejected', false)
+  } catch (error) { ok('built-in captured bundle rejected before dispatch', !dispatched && /do not accept captured approval bundles/.test(String(error))) }
 }
 
 console.log('durable plan review and reset gates reject invalid state')
@@ -508,9 +518,21 @@ console.log('resume includes only proven attempted work and preserves structured
 for (const [name, attemptRecords] of [['no prior attempt proof', []], ['forged partial record', [{ taskId: 'a' }]]]) {
   try { await exec({ readyWave: [task('a', ['src/a.js'])], planReset: reset, resume: { attemptedTaskIds: ['a'], attemptRecords } }, () => ({})); ok(`rejects retry with ${name}`, false) } catch { ok(`rejects retry with ${name}`, true) }
 }
+{
+  const wave = [task('a', ['src/a.js'])]
+  const first = await exec({ workflow: 'work', readyWave: wave, planReset: reset }, () => ({ taskId: 'a', status: 'failed', summary: 'attempted', reusableFacts: [], changedFiles: [] }), { workflow: 'work' })
+  const replacementPlan = '# Replacement approved plan\n'
+  const replacementHash = createHash('sha256').update(replacementPlan).digest('hex')
+  const replacementReset = { planFile: 'replacement-generated.md', planHash: replacementHash }
+  let dispatched = false
+  try {
+    await exec({ workflow: 'work', readyWave: wave, planReset: replacementReset, resume: { attemptedTaskIds: ['a'], attemptRecords: first.result.results } }, () => { dispatched = true; return {} }, { workflow: 'work', plan: replacementPlan, planFile: 'replacement-generated.md', approvedSession: 's-456' })
+    ok('work rejects retry records from a prior plan hash', false)
+  } catch { ok('work rejects retry records from a prior plan hash before dispatch', !dispatched) }
+}
 
 console.log('plan-reset cross-check identity is strict')
-for (const [name, badReset] of [['unexpected marker field', { ...reset, marker: true }], ['blank hash', { ...reset, approvedBodyHash: '  ' }], ['object session', { ...reset, session: {} }]]) {
+for (const [name, badReset] of [['unexpected marker field', { ...reset, marker: true }], ['blank hash', { ...reset, planHash: '  ' }], ['object plan file', { ...reset, planFile: {} }]]) {
   try { await exec({ readyWave: [task('a', ['src/a.js'])], planReset: badReset }, () => ({})); ok(`rejects ${name}`, false) } catch { ok(`rejects ${name}`, true) }
 }
 

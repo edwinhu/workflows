@@ -1,169 +1,41 @@
 ---
 name: writing-outline-reviewer
-description: "Internal skill used by writing-outline at exit gate. Dispatches a reviewer subagent to verify OUTLINE.md quality before drafting. NOT user-facing."
+description: "Legacy-only conversion helper for archived master-outline episodes. It is never selected in a canonical writing episode."
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Agent
 ---
 
-# Outline Document Reviewer
+# Legacy Outline Conversion Reviewer
 
-**Purpose:** Catch outline gaps BEFORE they survive into drafting. A thin outline that survives into drafting means every section is improvised, every transition is missing, and every draft rewrites from scratch.
+This helper inspects a **legacy-only** `.planning/OUTLINE.md` and any `outlines/` deliverables only as conversion provenance. Canonical writing uses the receipt-selected generated plan’s document structure and claim-to-section map, then a whole-plan review. It never uses this helper to create a review marker or to authorize drafting.
 
-## Shared Enforcement
+## Admission
 
-Auto-load all constraints matching `applies-to: writing-outline-reviewer`:
+Use the layout classifier first. Continue only for `legacy-only` conversion. For canonical state, dispatch the canonical whole-plan reviewer. For a mixed conflicting layout, fail closed rather than merging sources of authority.
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-outline-reviewer`
+## Procedure
 
-**You MUST have these constraints loaded before proceeding. No claiming you "remember" them.**
+1. Read the legacy master outline and detailed `outlines/` files as provenance.
+2. Dispatch a read-only reviewer to report claim coverage, section purposes, transitions, scope drift, evidence mapping, and incomplete detailed outlines.
+3. Return conversion findings to the caller. Do not modify the legacy files, create `.planning/OUTLINE_REVIEWED.md`, or begin drafting.
+4. Carry valid structure into a new native writing plan’s `## Document Structure`, `## Claim → Section Map`, `## Section Outputs`, and `## Review Surfaces`.
+5. Require fresh native approval and the canonical independent whole-plan review before implementation. Detailed outlines remain normal `outlines/` project deliverables.
 
-## When to Dispatch
+## Return format
 
-After writing-outline completes `.planning/OUTLINE.md` (master outline) and all section outlines in `outlines/`, before writing-draft begins.
-
-```
-Outline phase complete → all outlines/ files written
-  → [THIS SKILL] Dispatch outline reviewer subagent
-  → For outlines with 10+ sections: review in groups of 3-4
-  → Issues found? Fix outlines → re-dispatch reviewer
-  → Approved? → Draft phase: writing-draft
-```
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Outline Review
-
-**NO DRAFTING WITHOUT REVIEWED OUTLINE. This is not negotiable.**
-
-A bad outline that survives into drafting means:
-- Sections that don't map to any PRECIS claim
-- Subsections with topics but no POINT, EVIDENCE, or LOGIC
-- Missing transitions that fragment the argument
-- Scope violations that bloat the document
-- Filler sections that exist because "papers usually have this" not because the argument needs it
-
-**Catching an outline gap NOW costs 1 minute. Catching it during drafting costs a full rewrite.**
-</EXTREMELY-IMPORTANT>
-
-## Chunking Rule
-
-**If the outline has 10+ sections (across OUTLINE.md and outlines/ files):** Review in groups of 3-4 sections. Each group should be logically related (e.g., "introduction + background", "core argument sections", "counterarguments + conclusion").
-
-**If the outline has <10 sections:** Review the entire outline in one pass.
-
-**Why chunk:** Monolithic review of large outlines produces shallow feedback. Focused review per group catches more issues.
-
-## Dispatch Template (Single Pass or Per-Chunk)
-
-Use this Task invocation to dispatch the outline reviewer:
-
-```
-Agent(
-  subagent_type="general-purpose",
-  description="Review outline documents",
-  prompt="""
-You are an outline document reviewer. Verify this outline is complete, maps to the PRECIS, and is ready for prose drafting.
-
-**Tool restrictions:** You may ONLY use Read, Grep, and Glob tools. Do NOT use Write, Edit, or Bash. Your job is to evaluate, not fix.
-
-**Master outline:** .planning/OUTLINE.md [— Chunk: sections N-M only, if chunked]
-**Section outlines:** outlines/ directory
-**Precis for reference:** .planning/PRECIS.md
-
-Read ALL files, then evaluate the outline against ALL categories below.
-
-## What to Check
-
-| Category | What to Look For |
-|----------|------------------|
-| PRECIS Mapping | Every claim in PRECIS.md has at least one section advancing it. No orphan claims. No orphan sections (sections that don't serve any claim). |
-| Transitions | Every section has a planned transition to the next. Missing transitions = fragmented argument. |
-| Scope Honored | No sections that fall outside PRECIS scope IN. No sections covering PRECIS scope OUT items. |
-| Section Purpose | Every section has a clear purpose (not filler like "background" without specific goals). Each section earns its place. |
-| Subsection Depth | Each section outline in outlines/ has POINT + EVIDENCE + LOGIC for every subsection. Topic lists without these are NOT outlines. |
-| Evidence Mapping | Sources are mapped to specific points, not vaguely listed at the end. |
-| Completeness | Every section in OUTLINE.md has a corresponding file in outlines/. No TODOs, TBDs, or placeholders. |
-| Internal Consistency | Sections don't contradict each other. Claims don't repeat across sections. |
-
-## CRITICAL — Look Especially Hard For:
-
-- Sections in OUTLINE.md with NO corresponding outlines/ file
-- Subsections that list topics but lack POINT, EVIDENCE, or LOGIC
-- Transitions that are missing or say "TBD"
-- Sections that exist "because papers usually have this" not because the argument needs them
-- PRECIS claims not covered by ANY section
-- Sections that drift outside PRECIS scope
-- Evidence listed without connection to a specific point
-- Counterargument sections that address strawmen instead of the objections in PRECIS
-
-## Output Format
-
-## Outline Review
-
-**Status:** APPROVED | ISSUES_FOUND
-
-**Issues (if any):**
-- [Section/File]: [specific issue] - [why it matters for drafting]
-
-**PRECIS Coverage Check:**
-- [Claim 1]: Covered by Section N ✅ | NOT COVERED ❌
-- [Claim 2]: Covered by Section N ✅ | NOT COVERED ❌
-
-**Recommendations (advisory — don't block approval):**
-- [suggestions for improvement that aren't blocking]
-""")
+```text
+Legacy outline conversion findings
+- Legacy inputs: [paths]
+- Reusable structure and mappings: [findings]
+- Gaps to resolve in the new plan or detailed outlines: [findings]
+- Next action: author and approve a fresh canonical writing plan
 ```
 
-## Handling Reviewer Output
+## Red flags
 
-### If APPROVED
-
-Write the gate artifact so downstream phases can verify the gate ran:
-
-```
-Write(".planning/OUTLINE_REVIEWED.md", """---
-status: APPROVED
-date: [ISO 8601]
-reviewer: outline-reviewer-subagent
----
-# Outline Review: APPROVED
-
-[Include reviewer's approval summary here]
-""")
-```
-
-Proceed immediately to draft phase. Read `${CLAUDE_SKILL_DIR}/../../skills/writing-draft/SKILL.md` and follow its instructions.
-
-### If ISSUES_FOUND
-
-Staged improvement criteria per iteration:
-
-| Iteration | Focus | Expected Improvement |
-|-----------|-------|---------------------|
-| 1 | Fix blocking issues (orphan claims, missing outlines/, no POINT/EVIDENCE/LOGIC) | Every claim mapped, every section has structure |
-| 2 | Fix secondary issues (missing transitions, weak evidence mapping) | Transitions planned, evidence mapped to specific points |
-| 3 | Fix refinement issues (scope drift, filler sections, consistency) | All sections earn their place, no drift outside PRECIS scope |
-| 4-5 | Polish (if still needed) | Edge cases, cross-section consistency |
-
-Process:
-1. Fix the specific issues in the relevant outline files
-2. Re-dispatch the reviewer (same template)
-3. Repeat until APPROVED or max 5 iterations
-
-### If 5 Iterations Without Approval
-Escalate to user:
-```
-"Outline reviewer has flagged issues 5 times. Remaining issues:
-[list issues]
-Should I: (A) Fix these, (B) Proceed with known gaps, (C) Rethink the outline?"
-```
-
-## Gate Function
-
-```
-1. IDENTIFY: `.planning/OUTLINE.md` and all `outlines/*.md` files exist
-2. DISPATCH: Send to reviewer subagent (per-chunk if 10+ sections)
-3. READ: Reviewer returns APPROVED or ISSUES_FOUND
-4. VERIFY: If ISSUES_FOUND, fix and re-dispatch (max 5)
-5. CLAIM: Only proceed to drafting when ALL chunks APPROVED
-```
+| About to | Stop because | Do instead |
+|---|---|---|
+| Invoke this for canonical writing | It promotes retired master-outline authority | Use canonical whole-plan review. |
+| Write an outline review marker | It creates a retired gate artifact | Return findings to the converter. |
+| Treat a legacy outline as implementation authorization | Only an approved canonical plan authorizes work | Convert and obtain fresh approval. |

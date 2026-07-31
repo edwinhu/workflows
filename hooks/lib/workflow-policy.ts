@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, normalize } from "node:path";
 
-const BUILT_IN_WORKFLOWS = new Set(["ds", "dev", "writing", "workshop", "workflow-creator"]);
+const BUILT_IN_WORKFLOWS = new Set(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 const WORKFLOW_PATTERN = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
 
 export type WorkflowPolicy = Readonly<{

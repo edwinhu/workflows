@@ -204,6 +204,11 @@
         ".planning/outlines/part-1.md": "# Part I\n",
         ".planning/outlines/part-2.md": "# Part II\n",
         ".planning/drafts/part-1.md": "draft text\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -345,6 +350,11 @@
         ".planning/HANDOFF.md": "---\nlast_updated: 2026-07-20\n---\n\n# Handoff\n\n## Status\n\nNo Next Action heading here.\n",
         ".planning/ACTIVE_WORKFLOW.md": "---\nphase_name: idle\nnotes:\n  - no workflow key\n---\n",
         ".planning/PHASE_SUMMARY.md": "summary\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

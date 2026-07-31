@@ -14,11 +14,15 @@
  */
 
 import { readFileSync, statSync } from "node:fs";
+import {
+  classifyBuiltInArtifactLayout,
+  resolveGeneratedPlanReviewState,
+  type ArtifactError,
+} from "../workflows/lib/approved-artifact.ts";
 
 // ── Python path-string semantics ────────────────────────────────────────────────
-// pathlib drops "." components and collapses repeated separators, and the guard's messages embed
-// these strings verbatim ("OUTLINE.md not found at .planning/OUTLINE.md/OUTLINE.md"), so str() has
-// to agree byte for byte.
+// pathlib drops "." components and collapses repeated separators, so generated-plan guard
+// diagnostics must use matching path strings byte for byte.
 export function pyPathStr(p: string): string {
   const absolute = p.startsWith("/");
   const parts = p.split("/").filter((s) => s !== "" && s !== ".");
@@ -147,31 +151,27 @@ function coreCell(header: string[], cells: string[], name: string): string {
   return c === undefined ? "" : c.trim();
 }
 
-/** First table whose lowercased header is a superset of `required`; null if absent. */
-export function findTable(text: string, required: string[]): { header: string[]; rows: string[][] } | null {
+/** First markdown table in the supplied section, with literal normalized cells. */
+export function findTable(text: string): { header: string[]; rows: string[][] } | null {
   const lines = splitLines(text);
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!(line.startsWith("|") && line.slice(1).includes("|"))) continue;
-    const header = splitCells(stripOuterPipes(line)).map((c) => c.trim().toLowerCase());
     const sep = i + 1 < lines.length ? lines[i + 1].trim() : "";
-    const isSep = SEP_RE.test(sep) && sep.includes("-");
-    if (isSep && required.every((r) => header.includes(r))) {
-      const rows: string[][] = [];
-      let j = i + 2;
-      while (j < lines.length && lines[j].trim().startsWith("|")) {
-        rows.push(splitRow(lines[j]));
-        j += 1;
-      }
-      return { header, rows };
+    if (!SEP_RE.test(sep) || !sep.includes("-")) continue;
+    const rows: string[][] = [];
+    let j = i + 2;
+    while (j < lines.length && lines[j].trim().startsWith("|")) {
+      rows.push(splitRow(lines[j]));
+      j += 1;
     }
+    return { header: splitRow(line), rows };
   }
   return null;
 }
 
 // ── workshop domain seam ────────────────────────────────────────────────────────
-const TABLE_REQUIRED = ["slide", "section", "takeaway", "inventory"];
-const REQUIRED_COLS = ["slide", "section", "takeaway", "bullets", "inventory", "visual", "notes"];
+const REQUIRED_COLS = ["Slide", "Section", "Takeaway", "Bullets", "Inventory", "Visual", "Notes"];
 const INV_TOK_RE = /[FTRA]\d+/g;
 const PROSE_SLIDE_RE = /^\s*-\s*Slide:\s*(.+)$/;
 const INV_TAIL_RE = /(?:→|->)?\s*\[([^\]]*)\]\s*$/;
@@ -194,12 +194,19 @@ export type SlideIndex = {
   form: string;
   sectionOrder: string[];
   groupOrder: string[];
-  outlinePath: string;
+  ok: boolean;
+  planPath: string;
+  planFile: string;
+  planHash: string;
+  reviewStatePath: string;
+  receipt: { workflow: string; plan_file: string; plan_hash: string; status: string } | null;
+  reviewStatus: string;
+  layout: string;
+  conversionRequired: boolean;
   sourcesPath: string;
   paperPath: string;
   sourcesInventory: string[];
   violations: string[];
-  staleApproval: string[];
 };
 
 /** Core cell extraction + workshop's backtick tolerance (the Section column wraps `==` in ticks). */
@@ -222,18 +229,13 @@ function invTokens(cell: string): string[] {
 }
 
 export function findSlideTable(text: string) {
-  return findTable(text, TABLE_REQUIRED);
+  return findTable(text);
 }
 
-function parseTable(text: string, idx: SlideIndex): void {
-  const found = findSlideTable(text);
-  if (!found) return;
-  const { header, rows } = found;
+function parseTable(table: { header: string[]; rows: string[][] }, idx: SlideIndex): void {
+  const header = table.header.map(cell => cell.toLowerCase());
+  const { rows } = table;
   idx.form = "table";
-  const missing = REQUIRED_COLS.filter((c) => colIndex(header, c) < 0);
-  if (missing.length) {
-    idx.violations.push(`Slide Spec table missing required column(s): ${missing.join(", ")}.`);
-  }
   const seen = new Set<number>();
   for (const cells of rows) {
     const slide = wsCell(header, cells, "slide");
@@ -359,100 +361,108 @@ function parseProse(text: string, idx: SlideIndex): void {
   }
 }
 
-function staleApproval(planning: string, idx: SlideIndex): void {
-  const approved = pyJoin(planning, "OUTLINE_APPROVED.md");
-  if (!isFile(approved)) return;
-  const txt = readFileSync(approved, "utf8");
-  for (const [key, live] of [
-    ["slide_count", idx.slides.length],
-    ["section_count", idx.sectionOrder.length],
-  ] as const) {
-    const m = new RegExp(`^${key}:\\s*(\\d+)`, "m").exec(txt);
-    if (m && parseInt(m[1], 10) !== live) {
-      idx.staleApproval.push(
-        `OUTLINE_APPROVED.md ${key}=${m[1]} but live OUTLINE.md has ${live} — ` +
-          "the approval predates a structure change; re-approve before generating.",
-      );
-    }
+const REQUIRED_PLAN_SECTIONS = [
+  "Presentation Intent",
+  "Audience, Venue, Duration, and Proportions",
+  "Source Paper",
+  "Source Inventory",
+  "Slide Spec",
+  "Outputs and Verification",
+  "Review Surfaces",
+] as const;
+
+function sectionBody(plan: string, heading: string): string | undefined {
+  const lines = splitLines(plan);
+  const wanted = `## ${heading}`;
+  const start = lines.findIndex(line => line.trim() === wanted);
+  if (start < 0) return undefined;
+  const body: string[] = [];
+  for (let i = start + 1; i < lines.length; i++) {
+    if (/^#{1,2}\s/.test(lines[i])) break;
+    body.push(lines[i]);
   }
+  return body.join("\n");
+}
+
+function isArtifactError(value: unknown): value is ArtifactError {
+  return !!value && typeof value === "object" && "code" in value && "message" in value;
 }
 
 /**
- * Parse OUTLINE.md (table OR prose) into a SlideIndex work-list. `arg` may be the OUTLINE.md path,
- * the project root, or its .planning dir. The guard consumes `.violations`.
+ * Authenticate the receipt-selected generated workshop PLAN and compile its native Source Paper,
+ * Source Inventory, and seven-column Slide Spec sections. Legacy files are diagnostics only; this
+ * parser never discovers a replacement by filename, directory listing, or LLM fallback.
  */
-export function buildIndex(arg: string): SlideIndex {
-  const p = pyPathStr(arg);
-  let outline: string;
-  if (isFile(p) && pyName(p).endsWith(".md")) {
-    outline = p;
-  } else {
-    const planning = isDir(pyJoin(p, ".planning")) ? pyJoin(p, ".planning") : p;
-    outline = pyJoin(planning, "OUTLINE.md");
-  }
+export function buildIndex(project: string): SlideIndex {
   const idx: SlideIndex = {
-    slides: [],
-    form: "none",
-    sectionOrder: [],
-    groupOrder: [],
-    outlinePath: outline,
-    sourcesPath: "",
-    paperPath: "",
-    sourcesInventory: [],
-    violations: [],
-    staleApproval: [],
+    slides: [], form: "none", sectionOrder: [], groupOrder: [], ok: false, planPath: "", planFile: "",
+    planHash: "", reviewStatePath: "", receipt: null, reviewStatus: "", layout: "canonical", conversionRequired: false,
+    sourcesPath: "", paperPath: "", sourcesInventory: [], violations: [],
   };
-  if (!isFile(outline)) {
-    idx.violations.push(`OUTLINE.md not found at ${outline}`);
+  const root = pyPathStr(project);
+  try {
+    idx.layout = classifyBuiltInArtifactLayout(root, "workshop");
+  } catch {
+    idx.violations.push(`Workshop project root is inaccessible: ${root}`);
     return idx;
   }
-  const planning = pyParent(outline);
-  const sources = pyJoin(planning, "SOURCES.md");
-  idx.sourcesPath = isFile(sources) ? sources : "";
-  let src = "";
-  if (idx.sourcesPath) {
-    src = readFileSync(sources, "utf8");
-    // first "- Path:" line (tolerate bold markers: "- **Path:**"); it is the primary paper.
-    const pm = /^\s*-\s*\*{0,2}Path:?\*{0,2}\s*(.+?)\s*$/m.exec(src);
-    if (pm) {
-      const raw = pm[1].trim();
-      idx.paperPath = raw.startsWith("~") ? expandUser(raw) : raw;
-    }
-  }
-  const text = readFileSync(outline, "utf8");
-
-  if (findSlideTable(text)) {
-    parseTable(text, idx);
-  } else {
-    idx.form = "none";
+  if (idx.layout === "legacy" || idx.layout === "conflict") {
+    idx.conversionRequired = true;
     idx.violations.push(
-      "No executable canonical Slide Spec table found: " +
-        "Slide|Section|Takeaway|Bullets|Inventory|Visual|Notes is required for shared-v1 workshop generation.",
+      idx.layout === "legacy"
+        ? "Legacy workshop planning artifacts are conversion input only; create and review a fresh receipt-selected generated plan."
+        : "Generated and legacy workshop planning artifacts conflict; preserve legacy files as provenance and resolve with a fresh generated plan.",
     );
+    return idx;
   }
-
-  // distinct section / group order (document order)
+  const resolved = resolveGeneratedPlanReviewState(root, "workshop");
+  if (isArtifactError(resolved)) {
+    idx.violations.push(`Workshop generated-plan receipt is invalid: ${resolved.message}`);
+    return idx;
+  }
+  idx.planPath = resolved.planPath;
+  idx.planFile = resolved.planFile;
+  idx.planHash = resolved.hash;
+  idx.reviewStatePath = pyJoin(pyJoin(root, ".planning"), ".state/review.json");
+  idx.receipt = { workflow: resolved.receipt.workflow, plan_file: resolved.receipt.plan_file, plan_hash: resolved.receipt.plan_hash, status: resolved.receipt.status };
+  idx.reviewStatus = resolved.receipt.status;
+  const plan = readFileSync(resolved.planPath, "utf8");
+  const headings = splitLines(plan).map(line => line.trim());
+  const observedH2 = headings.filter(line => /^##\s+/.test(line)).map(line => line.replace(/^##\s+/, ""));
+  if (JSON.stringify(observedH2) !== JSON.stringify(REQUIRED_PLAN_SECTIONS)) {
+    idx.violations.push(`PLAN level-2 heading sequence must equal exactly: ${REQUIRED_PLAN_SECTIONS.join(" | ")}.`);
+  }
+  for (const heading of REQUIRED_PLAN_SECTIONS) {
+    const count = headings.filter(line => line === `## ${heading}`).length;
+    if (count !== 1) idx.violations.push(`PLAN requires exactly one level-2 section: ## ${heading} (found ${count}).`);
+  }
+  const sourcePaper = sectionBody(plan, "Source Paper") ?? "";
+  const paper = /^\s*-\s*\*{0,2}Path:?\*{0,2}\s*(.+?)\s*$/m.exec(sourcePaper);
+  if (!paper) idx.violations.push("PLAN Source Paper requires a '- Path: <absolute paper path>' row.");
+  else idx.paperPath = paper[1].trim().startsWith("~") ? expandUser(paper[1].trim()) : paper[1].trim();
+  const inventory = sectionBody(plan, "Source Inventory") ?? "";
+  const known = new Set<string>(inventory.match(INV_TOK_RE) ?? []);
+  idx.sourcesInventory = [...known].sort((a, b) =>
+    a[0] === b[0] ? parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10) : a[0] < b[0] ? -1 : 1,
+  );
+  if (!idx.sourcesInventory.length) idx.violations.push("PLAN Source Inventory requires at least one F/T/R/A item.");
+  const slideSpec = sectionBody(plan, "Slide Spec") ?? "";
+  const table = findSlideTable(slideSpec);
+  if (!table) {
+    idx.violations.push("PLAN Slide Spec requires the canonical seven-column Slide|Section|Takeaway|Bullets|Inventory|Visual|Notes table.");
+  } else if (JSON.stringify(table.header) !== JSON.stringify(REQUIRED_COLS)) {
+    idx.violations.push("PLAN Slide Spec header must contain exactly seven ordered columns: Slide|Section|Takeaway|Bullets|Inventory|Visual|Notes.");
+  } else if (table.rows.some(row => row.length !== REQUIRED_COLS.length)) {
+    idx.violations.push("Every PLAN Slide Spec data row must contain exactly seven cells.");
+  } else {
+    parseTable(table, idx);
+  }
   for (const sl of idx.slides) {
     if (sl.section && !idx.sectionOrder.includes(sl.section)) idx.sectionOrder.push(sl.section);
     if (sl.group && !idx.groupOrder.includes(sl.group)) idx.groupOrder.push(sl.group);
+    for (const tok of sl.inventory) if (!known.has(tok)) idx.violations.push(`Slide ${sl.num}: inventory id ${tok} not found in PLAN Source Inventory.`);
   }
-
-  // dangling inventory ref check + the canonical ID universe (only if SOURCES present)
-  if (idx.sourcesPath) {
-    const known = new Set<string>((src.match(INV_TOK_RE) ?? []) as string[]);
-    idx.sourcesInventory = [...known].sort((a, b) =>
-      a[0] === b[0] ? parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10) : a[0] < b[0] ? -1 : 1,
-    );
-    for (const sl of idx.slides) {
-      for (const tok of sl.inventory) {
-        if (!known.has(tok)) {
-          idx.violations.push(`Slide ${sl.num}: inventory id ${tok} not found in SOURCES.md.`);
-        }
-      }
-    }
-  }
-
-  staleApproval(planning, idx);
+  idx.ok = idx.violations.length === 0;
   return idx;
 }
 
