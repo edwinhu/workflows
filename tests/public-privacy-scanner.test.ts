@@ -15,9 +15,9 @@ import {
 } from "../scripts/scan-public-privacy";
 
 const REQUIRED_RATIONALE = ["live reverse integration until pri", "vate Stage 2 passes"].join("");
-const DEBT_ROOT = ["course", "-materials"].join("");
 const DEBT_COMMAND = ["teaching", ":find-slide-page"].join("");
 const DEBT_PLUGIN = ["teaching", "-plugin"].join("");
+const TEACHING_CACHE = ["teaching", "teaching"].join("/");
 const PRIVATE_REPOSITORY = ["private", " repository"].join("");
 const COURSE_EXAMPLE = ["Advanced Corporate Law", " Seminar 2028"].join("");
 
@@ -26,9 +26,8 @@ const basePolicy = (): PrivacyPolicy => ({
   scanRoots: ["."],
   exclusions: [".git/**", ".planning/**", "node_modules/**", "scratch/**", "bun.lock"],
   denyRules: [
-    { id: "private-identifier", pattern: `(?:${DEBT_ROOT}|${DEBT_COMMAND}|${DEBT_PLUGIN}|private (?:repository|repo|plugin|consumer))`, flags: "gi" },
-    { id: "cache-path", pattern: `\\.claude\\/plugins\\/cache\\/${DEBT_ROOT}\\/teaching\\/`, flags: "g" },
-    { id: "machine-path", pattern: `\\/(?:home|Users)\\/[A-Za-z0-9._-]+\\/[^\\s'\\\"\\x60]*${DEBT_ROOT}[^\\s'\\\"\\x60]*`, flags: "g" },
+    { id: "private-identifier", pattern: `(?:${DEBT_COMMAND}|${DEBT_PLUGIN}|private (?:repository|repo|plugin|consumer))`, flags: "gi" },
+    { id: "cache-path", pattern: `\\.claude\\/plugins\\/cache\\/${TEACHING_CACHE.replace("/", "\\/")}\\/`, flags: "g" },
     { id: "course-name", pattern: "\\b[A-Z][A-Za-z& -]+ (?:Seminar|Course) 20\\d{2}\\b", flags: "g" },
     { id: "private-provenance", pattern: "\\b(?:developed|extracted|migrated|copied) (?:in|from|for) (?:the )?private (?:repository|repo|plugin|consumer)\\b", flags: "gi" },
   ],
@@ -45,16 +44,13 @@ describe("public privacy scanner", () => {
     const findings = scanFiles(basePolicy(), [
       { path: "z.ts", content: `developed in the ${PRIVATE_REPOSITORY}\n` },
       { path: "a.md", content: `${DEBT_PLUGIN}\n${COURSE_EXAMPLE}\n` },
-      { path: "m.json", content: `"/home/example/projects/${DEBT_ROOT}/item"\n"~/.claude/plugins/cache/${DEBT_ROOT}/teaching/"\n` },
+      { path: "m.json", content: `"~/.claude/plugins/cache/${TEACHING_CACHE}/"\n` },
     ]);
 
     expect(findings.map(({ path, ruleId, match }) => [path, ruleId, match])).toEqual([
       ["a.md", "private-identifier", DEBT_PLUGIN],
       ["a.md", "course-name", COURSE_EXAMPLE],
-      ["m.json", "machine-path", `/home/example/projects/${DEBT_ROOT}/item`],
-      ["m.json", "private-identifier", DEBT_ROOT],
-      ["m.json", "cache-path", `.claude/plugins/cache/${DEBT_ROOT}/teaching/`],
-      ["m.json", "private-identifier", DEBT_ROOT],
+      ["m.json", "cache-path", `.claude/plugins/cache/${TEACHING_CACHE}/`],
       ["z.ts", "private-provenance", `developed in the ${PRIVATE_REPOSITORY}`],
       ["z.ts", "private-identifier", PRIVATE_REPOSITORY],
     ]);
@@ -103,16 +99,14 @@ describe("public privacy scanner", () => {
     expect(validatePrivacyPolicy(policy).scanRoots).toEqual(["."]);
     expect(policy.allowlist).toEqual([
       { path: "hooks/find-slide-page-inject.ts", ruleId: "private-identifier", token: DEBT_PLUGIN, rationale: REQUIRED_RATIONALE, removeStage: 3 },
-      { path: "hooks/find-slide-page-inject.ts", ruleId: "private-identifier", token: DEBT_ROOT, rationale: REQUIRED_RATIONALE, removeStage: 3 },
-      { path: "hooks/find-slide-page-inject.ts", ruleId: "cache-path", token: `.claude/plugins/cache/${DEBT_ROOT}/teaching/`, rationale: REQUIRED_RATIONALE, removeStage: 3 },
+      { path: "hooks/find-slide-page-inject.ts", ruleId: "cache-path", token: `.claude/plugins/cache/${TEACHING_CACHE}/`, rationale: REQUIRED_RATIONALE, removeStage: 3 },
       { path: "skills/visual-verify/SKILL.md", ruleId: "private-identifier", token: DEBT_COMMAND, rationale: REQUIRED_RATIONALE, removeStage: 3 },
-      { path: "tests/golden/find-slide-page-inject.json", ruleId: "private-identifier", token: DEBT_ROOT, rationale: REQUIRED_RATIONALE, removeStage: 3 },
     ]);
   });
 
   test("pins the complete checked-in security policy contract", async () => {
     const bytes = await readFile(join(import.meta.dir, "../policy/public-privacy.json"));
-    expect(createHash("sha256").update(bytes).digest("hex")).toBe("eae7291caa7be8b567efafb3ca3a8eafce61647a209358293df42af472f260fc");
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe("db95fbc58c648ca4c2dbad4400d00fccd00a6f8764a50260964b442d31f31d96");
   });
 
   test("rejects every policy-semantic weakening at runtime", () => {
@@ -174,10 +168,10 @@ describe("public privacy scanner", () => {
       await Bun.$`git -C ${root} init -q`;
       await Bun.$`mkdir -p ${join(root, "policy")} ${join(root, "hooks")} ${join(root, "skills/visual-verify")} ${join(root, "tests/golden")}`;
       await writeFile(join(root, "policy/public-privacy.json"), await readFile(join(import.meta.dir, "../policy/public-privacy.json"), "utf8"));
-      await writeFile(join(root, "hooks/find-slide-page-inject.ts"), `${DEBT_PLUGIN} ${DEBT_ROOT} .claude/plugins/cache/${DEBT_ROOT}/teaching/\n`);
+      await writeFile(join(root, "hooks/find-slide-page-inject.ts"), `${DEBT_PLUGIN} .claude/plugins/cache/${TEACHING_CACHE}/\n`);
       await writeFile(join(root, "skills/visual-verify/SKILL.md"), `${DEBT_COMMAND}\n`);
-      await writeFile(join(root, "tests/golden/find-slide-page-inject.json"), `${DEBT_ROOT}/teaching\n`);
-      await writeFile(join(root, "note.md"), `${DEBT_ROOT}\n`);
+      await writeFile(join(root, "tests/golden/find-slide-page-inject.json"), "teaching/teaching\n");
+      await writeFile(join(root, "note.md"), `${DEBT_PLUGIN}\n`);
       await Bun.$`git -C ${root} add policy/public-privacy.json hooks skills tests`;
       await Bun.$`git -C ${root} -c user.name=test -c user.email=test@example.com commit -qm baseline`;
       await Bun.$`git -C ${root} add note.md`;
@@ -265,7 +259,7 @@ describe("public privacy scanner", () => {
       await Bun.$`git -C ${root} -c user.name=test -c user.email=test@example.com commit -qm baseline`;
       await writeFile(join(root, "split.txt"), `${DEBT_PLUGIN}\n`);
       await Bun.$`git -C ${root} add split.txt`;
-      await writeFile(join(root, "split.txt"), `${DEBT_ROOT}\n`);
+      await writeFile(join(root, "split.txt"), `${DEBT_COMMAND}\n`);
       await rm(join(root, "deleted.txt"));
       await symlink(DEBT_PLUGIN, join(root, "payload-link"));
 
@@ -278,7 +272,7 @@ describe("public privacy scanner", () => {
         ["deleted.txt", "worktree", "deleted", "candidate-deletion", ""],
         ["payload-link", "worktree", "present", "private-identifier", DEBT_PLUGIN],
         ["split.txt", "index", "present", "private-identifier", DEBT_PLUGIN],
-        ["split.txt", "worktree", "present", "private-identifier", DEBT_ROOT],
+        ["split.txt", "worktree", "present", "private-identifier", DEBT_COMMAND],
       ]);
       for (const result of results) {
         expect(result.candidateDigest).toBe(captured.manifestDigest);

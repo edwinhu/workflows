@@ -27,12 +27,12 @@ import { join } from "node:path";
 // graceful no-op for machines without it — that part is by design, not part of this fix.
 const TRIGGER_RE = /tinymist\s+compile\b.*?\b(\S+\.typ)\b/;
 
-/** Find the most recent course-materials teaching plugin scripts dir. */
+/** Find the most recent teaching marketplace plugin scripts dir. */
 function findScriptsDir(): string | null {
-  // Equivalent of glob("~/.claude/plugins/cache/course-materials/teaching/*/scripts"): `*` never
+  // Equivalent of glob("~/.claude/plugins/cache/teaching/teaching/*/scripts"): `*` never
   // matches a leading dot, each candidate must exist, and the list is sorted before taking the last.
   const home = process.env.HOME ?? homedir();
-  const base = join(home, ".claude", "plugins", "cache", "course-materials", "teaching");
+  const base = join(home, ".claude", "plugins", "cache", "teaching", "teaching");
   let entries: string[];
   try {
     entries = readdirSync(base);

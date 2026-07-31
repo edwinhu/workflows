@@ -68,7 +68,7 @@
     {
       "name": "trigger-matches-flat-target-exists",
       "kind": "allow",
-      "_branch": "Deepest externally reachable branch: regex matched, `slides.typ` exists in cwd, so control reaches find_scripts_dir(). With no course-materials/teaching plugin installed the lookup returns None -> sys.exit(0), no stdout, and crucially NO cwd/output/ directory and no typst/uv subprocess. Pins that the port stops before the side-effecting stage.",
+      "_branch": "Deepest externally reachable branch: regex matched, `slides.typ` exists in cwd, so control reaches find_scripts_dir(). With no teaching/teaching plugin installed the lookup returns None -> sys.exit(0), no stdout, and crucially NO cwd/output/ directory and no typst/uv subprocess. Pins that the port stops before the side-effecting stage.",
       "stdin": {
         "session_id": "sess-parity",
         "transcript_path": "/tmp/transcript.jsonl",
