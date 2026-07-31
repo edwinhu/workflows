@@ -5,6 +5,7 @@ import { persistApprovedPlan } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 
 function fail(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(2); }
+function defer(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(1); }
 
 const policy = workflowFromArg(Bun.argv.slice(2));
 if (!policy || policy.workflow === "dev") fail("requires a native-plan workflow: ds, writing, workshop, or workflow-creator; dev has no native-plan producer yet");
@@ -78,8 +79,8 @@ if (typeof plan !== "string") {
   }
   if (toolUsePlan !== undefined && resultPlan !== undefined && !Buffer.from(toolUsePlan, "utf8").equals(resultBytes)) fail("ExitPlanMode transcript tool-use and tool-result plans disagree");
   plan = toolUsePlan ?? resultPlan;
-  if (typeof plan !== "string") fail("ExitPlanMode matching transcript tool-result was not found");
+  if (typeof plan !== "string") defer("ExitPlanMode matching transcript tool-result was not found");
 }
 if (typeof plan !== "string") fail("ExitPlanMode tool input is missing string plan");
 if (typeof payload.session_id !== "string" || !payload.session_id.trim()) fail("ExitPlanMode payload is missing a nonempty session_id");
-try { persistApprovedPlan(process.cwd(), policy.workflow, plan, payload.session_id); } catch (error) { fail(`could not persist approved artifact: ${error instanceof Error ? error.message : String(error)}`); }
+try { persistApprovedPlan(process.cwd(), policy.workflow, plan, payload.session_id); } catch (error) { defer(`could not persist approved artifact: ${error instanceof Error ? error.message : String(error)}`); }

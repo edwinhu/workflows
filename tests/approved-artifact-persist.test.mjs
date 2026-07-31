@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const REPO = new URL("..", import.meta.url).pathname;
-const HOOK = join(REPO, "hooks", "approved-artifact-persist.ts");
+const HOOK = process.env.APPROVED_ARTIFACT_PERSIST_HOOK ?? join(REPO, "hooks", "approved-artifact-persist.ts");
 
 function run(payload, cwd, workflow = "ds") {
   return spawnSync("bun", [HOOK, "--workflow", workflow], { cwd, input: JSON.stringify(payload), encoding: "utf8" });
@@ -80,6 +80,69 @@ withProject((cwd) => {
   assert.equal(readFileSync(join(cwd, ".planning", "PLAN.md"), "utf8"), plan);
 });
 
+// Actual Claude session records represent an ExitPlanMode invocation as a full
+// assistant message with a tool_use block. PostToolUse supplies the same ID but an
+// empty tool_input, so recovery must obtain input.plan from that block.
+withProject(function nativeAssistantMessageToolUsePersistsWithoutAToolResult(cwd) {
+  const plan = "# Native assistant-message plan\n\n- Preserve this exact artifact.\n";
+  const toolUseId = "toolu_012D25HKRf1vKpfreHdvW4Ko";
+  const transcript = join(cwd, "native-session.jsonl");
+  writeFileSync(transcript, JSON.stringify({
+    parentUuid: "parent-uuid", isSidechain: false, uuid: "assistant-uuid",
+    sessionId: "native-session", type: "assistant",
+    message: { role: "assistant", content: [{
+      type: "tool_use", id: toolUseId, name: "ExitPlanMode", input: { plan },
+    }] },
+  }));
+  const result = run({
+    tool_name: "ExitPlanMode", tool_use_id: toolUseId, tool_input: {},
+    session_id: "native-session", transcript_path: transcript,
+  }, cwd, "writing");
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(readFileSync(join(cwd, ".planning", "PLAN.md"), "utf8"), plan);
+});
+
+// PostToolUse can run before asynchronous transcript writing makes this exact
+// ExitPlanMode result available. The persistence miss must be exit 1 (a hook
+// error that cannot block the completed tool), never exit 2; the separate
+// approval gate remains fail-closed because no artifact was persisted.
+withProject(function postToolUseTranscriptLagDoesNotBlockExitPlanModeAndGateStillDenies(cwd) {
+  const toolUseId = "toolu-transcript-lag";
+  const transcript = join(cwd, "lagging-transcript.jsonl");
+  writeFileSync(transcript, JSON.stringify({ message: { content: [] } }));
+  const persisted = run({
+    tool_name: "ExitPlanMode", tool_use_id: toolUseId, tool_input: {},
+    session_id: "lagging-session", transcript_path: transcript,
+  }, cwd, "writing");
+
+  assert.equal(persisted.status, 1, persisted.stderr);
+  assert.match(persisted.stderr, /matching transcript tool-result was not found/);
+  assert.ok(!existsSync(join(cwd, ".planning", "PLAN.md")));
+  const gate = runGate({
+    tool_name: "Workflow", cwd, tool_input: { name: "workflows:writing-review", args: { projectDir: cwd } },
+  }, cwd);
+  assert.equal(gate.status, 0, gate.stderr);
+  const gateOutput = JSON.parse(gate.stdout);
+  assert.equal(gateOutput.hookSpecificOutput.permissionDecision, "deny");
+  assert.match(gateOutput.hookSpecificOutput.permissionDecisionReason, /APPROVED ARTIFACT GATE \(writing\):/);
+});
+
+withProject(function postToolUseArtifactCopyFailureDoesNotBlockAndGateStillDenies(cwd) {
+  writeFileSync(join(cwd, ".planning"), "not a directory");
+  const persisted = run({
+    tool_name: "ExitPlanMode", tool_input: { plan: "# Approved plan\n" }, session_id: "copy-failure",
+  }, cwd, "writing");
+
+  assert.equal(persisted.status, 1, persisted.stderr);
+  assert.match(persisted.stderr, /could not persist approved artifact/);
+  const gate = runGate({
+    tool_name: "Workflow", cwd, tool_input: { name: "workflows:writing-review", args: { projectDir: cwd } },
+  }, cwd);
+  assert.equal(gate.status, 0, gate.stderr);
+  assert.equal(JSON.parse(gate.stdout).hookSpecificOutput.permissionDecision, "deny");
+});
+
 // Claude Code's observed native ExitPlanMode transcript stores the approved plan in
 // the matching tool_use input. Persist it, add an independent review verdict, then
 // ensure the writing workflow allows its review step after that independent approval.
@@ -106,7 +169,7 @@ withProject(function writingToolUseTranscriptPersistsAndAllowsWritingReviewAfter
 
 // Transcript recovery must scan every exact-ID record, reject ambiguous sources, and
 // ignore malformed or non-matching records rather than choosing the first match.
-for (const [name, prepare, expectedPlan] of [
+for (const [name, prepare, expectedPlan, expectedStatus = expectedPlan ? 0 : 2] of [
   ["malformed unrelated JSONL", (cwd, transcript) => {
     const plan = "# Exact plan after malformed JSONL\n";
     writeFileSync(transcript, [
@@ -117,13 +180,13 @@ for (const [name, prepare, expectedPlan] of [
   }, "# Exact plan after malformed JSONL\n"],
   ["wrong tool name", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({
     message: { content: [{ type: "tool_use", id: "toolu-exact", name: "Write", input: { plan: "# Decoy\n" } }] },
-  })), undefined],
+  })), undefined, 1],
   ["wrong tool ID", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({
     message: { content: [{ type: "tool_use", id: "toolu-other", name: "ExitPlanMode", input: { plan: "# Decoy\n" } }] },
-  })), undefined],
+  })), undefined, 1],
   ["non-string tool-use plan", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({
     message: { content: [{ type: "tool_use", id: "toolu-exact", name: "ExitPlanMode", input: { plan: { text: "# Not a string\n" } } }] },
-  })), undefined],
+  })), undefined, 1],
   ["matching tool-use and result plans", (cwd, transcript) => {
     const plan = "# Matching plan\n";
     const resultPath = join(cwd, "matching-result-plan.md");
@@ -171,11 +234,10 @@ for (const [name, prepare, expectedPlan] of [
       session_id: name, transcript_path: transcript,
     }, cwd);
 
+    assert.equal(result.status, expectedStatus, `${name}: ${result.stderr}`);
     if (expectedPlan) {
-      assert.equal(result.status, 0, `${name}: ${result.stderr}`);
       assert.equal(readFileSync(join(cwd, ".planning", "PLAN.md"), "utf8"), expectedPlan);
     } else {
-      assert.equal(result.status, 2, `${name}: ${result.stderr}`);
       assert.ok(!existsSync(join(cwd, ".planning")), `${name}: must not create artifacts`);
     }
   });
@@ -204,8 +266,8 @@ withProject((cwd) => {
   assert.equal(readFileSync(join(cwd, ".planning", "PLAN.md"), "utf8"), exactPlan);
 });
 
-for (const [name, prepare, expected] of [
-  ["no matching tool result", (cwd, transcript) => writeFileSync(transcript, JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-other" }] }, toolUseResult: { filePath: join(cwd, "other.md") } })), /matching transcript tool-result/],
+for (const [name, prepare, expected, expectedStatus = 2] of [
+  ["no matching tool result", (cwd, transcript) => writeFileSync(transcript, JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-other" }] }, toolUseResult: { filePath: join(cwd, "other.md") } })), /matching transcript tool-result/, 1],
   ["missing filePath", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: {} })), /absolute regular nonempty file/],
   ["relative filePath", (_cwd, transcript) => writeFileSync(transcript, JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: "relative.md" } })), /absolute regular nonempty file/],
   ["directory filePath", (cwd, transcript) => writeFileSync(transcript, JSON.stringify({ message: { content: [{ type: "tool_result", tool_use_id: "toolu-exact" }] }, toolUseResult: { filePath: cwd } })), /absolute regular nonempty file/],
@@ -220,7 +282,7 @@ for (const [name, prepare, expected] of [
       session_id: name, transcript_path: transcript,
     }, cwd);
 
-    assert.equal(result.status, 2, `${name}: ${result.stderr}`);
+    assert.equal(result.status, expectedStatus, `${name}: ${result.stderr}`);
     assert.match(result.stderr, expected ?? /absolute regular nonempty file/);
     assert.ok(!existsSync(join(cwd, ".planning")));
   });
