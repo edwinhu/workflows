@@ -15,19 +15,19 @@ const cwd = String(payload.cwd ?? process.cwd());
 const reason = "Reviewer read-only enforcement: return findings without modifying artifacts, state, or project files.";
 if (tool === "Edit") deny(reason);
 
-const modern = policy.approvalPolicy === undefined;
+const generatedPlan = policy.approvalMode !== "external-fixed-v1";
 const receiptPath = join(cwd, ".planning", ".state", "review.json");
 let selectedPlan = join(cwd, ".planning", "PLAN.md");
 let externalVerdictPath: string | null = null;
 let externalApproval: { approvedSession: string; approvedAt: string } | null = null;
 let pending: ReturnType<typeof parseReviewState> | null = null;
 let validatedPlanHash: string | null = null;
-if ((tool === "Write" || tool === "Bash") && modern) {
+if ((tool === "Write" || tool === "Bash") && generatedPlan) {
   try { pending = parseReviewState(readFileSync(receiptPath, "utf8"), policy.workflow); }
   catch { pending = null; }
   if (!pending || "code" in pending || pending.status !== "PENDING") deny("Reviewer requires the current PENDING combined review.json created by native Plan approval.");
   selectedPlan = join(cwd, ".planning", pending.plan_file);
-} else if ((tool === "Write" || tool === "Bash") && policy.approvalPolicy !== undefined) {
+} else if ((tool === "Write" || tool === "Bash") && policy.approvalMode === "external-fixed-v1") {
   try {
     const approvalPolicyPath = safeProjectPath(cwd, policy.approvalPolicy);
     if (!approvalPolicyPath || !safeExactTarget(cwd, approvalPolicyPath, join(cwd, policy.approvalPolicy))) deny("Reviewer cannot resolve the external schema-v1 approval policy safely.");
@@ -47,7 +47,7 @@ if ((tool === "Write" || tool === "Bash") && modern) {
     externalVerdictPath = descriptorVerdictPath;
   } catch { deny("Reviewer cannot load the external schema-v1 approval policy."); }
 }
-if ((tool === "Write" || tool === "Bash") && modern) {
+if ((tool === "Write" || tool === "Bash") && generatedPlan) {
   const resolved = resolveGeneratedPlanReviewState(cwd, policy.workflow);
   if ("code" in resolved || !pending || "code" in pending || JSON.stringify(resolved.receipt) !== JSON.stringify(pending)) deny("Reviewer requires one unchanged, regular, receipt-selected generated plan.");
   selectedPlan = resolved.planPath;
@@ -56,12 +56,12 @@ if ((tool === "Write" || tool === "Bash") && modern) {
 
 if (tool === "Write") {
   const requested = safeProjectPath(cwd, input.file_path);
-  const verdictPath = externalVerdictPath ?? join(cwd, policy.reviewerVerdict);
+  const verdictPath = generatedPlan ? receiptPath : (externalVerdictPath ?? "");
   try { if (!requested || lstatSync(requested).isSymbolicLink() || !safeExactTarget(cwd, requested, verdictPath)) deny(reason); }
   catch { if (!requested || !safeExactTarget(cwd, requested, verdictPath)) deny(reason); }
   let planHash: string | null = validatedPlanHash;
-  if (!modern && !planHash) try { planHash = sha256(readFileSync(selectedPlan)); } catch { /* fail closed */ }
-  if (modern) {
+  if (!generatedPlan && !planHash) try { planHash = sha256(readFileSync(selectedPlan)); } catch { /* fail closed */ }
+  if (generatedPlan) {
     const proposed = parseReviewState(input.content, policy.workflow);
     if ("code" in proposed || !pending || "code" in pending || !planHash
       || proposed.workflow !== pending.workflow || proposed.plan_file !== pending.plan_file || proposed.plan_hash !== pending.plan_hash
@@ -75,7 +75,7 @@ if (tool === "Write") {
   const verdict = parseVerdict(input.content);
   if ("code" in verdict || verdict.reviewer_session_id !== process.env.CLAUDE_SESSION_ID || !planHash || verdict.plan_hash !== planHash
     || (externalApproval !== null && (verdict.reviewer_session_id === externalApproval.approvedSession || Date.parse(verdict.reviewed_at) <= Date.parse(externalApproval.approvedAt)))) {
-    deny(`${policy.reviewerVerdict} must record the current plan hash, this independent reviewer's actual session ID, and a review time after approval in the legacy strict verdict schema.`);
+    deny(`The external reviewer verdict must record the current plan hash, this independent reviewer's actual session ID, and a review time after approval in the legacy strict verdict schema.`);
   }
   allow();
 }

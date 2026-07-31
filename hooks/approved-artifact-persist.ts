@@ -1,15 +1,14 @@
 #!/usr/bin/env bun
 import { readFileSync } from "node:fs";
 import { isAbsolute } from "node:path";
-import { bindApprovedGeneratedPlan, type BuiltInApprovalWorkflow } from "../workflows/lib/approved-artifact.ts";
+import { bindApprovedGeneratedPlan } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 
 function fail(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(2); }
 function defer(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(1); }
 
 const policy = workflowFromArg(Bun.argv.slice(2));
-const nativeWorkflows = new Set<BuiltInApprovalWorkflow>(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
-if (!policy || policy.approvalPolicy !== undefined || !nativeWorkflows.has(policy.workflow as BuiltInApprovalWorkflow)) fail("requires a built-in native-plan workflow: ds, dev, work, writing, workshop, or workflow-creator; external descriptors have no native-plan producer");
+if (!policy || policy.approvalMode === "external-fixed-v1") fail("requires a generated-plan approval workflow; external schema-v1 fixed-artifact descriptors have no native-plan producer");
 let payload: Record<string, unknown>;
 try { payload = JSON.parse(await Bun.stdin.text()); } catch { fail("hook payload is not valid JSON"); }
 if (!payload || typeof payload !== "object" || Array.isArray(payload)) fail("hook payload must be an object");
@@ -42,5 +41,5 @@ if (resultCount > 1) fail("ExitPlanMode transcript contains duplicate matching r
 if (resultCount === 0) defer("ExitPlanMode matching transcript tool-result was not found");
 if (typeof approvedPath !== "string" || !isAbsolute(approvedPath)) fail("ExitPlanMode toolUseResult.filePath must name the exact absolute generated plan path");
 if (typeof payload.session_id !== "string" || !payload.session_id.trim()) fail("ExitPlanMode payload is missing a nonempty session_id");
-try { bindApprovedGeneratedPlan(process.cwd(), policy.workflow as BuiltInApprovalWorkflow, approvedPath, payload.session_id); }
+try { bindApprovedGeneratedPlan(process.cwd(), policy.workflow, approvedPath, payload.session_id); }
 catch (error) { defer(`could not bind approved generated plan: ${error instanceof Error ? error.message : String(error)}`); }

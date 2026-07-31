@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { lstatSync, readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, join, relative } from "node:path";
-import { parseApprovalPolicyDescriptor, validateApprovedArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
+import { parseApprovalPolicyDescriptor, validateApprovedArtifact, validateGeneratedPlanArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, projectFromArgs, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
@@ -25,7 +25,7 @@ if (tool === "Workflow" && policy.workflow === "workflow-creator" && String(inpu
 }
 const projectDir = projectFromArgs(input, payload);
 let approvalPolicy: ApprovalPolicyDescriptor | undefined;
-if (policy.approvalPolicy !== undefined) {
+if (policy.approvalMode === "external-fixed-v1") {
   try {
     const root = realpathSync(projectDir);
     const path = join(root, policy.approvalPolicy);
@@ -50,7 +50,9 @@ if (policy.approvalPolicy !== undefined) {
 }
 let result;
 try {
-  result = validateApprovedArtifact(projectDir, policy.workflow, process.env.CLAUDE_SESSION_ID, approvalPolicy);
+  result = policy.approvalMode === "generated-plan-receipt-v1"
+    ? validateGeneratedPlanArtifact(projectDir, policy.workflow, process.env.CLAUDE_SESSION_ID)
+    : validateApprovedArtifact(projectDir, policy.workflow, process.env.CLAUDE_SESSION_ID, approvalPolicy);
 } catch (error) {
   deny(`APPROVED ARTIFACT GATE (${policy.workflow}): validation failed: ${error instanceof Error ? error.message : String(error)}.`);
 }

@@ -171,7 +171,7 @@ describe("modern planning artifact doctrine", () => {
     const guard = readFileSync(join(ROOT, "hooks/orchestrator-mutation-guard.ts"), "utf8");
     expect(guard).toContain("RETIRED_MODERN_ARTIFACTS");
     expect(guard).toContain('relative.startsWith(".planning/.state/")');
-    expect(guard).toContain("const builtInModern = policy.approvalPolicy === undefined");
+    expect(guard).toContain('const generatedPlan = policy.approvalMode !== "external-fixed-v1"');
     expect(guard).not.toContain('policy.workflow !== "dev"');
   });
 

@@ -24,6 +24,14 @@ function externalWorkflowPolicy(reviewerVerdict) {
     allowedOrchestratorDirectories: [".planning"],
   };
 }
+function generatedPlanWorkflowPolicy() {
+  return {
+    schemaVersion: 2,
+    workflow: "external-review",
+    approvalMode: "generated-plan-receipt-v1",
+    allowedOrchestratorDirectories: [".planning"],
+  };
+}
 function externalApprovalPolicy(verdictPath = ".planning/PLAN_REVIEWED.md") {
   return { schemaVersion: 1, workflow: "external-review", planPath: ".planning/PLAN.md", metadataPath: ".planning/PLAN.meta.json", verdictPath };
 }
@@ -72,6 +80,15 @@ try {
   denied(run(cwd, { workflow: "dev", filePath: ".planning/PLAN_REVIEWED.md", content: devVerdict() }), "dev visible fixed verdict is conversion-only");
   writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(pending));
 
+  const generatedWorkflowPolicyPath = join(cwd, "generated-workflow-policy.json");
+  const generatedPending = { ...pending, workflow: "external-review" };
+  const generatedFinal = JSON.stringify({ ...generatedPending, status: "APPROVED", reviewer_session_id: "reviewer-456", reviewed_at: "2026-01-01T00:01:00.000Z" }, null, 2);
+  writeFileSync(generatedWorkflowPolicyPath, JSON.stringify(generatedPlanWorkflowPolicy()));
+  writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(generatedPending));
+  allowed(run(cwd, { workflowPolicy: generatedWorkflowPolicyPath, filePath: ".planning/.state/review.json", content: generatedFinal }), "schema-v2 external workflow finalizes generated-plan receipt");
+  denied(run(cwd, { workflowPolicy: generatedWorkflowPolicyPath, filePath: ".planning/PLAN_REVIEWED.md", content: devVerdict() }), "schema-v2 external workflow has no fixed reviewer verdict path");
+
+  writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(pending));
   writeFileSync(join(planning, "PLAN.md"), plan);
   const approvalPolicyPath = join(planning, "approval-policy.json");
   const matchingWorkflowPolicyPath = join(cwd, "external-workflow-policy.json");

@@ -36,9 +36,9 @@ function allowedPath(raw: unknown): boolean {
   const path = safeProjectPath(cwd, raw);
   if (!path) return false;
   const relative = path.slice(cwd.endsWith("/") ? cwd.length : cwd.length + 1);
-  // Descriptor-v1 external workflows retain the descriptor-declared legacy artifact layout.
-  const builtInModern = policy.approvalPolicy === undefined;
-  if (builtInModern && (RETIRED_MODERN_ARTIFACTS.has(relative) || relative.startsWith(".planning/.state/"))) return false;
+  // Fixed schema-v1 external workflows retain their descriptor-declared legacy artifact layout.
+  const generatedPlan = policy.approvalMode !== "external-fixed-v1";
+  if (generatedPlan && (RETIRED_MODERN_ARTIFACTS.has(relative) || relative.startsWith(".planning/.state/"))) return false;
   return policy.allowedOrchestratorDirectories.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`));
 }
 function allowedNativePlanPath(raw: unknown): boolean {

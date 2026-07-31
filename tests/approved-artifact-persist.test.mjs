@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process";
 
 const REPO = new URL("..", import.meta.url).pathname;
 const HOOK = join(REPO, "hooks", "approved-artifact-persist.ts");
-function run(payload, cwd, workflow = "ds") { return spawnSync("bun", [HOOK, "--workflow", workflow], { cwd, input: JSON.stringify(payload), encoding: "utf8" }); }
+function run(payload, cwd, workflow = "ds", workflowPolicy = "") { return spawnSync("bun", [HOOK, ...(workflowPolicy ? ["--workflow-policy", workflowPolicy] : ["--workflow", workflow])], { cwd, input: JSON.stringify(payload), encoding: "utf8" }); }
 function withProject(test) { const cwd = mkdtempSync(join(tmpdir(), "native-plan-")); try { test(cwd); } finally { rmSync(cwd, { recursive: true, force: true }); } }
 function payload(cwd, planFile, session = "approval-session", id = "toolu-plan") {
   const transcript = join(cwd, `${id}.jsonl`);
@@ -69,6 +69,21 @@ for (const workflow of ["dev", "work", "writing", "workshop", "workflow-creator"
       assert.equal(existsSync(join(cwd, ".planning", retired)), false, `dev must not create ${retired}`);
     }
   }
+});
+
+withProject((cwd) => {
+  const planning = join(cwd, ".planning"); mkdirSync(planning);
+  const path = join(planning, "external-generated.md"); writeFileSync(path, "# external generated\n");
+  const descriptorPath = join(cwd, "workflow-policy.json");
+  writeFileSync(descriptorPath, JSON.stringify({
+    schemaVersion: 2,
+    workflow: "opaque-native-extension",
+    approvalMode: "generated-plan-receipt-v1",
+    allowedOrchestratorDirectories: [".planning"],
+  }));
+  const result = run(payload(cwd, path), cwd, "", descriptorPath);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(readFileSync(join(planning, ".state", "review.json"), "utf8")).workflow, "opaque-native-extension");
 });
 
 console.log("approved-artifact-persist tests passed");

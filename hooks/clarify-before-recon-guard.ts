@@ -6,6 +6,7 @@ import { allow, deny, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
 if (!policy) { deny("Clarification guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();
+if (policy.approvalMode === "generated-plan-receipt-v1") allow();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
 const cwd = String(payload.cwd ?? process.cwd());
