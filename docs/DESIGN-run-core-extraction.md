@@ -187,17 +187,17 @@ gateProbe(t) -> {
   does **not** cover (e.g. `notChecked: ["semantic correctness of outputs"]`). Already landed & tested
   in writing (`writing_gate_probe.py`); workshop's widow/overflow regex floor has the identical
   blind-spot-disclosure need.
-- **Two deterministic probe-output FLAVORS (5th-instance sharpening, teaching N4 — Tier-2 contract
+- **Two deterministic probe-output FLAVORS (additional contract-consumer sharpening — Tier-2 contract
   clarity, NOT a structural change):** deterministic probe output comes in two kinds, and they must not
   be conflated. **(i) gate-bearing FLOOR** = `pass` (sufficient for exit-code, necessary for semantic).
   **(ii) verdict-feeding ASSIST** = a deterministic *candidate list* that narrows what the OUTSIDE
   semantic authority adjudicates — it lives in `evidence` (e.g. writing's `bibUnresolved`/`citeNeeded`;
-  teaching's `uncitedCandidates[]`), is 100% reproducible/no-judgment, but **does NOT bear the gate**.
+  an external consumer's candidate list), is 100% reproducible/no-judgment, but **does NOT bear the gate**.
   Reading an assist as a floor is the *inverted* disguised-semantic defect (G2): pretending a
   candidate-narrowing list is a gate verdict. D1 already subsumes this structurally (`evidence` carries
   the assist; `scope.notChecked` discloses the L3 adjudication the probe does not do); the value is the
   naming so a future implementer keeps the assist OUT of `pass`. ds/dev have only flavor (i); this is a
-  CONTRACT-consumer concern (writing/workshop/teaching) and changes nothing in `run-core.js`.
+  CONTRACT-consumer concern (writing/workshop/external consumers) and changes nothing in `run-core.js`.
 - **INVARIANT (preserved hard):** the runner-side probe is always deterministic; semantic authority
   lives **outside `run.js`** (doctrine #4). No LLM judge inside the probe to game.
 
@@ -296,48 +296,47 @@ consumption tiers — and conflating them is the trap to avoid:
 | **dev** | workflows | codegen, topo DAG | **DRIVER** — splices `run-core.js` into `run.js` |
 | **writing** | workflows | flat `parallel()` fan-out, no run.js | **CONTRACT** — D1 + S4 + six invariants |
 | **workshop** | workflows | flat fan-out by section, no run.js | **CONTRACT** (4th instance) |
-| **teaching** | **course-materials** (separate repo + plugin) | flat/level fan-out + pure-JS substrate gate, no run.js | **CONTRACT** (5th instance) |
+| **external plugin consumer** | separate repository and plugin | flat/level fan-out + pure-JS substrate gate, no run.js | **CONTRACT** (additional instance) |
 
 - **Tier 1 — DRIVER (`run-core.js`):** the JS S2 driver (topo / level-iteration / `runTask` /
   `intraLevel` / `returnReason` / `collect`). Consumed by **ds + dev only**, via compile-time splice
   into a self-contained `run.js`. This is the scoped deliverable of pass #9.
 - **Tier 2 — CONTRACT (language-agnostic specs):** the D1 `gateProbe` return shape
   `{pass, artifactsPresent, evidence, scope}`, the S4 payload shape, the six invariants, the
-  RETURN-REASON taxonomy. Flat-fan-out instances (writing today; workshop, teaching next) **implement**
+  RETURN-REASON taxonomy. Flat-fan-out instances (writing today; workshop and external consumers next) **implement**
   these in their own probes/gates — they do NOT import the JS driver. Writing already embodies the
   contract (`writing_gate_probe.py` returns the exact shape). The authoritative reference is
   `docs/common-infra-candidates.md` + the D1 schema in §3.1.
 
 **Why this matters for the answers the satellite authors need (all consistent with §3):**
-- *Probe shells the mechanical checks; LLM stays outside* (teaching Q2 / writing's G3'): YES — the D1
+- *Probe shells the mechanical checks; LLM stays outside* (external-consumer evidence / writing's G3'): YES — the D1
   probe body runs the deterministic exit-code/floor checks (overflow.py, widows, anchors, compile) and
   returns `{pass(floor), artifactsPresent, evidence, scope}`; the LLM reviewers remain the **semantic
   authority OUTSIDE** the probe (doctrine #4). Reading an LLM reviewer's `status:OVERFLOW` as the "floor"
   is the disguised-semantic-gate anti-pattern — move the real script into the probe.
-- *yield-for-recheck has its OWN channel* (workshop, teaching Q3): YES — §3.3. A professor-approval
+- *yield-for-recheck has its OWN channel* (workshop and external-consumer evidence): YES — §3.3. A professor-approval
   declared pause and an automated `onlyChecks` re-diagnose are both "return to skill" but never conflate.
-- *idempotent skip keyed on `artifactsPresent`, never a pass-signal/approval file* (teaching Q4 / S4-art):
+- *idempotent skip keyed on `artifactsPresent`, never a pass-signal/approval file* (external-consumer evidence / S4-art):
   YES — ds/dev `runTask` already skips only when `gate.pass && artifactsPresent` corroborate the **real
   output artifact** (parquet / file+test), never an approval log. Ephemeral `*_APPROVED.md` files must
   not gate a skip.
 - *`scope` field landed?* (workshop): landed & tested in writing; ds/dev gain it at §6 step 4. It is the
   cross-instance contract field for every deterministic floor's blind-spot disclosure.
 
-**Distribution / sync discipline (NEW axis, course-refactor Q1) — flagged, not solved in this pass:**
-A separate-repo plugin (teaching) cannot `require()` across into the workflows plugin at runtime, and as
+**Distribution / sync discipline (NEW axis) — flagged, not solved in this pass:**
+A separate-repository plugin cannot `require()` across into the workflows plugin at runtime, and as
 a CONTRACT consumer it does not need the JS driver anyway. So:
 - Tier-1 `run-core.js` is **not** distributed cross-repo — it is spliced into each project's `run.js`
   inside the owning repo's compiler.
 - Tier-2 is a **CONTRACT**, not shipped code: the canonical source of truth is
-  `docs/common-infra-candidates.md` + the D1 schema; each consumer implements it natively (teaching in
-  its own probe). If a future pass wants shared *executable* helpers cross-repo (a tiny
+  `docs/common-infra-candidates.md` + the D1 schema; each consumer implements it natively in its own probe. If a future pass wants shared *executable* helpers cross-repo (a tiny
   `payload/collect` contract-lib), the only runtime-safe model for a separate plugin is a **vendored
   copy pinned to a canonical version** — but that is a **follow-up**, not pass #9 (it is not part of the
   three proven driver instances, and architecting a cross-repo package now would be gold-plating).
 
 **Scope boundary (held firm):** pass #9 lands Tier-1 `run-core.js` (ds+dev) + the Tier-2 D1/`scope`
 contract as the authoritative reference. The **shared Python S1 parser** and any **cross-repo
-contract-lib** are explicit follow-up passes, co-owned with workshop/writing/teaching (see §8.4).
+contract-lib** are explicit follow-up passes, co-owned with workshop, writing, and external consumers (see §8.4).
 
 **Constraint on the S1-parser follow-up (NEW seam datum, workshop-refactor opv-parity, measured live):**
 "compile = produce the work-list" (S5) sometimes feeds a consumer whose **correspondence step is

@@ -36,7 +36,7 @@ Everything ds-specific in the new design is actually three small seams (below); 
 | **workshop** | `workshop-generate.js`; `workshop-outline-executable-guard.py` exists; slides | **visual/structural** (render + look-at; `workshop-verify.js`) | ◑ medium | After dev. `gateProbe` becomes render→structural/visual check (reuse `workshop-verify`), returning `{pass, evidence}`. Validates the judgment-gate abstraction. |
 | **writing** | `writing-draft.js`; outline-driven; `writing-claim-id-guard.py` | **claim-id / source-fidelity** (semantic, not exit code) | ◑ medium | After workshop. `gateProbe` = source-fidelity agent. Pauses map to editorial decisions. The two-kinds finding still applies: a decision to recast a claim changes the fidelity check (gate-changing). |
 | **workflow-creator** | `wc-generate.js` (+ `wc-audit.js`); file generation | structural / test | ◑ low priority | Meta-tooling; `wc-generate` already works. Port only if it earns its keep; not load-bearing. |
-| **course-materials** | **none** (no engine, no skill) | — | ✗ N/A | Nothing to generalize to — the domain has no workflow yet. If/when it gets one, design it on the core from the start. |
+| **future external consumer** | **none assessed** | — | ✗ N/A | No concrete workflow is in scope. A future consumer should adopt the contract from the start. |
 
 ## Recommended sequence (disciplined, incremental)
 
@@ -52,7 +52,7 @@ Everything ds-specific in the new design is actually three small seams (below); 
 3. **Then assess `workshop`/`writing`** against the judgment-gate abstraction (`gateProbe → {pass, evidence}`).
    These are the real test of whether the core spans exit-code *and* semantic gates. Do them only if the core
    stays clean; if a domain's gate doesn't fit, that's a finding, not a forcing function.
-4. **Leave `wc` and (non-existent) `course-materials` alone** unless they earn a port.
+4. **Leave `wc` and hypothetical external consumers alone** unless they earn a port.
 
 ## What carries over for free (lessons already paid for)
 

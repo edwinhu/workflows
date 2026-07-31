@@ -350,7 +350,7 @@ The shared core vs the per-domain seam:
 - **writing** (`writing-draft.js`): gate = claim-id / source-fidelity check (a hook already exists:
   `writing-claim-id-guard.py`); implementer = section draft.
 - **workshop** (`workshop-generate.js`): gate = visual/structural verify; implementer = slide build.
-- **workflow-creator / course-materials**: file generation; gate = structural.
+- **workflow-creator / external consumers**: file generation; gate = structural.
 
 Proposed end state (only if ds validates the pattern): `workflows/templates/run-core.js` (driver +
 pause + schema) and `templates/<domain>-task.js` (the two prompts), composed by a shared

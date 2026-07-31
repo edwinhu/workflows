@@ -197,7 +197,7 @@ and 7 `workflows/*.js`. TS is appropriate where the runtime is already JS (workf
 | 4 | marimo-pair as a plugin monitor | deletes mini beat 5's PID/`pkill` teardown | small |
 | 5 | PEP 723 inline deps on `scripts/` that need them | 0 of 48 declare; callers must pass `--with` | 3 lines/file |
 | 6 | File-type knowledge → `~/.claude/rules/` in dotfiles | typst/qmd/sas knowledge currently needs a skill invocation | small |
-| 7 | Dedup: `course-materials` consumes the loader via plugin dependency | it maintains a fork that has already diverged | medium |
+| 7 | Dedup: an external plugin consumes the loader through the public extension contract | a downstream fork has already diverged | medium |
 | 8 | Collapse 6 inline Context Monitoring copies into the existing constraint | `applies-to:` merely omits `ds-*` | small |
 | 9 | **Convert everything to `.ts`** — requested 2026-07-29 | `bun 1.3.14` runs `.ts` directly, so this is *not* a self-containment loss as §8 originally claimed (that argument assumed no JS runtime; correction recorded there). Existing TS: `cite-check/*.ts`, `deep-research.ts`, run via `bun x.ts` | large |
 

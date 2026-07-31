@@ -149,7 +149,7 @@ From both sessions, verbatim-worthy: **"Never scaffold an LLM step between a str
 
 ## 5. Scope discipline / what NOT to do
 
-- **Do NOT port `wc-generate.js` to a compiled runner.** It is a pure transform over an approved design; the generalization assessment rates it low-priority and it is not load-bearing. Same for leaving `course-materials` (no engine) alone.
+- **Do NOT port `wc-generate.js` to a compiled runner.** It is a pure transform over an approved design; the generalization assessment rates it low-priority and it is not load-bearing. Same for leaving hypothetical external consumers alone until a concrete engine exists.
 - **Do NOT extract a shared `run-core` yet** — that is the ds/dev sequence's *next* step (after a 2nd live instance), independent of the creator fix. The creator should *emit per-domain templates*; core-extraction is a separate maturity step.
 - **Do NOT force the engine swap on `writing`** (already a fan-out) — the corrected creator's *detector* is precisely what prevents that.
 - This document changes nothing yet. All §4 items await USER direction.

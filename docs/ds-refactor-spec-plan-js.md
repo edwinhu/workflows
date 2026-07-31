@@ -5,7 +5,7 @@
 > Handoff from a full `/ds` run (muni-pennying: materialize masters + parallelize, then a
 > figures/analysis enhancement round). This brief distills the lived experience into a concrete
 > refactor direction for the ds workflow, and a hypothesis for generalizing to dev / writing /
-> workshop / workflow-creator / course-materials.
+> workshop / workflow-creator / external consumers.
 
 ## The core insight
 
@@ -95,10 +95,10 @@ that table into a `run.js` literal + the template's loop.
    - Slim `ds-implement.js` to a **thin runner** of the generated `run.js` (or retire it).
    - Keep ds-brainstorm / plan / review / verify conversational; keep `ds-validate-coverage` as a
      review-style subagent fan-out.
-2. **Then assess generalizing** to dev, writing, workshop, workflow-creator, course-materials. Same
+2. **Then assess generalizing** to dev, writing, workshop, workflow-creator, and external consumers. Same
    shape (human-gated boundaries + mechanical execution between), different template per domain
    (dev: TDD failing-test-first; writing: section draft+source-fidelity; workshop: slides+visual
-   verify; workflow-creator: file generation; course-materials: ?). Find the **shared core**
+   verify; workflow-creator: file generation; external consumer: domain-specific). Find the **shared core**
    (compile + run-template + pause protocol) vs the domain-specific template. Don't force a rewrite
    where the current shape already works.
 3. **Discipline:** use workflow-creator's own conventions; **audit before rewriting** (wc-audit);

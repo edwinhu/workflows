@@ -138,13 +138,10 @@ Status and dependencies: [live TaskList details]
 5. reusableFacts: [] or short, durable project facts worth the main orchestrator considering for project auto-memory
 ```
 
-For analysis tasks, require the agent to read:
+For every compatibility task, require the agent to read all three aggregate indexes:
 
+- `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md`
 - `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md`
-- `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md`
-
-For engineering tasks, require the agent to read:
-
 - `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-engineering-constraints.md`
 - `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md`
 

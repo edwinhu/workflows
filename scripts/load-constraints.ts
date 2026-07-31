@@ -18,8 +18,8 @@
  * 2026-07-29 scoping fix), so byte-for-byte fidelity with the Python is the whole requirement.
  */
 
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { lstatSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 
 const BANG_MARKER = "/tmp/workflows-constraints-loaded.json";
 
@@ -97,23 +97,52 @@ export function skillMatches(appliesTo: string[], skillName: string): boolean {
   return false;
 }
 
-function loadConstraints(skillName: string, constraintsDir?: string): string {
-  const cdir = constraintsDir ?? resolve(import.meta.dir, "..", "references", "constraints");
+export interface LoadConstraintsOptions {
+  skillName: string;
+  constraintsDir: string;
+  markerPath?: string;
+}
 
-  let entries: string[];
-  try {
-    entries = readdirSync(cdir);
-  } catch {
-    console.error(`Error: ${cdir} not found`);
-    process.exit(1);
-  }
+export interface ConstraintLoadEvidence {
+  skill: string;
+  matched: number;
+  skipped: number;
+  constraints: string[];
+  markerPath: string;
+  markerWritten: boolean;
+}
 
+export interface ConstraintLoadResult {
+  output: string;
+  evidence: ConstraintLoadEvidence;
+}
+
+function isContained(root: string, candidate: string): boolean {
+  const fromRoot = relative(root, candidate);
+  return fromRoot === "" || (!fromRoot.startsWith("..") && !isAbsolute(fromRoot));
+}
+
+export function loadConstraints(options: LoadConstraintsOptions): ConstraintLoadResult {
+  const { skillName, constraintsDir } = options;
+  const markerPath = options.markerPath ?? BANG_MARKER;
+  if (!skillName) throw new Error("Constraint skill name must be explicit");
+  if (!constraintsDir) throw new Error("Constraint directory must be explicit");
+
+  const canonicalRoot = realpathSync(constraintsDir);
+  if (!lstatSync(canonicalRoot).isDirectory()) throw new Error("Constraint root must be a directory");
+  const entries = readdirSync(canonicalRoot).filter((name) => name.endsWith(".md")).sort();
   const outputParts: string[] = [];
+  const constraints: string[] = [];
   let matched = 0;
   let skipped = 0;
 
-  for (const name of entries.filter((f) => f.endsWith(".md")).sort()) {
-    const text = readFileSync(join(cdir, name), "utf8");
+  for (const name of entries) {
+    const constraintPath = realpathSync(join(canonicalRoot, name));
+    if (!isContained(canonicalRoot, constraintPath)) {
+      throw new Error(`Constraint file is outside canonical constraint root: ${name}`);
+    }
+    if (!lstatSync(constraintPath).isFile()) throw new Error(`Constraint must be a file: ${name}`);
+    const text = readFileSync(constraintPath, "utf8");
     const [meta, body] = parseFrontmatter(text);
 
     let appliesTo = meta["applies-to"] ?? [];
@@ -125,25 +154,36 @@ function loadConstraints(skillName: string, constraintsDir?: string): string {
       outputParts.push(`# Constraint: ${constraintName}`);
       outputParts.push(body.trim());
       outputParts.push("");
+      constraints.push(name);
       matched++;
     } else {
       skipped++;
     }
   }
 
-  if (!outputParts.length) {
-    console.error(`# No constraints found for skill: ${skillName}`);
-    return "";
+  const output = outputParts.length
+    ? `# Loaded ${matched} constraints for ${skillName} (${skipped} skipped)\n${outputParts.join("\n")}`
+    : "";
+  const evidence: ConstraintLoadEvidence = {
+    skill: skillName,
+    matched,
+    skipped,
+    constraints,
+    markerPath,
+    markerWritten: false,
+  };
+
+  if (output) {
+    try {
+      mkdirSync(dirname(markerPath), { recursive: true });
+      evidence.markerWritten = true;
+      writeFileSync(markerPath, JSON.stringify(evidence));
+    } catch {
+      evidence.markerWritten = false;
+    }
   }
 
-  try {
-    writeFileSync(BANG_MARKER, JSON.stringify({ skill: skillName, matched, skipped }));
-  } catch {
-    // marker is advisory; never fail a skill load over it
-  }
-
-  const header = `# Loaded ${matched} constraints for ${skillName} (${skipped} skipped)\n`;
-  return header + outputParts.join("\n");
+  return { output, evidence };
 }
 
 // CLI entry point. Guarded by import.meta.main so importing this module for its exported
@@ -165,7 +205,15 @@ if (!argv.length || argv[0] === "-h" || argv[0] === "--help") {
 }
 
 const skillName = argv[0];
-const constraintsDir = argv.length >= 3 && argv[1] === "--dir" ? argv[2] : undefined;
-const output = loadConstraints(skillName, constraintsDir);
-if (output) console.log(output);
+const constraintsDir = argv.length >= 3 && argv[1] === "--dir"
+  ? argv[2]
+  : resolve(import.meta.dir, "..", "references", "constraints");
+try {
+  const result = loadConstraints({ skillName, constraintsDir });
+  if (result.output) console.log(result.output);
+  else console.error(`# No constraints found for skill: ${skillName}`);
+} catch {
+  console.error(`Error: ${constraintsDir} not found`);
+  process.exit(1);
+}
 }
