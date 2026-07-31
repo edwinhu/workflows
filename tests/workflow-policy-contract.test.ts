@@ -124,13 +124,12 @@ describe("external workflow policy contract", () => {
     } finally { rmSync(root, { recursive: true, force: true }); }
   });
 
-  test("uses hidden review state for modern built-ins while preserving legacy dev", () => {
-    for (const workflow of ["ds", "work", "writing", "workshop", "workflow-creator"]) {
+  test("uses hidden review state for all built-ins", () => {
+    for (const workflow of ["ds", "dev", "work", "writing", "workshop", "workflow-creator"]) {
       const policy = workflowFromArg(["--workflow", workflow]);
       expect(policy?.workflow).toBe(workflow);
       expect(policy?.reviewerVerdict).toBe(".planning/.state/review.json");
     }
-    expect(workflowFromArg(["--workflow", "dev"])?.reviewerVerdict).toBe(".planning/PLAN_REVIEWED.md");
   });
 
   test("preserves immutable built-ins across external loads", () => {

@@ -15,7 +15,7 @@ const cwd = String(payload.cwd ?? process.cwd());
 const reason = "Reviewer read-only enforcement: return findings without modifying artifacts, state, or project files.";
 if (tool === "Edit") deny(reason);
 
-const modern = policy.approvalPolicy === undefined && policy.workflow !== "dev";
+const modern = policy.approvalPolicy === undefined;
 const receiptPath = join(cwd, ".planning", ".state", "review.json");
 let selectedPlan = join(cwd, ".planning", "PLAN.md");
 let externalVerdictPath: string | null = null;

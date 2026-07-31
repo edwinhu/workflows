@@ -72,10 +72,6 @@ function activeWorkflow(): string | null {
   if (lifecycle.kind === "canonical") return lifecycle.resolved.receipt.workflow;
   if (lifecycle.kind === "blocked") return null;
 
-  // Only the explicitly authenticated /dev compatibility path may resume visible STATE.md.
-  const text = read(join(process.cwd(), ".planning", "STATE.md"));
-  const m = /^## Active workflow:\s*\/?(\S+)/m.exec(text);
-  if (m && m[1].toUpperCase() !== "UNKNOWN") return m[1].replace(/^\/+/, "");
   return null;
 }
 

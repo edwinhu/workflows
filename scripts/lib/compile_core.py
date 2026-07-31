@@ -43,14 +43,14 @@ def node_check(path: Path) -> bool:
 
 @dataclass
 class CompileConfig:
-    domain: str                                   # "dev" | "ds" — used only for defaults/messages
-    default_fragment_name: str                    # e.g. "dev-task.js"
+    domain: str                                   # used only for defaults/messages
+    default_fragment_name: str                    # domain-specific task fragment basename
     parse_plan: Callable[[str], object]            # -> ParseResult with .ok/.violations/.tasks/.global_constraints
     toposort: Callable[[list], list]               # tasks -> levels
     spec_dict: Callable[[object], dict]            # Task -> per-task literal dict
     level_modes: Callable[..., list]               # (levels, [by_id]) -> list[str]; see level_modes_needs_by_id
-    level_modes_needs_by_id: bool                  # dev's level_modes(levels) vs ds's level_modes(levels, by_id)
-    run_name: str                                  # "dev-run" / "ds-run"
+    level_modes_needs_by_id: bool                  # whether level_modes also accepts by_id
+    run_name: str                                  # generated runner identity
     describe: Callable[[int, int, Path], str]      # (n_tasks, n_levels, project_dir) -> meta.description
     global_constraints_hole: Callable[[object], str]  # ParseResult -> JSON string for __GLOBAL_CONSTRAINTS__
     require_outputs_produced: bool                 # __REQUIRE_OUTPUTS_PRODUCED__ literal

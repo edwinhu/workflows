@@ -171,7 +171,8 @@ describe("modern planning artifact doctrine", () => {
     const guard = readFileSync(join(ROOT, "hooks/orchestrator-mutation-guard.ts"), "utf8");
     expect(guard).toContain("RETIRED_MODERN_ARTIFACTS");
     expect(guard).toContain('relative.startsWith(".planning/.state/")');
-    expect(guard).toContain('policy.workflow !== "dev"');
+    expect(guard).toContain("const builtInModern = policy.approvalPolicy === undefined");
+    expect(guard).not.toContain('policy.workflow !== "dev"');
   });
 
   test("canonical documentation names the receipt, TaskList, and auto-memory continuity", () => {

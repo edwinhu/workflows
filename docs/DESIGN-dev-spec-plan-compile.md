@@ -1,6 +1,8 @@
 # DESIGN: `spec → plan → compiled run.js` for the dev workflow
 
-Status: **SIGNED OFF 2026-06-26 ("go").** Decisions resolved to the recommended options:
+> **Historical and superseded (2026-07-31).** Dev now uses a receipt-selected native generated plan, TaskList, shared `beat-implement`, and returned review/verification results. The compiler, parser, generated `run.js`, fixed plan, and visible ledgers described below are retired conversion-era provenance only.
+
+Original status: **SIGNED OFF 2026-06-26 ("go").** Decisions resolved to the recommended options:
 D-dev-1 = sequential v1, D-dev-2 = **hybrid** cadence, D-dev-3/4/5/6 as recommended.
 
 **Parity harness confirmed live (hylo-parity, 2026-06-26):** the hylo `browserStore` slice has a clean

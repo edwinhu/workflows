@@ -5,6 +5,7 @@ import { join } from "node:path";
 import {
   bindApprovedGeneratedPlan,
   classifyBuiltInArtifactLayout,
+  classifyPlanningLifecycle,
   sha256,
   validateApprovedArtifact,
   validateApprovedPlan,
@@ -516,10 +517,18 @@ describe("built-in generated-plan and legacy layouts", () => {
     expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "artifact-layout-conflict" }));
   }));
 
-  test("preserves legacy modern conversion and fixed dev behavior", () => withProject((root) => {
+  test("treats a strict built-in clarification sentinel as benign but non-resumable", () => withProject((root) => {
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    writeFileSync(join(root, ".planning", "DEV_CLARIFIED.json"), '{"status":"clarified","sessionId":"clarifier"}\n');
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "none" });
+    writeFileSync(join(root, ".planning", "STATE.md"), "retired state\n");
+    expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ kind: "blocked", reason: "conversion-required" }));
+  }));
+
+  test("treats legacy fixed artifacts as conversion-only provenance", () => withProject((root) => {
     const plan = "# Legacy\n"; const hash = sha256(plan); mkdirSync(join(root, ".planning"), { recursive: true });
     writeFileSync(join(root, ".planning", "PLAN.md"), plan); writeFileSync(join(root, ".planning", "PLAN.meta.json"), JSON.stringify(legacyMetadata("work", hash))); writeFileSync(join(root, ".planning", "PLAN_REVIEWED.md"), frontmatter(legacyReview(hash)));
     expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "conversion-required" }));
-    expect(validateApprovedArtifact(root, "dev", "implementation-session")).toEqual(expect.objectContaining({ hash, planFile: "PLAN.md" }));
+    expect(validateApprovedArtifact(root, "dev", "implementation-session")).toEqual(expect.objectContaining({ code: "conversion-required" }));
   }));
 });

@@ -30,7 +30,7 @@ Inputs: <one or more paths>
 
 Use Bash only to hash the exact supplied `Plan` path. Do not use `Edit`, glob for plans, list `.planning/`, choose a newest file, or infer from modification time.
 
-For `ds`, `work`, `writing`, `workshop`, and `workflow-creator`:
+For `dev`, `ds`, `work`, `writing`, `workshop`, and `workflow-creator`:
 
 1. Read `.planning/.state/review.json`. It must be the strict PENDING receipt created by native Plan approval and must name the exact supplied generated plan basename.
 2. Hash the supplied plan before review and require the hash to equal `plan_hash` in that PENDING receipt.
@@ -43,6 +43,6 @@ For `ds`, `work`, `writing`, `workshop`, and `workflow-creator`:
 
 The approval session, reviewer session, and later implementation session must be distinct. Never create `PLAN_REVIEWED.md`, copy or rename the generated plan, write `plan.json`, or select another plan.
 
-For legacy `dev` only, preserve fixed `.planning/PLAN.md` and its existing four-field visible verdict.
+For `dev`, additionally validate its full executable grammar: the eight required sections, stable `REQ-NN` and `TASK-NN` identifiers, acyclic dependencies, complete shared TaskContract fields, RED/real-test contract and commands, requirement-to-test traceability, evidence plan, and independent review surfaces.
 
 Report blockers separately from advisory findings. `ISSUES_FOUND` never authorizes implementation. Do not write any other file.

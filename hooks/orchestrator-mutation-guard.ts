@@ -20,13 +20,24 @@ const RETIRED_MODERN_ARTIFACTS = new Set([
   ".planning/STATE.md",
   ".planning/SPEC.md",
   ".planning/LEARNINGS.md",
+  ".planning/ACTIVE_WORKFLOW.md",
+  ".planning/HANDOFF.md",
+  ".planning/PROGRESS.md",
+  ".planning/progress.md",
+  ".planning/REVIEW_STATE.md",
+  ".planning/VERIFY_STATE.md",
+  ".planning/HUMAN_REVIEW.md",
+  ".planning/IMPLEMENT_COMPLETE.md",
+  ".planning/BACKLOG.md",
+  ".planning/EXPLORATION.md",
+  ".planning/SPEC_REVIEWED.md",
 ]);
 function allowedPath(raw: unknown): boolean {
   const path = safeProjectPath(cwd, raw);
   if (!path) return false;
   const relative = path.slice(cwd.endsWith("/") ? cwd.length : cwd.length + 1);
   // Descriptor-v1 external workflows retain the descriptor-declared legacy artifact layout.
-  const builtInModern = policy.approvalPolicy === undefined && policy.workflow !== "dev";
+  const builtInModern = policy.approvalPolicy === undefined;
   if (builtInModern && (RETIRED_MODERN_ARTIFACTS.has(relative) || relative.startsWith(".planning/.state/"))) return false;
   return policy.allowedOrchestratorDirectories.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`));
 }

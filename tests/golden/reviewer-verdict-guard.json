@@ -27,6 +27,32 @@
       "tsExpected": { "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "exit": 0, "fs": {} }
     },
     {
+      "name": "dev-combined-review-finalization-allowed",
+      "kind": "allow",
+      "env": { "CLAUDE_SESSION_ID": "reviewer-456" },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": ".planning/.state/review.json",
+          "content": "{\n  \"workflow\": \"dev\",\n  \"plan_file\": \"jazzy-leaping-scroll.md\",\n  \"plan_hash\": \"98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\",\n  \"approved_session_id\": \"approval-123\",\n  \"approved_at\": \"2025-12-31T23:59:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reviewer_session_id\": \"reviewer-456\",\n  \"reviewed_at\": \"2026-01-01T00:00:00.000Z\"\n}\n"
+        }
+      },
+      "argv": ["--workflow", "dev"],
+      "fixture": {
+        ".planning/jazzy-leaping-scroll.md": "# plan\n",
+        ".planning/.state/review.json": "{\n  \"workflow\": \"dev\",\n  \"plan_file\": \"jazzy-leaping-scroll.md\",\n  \"plan_hash\": \"98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\",\n  \"approved_session_id\": \"approval-123\",\n  \"approved_at\": \"2025-12-31T23:59:00.000Z\",\n  \"status\": \"PENDING\",\n  \"reviewer_session_id\": \"\",\n  \"reviewed_at\": \"\"\n}\n"
+      },
+      "tsExpected": { "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "exit": 0, "fs": {} }
+    },
+    {
+      "name": "dev-visible-verdict-denied",
+      "kind": "deny",
+      "stdin": { "tool_name": "Write", "tool_input": { "file_path": ".planning/PLAN_REVIEWED.md", "content": "status: APPROVED\n" } },
+      "argv": ["--workflow", "dev"],
+      "fixture": { ".planning/jazzy-leaping-scroll.md": "# plan\n" },
+      "tsExpected": { "stdoutSha256": "a717887e29bce83ea996035aff2f0a5d7cf4f08dc14e0f46fc8680e04ac556b5", "exit": 0, "fs": {} }
+    },
+    {
       "name": "plan-itself-denied",
       "kind": "deny",
       "stdin": { "tool_name": "Edit", "tool_input": { "file_path": ".planning/generated.md" } },

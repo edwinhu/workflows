@@ -4,13 +4,12 @@ These are the compile **targets** for workflow-creator's compiled-runner pattern
 
 > 📊 **New here? Read `docs/compiled-runner-architecture.md` first** — a visual, code-grounded walkthrough (mermaid diagrams) of how the whole `spec → plan → compile → run.js` machinery actually runs: the splice, the driver loop, `gateProbe`, return-reasons, pause/resume.
 
-> **Canonical seam list (source of truth): `docs/common-infra-candidates.md`** — shared core S1-S7, injected seams D1-D4, the 6 doctrine invariants, the return-reason taxonomy, and the confidence tags (now **3-instance-confirmed: ds + dev + writing**). See also `skills/workflow-creator/references/dynamic-workflow-migration.md` §0 and `docs/DESIGN-ds-spec-plan-compile.md` / `docs/DESIGN-dev-spec-plan-compile.md` / `docs/DESIGN-writing-spec-plan-compile.md`.
+> **Pattern reference:** `skills/workflow-creator/references/dynamic-workflow-migration.md` and `docs/compiled-runner-architecture.md`. Historical dev compiler designs remain under `docs/DESIGN-dev-spec-plan-compile.md`, but dev is no longer a live consumer of these templates.
 
 | File | Role |
 |------|------|
 | `run-core.js` | **THE shared driver core (pass #9).** ONE copy of the topo/level/`runTask`/`returnReason`/`intraLevel` driver + helpers + unified `TRANSFORM_SCHEMA` + the six doctrine invariants. The compiler SPLICES it with a per-domain fragment into a self-contained `<project>/.planning/run.js`. Holes: `__META__/__PROJECT__/__TASKS__/__GLOBAL_CONSTRAINTS__/__LEVEL_MODES__/__TASK_BODIES__`. |
-| `dev-task.js` | dev FRAGMENT — `gateProbe` (TDD / files+test → `artifactsPresent`), `implementerPrompt` (Global Constraints + Interfaces), `recheckTrigger` (cross-level overlap → full suite). |
-| `compiled-runner-template.js` | **Generic FRAGMENT skeleton (birther).** Copy to `<domain>-task.js` and fill the three injected fns (`gateProbe`/`implementerPrompt`/optional `recheckTrigger`) + write `<domain>_compile.py` per its header recipe. Carries NO driver — the driver is `run-core.js`, spliced at compile time. (`ds-run-template.js`/`dev-run-template.js` were the pre-pass-#9 monolithic copies — **deleted** in the birther-convergence pass; the compilers use `run-core.js` + `<domain>-task.js`.) |
+| `compiled-runner-template.js` | **Generic FRAGMENT skeleton (birther).** Copy to `<domain>-task.js` and fill the three injected fns (`gateProbe`/`implementerPrompt`/optional `recheckTrigger`) + write `<domain>_compile.py` per its header recipe. Carries NO driver — the driver is `run-core.js`, spliced at compile time. (Earlier monolithic run templates were deleted in the birther-convergence pass; live compiler-backed domains use `run-core.js` + `<domain>-task.js`.) |
 
 ## How a runner is born — the emitter/guard/parser triple
 
@@ -28,18 +27,18 @@ SPEC ──▶ PLAN-EMITTER phase  ← emits BORN-CANONICAL table format (doctri
                   └─ emit CODE (<project>/.planning/run.js)  OR  DATA (a work-list a generic runner consumes)
                         └─ Workflow({ scriptPath: ".planning/run.js" })  or the generic engine reads the work-list
 
-DS no longer uses this compiler/parser path. Its native approved plan is adapted directly to
-`workflows/beat-implement.js` by `skills/ds-implement/SKILL.md`.
+DS and dev no longer use this compiler/parser path. Their receipt-selected native generated plans
+are adapted directly to `workflows/beat-implement.js` by their implementation skills.
 ```
 
 There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; wc-audit flags it `executionClass=generic-interpreter` → critical). **Emitting only parser + guard (no canonical emitter) half-applies the rule — it relocates the tolerance into regex instead of removing it.**
 
 ## The four INJECTED seams D1-D4 (the ONLY things that change per domain)
 
-1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, artifactsPresent, evidence, scope}` (canonical names; `pass` ⊥ `artifactsPresent` — the core ANDs them). **`pass` is ALWAYS deterministic** (exit code or mechanical floor — never a returned judgment, so nothing in the runner to game). The fork is *sufficiency*: exit-code (ds/dev — the gate IS the probe) vs a **necessary-not-sufficient floor** (writing — the sufficient authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3). Pick the trust-class via interview Q7.
+1. **D1 `gateProbe(t)`** — how a task is gated, returning `{pass, artifactsPresent, evidence, scope}` (canonical names; `pass` ⊥ `artifactsPresent` — the core ANDs them). **`pass` is ALWAYS deterministic** (exit code or mechanical floor — never a returned judgment, so nothing in the runner to game). The fork is *sufficiency*: exit-code (for a compiler-backed domain such as the historical DS runner — the gate IS the probe) vs a **necessary-not-sufficient floor** (writing — the sufficient authority is the adversarial review OUTSIDE run.js). `scope` (`checked`/`not-checked`) discloses the floor's blind spot — a clean `pass` must not over-claim coverage it doesn't have (doctrine #3). Pick the trust-class via interview Q7.
 2. **D2 `implementerPrompt(t)`** — how one task is produced (output-first vs TDD failing-test-first + the domain's R4 assumption-change list). Keep the mandatory-R4 block + stale-gate backstop verbatim.
 3. **D3 `columns` / task-spec shape** — what the plan table carries (`__TASKS__`): `id, name, deps, outputs, expectedOutput, verify, implements, kind, tier, effort, done, pauseAfter, taskText`.
-4. **D4 tier/effort policy** — `t.tier`/`t.effort` (dev inherits session model). Pull out of the shared compiler.
+4. **D4 tier/effort policy** — `t.tier`/`t.effort` is supplied by the domain. Pull it out of the shared compiler.
 
 **NOT a seam — intra-level parallel-vs-sequential is CORE, compiler-DERIVED:** parallel IFF a level's declared outputs are provably **disjoint**; a shared tree runs sequentially by construction. Never hand-set it; never ask the author. (This killed the earlier `D5` proposal.)
 

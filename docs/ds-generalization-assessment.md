@@ -1,6 +1,6 @@
 # Generalization assessment: the compiled-runner pattern beyond ds
 
-> **Superseded for DS (2026-07-29).** This compiler-era assessment is retained for historical provenance, not as an implementation guide. The current DS workflow uses immutable copied plans, native tasks, project auto-memory, and a human review ledger rather than a compiler or generated runner.
+> **Superseded for DS and dev (2026-07-31).** This compiler-era assessment is retained for historical provenance, not as an implementation guide. Both current built-ins use receipt-selected native generated plans, TaskList, project auto-memory, and returned review/verification results rather than their former compilers or generated runners.
 
 > After proving `spec → plan → compiled run.js` on ds (parity complete, engine retired). Per the brief:
 > find the **shared core** (compile + run-template + pause protocol) vs the **per-domain template**, and

@@ -41,7 +41,7 @@ planning and execution guarantees:
 | Start Fresh | Midpoint Re-entry | Domain |
 |-------------|-------------------|--------|
 | `/work` | Resume the receipt-selected generated plan (`{planFile, planHash}`) with TaskList | Bounded cross-domain work: clarify, approve a proportional plan, execute under `/goal`, independently verify, and obtain human review |
-| `/dev` | `/dev-debug` | 7-phase feature development with TDD enforcement |
+| `/dev` | `/dev-debug` | Native-plan feature development: conversational clarification/reconnaissance, explicit architecture choice, TDD, TaskList execution, independent review, and fresh verification |
 | `/ds` | `/ds-fix` | Native-plan data science: plan, implement, independently review, and correct wrong results or notebook failures |
 | `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
 | `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
@@ -119,7 +119,7 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `headline-card`, `audit-fix-loop`
 
 ### Internal Workflow Phases
-Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-spec-reviewer`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`)
+Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`; `dev-spec-reviewer` is retired)
 
 DS: `/ds` is the user-facing planning entry; internal `ds-implement` executes the approved tasks and internal `ds-review` handles terminal review. `/ds-fix` is the user-facing corrective re-entry for wrong results and notebook failures.
 
@@ -161,7 +161,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 ## Workflow lifecycle architecture
 
-Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). It separates reusable clarification, receipt-selected generated-plan identity (`{planFile, planHash}`), reviewer finalization, mutation boundaries, and human review from the execution and verification adapters used by DS, writing, workshop, and workflow-creator. Dev retains its legacy SPEC/compiler path, while `/work` remains lightweight and procedural.
+Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). All six built-ins use reusable clarification, receipt-selected generated-plan identity (`{planFile, planHash}`), hidden reviewer finalization, mutation boundaries, TaskList, and human review. Their adapters preserve domain-specific execution and verification rigor; `/work` is lightweight in scope, not in authority.
 
 ## Hooks
 
@@ -188,7 +188,7 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 
 ## Session Continuity
 
-Modern native-plan workflows separate durable records by purpose: a hook-owned receipt authenticates and selects one immutable generated plan by `{planFile, planHash}`, Claude Code's `TaskList` is the live task and review-finding record, project auto-memory retains reusable facts, project directories retain real inputs and deliverables, and `.planning/.state/` holds only narrow machine-owned state such as the hash-bound review verdict. Legacy dev keeps its descriptor-v1 artifacts in its isolated compatibility path.
+Built-in native-plan workflows separate durable records by purpose: a hook-owned receipt authenticates and selects one immutable generated plan by `{planFile, planHash}`, Claude Code's `TaskList` is the live task and review-finding record, project auto-memory retains reusable facts, project directories retain real inputs and deliverables, and `.planning/.state/` holds only narrow machine-owned state such as the hash-bound review verdict. External descriptor schema v1 retains its separate compatibility contract.
 
 For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 

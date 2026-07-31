@@ -66,7 +66,6 @@ const LEGACY_TS_EXPECTATIONS: Record<string, TsExpectation> = {
   "pre-compact/native-ds-plan-without-keywords-never-writes-state": { stdoutSha256: "156864016656d19c95cd65f4f7262a5e439192bcf2148137f54d89e8d9641e11", exit: 0, fs: {} },
   "pre-compact/learnings-only-no-plan-marker-has-no-workflow-note": { stdoutSha256: "e1f92e984bc0c0fe51bbabfa8e654606e871dc2d1b9125169775fd881bb1eafd", exit: 0, fs: {} },
   "session-start/planning-plan-progress-with-next-task": { stdoutSha256: "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac", exit: 0, fs: {} },
-  "session-start/planning-dev-workflow-all-tasks-complete": { stdoutSha256: "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac", exit: 0, fs: {} },
   "session-start/legacy-claude-dir-plan-without-checkboxes": { stdoutSha256: "2b63930c16cdf6b06a60e748c4808e35a929fd9af4a232afd70a7afd370d401f", exit: 0, fs: {} },
   "session-start/planning-dir-present-but-no-recognized-state-files": { stdoutSha256: "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac", exit: 0, fs: {} },
   "subagent-start/active-workflow-only": { stdoutSha256: "92f7c2777260574d918b907072e08b60e42504422a22607249c880b126a2f0eb", exit: 0, fs: {} },

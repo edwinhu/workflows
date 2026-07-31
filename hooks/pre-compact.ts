@@ -221,8 +221,8 @@ async function main(): Promise<void> {
       : (planPath ? detectActiveWorkflow(planPath) : null));
   const resumeCommand = lifecycle.kind === "canonical" ? null : sharedResumeCommand(marker);
 
-  // Canonical lifecycle state is receipt-selected; the authenticated /dev compatibility path and
-  // pre-.planning legacy state retain their historical persistence behavior.
+  // Canonical lifecycle state is receipt-selected; only pre-.planning legacy state retains
+  // its historical persistence behavior.
   const nativePlanLifecycle = lifecycle.kind === "canonical";
   const learningsPath = nativePlanLifecycle ? null : findLearningsFile();
   if (learningsPath) appendCompactionMarker(learningsPath, activeWorkflow);

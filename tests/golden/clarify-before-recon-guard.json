@@ -238,8 +238,8 @@
       ]
     },
     {
-      "name": "dev-handoff-read-allowed-before-clarification",
-      "kind": "allow",
+      "name": "dev-retired-handoff-read-denied-before-clarification",
+      "kind": "deny",
       "stdin": {
         "tool_name": "Read",
         "tool_input": {
@@ -252,7 +252,7 @@
         "dev"
       ],
       "tsExpected": {
-        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutSha256": "5a5a4f2c17dd9fd1148af6ab9652e8ec1913401255e9bdd460c322d29fb4c13c",
         "exit": 0,
         "fs": {}
       }

@@ -257,8 +257,8 @@
       }
     },
     {
-      "name": "dev-allow-planning-state-file",
-      "kind": "allow",
+      "name": "dev-deny-retired-visible-review-artifact",
+      "kind": "deny",
       "stdin": {
         "session_id": "sess-parity-3",
         "hook_event_name": "PreToolUse",
@@ -276,7 +276,7 @@
         "dev"
       ],
       "tsExpected": {
-        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutSha256": "acb82531a75dd886efb5940c60a01fc9284b3151483d3c59a318b888158f2bd8",
         "exit": 0,
         "fs": {}
       }

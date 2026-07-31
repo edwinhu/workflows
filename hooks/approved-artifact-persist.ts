@@ -7,8 +7,8 @@ import { workflowFromArg } from "./_workflow_policies.ts";
 function fail(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(2); }
 
 const policy = workflowFromArg(Bun.argv.slice(2));
-const nativeWorkflows = new Set<BuiltInApprovalWorkflow>(["ds", "work", "writing", "workshop", "workflow-creator"]);
-if (!policy || policy.approvalPolicy !== undefined || !nativeWorkflows.has(policy.workflow as BuiltInApprovalWorkflow)) fail("requires a built-in native-plan workflow: ds, work, writing, workshop, or workflow-creator; dev and external descriptors have no native-plan producer");
+const nativeWorkflows = new Set<BuiltInApprovalWorkflow>(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
+if (!policy || policy.approvalPolicy !== undefined || !nativeWorkflows.has(policy.workflow as BuiltInApprovalWorkflow)) fail("requires a built-in native-plan workflow: ds, dev, work, writing, workshop, or workflow-creator; external descriptors have no native-plan producer");
 let payload: Record<string, unknown>;
 try { payload = JSON.parse(await Bun.stdin.text()); } catch { fail("hook payload is not valid JSON"); }
 if (!payload || typeof payload !== "object" || Array.isArray(payload)) fail("hook payload must be an object");

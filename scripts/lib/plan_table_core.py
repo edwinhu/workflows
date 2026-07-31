@@ -2,9 +2,9 @@
 """
 plan_table_core — the shared S1 parser core for compiled-runner plan tables.
 
-Extracted (pass-#9 follow-up) from the byte-near-identical internals of
-scripts/ds/ds_plan_table.py and scripts/dev/dev_plan_table.py once 2+ instances proved
-the shape empirical (canonical: docs/common-infra-candidates.md, seam S1). It holds the
+Extracted (pass-#9 follow-up) from byte-near-identical domain parser internals once
+2+ instances proved the shape empirical (canonical: docs/common-infra-candidates.md,
+seam S1). It holds the
 domain-AGNOSTIC mechanics:
   - markdown-table location (by an exact required-header set) + cell extraction
     (prefix-tolerant, so 'failing test (write first)' satisfies the column 'failing test'),

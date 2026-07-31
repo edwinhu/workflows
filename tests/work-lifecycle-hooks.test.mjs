@@ -134,21 +134,15 @@ describe("work lifecycle hooks", () => {
     expect(JSON.parse(subagent.stdout).hookSpecificOutput.additionalContext).toContain("PLANNING STATE BLOCKED");
   });
 
-  test("fully authenticated and explicitly marked legacy dev remains an isolated compatibility path", async () => {
+  test("legacy dev state is conversion-only and never creates visible compaction state", async () => {
     const cwd = fixture({
       ".planning/ACTIVE_WORKFLOW.md": "---\nworkflow: dev\nphase: implement\n---\n",
-      ".planning/PLAN.md": "## Dev Workflow\n",
-      ".planning/PLAN_REVIEWED.md": "---\nplan_hash: f96f5dac41ce72c31f51e899a30cf1dded3677c3084639e492f82ecfb910b664\nstatus: APPROVED\nreviewer_session_id: reviewer\nreviewed_at: 2026-01-01T00:01:00.000Z\n---\n\nApproved\n",
+      ".planning/PLAN.md": "# legacy dev\n",
+      ".planning/PLAN_REVIEWED.md": "---\nplan_hash: x\nstatus: APPROVED\nreviewer_session_id: reviewer\nreviewed_at: 2026-01-01T00:01:00.000Z\n---\n",
     });
-    const result = await run("session-start.ts", cwd, { hook_event_name: "SessionStart" });
-    const context = JSON.parse(result.stdout).hookSpecificOutput.additionalContext;
-    expect(context).toContain("### Approved native plan");
-    expect(context).toContain("- Full plan: `.planning/PLAN.md`");
-    expect(context).not.toContain("Native planning state is blocked");
-
     const compact = await run("pre-compact.ts", cwd, { hook_event_name: "PreCompact" });
-    expect(JSON.parse(compact.stdout).systemMessage).toContain("Workflow state saved to .planning/STATE.md (/dev active)");
-    expect(readFileSync(join(cwd, ".planning/STATE.md"), "utf8")).toContain("invoke /dev to reload the workflow context");
+    expect(JSON.parse(compact.stdout).systemMessage).toContain("Planning state is blocked");
+    expect(existsSync(join(cwd, ".planning/STATE.md"))).toBe(false);
   });
 
   test("native persistence refuses unbound raw plan text", async () => {

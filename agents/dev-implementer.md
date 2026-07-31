@@ -1,8 +1,8 @@
 ---
 name: dev-implementer
 description: |
-  Development implementation subagent with automatic linting. Use for dev workflow TDD tasks.
-  Spawned by dev-delegate for each implementation task in PLAN.md.
+  Development implementation subagent with automatic linting. Use for authenticated dev TDD tasks.
+  Spawned by dev-delegate for each receipt-selected generated-plan TaskList item.
 model: inherit
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
 hooks:

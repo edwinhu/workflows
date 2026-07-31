@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Shared PreToolUse-hook shell for the dev/ds plan-executable guards — TypeScript port of
- * hooks/_plan_guard_common.py.
+ * Shared PreToolUse-hook shell for compiler-backed plan-executable guards (currently DS) —
+ * TypeScript port of hooks/_plan_guard_common.py.
  *
  * Each guard file supplies only its domain config (scripts subdir, parser module name, domain
  * label, deny prose) via `PlanGuardConfig` and calls `run(CONFIG)`.
@@ -22,9 +22,9 @@ import { deny, parsePayload } from "./_gate_common.ts";
 export type PlanGuardConfig = {
   /** this hook file's own directory (import.meta.dir of the guard) */
   hooksDir: string;
-  /** "dev" | "ds" — scripts/<subdir> holds the parser module */
+  /** scripts/<subdir> holds the parser module */
   scriptsSubdir: string;
-  /** "dev_plan_table" | "ds_plan_table" */
+  /** parser module imported from the compiler-backed domain */
   parserModule: string;
   /** "Implementation Order" | "Task Breakdown" (for CLI messages) */
   tableLabel: string;

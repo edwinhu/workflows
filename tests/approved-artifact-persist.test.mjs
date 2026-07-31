@@ -57,10 +57,15 @@ withProject((cwd) => {
   finally { rmSync(outside, { recursive: true, force: true }); }
 });
 
-for (const workflow of ["work", "writing", "workshop", "workflow-creator"]) withProject((cwd) => {
+for (const workflow of ["dev", "work", "writing", "workshop", "workflow-creator"]) withProject((cwd) => {
   mkdirSync(join(cwd, ".planning")); const path = join(cwd, ".planning", `${workflow}-generated.md`); writeFileSync(path, `# ${workflow}\n`);
   const result = run(payload(cwd, path, `${workflow}-approval`), cwd, workflow); assert.equal(result.status, 0, result.stderr);
   assert.equal(JSON.parse(readFileSync(join(cwd, ".planning", ".state", "review.json"), "utf8")).workflow, workflow);
+  if (workflow === "dev") {
+    for (const retired of ["PLAN.md", "SPEC.md", "SPEC_REVIEWED.md", "PLAN_REVIEWED.md", "REVIEW_STATE.md"]) {
+      assert.equal(existsSync(join(cwd, ".planning", retired)), false, `dev must not create ${retired}`);
+    }
+  }
 });
 
 console.log("approved-artifact-persist tests passed");

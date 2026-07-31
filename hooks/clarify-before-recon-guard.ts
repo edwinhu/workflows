@@ -24,7 +24,13 @@ function reconPath(value: unknown): boolean {
 }
 const dsPatterns = ["python3 -c", "python -c", "import pandas", "import numpy", "import polars", "pd.read_", "pd.DataFrame", "df.head", "df.describe", "df.info", "df.shape", "df.columns", "df.dtypes", ".read_csv", ".read_parquet", ".read_sql", ".read_excel", "pixi run python"];
 if (clarified()) allow();
-if (tool === "Read" && policy.workflow === "dev" && String(input.file_path).replaceAll("\\", "/").endsWith(".planning/HANDOFF.md")) allow();
+if (
+  tool === "Read" &&
+  policy.workflow === "dev" &&
+  /(^|\/)\.planning\/(?:PLAN|SPEC|STATE|LEARNINGS|HANDOFF|VALIDATION|REVIEW_STATE|VERIFY_STATE|HUMAN_REVIEW|ACTIVE_WORKFLOW)(?:\.meta\.json|_REVIEWED\.md|\.md)$/.test(
+    String(input.file_path).replaceAll("\\", "/"),
+  )
+) deny(policy.clarifyReason);
 if (tool === "Bash") {
   const command = String(input.command ?? "").trim();
   // The sentinel is intentionally a clarification proof, not an access token. Before it exists,

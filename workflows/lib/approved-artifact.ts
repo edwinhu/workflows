@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { isAbsolute, join, relative } from "node:path";
 
 export type WorkflowName = "ds" | "dev" | "work" | "writing" | "workshop" | "workflow-creator";
-export type BuiltInApprovalWorkflow = Exclude<WorkflowName, "dev">;
+export type BuiltInApprovalWorkflow = WorkflowName;
 export type ArtifactError = { code: string; message: string };
 export type ApprovalMetadata = { schemaVersion: 1; workflow: string; planHash: string; approvedSession: string; approvedAt: string };
 export type ReviewerVerdict = { plan_hash: string; status: "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
@@ -14,21 +14,20 @@ export type ApprovedArtifact = { hash: string; planFile?: string; planPath?: str
 export type BuiltInArtifactLayout = "canonical" | "canonical-with-legacy-provenance" | "legacy" | "conflict";
 export type PlanningLifecycle =
   | { kind: "canonical"; resolved: ResolvedGeneratedPlan }
-  | { kind: "legacy-dev" }
   | { kind: "blocked"; reason: string }
   | { kind: "none" };
 export type ApprovalPolicyDescriptor = { schemaVersion: 1; workflow: string; planPath: string; metadataPath: string; verdictPath: string };
 
 const HASH = /^[0-9a-f]{64}$/;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-const MODERN_WORKFLOWS = new Set<BuiltInApprovalWorkflow>(["ds", "work", "writing", "workshop", "workflow-creator"]);
+const MODERN_WORKFLOWS = new Set<BuiltInApprovalWorkflow>(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 const RESERVED_PLAN_FILES = new Set(["PLAN.md", "PLAN_REVIEWED.md", "REVIEW.md", "AUTOMATED_REVIEW.md", "HUMAN_REVIEW.md", "IMPLEMENT_COMPLETE.md", "VALIDATION.md"]);
 
 export function sha256(value: string | Buffer): string { return createHash("sha256").update(value).digest("hex"); }
 export function strictUtc(value: unknown): value is string { return typeof value === "string" && UTC.test(value) && new Date(value).toISOString() === value; }
 export function err(code: string, message: string): ArtifactError { return { code, message }; }
 function isError(value: unknown): value is ArtifactError { return !!value && typeof value === "object" && "code" in value; }
-function isBuiltInWorkflow(workflow: string): workflow is WorkflowName { return workflow === "dev" || MODERN_WORKFLOWS.has(workflow as BuiltInApprovalWorkflow); }
+function isBuiltInWorkflow(workflow: string): workflow is BuiltInApprovalWorkflow { return MODERN_WORKFLOWS.has(workflow as BuiltInApprovalWorkflow); }
 function isModernWorkflow(workflow: string): workflow is BuiltInApprovalWorkflow { return MODERN_WORKFLOWS.has(workflow as BuiltInApprovalWorkflow); }
 
 export function parseMetadata(value: unknown, expectedWorkflow?: string): ApprovalMetadata | ArtifactError {
@@ -195,7 +194,6 @@ function readJsonSnapshot(value: Buffer | ArtifactError, path: string): unknown 
 }
 
 export function classifyBuiltInArtifactLayout(projectDir: string, workflow: WorkflowName): BuiltInArtifactLayout {
-  if (workflow === "dev") return "legacy";
   const root = realpathSync(projectDir); const planning = join(root, ".planning");
   const receipt = join(planning, ".state", "review.json"); const legacyPlan = join(planning, "PLAN.md"); const legacyMetadata = join(planning, "PLAN.meta.json"); const legacyVerdict = join(planning, "PLAN_REVIEWED.md");
   if (!existsSync(receipt)) return existsSync(legacyPlan) || existsSync(legacyMetadata) || existsSync(legacyVerdict) ? "legacy" : "canonical";
@@ -222,10 +220,29 @@ export function resolveGeneratedPlanReviewState(projectDir: string, expectedWork
 
 /**
  * One fail-closed routing decision for lifecycle hooks. A visible planning ledger is never
- * authority for modern workflows: only a receipt that authenticates its selected plan is.
- * The fully authenticated legacy /dev pair remains an explicitly isolated compatibility path.
+ * authority for built-ins: only a receipt that authenticates its selected plan is.
  */
-export function classifyPlanningLifecycle(projectDir: string, implementationSession = "lifecycle-hook"): PlanningLifecycle {
+const CLARIFICATION_SENTINELS = new Set([
+  "DS_CLARIFIED.json", "DEV_CLARIFIED.json", "WORK_CLARIFIED.json",
+  "WRITING_CLARIFIED.json", "WORKSHOP_CLARIFIED.json", "WC_CLARIFIED.json",
+]);
+function hasOnlyBenignPreplanSentinel(planning: string): boolean {
+  try {
+    const entries = readdirSync(planning, { withFileTypes: true });
+    const sentinel = entries.filter(entry => entry.isFile() && !entry.isSymbolicLink() && CLARIFICATION_SENTINELS.has(entry.name));
+    const permitted = entries.every(entry =>
+      (entry.isFile() && !entry.isSymbolicLink() && CLARIFICATION_SENTINELS.has(entry.name))
+      || (entry.isDirectory() && !entry.isSymbolicLink() && entry.name === ".state"));
+    if (!permitted || sentinel.length !== 1) return false;
+    const state = join(planning, ".state");
+    if (entries.some(entry => entry.name === ".state") && readdirSync(state).length !== 0) return false;
+    const value = JSON.parse(readFileSync(join(planning, sentinel[0].name), "utf8"));
+    return !!value && typeof value === "object" && !Array.isArray(value)
+      && Object.keys(value).length === 2 && value.status === "clarified"
+      && typeof value.sessionId === "string" && value.sessionId.trim() !== "";
+  } catch { return false; }
+}
+export function classifyPlanningLifecycle(projectDir: string): PlanningLifecycle {
   let root: string;
   try { root = realpathSync(projectDir); } catch { return { kind: "none" }; }
   const planning = join(root, ".planning");
@@ -234,30 +251,10 @@ export function classifyPlanningLifecycle(projectDir: string, implementationSess
   const resolved = resolveGeneratedPlanReviewState(root);
   if (!isError(resolved)) return { kind: "canonical", resolved };
   if (existsSync(receiptPath)) return { kind: "blocked", reason: resolved.code };
-
-  // /dev is the sole compatibility path that may read legacy visible artifacts. Require both its
-  // explicit workflow marker and the established full-plan/verdict authentication; a hash-valid
-  // fixed PLAN pair from an old modern episode must never be guessed to be /dev.
-  const markerPath = join(planning, "ACTIVE_WORKFLOW.md");
-  if (existsSync(markerPath)) {
-    const markerSnapshot = readArtifactSnapshot(root, markerPath, "legacy-dev-marker");
-    if (!isError(markerSnapshot)) {
-      const marker = parseFrontmatter(markerSnapshot.toString("utf8"));
-      if (!isError(marker) && marker.workflow === "dev") {
-        const dev = validateApprovedArtifact(root, "dev", implementationSession);
-        if (!isError(dev)) return { kind: "legacy-dev" };
-      }
-    }
-  }
-
-  // With no valid receipt and no authenticated /dev marker, any content under `.planning` is
-  // unauthenticated modern or conversion residue. This includes orphan generated filenames and
-  // obsolete hidden state such as `.state/plan.json`; never fall through to visible-ledger readers.
+  if (hasOnlyBenignPreplanSentinel(planning)) return { kind: "none" };
   try {
     if (readdirSync(planning).length > 0) return { kind: "blocked", reason: "conversion-required" };
-  } catch {
-    return { kind: "blocked", reason: "planning-read" };
-  }
+  } catch { return { kind: "blocked", reason: "planning-read" }; }
   return { kind: "none" };
 }
 
@@ -279,7 +276,6 @@ export function validateApprovedPlan(projectDir: string, workflow: string, descr
   let root: string; try { root = realpathSync(projectDir); } catch { return err("project-root", "project root must exist and be accessible"); }
   if (descriptor !== undefined && isBuiltInWorkflow(workflow)) return err("policy-ambiguous", "built-in workflows cannot override approval artifact paths");
   if (descriptor === undefined && !isBuiltInWorkflow(workflow)) return err("unknown-workflow", "external workflows require an explicit approval policy");
-  if (descriptor === undefined && workflow === "dev") return err("metadata-unavailable", "legacy dev plans are authenticated only by the full review verdict");
   if (descriptor === undefined && isModernWorkflow(workflow)) {
     const layout = classifyBuiltInArtifactLayout(root, workflow); if (layout === "conflict") return err("artifact-layout-conflict", "generated and legacy approval artifacts contain competing current authority");
     if (layout === "legacy") return err("conversion-required", `legacy ${workflow} approval artifacts are conversion input only; create a fresh generated plan`);
@@ -302,15 +298,6 @@ export function validateApprovedArtifact(projectDir: string, workflow: string, c
   let root: string; try { root = realpathSync(projectDir); } catch { return err("project-root", "project root must exist and be accessible"); }
   if (descriptor !== undefined && isBuiltInWorkflow(workflow)) return err("policy-ambiguous", "built-in workflows cannot override approval artifact paths");
   if (descriptor === undefined && !isBuiltInWorkflow(workflow)) return err("unknown-workflow", "external workflows require an explicit approval policy");
-  if (descriptor === undefined && workflow === "dev") {
-    const planPath = join(root, ".planning", "PLAN.md"); const verdictPath = join(root, ".planning", "PLAN_REVIEWED.md");
-    const plan = readArtifactSnapshot(root, planPath, "artifact-read", readOptions); if (isError(plan)) return plan;
-    const verdictBytes = readArtifactSnapshot(root, verdictPath, "verdict-read", readOptions); if (isError(verdictBytes)) return verdictBytes;
-    const hash = sha256(plan); const verdict = parseVerdict(verdictBytes.toString("utf8")); if (isError(verdict)) return verdict;
-    if (verdict.status !== "APPROVED" || verdict.plan_hash !== hash) return err("stale-verdict", "review verdict is not APPROVED for current PLAN.md bytes");
-    if (typeof currentSession !== "string" || !currentSession.trim() || currentSession === verdict.reviewer_session_id) return err("session-separation", "implementation session must differ from reviewer session");
-    return { hash, planFile: "PLAN.md", planPath, verdict };
-  }
   if (descriptor === undefined && isModernWorkflow(workflow)) {
     const first = validateApprovedPlan(root, workflow, undefined, readOptions); if (isError(first)) return first;
     if (!first.receipt || !first.planFile || !first.planPath) return err("review-schema", "generated plan approval state is incomplete");

@@ -150,4 +150,34 @@ describe("work workflow contract", () => {
     expect(routing).toContain("use work only for the bounded middle category");
     for (const command of ["/dev", "/ds", "/writing", "/workshop"]) expect(routing).toContain(command);
   });
+
+  test("dev execution keeps plan identity and live state in TaskList", () => {
+    const devEntry = read("skills/dev/SKILL.md");
+    expect(devEntry).toContain("TaskCreate");
+    expect(devEntry).toContain("TaskList");
+    expect(devEntry).toContain('matcher: "ExitPlanMode"');
+    expect(devEntry).toContain("approved-artifact-persist.ts --workflow dev");
+    expect(devEntry).not.toContain("TodoWrite");
+    const devSkills = [
+      "skills/dev-implement/SKILL.md",
+      "skills/dev-test-gaps/SKILL.md",
+      "skills/dev-review/SKILL.md",
+      "skills/dev-verify/SKILL.md",
+      "skills/dev-handoff/SKILL.md",
+      "skills/dev-delegate/SKILL.md",
+      "skills/dev-debug/SKILL.md",
+      "skills/dev-tdd/SKILL.md",
+      "skills/dev-worktree/SKILL.md",
+    ].map(read);
+    for (const text of devSkills) {
+      expect(text).toContain("TaskList");
+      expect(text).toMatch(/planFile.*planHash|planHash.*planFile/s);
+    }
+    expect(devImplement).toContain('workflow: "dev"');
+    expect(devImplement).toContain("workflows/beat-implement.js");
+    expect(devImplement).toContain("valid RED");
+    expect(devImplement).toContain("independent fresh verifier");
+    expect(read("skills/dev-review/SKILL.md")).toContain("Codex");
+    expect(read("skills/dev-verify/SKILL.md")).toContain("beat-review/SKILL.md");
+  });
 });

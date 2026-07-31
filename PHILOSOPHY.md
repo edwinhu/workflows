@@ -53,7 +53,7 @@ The RL framing is most useful for: identifying reward hacking, designing action 
 Break work into phases with single responsibilities. Each phase answers ONE question. Phases are sequential: you can't design before exploring, can't implement before designing.
 
 The shape varies by domain:
-- **Dev**: 7 linear phases (brainstorm → explore → clarify → design → implement → review → verify)
+- **Dev**: question-first clarification and reconnaissance → explicit architecture choice → native plan → TaskList implementation → independent review and fresh verification
 - **DS**: three skills — `/ds` plans, `/ds-implement` executes native tasks, and `/ds-review` records independent review for a human decision
 - **Writing**: Branching (quick vs. project, domain routing, progressive expansion)
 
@@ -61,7 +61,7 @@ The shape varies by domain:
 
 Workflows prevent drift by making the current status legible. Use reproducible evidence where it is meaningful, and reserve quality decisions for independent review and the human.
 
-For the DS workflow, a hook-authenticated receipt selects one generated plan by `{planFile, planHash}`; native `TaskList` status is the live execution record; and `.planning/HUMAN_REVIEW.md` records human feedback/dispositions. These are distinct records because plan approval, live task state, and human judgment are distinct facts.
+For every built-in workflow, a hook-authenticated receipt selects one generated plan by `{planFile, planHash}` and native `TaskList` is the live execution and review-finding record. Human feedback is returned through the terminal review surface and tracked as live work when it requires follow-up. These records are distinct because approved intent, live task state, and human judgment are distinct facts.
 
 ### Structural Gate Artifacts
 
@@ -70,30 +70,15 @@ A gate that exists only as instructional text ("you must run X before Y") is adv
 **The principle: every mandatory inter-phase gate must produce a concrete artifact that the consuming phase checks before starting.** If the main chat skips the gate skill entirely and jumps straight to the next phase, the next phase must REFUSE to start.
 
 The pattern:
-1. A modern gate finalizes a hook-owned receipt that binds the selected generated plan hash and reviewer identity; legacy dev alone retains its historical `.planning/PLAN_REVIEWED.md` marker.
-2. Consuming phase authenticates the gate state at startup — missing or stale state = STOP.
+1. A gate finalizes a hook-owned receipt that binds the selected generated plan hash and reviewer identity.
+2. The consuming phase authenticates the current receipt-selected plan at startup — missing or stale state = STOP.
 3. The state contains the reviewer's actual outcome (not just a flag), so it cannot be fabricated without running the reviewer.
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
-**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools (Write, Edit, Agent) until the gate artifact exists. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Use the generic `phase-gate-guard.ts` hook with environment variables to configure per-phase gates:
+**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Built-ins use `approved-artifact-gate.ts` for this identity and chronology check; `reviewer-verdict-guard.ts` admits only the hash-bound hidden receipt write.
 
-```yaml
-# Legacy dev compatibility example only; modern workflows authenticate their receipt instead:
-hooks:
-  PreToolUse:
-    - matcher: "Write|Edit|Agent"
-      hooks:
-        - type: command
-          command: >-
-            GATE_ARTIFACT=.planning/PLAN_REVIEWED.md
-            GATE_STATUS=APPROVED
-            GATE_DESCRIPTION="Legacy dev plan review"
-            GATE_REMEDY="Return to dev-design and run dev-plan-reviewer"
-            uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
-```
-
-**The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks can't express the constraint.
+**The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks cannot express the constraint.
 
 ### Constraints vs Conventions
 
@@ -158,8 +143,8 @@ A spec with a missing edge case survives into exploration (exploring the wrong a
 
 | Artifact | Produced By | Consumed By | Review Gate |
 |----------|------------|-------------|-------------|
-| SPEC.md | Brainstorm | Explore, Clarify, Design | Independent reviewer checks completeness, consistency, clarity |
-| PLAN.md | Design | Implement | Independent reviewer checks task decomposition, spec alignment |
+| Native generated dev plan | Conversational clarification, reconnaissance, and architecture choice | Implement | Independent reviewer checks complete requirement/task/test/evidence grammar against the immutable exact path |
+| Domain plan | Domain planning | Implement | Independent reviewer checks task decomposition and requirement alignment |
 | OUTLINE.md | Brainstorm | Draft | Independent reviewer checks coverage, structure |
 | HYPOTHESES.md | Investigate | Test | Self-review acceptable (serial iteration, not final) |
 
@@ -243,11 +228,12 @@ This is the *why*; the *how* (the compile step, the shared runner, the gate cont
 A gate's mechanism should be reusable when its proof is domain-neutral: session-bound opening
 clarification, exact approved-artifact hashes, reviewer-owned hash-bound verdicts, canonical mutation
 boundaries, and task identities. The policy decides what counts as reconnaissance and which paths or
-commands are legitimate. The execution adapter remains independent: DS native plans and dev's
-executable table/compiler do not become equivalent merely because they share lifecycle proof.
+commands are legitimate. Execution adapters remain independent: dev's RED-first TaskList adapter,
+DS's data-task adapter, and the writing/workshop generators share lifecycle proof without sharing
+domain semantics.
 
-See [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md) for the before/after
-boundary and the DATA task-IR → sequential Workflow migration seam.
+See [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md) for the current
+built-in authority boundary and adapter seams.
 
 ## 5. Enforcement and Its Limits
 

@@ -101,7 +101,7 @@ flowchart TD
 - **Single-source parser (S1/S6):** the guard `import`s the same parser the compiler uses, so
   "compiles ⇔ passes gate" is a property, not a hope. No second drifting regex.
 - **Compile = produce the work-list (S5):** emit **CODE** (`run.js`) for a per-project DAG runner
-  (ds/dev), or **DATA** (a work-list a generic fan-out engine consumes) when the engine already exists
+  (currently ds; dev's former CODE runner is retired), or **DATA** (a work-list a generic fan-out engine consumes) when the engine already exists
   (writing/workshop/teaching). Absence of a `run.js` is *not* a gap — it is the DATA emit form.
 
 ---
@@ -229,7 +229,7 @@ prose"). The fork is **sufficiency**, not whether an LLM is involved:
 ```mermaid
 flowchart LR
     TC{"gate trust-class<br/>(interview Q7)"}
-    TC -->|"exit-code (ds/dev)"| EC["the probe IS the gate<br/>(sufficient)"]
+    TC -->|"exit-code (ds)"| EC["the probe IS the gate<br/>(sufficient)"]
     TC -->|"mechanical floor (writing/workshop)"| FL["necessary-NOT-sufficient floor;<br/>the sufficient authority is the<br/>adversarial review OUTSIDE run.js"]
     EC --> SCOPE["scope.notChecked names the<br/>boundary either way"]
     FL --> SCOPE

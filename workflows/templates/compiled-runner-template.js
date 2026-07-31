@@ -42,8 +42,8 @@
 //      isolation-safe, else 'sequential' — never an author knob, never asked;
 //   5. `node --check` the emitted .planning/run.js.
 //
-// LIVE reference implementations on main: workflows/templates/{run-core.js,
-// dev-task.js}; scripts/dev/dev_compile.py + scripts/lib/plan_table_core.py.
+// Shared extension infrastructure: workflows/templates/run-core.js and
+// scripts/lib/{compile_core.py,plan_table_core.py}. Domain compilers are optional.
 // Canonical seam list: docs/common-infra-candidates.md.
 // ============================================================================
 

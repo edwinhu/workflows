@@ -1,92 +1,34 @@
 ---
 name: dev-requirement-traceability
-description: CATEGORY-NN requirement IDs from SPEC.md must flow through PLAN.md, VALIDATION.md, and verification
+description: REQ-NN IDs in the native dev plan must trace through TaskList work, tests, and fresh evidence
 applies-to: [dev-design, dev-plan-reviewer, dev-implement, dev-review, dev-verify, dev-test-gaps]
 ---
 
-## Rule
+# Dev requirement traceability
 
-SPEC.md assigns unique IDs to every requirement (e.g., AUTH-01, DATA-02). These IDs flow through the entire dev workflow:
+The exact approved native dev plan is the only requirement authority. `## Requirements` assigns a
+stable `REQ-NN` ID to every in-scope behavioral requirement, and its `## Requirement → Test Map`
+maps each ID to `TASK-NN` work, named tests, and concrete evidence commands.
 
-| Artifact | How IDs appear |
-|----------|---------------|
-| **SPEC.md** | `AUTH-01: [requirement text]` -- unique ID per requirement |
-| **PLAN.md** | `implements: [AUTH-01, AUTH-02]` per task |
-| **LEARNINGS.md** | `implements: [AUTH-01]` per task summary |
-| **VALIDATION.md** | `AUTH-01: COVERED / PARTIAL / MISSING` -- full coverage map |
-| **dev-verify** | `REQUIREMENT: AUTH-01` per goal verification |
+| Authority | Traceability role |
+|---|---|
+| Native generated plan | Defines each `REQ-NN`, `TASK-NN`, real-test contract, and evidence plan. |
+| TaskList | Holds live task identities, dependencies, retries, test-gap findings, review findings, and supersession state for the current plan hash. |
+| Test/runtime evidence | Establishes whether each requirement's named behavior actually works. |
+| Returned verification/review result | Reports the final requirement-to-test matrix and unresolved blockers; it is not a new plan ledger. |
 
-**Without IDs, "we tested the feature" is vague. With IDs, you can verify that AUTH-01, AUTH-02, and DATA-01 are each addressed with tests in specific tasks.**
+A requirement with no task, test, or evidence is a structural plan gap. A behavioral statement
+outside the requirements map is a missing requirement, not an optional note. Do not add new
+requirements mid-implementation: return to native Plan mode, create a replacement generated plan,
+and obtain a fresh receipt.
 
-**ID format:** `CATEGORY-NN` where category comes from natural groupings (AUTH, DATA, UI, API, etc.).
+## Red flags
 
-**Scope tags:** `v1` (must complete), `v2` (defer if needed), `out-of-scope` (excluded).
-
-## Rationale
-
-**Why this exists** -- in early dev workflows, "requirements covered" was asserted without proof. Validation would pass because the agent believed it had tested everything, but specific requirements were missing test coverage. Requirement IDs make coverage auditable: VALIDATION.md can mechanically check that every CATEGORY-NN appears in at least one task's test output. Vague coverage assertions become concrete traceable links.
-
-## Examples
-
-### Correct
-
-```markdown
-# SPEC.md
-AUTH-01: Users can login with email/password [v1]
-AUTH-02: JWT tokens refresh automatically [v1]
-DATA-01: API returns paginated results [v1]
-
-# PLAN.md
-## Task 1: Auth endpoints
-implements: [AUTH-01, AUTH-02]
-
-## Task 2: Pagination
-implements: [DATA-01]
-
-# VALIDATION.md
-AUTH-01: COVERED (test_login_success, test_login_failure)
-AUTH-02: COVERED (test_token_refresh)
-DATA-01: COVERED (test_pagination_defaults, test_pagination_cursor)
-```
-
-### Incorrect
-
-```markdown
-# SPEC.md
-The app needs authentication and pagination.
-(No requirement IDs. Requirements embedded in prose. Can't trace.)
-
-# PLAN.md
-## Task 1: Build auth
-(No implements line. No way to verify which requirements this covers.)
-
-# VALIDATION.md
-"All requirements tested."
-(No per-requirement status. Just assertion.)
-```
-
-## Traceability Facts
-
-- Validation checks traceability — it cannot add it. The IDs must exist before validation runs, so "I'll add traceability during validation" schedules work the phase cannot do; assign IDs as each artifact is created.
-- A requirement with no task is a coverage gap, not an ID inconvenience — flag it as a structural issue during design; the plan structure needs revision.
-- "Requirements are obvious from context" is obvious only to you, now — not to the validation phase or a resuming session. Asserting coverage without per-requirement status is an unverified claim presented as fact.
-
-## Prose Section Audit
-
-**Every behavioral statement in SPEC.md prose sections MUST have a CATEGORY-NN ID in the Requirements table.**
-
-Sections to audit: Design Decisions, Discovered Protocol, Clarified Requirements, and any other prose sections outside the Requirements table.
-
-A "behavioral statement" is any prose that describes an implementable feature, user-facing behavior, protocol handling, or UI element. Examples:
-- "The extension should show a permission_request dialog when the server sends a permission_request message"
-- "A session selector allows the user to switch between active sessions"
-
-**If a behavioral statement is found in prose without a corresponding CATEGORY-NN ID in the Requirements table → STOP.** Assign an ID and add it to the Requirements table before proceeding. These un-ID'd requirements are invisible to the entire downstream traceability chain (PLAN.md, VALIDATION.md, dev-verify) and will be silently dropped.
-
-## Red Flags
-
-- **SPEC.md has requirements without CATEGORY-NN IDs** -- STOP. Every requirement needs a unique, traceable identifier.
-- **PLAN.md tasks missing `implements:` lines** -- STOP. Every task must declare which requirements it covers.
-- **VALIDATION.md says "all requirements covered" without per-requirement status** -- STOP. Validate each ID individually.
-- **A CATEGORY-NN appears in SPEC.md but not in any PLAN.md task** -- STOP. That's a coverage gap.
-- **Adding new requirements mid-implementation without updating SPEC.md** -- STOP. New requirements need IDs and must flow through all downstream artifacts.
+- **A requirement has no `REQ-NN` ID** — STOP. Put it in the native generated plan before review.
+- **A `REQ-NN` lacks a `TASK-NN`, test, or evidence command** — STOP. Replan and reapprove.
+- **A task is tracked outside TaskList or mutable plan checkboxes** — STOP. Reconcile the current
+  receipt-selected plan into TaskList.
+- **A reviewer claims coverage without fresh runtime evidence** — STOP. Run the map's concrete
+  commands and record the result through TaskList/returned evidence.
+- **An implementation discovery changes requirement scope** — STOP. It needs a new generated plan,
+  not an edit to approved bytes.

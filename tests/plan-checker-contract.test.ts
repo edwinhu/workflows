@@ -62,12 +62,40 @@ test("modern adapters dispatch the generic checker with the exact generated plan
   }
 });
 
-test("legacy dev adapter retains its fixed plan contract", () => {
+test("dev adapter dispatches the generic checker with its exact generated plan path", () => {
   const text = read("skills/dev-plan-reviewer/SKILL.md");
   expect(text).toContain("subagent_type=\"workflows:plan-checker\"");
   expect(text).toContain("Workflow/domain: dev");
-  expect(text).toContain("Plan: .planning/PLAN.md");
-  expect(text).toContain("Inputs: .planning/SPEC.md");
+  expect(text).toContain("Plan: <exact generated plan path returned by the completed native Plan interaction>");
+  expect(text).toContain("Replace both angle-bracket placeholders with concrete paths before dispatch.");
+  expect(text).toContain(".planning/.state/review.json");
+  expect(text).not.toContain("Plan: .planning/PLAN.md");
+  expect(text).not.toContain("PLAN_REVIEWED.md");
+});
+
+test("dev planning establishes conversational inputs and a strict native task grammar", () => {
+  const entry = read("skills/dev/SKILL.md");
+  const explore = read("skills/dev-explore/SKILL.md");
+  const clarify = read("skills/dev-clarify/SKILL.md");
+  const design = read("skills/dev-design/SKILL.md");
+  const template = read("skills/dev-design/references/plan-template.md");
+
+  expect(entry).toContain("DEV_CLARIFIED.json");
+  expect(explore).toContain("Return these findings directly in the conversation");
+  expect(clarify).toContain("Return the user decisions directly in the conversation");
+  expect(design).toContain("Enter native Plan mode");
+  for (const section of ["Intent and Scope", "Requirements", "Chosen Architecture", "Testing Strategy and Real-Test Contract", "Implementation Tasks", "Requirement → Test Map", "Evidence Plan", "Review Surfaces"]) {
+    expect(design).toContain(`## ${section}`);
+    expect(template).toContain(`## ${section}`);
+  }
+  for (const field of ["REQ-NN", "TASK-NN", "Dependencies", "Work", "Criteria", "Outputs", "Writable paths", "First failing test / RED expectation", "Verify command", "Instruction files", "Model", "Effort"]) {
+    expect(design).toContain(field);
+  }
+  expect(design).toContain("TaskContract");
+  expect(design).toContain("ExitPlanMode");
+  expect(design).not.toContain("dev-plan-executable-guard");
+  expect(entry).not.toContain("dev-spec-reviewer");
+  expect(read("skills/dev-spec-reviewer/SKILL.md")).toContain("Retired");
 });
 
 test("atomic constraints keep common doctrine and domain policy separate", () => {
@@ -77,8 +105,9 @@ test("atomic constraints keep common doctrine and domain policy separate", () =>
   expect(common).toContain("plan_file");
   expect(common).toContain("plan_hash");
   expect(common).toMatch(/Never glob[\s\S]*newest[\s\S]*substitute/i);
-  expect(common).toContain("Legacy dev");
-  expect(readFileSync(join(dev, "executable-plan-table.md"), "utf8")).toContain("Task | Deps | Files | Failing Test | Verify Command | Implements");
+  expect(common).not.toContain("Legacy dev");
+  expect(readFileSync(join(dev, "executable-plan-table.md"), "utf8")).toContain("shared `TaskContract`");
+  expect(readFileSync(join(dev, "executable-plan-table.md"), "utf8")).toContain("TASK-NN");
   expect(readFileSync(join(dev, "tdd-and-verify-commands.md"), "utf8")).toContain("RED");
   const dsIntegrity = readFileSync(join(ds, "native-plan-integrity.md"), "utf8");
   expect(dsIntegrity).toContain(".planning/.state/review.json");
@@ -92,7 +121,8 @@ test("atomic constraints keep common doctrine and domain policy separate", () =>
   expect(dsIntegrity).toMatch(/Never list or glob[\s\S]*newest[\s\S]*modification time[\s\S]*copy or rename[\s\S]*substitute/i);
   expect(dsIntegrity).toContain("independent");
   expect(dsIntegrity).toContain("strictly later than `approved_at`");
-  expect(dsIntegrity).toContain("Legacy `dev` alone");
+  expect(dsIntegrity).toContain("Dev uses the same native generated-plan");
+  expect(dsIntegrity).toContain("conversion-only provenance");
   expect(dsIntegrity).not.toContain("PLAN.meta.json");
   expect(dsIntegrity).not.toContain("`PLAN.md` is the immutable");
   expect(readFileSync(join(ds, "profiling-and-dq.md"), "utf8")).toContain("duplicates");
@@ -110,6 +140,8 @@ test("generic checker owns only hidden combined receipt finalization", () => {
   expect(checker).toContain("Hash the supplied plan before review");
   expect(checker.toLowerCase()).toContain("immediately before finalization");
   expect(checker).toMatch(/Do not use `Edit`, glob for plans, list `.planning\/`, choose a newest file/);
-  expect(checker).toContain("For legacy `dev` only");
+  expect(checker).toContain("For `dev`, additionally validate its full executable grammar");
+  expect(checker).toContain("TASK-NN");
+  expect(checker).not.toContain("For legacy `dev` only");
   expect(checker).not.toContain("write only `.planning/PLAN_REVIEWED.md`");
 });

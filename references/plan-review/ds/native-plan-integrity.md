@@ -6,4 +6,4 @@ The reviewer receives that exact generated plan path. Read the PENDING receipt a
 
 The approval, review, and implementation sessions must be independent, and `reviewed_at` must be strictly later than `approved_at`. Finalize only by replacing `.planning/.state/review.json`, preserving every approval-owned field unchanged and setting the reviewer-owned verdict fields. An `ISSUES_FOUND` verdict returns to native Plan mode for a new approval; it never authorizes a plan patch or implementation.
 
-Legacy `dev` alone retains its fixed `.planning/PLAN.md` and visible four-field verdict; those legacy semantics do not apply to DS.
+Dev uses the same native generated-plan and hidden combined-receipt authority. Any fixed dev `.planning/PLAN.md` or visible verdict is conversion-only provenance and never authorizes review or implementation.

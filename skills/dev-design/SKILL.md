@@ -1,496 +1,71 @@
 ---
 name: dev-design
-description: "This skill should be used when the user asks to 'design the approach', 'propose architecture', or 'choose between approaches'."
+description: "Internal architecture decision and native dev-plan authoring."
 user-invocable: false
 disable-model-invocation: true
-hooks:
-  PreToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: >-
-            GATE_ARTIFACT=.planning/SPEC_REVIEWED.md
-            GATE_STATUS=APPROVED
-            GATE_BLOCKED_TOOLS=Agent
-            GATE_DESCRIPTION="Spec reviewed"
-            GATE_REMEDY="SPEC.md must exist AND have passed dev-spec-reviewer (SPEC_REVIEWED.md status: APPROVED) before designing. Complete brainstorm, spec review, and exploration first."
-            bun ${CLAUDE_PLUGIN_ROOT}/hooks/phase-gate-guard.ts
-    - matcher: "Write|Edit"
-      hooks:
-        - type: command
-          command: bun ${CLAUDE_PLUGIN_ROOT}/hooks/dev-plan-executable-guard.ts
 ---
 
-**Announce:** "Using dev-design (Phase 4) to propose implementation approaches and obtain user approval."
+**Announce:** "I'm using dev-design to present architecture choices before creating the native plan."
 
-**Iteration topology:** one-shot + fresh-subagent plan review (dev-plan-reviewer)
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev-design`
 
-### Context Check
+# Architecture choice and native plan
 
-Before starting this phase, check remaining context:
+Use the conversational clarification and reconnaissance results; do not read or revive historical
+`.planning/PLAN.md`, `SPEC.md`, reviews, progress files, or handoffs.
 
-| Level | Remaining | Action |
-|-------|-----------|--------|
-| Normal | >35% | Proceed |
-| Warning | 25-35% | Finish the current step, then invoke dev-handoff |
-| Critical | ≤25% | Invoke dev-handoff immediately — resume fresh |
+## Architecture gate
 
-At Warning/Critical: Read `${CLAUDE_SKILL_DIR}/../../skills/dev-handoff/SKILL.md` and follow its instructions.
+Present 2–3 feasible approaches, including a recommendation. For each, name the affected
+boundaries/files, compatibility and testing implications, implementation cost, and trade-offs.
+Obtain the user's explicit choice before entering Plan mode. A sole viable option still needs its
+trade-off explained and explicit acceptance.
 
-## Contents
+## Native Plan mode
 
-- [The Iron Law of Design](#the-iron-law-of-design)
-- [What Design Does](#what-design-does)
-- [Process](#process)
-- [Approach Categories](#approach-categories)
-- [PLAN.md Format](#planmd-format)
-- [Design Facts](#design-facts)
-- [Output](#output)
+Enter native Plan mode and generate exactly one executable Markdown plan. `ExitPlanMode` returns
+its path; save that exact path and its returned identity for review and implementation. Do not
+write a fixed `.planning/PLAN.md`, copy plan bytes, or create a visible approval marker.
 
-# Architecture Design with User Gate
+The generated plan must contain these exact sections:
 
-Propose implementation approaches, explain trade-offs, get user approval.
-**Prerequisites:** SPEC.md finalized, exploration complete, clarifications resolved.
-
-## Prerequisite: dev-clarify Must Be Complete
-
-**dev-design REQUIRES dev-clarify to be complete. This is not optional.**
-
-Before writing PLAN.md, verify these clarify gates passed:
-- [ ] Testing approach documented (unit/integration/E2E)
-- [ ] Test framework specified
-- [ ] First test described
-- [ ] Test command documented
-- [ ] User workflow confirmed
-
-**If ANY gate is unchecked → DO NOT START DESIGN. Return to dev-clarify.**
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Design
-
-**YOU MUST GET USER APPROVAL BEFORE IMPLEMENTATION. This is not negotiable.**
-
-After presenting approaches:
-1. Show 2-3 options with trade-offs
-2. Lead with your recommendation
-3. **Ask user which approach**
-4. **Wait for explicit approval**
-
-Implementation CANNOT start without user saying "Yes" or choosing an approach.
-
-**STOP - you're about to implement without user approval.**
-</EXTREMELY-IMPORTANT>
-
-## What Design Does
-
-| DO | DON'T |
-|----|-------|
-| Propose 2-3 approaches | Implement anything |
-| Explain trade-offs clearly | Make the choice for user |
-| Lead with recommendation | Present without opinion |
-| Get explicit approval | Assume approval |
-| Write PLAN.md | Skip the user gate |
-
-**Design answers: HOW to build it and WHY this approach**
-**Implement executes: the approved approach** (next phase, after gate)
-
-## Process
-
-### 1. Review Inputs
-
-Before designing, ensure the following exist:
-- `.planning/SPEC.md` - final requirements
-- Exploration findings - key files, patterns
-- Clarified decisions - edge cases, integrations
-
-### 2. Propose 2-3 Approaches
-
-Each approach should address the same requirements differently:
-
-**Approach A: Minimal Changes**
-- Smallest diff, maximum reuse
-- Trade-off: May be less clean, tech debt
-
-**Approach B: Clean Architecture**
-- Best patterns, maintainability
-- Trade-off: More changes, longer implementation
-
-**Approach C: Pragmatic Balance**
-- Balance of speed and quality
-- Trade-off: Compromise on both
-
-### 3. Present with Trade-offs
-
-Use the AskUserQuestion tool to present approaches:
-
-```python
-# AskUserQuestion: Present 2-3 architecture approaches with trade-offs for user selection
-AskUserQuestion(questions=[{
-  "question": "Which architecture approach should we use?",
-  "header": "Architecture",
-  "options": [
-    {
-      "label": "Pragmatic Balance (Recommended)",
-      "description": "Extend existing AuthService with new method. ~150 lines changed. Balances reuse with clean separation."
-    },
-    {
-      "label": "Minimal Changes",
-      "description": "Add logic to existing endpoint. ~50 lines changed. Fast but increases coupling."
-    },
-    {
-      "label": "Clean Architecture",
-      "description": "New service with full abstraction. ~300 lines. Most maintainable but longest to build."
-    }
-  ],
-  "multiSelect": false
-}])
+```markdown
+## Intent and Scope
+## Requirements
+## Chosen Architecture
+## Testing Strategy and Real-Test Contract
+## Implementation Tasks
+## Requirement → Test Map
+## Evidence Plan
+## Review Surfaces
 ```
 
-**Key principles:**
-- Lead with recommendation (first option + "Recommended")
-- Concrete numbers (lines changed, files affected)
-- Clear trade-offs for each
-- Reference specific files from exploration
-
-#### Log the review pattern (observe → record → offer)
-
-After the user makes this `decision` selection, append one line to `.planning/LEARNINGS.md` recording **what the user attended to** before choosing — e.g. "compared lines-changed across options", "asked for the dependency graph", "approved on the recommendation without detail", "wanted to see affected files". Do NOT build any visualization speculatively.
-
-**Offer rule:** if `.planning/LEARNINGS.md` shows the **same review artifact requested 3+ times** across episodes (e.g. the user keeps asking for a dependency graph or a diff summary before approving), offer to bundle a script under `skills/dev-design/scripts/` that generates that view automatically. Build it only after the 3rd occurrence — observed behavior first, automation after.
-
-When the offer triggers, map the observed request to a concrete artifact:
-
-| If the user keeps asking for… | Consider building |
-|-------------------------------|-------------------|
-| "show me what changed / a diff" | Interactive diff explorer (self-contained HTML) |
-| "what's the architecture / dependencies?" | Dependency graph or codebase tree |
-| "which files does this touch?" | Affected-files map from PLAN.md `affects:` |
-| "how big is each approach?" | Lines-changed / files-touched comparison table |
-
-Bundle the script in `skills/dev-design/scripts/`; the phase offers to run it — it never forces it.
-
-### 4. Feature Decomposition Check
-
-**CRITICAL:** Before writing PLAN.md, check if this is actually multiple features.
-
-Review the scope and ask:
-
-```python
-# AskUserQuestion: Determine if feature should be split into independent tasks
-AskUserQuestion(questions=[{
-  "question": "Is this one cohesive feature or multiple independent features?",
-  "header": "Scope",
-  "options": [
-    {
-      "label": "One feature",
-      "description": "Implement everything together in one branch/worktree"
-    },
-    {
-      "label": "Multiple features",
-      "description": "Break into separate features, each with own branch/worktree/PR"
-    }
-  ],
-  "multiSelect": false
-}])
-```
-
-**If "Multiple features":**
-
-1. **List the independent features** identified from SPEC.md:
-   ```
-   Based on the requirements, this breaks into:
-   1. Theme infrastructure (color system, theme provider)
-   2. Settings UI (theme selector component)
-   3. Component updates (update 20+ components to use theme)
-   4. Persistence layer (save user preference)
-
-   Each can be implemented and PR'd independently.
-   ```
-
-2. **Ask which to tackle first:**
-   ```python
-   # AskUserQuestion: Prioritize which feature to implement first
-   AskUserQuestion(questions=[{
-     "question": "Which feature should we implement first?",
-     "header": "Priority",
-     "options": [
-       {"label": "Theme infrastructure (Recommended)", "description": "Foundation that others depend on"},
-       {"label": "Settings UI", "description": "UI for theme selection"},
-       {"label": "Component updates", "description": "Apply themes to components"},
-       {"label": "Persistence layer", "description": "Save user preference"}
-     ],
-     "multiSelect": false
-   }])
-   ```
-
-3. **Write PLAN.md for ONLY the chosen feature**
-
-4. **Document remaining features** in `.planning/BACKLOG.md`:
-   ```markdown
-   # Feature Backlog
-
-   ## Dark Mode Implementation
-
-   ### Completed
-   - [ ] None yet
-
-   ### Next Up
-   - [ ] Theme infrastructure
-   - [ ] Settings UI
-   - [ ] Component updates
-   - [ ] Persistence layer
-
-   **Current Focus:** Theme infrastructure
-   ```
-
-**If "One feature":**
-
-Proceed to write PLAN.md for the entire scope (step 5 below).
-
-**Why this matters:**
-
-- Multiple features in one branch = massive PR, review hell, merge conflicts
-- Separate features = clean PRs, incremental progress, easier reviews
-- After first feature PR merges, come back and tackle next feature
-
-### 4b. Prose Section Audit (MANDATORY)
-
-**Before writing PLAN.md, scan ALL sections of SPEC.md for behavioral statements that lack CATEGORY-NN IDs.**
-
-Check these sections specifically:
-- Design Decisions
-- Discovered Protocol
-- Clarified Requirements
-- Any other prose sections outside the Requirements table
-
-Any prose that describes an implementable feature, user-facing behavior, protocol handling, or UI element MUST have a corresponding CATEGORY-NN ID in the Requirements table.
-
-**If any implementable feature lacks an ID → STOP. Add it to the Requirements table before writing PLAN.md.**
-
-Un-ID'd requirements in prose are invisible to PLAN.md task mapping, VALIDATION.md coverage, and dev-verify tracing. They will be silently dropped from the entire implementation.
-
-### 5. Write PLAN.md
-
-After user chooses approach AND confirms scope, write `.planning/PLAN.md`:
-
-### PLAN.md Template
-
-Use the template from `references/plan-template.md` for the PLAN.md structure. Load it before writing the plan:
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-design/references/plan-template.md` and follow its instructions.
-
-### 6. User Gate - Final Approval
-
-**Checkpoint type:** decision (user chooses architecture — cannot auto-advance)
-
-After writing PLAN.md, get explicit approval:
-
-```
-AskUserQuestion(questions=[{
-  "question": "Ready to start implementation?",
-  "header": "Approval",
-  "options": [
-    {"label": "Yes, proceed", "description": "Start implementation with TDD"},
-    {"label": "No, discuss changes", "description": "Modify the plan first"}
-  ],
-  "multiSelect": false
-}])
-```
-
-**If "No":** Wait for user feedback, modify plan, ask again.
-
-**If "Yes":** Proceed to workspace setup question in Step 7 below.
-
-### 7. Workspace Setup Question
-
-**Checkpoint type:** decision (user chooses workspace setup — cannot auto-advance)
-
-After user approves implementation, ask about worktree isolation:
-
-```
-AskUserQuestion(questions=[{
-  "question": "Create isolated worktree for this feature?",
-  "header": "Workspace",
-  "options": [
-    {"label": "Yes (Recommended)", "description": "Work in isolated .worktrees/ directory - keeps main workspace clean"},
-    {"label": "No", "description": "Work in current directory"}
-  ],
-  "multiSelect": false
-}])
-```
-
-**If "Yes (Recommended)":**
-
-Invoke the dev-worktree skill:
-```bash
-# dev-worktree: Create isolated git worktree for feature development
-Skill(skill="workflows:dev-worktree")
-```
-
-Then after worktree is created, invoke dev-implement.
-
-**If "No":**
-
-Directly invoke dev-implement in current directory without worktree isolation.
-
-## Approach Categories
-
-| Category | When to Use | Trade-off |
-|----------|-------------|-----------|
-| Minimal | Bug fixes, small features | Speed vs cleanliness |
-| Clean | New systems, core features | Quality vs time |
-| Pragmatic | Most features | Balance |
-
-## PLAN.md Format
-
-Required sections:
-- **Chosen Approach** - What was selected and why
-- **Testing Strategy** - Framework, command, first test, location, skill
-- **REAL Test Criteria** - User workflow, protocol, UI elements, what user sees
-- **Files to Modify** - Specific paths with change descriptions
-- **New Files** - If any, with purposes
-- **Implementation Order** - the MANDATORY machine-executable table: `Task | Deps | Files | Failing Test | Verify Command | Implements`, one row per task, every column filled (see `references/plan-template.md`). `dev-implement` reads this table to build the dependency DAG and the per-task verify gates — record tasks as table ROWS, never as prose `### Phase` headings. **Enforced:** `dev-plan-executable-guard.py` blocks `PLAN_REVIEWED.md` until the table is complete and the `Deps` graph is an acyclic, resolvable DAG. Self-check before approving: `bun ${CLAUDE_SKILL_DIR}/../../hooks/dev-plan-executable-guard.ts .planning/PLAN.md`.
-- **Global Constraints** (recommended) - a `## Global Constraints` block of invariants binding every task; **Task Interfaces** (recommended) - one `### Task N` Consumes/Produces block per task. Both are OPTIONAL and backward-compatible (the guard does not require them, and `task-brief.sh` produces valid briefs without them). When present, `task-brief.sh` folds the Global Constraints + the task's Interfaces into each per-task brief, so the implementer reads ONE self-contained file instead of re-reading the whole plan — see `references/plan-template.md`.
-
-### PLAN Self-Containment Facts
-
-- A pasted task and a re-read of the full PLAN.md are the two failure modes the brief sits between: pasting parks the bytes in the controller's context, "go read PLAN.md" makes the implementer guess scope. The brief (`task-brief.sh` → `.planning/handoff/task-N-brief.md`) is the scoped middle — pin Global Constraints + Interfaces in the plan so the brief is genuinely self-contained, or the implementer falls back to one of the two failure modes.
-
-## The Gate Function
-
-This is the canonical IDENTIFY → RUN → READ → VERIFY → CLAIM gate, expanded into 12 ordered steps. The phases map as: **IDENTIFY/RUN** = steps 1-2 (read SPEC.md + exploration), **READ/VERIFY** = steps 6b, 8 (prose audit + testing-table checks), **CLAIM** = step 12 (start /dev-implement). CLAIM is reachable ONLY if every prior step passed — the PLAN_REVIEWED.md hook downstream blocks implement if it did not.
-
-Complete all steps before starting implementation:
-
-```
-1. REVIEW → Read SPEC.md and exploration findings
-2. VERIFY TESTING → Check SPEC.md has automated testing strategy
-   └─ If missing → STOP. Go back to clarify phase.
-3. PROPOSE → Present 2-3 approaches with trade-offs
-4. ASK → Use AskUserQuestion with clear options
-5. DECOMPOSE → Ask "One feature or multiple?" (CRITICAL)
-   └─ If multiple → List features, ask which first, write BACKLOG.md
-6. WAIT → Do NOT proceed until user responds
-6b. PROSE AUDIT → Scan ALL SPEC.md prose sections for un-ID'd behavioral requirements (MANDATORY)
-   └─ If found → STOP. Add CATEGORY-NN IDs to Requirements table before proceeding.
-7. DOCUMENT → Write PLAN.md with Testing Strategy section FILLED
-8. VERIFY PLAN → Check PLAN.md Testing Strategy table has all boxes checked
-   └─ If any unchecked → STOP. Fill them before proceeding.
-9. CONFIRM → Ask "Ready to proceed?"
-10. WORKSPACE → Ask "Create worktree?" (Yes recommended / No)
-11. SETUP → If worktree Yes, invoke dev-worktree
-12. GATE → Only start /dev-implement after all approvals
-```
-
-**Mandatory steps (NEVER skip):** VERIFY TESTING, DECOMPOSE, PROSE AUDIT, VERIFY PLAN, WAIT, WORKSPACE, and GATE.
-
-### Testing Strategy Verification (Step 2 & 8)
-
-Before proceeding past step 2, verify SPEC.md contains:
-```
-[ ] Testing approach (unit/integration/E2E)
-[ ] Test framework (pytest/jest/playwright)
-[ ] Test command (how to run)
-[ ] Testing skill specified (dev-test-electron/playwright/etc.)
-```
-
-Before proceeding past step 8, verify PLAN.md Testing Strategy table:
-```
-[ ] Framework filled
-[ ] Test Command filled
-[ ] First Failing Test described
-[ ] Test File Location specified
-[ ] Testing Skill specified
-```
-
-**If any box is unchecked → STOP. Do not proceed.**
-
-### REAL Test Verification (Step 8 - CRITICAL)
-
-Before proceeding past step 8, verify PLAN.md REAL Test Criteria table:
-
-```
-[ ] User workflow documented (exact steps user takes)
-[ ] Protocol matches production (WebSocket/HTTP/IPC/etc.)
-[ ] UI elements identified (what user interacts with)
-[ ] User-visible output documented (what user sees)
-[ ] Code path specified (same path as production)
-```
-
-**If any box is unchecked → You WILL write fake tests. Fix now.**
-
-### Fake Test Prevention Check (Step 8)
-
-Ask yourself before proceeding:
-1. Will the test use the SAME protocol as production? (Not a substitute)
-2. Will the test follow the EXACT user workflow? (Not shortcuts)
-3. Will the test use the SPECIFIED testing skill? (Not your own approach)
-4. Will the test verify what the USER sees? (Not internal state)
-
-If ANY answer is "no" → STOP. Fix the REAL Test Criteria section.
-
-## Design Facts
-
-- Behavioral requirements without REQ-IDs hide in SPEC.md prose sections — Design Decisions, Discovered Protocol, Clarified Requirements. A PLAN.md written without the Prose Section Audit (step 4b) silently drops them from the entire traceability chain, and implementers execute the plan literally: what the plan omits never gets built.
-- "Only one viable option" still gets presented as an option with trade-offs — the user routinely has context you lack and sees alternatives you missed; choosing for them converts their approval gate into a notification.
-
-## Output
-
-Design complete when:
-- 2-3 approaches presented with trade-offs
-- User chose an approach
-- `.planning/PLAN.md` written with chosen approach
-- **User explicitly approved** ("Yes, proceed")
-
-## Phase Complete
-
-**Phase summary (append to LEARNINGS.md):**
-
-```yaml
-## Phase: Design
-
----
-phase: design
-status: completed
-requires: [SPEC.md, clarified-requirements]
-provides: [PLAN.md, PLAN_REVIEWED.md, architecture-decision]
-chosen-approach: [one-liner describing selected approach]
----
-```
-
-**After user approves ("Yes, proceed"):**
-
-1. **Plan Review Gate (MANDATORY — produces `.planning/PLAN_REVIEWED.md`):**
-   Discover and read the plan reviewer skill:Read `${CLAUDE_SKILL_DIR}/../../skills/dev-plan-reviewer/SKILL.md` and follow its instructions.
-   Follow the plan reviewer's instructions:
-   - Dispatch one reviewer for the complete plan
-   - If ISSUES_FOUND → fix PLAN.md → re-dispatch (max 5 iterations)
-   - If APPROVED → the reviewer writes `.planning/PLAN_REVIEWED.md` → proceed to worktree question
-
-   <EXTREMELY-IMPORTANT>
-   **`.planning/PLAN_REVIEWED.md` is the structural handoff artifact.**
-   dev-implement will REFUSE to start without it. You CANNOT skip this step.
-   If you proceed to step 2 without PLAN_REVIEWED.md existing, implementation will be blocked.
-   </EXTREMELY-IMPORTANT>
-
-2. **Ask about worktree** (Step 7 above)
-3. **If worktree chosen:**
-   - Invoke `Skill(skill="workflows:dev-worktree")`
-   - After worktree created, discover and read `skills/dev-implement/SKILL.md` via cache lookup, then invoke with `Read()`
-4. **If no worktree:**
-   - Directly discover and read `skills/dev-implement/SKILL.md` via cache lookup, then invoke with `Read()`
-
-**Required before proceeding:**
-- Explicit user approval for implementation
-- Feature scope decision (one feature vs multiple)
-- `.planning/PLAN_REVIEWED.md` exists with status: APPROVED
-- User choice on worktree (Yes/No)
-
-**After this feature is implemented and PR'd:**
-
-If multiple features were identified in step 4, check `.planning/BACKLOG.md` for remaining features:
-1. View remaining features in BACKLOG.md
-2. Invoke `/dev` again to tackle the next feature
-3. Repeat until all features are complete
-
-This enables incremental development: one feature → PR → merge → next feature.
+### Required grammar
+
+- `## Requirements` assigns every in-scope behavioral requirement a stable `REQ-NN` identifier;
+  it states exclusions separately.
+- `## Chosen Architecture` records the selected option, rationale, boundaries, interfaces, and
+  accepted trade-offs.
+- `## Testing Strategy and Real-Test Contract` records the exact framework and commands, user
+  workflow, production protocol/transport, observable outcome, first failing test and expected
+  RED, plus the full-suite/E2E contract where applicable.
+- `## Implementation Tasks` has one stable `TASK-NN` block per execution task. Each block must
+  include **Dependencies**, **Work**, **Criteria**, **Outputs**, **Writable paths**,
+  **First failing test / RED expectation**, **Verify command**, **Instruction files**, **Model**,
+  and **Effort**. `Outputs` and `Writable paths` are nonempty concrete repo-relative paths;
+  instruction files are absolute paths. Dependencies name `TASK-NN` IDs and form an acyclic DAG.
+  The work, criteria, outputs, writable paths, instruction files, model, and effort compile
+  directly to the shared `TaskContract` fields. Work requires RED before implementation and
+  GREEN through the exact verify command.
+- `## Requirement → Test Map` maps every `REQ-NN` to one or more `TASK-NN`, named tests, and
+  evidence commands. No requirement can be prose-only or untested.
+- `## Evidence Plan` defines command/runtime artifacts for every requirement and task.
+- `## Review Surfaces` names security, correctness, regression, API/UI, and other independently
+  reviewable surfaces relevant to the change.
+
+**Iron law: no implementation without a native approved plan.** The generated plan bytes are
+immutable after `ExitPlanMode`: changes to requirements, architecture, dependencies, real-test
+contract, or evidence require a newly generated plan and receipt rollover.
+
+After native approval, load `skills/dev-plan-reviewer/SKILL.md`; dispatch review with the exact
+path returned by Plan mode, never a globbed or inferred plan.

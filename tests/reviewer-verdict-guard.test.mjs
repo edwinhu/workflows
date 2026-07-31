@@ -64,10 +64,15 @@ try {
   denied(run(cwd), "external symlinked selected plan denied");
   rmSync(selected); writeFileSync(selected, plan);
 
-  writeFileSync(join(planning, "PLAN.md"), plan); writeFileSync(join(planning, "PLAN_REVIEWED.md"), devVerdict());
-  allowed(run(cwd, { workflow: "dev", filePath: ".planning/PLAN_REVIEWED.md", content: devVerdict() }), "dev fixed verdict preserved");
-  allowed(run(cwd, { workflow: "dev", tool: "Bash", command: "sha256sum .planning/PLAN.md" }), "dev fixed hash preserved");
+  const devPending = { ...pending, workflow: "dev" };
+  const devFinal = JSON.stringify({ ...devPending, status: "APPROVED", reviewer_session_id: "reviewer-456", reviewed_at: "2026-01-01T00:01:00.000Z" }, null, 2);
+  writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(devPending));
+  allowed(run(cwd, { workflow: "dev", filePath: ".planning/.state/review.json", content: devFinal }), "dev finalizes hidden native receipt");
+  allowed(run(cwd, { workflow: "dev", tool: "Bash", command: `sha256sum .planning/${planFile}` }), "dev hashes selected generated plan");
+  denied(run(cwd, { workflow: "dev", filePath: ".planning/PLAN_REVIEWED.md", content: devVerdict() }), "dev visible fixed verdict is conversion-only");
+  writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(pending));
 
+  writeFileSync(join(planning, "PLAN.md"), plan);
   const approvalPolicyPath = join(planning, "approval-policy.json");
   const matchingWorkflowPolicyPath = join(cwd, "external-workflow-policy.json");
   const mismatchedWorkflowPolicyPath = join(cwd, "external-workflow-policy-mismatch.json");
@@ -96,11 +101,11 @@ try {
   denied(run(cwd, { workflowPolicy: matchingWorkflowPolicyPath, tool: "Bash", command: "sha256sum .planning/PLAN.md" }), "external descriptor plan cannot escape through a symlink");
   rmSync(externalPlan); writeFileSync(externalPlan, plan);
 
-  rmSync(join(planning, "PLAN_REVIEWED.md"));
+  rmSync(join(planning, "PLAN_REVIEWED.md"), { force: true });
   writeFileSync(join(outside, "external-verdict.md"), devVerdict());
   symlinkSync(join(outside, "external-verdict.md"), join(planning, "PLAN_REVIEWED.md"));
   denied(run(cwd, { workflowPolicy: matchingWorkflowPolicyPath, filePath: ".planning/PLAN_REVIEWED.md", content: devVerdict() }), "external verdict target cannot be a symlink");
-  rmSync(join(planning, "PLAN_REVIEWED.md"));
+  rmSync(join(planning, "PLAN_REVIEWED.md"), { force: true });
 
   rmSync(join(planning, ".state", "review.json")); symlinkSync(join(outside, "missing.json"), join(planning, ".state", "review.json")); denied(run(cwd), "symlinked receipt denied");
 } finally { rmSync(cwd, { recursive: true, force: true }); rmSync(outside, { recursive: true, force: true }); }

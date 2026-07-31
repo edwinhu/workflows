@@ -457,52 +457,9 @@ codex_second_pass: declined
     check('nested block under a later key -> allowed', allowed)
 
 
-# --- The wiring is real: execute the command strings from SKILL.md frontmatter ---
-#
-# GATE_REQUIRE_FIELDS contains `|`. Unquoted, bash reads it as a pipeline, the env
-# var never reaches the hook, and the gate silently allows everything. Parsing the
-# YAML would not catch that — only running the command as a shell does.
-
-import re
-
-REPO = Path(__file__).resolve().parent.parent
-
-
-def gate_command(skill_path):
-    """Extract the phase-gate-guard command string from a SKILL.md frontmatter."""
-    text = (REPO / skill_path).read_text()
-    frontmatter = text.split('---', 2)[1]
-    for block in re.findall(r'command: >-\n((?:\s{12,}.*\n)+)', frontmatter):
-        joined = ' '.join(line.strip() for line in block.strip().splitlines())
-        if 'phase-gate-guard.ts' in joined:
-            return joined
-    return ''
-
-
-with tempfile.TemporaryDirectory() as td:
-    # DS no longer uses a separate verify phase or phase-gate sentinel. Its copied native PLAN
-    # carries immutable approval frontmatter and ds-implement performs technical VERIFY inline.
-    skill = 'skills/dev-verify/SKILL.md'
-    cmd = gate_command(skill)
-    check(f'{skill}: gate command found', bool(cmd))
-    if cmd:
-        check(f'{skill}: GATE_REQUIRE_FIELDS present', 'GATE_REQUIRE_FIELDS' in cmd)
-
-        # Replace the interpreter invocation with `env` so the shell reports the
-        # environment the hook would actually receive.
-        env_probe = re.sub(r'bun \S+phase-gate-guard\.ts', 'env', cmd)
-        env_probe = env_probe.replace('${CLAUDE_PLUGIN_ROOT}', str(REPO))
-        proc = subprocess.run(['bash', '-c', env_probe], capture_output=True, text=True, check=False)
-
-        got = [l for l in proc.stdout.splitlines() if l.startswith('GATE_REQUIRE_FIELDS=')]
-        check(f'{skill}: GATE_REQUIRE_FIELDS survives shell parsing (quoted)', len(got) == 1)
-        if got:
-            value = got[0].split('=', 1)[1]
-            check(f'{skill}: all three dispositions reach the hook',
-                  set(value.split(':', 1)[1].split('|')) ==
-                  {'completed', 'declined', 'unavailable'})
-        check(f'{skill}: no stray shell errors from the assignment',
-              'command not found' not in proc.stderr)
+# `phase-gate-guard` remains a generic hook contract. Built-in dev now uses the
+# authenticated native receipt and TaskList results instead of a visible review-state phase gate;
+# dev-specific wiring belongs to the approved-artifact and workflow-policy contracts.
 
 print()
 if F:

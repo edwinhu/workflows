@@ -1,99 +1,49 @@
 ---
 name: dev-common-constraints
-description: Common deterministic constraints index for the dev skill family
-applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-spec-reviewer, dev-plan-reviewer]
+description: Common deterministic constraints index for the native-plan dev skill family
+applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-plan-reviewer]
 ---
 
-# Dev Workflow: Common Constraints
+# Dev workflow: common constraints
 
-Deterministic rules for the dev skill family. Each constraint can be verified by a co-located `.py` check script returning pass/fail. Self-contained files under `constraints/`.
-
-**Skills that load this file:** dev (brainstorm), dev-tdd, dev-implement, dev-review, dev-verify, dev-debug
-
-After reading this index, load the specific constraint files needed for your current phase.
-
----
+Dev uses one native generated plan as immutable approved intent, the hidden hash-bound receipt as
+approval/review provenance, `TaskList` as live work and finding state, returned phase results for
+conversational status, and project paths for code and evidence. No fixed specification, plan,
+compiler output, progress file, or visible phase ledger is authority.
 
 ## Index
 
-| ID | Constraint | File | Check Script | Description |
-|----|------------|------|-------------|-------------|
-| C1 | Delegation Law | [delegation-law.md](delegation-law.md) | [delegation-law.py](delegation-law.py) | Main chat MUST NOT write code or investigate directly — delegate all to subagents |
-| C1b | Verification vs Investigation | [verification-vs-investigation.md](verification-vs-investigation.md) | [verification-vs-investigation.py](verification-vs-investigation.py) | Running tests = verification; reading source = investigation. Not the same. |
-| C2 | Real Test Enforcement | [real-test-enforcement.md](real-test-enforcement.md) | [real-test-enforcement.py](real-test-enforcement.py) | Tests must exercise real code paths — no mocks-only, no skips, same protocol as production |
-| C3 | Structural vs Runtime Verification | [structural-vs-runtime-verification.md](structural-vs-runtime-verification.md) | [structural-vs-runtime-verification.py](structural-vs-runtime-verification.py) | Only runtime execution counts as verification — code existing in a file proves nothing |
-| C4 | Deviation Rules | [dev-deviation-rules.md](dev-deviation-rules.md) | [dev-deviation-rules.py](dev-deviation-rules.py) | 4-rule system for unplanned discoveries — R1-R3 auto-fix, R4 STOP for architectural changes |
-| C5 | Requirement Traceability | [dev-requirement-traceability.md](dev-requirement-traceability.md) | [dev-requirement-traceability.py](dev-requirement-traceability.py) | CATEGORY-NN IDs from SPEC.md must flow through PLAN.md, VALIDATION.md, and verification |
+| ID | Constraint | File | Check script | Role |
+|---|---|---|---|---|
+| C1 | Delegation Law | [delegation-law.md](delegation-law.md) | [delegation-law.py](delegation-law.py) | Main chat does not implement or investigate in place of the appropriate worker. |
+| C1b | Verification vs Investigation | [verification-vs-investigation.md](verification-vs-investigation.md) | [verification-vs-investigation.py](verification-vs-investigation.py) | Test execution is verification; source reading is reconnaissance. |
+| C2 | Real Test Enforcement | [real-test-enforcement.md](real-test-enforcement.md) | [real-test-enforcement.py](real-test-enforcement.py) | Tests exercise real production-relevant paths and protocol. |
+| C3 | Structural vs Runtime Verification | [structural-vs-runtime-verification.md](structural-vs-runtime-verification.md) | [structural-vs-runtime-verification.py](structural-vs-runtime-verification.py) | Runtime evidence, not source presence, establishes behavior. |
+| C4 | Deviation Rules | [dev-deviation-rules.md](dev-deviation-rules.md) | [dev-deviation-rules.py](dev-deviation-rules.py) | R1–R3 are recorded in TaskList; R4 requires user decision and native replan. |
+| C5 | Requirement Traceability | [dev-requirement-traceability.md](dev-requirement-traceability.md) | [dev-requirement-traceability.py](dev-requirement-traceability.py) | `REQ-NN` plan requirements trace through `TASK-NN`, real tests, and fresh evidence. |
 
-## Phase Loading Guide
+## Phase loading guide
 
-Not every phase needs every constraint. Load by relevance:
+| Phase | Must load | Purpose |
+|---|---|---|
+| Opening clarification / exploration / post-recon clarification | C2 context | Establish and discover the real-test contract without writing planning ledgers. |
+| Native design and plan review | C2, C5 | Generate and independently validate `REQ-NN`/`TASK-NN`, RED/verify, evidence, and review-surface grammar. |
+| Implement | C1, C1b, C2, C3, C4, C5 | Reconcile the current receipt-selected plan into TaskList, then execute RED-first work. |
+| Test-gap audit, review, verify | C1b, C2, C3, C5 | Create TaskList findings for missing evidence and independently establish fresh coverage. |
+| Debug | C1, C1b, C2, C3, C4 | Investigate and repair without reviving a mutable plan or visible ledger. |
 
-| Phase | Must Load | Why |
-|-------|-----------|-----|
-| **Brainstorm** | — | No deterministic constraints at brainstorm stage |
-| **Explore** | — | Read-only exploration, no implementation |
-| **Clarify** | — | Clarification has no deterministic constraints |
-| **Design** | C5 | Verify plan covers all SPEC requirement IDs, audit prose sections for un-ID'd requirements |
-| **Implement** | C1, C1b, C2, C3, C4, C5 | All constraints: delegation, test reality, runtime evidence, deviation tracking, requirement tracing |
-| **Review** | C1, C1b, C2, C3, C5 | Delegation boundary, test evidence gating, requirement coverage |
-| **Verify** | C1b, C3, C5 | Verification boundary, runtime evidence, requirement tracing |
-| **Debug** | C1, C1b, C2, C3, C4 | All constraints: fresh subagents, hypothesis testing, real tests, deviation tracking |
+## Lifecycle enforcement
 
-## Check Matrix
-
-Which constraints are CRITICAL vs contextual in each phase:
-
-| Check | Brainstorm | Explore | Clarify | Design | Implement | Review | Verify | Debug |
-|-------|-----------|---------|---------|--------|-----------|--------|--------|-------|
-| C1: Delegation | - | - | - | - | **CRITICAL** | - | - | **CRITICAL** |
-| C1b: Verification vs Investigation | - | - | - | - | Post-subagent | Post-subagent | Post-subagent | **CRITICAL** |
-| C2: Real Tests | Define | Discover infra | Verify strategy | Lock in plan | Enforce TDD | Gate evidence | Prove E2E | Regression |
-| C3: Structural vs Runtime | - | - | - | - | Verify agent output | Gate test evidence | Fresh evidence | Verify fix |
-| C4: Deviation Rules | - | - | - | - | **CRITICAL** | - | - | **CRITICAL** |
-| C5: Requirement Traceability | - | - | - | Verify plan coverage | **CRITICAL** | Verify coverage | Trace to requirements | - |
-
-**How to use this matrix:**
-- **CRITICAL** = Primary enforcement point. Load the atomic constraint file and enforce fully.
-- **Named context** = Constraint applies in this specific way for this phase.
-- **-** = Constraint does not apply to this phase.
-
-## Hook Coverage Matrix
-
-Structural enforcement (Layer 2). Two PreToolUse guards are declared in skill frontmatter; one PostToolUse guard fires globally via `hooks/hooks.json`. Coverage is intentionally uneven — each gap is justified below.
-
-| Skill | `orchestrator-mutation-guard (--workflow dev)` (PreToolUse Write\|Edit) | `phase-gate-guard` (PreToolUse, artifact gate) | Gate artifact |
-|-------|:---:|:---:|---|
-| dev (brainstorm) | ✅ | ➖ | — (entry phase; no upstream gate). Writes `SPEC_REVIEWED.md` (status: APPROVED) on spec-review pass. |
-| dev-explore | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
-| dev-clarify | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
-| dev-design | ➖ | ✅ | `.planning/SPEC_REVIEWED.md` (status: APPROVED) |
-| dev-implement | ✅ | ✅ | `.planning/PLAN_REVIEWED.md` (status: APPROVED) |
-| dev-test-gaps | ✅ | ➖ | — (intra-implement; no phase gate) |
-| dev-review | ✅ | ✅ | `.planning/VALIDATION.md` (status: validated) |
-| dev-verify | ✅ | ✅ | `.planning/REVIEW_STATE.md` (status: APPROVED) |
-| dev-debug | ✅ | ➖ | — (midpoint re-entry; no linear upstream gate) |
-| dev-handoff | ✅ | ➖ | — (pause/resume; no phase gate) |
-| dev-delegate, dev-tdd, dev-test*, dev-tools, dev-worktree | ➖ | ➖ | run inside Task agents / are reference skills (see below) |
-| dev-spec-reviewer, dev-plan-reviewer | ➖ | ➖ | dispatched AS read-only subagents (`allowed-tools`); restriction is at dispatch |
-
-**Global (all skills, via `hooks/hooks.json`):** `atomic-constraint-guard.py` (PostToolUse Edit/Write — non-blocking monolith-constraint guard), plus `lint-check`, `image-read-guard`, `pattern-scan`, session hooks. These do not need per-skill declaration.
-
-**Justified gaps (intentional, not drift):**
-- **`phase-gate-guard` only on artifact-consuming phases.** explore/clarify/design gate on the upstream `SPEC.md`; implement on `PLAN_REVIEWED.md`; review on `VALIDATION.md`; verify on `REVIEW_STATE.md`. Brainstorm/debug/handoff have no linear upstream artifact to gate, so they declare no phase gate.
-- **`orchestrator-mutation-guard (--workflow dev)` only on main-chat orchestration phases** (dev, implement, test-gaps, review, verify, debug, handoff) where main chat must delegate code-writing to subagents. explore/clarify/design are read-only or `.planning/`-writing planning phases — main chat legitimately writes SPEC.md/PLAN.md there (the guard allows `.planning/` writes), so the guard is unnecessary.
-- **Reviewer/tool/test sub-skills declare no hooks** because they execute inside dispatched Task agents (whose tools are restricted at dispatch via `allowed-tools`) or are reference skills, not main-chat orchestration phases. The enforcing hook fires in the parent orchestrating skill.
-
-**Maintenance rule:** when adding a new dev phase that orchestrates code-writing, add `orchestrator-mutation-guard (--workflow dev)`. When it consumes an upstream artifact, add `phase-gate-guard` with the correct `GATE_ARTIFACT`, `GATE_STATUS`, **and `GATE_BLOCKED_TOOLS`**. Update this matrix in the same edit.
-
-> **Load-bearing detail — `GATE_BLOCKED_TOOLS` is mandatory.** `phase-gate-guard.ts` defaults `blocked_tools={Write,Edit}` and `exit(0)`s for any tool not in that set. A phase whose first action is `Agent` (subagent dispatch) MUST set `GATE_BLOCKED_TOOLS=Agent` (dev-explore, which also greps/globs, sets `Grep,Glob,Agent`) or the hook fires on the `Agent` call, finds it un-blocked, and silently allows it — the gate becomes a no-op. Verify every gate with: `echo '{"tool_name":"Agent","tool_input":{}}' | GATE_ARTIFACT=.planning/MISSING.md GATE_BLOCKED_TOOLS=Agent uv run python3 hooks/phase-gate-guard.ts` → must emit a `deny`.
+- `clarify-before-recon-guard --workflow dev` admits reconnaissance only after the current-session
+  `DEV_CLARIFIED.json` sentinel; the sentinel contains no requirements.
+- Native `ExitPlanMode` persistence creates `.planning/.state/review.json` selecting the exact
+  generated plan. `reviewer-verdict-guard --workflow dev` permits only its independent finalization.
+- `approved-artifact-gate --workflow dev` admits implementation only for the current reviewed hash
+  and distinct approval/review/implementation sessions.
+- `orchestrator-mutation-guard --workflow dev` prevents reintroducing visible planning authority.
 
 ## Verification
-
-Run all constraint checks:
 
 ```bash
 uv run --with lxml python3 references/constraints/check-all.py .
 ```
-
-Coverage: 6/6 dev constraints have `.py` check scripts = 100%.

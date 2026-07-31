@@ -297,10 +297,7 @@ function buildInProgressSection(): string {
 
   let stateDir: string;
   let statePrefix: string;
-  if (lifecycle.kind === "legacy-dev") {
-    stateDir = planningDir;
-    statePrefix = ".planning";
-  } else if (existsSync(planningDir) && isDir(planningDir) && readdirSync(planningDir).length > 0) {
+  if (existsSync(planningDir) && isDir(planningDir) && readdirSync(planningDir).length > 0) {
     stateDir = planningDir;
     statePrefix = ".planning";
   } else if (existsSync(legacyDir) && existsSync(join(legacyDir, "PLAN.md"))) {
@@ -403,8 +400,8 @@ function buildInProgressSection(): string {
         } else if (wfType === "work") {
           lines.push("- State: `.planning/WORK.md`");
           lines.push("- Resume: `/work`");
-        } else if (wfType === "dev" || wfType === "ds") {
-          lines.push(`- Resume: \`/${wfType}\` or \`/${wfType}-debug\``);
+        } else if (wfType === "ds") {
+          lines.push("- Resume: `/ds` or `/ds-debug`");
         }
 
         lines.push("");

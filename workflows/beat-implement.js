@@ -24,9 +24,9 @@ if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } 
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error('beat-implement requires args.projectDir')
-const BUILT_IN_WORKFLOWS = ['ds', 'work', 'writing', 'workshop', 'workflow-creator']
+const BUILT_IN_WORKFLOWS = ['ds', 'dev', 'work', 'writing', 'workshop', 'workflow-creator']
 if (!requiredWorkflowIdentity(cfg.workflow) || (!BUILT_IN_WORKFLOWS.includes(cfg.workflow) && cfg.approvalPolicy === undefined)) {
-  throw new Error('beat-implement requires args.workflow as ds, work, writing, workshop, workflow-creator, or an external workflow with explicit approval policy')
+  throw new Error('beat-implement requires args.workflow as ds, dev, work, writing, workshop, workflow-creator, or an external workflow with explicit approval policy')
 }
 if (!Array.isArray(cfg.readyWave)) throw new Error('beat-implement requires args.readyWave as a complete task-spec array')
 

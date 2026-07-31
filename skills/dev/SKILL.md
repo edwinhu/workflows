@@ -1,7 +1,7 @@
 ---
 name: dev
-description: "This skill should be used when the user asks to 'start a feature', 'build a feature', 'implement a feature', 'develop', or 'new feature'."
-allowed-tools: Read, Grep, Glob, Bash, Skill, TodoWrite
+description: "Use for feature development and engineering changes."
+allowed-tools: Read, Grep, Glob, Bash, Skill, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Workflow, TaskCreate, TaskUpdate, TaskList, TaskGet
 hooks:
   PreToolUse:
     - matcher: "Read|Glob|Grep|Bash"
@@ -12,470 +12,60 @@ hooks:
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
+  PostToolUse:
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow dev"
 ---
 
-**Announce:** "I'm using dev (Phase 1) to gather requirements."
+**Announce:** "I'm using dev to clarify the outcome before I inspect the codebase."
+
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev`
+
+# Dev planning entry
 
 ## Opening clarification sentinel
 
-`.planning/DEV_CLARIFIED.json` is an intentionally narrow, session-bound gate record. It is not a
-requirements artifact and carries no product facts: it proves only that this session received the
-user's opening answers before inspecting the codebase. For a fresh workflow, write exactly
-`{"status":"pending","sessionId":"[current session]"}` before questioning. Use `beat-clarify` to
-batch independent questions about outcome, scope, constraints, done-ness, and test evidence. After
-the user replies, replace it with exactly `{"status":"clarified","sessionId":"[current session]"}`.
-The hook rejects a stale, malformed, or other-session record so a previous workflow cannot authorize
-reconnaissance here. `dev-clarify` remains the separate post-recon phase for ambiguities discovered
-from the codebase.
+Before reconnaissance, create the narrow session-bound sentinel exactly as required by
+`clarify-before-recon-guard.ts`:
 
-**Iteration topology:** one-shot (conversational Q&A — no fan-out)
-
-## Resume Detection
-
-**BEFORE creating any new state, check for a previous session handoff.**
-
-Attempt `Read(".planning/HANDOFF.md")`. If it is missing, this is a fresh workflow; otherwise, treat the successfully read file as the previous-session handoff.
-
-**If the handoff was read:**
-
-1. Read `.planning/HANDOFF.md`
-2. Present the user with a status summary:
-
-```
-Previous session handoff detected:
-- Phase: [phase_name from frontmatter]
-- Task: [task] of [total_tasks]
-- Status: [status]
-- Last updated: [last_updated]
-- Next action: [from "Next Action" section]
+```json
+{"status":"pending","sessionId":"[current session]"}
 ```
 
-3. Ask the user:
+at `.planning/DEV_CLARIFIED.json`. Ask the user, conversationally and before reading project
+files, about the outcome, exclusions, constraints, acceptance evidence, automated real-test
+strategy, intended first failing test, user workflow, protocol/transport, and review surfaces.
+After the user answers, replace it exactly with:
 
-```python
-AskUserQuestion(questions=[{
-  "question": "A handoff from a previous session was found. How would you like to proceed?",
-  "header": "Session Handoff Detected",
-  "options": [
-    {"label": "Resume from handoff", "description": "Continue where the previous session left off"},
-    {"label": "Start fresh", "description": "Discard the handoff and begin a new workflow from scratch"}
-  ],
-  "multiSelect": false
-}])
+```json
+{"status":"clarified","sessionId":"[current session]"}
 ```
 
-4. **If "Resume from handoff":**
-   - Read `.planning/ACTIVE_WORKFLOW.md` to get the recorded phase
-   - Read `.planning/SPEC.md` and `.planning/PLAN.md` if they exist
-   - Skip directly to the recorded phase by discovering and reading the appropriate phase skill:
-     ```bash
-     ${CLAUDE_SKILL_DIR}/../../skills/dev-[phase_name]/SKILL.md
-     ```
-   - Delete `.planning/HANDOFF.md` after successfully resuming (it has been consumed)
-   - Announce: "Resuming from handoff — picking up at Phase [N]: [phase_name]."
+The sentinel proves only current-session clarification. It is not a specification or planning
+authority. Never create `SPEC.md`, `SPEC_REVIEWED.md`, `EXPLORATION.md`, `ACTIVE_WORKFLOW.md`,
+`STATE.md`, `LEARNINGS.md`, `BACKLOG.md`, or `HANDOFF.md`.
 
-5. **If "Start fresh":**
-   - Delete `.planning/HANDOFF.md`
-   - Proceed with normal workflow initialization below
+**Iron law: ask before reconnaissance.** Code explains how the current system works, not what
+the user wants. A manual-only test proposal is a blocker: resolve an automated test approach or
+leave this workflow rather than silently waive TDD.
 
-## Workflow Overview
+## Flow
 
-```
-Phase 1       Phase 2      Phase 3      Phase 4       Phase 5        Phase 5.5      Phase 6      Phase 7
-brainstorm → explore    → clarify   → design     → implement   → validate    → review    → verify
- (SPEC.md)   (key files)  (resolved)   (PLAN.md)    (tests pass)   (gaps filled)  (>=80%)    (fresh evidence)
-    │            │            │            │              │              │             │            │
-    ▼            ▼            ▼            ▼              ▼              ▼             ▼            ▼
-  GATE:        GATE:        GATE:        GATE:          GATE:          GATE:         GATE:        GATE:
-  Questions    All files    Ambiguities  User           All tasks      Goals met     No issues    Fresh run
-  asked +      read by      resolved +   approved +     pass tests     vs tasks      >= 80%       confirms
-  SPEC.md      main chat    SPEC.md      PLAN.md        + spec         completed     confidence   all claims
-  written                   updated      written        match
+```text
+opening clarification → read-only reconnaissance → post-recon clarification
+→ architecture options + user choice → native Plan mode → exact-path review
 ```
 
-**Every gate is mandatory. Skipping a gate means the next phase operates on bad inputs.**
-
-## Workflow Initialization
-
-Create `.planning/ACTIVE_WORKFLOW.md` to track workflow state:
-
-```yaml
----
-workflow: dev
-phase: 1
-phase_name: brainstorm
-started: [current timestamp]
-project_root: [current directory]
-active_skill: ../../skills/dev/SKILL.md  # relative to this skill's base directory
-spec: .planning/SPEC.md
-plan: .planning/PLAN.md
----
-```
-
-This enables session persistence - returning to the project will reload the current phase.
-
-Also create `.planning/STATE.md` to track workflow state:
-
-```markdown
----
-workflow: dev
-phase: 1
-phase_name: brainstorm
-status: in_progress
-started: [timestamp]
----
-# Dev Workflow State
-
-## Current Position
-Phase: 1 (brainstorm)
-Status: In progress
-
-## Decisions
-(none yet)
-
-## Blockers
-(none)
-```
-
-## Contents
-
-- [The Iron Law of Brainstorming](#the-iron-law-of-brainstorming)
-- [What Brainstorm Does](#what-brainstorm-does)
-- [Process](#process)
-- [Output](#output)
-
-# Brainstorming (Questions Only)
-
-Refine vague ideas into clear requirements through Socratic questioning.
-**NO exploration, NO approaches** - just questions and requirements.
-
-<EXTREMELY-IMPORTANT>
-## The Iron Law of Brainstorming
-
-**ASK QUESTIONS BEFORE ANYTHING ELSE. This is not negotiable.**
-
-Before exploring codebase, before proposing approaches, follow these requirements:
-1. Ask clarifying questions using AskUserQuestion
-2. Understand what the user actually wants
-3. Define success criteria
-
-Approaches come later (in /dev-design) after exploring the codebase.
-
-**If YOU catch YOURSELF about to explore the codebase before asking questions, STOP.**
-</EXTREMELY-IMPORTANT>
-
-### Brainstorm Facts
-
-- Code answers HOW the system works, not WHY the user wants the change — and reading the codebase before requirements are fixed anchors the questions you ask on what already exists. Deliberate ignorance until requirements are clear is the point of this phase, not an accident of ordering.
-
-### No Pause After Completion
-
-After writing `.planning/SPEC.md` and completing brainstorm, immediately invoke the next phase:
-
-**Invoke the explore phase:**
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-explore/SKILL.md` and follow its instructions.
-
-DO NOT:
-- Summarize what was learned
-- Ask "should I proceed?"
-- Wait for user confirmation
-- Write status updates
-
-The workflow phases are SEQUENTIAL. Complete brainstorm → immediately start explore.
-
-## What Brainstorm Does
-
-| DO | DON'T |
-|----|-------|
-| Ask clarifying questions | Explore codebase |
-| Understand requirements | Spawn explore agents |
-| Define success criteria | Look at existing code |
-| Write draft SPEC.md | Propose approaches (that's design) |
-| Identify unknowns | Create implementation tasks |
-
-**Brainstorm answers: WHAT do we need and WHY**
-**Explore answers: WHERE is the code** (next phase)
-**Design answers: HOW to build it** (after exploration)
-
-## Process
-
-### 1. Ask Questions First
-
-Use `AskUserQuestion` immediately with these principles:
-- **One question at a time** - never batch
-- **Multiple-choice preferred** - easier to answer
-- Focus on: purpose, constraints, success criteria
-
-Example questions to ask:
-- "What problem does this solve?"
-- "Who will use this feature?"
-- "What's the most important requirement?"
-- "Any constraints (performance, compatibility)?"
-
-### 2. Ask About Testing Strategy (MANDATORY)
-
-<EXTREMELY-IMPORTANT>
-**THE TESTING QUESTION IS NOT OPTIONAL. This is the moment to prevent "no tests" rationalization.**
-
-After understanding what to build, immediately ask:
-
-```python
-AskUserQuestion(questions=[{
-  "question": "How will we verify this works automatically?",
-  "header": "Testing",
-  "options": [
-    {"label": "Unit tests (pytest/jest/etc.)", "description": "Test functions/methods in isolation"},
-    {"label": "Integration tests", "description": "Test component interactions"},
-    {"label": "E2E automation (Playwright/ydotool)", "description": "Simulate real user interactions"},
-    {"label": "API tests", "description": "Test HTTP endpoints directly"}
-  ],
-  "multiSelect": true
-}])
-```
-
-**If user says "manual testing only" → This is a BLOCKER, not a workaround.**
-
-| User Says | Your Response |
-|-----------|---------------|
-| "Manual testing" | "That's not acceptable for /dev workflow. What's blocking automated tests?" |
-| "No test infrastructure" | "Let's add one. What framework fits this codebase?" |
-| "Too hard to test" | "What specifically is hard? Let's solve that first." |
-| "Just this once" | "No exceptions. TDD is the workflow, not optional." |
-
-**Why this matters:** If you don't ask about testing NOW, you'll rationalize skipping it later.
-</EXTREMELY-IMPORTANT>
-
-### 2b. Define What a REAL Test Looks Like (MANDATORY)
-
-<EXTREMELY-IMPORTANT>
-**A REAL test is feature-specific. You must define it NOW, not during implementation.**
-
-After user chooses testing approach, ask:
-
-```python
-AskUserQuestion(questions=[{
-  "question": "Describe the user workflow this test must replicate:",
-  "header": "User Workflow",
-  "options": [
-    {"label": "UI interaction sequence", "description": "e.g., 'click button → see modal → submit form'"},
-    {"label": "API call sequence", "description": "e.g., 'POST /login → receive token → GET /profile'"},
-    {"label": "CLI command sequence", "description": "e.g., 'run command → see output → verify file created'"},
-    {"label": "Other (describe in chat)", "description": "Custom workflow"}
-  ],
-  "multiSelect": false
-}])
-```
-
-**Then ask for specifics:**
-
-```python
-AskUserQuestion(questions=[{
-  "question": "What specific skill/tool should we use for testing?",
-  "header": "Test Tool",
-  "options": [
-    {"label": "dev-test-electron", "description": "Electron apps with Chrome DevTools Protocol"},
-    {"label": "dev-test-playwright", "description": "Web apps with Playwright MCP"},
-    {"label": "dev-test-hammerspoon", "description": "macOS native apps"},
-    {"label": "dev-test-linux", "description": "Linux desktop apps (ydotool/xdotool)"},
-    {"label": "Standard unit tests", "description": "pytest/jest/etc. for pure functions"}
-  ],
-  "multiSelect": false
-}])
-```
-
-**Why this matters:** If you don't define what a REAL test looks like NOW, you'll write FAKE tests later that:
-- Test wrong code paths (HTTP when app uses WebSocket)
-- Use programmatic shortcuts instead of actual UI
-- Pass but don't verify real behavior
-
-### Real Test Enforcement
-
-**Read the shared enforcement for REAL vs FAKE test definitions:**
-
-!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints/dev-common-constraints.md`
-
-See constraints C2 (Real Test Enforcement) and the protocol mismatch table. **A test that doesn't replicate the user's actual workflow is a FAKE test.**
-
-**Document in SPEC.md:**
-- User workflow to replicate
-- Testing skill to use
-- Code paths that must be exercised
-- What the user actually sees/verifies
-</EXTREMELY-IMPORTANT>
-
-### 3. Define Success Criteria
-
-After understanding requirements AND testing strategy, define measurable success criteria:
-- Turn requirements into measurable criteria
-- Use checkboxes for clear pass/fail
-- Confirm criteria with user
-- **Include at least one testable criterion per requirement**
-
-### 4. Write Draft SPEC.md
-
-Write the initial spec to `.planning/SPEC.md`:
-
-```markdown
-# Spec: [Feature Name]
-
-> **For Claude:** After writing this spec, discover and read the explore phase skill via cache lookup for `skills/dev-explore/SKILL.md`.
-
-## Problem
-[What problem this solves]
-
-## Requirements
-
-Assign each requirement a unique ID using `CATEGORY-NN` format (e.g., `AUTH-01`, `UI-02`, `DATA-03`). Categories come from natural groupings.
-
-| ID | Requirement | Scope |
-|----|-------------|-------|
-| [CAT-01] | [Requirement 1] | v1 |
-| [CAT-02] | [Requirement 2] | v1 |
-
-Scope: `v1` = must complete, `v2` = nice to have, `out-of-scope` = explicitly excluded.
-
-## Success Criteria
-- [ ] [CAT-01] [Criterion derived from requirement]
-- [ ] [CAT-02] [Criterion derived from requirement]
-
-## Constraints
-- [Any limitations or boundaries]
-
-## Testing Strategy (MANDATORY - USER APPROVED)
-
-> **For Claude:** Discover and read the test skill via cache lookup for `skills/dev-test/SKILL.md` for automation options.
->
-> **⚠️ NO IMPLEMENTATION WITHOUT TESTS. If this section is empty, STOP.**
-
-- **User's chosen approach:** [From AskUserQuestion in Phase 1: unit/integration/E2E/API]
-- **Framework:** [pytest / playwright / jest / etc.]
-- **Command:** [e.g., `pytest tests/ -v`]
-- **Testing skill to use:** [dev-test-electron / dev-test-playwright / etc.]
-
-### REAL Test Definition (MANDATORY)
-
-> **⚠️ A test that doesn't replicate user workflow is a FAKE test. Define REAL tests NOW.**
-
-| Field | Value |
-|-------|-------|
-| **User workflow to replicate** | [e.g., "highlight text → click Claude panel → see '⧉ X lines selected'"] |
-| **Code paths that must be exercised** | [e.g., "WebSocket connection, not HTTP"] |
-| **What user actually sees/verifies** | [e.g., "Status bar shows selection count"] |
-| **Protocol/transport** | [e.g., "WebSocket" or "HTTP" or "IPC"] |
-
-### First Failing Test
-
-- **Test name:** [e.g., `test_selection_shows_in_claude_panel`]
-- **What it tests:** [Specific behavior]
-- **How it replicates user workflow:** [Step by step]
-- **Expected failure message:** [What RED looks like]
-
-### The Iron Law of REAL Tests
-
-**If the test doesn't do what the user does, it's a FAKE test.** See `references/constraints/dev-common-constraints.md` (C2) and `references/constraints/real-test-enforcement.md` for the full REAL vs FAKE detection tables and protocol mismatch examples.
-
-### No Test Infrastructure? That's a BLOCKER.
-
-If the project has no tests, your first task is to ADD test infrastructure, not skip testing.
-
-| Situation | Response |
-|-----------|----------|
-| "Project has no tests" | Add test framework as Task 0 |
-| "Hard to test (DOM/UI/etc)" | Use E2E tools: Playwright, ydotool, screenshot comparison |
-| "No time for tests" | TDD saves time. No shortcuts. |
-| "User said manual testing" | Push back. Ask what's blocking automation. |
-
-## Open Questions
-- [Questions to resolve during exploration]
-```
-
-**Note:** No "Chosen Approach" yet - that comes after exploration and design phases.
-
-## Output
-
-Brainstorm complete when:
-- Problem is clearly understood
-- Requirements defined
-- Success criteria defined
-- `.planning/SPEC.md` written (draft)
-- Open questions identified for exploration
-
-### Exit Gate
-
-**Checkpoint type:** human-verify (auto-advanceable — SPEC.md content is machine-verifiable)
-
-Before transitioning to dev-explore, ALL checks must pass:
-
-```
-1. IDENTIFY: `.planning/SPEC.md` exists
-2. RUN: `Read(".planning/SPEC.md")`
-3. READ: Verify it contains: Problem Statement, Success Criteria, Scope sections
-4. VERIFY: User has confirmed the objectives (explicit approval, not assumed)
-5. CLAIM: Only proceed to dev-explore if ALL checks pass
-```
-
-**If any check fails, do NOT proceed. Fix the gap before transitioning.**
-
-### Delete & Restart Protocol
-
-If a gate check fails:
-
-| Failure | Action |
-|---------|--------|
-| SPEC.md missing required sections | Delete SPEC.md, re-run brainstorm with focus on missing sections |
-| User hasn't confirmed objectives | Ask user to confirm before proceeding — do NOT assume approval |
-| Testing strategy empty | Re-ask testing questions (Step 2) — this is a BLOCKER |
-| Success criteria vague or missing | Re-ask requirements questions — do NOT proceed with weak criteria |
-
-**Do NOT patch a broken SPEC.md. Delete it and restart brainstorm with the gap identified.** Partial fixes to wrong-foundation work create worse outcomes than restarting.
-
-After fixing, re-run ALL gate checks (not just the one that failed).
-
-## Phase Complete
-
-**Phase summary (append to LEARNINGS.md):**
-
-```yaml
-## Phase: Brainstorm
-
----
-phase: brainstorm
-status: completed
-implements: []          # brainstorm DEFINES requirement IDs; it implements none yet
-requires: []
-provides: [SPEC.md, ACTIVE_WORKFLOW.md]
-affects: [.planning/SPEC.md, .planning/ACTIVE_WORKFLOW.md]
-requirements-count: N
-success-criteria-count: M
----
-```
-One-liner: must be substantive — e.g. "Defined 7 requirements (AUTH-01..04, DATA-01..03) and 4 success criteria for JWT refresh-rotation." Not "brainstorm complete."
-
-**REQUIRED SUB-SKILL:** After completing brainstorm, dispatch the spec reviewer before exploring:
-
-**Spec Review Gate (MANDATORY):**
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-spec-reviewer/SKILL.md` and follow its instructions.
-
-Follow the spec reviewer's instructions:
-1. Dispatch reviewer subagent
-2. If ISSUES_FOUND → fix SPEC.md → re-dispatch (max 5 iterations)
-3. If APPROVED → write the review marker, then proceed to explore
-
-**On APPROVED, write the spec-review marker** (the reviewer is read-only and cannot write it — main chat does, mirroring `PLAN_REVIEWED.md`). This is the structural gate dev-explore checks:
-
-```bash
-cat > .planning/SPEC_REVIEWED.md << 'EOF'
----
-status: APPROVED
-reviewed_date: [today]
-reviewer: dev-spec-reviewer
----
-SPEC.md approved by dev-spec-reviewer. Exploration may begin.
-EOF
-```
-
-**After spec review APPROVED and SPEC_REVIEWED.md written, start explore phase - Phase 2:**
-
-Read `${CLAUDE_SKILL_DIR}/../../skills/dev-explore/SKILL.md` and follow its instructions.
+1. Read `skills/dev-explore/SKILL.md`; return its findings directly to the user.
+2. Read `skills/dev-clarify/SKILL.md`; resolve ambiguities exposed by reconnaissance.
+3. Read `skills/dev-design/SKILL.md`; present alternatives and obtain the architecture choice.
+4. Enter native Plan mode. The generated plan returned by `ExitPlanMode` is the sole plan and
+   exact-byte approval boundary. Do not copy, rename, or replace it.
+5. Read `skills/dev-plan-reviewer/SKILL.md` and dispatch the independent whole-plan review for
+   that exact generated path. Only its hidden receipt can admit implementation.
+
+A prior fixed dev plan or visible ledger is conversion-only provenance. Do not resume it. If the
+user needs changed requirements, architecture, task dependencies, test contract, or evidence,
+create a new native generated plan and obtain a new receipt.
