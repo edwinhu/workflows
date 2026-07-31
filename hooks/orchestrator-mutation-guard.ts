@@ -1,5 +1,8 @@
 #!/usr/bin/env bun
-import { hasUnsafeCompoundCommand, safeProjectPath } from "./_path_safety.ts";
+import { lstatSync, statSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, extname, isAbsolute, join, resolve } from "node:path";
+import { canonicalExisting, canonicalPossiblyMissing, contained, hasUnsafeCompoundCommand, safeProjectPath } from "./_path_safety.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
@@ -20,7 +23,31 @@ function allowedPath(raw: unknown): boolean {
   if (["writing", "workshop", "workflow-creator"].includes(policy.workflow) && IMMUTABLE_APPROVAL_ARTIFACTS.has(relative)) return false;
   return policy.allowedOrchestratorDirectories.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`));
 }
+function allowedNativePlanPath(raw: unknown): boolean {
+  if (typeof raw !== "string" || !isAbsolute(raw) || raw.includes("\\")) return false;
+  const configDir = resolve(process.env.CLAUDE_CONFIG_DIR || join(homedir(), ".claude"));
+  const plansDir = join(configDir, "plans");
+  const target = resolve(raw);
+  if (dirname(target) !== plansDir || extname(target) !== ".md") return false;
+
+  const canonicalConfig = canonicalExisting(configDir);
+  const canonicalPlans = canonicalExisting(plansDir);
+  const canonicalTarget = canonicalPossiblyMissing(target);
+  if (!canonicalConfig || !canonicalPlans || !canonicalTarget) return false;
+  try {
+    if (!statSync(configDir).isDirectory() || !statSync(plansDir).isDirectory()) return false;
+  } catch { return false; }
+  if (dirname(canonicalPlans) !== canonicalConfig || !contained(canonicalPlans, canonicalTarget) || dirname(canonicalTarget) !== canonicalPlans) return false;
+
+  try {
+    const leaf = lstatSync(target);
+    return leaf.isFile() && !leaf.isSymbolicLink();
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === "ENOENT";
+  }
+}
 if (tool === "Write" || tool === "Edit") {
+  if (payload.permission_mode === "plan" && allowedNativePlanPath(input.file_path)) allow();
   if (policy.workflow !== "ds") {
     if (!allowedPath(input.file_path)) deny("DELEGATION VIOLATION: main chat may only Write/Edit canonical paths under .planning or .claude; delegate all project mutations.");
   } else {
