@@ -6,10 +6,14 @@ import {
   bindApprovedGeneratedPlan,
   classifyBuiltInArtifactLayout,
   classifyPlanningLifecycle,
+  parseReviewState,
   sha256,
   validateApprovedArtifact,
   validateApprovedPlan,
   validateCapturedApprovalBundle,
+  validateExternalWorkflowIdentity,
+  validateGeneratedPlanArtifact,
+  validateGeneratedPlanImplementationApproval,
   type ApprovalPolicyDescriptor,
 } from "../workflows/lib/approved-artifact";
 import { captureApprovalBundle, type CapturedApprovalBundleV1 } from "../workflows/lib/approval-bundle";
@@ -354,6 +358,58 @@ describe("strict external approved-artifact policy", () => {
       plan_hash: sha256("# Exact current bytes\n"), status: "APPROVED", reviewer_session_id: "review-session", reviewed_at: "2026-07-30T11:00:00.000Z", extra: "forbidden",
     } });
     expectError(validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR), "verdict-schema");
+  }));
+});
+
+describe("external generated-plan receipt workflows", () => {
+  const workflow = "native-extension-7f3a";
+  const planFile = "native-generated.md";
+  const plan = "# Native external plan\n";
+  const hash = sha256(plan);
+  const receipt = (overrides: Record<string, unknown> = {}) => ({
+    workflow, plan_file: planFile, plan_hash: hash,
+    approved_session_id: "approval-session", approved_at: "2026-07-30T10:00:00.000Z",
+    status: "APPROVED", reviewer_session_id: "review-session", reviewed_at: "2026-07-30T11:00:00.000Z",
+    ...overrides,
+  });
+
+  test("parses, binds, and validates a generated-plan receipt for a validated external identity", () => withProject((root) => {
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    const absolutePlan = join(root, ".planning", planFile);
+    writeFileSync(absolutePlan, plan);
+    expect(bindApprovedGeneratedPlan(root, workflow, absolutePlan, "approval-session", "2026-07-30T10:00:00.000Z")).toEqual(expect.objectContaining({ workflow, status: "PENDING" }));
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt()));
+
+    expect(parseReviewState(JSON.stringify(receipt()), workflow)).toEqual(expect.objectContaining({ workflow }));
+    const artifact = validateGeneratedPlanArtifact(root, workflow, "implementation-session");
+    expect(artifact).toEqual(expect.objectContaining({ hash, planFile, receipt: expect.objectContaining({ workflow }) }));
+    if ("code" in artifact) throw new Error(artifact.message);
+    expect(validateGeneratedPlanImplementationApproval(artifact, workflow, {
+      taskIdentity: "task-1",
+      taskContractDigest: "a".repeat(64),
+      preDispatchObservationDigest: "b".repeat(64),
+      implementationSession: "implementation-session",
+    })).toEqual(expect.objectContaining({ schemaVersion: 2, workflow, planFile, planHash: hash }));
+  }));
+
+  test("rejects malformed external identities and receipt identity tampering", () => withProject((root) => {
+    expect(validateExternalWorkflowIdentity(workflow)).toBe(true);
+    expect(validateExternalWorkflowIdentity("work")).toBe(false);
+    expect(validateExternalWorkflowIdentity("Invalid Workflow")).toBe(false);
+    expect(parseReviewState(JSON.stringify(receipt({ workflow: "Invalid Workflow" })))).toEqual(expect.objectContaining({ code: "review-schema" }));
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt({ workflow: "other-native" })));
+    expect(validateGeneratedPlanArtifact(root, workflow, "implementation-session")).toEqual(expect.objectContaining({ code: "review-schema" }));
+  }));
+
+  test("external generated receipts participate in lifecycle classification", () => withProject((root) => {
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt()));
+    expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ kind: "canonical", resolved: expect.objectContaining({ planFile, hash }) }));
+    writeFileSync(join(root, ".planning", planFile), "# tampered\n");
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "stale-receipt" });
   }));
 });
 

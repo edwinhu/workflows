@@ -7,7 +7,7 @@ export type BuiltInApprovalWorkflow = WorkflowName;
 export type ArtifactError = { code: string; message: string };
 export type ApprovalMetadata = { schemaVersion: 1; workflow: string; planHash: string; approvedSession: string; approvedAt: string };
 export type ReviewerVerdict = { plan_hash: string; status: "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
-export type ModernReviewReceipt = { workflow: BuiltInApprovalWorkflow; plan_file: string; plan_hash: string; approved_session_id: string; approved_at: string; status: "PENDING" | "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
+export type ModernReviewReceipt = { workflow: string; plan_file: string; plan_hash: string; approved_session_id: string; approved_at: string; status: "PENDING" | "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
 export type ResolvedGeneratedPlan = { planFile: string; planPath: string; hash: string; receipt: ModernReviewReceipt };
 export type AuthenticatedPlan = { hash: string; planFile?: string; planPath?: string; receipt?: ModernReviewReceipt; metadata: ApprovalMetadata; layout: "canonical" | "canonical-with-legacy-provenance" | "external" };
 export type ApprovedArtifact = { hash: string; planFile?: string; planPath?: string; receipt?: ModernReviewReceipt; metadata?: ApprovalMetadata; verdict: ReviewerVerdict };
@@ -22,6 +22,14 @@ const HASH = /^[0-9a-f]{64}$/;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const MODERN_WORKFLOWS = new Set<BuiltInApprovalWorkflow>(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 const RESERVED_PLAN_FILES = new Set(["PLAN.md", "PLAN_REVIEWED.md", "REVIEW.md", "AUTOMATED_REVIEW.md", "HUMAN_REVIEW.md", "IMPLEMENT_COMPLETE.md", "VALIDATION.md"]);
+const WORKFLOW_IDENTITY = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+
+export function validateExternalWorkflowIdentity(value: unknown): value is string {
+  return typeof value === "string" && WORKFLOW_IDENTITY.test(value) && !isBuiltInWorkflow(value);
+}
+function isWorkflowIdentity(value: unknown): value is string {
+  return typeof value === "string" && WORKFLOW_IDENTITY.test(value);
+}
 
 export function sha256(value: string | Buffer): string { return createHash("sha256").update(value).digest("hex"); }
 export function strictUtc(value: unknown): value is string { return typeof value === "string" && UTC.test(value) && new Date(value).toISOString() === value; }
@@ -97,7 +105,7 @@ export function isGeneratedPlanBasename(value: unknown): value is string {
 export function parseReviewState(content: unknown, expectedWorkflow?: string): ModernReviewReceipt | ArtifactError {
   const fields = parseFlatStringJson(content); if (isError(fields)) return fields;
   const keys = ["workflow", "plan_file", "plan_hash", "approved_session_id", "approved_at", "status", "reviewer_session_id", "reviewed_at"];
-  if (Object.keys(fields).length !== keys.length || keys.some(key => !Object.hasOwn(fields, key)) || !isModernWorkflow(fields.workflow)
+  if (Object.keys(fields).length !== keys.length || keys.some(key => !Object.hasOwn(fields, key)) || !isWorkflowIdentity(fields.workflow)
     || (expectedWorkflow !== undefined && fields.workflow !== expectedWorkflow) || !isGeneratedPlanBasename(fields.plan_file) || !HASH.test(fields.plan_hash)
     || !fields.approved_session_id.trim() || !strictUtc(fields.approved_at) || !["PENDING", "APPROVED", "ISSUES_FOUND"].includes(fields.status)) return err("review-schema", "combined review state has an invalid strict schema");
   if (fields.status === "PENDING") {
@@ -294,6 +302,18 @@ export function validateApprovedPlan(projectDir: string, workflow: string, descr
   return { hash, metadata, layout: "external" };
 }
 
+export function validateGeneratedPlanArtifact(projectDir: string, workflow: string, currentSession: unknown, readOptions: ArtifactReadOptions = {}): ApprovedArtifact | ArtifactError {
+  let root: string; try { root = realpathSync(projectDir); } catch { return err("project-root", "project root must exist and be accessible"); }
+  if (!isWorkflowIdentity(workflow)) return err("workflow-identity", "generated-plan workflow identity is invalid");
+  const first = resolveGeneratedPlanReviewState(root, workflow, readOptions); if (isError(first)) return first;
+  if (first.receipt.status !== "APPROVED") return err("review-pending", `review state is ${first.receipt.status}, not APPROVED`);
+  if (typeof currentSession !== "string" || !currentSession.trim() || new Set([first.receipt.approved_session_id, first.receipt.reviewer_session_id, currentSession]).size !== 3) return err("session-separation", "approval, review, and implementation sessions must differ");
+  const second = resolveGeneratedPlanReviewState(root, workflow, readOptions); if (isError(second)) return second;
+  if (second.hash !== first.hash || JSON.stringify(second.receipt) !== JSON.stringify(first.receipt)) return err("approval-race", "generated plan approval state changed during validation");
+  const metadata: ApprovalMetadata = { schemaVersion: 1, workflow, planHash: first.hash, approvedSession: first.receipt.approved_session_id, approvedAt: first.receipt.approved_at };
+  return { hash: first.hash, planFile: first.planFile, planPath: first.planPath, receipt: first.receipt, metadata, verdict: { plan_hash: first.hash, status: "APPROVED", reviewer_session_id: first.receipt.reviewer_session_id, reviewed_at: first.receipt.reviewed_at } };
+}
+
 export function validateApprovedArtifact(projectDir: string, workflow: string, currentSession: unknown, descriptor?: ApprovalPolicyDescriptor, readOptions: ArtifactReadOptions = {}): ApprovedArtifact | ArtifactError {
   let root: string; try { root = realpathSync(projectDir); } catch { return err("project-root", "project root must exist and be accessible"); }
   if (descriptor !== undefined && isBuiltInWorkflow(workflow)) return err("policy-ambiguous", "built-in workflows cannot override approval artifact paths");
@@ -395,8 +415,8 @@ function unlinkOwnedDirectory(root: string, livePath: string, directory: OwnedDi
   requireLiveDirectory(root, livePath, directory);
 }
 export type ArtifactWriteOptions = { forceNoDescriptorAnchor?: boolean; afterStateOpen?: (strategy: "descriptor" | "pathname") => void; afterTemporaryOpen?: () => void };
-export function bindApprovedGeneratedPlan(projectDir: string, workflow: BuiltInApprovalWorkflow, absolutePlanPath: string, session: string, approvedAt = new Date().toISOString(), options: ArtifactWriteOptions = {}): ModernReviewReceipt {
-  if (!MODERN_WORKFLOWS.has(workflow) || !session.trim() || !strictUtc(approvedAt)) throw new Error("approval binding identity is invalid");
+export function bindApprovedGeneratedPlan(projectDir: string, workflow: string, absolutePlanPath: string, session: string, approvedAt = new Date().toISOString(), options: ArtifactWriteOptions = {}): ModernReviewReceipt {
+  if (!isWorkflowIdentity(workflow) || !session.trim() || !strictUtc(approvedAt)) throw new Error("approval binding identity is invalid");
   const root = realpathSync(projectDir); const planning = join(root, ".planning"); const state = join(planning, ".state");
   if (!isAbsolute(absolutePlanPath)) throw new Error("generated plan path must be absolute"); const basename = relative(planning, absolutePlanPath);
   if (!isGeneratedPlanBasename(basename) || join(planning, basename) !== absolutePlanPath) throw new Error("generated plan must be a safe direct child of project .planning");
@@ -440,14 +460,19 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: BuiltInA
 }
 
 export type ImplementationApprovalBindingV1 = Readonly<{ taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; implementationSession: string }>;
-export type BuiltInImplementationApprovalV2 = Readonly<{ schemaVersion: 2; approvalBundleDigest: string; planFile: string; planHash: string; workflow: BuiltInApprovalWorkflow; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
+export type GeneratedPlanImplementationApprovalV2 = Readonly<{ schemaVersion: 2; approvalBundleDigest: string; planFile: string; planHash: string; workflow: string; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
+export type BuiltInImplementationApprovalV2 = GeneratedPlanImplementationApprovalV2 & Readonly<{ workflow: BuiltInApprovalWorkflow }>;
 export type CapturedImplementationApprovalV1 = Readonly<{ schemaVersion: 1; approvalBundleDigest: string; planDigest: string; workflow: string; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
-export function validateBuiltInImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): BuiltInImplementationApprovalV2 | ArtifactError {
-  if (!isModernWorkflow(expectedWorkflow) || !artifact.receipt || !artifact.planFile || artifact.receipt.workflow !== expectedWorkflow || artifact.receipt.plan_file !== artifact.planFile) return err("workflow-mismatch", "built-in generated-plan approval workflow was substituted");
+export function validateGeneratedPlanImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): GeneratedPlanImplementationApprovalV2 | ArtifactError {
+  if (!isWorkflowIdentity(expectedWorkflow) || !artifact.receipt || !artifact.planFile || artifact.receipt.workflow !== expectedWorkflow || artifact.receipt.plan_file !== artifact.planFile) return err("workflow-mismatch", "generated-plan approval workflow was substituted");
   if (!binding.taskIdentity.trim() || !HASH.test(binding.taskContractDigest) || !HASH.test(binding.preDispatchObservationDigest)) return err("binding-schema", "implementation approval binding is invalid");
   if (new Set([artifact.receipt.approved_session_id, artifact.receipt.reviewer_session_id, binding.implementationSession]).size !== 3) return err("session-separation", "approval, review, and implementation sessions must differ");
   const approvalBundleDigest = sha256(Buffer.from(JSON.stringify({ schemaVersion: 2, planFile: artifact.planFile, planHash: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.receipt.approved_session_id, reviewerSession: artifact.receipt.reviewer_session_id, implementationSession: binding.implementationSession }), "utf8"));
   return Object.freeze({ schemaVersion: 2, approvalBundleDigest, planFile: artifact.planFile, planHash: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.receipt.approved_session_id, reviewerSession: artifact.receipt.reviewer_session_id, implementationSession: binding.implementationSession, approvedAt: artifact.receipt.approved_at, reviewedAt: artifact.receipt.reviewed_at, terminalReleaseAuthorized: false });
+}
+export function validateBuiltInImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): BuiltInImplementationApprovalV2 | ArtifactError {
+  if (!isModernWorkflow(expectedWorkflow)) return err("workflow-mismatch", "built-in generated-plan approval workflow was substituted");
+  return validateGeneratedPlanImplementationApproval(artifact, expectedWorkflow, binding) as BuiltInImplementationApprovalV2 | ArtifactError;
 }
 export function validateExternalImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): CapturedImplementationApprovalV1 | ArtifactError {
   if (!artifact.metadata || artifact.metadata.workflow !== expectedWorkflow) return err("workflow-mismatch", "external approval workflow was substituted");

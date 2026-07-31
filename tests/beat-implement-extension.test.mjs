@@ -89,6 +89,7 @@ async function exec(overrides = {}) {
     return { result: await fn(agent, parallel, log, phase, {
       projectDir: project,
       workflow,
+      approvalMode: 'external-fixed-v1',
       approvalPolicy,
       capturedApprovalBundle,
       preDispatchObservation,
@@ -98,6 +99,50 @@ async function exec(overrides = {}) {
       planReset: reset,
       ...overrides,
     }), trace }
+  } finally {
+    if (previous === undefined) delete process.env.CLAUDE_SESSION_ID
+    else process.env.CLAUDE_SESSION_ID = previous
+  }
+}
+
+async function execGenerated(overrides = {}) {
+  const project = mkdtempSync(join(tmpdir(), 'beat-implement-generated-extension-'))
+  projects.push(project)
+  const planning = join(project, '.planning')
+  mkdirSync(join(planning, '.state'), { recursive: true })
+  writeFileSync(join(planning, 'external-generated.md'), plan)
+  writeFileSync(join(planning, '.state/review.json'), JSON.stringify({
+    workflow,
+    plan_file: 'external-generated.md',
+    plan_hash: hash,
+    approved_session_id: 'approval-session',
+    approved_at: '2026-07-30T10:00:00.000Z',
+    status: 'APPROVED',
+    reviewer_session_id: 'review-session',
+    reviewed_at: '2026-07-30T11:00:00.000Z',
+  }))
+  Bun.spawnSync(['git', 'init', '-q'], { cwd: project })
+  Bun.spawnSync(['git', 'config', 'user.email', 'test@example.invalid'], { cwd: project })
+  Bun.spawnSync(['git', 'config', 'user.name', 'Test'], { cwd: project })
+  Bun.spawnSync(['git', 'add', '.'], { cwd: project })
+  Bun.spawnSync(['git', 'commit', '-qm', 'fixture'], { cwd: project })
+  const agent = async () => {
+    mkdirSync(join(project, 'src'), { recursive: true })
+    writeFileSync(join(project, 'src/output.js'), 'export const value = 1\n')
+    return { taskId: task.id, status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/output.js'] }
+  }
+  const fn = new AsyncFunction('agent', 'parallel', 'log', 'phase', 'args', source)
+  const previous = process.env.CLAUDE_SESSION_ID
+  process.env.CLAUDE_SESSION_ID = 'implementation-session'
+  try {
+    return await fn(agent, async () => [], () => {}, () => {}, {
+      projectDir: project,
+      workflow,
+      approvalMode: 'generated-plan-receipt-v1',
+      readyWave: [task],
+      planReset: { planFile: 'external-generated.md', planHash: hash },
+      ...overrides,
+    })
   } finally {
     if (previous === undefined) delete process.env.CLAUDE_SESSION_ID
     else process.env.CLAUDE_SESSION_ID = previous
@@ -126,12 +171,30 @@ describe('beat-implement external approval policy', () => {
     expect(result.results[0].candidateState.supersededManifestDigests).toEqual(['a'.repeat(64)])
   })
 
-  test('rejects unknown external workflows without a policy', async () => {
+  test('requires an explicit approval mode for external workflows', async () => {
+    await expect(exec({ approvalMode: undefined })).rejects.toThrow(/approvalMode/i)
+  })
+
+  test('rejects fixed external workflows without a policy', async () => {
     await expect(exec({ approvalPolicy: undefined })).rejects.toThrow(/explicit approval policy|unknown workflow/i)
   })
 
   test('rejects ambiguous built-in workflow plus external policy', async () => {
     await expect(exec({ workflow: 'ds' })).rejects.toThrow(/ambiguous|cannot override|mutually exclusive/i)
+  })
+
+  test('dispatches an external native workflow from a generated-plan receipt identity', async () => {
+    const result = await execGenerated()
+    expect(result.results).toEqual([expect.objectContaining({
+      status: 'implemented',
+      planFile: 'external-generated.md',
+      planHash: hash,
+      approvalBundleDigest: expect.stringMatching(/^[0-9a-f]{64}$/),
+    })])
+  })
+
+  test('rejects generated-plan receipt tampering before dispatch', async () => {
+    await expect(execGenerated({ planReset: { planFile: 'external-generated.md', planHash: '0'.repeat(64) } })).rejects.toThrow(/planReset|receipt-selected generated plan/i)
   })
 
   test('rejects weakened and unknown policy fields', async () => {

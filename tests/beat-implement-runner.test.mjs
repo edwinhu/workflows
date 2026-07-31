@@ -176,7 +176,7 @@ for (const workflow of ['dev', 'work', 'writing', 'workshop', 'workflow-creator'
   try {
     await exec({ workflow: 'unknown', readyWave: [], planReset: reset }, () => { dispatched = true; return null })
     ok('unsupported workflow without explicit policy rejected', false)
-  } catch (error) { ok('unsupported workflow without explicit policy rejected before dispatch', !dispatched && /args\.workflow/.test(String(error))) }
+  } catch (error) { ok('unsupported workflow without explicit policy rejected before dispatch', !dispatched && /approvalMode/.test(String(error))) }
 }
 try {
   await exec({ workflow: 'workshop', readyWave: [], planReset: reset }, () => null)
@@ -216,6 +216,7 @@ try {
   Bun.spawnSync(['git', 'commit', '-qm', 'fixture'], { cwd: project })
   const { result } = await exec({
     workflow,
+    approvalMode: 'external-fixed-v1',
     approvalPolicy,
     readyWave: [task('external', ['src/external.js'])],
     planReset: { approvedBodyHash: externalHash, session: 'external-approval-session' },
