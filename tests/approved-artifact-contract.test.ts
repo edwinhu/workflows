@@ -717,6 +717,42 @@ describe("built-in generated-plan and legacy layouts", () => {
     expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ kind: "blocked", reason: "conversion-required" }));
   }));
 
+  /**
+   * EVERY `none` IS A TOTAL PERMIT, SO NO EARLY RETURN MAY REACH ONE WITHOUT CONSULTING `governed`.
+   *
+   * Both rows below were live bypasses: each is a check whose sentinel means SOMETHING IS WRONG HERE
+   * being read as NOTHING TO CHECK, and each returned `none` while `hasReceiptSurface` scored the
+   * same shape `governed: true`. Measured against the real hook before the fix, all 16 actor x tool
+   * cells ALLOWED in both — every rule in `implementer-identity-gate` off, reachable with one
+   * `ln -s`. This is round 12's `.state` bypass reappearing through two adjacent spellings.
+   */
+  test("a broken .planning is governed, not benign, however it is spelled", () => withProject((root) => {
+    // (1) `.planning` symlinked to a DECOY holding one valid sentinel. `hasOnlyBenignPreplanSentinel`
+    // reads the decoy's contents, finds them benign, and used to return `none` without ever asking
+    // whether the surface it read through was itself the problem.
+    const decoy = join(root, "decoy");
+    mkdirSync(decoy, { recursive: true });
+    writeFileSync(join(decoy, "DEV_CLARIFIED.json"), '{"status":"clarified","sessionId":"clarifier"}\n');
+    symlinkSync(decoy, join(root, ".planning"));
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: true });
+    rmSync(join(root, ".planning"));
+
+    // (2) `.planning` as a DANGLING symlink. `existsSync` FOLLOWS links, so it answered "there is no
+    // planning directory" — the same total permit as an untouched project — while `lstat` sees the
+    // link plainly. Presence, not resolvability, is the question.
+    symlinkSync(join(root, "nowhere"), join(root, ".planning"));
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "planning-unresolvable", governed: true });
+    rmSync(join(root, ".planning"));
+
+    // The PERMISSIVE outcomes must survive all of it, or the fix costs every ungoverned project in
+    // existence. What the gate acts on is `none` OR `governed: false`; both are an allow.
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "none" });
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: false });
+    writeFileSync(join(root, ".planning", "DEV_CLARIFIED.json"), '{"status":"clarified","sessionId":"clarifier"}\n');
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "none" });
+  }));
+
   test("treats legacy fixed artifacts as conversion-only provenance", () => withProject((root) => {
     const plan = "# Legacy\n"; const hash = sha256(plan); mkdirSync(join(root, ".planning"), { recursive: true });
     writeFileSync(join(root, ".planning", "PLAN.md"), plan); writeFileSync(join(root, ".planning", "PLAN.meta.json"), JSON.stringify(legacyMetadata("work", hash))); writeFileSync(join(root, ".planning", "PLAN_REVIEWED.md"), frontmatter(legacyReview(hash)));

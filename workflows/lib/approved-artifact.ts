@@ -399,8 +399,25 @@ function hasOnlyBenignPreplanSentinel(planning: string): boolean {
  *     reachable with one `ln -s` and turns an approved project into an unclassifiable one.
  *
  * A caller that reads `kind !== "canonical"` as "not my business" hands the second population the
- * same blanket permission as the first, so the cheapest way to disable an approval-bound gate is to
- * make the receipt unreadable. This flag is what lets the gate refuse that.
+ * same blanket permission as the first. This flag is what lets the gate refuse that.
+ *
+ * WHAT THIS FLAG DOES NOT BUY, MEASURED. An earlier revision of this note claimed "the cheapest way
+ * to disable an approval-bound gate is to make the receipt unreadable, and this flag is what lets
+ * the gate refuse that." That is overstated, and the overstatement matters because it invites the
+ * reader to stop looking. ABSENT IS STILL A TOTAL PERMIT, AT THE SAME ONE-COMMAND PRICE. All three
+ * of these still classify `none` and turn the gate fully off, verified against the real hook:
+ *     rm .planning/.state/review.json          -> conversion-required, governed FALSE -> allow
+ *     mv .planning aside && mkdir .planning    -> plus one sentinel file -> none -> allow
+ *     rm -rf .planning                         -> none -> allow
+ * That is deliberate, not an oversight: an empty `.planning/.state` IS the pre-approval shape, and
+ * treating it as governed would restrict every CLARIFY and PLAN conversation. The consequence is
+ * that against an actor WITH a shell the bar is unchanged — deleting is cheaper than aliasing, and
+ * nothing here raises the cost of deleting.
+ *
+ * The genuine gain is narrower and real: against an actor holding only write tools (which is
+ * exactly what a restricted actor under this gate is reduced to — it has NO Bash), aliasing is
+ * reachable and deleting is not, and against ordinary accidents a half-broken receipt surface no
+ * longer reads as a green light.
  *
  * IT IS STRUCTURAL, NOT REASON-KEYED. Keying on `reason` strings does not work: replacing `.state`
  * with a DANGLING symlink classifies as `conversion-required` (nothing exists at the receipt path),
@@ -421,17 +438,48 @@ function hasReceiptSurface(planning: string): boolean {
   // the whole question. `existsSync` follows the link and would report it absent.
   try { lstatSync(join(planning, ".state", "review.json")); return true; } catch { return false; }
 }
+/**
+ * EVERY `none` HERE IS A TOTAL PERMIT, SO EVERY EARLY RETURN MUST HAVE CONSULTED `governed` FIRST.
+ *
+ * `none` is not "I found nothing interesting" — it is the answer that switches
+ * `implementer-identity-gate` off entirely, for every tool and every actor. Three returns below
+ * reached it while a receipt surface was demonstrably PRESENT, each for the same reason: a check
+ * whose sentinel means SOMETHING IS WRONG HERE was read as NOTHING TO CHECK.
+ *
+ *   - `!existsSync(planning)` — `existsSync` FOLLOWS symlinks, so a DANGLING `.planning` symlink
+ *     answered "no planning directory" and returned `none`. `hasReceiptSurface` scores that same
+ *     shape `governed: true` (its `lstat` sees the link). Measured before this fix: `.planning`
+ *     symlinked to a nonexistent path, all 16 actor x tool cells ALLOW.
+ *   - `hasOnlyBenignPreplanSentinel` — `.planning` replaced by a symlink to a decoy directory
+ *     holding one valid `DEV_CLARIFIED.json` scored `governed: true` and then returned `none`
+ *     anyway, because the sentinel check ran without consulting it. Measured: all 16 cells ALLOW.
+ *     This is round 12's `.state` bypass restored through the adjacent spelling.
+ *
+ * The remaining `none` returns are deliberate and are NOT of that shape:
+ *   - the final return is reached only for an EMPTY real `.planning`, where `hasReceiptSurface` is
+ *     false by construction (no `.state`, no `review.json`, and `.planning` is a real directory).
+ *   - the `realpathSync` failure returns `none` because the PROJECT ROOT does not resolve, so no
+ *     `.planning` under it is reachable either and there is no receipt that could be protected. Its
+ *     evidence is the ABSENCE of a resolvable path, not the PRESENCE of a broken governance entry;
+ *     failing closed there would deny on absence of evidence in every project of every user, which
+ *     is the one regression this hook may never cause.
+ */
 export function classifyPlanningLifecycle(projectDir: string): PlanningLifecycle {
   let root: string;
   try { root = realpathSync(projectDir); } catch { return { kind: "none" }; }
   const planning = join(root, ".planning");
-  if (!existsSync(planning)) return { kind: "none" };
+  const governed = hasReceiptSurface(planning);
+  // `lstat`, not `existsSync`, decides PRESENCE: a dangling `.planning` symlink is present and
+  // unresolvable, which is the governed-but-broken population, not the ungoverned one.
+  if (!existsSync(planning)) {
+    try { lstatSync(planning); } catch { return { kind: "none" }; }
+    return { kind: "blocked", reason: "planning-unresolvable", governed };
+  }
   const receiptPath = join(planning, ".state", "review.json");
   const resolved = resolveGeneratedPlanReviewState(root);
   if (!isError(resolved)) return { kind: "canonical", resolved };
-  const governed = hasReceiptSurface(planning);
   if (existsSync(receiptPath)) return { kind: "blocked", reason: resolved.code, governed };
-  if (hasOnlyBenignPreplanSentinel(planning)) return { kind: "none" };
+  if (!governed && hasOnlyBenignPreplanSentinel(planning)) return { kind: "none" };
   try {
     if (readdirSync(planning).length > 0) return { kind: "blocked", reason: "conversion-required", governed };
   } catch { return { kind: "blocked", reason: "planning-read", governed }; }

@@ -142,12 +142,29 @@ function bashDenial(who: string): never {
  * orchestrator keeps?" — and an earlier revision answered it in only one of them, which is how the
  * blocked branch ended up answering "yes, everywhere". Keeping one copy means a future narrowing
  * cannot be applied to one branch and forgotten in the other.
+ *
+ * THE PERMITTED PREFIX IS CHECKED TWICE, LEXICALLY AND BY WHERE THE BYTES LAND, AND BOTH MUST AGREE.
+ * `projectRelativePath` answers over `resolve()`, which collapses `..` lexically and — the case that
+ * matters here — reads a path through a symlinked prefix as though the prefix were a real directory.
+ * With `.planning` a DANGLING symlink to `./decoy`, measured: lexical said `.planning/.state/review.json`
+ * (permitted, ALLOW) while the bytes were bound for `decoy/.state/review.json` (outside every permitted
+ * prefix). `safeProjectPath`'s symlink-component rejection does NOT catch it: that rejection needs a
+ * link it can resolve, and a dangling one resolves to nothing. Nothing lands through a dangling link
+ * today — `mkdir -p` returns ENOENT, checked with coreutils and not only through Node — but that is the
+ * FILESYSTEM refusing, and one `ln -s` retargeted at a directory that exists is the whole difference.
+ * A `null` landing place is a REFUSAL TO VOUCH, and this codebase has now paid twice for reading that
+ * refusal as a "no": it is treated as "cannot be shown to be permitted", which is a denial.
+ *
+ * The plan-mode escape stays ABOVE the landing check on purpose: `~/.claude/plans/*.md` is outside the
+ * project root by construction, so a project-relative landing place is `null` for every legitimate one.
  */
 function orchestratorSurfaceOrDeny(label: string, permitted: readonly string[], preface: string): never {
   const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
   if (payload.permission_mode === "plan" && allowedNativePlanPath(target)) allow();
+  const landing = resolvedProjectRelativePath(cwd, target);
+  const lands = landing !== null && permitted.some(prefix => landing === prefix || landing.startsWith(`${prefix}/`));
   const relative = projectRelativePath(cwd, target);
-  if (relative !== null && permitted.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`))) allow();
+  if (lands && relative !== null && permitted.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`))) allow();
   // A hard link or a symlink escape also lands here with `relative === null`, and rendering it as
   // "may only write .planning, .claude" names the directory the file is ALREADY IN. Say which
   // rule fired, or the denial reads as a permitted-list bug whose obvious fix reopens the escape.
@@ -178,16 +195,34 @@ function orchestratorSurfaceOrDeny(label: string, permitted: readonly string[], 
  *   - No receipt to read, so no actor can be CLEARED by identity. A conversation-level actor is
  *     therefore held to the orchestrator's own surface and gets no Bash — the same regime the
  *     approving conversation is in under a valid APPROVED receipt. This is the fail-closed choice and
- *     it is the one with a real cost: an ordinary main-chat actor in a project whose receipt merely
- *     went stale loses Bash and project writes until the state is repaired.
+ *     it is the one with a real cost, AND THAT COST IS REACHED BY ORDINARY USE, NOT ONLY BY ATTACK:
+ *     editing an approved plan file — a normal thing to do, and the ONLY way a stale receipt arises
+ *     benignly — moves the project out of `canonical` and into this branch, at which point the main
+ *     conversation loses Bash AND every project write until the plan bytes are put back or the state
+ *     is otherwise repaired. Nobody has to do anything wrong to land here.
  *   - A dispatched subagent is still allowed, because "delegate it" has to remain true advice and
  *     because the implementer is the actor this rule was never aimed at. That is the residue: an
  *     approver re-entering as a subagent is caught only by the untrusted-receipt check below, which
  *     an attacker who controls the unreadable receipt can trivially defeat by not naming itself.
  *   - `.planning` and `.claude` stay writable — the restriction is the ORCHESTRATOR'S surface, not a
- *     stricter one — so most blocked states (a stale receipt, a malformed one) are repairable from
- *     the conversation that hit the denial. A SYMLINKED `.state` is not repairable that way, because
- *     removing a link needs `rm`; that one needs a dispatched agent or a shell outside the session.
+ *     stricter one — MINUS `.planning/.state`, which is excluded below. WHAT IS AND IS NOT
+ *     SELF-REPAIRABLE FOLLOWS EXACTLY FROM THAT LINE, and it is narrower than an earlier version of
+ *     this note claimed ("most blocked states ... are repairable from the conversation that hit the
+ *     denial"). Each row below is measured against the real hook:
+ *       SELF-REPAIRABLE — the fault is in the PLAN FILE, which stays writable:
+ *         `stale-receipt`   (plan bytes edited)  -> Write the original bytes back.
+ *         `empty-plan`      (plan truncated)     -> same.
+ *         `plan-encoding`   (plan not UTF-8)     -> same.
+ *         `missing-artifact` (selected plan gone) -> Write the file back with the hashed bytes.
+ *       NOT SELF-REPAIRABLE — the fault is in the RECEIPT or in the SHAPE of `.planning`/`.state`,
+ *       neither of which this conversation may write. All of these need a dispatched agent (still
+ *       admitted here) or a shell outside the session:
+ *         a MALFORMED receipt (`review-json`, schema failures) — the receipt itself must be rewritten;
+ *         a SYMLINKED or dangling `.state`, or `.planning` symlinked/dangling/a regular file —
+ *         removing a link or replacing a file with a directory needs `rm`/`mkdir`, not `Write`.
+ *     The malformed-receipt row is a DELIBERATE trade made in round 13: it was self-repairable
+ *     before, and it was self-repairable only because the same permission let a contained approver
+ *     forge the receipt outright (see the chain documented at the exclusion below).
  *
  * THE UNTRUSTED READ MAY ONLY TIGHTEN. The receipt bytes at a blocked project are exactly what
  * cannot be trusted, so they are never used to permit anything: they are read best-effort, and used
@@ -221,7 +256,40 @@ function blockedProjectDisposition(reason: string, governed: boolean): never {
   // the only in-session route back to a resolvable state. The permitted set is the most restrictive
   // any built-in workflow grants — the blocked receipt names a workflow, but that name is untrusted
   // and a WIDER surface is exactly what it must not be able to buy.
-  if (FILE_TOOLS.has(tool)) orchestratorSurfaceOrDeny(label, [".planning", ".claude"], `${preface} ${repair}`);
+  //
+  // EXCEPT THE RECEIPT. `.planning` granted WHOLESALE re-authorized writing `.planning/.state/review.json`
+  // — the one file the invariant below says is part of nobody's write surface AT ANY LIFECYCLE STATUS.
+  // This branch was the single place that was not true, and it was reachable by a fully contained
+  // approver with no Bash, no symlink and no `..`, in three permitted Writes:
+  //   1. Write the selected plan with any different bytes (permitted `.planning`) -> `stale-receipt`,
+  //      so the project leaves `canonical` and lands HERE, `governed`;
+  //   2. Write the receipt, replacing `approved_session_id` and `reviewer_session_id` with strangers.
+  //      `plan_hash` is untouched, so nothing has to be recomputed;
+  //   3. Write the original plan bytes back -> the forged receipt authenticates and the project is
+  //      canonical APPROVED again, with the actor now a STRANGER to it.
+  // Measured end to end from an untouched canonical APPROVED project where the same actor's
+  // `Write src/a.js`, `Bash`, and receipt Write were all DENIED: after the chain, `Write src/a.js`
+  // and `Bash rm -rf src` were both ALLOWED and `validateGeneratedPlanArtifact` ACCEPTED the forged
+  // receipt as `dispatch` AND as `implement`.
+  //
+  // Scoped by WHERE THE BYTES LAND, exactly as the canonical branch is, so `.planning/.state/../.state/
+  // review.json` cannot walk around it — `projectRelativePath` returns `null` for a path it refuses to
+  // vouch for, and reading that refusal as "not the receipt" is the polarity bug that cost round 11.
+  //
+  // THE COST IS REAL AND IS NOT HIDDEN: a MALFORMED receipt is now unrepairable from the conversation
+  // that hit the denial and needs a dispatched agent (which this branch still admits, immediately
+  // above). A STALE one is still self-repairable, because its fault is in the PLAN FILE, not the
+  // receipt. The header above says which is which.
+  if (FILE_TOOLS.has(tool)) {
+    const landing = resolvedProjectRelativePath(cwd, tool === "NotebookEdit" ? input.notebook_path : input.file_path);
+    if (landing === RECEIPT_RELATIVE || landing === RECEIPT_STATE_DIRECTORY || landing?.startsWith(`${RECEIPT_STATE_DIRECTORY}/`)) {
+      deny(`${label}: ${preface} \`${RECEIPT_STATE_DIRECTORY}/\` holds the receipt every other gate reads its ` +
+        `authority from, so it is not part of any orchestrator's write surface — including here, where that ` +
+        `authority is already unreadable. Rewriting it from this conversation would let an actor restricted by ` +
+        `the receipt replace the identities that restrict it. ${repair}`);
+    }
+    orchestratorSurfaceOrDeny(label, [".planning", ".claude"], `${preface} ${repair}`);
+  }
   deny(`${label}: ${preface} It may not execute commands in a project whose approval state cannot be resolved. ` +
     `A restricted actor gets NO Bash — this is not an allowlist with a gap: read-only commands, \`git status\`, ` +
     `and TEST RUNS are all refused here. ${repair}`);

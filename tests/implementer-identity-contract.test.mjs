@@ -622,6 +622,104 @@ try {
     }
   }
 
+  // ---------------------------------------------------------------------------------------------
+  // THE RECEIPT IS NOT PART OF ANYONE'S WRITE SURFACE — AT ANY LIFECYCLE STATUS, INCLUDING `blocked`.
+  //
+  // The blocked branch granted `.planning` and `.claude` WHOLESALE, with no receipt exclusion, and
+  // that was the one place the invariant above was false. A fully contained approver — `Write
+  // src/a.js` DENY, `Bash` DENY, receipt Write DENY — walked out of an untouched canonical APPROVED
+  // project in THREE PERMITTED WRITES, with no Bash, no symlink, and no `..`:
+  //   1. Write the selected plan with different bytes  -> `stale-receipt`, so the project is now HERE;
+  //   2. Write the receipt, swapping approved_session_id and reviewer_session_id for strangers
+  //      (`plan_hash` untouched, so nothing has to be recomputed);
+  //   3. Write the original plan bytes back            -> the forged receipt authenticates.
+  // The project is canonical APPROVED again and the actor is a STRANGER to it: measured, `Write
+  // src/a.js` and `Bash rm -rf src` both ALLOWED afterwards, and `validateGeneratedPlanArtifact`
+  // ACCEPTED the forged receipt as `dispatch` AND as `implement`.
+  //
+  // Step 1 and step 3 are deliberately still ALLOWED. Editing an approved plan file is ORDINARY USE
+  // — it is how a stale receipt arises benignly — and it is the only in-session route back to a
+  // resolvable state. Step 2 is the only load-bearing link, and closing it is what breaks the chain:
+  // a plan rewrite can only ever destroy or restore authentication, never RE-ATTRIBUTE it.
+  // ---------------------------------------------------------------------------------------------
+  {
+    const chain = mkdtempSync(join(tmpdir(), "implementer-identity-chain-"));
+    try {
+      mkdirSync(join(chain, ".planning", ".state"), { recursive: true });
+      mkdirSync(join(chain, "src"), { recursive: true });
+      const chainPlan = join(chain, ".planning", planFile);
+      const chainReceipt = join(chain, ".planning", ".state", "review.json");
+      writeFileSync(chainPlan, plan);
+      writeFileSync(chainReceipt, receipt());
+      const forged = receipt({ approved_session_id: "stranger-approver", reviewer_session_id: "stranger-reviewer" });
+      const asApprover = (path, content) => runGate(chain, {
+        rawInput: JSON.stringify({ ...payloadFor(chain, { agentId: undefined, path }), tool_input: { file_path: path, content } }),
+      });
+
+      // The approver is contained to begin with — otherwise the chain proves nothing.
+      denied(asApprover(join(chain, "src", "a.js"), "x"), "chain: the approver may not write project code", /may not also implement/);
+      denied(asApprover(chainReceipt, forged), "chain: the approver may not write the receipt under a canonical receipt", /write surface/);
+
+      // Step 1: ordinary use, and it must STAY allowed.
+      allowed(asApprover(chainPlan, `${plan}edit\n`), "chain step 1: editing an approved plan file is ordinary use");
+      writeFileSync(chainPlan, `${plan}edit\n`);
+
+      // Step 2: the link that has to break, in every spelling that lands on the receipt. The `..`
+      // spelling is built by CONCATENATION — `join` would normalize it away and assert nothing.
+      denied(asApprover(chainReceipt, forged), "chain step 2: the receipt is excluded from the blocked branch too", /planning state blocked/);
+      denied(asApprover(`${chain}/.planning/.state/../.state/review.json`, forged), "chain step 2: a `..` spelling lands on the receipt", /planning state blocked/);
+      denied(asApprover(join(chain, ".planning", ".state", "nested.json"), forged), "chain step 2: nothing under .state is writable", /planning state blocked/);
+
+      // Step 3: restoring the plan bytes is the SELF-REPAIR route for a stale receipt, and must stay
+      // allowed. With step 2 closed it restores the ORIGINAL receipt's authority, not a forged one.
+      allowed(asApprover(chainPlan, plan), "chain step 3: restoring the plan bytes repairs a stale receipt");
+      writeFileSync(chainPlan, plan);
+
+      // End state: the actor is the approver it always was.
+      denied(asApprover(join(chain, "src", "a.js"), "x"), "chain end state: still the approver", /may not also implement/);
+      denied(runGate(chain, { tool: "Bash", command: "rm -rf src", agentId: undefined }), "chain end state: still no Bash", /NO Bash/);
+
+      // WHAT THIS COSTS, PINNED SO IT CANNOT BE FORGOTTEN. A MALFORMED receipt is no longer
+      // repairable from the conversation that hit the denial; it needs a dispatched agent, which
+      // this branch still admits. A STALE one stays self-repairable (step 3 above), because its
+      // fault is in the plan file rather than in the receipt.
+      writeFileSync(chainReceipt, "{ not json");
+      denied(asApprover(chainReceipt, receipt()), "cost: a malformed receipt is not repairable in-session", /planning state blocked/);
+      allowed(runGate(chain, { agentId: IMPLEMENTER_AGENT, path: chainReceipt }), "cost: a dispatched agent can still repair it");
+    } finally {
+      rmSync(chain, { recursive: true, force: true });
+    }
+  }
+
+  // THE PERMITTED PREFIX IS CHECKED LEXICALLY AND BY WHERE THE BYTES LAND, AND BOTH MUST AGREE.
+  //
+  // `projectRelativePath` answers over `resolve()`, which reads a path through a symlinked prefix as
+  // though the prefix were a real directory. With `.planning` a DANGLING symlink to `./decoy`,
+  // measured: lexical said `.planning/.state/review.json` — permitted, ALLOW — while the bytes were
+  // bound for `decoy/.state/review.json`, outside every permitted prefix and outside the receipt
+  // exclusion's reach. `safeProjectPath`'s symlink-component rejection does NOT catch this: that
+  // rejection needs a link it can resolve, and a dangling one resolves to nothing.
+  //
+  // Nothing lands through a dangling link today — `mkdir -p` returns ENOENT — but that is the
+  // FILESYSTEM refusing, not the gate, and one `ln -s` retargeted at a directory that exists is the
+  // whole difference. The gate must decide this itself.
+  {
+    const dangling = mkdtempSync(join(tmpdir(), "implementer-identity-dangling-"));
+    try {
+      mkdirSync(join(dangling, "src"), { recursive: true });
+      symlinkSync("./decoy", join(dangling, ".planning"));
+      const conversation = options => runGate(dangling, { rawInput: JSON.stringify(payloadFor(dangling, { agentId: undefined, ...options })) });
+      // A dangling `.planning` is governed-but-broken, not absent: every conversation-level cell denies.
+      denied(conversation({ path: join(dangling, "src", "a.js") }), "dangling .planning: no project writes", /planning state blocked/);
+      denied(conversation({ tool: "Bash", command: "rm -rf src" }), "dangling .planning: no Bash", /NO Bash/);
+      // The cell M4 guards: lexically inside `.planning`, actually bound for `decoy/`.
+      denied(conversation({ path: join(dangling, ".planning", ".state", "review.json") }), "dangling .planning: a write bound for the decoy is not a write to .planning", /planning state blocked/);
+      denied(conversation({ path: join(dangling, ".planning", "notes.md") }), "dangling .planning: no permitted surface survives an unresolvable prefix", /planning state blocked/);
+    } finally {
+      rmSync(dangling, { recursive: true, force: true });
+    }
+  }
+
   // THE INERTNESS THAT IS LOAD-BEARING SURVIVES. A `blocked` project with NO receipt surface is an
   // ordinary legacy or mid-planning `.planning`, nothing was ever approved in it, and this
   // plugin-wide hook must stay out of its way. Breaking this would restrict every user with a
