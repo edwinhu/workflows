@@ -15,7 +15,7 @@ The two pipelines share their *machinery* and disagree on nearly every *policy*:
   shared (imported from build_docx.py, one maintenance point)
       include sentinels, frontmatter stripping, footnote-label prefixing,
       widow control, the booktabs table restyle, docx-repair, PDF rendering,
-      the acknowledgment-footnote injector
+      the acknowledgment-footnote injector, the svgBlip vector-figure attacher
 
   divergent (why a flag would have branched inside almost every function)
       citations   footnote citations, suppressed bibliography, Bluebook CSL
@@ -54,6 +54,7 @@ from build_docx import (  # noqa: E402
     style_tables,
     convert_to_pdf,
     inject_acknowledgement,
+    attach_svg_blips,
 )
 
 TEMPLATE = SKILLS / "writing-legal" / "templates" / "law_econ_template.docx"
@@ -385,6 +386,15 @@ def build(target: Path, output: Path | None, *, spacing: str = "double",
         sys.exit(f"ERROR: pandoc failed:\n{result.stderr}")
     if result.stderr.strip():
         print(result.stderr.strip(), file=sys.stderr)
+
+    # Vector figures first: every later pass rewrites document.xml, and the
+    # blip match keys off the media parts pandoc just wrote. Figures are looked
+    # for beside the SOURCES (the L&E layout puts figure1.png next to paper.md)
+    # as well as in the project's figures/ and drafts/ dirs, so both the
+    # single-file and the project-dir invocation find their SVGs.
+    figure_dirs = [s.parent.resolve() for s in sources]
+    figure_dirs += [root / "figures", root / "drafts", root]
+    attach_svg_blips(output, root, search_dirs=list(dict.fromkeys(figure_dirs)))
 
     # JLE: "An acknowledgment note should be included and placed at the
     # beginning of the footnotes." A symbol-marked (*) note keeps it out of the

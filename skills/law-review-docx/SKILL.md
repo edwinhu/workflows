@@ -63,6 +63,49 @@ This template defines all styles that pandoc applies:
 | **First Paragraph** | After headings | No indent |
 | **Footnote Text** | Footnotes | 10pt, single-spaced |
 
+## Figures: vector, via `svgBlip`
+
+Reference the **PNG** in markdown — `![caption](~/figures/fig1.png)` — and keep a
+same-stem `.svg` beside it. After pandoc, `build_docx.py` finds each embedded
+raster, matches it to its SVG **by content hash** (pandoc rewrites media to
+`rIdN.png`, so the filename is gone by then), and attaches the vector:
+
+```xml
+<a:blip r:embed="rIdPng">
+  <a:extLst>
+    <a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}">
+      <asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main"
+                    r:embed="rIdSvg"/>
+    </a:ext>
+  </a:extLst>
+</a:blip>
+```
+
+Word 2016+ draws the SVG with its own renderer; everything older falls back to
+the PNG. No sibling `.svg`, no change — raster-only projects are unaffected.
+
+**Never reference a bare `.svg` from markdown.** Pandoc embeds it as an image
+part with no `svgBlip`, `unzip -l` shows the media happily, and Word renders
+*nothing* — blank space under the caption, no error at any stage.
+
+**Never convert SVG→EMF with LibreOffice as a substitute.** EMF is a real vector
+format and Word draws it, so the route looks correct. It is not: LibreOffice's
+SVG importer silently corrupts complex figures. A five-facet histogram came back
+missing an entire facet row, every row label, both axis labels, the tick numbers
+and the zero line — still a plausible-looking chart, so nothing downstream
+flagged it. Simple one-panel figures convert fine, which is what makes it
+dangerous: verifying one figure proves nothing about the rest.
+
+**Verification** — count images in the RENDERED PDF, never in the DOCX:
+
+```bash
+pdfimages -list manuscript.pdf | tail -n +3 | wc -l   # 0 == every figure is vector
+```
+
+A media part exists for formats Word cannot draw, so a `word/media/` count is not
+evidence the figure reached the page. Check the most structurally complex figure
+against its source, not the first one.
+
 ## After Export
 
 Report the output path, section count, footnote count, and approximate word count. If the user needs further formatting (NOTEREF cross-references, footnote repair from cloud editing), suggest `--fix-footnotes` or the `docx-repair` skill.
@@ -165,3 +208,7 @@ automatically when `--fix-footnotes` is set (the default).
 | Running `pandoc -o output.docx` without `--reference-doc` | Produces default Calibri formatting that violates journal requirements | Always use the template |
 | Manually constructing the DOCX with python-docx or docx-js | Reinvents what the template + pandoc already handle | Run the script |
 | Combining markdown without prefixing footnote labels | Causes footnote collisions when multiple sections use `[^1]` | The script handles this automatically |
+| Referencing a bare `.svg` from markdown | Pandoc writes no `svgBlip`, so Word renders nothing — blank space under the caption, no error | Reference the PNG; keep the `.svg` beside it and let the build attach it |
+| Converting SVG→EMF with LibreOffice to get vector into Word | Its SVG importer silently drops facet rows, row labels, axis labels and reference lines from complex figures | Use the `svgBlip` path the build already implements |
+| Confirming figures embedded by counting `word/media/` entries | A media part exists for formats Word cannot draw | `pdfimages -list` the rendered PDF |
+| Declaring the figure pipeline verified after checking one figure | Converters that mangle complex figures handle simple ones fine | Verify the most structurally complex figure |

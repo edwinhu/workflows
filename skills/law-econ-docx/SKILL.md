@@ -226,6 +226,53 @@ Other options:
   Modern on Linux, but it is **not** the submission artifact and diverges from
   the .docx.
 
+## Figures: vector, via `svgBlip`
+
+Reference the **PNG** in markdown — `![caption](~/figures/fig1.png)` — and keep a
+same-stem `.svg` beside it. After pandoc, the build finds each embedded raster,
+matches it to its SVG **by content hash** (pandoc rewrites media to `rIdN.png`,
+so the filename is gone by then), and attaches the vector:
+
+```xml
+<a:blip r:embed="rIdPng">
+  <a:extLst>
+    <a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}">
+      <asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main"
+                    r:embed="rIdSvg"/>
+    </a:ext>
+  </a:extLst>
+</a:blip>
+```
+
+Word 2016+ draws the SVG with its own renderer; everything older falls back to
+the PNG. No sibling `.svg`, no change — raster-only projects are unaffected.
+
+The SVG is looked for beside the **source files** (the L&E layout keeps
+`figure1.png` next to `paper.md`) as well as under the project's `figures/` and
+`drafts/`, so both the single-file and the `PROJECT_DIR` invocation find it.
+
+**Never reference a bare `.svg` from markdown.** Pandoc embeds it as an image
+part with no `svgBlip`, `unzip -l` shows the media happily, and Word renders
+*nothing* — blank space under the caption, no error at any stage.
+
+**Never convert SVG→EMF with LibreOffice as a substitute.** EMF is a real vector
+format and Word draws it, so the route looks correct. It is not: LibreOffice's
+SVG importer silently corrupts complex figures. A five-facet histogram came back
+missing an entire facet row, every row label, both axis labels, the tick numbers
+and the zero line — still a plausible-looking chart, so nothing downstream
+flagged it. Simple one-panel figures convert fine, which is what makes it
+dangerous: verifying one figure proves nothing about the rest.
+
+**Verification** — count images in the RENDERED PDF, never in the DOCX:
+
+```bash
+pdfimages -list manuscript.pdf | tail -n +3 | wc -l   # 0 == every figure is vector
+```
+
+A media part exists for formats Word cannot draw, so a `word/media/` count is not
+evidence the figure reached the page. Check the most structurally complex figure
+against its source, not the first one.
+
 ## Verification gate — before you claim the build is done
 
 IDENTIFY the output → RUN the render → READ the pages → VERIFY → CLAIM.
