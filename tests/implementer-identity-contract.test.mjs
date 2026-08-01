@@ -15,7 +15,7 @@
  */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { linkSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { linkSync, mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -464,6 +464,24 @@ try {
   // Chronologically valid on its own — only the comparison against the ON-DISK receipt catches it.
   denied(finalize(finalization({ approved_at: "2025-12-31T00:00:00.000Z" })), "approved_at must survive", /reproduce workflow, plan_file/);
   denied(finalize(finalization({ plan_hash: "0".repeat(64) })), "plan_hash must survive", /reproduce workflow, plan_file/);
+  // `plan_file` and `workflow` had NO mutation test, and a surgical deletion of just those two
+  // comparisons survived the whole suite (60 passed, 0 failed): three of the five fields were
+  // covered, so the rule as a whole looked pinned while two of its conditions were free.
+  //
+  // They do not behave alike, and the difference is why the gap went unnoticed:
+  //   - `plan_file` is reachable. A finalization naming a DIFFERENT generated plan is schema-valid
+  //     on its own — `isGeneratedPlanBasename` accepts any plan basename and `parseReviewState` has
+  //     nothing to compare it against — so only the on-disk comparison catches it. Without the rule
+  //     a reviewer's verdict could be recorded against a plan nobody approved.
+  writeFileSync(join(planning, "other-plan.md"), "# a different generated plan\n");
+  denied(finalize(finalization({ plan_file: "other-plan.md" })), "plan_file must survive", /reproduce workflow, plan_file/);
+  //   - `workflow` is NOT reachable through this path, and that is the honest reason no mutation
+  //     test kills it: the gate parses the proposal with `parseReviewState(content, receipt.workflow)`,
+  //     which rejects a differing workflow as a schema failure before the comparison is evaluated.
+  //     What is asserted here is therefore the real behaviour — the earlier rule fires — so a future
+  //     change that drops `expectedWorkflow` from that call fails HERE, which is the only place the
+  //     comparison could start mattering.
+  denied(finalize(finalization({ workflow: "work" })), "a finalization may not restate the workflow", /the proposed receipt is invalid \(review-schema\)/);
   denied(finalize(finalization(), { agentId: undefined }), "a conversation-level actor may not finalize", /only a dispatched reviewer subagent/);
   // The approver as a SUBAGENT of itself: identity equals `approved_session_id`, so it is self-review.
   write({ status: "PENDING", reviewer_session_id: "", reviewed_at: "", approved_session_id: REVIEWER_ACTOR });
@@ -521,6 +539,150 @@ try {
   allowed(finalize(finalization()), "...and the same finalization is admitted once the second name is gone");
 
   write();
+
+  // ---------------------------------------------------------------------------------------------
+  // A BLOCKED LIFECYCLE IS MORE SUSPICION, NOT LESS.
+  //
+  // The gate opened with `if (lifecycle.kind !== "canonical") allow()`, so any state the classifier
+  // could not resolve was a blanket permit. Replacing `.planning/.state` with a SYMLINK to a sibling
+  // directory holding byte-identical receipt content classifies as `blocked/artifact-type` — and
+  // measured before the fix, the recorded approver's `Write src/a.js` and `Bash rm -rf src` were both
+  // ALLOWED, at APPROVED and at PENDING. Every rule in the file was off for as long as the link
+  // existed, and creating it costs one `ln -s` during PENDING, when Bash is unrestricted anyway.
+  //
+  // The classification itself is correct and predates this work (`rejectSymlinkComponents`, on main);
+  // the inversion was the call site reading a "something is wrong here" sentinel as permission.
+  // ---------------------------------------------------------------------------------------------
+
+  // `build(root, body)` receives the receipt bytes for the status under test, so each shape decides
+  // for itself where (or whether) a readable receipt survives behind the broken surface. Writing it
+  // into `.state` unconditionally would repair the malformed case back to canonical and assert
+  // nothing — measured while writing this.
+  const blocked = (build, status) => {
+    const root = mkdtempSync(join(tmpdir(), "implementer-identity-blocked-"));
+    mkdirSync(join(root, "src"), { recursive: true });
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    writeFileSync(join(root, ".planning", planFile), plan);
+    build(root, status === "APPROVED" ? receipt() : receipt({ status: "PENDING", reviewer_session_id: "", reviewed_at: "" }));
+    return root;
+  };
+  const inProject = (root, options = {}) => runGate(root, { rawInput: JSON.stringify(payloadFor(root, options)) });
+
+  // The third element names where receipt bytes are still READABLE behind the broken surface, or
+  // null when nothing parseable survives. The untrusted read is asserted BOTH ways from it — it must
+  // tighten where bytes exist, and its absence must not silently turn the whole case vacuous.
+  for (const [name, build, readable] of [
+    // The measured blocker: byte-identical receipt content behind a symlinked governance directory.
+    ["a symlinked .state directory", (root, body) => {
+      rmSync(join(root, ".planning", ".state"), { recursive: true });
+      mkdirSync(join(root, ".planning", "shadow"), { recursive: true });
+      writeFileSync(join(root, ".planning", "shadow", "review.json"), body);
+      symlinkSync("shadow", join(root, ".planning", ".state"));
+    }, join(".planning", "shadow", "review.json")],
+    // A DANGLING link classifies as `conversion-required`, not `artifact-type` — nothing exists at
+    // the receipt path — so keying the disposition on the reason string would have re-admitted it.
+    ["a dangling .state symlink", root => {
+      rmSync(join(root, ".planning", ".state"), { recursive: true });
+      symlinkSync("nowhere", join(root, ".planning", ".state"));
+    }],
+    ["a regular file where .state belongs", root => {
+      rmSync(join(root, ".planning", ".state"), { recursive: true });
+      writeFileSync(join(root, ".planning", ".state"), "not a directory");
+    }],
+    ["a malformed receipt", root => writeFileSync(join(root, ".planning", ".state", "review.json"), "{ not json")],
+    ["a receipt that no longer authenticates its plan", (root, body) => {
+      writeFileSync(join(root, ".planning", ".state", "review.json"), body);
+      writeFileSync(join(root, ".planning", planFile), "# these bytes are not the approved ones\n");
+    }, join(".planning", ".state", "review.json")],
+  ]) {
+    for (const status of ["APPROVED", "PENDING"]) {
+      const root = blocked(build, status);
+      try {
+        denied(inProject(root, { agentId: undefined }), `${name} at ${status}: the conversation may not write project code`, /planning state blocked/);
+        denied(inProject(root, { tool: "Bash", command: "rm -rf src", agentId: undefined }), `${name} at ${status}: the conversation gets no Bash`, /planning state blocked/);
+        // An actor the (untrusted) receipt does not name is still restricted: with the receipt
+        // unreadable, nothing CLEARS an actor, so the denial cannot depend on recognising one. The
+        // read-only command is the point — there is no allowlist here to widen.
+        denied(inProject(root, { tool: "Bash", command: "git status", sessionId: "sess-unrelated", agentId: undefined }), `${name} at ${status}: not an allowlist with a gap`, /NO Bash/);
+        // ...and the state stays repairable from the conversation that hit the denial.
+        allowed(inProject(root, { agentId: undefined, path: join(root, ".planning", "notes.md") }), `${name} at ${status}: .planning stays writable`);
+        // Delegation has to remain true advice, so a dispatched subagent is not restricted here.
+        allowed(inProject(root, { agentId: IMPLEMENTER_AGENT }), `${name} at ${status}: a dispatched implementer still works`);
+        // The untrusted receipt may only TIGHTEN. Where bytes are still readable, an actor they name
+        // as the approver is refused even as a subagent; where none are, there is nothing to
+        // recognise and the subagent stays admitted. The same bytes buy the writer nothing else —
+        // every assertion above already held with the receipt naming a different actor.
+        if (readable) writeFileSync(join(root, readable), receipt({ approved_session_id: `${SESSION}#${IMPLEMENTER_AGENT}` }));
+        const shadowed = inProject(root, { agentId: IMPLEMENTER_AGENT });
+        if (readable) denied(shadowed, `${name} at ${status}: a subagent the surviving bytes name as approver`, /may not also implement/);
+        else allowed(shadowed, `${name} at ${status}: no readable bytes means no identity to recognise`);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    }
+  }
+
+  // THE INERTNESS THAT IS LOAD-BEARING SURVIVES. A `blocked` project with NO receipt surface is an
+  // ordinary legacy or mid-planning `.planning`, nothing was ever approved in it, and this
+  // plugin-wide hook must stay out of its way. Breaking this would restrict every user with a
+  // pre-receipt `.planning` directory.
+  for (const [name, build] of [
+    ["a legacy .planning with no .state at all", root => {
+      rmSync(join(root, ".planning", ".state"), { recursive: true });
+      writeFileSync(join(root, ".planning", "PLAN.md"), "# legacy\n");
+    }],
+    // The PLAN phase: drafts on disk, `.state` created but still empty, no approval anywhere.
+    ["plan drafts and an empty .state", root => {
+      writeFileSync(join(root, ".planning", "DEV_CLARIFIED.json"), JSON.stringify({ status: "clarified", sessionId: SESSION }));
+    }],
+  ]) {
+    const root = blocked(build);
+    try {
+      allowed(inProject(root, { agentId: undefined }), `${name}: the conversation still writes project code`);
+      allowed(inProject(root, { tool: "Bash", command: "rm -rf src", agentId: undefined }), `${name}: the conversation still runs commands`);
+      allowed(inProject(root, { agentId: IMPLEMENTER_AGENT }), `${name}: a subagent is unaffected`);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // `resolve()` COLLAPSES `..` LEXICALLY; THE KERNEL RESOLVES THE SYMLINK FIRST.
+  //
+  // The header of `safeProjectPath` claims "a path is judged by where it points, not by how it is
+  // spelled". That claim was FALSE for any function that accepted a `..`: with
+  // `.planning/statelink -> ../src`, the spelling `.planning/statelink/../.state/review.json`
+  // computed as the canonical receipt — `safeExactTarget` returned true for it — while a write
+  // through it lands in `<root>/.state/review.json`. `safeProjectPath` and `projectRelativePath`
+  // were immune only because they REJECT `..` first, which makes that rejection a correctness
+  // precondition for their `resolve()`, not spelling hygiene.
+  // ---------------------------------------------------------------------------------------------
+
+  const { resolvedProjectRelativePath, safeExactTarget } = await import(join(REPO, "hooks", "_path_safety.ts"));
+  const spellingRoot = realpathSync(mkdtempSync(join(tmpdir(), "implementer-identity-spelling-")));
+  try {
+    mkdirSync(join(spellingRoot, ".planning", ".state"), { recursive: true });
+    mkdirSync(join(spellingRoot, "src"), { recursive: true });
+    writeFileSync(join(spellingRoot, ".planning", ".state", "review.json"), receipt());
+    symlinkSync("../src", join(spellingRoot, ".planning", "statelink"));
+    // Built by concatenation, NOT `join`: `path.join` normalizes the `..` away lexically, which is
+    // the very collapse under test — a fixture that used it would assert nothing.
+    const spelled = `${spellingRoot}/.planning/statelink/../.state/review.json`;
+    assert.match(spelled, /\/\.\.\//, "the fixture must actually carry a `..` segment");
+    assert.equal(
+      resolvedProjectRelativePath(spellingRoot, spelled), ".state/review.json",
+      "scope must be the kernel's landing, not the lexical collapse onto the receipt",
+    );
+    assert.equal(
+      safeExactTarget(spellingRoot, spelled, join(spellingRoot, ".planning", ".state", "review.json")), false,
+      "an exact-target check must refuse a `..` spelling rather than compare the lexical form",
+    );
+    // ...and the honest spelling of the same file is still the same file.
+    assert.equal(resolvedProjectRelativePath(spellingRoot, join(spellingRoot, ".planning", ".state", "review.json")), ".planning/.state/review.json");
+    assert.equal(safeExactTarget(spellingRoot, join(spellingRoot, ".planning", ".state", "review.json"), join(spellingRoot, ".planning", ".state", "review.json")), true);
+  } finally {
+    rmSync(spellingRoot, { recursive: true, force: true });
+  }
 
   const plainProject = mkdtempSync(join(tmpdir(), "implementer-identity-plain-"));
   try {

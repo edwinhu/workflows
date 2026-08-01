@@ -457,7 +457,27 @@ describe("external generated-plan receipt workflows", () => {
     writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt()));
     expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ kind: "canonical", resolved: expect.objectContaining({ planFile, hash }) }));
     writeFileSync(join(root, ".planning", planFile), "# tampered\n");
-    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "stale-receipt" });
+    // `governed` is the half of `blocked` that a gate acts on: a receipt surface EXISTS here, so a
+    // caller must not read the unresolvable state as permission. See `hasReceiptSurface`.
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "stale-receipt", governed: true });
+  }));
+
+  test("blocked separates a governed receipt surface from an ungoverned .planning", () => withProject((root) => {
+    // Legacy content and nothing else: nothing was ever approved, and every gate must stay inert.
+    mkdirSync(join(root, ".planning"), { recursive: true });
+    writeFileSync(join(root, ".planning", "PLAN.md"), plan);
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: false });
+    // The PLAN phase: drafts on disk, `.state` created but still empty. Also ungoverned.
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: false });
+    // A receipt PRESENT but unreadable is governed, and so is a governance directory replaced by a
+    // link — including a DANGLING one, which classifies under the same reason as the benign case
+    // above and is why the flag cannot be derived from `reason`.
+    writeFileSync(join(root, ".planning", ".state", "review.json"), "{ not a receipt");
+    expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ governed: true }));
+    rmSync(join(root, ".planning", ".state"), { recursive: true });
+    symlinkSync("nowhere", join(root, ".planning", ".state"));
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: true });
   }));
 });
 

@@ -321,13 +321,35 @@ try {
   // regression here turns a targeted rule into a global Bash ban.
   // -----------------------------------------------------------------------------------------------
 
-  writeFileSync(join(cwd, ".planning", ".state", "review.json"), JSON.stringify({
+  // THE PENDING RECEIPT HERE MUST BE SCHEMA-VALID, and an earlier version of this fixture was not:
+  // it omitted `reviewer_session_id` and `reviewed_at`, so `parseReviewState` rejected it and the
+  // project classified as BLOCKED, not PENDING. The assertion passed only because the gate then read
+  // "blocked" as a blanket permit — i.e. this row was pinning the hole documented in
+  // `blockedProjectDisposition` while claiming to pin PENDING inertness.
+  const pendingReceipt = {
     workflow: "dev", plan_file: planFile, plan_hash: createHash("sha256").update(plan).digest("hex"),
     approved_session_id: SESSION, approved_at: "2026-01-01T00:00:00.000Z", status: "PENDING",
-  }, null, 2));
+    reviewer_session_id: "", reviewed_at: "",
+  };
+  writeFileSync(join(cwd, ".planning", ".state", "review.json"), JSON.stringify(pendingReceipt, null, 2));
   for (const actor of RESTRICTED) {
     assert.ok(!denies("rm src/a.js", actor), `a PENDING receipt must gate nothing (${actor})`);
   }
+
+  // ...and the malformed version of the same receipt is NOT inertness. A governed project whose
+  // authority cannot be resolved restricts the CONVERSATION, because "make the receipt unreadable"
+  // is the cheapest thing for a restricted actor to arrange and must not be the way out of the rule.
+  const { reviewer_session_id: _r, reviewed_at: _a, ...malformed } = pendingReceipt;
+  writeFileSync(join(cwd, ".planning", ".state", "review.json"), JSON.stringify(malformed, null, 2));
+  assert.ok(denies("rm src/a.js", "approver"), "an unresolvable receipt is not inertness for the conversation");
+  assert.ok(denies("git status", "approver"), "...including read-only commands: there is no allowlist here either");
+  // A DISPATCHED subagent stays unrestricted in that state, which is what keeps "delegate it" true
+  // advice — the deliberate residue recorded in `blockedProjectDisposition`.
+  assert.ok(!denies("rm src/a.js", "reviewer"), "a dispatched subagent is not restricted by an unresolvable receipt");
+  // ...unless the bytes that DO survive name it. The unreadable receipt may only ever tighten.
+  writeFileSync(join(cwd, ".planning", ".state", "review.json"), JSON.stringify({ ...malformed, reviewer_session_id: `${SESSION}#${REVIEWER_AGENT}` }, null, 2));
+  assert.ok(denies("rm src/a.js", "reviewer"), "surviving bytes that name the actor still deny it");
+  writeFileSync(join(cwd, ".planning", ".state", "review.json"), JSON.stringify(pendingReceipt, null, 2));
 
   const ungoverned = mkdtempSync(join(tmpdir(), "restricted-actor-ungoverned-"));
   try {

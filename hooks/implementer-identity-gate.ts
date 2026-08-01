@@ -63,16 +63,22 @@
  *   Identity and lifecycle are still resolved FIRST — not because the command text could otherwise
  *   decide anything (nothing reads it now), but because an unresolvable identity must still deny.
  *
- * BECAUSE IT IS PLUGIN-WIDE IT MUST BE INERT BY DEFAULT.
- *   It no-ops unless the call is a mutation, in a project whose canonical receipt authenticates its
- *   selected plan, and that receipt is APPROVED. Inside such a project it fails CLOSED: an identity
- *   it cannot resolve is a denial, never a silent allow.
+ * BECAUSE IT IS PLUGIN-WIDE IT MUST BE INERT BY DEFAULT — AND "INERT" MEANS UNGOVERNED, NOT UNREADABLE.
+ *   It no-ops unless the call is a mutation in a GOVERNED project: one with a receipt surface under
+ *   `.planning/.state`. Where that receipt resolves and is APPROVED, the identity rules below apply.
+ *   Where it EXISTS but does not resolve, `blockedProjectDisposition` applies a reduced, fail-closed
+ *   regime — because reading "I cannot classify this project" as permission made one `ln -s` a
+ *   complete bypass of every rule in this file. Where there is no receipt surface at all, the hook
+ *   does nothing, which is the case that must never regress: it is every project of every user.
+ *   Inside a governed project it fails CLOSED: an identity it cannot resolve is a denial, never a
+ *   silent allow.
  */
 import { classifyPlanningLifecycle, hookActorIdentity, isSubagentPayload, parseReviewState } from "../workflows/lib/approved-artifact.ts";
 import { aliasRejectionReason, allowedNativePlanPath, projectRelativePath, resolvedProjectRelativePath, safeExactTarget } from "./_path_safety.ts";
 import { builtInOrchestratorDirectories } from "./_workflow_policies.ts";
 import { reviewerDispatchedImplementer } from "./lineage.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 // FIRST STATEMENT WITH AN EFFECT in this module's body, so every line of gate logic below runs
@@ -102,6 +108,12 @@ denyOnCrash("IMPLEMENTER IDENTITY GATE");
  */
 const FILE_TOOLS = new Set(["Write", "Edit", "MultiEdit", "NotebookEdit"]);
 
+// Declared HERE, not next to the receipt-protection block that reads them: `blockedProjectDisposition`
+// runs before that block's line is ever reached, and a `const` referenced ahead of its declaration is
+// a TDZ ReferenceError — which `denyOnCrash` would turn into a deny for every blocked project.
+const RECEIPT_STATE_DIRECTORY = ".planning/.state";
+const RECEIPT_RELATIVE = `${RECEIPT_STATE_DIRECTORY}/review.json`;
+
 /**
  * The one Bash denial, for every restricted actor and every command.
  *
@@ -123,6 +135,107 @@ function bashDenial(who: string): never {
   );
 }
 
+/**
+ * The orchestrator's write surface, shared by the canonical and the blocked branch.
+ *
+ * Both branches ask the identical question — "is this write inside the narrow surface an
+ * orchestrator keeps?" — and an earlier revision answered it in only one of them, which is how the
+ * blocked branch ended up answering "yes, everywhere". Keeping one copy means a future narrowing
+ * cannot be applied to one branch and forgotten in the other.
+ */
+function orchestratorSurfaceOrDeny(label: string, permitted: readonly string[], preface: string): never {
+  const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
+  if (payload.permission_mode === "plan" && allowedNativePlanPath(target)) allow();
+  const relative = projectRelativePath(cwd, target);
+  if (relative !== null && permitted.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`))) allow();
+  // A hard link or a symlink escape also lands here with `relative === null`, and rendering it as
+  // "may only write .planning, .claude" names the directory the file is ALREADY IN. Say which
+  // rule fired, or the denial reads as a permitted-list bug whose obvious fix reopens the escape.
+  const alias = aliasRejectionReason(cwd, target);
+  deny(`${label}: ${preface} ${alias ?? `The orchestrator may only write ${permitted.join(", ")}`}; delegate project mutations to a separate implementation agent.`);
+}
+
+/**
+ * `blocked` IS MORE SUSPICION, NOT LESS. A SENTINEL MEANING "SOMETHING IS WRONG HERE" IS NOT A PERMIT.
+ *
+ * The call site used to read `if (lifecycle.kind !== "canonical") allow()`, which handed the same
+ * blanket permission to a project with no planning state at all and to a project whose receipt
+ * surface had been REPLACED. Measured before this fix, in a project with a legitimately APPROVED
+ * receipt (`approved_session_id: "approver-1"`) whose `.planning/.state` was swapped for a symlink to
+ * a sibling directory holding byte-identical receipt content: the recorded approver's `Write src/a.js`
+ * and its `Bash rm -rf src` were BOTH allowed, at APPROVED and at PENDING. Every rule in this file —
+ * receipt protection, both actor comparisons, the Bash denial — was off for as long as the symlink
+ * existed, and creating it needs one `ln -s` during PENDING, when Bash is unrestricted anyway.
+ *
+ * THE INERTNESS THAT IS LOAD-BEARING IS `kind === "none"`, AND ONLY THAT. This hook runs on every
+ * Edit/Write/MultiEdit/NotebookEdit/Bash in every project of every user, so a project that is not
+ * governed must be untouched. That is what `none` means. `blocked` splits (see `hasReceiptSurface`):
+ * without a receipt surface it is an ungoverned or legacy `.planning`, nothing was ever approved, and
+ * it is allowed exactly as before; WITH one, the project is governed and its authority is currently
+ * unreadable, which is the state this function refuses to reward.
+ *
+ * WHAT A GOVERNED-BUT-BROKEN PROJECT GETS
+ *   - No receipt to read, so no actor can be CLEARED by identity. A conversation-level actor is
+ *     therefore held to the orchestrator's own surface and gets no Bash — the same regime the
+ *     approving conversation is in under a valid APPROVED receipt. This is the fail-closed choice and
+ *     it is the one with a real cost: an ordinary main-chat actor in a project whose receipt merely
+ *     went stale loses Bash and project writes until the state is repaired.
+ *   - A dispatched subagent is still allowed, because "delegate it" has to remain true advice and
+ *     because the implementer is the actor this rule was never aimed at. That is the residue: an
+ *     approver re-entering as a subagent is caught only by the untrusted-receipt check below, which
+ *     an attacker who controls the unreadable receipt can trivially defeat by not naming itself.
+ *   - `.planning` and `.claude` stay writable — the restriction is the ORCHESTRATOR'S surface, not a
+ *     stricter one — so most blocked states (a stale receipt, a malformed one) are repairable from
+ *     the conversation that hit the denial. A SYMLINKED `.state` is not repairable that way, because
+ *     removing a link needs `rm`; that one needs a dispatched agent or a shell outside the session.
+ *
+ * THE UNTRUSTED READ MAY ONLY TIGHTEN. The receipt bytes at a blocked project are exactly what
+ * cannot be trusted, so they are never used to permit anything: they are read best-effort, and used
+ * ONLY to deny an actor that names itself the approver or reviewer. Feeding this check attacker-chosen
+ * bytes can at most deny the attacker.
+ */
+function blockedProjectDisposition(reason: string, governed: boolean): never {
+  if (!governed) allow();
+  const label = `IMPLEMENTER IDENTITY GATE (planning state blocked: ${reason})`;
+  const repair =
+    `The receipt at \`${RECEIPT_RELATIVE}\` exists but does not resolve, so no actor here can be shown to be ` +
+    `separate from the approver. Repair the planning state — \`${RECEIPT_STATE_DIRECTORY}\` must be a real ` +
+    `directory containing a receipt that authenticates its selected plan — or run the work through a ` +
+    `dispatched agent, which is unrestricted.`;
+
+  // Untrusted, best-effort, DENY-ONLY: never a source of permission. Its ONLY effect is to extend the
+  // restriction to a SUBAGENT that the bytes on disk name as approver or reviewer.
+  const actor = hookActorIdentity(payload);
+  const named = actor === null ? null
+    : untrustedReceiptField("approved_session_id") === actor ? "approved"
+    : untrustedReceiptField("reviewer_session_id") === actor ? "reviewed"
+    : null;
+  // The implementer is not the actor this rule separates, and denying every subagent would make
+  // "dispatch a separate agent" unfollowable advice in the one state that most needs it.
+  if (named === null && isSubagentPayload(payload)) allow();
+  const preface = named === null
+    ? `No actor can be separated from the approver in this project's current state.`
+    : `This actor ${named} the plan recorded here and may not also implement it.`;
+  // The restriction is the ORCHESTRATOR'S, not a stricter one: a restricted actor under a valid
+  // APPROVED receipt still writes `.planning` and `.claude`, and taking that away here would remove
+  // the only in-session route back to a resolvable state. The permitted set is the most restrictive
+  // any built-in workflow grants — the blocked receipt names a workflow, but that name is untrusted
+  // and a WIDER surface is exactly what it must not be able to buy.
+  if (FILE_TOOLS.has(tool)) orchestratorSurfaceOrDeny(label, [".planning", ".claude"], `${preface} ${repair}`);
+  deny(`${label}: ${preface} It may not execute commands in a project whose approval state cannot be resolved. ` +
+    `A restricted actor gets NO Bash — this is not an allowlist with a gap: read-only commands, \`git status\`, ` +
+    `and TEST RUNS are all refused here. ${repair}`);
+}
+
+/** The receipt as it happens to read RIGHT NOW, with no safety at all. Deny-only, by construction. */
+function untrustedReceiptField(field: string): string | null {
+  try {
+    const value = JSON.parse(readFileSync(join(cwd, ".planning", ".state", "review.json"), "utf8"));
+    const found = value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>)[field] : undefined;
+    return typeof found === "string" && found.trim() ? found : null;
+  } catch { return null; }
+}
+
 const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
@@ -131,7 +244,8 @@ if (!FILE_TOOLS.has(tool) && tool !== "Bash") allow();
 // Authority comes from the receipt, never from a visible planning file.
 const cwd = typeof payload.cwd === "string" && payload.cwd.trim() ? payload.cwd : process.cwd();
 const lifecycle = classifyPlanningLifecycle(cwd);
-if (lifecycle.kind !== "canonical") allow();
+if (lifecycle.kind === "none") allow();
+if (lifecycle.kind === "blocked") blockedProjectDisposition(lifecycle.reason, lifecycle.governed);
 const receipt = lifecycle.resolved.receipt;
 
 /**
@@ -168,11 +282,19 @@ const receipt = lifecycle.resolved.receipt;
  *   and it is deliberately a duplicate rather than a delegation: two gates, one rule, neither
  *   assuming the other fires.
  *
- * WHAT THIS DOES NOT CLOSE, MEASURED AFTER THE FIX. Only TOOL CALLS are gated. During the PENDING
- * window a conversation-level actor may still `Write .claude/probe.ts` (permitted orchestrator
- * surface) and then `Bash bun .claude/probe.ts`, and the probe writes the receipt with raw `fs`,
- * which no hook sees. Re-measured with this rule in place: both calls ALLOWED, and
- * `validateGeneratedPlanArtifact` then admitted the fabricated receipt.
+ * WHAT THIS DOES NOT CLOSE, MEASURED AFTER THE FIX — AND IT IS SIMPLER THAN AN EARLIER VERSION OF
+ * THIS NOTE ADMITTED. The whole PENDING window is open, and not by a clever route: a conversation-level
+ * approver may `Write src/a.js` — plain content, canonical path, no Bash, no symlink, no `..` — and it
+ * is ALLOWED, because `if (receipt.status !== "APPROVED") allow()` sits above every actor comparison.
+ * Reproduced at `a80e920`, before any of the receipt work, and again with every rule in this file in
+ * place. The Bash route below is a further consequence, not the exposure itself; framing it as the
+ * exposure understates how directly reachable this is.
+ *
+ * The receipt SURFACE is the one thing that is closed during PENDING (that is what the block below is
+ * for), so what remains open is arbitrary project mutation by the approver before review completes,
+ * plus this: `Write .claude/probe.ts` (permitted orchestrator surface) then `Bash bun .claude/probe.ts`,
+ * where the probe writes the receipt with raw `fs`, which no hook sees. Re-measured with this rule in
+ * place: both calls ALLOWED, and `validateGeneratedPlanArtifact` then admitted the fabricated receipt.
  *
  * TWO NARROW CLOSURES WERE TRIED AND BOTH FAIL, so neither is implemented here:
  *   - Scoping the Bash denial to commands whose TEXT can reach `.planning/.state` (the shape
@@ -216,8 +338,6 @@ const receipt = lifecycle.resolved.receipt;
  * skill-scope reason). So every denial on this path names the actor identity verbatim: the reviewer
  * learns what to record by being refused once, exactly as `denySeparation` intends.
  */
-const RECEIPT_STATE_DIRECTORY = ".planning/.state";
-const RECEIPT_RELATIVE = `${RECEIPT_STATE_DIRECTORY}/review.json`;
 if (FILE_TOOLS.has(tool)) {
   const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
   const relative = resolvedProjectRelativePath(cwd, target);
@@ -244,6 +364,12 @@ if (FILE_TOOLS.has(tool)) {
     if ("code" in proposed) refuse(`the proposed receipt is invalid (${proposed.code}): ${proposed.message}`);
     if (proposed.status === "PENDING") refuse("a finalization must set a final status");
     if (proposed.reviewer_session_id !== actor) refuse("reviewer_session_id must be exactly the writing actor's identity");
+    // `proposed.workflow !== receipt.workflow` is UNREACHABLE as written, and deliberately kept:
+    // `parseReviewState` above is given `receipt.workflow` as the expected value, so a differing
+    // workflow is already a schema failure. It stays as the guard for the day that argument is
+    // dropped; `tests/implementer-identity-contract.test.mjs` pins the schema denial that makes it
+    // unreachable, so the change that would make this line live cannot pass unnoticed. Every OTHER
+    // field here is reachable and has its own mutation test.
     if (proposed.workflow !== receipt.workflow || proposed.plan_file !== receipt.plan_file || proposed.plan_hash !== receipt.plan_hash
       || proposed.approved_session_id !== receipt.approved_session_id || proposed.approved_at !== receipt.approved_at) {
       refuse("a finalization must reproduce workflow, plan_file, plan_hash, approved_session_id, and approved_at unchanged");
@@ -292,16 +418,11 @@ if (!isSubagentPayload(payload)) {
   // orchestrator's write surface — planning and configuration paths, plus native plan files in plan
   // mode — and nothing else. Anything wider is the bypass this gate exists to close.
   if (FILE_TOOLS.has(tool)) {
-    const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
-    if (payload.permission_mode === "plan" && allowedNativePlanPath(target)) allow();
-    const relative = projectRelativePath(cwd, target);
-    const permitted = builtInOrchestratorDirectories(receipt.workflow);
-    if (relative !== null && permitted.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`))) allow();
-    // A hard link or a symlink escape also lands here with `relative === null`, and rendering it as
-    // "may only write .planning, .claude" names the directory the file is ALREADY IN. Say which
-    // rule fired, or the denial reads as a permitted-list bug whose obvious fix reopens the escape.
-    const alias = aliasRejectionReason(cwd, target);
-    deny(`IMPLEMENTER IDENTITY GATE (${receipt.workflow}): this conversation ${isApprover ? "approved" : "reviewed"} ${receipt.plan_file} and may not also implement it. ${alias ?? `The orchestrator may only write ${permitted.join(", ")}`}; delegate project mutations to a separate implementation agent.`);
+    orchestratorSurfaceOrDeny(
+      `IMPLEMENTER IDENTITY GATE (${receipt.workflow})`,
+      builtInOrchestratorDirectories(receipt.workflow),
+      `this conversation ${isApprover ? "approved" : "reviewed"} ${receipt.plan_file} and may not also implement it.`,
+    );
   }
   // Bash carries no reliable target path and whether a command writes is undecidable, so the
   // approving or reviewing conversation gets NO commands — including read-only ones and test runs.

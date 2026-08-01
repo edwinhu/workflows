@@ -67,7 +67,7 @@ export type ApprovedArtifact = { hash: string; planFile?: string; planPath?: str
 export type BuiltInArtifactLayout = "canonical" | "canonical-with-legacy-provenance" | "legacy" | "conflict";
 export type PlanningLifecycle =
   | { kind: "canonical"; resolved: ResolvedGeneratedPlan }
-  | { kind: "blocked"; reason: string }
+  | { kind: "blocked"; reason: string; governed: boolean }
   | { kind: "none" };
 export type ApprovalPolicyDescriptor = { schemaVersion: 1; workflow: string; planPath: string; metadataPath: string; verdictPath: string };
 
@@ -387,6 +387,40 @@ function hasOnlyBenignPreplanSentinel(planning: string): boolean {
       && typeof value.sessionId === "string" && value.sessionId.trim() !== "";
   } catch { return false; }
 }
+/**
+ * `blocked` ALONE DOES NOT SAY WHETHER THIS PROJECT IS GOVERNED, AND THE DIFFERENCE IS A GATE.
+ *
+ * `blocked` covers two populations that must not be treated alike:
+ *   - a project that merely has a non-empty `.planning/` (legacy files, in-progress plan drafts) and
+ *     no receipt surface at all — `conversion-required`. Ordinary, extremely common, and nothing has
+ *     ever been approved there.
+ *   - a project whose receipt surface EXISTS but does not resolve — including the case where
+ *     `.planning` or `.planning/.state` has been replaced by a symlink or a regular file, which is
+ *     reachable with one `ln -s` and turns an approved project into an unclassifiable one.
+ *
+ * A caller that reads `kind !== "canonical"` as "not my business" hands the second population the
+ * same blanket permission as the first, so the cheapest way to disable an approval-bound gate is to
+ * make the receipt unreadable. This flag is what lets the gate refuse that.
+ *
+ * IT IS STRUCTURAL, NOT REASON-KEYED. Keying on `reason` strings does not work: replacing `.state`
+ * with a DANGLING symlink classifies as `conversion-required` (nothing exists at the receipt path),
+ * which would read as the benign population. So the question asked is "does a receipt-shaped surface
+ * exist in any form", answered with `lstat` — which never follows the link that is the problem.
+ *
+ * A real, empty `.planning/.state/` directory is deliberately NOT governed: that is the shape a
+ * project has during CLARIFY and PLAN, before anything is approved, and treating it as governed
+ * would restrict the ordinary pre-approval conversation.
+ */
+function hasReceiptSurface(planning: string): boolean {
+  for (const path of [planning, join(planning, ".state")]) {
+    let entry; try { entry = lstatSync(path); } catch { continue; }
+    // A symlink or a regular file where a governance DIRECTORY belongs is itself the evidence.
+    if (!entry.isDirectory()) return true;
+  }
+  // `lstat`, not `existsSync`: a dangling or escaping receipt symlink is present, and present is
+  // the whole question. `existsSync` follows the link and would report it absent.
+  try { lstatSync(join(planning, ".state", "review.json")); return true; } catch { return false; }
+}
 export function classifyPlanningLifecycle(projectDir: string): PlanningLifecycle {
   let root: string;
   try { root = realpathSync(projectDir); } catch { return { kind: "none" }; }
@@ -395,11 +429,12 @@ export function classifyPlanningLifecycle(projectDir: string): PlanningLifecycle
   const receiptPath = join(planning, ".state", "review.json");
   const resolved = resolveGeneratedPlanReviewState(root);
   if (!isError(resolved)) return { kind: "canonical", resolved };
-  if (existsSync(receiptPath)) return { kind: "blocked", reason: resolved.code };
+  const governed = hasReceiptSurface(planning);
+  if (existsSync(receiptPath)) return { kind: "blocked", reason: resolved.code, governed };
   if (hasOnlyBenignPreplanSentinel(planning)) return { kind: "none" };
   try {
-    if (readdirSync(planning).length > 0) return { kind: "blocked", reason: "conversion-required" };
-  } catch { return { kind: "blocked", reason: "planning-read" }; }
+    if (readdirSync(planning).length > 0) return { kind: "blocked", reason: "conversion-required", governed };
+  } catch { return { kind: "blocked", reason: "planning-read", governed }; }
   return { kind: "none" };
 }
 

@@ -50,6 +50,12 @@ export function safeProjectPath(projectDir: string, value: unknown): string | nu
   if (!contained(root, target)) return null;
   // Resolves symlinked ancestors, then the leaf itself — including a dangling one, whose target is
   // where a write actually lands — so a path is judged by where it points, not by how it is spelled.
+  //
+  // THAT CLAIM HOLDS HERE ONLY BECAUSE OF THE `..` REJECTION TWO LINES ABOVE, which is a correctness
+  // PRECONDITION for the `resolve()` on the previous line, not spelling hygiene. `resolve()` cancels
+  // `link/..` lexically; the kernel resolves `link` first and the two land in different directories.
+  // Delete the rejection and this function starts vouching for the lexical answer. See
+  // `canonicalWalkingSpelling`, which computes the real one for callers that must accept any spelling.
   const canonical = canonicalPossiblyMissing(target);
   if (!canonical || !contained(root, canonical)) return null;
   const leaf = resolveLeafLink(canonical);
@@ -111,11 +117,44 @@ export function resolvedProjectRelativePath(projectDir: string, value: unknown):
   if (typeof value !== "string" || !value.trim()) return null;
   const root = canonicalExisting(projectDir);
   if (!root) return null;
-  const canonical = canonicalPossiblyMissing(resolve(root, value));
-  const landing = canonical ? resolveLeafLink(canonical) ?? canonical : null;
+  const landing = canonicalWalkingSpelling(root, value);
   if (!landing || !contained(root, landing)) return null;
   const rel = relative(root, landing);
   return rel && !rel.startsWith("..") ? rel : null;
+}
+
+/**
+ * `resolve()` COLLAPSES `..` LEXICALLY, AND THE KERNEL DOES NOT. THE TWO DISAGREE OVER A SYMLINK.
+ *
+ * `resolve(root, "a/link/../b")` deletes `link/..` as a pair before any `realpath` runs, so the
+ * result is `root/a/b`. The kernel resolves `link` FIRST and only then applies `..`, landing at
+ * `dirname(realpath(link))/b`. Measured with `.planning/statelink -> src`: the spelling
+ * `.planning/statelink/../.state/review.json` was computed as `.planning/.state/review.json` — the
+ * receipt — while a write through it lands in `<root>/.state/review.json`. A function whose entire
+ * contract is WHERE THE BYTES LAND cannot be built on the lexical answer.
+ *
+ * So the spelling is walked component by component, resolving each symlink before the next segment
+ * is applied and taking `..` against the RESOLVED prefix. A missing intermediate is joined and the
+ * walk continues, because that is what a write to a not-yet-created path does.
+ *
+ * THIS IS ALSO WHY THE `..` REJECTIONS ELSEWHERE ARE NOT SPELLING HYGIENE. `safeProjectPath`,
+ * `projectRelativePath` and `safeExactTarget` are correct over `resolve()` ONLY because each refuses
+ * a literal `..` segment before it computes anything. Removing one of those rejections as "cosmetic"
+ * silently substitutes the lexical answer for the real one in a function that authorizes writes.
+ */
+function canonicalWalkingSpelling(root: string, value: string): string | null {
+  let current = isAbsolute(value) ? "/" : root;
+  for (const segment of value.split(/[\\/]+/)) {
+    if (segment === "" || segment === ".") continue;
+    if (segment === "..") { current = dirname(current); continue; }
+    const next = join(current, segment);
+    const resolved = resolveLeafLink(next);
+    // An unresolvable component (a symlink loop, a link whose parent vanished) is not something to
+    // guess at: refuse rather than fall back to the lexical join.
+    if (!resolved) return null;
+    current = resolved;
+  }
+  return current;
 }
 
 /**
@@ -214,6 +253,16 @@ export function resolveLeafLink(path: string): string | null {
 
 /** True only if a requested (including missing) path resolves inside root without symlink escape. */
 export function safeExactTarget(projectDir: string, candidate: string, expected: string): boolean {
+  // A LITERAL `..` IS REFUSED BEFORE ANYTHING IS COMPUTED, because everything below is computed with
+  // `resolve()`, which collapses `..` lexically while the kernel resolves the symlink first — see
+  // `canonicalWalkingSpelling`. Measured: with `.planning/statelink -> src`, the candidate
+  // `.planning/statelink/../.state/review.json` compares EQUAL to the canonical receipt here while a
+  // write through it lands in `<root>/.state/review.json`. `safeProjectPath` and
+  // `projectRelativePath` already refuse `..` for the same reason; this one was reached with a RAW,
+  // unfiltered target by `implementer-identity-gate` and so had to make the rejection itself.
+  // Nothing legitimate needs it: this function authorizes ONE exact file, which always has a
+  // `..`-free spelling.
+  if (typeof candidate !== "string" || candidate.split(/[\\/]+/).some(part => part === "..")) return false;
   const root = canonicalExisting(projectDir);
   // A verdict target must never be a leaf symlink, including dangling/chained aliases.
   try { if (lstatSync(candidate).isSymbolicLink()) return false; } catch { /* missing leaf is permitted */ }
