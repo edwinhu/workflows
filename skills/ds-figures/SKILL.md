@@ -12,11 +12,14 @@ wrong so much as unusable at the point it matters: in a printed journal, in a
 reviewer's greyscale printout, or projected in a room where a tenth of the
 audience cannot separate your two series.
 
-## The five rules
+## The house rules
 
 | | Rule | Why it is not negotiable |
 |---|---|---|
-| **Type** | **Serif** faces for all text (labels, ticks, legends, annotations) | Figures sit inside serif body text. A sans-serif figure reads as pasted in from somewhere else, and journals increasingly ask for the match. |
+| **Type** | **Serif** faces for **all** text — axis labels, tick labels, **legend entries and legend title**, annotations, facet strips, colorbar labels | Figures sit inside serif body text. A sans-serif figure reads as pasted in from somewhere else, and journals increasingly ask for the match. The legend is the piece that most often escapes a global font setting, and one sans legend undoes the whole figure. |
+| **Labels** | **Axis labels in Title Case** ("Shareholder Support Rate", not "shareholder support rate" or "support_rate"). Every user-visible string is **prose, never an identifier** | The reader never saw your DataFrame. `glass_lewis` is not a scenario, **Glass Lewis** is; `mkt_cap_wtd` is not an axis, **Market Cap Weighted** is. Shipping identifiers tells the reader the figure was never finished — and it is the single fastest tell that a chart came straight out of a notebook. |
+| **Numbering** | Main exhibits **Figure 1 … Figure N**, consecutive in order of first mention. Appendix exhibits restart as **Figure A1 … Figure AN** | Numbers are the reader's only address for an exhibit. A sequence that skips, repeats, or continues main numbering into the appendix breaks every cross-reference in the text. |
+| **Clipping** | **Nothing may be cut off.** Verify the saved file, not the notebook preview | A clipped y-label or a legend sliced by the frame is invisible in the inline preview at one size and obvious in the PDF at another. |
 | **Format** | **Vector** (PDF/SVG/EPS). Raster only when the figure genuinely needs it — heatmaps, scatter with >50k points, images | Vector stays sharp at any zoom and prints at the press's resolution, not yours. A raster figure in a PDF is the one element a reader can visibly degrade by zooming. |
 | **Resolution** | If raster is unavoidable, **300 DPI minimum** at final print size | 300 DPI is the floor most journals accept. Note DPI is meaningless without physical size: 300 DPI at 3 inches is 900px. Set figure size in inches, then DPI. |
 | **Scale** | Use **log** when the series span more than ~1 decade — but then name the ticks | A linear axis over a 77x range collapses everything below the largest series into one band at the baseline. Log fixes that and introduces its own problem: unreadable automatic ticks. |
@@ -77,6 +80,33 @@ mpl.rcParams.update({
 Save vector explicitly: `fig.savefig("f1.pdf")`. `savefig.dpi` only binds when
 the format is raster, so it is a fallback, not the plan.
 
+`rcParams["font.family"]` covers legend text, so a sans legend under a serif
+figure means the legend was styled separately — check for a stray `prop=`,
+`fontproperties=`, or a `FontProperties` on `ax.legend()`.
+
+### Relabelling before plotting
+
+Rename once, at the boundary between the data and the plot, so no identifier can
+reach an axis, a legend, or a facet strip:
+
+```python
+SCENARIO_LABELS = {
+    "glass_lewis": "Glass Lewis",
+    "iss_rec": "ISS Recommendation",
+    "mgmt_rec": "Management Recommendation",
+}
+AXIS_LABELS = {"support_rate": "Shareholder Support Rate", "yr": "Year"}
+
+plot_df = df.assign(scenario=df["scenario"].map(SCENARIO_LABELS))
+assert plot_df["scenario"].notna().all(), "unmapped scenario code"
+ax.set_xlabel(AXIS_LABELS["yr"])
+ax.set_ylabel(AXIS_LABELS["support_rate"])
+ax.legend(title="Scenario")          # Title Case here too
+```
+
+The assert matters: a `.map()` with a missing key silently produces `NaN`, which
+drops the series or prints "nan" in the legend instead of failing loudly.
+
 ### Observable Plot / pyobsplot
 
 Plot has no font parameter — style it through the enclosing CSS, or set the
@@ -134,6 +164,27 @@ alt.themes.enable("house")
 - Viridis is perceptually uniform; `jet`/`rainbow` are not, and manufacture a
   bright band mid-scale that readers interpret as a feature of the data. This is
   a false finding introduced by the palette, not a matter of taste.
+- **Every default label is an identifier.** matplotlib/plotnine/Altair name axes
+  and legend entries from the column and the category *values* — so `support_rate`
+  and `glass_lewis` ship unless you rename them. There is no library setting that
+  makes this right; the fix is a label map applied before plotting, and it must
+  cover legend entries and facet strips, not just `set_xlabel`.
+- **`bbox_inches="tight"` fixes clipping at save time, not at draw time.** The
+  inline preview and `plt.show()` use the figure's own bounds, so a label clipped
+  on screen can be fine in the PDF and vice versa. Only the saved file counts.
+- **`bbox_inches="tight"` does not rescue a legend placed outside the axes with
+  `loc="upper left", bbox_to_anchor=(1.02, 1)` if the figure was also given an
+  explicit `figsize` the legend exceeds** — tight bbox expands the canvas, which
+  silently changes the figure's physical width and therefore its effective DPI and
+  the column width it was sized for. Reserve the space instead
+  (`fig.subplots_adjust(right=0.78)`) so the size you set is the size you get.
+- **Title Case is not `str.title()`.** `"support rate by iss rec".title()` yields
+  `"Support Rate By Iss Rec"` — it capitalizes the preposition and mangles the
+  acronym. Write the label string out by hand; an automated caser produces text
+  that is visibly wrong in a way readers attribute to carelessness.
+- **Appendix figures restart at A1 and are numbered independently of the main
+  sequence.** A figure labelled "Figure 12" in an appendix that only has three
+  exhibits reads as a numbering bug and sends readers hunting for figures 9-11.
 
 ## Red Flags — STOP If You Catch Yourself
 
@@ -146,15 +197,34 @@ alt.themes.enable("house")
 | About to plot more than ~8 categories in color | No palette separates that many | Facet, aggregate a tail, or label directly |
 | About to plot a numeric year on an axis without formatting it | Renders as `2,005` — a thousands separator on a year | `tickFormat: "d"`, or make the column a date |
 | About to set a log scale and accept the default ticks | Under ~2 decades they come out unlabelled or in scientific notation | Name the ticks and format them plainly; put "log scale" in the label |
+| About to ship an axis label, legend entry, facet strip, or category value that is a column name or a code (`support_rate`, `glass_lewis`, `mkt_cap_wtd`) | The reader has never seen your schema; identifiers read as an unfinished draft | Map to prose before plotting — "Shareholder Support Rate", "Glass Lewis" |
+| About to write an axis label in lowercase or sentence case | House style is Title Case for both axes | "Shareholder Support Rate", not "shareholder support rate" |
+| About to call `.title()` on a label to get Title Case | Capitalizes prepositions and destroys acronyms — "By Iss Rec" | Write the string by hand |
+| About to declare a figure done from the notebook preview | Preview bounds differ from the saved file, so clipping shows up in one and not the other | Open the saved PDF/PNG and check all four edges |
+| About to leave `ax.legend()` with a default sans font under a serif figure | A styled-separately legend escapes `font.family` | Remove the `prop=`/`fontproperties=` override |
+| About to continue main figure numbering into the appendix ("Figure 12" in Appendix A) | Breaks every cross-reference and implies missing exhibits | Restart at Figure A1 |
 
 ## Checking a figure before it ships
 
-1. **Greyscale it.** Convert to greyscale and confirm every series is still
+Run these **on the saved file**, not the notebook preview.
+
+1. **Read every string aloud.** Axis labels, tick labels, legend title and
+   entries, facet strips, annotations, colorbar label. Each must be prose a
+   reader who has never seen the data would understand, and each axis label must
+   be in Title Case. One underscore anywhere fails this check.
+2. **Check all four edges for clipping.** Y-label at the left, x-label and tick
+   labels at the bottom, legend and long tick labels at the right, title at the
+   top. Rotated tick labels and a legend anchored outside the axes are where this
+   fails; both look fine inline and truncate on save.
+3. **Greyscale it.** Convert to greyscale and confirm every series is still
    distinguishable. If not, the figure depends on hue alone and needs a second
    encoding.
-2. **Simulate CVD.** `pip install daltonlens`, or view in any deuteranopia
+4. **Simulate CVD.** `pip install daltonlens`, or view in any deuteranopia
    simulator.
-3. **Zoom the PDF to 400%.** Text should stay sharp. If it pixelates, a raster
-   image got embedded somewhere.
-4. **Read it at print size.** Shrink to the column width it will occupy —
+5. **Zoom the PDF to 400%.** Text should stay sharp. If it pixelates, a raster
+   image got embedded somewhere. At this zoom the legend's font is also
+   unambiguous — serif or not.
+6. **Read it at print size.** Shrink to the column width it will occupy —
    typically 3.5in single-column. Tick labels usually die first.
+7. **Check the number.** The figure's number is consecutive with the exhibit
+   before it, and appendix exhibits are in the A-series.
