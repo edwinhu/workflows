@@ -38,8 +38,14 @@ import assert from "node:assert";
 
 const REPO = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 
-/** Directories that ship as the plugin's runtime. `tests/` is deliberately absent. */
-const PRODUCTION_DIRECTORIES = ["hooks", "workflows", "scripts", "bin", "agents", "skills", "references", "policy", "commands"];
+/**
+ * Directories that ship as the plugin's runtime. `tests/` is deliberately absent.
+ *
+ * `external/` holds the published external-workflow contract fixtures. It was missing, so the one
+ * directory whose whole purpose is to be copied by third parties was the one this check did not
+ * cover. It is empty at the moment, which is exactly when an omission is cheapest to fix.
+ */
+const PRODUCTION_DIRECTORIES = ["hooks", "workflows", "scripts", "bin", "agents", "skills", "references", "policy", "commands", "external"];
 const CODE = /\.(ts|js|mjs|cjs|py|sh)$/;
 
 /**
@@ -75,21 +81,48 @@ function* codeFiles(directory) {
   }
 }
 
+/**
+ * SCAN THE FILE, NOT ITS LINES.
+ *
+ * The first version tested each line in isolation. Every READ_PATTERN is written with `\s*` between
+ * its tokens precisely so whitespace cannot hide a read — but a per-line test can never let `\s*`
+ * match a NEWLINE, so
+ *
+ *     process.env
+ *       .CLAUDE_SESSION_ID
+ *
+ * was invisible to a check whose entire job is to prove a construct is absent. That is the same
+ * class of failure as the defect itself: a check that cannot fail on the case it is for.
+ *
+ * The comment exemption is preserved by BLANKING whole-comment lines in place — same length, so
+ * every match offset still maps back to a real line — rather than by skipping them, which is what
+ * forced the per-line shape in the first place.
+ */
+function scannableText(text) {
+  return text
+    .split("\n")
+    .map(line => {
+      // A line that only NAMES the variable in prose is the documentation this check depends on.
+      const stripped = line.replace(/^\s*(?:\/\/|\/?\*+|#)\s?.*$/, "");
+      return stripped === "" && line.trim() !== "" ? " ".repeat(line.length) : line;
+    })
+    .join("\n");
+}
+
 const offenders = [];
 for (const directory of PRODUCTION_DIRECTORIES) {
   for (const path of codeFiles(join(REPO, directory))) {
     const text = readFileSync(path, "utf8");
     if (!text.includes("CLAUDE_SESSION_ID")) continue;
-    text.split("\n").forEach((line, index) => {
-      // A line that only NAMES the variable in prose is the documentation this check depends on.
-      const stripped = line.replace(/^\s*(?:\/\/|\/?\*+|#)\s?.*$/, "");
-      const candidate = stripped || line;
-      const isComment = stripped === "" && line.trim() !== "";
-      if (isComment) return;
-      const matched = READ_PATTERNS.some(pattern => pattern.test(candidate))
-        || (path.endsWith(".sh") && SHELL_EXPANSION.test(candidate));
-      if (matched) offenders.push(`${relative(REPO, path)}:${index + 1}: ${line.trim()}`);
-    });
+    const scannable = scannableText(text);
+    const patterns = path.endsWith(".sh") ? [...READ_PATTERNS, SHELL_EXPANSION] : READ_PATTERNS;
+    for (const pattern of patterns) {
+      const global = new RegExp(pattern.source, `${pattern.flags.replace("g", "")}g`);
+      for (const match of scannable.matchAll(global)) {
+        const line = scannable.slice(0, match.index).split("\n").length;
+        offenders.push(`${relative(REPO, path)}:${line}: ${match[0].replace(/\s+/g, " ").trim()}`);
+      }
+    }
   }
 }
 
@@ -113,8 +146,12 @@ for (const sample of [
   `s = os.environ["CLAUDE_SESSION_ID"]`,
   `s = os.environ.get("CLAUDE_SESSION_ID", "")`,
   `char *s = getenv("CLAUDE_SESSION_ID");`,
+  // The line-split evasion this scanner used to admit. Goes through scannableText, not the raw
+  // pattern list, because the whole point is that the SCAN — not the regex — was what broke.
+  `const s = process.env\n  .CLAUDE_SESSION_ID;`,
 ]) {
-  assert.ok(READ_PATTERNS.some(pattern => pattern.test(sample)), `pattern list fails to detect a real read: ${sample}`);
+  const scannable = scannableText(sample);
+  assert.ok(READ_PATTERNS.some(pattern => pattern.test(scannable)), `pattern list fails to detect a real read: ${sample}`);
 }
 
 /** The real variable must NOT trip it, or the check would forbid the correct replacement. */

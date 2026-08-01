@@ -104,13 +104,19 @@ export function aliasRejectionReason(projectDir: string, value: unknown): string
   const target = resolve(root, value);
   const canonical = canonicalPossiblyMissing(target);
   const leaf = canonical ? resolveLeafLink(canonical) : null;
-  if (leaf && multiplyLinked(leaf)) {
-    return `\`${value}\` is a HARD LINK (link count above one), so the same bytes are reachable under another path and writing it cannot be authorized by this path. This is not a permitted-directory problem — widening the permitted list would not and should not admit it.`;
-  }
   // Only report a symlink when resolution actually MOVED the path. A path that is simply outside
   // the project root did not alias anything, and calling it a symlink escape is its own false
   // diagnosis — the exact failure mode this function exists to prevent.
   const resolvedElsewhere = (leaf ?? canonical) !== null && (leaf ?? canonical) !== target;
+  if (leaf && multiplyLinked(leaf)) {
+    // A SYMLINK whose target happens to be multiply linked was rendered as a flat "is a HARD LINK",
+    // which names the wrong construct: the reader inspects `value` itself, finds `st_nlink == 1`,
+    // and concludes the gate is broken. Denial is correct either way; only the diagnosis differed.
+    const construct = resolvedElsewhere
+      ? `\`${value}\` resolves through a symlink to \`${leaf}\`, which is a HARD LINK (link count above one)`
+      : `\`${value}\` is a HARD LINK (link count above one)`;
+    return `${construct}, so the same bytes are reachable under another path and writing it cannot be authorized by this path. This is not a permitted-directory problem — widening the permitted list would not and should not admit it.`;
+  }
   if (resolvedElsewhere && (!canonical || !contained(root, canonical) || (leaf && !contained(root, leaf)))) {
     return `\`${value}\` resolves through a symlink to \`${leaf ?? canonical}\`, outside the project root. A path is judged by where it points, not by how it is spelled.`;
   }

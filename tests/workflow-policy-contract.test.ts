@@ -160,7 +160,14 @@ describe("external workflow policy contract", () => {
       const env = { ...process.env }; delete env.CLAUDE_SESSION_ID;
       const run = (args: string[]) => Bun.spawnSync(["bun", join(import.meta.dir, "../hooks/approved-artifact-gate.ts"), ...args], { stdin: Buffer.from(payload), env });
       expect(run(["--workflow-policy", workflowPath]).stdout.toString()).toBe("");
-      expect(run(["--workflow-policy", join(root, "missing.json")]).exitCode).not.toBe(0);
+      // A MISSING external workflow policy must DENY, not exit non-zero. It used to throw out of
+      // the hook and exit 1, and Claude Code treats a non-zero hook exit as NON-BLOCKING — so the
+      // one input that leaves this gate unable to identify the workflow at all was the one input
+      // that let the dispatch through. `denyOnCrash` turns that into the denial it always claimed
+      // to be, so the assertion is now on the DECISION rather than on the exit code.
+      const missing = run(["--workflow-policy", join(root, "missing.json")]);
+      expect(missing.exitCode).toBe(0);
+      expect(missing.stdout.toString()).toContain('"permissionDecision": "deny"');
       writeFileSync(join(root, ".approval/policy.json"), "{}\n");
       expect(run(["--workflow-policy", workflowPath]).stdout.toString()).toContain("permissionDecision");
       writeFileSync(join(root, ".approval/policy.json"), JSON.stringify({ schemaVersion: 1, workflow: "wrong", planPath: ".approval/CURRENT.md", metadataPath: ".approval/CURRENT.meta.json", verdictPath: ".approval/CURRENT_REVIEWED.md" }));

@@ -323,6 +323,49 @@ try {
   allowed(runGate(cwd, { agentId: REVIEWER_AGENT }), "a PENDING receipt does not gate the reviewer");
   write();
 
+  // ---------------------------------------------------------------------------------------------
+  // A CRASH IS A DENIAL. Claude Code treats a non-zero hook exit as NON-BLOCKING, so every throw in
+  // this gate was a silent allow.
+  // ---------------------------------------------------------------------------------------------
+
+  // `receipt.workflow` under schema-v2 is an arbitrary WORKFLOW_IDENTITY string, and that regex
+  // admits `constructor`. `builtInOrchestratorDirectories` indexed a prototype-bearing object
+  // literal with it, returned `Object`'s constructor, and `permitted.some` threw — measured
+  // TypeError, EXIT=1, and the approving conversation's Write to arbitrary project code landed
+  // ungated under an APPROVED receipt.
+  for (const poisoned of ["constructor", "tostring", "valueof"]) {
+    write({ workflow: poisoned });
+    denied(
+      runGate(cwd, { agentId: undefined }),
+      `a receipt naming workflow "${poisoned}" must deny, not crash`,
+      /may not also implement it/i,
+    );
+  }
+  write();
+
+  // The class, not the one instance: an induced throw of any kind must still emit a schema-valid
+  // deny and exit 0.
+  for (const argv of [[], ["--reject"]]) {
+    const crash = spawnSync("bun", [join(REPO, "tests", "fixtures", "crash-gate.ts"), ...argv], {
+      cwd,
+      env: productionEnv(),
+      input: JSON.stringify(payloadFor(cwd)),
+      encoding: "utf8",
+    });
+    assert.equal(crash.status, 0, `an induced ${argv.length ? "rejection" : "throw"} must exit 0, not ${crash.status}: ${crash.stderr}`);
+    assert.match(crash.stdout, /"permissionDecision": "deny"/, `an induced fault must deny: ${crash.stdout}`);
+    const parsed = JSON.parse(crash.stdout);
+    assert.equal(parsed.hookSpecificOutput.hookEventName, "PreToolUse");
+    const schema = spawnSync("python3", ["-c", [
+      "import json,sys",
+      `sys.path.insert(0, ${JSON.stringify(join(REPO, "scripts", "checks"))})`,
+      "from hook_output_schema import validate_payload",
+      "print(json.dumps(validate_payload('PreToolUse', json.load(sys.stdin))))",
+    ].join("\n")], { input: crash.stdout, encoding: "utf8" });
+    assert.equal(schema.status, 0, `schema check failed to run: ${schema.stderr}`);
+    assert.equal(schema.stdout.trim(), "[]", `crash deny violates the PreToolUse output schema: ${schema.stdout}`);
+  }
+
   const plainProject = mkdtempSync(join(tmpdir(), "implementer-identity-plain-"));
   try {
     mkdirSync(join(plainProject, "src"), { recursive: true });

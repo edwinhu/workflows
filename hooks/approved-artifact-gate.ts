@@ -3,7 +3,11 @@ import { lstatSync, readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, join, relative } from "node:path";
 import { hookActorIdentity, isSubagentPayload, parseApprovalPolicyDescriptor, validateApprovedArtifact, validateGeneratedPlanArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
-import { allow, deny, projectFromArgs, readPayload } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, projectFromArgs, readPayload } from "./_gate_common.ts";
+
+// A throw here would exit non-zero, which Claude Code treats as NON-BLOCKING — the dispatch this
+// gate exists to authenticate would proceed unauthenticated. See `denyOnCrash`.
+denyOnCrash("APPROVED ARTIFACT GATE");
 const policy = workflowFromArg(Bun.argv.slice(2));
 if (!policy) { deny("Approved artifact gate requires exactly one known --workflow ds|dev|work|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();

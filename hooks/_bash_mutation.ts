@@ -2,10 +2,13 @@
  * Best-effort classification of a Bash command line as "mutates files on disk".
  *
  * SCOPE, AFTER THE INVERSION — READ THIS FIRST
- *   This module NO LONGER decides whether a restricted actor may run a command. That question moved
- *   to `_bash_allowlist.ts`, which denies by default and admits only recognized read-only
- *   invocations, because the denylist below never converged: four rounds of enumeration produced
- *   four rounds of fresh live ALLOWs. `implementer-identity-gate` does not import this file.
+ *   This module NO LONGER decides whether a restricted actor may run a command. The denylist below
+ *   never converged — four rounds of enumeration produced four rounds of fresh live ALLOWs — and
+ *   inverting it to a positive allowlist (`_bash_allowlist.ts`, rounds 5-7) did not converge either,
+ *   only relocating the same undecidable enumeration into command names, then flags, then arity.
+ *   Round 8 therefore DELETED `_bash_allowlist.ts` and stopped reading the command text at all: a
+ *   restricted actor gets no Bash, full stop. See `implementer-identity-gate`, which asks no
+ *   question of the command line and does not import this file.
  *
  *   What remains is `orchestrator-mutation-guard`'s `ds`/`dev`/`work` branch, and that is genuinely
  *   different work rather than a duplicate mechanism. That guard is skill-scoped and receipt-blind:
@@ -335,7 +338,12 @@ function classifySimple(simple: string): BashMutation {
   if (!tokens.length) return CLEAN;
   const [name, ...rest] = tokens;
   if (MUTATING_COMMANDS.has(name)) {
-    const readOnlyForm = READ_ONLY_FORMS[name];
+    // `Object.hasOwn`, so a command literally named `constructor`/`toString` cannot pull a
+    // function off Object.prototype and have it invoked as a read-only-form predicate. Not
+    // reachable today (`MUTATING_COMMANDS` is a Set and holds no such name), but the same bare
+    // index in `builtInOrchestratorDirectories` WAS reachable and crashed a gate into a silent
+    // allow, so the shape is removed wherever it appears rather than argued about per site.
+    const readOnlyForm = Object.hasOwn(READ_ONLY_FORMS, name) ? READ_ONLY_FORMS[name] : undefined;
     if (!readOnlyForm || !readOnlyForm(rest)) return flag(`invokes the file-mutating command \`${name}\``);
   }
   if (name === "git" && rest.length && MUTATING_GIT.has(rest[0])) return flag(`invokes \`git ${rest[0]}\`, which rewrites worktree content`);

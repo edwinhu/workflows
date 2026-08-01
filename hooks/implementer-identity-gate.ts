@@ -72,7 +72,13 @@ import { classifyPlanningLifecycle, hookActorIdentity, isSubagentPayload } from 
 import { aliasRejectionReason, allowedNativePlanPath, projectRelativePath } from "./_path_safety.ts";
 import { builtInOrchestratorDirectories } from "./_workflow_policies.ts";
 import { reviewerDispatchedImplementer } from "./lineage.ts";
-import { allow, deny, readPayload } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT in this module's body, so every line of gate logic below runs
+// under it. A throw after this point becomes a deny instead of an exit-1, which Claude Code would
+// treat as non-blocking. It cannot cover a throw during MODULE EVALUATION of the imports above —
+// ES imports are hoisted — but none of those modules execute anything at import time.
+denyOnCrash("IMPLEMENTER IDENTITY GATE");
 
 /**
  * Every tool that can land bytes in a file.

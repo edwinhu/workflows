@@ -85,6 +85,57 @@ export function allow(): never {
 }
 
 /**
+ * A CRASH IS A DENIAL, NOT A NON-EVENT.
+ *
+ * Claude Code treats a hook that exits non-zero as NON-BLOCKING: the message goes to stderr and the
+ * tool call proceeds. So an unhandled throw in a PreToolUse gate is a silent ALLOW, which is the
+ * exact opposite of what a gate whose header promises "it fails CLOSED" is for. Measured: a receipt
+ * carrying `workflow: "constructor"` made `builtInOrchestratorDirectories` return `undefined`,
+ * `permitted.some` threw, `implementer-identity-gate` exited 1, and the approving conversation's
+ * `Write` to arbitrary project code landed ungated under an APPROVED receipt.
+ *
+ * THE HANDLER MUST NOT ITSELF THROW. It formats one fixed-shape deny with `pyJson` over a string it
+ * builds from the error's own text, and everything that could fail — reading `.stack`, a getter on a
+ * thrown exotic object — sits inside its own try. If even that fails it still denies, with a
+ * generic reason. There is no path through here that reaches `process.exit(1)`.
+ *
+ * `readPayload`'s deliberate `process.exit(1)` on a non-object payload is UNAFFECTED: it exits
+ * rather than throws, precisely so no local catch — and now no global handler — can reinterpret it.
+ * That one case keeps its Python-parity crash semantics.
+ */
+export function denyOnCrash(gate: string): void {
+  const denyFromError = (kind: string, error: unknown): void => {
+    let detail: string;
+    try {
+      detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    } catch {
+      detail = "an unrepresentable value was thrown";
+    }
+    try {
+      // Deliberately NOT `deny()`: keep the emission inline so a future change to deny's shape
+      // cannot make the crash path print something the schema rejects.
+      console.log(
+        pyJson({
+          hookSpecificOutput: {
+            hookEventName: "PreToolUse",
+            permissionDecision: "deny",
+            permissionDecisionReason:
+              `${gate}: this gate crashed (${kind}: ${detail}) and could not decide. A gate that cannot ` +
+              `resolve identity or policy denies; a non-zero exit would have been treated as non-blocking ` +
+              `and silently permitted this call. Re-run after fixing the underlying fault.`,
+          },
+        }),
+      );
+    } catch {
+      console.log('{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "gate crashed and could not decide"}}');
+    }
+    process.exit(0);
+  };
+  process.on("uncaughtException", error => denyFromError("uncaughtException", error));
+  process.on("unhandledRejection", error => denyFromError("unhandledRejection", error));
+}
+
+/**
  * Non-blocking feedback to Claude, on any event that accepts additionalContext.
  *
  * `event` MUST equal the event the hook is wired to: a hookEventName that disagrees with the wiring

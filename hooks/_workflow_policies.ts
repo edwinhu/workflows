@@ -29,8 +29,16 @@ function builtInWorkflowFromArg(argv: string[]): WorkflowPolicy | null {
  * must hold the orchestrator to the SAME surface the skill-scoped mutation guard does. Reading it
  * from this one table is what keeps the two gates from drifting apart.
  */
+/**
+ * `Object.hasOwn`, NOT a bare index. `receipt.workflow` under schema-v2 is an arbitrary
+ * `WORKFLOW_IDENTITY` string, and that regex admits `constructor` — a bare index then returned
+ * `Object`'s inherited constructor, `policy.allowedOrchestratorDirectories` was `undefined`, and
+ * `permitted.some(...)` threw a TypeError out of `implementer-identity-gate`. Claude Code treats a
+ * non-zero hook exit as NON-BLOCKING, so a receipt naming `workflow: "constructor"` turned the gate
+ * into a silent allow for arbitrary project writes. Measured before the fix.
+ */
 export function builtInOrchestratorDirectories(workflow: string): readonly string[] {
-  const policy = (POLICIES as Record<string, WorkflowPolicy | undefined>)[workflow];
+  const policy = Object.hasOwn(POLICIES, workflow) ? (POLICIES as Record<string, WorkflowPolicy | undefined>)[workflow] : undefined;
   return policy ? policy.allowedOrchestratorDirectories : [".planning", ".claude"];
 }
 

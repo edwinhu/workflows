@@ -86,13 +86,22 @@ export async function composePlanReview(args: Readonly<{
   return composition;
 }
 
-/** Re-authenticates the composed plan and changes only receipt fields owned by plan review. */
+/**
+ * Re-authenticates the composed plan and changes only receipt fields owned by plan review.
+ *
+ * TAKES A NONCE, NOT AN IDENTITY. The parameter was `reviewerSessionId: string`, and the separation
+ * rule underneath compared the approver to that literal — so one actor could finalize an APPROVED
+ * receipt naming a reviewer that never existed and admission accepted it. There is deliberately no
+ * overload, no optional identity, and no other export from this module that reaches finalization:
+ * the reviewer identity is read out of the record `reviewer-verdict-guard` wrote for the actor it
+ * OBSERVED, and this module cannot spell one. See `finalizeGeneratedPlanReview`.
+ */
 export function finalizeComposedPlanReview(args: Readonly<{
-  projectDir: string; policy: GeneratedPlanReviewPolicy; composition: PlanReviewComposition; reviewerSessionId: string; reviewedAt?: string;
+  projectDir: string; policy: GeneratedPlanReviewPolicy; composition: PlanReviewComposition; reviewerAuthorizationNonce: string; reviewedAt?: string;
 }>): ModernReviewReceipt | ArtifactError {
   const policyError = validatePolicy(args?.policy); if (policyError) return policyError;
   if (!args.composition || !issuedCompositions.has(args.composition) || args.composition.workflow !== args.policy.workflow || !Array.isArray(args.composition.executedCheckIds) || args.composition.executedCheckIds.length === 0) return err("review-composition", "complete matching plan review composition issued by this composer is required");
-  if (typeof args.reviewerSessionId !== "string" || !args.reviewerSessionId.trim()) return err("review-session", "reviewerSessionId is required");
+  if (typeof args.reviewerAuthorizationNonce !== "string" || !args.reviewerAuthorizationNonce.trim()) return err("reviewer-authorization", "a reviewer authorization nonce issued by the reviewer hook is required; this contract does not accept a caller-supplied reviewer identity");
   const resolved = resolveGeneratedPlanReviewState(args.projectDir, args.policy.workflow); if (isError(resolved)) return resolved;
   const prior = args.composition.approvalReceipt;
   if (resolved.receipt.status !== "PENDING" || resolved.hash !== args.composition.planHash || resolved.planFile !== args.composition.planFile || JSON.stringify(resolved.receipt) !== JSON.stringify(prior)) return err("review-race", "plan identity or approval receipt changed before finalization");
@@ -101,7 +110,7 @@ export function finalizeComposedPlanReview(args: Readonly<{
     args.policy.workflow,
     prior,
     args.composition.status,
-    args.reviewerSessionId,
+    args.reviewerAuthorizationNonce,
     args.reviewedAt,
   );
 }
