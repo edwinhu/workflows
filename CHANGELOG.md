@@ -11,6 +11,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   - Remaining eight are docs and examples: `skills/look-at/references/use-cases.md` (50), `skills/using-skills/SKILL.md` (6), `skills/look-at/README.md` (5), the three `skills/look-at/examples/*.sh` (4 each), `skills/look-at/scripts/look_at.py`'s own docstring and error text (4), `skills/workshop/SKILL.md` (3).
   - **`uv run python3 X.py` and `uv run --script X.py` are not interchangeable**, and the failure is silent until the import. Only `--script` honours PEP 723. Verified after the change: the corrected form and `look_at.sh --backend api` both return correct output from a 46-page PDF; all four edited code files pass `ast.parse` / `node --check` / `bash -n`.
 
+## [5.105.0] - 2026-08-01
+
+### Fixed
+- **`ds` orchestration banned every pipe and redirection while `dev` and `work` allowed them.** Measured, that denied `pixi run pytest 2>&1 | tail -20`, `rg foo | wc -l`, `git log --oneline | head -5` and `ls -la | head` under `ds` — in the workflow that most wants a paged test run. Nobody argued for the difference; it was the pre-existing shape, and the rounds that touched the file were closing holes rather than opening them. `ds` now takes the same `classifyBashMutation` path, which splits a command line and judges each simple command, so `x && cp a b` and `x | tee f` are still caught. Mutation is unchanged: `cp`, `rm -rf`, `> file`, `| tee`, `git checkout/restore/apply` and `$(...)` all still deny. Allow-side coverage moves 23 → 26, which is `dev`'s number. The one rule that is genuinely `ds`-specific — no inline analysis code in main chat — is untouched.
+- **`npx-ownership-panel`'s preflight guarded a script the DAG never runs and missed the two it does.** It checked `split_s12.sas`, retired from the DAG in #83, while `run_s12_array.sh` and `split_s12_one.sas` — the array path that replaced it — went unchecked. A guard that exists to fail in seconds instead of 40 minutes of grid time was watching the wrong file. Two further prereqs that fail late were also never checked: `~/sas/MERGE_ASOF.sas`, which `merge_panel.sas` `%INCLUDE`s as the last node in the DAG, and `../src/wrds_pull.py`, which both Python legs import at module load and a `scp scripts/*` leaves behind.
+- **`chmod +x` covered four wrappers of seven**, the same consolidation oversight. Not a break — `qsub` does not require the exec bit — but a half-covered list reads as a decision when it is an omission.
+
+### Changed
+- `references/pipeline.md` rewritten against the tree. It documented a retired architecture — a `workflows/npx-ownership-pipeline.js` orchestrator, a second entry point in `run_npx_pipeline.sh`, and a "Python alternatives" table offering runnable commands for four scripts deleted in #83/#85 — so it told a reader to run seven scripts that are not there. Also corrected: the legs table (four legs, wrong leg 2), a design-decision claim that "all data building is SAS" when legs 2 and 5 are Python, and a customization section pointing at the per-script `%let` values that `pipeline_config.sas` exists to centralize.
+
 ## [Unreleased]
 
 ## [5.104.0] - 2026-08-01
