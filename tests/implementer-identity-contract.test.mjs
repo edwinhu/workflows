@@ -623,7 +623,10 @@ try {
   }
 
   // ---------------------------------------------------------------------------------------------
-  // THE RECEIPT IS NOT PART OF ANYONE'S WRITE SURFACE — AT ANY LIFECYCLE STATUS, INCLUDING `blocked`.
+  // THE RECEIPT IS NOT PART OF ANY CONVERSATION-LEVEL ACTOR'S WRITE SURFACE — AT ANY LIFECYCLE STATUS,
+  // INCLUDING `blocked`. A DISPATCHED SUBAGENT is outside that claim in the blocked branch and always
+  // was: the last assertion in this block is exactly that write succeeding, as the documented cost of
+  // keeping "delegate it" followable. It is dominated by the same subagent's unrestricted `Bash`.
   //
   // The blocked branch granted `.planning` and `.claude` WHOLESALE, with no receipt exclusion, and
   // that was the one place the invariant above was false. A fully contained approver — `Write

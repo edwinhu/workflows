@@ -258,7 +258,9 @@ function blockedProjectDisposition(reason: string, governed: boolean): never {
   // and a WIDER surface is exactly what it must not be able to buy.
   //
   // EXCEPT THE RECEIPT. `.planning` granted WHOLESALE re-authorized writing `.planning/.state/review.json`
-  // — the one file the invariant below says is part of nobody's write surface AT ANY LIFECYCLE STATUS.
+  // — the one file the invariant below says is part of no CONVERSATION-LEVEL actor's write surface AT ANY
+  // LIFECYCLE STATUS. (A dispatched subagent is already past this exclusion via the `allow()` above, so
+  // the invariant never covered it here; see the header on that block.)
   // This branch was the single place that was not true, and it was reachable by a fully contained
   // approver with no Bash, no symlink and no `..`, in three permitted Writes:
   //   1. Write the selected plan with any different bytes (permitted `.planning`) -> `stale-receipt`,
@@ -284,7 +286,7 @@ function blockedProjectDisposition(reason: string, governed: boolean): never {
     const landing = resolvedProjectRelativePath(cwd, tool === "NotebookEdit" ? input.notebook_path : input.file_path);
     if (landing === RECEIPT_RELATIVE || landing === RECEIPT_STATE_DIRECTORY || landing?.startsWith(`${RECEIPT_STATE_DIRECTORY}/`)) {
       deny(`${label}: ${preface} \`${RECEIPT_STATE_DIRECTORY}/\` holds the receipt every other gate reads its ` +
-        `authority from, so it is not part of any orchestrator's write surface — including here, where that ` +
+        `authority from, so it is not part of any conversation-level actor's write surface — including here, where that ` +
         `authority is already unreadable. Rewriting it from this conversation would let an actor restricted by ` +
         `the receipt replace the identities that restrict it. ${repair}`);
     }
@@ -317,7 +319,15 @@ if (lifecycle.kind === "blocked") blockedProjectDisposition(lifecycle.reason, li
 const receipt = lifecycle.resolved.receipt;
 
 /**
- * THE RECEIPT IS NOT PART OF ANYONE'S WRITE SURFACE — AT ANY LIFECYCLE STATUS.
+ * THE RECEIPT IS NOT PART OF ANY CONVERSATION-LEVEL ACTOR'S WRITE SURFACE — AT ANY LIFECYCLE STATUS.
+ *
+ * THAT IS THE ACTOR CLASS THE INVARIANT HOLDS FOR, AND NOT A WIDER ONE. In the BLOCKED branch the
+ * receipt exclusion sits below `if (named === null && isSubagentPayload(payload)) allow()`, so a
+ * DISPATCHED SUBAGENT the unreadable bytes do not name still writes the receipt there — the forgery
+ * chain documented at that exclusion completes at the cost of one delegation. That is dominated
+ * rather than closed: the same subagent already holds `Bash rm -rf .planning`, which classifies
+ * `none` and is a total permit at one command instead of three writes plus a dispatch. It is the
+ * same subagent residue the header above discloses, and it is left open for the same reason.
  *
  * `builtInOrchestratorDirectories` returns `[".planning", ".claude"]`, and the conversation-level
  * branch below authorized any path under those prefixes. `.planning/.state/review.json` IS the

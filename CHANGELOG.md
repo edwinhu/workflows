@@ -13,6 +13,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [5.104.0] - 2026-08-01
+
+### Fixed
+- **The reviewer never delivered a verdict, because the gate was comparing against an identity that is never set.** `process.env.CLAUDE_SESSION_ID` is not populated by Claude Code in a hook process, so every actor comparison read `undefined` and the reviewer's finalization could not be attributed. Identity now derives from the PreToolUse payload (`session_id` plus `agent_id` for a dispatched subagent), which is the only place the harness actually supplies it.
+- **Blocking gates dispatched asynchronously and returned before the verdict existed.** Dispatch on those paths is now synchronous, so the gate observes the result it is gating on rather than an empty one.
+- **`.planning/.state/` is no longer part of a conversation-level actor's write surface at any lifecycle status.** It holds the receipt every other gate reads its authority from; granting `.planning` wholesale let an actor restricted BY the receipt rewrite the identities that restrict it. Scoping is computed from where the bytes land, so a `..` spelling cannot walk around it. Cost, deliberately taken: a malformed receipt is no longer repairable from the conversation that hit the denial and needs a dispatched agent; a stale one stays self-repairable, since its fault is in the plan file.
+- **A restricted actor gets no Bash** under an APPROVED receipt and in the blocked-but-governed branch — not an allowlist with a gap: read-only commands, `git status`, and test runs are refused too. Command-text scoping was measured and does not hold; `bun .claude/probe.ts` contains no telltale substring.
+- **`denyOnCrash` now covers every PreToolUse gate**, so a hook that throws fails closed instead of exiting 0.
+
+### Known residues, stated rather than papered over
+- The whole PENDING window is open to a conversation-level approver: `if (receipt.status !== "APPROVED") allow()` sits above every actor comparison, so plain project writes and Bash are permitted before review completes. The only closure found is a blanket Bash denial across planning, which is not imposed.
+- Under a tampered or unreadable receipt, a dispatched subagent the surviving bytes do not name remains unrestricted — including on the receipt itself in the blocked branch. Denying every subagent would make "delegate it" unfollowable in the state that most needs it, and the same subagent's `rm -rf .planning` already classifies `none`, a total permit at one command.
+
 ## [5.103.1] - 2026-07-31
 
 ### Added
