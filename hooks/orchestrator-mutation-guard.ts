@@ -96,14 +96,19 @@ if (tool === "Bash" && ["ds", "dev", "work"].includes(policy.workflow)) {
   const command = String(input.command ?? "").trim();
   const readOnlyGit = /^git (?:status|diff|log|show|rev-parse|ls-files)(?: [A-Za-z0-9._/@:=+-]+)*$|^git branch --show-current$/;
   const dsCheck = /^bash scripts\/check-all-ds\.sh(?: (?:\.|[A-Za-z0-9][A-Za-z0-9._/-]*))?$/;
-  // ds keeps its pre-existing, stricter shape: no chaining or redirection of any kind, git and
-  // bash reduced to two named read-only forms, and no inline analysis code.
+  // ds carries ONE rule the other workflows do not: analysis belongs in a dispatched agent, not in
+  // main chat. That is about WHERE analysis runs and is unrelated to how a command line is spelled,
+  // so it is enforced on its own and the shared classifier handles the rest.
+  //
+  // It used to also ban chaining and redirection outright — inherited, never argued for. The cost
+  // was measured: `pixi run pytest 2>&1 | tail -20`, `rg foo | wc -l` and `git log --oneline | head`
+  // all denied under ds while dev and work allowed them, in the workflow that most wants a paged
+  // test run. The classifier below already splits a command line and judges each simple command, so
+  // it catches `x && cp a b` and `x | tee f` without costing the pipe.
   if (policy.workflow === "ds") {
-    if (hasUnsafeCompoundCommand(command) || /[<>\n\r]/.test(command)) deny("Orchestrator Bash enforcement rejects chaining, redirection, and substitution; use one reviewed orchestration command at a time.");
-    if (command.startsWith("git ") && !readOnlyGit.test(command)) deny("Orchestrator Bash enforcement permits only explicit read-only Git subcommands.");
+    if (["python3 -c", "pixi run python", "import pandas", "import numpy"].some(keyword => command.includes(keyword))) deny("Iron Law: no analysis code in main chat. Use the shared ready-wave implementation workflow.");
     if (command.startsWith("bash ") && !dsCheck.test(command)) deny("Orchestrator Bash enforcement permits only the named read-only DS check script.");
     if (readOnlyGit.test(command) || dsCheck.test(command)) allow();
-    if (["python3 -c", "pixi run python", "import pandas", "import numpy"].some(keyword => command.includes(keyword))) deny("Iron Law: no analysis code in main chat. Use the shared ready-wave implementation workflow.");
   } else if (readOnlyGit.test(command)) allow();
   // dev/work orchestration legitimately runs test and check commands with pipes and `2>&1`, so a
   // blanket ban on chaining would cost far more than it buys. The classifier splits the command

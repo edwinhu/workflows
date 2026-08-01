@@ -76,7 +76,7 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "7639afd432f180fff1631524e614b87ef564823837339c97aaf25eccc7057e1f",
+        "stdoutSha256": "89f45bcd5e158078a79d23c0056c58647e469df4ac3fb4f1cc697c1269fe2e49",
         "exit": 0,
         "fs": {}
       }
@@ -399,7 +399,7 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "1e81d1e83c5766c5affbb338c142cf00d70de49456c024da1f2050b20f9dde78",
+        "stdoutSha256": "e311a43c2e1c1330983a27a534712855302febffa286327ccaa92a70414c3ce2",
         "exit": 0,
         "fs": {}
       }
@@ -419,7 +419,7 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "1e81d1e83c5766c5affbb338c142cf00d70de49456c024da1f2050b20f9dde78",
+        "stdoutSha256": "b337d4e24295843efbb916a1b8bd640c335131853778c30d32f2dff8fe5eff36",
         "exit": 0,
         "fs": {}
       }
@@ -439,14 +439,14 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "1e81d1e83c5766c5affbb338c142cf00d70de49456c024da1f2050b20f9dde78",
+        "stdoutSha256": "55522b6bf3a3fec23ad9824c8a2955463e8e78cae5c2beb283f3c092be1bd06b",
         "exit": 0,
         "fs": {}
       }
     },
     {
-      "name": "deny-git-shell-chaining",
-      "kind": "deny",
+      "name": "allow-git-read-only-chaining",
+      "kind": "allow",
       "stdin": {
         "hook_event_name": "PreToolUse",
         "tool_name": "Bash",
@@ -459,10 +459,11 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "7639afd432f180fff1631524e614b87ef564823837339c97aaf25eccc7057e1f",
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {}
-      }
+      },
+      "note": "ds no longer bans chaining outright: two read-only git commands classify clean, exactly as under dev. Renamed from deny-git-shell-chaining, which pinned the retired blanket ban."
     },
     {
       "name": "deny-git-redirection",
@@ -479,7 +480,7 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "7639afd432f180fff1631524e614b87ef564823837339c97aaf25eccc7057e1f",
+        "stdoutSha256": "38db7e2704878e4fb52eaac50d9b5eb7d6b86a1ef0de5fe6f8137b163db50943",
         "exit": 0,
         "fs": {}
       }
@@ -499,7 +500,7 @@
         "ds"
       ],
       "tsExpected": {
-        "stdoutSha256": "7639afd432f180fff1631524e614b87ef564823837339c97aaf25eccc7057e1f",
+        "stdoutSha256": "29bc06297b103d3e30992e573caf01597c5d196089ea25299090b13f785151e6",
         "exit": 0,
         "fs": {}
       }

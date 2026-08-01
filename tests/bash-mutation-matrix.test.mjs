@@ -51,7 +51,7 @@ const WORKFLOWS = ["ds", "dev", "work", "writing", "workshop", "workflow-creator
  * 5 each — only what their own lists name. A workflow that started denying everything would look
  * identical to a correct one on the deny side alone, which is why this exists.
  */
-const ALLOW_SIDE_EXPECTED = { ds: 23, dev: 26, work: 26, writing: 5, workshop: 5, "workflow-creator": 5 };
+const ALLOW_SIDE_EXPECTED = { ds: 26, dev: 26, work: 26, writing: 5, workshop: 5, "workflow-creator": 5 };
 
 /**
  * The eighteen techniques as they were originally attempted, one per row of the matrix. They are
@@ -219,8 +219,8 @@ try {
   // `workshop` and `workflow-creator` named-command allowlists and on `ds`'s stricter pre-existing
   // checks. Only 49 are the classifier's own work. A floor would let that ratio drift unnoticed,
   // which is how "108/108" came to read as evidence for a mechanism responsible for under half.
-  assert.equal(byMechanism.classifier, 49, `classifier-attributed cells: ${byMechanism.classifier}`);
-  assert.equal(byMechanism["pre-existing allowlist"], 59, `allowlist-attributed cells: ${byMechanism["pre-existing allowlist"]}`);
+  assert.equal(byMechanism.classifier, 53, `classifier-attributed cells: ${byMechanism.classifier}`);
+  assert.equal(byMechanism["pre-existing allowlist"], 55, `allowlist-attributed cells: ${byMechanism["pre-existing allowlist"]}`);
   console.log(`  matrix attribution: ${byMechanism.classifier} classifier, ${byMechanism["pre-existing allowlist"]} pre-existing allowlist`);
 
   // -----------------------------------------------------------------------------------------------
