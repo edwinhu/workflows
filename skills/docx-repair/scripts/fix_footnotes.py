@@ -79,9 +79,57 @@ def read_zip_member(zf, name):
     return zf.read(name).decode("utf-8")
 
 
-def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
+# ── Which footnotes are author-acknowledgement footnotes? ──────────────
+_FN_REF_RE = re.compile(r'<w:footnoteReference\b[^>]*/>')
+
+
+def bio_footnote_ids(doc_xml, num_bio_footnotes=3):
+    """Return the w:id values of the author-acknowledgement footnotes.
+
+    AUTHORITATIVE: the body reference tells us which footnotes are bios. A bio
+    reference carries ``w:customMarkFollows`` — the attribute exists ONLY on a
+    custom-mark (``*``/``†``/``‡``) reference — so the ids that carry it, in body
+    order, are the bios.
+
+    Do NOT infer bios positionally. Neither document order nor footnotes.xml
+    order is reliable: pandoc emits the author-note footnotes with ids 2/3/4 but
+    serializes them LAST in footnotes.xml, so "the first three footnotes in the
+    part" are ordinary body footnotes. Stamping marks on those is the exact bug
+    this function exists to prevent.
+
+    Fallback (Google Docs round-trip): a round-trip flips every
+    ``customMarkFollows="1"`` to ``"0"``, so when NO reference is marked ``"1"``
+    the attribute alone cannot single out the bios — only then do we fall back to
+    the first ``num_bio_footnotes`` references in body order (the law-review
+    convention that author notes precede the first numbered footnote).
+    Returns at most ``num_bio_footnotes`` ids; ``[]`` when there are no bios.
+    """
+    if num_bio_footnotes <= 0:
+        return []
+    parsed = []
+    for ref in _FN_REF_RE.findall(doc_xml or ""):
+        idm = re.search(r'\bw:id="(-?\d+)"', ref)
+        if not idm:
+            continue
+        cmf = re.search(r'\bw:customMarkFollows="([^"]*)"', ref)
+        parsed.append((idm.group(1), cmf.group(1) if cmf else None))
+    marked = [fid for fid, cmf in parsed if cmf == "1"]
+    if marked:
+        return marked[:num_bio_footnotes]
+    return [fid for fid, _ in parsed][:num_bio_footnotes]
+
+
+def _default_bio_ids(num_bio_footnotes):
+    """Legacy id assumption (footnotes 1..N) for callers with no document.xml."""
+    return [str(i + 1) for i in range(max(num_bio_footnotes, 0))]
+
+
+def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None,
+                  bio_ids=None):
     """Detect both Google Docs round-trip damage and pandoc wrap parens."""
     issues = []
+    if bio_ids is None:
+        bio_ids = bio_footnote_ids(doc_xml)
 
     # Google Docs export sets <w:evenAndOddHeaders/> in settings.xml even when
     # the document does not actually use different even/odd headers. When Word
@@ -102,7 +150,8 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     # bio reference runs lack any superscript formatting (no vertAlign and
     # no FootnoteReference rStyle). Symptom: bio marks render at baseline.
     bio_unsuperscripted = _count_unsuperscripted_bio_refs(
-        doc_xml, ref_style_ok=_footnote_ref_style_has_superscript(styles_xml))
+        doc_xml, ref_style_ok=_footnote_ref_style_has_superscript(styles_xml),
+        bio_ids=bio_ids)
     if bio_unsuperscripted:
         issues.append(f"bio_marks_not_superscript({bio_unsuperscripted})")
 
@@ -119,7 +168,9 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
     # instead of the canonical FNStyleBest. A round-trip swaps the pStyle
     # silently; the visual difference is usually small but it desyncs the
     # doc from the reference template.
-    wrong_pstyle = fn_xml.count('<w:pStyle w:val="FootnoteText"/>')
+    # (whitespace-tolerant: pandoc writes `<w:pStyle w:val="FootnoteText" />`)
+    wrong_pstyle = len(re.findall(
+        r'<w:pStyle\s+w:val="FootnoteText"\s*/>', fn_xml))
     if wrong_pstyle:
         issues.append(f"wrong_pstyle({wrong_pstyle} FootnoteText)")
 
@@ -143,7 +194,7 @@ def detect_issues(fn_xml, doc_xml, settings_xml=None, styles_xml=None):
 
     # Half-fixed state inside footnotes.xml: the leading mark glyph in each
     # bio footnote body lacks superscript formatting.
-    bio_body_unsup = _count_unsuperscripted_bio_bodies(fn_xml)
+    bio_body_unsup = _count_unsuperscripted_bio_bodies(fn_xml, bio_ids=bio_ids)
     if bio_body_unsup:
         issues.append(f"bio_body_marks_not_superscript({bio_body_unsup})")
 
@@ -352,31 +403,17 @@ def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
                 fn_xml = fn_xml_new
                 changes.append(f"Fixed bio footnote {fn_id} custom mark")
 
-    # 4. Add pStyle to ALL footnotes missing it
-    # Match footnotes with <w:pPr> that don't already have <w:pStyle>
-    count = 0
-
-    def add_pstyle(m):
-        nonlocal count
-        count += 1
-        return m.group(1) + f'\n        <w:pStyle w:val="{FN_PSTYLE}"/>'
-
-    fn_xml = re.sub(
-        r'(<w:footnote\s+w:id="\d+">\s*<w:p[^>]*>\s*<w:pPr>)(?!\s*<w:pStyle)',
-        add_pstyle,
-        fn_xml
-    )
-    if count:
-        changes.append(f"Added {FN_PSTYLE} pStyle to {count} footnotes")
-
-    # 5. Reassign any existing FootnoteText pStyle inside footnotes to
+    # 4. Reassign any existing FootnoteText pStyle inside footnotes to
     # FNStyleBest. Google Docs round-trips swap the canonical law-review
     # style for its own default; we want all footnote paragraphs on the
     # same style so the template's tabs/indent/sz=20 are picked up
     # consistently. Safe within footnotes.xml — pStyle only appears as
     # a paragraph-style reference here, never as a styleId definition.
+    # Whitespace-tolerant: pandoc writes `<w:pStyle w:val="FootnoteText" />`
+    # (space before the slash); matching only the tight form left the
+    # FootnoteText reference in place and step 5 then ADDED a second pStyle.
     fn_xml, reassign_count = re.subn(
-        r'<w:pStyle w:val="FootnoteText"/>',
+        r'<w:pStyle\s+w:val="FootnoteText"\s*/>',
         f'<w:pStyle w:val="{FN_PSTYLE}"/>',
         fn_xml,
     )
@@ -384,6 +421,50 @@ def fix_footnotes_xml(fn_xml, num_bio_footnotes=3):
         changes.append(
             f"Reassigned {reassign_count} FootnoteText pStyles to {FN_PSTYLE}"
         )
+
+    # 5. Ensure each footnote's first paragraph carries EXACTLY ONE pStyle, as
+    # the first child of <w:pPr>.
+    #
+    # `<w:pPr>` permits only ONE `<w:pStyle>` (CT_PPrBase), and it must come
+    # first. The old code appended one whenever `<w:pPr>` was not IMMEDIATELY
+    # followed by `<w:pStyle>` — but pandoc emits
+    # `<w:pPr><w:widowControl/><w:pStyle .../></w:pPr>`, so the styled
+    # paragraph looked unstyled and got a SECOND pStyle. Scan the whole pPr:
+    # a pPr that already names a style keeps it (only relocated to the front);
+    # one with no style at all gets FN_PSTYLE.
+    added = 0
+    moved = 0
+
+    def normalize_pstyle(m):
+        nonlocal added, moved
+        head, inner, tail = m.group(1), m.group(2), m.group(3)
+        styles = re.findall(r'<w:pStyle\s[^>]*/>', inner)
+        if not styles:
+            added += 1
+            return head + f'\n        <w:pStyle w:val="{FN_PSTYLE}"/>' + inner + tail
+        # Keep the first declared style; drop any duplicates; hoist it to front.
+        keep = styles[0]
+        if len(styles) == 1 and inner.lstrip().startswith(keep):
+            return m.group(0)  # exactly one pStyle, already the first child
+        rest = inner
+        for s in styles:
+            rest = rest.replace(s, '', 1)
+        moved += 1
+        return head + keep + rest + tail
+
+    fn_xml = re.sub(
+        r'(<w:footnote\s+w:id="-?\d+">\s*<w:p[^>]*>\s*<w:pPr>)'
+        r'((?:(?!</w:pPr>).)*)'
+        r'(</w:pPr>)',
+        normalize_pstyle,
+        fn_xml,
+        flags=re.DOTALL,
+    )
+    if added:
+        changes.append(f"Added {FN_PSTYLE} pStyle to {added} footnotes")
+    if moved:
+        changes.append(
+            f"Normalized pStyle placement/duplication in {moved} footnote pPr(s)")
 
     return fn_xml, changes
 
@@ -402,10 +483,11 @@ def _find_bio_footnote_first_run(fn_xml, fn_id):
     return fn_m, body, run_m
 
 
-def _count_unsuperscripted_bio_bodies(fn_xml, num_bio_footnotes=3):
+def _count_unsuperscripted_bio_bodies(fn_xml, num_bio_footnotes=3, bio_ids=None):
+    if bio_ids is None:
+        bio_ids = _default_bio_ids(num_bio_footnotes)
     n = 0
-    for i, mark in enumerate(AUTHOR_BIO_MARKS[:num_bio_footnotes]):
-        fn_id = str(i + 1)
+    for fn_id, mark in zip(bio_ids, AUTHOR_BIO_MARKS[:num_bio_footnotes]):
         fn_m, body, run_m = _find_bio_footnote_first_run(fn_xml, fn_id)
         if not run_m:
             continue
@@ -423,14 +505,18 @@ def _count_unsuperscripted_bio_bodies(fn_xml, num_bio_footnotes=3):
     return n
 
 
-def fix_bio_superscript_in_footnotes(fn_xml, num_bio_footnotes=3):
+def fix_bio_superscript_in_footnotes(fn_xml, num_bio_footnotes=3, bio_ids=None):
     """Add superscript formatting to the leading mark glyph inside each bio
-    footnote body (in footnotes.xml). Idempotent."""
+    footnote body (in footnotes.xml). Idempotent.
+
+    ``bio_ids`` — the real author-footnote w:ids (see :func:`bio_footnote_ids`).
+    Defaults to the legacy 1..N assumption when the caller has no document.xml."""
     changes = []
     sup_rpr = '<w:rPr><w:vertAlign w:val="superscript"/></w:rPr>'
+    if bio_ids is None:
+        bio_ids = _default_bio_ids(num_bio_footnotes)
 
-    for i, mark in enumerate(AUTHOR_BIO_MARKS[:num_bio_footnotes]):
-        fn_id = str(i + 1)
+    for fn_id, mark in zip(bio_ids, AUTHOR_BIO_MARKS[:num_bio_footnotes]):
         fn_m, body, run_m = _find_bio_footnote_first_run(fn_xml, fn_id)
         if not run_m:
             continue
@@ -482,12 +568,13 @@ def fix_settings_xml(settings_xml):
     return settings_xml, changes
 
 
-def _iter_bio_ref_runs(doc_xml, num_bio_footnotes):
+def _iter_bio_ref_runs(doc_xml, num_bio_footnotes, bio_ids=None):
     """Yield (match, fn_id, mark) for each bio footnoteReference run with
     customMarkFollows="1". The match captures the full <w:r>...</w:r>, with
     groups: 1=run attrs, 2=content before footnoteReference, 3=content after."""
-    for i, mark in enumerate(AUTHOR_BIO_MARKS[:num_bio_footnotes]):
-        fn_id = str(i + 1)
+    if bio_ids is None:
+        bio_ids = bio_footnote_ids(doc_xml, num_bio_footnotes)
+    for fn_id, mark in zip(bio_ids, AUTHOR_BIO_MARKS[:num_bio_footnotes]):
         fn_ref = f'<w:footnoteReference w:customMarkFollows="1" w:id="{fn_id}"/>'
         pattern = re.compile(
             r'<w:r(\s[^>]*)?>((?:(?!</?w:r\b).)*?)' + re.escape(fn_ref) +
@@ -540,22 +627,26 @@ def _run_has_superscript(run_before, ref_style_ok=False):
 
 
 def _count_unsuperscripted_bio_refs(doc_xml, num_bio_footnotes=3,
-                                    ref_style_ok=False):
+                                    ref_style_ok=False, bio_ids=None):
     """Count bio references that have customMarkFollows="1" but no superscript."""
     n = 0
-    for m, fn_id, mark in _iter_bio_ref_runs(doc_xml, num_bio_footnotes):
+    for m, fn_id, mark in _iter_bio_ref_runs(doc_xml, num_bio_footnotes, bio_ids):
         if not _run_has_superscript(m.group(2), ref_style_ok):
             n += 1
     return n
 
 
-def fix_bio_superscript(doc_xml, num_bio_footnotes=3, ref_style_ok=False):
+def fix_bio_superscript(doc_xml, num_bio_footnotes=3, ref_style_ok=False,
+                        bio_ids=None):
     """Half-fixed-state repair: bio refs already have customMarkFollows="1",
     but the run lacks superscript formatting. Add inline <w:vertAlign> and,
     if the mark glyph is welded to trailing text in the same <w:t>, split
     the run so only the mark is superscripted."""
     changes = []
-    for _, fn_id, mark in list(_iter_bio_ref_runs(doc_xml, num_bio_footnotes)):
+    if bio_ids is None:
+        bio_ids = bio_footnote_ids(doc_xml, num_bio_footnotes)
+    for _, fn_id, mark in list(
+            _iter_bio_ref_runs(doc_xml, num_bio_footnotes, bio_ids)):
         # Re-search every iteration since doc_xml may have changed.
         fn_ref = f'<w:footnoteReference w:customMarkFollows="1" w:id="{fn_id}"/>'
         pattern = re.compile(
@@ -737,21 +828,36 @@ def _normalize_bio_rpr(run):
     rs.set(_wq("val"), "FootnoteReference")
 
 
-def restore_bio_custom_marks(doc_xml, fn_xml, num_bio_footnotes=3):
-    """Force the first `num_bio_footnotes` footnotes into custom-mark form in
-    both document.xml (the body reference) and footnotes.xml (the footnote
-    body). Returns (doc_xml, fn_xml, changes). See module comment above."""
+def restore_bio_custom_marks(doc_xml, fn_xml, num_bio_footnotes=3,
+                             bio_ids=None):
+    """Force the author-acknowledgement footnotes into custom-mark form in both
+    document.xml (the body reference) and footnotes.xml (the footnote body).
+
+    ``bio_ids`` is the authoritative list of bio footnote w:ids (see
+    :func:`bio_footnote_ids`); when omitted it is derived from ``doc_xml``. Both
+    parts are matched BY ID — footnotes.xml is not necessarily serialized in id
+    or body order (pandoc writes the author notes last), so selecting "the first
+    N footnotes" there stamps ``*``/``†``/``‡`` onto ordinary body footnotes.
+
+    Returns (doc_xml, fn_xml, changes). See module comment above."""
     changes = []
     marks = AUTHOR_BIO_MARKS[:num_bio_footnotes]
     if not marks:
         return doc_xml, fn_xml, changes
+    if bio_ids is None:
+        bio_ids = bio_footnote_ids(doc_xml, num_bio_footnotes)
+    bio_ids = list(bio_ids)[:len(marks)]
+    if not bio_ids:
+        return doc_xml, fn_xml, changes
+    mark_for_id = dict(zip(bio_ids, marks))
 
     # ── document.xml: the in-text bio references ──────────────────────
     doc = etree.fromstring(doc_xml.encode("utf-8"))
-    refs = list(doc.iter(_wq("footnoteReference")))[:num_bio_footnotes]
+    refs = [r for r in doc.iter(_wq("footnoteReference"))
+            if r.get(_wq("id")) in mark_for_id]
     fixed_refs = 0
-    for idx, ref in enumerate(refs):
-        mark = marks[idx]
+    for ref in refs:
+        mark = mark_for_id[ref.get(_wq("id"))]
         run = ref.getparent()
         if run is None or run.tag != _wq("r"):
             continue
@@ -785,16 +891,14 @@ def restore_bio_custom_marks(doc_xml, fn_xml, num_bio_footnotes=3):
 
     # ── footnotes.xml: the bio footnote bodies ────────────────────────
     foot = etree.fromstring(fn_xml.encode("utf-8"))
-    bios = []
-    for fn in foot.iter(_wq("footnote")):
-        if fn.get(_wq("type")) in ("separator", "continuationSeparator"):
-            continue
-        bios.append(fn)
-        if len(bios) >= num_bio_footnotes:
-            break
+    # BY ID, not by position: footnotes.xml is not ordered to match either the
+    # id sequence or body order.
+    bios = [fn for fn in foot.iter(_wq("footnote"))
+            if fn.get(_wq("type")) not in ("separator", "continuationSeparator")
+            and fn.get(_wq("id")) in mark_for_id]
     fixed_bodies = 0
-    for idx, fn in enumerate(bios):
-        mark = marks[idx]
+    for fn in bios:
+        mark = mark_for_id[fn.get(_wq("id"))]
         # The auto-number placeholder run, if it survived.
         ref_run = None
         for r in fn.iter(_wq("r")):
@@ -1895,7 +1999,14 @@ def main():
             'customMarkFollows="1"/"0" (none found)')
         print(f"Auto-detected {bio_count} author bio footnote(s) from {variant} refs.")
 
-    issues = detect_issues(fn_xml, doc_xml, settings_xml, styles_xml)
+    # WHICH footnotes are the bios — by id, read off the body references. Never
+    # positional: footnotes.xml is not ordered by id or by body order, so "the
+    # first N footnotes in the part" are ordinary body footnotes.
+    bio_ids = bio_footnote_ids(doc_xml, bio_count)
+    if bio_ids:
+        print(f"Bio footnote ids: {', '.join(bio_ids)}")
+
+    issues = detect_issues(fn_xml, doc_xml, settings_xml, styles_xml, bio_ids)
     if not issues and not args.fix_numbering and not args.normalize_headings:
         print("No footnote damage detected.")
         return
@@ -1912,6 +2023,11 @@ def main():
     if fn_sdt_changes:
         all_changes.append("footnotes.xml: " + fn_sdt_changes[0])
 
+    # fix_footnotes_xml renumbers (+1) when the separators are missing, so the
+    # ids read off the ORIGINAL document.xml shift with it.
+    fn_id_shift = 1 if 'w:type="separator"' not in fn_xml else 0
+    fn_bio_ids = [str(int(i) + fn_id_shift) for i in bio_ids]
+
     fn_xml_fixed, fn_changes = fix_footnotes_xml(fn_xml_fixed, bio_count)
     all_changes.extend(fn_changes)
 
@@ -1919,7 +2035,7 @@ def main():
     all_changes.extend(pandoc_changes)
 
     fn_xml_fixed, bio_body_changes = fix_bio_superscript_in_footnotes(
-        fn_xml_fixed, bio_count)
+        fn_xml_fixed, bio_count, fn_bio_ids)
     all_changes.extend(bio_body_changes)
 
     # Feature 1: strip Google Docs leftover content controls FIRST so every
@@ -1934,8 +2050,12 @@ def main():
     # Authoritative bio normalization (lxml, position-based). Repairs the
     # Google-Docs bare-reference case and rebuilds the canonical custom-mark
     # ref shape; leaves a correct bio untouched (idempotent).
+    # Re-read the ids from the in-flight document.xml: fix_document_xml may have
+    # renumbered the references (+1) and stamped customMarkFollows="1" on the
+    # bios, so this is now the authoritative id set for BOTH parts.
+    bio_ids = bio_footnote_ids(doc_xml_fixed, bio_count) or fn_bio_ids
     doc_xml_fixed, fn_xml_fixed, bio_norm_changes = restore_bio_custom_marks(
-        doc_xml_fixed, fn_xml_fixed, bio_count)
+        doc_xml_fixed, fn_xml_fixed, bio_count, bio_ids)
     all_changes.extend(bio_norm_changes)
 
     # Superscript the bio reference marks — MUST run after restore_bio_custom_marks,
@@ -1945,7 +2065,8 @@ def main():
     # is not enough and we add explicit vertAlign.
     doc_xml_fixed, bio_ref_changes = fix_bio_superscript(
         doc_xml_fixed, bio_count,
-        ref_style_ok=_footnote_ref_style_has_superscript(styles_xml))
+        ref_style_ok=_footnote_ref_style_has_superscript(styles_xml),
+        bio_ids=bio_ids)
     all_changes.extend(bio_ref_changes)
 
     doc_xml_fixed, toc_changes = fix_toc_separator(doc_xml_fixed)

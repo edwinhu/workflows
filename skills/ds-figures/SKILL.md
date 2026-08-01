@@ -20,8 +20,9 @@ audience cannot separate your two series.
 | **Labels** | **Axis labels in Title Case** ("Shareholder Support Rate", not "shareholder support rate" or "support_rate"). Every user-visible string is **prose, never an identifier** | The reader never saw your DataFrame. `glass_lewis` is not a scenario, **Glass Lewis** is; `mkt_cap_wtd` is not an axis, **Market Cap Weighted** is. Shipping identifiers tells the reader the figure was never finished — and it is the single fastest tell that a chart came straight out of a notebook. |
 | **Numbering** | Main exhibits **Figure 1 … Figure N**, consecutive in order of first mention. Appendix exhibits restart as **Figure A1 … Figure AN** | Numbers are the reader's only address for an exhibit. A sequence that skips, repeats, or continues main numbering into the appendix breaks every cross-reference in the text. |
 | **Clipping** | **Nothing may be cut off.** Verify the saved file, not the notebook preview | A clipped y-label or a legend sliced by the frame is invisible in the inline preview at one size and obvious in the PDF at another. |
-| **Format** | **Vector** (PDF/SVG/EPS). Raster only when the figure genuinely needs it — heatmaps, scatter with >50k points, images | Vector stays sharp at any zoom and prints at the press's resolution, not yours. A raster figure in a PDF is the one element a reader can visibly degrade by zooming. |
-| **Resolution** | If raster is unavoidable, **300 DPI minimum** at final print size | 300 DPI is the floor most journals accept. Note DPI is meaningless without physical size: 300 DPI at 3 inches is 900px. Set figure size in inches, then DPI. |
+| **Format** | **Vector, always.** PDF/SVG/EPS for LaTeX and the web; **SVG for Word**, embedded as described below. Raster is a FALLBACK, not a choice — reach for it only when the figure genuinely cannot be vector (heatmaps, scatter with >50k points, embedded photographs) | Vector stays sharp at any zoom and prints at the press's resolution, not yours. A raster figure in a PDF is the one element a reader can visibly degrade by zooming. "Word needs raster" is FALSE and is the usual reason a manuscript ships screenshots — see the Word row. |
+| **Word** | Embed the **SVG via the `svgBlip` extension**, keeping a PNG as the raster fallback. Do NOT hand pandoc a bare `.svg`, and do NOT convert to EMF through LibreOffice | Word 2016+ renders SVG natively, but only through `svgBlip`: `a:blip` keeps pointing at the raster and carries the vector beside it in an `a:extLst`. Pandoc emits no such thing, so a bare `.svg` is **silently dropped** — the caption sits under blank space with no error. EMF is genuinely vector and Word draws it, but the SVG→EMF converters available on Linux are not faithful: see the facts below. |
+| **Resolution** | When raster IS the fallback, **300 DPI minimum** at final print size | 300 DPI is the floor most journals accept. Note DPI is meaningless without physical size: 300 DPI at 3 inches is 900px. Set figure size in inches, then DPI. |
 | **Scale** | Use **log** when the series span more than ~1 decade — but then name the ticks | A linear axis over a 77x range collapses everything below the largest series into one band at the baseline. Log fixes that and introduces its own problem: unreadable automatic ticks. |
 | **Color** | **Colorblind-safe throughout.** Sequential → `viridis`. Two-category contrast → **blue/orange**. Never red/green | ~8% of men have red-green color vision deficiency. A red/green figure is not "harder" for them — it carries zero information. |
 
@@ -182,6 +183,41 @@ alt.themes.enable("house")
   `"Support Rate By Iss Rec"` — it capitalizes the preposition and mangles the
   acronym. Write the label string out by hand; an automated caser produces text
   that is visibly wrong in a way readers attribute to carelessness.
+- **"Word requires raster" is a myth that costs every figure its resolution.**
+  The working route from a web plotting library is: render to a vector PDF
+  (headless Chromium `--print-to-pdf` handles the HTML-wrapped charts a native
+  SVG writer cannot), convert to SVG with `pdftocairo -svg`, then attach that SVG
+  to the DOCX as an `svgBlip` beside the PNG. Word renders it with its own engine.
+- **`svgBlip` is the whole trick, and it is three edits to the package.** Add the
+  `.svg` as an image part; add a relationship for it; and wrap the existing blip:
+  `<a:blip r:embed="rIdPng"><a:extLst><a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}"><asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main" r:embed="rIdSvg"/></a:ext></a:extLst></a:blip>`
+  plus a `<Default Extension="svg" ContentType="image/svg+xml"/>`. Match figures to
+  their SVG by CONTENT HASH: pandoc rewrites embedded media to `rIdN.png` and the
+  original filename is gone by the time you post-process.
+- **Do NOT convert SVG→EMF with LibreOffice.** It is the obvious route and it
+  silently corrupts complex figures. A five-facet histogram came back missing an
+  entire facet row, every row label, both axis labels, the tick numbers and the
+  zero line — and still looked like a plausible chart, so nothing downstream
+  flagged it. Simple single-panel figures survive, which is exactly what makes the
+  failure hard to catch: verifying one figure proves nothing about the others.
+- **A pandoc-embedded SVG in a DOCX fails SILENTLY.** The image part lands in
+  the package — `unzip -l` shows it, so a media-count check passes — and Word
+  renders nothing. Count images in the RENDERED PDF (`pdfimages -list`, or read
+  the page), never in the DOCX.
+- **`pdftocairo`'s `-x/-y/-W/-H` crop flags apply to RASTER output only.** With
+  `-svg` they are accepted and ignored, so the figure silently comes out the size
+  of the whole printed page. Do not reach for Ghostscript to crop it either:
+  `gs -sDEVICE=pdfwrite` re-encodes the entire content stream, and downstream
+  importers choke on the result. Size the page to the content BEFORE printing —
+  screenshot into an oversized white canvas, take the ink bounding box as the
+  content size, set `@page` to it — and assert the output is one page, because a
+  page a fraction too short pushes the last row of the figure onto a second page
+  where it is simply lost.
+- **A figure that is correct in every intermediate format can still be wrong in
+  the one the document embeds.** The SVG rendered perfectly in every viewer while
+  the EMF built from it was missing half its content. Ink-margin checks, edge
+  tests and transcriptions all passed — on the SVG. Verify the format that
+  actually ships, in the application that actually renders it.
 - **Appendix figures restart at A1 and are numbered independently of the main
   sequence.** A figure labelled "Figure 12" in an appendix that only has three
   exhibits reads as a numbering bug and sends readers hunting for figures 9-11.
@@ -202,6 +238,11 @@ alt.themes.enable("house")
 | About to call `.title()` on a label to get Title Case | Capitalizes prepositions and destroys acronyms — "By Iss Rec" | Write the string by hand |
 | About to declare a figure done from the notebook preview | Preview bounds differ from the saved file, so clipping shows up in one and not the other | Open the saved PDF/PNG and check all four edges |
 | About to leave `ax.legend()` with a default sans font under a serif figure | A styled-separately legend escapes `font.family` | Remove the `prop=`/`fontproperties=` override |
+| About to export a figure as PNG for a Word document because "Word needs raster" | It does not; Word renders SVG natively through `svgBlip` | Embed the SVG as an `svgBlip`; keep the PNG as the fallback |
+| About to embed an SVG in a DOCX via pandoc | Pandoc writes no `svgBlip`, so Word drops it — no error, blank space under the caption | Post-process the DOCX to attach the SVG |
+| About to convert SVG→EMF with LibreOffice | It silently drops facet rows, row labels, axis labels and reference lines from complex figures | Use `svgBlip`; if EMF is unavoidable, diff every figure against its source |
+| About to verify the pipeline on one figure and ship the rest | The converters that break complex figures handle simple ones fine | Check the most structurally complex figure, not the first one |
+| About to confirm figures embedded by counting `word/media/` entries | The media part exists for formats Word cannot draw | Count images in the rendered PDF, or look at the page |
 | About to continue main figure numbering into the appendix ("Figure 12" in Appendix A) | Breaks every cross-reference and implies missing exhibits | Restart at Figure A1 |
 
 ## Checking a figure before it ships
@@ -228,3 +269,6 @@ Run these **on the saved file**, not the notebook preview.
    typically 3.5in single-column. Tick labels usually die first.
 7. **Check the number.** The figure's number is consecutive with the exhibit
    before it, and appendix exhibits are in the A-series.
+8. **Confirm it is still vector where it lands.** Zoom the final PDF to 400%: a
+   figure that pixelates got rasterized somewhere in the chain. `pdfimages -list`
+   on the finished document should show no image for a vector figure.

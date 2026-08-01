@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -112,7 +113,121 @@ def get_prefix(path: Path) -> str:
 
 
 
-DEFAULT_CSL = Path.home() / "projects" / "bluebook-law-review-21e.csl"
+# Vendored beside the skill, not under ~/projects: the old home-relative default
+# silently missed on any machine that had not cloned that repo, and a missing CSL
+# means citeproc falls back to its own style rather than Bluebook.
+DEFAULT_CSL = Path(__file__).resolve().parent.parent / "assets" / "bluebook-law-review-21e.csl"
+
+
+SVG_EXT_NS = "http://schemas.microsoft.com/office/drawing/2016/SVG/main"
+SVG_EXT_URI = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}"
+
+
+def attach_svg_blips(docx: Path, project_dir: Path,
+                     search_dirs: list[Path] | None = None) -> None:
+    """Give every embedded raster its SVG twin so Word draws the figure as vector.
+
+    Word 2016+ renders SVG natively, but only through the svgBlip extension: the
+    a:blip keeps pointing at a raster fallback and carries the vector alongside
+    it as an extension. Pandoc emits no such thing, which is why handing pandoc a
+    bare .svg drops the image from the document without a word of warning.
+
+    Converting to EMF through LibreOffice is NOT an equivalent substitute.
+    LibreOffice's SVG importer silently mangles complex figures -- a faceted
+    histogram came back missing an entire facet row, every row label, both axis
+    labels and the zero line, while still looking like a plausible chart. This
+    path never leaves Word's own renderer.
+
+    Figures are matched to their SVG by CONTENT, because pandoc rewrites embedded
+    media to rIdN.png and the original filename is gone by this point. Does
+    nothing when no sibling .svg exists, so raster-only projects are unaffected.
+
+    ``search_dirs`` overrides where the PNG/SVG pairs are looked for. The law
+    review layout (the default) keeps figures under figures/ or drafts/; the
+    law-econ sibling keeps them beside the source file, so build_le_docx.py
+    passes its own list rather than assuming this project shape.
+    """
+    import hashlib
+    import zipfile
+
+    if search_dirs is None:
+        search_dirs = [project_dir / "figures", project_dir / "drafts", project_dir]
+    figure_svgs: dict[str, Path] = {}
+    for figdir in search_dirs:
+        if not figdir.is_dir():
+            continue
+        for png in figdir.glob("*.png"):
+            svg = png.with_suffix(".svg")
+            if svg.is_file():
+                figure_svgs[hashlib.sha256(png.read_bytes()).hexdigest()] = svg
+    if not figure_svgs:
+        return
+
+    with zipfile.ZipFile(docx) as src:
+        items = {n: src.read(n) for n in src.namelist()}
+
+    rels = items["word/_rels/document.xml.rels"].decode()
+    doc = items["word/document.xml"].decode()
+    attached: list[str] = []
+    next_n = max((int(x) for x in re.findall(r'Id="rId(\d+)"', rels)), default=0) + 1
+
+    for tag in re.findall(r"<Relationship\b[^>]*/>", rels):
+        rid = re.search(r'Id="([^"]+)"', tag)
+        target = re.search(r'Target="(media/[^"]+)"', tag)
+        if not rid or not target:
+            continue
+        data = items.get("word/" + target.group(1))
+        if data is None:
+            continue
+        svg_path = figure_svgs.get(hashlib.sha256(data).hexdigest())
+        if svg_path is None:
+            continue
+
+        svg_name = "media/%s.svg" % svg_path.stem
+        svg_rid = "rId%d" % next_n
+        next_n += 1
+        ext = (
+            '<a:extLst><a:ext uri="%s">'
+            '<asvg:svgBlip xmlns:asvg="%s" r:embed="%s"/>'
+            "</a:ext></a:extLst>" % (SVG_EXT_URI, SVG_EXT_NS, svg_rid)
+        )
+        # The blip may or may not be self-closing, and pandoc writes a space
+        # before the slash, so it is matched by pattern rather than literally.
+        blip = re.compile(r'<a:blip([^>]*r:embed="%s"[^>]*?)(/?)>' % rid.group(1))
+        if not blip.search(doc):
+            continue
+        doc = blip.sub(
+            lambda m: ("<a:blip%s>%s</a:blip>" % (m.group(1), ext)) if m.group(2)
+            else ("<a:blip%s>%s" % (m.group(1), ext)),
+            doc,
+        )
+        items["word/" + svg_name] = svg_path.read_bytes()
+        rels = rels.replace(
+            "</Relationships>",
+            '<Relationship Id="%s" '
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" '
+            'Target="%s"/></Relationships>' % (svg_rid, svg_name),
+        )
+        attached.append(svg_path.stem)
+
+    if not attached:
+        return
+
+    ct = items["[Content_Types].xml"].decode()
+    if 'Extension="svg"' not in ct:
+        ct = ct.replace(
+            "</Types>",
+            '<Default Extension="svg" ContentType="image/svg+xml"/></Types>')
+    items["[Content_Types].xml"] = ct.encode()
+    items["word/_rels/document.xml.rels"] = rels.encode()
+    items["word/document.xml"] = doc.encode()
+
+    tmp = docx.with_suffix(".svgblip.tmp")
+    with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, blob in items.items():
+            z.writestr(name, blob)
+    shutil.move(str(tmp), str(docx))
+    print("Vector: SVG attached to %d figure(s)" % len(attached))
 
 
 def parse_metadata(project_dir: Path) -> dict:
@@ -1380,9 +1495,19 @@ date: "{meta['date']}"
         print(f"ERROR: Template not found at {TEMPLATE}", file=sys.stderr)
         sys.exit(1)
 
-    # Resolve bibliography and CSL: prefer metadata, fall back to project conventions
-    bib_path = Path(meta["bibliography"]).expanduser() if meta["bibliography"] else (project_dir / "references" / "sources.bib")
-    csl_path = Path(meta["csl"]).expanduser() if meta["csl"] else DEFAULT_CSL
+    # Resolve bibliography and CSL: prefer metadata, fall back to project conventions.
+    # A relative path in ACTIVE_WORKFLOW.md is relative to the PROJECT, not to
+    # wherever the build happens to be invoked from. Resolving it against the cwd
+    # means the same project builds with citations from one directory and without
+    # them from another -- and the miss is reported as INFO, so the DOCX ships with
+    # every citation left as a raw [@key].
+    def _project_relative(value: str) -> Path:
+        path = Path(value).expanduser()
+        return path if path.is_absolute() else (project_dir / path)
+
+    bib_path = (_project_relative(meta["bibliography"]) if meta["bibliography"]
+                else project_dir / "references" / "sources.bib")
+    csl_path = _project_relative(meta["csl"]) if meta["csl"] else DEFAULT_CSL
 
     cmd = [
         "pandoc", str(tmp_md),
@@ -1415,6 +1540,14 @@ date: "{meta['date']}"
         abbrev_path = project_dir / "references" / "journal-abbreviations.json"
         if abbrev_path.exists():
             cmd += [f"--citation-abbreviations={abbrev_path}"]
+    elif meta["bibliography"]:
+        # The project ASKED for this file. Missing it is a build failure, not a
+        # note: every citation would ship as a raw [@key] in the DOCX, and an
+        # INFO line scrolls past unread.
+        print(f"ERROR: bibliography declared in ACTIVE_WORKFLOW.md but not found "
+              f"at {bib_path}; every citation would render as a raw [@key]",
+              file=sys.stderr)
+        sys.exit(1)
     else:
         print(f"INFO: no bibliography at {bib_path}; skipping citeproc", file=sys.stderr)
 
@@ -1422,6 +1555,8 @@ date: "{meta['date']}"
     if result.returncode != 0:
         print(f"ERROR: pandoc failed:\n{result.stderr}", file=sys.stderr)
         sys.exit(1)
+
+    attach_svg_blips(output, project_dir)
 
     replace_header_placeholders(output, meta["short_title"], meta["journal_cite"])
 
