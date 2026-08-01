@@ -18,6 +18,8 @@
  *   prints, never `JSON.stringify`.
  */
 
+import { createHash } from "node:crypto";
+
 /** Serialize exactly as Python's `json.dumps` does by default: `", "` / `": "`, ensure_ascii. */
 export function pyJson(value: unknown): string {
   const esc = (s: string): string => {
@@ -157,4 +159,56 @@ export async function readPayload(): Promise<Record<string, unknown>> {
  */
 export function parsePayload(text: string): Record<string, unknown> {
   return requireObject(JSON.parse(text));
+}
+
+/**
+ * The per-session key for the DS subagent-completion flag file.
+ *
+ * WHY NOT process.env.CLAUDE_SESSION_ID
+ *   Claude Code never sets it. The three DS flag hooks all resolved to the literal "default", so
+ *   every concurrent session process-wide shared ONE flag file: a subagent returning in one session
+ *   armed the Read/Grep block in every other session, and clearing it in one disarmed all of them.
+ *   The variable's absence is invisible — the guard keeps running and keeps exiting 0.
+ *
+ * The payload's `session_id` is the real per-session identity and is present on every hook event
+ * these three are wired to, so all three derive the same key for the same session. The env fallback
+ * is the session-tree id Claude Code does set; "default" survives only as the last resort, which is
+ * also the only case where the original collision can still occur.
+ *
+ * The result is a FILENAME component, so anything outside [A-Za-z0-9._-] must not survive: a session
+ * id is opaque and must never introduce a path separator or a `..` traversal.
+ *
+ * WHY DELETING THE UNSAFE CHARACTERS WAS NOT ENOUGH
+ *   The first version returned `candidate.replace(/[^A-Za-z0-9._-]/g, "")`. Deletion is not
+ *   injective, so DISTINCT sessions collapsed onto ONE key — measured: "sess/one", "sess#one",
+ *   "sess one", and "sessone" all produced "sessone", and "a#b" collided with "ab". That is the
+ *   very cross-session flag sharing this function was introduced to fix, merely made rarer: two
+ *   sessions whose ids differ only in a stripped character share a flag file, so one session's
+ *   returning subagent arms the Read block in the other.
+ *
+ *   The fix appends a digest of the RAW id. The readable prefix is still the sanitized id (so the
+ *   files stay diagnosable by eye) but the digest is what separates the keys, and it is computed
+ *   before any sanitization, so two ids that differ only in a stripped character no longer collide.
+ *   It also removes the `..` hazard structurally: a key derived from an id always ends in
+ *   `-<32 hex chars>`, so it can never BE `.` or `..` regardless of the input.
+ *
+ * THE ONE COLLISION THAT REMAINS, STATED PLAINLY
+ *   The mapping is injective over IDS, not over CALLS. When neither the payload nor the environment
+ *   supplies an identity there is nothing to hash, and every such call returns the literal
+ *   "default" — so all identity-less sessions still share one flag file, which is the original
+ *   cross-session sharing bug in its last remaining form. It is bounded rather than fixed: the
+ *   environment fallback means it needs BOTH sources absent, and "default" cannot collide with any
+ *   real id, since a derived key always carries the `-<32 hex>` suffix.
+ */
+export function sessionFlagKey(payload?: unknown): string {
+  const fromPayload = payload && typeof payload === "object" && !Array.isArray(payload)
+    ? (payload as Record<string, unknown>).session_id
+    : undefined;
+  for (const candidate of [fromPayload, process.env.CLAUDE_CODE_SESSION_ID]) {
+    if (typeof candidate !== "string" || !candidate) continue;
+    const readable = candidate.replace(/[^A-Za-z0-9._-]/g, "").slice(0, 64);
+    const digest = createHash("sha256").update(candidate, "utf8").digest("hex").slice(0, 32);
+    return readable ? `${readable}-${digest}` : digest;
+  }
+  return "default";
 }

@@ -89,13 +89,22 @@ async function exec(args, onAgent, options = {}) {
   const parallel = async (thunks) => Promise.all(thunks.map(thunk => thunk()))
   const log = () => {}, phase = () => {}
   const fn = new AsyncFunction('agent', 'parallel', 'log', 'phase', 'args', 'snapshotReadFile', 'snapshotLstat', source)
-  const originalSession = process.env.CLAUDE_SESSION_ID
-  process.env.CLAUDE_SESSION_ID = options.session || 'different-session'
+  // PRODUCTION'S ACTUAL ENVIRONMENT. Claude Code never sets CLAUDE_SESSION_ID; the Workflow
+  // runtime sees CLAUDE_CODE_SESSION_ID, which is the dispatching session's id. Setting the
+  // variable the runner used to read is what hid the fact that it was always undefined in
+  // production, where it reached .trim() and threw an uncaught TypeError.
+  const originalStale = process.env.CLAUDE_SESSION_ID
+  const originalSession = process.env.CLAUDE_CODE_SESSION_ID
+  delete process.env.CLAUDE_SESSION_ID
+  if (options.noSession) delete process.env.CLAUDE_CODE_SESSION_ID
+  else process.env.CLAUDE_CODE_SESSION_ID = options.session || 'different-session'
   try {
     return { result: await fn(agent, parallel, log, phase, { workflow: 'ds', ...args, projectDir: project }, snapshotReadFile, snapshotLstat), trace }
   } finally {
-    if (originalSession === undefined) delete process.env.CLAUDE_SESSION_ID
-    else process.env.CLAUDE_SESSION_ID = originalSession
+    if (originalStale === undefined) delete process.env.CLAUDE_SESSION_ID
+    else process.env.CLAUDE_SESSION_ID = originalStale
+    if (originalSession === undefined) delete process.env.CLAUDE_CODE_SESSION_ID
+    else process.env.CLAUDE_CODE_SESSION_ID = originalSession
     rmSync(project, { recursive: true, force: true })
   }
 }
@@ -239,8 +248,6 @@ console.log('durable plan review and reset gates reject invalid state')
 for (const [name, options] of [
   ['stale plan review hash', { reviewHash: '0'.repeat(64) }],
   ['unapproved plan review', { reviewStatus: 'ISSUES_FOUND' }],
-  ['same approval session', { session: 's-123' }],
-  ['same approval session despite irrelevant marker file', { session: 's-123', contextReset: true }],
   ['reviewer approval session reused', { reviewerSession: 's-123' }],
   ['implementation session equals reviewer session', { session: 'reviewer-456' }],
   ['approval timestamp lacks UTC Z', { approvedAt: '2026-01-01T00:00:00+00:00' }],
@@ -254,6 +261,46 @@ for (const [name, options] of [
     ok(`rejects ${name}`, false)
   } catch { ok(`rejects ${name}`, true) }
 }
+// The runner is a DISPATCHER, not an implementer: it hands each task to an agent() subagent that
+// gets its own identity. So the dispatching session may equal the approving session -- the
+// single-conversation flow approves the plan and then dispatches -- while the REVIEWER must still
+// differ from both. approver != implementer is enforced where the implementer's identity exists,
+// on that subagent's own tool calls (see tests/implementer-identity-contract.test.mjs).
+console.log('dispatch by the approving session is admitted; reviewer separation still holds')
+{
+  const { result } = await exec({ readyWave: [task('a', ['src/a.js'])], planReset: reset },
+    async label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/a.js'] }),
+    { session: 's-123' })
+  ok('approving session may dispatch implementation', result.results[0]?.status === 'implemented', JSON.stringify(result.results))
+}
+{
+  const { result } = await exec({ readyWave: [task('a', ['src/a.js'])], planReset: reset },
+    async label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/a.js'] }),
+    { session: 's-123', contextReset: true })
+  ok('approving session may dispatch implementation with an irrelevant marker file present', result.results[0]?.status === 'implemented', JSON.stringify(result.results))
+}
+
+// F2: the runner read process.env.CLAUDE_SESSION_ID, which Claude Code never sets. That reached
+// .trim() with no type guard and threw an uncaught TypeError out of the Workflow runtime instead
+// of returning a controlled failure. With no identity available at all it must fail CLOSED with a
+// clear message, and it must never crash.
+console.log('the runner fails closed, never crashes, when it cannot authenticate its session')
+{
+  let message = ''
+  try {
+    await exec({ readyWave: [task('a', ['src/a.js'])], planReset: reset }, () => ({}), { noSession: true })
+  } catch (error) { message = String(error) }
+  ok('names the missing dispatching-session identity', /dispatch|session/i.test(message), message)
+  ok('does not surface a TypeError', !/TypeError/.test(message), message)
+}
+{
+  let message = ''
+  try {
+    await exec({ readyWave: [task('a', ['src/a.js'])], planReset: reset }, () => ({}), { session: '   ' })
+  } catch (error) { message = String(error) }
+  ok('rejects a blank dispatching-session identity', /dispatch|session/i.test(message) && !/TypeError/.test(message), message)
+}
+
 console.log('shared or ambiguous output tasks dispatch sequentially')
 {
   const { trace } = await exec({ readyWave: [task('a', ['src/shared.js']), task('b', ['src/shared.js'])], planReset: reset }, async label => ({ taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: [] }))

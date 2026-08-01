@@ -164,7 +164,10 @@ Instead, spawn a subagent that uses the `Read` tool directly on the rendered PNG
 Agent(
     prompt="Read the image at /tmp/visual-verify.png and score it. [CONTEXT-ENRICHED GOAL]. Score 0-10 against the checklist. Report BLOCKING and COSMETIC issues separately.",
     description="Vision fallback: score rendered PNG",
-    subagent_type="general-purpose"
+    subagent_type="general-purpose",
+    # Blocking: verification cannot resolve without the score. A backgrounded agent returns a
+    # completion notification, not a verdict.
+    run_in_background=false
 )
 ```
 
@@ -217,7 +220,9 @@ For diagram pages, use look-at's `--consensus` mode (runs Gemini + GPT-5.4 in pa
 Agent(
     prompt="Read the image at /tmp/visual-verify.png. [CONTEXT-ENRICHED GOAL]. Score 0-10. Report BLOCKING and COSMETIC issues.",
     description="Vision prong: Claude",
-    subagent_type="general-purpose"
+    subagent_type="general-purpose",
+    # Blocking: the consensus rule needs this score alongside the look_at.sh output.
+    run_in_background=false
 )
 ```
 

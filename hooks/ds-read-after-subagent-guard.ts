@@ -11,7 +11,7 @@
  */
 import { accessSync, constants, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { allow, deny, readPayload } from "./_gate_common.ts";
+import { allow, deny, readPayload, sessionFlagKey } from "./_gate_common.ts";
 
 /**
  * Port of Python's `tempfile.gettempdir()` resolution order.
@@ -46,8 +46,10 @@ const toolParams = (hookInput.tool_input as Record<string, unknown>) ?? {};
 
 // Check if subagent has returned
 const flagDir = join(gettempdir(), "ds-workflow-flags");
-// `?? "default"`, not `|| "default"`: Python's os.environ.get returns "" for an empty-but-set var.
-const sessionId = process.env.CLAUDE_SESSION_ID ?? "default";
+// Keyed to the payload session so it finds the flag its PostToolUse counterpart wrote. The old
+// process.env.CLAUDE_SESSION_ID is never set by Claude Code, so this resolved to "default" and
+// one session's returning subagent blocked reads in every other session. See sessionFlagKey.
+const sessionId = sessionFlagKey(hookInput);
 const flagFile = join(flagDir, `subagent-returned-${sessionId}`);
 
 if (!existsSync(flagFile)) {

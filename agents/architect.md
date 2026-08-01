@@ -209,3 +209,10 @@ Example architecture for an AI-powered SaaS platform:
 - **10M users**: Event-driven architecture, distributed caching, multi-region
 
 **Remember**: Good architecture enables rapid development, easy maintenance, and confident scaling. The best architecture is simple, clear, and follows established patterns.
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put the architecture recommendation, its trade-offs, and the risks you flagged there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

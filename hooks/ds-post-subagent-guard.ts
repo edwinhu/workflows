@@ -7,16 +7,17 @@
  * This is a simplified version — the flag is set per-session via an env-based temp file.
  *
  * PORT NOTES — the two places a "cleaner" TypeScript version silently breaks the guard:
- *   1. `process.env.CLAUDE_SESSION_ID || "default"` is WRONG. Python's
- *      os.environ.get(key, "default") only falls back when the key is ABSENT; a set-but-empty
- *      var yields "". The `||` form turns "" into "default" and writes a differently-named flag,
- *      which the PreToolUse reader never finds — the guard stops guarding, silently.
+ *   1. The session key must match the PreToolUse readers byte for byte, or the guard stops
+ *      guarding silently. It is no longer read from process.env.CLAUDE_SESSION_ID at all —
+ *      Claude Code never sets that variable, so all three hooks resolved to "default" and shared
+ *      one flag file across every concurrent session. sessionFlagKey owns the derivation.
  *   2. A non-object payload must CRASH (exit 1, no flag). Python reaches `.get` on a str and
  *      raises AttributeError before the write. Defensively coercing to {} would arm the
  *      PreToolUse blocker off a malformed payload.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { sessionFlagKey } from "./_gate_common.ts";
 
 /** Python's tempfile.gettempdir(): TMPDIR, TEMP, TMP, then the platform dirs, then cwd. */
 function gettempdir(): string {
@@ -54,8 +55,10 @@ const _toolName = String((payload as Record<string, unknown>).tool_name ?? "");
 const flagDir = join(gettempdir(), "ds-workflow-flags");
 mkdirSync(flagDir, { recursive: true });
 
-const sessionId =
-  "CLAUDE_SESSION_ID" in process.env ? String(process.env.CLAUDE_SESSION_ID) : "default";
+// Keyed to the payload session, not to process.env.CLAUDE_SESSION_ID: Claude Code never sets that
+// variable, so this always resolved to the literal "default" and every concurrent session shared
+// one flag file. See sessionFlagKey.
+const sessionId = sessionFlagKey(payload);
 const flagFile = join(flagDir, `subagent-returned-${sessionId}`);
 
 writeFileSync(flagFile, "1");

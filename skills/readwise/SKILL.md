@@ -46,7 +46,8 @@ These thoughts in MAIN CHAT = VIOLATION. Delegate instead.
 User: "Search my Readwise for proxy advisor articles"
 
 MAIN CHAT RESPONSE:
-Task(subagent_type="workflows:librarian", prompt="Search Readwise for proxy advisor articles and summarize findings")
+Task(subagent_type="workflows:librarian", prompt="Search Readwise for proxy advisor articles and summarize findings", run_in_background=false)
+# Blocking: the answer to the user IS the agent's result, so dispatch synchronously.
 
 NEVER IN MAIN CHAT:
 readwise readwise-search-highlights --vector-search-term "proxy advisors"

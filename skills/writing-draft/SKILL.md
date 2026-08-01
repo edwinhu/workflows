@@ -5,7 +5,7 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
-    - matcher: "Write|Edit|Bash|Agent|Workflow"
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|Agent|Workflow"
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow writing"
@@ -20,7 +20,7 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.ts"
   PostToolUse:
-    - matcher: "Edit|Write"
+    - matcher: "Edit|Write|MultiEdit|NotebookEdit"
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.ts"

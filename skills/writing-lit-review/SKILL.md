@@ -88,6 +88,10 @@ For each research theme from brainstorm, dispatch parallel search agents:
 ```
 Agent(
   subagent_type="workflows:librarian",
+  # Blocking: Step 2's dedupe/Paperpile work consumes these results. Dispatch synchronously —
+  # backgrounded agents return a completion notification, not the paper list. Multiple synchronous
+  # dispatches issued in ONE message still run concurrently.
+  run_in_background=false,
   prompt="Search Google Scholar and Consensus for academic papers about [THEME].
   For each paper found, return: title, author(s), year, journal, DOI if available.
   Focus on empirical papers and seminal works. Return top 5 most relevant."
@@ -123,6 +127,8 @@ Search Readwise for sources the user has already been reading about the topic:
 ```
 Agent(
   subagent_type="workflows:librarian",
+  # Blocking: the document list feeds materialize-sources.ts. Dispatch synchronously.
+  run_in_background=false,
   prompt="Search Readwise Reader for documents related to [TOPIC].
   Search by these queries: [theme1], [theme2], [theme3].
   For each document found, return: title, author, document_id, category.

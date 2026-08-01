@@ -7,7 +7,7 @@ hooks:
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow workshop"
-    - matcher: "Edit|Write|Bash|Agent|Workflow"
+    - matcher: "Edit|Write|MultiEdit|NotebookEdit|Bash|Agent|Workflow"
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow workshop"

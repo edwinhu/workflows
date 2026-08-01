@@ -15,8 +15,9 @@ Main chat orchestrates. Subagents implement and investigate. If you catch yourse
 | Spawn Task/Agent subagents | Write/Edit code files |
 | Review subagent output | Direct implementation |
 | Write to .planning/*.md files | "Quick fixes" |
-| Run git commands | Any code editing |
-| Run test commands (verification) | Grep/Glob code (investigation) |
+| Run git commands — BEFORE approval only | Any code editing |
+| Run test commands (verification) — BEFORE approval only | Grep/Glob code (investigation) |
+| | ANY Bash at all, AFTER approval |
 | Read HYPOTHESES.md, LEARNINGS.md | Read project source files |
 | | Docker exec into containers |
 | | Read application logs |
@@ -25,6 +26,12 @@ Main chat orchestrates. Subagents implement and investigate. If you catch yourse
 | | Inspect process state / env vars |
 
 **Operational debugging is investigation.** Running `docker exec`, reading logs, querying databases, and curling endpoints are ALL investigation — they require interpreting results and forming hypotheses. Delegate to subagents.
+
+**After the plan is APPROVED, main chat gets NO Bash — including the two rows above.** Main chat is the approver, and `hooks/implementer-identity-gate.ts` denies every Bash call from the approving or reviewing actor once a canonical receipt reads `APPROVED`. Not a filtered subset: `git status`, `rg`, and test runs are all refused. This is not an oversight in the gate and it is not an allowlist with a gap — eight rounds established that "does this command line write?" cannot be decided from the text, so the text is no longer read. Do not add an exception; the exception would be a command-line pattern, which is the thing that does not converge.
+
+What to do instead: **dispatch an agent to run the command and return its raw output.** Dispatched agents are unrestricted, and this is the only move the gate's denial recommends. Verification does not become weaker — the evidence is still fresh command output — it just arrives through a subagent that did not approve the plan, which is the same separation this constraint already demands for implementation.
+
+**The one thing that cannot be delegated:** `scripts/goal-self-send.ts` delivers `/goal` into the *caller's own* session and exits `unsafe_identity` from anywhere else, so no subagent can activate the orchestrator's goal. That call falls back to its already-specified path: print the literal `/goal` line and let the user type it.
 
 ## Rationale
 

@@ -11,12 +11,14 @@
     {
       "name": "combined-review-finalization-allowed",
       "kind": "allow",
-      "env": { "CLAUDE_SESSION_ID": "reviewer-456" },
       "stdin": {
+        "session_id": "approval-123",
+        "agent_id": "agent-456",
+        "agent_type": "general-purpose",
         "tool_name": "Write",
         "tool_input": {
           "file_path": ".planning/.state/review.json",
-          "content": "{\n  \"workflow\": \"ds\",\n  \"plan_file\": \"jazzy-leaping-scroll.md\",\n  \"plan_hash\": \"98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\",\n  \"approved_session_id\": \"approval-123\",\n  \"approved_at\": \"2025-12-31T23:59:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reviewer_session_id\": \"reviewer-456\",\n  \"reviewed_at\": \"2026-01-01T00:00:00.000Z\"\n}\n"
+          "content": "{\n  \"workflow\": \"ds\",\n  \"plan_file\": \"jazzy-leaping-scroll.md\",\n  \"plan_hash\": \"98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\",\n  \"approved_session_id\": \"approval-123\",\n  \"approved_at\": \"2025-12-31T23:59:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reviewer_session_id\": \"approval-123#agent-456\",\n  \"reviewed_at\": \"2026-01-01T00:00:00.000Z\"\n}\n"
         }
       },
       "argv": ["--workflow", "ds"],
@@ -29,12 +31,14 @@
     {
       "name": "dev-combined-review-finalization-allowed",
       "kind": "allow",
-      "env": { "CLAUDE_SESSION_ID": "reviewer-456" },
       "stdin": {
+        "session_id": "approval-123",
+        "agent_id": "agent-456",
+        "agent_type": "general-purpose",
         "tool_name": "Write",
         "tool_input": {
           "file_path": ".planning/.state/review.json",
-          "content": "{\n  \"workflow\": \"dev\",\n  \"plan_file\": \"jazzy-leaping-scroll.md\",\n  \"plan_hash\": \"98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\",\n  \"approved_session_id\": \"approval-123\",\n  \"approved_at\": \"2025-12-31T23:59:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reviewer_session_id\": \"reviewer-456\",\n  \"reviewed_at\": \"2026-01-01T00:00:00.000Z\"\n}\n"
+          "content": "{\n  \"workflow\": \"dev\",\n  \"plan_file\": \"jazzy-leaping-scroll.md\",\n  \"plan_hash\": \"98acf32e1a70004b64cf74fc3195fbc6427da37e3987a4cec001ff107f09b844\",\n  \"approved_session_id\": \"approval-123\",\n  \"approved_at\": \"2025-12-31T23:59:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reviewer_session_id\": \"approval-123#agent-456\",\n  \"reviewed_at\": \"2026-01-01T00:00:00.000Z\"\n}\n"
         }
       },
       "argv": ["--workflow", "dev"],

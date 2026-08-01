@@ -278,3 +278,10 @@ npm test -- --coverage --ci
 ```
 
 **Remember**: No code without tests. Tests are not optional. They are the safety net that enables confident refactoring, rapid development, and production reliability.
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put the tests you wrote and their observed RED/GREEN status there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

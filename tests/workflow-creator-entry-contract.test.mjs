@@ -19,7 +19,11 @@ describe("workflow-creator shared-v1 entry contracts", () => {
       expect(text).toContain("orchestrator-mutation-guard.ts --workflow workflow-creator");
       expect(text).toContain("approved-artifact-gate.ts --workflow workflow-creator");
       expect(text).toContain("approved-artifact-persist.ts --workflow workflow-creator");
-      expect(text).toContain('matcher: "Edit|Write|Bash"');
+      // Every write-capable tool is named explicitly, because a matcher of only letters/digits/
+      // `_`/`-`/spaces/`,`/`|` is an EXACT string list and not a regex: `Edit` does NOT match
+      // `MultiEdit` or `NotebookEdit`. Omitting a name means the hook is never invoked for that
+      // tool, which is invisible — there is no denial to inspect and no allow to attribute.
+      expect(text).toContain('matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash"');
       expect(text).toContain('matcher: "Agent|Workflow"');
     }
   });

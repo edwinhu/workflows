@@ -9,8 +9,13 @@ const HOOK = join(REPO, "hooks", "orchestrator-mutation-guard.ts");
 const WORKFLOWS = ["ds", "dev", "writing", "workshop", "workflow-creator"];
 
 function run({ cwd, configDir, homeDir = process.env.HOME, workflow = "writing", workflowPolicy, tool = "Write", permissionMode = "plan", filePath }) {
-  const toolInput = tool === "Edit"
+  // NotebookEdit names its target `notebook_path`; every other write tool uses `file_path`.
+  const toolInput = tool === "NotebookEdit"
+    ? { notebook_path: filePath, new_source: "1 + 1" }
+    : tool === "Edit"
     ? { file_path: filePath, old_string: "old", new_string: "new" }
+    : tool === "MultiEdit"
+    ? { file_path: filePath, edits: [{ old_string: "old", new_string: "new" }] }
     : { file_path: filePath, content: "# Native plan\n" };
   const payload = {
     hook_event_name: "PreToolUse",
@@ -59,6 +64,23 @@ try {
     const editTarget = join(plans, `${workflow}-edit.md`);
     writeFileSync(editTarget, "old");
     assertAllowed(run({ cwd: project, configDir: config, workflow, tool: "Edit", filePath: editTarget }), `${workflow} Plan-mode Edit should be allowed`);
+  }
+
+  /**
+   * EVERY WRITE-CAPABLE TOOL, NOT JUST `Write` AND `Edit`.
+   *
+   * The branch tested only those two, so `MultiEdit` and `NotebookEdit` fell straight through to the
+   * final `allow()` and main chat could edit any project file by reaching for either.
+   *
+   * They are reached because the wiring NAMES them: the skill matchers are
+   * `Write|Edit|MultiEdit|NotebookEdit`. Hook matchers are EXACT string matches per the official
+   * docs — `Write|Edit` would NOT match `MultiEdit`, and the earlier claim here that matchers are
+   * regexes whose `Edit` alternative matches the substring inside both names was simply wrong. The
+   * same wrong rationale was corrected in three other files; this was the fourth copy.
+   */
+  for (const tool of ["Write", "Edit", "MultiEdit", "NotebookEdit"]) {
+    assertDenied(run({ cwd: project, configDir: config, tool, filePath: join(project, "src", "module.ts") }), `${tool} of project source should be denied`);
+    assertAllowed(run({ cwd: project, configDir: config, tool, filePath: join(project, ".planning", "notes.md") }), `${tool} under .planning should be allowed`);
   }
 
   const planTarget = join(plans, "mode-check.md");

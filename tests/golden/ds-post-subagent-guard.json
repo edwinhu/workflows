@@ -17,7 +17,7 @@
     {
       "name": "task-returned-writes-session-flag",
       "kind": "allow",
-      "_comment": "Main path. Silence + exit 0 is how a PostToolUse hook says 'carry on'; the real output is the flag file. Pins the exact filename ds-workflow-flags/subagent-returned-<CLAUDE_SESSION_ID> and its contents ('1'). Verified: exit 0, empty stdout, ./ds-workflow-flags/subagent-returned-sess-abc created.",
+      "_comment": "Main path. Silence + exit 0 is how a PostToolUse hook says 'carry on'; the real output is the flag file. Pins the exact filename ds-workflow-flags/subagent-returned-<CLAUDE_SESSION_ID> and its contents ('1'). Verified: exit 0, empty stdout, ./ds-workflow-flags/subagent-returned-sess-abc-33a386c9464a4538527687ee331d081d created.",
       "stdin": {
         "session_id": "sess-abc",
         "hook_event_name": "PostToolUse",
@@ -28,28 +28,59 @@
           "prompt": "Summarize the columns in data/raw/panel.parquet"
         },
         "tool_response": {
-          "content": [{ "type": "text", "text": "Panel has 412 columns." }]
+          "content": [
+            {
+              "type": "text",
+              "text": "Panel has 412 columns."
+            }
+          ]
         }
       },
       "env": {
         "TMPDIR": ".",
         "CLAUDE_SESSION_ID": "sess-abc"
+      },
+      "_tsComment": "TS-ONLY EXPECTATION. `sessionFlagKey` now appends a digest of the RAW session id, because deleting disallowed characters was not injective: \"sess/one\", \"sess#one\", \"sess one\", and \"sessone\" all collapsed to one key, so distinct sessions shared a flag file — the very cross-session leak this key was introduced to stop. Python still names the file after CLAUDE_SESSION_ID verbatim, so the two sides legitimately diverge and the TS side is pinned exactly: stdout hash, exit code, and the full filesystem delta.",
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          "ds-workflow-flags/subagent-returned-sess-abc-33a386c9464a4538527687ee331d081d": "6b86b273ff34fce1"
+        }
       }
     },
     {
-      "name": "empty-session-id-is-not-defaulted",
+      "name": "payload-session-id-outranks-an-empty-env-var",
       "kind": "effect",
-      "_comment": "os.environ.get('CLAUDE_SESSION_ID', 'default') returns the EMPTY STRING when the var is set but blank — the 'default' fallback only fires when the key is absent. The idiomatic TS port (process.env.CLAUDE_SESSION_ID || 'default') gets this wrong and writes 'subagent-returned-default' instead, desynchronizing the flag name from the PreToolUse reader. Verified against Python: file is ./ds-workflow-flags/subagent-returned- (trailing hyphen, no 'default'). The genuinely-absent-env variant is not expressible here — see notes.",
+      "_comment": "NEW CONTRACT, deliberately diverging from the Python original. The flag key came from process.env.CLAUDE_SESSION_ID, which Claude Code never sets, so all three DS flag hooks resolved to the literal 'default' and every concurrent session shared one flag file. The key now comes from the payload's session_id, which is present on every event these hooks are wired to. Python still reads the env var, so tsExpected pins the TS side exactly: complete stdout hash, exit code, and the full filesystem delta.",
       "stdin": {
-        "session_id": "",
+        "session_id": "sess-payload",
         "hook_event_name": "PostToolUse",
         "tool_name": "Task",
-        "tool_input": { "subagent_type": "general-purpose", "prompt": "check schema" },
-        "tool_response": { "content": [{ "type": "text", "text": "done" }] }
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "prompt": "check schema"
+        },
+        "tool_response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "done"
+            }
+          ]
+        }
       },
       "env": {
         "TMPDIR": ".",
-        "CLAUDE_SESSION_ID": ""
+        "CLAUDE_SESSION_ID": "",
+        "CLAUDE_CODE_SESSION_ID": "sess-env"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          "ds-workflow-flags/subagent-returned-sess-payload-6a53a35d563cd6717a79759c76feede5": "6b86b273ff34fce1"
+        }
       }
     },
     {
@@ -60,15 +91,33 @@
         "session_id": "sess-abc",
         "hook_event_name": "PostToolUse",
         "tool_name": "Task",
-        "tool_input": { "subagent_type": "general-purpose", "prompt": "second subagent" },
-        "tool_response": { "content": [{ "type": "text", "text": "done" }] }
+        "tool_input": {
+          "subagent_type": "general-purpose",
+          "prompt": "second subagent"
+        },
+        "tool_response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "done"
+            }
+          ]
+        }
       },
       "env": {
         "TMPDIR": ".",
         "CLAUDE_SESSION_ID": "sess-abc"
       },
       "fixture": {
-        "ds-workflow-flags/subagent-returned-sess-abc": "STALE-CONTENT-0"
+        "ds-workflow-flags/subagent-returned-sess-abc-33a386c9464a4538527687ee331d081d": "STALE-CONTENT-0"
+      },
+      "_tsComment": "TS-ONLY EXPECTATION. `sessionFlagKey` now appends a digest of the RAW session id, because deleting disallowed characters was not injective: \"sess/one\", \"sess#one\", \"sess one\", and \"sessone\" all collapsed to one key, so distinct sessions shared a flag file — the very cross-session leak this key was introduced to stop. Python still names the file after CLAUDE_SESSION_ID verbatim, so the two sides legitimately diverge and the TS side is pinned exactly: stdout hash, exit code, and the full filesystem delta.",
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          "ds-workflow-flags/subagent-returned-sess-abc-33a386c9464a4538527687ee331d081d": "6b86b273ff34fce1"
+        }
       }
     },
     {

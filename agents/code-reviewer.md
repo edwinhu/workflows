@@ -102,3 +102,10 @@ Add your project-specific checks here. Examples:
 - Validate cache fallback behavior
 
 Customize based on your project's `CLAUDE.md` or skill files.
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put the findings, severity-ordered, with file:line locations there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

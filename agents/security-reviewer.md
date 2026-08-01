@@ -543,3 +543,10 @@ After security review:
 ---
 
 **Remember**: Security is not optional, especially for platforms handling real money. One vulnerability can cost users real financial losses. Be thorough, be paranoid, be proactive.
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put each vulnerability, its severity, its location, and the remediation there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

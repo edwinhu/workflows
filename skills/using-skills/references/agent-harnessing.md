@@ -16,17 +16,45 @@ Task(subagent_type="Explore", description="Find API", run_in_background=true, pr
 # Collect results later with TaskOutput
 ```
 
-**NEVER wait synchronously:**
+**NEVER dispatch one-per-message:**
 ```
-# WRONG: Sequential execution
-task1 = Task(...) # Blocks
-task2 = Task(...) # Blocks
+# WRONG: one dispatch per turn — each waits for the previous to finish
+task1 = Task(...) # message 1
+task2 = Task(...) # message 2
 ```
 
 **Benefits:**
 - 3x faster for 3 agents
 - Main conversation continues immediately
 - Results collected asynchronously
+
+### EXCEPTION: blocking gates dispatch synchronously
+
+**If the caller cannot proceed without the agent's result, pass `run_in_background=false`.**
+
+A backgrounded agent returns a completion *notification*, not its result. The dispatcher then sits
+idle waiting for a verdict that will never arrive on that channel — the agent finished, and nobody
+got the answer. Plan review is the canonical case (`skills/*-plan-reviewer/SKILL.md`); so are the
+`audit-fix-loop` fresh auditor, the `visual-verify` vision prongs, and the `writing-lit-review`
+librarian fan-outs.
+
+**This costs no parallelism.** Synchronous is not sequential: multiple `run_in_background=false`
+dispatches issued in ONE message still run concurrently, and all of them return before the next
+turn. Background buys you a conversation that continues *before* the results land — which is exactly
+what a gate must not do.
+
+**Result delivery.** A synchronously dispatched agent's final message IS its return value and
+reaches its dispatcher directly. A backgrounded agent or a named teammate must call `SendMessage`
+for anything to reach the dispatcher. An agent whose `tools:` frontmatter omits `SendMessage`
+therefore has no way to report from the background — it can only be dispatched synchronously.
+
+**A successful `SendMessage` is not proof of receipt.** From the sender's side a message that
+didn't land is indistinguishable from one never sent, so a dispatcher that NEEDS a result should
+dispatch synchronously rather than depend on the agent pushing it.
+
+**Idle does not mean silent.** A completion/idle notification can reach the dispatcher BEFORE the
+agent's own message does. Reading "idle" as "reported nothing" is a mistake — ask the agent, don't
+conclude, and never re-dispatch work that may already be done and already reported.
 
 ## Tool Restrictions (Enforce Focus)
 

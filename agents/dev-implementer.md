@@ -32,3 +32,10 @@ You MUST follow the TDD protocol provided in your task instructions:
 - REFACTOR: Clean up while staying green (linter clean)
 
 **Code that passes tests but fails linting is NOT green.**
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put what you changed, the exact paths, and the test evidence your task contract requires there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

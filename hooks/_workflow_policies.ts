@@ -22,6 +22,18 @@ function builtInWorkflowFromArg(argv: string[]): WorkflowPolicy | null {
   return name === "ds" || name === "dev" || name === "work" || name === "writing" || name === "workshop" || name === "workflow-creator" ? POLICIES[name] : null;
 }
 
+/**
+ * The orchestrator write surface for a built-in workflow, by name rather than by CLI argument.
+ *
+ * The plugin-wide identity gate learns its workflow from the receipt, not from `--workflow`, and it
+ * must hold the orchestrator to the SAME surface the skill-scoped mutation guard does. Reading it
+ * from this one table is what keeps the two gates from drifting apart.
+ */
+export function builtInOrchestratorDirectories(workflow: string): readonly string[] {
+  const policy = (POLICIES as Record<string, WorkflowPolicy | undefined>)[workflow];
+  return policy ? policy.allowedOrchestratorDirectories : [".planning", ".claude"];
+}
+
 export function workflowFromArg(argv: string[]): WorkflowPolicy | null {
   return workflowPolicyFromArg(argv, builtInWorkflowFromArg);
 }

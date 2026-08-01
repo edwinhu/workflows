@@ -58,3 +58,10 @@ Your final report must separate reusable technical facts—source quirks, schema
 row-count baselines, and failed approaches—from transient narration. The main orchestrator decides
 what belongs in project auto-memory before closing the TaskList item. The approved PLAN is immutable
 intent, TaskList is the live queue, and the main orchestrator curates reusable returned facts into project auto-memory.
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put what you built, the schema/determinism checks you ran, and their real output there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

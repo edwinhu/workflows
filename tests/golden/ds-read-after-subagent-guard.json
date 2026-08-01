@@ -14,11 +14,17 @@
       "name": "allow-no-flag-file",
       "kind": "allow",
       "stdin": {
+        "session_id": "parity-no-flag",
         "hook_event_name": "PreToolUse",
         "tool_name": "Read",
-        "tool_input": { "file_path": "src/analysis.py" }
+        "tool_input": {
+          "file_path": "src/analysis.py"
+        }
       },
-      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "parity-no-flag" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "parity-no-flag"
+      },
       "fixture": {
         "src/analysis.py": "import polars as pl\n"
       }
@@ -27,13 +33,19 @@
       "name": "allow-flag-set-but-tool-carries-no-path",
       "kind": "allow",
       "stdin": {
+        "session_id": "parity-session",
         "hook_event_name": "PreToolUse",
         "tool_name": "Bash",
-        "tool_input": { "command": "cat src/analysis.py" }
+        "tool_input": {
+          "command": "cat src/analysis.py"
+        }
       },
-      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "parity-session" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "parity-session"
+      },
       "fixture": {
-        "ds-workflow-flags/subagent-returned-parity-session": "",
+        "ds-workflow-flags/subagent-returned-parity-session-8eaa817b4b470cce148263feea168071": "",
         "src/analysis.py": "import polars as pl\n"
       }
     },
@@ -41,13 +53,19 @@
       "name": "allow-flag-set-read-of-planning-state",
       "kind": "allow",
       "stdin": {
+        "session_id": "parity-session",
         "hook_event_name": "PreToolUse",
         "tool_name": "Read",
-        "tool_input": { "file_path": ".planning/SPEC.md" }
+        "tool_input": {
+          "file_path": ".planning/SPEC.md"
+        }
       },
-      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "parity-session" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "parity-session"
+      },
       "fixture": {
-        "ds-workflow-flags/subagent-returned-parity-session": "",
+        "ds-workflow-flags/subagent-returned-parity-session-8eaa817b4b470cce148263feea168071": "",
         ".planning/SPEC.md": "# Spec\n"
       }
     },
@@ -55,13 +73,20 @@
       "name": "allow-flag-set-glob-under-allowed-pattern",
       "kind": "allow",
       "stdin": {
+        "session_id": "parity-session",
         "hook_event_name": "PreToolUse",
         "tool_name": "Glob",
-        "tool_input": { "pattern": "*.md", "path": "docs/CLAUDE.md" }
+        "tool_input": {
+          "pattern": "*.md",
+          "path": "docs/CLAUDE.md"
+        }
       },
-      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "parity-session" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "parity-session"
+      },
       "fixture": {
-        "ds-workflow-flags/subagent-returned-parity-session": "",
+        "ds-workflow-flags/subagent-returned-parity-session-8eaa817b4b470cce148263feea168071": "",
         "docs/CLAUDE.md": "# project\n"
       }
     },
@@ -69,28 +94,53 @@
       "name": "deny-flag-set-read-of-source-file",
       "kind": "deny",
       "stdin": {
+        "session_id": "parity-session",
         "hook_event_name": "PreToolUse",
         "tool_name": "Read",
-        "tool_input": { "file_path": "src/analysis.py" }
+        "tool_input": {
+          "file_path": "src/analysis.py"
+        }
       },
-      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "parity-session" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "parity-session"
+      },
       "fixture": {
-        "ds-workflow-flags/subagent-returned-parity-session": "",
+        "ds-workflow-flags/subagent-returned-parity-session-8eaa817b4b470cce148263feea168071": "",
         "src/analysis.py": "import polars as pl\n"
+      },
+      "_tsComment": "TS-ONLY EXPECTATION. `sessionFlagKey` now appends a digest of the RAW session id, because deleting disallowed characters was not injective: \"sess/one\", \"sess#one\", \"sess one\", and \"sessone\" all collapsed to one key, so distinct sessions shared a flag file — the very cross-session leak this key was introduced to stop. Python still names the file after CLAUDE_SESSION_ID verbatim, so the two sides legitimately diverge and the TS side is pinned exactly: stdout hash, exit code, and the full filesystem delta.",
+      "tsExpected": {
+        "stdoutSha256": "5205728f68d8ba5c8262c1db29f1d521aebdfda95e64e77093884fa6d7dc652e",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "deny-flag-set-grep-of-data-dir",
       "kind": "deny",
       "stdin": {
+        "session_id": "parity-session",
         "hook_event_name": "PreToolUse",
         "tool_name": "Grep",
-        "tool_input": { "pattern": "permno", "path": "data/raw" }
+        "tool_input": {
+          "pattern": "permno",
+          "path": "data/raw"
+        }
       },
-      "env": { "TMPDIR": ".", "CLAUDE_SESSION_ID": "parity-session" },
+      "env": {
+        "TMPDIR": ".",
+        "CLAUDE_SESSION_ID": "parity-session"
+      },
       "fixture": {
-        "ds-workflow-flags/subagent-returned-parity-session": "",
+        "ds-workflow-flags/subagent-returned-parity-session-8eaa817b4b470cce148263feea168071": "",
         "data/raw/panel.csv": "permno,ret\n10001,0.01\n"
+      },
+      "_tsComment": "TS-ONLY EXPECTATION. `sessionFlagKey` now appends a digest of the RAW session id, because deleting disallowed characters was not injective: \"sess/one\", \"sess#one\", \"sess one\", and \"sessone\" all collapsed to one key, so distinct sessions shared a flag file — the very cross-session leak this key was introduced to stop. Python still names the file after CLAUDE_SESSION_ID verbatim, so the two sides legitimately diverge and the TS side is pinned exactly: stdout hash, exit code, and the full filesystem delta.",
+      "tsExpected": {
+        "stdoutSha256": "5205728f68d8ba5c8262c1db29f1d521aebdfda95e64e77093884fa6d7dc652e",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

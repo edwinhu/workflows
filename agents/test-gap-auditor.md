@@ -69,3 +69,10 @@ For each gap identified by the gap analysis:
 - Gaps filled: [N]
 - Escalated: [N]
 ```
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put the gaps you found and the tests you added — or the escalation, if implementation code would have had to change there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

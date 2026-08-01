@@ -112,3 +112,10 @@ SUMMARY: X/Y citations verified. Z violations found.
 | Ignoring approximate matches | "Li" could be "Wei Li" or "Tao Li" — disambiguation matters | Flag ambiguous matches |
 | Editing the draft to fix a citation | You are read-only | Report the mismatch |
 | Approving claims about source content without checking sources.md | The draft may attribute findings the source doesn't support | Check what sources.md actually says |
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put your findings, citation by citation there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

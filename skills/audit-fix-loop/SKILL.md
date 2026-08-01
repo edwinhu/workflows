@@ -144,7 +144,9 @@ Then audit this artifact: [ARTIFACT PATH]
 Output findings EXACTLY as: | # | Severity | Finding | Location | Suggestion |
 Severities: CRITICAL, HIGH, MEDIUM, LOW. Be thorough — a clean audit that misses issues is worse
 than a harsh one. Do NOT soften findings. Do NOT say "overall good." Then give a 0-10 score.
-""", subagent_type="general-purpose")
+""", subagent_type="general-purpose", run_in_background=false)
+# Blocking: DECIDE -> FIX consumes this audit. A backgrounded auditor returns a completion
+# notification, not findings.
 ```
 
 Compile into `.planning/AUDIT.md`, append the row to `.planning/SCORES.md`, then DECIDE → FIX → end turn.

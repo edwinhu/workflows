@@ -5,7 +5,7 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
-    - matcher: "Write|Edit"
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
@@ -28,7 +28,12 @@ review results, and TaskList. It does not read or write `REVIEW_STATE.md`, `VERI
 1. Re-resolve and rehash the receipt-selected generated plan; reject any identity mismatch.
 2. Confirm the test-gap audit has no open current-plan gaps and review has returned `APPROVED` with no
    pending review finding. These results are admission evidence, not substitutes for verification.
-3. Run the mechanical floor and complete test suite fresh. Read all command output and exit statuses.
+3. Obtain a fresh run of the mechanical floor and the complete test suite. **Do not run them
+   yourself**: verification happens after approval, this conversation is the approver, and
+   `implementer-identity-gate` denies every Bash call from it — test runs included. Dispatch an agent
+   to execute them and return each `{command, exitCode, raw output}` verbatim. Read all of it.
+   Summarized or paraphrased results are not evidence; if an agent returns a verdict instead of
+   output, re-dispatch for the output.
 4. Dispatch a fresh read-only verifier, distinct from doers and reviewers, with plan requirements,
    criteria, real-test contract, review surfaces, and the fresh command evidence. The verifier checks
    every requirement with runtime evidence; structural existence alone is FAIL.

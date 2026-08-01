@@ -11,8 +11,8 @@ const planFile = "jazzy-leaping-scroll.md";
 const plan = "# Exact generated plan\n";
 const hash = createHash("sha256").update(plan).digest("hex");
 const pending = { workflow: "ds", plan_file: planFile, plan_hash: hash, approved_session_id: "approval-123", approved_at: "2026-01-01T00:00:00.000Z", status: "PENDING", reviewer_session_id: "", reviewed_at: "" };
-function final(overrides = {}) { return JSON.stringify({ ...pending, status: "APPROVED", reviewer_session_id: "reviewer-456", reviewed_at: "2026-01-01T00:01:00.000Z", ...overrides }, null, 2); }
-function devVerdict() { return `---\nplan_hash: ${hash}\nstatus: APPROVED\nreviewer_session_id: reviewer-456\nreviewed_at: 2026-01-01T00:01:00.000Z\n---\n`; }
+function final(overrides = {}) { return JSON.stringify({ ...pending, status: "APPROVED", reviewer_session_id: REVIEWER_ACTOR, reviewed_at: "2026-01-01T00:01:00.000Z", ...overrides }, null, 2); }
+function devVerdict() { return `---\nplan_hash: ${hash}\nstatus: APPROVED\nreviewer_session_id: ${REVIEWER_ACTOR}\nreviewed_at: 2026-01-01T00:01:00.000Z\n---\n`; }
 function externalWorkflowPolicy(reviewerVerdict) {
   return {
     schemaVersion: 1,
@@ -30,12 +30,22 @@ function externalApprovalPolicy(verdictPath = ".planning/PLAN_REVIEWED.md") {
 function externalMetadata(overrides = {}) {
   return { schemaVersion: 1, workflow: "external-review", planHash: hash, approvedSession: "approval-123", approvedAt: "2026-01-01T00:00:00.000Z", ...overrides };
 }
+// Reviewer identity comes from the payload (session_id + agent_id), never from the environment:
+// Claude Code does not set CLAUDE_SESSION_ID, so injecting it here simulated a variable production
+// never provides — which is why these cases passed while every real finalization denied.
+// "approval-123" is the approving conversation; the reviewer is a subagent it dispatched.
+const REVIEWER_ACTOR = "approval-123#agent-456";
 function run(cwd, { workflow = "ds", workflowPolicy = "", tool = "Write", filePath = ".planning/.state/review.json", content = final(), command = "" } = {}) {
   const toolInput = tool === "Bash" ? { command } : { file_path: filePath, content };
   const argv = workflowPolicy ? [HOOK, "--workflow-policy", workflowPolicy] : [HOOK, "--workflow", workflow];
-  return spawnSync("bun", argv, { cwd, env: { ...process.env, CLAUDE_SESSION_ID: "reviewer-456" }, input: JSON.stringify({ tool_name: tool, cwd, tool_input: toolInput }), encoding: "utf8" });
+  const env = { ...process.env }; delete env.CLAUDE_SESSION_ID;
+  const stdin = { session_id: "approval-123", agent_id: "agent-456", agent_type: "general-purpose", cwd, hook_event_name: "PreToolUse", tool_name: tool, tool_input: toolInput };
+  return spawnSync("bun", argv, { cwd, env, input: JSON.stringify(stdin), encoding: "utf8" });
 }
-function allowed(result, message) { assert.equal(result.status, 0, `${message}: ${result.stderr}`); assert.equal(result.stdout, "", message); }
+// An allow is the absence of a deny, not necessarily empty stdout: the permitted pre-finalization
+// hash call also carries the reviewer's actor identity as PreToolUse additionalContext, which is
+// the only way a subagent can learn its own agent_id.
+function allowed(result, message) { assert.equal(result.status, 0, `${message}: ${result.stderr}`); assert.doesNotMatch(result.stdout, /"permissionDecision"/, `${message}: ${result.stdout}`); }
 function denied(result, message) { assert.equal(result.status, 0, `${message}: ${result.stderr}`); assert.match(result.stdout, /"permissionDecision": "deny"/, message); }
 
 const cwd = mkdtempSync(join(tmpdir(), "reviewer-guard-")); const outside = mkdtempSync(join(tmpdir(), "reviewer-guard-outside-"));
@@ -65,7 +75,7 @@ try {
   rmSync(selected); writeFileSync(selected, plan);
 
   const devPending = { ...pending, workflow: "dev" };
-  const devFinal = JSON.stringify({ ...devPending, status: "APPROVED", reviewer_session_id: "reviewer-456", reviewed_at: "2026-01-01T00:01:00.000Z" }, null, 2);
+  const devFinal = JSON.stringify({ ...devPending, status: "APPROVED", reviewer_session_id: REVIEWER_ACTOR, reviewed_at: "2026-01-01T00:01:00.000Z" }, null, 2);
   writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(devPending));
   allowed(run(cwd, { workflow: "dev", filePath: ".planning/.state/review.json", content: devFinal }), "dev finalizes hidden native receipt");
   allowed(run(cwd, { workflow: "dev", tool: "Bash", command: `sha256sum .planning/${planFile}` }), "dev hashes selected generated plan");

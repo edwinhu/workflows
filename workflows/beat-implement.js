@@ -53,9 +53,29 @@ if (builtInWorkflow) {
   if (!requiredText(reset.session)) throw new Error('beat-implement external planReset requires nonempty session')
   if (Object.keys(reset).some(key => !['approvedBodyHash', 'session'].includes(key))) throw new Error('beat-implement external planReset accepts only approvedBodyHash and session')
 }
+// THE RUNNER IS A DISPATCHER, NOT AN IMPLEMENTER.
+// It hands every task to an agent() subagent; those subagents are the implementing actors and their
+// identities do not exist here. So it declares role 'dispatch' and is permitted to be the approving
+// session, exactly as the conversation that approved the plan and then invoked this runner is.
+// approver != implementer is enforced on each implementer's own tool calls by
+// hooks/implementer-identity-gate.ts, which is where a real implementer identity first exists.
+//
+// IDENTITY SOURCE. The Workflow runtime has no hook stdin payload, so it cannot read the payload
+// `session_id` the gates use. It reads CLAUDE_CODE_SESSION_ID, which Claude Code does set in its
+// own process environment (verified: present in a plain Bash tool child, and byte-identical to the
+// PreToolUse payload's session_id in a captured probe). That value is session-TREE-wide — identical
+// in a conversation and in the subagents it dispatches — which is precisely why it may serve only
+// as a dispatch identity and never as a reviewer or implementer identity. process.env
+// .CLAUDE_SESSION_ID, which this used to read, is never set by Claude Code at all: it arrived as
+// undefined, denied every real run, and reached .trim() as an uncaught TypeError.
+const DISPATCH_SESSION = process.env.CLAUDE_CODE_SESSION_ID
+if (typeof DISPATCH_SESSION !== 'string' || !DISPATCH_SESSION.trim()) {
+  throw new Error('beat-implement cannot authenticate its dispatching session: CLAUDE_CODE_SESSION_ID is absent or empty. Refusing to dispatch implementation without an actor identity.')
+}
+const DISPATCH_ACTOR = { role: 'dispatch', identity: DISPATCH_SESSION }
 let artifact = null
 if (cfg.capturedApprovalBundle === undefined) {
-  artifact = validateApprovedArtifact(PROJECT, cfg.workflow, process.env.CLAUDE_SESSION_ID, cfg.approvalPolicy)
+  artifact = validateApprovedArtifact(PROJECT, cfg.workflow, DISPATCH_ACTOR, cfg.approvalPolicy)
   if (artifact.code) throw new Error(`beat-implement ${artifact.message}`)
   if (builtInWorkflow) {
     if (reset.planFile !== artifact.planFile || reset.planHash !== artifact.hash) throw new Error('beat-implement rejects caller planReset that differs from current receipt-selected generated plan')
@@ -186,7 +206,8 @@ async function run(task) {
       taskIdentity: task.id,
       taskContractDigest: contractDigest(task),
       preDispatchObservationDigest: pre.digest,
-      implementationSession: process.env.CLAUDE_SESSION_ID,
+      implementationSession: DISPATCH_SESSION,
+      implementationRole: 'dispatch',
     }
     approval = cfg.capturedApprovalBundle !== undefined
       ? validateCapturedApprovalBundle(cfg.capturedApprovalBundle, cfg.workflow, approvalBinding)

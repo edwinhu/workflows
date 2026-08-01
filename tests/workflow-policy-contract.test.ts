@@ -100,8 +100,12 @@ describe("external workflow policy contract", () => {
       writeFileSync(join(root, ".approval/policy.json"), JSON.stringify({ schemaVersion: 1, workflow: "opaque-extension", planPath: ".approval/CURRENT.md", metadataPath: ".approval/CURRENT.meta.json", verdictPath: ".approval/CURRENT_REVIEWED.md" }));
       const workflowPath = join(root, "workflow.json");
       writeFileSync(workflowPath, JSON.stringify(descriptor()));
-      const payload = JSON.stringify({ tool_name: "Agent", tool_input: { subagent_type: "implementation" }, cwd: root });
-      const run = (args: string[]) => Bun.spawnSync(["bun", join(import.meta.dir, "../hooks/approved-artifact-gate.ts"), ...args], { stdin: Buffer.from(payload), env: { ...process.env, CLAUDE_SESSION_ID: "implement" } });
+      // Identity comes from the payload: session_id plus agent_id when the call is made inside a
+      // subagent. CLAUDE_SESSION_ID is never set by Claude Code, so injecting it here tested a
+      // variable production does not have.
+      const payload = JSON.stringify({ session_id: "implement", cwd: root, hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { subagent_type: "implementation" } });
+      const env = { ...process.env }; delete env.CLAUDE_SESSION_ID;
+      const run = (args: string[]) => Bun.spawnSync(["bun", join(import.meta.dir, "../hooks/approved-artifact-gate.ts"), ...args], { stdin: Buffer.from(payload), env });
       expect(run(["--workflow-policy", workflowPath]).stdout.toString()).toBe("");
       expect(run(["--workflow-policy", join(root, "missing.json")]).exitCode).not.toBe(0);
       writeFileSync(join(root, ".approval/policy.json"), "{}\n");

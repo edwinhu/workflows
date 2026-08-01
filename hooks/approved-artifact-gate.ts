@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { lstatSync, readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, join, relative } from "node:path";
-import { parseApprovalPolicyDescriptor, validateApprovedArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
+import { hookActorIdentity, isSubagentPayload, parseApprovalPolicyDescriptor, validateApprovedArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, projectFromArgs, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
@@ -50,7 +50,18 @@ if (policy.approvalPolicy !== undefined) {
 }
 let result;
 try {
-  result = validateApprovedArtifact(projectDir, policy.workflow, process.env.CLAUDE_SESSION_ID, approvalPolicy);
+  // The actor comes from the hook PAYLOAD. process.env.CLAUDE_SESSION_ID is never set in a real
+  // hook process, so this argument was always `undefined` and every admission failed the identity
+  // check; see hookActorIdentity.
+  //
+  // ROLE. A conversation-level call (no agent_id) is DISPATCHING: the implementer it is about to
+  // create does not exist yet, so holding it to approver != implementer would deny the normal
+  // single-conversation flow outright. approver != implementer is enforced on the implementer's own
+  // calls by implementer-identity-gate. A call from INSIDE a subagent already names a real actor,
+  // so it carries the full three-way rule here.
+  const identity = hookActorIdentity(payload);
+  const actor = identity === null ? identity : { role: isSubagentPayload(payload) ? "implement" as const : "dispatch" as const, identity };
+  result = validateApprovedArtifact(projectDir, policy.workflow, actor, approvalPolicy);
 } catch (error) {
   deny(`APPROVED ARTIFACT GATE (${policy.workflow}): validation failed: ${error instanceof Error ? error.message : String(error)}.`);
 }

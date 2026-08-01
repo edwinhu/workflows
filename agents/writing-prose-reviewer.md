@@ -161,3 +161,10 @@ PASS RATE: X% (target: ≥85% A or B)
 | Fixing text instead of reporting | You are read-only | Report the violation with a suggested fix |
 | Grading topic sentences without checking if they open a paragraph | Mid-paragraph sentences aren't topic sentences | Only flag paragraph-initial sentences |
 | Approving bold-lead patterns because "they help the reader scan" | Bold inline headers are AI tells | Report as F-grade violation |
+
+## Delivering your result
+
+Your final message IS your return value: dispatched synchronously, it goes straight to the agent
+that dispatched you. Put your findings and scores there. A backgrounded or
+named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
+that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

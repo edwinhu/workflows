@@ -29,6 +29,15 @@
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.ts"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/implementer-identity-gate.ts"
+          }
+        ]
       }
     ],
     "PostToolUse": [

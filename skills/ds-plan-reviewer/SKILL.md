@@ -17,7 +17,7 @@ hooks:
 **NO IMPLEMENTATION WITHOUT AN INTACT, REVIEWED NATIVE PLAN.** The approved native plan is immutable. A vague or altered plan makes workers guess about data, evidence, and acceptance, which is anti-helpful.
 </EXTREMELY-IMPORTANT>
 
-After the approved native Plan interaction completes, retain the hook-authenticated generated plan path and its receipt-selected `{planFile, planHash}`. Dispatch one fresh reviewer in a session distinct from later implementation. It reviews that complete plan once and finalizes the only durable review state; main chat never substitutes its own review.
+After the approved native Plan interaction completes, retain the hook-authenticated generated plan path and its receipt-selected `{planFile, planHash}`. Dispatch the reviewer as a fresh subagent, a distinct actor from this conversation and from the later implementers. It reviews that complete plan once and finalizes the only durable review state; main chat never substitutes its own review.
 
 If that authenticated path is unavailable, STOP. Do not list `.planning/`, choose the newest file, inspect the hidden receipt to invent a path, or infer a filename.
 
@@ -26,6 +26,10 @@ Agent(
   subagent_type="workflows:plan-checker",
   allowed_tools=["Read", "Glob", "Grep", "Bash", "Write"],
   description="Review DS native plan",
+  # Plan review is a blocking gate: this conversation cannot proceed without the verdict.
+  # Agent defaults to background, and a backgrounded reviewer returns a completion
+  # NOTIFICATION, not a verdict — the dispatcher then idles waiting for one. Dispatch synchronously.
+  run_in_background=false,
   prompt="""
 Workflow/domain: ds
 Reference root: ${CLAUDE_SKILL_DIR}/../../references
@@ -40,7 +44,7 @@ Replace both angle-bracket placeholders with concrete paths before dispatch. The
 
 ## Resolution
 
-- **APPROVED:** transition directly to `${CLAUDE_SKILL_DIR}/../ds-implement/SKILL.md` in a genuinely distinct implementation session.
+- **APPROVED:** transition directly to `${CLAUDE_SKILL_DIR}/../ds-implement/SKILL.md`, dispatching implementers as actors distinct from BOTH the reviewer and the approving conversation. Dispatching is not implementing: this conversation approved the plan and may delegate the work, but it may never perform that work itself.
 - **ISSUES_FOUND or integrity failure:** return to native Plan mode, revise and obtain fresh approval through `ExitPlanMode`, let persistence bind a replacement generated plan and reset its receipt, then dispatch a fresh reviewer. Never patch the immutable plan, create a custom task table, or use a parallel state file.
 
 ## Gate

@@ -7,7 +7,7 @@ hooks:
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/image-read-guard.ts"
-    - matcher: "Edit|Write|Bash|Agent|Workflow"
+    - matcher: "Edit|Write|MultiEdit|NotebookEdit|Bash|Agent|Workflow"
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow workshop"

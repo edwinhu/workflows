@@ -13,7 +13,7 @@
  */
 import { existsSync, mkdtempSync, rmSync, rmdirSync } from "node:fs";
 import { resolve, join } from "node:path";
-import { allow } from "./_gate_common.ts";
+import { allow, readPayload, sessionFlagKey } from "./_gate_common.ts";
 
 /**
  * Port of Python's `tempfile.gettempdir()`.
@@ -51,9 +51,10 @@ function gettempdir(): string {
 }
 
 const flagDir = join(gettempdir(), "ds-workflow-flags");
-// `os.environ.get(..., "default")` only falls back when the var is ABSENT — an empty string is
-// used literally, yielding the filename "subagent-returned-".
-const sessionId = process.env.CLAUDE_SESSION_ID ?? "default";
+// The payload is now read for one reason only: its session_id is the per-session flag key. The
+// old process.env.CLAUDE_SESSION_ID is never set by Claude Code, so this resolved to "default"
+// and cleared every concurrent session's flag at once. See sessionFlagKey.
+const sessionId = sessionFlagKey(await readPayload());
 const flagFile = join(flagDir, `subagent-returned-${sessionId}`);
 
 if (existsSync(flagFile)) {

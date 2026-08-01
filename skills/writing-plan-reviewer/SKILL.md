@@ -14,7 +14,7 @@ hooks:
 # Writing Native Plan Reviewer
 
 After the approved native Plan interaction completes, retain its exact generated plan path and dispatch
-one fresh reviewer session distinct from implementation. If that exact path is unavailable, STOP; never
+the reviewer as one fresh subagent, a distinct actor from this conversation and from implementation. If that exact path is unavailable, STOP; never
 list `.planning/`, choose the newest file, or infer a filename.
 
 ```text
@@ -22,6 +22,10 @@ Agent(
   subagent_type="workflows:plan-checker",
   allowed_tools=["Read", "Glob", "Grep", "Bash", "Write"],
   description="Review writing native plan",
+  # Plan review is a blocking gate: this conversation cannot proceed without the verdict.
+  # Agent defaults to background, and a backgrounded reviewer returns a completion
+  # NOTIFICATION, not a verdict — the dispatcher then idles waiting for one. Dispatch synchronously.
+  run_in_background=false,
   prompt="""
 Workflow/domain: writing
 Reference root: ${CLAUDE_SKILL_DIR}/../../references
@@ -35,10 +39,12 @@ Review the exact supplied generated plan; never discover or substitute another p
 Replace both angle-bracket placeholders with concrete paths before dispatch. The reviewer deterministically
 loads common plus writing constraints, hashes the exact generated path before review and immediately before
 finalization, and may replace only `.planning/.state/review.json`. It must reproduce `workflow`, `plan_file`,
-`plan_hash`, `approved_session_id`, and `approved_at` unchanged, then set only `status`, its actual
-`reviewer_session_id`, and strict `reviewed_at`.
+`plan_hash`, `approved_session_id`, and `approved_at` unchanged, then set only `status`, the
+reviewer actor identity the guard supplies as its `reviewer_session_id`, and strict `reviewed_at`.
 
-- `APPROVED`: begin outlining and drafting in a third, distinct implementation session.
+- `APPROVED`: begin outlining and drafting through actors distinct from BOTH the reviewer and the
+  approving conversation. Dispatching is not implementing: this conversation approved the plan and
+  may delegate the work, but it may never perform that work itself.
 - `ISSUES_FOUND`: return to native Plan mode, create a new generated file, obtain fresh approval, then dispatch a fresh review.
 
 Never patch generated plan bytes, write `PLAN_REVIEWED.md`, self-approve, or substitute automated document review for whole-plan review.

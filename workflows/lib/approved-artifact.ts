@@ -1,3 +1,44 @@
+/**
+ * WHAT THE ACTOR-SEPARATION INVARIANT ACTUALLY PROVES — READ BEFORE CITING IT.
+ *
+ * The gates in this repo enforce a real but NARROW property, and it is easy to read far more into
+ * `approver != implementer` than the mechanism can support. State it exactly.
+ *
+ * IT PROVES
+ *   Under a canonical receipt whose recorded `plan_hash` matches the current bytes of the selected
+ *   generated plan and whose `status` is APPROVED, the actor performing a gated mutation is a
+ *   DIFFERENT HOOK ACTOR from the recorded approver and from the recorded reviewer — three distinct
+ *   `(session_id, agent_id)` tuples, as observed on the tool calls themselves. Nothing more.
+ *
+ * IT DOES NOT PROVE
+ *   - That the implementer is not a DESCENDANT of the approver. In single-conversation /dev it
+ *     always is: the approving conversation dispatches the implementer, so "different actor" means
+ *     "different subagent of the same conversation", not "arm's length". `hooks/subagent-start.ts`
+ *     additionally injects the approved plan context into that subagent.
+ *   - Independence of JUDGMENT. Approver, reviewer, and implementer are the same model, in the same
+ *     repository, reading the same plan. A distinct `agent_id` is an identity fact, not evidence of
+ *     an independent viewpoint. Do not describe this invariant as "independent review" in the sense
+ *     a human reviewer would mean.
+ *   - Anything about Bash-based mutation beyond what `hooks/_bash_mutation.ts` catches. That
+ *     classifier is a deny-biased DENYLIST; a command whose writes happen inside an opaque
+ *     executable (`make`, `cargo build`, `./scripts/build.sh`, a project binary) is admitted by
+ *     design, because denying every unrecognized command would deny the orchestrator's own checks.
+ *   - Anything about REPOSITORY state. The Bash classifier's git rules cover subcommands that change
+ *     the content of files in the WORKTREE, which is what "may not implement" is about. `git add`,
+ *     `commit`, `push`, `tag`, `fetch`, `branch`, `update-index`, and `hash-object -w` all mutate the
+ *     index, the object database, refs, or a remote, and are deliberately out of scope here — they
+ *     record or publish bytes that were themselves gated when they were written. If publishing is
+ *     what needs governing, it needs its own control; do not read this one as covering it.
+ *   - Any lineage property at all. `hooks/lineage.ts` is MONITORED TELEMETRY, not a control: it can
+ *     observe a reviewer that dispatched its own implementer DIRECTLY, only when undocumented
+ *     on-disk subagent metadata resolves. It FAILS OPEN otherwise — that metadata was missing for
+ *     41% of agents measured on this machine (503 of 1236) — and one extra hop through any
+ *     intermediate agent is invisible to it. A positive from it is evidence; a negative is nothing.
+ *
+ * The honest summary: this is a separation-of-actors control that raises the cost of self-approval
+ * and catches the structurally lazy path. It is not a proof of independence, and a future reader who
+ * treats `approver != implementer` as one will over-trust it.
+ */
 import { closeSync, constants, existsSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readSync, realpathSync, renameSync, unlinkSync, writeSync, type BigIntStats } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { isAbsolute, join, relative } from "node:path";
@@ -6,6 +47,18 @@ export type WorkflowName = "ds" | "dev" | "work" | "writing" | "workshop" | "wor
 export type BuiltInApprovalWorkflow = WorkflowName;
 export type ArtifactError = { code: string; message: string };
 export type ApprovalMetadata = { schemaVersion: 1; workflow: string; planHash: string; approvedSession: string; approvedAt: string };
+/**
+ * `reviewer_session_id` and `approved_session_id` hold an ACTOR IDENTITY, not a raw session id.
+ *
+ * Claude Code never exports CLAUDE_SESSION_ID to a hook process, so the old
+ * `process.env.CLAUDE_SESSION_ID` comparison was `undefined` on every real invocation and every
+ * receipt finalization denied. CLAUDE_CODE_SESSION_ID is no substitute: it is session-TREE-wide and
+ * byte-identical in a parent conversation and its Agent()-dispatched subagent, so
+ * reviewer != approver could never hold. The hook stdin payload is the only source that separates
+ * them: it carries `session_id` for every call and `agent_id` ONLY when the call originates inside a
+ * subagent. `hookActorIdentity` combines the two, so the parent conversation and each subagent it
+ * dispatches are distinct actors within one conversation.
+ */
 export type ReviewerVerdict = { plan_hash: string; status: "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
 export type ModernReviewReceipt = { workflow: BuiltInApprovalWorkflow; plan_file: string; plan_hash: string; approved_session_id: string; approved_at: string; status: "PENDING" | "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
 export type ResolvedGeneratedPlan = { planFile: string; planPath: string; hash: string; receipt: ModernReviewReceipt };
@@ -29,6 +82,78 @@ export function err(code: string, message: string): ArtifactError { return { cod
 function isError(value: unknown): value is ArtifactError { return !!value && typeof value === "object" && "code" in value; }
 function isBuiltInWorkflow(workflow: string): workflow is BuiltInApprovalWorkflow { return MODERN_WORKFLOWS.has(workflow as BuiltInApprovalWorkflow); }
 function isModernWorkflow(workflow: string): workflow is BuiltInApprovalWorkflow { return MODERN_WORKFLOWS.has(workflow as BuiltInApprovalWorkflow); }
+
+/** Separator between the two payload components. Rejected inside either component so the
+ *  composite is unambiguous and one actor can never spell another actor's identity. */
+const ACTOR_SEPARATOR = "#";
+
+/**
+ * The actor identity of the tool call that produced this hook payload.
+ *
+ * A parent-conversation call is `<session_id>`; a subagent call is `<session_id>#<agent_id>`.
+ * Returns null when the payload carries no usable identity — callers must fail closed, never
+ * substitute a default. Reading `process.env.CLAUDE_SESSION_ID` here instead is the original bug:
+ * Claude Code does not set it.
+ */
+export function hookActorIdentity(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
+  const fields = payload as Record<string, unknown>;
+  const session = fields.session_id;
+  if (typeof session !== "string" || !session.trim() || session.includes(ACTOR_SEPARATOR)) return null;
+  const agent = fields.agent_id;
+  if (agent === undefined || agent === null) return session;
+  if (typeof agent !== "string" || !agent.trim() || agent.includes(ACTOR_SEPARATOR)) return null;
+  return `${session}${ACTOR_SEPARATOR}${agent}`;
+}
+
+/** True when this payload came from inside a dispatched subagent rather than the conversation. */
+export function isSubagentPayload(payload: unknown): boolean {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return false;
+  const agent = (payload as Record<string, unknown>).agent_id;
+  return typeof agent === "string" && agent.trim() !== "";
+}
+
+/**
+ * WHY AN ACTOR HAS A ROLE, AND WHY approver != implementer NEEDS ONE.
+ *
+ * Three actors matter: the one that APPROVED the plan, the one that REVIEWED it, and the one that
+ * EXECUTES the work. All three must differ. The trap is that the admission hook fires on the
+ * DISPATCHING call — the parent conversation's `Agent`/`Workflow` tool call — whose payload carries
+ * no `agent_id` because the implementer subagent does not exist yet. Reading that dispatcher as
+ * "the implementer" makes approver == implementer structurally true in single-conversation /dev
+ * (the conversation approves the plan and then dispatches), which is why the rule was dropped.
+ *
+ * Naming the role restores it. A `dispatch` actor is admitted while equal to the approver, because
+ * it is delegating rather than executing. An `implement` actor carries the full three-way rule, and
+ * its identity is only ever available on the implementer subagent's OWN tool calls, which carry its
+ * distinct `agent_id`. A bare string is an `implement` actor: the strict reading is the default, so
+ * a caller that has not thought about its role gets the strong rule rather than the weak one.
+ */
+export type ActorRole = "dispatch" | "implement";
+export type ActorIdentity = Readonly<{ role: ActorRole; identity: string }>;
+const ACTOR_ROLES = new Set<ActorRole>(["dispatch", "implement"]);
+export function parseActorIdentity(value: unknown): ActorIdentity | ArtifactError {
+  const invalid = err("session-separation", "a valid actor identity and role are required; the caller supplied none");
+  if (typeof value === "string") return value.trim() ? Object.freeze({ role: "implement" as const, identity: value }) : invalid;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return invalid;
+  const actor = value as Record<string, unknown>;
+  if (Object.keys(actor).length !== 2 || !ACTOR_ROLES.has(actor.role as ActorRole)) return invalid;
+  if (typeof actor.identity !== "string" || !actor.identity.trim()) return invalid;
+  return Object.freeze({ role: actor.role as ActorRole, identity: actor.identity });
+}
+
+/**
+ * The one place the actor-separation rule is written down. Every gate routes through it so a
+ * relaxation cannot be applied to one call site and forgotten at another.
+ */
+function actorSeparation(approvedSession: string, reviewerSession: string, actor: ActorIdentity): ArtifactError | undefined {
+  if (reviewerSession === approvedSession) return err("session-separation", "approval and review actors must differ");
+  if (reviewerSession === actor.identity) return err("session-separation", "review and implementation actors must differ");
+  // The dispatcher delegates the work to a subagent that will have its own identity; only an actor
+  // that claims to execute the work is held to this.
+  if (actor.role === "implement" && approvedSession === actor.identity) return err("session-separation", "approval and implementation actors must differ");
+  return undefined;
+}
 
 export function parseMetadata(value: unknown, expectedWorkflow?: string): ApprovalMetadata | ArtifactError {
   if (!value || typeof value !== "object" || Array.isArray(value)) return err("metadata-shape", "PLAN metadata must be an object");
@@ -302,7 +427,8 @@ export function validateApprovedArtifact(projectDir: string, workflow: string, c
     const first = validateApprovedPlan(root, workflow, undefined, readOptions); if (isError(first)) return first;
     if (!first.receipt || !first.planFile || !first.planPath) return err("review-schema", "generated plan approval state is incomplete");
     if (first.receipt.status !== "APPROVED") return err("review-pending", `review state is ${first.receipt.status}, not APPROVED`);
-    if (typeof currentSession !== "string" || !currentSession.trim() || new Set([first.receipt.approved_session_id, first.receipt.reviewer_session_id, currentSession]).size !== 3) return err("session-separation", "approval, review, and implementation sessions must differ");
+    const actor = parseActorIdentity(currentSession); if (isError(actor)) return actor;
+    const separation = actorSeparation(first.receipt.approved_session_id, first.receipt.reviewer_session_id, actor); if (separation) return separation;
     const second = validateApprovedPlan(root, workflow, undefined, readOptions); if (isError(second)) return second;
     if (!second.receipt || second.hash !== first.hash || JSON.stringify(second.receipt) !== JSON.stringify(first.receipt)) return err("approval-race", "generated plan approval state changed during validation");
     return { hash: first.hash, planFile: first.planFile, planPath: first.planPath, receipt: first.receipt, metadata: first.metadata, verdict: { plan_hash: first.hash, status: "APPROVED", reviewer_session_id: first.receipt.reviewer_session_id, reviewed_at: first.receipt.reviewed_at } };
@@ -313,8 +439,9 @@ export function validateApprovedArtifact(projectDir: string, workflow: string, c
   const verdictBytes = readArtifactSnapshot(root, verdictPath, "verdict-read", readOptions); if (isError(verdictBytes)) return verdictBytes;
   const verdict = parseVerdict(verdictBytes.toString("utf8")); if (isError(verdict)) return verdict;
   if (verdict.status !== "APPROVED" || verdict.plan_hash !== authenticated.hash) return err("stale-verdict", "review verdict is not APPROVED for current plan bytes");
-  if (typeof currentSession !== "string" || !currentSession.trim() || currentSession === verdict.reviewer_session_id) return err("session-separation", "implementation session must differ from reviewer session");
-  if (authenticated.metadata.approvedSession === verdict.reviewer_session_id || authenticated.metadata.approvedSession === currentSession || Date.parse(verdict.reviewed_at) <= Date.parse(authenticated.metadata.approvedAt)) return err("approval-chronology", "approval, review, and implementation must be distinct chronological sessions");
+  const externalActor = parseActorIdentity(currentSession); if (isError(externalActor)) return externalActor;
+  const externalSeparation = actorSeparation(authenticated.metadata.approvedSession, verdict.reviewer_session_id, externalActor); if (externalSeparation) return externalSeparation;
+  if (Date.parse(verdict.reviewed_at) <= Date.parse(authenticated.metadata.approvedAt)) return err("approval-chronology", "review must be strictly later than approval");
   return { hash: authenticated.hash, metadata: authenticated.metadata, verdict };
 }
 
@@ -439,20 +566,35 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: BuiltInA
   }
 }
 
-export type ImplementationApprovalBindingV1 = Readonly<{ taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; implementationSession: string }>;
+/**
+ * `implementationSession` is the identity of the actor the binding speaks for, and
+ * `implementationRole` says what that actor claims to be. Omitting the role means `implement`, so a
+ * binding that has not thought about the distinction is held to the strict three-way rule.
+ *
+ * A shared runner that hands each task to a fresh `agent()` subagent is a `dispatch` actor: the
+ * subagents it creates are the implementers and their identities do not exist yet.
+ */
+export type ImplementationApprovalBindingV1 = Readonly<{ taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; implementationSession: string; implementationRole?: ActorRole }>;
 export type BuiltInImplementationApprovalV2 = Readonly<{ schemaVersion: 2; approvalBundleDigest: string; planFile: string; planHash: string; workflow: BuiltInApprovalWorkflow; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
 export type CapturedImplementationApprovalV1 = Readonly<{ schemaVersion: 1; approvalBundleDigest: string; planDigest: string; workflow: string; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
 export function validateBuiltInImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): BuiltInImplementationApprovalV2 | ArtifactError {
   if (!isModernWorkflow(expectedWorkflow) || !artifact.receipt || !artifact.planFile || artifact.receipt.workflow !== expectedWorkflow || artifact.receipt.plan_file !== artifact.planFile) return err("workflow-mismatch", "built-in generated-plan approval workflow was substituted");
   if (!binding.taskIdentity.trim() || !HASH.test(binding.taskContractDigest) || !HASH.test(binding.preDispatchObservationDigest)) return err("binding-schema", "implementation approval binding is invalid");
-  if (new Set([artifact.receipt.approved_session_id, artifact.receipt.reviewer_session_id, binding.implementationSession]).size !== 3) return err("session-separation", "approval, review, and implementation sessions must differ");
+  // TYPE GUARD, NOT A TRUTHINESS CHECK. `binding.implementationSession.trim()` threw an uncaught
+  // TypeError out of the Workflow runtime whenever the caller passed an absent identity — a crash
+  // where a controlled denial belonged. parseActorIdentity rejects every non-string.
+  const actor = parseActorIdentity(binding.implementationRole === undefined ? binding.implementationSession : { role: binding.implementationRole, identity: binding.implementationSession });
+  if (isError(actor)) return actor;
+  const separation = actorSeparation(artifact.receipt.approved_session_id, artifact.receipt.reviewer_session_id, actor); if (separation) return separation;
   const approvalBundleDigest = sha256(Buffer.from(JSON.stringify({ schemaVersion: 2, planFile: artifact.planFile, planHash: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.receipt.approved_session_id, reviewerSession: artifact.receipt.reviewer_session_id, implementationSession: binding.implementationSession }), "utf8"));
   return Object.freeze({ schemaVersion: 2, approvalBundleDigest, planFile: artifact.planFile, planHash: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.receipt.approved_session_id, reviewerSession: artifact.receipt.reviewer_session_id, implementationSession: binding.implementationSession, approvedAt: artifact.receipt.approved_at, reviewedAt: artifact.receipt.reviewed_at, terminalReleaseAuthorized: false });
 }
 export function validateExternalImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): CapturedImplementationApprovalV1 | ArtifactError {
   if (!artifact.metadata || artifact.metadata.workflow !== expectedWorkflow) return err("workflow-mismatch", "external approval workflow was substituted");
   if (!binding.taskIdentity.trim() || !HASH.test(binding.taskContractDigest) || !HASH.test(binding.preDispatchObservationDigest)) return err("binding-schema", "implementation approval binding is invalid");
-  if (typeof binding.implementationSession !== "string" || !binding.implementationSession.trim() || new Set([artifact.metadata.approvedSession, artifact.verdict.reviewer_session_id, binding.implementationSession]).size !== 3) return err("session-separation", "approval, review, and implementation sessions must differ");
+  const externalActor = parseActorIdentity(binding.implementationRole === undefined ? binding.implementationSession : { role: binding.implementationRole, identity: binding.implementationSession });
+  if (isError(externalActor)) return externalActor;
+  const externalSeparation = actorSeparation(artifact.metadata.approvedSession, artifact.verdict.reviewer_session_id, externalActor); if (externalSeparation) return externalSeparation;
   const approvalBundleDigest = sha256(Buffer.from(JSON.stringify({ schemaVersion: 1, planDigest: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.metadata.approvedSession, reviewerSession: artifact.verdict.reviewer_session_id, implementationSession: binding.implementationSession }), "utf8"));
   return Object.freeze({ schemaVersion: 1, approvalBundleDigest, planDigest: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.metadata.approvedSession, reviewerSession: artifact.verdict.reviewer_session_id, implementationSession: binding.implementationSession, approvedAt: artifact.metadata.approvedAt, reviewedAt: artifact.verdict.reviewed_at, terminalReleaseAuthorized: false });
 }
@@ -472,7 +614,10 @@ export function validateCapturedApprovalBundle(bundle: CapturedApprovalBundleV1,
   if (metadata.planHash !== planDigest || verdict.plan_hash !== planDigest || verdict.status !== "APPROVED") return err("stale-approval", "approval does not authenticate captured plan bytes");
   if (!binding.taskIdentity.trim() || !HASH.test(binding.taskContractDigest) || !HASH.test(binding.preDispatchObservationDigest)) return err("binding-schema", "implementation approval binding is invalid");
   for (const [key, expected] of [["taskIdentity", binding.taskIdentity], ["taskContractDigest", binding.taskContractDigest], ["preDispatchObservationDigest", binding.preDispatchObservationDigest]] as const) if (metadata[key] !== expected) return err("binding-mismatch", `${key} was substituted`);
-  if (new Set([metadata.approvedSession, verdict.reviewer_session_id, binding.implementationSession]).size !== 3) return err("session-separation", "approval, review, and implementation sessions must differ"); if (Date.parse(verdict.reviewed_at) <= Date.parse(metadata.approvedAt)) return err("approval-chronology", "review must be strictly later than approval");
+  const capturedActor = parseActorIdentity(binding.implementationRole === undefined ? binding.implementationSession : { role: binding.implementationRole, identity: binding.implementationSession });
+  if (isError(capturedActor)) return capturedActor;
+  const capturedSeparation = actorSeparation(metadata.approvedSession, verdict.reviewer_session_id, capturedActor); if (capturedSeparation) return capturedSeparation;
+  if (Date.parse(verdict.reviewed_at) <= Date.parse(metadata.approvedAt)) return err("approval-chronology", "review must be strictly later than approval");
   const all = Buffer.concat([Buffer.from(snapshot.descriptorBytes), Buffer.from(snapshot.planBytes), Buffer.from(snapshot.metadataBytes), Buffer.from(snapshot.verdictBytes)]);
   return Object.freeze({ schemaVersion: 1, approvalBundleDigest: digestBytes(all), planDigest, workflow: expectedWorkflow, taskIdentity: metadata.taskIdentity, taskContractDigest: metadata.taskContractDigest, preDispatchObservationDigest: metadata.preDispatchObservationDigest, approvalSession: metadata.approvedSession, reviewerSession: verdict.reviewer_session_id, implementationSession: binding.implementationSession, approvedAt: metadata.approvedAt, reviewedAt: verdict.reviewed_at, terminalReleaseAuthorized: false });
 }

@@ -6,11 +6,15 @@ import {
   bindApprovedGeneratedPlan,
   classifyBuiltInArtifactLayout,
   classifyPlanningLifecycle,
+  hookActorIdentity,
+  isSubagentPayload,
   sha256,
   validateApprovedArtifact,
   validateApprovedPlan,
+  validateBuiltInImplementationApproval,
   validateCapturedApprovalBundle,
   type ApprovalPolicyDescriptor,
+  type ApprovedArtifact,
 } from "../workflows/lib/approved-artifact";
 import { captureApprovalBundle, type CapturedApprovalBundleV1 } from "../workflows/lib/approval-bundle";
 
@@ -83,17 +87,55 @@ describe("strict external approved-artifact policy", () => {
     expectError(validateApprovedArtifact(root, IDENTITY, "implementation-session"), "unknown-workflow");
   }));
 
+  /**
+   * The rule under test is `binding-mismatch`: captured metadata whose taskIdentity /
+   * taskContractDigest / preDispatchObservationDigest do not equal the ones the caller binds.
+   *
+   * This asserted `code: expect.any(String)` — i.e. ANY error at all — under a title naming the
+   * binding rule, while the fixture used `writeApproved`'s DEFAULT metadata, which omits all three
+   * binding fields and therefore dies at `metadata-schema` before the binding comparison is ever
+   * reached. The named rule was never exercised. Fixed on both sides: the fixture now carries a
+   * schema-complete captured metadata block so validation reaches the comparison, and the code is
+   * pinned exactly. The schema path keeps its own case below, where it belongs.
+   */
   test("captured approval rejects artifacts that do not bind the named task and pre-dispatch state", () => withProject((root) => {
-    writeApproved(root);
+    const plan = "# Exact current bytes\n";
+    writeApproved(root, { metadata: {
+      schemaVersion: 1,
+      workflow: IDENTITY,
+      planHash: sha256(plan),
+      approvedSession: "approval-session",
+      approvedAt: "2026-07-30T10:00:00.000Z",
+      taskIdentity: "task-14",
+      taskContractDigest: "a".repeat(64),
+      preDispatchObservationDigest: "b".repeat(64),
+    } });
     const captured = captureApprovalBundle(root, Buffer.from(JSON.stringify(DESCRIPTOR)), DESCRIPTOR);
-    const result = validateCapturedApprovalBundle(captured, IDENTITY, {
+    const binding = {
       taskIdentity: "task-14",
       taskContractDigest: "a".repeat(64),
       preDispatchObservationDigest: "b".repeat(64),
       implementationSession: "implementation-session",
-    });
+    };
+    // The fixture now VALIDATES, which is what makes the negative cases below meaningful.
+    expect(validateCapturedApprovalBundle(captured, IDENTITY, binding))
+      .toEqual(expect.objectContaining({ schemaVersion: 1, taskIdentity: "task-14" }));
 
-    expect(result).toEqual(expect.objectContaining({ code: expect.any(String) }));
+    // One substituted binding field at a time; each must be caught by the binding rule itself.
+    expectError(validateCapturedApprovalBundle(captured, IDENTITY, { ...binding, taskIdentity: "task-15" }), "binding-mismatch");
+    expectError(validateCapturedApprovalBundle(captured, IDENTITY, { ...binding, taskContractDigest: "c".repeat(64) }), "binding-mismatch");
+    expectError(validateCapturedApprovalBundle(captured, IDENTITY, { ...binding, preDispatchObservationDigest: "d".repeat(64) }), "binding-mismatch");
+  }));
+
+  test("captured approval rejects metadata that omits the binding fields entirely", () => withProject((root) => {
+    writeApproved(root);
+    const captured = captureApprovalBundle(root, Buffer.from(JSON.stringify(DESCRIPTOR)), DESCRIPTOR);
+    expectError(validateCapturedApprovalBundle(captured, IDENTITY, {
+      taskIdentity: "task-14",
+      taskContractDigest: "a".repeat(64),
+      preDispatchObservationDigest: "b".repeat(64),
+      implementationSession: "implementation-session",
+    }), "metadata-schema");
   }));
 
   test("pure captured validation authenticates the bytes captured before later path edits", () => withProject((root) => {
@@ -333,10 +375,15 @@ describe("strict external approved-artifact policy", () => {
     writeApproved(root);
     expectError(validateApprovedArtifact(root, IDENTITY, "review-session", DESCRIPTOR), "session-separation");
 
+    // Approver == implementer is an actor-separation failure, not a chronology failure. The old
+    // code reported both through one `approval-chronology` message, which hid which rule was
+    // actually violated; the three actor comparisons now report `session-separation`.
     writeApproved(root, { metadata: {
       schemaVersion: 1, workflow: IDENTITY, planHash: sha256("# Exact current bytes\n"), approvedSession: "implementation-session", approvedAt: "2026-07-30T10:00:00.000Z",
     } });
-    expectError(validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR), "approval-chronology");
+    expectError(validateApprovedArtifact(root, IDENTITY, "implementation-session", DESCRIPTOR), "session-separation");
+    // A dispatching runner is still admitted while equal to the approving session.
+    expect(validateApprovedArtifact(root, IDENTITY, { role: "dispatch", identity: "implementation-session" }, DESCRIPTOR)).toEqual(expect.objectContaining({ hash: sha256("# Exact current bytes\n") }));
   }));
 
   test("rejects verdict hash, schema, and timestamp weakening", () => withProject((root) => {
@@ -493,7 +540,56 @@ describe("built-in generated-plan and legacy layouts", () => {
     expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "review-duplicate" }));
     writeFileSync(path, JSON.stringify({ ...receipt("work", planFile, hash), plan_file: "PLAN.md" })); expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "review-schema" }));
     writeFileSync(path, JSON.stringify({ ...receipt("work", planFile, hash), reviewed_at: "2026-07-30T09:00:00.000Z" })); expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "approval-chronology" }));
-    writeFileSync(path, JSON.stringify(receipt("work", planFile, hash))); expect(validateApprovedArtifact(root, "work", "approval-session")).toEqual(expect.objectContaining({ code: "session-separation" }));
+    // Three actors, three roles. A bare string names an IMPLEMENTING actor and carries the full
+    // rule: approver, reviewer, and implementer must all differ. The dispatching actor is a
+    // different role — the implementer it is about to create does not exist yet — so it is named
+    // explicitly and is allowed to be the approver.
+    writeFileSync(path, JSON.stringify(receipt("work", planFile, hash))); expect(validateApprovedArtifact(root, "work", "review-session")).toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateApprovedArtifact(root, "work", "")).toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateApprovedArtifact(root, "work", undefined)).toEqual(expect.objectContaining({ code: "session-separation" }));
+    // RESTORED INVARIANT: the approving actor may not be the implementing actor.
+    expect(validateApprovedArtifact(root, "work", "approval-session")).toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateApprovedArtifact(root, "work", { role: "implement", identity: "approval-session" })).toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateApprovedArtifact(root, "work", { role: "implement", identity: "review-session" })).toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateApprovedArtifact(root, "work", { role: "implement", identity: "implementation-session" })).toEqual(expect.objectContaining({ hash }));
+    // A DISPATCHING actor is admitted while equal to the approver: single-conversation /dev has the
+    // conversation approve the plan and then dispatch implementers. It still may not be the reviewer.
+    expect(validateApprovedArtifact(root, "work", { role: "dispatch", identity: "approval-session" })).toEqual(expect.objectContaining({ hash }));
+    expect(validateApprovedArtifact(root, "work", { role: "dispatch", identity: "review-session" })).toEqual(expect.objectContaining({ code: "session-separation" }));
+    // A malformed actor descriptor fails CLOSED with a controlled error, never a crash.
+    for (const actor of [{}, { role: "implement" }, { identity: "x" }, { role: "audit", identity: "x" }, { role: "implement", identity: "" }, { role: "implement", identity: 7 }, 7, null, []]) {
+      expect(validateApprovedArtifact(root, "work", actor as unknown)).toEqual(expect.objectContaining({ code: "session-separation" }));
+    }
+    writeFileSync(path, JSON.stringify({ ...receipt("work", planFile, hash), reviewer_session_id: "approval-session" })); expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "session-separation" }));
+  }));
+
+  test("implementation approval binding fails closed on an absent or malformed actor identity", () => withProject((root) => {
+    const planFile = "binding-generated.md"; const plan = "# Binding\n"; const hash = sha256(plan);
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true }); writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt("work", planFile, hash)));
+    const artifact = validateApprovedArtifact(root, "work", { role: "dispatch", identity: "approval-session" }) as ApprovedArtifact;
+    expect(artifact).toEqual(expect.objectContaining({ hash }));
+    const base = { taskIdentity: "task-a", taskContractDigest: "b".repeat(64), preDispatchObservationDigest: "c".repeat(64) };
+    // beat-implement reached `.trim()` on an absent identity and threw an uncaught TypeError out of
+    // the runner instead of denying. Every non-string must return a controlled ArtifactError.
+    for (const identity of [undefined, null, 7, {}, ""]) {
+      expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: identity as unknown as string }))
+        .toEqual(expect.objectContaining({ code: "session-separation" }));
+    }
+    // Default role is the strict one: a bare binding names an implementer and may not be the approver.
+    expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: "approval-session" }))
+      .toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: "review-session" }))
+      .toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: "implementation-session" }))
+      .toEqual(expect.objectContaining({ schemaVersion: 2, planHash: hash }));
+    // A dispatching runner declares its role and may equal the approver, never the reviewer.
+    expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: "approval-session", implementationRole: "dispatch" }))
+      .toEqual(expect.objectContaining({ schemaVersion: 2, planHash: hash }));
+    expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: "review-session", implementationRole: "dispatch" }))
+      .toEqual(expect.objectContaining({ code: "session-separation" }));
+    expect(validateBuiltInImplementationApproval(artifact, "work", { ...base, implementationSession: "x", implementationRole: "audit" as unknown as "dispatch" }))
+      .toEqual(expect.objectContaining({ code: "session-separation" }));
   }));
 
   test("rejects generated plan symlinks and path substitution", () => withProject((root) => {
@@ -502,7 +598,10 @@ describe("built-in generated-plan and legacy layouts", () => {
       const planFile = "linked-generated.md"; const plan = "# linked\n"; const hash = sha256(plan);
       mkdirSync(join(root, ".planning", ".state"), { recursive: true }); writeFileSync(join(outside, planFile), plan); symlinkSync(join(outside, planFile), join(root, ".planning", planFile));
       writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt("work", planFile, hash)));
-      expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: expect.stringMatching(/artifact-type|policy-path/) }));
+      // Pinned exactly. `stringMatching(/artifact-type|policy-path/)` accepted EITHER of two
+      // different rejections, so a change that moved the symlink from one rule to the other would
+      // have passed silently while the rule this test names stopped running.
+      expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "policy-path" }));
     } finally { rmSync(outside, { recursive: true, force: true }); }
   }));
 
@@ -531,4 +630,35 @@ describe("built-in generated-plan and legacy layouts", () => {
     expect(validateApprovedArtifact(root, "work", "implementation-session")).toEqual(expect.objectContaining({ code: "conversion-required" }));
     expect(validateApprovedArtifact(root, "dev", "implementation-session")).toEqual(expect.objectContaining({ code: "conversion-required" }));
   }));
+});
+
+describe("hook actor identity", () => {
+  // The identity the review and implementation gates compare MUST come from the hook payload.
+  // process.env.CLAUDE_SESSION_ID does not exist in a real hook process, and the tree-wide
+  // CLAUDE_CODE_SESSION_ID is byte-identical in a conversation and in the subagents it dispatches.
+  test("separates a conversation from the subagents it dispatches", () => {
+    expect(hookActorIdentity({ session_id: "sess-1" })).toBe("sess-1");
+    expect(hookActorIdentity({ session_id: "sess-1", agent_id: "a850df8", agent_type: "general-purpose" })).toBe("sess-1#a850df8");
+    expect(hookActorIdentity({ session_id: "sess-1" })).not.toBe(hookActorIdentity({ session_id: "sess-1", agent_id: "a850df8" }));
+    expect(hookActorIdentity({ session_id: "sess-1", agent_id: "a1" })).not.toBe(hookActorIdentity({ session_id: "sess-1", agent_id: "a2" }));
+  });
+
+  test("fails closed rather than defaulting", () => {
+    for (const payload of [null, undefined, "sess-1", ["sess-1"], {}, { session_id: "" }, { session_id: "   " }, { session_id: 1 },
+      { session_id: "sess-1", agent_id: "" }, { session_id: "sess-1", agent_id: 7 }]) {
+      expect(hookActorIdentity(payload)).toBeNull();
+    }
+    // The separator may not appear in either component, so one actor cannot spell another's identity.
+    expect(hookActorIdentity({ session_id: "sess#1" })).toBeNull();
+    expect(hookActorIdentity({ session_id: "sess-1", agent_id: "a#b" })).toBeNull();
+    // An absent agent_id is a conversation-level call, not an error.
+    expect(hookActorIdentity({ session_id: "sess-1", agent_id: null })).toBe("sess-1");
+  });
+
+  test("reports whether the call came from inside a subagent", () => {
+    expect(isSubagentPayload({ session_id: "sess-1", agent_id: "a1" })).toBe(true);
+    expect(isSubagentPayload({ session_id: "sess-1" })).toBe(false);
+    expect(isSubagentPayload({ session_id: "sess-1", agent_id: "" })).toBe(false);
+    expect(isSubagentPayload(null)).toBe(false);
+  });
 });

@@ -325,6 +325,14 @@ export function captureCandidate(options: CaptureCandidateOptions): CapturedCand
   for (const path of decodeGitPaths(runGit(root, ["diff", "--name-only", "-z", "--"]))) paths.add(validateCandidatePath(path));
   for (const path of decodeGitPaths(runGit(root, ["ls-files", "--others", "--exclude-standard", "-z"]))) paths.add(validateCandidatePath(path));
   const metadata = loadGitMetadata(root, baseCommit);
+  // Gitlinks (submodule pointers, mode 160000) name a COMMIT, not a blob. Feeding one to
+  // `git cat-file --batch` throws `invalid Git blob`, which is why the privacy scanner passed at
+  // HEAD and failed in any working tree containing the `skills/bmll` submodule. A submodule's
+  // contents live in another repository and are not this candidate's content in any case, so the
+  // pointer is dropped rather than read.
+  const isGitlink = (path: string) =>
+    metadata.index.get(path)?.mode === "160000" || metadata.tree.get(path)?.mode === "160000";
+  for (const path of [...paths]) if (isGitlink(path)) paths.delete(path);
   const indexObjects = loadGitObjects(root, [...paths].flatMap((path) => metadata.index.get(path)?.oid ?? []));
 
   const entries: CandidateEntryV1[] = [];

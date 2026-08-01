@@ -40,11 +40,15 @@ is not helpful: it lets old guesses override the approved task.
 
 Resolve the hidden review receipt and read only its selected generated plan. The receipt must authenticate
 that exact plan's SHA-256 bytes and provide the immutable runner identity: `{ planFile, planHash,
-approvedSession, approvedAt, reviewerSession, reviewedAt, status: APPROVED }`. The current
-`CLAUDE_SESSION_ID` must be nonempty and genuinely distinct from approval and reviewer sessions. There
-is no compaction, visible-plan, or marker fallback. The runner checks fail-closed workflow provenance by
-session IDs; it is not cryptographic attestation. If any condition fails, start a genuinely separate
-reviewer or implementation session. Do not manufacture any identity.
+approvedSession, approvedAt, reviewerSession, reviewedAt, status: APPROVED }`. Actor identity comes
+from the hook payload (`session_id`, plus `agent_id` when the call originates inside a subagent), never
+from `CLAUDE_SESSION_ID` — Claude Code does not set that variable, and reading it denied every real
+run. The reviewer actor must differ from the approving actor and from every implementing actor. This
+conversation approves the plan and then DISPATCHES the work, so it may equal the approving actor while
+dispatching; it may never perform the implementation itself, which is enforced on each implementer's
+own tool calls. There is no compaction, visible-plan, or marker fallback. The runner checks fail-closed
+workflow provenance by actor identity; it is not cryptographic attestation. If any condition fails,
+dispatch a genuinely separate reviewer or implementation actor. Do not manufacture any identity.
 
 ### Reconcile the approved plan into TaskList
 

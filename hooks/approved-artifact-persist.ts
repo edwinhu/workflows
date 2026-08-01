@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { readFileSync } from "node:fs";
 import { isAbsolute } from "node:path";
-import { bindApprovedGeneratedPlan, type BuiltInApprovalWorkflow } from "../workflows/lib/approved-artifact.ts";
+import { bindApprovedGeneratedPlan, hookActorIdentity, type BuiltInApprovalWorkflow } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 
 function fail(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(2); }
@@ -41,6 +41,10 @@ if (resultCount > 1) fail("ExitPlanMode transcript contains duplicate matching r
 // completed ExitPlanMode call; the approval gate will remain closed until a retry binds it.
 if (resultCount === 0) defer("ExitPlanMode matching transcript tool-result was not found");
 if (typeof approvedPath !== "string" || !isAbsolute(approvedPath)) fail("ExitPlanMode toolUseResult.filePath must name the exact absolute generated plan path");
-if (typeof payload.session_id !== "string" || !payload.session_id.trim()) fail("ExitPlanMode payload is missing a nonempty session_id");
-try { bindApprovedGeneratedPlan(process.cwd(), policy.workflow as BuiltInApprovalWorkflow, approvedPath, payload.session_id); }
+// Record the same composite actor identity the review and implementation gates compare against,
+// so an approval taken in the conversation and one taken inside a subagent are distinguishable.
+// With no agent_id this is exactly payload.session_id, so existing receipts stay valid.
+const approvingActor = hookActorIdentity(payload);
+if (approvingActor === null) fail("ExitPlanMode payload is missing a usable session_id");
+try { bindApprovedGeneratedPlan(process.cwd(), policy.workflow as BuiltInApprovalWorkflow, approvedPath, approvingActor); }
 catch (error) { defer(`could not bind approved generated plan: ${error instanceof Error ? error.message : String(error)}`); }
