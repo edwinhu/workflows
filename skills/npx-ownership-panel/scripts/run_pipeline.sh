@@ -160,7 +160,12 @@ fi
     preflight_fail=1; }
 [ "$preflight_fail" = "0" ] || { echo "Preflight failed — nothing submitted." >&2; exit 1; }
 
-chmod +x run_sas.sh run_npx_stage.sh run_npx_array.sh run_import.sh 2>/dev/null || true
+# Every wrapper the DAG submits, not the four that predate the S12 consolidation.
+# qsub does not require the exec bit, so an omission here is not a break — but a
+# half-covered list reads as a decision about which wrappers are "real" when it is
+# only an oversight, and the next reader has to work that out.
+chmod +x run_sas.sh run_python.sh run_s12_array.sh run_npx_stage.sh \
+         run_npx_array.sh run_import.sh run_dq.sh 2>/dev/null || true
 
 echo "=========================================="
 echo "N-PX x Ownership Pipeline"
