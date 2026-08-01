@@ -41,10 +41,10 @@
 #   `hooks/<name>.ts` and never had its test updated. Nobody noticed because nothing ran them. That
 #   is the finding, not an obstacle to it.
 #
-#   The quarantine list below is now NINE, not six: three TypeScript suites fail at HEAD for their
-#   own unrelated reasons and were added when that was discovered. This paragraph said "6" long
-#   after the list said nine — the same understated-count defect the list itself was written to fix,
-#   one comment block over. Count the `quarantine_reason` cases, not this sentence.
+#   The list grew to NINE when three TypeScript suites were found failing at HEAD for their own
+#   unrelated reasons, and is back to SIX now that the v5.103.1 line fixed three of them. Count the
+#   `quarantine_reason` cases, not this sentence: it has been wrong before, which is why the
+#   un-quarantine rule below exists and why it, not a comment, is the authority.
 #
 #   Fixing them is a change to the writing / overflow hooks, unrelated to the work that added this
 #   script, so they are QUARANTINED rather than silently dropped: each is named with its reason, the
@@ -80,19 +80,17 @@ quarantine_reason() {
         tests/overflow_check_test.py)          echo "opens hooks/overflow-check.py; the hook is now .ts" ;;
         tests/test_mechanical_floor_gate.py)   echo "opens hooks/mechanical-floor-gate.py; the hook is now .ts" ;;
         tests/test_prose_lint_hook.py)         echo "opens hooks/writing-prose-check.py; the hook is now .ts" ;;
-        tests/test_writing_constraint_lints.py) echo "asserts load-constraints wiring the writing skills no longer carry" ;;
         tests/test_writing_mechanical_gate.py) echo "opens hooks/writing-mechanical-gate.py; the hook is now .ts" ;;
         tests/writing_gate_probe_test.py)      echo "probes a writing gate whose response shape changed" ;;
-        # The THREE TypeScript suites that also fail at HEAD. They were neither named nor
-        # quarantined, so the "6" in the results line understated the pre-existing failures by three
-        # and the script exited non-zero for reasons it did not account for. Each verified failing in
-        # a clean `git worktree` at ce17921, with the reason read off the failure, not guessed.
-        tests/load-constraints-applies-to.test.ts)
-            echo "35 shipped writing constraints name applies-to skills no loader-calling skill matches" ;;
-        tests/public-extension-contract.test.ts)
-            echo "opens .planning/STAGE1_EVIDENCE.md, an evidence file no longer in the tree (ENOENT)" ;;
         tests/workflow-creator-compiler.test.ts)
             echo "asserts normalizeExpectedOutputs accepts an inventory task-contract.ts now rejects" ;;
+        # THREE ENTRIES LEFT ON EXIT, NOT DELETED QUIETLY.
+        #   tests/load-constraints-applies-to.test.ts, tests/public-extension-contract.test.ts and
+        #   tests/test_writing_constraint_lints.py were quarantined at ce17921 and are FIXED by the
+        #   v5.103.1 line (external native workflow contracts + the writing constraint rewrite).
+        #   The un-quarantine rule below caught all three the first time this ran on the merged tree,
+        #   which is exactly what it is for. Verified passing in a clean `git worktree` at 2454e39
+        #   before removal, so the credit goes to those commits and not to a dirty working tree.
         *)                                     echo "" ;;
     esac
 }

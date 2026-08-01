@@ -148,6 +148,22 @@ try {
     run({ cwd: project, configDir: config, workflowPolicy: descriptorPath, permissionMode: "default", filePath: join(project, ".planning", "PLAN.md") }),
     "external descriptor-v1 policy should retain its declared visible plan path",
   );
+
+  const generatedDescriptorPath = join(project, ".planning", "generated-policy.json");
+  writeFileSync(generatedDescriptorPath, JSON.stringify({
+    schemaVersion: 2,
+    workflow: "external-v2",
+    approvalMode: "generated-plan-receipt-v1",
+    allowedOrchestratorDirectories: [".planning"],
+  }));
+  assertDenied(
+    run({ cwd: project, configDir: config, workflowPolicy: generatedDescriptorPath, permissionMode: "default", filePath: join(project, ".planning", "PLAN.md") }),
+    "external descriptor-v2 policy should retire visible fixed plan authority",
+  );
+  assertAllowed(
+    run({ cwd: project, configDir: config, workflowPolicy: generatedDescriptorPath, permissionMode: "default", filePath: join(project, ".planning", "notes.txt") }),
+    "external descriptor-v2 policy should retain declared orchestrator directories",
+  );
 } finally {
   rmSync(root, { recursive: true, force: true });
 }

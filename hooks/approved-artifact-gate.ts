@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { lstatSync, readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, join, relative } from "node:path";
-import { hookActorIdentity, isSubagentPayload, parseApprovalPolicyDescriptor, validateApprovedArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
+import { hookActorIdentity, isSubagentPayload, parseApprovalPolicyDescriptor, validateApprovedArtifact, validateGeneratedPlanArtifact, type ApprovalPolicyDescriptor } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, projectFromArgs, readPayload } from "./_gate_common.ts";
 const policy = workflowFromArg(Bun.argv.slice(2));
@@ -25,7 +25,7 @@ if (tool === "Workflow" && policy.workflow === "workflow-creator" && String(inpu
 }
 const projectDir = projectFromArgs(input, payload);
 let approvalPolicy: ApprovalPolicyDescriptor | undefined;
-if (policy.approvalPolicy !== undefined) {
+if (policy.approvalMode === "external-fixed-v1") {
   try {
     const root = realpathSync(projectDir);
     const path = join(root, policy.approvalPolicy);
@@ -52,7 +52,8 @@ let result;
 try {
   // The actor comes from the hook PAYLOAD. process.env.CLAUDE_SESSION_ID is never set in a real
   // hook process, so this argument was always `undefined` and every admission failed the identity
-  // check; see hookActorIdentity.
+  // check; see hookActorIdentity. Both validators take the same actor, so the schema-v2
+  // generated-plan-receipt-v1 route cannot reintroduce the env read on one branch only.
   //
   // ROLE. A conversation-level call (no agent_id) is DISPATCHING: the implementer it is about to
   // create does not exist yet, so holding it to approver != implementer would deny the normal
@@ -61,7 +62,9 @@ try {
   // so it carries the full three-way rule here.
   const identity = hookActorIdentity(payload);
   const actor = identity === null ? identity : { role: isSubagentPayload(payload) ? "implement" as const : "dispatch" as const, identity };
-  result = validateApprovedArtifact(projectDir, policy.workflow, actor, approvalPolicy);
+  result = policy.approvalMode === "generated-plan-receipt-v1"
+    ? validateGeneratedPlanArtifact(projectDir, policy.workflow, actor)
+    : validateApprovedArtifact(projectDir, policy.workflow, actor, approvalPolicy);
 } catch (error) {
   deny(`APPROVED ARTIFACT GATE (${policy.workflow}): validation failed: ${error instanceof Error ? error.message : String(error)}.`);
 }

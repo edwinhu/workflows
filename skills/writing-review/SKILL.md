@@ -18,6 +18,8 @@ hooks:
 
 # Writing Review
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-review`
+
 Run independent, evidence-grounded review against the authenticated PLAN's claims, counterarguments, source plan, section outputs, dependencies, and review surfaces. Findings live in TaskList; this phase does not create a competing planning or review ledger.
 
 ## Iron Laws

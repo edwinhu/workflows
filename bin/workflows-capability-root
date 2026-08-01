@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+plugin_root=$(CDPATH= cd -P "$script_dir/.." && pwd)
+manifest="$plugin_root/.claude-plugin/capabilities.json"
+
+if [ ! -f "$manifest" ]; then
+  printf '%s\n' 'workflows capability manifest is missing' >&2
+  exit 2
+fi
+
+printf '%s\n' "$plugin_root"

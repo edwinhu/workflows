@@ -3,7 +3,7 @@
 
 Authoring lint (checks the plugin's own skills/, not a user's document). Verifies the REAL
 loading mechanism: (a) post-subagent-enforcement.md's `applies-to` includes the skill AND (b) the
-skill invokes `load-constraints.py` (the auto-loader). The earlier version checked for a literal
+skill invokes `load-constraints.ts` (the auto-loader). The earlier version checked for a literal
 `.md` string reference in SKILL.md — superseded by the auto-loader — so it false-failed.
 """
 
@@ -46,9 +46,9 @@ def check(context):
         if skill_name.lower() not in applies:
             violations.append(
                 f"{CONSTRAINT}.md `applies-to` omits {skill_name} — it will NOT auto-load there.")
-        elif 'load-constraints.py' not in skill_file.read_text():
+        elif 'load-constraints.ts' not in skill_file.read_text():
             violations.append(
-                f"{skill_name}/SKILL.md does not invoke load-constraints.py — {CONSTRAINT} "
+                f"{skill_name}/SKILL.md does not invoke load-constraints.ts — {CONSTRAINT} "
                 "won't auto-load (subagent-dispatching skills must run the constraint auto-loader).")
     return violations
 

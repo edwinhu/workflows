@@ -4,16 +4,46 @@ import { isAbsolute, normalize } from "node:path";
 const BUILT_IN_WORKFLOWS = new Set(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 const WORKFLOW_PATTERN = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
 
-export type WorkflowPolicy = Readonly<{
+export type ApprovalMode = "external-fixed-v1" | "generated-plan-receipt-v1" | "built-in-native";
+type WorkflowPolicyBase = Readonly<{
+  workflow: string;
+  approvalMode: ApprovalMode;
+  allowedOrchestratorDirectories: readonly string[];
+}>;
+export type ExternalFixedWorkflowPolicy = WorkflowPolicyBase & Readonly<{
+  approvalMode: "external-fixed-v1";
+  clarifySentinel: string;
+  clarifyReason: string;
+  reviewerVerdict: string;
+  approvalPolicy: string;
+}>;
+export type GeneratedPlanWorkflowPolicy = WorkflowPolicyBase & Readonly<{
+  approvalMode: "generated-plan-receipt-v1";
+}>;
+export type BuiltInWorkflowPolicy = WorkflowPolicyBase & Readonly<{
+  approvalMode: "built-in-native";
+  clarifySentinel: string;
+  clarifyReason: string;
+  reviewerVerdict: string;
+}>;
+export type WorkflowPolicy = ExternalFixedWorkflowPolicy | GeneratedPlanWorkflowPolicy | BuiltInWorkflowPolicy;
+
+type WorkflowPolicyDescriptorV1 = Readonly<{
+  schemaVersion: 1;
   workflow: string;
   clarifySentinel: string;
   clarifyReason: string;
   reviewerVerdict: string;
-  approvalPolicy?: string;
+  approvalPolicy: string;
   allowedOrchestratorDirectories: readonly string[];
 }>;
-
-type WorkflowPolicyDescriptor = WorkflowPolicy & Readonly<{ schemaVersion: 1 }>;
+type WorkflowPolicyDescriptorV2 = Readonly<{
+  schemaVersion: 2;
+  workflow: string;
+  approvalMode: "generated-plan-receipt-v1";
+  allowedOrchestratorDirectories: readonly string[];
+}>;
+type WorkflowPolicyDescriptor = WorkflowPolicyDescriptorV1 | WorkflowPolicyDescriptorV2;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -28,57 +58,75 @@ function descriptorError(message: string): Error {
   return new Error(`Invalid workflow policy descriptor: ${message}`);
 }
 
+function rejectDuplicateTopLevelKeys(text: string): void {
+  let index = 0;
+  const skipWhitespace = () => { while (/\s/.test(text[index] ?? "")) index++; };
+  const readString = (): string | null => {
+    skipWhitespace();
+    if (text[index] !== '"') return null;
+    const start = index++;
+    let escaped = false;
+    while (index < text.length) {
+      const character = text[index++];
+      if (escaped) { escaped = false; continue; }
+      if (character === "\\") { escaped = true; continue; }
+      if (character === '"') {
+        try { return JSON.parse(text.slice(start, index)); }
+        catch { return null; }
+      }
+    }
+    return null;
+  };
+  const skipValue = (): boolean => {
+    skipWhitespace();
+    if (text[index] === '"') return readString() !== null;
+    if (text[index] === "[" || text[index] === "{") {
+      const stack = [text[index++] === "[" ? "]" : "}"];
+      while (index < text.length && stack.length > 0) {
+        if (text[index] === '"') { if (readString() === null) return false; continue; }
+        if (text[index] === "[") { stack.push("]"); index++; continue; }
+        if (text[index] === "{") { stack.push("}"); index++; continue; }
+        if (text[index] === stack[stack.length - 1]) { stack.pop(); index++; continue; }
+        index++;
+      }
+      return stack.length === 0;
+    }
+    while (index < text.length && text[index] !== "," && text[index] !== "}") index++;
+    return true;
+  };
+
+  skipWhitespace();
+  if (text[index++] !== "{") return;
+  const seen = new Set<string>();
+  while (index < text.length) {
+    skipWhitespace();
+    if (text[index] === "}") return;
+    const key = readString();
+    if (key === null) return;
+    if (seen.has(key)) throw descriptorError(`duplicate field: ${key}`);
+    seen.add(key);
+    skipWhitespace();
+    if (text[index++] !== ":" || !skipValue()) return;
+    skipWhitespace();
+    if (text[index] === ",") { index++; continue; }
+    if (text[index] === "}") return;
+    return;
+  }
+}
+
 function isSafeProjectRelativePath(value: unknown): value is string {
   if (typeof value !== "string" || value.length === 0 || isAbsolute(value) || value.includes("\\")) return false;
   if (value.split("/").some((segment) => segment === "" || segment === "." || segment === "..")) return false;
   return normalize(value) === value;
 }
 
-function parseDescriptor(text: string): WorkflowPolicyDescriptor {
-  let value: unknown;
-  try {
-    value = JSON.parse(text);
-  } catch {
-    throw descriptorError("malformed JSON");
-  }
-
-  const keys = [
-    "schemaVersion",
-    "workflow",
-    "clarifySentinel",
-    "clarifyReason",
-    "reviewerVerdict",
-    "approvalPolicy",
-    "allowedOrchestratorDirectories",
-  ] as const;
-  if (!isRecord(value) || !hasExactKeys(value, keys)) {
-    throw descriptorError(`expected only ${keys.join(", ")}`);
-  }
-  if (value.schemaVersion !== 1) throw descriptorError("unsupported schemaVersion");
-  if (typeof value.workflow !== "string" || !WORKFLOW_PATTERN.test(value.workflow)) {
-    throw descriptorError("invalid workflow identity");
-  }
-  if (BUILT_IN_WORKFLOWS.has(value.workflow)) {
-    throw descriptorError("external descriptor cannot replace a built-in workflow");
-  }
-  if (!isSafeProjectRelativePath(value.clarifySentinel)) {
-    throw descriptorError("clarifySentinel must be a canonical project-relative path");
-  }
-  if (typeof value.clarifyReason !== "string" || value.clarifyReason.trim() !== value.clarifyReason || value.clarifyReason.length === 0) {
-    throw descriptorError("clarifyReason must be a non-empty trimmed string");
-  }
-  if (!isSafeProjectRelativePath(value.reviewerVerdict)) {
-    throw descriptorError("reviewerVerdict must be a canonical project-relative path");
-  }
-  if (!isSafeProjectRelativePath(value.approvalPolicy)) {
-    throw descriptorError("approvalPolicy must be a canonical project-relative path");
-  }
-  if (!Array.isArray(value.allowedOrchestratorDirectories) || value.allowedOrchestratorDirectories.length === 0) {
+function parseDirectories(value: unknown): readonly string[] {
+  if (!Array.isArray(value) || value.length === 0) {
     throw descriptorError("allowedOrchestratorDirectories must be a non-empty array");
   }
   const directories: string[] = [];
   const seen = new Set<string>();
-  for (const directory of value.allowedOrchestratorDirectories) {
+  for (const directory of value) {
     if (!isSafeProjectRelativePath(directory)) {
       throw descriptorError("allowed orchestrator directory must be a canonical project-relative path");
     }
@@ -86,35 +134,98 @@ function parseDescriptor(text: string): WorkflowPolicyDescriptor {
     seen.add(directory);
     directories.push(directory);
   }
+  return directories;
+}
 
-  return {
-    schemaVersion: 1,
-    workflow: value.workflow,
-    clarifySentinel: value.clarifySentinel,
-    clarifyReason: value.clarifyReason,
-    reviewerVerdict: value.reviewerVerdict,
-    approvalPolicy: value.approvalPolicy,
-    allowedOrchestratorDirectories: directories,
-  };
+function parseWorkflowIdentity(value: unknown): string {
+  if (typeof value !== "string" || !WORKFLOW_PATTERN.test(value)) throw descriptorError("invalid workflow identity");
+  if (BUILT_IN_WORKFLOWS.has(value)) throw descriptorError("external descriptor cannot replace a built-in workflow");
+  return value;
+}
+
+function parseDescriptor(text: string): WorkflowPolicyDescriptor {
+  rejectDuplicateTopLevelKeys(text);
+  let value: unknown;
+  try { value = JSON.parse(text); }
+  catch { throw descriptorError("malformed JSON"); }
+  if (!isRecord(value)) throw descriptorError("descriptor must be an object");
+
+  if (value.schemaVersion === 1) {
+    const keys = ["schemaVersion", "workflow", "clarifySentinel", "clarifyReason", "reviewerVerdict", "approvalPolicy", "allowedOrchestratorDirectories"] as const;
+    if (!hasExactKeys(value, keys)) throw descriptorError(`expected only ${keys.join(", ")}`);
+    const workflow = parseWorkflowIdentity(value.workflow);
+    if (!isSafeProjectRelativePath(value.clarifySentinel)) throw descriptorError("clarifySentinel must be a canonical project-relative path");
+    if (typeof value.clarifyReason !== "string" || value.clarifyReason.trim() !== value.clarifyReason || value.clarifyReason.length === 0) throw descriptorError("clarifyReason must be a non-empty trimmed string");
+    if (!isSafeProjectRelativePath(value.reviewerVerdict)) throw descriptorError("reviewerVerdict must be a canonical project-relative path");
+    if (!isSafeProjectRelativePath(value.approvalPolicy)) throw descriptorError("approvalPolicy must be a canonical project-relative path");
+    return {
+      schemaVersion: 1,
+      workflow,
+      clarifySentinel: value.clarifySentinel,
+      clarifyReason: value.clarifyReason,
+      reviewerVerdict: value.reviewerVerdict,
+      approvalPolicy: value.approvalPolicy,
+      allowedOrchestratorDirectories: parseDirectories(value.allowedOrchestratorDirectories),
+    };
+  }
+
+  if (value.schemaVersion === 2) {
+    const keys = ["schemaVersion", "workflow", "approvalMode", "allowedOrchestratorDirectories"] as const;
+    if (!hasExactKeys(value, keys)) throw descriptorError(`expected only ${keys.join(", ")}`);
+    if (value.approvalMode !== "generated-plan-receipt-v1") throw descriptorError("approvalMode must be generated-plan-receipt-v1");
+    return {
+      schemaVersion: 2,
+      workflow: parseWorkflowIdentity(value.workflow),
+      approvalMode: value.approvalMode,
+      allowedOrchestratorDirectories: parseDirectories(value.allowedOrchestratorDirectories),
+    };
+  }
+  throw descriptorError("unsupported schemaVersion");
+}
+
+export function isGeneratedPlanWorkflow(policy: WorkflowPolicy): policy is GeneratedPlanWorkflowPolicy | BuiltInWorkflowPolicy {
+  return policy.approvalMode === "generated-plan-receipt-v1" || policy.approvalMode === "built-in-native";
 }
 
 export function freezeWorkflowPolicy(policy: WorkflowPolicy): WorkflowPolicy {
-  return Object.freeze({
+  const base = {
     workflow: policy.workflow,
+    approvalMode: policy.approvalMode,
+    allowedOrchestratorDirectories: Object.freeze([...policy.allowedOrchestratorDirectories]),
+  };
+  if (policy.approvalMode === "generated-plan-receipt-v1") return Object.freeze(base);
+  if (policy.approvalMode === "external-fixed-v1") return Object.freeze({
+    ...base,
     clarifySentinel: policy.clarifySentinel,
     clarifyReason: policy.clarifyReason,
     reviewerVerdict: policy.reviewerVerdict,
-    ...(policy.approvalPolicy === undefined ? {} : { approvalPolicy: policy.approvalPolicy }),
-    allowedOrchestratorDirectories: Object.freeze([...policy.allowedOrchestratorDirectories]),
+    approvalPolicy: policy.approvalPolicy,
+  });
+  return Object.freeze({
+    ...base,
+    clarifySentinel: policy.clarifySentinel,
+    clarifyReason: policy.clarifyReason,
+    reviewerVerdict: policy.reviewerVerdict,
   });
 }
 
 export function loadExternalWorkflowPolicy(descriptorPath: string): WorkflowPolicy {
-  if (typeof descriptorPath !== "string" || descriptorPath.length === 0) {
-    throw descriptorError("descriptor path must be explicit");
-  }
+  if (typeof descriptorPath !== "string" || descriptorPath.length === 0) throw descriptorError("descriptor path must be explicit");
   const descriptor = parseDescriptor(readFileSync(descriptorPath, "utf8"));
-  return freezeWorkflowPolicy(descriptor);
+  if (descriptor.schemaVersion === 2) return freezeWorkflowPolicy({
+    workflow: descriptor.workflow,
+    approvalMode: descriptor.approvalMode,
+    allowedOrchestratorDirectories: descriptor.allowedOrchestratorDirectories,
+  });
+  return freezeWorkflowPolicy({
+    workflow: descriptor.workflow,
+    approvalMode: "external-fixed-v1",
+    clarifySentinel: descriptor.clarifySentinel,
+    clarifyReason: descriptor.clarifyReason,
+    reviewerVerdict: descriptor.reviewerVerdict,
+    approvalPolicy: descriptor.approvalPolicy,
+    allowedOrchestratorDirectories: descriptor.allowedOrchestratorDirectories,
+  });
 }
 
 export function workflowPolicyFromArg(
@@ -124,7 +235,6 @@ export function workflowPolicyFromArg(
   const workflowCount = argv.filter((value) => value === "--workflow").length;
   const descriptorCount = argv.filter((value) => value === "--workflow-policy").length;
   if (workflowCount + descriptorCount !== 1) return null;
-
   if (descriptorCount === 1) {
     const index = argv.indexOf("--workflow-policy");
     if (index + 1 >= argv.length) return null;

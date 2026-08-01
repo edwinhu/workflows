@@ -25,19 +25,21 @@ function denySeparation(detail: string): never {
   deny(`Reviewer session separation failure: ${detail}. This reviewer's actor identity is ${actor === null ? "unavailable" : `"${actor}"`}; record it verbatim as reviewer_session_id, and it must differ from the approving actor.`);
 }
 
-const modern = policy.approvalPolicy === undefined;
+// Schema-v2 routing (origin/main): the generated-plan receipt path is everything that is not the
+// fixed external descriptor mode, which is broader than the old `approvalPolicy === undefined`.
+const generatedPlan = policy.approvalMode !== "external-fixed-v1";
 const receiptPath = join(cwd, ".planning", ".state", "review.json");
 let selectedPlan = join(cwd, ".planning", "PLAN.md");
 let externalVerdictPath: string | null = null;
 let externalApproval: { approvedSession: string; approvedAt: string } | null = null;
 let pending: ReturnType<typeof parseReviewState> | null = null;
 let validatedPlanHash: string | null = null;
-if ((tool === "Write" || tool === "Bash") && modern) {
+if ((tool === "Write" || tool === "Bash") && generatedPlan) {
   try { pending = parseReviewState(readFileSync(receiptPath, "utf8"), policy.workflow); }
   catch { pending = null; }
   if (!pending || "code" in pending || pending.status !== "PENDING") deny("Reviewer requires the current PENDING combined review.json created by native Plan approval.");
   selectedPlan = join(cwd, ".planning", pending.plan_file);
-} else if ((tool === "Write" || tool === "Bash") && policy.approvalPolicy !== undefined) {
+} else if ((tool === "Write" || tool === "Bash") && policy.approvalMode === "external-fixed-v1") {
   try {
     const approvalPolicyPath = safeProjectPath(cwd, policy.approvalPolicy);
     if (!approvalPolicyPath || !safeExactTarget(cwd, approvalPolicyPath, join(cwd, policy.approvalPolicy))) deny("Reviewer cannot resolve the external schema-v1 approval policy safely.");
@@ -57,7 +59,7 @@ if ((tool === "Write" || tool === "Bash") && modern) {
     externalVerdictPath = descriptorVerdictPath;
   } catch { deny("Reviewer cannot load the external schema-v1 approval policy."); }
 }
-if ((tool === "Write" || tool === "Bash") && modern) {
+if ((tool === "Write" || tool === "Bash") && generatedPlan) {
   const resolved = resolveGeneratedPlanReviewState(cwd, policy.workflow);
   if ("code" in resolved || !pending || "code" in pending || JSON.stringify(resolved.receipt) !== JSON.stringify(pending)) deny("Reviewer requires one unchanged, regular, receipt-selected generated plan.");
   selectedPlan = resolved.planPath;
@@ -66,12 +68,12 @@ if ((tool === "Write" || tool === "Bash") && modern) {
 
 if (tool === "Write") {
   const requested = safeProjectPath(cwd, input.file_path);
-  const verdictPath = externalVerdictPath ?? join(cwd, policy.reviewerVerdict);
+  const verdictPath = generatedPlan ? receiptPath : (externalVerdictPath ?? "");
   try { if (!requested || lstatSync(requested).isSymbolicLink() || !safeExactTarget(cwd, requested, verdictPath)) deny(reason); }
   catch { if (!requested || !safeExactTarget(cwd, requested, verdictPath)) deny(reason); }
   let planHash: string | null = validatedPlanHash;
-  if (!modern && !planHash) try { planHash = sha256(readFileSync(selectedPlan)); } catch { /* fail closed */ }
-  if (modern) {
+  if (!generatedPlan && !planHash) try { planHash = sha256(readFileSync(selectedPlan)); } catch { /* fail closed */ }
+  if (generatedPlan) {
     const proposed = parseReviewState(input.content, policy.workflow);
     // A session-separation failure used to surface as the generic field-preservation message
     // below, so the one cause that made the reviewer unable to finalize was invisible. Report it

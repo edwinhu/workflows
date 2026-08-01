@@ -13,17 +13,12 @@
   "denyRules": [
     {
       "id": "private-identifier",
-      "pattern": "(?:course-materials|teaching:find-slide-page|teaching-plugin|private (?:repository|repo|plugin|consumer))",
+      "pattern": "(?:teaching:find-slide-page|teaching-plugin|private (?:repository|repo|plugin|consumer))",
       "flags": "gi"
     },
     {
       "id": "cache-path",
-      "pattern": "\\.claude\\/plugins\\/cache\\/course-materials\\/teaching\\/",
-      "flags": "g"
-    },
-    {
-      "id": "machine-path",
-      "pattern": "\\/(?:home|Users)\\/[A-Za-z0-9._-]+\\/[^\\s'\\\"\\x60]*course-materials[^\\s'\\\"\\x60]*",
+      "pattern": "\\.claude\\/plugins\\/cache\\/teaching\\/teaching\\/",
       "flags": "g"
     },
     {
@@ -47,15 +42,8 @@
     },
     {
       "path": "hooks/find-slide-page-inject.ts",
-      "ruleId": "private-identifier",
-      "token": "course-materials",
-      "rationale": "live reverse integration until private Stage 2 passes",
-      "removeStage": 3
-    },
-    {
-      "path": "hooks/find-slide-page-inject.ts",
       "ruleId": "cache-path",
-      "token": ".claude/plugins/cache/course-materials/teaching/",
+      "token": ".claude/plugins/cache/teaching/teaching/",
       "rationale": "live reverse integration until private Stage 2 passes",
       "removeStage": 3
     },
@@ -63,13 +51,6 @@
       "path": "skills/visual-verify/SKILL.md",
       "ruleId": "private-identifier",
       "token": "teaching:find-slide-page",
-      "rationale": "live reverse integration until private Stage 2 passes",
-      "removeStage": 3
-    },
-    {
-      "path": "tests/golden/find-slide-page-inject.json",
-      "ruleId": "private-identifier",
-      "token": "course-materials",
       "rationale": "live reverse integration until private Stage 2 passes",
       "removeStage": 3
     }

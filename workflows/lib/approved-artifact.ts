@@ -60,8 +60,8 @@ export type ApprovalMetadata = { schemaVersion: 1; workflow: string; planHash: s
  * dispatches are distinct actors within one conversation.
  */
 export type ReviewerVerdict = { plan_hash: string; status: "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
-export type ModernReviewReceipt = { workflow: BuiltInApprovalWorkflow; plan_file: string; plan_hash: string; approved_session_id: string; approved_at: string; status: "PENDING" | "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
-export type ResolvedGeneratedPlan = { planFile: string; planPath: string; hash: string; receipt: ModernReviewReceipt };
+export type ModernReviewReceipt = { workflow: string; plan_file: string; plan_hash: string; approved_session_id: string; approved_at: string; status: "PENDING" | "APPROVED" | "ISSUES_FOUND"; reviewer_session_id: string; reviewed_at: string };
+export type ResolvedGeneratedPlan = { planFile: string; planPath: string; planText: string; hash: string; receipt: ModernReviewReceipt };
 export type AuthenticatedPlan = { hash: string; planFile?: string; planPath?: string; receipt?: ModernReviewReceipt; metadata: ApprovalMetadata; layout: "canonical" | "canonical-with-legacy-provenance" | "external" };
 export type ApprovedArtifact = { hash: string; planFile?: string; planPath?: string; receipt?: ModernReviewReceipt; metadata?: ApprovalMetadata; verdict: ReviewerVerdict };
 export type BuiltInArtifactLayout = "canonical" | "canonical-with-legacy-provenance" | "legacy" | "conflict";
@@ -75,6 +75,14 @@ const HASH = /^[0-9a-f]{64}$/;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const MODERN_WORKFLOWS = new Set<BuiltInApprovalWorkflow>(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 const RESERVED_PLAN_FILES = new Set(["PLAN.md", "PLAN_REVIEWED.md", "REVIEW.md", "AUTOMATED_REVIEW.md", "HUMAN_REVIEW.md", "IMPLEMENT_COMPLETE.md", "VALIDATION.md"]);
+const WORKFLOW_IDENTITY = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+
+export function validateExternalWorkflowIdentity(value: unknown): value is string {
+  return typeof value === "string" && WORKFLOW_IDENTITY.test(value) && !isBuiltInWorkflow(value);
+}
+function isWorkflowIdentity(value: unknown): value is string {
+  return typeof value === "string" && WORKFLOW_IDENTITY.test(value);
+}
 
 export function sha256(value: string | Buffer): string { return createHash("sha256").update(value).digest("hex"); }
 export function strictUtc(value: unknown): value is string { return typeof value === "string" && UTC.test(value) && new Date(value).toISOString() === value; }
@@ -146,8 +154,17 @@ export function parseActorIdentity(value: unknown): ActorIdentity | ArtifactErro
  * The one place the actor-separation rule is written down. Every gate routes through it so a
  * relaxation cannot be applied to one call site and forgotten at another.
  */
+/**
+ * approver != reviewer, alone. Split out because review FINALIZATION can only check this pair —
+ * no implementer exists yet at that point — and a second literal copy of the rule there would be a
+ * second place to forget to change it.
+ */
+function approverReviewerSeparation(approvedSession: string, reviewerSession: string): ArtifactError | undefined {
+  return reviewerSession === approvedSession ? err("session-separation", "approval and review actors must differ") : undefined;
+}
+
 function actorSeparation(approvedSession: string, reviewerSession: string, actor: ActorIdentity): ArtifactError | undefined {
-  if (reviewerSession === approvedSession) return err("session-separation", "approval and review actors must differ");
+  const approverReviewer = approverReviewerSeparation(approvedSession, reviewerSession); if (approverReviewer) return approverReviewer;
   if (reviewerSession === actor.identity) return err("session-separation", "review and implementation actors must differ");
   // The dispatcher delegates the work to a subagent that will have its own identity; only an actor
   // that claims to execute the work is held to this.
@@ -222,7 +239,7 @@ export function isGeneratedPlanBasename(value: unknown): value is string {
 export function parseReviewState(content: unknown, expectedWorkflow?: string): ModernReviewReceipt | ArtifactError {
   const fields = parseFlatStringJson(content); if (isError(fields)) return fields;
   const keys = ["workflow", "plan_file", "plan_hash", "approved_session_id", "approved_at", "status", "reviewer_session_id", "reviewed_at"];
-  if (Object.keys(fields).length !== keys.length || keys.some(key => !Object.hasOwn(fields, key)) || !isModernWorkflow(fields.workflow)
+  if (Object.keys(fields).length !== keys.length || keys.some(key => !Object.hasOwn(fields, key)) || !isWorkflowIdentity(fields.workflow)
     || (expectedWorkflow !== undefined && fields.workflow !== expectedWorkflow) || !isGeneratedPlanBasename(fields.plan_file) || !HASH.test(fields.plan_hash)
     || !fields.approved_session_id.trim() || !strictUtc(fields.approved_at) || !["PENDING", "APPROVED", "ISSUES_FOUND"].includes(fields.status)) return err("review-schema", "combined review state has an invalid strict schema");
   if (fields.status === "PENDING") {
@@ -339,8 +356,11 @@ export function resolveGeneratedPlanReviewState(projectDir: string, expectedWork
   const planPath = join(root, ".planning", receipt.plan_file); if (!existsSync(planPath)) return err("missing-artifact", `selected generated plan is missing: ${receipt.plan_file}`);
   const planSnapshot = readArtifactSnapshot(root, planPath, "artifact-read", readOptions); if (isError(planSnapshot)) return planSnapshot;
   if (planSnapshot.length === 0) return err("empty-plan", `selected generated plan is empty: ${receipt.plan_file}`);
+  let planText: string;
+  try { planText = new TextDecoder("utf-8", { fatal: true }).decode(planSnapshot); }
+  catch { return err("plan-encoding", `selected generated plan is not valid UTF-8: ${receipt.plan_file}`); }
   const hash = sha256(planSnapshot); if (receipt.plan_hash !== hash) return err("stale-receipt", `review state does not authenticate current ${receipt.plan_file} bytes`);
-  return { planFile: receipt.plan_file, planPath, hash, receipt };
+  return { planFile: receipt.plan_file, planPath, planText, hash, receipt };
 }
 
 /**
@@ -419,6 +439,26 @@ export function validateApprovedPlan(projectDir: string, workflow: string, descr
   return { hash, metadata, layout: "external" };
 }
 
+export function validateGeneratedPlanArtifact(projectDir: string, workflow: string, currentSession: unknown, readOptions: ArtifactReadOptions = {}): ApprovedArtifact | ArtifactError {
+  let root: string; try { root = realpathSync(projectDir); } catch { return err("project-root", "project root must exist and be accessible"); }
+  if (!isWorkflowIdentity(workflow)) return err("workflow-identity", "generated-plan workflow identity is invalid");
+  const first = resolveGeneratedPlanReviewState(root, workflow, readOptions); if (isError(first)) return first;
+  if (first.receipt.status !== "APPROVED") return err("review-pending", `review state is ${first.receipt.status}, not APPROVED`);
+  // ROLE-AWARE SEPARATION, NOT A THREE-WAY SET. `new Set([approved, reviewer, current]).size !== 3`
+  // is unsatisfiable in the case this gate actually observes: the admission hook fires on the
+  // DISPATCHING call, whose payload carries no `agent_id`, so the dispatcher's identity is the
+  // approver's identity and the set can never reach 3. Every generated-plan admission denied.
+  // `actorSeparation` is the single place the rule is written down; a `dispatch` actor is admitted
+  // while equal to the approver because it is delegating, and approver != implementer is enforced on
+  // the implementer's own calls by hooks/implementer-identity-gate.ts.
+  const actor = parseActorIdentity(currentSession); if (isError(actor)) return actor;
+  const separation = actorSeparation(first.receipt.approved_session_id, first.receipt.reviewer_session_id, actor); if (separation) return separation;
+  const second = resolveGeneratedPlanReviewState(root, workflow, readOptions); if (isError(second)) return second;
+  if (second.hash !== first.hash || JSON.stringify(second.receipt) !== JSON.stringify(first.receipt)) return err("approval-race", "generated plan approval state changed during validation");
+  const metadata: ApprovalMetadata = { schemaVersion: 1, workflow, planHash: first.hash, approvedSession: first.receipt.approved_session_id, approvedAt: first.receipt.approved_at };
+  return { hash: first.hash, planFile: first.planFile, planPath: first.planPath, receipt: first.receipt, metadata, verdict: { plan_hash: first.hash, status: "APPROVED", reviewer_session_id: first.receipt.reviewer_session_id, reviewed_at: first.receipt.reviewed_at } };
+}
+
 export function validateApprovedArtifact(projectDir: string, workflow: string, currentSession: unknown, descriptor?: ApprovalPolicyDescriptor, readOptions: ArtifactReadOptions = {}): ApprovedArtifact | ArtifactError {
   let root: string; try { root = realpathSync(projectDir); } catch { return err("project-root", "project root must exist and be accessible"); }
   if (descriptor !== undefined && isBuiltInWorkflow(workflow)) return err("policy-ambiguous", "built-in workflows cannot override approval artifact paths");
@@ -484,7 +524,7 @@ export function atomicWrite(path: string, content: string): void {
   try { fd = openSync(temporary, "wx", 0o600); const bytes = Buffer.from(content, "utf8"); for (let offset = 0; offset < bytes.length;) { const written = writeSync(fd, bytes, offset, bytes.length - offset); if (written <= 0) throw new Error("write made no progress"); offset += written; } fsyncSync(fd); closeSync(fd); fd = undefined; renameSync(temporary, path); }
   finally { if (fd !== undefined) closeSync(fd); try { unlinkSync(temporary); } catch {} }
 }
-function atomicWriteOwnedDirectory(root: string, livePath: string, directory: OwnedDirectory, basename: string, content: string, afterTemporaryOpen?: () => void): void {
+function atomicWriteOwnedDirectory(root: string, livePath: string, directory: OwnedDirectory, basename: string, content: string, afterTemporaryOpen?: () => void, beforeRename?: () => void): void {
   if (directory.anchor === undefined) throw new Error("approval artifact directory does not support descriptor-anchored mutation");
   const base = directory.anchor;
   const target = join(base, basename);
@@ -505,6 +545,8 @@ function atomicWriteOwnedDirectory(root: string, livePath: string, directory: Ow
     }
     fsyncSync(fd); closeSync(fd); fd = undefined;
     requireLiveDirectory(root, livePath, directory);
+    beforeRename?.();
+    requireLiveDirectory(root, livePath, directory);
     renameSync(temporary, target);
     requireLiveDirectory(root, livePath, directory);
   } finally {
@@ -522,8 +564,8 @@ function unlinkOwnedDirectory(root: string, livePath: string, directory: OwnedDi
   requireLiveDirectory(root, livePath, directory);
 }
 export type ArtifactWriteOptions = { forceNoDescriptorAnchor?: boolean; afterStateOpen?: (strategy: "descriptor" | "pathname") => void; afterTemporaryOpen?: () => void };
-export function bindApprovedGeneratedPlan(projectDir: string, workflow: BuiltInApprovalWorkflow, absolutePlanPath: string, session: string, approvedAt = new Date().toISOString(), options: ArtifactWriteOptions = {}): ModernReviewReceipt {
-  if (!MODERN_WORKFLOWS.has(workflow) || !session.trim() || !strictUtc(approvedAt)) throw new Error("approval binding identity is invalid");
+export function bindApprovedGeneratedPlan(projectDir: string, workflow: string, absolutePlanPath: string, session: string, approvedAt = new Date().toISOString(), options: ArtifactWriteOptions = {}): ModernReviewReceipt {
+  if (!isWorkflowIdentity(workflow) || !session.trim() || !strictUtc(approvedAt)) throw new Error("approval binding identity is invalid");
   const root = realpathSync(projectDir); const planning = join(root, ".planning"); const state = join(planning, ".state");
   if (!isAbsolute(absolutePlanPath)) throw new Error("generated plan path must be absolute"); const basename = relative(planning, absolutePlanPath);
   if (!isGeneratedPlanBasename(basename) || join(planning, basename) !== absolutePlanPath) throw new Error("generated plan must be a safe direct child of project .planning");
@@ -566,6 +608,70 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: BuiltInA
   }
 }
 
+export function finalizeGeneratedPlanReview(
+  projectDir: string,
+  workflow: string,
+  priorReceipt: ModernReviewReceipt,
+  status: "APPROVED" | "ISSUES_FOUND",
+  reviewerSession: string,
+  reviewedAt = new Date().toISOString(),
+  options: ArtifactWriteOptions = {},
+): ModernReviewReceipt | ArtifactError {
+  if (!isWorkflowIdentity(workflow) || (status !== "APPROVED" && status !== "ISSUES_FOUND") || typeof reviewerSession !== "string" || !reviewerSession.trim() || !strictUtc(reviewedAt)) {
+    return err("review-schema", "generated-plan review finalization identity is invalid");
+  }
+  const parsedPrior = parseReviewState(JSON.stringify(priorReceipt), workflow);
+  if (isError(parsedPrior) || parsedPrior.status !== "PENDING") return err("review-schema", "generated-plan review finalization requires the exact PENDING receipt");
+  // `reviewerSession` is an ACTOR IDENTITY (hookActorIdentity), not a raw session id — see the
+  // ModernReviewReceipt note. Only the approver/reviewer pair is checkable here: review
+  // finalization precedes implementation, so there is no implementer identity yet to separate.
+  const separation = approverReviewerSeparation(parsedPrior.approved_session_id, reviewerSession); if (separation) return separation;
+  if (Date.parse(reviewedAt) <= Date.parse(parsedPrior.approved_at)) return err("approval-chronology", "review must be strictly later than approval");
+
+  let root: string;
+  try { root = realpathSync(projectDir); }
+  catch { return err("project-root", "project root must exist and be accessible"); }
+  const planning = join(root, ".planning");
+  const state = join(planning, ".state");
+  const first = resolveGeneratedPlanReviewState(root, workflow);
+  if (isError(first)) return first;
+  if (JSON.stringify(first.receipt) !== JSON.stringify(parsedPrior)) return err("review-race", "approval receipt changed before review finalization");
+
+  let planningDirectory: OwnedDirectory | undefined;
+  let stateDirectory: OwnedDirectory | undefined;
+  let writeBoundaryRace = false;
+  try {
+    planningDirectory = openOwnedDirectory(root, planning, options.forceNoDescriptorAnchor);
+    stateDirectory = openOwnedDirectory(root, state, options.forceNoDescriptorAnchor);
+    requireLiveDirectory(root, planning, planningDirectory);
+    requireLiveDirectory(root, state, stateDirectory);
+    options.afterStateOpen?.(stateDirectory.anchor === undefined ? "pathname" : "descriptor");
+    if (stateDirectory.anchor === undefined) return err("review-write", "approval artifact directory does not support descriptor-anchored mutation");
+    const unchanged = resolveGeneratedPlanReviewState(root, workflow);
+    if (isError(unchanged)) return unchanged;
+    if (unchanged.hash !== first.hash || JSON.stringify(unchanged.receipt) !== JSON.stringify(parsedPrior)) return err("review-race", "plan identity or approval receipt changed during review finalization");
+    const receipt: ModernReviewReceipt = { ...parsedPrior, status, reviewer_session_id: reviewerSession, reviewed_at: reviewedAt };
+    atomicWriteOwnedDirectory(root, state, stateDirectory, "review.json", `${JSON.stringify(receipt, null, 2)}\n`, options.afterTemporaryOpen, () => {
+      const boundary = resolveGeneratedPlanReviewState(root, workflow);
+      if (isError(boundary) || boundary.hash !== first.hash || JSON.stringify(boundary.receipt) !== JSON.stringify(parsedPrior)) {
+        writeBoundaryRace = true;
+        throw new Error("plan identity or approval receipt changed at the review write boundary");
+      }
+    });
+    requireLiveDirectory(root, planning, planningDirectory);
+    requireLiveDirectory(root, state, stateDirectory);
+    const finalized = resolveGeneratedPlanReviewState(root, workflow);
+    if (isError(finalized) || finalized.hash !== first.hash || JSON.stringify(finalized.receipt) !== JSON.stringify(receipt)) return err("review-race", "finalized review receipt could not be re-authenticated");
+    return Object.freeze(receipt);
+  } catch (error) {
+    if (writeBoundaryRace) return err("review-race", "plan identity or approval receipt changed at the review write boundary");
+    return err("review-write", `could not finalize generated-plan review: ${error instanceof Error ? error.message : String(error)}`);
+  } finally {
+    if (stateDirectory !== undefined) closeSync(stateDirectory.fd);
+    if (planningDirectory !== undefined) closeSync(planningDirectory.fd);
+  }
+}
+
 /**
  * `implementationSession` is the identity of the actor the binding speaks for, and
  * `implementationRole` says what that actor claims to be. Omitting the role means `implement`, so a
@@ -575,10 +681,11 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: BuiltInA
  * subagents it creates are the implementers and their identities do not exist yet.
  */
 export type ImplementationApprovalBindingV1 = Readonly<{ taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; implementationSession: string; implementationRole?: ActorRole }>;
-export type BuiltInImplementationApprovalV2 = Readonly<{ schemaVersion: 2; approvalBundleDigest: string; planFile: string; planHash: string; workflow: BuiltInApprovalWorkflow; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
+export type GeneratedPlanImplementationApprovalV2 = Readonly<{ schemaVersion: 2; approvalBundleDigest: string; planFile: string; planHash: string; workflow: string; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
+export type BuiltInImplementationApprovalV2 = GeneratedPlanImplementationApprovalV2 & Readonly<{ workflow: BuiltInApprovalWorkflow }>;
 export type CapturedImplementationApprovalV1 = Readonly<{ schemaVersion: 1; approvalBundleDigest: string; planDigest: string; workflow: string; taskIdentity: string; taskContractDigest: string; preDispatchObservationDigest: string; approvalSession: string; reviewerSession: string; implementationSession: string; approvedAt: string; reviewedAt: string; terminalReleaseAuthorized: false }>;
-export function validateBuiltInImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): BuiltInImplementationApprovalV2 | ArtifactError {
-  if (!isModernWorkflow(expectedWorkflow) || !artifact.receipt || !artifact.planFile || artifact.receipt.workflow !== expectedWorkflow || artifact.receipt.plan_file !== artifact.planFile) return err("workflow-mismatch", "built-in generated-plan approval workflow was substituted");
+export function validateGeneratedPlanImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): GeneratedPlanImplementationApprovalV2 | ArtifactError {
+  if (!isWorkflowIdentity(expectedWorkflow) || !artifact.receipt || !artifact.planFile || artifact.receipt.workflow !== expectedWorkflow || artifact.receipt.plan_file !== artifact.planFile) return err("workflow-mismatch", "generated-plan approval workflow was substituted");
   if (!binding.taskIdentity.trim() || !HASH.test(binding.taskContractDigest) || !HASH.test(binding.preDispatchObservationDigest)) return err("binding-schema", "implementation approval binding is invalid");
   // TYPE GUARD, NOT A TRUTHINESS CHECK. `binding.implementationSession.trim()` threw an uncaught
   // TypeError out of the Workflow runtime whenever the caller passed an absent identity — a crash
@@ -588,6 +695,10 @@ export function validateBuiltInImplementationApproval(artifact: ApprovedArtifact
   const separation = actorSeparation(artifact.receipt.approved_session_id, artifact.receipt.reviewer_session_id, actor); if (separation) return separation;
   const approvalBundleDigest = sha256(Buffer.from(JSON.stringify({ schemaVersion: 2, planFile: artifact.planFile, planHash: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.receipt.approved_session_id, reviewerSession: artifact.receipt.reviewer_session_id, implementationSession: binding.implementationSession }), "utf8"));
   return Object.freeze({ schemaVersion: 2, approvalBundleDigest, planFile: artifact.planFile, planHash: artifact.hash, workflow: expectedWorkflow, taskIdentity: binding.taskIdentity, taskContractDigest: binding.taskContractDigest, preDispatchObservationDigest: binding.preDispatchObservationDigest, approvalSession: artifact.receipt.approved_session_id, reviewerSession: artifact.receipt.reviewer_session_id, implementationSession: binding.implementationSession, approvedAt: artifact.receipt.approved_at, reviewedAt: artifact.receipt.reviewed_at, terminalReleaseAuthorized: false });
+}
+export function validateBuiltInImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): BuiltInImplementationApprovalV2 | ArtifactError {
+  if (!isModernWorkflow(expectedWorkflow)) return err("workflow-mismatch", "built-in generated-plan approval workflow was substituted");
+  return validateGeneratedPlanImplementationApproval(artifact, expectedWorkflow, binding) as BuiltInImplementationApprovalV2 | ArtifactError;
 }
 export function validateExternalImplementationApproval(artifact: ApprovedArtifact, expectedWorkflow: string, binding: ImplementationApprovalBindingV1): CapturedImplementationApprovalV1 | ArtifactError {
   if (!artifact.metadata || artifact.metadata.workflow !== expectedWorkflow) return err("workflow-mismatch", "external approval workflow was substituted");

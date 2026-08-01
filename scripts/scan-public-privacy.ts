@@ -69,14 +69,13 @@ const REQUIRED_RATIONALE = "live reverse integration until private Stage 2 passe
 const GLOB_META = /[*?{}[\]]/;
 const REQUIRED_SCAN_ROOTS = ["."];
 const REQUIRED_EXCLUSIONS = [".git/**", ".planning/**", "node_modules/**", "scratch/**", "bun.lock"];
-const DEBT_ROOT_PATTERN = ["course", "-materials"].join("");
 const DEBT_COMMAND_PATTERN = ["teaching", ":find-slide-page"].join("");
 const DEBT_PLUGIN_PATTERN = ["teaching", "-plugin"].join("");
+const TEACHING_CACHE_PATTERN = ["teaching", "teaching"].join("\\/");
 const ACCEPTED_BINARY_DISPOSITIONS = new Set(["preserve"]);
 const REQUIRED_DENY_RULES: DenyRule[] = [
-  { id: "private-identifier", pattern: `(?:${DEBT_ROOT_PATTERN}|${DEBT_COMMAND_PATTERN}|${DEBT_PLUGIN_PATTERN}|private (?:repository|repo|plugin|consumer))`, flags: "gi" },
-  { id: "cache-path", pattern: `\\.claude\\/plugins\\/cache\\/${DEBT_ROOT_PATTERN}\\/teaching\\/`, flags: "g" },
-  { id: "machine-path", pattern: `\\/(?:home|Users)\\/[A-Za-z0-9._-]+\\/[^\\s'\\\"\\x60]*${DEBT_ROOT_PATTERN}[^\\s'\\\"\\x60]*`, flags: "g" },
+  { id: "private-identifier", pattern: `(?:${DEBT_COMMAND_PATTERN}|${DEBT_PLUGIN_PATTERN}|private (?:repository|repo|plugin|consumer))`, flags: "gi" },
+  { id: "cache-path", pattern: `\\.claude\\/plugins\\/cache\\/${TEACHING_CACHE_PATTERN}\\/`, flags: "g" },
   { id: "course-name", pattern: "\\b[A-Z][A-Za-z& -]+ (?:Seminar|Course) 20\\d{2}\\b", flags: "g" },
   { id: "private-provenance", pattern: "\\b(?:developed|extracted|migrated|copied) (?:in|from|for) (?:the )?private (?:repository|repo|plugin|consumer)\\b", flags: "gi" },
 ];

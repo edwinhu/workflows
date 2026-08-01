@@ -6,13 +6,18 @@ import {
   bindApprovedGeneratedPlan,
   classifyBuiltInArtifactLayout,
   classifyPlanningLifecycle,
+  finalizeGeneratedPlanReview,
   hookActorIdentity,
   isSubagentPayload,
+  parseReviewState,
   sha256,
   validateApprovedArtifact,
   validateApprovedPlan,
   validateBuiltInImplementationApproval,
   validateCapturedApprovalBundle,
+  validateExternalWorkflowIdentity,
+  validateGeneratedPlanArtifact,
+  validateGeneratedPlanImplementationApproval,
   type ApprovalPolicyDescriptor,
   type ApprovedArtifact,
 } from "../workflows/lib/approved-artifact";
@@ -404,6 +409,58 @@ describe("strict external approved-artifact policy", () => {
   }));
 });
 
+describe("external generated-plan receipt workflows", () => {
+  const workflow = "native-extension-7f3a";
+  const planFile = "native-generated.md";
+  const plan = "# Native external plan\n";
+  const hash = sha256(plan);
+  const receipt = (overrides: Record<string, unknown> = {}) => ({
+    workflow, plan_file: planFile, plan_hash: hash,
+    approved_session_id: "approval-session", approved_at: "2026-07-30T10:00:00.000Z",
+    status: "APPROVED", reviewer_session_id: "review-session", reviewed_at: "2026-07-30T11:00:00.000Z",
+    ...overrides,
+  });
+
+  test("parses, binds, and validates a generated-plan receipt for a validated external identity", () => withProject((root) => {
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    const absolutePlan = join(root, ".planning", planFile);
+    writeFileSync(absolutePlan, plan);
+    expect(bindApprovedGeneratedPlan(root, workflow, absolutePlan, "approval-session", "2026-07-30T10:00:00.000Z")).toEqual(expect.objectContaining({ workflow, status: "PENDING" }));
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt()));
+
+    expect(parseReviewState(JSON.stringify(receipt()), workflow)).toEqual(expect.objectContaining({ workflow }));
+    const artifact = validateGeneratedPlanArtifact(root, workflow, "implementation-session");
+    expect(artifact).toEqual(expect.objectContaining({ hash, planFile, receipt: expect.objectContaining({ workflow }) }));
+    if ("code" in artifact) throw new Error(artifact.message);
+    expect(validateGeneratedPlanImplementationApproval(artifact, workflow, {
+      taskIdentity: "task-1",
+      taskContractDigest: "a".repeat(64),
+      preDispatchObservationDigest: "b".repeat(64),
+      implementationSession: "implementation-session",
+    })).toEqual(expect.objectContaining({ schemaVersion: 2, workflow, planFile, planHash: hash }));
+  }));
+
+  test("rejects malformed external identities and receipt identity tampering", () => withProject((root) => {
+    expect(validateExternalWorkflowIdentity(workflow)).toBe(true);
+    expect(validateExternalWorkflowIdentity("work")).toBe(false);
+    expect(validateExternalWorkflowIdentity("Invalid Workflow")).toBe(false);
+    expect(parseReviewState(JSON.stringify(receipt({ workflow: "Invalid Workflow" })))).toEqual(expect.objectContaining({ code: "review-schema" }));
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt({ workflow: "other-native" })));
+    expect(validateGeneratedPlanArtifact(root, workflow, "implementation-session")).toEqual(expect.objectContaining({ code: "review-schema" }));
+  }));
+
+  test("external generated receipts participate in lifecycle classification", () => withProject((root) => {
+    mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+    writeFileSync(join(root, ".planning", planFile), plan);
+    writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify(receipt()));
+    expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ kind: "canonical", resolved: expect.objectContaining({ planFile, hash }) }));
+    writeFileSync(join(root, ".planning", planFile), "# tampered\n");
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "stale-receipt" });
+  }));
+});
+
 describe("built-in generated-plan and legacy layouts", () => {
   const receipt = (workflow: "ds" | "work" | "writing" | "workshop" | "workflow-creator", planFile: string, hash: string, status = "APPROVED") => ({
     workflow, plan_file: planFile, plan_hash: hash,
@@ -522,6 +579,22 @@ describe("built-in generated-plan and legacy layouts", () => {
       expect(readdirSync(outside)).toEqual(["review.json"]);
       expect(readFileSync(join(outside, "review.json"), "utf8")).toBe("outside review sentinel\n");
     } finally { rmSync(outside, { recursive: true, force: true }); }
+  }));
+
+  test("review finalization refuses to overwrite a receipt changed at the write boundary", () => withProject((root) => {
+    const planning = join(root, ".planning");
+    const planPath = join(planning, "review-race.md");
+    mkdirSync(planning, { recursive: true });
+    writeFileSync(planPath, "# Review race\n");
+    const prior = bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z");
+    const competing = { ...prior, status: "ISSUES_FOUND" as const, reviewer_session_id: "competing-reviewer", reviewed_at: "2026-07-30T10:30:00.000Z" };
+    const result = finalizeGeneratedPlanReview(root, "work", prior, "APPROVED", "review-session", "2026-07-30T11:00:00.000Z", {
+      afterTemporaryOpen() {
+        writeFileSync(join(planning, ".state", "review.json"), `${JSON.stringify(competing, null, 2)}\n`);
+      },
+    });
+    expect(result).toEqual(expect.objectContaining({ code: "review-race" }));
+    expect(JSON.parse(readFileSync(join(planning, ".state", "review.json"), "utf8"))).toEqual(competing);
   }));
 
   test("PENDING authenticates exact approval identity but does not authorize implementation", () => withProject((root) => {

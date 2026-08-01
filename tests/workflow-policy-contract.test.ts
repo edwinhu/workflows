@@ -23,10 +23,27 @@ function descriptor(overrides: Record<string, unknown> = {}): Record<string, unk
   };
 }
 
+function generatedPlanDescriptor(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    schemaVersion: 2,
+    workflow: "opaque-native-extension",
+    approvalMode: "generated-plan-receipt-v1",
+    allowedOrchestratorDirectories: [".planning", ".claude"],
+    ...overrides,
+  };
+}
+
 function writeDescriptor(value: unknown): string {
   const root = mkdtempSync(join(tmpdir(), "workflow-policy-"));
   const path = join(root, "policy.json");
   writeFileSync(path, `${JSON.stringify(value)}\n`);
+  return path;
+}
+
+function writeDescriptorText(value: string): string {
+  const root = mkdtempSync(join(tmpdir(), "workflow-policy-"));
+  const path = join(root, "policy.json");
+  writeFileSync(path, value);
   return path;
 }
 
@@ -37,6 +54,7 @@ describe("external workflow policy contract", () => {
 
     expect(policy).toEqual({
       workflow: "opaque-extension",
+      approvalMode: "external-fixed-v1",
       clarifySentinel: ".planning/OPAQUE_CLARIFIED.json",
       clarifyReason: "Ask the extension's opening questions before reconnaissance.",
       reviewerVerdict: ".planning/PLAN_REVIEWED.md",
@@ -46,6 +64,40 @@ describe("external workflow policy contract", () => {
     expect(Object.isFrozen(policy)).toBe(true);
     expect(Object.isFrozen(policy?.allowedOrchestratorDirectories)).toBe(true);
     expect(workflowFromArg(["--workflow", "opaque-extension"])).toBeNull();
+  });
+
+  test("accepts schema-v2 generated-plan receipt descriptors without legacy paths", () => {
+    const policy = loadExternalWorkflowPolicy(writeDescriptor(generatedPlanDescriptor()));
+
+    expect(policy).toEqual({
+      workflow: "opaque-native-extension",
+      approvalMode: "generated-plan-receipt-v1",
+      allowedOrchestratorDirectories: [".planning", ".claude"],
+    });
+    expect("clarifySentinel" in policy).toBe(false);
+    expect("reviewerVerdict" in policy).toBe(false);
+    expect("approvalPolicy" in policy).toBe(false);
+    expect(Object.isFrozen(policy)).toBe(true);
+    expect(Object.isFrozen(policy.allowedOrchestratorDirectories)).toBe(true);
+  });
+
+  test("normalizes every policy to one explicit approval mode", () => {
+    expect(loadExternalWorkflowPolicy(writeDescriptor(descriptor())).approvalMode).toBe("external-fixed-v1");
+    expect(loadExternalWorkflowPolicy(writeDescriptor(generatedPlanDescriptor())).approvalMode).toBe("generated-plan-receipt-v1");
+    for (const workflow of ["ds", "dev", "work", "writing", "workshop", "workflow-creator"]) {
+      expect(workflowFromArg(["--workflow", workflow])?.approvalMode).toBe("built-in-native");
+    }
+  });
+
+  test("schema-v2 rejects legacy paths, mode changes, and noncanonical directory lists", () => {
+    for (const invalid of [
+      generatedPlanDescriptor({ clarifySentinel: ".planning/CLARIFIED.json" }),
+      generatedPlanDescriptor({ reviewerVerdict: ".planning/.state/review.json" }),
+      generatedPlanDescriptor({ approvalPolicy: ".approval/policy.json" }),
+      generatedPlanDescriptor({ approvalMode: "external-fixed-v1" }),
+      generatedPlanDescriptor({ allowedOrchestratorDirectories: [] }),
+      generatedPlanDescriptor({ allowedOrchestratorDirectories: [".planning", "../outside"] }),
+    ]) expect(() => loadExternalWorkflowPolicy(writeDescriptor(invalid))).toThrow(/descriptor|approvalMode|directory|only/i);
   });
 
   test("requires explicit selection and never performs ambient lookup", () => {
@@ -61,9 +113,10 @@ describe("external workflow policy contract", () => {
     }
   });
 
-  test("rejects unknown keys and malformed descriptors", () => {
+  test("rejects unknown keys, duplicate keys, and malformed descriptors", () => {
     expect(() => loadExternalWorkflowPolicy(writeDescriptor(descriptor({ extra: true })))).toThrow(/unknown|only/i);
-    expect(() => loadExternalWorkflowPolicy(writeDescriptor({ ...descriptor(), schemaVersion: 2 }))).toThrow(/schemaVersion/i);
+    expect(() => loadExternalWorkflowPolicy(writeDescriptor({ ...descriptor(), schemaVersion: 3 }))).toThrow(/schemaVersion/i);
+    expect(() => loadExternalWorkflowPolicy(writeDescriptorText('{"schemaVersion":2,"workflow":"teaching","workflow":"substituted","approvalMode":"generated-plan-receipt-v1","allowedOrchestratorDirectories":[".planning"]}'))).toThrow(/duplicate/i);
   });
 
   test.each(["ds", "dev", "work", "writing", "workshop", "workflow-creator"])("rejects external descriptors claiming built-in identity %s", (workflow) => {
@@ -125,6 +178,64 @@ describe("external workflow policy contract", () => {
       const ancestorWorkflowPath = join(root, "workflow-ancestor.json");
       writeFileSync(ancestorWorkflowPath, JSON.stringify(descriptor({ approvalPolicy: "policy-link/policy.json" })));
       expect(run(["--workflow-policy", ancestorWorkflowPath]).stdout.toString()).toContain("symbolic link");
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
+
+  test("approved-artifact gate validates schema-v2 external generated-plan receipts", () => {
+    const root = mkdtempSync(join(tmpdir(), "external-generated-gate-"));
+    try {
+      mkdirSync(join(root, ".planning", ".state"), { recursive: true });
+      const planFile = "opaque-generated.md";
+      const plan = "# Opaque generated plan\n";
+      const hash = sha256(plan);
+      writeFileSync(join(root, ".planning", planFile), plan);
+      writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify({
+        workflow: "opaque-native-extension", plan_file: planFile, plan_hash: hash,
+        approved_session_id: "approve", approved_at: "2026-07-30T10:00:00.000Z",
+        status: "APPROVED", reviewer_session_id: "review", reviewed_at: "2026-07-30T11:00:00.000Z",
+      }));
+      const workflowPath = join(root, "workflow.json");
+      writeFileSync(workflowPath, JSON.stringify(generatedPlanDescriptor()));
+      // PRODUCTION'S ACTUAL ENVIRONMENT. The original of this case injected
+      // `CLAUDE_SESSION_ID: "implement"` and sent a payload with no session_id — a variable Claude
+      // Code never sets, so it asserted an admission that cannot happen in a real hook process.
+      // Identity comes from the payload; the env var is deleted so its absence is what is tested.
+      const env = { ...process.env }; delete env.CLAUDE_SESSION_ID;
+      const run = (identity: Record<string, unknown>) => Bun.spawnSync(
+        ["bun", join(import.meta.dir, "../hooks/approved-artifact-gate.ts"), "--workflow-policy", workflowPath],
+        { cwd: root, env, stdin: Buffer.from(JSON.stringify({ ...identity, tool_name: "Agent", tool_input: { subagent_type: "implementation", projectDir: root }, cwd: root })) },
+      );
+
+      // A conversation-level call is DISPATCHING, so it is admitted even though it is the approver:
+      // the implementer it is about to create has no identity yet. A three-way distinctness check
+      // (`new Set([approved, reviewer, current]).size !== 3`) cannot express this and denies here.
+      const dispatch = run({ session_id: "approve" });
+      expect(dispatch.exitCode).toBe(0);
+      expect(dispatch.stdout.toString()).toBe("");
+
+      // An unrelated dispatcher is likewise admitted.
+      expect(run({ session_id: "implement" }).stdout.toString()).toBe("");
+
+      // A call from INSIDE a subagent names a real implementing actor and carries the full rule.
+      expect(run({ session_id: "unrelated", agent_id: "impl1" }).stdout.toString()).toBe("");
+      // ...including reviewer != implementer, which binds at both levels.
+      expect(run({ session_id: "review" }).stdout.toString()).toContain("review and implementation actors must differ");
+
+      // ...and approver != implementer, which the dispatch case deliberately does not enforce. It is
+      // only reachable when the receipt's approver is itself a subagent, since a conversation-level
+      // call is always a dispatcher. `session_id: "approve", agent_id: "a1"` composes to
+      // "approve#a1", which is why an approval taken in a subagent and one taken in its parent
+      // conversation are distinguishable at all.
+      writeFileSync(join(root, ".planning", ".state", "review.json"), JSON.stringify({
+        workflow: "opaque-native-extension", plan_file: planFile, plan_hash: hash,
+        approved_session_id: "approve#a1", approved_at: "2026-07-30T10:00:00.000Z",
+        status: "APPROVED", reviewer_session_id: "review", reviewed_at: "2026-07-30T11:00:00.000Z",
+      }));
+      expect(run({ session_id: "approve", agent_id: "a1" }).stdout.toString()).toContain("approval and implementation actors must differ");
+      expect(run({ session_id: "approve", agent_id: "a2" }).stdout.toString()).toBe("");
+
+      // No usable payload identity is a DENY, never a default.
+      expect(run({}).stdout.toString()).toContain("a valid actor identity and role are required");
     } finally { rmSync(root, { recursive: true, force: true }); }
   });
 

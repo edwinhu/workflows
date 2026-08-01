@@ -1,15 +1,14 @@
 #!/usr/bin/env bun
 import { readFileSync } from "node:fs";
 import { isAbsolute } from "node:path";
-import { bindApprovedGeneratedPlan, hookActorIdentity, type BuiltInApprovalWorkflow } from "../workflows/lib/approved-artifact.ts";
+import { bindApprovedGeneratedPlan, hookActorIdentity } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 
 function fail(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(2); }
 function defer(message: string): never { console.error(`[approved-artifact-persist] ${message}`); process.exit(1); }
 
 const policy = workflowFromArg(Bun.argv.slice(2));
-const nativeWorkflows = new Set<BuiltInApprovalWorkflow>(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
-if (!policy || policy.approvalPolicy !== undefined || !nativeWorkflows.has(policy.workflow as BuiltInApprovalWorkflow)) fail("requires a built-in native-plan workflow: ds, dev, work, writing, workshop, or workflow-creator; external descriptors have no native-plan producer");
+if (!policy || policy.approvalMode === "external-fixed-v1") fail("requires a generated-plan approval workflow; external schema-v1 fixed-artifact descriptors have no native-plan producer");
 let payload: Record<string, unknown>;
 try { payload = JSON.parse(await Bun.stdin.text()); } catch { fail("hook payload is not valid JSON"); }
 if (!payload || typeof payload !== "object" || Array.isArray(payload)) fail("hook payload must be an object");
@@ -44,7 +43,10 @@ if (typeof approvedPath !== "string" || !isAbsolute(approvedPath)) fail("ExitPla
 // Record the same composite actor identity the review and implementation gates compare against,
 // so an approval taken in the conversation and one taken inside a subagent are distinguishable.
 // With no agent_id this is exactly payload.session_id, so existing receipts stay valid.
+//
+// `policy.workflow` is passed unnarrowed: schema v2 admits external workflow identities, and
+// bindApprovedGeneratedPlan validates it with isWorkflowIdentity rather than the built-in set.
 const approvingActor = hookActorIdentity(payload);
 if (approvingActor === null) fail("ExitPlanMode payload is missing a usable session_id");
-try { bindApprovedGeneratedPlan(process.cwd(), policy.workflow as BuiltInApprovalWorkflow, approvedPath, approvingActor); }
+try { bindApprovedGeneratedPlan(process.cwd(), policy.workflow, approvedPath, approvingActor); }
 catch (error) { defer(`could not bind approved generated plan: ${error instanceof Error ? error.message : String(error)}`); }

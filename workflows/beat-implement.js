@@ -10,8 +10,9 @@ export const meta = {
 
 // args = {
 //   projectDir: "/absolute/project/path",             // REQUIRED
-//   workflow: string,                                 // REQUIRED built-in or opaque external identity
-//   approvalPolicy?: { schemaVersion, workflow, planPath, metadataPath, verdictPath }, // REQUIRED only for external workflows
+//   workflow: string,                                 // REQUIRED built-in or validated external identity
+//   approvalMode?: "external-fixed-v1" | "generated-plan-receipt-v1", // REQUIRED for external workflows; built-ins infer built-in-native
+//   approvalPolicy?: { schemaVersion, workflow, planPath, metadataPath, verdictPath }, // REQUIRED only for external-fixed-v1
 //   readyWave: [{ id, name, work, criteria, outputs, model, effort }], // REQUIRED; complete, caller-curated work list
 //   planReset: { planFile, planHash }, // REQUIRED exact generated-plan identity for built-ins; external v1 keeps approvedBodyHash/session
 //   resume?: { attemptedTaskIds: ["task-id", ...] },   // optional: re-dispatch ONLY previously attempted work
@@ -25,29 +26,36 @@ cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error('beat-implement requires args.projectDir')
 const BUILT_IN_WORKFLOWS = ['ds', 'dev', 'work', 'writing', 'workshop', 'workflow-creator']
-if (!requiredWorkflowIdentity(cfg.workflow) || (!BUILT_IN_WORKFLOWS.includes(cfg.workflow) && cfg.approvalPolicy === undefined)) {
-  throw new Error('beat-implement requires args.workflow as ds, dev, work, writing, workshop, workflow-creator, or an external workflow with explicit approval policy')
+if (!requiredWorkflowIdentity(cfg.workflow)) throw new Error('beat-implement requires args.workflow as a validated workflow identity')
+const builtInWorkflow = BUILT_IN_WORKFLOWS.includes(cfg.workflow)
+if (builtInWorkflow && cfg.approvalMode !== undefined) throw new Error('beat-implement built-in workflows cannot override approvalMode')
+if (!builtInWorkflow && !['external-fixed-v1', 'generated-plan-receipt-v1'].includes(cfg.approvalMode)) {
+  throw new Error('beat-implement external workflows require explicit approvalMode as external-fixed-v1 or generated-plan-receipt-v1')
 }
+const approvalMode = builtInWorkflow ? 'built-in-native' : cfg.approvalMode
+const generatedPlanMode = approvalMode === 'built-in-native' || approvalMode === 'generated-plan-receipt-v1'
 if (!Array.isArray(cfg.readyWave)) throw new Error('beat-implement requires args.readyWave as a complete task-spec array')
 
 // Shared libraries own approval identity and task-contract validation.
-const { parseApprovalPolicyDescriptor, validateApprovedArtifact, validateBuiltInImplementationApproval, validateCapturedApprovalBundle, validateExternalImplementationApproval } = await import(new URL('./lib/approved-artifact.ts', import.meta.url).href)
+const { parseApprovalPolicyDescriptor, validateApprovedArtifact, validateBuiltInImplementationApproval, validateCapturedApprovalBundle, validateExternalImplementationApproval, validateGeneratedPlanArtifact, validateGeneratedPlanImplementationApproval } = await import(new URL('./lib/approved-artifact.ts', import.meta.url).href)
 const { concretePaths, enforceTaskOutputs, fingerprint, pathsOverlap, requiredText, validateTask, writablePathsWithin } = await import(new URL('./lib/task-contract.ts', import.meta.url).href)
 const { captureGitObservation, compareGitObservations } = await import(new URL('./lib/git-observation.ts', import.meta.url).href)
 const { failClosedCandidateState, markCandidateMutation, validateCandidateMutationConfiguration } = await import(new URL('./lib/candidate-state.ts', import.meta.url).href)
 const { createHash } = await import('node:crypto')
 
 const reset = cfg.planReset || {}
-const builtInWorkflow = BUILT_IN_WORKFLOWS.includes(cfg.workflow)
-if (cfg.approvalPolicy !== undefined) {
-  if (builtInWorkflow) throw new Error('beat-implement built-in workflows cannot override approval policy')
+if (approvalMode === 'external-fixed-v1') {
+  if (cfg.approvalPolicy === undefined) throw new Error('beat-implement external-fixed-v1 requires an explicit approval policy')
   const policy = parseApprovalPolicyDescriptor(cfg.approvalPolicy, cfg.workflow)
   if (policy.code) throw new Error(`beat-implement ${policy.message}`)
+} else if (cfg.approvalPolicy !== undefined) {
+  if (builtInWorkflow) throw new Error('beat-implement built-in workflows cannot override approval policy')
+  throw new Error(`beat-implement ${approvalMode} does not accept an approval policy`)
 }
-if (builtInWorkflow) {
+if (generatedPlanMode) {
   if (!requiredText(reset.planFile)) throw new Error('beat-implement requires nonempty immutable planReset.planFile')
   if (!requiredText(reset.planHash)) throw new Error('beat-implement requires nonempty immutable planReset.planHash')
-  if (Object.keys(reset).some(key => !['planFile', 'planHash'].includes(key))) throw new Error('beat-implement built-in planReset accepts only planFile and planHash')
+  if (Object.keys(reset).some(key => !['planFile', 'planHash'].includes(key))) throw new Error(`beat-implement ${approvalMode} planReset accepts only planFile and planHash`)
 } else {
   if (!requiredText(reset.approvedBodyHash)) throw new Error('beat-implement external planReset requires nonempty approvedBodyHash')
   if (!requiredText(reset.session)) throw new Error('beat-implement external planReset requires nonempty session')
@@ -75,15 +83,17 @@ if (typeof DISPATCH_SESSION !== 'string' || !DISPATCH_SESSION.trim()) {
 const DISPATCH_ACTOR = { role: 'dispatch', identity: DISPATCH_SESSION }
 let artifact = null
 if (cfg.capturedApprovalBundle === undefined) {
-  artifact = validateApprovedArtifact(PROJECT, cfg.workflow, DISPATCH_ACTOR, cfg.approvalPolicy)
+  artifact = approvalMode === 'generated-plan-receipt-v1'
+    ? validateGeneratedPlanArtifact(PROJECT, cfg.workflow, DISPATCH_ACTOR)
+    : validateApprovedArtifact(PROJECT, cfg.workflow, DISPATCH_ACTOR, cfg.approvalPolicy)
   if (artifact.code) throw new Error(`beat-implement ${artifact.message}`)
-  if (builtInWorkflow) {
+  if (generatedPlanMode) {
     if (reset.planFile !== artifact.planFile || reset.planHash !== artifact.hash) throw new Error('beat-implement rejects caller planReset that differs from current receipt-selected generated plan')
   } else if (reset.approvedBodyHash !== artifact.hash || reset.session !== artifact.metadata?.approvedSession) {
     throw new Error('beat-implement rejects caller planReset that differs from durable external approval metadata')
   }
-} else if (builtInWorkflow) {
-  throw new Error('beat-implement built-in workflows do not accept captured approval bundles')
+} else if (approvalMode !== 'external-fixed-v1') {
+  throw new Error(`beat-implement ${approvalMode} workflows do not accept captured approval bundles`)
 }
 
 const ids = new Set()
@@ -101,7 +111,7 @@ const attemptRecords = cfg.resume?.attemptRecords
 if (attempted !== undefined && !Array.isArray(attempted)) throw new Error('beat-implement resume.attemptedTaskIds must be an array')
 if (attempted && !Array.isArray(attemptRecords)) throw new Error('beat-implement retry requires resume.attemptRecords from the preceding runner result')
 function isPriorResult(record) {
-  const sameApproval = builtInWorkflow
+  const sameApproval = generatedPlanMode
     ? record?.planFile === reset.planFile && record?.planHash === reset.planHash
     : record?.approvedBodyHash === reset.approvedBodyHash && record?.session === reset.session
   return record && typeof record === 'object'
@@ -153,7 +163,7 @@ const RESULT_SCHEMA = {
 }
 
 function promptFor(task) {
-  const approvalIdentity = builtInWorkflow
+  const approvalIdentity = generatedPlanMode
     ? `- plan_file: ${reset.planFile}\n- plan_hash: ${reset.planHash}`
     : `- approved_body_hash: ${reset.approvedBodyHash}\n- approval_session: ${reset.session}`
   // Mutable planning state is deliberately excluded: no phase cursor, TaskList history, or previous agent memory enters a new doer.
@@ -211,12 +221,14 @@ async function run(task) {
     }
     approval = cfg.capturedApprovalBundle !== undefined
       ? validateCapturedApprovalBundle(cfg.capturedApprovalBundle, cfg.workflow, approvalBinding)
-      : builtInWorkflow
+      : approvalMode === 'built-in-native'
         ? validateBuiltInImplementationApproval(artifact, cfg.workflow, approvalBinding)
-        : validateExternalImplementationApproval(artifact, cfg.workflow, approvalBinding)
+        : approvalMode === 'generated-plan-receipt-v1'
+          ? validateGeneratedPlanImplementationApproval(artifact, cfg.workflow, approvalBinding)
+          : validateExternalImplementationApproval(artifact, cfg.workflow, approvalBinding)
     if (approval.code) throw new Error(approval.message)
-    if (builtInWorkflow) {
-      if (approval.planFile !== reset.planFile || approval.planHash !== reset.planHash) throw new Error('current built-in approval differs from immutable planReset identity')
+    if (generatedPlanMode) {
+      if (approval.planFile !== reset.planFile || approval.planHash !== reset.planHash) throw new Error('current generated-plan approval differs from immutable planReset identity')
     } else if (approval.planDigest !== reset.approvedBodyHash || approval.approvalSession !== reset.session) {
       throw new Error('captured external approval differs from immutable planReset identity')
     }
@@ -256,7 +268,7 @@ async function run(task) {
     return {
       taskId: task.id,
       taskFingerprint: taskFingerprint(task),
-      ...(builtInWorkflow ? { planFile: reset.planFile, planHash: reset.planHash } : { approvedBodyHash: reset.approvedBodyHash, session: reset.session }),
+      ...(generatedPlanMode ? { planFile: reset.planFile, planHash: reset.planHash } : { approvedBodyHash: reset.approvedBodyHash, session: reset.session }),
       status,
       summary: String(raw.summary || ''),
       reusableFacts: Array.isArray(raw.reusableFacts) ? raw.reusableFacts.filter(fact => typeof fact === 'string' && fact.trim()) : [],
@@ -272,7 +284,7 @@ async function run(task) {
     return {
       taskId: task.id,
       taskFingerprint: taskFingerprint(task),
-      ...(builtInWorkflow ? { planFile: reset.planFile, planHash: reset.planHash } : { approvedBodyHash: reset.approvedBodyHash, session: reset.session }),
+      ...(generatedPlanMode ? { planFile: reset.planFile, planHash: reset.planHash } : { approvedBodyHash: reset.approvedBodyHash, session: reset.session }),
       status: 'failed',
       summary: `Agent dispatch failed: ${error instanceof Error ? error.message : String(error)}`,
       reusableFacts: [],
