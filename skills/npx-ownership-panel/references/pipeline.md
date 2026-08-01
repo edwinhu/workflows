@@ -77,8 +77,12 @@ meeting-type filter once — which changes the item universe. Two things now mak
 divergence impossible rather than merely detectable:
 
 1. **`run_pipeline.sh` preflight** fails before submitting anything if a script,
-   the crosswalk CSV, the EDGAR holdings directory, `~/.pgpass`, or the Python
-   packages legs 2 and 5 need are absent. It also echoes the declared universe
+   the crosswalk CSV, the EDGAR holdings directory, `~/.pgpass`,
+   `~/sas/MERGE_ASOF.sas`, `../src/wrds_pull.py`, or the Python packages legs 2
+   and 5 need are absent. Its script list is exactly what the DAG submits or
+   reaches — fallbacks that nothing opens (`split_s12.sas`,
+   `build_inst_own.sas`) are deliberately **not** in it, so a tree that carries
+   only the DAG's files still passes. It also echoes the declared universe
    out of `pipeline_config.sas` at the top of every run.
 2. **`merge_panel.sas` asserts** that every item in `out.meetings` exists in
    `out.npx_items` and calls `abort abend` if not. It **fails**, it does not warn.

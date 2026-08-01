@@ -15,7 +15,7 @@
 #   short_interest ──→ build_inst_own ──→ import_inst_own ──────────┤
 #                        (EDGAR, py)      (csv → out.inst_own)      │
 #   build_mflinks ──┐                                               │
-#   split_s12 ──────┴──→ tfn_holdings_parallel ×N ──────────────────┤
+#   s12_split ×N ───┴──→ tfn_holdings_parallel ×N ──────────────────┤
 #   npx_stage ───────────→ npx_array ×M (one task per year) ────────┤
 #                                                                   │
 #                                                     ┌─────────────▼─────────────┐
@@ -51,9 +51,11 @@ Y1="${1:-2005}"
 Y2="${2:-2025}"
 LINKCSV="${LINKCSV:-$(pwd)/npx_link.csv}"
 
-# S12 partition ranges come from pipeline_config.sas — the SAME list split_s12.sas
-# writes. Hardcoding them separately here is one edit away from submitting
-# tfn_holdings jobs for partitions that were never written.
+# S12 partition ranges come from pipeline_config.sas — the SAME list the split
+# reads: split_s12_one.sas (one range per array task, what this DAG submits) and
+# split_s12.sas (the single-job fallback) both %include it. Hardcoding them
+# separately here is one edit away from submitting tfn_holdings jobs for
+# partitions that were never written.
 # [^;]* not .* — a %let value ends at the FIRST semicolon, and a greedy match
 # swallows any ';' inside a trailing comment. SAS parses it correctly either way,
 # so a greedy sed here reintroduces exactly the bash/SAS divergence this shared
@@ -64,10 +66,23 @@ read -r -a YEAR_RANGES <<< "$(sed -n 's/^%let S12_RANGES *= *\([^;]*\);.*/\1/p' 
 # --- Preflight: fail before submitting anything ------------------------------
 # Cheap, local, and it costs nothing to be strict. A missing crosswalk discovered
 # 40 minutes in is 40 minutes of grid time and a confusing log.
+#
+# THIS LIST IS EXACTLY WHAT THE DAG BELOW SUBMITS OR REACHES — every wrapper
+# qsub'd here, every .sas/.py those wrappers invoke, and pipeline_config.sas,
+# which four of them %include. Nothing else belongs in it. It once listed
+# split_s12.sas, which the DAG has not submitted since the split became an SGE
+# array; the array path (run_s12_array.sh -> split_s12_one.sas) was unchecked,
+# so the guard was blind to the two files the S12 leg actually needs and instead
+# failed runs over a file nothing was going to open. split_s12.sas is still
+# shipped and still works as the single-job fallback (references/pipeline.md,
+# "Reachable by hand, not from the DAG") — but guarding a fallback here blocks a
+# run that would have succeeded, the same false failure the HOLDINGS_13F default
+# caused below. Fetch it when you need it; do not gate on it.
 preflight_fail=0
 for f in pipeline_config.sas build_meetings.sas build_inst_own.py build_short_interest.py \
          import_inst_own.sas run_import.sh \
-         build_mflinks.sas split_s12.sas tfn_holdings_parallel.sas stage_npx_link.sas \
+         build_mflinks.sas run_s12_array.sh split_s12_one.sas \
+         tfn_holdings_parallel.sas stage_npx_link.sas \
          build_npx.sas merge_panel.sas run_sas.sh run_python.sh run_npx_stage.sh \
          run_npx_array.sh dq_panel.py run_dq.sh; do
     [ -f "$f" ] || { echo "PREFLIGHT ERROR: missing $f" >&2; preflight_fail=1; }
@@ -98,6 +113,14 @@ if ! "$PYBIN" -c 'import polars, pyarrow, psycopg2' 2>/dev/null; then
     echo "  Install into that interpreter, or point run_python.sh at one that has them." >&2
     preflight_fail=1
 fi
+# Both Python legs do `from src import wrds_pull` at import time, resolved
+# against <script dir>/.. — so it is a project file, not a package, and a
+# scp of scripts/* alone leaves it behind. Unchecked it surfaces as an
+# ImportError in a job log rather than here.
+[ -f ../src/wrds_pull.py ] || {
+    echo "PREFLIGHT ERROR: ../src/wrds_pull.py not found" >&2
+    echo "  Legs 2 and 5 import it (from src import wrds_pull). Ship src/ too." >&2
+    preflight_fail=1; }
 # Leg 2 reads the EDGAR 13F parquet. Absent, it would build an empty panel and
 # every downstream ownership column would be silently null.
 # The default must be where build_inst_own.py ACTUALLY looks: it resolves
@@ -129,6 +152,12 @@ if [ ! -f "$LINKCSV" ]; then
     preflight_fail=1
 fi
 [ -f ~/.pgpass ] || { echo "PREFLIGHT ERROR: ~/.pgpass missing (WRDS PG credentials)" >&2; preflight_fail=1; }
+# merge_panel.sas does `%INCLUDE "~/sas/MERGE_ASOF.sas"` — a home-dir prereq like
+# ~/.pgpass, not something this directory ships. It is the LAST node in the DAG,
+# so absent it the whole run burns ~35 min before failing on a one-file fix.
+[ -f ~/sas/MERGE_ASOF.sas ] || {
+    echo "PREFLIGHT ERROR: ~/sas/MERGE_ASOF.sas missing (merge_panel.sas %INCLUDEs it)" >&2
+    preflight_fail=1; }
 [ "$preflight_fail" = "0" ] || { echo "Preflight failed — nothing submitted." >&2; exit 1; }
 
 chmod +x run_sas.sh run_npx_stage.sh run_npx_array.sh run_import.sh 2>/dev/null || true
@@ -235,7 +264,10 @@ cat <<MSG
 
 ==========================================
 Submitted. Nothing local needs to stay alive — SGE runs the chain.
-Expected wall: ~25 min (split_s12 ~15 min and the TFN chunks dominate).
+Expected wall: ~35 min (measured 34m 46s full-scale, 2026-07-25 — SKILL.md).
+The critical path is the TFN chunks and the N-PX array, NOT the split: the S12
+array cut the partition write from 910s sequential to ~270s and total wall did
+not move.
 
   qstat -u \$USER                                        # progress
   grep -h NPXSTAT logs/build_npx_*.log                   # N-PX per-year reconciliation
