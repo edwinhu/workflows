@@ -18,7 +18,7 @@
  *     yields the bare `outlines` (Path('.') / 'outlines'), not `./outlines`.
  */
 import { existsSync, readdirSync } from "node:fs";
-import { deny, denyOnCrash } from "./_gate_common.ts";
+import { deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
 
 // FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
 // exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
@@ -61,18 +61,13 @@ function pyStrip(s: string): string {
   return s.replace(/^[\s\x1c-\x1f]+/, "").replace(/[\s\x1c-\x1f]+$/, "");
 }
 
-let hookInput: unknown;
-try {
-  hookInput = JSON.parse(await Bun.stdin.text());
-} catch {
-  process.exit(0);
-}
-
-// Mirrors Python's AttributeError on a non-dict payload: crash, exit 1, empty stdout.
-if (hookInput === null || typeof hookInput !== "object" || Array.isArray(hookInput)) {
-  throw new TypeError("hook_input has no attribute 'get'");
-}
-const payload = hookInput as Record<string, unknown>;
+// A PreToolUse GATE DENIES ON A PAYLOAD IT CANNOT READ. The `catch { exit 0 }` here was
+// Python parity, and it is precisely what `denyOnCrash` cannot reach: the handler covers
+// throws that ESCAPE, and a local catch means none does. Measured — unparseable stdin, and
+// for the raw-`JSON.parse` gates also `null`/`"s"`/`[1,2]`, produced exit 0 with no output,
+// i.e. a silent ALLOW on every malformed payload. `parsePayload` denies on a non-object and
+// lets a parse error propagate to the handler, which denies too.
+const payload: Record<string, unknown> = parsePayload(await Bun.stdin.text());
 
 const toolName = payload.tool_name ?? "";
 const rawInput = payload.tool_input ?? {};

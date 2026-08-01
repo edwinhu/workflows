@@ -86,6 +86,39 @@ export function projectRelativePath(projectDir: string, value: unknown): string 
 }
 
 /**
+ * WHERE THE BYTES LAND, asked WITHOUT asking whether the write is permitted.
+ *
+ * `null` FROM `safeProjectPath` IS A REJECTION, AND READING IT AS "NOT MY BUSINESS" INVERTS IT.
+ *   `projectRelativePath` returns `null` for a path this module refuses to vouch for — a literal
+ *   `..` segment, a backslash, a containment failure, a hard link. A caller that authorizes on the
+ *   returned prefix must treat that `null` as DENY, which `orchestrator-mutation-guard` does
+ *   (`if (!relative) return false`). But a caller asking the different question "is this call in the
+ *   scope of rule R?" gets `null` too, and there the same sentinel reads as "not in scope" — i.e. as
+ *   PERMISSION. Measured in `implementer-identity-gate`: spelling the receipt
+ *   `.planning/.state/../.state/review.json` made `projectRelativePath` return `null`, the receipt
+ *   permit-list was skipped whole, and a forged `{status: "APPROVED", approved_session_id:
+ *   "nobody-approved-this"}` was ALLOWED at three of the four actor/status combinations that deny
+ *   under the canonical spelling. One `..` bypassed all nine conditions at once.
+ *
+ * SO SCOPE IS DERIVED HERE, FROM THE RESOLVED LOCATION ONLY. This applies containment and symlink
+ * resolution — a path that lands outside the project is genuinely out of scope — and DELIBERATELY
+ * NOT the spelling and aliasing rejections, because those are reasons to REFUSE a write, and a rule
+ * cannot refuse a write it never sees. A caller uses this to decide WHETHER rule R applies, then
+ * uses `safeExactTarget`/`safeProjectPath` inside R to decide whether the write is allowed. Do not
+ * substitute it for either: it says nothing about hard links, and on its own it authorizes nothing.
+ */
+export function resolvedProjectRelativePath(projectDir: string, value: unknown): string | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const root = canonicalExisting(projectDir);
+  if (!root) return null;
+  const canonical = canonicalPossiblyMissing(resolve(root, value));
+  const landing = canonical ? resolveLeafLink(canonical) ?? canonical : null;
+  if (!landing || !contained(root, landing)) return null;
+  const rel = relative(root, landing);
+  return rel && !rel.startsWith("..") ? rel : null;
+}
+
+/**
  * WHY A REJECTED PATH NEEDS TO SAY WHICH RULE REJECTED IT.
  *
  * `safeProjectPath` returns `null` for three unrelated reasons, and both callers rendered all three

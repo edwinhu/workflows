@@ -40,12 +40,13 @@ function failure(idx: ReturnType<typeof buildIndex>): string {
   return "GATE BLOCKED: workshop generation requires an executable receipt-selected PLAN.\n- " + idx.violations.join("\n- ");
 }
 
-let payload: Record<string, unknown>;
-try {
-  payload = parsePayload(await Bun.stdin.text());
-} catch {
-  process.exit(0);
-}
+// A PreToolUse GATE DENIES ON A PAYLOAD IT CANNOT READ. The `catch { exit 0 }` here was
+// Python parity, and it is precisely what `denyOnCrash` cannot reach: the handler covers
+// throws that ESCAPE, and a local catch means none does. Measured — unparseable stdin, and
+// for the raw-`JSON.parse` gates also `null`/`"s"`/`[1,2]`, produced exit 0 with no output,
+// i.e. a silent ALLOW on every malformed payload. `parsePayload` denies on a non-object and
+// lets a parse error propagate to the handler, which denies too.
+const payload: Record<string, unknown> = parsePayload(await Bun.stdin.text());
 const toolName = String(payload.tool_name ?? "");
 const input = (payload.tool_input ?? {}) as Record<string, unknown>;
 const filePath = String(input.file_path ?? "");

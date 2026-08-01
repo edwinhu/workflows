@@ -72,6 +72,24 @@ const LEGACY_TS_EXPECTATIONS: Record<string, TsExpectation> = {
   "subagent-start/skills-with-reference-files-only": { stdoutSha256: "7a46d64deafa9c2ebd499d75d5d5ab65512668030b275bc881818a622ebc29bd", exit: 0, fs: {} },
   "subagent-start/workflow-and-skills-merged-across-state-spec-plan": { stdoutSha256: "a8bc42829d751f61205e60ba8910458d59842a217878ba323e70ef70e85cb7f5", exit: 0, fs: {} },
   "subagent-start/empty-stdin-still-injects": { stdoutSha256: "75600f29044bd8da8fdfd5a8ad9d603e5d347572f235fc73bab191f102d19546", exit: 0, fs: {} },
+
+  // UNREADABLE STDIN IN A PreToolUse GATE: the Python contract is the DEFECT, so parity to it is not
+  // a property worth keeping. Each Python original wrapped `json.load(sys.stdin)` in
+  // `except: sys.exit(0)`, and in a PreToolUse hook exit 0 with no output IS THE ALLOW — so every
+  // one of these gates permitted the call it exists to refuse whenever it could not read its own
+  // payload. The TS ports inherited the `catch { process.exit(0) }` faithfully, which also made
+  // `denyOnCrash` inert in them: the handler covers throws that ESCAPE, and a local catch means none
+  // does. The gates now let the parse error propagate and deny.
+  //
+  // This is the same call `_gate_common.requireObject` already made for a non-object payload, and it
+  // is split the same way: PreToolUse denies, PostToolUse keeps exit-code parity, because only in
+  // the first is a non-zero exit (or a silent zero) a permit. `tests/pretooluse-crash-closure.test.mjs`
+  // asserts the DECISION for all 18 gates, which is what these six cases stop contradicting.
+  "find-slide-page-inject/unparseable-stdin-noop": { stdoutSha256: "7975103a99c4d7cbefc253eeaa7786b0e6e2311dbdf900fa5d6d5fcbb22dc203", exit: 0, fs: {} },
+  "image-read-guard/allow-unparseable-stdin": { stdoutSha256: "8ccddd10a1efffad4348431e65835fc0c78eec9ac32668aecbf1cbdc4e6e87f5", exit: 0, fs: {} },
+  "mechanical-floor-gate/allow-on-unreadable-stdin": { stdoutSha256: "fc6a4130ac2a4f0a83af0242461ac2a424894c23af7018954e933d469bc3025c", exit: 0, fs: {} },
+  "suggest-compact/unparseable-stdin-exits-clean": { stdoutSha256: "51d37ef05f9472dfa22e8200acf0c141422e045576f7ad450232dd61ff5ab2bb", exit: 0, fs: {} },
+  "writing-outline-guard/allow-unparseable-stdin": { stdoutSha256: "9e59479c734d2229046b52336aad3f1bd321fe7d3bc1d425e04ad087382c9a10", exit: 0, fs: {} },
 };
 
 type TsExpectation = {

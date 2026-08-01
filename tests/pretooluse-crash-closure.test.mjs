@@ -76,17 +76,35 @@ for (const hook of wiredHooks("PostToolUse")) {
   assert.doesNotMatch(source, /\bdenyOnCrash\(/, `${hook} is PostToolUse and must keep its exit-code parity semantics`);
 }
 
-// BEHAVIOURAL, not just structural: a payload that is valid JSON but not an object must never
-// produce a non-zero exit from a PreToolUse gate. `requireObject` used to `process.exit(1)` here
-// and the header defended it as "dying loudly" — which, per the paragraph above it, IS the silent
-// allow. Gates that take a `--workflow` argument are given one; passing none would put the two
+// EFFECT, NOT INSTALLATION. Everything above this line is satisfied by a gate that CALLS
+// `denyOnCrash` and then defeats it, and fourteen gates did exactly that: `try { JSON.parse(await
+// Bun.stdin.text()) } catch { process.exit(0) }`. The handler covers throws that ESCAPE, and a local
+// catch means none does. Measured at e225afb — `phase-gate-guard` returned exit 0 with NO OUTPUT on
+// `null`, on `[1,2]`, and on unparseable stdin; `writing-mechanical-gate` did the same for arrays
+// and strings. That is a silent ALLOW on every malformed payload, from gates whose headers promise
+// they fail closed, and this file passed the whole time because it only asserted the exit code.
+//
+// So the assertion is now the DECISION: a gate that cannot read its payload must emit a deny. Exit 0
+// remains asserted alongside it and is not the point — an exit-0 gate that prints nothing is the
+// failure mode, not the success one. Empty stdin is included because it is the shape a misconfigured
+// wiring actually produces.
+//
+// Gates that take a `--workflow` argument are given one; passing none would put the two
 // `*-outline-executable-guard` gates into their CLI self-check mode, which legitimately exits 1.
+// `GATE_ARTIFACT` is set because `phase-gate-guard` short-circuits to allow without it, and a probe
+// that never reaches the payload read asserts nothing about the payload read.
 for (const gate of gates) {
   const source = readFileSync(join(REPO, "hooks", `${gate}.ts`), "utf8");
   const args = /workflowFromArg|--workflow/.test(source) ? ["--workflow", "dev"] : [];
-  for (const raw of ["null", '"sess"', "[1,2]"]) {
-    const result = spawnSync("bun", [join(REPO, "hooks", `${gate}.ts`), ...args], { input: raw, encoding: "utf8", cwd: REPO });
-    assert.equal(result.status, 0, `${gate} exited ${result.status} on payload ${raw}; a non-zero PreToolUse exit is a silent allow. stderr: ${result.stderr}`);
+  const env = { ...process.env, GATE_ARTIFACT: ".planning/phase-gate-probe.md" };
+  for (const raw of ["null", '"sess"', "[1,2]", "{not json", ""]) {
+    const result = spawnSync("bun", [join(REPO, "hooks", `${gate}.ts`), ...args], { input: raw, encoding: "utf8", cwd: REPO, env });
+    assert.equal(result.status, 0, `${gate} exited ${result.status} on payload ${JSON.stringify(raw)}; a non-zero PreToolUse exit is a silent allow. stderr: ${result.stderr}`);
+    assert.match(
+      result.stdout,
+      /"permissionDecision": "deny"/,
+      `${gate} did not DENY on the malformed payload ${JSON.stringify(raw)} — it exited 0 with ${result.stdout ? `output ${result.stdout}` : "no output"}, which is a silent allow. A gate that cannot read its payload cannot decide, and a gate that cannot decide denies.`,
+    );
   }
 }
 

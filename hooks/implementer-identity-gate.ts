@@ -69,7 +69,7 @@
  *   it cannot resolve is a denial, never a silent allow.
  */
 import { classifyPlanningLifecycle, hookActorIdentity, isSubagentPayload, parseReviewState } from "../workflows/lib/approved-artifact.ts";
-import { aliasRejectionReason, allowedNativePlanPath, projectRelativePath, safeExactTarget } from "./_path_safety.ts";
+import { aliasRejectionReason, allowedNativePlanPath, projectRelativePath, resolvedProjectRelativePath, safeExactTarget } from "./_path_safety.ts";
 import { builtInOrchestratorDirectories } from "./_workflow_policies.ts";
 import { reviewerDispatchedImplementer } from "./lineage.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
@@ -187,6 +187,30 @@ const receipt = lifecycle.resolved.receipt;
  * A hard link from a permitted `.planning` name onto the receipt is already refused structurally:
  * `safeProjectPath` rejects any leaf with a link count above one, so both names are unwritable.
  *
+ * SCOPE IS COMPUTED FROM WHERE THE BYTES LAND, NOT FROM `projectRelativePath`.
+ *   This block used `projectRelativePath` to ask "is this the receipt?". That function returns
+ *   `null` for a path it REFUSES TO VOUCH FOR, and a `?.startsWith` over `null` reads the refusal as
+ *   "not the receipt" and skips the block entirely. Measured with this binary: spelling the target
+ *   `.planning/.state/../.state/review.json` — one `..`, which `safeProjectPath` rejects at its
+ *   second line — skipped all nine conditions below and ALLOWED the round-9 forged receipt at three
+ *   of four actor/status combinations (PENDING conversation-level approver, PENDING implementer
+ *   subagent, APPROVED implementer subagent; the fourth denies only incidentally, via the
+ *   permitted-directory check further down). `Write` accepts such a `file_path` and the bytes land at
+ *   the resolved target. The polarity was inverted against this codebase's own convention:
+ *   `orchestrator-mutation-guard` does `if (!relative) return false` on the identical sentinel.
+ *
+ *   `resolvedProjectRelativePath` answers only "where does this land, project-relative", so every
+ *   spelling that reaches `.planning/.state` enters the block and is judged by the nine conditions —
+ *   `safeExactTarget` among them, which is where the `..` spelling now dies. Scoping deliberately
+ *   stops at the RESOLVED LOCATION and does not fold in the aliasing rejections: a hard link at
+ *   `.planning/alias.ts` still resolves to `.planning/alias.ts`, stays out of this block, and keeps
+ *   `aliasRejectionReason`'s self-diagnosing denial instead of being re-rendered as a receipt error.
+ *
+ * WHAT THIS DOES NOT BUY, STATED PLAINLY. Every ALLOW the `..` spelling produced was already
+ * reachable by the raw-`fs` route documented above — during PENDING the actor's Bash is unrestricted,
+ * and an implementer subagent's Bash is unrestricted at every status. So this closes a gate hole, not
+ * an attack: it removes the case where the gate ITSELF signs off on a forged receipt.
+ *
  * THE DENIAL IS ALSO THE IDENTITY DELIVERY CHANNEL. A subagent cannot read its own `agent_id`, and
  * the additionalContext channel in `reviewer-verdict-guard` does not reach it either (same
  * skill-scope reason). So every denial on this path names the actor identity verbatim: the reviewer
@@ -196,7 +220,7 @@ const RECEIPT_STATE_DIRECTORY = ".planning/.state";
 const RECEIPT_RELATIVE = `${RECEIPT_STATE_DIRECTORY}/review.json`;
 if (FILE_TOOLS.has(tool)) {
   const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
-  const relative = projectRelativePath(cwd, target);
+  const relative = resolvedProjectRelativePath(cwd, target);
   if (relative === RECEIPT_STATE_DIRECTORY || relative?.startsWith(`${RECEIPT_STATE_DIRECTORY}/`)) {
     const actor = hookActorIdentity(payload);
     const identity = actor === null ? "unavailable" : `"${actor}"`;

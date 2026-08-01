@@ -154,4 +154,8 @@ console.log('verification identities must match exactly')
 }
 
 console.log(`\n${PASS}/${PASS + FAIL} passed` + (FAIL ? `  (${FAIL} FAILED)` : ''))
-process.exit(FAIL ? 1 : 0)
+// EXIT ONLY ON FAILURE. `process.exit(0)` here is not a no-op: under `bun test tests/*.test.mjs`
+// every file shares ONE process, so a success-path exit TERMINATES THE RUN — bun reports exit 0
+// and the remaining files never execute. Measured: this file's exit ended the run after 12 of 27
+// files, masking a genuine failure in `implementer-identity-contract` and skipping 15 suites.
+if (FAIL) process.exit(1)

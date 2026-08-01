@@ -21,13 +21,13 @@ const IMAGE_EXTENSIONS = [
   ".gif", ".bmp", ".tiff", ".tif", ".ico", ".svg",
 ];
 
-let hookInput: Record<string, unknown>;
-try {
-  hookInput = parsePayload(await Bun.stdin.text());
-} catch {
-  // Python: `except Exception: sys.exit(0)` around json.load — unparseable stdin is a silent allow.
-  process.exit(0);
-}
+// A PreToolUse GATE DENIES ON A PAYLOAD IT CANNOT READ. The `catch { exit 0 }` here was
+// Python parity, and it is precisely what `denyOnCrash` cannot reach: the handler covers
+// throws that ESCAPE, and a local catch means none does. Measured — unparseable stdin, and
+// for the raw-`JSON.parse` gates also `null`/`"s"`/`[1,2]`, produced exit 0 with no output,
+// i.e. a silent ALLOW on every malformed payload. `parsePayload` denies on a non-object and
+// lets a parse error propagate to the handler, which denies too.
+const hookInput: Record<string, unknown> = parsePayload(await Bun.stdin.text());
 
 const toolName = String(hookInput?.tool_name ?? "");
 const toolInput = (hookInput?.tool_input ?? {}) as Record<string, unknown>;

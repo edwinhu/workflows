@@ -24,7 +24,7 @@
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { deny, denyOnCrash, projectFromArgs, pyJson } from "./_gate_common.ts";
+import { deny, denyOnCrash, parsePayload, projectFromArgs, pyJson } from "./_gate_common.ts";
 
 // FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
 // exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
@@ -272,12 +272,13 @@ async function main(): Promise<void> {
     process.exit(r.ok ? 0 : 1);
   }
 
-  let hookInput: Record<string, unknown>;
-  try {
-    hookInput = JSON.parse(await Bun.stdin.text());
-  } catch {
-    process.exit(0);
-  }
+  // A PreToolUse GATE DENIES ON A PAYLOAD IT CANNOT READ. The `catch { exit 0 }` here was
+  // Python parity, and it is precisely what `denyOnCrash` cannot reach: the handler covers
+  // throws that ESCAPE, and a local catch means none does. Measured — unparseable stdin, and
+  // for the raw-`JSON.parse` gates also `null`/`"s"`/`[1,2]`, produced exit 0 with no output,
+  // i.e. a silent ALLOW on every malformed payload. `parsePayload` denies on a non-object and
+  // lets a parse error propagate to the handler, which denies too.
+  const hookInput: Record<string, unknown> = parsePayload(await Bun.stdin.text());
   if (String((hookInput as Record<string, unknown>).tool_name ?? "") !== "Workflow") process.exit(0);
   const rawToolInput = (hookInput as Record<string, unknown>).tool_input;
   const toolInput: Record<string, unknown> =

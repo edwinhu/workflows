@@ -408,6 +408,30 @@ try {
     }
   }
 
+  // ---------------------------------------------------------------------------------------------
+  // ONE `..` SEGMENT USED TO SKIP ALL NINE CONDITIONS ABOVE.
+  //
+  // The block was scoped with `projectRelativePath`, which returns `null` for any path carrying a
+  // literal `..`. That `null` is a REJECTION, but `relative?.startsWith(...)` reads it as "not the
+  // receipt" and falls through — to `if (receipt.status !== "APPROVED") allow()`. Measured with this
+  // binary before the fix: the identical forged content ALLOWED at three of the four combinations
+  // below (PENDING/conversation-level, PENDING/subagent, APPROVED/subagent; the fourth denied only
+  // incidentally, via the permitted-directory check further down).
+  //
+  // Scope is now derived from where the bytes LAND, so every spelling enters the block. The polarity
+  // is the finding, not the spelling: `orchestrator-mutation-guard` treats the same sentinel as deny.
+  // ---------------------------------------------------------------------------------------------
+
+  const DOTDOT_RECEIPT = `${cwd}/.planning/.state/../.state/review.json`;
+  assert.match(DOTDOT_RECEIPT, /\/\.\.\//, "the traversal spelling must actually contain a `..` segment");
+  for (const [status, receiptFields] of [["PENDING", { status: "PENDING", reviewer_session_id: "", reviewed_at: "" }], ["APPROVED", {}]]) {
+    write(receiptFields);
+    for (const [who, options] of actors) {
+      const traversal = runGate(cwd, { rawInput: JSON.stringify({ ...payloadFor(cwd, options), tool_input: { file_path: DOTDOT_RECEIPT, content: forged } }) });
+      denied(traversal, `${who} may not fabricate the receipt through a \`..\` spelling at ${status}`, /is not part of any orchestrator's write surface/);
+    }
+  }
+
   // The whole directory, not just the one filename, and every write-capable tool.
   write({ status: "PENDING", reviewer_session_id: "", reviewed_at: "" });
   denied(runGate(cwd, { agentId: REVIEWER_AGENT, path: join(state, "plan.json") }), "no other .state file is writable either", /is not the review receipt/);
@@ -452,6 +476,50 @@ try {
   // The denial is also the identity DELIVERY channel: a subagent cannot read its own agent_id, and
   // `reviewer-verdict-guard`'s additionalContext does not reach it (same skill-scope reason).
   denied(finalize(finalization({ reviewer_session_id: "guessed" })), "a denial names the actor identity verbatim", new RegExp(`This actor's identity is \\\\"${REVIEWER_ACTOR}\\\\"`));
+
+  // ---------------------------------------------------------------------------------------------
+  // TWO RULES THAT WORKED BUT WERE PINNED BY NOTHING.
+  //
+  // Re-running the receipt-block mutations under a harness that does not truncate showed both
+  // deletions SURVIVING the whole suite. A rule no test kills is a rule the next refactor removes.
+  // ---------------------------------------------------------------------------------------------
+
+  // (1) `proposed.status === "PENDING"`. A "finalization" that leaves the receipt PENDING is not a
+  // verdict. The content has to be a SCHEMA-VALID pending state to reach the rule at all — a PENDING
+  // status carrying reviewer fields is rejected earlier by `parseReviewState` — which is exactly why
+  // the mutation survived: the obvious probe never gets there. What the rule owns is the DIAGNOSIS:
+  // delete it and the same call is still denied, but as an identity failure ("record your agent_id
+  // verbatim"), advice that cannot fix a write whose real defect is that it decides nothing.
+  denied(finalize(finalization({ status: "PENDING", reviewer_session_id: "", reviewed_at: "" })),
+    "a finalization may not leave the receipt PENDING", /must set a final status/);
+
+  // (2) `safeExactTarget` on the canonical receipt path. The spelling check one line above compares
+  // the RESOLVED project-relative path, and a hard link cannot change that: `ln .planning/.state/
+  // review.json src/mirror.json` leaves the receptacle presenting as the canonical receipt under its
+  // own real name, with `realpath` and containment both clean. Only the structural link-count
+  // rejection sees the second name — and it matters because the receipt is the one file whose bytes
+  // every other gate trusts, so a second writable name for it is a second way to author authority.
+  // (3) `actor === null`. Re-running the matrix found two survivors the review had not named, both
+  // of the same shape as (1): the call is still denied, by a LATER rule, with a message that
+  // misdescribes it. Here an identity-less subagent write falls through to the reviewer_session_id
+  // comparison and is told to "record its identity verbatim" — advice it cannot act on, because the
+  // payload has no identity to record. The nearby `/identity/i` assertions match both messages, so
+  // nothing distinguished them.
+  denied(finalize(finalization(), { agentId: REVIEWER_AGENT, omitSession: true }),
+    "a receipt write with no resolvable actor identity", /no usable actor identity/);
+
+  // (4) `"code" in proposed`. Content that is not a review state at all reports as an invalid
+  // PROPOSAL; without the rule the undefined fields fall through to the identity comparison and the
+  // reviewer is told its agent_id is wrong when the real defect is that it wrote unparseable bytes.
+  denied(finalize("not json at all"), "unparseable receipt content", /the proposed receipt is invalid/);
+  denied(finalize(JSON.stringify({ workflow: "dev" })), "structurally incomplete receipt content", /the proposed receipt is invalid/);
+
+  const MIRROR = join(cwd, "src", "mirror.json");
+  linkSync(RECEIPT, MIRROR);
+  denied(finalize(finalization()), "a hard-linked receipt is not the canonical receipt path", /is not the canonical receipt path/);
+  rmSync(MIRROR, { force: true });
+  allowed(finalize(finalization()), "...and the same finalization is admitted once the second name is gone");
+
   write();
 
   const plainProject = mkdtempSync(join(tmpdir(), "implementer-identity-plain-"));

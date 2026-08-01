@@ -51,20 +51,21 @@
       }
     },
     {
-      "name": "allow-unreadable-stdin-exits-silently",
-      "kind": "allow",
+      "name": "deny-unreadable-stdin",
+      "kind": "deny",
       "env": {
         "PYTHONPATH": "/home/eh/projects/workflows/scripts/workshop:/home/eh/projects/workflows/scripts/lib",
         "PYTHONDONTWRITEBYTECODE": "1"
       },
       "fixture": {
-        ".planning/OUTLINE.md": "# Workshop Outline\n\nno stdin is supplied, so json.load raises and the guard exits 0\n"
+        ".planning/OUTLINE.md": "# Workshop Outline\n\nno stdin is supplied, so the payload read fails and the gate denies\n"
       },
       "tsExpected": {
-        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutSha256": "09b7bd79ed4072fe371a19b31d96d083e382b5ac4cb0ee03a52f7a542973710e",
         "exit": 0,
         "fs": {}
-      }
+      },
+      "_branch": "Python wrapped json.load in `except: sys.exit(0)`, and in a PreToolUse hook exit 0 with no output IS the allow \u2014 the gate permitted the very Write it exists to refuse whenever it could not read its payload. The TS port now lets the parse error reach denyOnCrash and denies. See LEGACY_TS_EXPECTATIONS in scripts/parity.ts for the five sibling cases."
     },
     {
       "name": "deny-missing-receipt-selected-generated-plan",

@@ -121,6 +121,27 @@ run_suite() {
     fi
 }
 
+# PREFLIGHT: a success-path `process.exit(0)` at top level in a suite file.
+#
+# THIS SCRIPT IS IMMUNE TO IT — it runs every suite in its OWN process and checks every exit code,
+# which is why the pattern went unnoticed for eleven rounds. The invocation people actually TYPED for
+# evidence was `bun test tests/*.test.mjs`, and there all 27 files share ONE process: the first
+# top-level `process.exit(0)` terminates the run. Measured at e225afb —
+# `tests/wc-audit-verify-batch.test.mjs` ended it after 12 of 27 files, bun exited 0 while
+# `implementer-identity-contract` was FAILING, and its internal "16/16" was read as a suite total.
+# Fifteen suites never ran at all.
+#
+# So the guard belongs where the mistake is CHEAP to catch rather than where it happens to be
+# survivable: a suite must signal success by RETURNING, never by exiting. `process.exit(1)` on
+# failure is fine and is what these files now do.
+BAD_EXIT="$(grep -lE '^[[:space:]]*process\.exit\((FAIL \? 1 : )?0\)' tests/*.test.ts tests/*.test.mjs tests/*.test.js 2>/dev/null || true)"
+if [ -n "$BAD_EXIT" ]; then
+    echo "  ✗ suite files exit 0 at top level; under a shared-process runner this truncates the run:"
+    printf '      %s\n' $BAD_EXIT
+    echo "    Signal success by returning. Use \`if (FAIL) process.exit(1)\` for the failure path."
+    exit 1
+fi
+
 for file in tests/*.test.ts tests/*.test.mjs tests/*.test.js; do
     [ -f "$file" ] || continue
     [ -z "$FILTER" ] || [[ "$file" == *"$FILTER"* ]] || continue

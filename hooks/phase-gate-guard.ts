@@ -7,7 +7,7 @@
  */
 import { realpathSync } from "node:fs";
 import { isAbsolute, relative, sep } from "node:path";
-import { allow, deny, denyOnCrash } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
 import { evaluatePhaseGate } from "./lib/phase-gate.ts";
 
 // FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
@@ -31,12 +31,13 @@ async function main(): Promise<void> {
     }
   }
 
-  let hookInput: Record<string, unknown>;
-  try {
-    hookInput = JSON.parse(await Bun.stdin.text());
-  } catch {
-    allow();
-  }
+  // A PreToolUse GATE DENIES ON A PAYLOAD IT CANNOT READ. The `catch { exit 0 }` here was
+  // Python parity, and it is precisely what `denyOnCrash` cannot reach: the handler covers
+  // throws that ESCAPE, and a local catch means none does. Measured — unparseable stdin, and
+  // for the raw-`JSON.parse` gates also `null`/`"s"`/`[1,2]`, produced exit 0 with no output,
+  // i.e. a silent ALLOW on every malformed payload. `parsePayload` denies on a non-object and
+  // lets a parse error propagate to the handler, which denies too.
+  const hookInput: Record<string, unknown> = parsePayload(await Bun.stdin.text());
 
   const decision = evaluatePhaseGate(
     projectRoot,
@@ -50,7 +51,7 @@ async function main(): Promise<void> {
         ? process.env.GATE_BLOCKED_TOOLS.split(",").map((tool) => tool.trim())
         : undefined,
     },
-    hookInput!,
+    hookInput,
   );
 
   if (decision.kind === "deny") deny(decision.reason);
