@@ -20,6 +20,11 @@ import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { denyOnCrash } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("FIND SLIDE PAGE INJECT");
 
 // Any *.typ compile target, not just one under a literal `slides/` directory — workshop decks
 // commonly compile `presentation/slides.typ` or a flat `slides.typ`, neither of which matched the

@@ -8,7 +8,11 @@
  */
 import { existsSync } from "node:fs";
 import { isAbsolute, join, normalize, resolve } from "node:path";
-import { deny, parsePayload } from "./_gate_common.ts";
+import { deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("WRITING PRECIS GUARD");
 
 function projectRoot(filePath: string, cwd: string): string {
   const absolute = isAbsolute(filePath) ? normalize(filePath) : resolve(cwd, filePath);

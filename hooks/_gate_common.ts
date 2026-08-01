@@ -99,11 +99,18 @@ export function allow(): never {
  * thrown exotic object — sits inside its own try. If even that fails it still denies, with a
  * generic reason. There is no path through here that reaches `process.exit(1)`.
  *
- * `readPayload`'s deliberate `process.exit(1)` on a non-object payload is UNAFFECTED: it exits
- * rather than throws, precisely so no local catch — and now no global handler — can reinterpret it.
- * That one case keeps its Python-parity crash semantics.
+ * IT ALSO MARKS THIS PROCESS AS A PreToolUse GATE, which is what `requireObject` needs to know.
+ * An earlier revision defended `requireObject`'s `process.exit(1)` on a non-object payload as
+ * "dying loudly" and exempted it from this handler. In a PreToolUse gate that defence contradicts
+ * the paragraph above it: Claude Code treats a non-zero exit as NON-BLOCKING, so dying loudly IS
+ * the silent allow. Calling this function is the signal — every PreToolUse gate calls it, and no
+ * PostToolUse hook does, so `requireObject` denies here and keeps its exit-1 parity semantics
+ * everywhere else (`writing-suggest-verify`, `overflow-check`, and `ds-post-subagent-guard` are
+ * PostToolUse and pin that exit code, where a non-zero exit is not a silent allow).
  */
+let preToolUseGate = false;
 export function denyOnCrash(gate: string): void {
+  preToolUseGate = true;
   const denyFromError = (kind: string, error: unknown): void => {
     let detail: string;
     try {
@@ -182,6 +189,8 @@ export function projectFromArgs(toolInput: Record<string, unknown>, hookInput?: 
 function requireObject(parsed: unknown): Record<string, unknown> {
   if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
     const got = Array.isArray(parsed) ? "array" : parsed === null ? "null" : typeof parsed;
+    // In a PreToolUse gate the exit-1 below is a SILENT ALLOW, not a loud death — see denyOnCrash.
+    if (preToolUseGate) deny(`Hook payload must be an object, got ${got}. This gate cannot decide without a payload, and a gate that cannot decide denies.`);
     console.error(`AttributeError: hook payload must be an object, got ${got}`);
     process.exit(1);
   }

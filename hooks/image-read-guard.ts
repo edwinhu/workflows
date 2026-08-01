@@ -10,7 +10,11 @@
  * lowered string for both is the obvious port bug and is invisible until a `.PNG` payload arrives.
  */
 import { resolve } from "node:path";
-import { allow, deny, parsePayload } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("IMAGE READ GUARD");
 
 const IMAGE_EXTENSIONS = [
   ".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif",

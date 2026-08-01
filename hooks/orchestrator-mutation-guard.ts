@@ -2,7 +2,11 @@
 import { aliasRejectionReason, allowedNativePlanPath, hasUnsafeCompoundCommand, projectRelativePath } from "./_path_safety.ts";
 import { classifyBashMutation } from "./_bash_mutation.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
-import { allow, deny, readPayload } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("ORCHESTRATOR MUTATION GUARD");
 const policy = workflowFromArg(Bun.argv.slice(2));
 if (!policy) { deny("Orchestrator mutation guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();

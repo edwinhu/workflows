@@ -7,8 +7,12 @@
  */
 import { realpathSync } from "node:fs";
 import { isAbsolute, relative, sep } from "node:path";
-import { allow, deny } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash } from "./_gate_common.ts";
 import { evaluatePhaseGate } from "./lib/phase-gate.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("PHASE GATE GUARD");
 
 async function main(): Promise<void> {
   let artifactPath = process.env.GATE_ARTIFACT ?? "";

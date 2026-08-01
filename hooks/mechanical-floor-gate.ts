@@ -23,7 +23,11 @@
  * CLI (debug):  FLOOR=dev bun mechanical-floor-gate.ts /abs/project
  */
 import { resolve, dirname, join } from "node:path";
-import { deny, parsePayload, projectFromArgs } from "./_gate_common.ts";
+import { deny, denyOnCrash, parsePayload, projectFromArgs } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("MECHANICAL FLOOR GATE");
 
 const HOOKS_DIR = resolve(import.meta.dir);
 const REPO = dirname(HOOKS_DIR);

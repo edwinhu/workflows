@@ -68,11 +68,12 @@
  *   selected plan, and that receipt is APPROVED. Inside such a project it fails CLOSED: an identity
  *   it cannot resolve is a denial, never a silent allow.
  */
-import { classifyPlanningLifecycle, hookActorIdentity, isSubagentPayload } from "../workflows/lib/approved-artifact.ts";
-import { aliasRejectionReason, allowedNativePlanPath, projectRelativePath } from "./_path_safety.ts";
+import { classifyPlanningLifecycle, hookActorIdentity, isSubagentPayload, parseReviewState } from "../workflows/lib/approved-artifact.ts";
+import { aliasRejectionReason, allowedNativePlanPath, projectRelativePath, safeExactTarget } from "./_path_safety.ts";
 import { builtInOrchestratorDirectories } from "./_workflow_policies.ts";
 import { reviewerDispatchedImplementer } from "./lineage.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
+import { join } from "node:path";
 
 // FIRST STATEMENT WITH AN EFFECT in this module's body, so every line of gate logic below runs
 // under it. A throw after this point becomes a deny instead of an exit-1, which Claude Code would
@@ -132,8 +133,103 @@ const cwd = typeof payload.cwd === "string" && payload.cwd.trim() ? payload.cwd 
 const lifecycle = classifyPlanningLifecycle(cwd);
 if (lifecycle.kind !== "canonical") allow();
 const receipt = lifecycle.resolved.receipt;
-// Before APPROVED there is no implementation to gate, and the reviewer subagent is still writing
-// its own receipt — `reviewer-verdict-guard` owns that call.
+
+/**
+ * THE RECEIPT IS NOT PART OF ANYONE'S WRITE SURFACE — AT ANY LIFECYCLE STATUS.
+ *
+ * `builtInOrchestratorDirectories` returns `[".planning", ".claude"]`, and the conversation-level
+ * branch below authorized any path under those prefixes. `.planning/.state/review.json` IS the
+ * receipt every other check reads its authority from, so that prefix authorized writing the
+ * authority itself. Measured end to end: an actor that never approved and never reviewed wrote
+ * `{status: "APPROVED", approved_session_id: "nobody-approved-this", reviewer_session_id:
+ * "nobody-reviewed-this"}`, this gate exited 0, and `validateGeneratedPlanArtifact` then ACCEPTED
+ * the fabricated receipt — no plan approved, no reviewer dispatched. Five of six actor/status
+ * combinations were admitted; the one denial was incidental (reviewer == implementer), not the
+ * receipt rule.
+ *
+ * `orchestrator-mutation-guard` already excludes `.planning/.state/` and was assumed to be the
+ * backstop. It is not: it is SKILL-SCOPED, so it never propagates into a subagent and is absent
+ * from any conversation not currently inside a wired skill. This gate is the only plugin-wide
+ * PreToolUse mutation hook, so the exclusion has to exist here or it does not exist.
+ *
+ * WHY THIS RUNS BEFORE THE `status !== "APPROVED"` ALLOW
+ *   The forgery's whole point is to CREATE an APPROVED receipt, so it happens while the on-disk
+ *   receipt is still PENDING. A rule that only fires under an APPROVED receipt is a rule the attack
+ *   never reaches. Everything else in this gate is correctly APPROVED-only — there is no
+ *   implementation to separate before then — but the receipt surface is not.
+ *
+ * WHY THE LEGITIMATE REVIEWER'S WRITE IS AUTHORIZED *HERE*, NOT BY `reviewer-verdict-guard`
+ *   `agents/plan-checker.md` step 5 tells the reviewer to Write exactly this path, and
+ *   `reviewer-verdict-guard.ts` does hold that write to `proposed.reviewer_session_id === actor`.
+ *   But the reviewer is a DISPATCHED SUBAGENT and that guard is wired in skill frontmatter, so it
+ *   does not fire for the reviewer's own call at all — it only ever gated the dispatching
+ *   conversation. The reviewer's finalization was therefore ungated in fact, which is also why the
+ *   forgery worked. So the same identity check is made here, where the call is actually observed,
+ *   and it is deliberately a duplicate rather than a delegation: two gates, one rule, neither
+ *   assuming the other fires.
+ *
+ * WHAT THIS DOES NOT CLOSE, MEASURED AFTER THE FIX. Only TOOL CALLS are gated. During the PENDING
+ * window a conversation-level actor may still `Write .claude/probe.ts` (permitted orchestrator
+ * surface) and then `Bash bun .claude/probe.ts`, and the probe writes the receipt with raw `fs`,
+ * which no hook sees. Re-measured with this rule in place: both calls ALLOWED, and
+ * `validateGeneratedPlanArtifact` then admitted the fabricated receipt.
+ *
+ * TWO NARROW CLOSURES WERE TRIED AND BOTH FAIL, so neither is implemented here:
+ *   - Scoping the Bash denial to commands whose TEXT can reach `.planning/.state` (the shape
+ *     `reviewer-verdict-guard` already runs) does not see it: the command is `bun .claude/probe.ts`
+ *     and contains no such substring. Measured, not argued.
+ *   - A PostToolUse re-validation against a hook-observed record needs that record, which is the
+ *     round-9 nonce under another name — and the record itself would sit in `.planning/.state`,
+ *     writable by the same raw `fs` call, so the check recurses onto its own premise.
+ * The only closure found is denying the approver Bash across the whole PENDING phase, i.e. across
+ * planning, which is a blanket denial and is deliberately NOT imposed. Reported instead.
+ *
+ * A hard link from a permitted `.planning` name onto the receipt is already refused structurally:
+ * `safeProjectPath` rejects any leaf with a link count above one, so both names are unwritable.
+ *
+ * THE DENIAL IS ALSO THE IDENTITY DELIVERY CHANNEL. A subagent cannot read its own `agent_id`, and
+ * the additionalContext channel in `reviewer-verdict-guard` does not reach it either (same
+ * skill-scope reason). So every denial on this path names the actor identity verbatim: the reviewer
+ * learns what to record by being refused once, exactly as `denySeparation` intends.
+ */
+const RECEIPT_STATE_DIRECTORY = ".planning/.state";
+const RECEIPT_RELATIVE = `${RECEIPT_STATE_DIRECTORY}/review.json`;
+if (FILE_TOOLS.has(tool)) {
+  const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
+  const relative = projectRelativePath(cwd, target);
+  if (relative === RECEIPT_STATE_DIRECTORY || relative?.startsWith(`${RECEIPT_STATE_DIRECTORY}/`)) {
+    const actor = hookActorIdentity(payload);
+    const identity = actor === null ? "unavailable" : `"${actor}"`;
+    const refuse = (detail: string): never => deny(
+      `IMPLEMENTER IDENTITY GATE (${receipt.workflow}): ${detail}. \`${RECEIPT_STATE_DIRECTORY}/\` holds the ` +
+      `receipt that every other gate reads its authority from, so it is not part of any orchestrator's write ` +
+      `surface: the only write permitted here is the dispatched reviewer's one finalization of ` +
+      `\`${RECEIPT_RELATIVE}\`, preserving every approval-owned field. This actor's identity is ${identity}; ` +
+      `a reviewer must record it verbatim as reviewer_session_id.`,
+    );
+    if (tool !== "Write") refuse(`a ${tool} of the review receipt state cannot be a review finalization`);
+    if (relative !== RECEIPT_RELATIVE) refuse(`\`${relative}\` is not the review receipt`);
+    if (typeof target !== "string" || !safeExactTarget(cwd, target, join(cwd, ".planning", ".state", "review.json"))) refuse("this target is not the canonical receipt path");
+    if (receipt.status !== "PENDING") refuse(`the receipt is already ${receipt.status} and is not open for finalization`);
+    if (actor === null) refuse("this write carries no usable actor identity, so no reviewer can be named by it");
+    // Finalization is the dispatched reviewer's call. A conversation-level actor writing the
+    // receipt is the orchestrator finalizing its own review, which is the forgery, not the flow.
+    if (!isSubagentPayload(payload)) refuse("only a dispatched reviewer subagent may finalize the receipt, and this call is conversation-level");
+    if (actor === receipt.approved_session_id) refuse("this actor approved the plan and may not also review it");
+    const proposed = parseReviewState(String(input.content ?? ""), receipt.workflow);
+    if ("code" in proposed) refuse(`the proposed receipt is invalid (${proposed.code}): ${proposed.message}`);
+    if (proposed.status === "PENDING") refuse("a finalization must set a final status");
+    if (proposed.reviewer_session_id !== actor) refuse("reviewer_session_id must be exactly the writing actor's identity");
+    if (proposed.workflow !== receipt.workflow || proposed.plan_file !== receipt.plan_file || proposed.plan_hash !== receipt.plan_hash
+      || proposed.approved_session_id !== receipt.approved_session_id || proposed.approved_at !== receipt.approved_at) {
+      refuse("a finalization must reproduce workflow, plan_file, plan_hash, approved_session_id, and approved_at unchanged");
+    }
+    allow();
+  }
+}
+
+// Before APPROVED there is no implementation to gate. The receipt surface itself is already
+// decided above, because that one is not an implementation question and does not wait for APPROVED.
 if (receipt.status !== "APPROVED") allow();
 
 // IDENTITY IS THE ONLY THING RESOLVED. The command is not read, here or anywhere below.

@@ -7,7 +7,6 @@ import {
   classifyBuiltInArtifactLayout,
   classifyPlanningLifecycle,
   finalizeGeneratedPlanReview,
-  issueReviewerAuthorization,
   hookActorIdentity,
   isSubagentPayload,
   parseReviewState,
@@ -589,11 +588,7 @@ describe("built-in generated-plan and legacy layouts", () => {
     writeFileSync(planPath, "# Review race\n");
     const prior = bindApprovedGeneratedPlan(root, "work", planPath, "approval-session", "2026-07-30T10:00:00.000Z");
     const competing = { ...prior, status: "ISSUES_FOUND" as const, reviewer_session_id: "competing-reviewer", reviewed_at: "2026-07-30T10:30:00.000Z" };
-    // Finalization derives the reviewer from a hook-issued authorization; there is no parameter
-    // through which this test — or any caller — could assert an identity instead.
-    const authorization = issueReviewerAuthorization(root, "work", { session_id: "review-session" }, "2026-07-30T10:15:00.000Z");
-    if ("code" in authorization) throw new Error(authorization.message);
-    const result = finalizeGeneratedPlanReview(root, "work", prior, "APPROVED", authorization.nonce, "2026-07-30T11:00:00.000Z", {
+    const result = finalizeGeneratedPlanReview(root, "work", prior, "APPROVED", "review-session", "2026-07-30T11:00:00.000Z", {
       afterTemporaryOpen() {
         writeFileSync(join(planning, ".state", "review.json"), `${JSON.stringify(competing, null, 2)}\n`);
       },

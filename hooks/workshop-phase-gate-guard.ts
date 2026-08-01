@@ -6,8 +6,12 @@
  */
 import { statSync } from "node:fs";
 import { dirname, isAbsolute, join, normalize, resolve } from "node:path";
-import { allow, deny, parsePayload } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
 import { buildIndex } from "./_workshop_slide_table.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("WORKSHOP PHASE GATE GUARD");
 
 function isWorkshopGenerateDispatch(input: Record<string, unknown>): boolean {
   return `${input.scriptPath ?? ""} ${input.name ?? ""}`.includes("workshop-generate");

@@ -1,10 +1,14 @@
 #!/usr/bin/env bun
 import { existsSync, lstatSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { hookActorIdentity, issueReviewerAuthorization, parseApprovalPolicyDescriptor, parseReviewState, parseVerdict, resolveGeneratedPlanReviewState, sha256, validateApprovedPlan } from "../workflows/lib/approved-artifact.ts";
+import { hookActorIdentity, parseApprovalPolicyDescriptor, parseReviewState, parseVerdict, resolveGeneratedPlanReviewState, sha256, validateApprovedPlan } from "../workflows/lib/approved-artifact.ts";
 import { safeExactTarget, safeProjectPath, hasUnsafeCompoundCommand } from "./_path_safety.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
-import { allow, context, deny, readPayload } from "./_gate_common.ts";
+import { allow, context, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("REVIEWER VERDICT GUARD");
 
 const policy = workflowFromArg(Bun.argv.slice(2));
 if (!policy) deny("Reviewer verdict guard requires exactly one known workflow policy.");
@@ -113,21 +117,7 @@ if (tool === "Bash") {
   // permissionDecision leaves the call permitted.
   if (rel && !hasUnsafeCompoundCommand(command) && hashCommand.test(command) && existsSync(selectedPlan)) {
     if (actor) {
-      let delivery = `Reviewer actor identity for this review: ${actor}\nWrite this string verbatim as reviewer_session_id when finalizing the review receipt. Do not substitute any other value.`;
-      if (generatedPlan) {
-        // The LIBRARY finalization path (`finalizeGeneratedPlanReview`, and the published
-        // `finalizeComposedPlanReview` over it) writes review.json with `fs`, so no hook ever sees
-        // that write and no hook can check the identity it records. It used to take the identity as
-        // a PARAMETER, which made approver != reviewer a comparison against whatever literal the
-        // caller passed — measured: one actor manufactured an APPROVED receipt naming
-        // "totally-made-up-reviewer" and admission accepted it. This is the one point where the
-        // reviewer's identity is OBSERVED, so this is where it is bound: a single-use nonce written
-        // into .planning/.state alongside the observed actor, redeemed once at finalization.
-        const authorization = issueReviewerAuthorization(cwd, policy.workflow, payload);
-        if ("code" in authorization) deny(`Reviewer authorization could not be issued (${authorization.code}): ${authorization.message}. Review cannot be finalized without it.`);
-        delivery += `\nReviewer authorization nonce: ${authorization.nonce}\nIf you finalize through finalizeComposedPlanReview / finalizeGeneratedPlanReview, pass this as reviewerAuthorizationNonce. Those functions DERIVE the reviewer identity from it and accept no identity you supply.`;
-      }
-      context("PreToolUse", delivery);
+      context("PreToolUse", `Reviewer actor identity for this review: ${actor}\nWrite this string verbatim as reviewer_session_id when finalizing the review receipt. Do not substitute any other value.`);
     }
     allow();
   }

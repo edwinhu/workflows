@@ -24,7 +24,11 @@
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { deny, pyJson, projectFromArgs } from "./_gate_common.ts";
+import { deny, denyOnCrash, projectFromArgs, pyJson } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("WRITING MECHANICAL GATE");
 
 const HOOKS_DIR = import.meta.dir;
 const PLUGIN_ROOT = resolve(HOOKS_DIR, "..");

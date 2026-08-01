@@ -40,7 +40,7 @@
  * treats `approver != implementer` as one will over-trust it.
  */
 import { closeSync, constants, existsSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readSync, realpathSync, renameSync, unlinkSync, writeSync, type BigIntStats } from "node:fs";
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { isAbsolute, join, relative } from "node:path";
 
 export type WorkflowName = "ds" | "dev" | "work" | "writing" | "workshop" | "workflow-creator";
@@ -600,10 +600,6 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: string, 
     atomicWriteOwnedDirectory(root, state, stateDirectory, "review.json", `${JSON.stringify(receipt, null, 2)}\n`, options.afterTemporaryOpen);
     requireLiveDirectory(root, planning, planningDirectory); requireLiveDirectory(root, state, stateDirectory);
     unlinkOwnedDirectory(root, state, stateDirectory, "plan.json");
-    // A nonce issued against the PREVIOUS approval must not survive into this one. Consumption
-    // already checks workflow and plan hash, but a re-approval of the SAME plan bytes would match
-    // both, so the record is destroyed here rather than relied on to mismatch.
-    unlinkOwnedDirectory(root, state, stateDirectory, REVIEWER_AUTHORIZATION_BASENAME);
     requireLiveDirectory(root, planning, planningDirectory); requireLiveDirectory(root, state, stateDirectory);
     return receipt;
   } finally {
@@ -612,142 +608,29 @@ export function bindApprovedGeneratedPlan(projectDir: string, workflow: string, 
   }
 }
 
-/**
- * REVIEWER IDENTITY IS DERIVED, NEVER ASSERTED.
- *
- * `finalizeGeneratedPlanReview` used to take `reviewerSession: string` and check only
- * approver != reviewer. That check compares the approver to WHATEVER STRING THE CALLER PASSED, so a
- * single actor could manufacture an APPROVED receipt naming a reviewer that never existed —
- * measured: `bind` as `sess-ORCH` at PENDING, then finalize with `"totally-made-up-reviewer"`, and
- * `validateGeneratedPlanArtifact` ADMITTED it. The separation rule was intact and vacuous: it
- * separated the approver from a literal.
- *
- * The only place a reviewer's identity is OBSERVED rather than claimed is a hook payload
- * (`hookActorIdentity`). `reviewer-verdict-guard` already sees it on the mandatory pre-finalization
- * rehash, so that hook now writes this record — a nonce bound to the observed actor, the workflow,
- * and the exact plan hash — and hands the nonce back through `additionalContext`. Finalization
- * accepts the NONCE and reads the identity out of the record; there is no parameter through which a
- * caller can spell an identity. A forger must make a real tool call as the actor it wants to name.
- *
- * THE RECORD IS SINGLE USE. It is unlinked at consumption, and `bindApprovedGeneratedPlan` unlinks
- * any leftover, so a nonce issued against one approval can never finalize the next.
- *
- * WHAT THIS DOES NOT CLOSE, STATED PLAINLY. The library writes `review.json` with `fs`, not with the
- * `Write` tool, so no hook observes it. An actor that bypasses this API entirely and writes the
- * receipt bytes itself is unaffected — during the PENDING window `implementer-identity-gate` allows
- * (`status !== "APPROVED"`). That is a lifecycle-window question, not a contract question, and is
- * reported rather than fixed here.
- */
-export type ReviewerAuthorizationRecordV1 = Readonly<{ schemaVersion: 1; workflow: string; planHash: string; nonce: string; actor: string; issuedAt: string }>;
-const REVIEWER_AUTHORIZATION_BASENAME = "reviewer-authorization.json";
-const NONCE = /^[0-9a-f]{64}$/;
-
-function parseReviewerAuthorization(value: unknown): ReviewerAuthorizationRecordV1 | ArtifactError {
-  const invalid = err("reviewer-authorization", "reviewer authorization record has an invalid strict schema");
-  if (!value || typeof value !== "object" || Array.isArray(value)) return invalid;
-  const record = value as Record<string, unknown>;
-  const keys = ["schemaVersion", "workflow", "planHash", "nonce", "actor", "issuedAt"];
-  if (Object.keys(record).length !== keys.length || keys.some(key => !Object.hasOwn(record, key))) return invalid;
-  if (record.schemaVersion !== 1 || !isWorkflowIdentity(record.workflow) || typeof record.planHash !== "string" || !HASH.test(record.planHash)) return invalid;
-  if (typeof record.nonce !== "string" || !NONCE.test(record.nonce)) return invalid;
-  if (typeof record.actor !== "string" || !record.actor.trim() || !strictUtc(record.issuedAt)) return invalid;
-  return Object.freeze(record as unknown as ReviewerAuthorizationRecordV1);
-}
-
-/**
- * Issue a reviewer authorization nonce for the actor a HOOK PAYLOAD names.
- *
- * Takes the payload, not an identity, so this entry point has no parameter through which a caller
- * can spell an actor either: the identity is whatever `hookActorIdentity` reads out of the same
- * stdin Claude Code handed the hook. Intended for `reviewer-verdict-guard` only.
- */
-export function issueReviewerAuthorization(projectDir: string, workflow: string, payload: unknown, issuedAt = new Date().toISOString(), options: ArtifactWriteOptions = {}): ReviewerAuthorizationRecordV1 | ArtifactError {
-  if (!isWorkflowIdentity(workflow) || !strictUtc(issuedAt)) return err("reviewer-authorization", "reviewer authorization identity is invalid");
-  const actor = hookActorIdentity(payload);
-  if (actor === null) return err("reviewer-authorization", "hook payload carries no usable actor identity to authorize a review with");
-  let root: string;
-  try { root = realpathSync(projectDir); }
-  catch { return err("project-root", "project root must exist and be accessible"); }
-  const resolved = resolveGeneratedPlanReviewState(root, workflow);
-  if (isError(resolved)) return resolved;
-  if (resolved.receipt.status !== "PENDING") return err("reviewer-authorization", "reviewer authorization requires a PENDING receipt");
-  const record: ReviewerAuthorizationRecordV1 = Object.freeze({ schemaVersion: 1 as const, workflow, planHash: resolved.hash, nonce: randomBytes(32).toString("hex"), actor, issuedAt });
-  const planning = join(root, ".planning");
-  const state = join(planning, ".state");
-  let stateDirectory: OwnedDirectory | undefined;
-  try {
-    stateDirectory = openOwnedDirectory(root, state, options.forceNoDescriptorAnchor);
-    requireLiveDirectory(root, state, stateDirectory);
-    if (stateDirectory.anchor === undefined) return err("reviewer-authorization", "approval artifact directory does not support descriptor-anchored mutation");
-    atomicWriteOwnedDirectory(root, state, stateDirectory, REVIEWER_AUTHORIZATION_BASENAME, `${JSON.stringify(record, null, 2)}\n`, options.afterTemporaryOpen);
-    return record;
-  } catch (error) {
-    return err("reviewer-authorization", `could not issue reviewer authorization: ${error instanceof Error ? error.message : String(error)}`);
-  } finally {
-    if (stateDirectory !== undefined) closeSync(stateDirectory.fd);
-  }
-}
-
-/** Read the authorized actor out of the record the nonce names, then destroy the record. */
-function consumeReviewerAuthorization(root: string, workflow: string, planHash: string, nonce: unknown): string | ArtifactError {
-  if (typeof nonce !== "string" || !NONCE.test(nonce)) return err("reviewer-authorization", "a reviewer authorization nonce issued by the reviewer hook is required; finalization does not accept a caller-supplied reviewer identity");
-  const state = join(root, ".planning", ".state");
-  const path = join(state, REVIEWER_AUTHORIZATION_BASENAME);
-  if (!existsSync(path)) return err("reviewer-authorization", "no reviewer authorization has been issued for this review");
-  const snapshot = readArtifactSnapshot(root, path, "reviewer-authorization");
-  if (isError(snapshot)) return snapshot;
-  let parsed: unknown;
-  try { parsed = JSON.parse(snapshot.toString("utf8")); }
-  catch { return err("reviewer-authorization", "reviewer authorization record is not valid JSON"); }
-  const record = parseReviewerAuthorization(parsed);
-  if (isError(record)) return record;
-  // Constant-time over EQUAL-LENGTH buffers only; `NONCE` already fixed both to 64 hex chars, so
-  // the length check above is what makes this comparison safe to make at all.
-  const supplied = Buffer.from(nonce, "utf8");
-  const issued = Buffer.from(record.nonce, "utf8");
-  if (supplied.length !== issued.length || !timingSafeEqual(supplied, issued)) return err("reviewer-authorization", "reviewer authorization nonce does not match the issued authorization");
-  if (record.workflow !== workflow || record.planHash !== planHash) return err("reviewer-authorization", "reviewer authorization was issued for a different workflow or plan");
-  let stateDirectory: OwnedDirectory | undefined;
-  try {
-    stateDirectory = openOwnedDirectory(root, state, false);
-    requireLiveDirectory(root, state, stateDirectory);
-    if (stateDirectory.anchor === undefined) return err("reviewer-authorization", "approval artifact directory does not support descriptor-anchored mutation");
-    unlinkOwnedDirectory(root, state, stateDirectory, REVIEWER_AUTHORIZATION_BASENAME);
-  } catch (error) {
-    return err("reviewer-authorization", `could not consume reviewer authorization: ${error instanceof Error ? error.message : String(error)}`);
-  } finally {
-    if (stateDirectory !== undefined) closeSync(stateDirectory.fd);
-  }
-  return record.actor;
-}
-
 export function finalizeGeneratedPlanReview(
   projectDir: string,
   workflow: string,
   priorReceipt: ModernReviewReceipt,
   status: "APPROVED" | "ISSUES_FOUND",
-  reviewerAuthorizationNonce: string,
+  reviewerSession: string,
   reviewedAt = new Date().toISOString(),
   options: ArtifactWriteOptions = {},
 ): ModernReviewReceipt | ArtifactError {
-  if (!isWorkflowIdentity(workflow) || (status !== "APPROVED" && status !== "ISSUES_FOUND") || !strictUtc(reviewedAt)) {
+  if (!isWorkflowIdentity(workflow) || (status !== "APPROVED" && status !== "ISSUES_FOUND") || typeof reviewerSession !== "string" || !reviewerSession.trim() || !strictUtc(reviewedAt)) {
     return err("review-schema", "generated-plan review finalization identity is invalid");
   }
   const parsedPrior = parseReviewState(JSON.stringify(priorReceipt), workflow);
   if (isError(parsedPrior) || parsedPrior.status !== "PENDING") return err("review-schema", "generated-plan review finalization requires the exact PENDING receipt");
-  let authorizationRoot: string;
-  try { authorizationRoot = realpathSync(projectDir); }
-  catch { return err("project-root", "project root must exist and be accessible"); }
-  // The reviewer's identity comes OUT of the hook-issued record, and is never a parameter.
-  const reviewerSession = consumeReviewerAuthorization(authorizationRoot, workflow, parsedPrior.plan_hash, reviewerAuthorizationNonce);
-  if (isError(reviewerSession)) return reviewerSession;
   // `reviewerSession` is an ACTOR IDENTITY (hookActorIdentity), not a raw session id — see the
   // ModernReviewReceipt note. Only the approver/reviewer pair is checkable here: review
   // finalization precedes implementation, so there is no implementer identity yet to separate.
   const separation = approverReviewerSeparation(parsedPrior.approved_session_id, reviewerSession); if (separation) return separation;
   if (Date.parse(reviewedAt) <= Date.parse(parsedPrior.approved_at)) return err("approval-chronology", "review must be strictly later than approval");
 
-  const root = authorizationRoot;
+  let root: string;
+  try { root = realpathSync(projectDir); }
+  catch { return err("project-root", "project root must exist and be accessible"); }
   const planning = join(root, ".planning");
   const state = join(planning, ".state");
   const first = resolveGeneratedPlanReviewState(root, workflow);

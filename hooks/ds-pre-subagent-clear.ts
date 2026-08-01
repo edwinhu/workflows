@@ -13,7 +13,11 @@
  */
 import { existsSync, mkdtempSync, rmSync, rmdirSync } from "node:fs";
 import { resolve, join } from "node:path";
-import { allow, readPayload, sessionFlagKey } from "./_gate_common.ts";
+import { allow, denyOnCrash, readPayload, sessionFlagKey } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("DS PRE-SUBAGENT CLEAR");
 
 /**
  * Port of Python's `tempfile.gettempdir()`.

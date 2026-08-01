@@ -7,8 +7,12 @@
  * Standalone: bun workshop-outline-executable-guard.ts <project-root>
  */
 
-import { deny, parsePayload } from "./_gate_common.ts";
+import { deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
 import { buildIndex, pyParent } from "./_workshop_slide_table.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("WORKSHOP OUTLINE EXECUTABLE GUARD");
 
 const argv = process.argv.slice(2);
 

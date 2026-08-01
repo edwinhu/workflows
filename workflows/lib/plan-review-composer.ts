@@ -89,19 +89,27 @@ export async function composePlanReview(args: Readonly<{
 /**
  * Re-authenticates the composed plan and changes only receipt fields owned by plan review.
  *
- * TAKES A NONCE, NOT AN IDENTITY. The parameter was `reviewerSessionId: string`, and the separation
- * rule underneath compared the approver to that literal — so one actor could finalize an APPROVED
- * receipt naming a reviewer that never existed and admission accepted it. There is deliberately no
- * overload, no optional identity, and no other export from this module that reaches finalization:
- * the reviewer identity is read out of the record `reviewer-verdict-guard` wrote for the actor it
- * OBSERVED, and this module cannot spell one. See `finalizeGeneratedPlanReview`.
+ * `reviewerSessionId` IS ASSERTED, NOT DERIVED, and this function has no way to check it: it writes
+ * `review.json` with `fs`, so no hook observes the write. An in-process caller can finalize an
+ * APPROVED receipt naming a reviewer that never reviewed anything.
+ *
+ * That is a statement about this entry point, not about the shipping path. The reviewer that
+ * actually runs uses the `Write` tool (`agents/plan-checker.md` step 5), and
+ * `hooks/implementer-identity-gate.ts` — plugin-wide, so it reaches the dispatched subagent — holds
+ * that write to `reviewer_session_id === hookActorIdentity(payload)`. There are no production
+ * callers of this function; it exists for external embedders, who inherit the same caveat.
+ *
+ * Round 9 replaced this parameter with a hook-issued nonce and documented the identity as derived.
+ * Reverted: the issuing function took the hook PAYLOAD, and `hookActorIdentity` is a pure function
+ * of it, so a caller spelled an arbitrary actor by writing a payload — the same hole, one call
+ * deeper. Do not reintroduce a token here and call it derivation.
  */
 export function finalizeComposedPlanReview(args: Readonly<{
-  projectDir: string; policy: GeneratedPlanReviewPolicy; composition: PlanReviewComposition; reviewerAuthorizationNonce: string; reviewedAt?: string;
+  projectDir: string; policy: GeneratedPlanReviewPolicy; composition: PlanReviewComposition; reviewerSessionId: string; reviewedAt?: string;
 }>): ModernReviewReceipt | ArtifactError {
   const policyError = validatePolicy(args?.policy); if (policyError) return policyError;
   if (!args.composition || !issuedCompositions.has(args.composition) || args.composition.workflow !== args.policy.workflow || !Array.isArray(args.composition.executedCheckIds) || args.composition.executedCheckIds.length === 0) return err("review-composition", "complete matching plan review composition issued by this composer is required");
-  if (typeof args.reviewerAuthorizationNonce !== "string" || !args.reviewerAuthorizationNonce.trim()) return err("reviewer-authorization", "a reviewer authorization nonce issued by the reviewer hook is required; this contract does not accept a caller-supplied reviewer identity");
+  if (typeof args.reviewerSessionId !== "string" || !args.reviewerSessionId.trim()) return err("review-session", "reviewerSessionId is required");
   const resolved = resolveGeneratedPlanReviewState(args.projectDir, args.policy.workflow); if (isError(resolved)) return resolved;
   const prior = args.composition.approvalReceipt;
   if (resolved.receipt.status !== "PENDING" || resolved.hash !== args.composition.planHash || resolved.planFile !== args.composition.planFile || JSON.stringify(resolved.receipt) !== JSON.stringify(prior)) return err("review-race", "plan identity or approval receipt changed before finalization");
@@ -110,7 +118,7 @@ export function finalizeComposedPlanReview(args: Readonly<{
     args.policy.workflow,
     prior,
     args.composition.status,
-    args.reviewerAuthorizationNonce,
+    args.reviewerSessionId,
     args.reviewedAt,
   );
 }

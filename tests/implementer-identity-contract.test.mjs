@@ -306,10 +306,17 @@ try {
   denied(runGate(cwd, { rawInput: JSON.stringify({ ...payloadFor(cwd), agent_id: 17 }) }), "non-string agent_id", /identity/i);
   denied(runGate(cwd, { rawInput: JSON.stringify({ ...payloadFor(cwd), agent_id: "  " }) }), "blank agent_id", /identity/i);
 
-  // A payload that is valid JSON but not an object must die loudly, never allow silently.
+  // A payload that is valid JSON but not an object must DENY, not exit 1.
+  //
+  // `requireObject` used to `process.exit(1)` here, defended as "dying loudly, which is better than
+  // a silent allow". In a PreToolUse gate those are THE SAME THING: Claude Code treats a non-zero
+  // hook exit as non-blocking, prints the stderr, and runs the tool. So the assertion below was
+  // pinning the silent allow it was written to prevent. It now pins the deny — and, deliberately,
+  // exit 0, because only an exit-0 deny actually blocks. PostToolUse hooks keep the exit-1 parity
+  // semantics (`writing-suggest-verify`, `overflow-check`, `ds-post-subagent-guard` pin it), which
+  // is why `denyOnCrash` — called only by PreToolUse gates — is what switches the behaviour.
   for (const raw of ["null", '"sess"', "[1,2]"]) {
-    const result = runGate(cwd, { rawInput: raw });
-    assert.notEqual(result.status, 0, `non-object payload must not exit 0: ${raw} -> ${result.stdout}`);
+    denied(runGate(cwd, { rawInput: raw }), `non-object payload ${raw} must deny`, /payload must be an object/i);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -365,6 +372,87 @@ try {
     assert.equal(schema.status, 0, `schema check failed to run: ${schema.stderr}`);
     assert.equal(schema.stdout.trim(), "[]", `crash deny violates the PreToolUse output schema: ${schema.stdout}`);
   }
+
+  // ---------------------------------------------------------------------------------------------
+  // THE FABRICATED RECEIPT. `.planning/.state/` was inside the orchestrator's permitted prefixes,
+  // so the gate authorized writing the very receipt every other check reads its authority from.
+  //
+  // Measured before the fix, end to end: an actor that never approved and never reviewed wrote a
+  // receipt naming `approved_session_id: "nobody-approved-this"` and `reviewer_session_id:
+  // "nobody-reviewed-this"`, the gate exited 0, and `validateGeneratedPlanArtifact` then ACCEPTED
+  // it — no plan approved, no reviewer dispatched. FIVE of the six actor/status combinations below
+  // were admitted; the sixth denied incidentally (reviewer == implementer), not by any receipt rule.
+  //
+  // `orchestrator-mutation-guard` excludes `.planning/.state/` and was assumed to be the backstop.
+  // It is skill-scoped: absent from every subagent and from every conversation outside a wired
+  // skill. This gate is the only plugin-wide PreToolUse mutation hook, so the rule lives here.
+  // ---------------------------------------------------------------------------------------------
+
+  const RECEIPT = join(state, "review.json");
+  const forged = JSON.stringify({
+    workflow: "dev", plan_file: planFile, plan_hash: hash,
+    approved_session_id: "nobody-approved-this", approved_at: "2026-01-01T00:00:00.000Z",
+    status: "APPROVED", reviewer_session_id: "nobody-reviewed-this", reviewed_at: "2026-01-01T00:05:00.000Z",
+  }, null, 2);
+  const forge = (options) => runGate(cwd, { rawInput: JSON.stringify({ ...payloadFor(cwd, options), tool_input: { file_path: RECEIPT, content: forged } }) });
+
+  const actors = [
+    ["an unrelated actor", { sessionId: "sess-unrelated", agentId: "totally-random-actor" }],
+    ["the recorded approver", { sessionId: SESSION, agentId: undefined }],
+    ["the recorded reviewer", { sessionId: SESSION, agentId: REVIEWER_AGENT }],
+  ];
+  for (const [status, receiptFields] of [["PENDING", { status: "PENDING", reviewer_session_id: "", reviewed_at: "" }], ["APPROVED", {}]]) {
+    write(receiptFields);
+    for (const [who, options] of actors) {
+      denied(forge(options), `${who} may not fabricate the receipt at ${status}`, /is not part of any orchestrator's write surface/);
+    }
+  }
+
+  // The whole directory, not just the one filename, and every write-capable tool.
+  write({ status: "PENDING", reviewer_session_id: "", reviewed_at: "" });
+  denied(runGate(cwd, { agentId: REVIEWER_AGENT, path: join(state, "plan.json") }), "no other .state file is writable either", /is not the review receipt/);
+  for (const tool of ["Edit", "MultiEdit"]) {
+    denied(runGate(cwd, { tool, agentId: REVIEWER_AGENT, path: RECEIPT }), `${tool} of the receipt is not a finalization`, /cannot be a review finalization/);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // ...AND THE LEGITIMATE REVIEWER STILL FINALIZES. This is the load-bearing half: `plan-checker`
+  // step 5 writes exactly this path, and `reviewer-verdict-guard` — wired in SKILL FRONTMATTER —
+  // never fires for that dispatched subagent. So this gate is what both permits and checks it, and
+  // a rule that only denied would break review entirely.
+  // ---------------------------------------------------------------------------------------------
+
+  const finalization = (overrides = {}) => JSON.stringify({
+    workflow: "dev", plan_file: planFile, plan_hash: hash,
+    approved_session_id: SESSION, approved_at: "2026-01-01T00:00:00.000Z",
+    status: "APPROVED", reviewer_session_id: REVIEWER_ACTOR, reviewed_at: "2026-01-01T00:05:00.000Z",
+    ...overrides,
+  }, null, 2);
+  const finalize = (content, options = { agentId: REVIEWER_AGENT }) =>
+    runGate(cwd, { rawInput: JSON.stringify({ ...payloadFor(cwd, options), tool_input: { file_path: RECEIPT, content } }) });
+
+  allowed(finalize(finalization()), "the dispatched reviewer finalizes its own receipt");
+  allowed(finalize(finalization({ status: "ISSUES_FOUND" })), "ISSUES_FOUND is a finalization too");
+
+  // Each field of the rule, one mutation at a time.
+  denied(finalize(finalization({ reviewer_session_id: `${SESSION}#someone-else` })), "reviewer_session_id must be the writing actor", /identity/i);
+  denied(finalize(finalization({ approved_session_id: "rewritten" })), "approval-owned fields must survive", /reproduce workflow, plan_file/);
+  // Chronologically valid on its own — only the comparison against the ON-DISK receipt catches it.
+  denied(finalize(finalization({ approved_at: "2025-12-31T00:00:00.000Z" })), "approved_at must survive", /reproduce workflow, plan_file/);
+  denied(finalize(finalization({ plan_hash: "0".repeat(64) })), "plan_hash must survive", /reproduce workflow, plan_file/);
+  denied(finalize(finalization(), { agentId: undefined }), "a conversation-level actor may not finalize", /only a dispatched reviewer subagent/);
+  // The approver as a SUBAGENT of itself: identity equals `approved_session_id`, so it is self-review.
+  write({ status: "PENDING", reviewer_session_id: "", reviewed_at: "", approved_session_id: REVIEWER_ACTOR });
+  denied(finalize(finalization({ approved_session_id: REVIEWER_ACTOR, reviewer_session_id: REVIEWER_ACTOR })), "the approver may not review its own plan", /approved the plan and may not also review/);
+  // Already final: the window is open only while the receipt is PENDING.
+  write();
+  denied(finalize(finalization({ reviewed_at: "2026-01-01T00:09:00.000Z" })), "an APPROVED receipt is closed to further finalization", /already APPROVED/);
+  write({ status: "PENDING", reviewer_session_id: "", reviewed_at: "" });
+
+  // The denial is also the identity DELIVERY channel: a subagent cannot read its own agent_id, and
+  // `reviewer-verdict-guard`'s additionalContext does not reach it (same skill-scope reason).
+  denied(finalize(finalization({ reviewer_session_id: "guessed" })), "a denial names the actor identity verbatim", new RegExp(`This actor's identity is \\\\"${REVIEWER_ACTOR}\\\\"`));
+  write();
 
   const plainProject = mkdtempSync(join(tmpdir(), "implementer-identity-plain-"));
   try {

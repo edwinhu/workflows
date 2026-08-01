@@ -18,7 +18,11 @@
  *     yields the bare `outlines` (Path('.') / 'outlines'), not `./outlines`.
  */
 import { existsSync, readdirSync } from "node:fs";
-import { deny } from "./_gate_common.ts";
+import { deny, denyOnCrash } from "./_gate_common.ts";
+
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
+// exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
+denyOnCrash("WRITING OUTLINE GUARD");
 
 /** pathlib.PurePosixPath(p).parts — absolute paths carry a leading "/" element. */
 function pathParts(p: string): string[] {
