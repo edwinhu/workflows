@@ -9,24 +9,32 @@ import { createServer } from 'node:net'
 import { captureApprovalBundle } from '../workflows/lib/approval-bundle.ts'
 import { captureGitObservation } from '../workflows/lib/git-observation.ts'
 import { fingerprint } from '../workflows/lib/task-contract.ts'
+import { runWorkflowModule } from './helpers/workflow-module.mjs'
 
 const ROOT = new URL('..', import.meta.url).pathname
-const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
   if (condition) PASS++
   else { FAIL++; console.log(`FAIL  ${name}${extra ? ` — ${extra}` : ''}`) }
 }
 
-const source = readFileSync(ROOT + 'workflows/beat-implement.js', 'utf8')
-  .replace(/^export const meta/m, 'const meta')
-  // AsyncFunction is not an ES module, so make module-relative imports explicit here.
-  .replace("new URL('./lib/approved-artifact.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/approved-artifact.ts'))
-  .replace("new URL('./lib/task-contract.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/task-contract.ts'))
-  .replace("new URL('./lib/git-observation.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/git-observation.ts'))
-  .replace("new URL('./lib/candidate-state.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/candidate-state.ts'))
+// RACE-INJECTION SEAM — NOT a module/runtime adaptation. This swaps the runner's snapshot
+// read+lstat pair for test doubles so a mid-read metadata swap (TOCTOU) can be provoked
+// deterministically, which no fixture can otherwise force. It is explicitly NOT compensating for a
+// module shape or specifier mismatch: the script is loaded as a real ES module by
+// tests/helpers/workflow-module.mjs, so `import.meta.url` and its `./lib/*.ts` specifiers resolve
+// natively and nothing about them is rewritten.
+//
+// KNOWN STALE, LEFT IN PLACE DELIBERATELY: both call sites have MOVED out of beat-implement.js into
+// workflows/lib/approved-artifact.ts (which these suites import as a real module and never rewrite),
+// so as of this commit the substitution matches nothing and `snapshotReadFile`/`snapshotLstat`/
+// `freezeSnapshotMetadata` below are inert. Re-pointing the seam at its new home is a change to the
+// snapshot code's own tests, not to this suite.
+const withRaceInjectionSeam = text => text
   .replace('readFileSync(fd)', 'snapshotReadFile(fd, full)')
   .replace('lstatSync(full)', 'snapshotLstat(full)')
+
+const source = withRaceInjectionSeam(readFileSync(ROOT + 'workflows/beat-implement.js', 'utf8'))
 const plan = '# Approved plan\n'
 const hash = createHash('sha256').update(plan).digest('hex')
 const planFile = 'jazzy-leaping-scroll.md'
@@ -88,7 +96,6 @@ async function exec(args, onAgent, options = {}) {
   }
   const parallel = async (thunks) => Promise.all(thunks.map(thunk => thunk()))
   const log = () => {}, phase = () => {}
-  const fn = new AsyncFunction('agent', 'parallel', 'log', 'phase', 'args', 'snapshotReadFile', 'snapshotLstat', source)
   // PRODUCTION'S ACTUAL ENVIRONMENT. Claude Code never sets CLAUDE_SESSION_ID; the Workflow
   // runtime sees CLAUDE_CODE_SESSION_ID, which is the dispatching session's id. Setting the
   // variable the runner used to read is what hid the fact that it was always undefined in
@@ -99,7 +106,14 @@ async function exec(args, onAgent, options = {}) {
   if (options.noSession) delete process.env.CLAUDE_CODE_SESSION_ID
   else process.env.CLAUDE_CODE_SESSION_ID = options.session || 'different-session'
   try {
-    return { result: await fn(agent, parallel, log, phase, { workflow: 'ds', ...args, projectDir: project }, snapshotReadFile, snapshotLstat), trace }
+    return {
+      result: await runWorkflowModule(source, {
+        agent, parallel, log, phase,
+        args: { workflow: 'ds', ...args, projectDir: project },
+        snapshotReadFile, snapshotLstat,
+      }),
+      trace,
+    }
   } finally {
     if (originalStale === undefined) delete process.env.CLAUDE_SESSION_ID
     else process.env.CLAUDE_SESSION_ID = originalStale

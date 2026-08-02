@@ -46,14 +46,44 @@ Require no violations, `reviewStatus: "APPROVED"`, and retain `planPath`/`planHa
 
 ## Edit and verify
 
-Apply synchronized slide/notes changes with Typst conventions. Then invoke the independent verifier with the exact parser result:
+Apply synchronized slide/notes changes with Typst conventions.
+
+**NO VERIFY WITHOUT AN AUTHENTICATE PRE-STEP AND A `--verify` POST-STEP.**
+`workshop-verify.js` is pure control flow — the Workflow runtime forbids `import()`,
+`import.meta`, `process`, and `Buffer`, so it cannot open, hash, or re-stat the
+receipt or the plan. Authenticate them in the deterministic authenticator first
+(`O_NOFOLLOW` open, fstat-vs-lstat identity comparison across the read, realpath
+containment, sha256, and rejection of a symlinked `.planning`, `.planning/.state`,
+receipt, or plan):
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_plan_auth.py \
+  --authenticate "<absolute project root>" --plan-hash "<index.planHash>" > /tmp/workshop-auth.json
+```
+
+Non-zero exit or `ok !== true` blocks verification — read `violations` and stop. Then
+invoke the independent verifier with the exact parser result and the bundle:
 
 ```text
 Workflow(name="workshop-verify", args={
-  "projectDir": "<absolute project root>", "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-  "planPath": "<index.planPath>", "planHash": "<index.planHash>",
-  "slideIndex": <parsed index>, "onlyChecks": [<changed built-slide IDs>]
+  "projectDir": "<absolute project root>", "projectReal": <bundle.projectReal>,
+  "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+  "planPath": <bundle.planPath>, "planHash": <bundle.planHash>,
+  "slideIndex": <parsed index>, "artifacts": <bundle.artifacts>,
+  "onlyChecks": [<changed built-slide IDs>]
 })
 ```
+
+Its return is provisional (`verifyRequired: true`, `driftVerified: false`). Write it to
+disk and finalize against the entry bundle:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_plan_auth.py \
+  --verify /tmp/workshop-auth.json --findings /tmp/workshop-result.json > /tmp/workshop-final.json
+```
+
+Read the gate only from the finalized output. If the plan or receipt moved during the
+run, it zeroes `finalPlanHash`, prepends a critical `artifact-integrity` finding, and
+forces `overallPass: false` — re-authenticate and re-run rather than patching.
 
 Preserve its unbiased semantic PLAN-to-built-slide join and Source Inventory whitelist. Fix critical and major findings, recompile slides and notes, then rerun with the same plan identity. A new plan invalidates prior reviews. When `overallPass` is true, proceed immediately to `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`; retain rendered Typst deliverables for the human review surface.

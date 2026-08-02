@@ -7,15 +7,12 @@ import { captureApprovalBundle } from '../workflows/lib/approval-bundle.ts'
 import { captureGitObservation } from '../workflows/lib/git-observation.ts'
 import { createCandidateState } from '../workflows/lib/candidate-state.ts'
 import { fingerprint } from '../workflows/lib/task-contract.ts'
+import { runWorkflowModule } from './helpers/workflow-module.mjs'
 
 const ROOT = new URL('..', import.meta.url).pathname
-const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
+// Verbatim. The script is executed as a real ES module (tests/helpers/workflow-module.mjs), so its
+// `import.meta.url` and `./lib/*.ts` specifiers resolve natively and nothing is rewritten.
 const source = readFileSync(ROOT + 'workflows/beat-implement.js', 'utf8')
-  .replace(/^export const meta/m, 'const meta')
-  .replace("new URL('./lib/approved-artifact.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/approved-artifact.ts'))
-  .replace("new URL('./lib/task-contract.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/task-contract.ts'))
-  .replace("new URL('./lib/git-observation.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/git-observation.ts'))
-  .replace("new URL('./lib/candidate-state.ts', import.meta.url).href", JSON.stringify(ROOT + 'workflows/lib/candidate-state.ts'))
 
 const projects = []
 const workflow = 'opaque-extension-7f3a'
@@ -79,7 +76,6 @@ async function exec(overrides = {}) {
     return { taskId: 'external-task', status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/output.js'] }
   }
   const log = () => {}, phase = () => {}, parallel = async () => []
-  const fn = new AsyncFunction('agent', 'parallel', 'log', 'phase', 'args', source)
   // PRODUCTION'S ACTUAL ENVIRONMENT. Claude Code never sets CLAUDE_SESSION_ID; the Workflow runtime
   // sees CLAUDE_CODE_SESSION_ID, which is the DISPATCHING session's id. Setting the dead variable
   // made these cases pass only because an ambient CLAUDE_CODE_SESSION_ID happened to be present.
@@ -91,7 +87,7 @@ async function exec(overrides = {}) {
     const descriptorBytes = Buffer.from(JSON.stringify(approvalPolicy))
     const capturedApprovalBundle = captureApprovalBundle(project, descriptorBytes, approvalPolicy)
     const candidateState = createCandidateState('a'.repeat(64), ['implementation'])
-    return { result: await fn(agent, parallel, log, phase, {
+    return { result: await runWorkflowModule(source, { agent, parallel, log, phase, args: {
       projectDir: project,
       workflow,
       approvalMode: 'external-fixed-v1',
@@ -103,7 +99,7 @@ async function exec(overrides = {}) {
       readyWave: [task],
       planReset: reset,
       ...overrides,
-    }), trace }
+    } }), trace }
   } finally {
     if (previous === undefined) delete process.env.CLAUDE_SESSION_ID
     else process.env.CLAUDE_SESSION_ID = previous
@@ -138,7 +134,6 @@ async function execGenerated(overrides = {}) {
     writeFileSync(join(project, 'src/output.js'), 'export const value = 1\n')
     return { taskId: task.id, status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/output.js'] }
   }
-  const fn = new AsyncFunction('agent', 'parallel', 'log', 'phase', 'args', source)
   // PRODUCTION'S ACTUAL ENVIRONMENT. Claude Code never sets CLAUDE_SESSION_ID; the Workflow runtime
   // sees CLAUDE_CODE_SESSION_ID, which is the DISPATCHING session's id. Setting the dead variable
   // made these cases pass only because an ambient CLAUDE_CODE_SESSION_ID happened to be present.
@@ -147,13 +142,19 @@ async function execGenerated(overrides = {}) {
   delete process.env.CLAUDE_SESSION_ID
   process.env.CLAUDE_CODE_SESSION_ID = 'implementation-session'
   try {
-    return await fn(agent, async () => [], () => {}, () => {}, {
-      projectDir: project,
-      workflow,
-      approvalMode: 'generated-plan-receipt-v1',
-      readyWave: [task],
-      planReset: { planFile: 'external-generated.md', planHash: hash },
-      ...overrides,
+    return await runWorkflowModule(source, {
+      agent,
+      parallel: async () => [],
+      log: () => {},
+      phase: () => {},
+      args: {
+        projectDir: project,
+        workflow,
+        approvalMode: 'generated-plan-receipt-v1',
+        readyWave: [task],
+        planReset: { planFile: 'external-generated.md', planHash: hash },
+        ...overrides,
+      },
     })
   } finally {
     if (previous === undefined) delete process.env.CLAUDE_SESSION_ID

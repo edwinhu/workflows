@@ -13,6 +13,9 @@ export const meta = {
 // ── Inputs ──────────────────────────────────────────────────────────────────
 // args = {
 //   projectDir: "/abs/writing-project-dir",   // REQUIRED — holds .planning/, outlines/, drafts/, references/sources.bib
+//   projectReal: "/abs/resolved-project-dir", // REQUIRED — bundle.projectReal from the authenticate pre-step
+//   artifacts: { receipt|plan|bib|"section:<name>:outline"|"section:<name>:draft": {path, real, hash, text} },
+//                                              // REQUIRED — bundle.artifacts from `writing_section_index.py --authenticate`
 //   pluginRoot: "/abs/.../workflows",          // optional — for resolving domain skill + bridge_repetition_check.py
 //   onlyChecks?: ["Section Name", ...],         // re-review loop: re-review only these sections; carry the rest
 //   priorReviews?: [<section objects>],         // re-review loop: prior per-section results to carry forward
@@ -47,47 +50,69 @@ if (SECTION_INDEX.precisPath || (SECTION_INDEX.outlinePath && SECTION_INDEX.outl
   throw new Error('writing-review rejected an index carrying retired active planning authority.')
 }
 
-const { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync, realpathSync } = await import('node:fs')
-const { createHash } = await import('node:crypto')
-const { isAbsolute, join, relative, resolve } = await import('node:path')
-const PROJECT_REAL = realpathSync(PROJECT)
-const sameState = (left, right) => left.dev === right.dev && left.ino === right.ino && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs
-const snapshotArtifact = path => {
-  let fd
-  try {
-    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW)
-    const opened = fstatSync(fd, { bigint: true })
-    if (!opened.isFile()) throw new Error(`writing-review requires a regular non-symlink artifact: ${path}`)
-    const real = realpathSync(path); const rel = relative(PROJECT_REAL, real)
-    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error(`writing-review artifact escapes projectDir: ${path}`)
-    const beforePath = lstatSync(path, { bigint: true })
-    if (beforePath.isSymbolicLink() || !sameState(opened, beforePath)) throw new Error(`writing-review artifact identity changed before read: ${path}`)
-    const bytes = readFileSync(fd)
-    const afterFd = fstatSync(fd, { bigint: true })
-    const afterPath = lstatSync(path, { bigint: true })
-    if (afterPath.isSymbolicLink() || realpathSync(path) !== real || !sameState(opened, afterFd) || !sameState(opened, afterPath)) throw new Error(`writing-review artifact changed during read: ${path}`)
-    return { path, real, text: bytes.toString('utf8'), hash: createHash('sha256').update(bytes).digest('hex'), dev: opened.dev, ino: opened.ino, size: opened.size, mtimeNs: opened.mtimeNs, ctimeNs: opened.ctimeNs }
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith('writing-review ')) throw error
-    throw new Error(`writing-review requires a stable regular non-symlink artifact: ${path}`)
-  } finally {
-    if (fd !== undefined) closeSync(fd)
+// ── Authenticated artifact bundle (no filesystem access in here) ─────────────
+// Workflow scripts are pure control flow: the runtime rejects import(), import.meta,
+// process, and Buffer. The TOCTOU-hardened snapshot/hash/read that used to run here
+// now runs in scripts/writing/writing_section_index.py --authenticate, the same
+// deterministic pre-step that compiles this index, and arrives via args.artifacts.
+// It is NOT delegated to an agent: the section index already comes from an agent, and
+// asking the untrusted party to vouch for its own artifacts is not authentication.
+// Drift detection is symmetrically deterministic — the post-step re-snapshots via
+// --verify --findings, which is why this run returns verifyRequired: true.
+const isAbs = value => typeof value === 'string' && value.startsWith('/')
+const normalizePath = value => {
+  const out = []
+  for (const segment of String(value).split('/')) {
+    if (!segment || segment === '.') continue
+    if (segment === '..') { out.pop(); continue }
+    out.push(segment)
   }
+  return '/' + out.join('/')
 }
-const artifactMatchesSnapshot = snapshot => {
-  try {
-    const current = snapshotArtifact(snapshot.path)
-    return current.real === snapshot.real && current.hash === snapshot.hash && current.dev === snapshot.dev && current.ino === snapshot.ino && current.size === snapshot.size && current.mtimeNs === snapshot.mtimeNs && current.ctimeNs === snapshot.ctimeNs
-  } catch { return false }
+// resolve() over already-absolute inputs only. A relative or empty input is a
+// missing authenticated value, and yields a sentinel that can never compare equal
+// to a real path — the pre-extraction code reached cwd here and failed the same way.
+const INVALID = '<unauthenticated-path>'
+const resolvePath = (...parts) => {
+  let base = ''
+  for (const part of parts) {
+    if (!part || typeof part !== 'string') return INVALID
+    base = isAbs(part) ? part : (base ? `${base}/${part}` : INVALID)
+    if (base === INVALID) return INVALID
+  }
+  return base ? normalizePath(base) : INVALID
 }
+const joinPath = (...parts) => normalizePath(parts.join('/'))
+// Strict containment: equivalent to the old `relative()` test — an empty relative
+// path (same file), a '..' prefix, or an absolute result all fail closed.
+const containedBy = (root, path) => typeof path === 'string' && path !== INVALID && path !== root && path.startsWith(`${root}/`)
+
+const PROJECT_REAL = typeof cfg.projectReal === 'string' ? cfg.projectReal : ''
+if (!isAbs(PROJECT_REAL) || normalizePath(PROJECT_REAL) !== PROJECT_REAL) {
+  throw new Error('writing-review requires args.projectReal: the absolute resolved projectDir emitted by writing_section_index.py --authenticate.')
+}
+const ARTIFACTS = (cfg.artifacts && typeof cfg.artifacts === 'object' && !Array.isArray(cfg.artifacts)) ? cfg.artifacts : null
+if (!ARTIFACTS) throw new Error('writing-review requires args.artifacts: the authenticated bundle from writing_section_index.py --authenticate.')
+const HEX64 = /^[0-9a-f]{64}$/
+const artifact = key => {
+  const snapshot = ARTIFACTS[key]
+  if (!snapshot || typeof snapshot !== 'object') throw new Error(`writing-review is missing an authenticated artifact: ${key}`)
+  const { path, real, hash, text } = snapshot
+  if (!isAbs(path) || !isAbs(real) || typeof text !== 'string' || !HEX64.test(String(hash))) {
+    throw new Error(`writing-review rejected a malformed authenticated artifact: ${key}`)
+  }
+  if (!containedBy(PROJECT_REAL, normalizePath(real))) throw new Error(`writing-review artifact escapes projectDir: ${key} (${real})`)
+  return { path, real: normalizePath(real), hash, text }
+}
+const SECTION_KEY = (name, kind) => `section:${name}:${kind}`
 const PLAN_FILE = typeof SECTION_INDEX.planFile === 'string' ? SECTION_INDEX.planFile : ''
 if (!/^\.planning\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(PLAN_FILE) || PLAN_FILE === '.planning/PLAN.md' || SECTION_INDEX.reviewStatus !== 'APPROVED') {
   throw new Error('writing-review requires an APPROVED receipt-selected generated planFile; fixed PLAN.md and non-approved review state cannot authorize review.')
 }
-const EXPECTED_PLAN = resolve(PROJECT_REAL, PLAN_FILE)
-const PLAN_REAL = realpathSync(PLAN_PATH)
-const PLAN_RELATIVE = relative(join(PROJECT_REAL, '.planning'), PLAN_REAL)
-if (PLAN_REAL !== EXPECTED_PLAN || !PLAN_RELATIVE || PLAN_RELATIVE.startsWith('..') || isAbsolute(PLAN_RELATIVE)) {
+const EXPECTED_PLAN = resolvePath(PROJECT_REAL, PLAN_FILE)
+const PLAN_SNAPSHOT = artifact('plan')
+const PLAN_REAL = PLAN_SNAPSHOT.real
+if (resolvePath(PLAN_PATH) !== resolvePath(PLAN_SNAPSHOT.path) || PLAN_REAL !== EXPECTED_PLAN || !containedBy(joinPath(PROJECT_REAL, '.planning'), PLAN_REAL)) {
   throw new Error('writing-review planPath must equal the receipt-selected generated planFile and may not escape through a symlink.')
 }
 const parseFlatStringJson = raw => {
@@ -118,8 +143,9 @@ const parseFlatStringJson = raw => {
   skip(); if (index !== text.length) throw new Error('trailing content')
   return value
 }
-const RECEIPT_PATH = join(PROJECT_REAL, '.planning', '.state', 'review.json')
-const RECEIPT_SNAPSHOT = snapshotArtifact(RECEIPT_PATH)
+const RECEIPT_PATH = joinPath(PROJECT_REAL, '.planning', '.state', 'review.json')
+const RECEIPT_SNAPSHOT = artifact('receipt')
+if (resolvePath(RECEIPT_SNAPSHOT.path) !== RECEIPT_PATH) throw new Error('writing-review authenticated receipt is not the projectDir combined review state.')
 const receiptKeys = ['workflow', 'plan_file', 'plan_hash', 'approved_session_id', 'approved_at', 'status', 'reviewer_session_id', 'reviewed_at']
 const strictUtc = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
 const receiptApproved = value => Object.keys(value).length === receiptKeys.length && receiptKeys.every(key => Object.hasOwn(value, key)) && value.workflow === 'writing' && `.planning/${value.plan_file}` === PLAN_FILE && value.plan_hash === PLAN_HASH && value.status === 'APPROVED' && typeof value.approved_session_id === 'string' && !!value.approved_session_id.trim() && typeof value.reviewer_session_id === 'string' && !!value.reviewer_session_id.trim() && value.approved_session_id !== value.reviewer_session_id && strictUtc(value.approved_at) && strictUtc(value.reviewed_at) && Date.parse(value.reviewed_at) > Date.parse(value.approved_at)
@@ -128,14 +154,6 @@ try { receipt = parseFlatStringJson(RECEIPT_SNAPSHOT.text) } catch { throw new E
 if (!receiptApproved(receipt)) {
   throw new Error('writing-review combined review state does not authenticate the supplied generated plan identity.')
 }
-const receiptSnapshotMatches = () => {
-  try {
-    const current = snapshotArtifact(RECEIPT_PATH)
-    const parsed = parseFlatStringJson(current.text)
-    return current.real === RECEIPT_SNAPSHOT.real && current.hash === RECEIPT_SNAPSHOT.hash && current.dev === RECEIPT_SNAPSHOT.dev && current.ino === RECEIPT_SNAPSHOT.ino && current.size === RECEIPT_SNAPSHOT.size && current.mtimeNs === RECEIPT_SNAPSHOT.mtimeNs && current.ctimeNs === RECEIPT_SNAPSHOT.ctimeNs && receiptApproved(parsed)
-  } catch { return false }
-}
-const PLAN_SNAPSHOT = snapshotArtifact(PLAN_REAL)
 const PLAN_TEXT = PLAN_SNAPSHOT.text
 const ACTUAL_PLAN_HASH = PLAN_SNAPSHOT.hash
 if (ACTUAL_PLAN_HASH !== PLAN_HASH) throw new Error('writing-review generated plan bytes no longer match args.planHash.')
@@ -171,11 +189,12 @@ for (const match of sourceBlock.matchAll(/^\s*(?:[-*]\s*)?(?:\*\*)?([A-Za-z][A-Z
 }
 const plannedBib = plannedSourcePlan.bibliography || ''
 const normalizedSourceEntries = value => JSON.stringify(Object.entries(value || {}).sort(([a], [b]) => a.localeCompare(b)))
-if (resolve(SECTION_INDEX.bibPath || '') !== resolve(PROJECT_REAL, plannedBib) || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
+const EXPECTED_BIB = resolvePath(PROJECT_REAL, plannedBib)
+if (resolvePath(SECTION_INDEX.bibPath || '') !== EXPECTED_BIB || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
   throw new Error('writing-review section index Source Plan context does not match the generated plan.')
 }
-const BIB_SNAPSHOT = snapshotArtifact(resolve(PROJECT_REAL, plannedBib))
-const bibSnapshotMatches = () => artifactMatchesSnapshot(BIB_SNAPSHOT)
+const BIB_SNAPSHOT = artifact('bib')
+if (resolvePath(BIB_SNAPSHOT.path) !== EXPECTED_BIB) throw new Error('writing-review authenticated bibliography is not the PLAN Source Plan bibliography.')
 const reviewBlock = PLAN_TEXT.match(/^## Review Surfaces\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const plannedSurfaces = [...reviewBlock.matchAll(/^\s*[-*]\s+(\S.*?)\s*$/gm)].map(match => match[1])
 if (JSON.stringify(SECTION_INDEX.reviewSurfaces || []) !== JSON.stringify(plannedSurfaces)) throw new Error('writing-review section index Review Surfaces do not match the generated plan.')
@@ -191,13 +210,12 @@ for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
   const section = SECTION_INDEX.sections[i]
   const row = outputRows[i]
   if (!row || row.section !== section.name) throw new Error('writing-review section index order does not match PLAN Section Outputs.')
-  const expectedOutline = resolve(PROJECT_REAL, row.outline)
-  const expectedDraft = resolve(PROJECT_REAL, row.draft)
-  for (const path of [expectedOutline, expectedDraft, resolve(section.outlineFile), resolve(section.draftFile)]) {
-    const rel = relative(PROJECT_REAL, path)
-    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error('writing-review rejected an artifact path outside projectDir.')
+  const expectedOutline = resolvePath(PROJECT_REAL, row.outline)
+  const expectedDraft = resolvePath(PROJECT_REAL, row.draft)
+  for (const path of [expectedOutline, expectedDraft, resolvePath(section.outlineFile), resolvePath(section.draftFile)]) {
+    if (!containedBy(PROJECT_REAL, path)) throw new Error('writing-review rejected an artifact path outside projectDir.')
   }
-  if (resolve(section.outlineFile) !== expectedOutline || resolve(section.draftFile) !== expectedDraft) {
+  if (resolvePath(section.outlineFile) !== expectedOutline || resolvePath(section.draftFile) !== expectedDraft) {
     throw new Error('writing-review section index artifact paths do not match PLAN Section Outputs.')
   }
   const expectedDependencies = !row['depends on'] || ['-', 'none', 'n/a'].includes(row['depends on'].toLowerCase()) ? [] : row['depends on'].split(/\s*(?:,|;)\s*/).filter(Boolean)
@@ -207,8 +225,11 @@ for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
   if (section.outlineCurrent !== true || section.draftCurrent !== true) {
     throw new Error(`writing-review requires current PLAN-bound outline and draft artifacts for ${section.name}.`)
   }
-  const outlineSnapshot = snapshotArtifact(expectedOutline)
-  const draftSnapshot = snapshotArtifact(expectedDraft)
+  const outlineSnapshot = artifact(SECTION_KEY(section.name, 'outline'))
+  const draftSnapshot = artifact(SECTION_KEY(section.name, 'draft'))
+  if (resolvePath(outlineSnapshot.path) !== expectedOutline || resolvePath(draftSnapshot.path) !== expectedDraft) {
+    throw new Error(`writing-review authenticated artifacts for ${section.name} are not the PLAN Section Outputs paths.`)
+  }
   artifactSnapshots[section.name] = { outline: outlineSnapshot, draft: draftSnapshot }
   const outlineText = outlineSnapshot.text
   const draftText = draftSnapshot.text
@@ -465,18 +486,18 @@ Per-section argument summaries + claims:\n${JSON.stringify(argSummaries, null, 2
 ])
 
 // ── Assemble structured findings + computed verdict (binary gate, in JS) ───────
+// Drift detection is the same guarantee, run on the other side of the workflow:
+// this script cannot re-stat anything, so it carries the entry hashes and the
+// deterministic post-step (`--verify --findings`) re-snapshots every artifact,
+// zeroes the finalOutlineHash/finalDraftHash of anything that moved, discards that
+// section's findings, and appends the critical artifact-integrity findings this
+// block used to append. verifyRequired below is the assertion that it must run.
 const artifactChanges = []
 for (const section of allSections) {
   const snapshots = artifactSnapshots[section.section]
-  section.finalOutlineHash = artifactMatchesSnapshot(snapshots.outline) ? snapshots.outline.hash : ''
-  section.finalDraftHash = artifactMatchesSnapshot(snapshots.draft) ? snapshots.draft.hash : ''
-  if (!section.finalOutlineHash) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: `${section.section} outline path, identity, metadata, or bytes changed during asynchronous review.`, location: snapshots.outline.path })
-  if (!section.finalDraftHash) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: `${section.section} draft path, identity, metadata, or bytes changed during asynchronous review.`, location: snapshots.draft.path })
+  section.finalOutlineHash = snapshots.outline.hash
+  section.finalDraftHash = snapshots.draft.hash
 }
-const finalPlanHash = artifactMatchesSnapshot(PLAN_SNAPSHOT) ? PLAN_SNAPSHOT.hash : ''
-if (finalPlanHash !== PLAN_HASH) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: 'Authenticated generated plan path, identity, metadata, or bytes changed during asynchronous review.', location: PLAN_REAL })
-if (!receiptSnapshotMatches()) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: 'Combined review receipt path, identity, metadata, or bytes changed during asynchronous review.', location: RECEIPT_PATH })
-if (!bibSnapshotMatches()) artifactChanges.push({ severity: 'critical', area: 'artifact-integrity', detail: 'Authenticated Source Plan bibliography path, identity, metadata, or bytes changed during asynchronous review.', location: BIB_SNAPSHOT.path })
 const sev = { critical: 0, major: 0, minor: 0 }
 for (const s of allSections) for (const i of (s.issues || [])) if (sev[i.severity] !== undefined) sev[i.severity]++
 // Document + transition issues count toward severity too.
@@ -535,7 +556,13 @@ log(substratePass
 return {
   planPath: PLAN_PATH,
   planHash: PLAN_HASH,
-  overallPass,                      // == substratePass: critical===0 && major===0 (minors are advisory, NOT blocking)
+  // Entry hashes. The post-step overwrites finalPlanHash / per-section final*Hash
+  // with '' for anything that drifted and flips the gate; until it has run this
+  // verdict is provisional, which is what verifyRequired announces.
+  finalPlanHash: PLAN_SNAPSHOT.hash,
+  verifyRequired: true,
+  driftVerified: false,
+  overallPass,                    // == substratePass: critical===0 && major===0 (minors are advisory, NOT blocking)
   substratePass,
   verdict,
   summary: { ...sev, total, blocking: sev.critical + sev.major, advisoryMinors: sev.minor },

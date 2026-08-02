@@ -13,6 +13,13 @@ export const meta = {
 // ── Inputs ──────────────────────────────────────────────────────────────────
 // args = {
 //   projectDir: "/abs/writing-project-dir",     // REQUIRED — holds .planning/, outlines/, drafts/
+//   projectReal: "/abs/resolved-project-dir",   // REQUIRED — bundle.projectReal from the authenticate pre-step
+//   artifacts: { receipt|plan|bib|"section:<name>:outline"|"section:<name>:draft": {path, real, hash, text} },
+//                                                // REQUIRED — bundle.artifacts from `writing_section_index.py --authenticate`.
+//                                                // INPUTS only. `section:<name>:draft` is present only for a section this
+//                                                // run does NOT redraft (a carried selective-retry section, whose draft
+//                                                // already existed at entry). Drafts this run produces are OUTPUTS and
+//                                                // cannot appear in an entry bundle — see the Gate phase.
 //   pluginRoot: "/abs/.../workflows",            // optional — for resolving the domain skill (writing-{style})
 //   outputSubdir: "drafts",                      // optional compatibility value; canonical execution rejects alternatives
 //   onlyChecks?: ["Part II", ...],                // re-run loop: re-draft only these sections; carry the rest
@@ -49,47 +56,76 @@ if (SECTION_INDEX.precisPath || (SECTION_INDEX.outlinePath && SECTION_INDEX.outl
   throw new Error('writing-draft rejected an index carrying retired active planning authority.')
 }
 
-const { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync, realpathSync } = await import('node:fs')
-const { createHash } = await import('node:crypto')
-const { isAbsolute, join, relative, resolve } = await import('node:path')
-const PROJECT_REAL = realpathSync(PROJECT)
-const sameState = (left, right) => left.dev === right.dev && left.ino === right.ino && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs
-const snapshotArtifact = path => {
-  let fd
-  try {
-    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW)
-    const opened = fstatSync(fd, { bigint: true })
-    if (!opened.isFile()) throw new Error(`writing-draft requires a regular non-symlink artifact: ${path}`)
-    const real = realpathSync(path); const rel = relative(PROJECT_REAL, real)
-    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error(`writing-draft artifact escapes projectDir: ${path}`)
-    const beforePath = lstatSync(path, { bigint: true })
-    if (beforePath.isSymbolicLink() || !sameState(opened, beforePath)) throw new Error(`writing-draft artifact identity changed before read: ${path}`)
-    const bytes = readFileSync(fd)
-    const afterFd = fstatSync(fd, { bigint: true })
-    const afterPath = lstatSync(path, { bigint: true })
-    if (afterPath.isSymbolicLink() || realpathSync(path) !== real || !sameState(opened, afterFd) || !sameState(opened, afterPath)) throw new Error(`writing-draft artifact changed during read: ${path}`)
-    return { path, real, text: bytes.toString('utf8'), hash: createHash('sha256').update(bytes).digest('hex'), dev: opened.dev, ino: opened.ino, size: opened.size, mtimeNs: opened.mtimeNs, ctimeNs: opened.ctimeNs }
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith('writing-draft ')) throw error
-    throw new Error(`writing-draft requires a stable regular non-symlink artifact: ${path}`)
-  } finally {
-    if (fd !== undefined) closeSync(fd)
+// ── Authenticated artifact bundle (no filesystem access in here) ─────────────
+// Workflow scripts are pure control flow: the runtime rejects import(), import.meta,
+// process, and Buffer. The TOCTOU-hardened snapshot/hash/read that used to run here
+// now runs in scripts/writing/writing_section_index.py --authenticate, the same
+// deterministic pre-step that compiles this index, and arrives via args.artifacts.
+// It is NOT delegated to an agent: the section index already comes from an agent, and
+// asking the untrusted party to vouch for its own artifacts is not authentication.
+//
+// writing-draft is a WRITER, so the split matters here in a way it does not in
+// writing-review. Only the artifacts that exist BEFORE dispatch — receipt, plan, bib,
+// every section outline, and the already-written drafts of carried selective-retry
+// sections — can be authenticated by an entry bundle. The drafts this run produces
+// come into existence AFTER dispatch, inside untrusted agents; no entry snapshot can
+// speak for them, and an agent's self-reported bytes are not evidence about the file
+// it wrote. Those are verified by the deterministic post-step (`--verify --findings`),
+// which is why this run returns verifyRequired: true.
+const isAbs = value => typeof value === 'string' && value.startsWith('/')
+const normalizePath = value => {
+  const out = []
+  for (const segment of String(value).split('/')) {
+    if (!segment || segment === '.') continue
+    if (segment === '..') { out.pop(); continue }
+    out.push(segment)
   }
+  return '/' + out.join('/')
 }
-const artifactMatchesSnapshot = snapshot => {
-  try {
-    const current = snapshotArtifact(snapshot.path)
-    return current.real === snapshot.real && current.hash === snapshot.hash && current.dev === snapshot.dev && current.ino === snapshot.ino && current.size === snapshot.size && current.mtimeNs === snapshot.mtimeNs && current.ctimeNs === snapshot.ctimeNs
-  } catch { return false }
+// resolve() over already-absolute inputs only. A relative or empty input is a
+// missing authenticated value, and yields a sentinel that can never compare equal
+// to a real path — the pre-extraction code reached cwd here and failed the same way.
+const INVALID = '<unauthenticated-path>'
+const resolvePath = (...parts) => {
+  let base = ''
+  for (const part of parts) {
+    if (!part || typeof part !== 'string') return INVALID
+    base = isAbs(part) ? part : (base ? `${base}/${part}` : INVALID)
+    if (base === INVALID) return INVALID
+  }
+  return base ? normalizePath(base) : INVALID
 }
+const joinPath = (...parts) => normalizePath(parts.join('/'))
+// Strict containment: equivalent to the old `relative()` test — an empty relative
+// path (same file), a '..' prefix, or an absolute result all fail closed.
+const containedBy = (root, path) => typeof path === 'string' && path !== INVALID && path !== root && path.startsWith(`${root}/`)
+
+const PROJECT_REAL = typeof cfg.projectReal === 'string' ? cfg.projectReal : ''
+if (!isAbs(PROJECT_REAL) || normalizePath(PROJECT_REAL) !== PROJECT_REAL) {
+  throw new Error('writing-draft requires args.projectReal: the absolute resolved projectDir emitted by writing_section_index.py --authenticate.')
+}
+const ARTIFACTS = (cfg.artifacts && typeof cfg.artifacts === 'object' && !Array.isArray(cfg.artifacts)) ? cfg.artifacts : null
+if (!ARTIFACTS) throw new Error('writing-draft requires args.artifacts: the authenticated bundle from writing_section_index.py --authenticate.')
+const HEX64 = /^[0-9a-f]{64}$/
+const artifact = key => {
+  const snapshot = ARTIFACTS[key]
+  if (!snapshot || typeof snapshot !== 'object') throw new Error(`writing-draft is missing an authenticated artifact: ${key}`)
+  const { path, real, hash, text } = snapshot
+  if (!isAbs(path) || !isAbs(real) || typeof text !== 'string' || !HEX64.test(String(hash))) {
+    throw new Error(`writing-draft rejected a malformed authenticated artifact: ${key}`)
+  }
+  if (!containedBy(PROJECT_REAL, normalizePath(real))) throw new Error(`writing-draft artifact escapes projectDir: ${key} (${real})`)
+  return { path, real: normalizePath(real), hash, text }
+}
+const SECTION_KEY = (name, kind) => `section:${name}:${kind}`
 const PLAN_FILE = typeof SECTION_INDEX.planFile === 'string' ? SECTION_INDEX.planFile : ''
 if (!/^\.planning\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(PLAN_FILE) || PLAN_FILE === '.planning/PLAN.md' || SECTION_INDEX.reviewStatus !== 'APPROVED') {
   throw new Error('writing-draft requires an APPROVED receipt-selected generated planFile; fixed PLAN.md and non-approved review state cannot authorize implementation.')
 }
-const EXPECTED_PLAN = resolve(PROJECT_REAL, PLAN_FILE)
-const PLAN_REAL = realpathSync(PLAN_PATH)
-const PLAN_RELATIVE = relative(join(PROJECT_REAL, '.planning'), PLAN_REAL)
-if (PLAN_REAL !== EXPECTED_PLAN || !PLAN_RELATIVE || PLAN_RELATIVE.startsWith('..') || isAbsolute(PLAN_RELATIVE)) {
+const EXPECTED_PLAN = resolvePath(PROJECT_REAL, PLAN_FILE)
+const PLAN_SNAPSHOT = artifact('plan')
+const PLAN_REAL = PLAN_SNAPSHOT.real
+if (resolvePath(PLAN_PATH) !== resolvePath(PLAN_SNAPSHOT.path) || PLAN_REAL !== EXPECTED_PLAN || !containedBy(joinPath(PROJECT_REAL, '.planning'), PLAN_REAL)) {
   throw new Error('writing-draft planPath must equal the receipt-selected generated planFile and may not escape through a symlink.')
 }
 const parseFlatStringJson = raw => {
@@ -120,8 +156,9 @@ const parseFlatStringJson = raw => {
   skip(); if (index !== text.length) throw new Error('trailing content')
   return value
 }
-const RECEIPT_PATH = join(PROJECT_REAL, '.planning', '.state', 'review.json')
-const RECEIPT_SNAPSHOT = snapshotArtifact(RECEIPT_PATH)
+const RECEIPT_PATH = joinPath(PROJECT_REAL, '.planning', '.state', 'review.json')
+const RECEIPT_SNAPSHOT = artifact('receipt')
+if (resolvePath(RECEIPT_SNAPSHOT.path) !== RECEIPT_PATH) throw new Error('writing-draft authenticated receipt is not the projectDir combined review state.')
 const receiptKeys = ['workflow', 'plan_file', 'plan_hash', 'approved_session_id', 'approved_at', 'status', 'reviewer_session_id', 'reviewed_at']
 const strictUtc = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
 const receiptApproved = value => Object.keys(value).length === receiptKeys.length && receiptKeys.every(key => Object.hasOwn(value, key)) && value.workflow === 'writing' && `.planning/${value.plan_file}` === PLAN_FILE && value.plan_hash === PLAN_HASH && value.status === 'APPROVED' && typeof value.approved_session_id === 'string' && !!value.approved_session_id.trim() && typeof value.reviewer_session_id === 'string' && !!value.reviewer_session_id.trim() && value.approved_session_id !== value.reviewer_session_id && strictUtc(value.approved_at) && strictUtc(value.reviewed_at) && Date.parse(value.reviewed_at) > Date.parse(value.approved_at)
@@ -130,14 +167,6 @@ try { receipt = parseFlatStringJson(RECEIPT_SNAPSHOT.text) } catch { throw new E
 if (!receiptApproved(receipt)) {
   throw new Error('writing-draft combined review state does not authenticate the supplied generated plan identity.')
 }
-const receiptSnapshotMatches = () => {
-  try {
-    const current = snapshotArtifact(RECEIPT_PATH)
-    const parsed = parseFlatStringJson(current.text)
-    return current.real === RECEIPT_SNAPSHOT.real && current.hash === RECEIPT_SNAPSHOT.hash && current.dev === RECEIPT_SNAPSHOT.dev && current.ino === RECEIPT_SNAPSHOT.ino && current.size === RECEIPT_SNAPSHOT.size && current.mtimeNs === RECEIPT_SNAPSHOT.mtimeNs && current.ctimeNs === RECEIPT_SNAPSHOT.ctimeNs && receiptApproved(parsed)
-  } catch { return false }
-}
-const PLAN_SNAPSHOT = snapshotArtifact(PLAN_REAL)
 const PLAN_TEXT = PLAN_SNAPSHOT.text
 const ACTUAL_PLAN_HASH = PLAN_SNAPSHOT.hash
 if (ACTUAL_PLAN_HASH !== PLAN_HASH) throw new Error('writing-draft generated plan bytes no longer match args.planHash.')
@@ -173,11 +202,12 @@ for (const match of sourceBlock.matchAll(/^\s*(?:[-*]\s*)?(?:\*\*)?([A-Za-z][A-Z
 }
 const plannedBib = plannedSourcePlan.bibliography || ''
 const normalizedSourceEntries = value => JSON.stringify(Object.entries(value || {}).sort(([a], [b]) => a.localeCompare(b)))
-if (resolve(SECTION_INDEX.bibPath || '') !== resolve(PROJECT_REAL, plannedBib) || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
+const EXPECTED_BIB = resolvePath(PROJECT_REAL, plannedBib)
+if (resolvePath(SECTION_INDEX.bibPath || '') !== EXPECTED_BIB || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
   throw new Error('writing-draft section index Source Plan context does not match the generated plan.')
 }
-const BIB_SNAPSHOT = snapshotArtifact(resolve(PROJECT_REAL, plannedBib))
-const bibSnapshotMatches = () => artifactMatchesSnapshot(BIB_SNAPSHOT)
+const BIB_SNAPSHOT = artifact('bib')
+if (resolvePath(BIB_SNAPSHOT.path) !== EXPECTED_BIB) throw new Error('writing-draft authenticated bibliography is not the PLAN Source Plan bibliography.')
 const reviewBlock = PLAN_TEXT.match(/^## Review Surfaces\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const plannedSurfaces = [...reviewBlock.matchAll(/^\s*[-*]\s+(\S.*?)\s*$/gm)].map(match => match[1])
 if (JSON.stringify(SECTION_INDEX.reviewSurfaces || []) !== JSON.stringify(plannedSurfaces)) throw new Error('writing-draft section index Review Surfaces do not match the generated plan.')
@@ -187,19 +217,19 @@ const mapHeaders = mapLines.length ? cells(mapLines[0]).map(h => h.toLowerCase()
 const mapRows = mapLines.slice(2).map(line => Object.fromEntries(mapHeaders.map((h, i) => [h, cells(line)[i] || ''])))
 const expectedClaims = Object.fromEntries(indexedNames.map(name => [name, []]))
 const admittedOutlineSnapshots = {}
+const expectedDraftPaths = {}
 for (const row of mapRows) if (expectedClaims[row.section]) expectedClaims[row.section].push(row.claim)
 if (outputRows.length !== SECTION_INDEX.sections.length) throw new Error('writing-draft section index does not contain every PLAN Section Outputs row.')
 for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
   const section = SECTION_INDEX.sections[i]
   const row = outputRows[i]
   if (!row || row.section !== section.name) throw new Error('writing-draft section index order does not match PLAN Section Outputs.')
-  const expectedOutline = resolve(PROJECT_REAL, row.outline)
-  const expectedDraft = resolve(PROJECT_REAL, row.draft)
-  for (const path of [expectedOutline, expectedDraft, resolve(section.outlineFile), resolve(section.draftFile)]) {
-    const rel = relative(PROJECT_REAL, path)
-    if (!rel || rel.startsWith('..') || isAbsolute(rel)) throw new Error('writing-draft rejected an artifact path outside projectDir.')
+  const expectedOutline = resolvePath(PROJECT_REAL, row.outline)
+  const expectedDraft = resolvePath(PROJECT_REAL, row.draft)
+  for (const path of [expectedOutline, expectedDraft, resolvePath(section.outlineFile), resolvePath(section.draftFile)]) {
+    if (!containedBy(PROJECT_REAL, path)) throw new Error('writing-draft rejected an artifact path outside projectDir.')
   }
-  if (resolve(section.outlineFile) !== expectedOutline || resolve(section.draftFile) !== expectedDraft) {
+  if (resolvePath(section.outlineFile) !== expectedOutline || resolvePath(section.draftFile) !== expectedDraft) {
     throw new Error('writing-draft section index artifact paths do not match PLAN Section Outputs.')
   }
   const expectedDependencies = !row['depends on'] || ['-', 'none', 'n/a'].includes(row['depends on'].toLowerCase()) ? [] : row['depends on'].split(/\s*(?:,|;)\s*/).filter(Boolean)
@@ -207,8 +237,12 @@ for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
   const claimsForSection = expectedClaims[section.name] || []
   if (JSON.stringify(section.primaryClaims || []) !== JSON.stringify(claimsForSection)) throw new Error('writing-draft section index claims do not match PLAN Claim → Section Map.')
   if (section.outlineCurrent !== true) throw new Error(`writing-draft requires a current PLAN-bound detailed outline for ${section.name}: ${(section.outlineIssues || []).join('; ')}`)
-  const outlineSnapshot = snapshotArtifact(expectedOutline)
+  const outlineSnapshot = artifact(SECTION_KEY(section.name, 'outline'))
+  if (resolvePath(outlineSnapshot.path) !== expectedOutline) {
+    throw new Error(`writing-draft authenticated outline for ${section.name} is not the PLAN Section Outputs path.`)
+  }
   admittedOutlineSnapshots[section.name] = outlineSnapshot
+  expectedDraftPaths[section.name] = expectedDraft
   const outlineText = outlineSnapshot.text
   const outlineIdentity = artifactIdentity(outlineText)
   const outlineBullets = outlineText.split('\n').filter(line => /^\s*(?:[-*]|\d+\.)\s+\S/.test(line)).length
@@ -338,7 +372,14 @@ for (const s of draftable) {
   if (ONLY && !ONLY.has(String(s.name))) {
     const prior = PRIOR.get(String(s.name))
     const outlineHash = outlineSnapshots[String(s.name)].hash
-    const draftSnapshot = snapshotArtifact(s.draftFile)
+    // A carried section is NOT redrafted, so its draft already existed at entry and IS
+    // an authenticable input: the bundle must carry it, and the prior result's draftHash
+    // must equal the bytes the pre-step actually opened. (The live branch below has no
+    // such entry snapshot — that draft does not exist yet.)
+    const draftSnapshot = artifact(SECTION_KEY(String(s.name), 'draft'))
+    if (resolvePath(draftSnapshot.path) !== resolvePath(expectedDraftPaths[String(s.name)])) {
+      throw new Error(`writing-draft authenticated carried draft for ${s.name} is not the PLAN Section Outputs path.`)
+    }
     const verify = prior?.verify
     if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== outlineHash || prior.draftHash !== draftSnapshot.hash || prior.status !== 'drafted' || !verify || verify.coverageOk !== true || verify.fidelityOk !== true || verify.transitionOk === false || !Array.isArray(verify.findings)) {
       throw new Error(`writing-draft selective retry requires one complete current-content prior result for ${s.name}.`)
@@ -401,14 +442,20 @@ Return VERIFY_SCHEMA.`
   tasks.push(() => (async () => {
     const t = await agent(draftPrompt, { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA })
     if (!t) return null
-    const draftSnapshot = snapshotArtifact(s.draftFile)
+    // The draft the agent just wrote is an OUTPUT: it did not exist when the bundle was
+    // built, and this script cannot open or hash it. t.content is the agent's account of
+    // what it wrote, not evidence about the file — so it is carried out to the post-step,
+    // which re-snapshots ${s.draftFile} and confirms the bytes on disk equal it.
     const v = await agent(buildVerifyPrompt(t), { label: `verify:${s.name}`, phase: 'Verify', schema: VERIFY_SCHEMA, model: 'sonnet' })
-    return { expectedSection: String(s.name), transform: t, verify: v, draftSnapshot }
+    return { expectedSection: String(s.name), transform: t, verify: v, draftSnapshot: null }
   })())
 }
 const liveResults = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-draft: ${drafted} section(s) live, ${carriedCount} carried`)
-for (const result of liveResults) draftSnapshots[result.expectedSection] = result.draftSnapshot
+// draftSnapshots holds ONLY authenticated entry snapshots — i.e. carried sections. A live
+// section's draft has no authenticated bytes in this process, and pretending otherwise by
+// storing the agent's echo under a snapshot-shaped key is exactly the confusion to avoid.
+const pendingDraftVerification = liveResults.map(result => result.expectedSection)
 // A verifier result is evidence only for the section captured when its dispatch was created.
 // Never let a swapped self-reported echo rebind it to a different section.
 const verifyByName = Object.fromEntries(liveResults
@@ -417,9 +464,17 @@ const verifyByName = Object.fromEntries(liveResults
 
 // ── Phase 4: Gate (pure JS — substrate split: drafted + coverage + fidelity + transitions) ─
 phase('Gate')
-const PLAN_STILL_CURRENT = artifactMatchesSnapshot(PLAN_SNAPSHOT)
-const RECEIPT_STILL_CURRENT = receiptSnapshotMatches()
-const BIB_STILL_CURRENT = bibSnapshotMatches()
+// Two things this gate can no longer do in-process, and how each is handled:
+//   1. DRIFT of authenticated inputs (plan, receipt, bib, outlines, carried drafts). Same
+//      guarantee, run on the other side of the workflow: the entry hashes are returned and
+//      the deterministic post-step (`--verify --findings`) re-snapshots each one, zeroes the
+//      hash of anything that moved, and appends the critical artifact-integrity findings
+//      this block used to append.
+//   2. OUTPUT verification of the drafts this run wrote. There is no entry snapshot to
+//      compare against — the file did not exist yet — so the post-step must read each live
+//      section's draftFile and confirm it equals reportedContent below. Until it does, a
+//      live section's `drafted` is the agent's own account of its work. verifyRequired
+//      announces that the returned verdict is provisional for exactly that reason.
 const transformByName = Object.fromEntries([
   ...liveResults.map(result => [result.expectedSection, result.transform]),
   ...carried.map(result => [String(result.section), result]),
@@ -427,9 +482,6 @@ const transformByName = Object.fromEntries([
 const SEV_RANK = { critical: 0, major: 1, minor: 2 }
 const rows = []
 const findings = []
-if (!PLAN_STILL_CURRENT) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: 'PLAN', area: 'artifact-integrity', detail: 'Authenticated generated plan bytes changed during drafting review.', location: PLAN_PATH, retryKey: 'artifact:plan' })
-if (!RECEIPT_STILL_CURRENT) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: 'RECEIPT', area: 'artifact-integrity', detail: 'Combined review receipt path, identity, metadata, or bytes changed during drafting review.', location: RECEIPT_PATH, retryKey: 'artifact:receipt' })
-if (!BIB_STILL_CURRENT) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: 'BIBLIOGRAPHY', area: 'artifact-integrity', detail: 'Authenticated Source Plan bibliography path, identity, metadata, or bytes changed during drafting review.', location: BIB_SNAPSHOT.path, retryKey: 'artifact:bibliography' })
 
 // Structureless outlines are blocking: no paragraph-level spec to expand, so we did NOT draft — bounce to writing-outline.
 for (const s of underGranular) {
@@ -441,13 +493,20 @@ for (const s of draftable) {
   const name = String(s.name)
   const t = transformByName[name]
   const v = verifyByName[name] || (!liveDispatchNames.has(name) && PRIOR.has(name) ? PRIOR.get(name).verify : null)
+  // A carried section's draft bytes ARE authenticated (entry snapshot); a live section's are
+  // not — its only account is the agent's own `content`, which the post-step must confirm
+  // against the file. Everything below that is a comparison of DATA (echoed section name,
+  // status, exact PLAN-owned path, frontmatter identity, claim mapping) still runs here on
+  // whichever text this run legitimately has.
   const draftSnapshot = draftSnapshots[name]
-  const draftUnchanged = !!draftSnapshot && artifactMatchesSnapshot(draftSnapshot)
-  const canonicalDraftText = draftSnapshot?.text || ''
-  const canonicalIdentity = artifactIdentity(canonicalDraftText)
+  const contentAuthenticated = !!draftSnapshot
+  const draftText = contentAuthenticated ? draftSnapshot.text : (typeof t?.content === 'string' ? t.content : '')
+  const canonicalIdentity = artifactIdentity(draftText)
   const mappedClaims = s.precisClaim ? s.precisClaim.split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)) : []
-  const outlineUnchanged = artifactMatchesSnapshot(outlineSnapshots[name])
-  const isDrafted = !!t && String(t.section) === name && t.status === 'drafted' && resolve(t.draftFile) === resolve(s.draftFile) && draftUnchanged && t.content === canonicalDraftText && canonicalIdentity.valid && canonicalIdentity.planHash === PLAN_HASH && JSON.stringify(canonicalIdentity.implements) === JSON.stringify(mappedClaims) && outlineUnchanged
+  // A carried result's stored content must still equal the bytes the pre-step opened; a live
+  // result has nothing to compare `content` to until the post-step reads the file.
+  const contentMatchesDisk = contentAuthenticated ? t?.content === draftSnapshot.text : null
+  const isDrafted = !!t && String(t.section) === name && t.status === 'drafted' && resolvePath(t.draftFile) === resolvePath(s.draftFile) && contentMatchesDisk !== false && canonicalIdentity.valid && canonicalIdentity.planHash === PLAN_HASH && JSON.stringify(canonicalIdentity.implements) === JSON.stringify(mappedClaims)
   const coverage = !!v && v.coverageOk === true
   const fidelity = !!v && v.fidelityOk === true
   const transition = !!v && v.transitionOk !== false   // no verify (e.g. not drafted) ⇒ false, matching coverage/fidelity
@@ -456,7 +515,9 @@ for (const s of draftable) {
   // Substrate: drafted AND coverage AND fidelity AND transitions hold AND no blocking finding.
   // Minor prose nits are advisory here — writing-review owns document-quality polish.
   const pass = isDrafted && coverage && fidelity && transition && blocking.length === 0
-  rows.push({ section: name, drafted: isDrafted, coverage, fidelity, transition, pass })
+  // draftFile + reportedContent are the post-step's inputs for output verification: it
+  // re-snapshots draftFile and fails the section if the bytes differ from reportedContent.
+  rows.push({ section: name, drafted: isDrafted, coverage, fidelity, transition, pass, draftFile: s.draftFile, contentAuthenticated, reportedContent: typeof t?.content === 'string' ? t.content : '' })
   if (!isDrafted) findings.push({ severity: 'critical', planHash: PLAN_HASH, section: name, area: 'draft-integrity', detail: `${name}: not drafted or exact path/content/frontmatter identity changed (status=${t ? t.status : 'missing'}).`, location: s.draftFile, retryKey: `section:${name}:draft-integrity` })
   if (!v) {
     findings.push({ severity: 'critical', planHash: PLAN_HASH, section: name, area: 'reviewer-integrity', detail: `${name}: independent draft verification was missing or returned the wrong section identity.`, location: s.draftFile, retryKey: `section:${name}:reviewer-missing` })
@@ -476,7 +537,9 @@ const severityCounts = {
 }
 const blockingCount = severityCounts.critical + severityCounts.major
 const minorCount = severityCounts.minor
-const substratePass = PLAN_STILL_CURRENT && RECEIPT_STILL_CURRENT && BIB_STILL_CURRENT && rows.length > 0 && rows.every(r => r.pass)
+// Provisional: input drift and live-draft output verification are both post-step verdicts,
+// and both can only ever subtract from this. The post-step recomputes it.
+const substratePass = rows.length > 0 && rows.every(r => r.pass)
 const overallPass = substratePass
 const verdict = !substratePass ? 'GAPS FOUND' : (minorCount ? 'DRAFTED (advisory minor notes)' : 'DRAFTED')
 
@@ -494,6 +557,16 @@ log(overallPass
 return {
   planPath: PLAN_PATH,
   planHash: PLAN_HASH,
+  // Entry hashes for the authenticated INPUTS. The post-step overwrites finalPlanHash and
+  // each review's outlineHash/draftHash with '' for anything that drifted, fills in the
+  // draftHash of every live section from the file it actually reads, and flips the gate.
+  // Until it has run this verdict is provisional — that is what verifyRequired announces.
+  finalPlanHash: PLAN_SNAPSHOT.hash,
+  verifyRequired: true,
+  driftVerified: false,
+  // Live sections wrote OUTPUTS this script cannot hash: the post-step must read each
+  // section's draftFile and confirm it equals that row's reportedContent.
+  pendingDraftVerification,
   overallPass,
   substratePass,
   verdict,
@@ -509,14 +582,15 @@ return {
     ...liveResults.map(result => {
       const section = result.expectedSection
       const transformBound = String(result.transform?.section) === section
-      const snapshot = draftSnapshots[section]
       return {
         ...result.transform,
         section,
         status: transformBound ? result.transform?.status : 'error',
         planHash: PLAN_HASH,
         outlineHash: outlineSnapshots[section].hash,
-        draftHash: snapshot && artifactMatchesSnapshot(snapshot) ? snapshot.hash : '',
+        // No entry snapshot exists for a draft this run wrote — the post-step fills this in
+        // from the file. An empty draftHash here means "not yet verified", never "verified".
+        draftHash: '',
         verify: transformBound ? (verifyByName[section] || null) : null,
       }
     }),
@@ -528,7 +602,9 @@ return {
         section,
         planHash: PLAN_HASH,
         outlineHash: outlineSnapshots[section].hash,
-        draftHash: snapshot && artifactMatchesSnapshot(snapshot) ? snapshot.hash : '',
+        // Carried sections DO have an authenticated entry snapshot; the post-step zeroes it
+        // if the file moved while the live sections were being drafted.
+        draftHash: snapshot ? snapshot.hash : '',
         verify: record.verify || null,
       }
     }),

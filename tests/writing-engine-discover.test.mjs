@@ -1,15 +1,82 @@
+// The writing engines are pure control flow: the Workflow runtime rejects `import()`,
+// `import.meta`, `process`, and `Buffer`, so neither script can open, hash, or re-stat a
+// file. Every test here therefore drives the real three-step contract —
+//   1. authenticate  (`writing_section_index.py --authenticate <project>`)
+//   2. dispatch      (the workflow, over the bundle, with no filesystem in scope)
+//   3. verify        (`writing_section_index.py --verify <bundle> --findings <result>`)
+// — rather than a harness that hands the script an environment it will never have. Checks
+// that used to run inside the orchestrator are asserted in whichever layer now owns them:
+// TOCTOU snapshotting and drift in the Python pre/post-step, and every pure data
+// comparison (receipt schema, PLAN grammar, path identity, claim mapping) still in the JS.
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, test } from 'bun:test'
+import { afterAll, describe, expect, test } from 'bun:test'
 
 const ROOT = new URL('..', import.meta.url).pathname
+const COMPILER = ROOT + 'scripts/writing/writing_section_index.py'
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 const draftSrc = readFileSync(ROOT + 'workflows/writing-draft.js', 'utf8').replace(/^export const meta/m, 'const meta')
 const reviewSrc = readFileSync(ROOT + 'workflows/writing-review.js', 'utf8').replace(/^export const meta/m, 'const meta')
 
-async function exec(src, { args, onAgent = () => ({}) }) {
+// The compiler exits non-zero whenever it refuses (failed authentication, detected drift);
+// those are the interesting cases, so the exit status is captured with the payload instead
+// of thrown away.
+function compiler(...argv) {
+  try { return { payload: JSON.parse(execFileSync('python3', [COMPILER, ...argv], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })), status: 0 } }
+  catch (error) { return { payload: JSON.parse(error.stdout), status: error.status } }
+}
+// `drafts` selects which section drafts belong in the ENTRY bundle, and it is the
+// difference between an input and an output. writing-review authenticates every draft
+// (default `all`). A full writing-draft run authenticates NONE — those files are what the
+// run produces, and a pre-run snapshot of one would be reported as drift the moment the
+// drafting agent legitimately rewrote it. A selective retry authenticates exactly the
+// CARRIED sections' drafts.
+const authenticate = (project, drafts) => compiler('--authenticate', project, ...(drafts ? ['--drafts', drafts] : []))
+
+// The rule above, applied once rather than restated at twenty call sites: a drafting run
+// authenticates the drafts it is NOT redrafting.
+function draftsFor(src, args) {
+  if (src !== draftSrc) return undefined
+  const only = Array.isArray(args.onlyChecks) ? args.onlyChecks.map(String) : []
+  if (!only.length) return 'none'
+  const carried = (args.sectionIndex?.sections || []).map(section => String(section.name)).filter(name => !only.includes(name))
+  return carried.length ? carried.join(',') : 'none'
+}
+
+// The post-step: re-snapshot every authenticated artifact and finalize the provisional
+// verdict the workflow returned. This is where drift detection lives now — the workflow
+// cannot re-stat anything, which is exactly what its `verifyRequired: true` announces.
+function finalize(bundle, result) {
+  const scratch = mkdtempSync(join(tmpdir(), 'writing-engine-verify-'))
+  TEMPS.push(scratch)
+  const bundlePath = join(scratch, 'bundle.json')
+  const resultPath = join(scratch, 'result.json')
+  writeFileSync(bundlePath, JSON.stringify(bundle))
+  writeFileSync(resultPath, JSON.stringify(result))
+  return compiler('--verify', bundlePath, '--findings', resultPath)
+}
+
+// A bundle whose receipt snapshot carries different bytes than the pre-step read. The
+// pre-step is trusted to deliver BYTES and nothing more: every statement about what those
+// bytes SAY is re-derived inside the workflow, and these helpers are how that boundary is
+// exercised directly (the pre-step itself refuses these inputs — asserted alongside).
+const withReceiptText = (bundle, text) => ({
+  ...bundle,
+  artifacts: { ...bundle.artifacts, receipt: { ...bundle.artifacts.receipt, text, hash: createHash('sha256').update(Buffer.from(text, 'utf8')).digest('hex') } },
+})
+const withReceiptReal = (bundle, real) => ({
+  ...bundle,
+  artifacts: { ...bundle.artifacts, receipt: { ...bundle.artifacts.receipt, real } },
+})
+
+// `process`, `Buffer`, `require`, `module`, and `exports` are declared as trailing
+// parameters so they are `undefined` inside the script — matching the Workflow runtime,
+// where those globals do not exist. (`import()` and `import.meta` are syntax, not
+// bindings, and cannot be shadowed; tests/workflow-runtime-purity.test.mjs forbids them.)
+async function exec(src, { args, onAgent = () => ({}), bundle, drafts }) {
   const trace = { labels: [], prompts: [] }
   const agent = async (prompt, opts = {}) => {
     const label = opts.label || ''
@@ -23,14 +90,19 @@ async function exec(src, { args, onAgent = () => ({}) }) {
   const phase = () => {}
   const fn = new AsyncFunction(
     'agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget',
-    src + '\n;return (typeof __ret!=="undefined")?__ret:undefined',
+    'process', 'Buffer', 'require', 'module', 'exports',
+    src,
   )
-  const result = await fn(agent, parallel, pipeline, log, phase, args, {
-    total: null,
-    spent: () => 0,
-    remaining: () => Infinity,
-  })
-  return { result, trace }
+  // Authentication happens immediately before dispatch, as the skill runs it, so a test
+  // that mutates the project between fixture() and exec() is authenticated as mutated.
+  const auth = bundle || authenticate(args.projectDir, drafts ?? draftsFor(src, args)).payload
+  const result = await fn(
+    agent, parallel, pipeline, log, phase,
+    { projectReal: auth.projectReal, artifacts: auth.artifacts, ...args },
+    { total: null, spent: () => 0, remaining: () => Infinity },
+    undefined, undefined, undefined, undefined, undefined,
+  )
+  return { result, trace, bundle: auth }
 }
 
 const PLAN = `# Article
@@ -78,8 +150,14 @@ Argument.
 - Citation fidelity.
 `
 
-function fixture() {
-  const project = mkdtempSync(join(tmpdir(), 'writing-engine-'))
+const TEMPS = []
+// `withDrafts: false` is a project that has been planned and outlined but never drafted —
+// the state a FIRST writing-draft run actually starts from.
+function fixture({ withDrafts = true } = {}) {
+  // Resolved path: every authenticated artifact path is compared against a path built from
+  // bundle.projectReal, so the fixture must speak in resolved paths too.
+  const project = realpathSync(mkdtempSync(join(tmpdir(), 'writing-engine-')))
+  TEMPS.push(project)
   for (const dir of ['.planning/.state', 'outlines', 'drafts', 'references']) mkdirSync(join(project, dir), { recursive: true })
   const planFile = '.planning/peaceful-engine-plan.md'
   const planPath = join(project, planFile)
@@ -93,59 +171,16 @@ function fixture() {
   writeFileSync(join(project, 'references', 'sources.bib'), '@article{case2024,title={Case}}\n')
   writeFileSync(join(project, 'outlines', 'intro-outline.md'), `---\nimplements: []\nplan_hash: ${planHash}\n---\n- One\n- Two\n- Three\n`)
   writeFileSync(join(project, 'outlines', 'argument.md'), `---\nimplements: [CLAIM-01]\nplan_hash: ${planHash}\n---\n- One\n- Two\n- Three\n`)
-  writeFileSync(join(project, 'drafts', '01-introduction.md'), `---\nimplements: []\nplan_hash: ${planHash}\n---\nIntroduction.\n`)
-  writeFileSync(join(project, 'drafts', '02-argument.md'), `---\nimplements: [CLAIM-01]\nplan_hash: ${planHash}\n---\nCLAIM-01 argument.\n`)
-  const sections = [
-    {
-      name: 'Introduction',
-      outlineFile: join(project, 'outlines', 'intro-outline.md'),
-      draftFile: join(project, 'drafts', '01-introduction.md'),
-      primaryClaims: [],
-      implements: [],
-      dependencies: [],
-      sourcesPinned: true,
-      granular: true,
-      granularityNote: '',
-      outlineCurrent: true,
-      draftCurrent: true,
-      outlineIssues: [],
-      draftIssues: [],
-      prevName: '',
-      nextName: 'Part I',
-    },
-    {
-      name: 'Part I',
-      outlineFile: join(project, 'outlines', 'argument.md'),
-      draftFile: join(project, 'drafts', '02-argument.md'),
-      primaryClaims: ['CLAIM-01'],
-      implements: ['CLAIM-01'],
-      dependencies: ['Introduction'],
-      sourcesPinned: true,
-      granular: true,
-      granularityNote: '',
-      outlineCurrent: true,
-      draftCurrent: true,
-      outlineIssues: [],
-      draftIssues: [],
-      prevName: 'Introduction',
-      nextName: '',
-    },
-  ]
-  const index = {
-    ok: true,
-    style: 'legal',
-    planFile,
-    planPath,
-    planHash,
-    reviewStatus: 'APPROVED',
-    precisPath: '',
-    outlinePath: '',
-    bibPath: join(project, 'references', 'sources.bib'),
-    sourcePlan: { bibliography: 'references/sources.bib', notebook: 'none', 'notebook url': 'none', 'key sources': 'case2024' },
-    reviewSurfaces: ['Claim and structure coverage.', 'Citation fidelity.'],
-    sections,
+  if (withDrafts) {
+    writeFileSync(join(project, 'drafts', '01-introduction.md'), `---\nimplements: []\nplan_hash: ${planHash}\n---\nIntroduction.\n`)
+    writeFileSync(join(project, 'drafts', '02-argument.md'), `---\nimplements: [CLAIM-01]\nplan_hash: ${planHash}\n---\nCLAIM-01 argument.\n`)
   }
-  return { project, planPath, planHash, index }
+  // The section index is no longer hand-built: it comes from the same deterministic
+  // compiler run that authenticates the artifacts, which is the only index the engines
+  // will ever be handed in production.
+  const { payload, status } = authenticate(project, withDrafts ? undefined : 'none')
+  if (status !== 0 || payload.ok !== true) throw new Error(`fixture failed to authenticate: ${JSON.stringify(payload.violations)}`)
+  return { project, planFile, planPath, planHash, bundle: payload, index: payload.index }
 }
 
 function draftAgentFor(f, { wrongHash = false, wrongPath = false, skipWrite = false } = {}) {
@@ -166,6 +201,33 @@ function draftAgentFor(f, { wrongHash = false, wrongPath = false, skipWrite = fa
       status: 'drafted', content, pointsExpanded: 3, summary: 'advances PLAN claims',
     }
   }
+}
+
+// A full drafting run, FINALIZED — the only form a prior result may be carried forward in.
+// A live section's draft is an OUTPUT: the workflow returns `draftHash: ''` for it because
+// it cannot hash a file, and the post-step is what reads each `pendingDraftVerification`
+// section's draftFile, confirms the bytes equal that row's `reportedContent`, and records
+// the hash. A selective retry then re-authenticates and requires the carried section's
+// prior draftHash to equal the bytes the pre-step opened.
+async function carriedRun(f) {
+  const full = await exec(draftSrc, {
+    args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
+    onAgent: draftAgentFor(f),
+  })
+  expect(full.result.verifyRequired).toBe(true)
+  const { payload: final, status } = finalize(full.bundle, full.result)
+  // The GATE, not just the hashes. A draftHash can be filled in while overallPass is false
+  // from drift the run itself caused — asserting only the hash is what let a bundle
+  // carrying pre-run draft snapshots ship.
+  expect(status).toBe(0)
+  expect(final.overallPass).toBe(true)
+  expect(final.verdict).toBe('DRAFTED')
+  expect(final.driftedArtifacts).toEqual([])
+  expect(final.unverifiedOutputs).toEqual([])
+  for (const review of final.reviews) {
+    expect(review.draftHash, `${review.section} draftHash must be filled in by the post-step`).toMatch(/^[0-9a-f]{64}$/)
+  }
+  return final
 }
 
 function reviewAgent(label, { missingSurface = false } = {}) {
@@ -224,6 +286,61 @@ describe('writing-draft authenticated PLAN discovery', () => {
     await expect(exec(draftSrc, { args: { projectDir: project } })).rejects.toThrow(/requires args\.planPath/)
   })
 
+  // The run the whole three-step contract exists to make possible, and the case whose
+  // absence let a broken pre-step ship: a project that has been planned and outlined but
+  // never drafted, drafted once, and finalized. Everything must be clean end to end —
+  // authentication, the workflow's provisional verdict, and the finalized gate.
+  test('a first full drafting run authenticates, drafts, and finalizes clean', async () => {
+    const f = fixture({ withDrafts: false })
+    expect(f.bundle.ok).toBe(true)
+    expect(f.bundle.draftsAuthenticated).toEqual([])
+    // The drafts are OUTPUTS: nothing may vouch for them at entry.
+    expect(Object.keys(f.bundle.artifacts).filter(key => key.endsWith(':draft'))).toEqual([])
+    expect(Object.keys(f.bundle.artifacts).filter(key => key.endsWith(':outline')).sort()).toEqual(['section:Introduction:outline', 'section:Part I:outline'])
+
+    const { result, bundle } = await exec(draftSrc, {
+      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
+      onAgent: draftAgentFor(f),
+    })
+    expect(result.overallPass).toBe(true)
+    expect(result.verdict).toBe('DRAFTED')
+    // Provisional until the post-step reads the files the agents claim to have written.
+    expect(result.verifyRequired).toBe(true)
+    expect(result.driftVerified).toBe(false)
+    expect(result.pendingDraftVerification).toEqual(['Introduction', 'Part I'])
+    expect(result.reviews.every(review => review.draftHash === '')).toBe(true)
+
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(0)
+    expect(final.driftVerified).toBe(true)
+    expect(final.verifyRequired).toBe(false)
+    expect(final.overallPass).toBe(true)
+    expect(final.verdict).toBe('DRAFTED')
+    expect(final.driftedArtifacts).toEqual([])
+    expect(final.unverifiedOutputs).toEqual([])
+    expect(final.pendingDraftVerification).toEqual([])
+    expect(final.findings).toEqual([])
+    expect(final.finalPlanHash).toBe(f.planHash)
+    for (const review of final.reviews) expect(review.draftHash).toMatch(/^[0-9a-f]{64}$/)
+    // The recorded hash is the file's, not the agent's echo.
+    for (const row of final.sections) {
+      expect(row.contentAuthenticated).toBe(true)
+      expect(row.finalDraftHash).toBe(createHash('sha256').update(readFileSync(row.draftFile)).digest('hex'))
+    }
+  })
+
+  // The selection itself must fail closed: a carried-section name that is not in the
+  // current PLAN would otherwise silently authenticate nothing and leave the workflow
+  // asking for an artifact the bundle never had.
+  test('rejects a drafts selection that names a section outside the PLAN', async () => {
+    const f = fixture()
+    const { payload, status } = authenticate(f.project, 'Introduction,Part IX')
+    expect(status).toBe(1)
+    expect(payload.ok).toBe(false)
+    expect(payload.violations.join(' ')).toMatch(/not in the current PLAN.*Part IX/)
+    expect(payload.artifacts).toEqual({})
+  })
+
   test('rejects a stale index before dispatch', async () => {
     const f = fixture()
     await expect(exec(draftSrc, {
@@ -246,14 +363,28 @@ describe('writing-draft authenticated PLAN discovery', () => {
     expect(trace.prompts.find(prompt => prompt.includes('section="Introduction"'))).toContain('implements: []')
   })
 
+  // A JSON.parse-based reader silently keeps the LAST duplicate key, so an escaped
+  // duplicate is how a forged receipt smuggles an attacker value past a naive parser.
+  // Both layers refuse it: the pre-step will not authenticate the project at all, and the
+  // engines re-run their own strict parse over whatever receipt BYTES they are handed.
   test('rejects escaped duplicate receipt keys', async () => {
     for (const src of [draftSrc, reviewSrc]) {
       const f = fixture()
       const receiptPath = join(f.project, '.planning', '.state', 'review.json')
-      const receipt = readFileSync(receiptPath, 'utf8').replace('"workflow":"writing"', '"workflow":"attacker","workfl\\u006fw":"writing"')
-      writeFileSync(receiptPath, receipt)
+      const hostile = readFileSync(receiptPath, 'utf8').replace('"workflow":"writing"', '"workflow":"attacker","workfl\\u006fw":"writing"')
+      writeFileSync(receiptPath, hostile)
+
+      const { payload, status } = authenticate(f.project)
+      expect(status).toBe(1)
+      expect(payload.ok).toBe(false)
+      expect(payload.artifacts).toEqual({})
+      expect(payload.violations.join(' ')).toMatch(/review\.json/)
+
+      // The pre-step is trusted for bytes only. Hand the engine a bundle carrying the
+      // hostile bytes and its own strict parse must still refuse them.
       await expect(exec(src, {
         args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
+        bundle: withReceiptText(f.bundle, hostile),
       })).rejects.toThrow(/duplicate combined review state/)
     }
   })
@@ -266,9 +397,20 @@ describe('writing-draft authenticated PLAN discovery', () => {
       writeFileSync(outside, readFileSync(receiptPath))
       rmSync(receiptPath)
       symlinkSync(outside, receiptPath)
+
+      // Symlink rejection is an O_NOFOLLOW open — a filesystem act, and therefore the
+      // pre-step's job now. It refuses the project outright: no bundle, no dispatch.
+      const { payload, status } = authenticate(f.project)
+      expect(status).toBe(1)
+      expect(payload.ok).toBe(false)
+      expect(payload.artifacts).toEqual({})
+      expect(payload.violations.join(' ')).toMatch(/review\.json/)
+      // …and an engine handed a snapshot that resolved outside projectDir refuses it too,
+      // so a pre-step that ever returned one could not be consumed.
       await expect(exec(src, {
         args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
-      })).rejects.toThrow(/regular non-symlink artifact|artifact escapes projectDir/)
+        bundle: withReceiptReal(f.bundle, outside),
+      })).rejects.toThrow(/artifact escapes projectDir/)
       rmSync(outside)
     }
   })
@@ -287,6 +429,9 @@ describe('writing-draft authenticated PLAN discovery', () => {
     })).rejects.toThrow(/APPROVED/)
   })
 
+  // NO SELF-REVIEW, and no approval that post-dates its own review. These are pure data
+  // comparisons over the receipt, so they still run inside the engine — over the
+  // authenticated bytes — and the pre-step refuses the same project independently.
   test('rejects invalid approval and review lifecycle fields', async () => {
     for (const src of [draftSrc, reviewSrc]) {
       for (const mutate of [
@@ -298,16 +443,25 @@ describe('writing-draft authenticated PLAN discovery', () => {
         const receiptPath = join(f.project, '.planning', '.state', 'review.json')
         const receipt = JSON.parse(readFileSync(receiptPath, 'utf8'))
         mutate(receipt)
-        writeFileSync(receiptPath, JSON.stringify(receipt))
+        const bytes = JSON.stringify(receipt)
+        writeFileSync(receiptPath, bytes)
+
+        const { payload, status } = authenticate(f.project)
+        expect(status).toBe(1)
+        expect(payload.ok).toBe(false)
+
         await expect(exec(src, {
           args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
+          bundle: withReceiptText(f.bundle, bytes),
         })).rejects.toThrow(/does not authenticate/)
       }
     }
   })
 
   test('gate rejects wrong path, wrong plan hash, or unchanged canonical output', async () => {
-    for (const options of [{ wrongPath: true }, { wrongHash: true }, { skipWrite: true }]) {
+    // Wrong path and wrong plan hash are visible in the agent's own record, so they stay
+    // pure data comparisons inside the engine.
+    for (const options of [{ wrongPath: true }, { wrongHash: true }]) {
       const f = fixture()
       const { result } = await exec(draftSrc, {
         args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
@@ -315,6 +469,80 @@ describe('writing-draft authenticated PLAN discovery', () => {
       })
       expect(result.overallPass).toBe(false)
     }
+    // "Unchanged canonical output" is different in kind: the agent reports well-formed
+    // prose at the right path with the right frontmatter, and never writes the file. There
+    // is nothing wrong with the echo, so only reading the file can catch it — which is the
+    // output verification the post-step owns over pendingDraftVerification / reportedContent.
+    const f = fixture()
+    const { result, bundle } = await exec(draftSrc, {
+      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
+      onAgent: draftAgentFor(f, { skipWrite: true }),
+    })
+    expect(result.verifyRequired).toBe(true)
+    expect(result.pendingDraftVerification).toEqual(['Introduction', 'Part I'])
+    // A live section's draftHash is "not yet verified", never "verified".
+    expect(result.reviews.every(review => review.draftHash === '')).toBe(true)
+    const reported = result.sections.find(row => row.section === 'Part I').reportedContent
+    expect(reported).not.toBe(readFileSync(join(f.project, 'drafts', '02-argument.md'), 'utf8'))
+
+    // The post-step reads the file, finds bytes that are not what the agent reported, and
+    // fails the section closed: no draft, no authenticated content, no hash — exactly what
+    // the in-process `draftUnchanged && t.content === canonicalDraftText` test used to do.
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.unverifiedOutputs).toEqual(['Introduction', 'Part I'])
+    expect(final.pendingDraftVerification).toEqual([])
+    const partI = final.sections.find(row => row.section === 'Part I')
+    expect(partI).toEqual(expect.objectContaining({ pass: false, drafted: false, contentAuthenticated: false }))
+    expect(final.reviews.every(review => review.draftHash === '')).toBe(true)
+    // A row that failed authentication carries no hash at all. Under the correct
+    // `--drafts none` there was never an entry snapshot to inherit one from, so this
+    // asserts the field is explicitly emptied rather than left absent; the STALE-hash
+    // case it guards against needs an entry snapshot and is covered by the next test.
+    expect(final.sections.every(row => row.finalDraftHash === '')).toBe(true)
+    expect(final.unreliableSections).toEqual(['Introduction', 'Part I'])
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({
+      severity: 'critical', area: 'draft-integrity', section: 'Part I', planHash: f.planHash,
+      location: join(f.project, 'drafts', '02-argument.md'), retryKey: 'section:Part I:draft-integrity',
+      detail: expect.stringContaining('do not equal the content the drafting agent reported writing'),
+    })]))
+    expect(final.overallPass).toBe(false)
+    expect(final.verdict).toBe('GAPS FOUND')
+  })
+
+  test('a failed output never inherits the pre-run draft hash as evidence', async () => {
+    // DEFENSIVE, and deliberately mis-invoked: `--drafts all` on a drafting run is what
+    // skills/writing-draft/SKILL.md forbids, and it is the ONLY way a live section can hold
+    // an authenticated ENTRY snapshot of its own draft. That combination is what makes the
+    // failure interesting — an agent that reports prose it never wrote leaves the PRE-RUN
+    // file untouched, so nothing drifts, the drift branch happily fills finalDraftHash from
+    // that stale snapshot, and the row ends up carrying a valid 64-hex hash certifying the
+    // very file the agent was pretending to replace. The gate is still correct; the hash is
+    // the lie. Carry-forward reads it, so it must be cleared alongside the verdict.
+    const f = fixture()
+    const { result, bundle } = await exec(draftSrc, {
+      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
+      onAgent: draftAgentFor(f, { skipWrite: true }),
+      drafts: 'all',
+    })
+    // Precondition: the entry bundle really does carry a snapshot for each live section,
+    // otherwise this test degrades into the absent-field case above without saying so.
+    expect(bundle.draftsAuthenticated).toEqual(['Introduction', 'Part I'])
+    for (const name of ['Introduction', 'Part I']) {
+      expect(bundle.artifacts[`section:${name}:draft`].hash).toMatch(/^[0-9a-f]{64}$/)
+    }
+
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftedArtifacts).toEqual([])          // nothing moved — the agent simply didn't write
+    expect(final.unverifiedOutputs).toEqual(['Introduction', 'Part I'])
+    // The assertion this test exists for: no surviving hash from the entry snapshot.
+    for (const row of final.sections) {
+      expect(row.finalDraftHash, `${row.section} must not certify the pre-run draft it failed to replace`).toBe('')
+    }
+    expect(final.reviews.every(review => review.draftHash === '')).toBe(true)
+    expect(final.unreliableSections).toEqual(['Introduction', 'Part I'])
+    expect(final.overallPass).toBe(false)
   })
 
   test('missing or wrong-section draft verification emits a blocking finding', async () => {
@@ -389,12 +617,9 @@ describe('writing-draft authenticated PLAN discovery', () => {
 
   test('live draft verification cannot fall back to a prior result after a swapped echo', async () => {
     const f = fixture()
-    const full = await exec(draftSrc, {
-      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
-      onAgent: draftAgentFor(f),
-    })
+    const full = await carriedRun(f)
     const { result } = await exec(draftSrc, {
-      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index, onlyChecks: ['Part I'], priorReviews: full.result.reviews },
+      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index, onlyChecks: ['Part I'], priorReviews: full.reviews },
       onAgent: (label, prompt, opts) => {
         const response = draftAgentFor(f)(label, prompt, opts)
         if (label === 'verify:Part I') return { ...response, section: 'Introduction' }
@@ -407,12 +632,9 @@ describe('writing-draft authenticated PLAN discovery', () => {
 
   test('a selected live draft with no transform cannot use prior verifier evidence', async () => {
     const f = fixture()
-    const full = await exec(draftSrc, {
-      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
-      onAgent: draftAgentFor(f),
-    })
+    const full = await carriedRun(f)
     const { result } = await exec(draftSrc, {
-      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index, onlyChecks: ['Part I'], priorReviews: full.result.reviews },
+      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index, onlyChecks: ['Part I'], priorReviews: full.reviews },
       onAgent: (label, prompt, opts) => label === 'Part I' ? null : draftAgentFor(f)(label, prompt, opts),
     })
     expect(result.overallPass).toBe(false)
@@ -441,31 +663,53 @@ describe('writing-draft authenticated PLAN discovery', () => {
 
   test('requires exact implements frontmatter and rehashes outlines after verification', async () => {
     const extra = fixture()
+    // An outline whose `implements` does not equal its mapped claims. The compiled index
+    // reports it first…
     writeFileSync(join(extra.project, 'outlines', 'intro-outline.md'), `---\nimplements: [CLAIM-01]\nplan_hash: ${extra.planHash}\n---\n- One\n- Two\n- Three\n`)
+    const reauthenticated = authenticate(extra.project).payload
+    expect(reauthenticated.index.sections[0].outlineCurrent).toBe(false)
     await expect(exec(draftSrc, {
-      args: { projectDir: extra.project, planPath: extra.planPath, planHash: extra.planHash, sectionIndex: extra.index },
+      args: { projectDir: extra.project, planPath: extra.planPath, planHash: extra.planHash, sectionIndex: reauthenticated.index },
+      bundle: reauthenticated,
+    })).rejects.toThrow(/requires a current PLAN-bound detailed outline for Introduction/)
+    // …and the engine re-derives the same verdict from the authenticated BYTES, so an index
+    // that lied about `outlineCurrent` still cannot get the outline admitted.
+    const lying = structuredClone(reauthenticated.index)
+    lying.sections[0].outlineCurrent = true
+    lying.sections[0].outlineIssues = []
+    await expect(exec(draftSrc, {
+      args: { projectDir: extra.project, planPath: extra.planPath, planHash: extra.planHash, sectionIndex: lying },
+      bundle: reauthenticated,
     })).rejects.toThrow(/stale, unmapped, or under-granular/)
 
+    // An outline that moves WHILE the section it specifies is being drafted: every agent
+    // expanded a snapshot that no longer describes the file, which the post-step catches.
     const changed = fixture()
-    const { result } = await exec(draftSrc, {
+    const outlinePath = join(changed.project, 'outlines', 'argument.md')
+    const { result, bundle } = await exec(draftSrc, {
       args: { projectDir: changed.project, planPath: changed.planPath, planHash: changed.planHash, sectionIndex: changed.index },
       onAgent: (label, prompt, opts) => {
         const response = draftAgentFor(changed)(label, prompt, opts)
-        if (label === 'verify:Part I') writeFileSync(join(changed.project, 'outlines', 'argument.md'), readFileSync(join(changed.project, 'outlines', 'argument.md'), 'utf8') + '\nchanged\n')
+        if (label === 'verify:Part I') writeFileSync(outlinePath, readFileSync(outlinePath, 'utf8') + '\nchanged\n')
         return response
       },
     })
-    expect(result.overallPass).toBe(false)
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftedArtifacts).toContain('section:Part I:outline')
+    expect(final.sections.find(section => section.section === 'Part I').finalOutlineHash).toBe('')
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ severity: 'critical', area: 'artifact-integrity', section: 'Part I', location: outlinePath })]))
+    expect(final.overallPass).toBe(false)
   })
 
   test('post-transform draft symlink substitution blocks the gate', async () => {
     const f = fixture()
-    const { result } = await exec(draftSrc, {
+    const draftPath = join(f.project, 'drafts', '02-argument.md')
+    const { result, bundle } = await exec(draftSrc, {
       args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
       onAgent: (label, prompt, opts) => {
         const response = draftAgentFor(f)(label, prompt, opts)
         if (label === 'verify:Part I') {
-          const draftPath = join(f.project, 'drafts', '02-argument.md')
           const target = join(f.project, 'drafts', 'same-bytes-draft-target.md')
           writeFileSync(target, readFileSync(draftPath))
           rmSync(draftPath)
@@ -474,14 +718,31 @@ describe('writing-draft authenticated PLAN discovery', () => {
         return response
       },
     })
-    expect(result.overallPass).toBe(false)
-    expect(result.sections.find(section => section.section === 'Part I')?.drafted).toBe(false)
+    expect(result.verifyRequired).toBe(true)
+    // A written draft is an OUTPUT, so no entry snapshot speaks for it and there is no
+    // drift to detect — this is the post-step's OUTPUT-VERIFICATION branch, which reads
+    // the draftFile under the same O_NOFOLLOW discipline. The bytes behind the link are
+    // identical; the refusal is about identity, not content.
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftedArtifacts).toEqual([])            // no authenticated INPUT drifted…
+    expect(final.unverifiedOutputs).toContain('Part I')   // …the written draft is what failed
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({
+      severity: 'critical', area: 'draft-integrity', section: 'Part I', location: draftPath,
+      detail: expect.stringContaining('regular non-symlink'),
+    })]))
+    // The gate row flips exactly as the in-process gate used to flip it.
+    expect(final.sections.find(section => section.section === 'Part I').drafted).toBe(false)
+    expect(final.sections.find(section => section.section === 'Part I').pass).toBe(false)
+    expect(final.reviews.find(review => review.section === 'Part I').draftHash).toBe('')
+    expect(final.sectionsThatFailed).toContain('Part I')
+    expect(final.overallPass).toBe(false)
   })
 
   test('combined review receipt mutation during draft verification blocks the gate', async () => {
     const f = fixture()
     const receiptPath = join(f.project, '.planning', '.state', 'review.json')
-    const { result } = await exec(draftSrc, {
+    const { result, bundle } = await exec(draftSrc, {
       args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
       onAgent: (label, prompt, opts) => {
         const response = draftAgentFor(f)(label, prompt, opts)
@@ -493,8 +754,11 @@ describe('writing-draft authenticated PLAN discovery', () => {
         return response
       },
     })
-    expect(result.overallPass).toBe(false)
-    expect(result.findings).toEqual(expect.arrayContaining([expect.objectContaining({ section: 'RECEIPT', severity: 'critical' })]))
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftedArtifacts).toContain('receipt')
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ severity: 'critical', area: 'artifact-integrity', location: receiptPath })]))
+    expect(final.overallPass).toBe(false)
   })
 
   test('mid-async receipt status, path, and hash mutations block draft and review', async () => {
@@ -502,7 +766,7 @@ describe('writing-draft authenticated PLAN discovery', () => {
       for (const [src, trigger, baseAgent] of [[draftSrc, 'verify:Part I', draftAgentFor], [reviewSrc, 'L3:document', null]]) {
         const f = fixture()
         const receiptPath = join(f.project, '.planning', '.state', 'review.json')
-        const { result } = await exec(src, {
+        const { result, bundle } = await exec(src, {
           args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
           onAgent: (label, prompt, opts) => {
             const response = baseAgent ? baseAgent(f)(label, prompt, opts) : reviewAgent(label)
@@ -514,8 +778,13 @@ describe('writing-draft authenticated PLAN discovery', () => {
             return response
           },
         })
-        expect(result.overallPass).toBe(false)
-        expect(result.findings).toEqual(expect.arrayContaining([expect.objectContaining({ severity: 'critical', area: 'artifact-integrity' })]))
+        // The approval the run was authorized by is revoked or repointed mid-flight; the
+        // post-step re-reads the receipt and the gate cannot stay clean.
+        const { payload: final, status } = finalize(bundle, result)
+        expect(status).toBe(1)
+        expect(final.driftedArtifacts).toContain('receipt')
+        expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ severity: 'critical', area: 'artifact-integrity', location: receiptPath })]))
+        expect(final.overallPass).toBe(false)
       }
     }
   })
@@ -547,11 +816,11 @@ describe('writing-draft authenticated PLAN discovery', () => {
 
   test('selective drafting carries only unchanged complete section results', async () => {
     const f = fixture()
-    const full = await exec(draftSrc, {
-      args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
-      onAgent: draftAgentFor(f),
-    })
-    const intro = full.result.reviews.find((review) => review.section === 'Introduction')
+    const full = await carriedRun(f)
+    const intro = full.reviews.find((review) => review.section === 'Introduction')
+    // A retry authenticates exactly the CARRIED section's draft — Part I is being
+    // rewritten, so its draft is an output again.
+    expect(authenticate(f.project, 'Introduction').payload.draftsAuthenticated).toEqual(['Introduction'])
     const valid = await exec(draftSrc, {
       args: {
         projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index,
@@ -618,14 +887,25 @@ describe('writing-review authenticated PLAN discovery', () => {
     expect(prompts).toContain('Immutable draft snapshot:')
   })
 
+  // ── Drift: mutated DURING review, adjudicated by the post-step ──────────────────
+  // The orchestrator can no longer re-stat anything, so it returns entry hashes and
+  // `verifyRequired: true`. `--verify --findings` is what zeroes the drifted artifact's
+  // final hash, DISCARDS that section's findings (they describe bytes that no longer
+  // exist), appends the critical artifact-integrity finding in their place, and flips the
+  // gate. Same guarantee, asserted end-to-end on the far side of the workflow.
   test('post-review artifact mutation blocks clean and returns a normalized finding', async () => {
     const f = fixture()
-    const { result, trace } = await exec(reviewSrc, {
+    const draftPath = join(f.project, 'drafts', '02-argument.md')
+    const { result, trace, bundle } = await exec(reviewSrc, {
       args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
       onAgent: (label) => {
-        const response = reviewAgent(label)
+        // Part I collects an ordinary review finding, so the discard is observable.
+        const response = label === 'Part I:structure'
+          ? { ...reviewAgent(label), issues: [{ severity: 'minor', location: 'drafts/02-argument.md:5', quote: 'CLAIM-01 argument.', detail: 'nit' }] }
+          : reviewAgent(label)
         if (label === 'L3:document') {
-          const draftPath = join(f.project, 'drafts', '02-argument.md')
+          // Restored byte-for-byte: only the inode metadata moved, which is precisely the
+          // substitution a hash-only comparison would miss.
           const original = readFileSync(draftPath, 'utf8')
           writeFileSync(draftPath, original + '\ntransient change during review\n')
           writeFileSync(draftPath, original)
@@ -633,15 +913,26 @@ describe('writing-review authenticated PLAN discovery', () => {
         return response
       },
     })
-    expect(result.overallPass).toBe(false)
-    expect(result.findings).toEqual(expect.arrayContaining([expect.objectContaining({ area: 'artifact-integrity', severity: 'critical', planHash: f.planHash })]))
-    expect(trace.prompts.find(prompt => prompt.includes('document reviewer'))).toContain(join(f.project, 'drafts', '02-argument.md'))
+    expect(result.verifyRequired).toBe(true)
+    expect(result.findings.some(finding => finding.section === 'Part I')).toBe(true)
+    expect(trace.prompts.find(prompt => prompt.includes('document reviewer'))).toContain(draftPath)
+
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftVerified).toBe(true)
+    expect(final.driftedArtifacts).toContain('section:Part I:draft')
+    expect(final.sections.find(section => section.section === 'Part I').finalDraftHash).toBe('')
+    expect(final.sections.find(section => section.section === 'Introduction').finalDraftHash).toMatch(/^[0-9a-f]{64}$/)
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ area: 'artifact-integrity', severity: 'critical', section: 'Part I', planHash: f.planHash, location: draftPath })]))
+    expect(final.findings.some(finding => finding.section === 'Part I' && finding.area !== 'artifact-integrity')).toBe(false)
+    expect(final.unreliableSections).toContain('Part I')
+    expect(final.overallPass).toBe(false)
   })
 
   test('combined review receipt mutation during asynchronous review blocks clean', async () => {
     const f = fixture()
     const receiptPath = join(f.project, '.planning', '.state', 'review.json')
-    const { result } = await exec(reviewSrc, {
+    const { result, bundle } = await exec(reviewSrc, {
       args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
       onAgent: (label) => {
         const response = reviewAgent(label)
@@ -653,18 +944,24 @@ describe('writing-review authenticated PLAN discovery', () => {
         return response
       },
     })
-    expect(result.overallPass).toBe(false)
-    expect(result.findings).toEqual(expect.arrayContaining([expect.objectContaining({ area: 'artifact-integrity', severity: 'critical', location: receiptPath })]))
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftedArtifacts).toContain('receipt')
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ area: 'artifact-integrity', severity: 'critical', location: receiptPath })]))
+    expect(final.overallPass).toBe(false)
+    expect(final.verdict).toBe('ISSUES FOUND')
   })
 
   test('post-compilation symlink substitution blocks clean review', async () => {
     const f = fixture()
-    const { result } = await exec(reviewSrc, {
+    const draftPath = join(f.project, 'drafts', '02-argument.md')
+    const { result, bundle } = await exec(reviewSrc, {
       args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
       onAgent: (label) => {
         const response = reviewAgent(label)
         if (label === 'L3:document') {
-          const draftPath = join(f.project, 'drafts', '02-argument.md')
+          // Same bytes, now reached through a symlink — the re-snapshot's O_NOFOLLOW open
+          // is what refuses it, not a content comparison.
           const target = join(f.project, 'drafts', 'same-bytes-target.md')
           writeFileSync(target, readFileSync(draftPath))
           rmSync(draftPath)
@@ -673,8 +970,13 @@ describe('writing-review authenticated PLAN discovery', () => {
         return response
       },
     })
-    expect(result.overallPass).toBe(false)
-    expect(result.findings).toEqual(expect.arrayContaining([expect.objectContaining({ area: 'artifact-integrity', severity: 'critical' })]))
+    const { payload: final, status } = finalize(bundle, result)
+    expect(status).toBe(1)
+    expect(final.driftedArtifacts).toContain('section:Part I:draft')
+    expect(final.artifactVerification.find(record => record.key === 'section:Part I:draft').reason).toMatch(/regular non-symlink/)
+    expect(final.sections.find(section => section.section === 'Part I').finalDraftHash).toBe('')
+    expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ area: 'artifact-integrity', severity: 'critical', location: draftPath })]))
+    expect(final.overallPass).toBe(false)
   })
 
   test('unexamined Review Surface blocks a clean verdict', async () => {
@@ -773,7 +1075,7 @@ describe('writing-review authenticated PLAN discovery', () => {
     for (const [src, trigger, baseAgent] of [[draftSrc, 'verify:Part I', draftAgentFor], [reviewSrc, 'L3:document', null]]) {
       const f = fixture()
       const bibPath = join(f.project, 'references', 'sources.bib')
-      const { result } = await exec(src, {
+      const { result, bundle } = await exec(src, {
         args: { projectDir: f.project, planPath: f.planPath, planHash: f.planHash, sectionIndex: f.index },
         onAgent: (label, prompt, opts) => {
           const response = baseAgent ? baseAgent(f)(label, prompt, opts) : reviewAgent(label)
@@ -781,8 +1083,13 @@ describe('writing-review authenticated PLAN discovery', () => {
           return response
         },
       })
-      expect(result.overallPass).toBe(false)
-      expect(result.findings).toEqual(expect.arrayContaining([expect.objectContaining({ severity: 'critical', area: 'artifact-integrity', location: bibPath })]))
+      // Every reviewer judged citations against a bibliography snapshot that no longer
+      // describes the file; the post-step is what catches that now.
+      const { payload: final, status } = finalize(bundle, result)
+      expect(status).toBe(1)
+      expect(final.driftedArtifacts).toContain('bib')
+      expect(final.findings).toEqual(expect.arrayContaining([expect.objectContaining({ severity: 'critical', area: 'artifact-integrity', location: bibPath })]))
+      expect(final.overallPass).toBe(false)
     }
   })
 
@@ -839,3 +1146,5 @@ describe('writing-review authenticated PLAN discovery', () => {
     })).rejects.toThrow(/different plan hash/)
   })
 })
+
+afterAll(() => { for (const dir of TEMPS) rmSync(dir, { recursive: true, force: true }) })

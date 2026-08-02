@@ -7,11 +7,16 @@
 //       OUTLINE-row↔slide JOIN are irreducibly semantic, §3a-join) BUT its prompt carries the
 //       deterministic CANDIDATE rows (no free OUTLINE re-parse); absent ⇒ prompt says read OUTLINE.md.
 // Run:  node tests/workshop-engine-discover.test.mjs
-import { mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { execFileSync } from 'child_process'
+import { mkdirSync, realpathSync, readFileSync, writeFileSync } from 'fs'
 import { createHash } from 'crypto'
 
 const ROOT = new URL('..', import.meta.url).pathname
-const TEST_ROOT = '/tmp/workshop-engine-receipt-test'
+const AUTHENTICATOR = ROOT + 'scripts/workshop/workshop_plan_auth.py'
+mkdirSync('/tmp/workshop-engine-receipt-test/.planning/.state', { recursive: true })
+// The workflows compare every authenticated artifact path against a path built from
+// projectReal, so the harness must speak in resolved paths too.
+const TEST_ROOT = realpathSync('/tmp/workshop-engine-receipt-test')
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 let PASS = 0, FAIL = 0
 const ok = (n, c, x = '') => { if (c) { PASS++ } else { FAIL++; console.log(`FAIL  ${n} ${x}`) } }
@@ -19,6 +24,19 @@ const ok = (n, c, x = '') => { if (c) { PASS++ } else { FAIL++; console.log(`FAI
 const genSrc = readFileSync(ROOT + 'workflows/workshop-generate.js', 'utf8').replace(/^export const meta/m, 'const meta')
 const verSrc = readFileSync(ROOT + 'workflows/workshop-verify.js', 'utf8').replace(/^export const meta/m, 'const meta')
 
+// The deterministic authenticate pre-step the workshop skills now run before dispatch.
+// It exits 1 when the receipt or plan fails to authenticate; those cases are exactly the
+// ones the engines must ALSO reject from the bundle's bytes, so the non-zero exit is
+// captured rather than thrown and the (partial) bundle is handed to the workflow anyway.
+function authenticate() {
+  try { return { bundle: JSON.parse(execFileSync('python3', [AUTHENTICATOR, '--authenticate', TEST_ROOT], { encoding: 'utf8' })), status: 0 } }
+  catch (error) { return { bundle: JSON.parse(error.stdout), status: error.status } }
+}
+
+// `process`, `Buffer`, `require`, `module`, and `exports` are declared as trailing
+// parameters so they are `undefined` inside the script — matching the Workflow runtime,
+// which exposes none of them. (`import()`/`import.meta` are syntax, not bindings;
+// tests/workflow-runtime-purity.test.mjs is what forbids those.)
 async function exec(src, { args, onAgent }) {
   const trace = { labels: [], prompts: {} }
   const agent = async (prompt, opts = {}) => {
@@ -29,19 +47,30 @@ async function exec(src, { args, onAgent }) {
   const parallel = async (thunks) => Promise.all(thunks.map(t => t()))
   const pipeline = async () => { throw new Error('pipeline unused') }
   const log = () => {}, phase = () => {}
-  const fn = new AsyncFunction('agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget', src)
+  const fn = new AsyncFunction(
+    'agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget',
+    'process', 'Buffer', 'require', 'module', 'exports',
+    src,
+  )
   const portable = JSON.parse(JSON.stringify(args).replaceAll('/p', TEST_ROOT))
   const selected = portable.slideIndex || JSON.parse(JSON.stringify(INDEX).replaceAll('/p', TEST_ROOT))
-  const normalized = { ...portable, slideIndex: selected, planPath: portable.planPath || selected.planPath, planHash: portable.planHash || selected.planHash }
-  const result = await fn(agent, parallel, pipeline, log, phase, normalized,
-    { total: null, spent: () => 0, remaining: () => Infinity })
+  const { bundle } = authenticate()
+  const normalized = {
+    ...portable, slideIndex: selected,
+    planPath: portable.planPath || selected.planPath, planHash: portable.planHash || selected.planHash,
+    projectReal: bundle.projectReal, artifacts: bundle.artifacts,
+  }
+  const result = await fn(
+    agent, parallel, pipeline, log, phase, normalized,
+    { total: null, spent: () => 0, remaining: () => Infinity },
+    undefined, undefined, undefined, undefined, undefined,
+  )
   return { result, trace }
 }
 
 // Minimal real-shaped slide index (3 slides over 2 composite groups), mirrors the parser output.
 const PLAN_BYTES = '# workshop generated plan\n'
 const PLAN_HASH = createHash('sha256').update(PLAN_BYTES).digest('hex')
-mkdirSync(`${TEST_ROOT}/.planning/.state`, { recursive: true })
 writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, PLAN_BYTES)
 writeFileSync(`${TEST_ROOT}/.planning/.state/review.json`, JSON.stringify({ workflow: 'workshop', plan_file: 'workshop-generated.md', plan_hash: PLAN_HASH, approved_session_id: 'approval', approved_at: '2026-07-30T10:00:00.000Z', status: 'APPROVED', reviewer_session_id: 'review', reviewed_at: '2026-07-30T11:00:00.000Z' }))
 const INDEX = {
@@ -204,6 +233,13 @@ for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
 
 // The engines must hash the receipt-selected on-disk plan, not accept a caller's otherwise-valid index.
 writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, '# bytes changed after approval\n')
+{
+  // The pre-step refuses first — it hashes the bytes it opened against the receipt — and the
+  // engines below refuse again from those same bytes. Both layers own the guarantee.
+  const { bundle, status } = authenticate()
+  ok('pre-step: mutated plan bytes fail authentication', bundle.ok === false && status === 1, JSON.stringify(bundle.violations))
+  ok('pre-step: names the receipt/plan_hash disagreement', (bundle.violations || []).some(v => /do not hash to the receipt plan_hash/.test(v)), JSON.stringify(bundle.violations))
+}
 for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
   let error
   try { await exec(src, { args: { projectDir: '/p', planPath: INDEX.planPath, planHash: INDEX.planHash, slideIndex: INDEX }, onAgent: () => ({}) }) } catch (caught) { error = caught }
@@ -213,6 +249,10 @@ for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
 // JSON.parse would silently overwrite a duplicate key; receipt authentication must reject it.
 writeFileSync(`${TEST_ROOT}/.planning/workshop-generated.md`, PLAN_BYTES)
 writeFileSync(`${TEST_ROOT}/.planning/.state/review.json`, `{"workflow":"workshop","workflow":"workshop","plan_file":"workshop-generated.md","plan_hash":"${PLAN_HASH}","approved_session_id":"approval","approved_at":"2026-07-30T10:00:00.000Z","status":"APPROVED","reviewer_session_id":"review","reviewed_at":"2026-07-30T11:00:00.000Z"}`)
+{
+  const { bundle, status } = authenticate()
+  ok('pre-step: duplicate receipt field fails authentication', bundle.ok === false && status === 1 && (bundle.violations || []).some(v => /duplicate fields/.test(v)), JSON.stringify(bundle.violations))
+}
 for (const [name, src] of [['generate', genSrc], ['verify', verSrc]]) {
   let error
   try { await exec(src, { args: { projectDir: '/p', planPath: INDEX.planPath, planHash: INDEX.planHash, slideIndex: INDEX }, onAgent: () => ({}) }) } catch (caught) { error = caught }

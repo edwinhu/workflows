@@ -24,7 +24,10 @@ const SEV_RANK = { critical: 0, major: 1, minor: 2 }
 
 // ── Inputs ──────────────────────────────────────────────────────────────────
 // args = {
-//   projectDir:  "/abs/project-root",         // REQUIRED — holds .planning/ and presentation/
+//   projectDir:  "/abs/project-root",          // REQUIRED — holds .planning/ and presentation/
+//   projectReal: "/abs/resolved-project-root", // REQUIRED — bundle.projectReal from the authenticate pre-step
+//   artifacts:   { receipt: {...}, plan: {...} },
+//                                              // REQUIRED — bundle.artifacts from `workshop_plan_auth.py --authenticate`
 //   pluginRoot:  "/abs/.../workflows",         // optional — for resolving check-all.py / look_at.py / load-constraints.py
 //   onlyChecks?: ["S3", "S7", ...],            // re-review loop: re-review only these slide IDs; carry the rest
 //   priorReviews?: [<slide review objects>],   // re-review loop: prior per-slide results to carry forward
@@ -35,12 +38,69 @@ cfg = cfg || {}
 const PROJECT = cfg.projectDir
 if (!PROJECT) throw new Error(`workshop-verify requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const PLUGIN = cfg.pluginRoot || ''
-const { readFileSync, lstatSync, realpathSync } = await import('node:fs')
-const { createHash } = await import('node:crypto')
 const RECEIPT_KEYS = ['workflow','plan_file','plan_hash','approved_session_id','approved_at','status','reviewer_session_id','reviewed_at']
 const HASH = /^[0-9a-f]{64}$/
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const RESERVED_PLAN_FILES = new Set(['PLAN.md','PLAN_REVIEWED.md','REVIEW.md','AUTOMATED_REVIEW.md','HUMAN_REVIEW.md','IMPLEMENT_COMPLETE.md','VALIDATION.md'])
+// ── Authenticated artifact bundle (no filesystem access in here) ─────────────
+// Workflow scripts are pure control flow: the runtime rejects import(), import.meta,
+// process, and Buffer. The node:fs/node:crypto `authenticatePlan` that used to run here
+// — duplicated near-identically in workshop-generate.js and workshop-verify.js, and
+// therefore executed by NEITHER (both threw at the import line before dispatching an
+// agent) — now runs ONCE, in the deterministic pre-step
+// `scripts/workshop/workshop_plan_auth.py --authenticate`, and arrives via args.artifacts.
+// Only the file opening, hashing, containing-directory symlink lstat, and realpath
+// containment moved. Every check that is pure data comparison stays right here: the
+// strict receipt parse runs again over the authenticated BYTES (artifacts.receipt.text),
+// not over a verdict handed to this script, so the pre-step is trusted to deliver bytes
+// and nothing more. Authentication is NOT delegated to an agent — asking a dispatched
+// agent to vouch for its own inputs is not authentication.
+// Drift detection is symmetrically deterministic: the post-step re-snapshots via
+// `--verify --findings`, which is why this run returns verifyRequired: true.
+const isAbs = value => typeof value === 'string' && value.startsWith('/')
+const normalizePath = value => {
+  const out = []
+  for (const segment of String(value).split('/')) {
+    if (!segment || segment === '.') continue
+    if (segment === '..') { out.pop(); continue }
+    out.push(segment)
+  }
+  return '/' + out.join('/')
+}
+// resolve() over already-absolute inputs only. A relative or empty input is a
+// missing authenticated value, and yields a sentinel that can never compare equal
+// to a real path — the pre-extraction code reached cwd here and failed the same way.
+const INVALID = '<unauthenticated-path>'
+const resolvePath = (...parts) => {
+  let base = ''
+  for (const part of parts) {
+    if (!part || typeof part !== 'string') return INVALID
+    base = isAbs(part) ? part : (base ? `${base}/${part}` : INVALID)
+    if (base === INVALID) return INVALID
+  }
+  return base ? normalizePath(base) : INVALID
+}
+const joinPath = (...parts) => normalizePath(parts.join('/'))
+// Strict containment: an empty relative path (same file), a '..' escape, or an
+// unauthenticated sentinel all fail closed.
+const containedBy = (root, path) => typeof path === 'string' && path !== INVALID && path !== root && path.startsWith(`${root}/`)
+
+const PROJECT_REAL = typeof cfg.projectReal === 'string' ? cfg.projectReal : ''
+if (!isAbs(PROJECT_REAL) || normalizePath(PROJECT_REAL) !== PROJECT_REAL) {
+  throw new Error('workshop-verify requires args.projectReal: the absolute resolved projectDir emitted by workshop_plan_auth.py --authenticate.')
+}
+const ARTIFACTS = (cfg.artifacts && typeof cfg.artifacts === 'object' && !Array.isArray(cfg.artifacts)) ? cfg.artifacts : null
+if (!ARTIFACTS) throw new Error('workshop-verify requires args.artifacts: the authenticated bundle from workshop_plan_auth.py --authenticate.')
+const artifact = key => {
+  const snapshot = ARTIFACTS[key]
+  if (!snapshot || typeof snapshot !== 'object') throw new Error(`workshop-verify is missing an authenticated artifact: ${key}`)
+  const { path, real, hash, text } = snapshot
+  if (!isAbs(path) || !isAbs(real) || typeof text !== 'string' || !HASH.test(String(hash))) {
+    throw new Error(`workshop-verify rejected a malformed authenticated artifact: ${key}`)
+  }
+  if (!containedBy(PROJECT_REAL, normalizePath(real))) throw new Error(`workshop-verify artifact escapes projectDir: ${key} (${real})`)
+  return { path: normalizePath(path), real: normalizePath(real), hash, text }
+}
 function parseStrictReceipt(content) {
   const text = String(content).trim(); let index = 0
   const skip = () => { while (/\s/.test(text[index] || '')) index++ }
@@ -67,19 +127,27 @@ function parseStrictReceipt(content) {
   index++; skip(); if (index !== text.length) throw new Error('workshop generated-plan review.json has trailing content')
   return receipt
 }
-function authenticatePlan(projectDir, planPath, planHash) {
-  const root = realpathSync(projectDir), planning = `${root}/.planning`, state = `${planning}/.state/review.json`
-  for (const path of [planning, `${planning}/.state`, state]) if (lstatSync(path).isSymbolicLink()) throw new Error('workshop generated-plan authentication rejects symbolic links')
-  const receipt = parseStrictReceipt(readFileSync(state, 'utf8'))
+// Pure data comparison over the authenticated bundle. The pre-step already proved
+// these bytes came from a regular, non-symlink, project-contained file whose identity
+// held still across the read (O_NOFOLLOW open, fstat-vs-lstat before AND after,
+// realpath containment); it proved nothing about what they SAY. That is this function.
+function authenticatePlan(planPath, planHash) {
+  const root = PROJECT_REAL, planning = joinPath(root, '.planning'), state = joinPath(planning, '.state', 'review.json')
+  const receiptSnapshot = artifact('receipt')
+  // real !== path means the pre-step resolved through a link; the lstat symlink
+  // rejection it performs is re-asserted here from the snapshot's own identity fields.
+  if (receiptSnapshot.path !== state || receiptSnapshot.real !== state) throw new Error('workshop generated-plan authenticated receipt is not the projectDir combined review state')
+  const receipt = parseStrictReceipt(receiptSnapshot.text)
   const approvedAt = Date.parse(receipt.approved_at), reviewedAt = Date.parse(receipt.reviewed_at)
   if (Object.keys(receipt).length !== RECEIPT_KEYS.length || RECEIPT_KEYS.some(key => typeof receipt[key] !== 'string') || receipt.workflow !== 'workshop' || receipt.status !== 'APPROVED' || !HASH.test(receipt.plan_hash) || !UTC.test(receipt.approved_at) || !UTC.test(receipt.reviewed_at) || new Date(approvedAt).toISOString() !== receipt.approved_at || new Date(reviewedAt).toISOString() !== receipt.reviewed_at || !receipt.approved_session_id.trim() || !receipt.reviewer_session_id.trim() || receipt.approved_session_id === receipt.reviewer_session_id || reviewedAt <= approvedAt || !/^[^./\\][^/\\]*\.md$/.test(receipt.plan_file) || RESERVED_PLAN_FILES.has(receipt.plan_file)) throw new Error('workshop generated-plan review.json has invalid strict receipt schema')
-  const selected = `${planning}/${receipt.plan_file}`
-  if (planPath !== selected || lstatSync(selected).isSymbolicLink()) throw new Error('workshop generated-plan path is not the receipt-selected safe direct child')
-  const current = createHash('sha256').update(readFileSync(selected)).digest('hex')
+  const selected = joinPath(planning, receipt.plan_file)
+  const planSnapshot = artifact('plan')
+  if (resolvePath(planPath) !== selected || planSnapshot.path !== selected || planSnapshot.real !== selected || !containedBy(planning, selected)) throw new Error('workshop generated-plan path is not the receipt-selected safe direct child')
+  const current = planSnapshot.hash
   if (current !== receipt.plan_hash || current !== planHash) throw new Error('workshop generated-plan receipt does not authenticate current plan bytes')
-  return { state, receipt, hash: current, planPath: selected }
+  return { state, receipt, hash: current, planPath: selected, receiptSnapshot, planSnapshot }
 }
-const AUTH = authenticatePlan(PROJECT, cfg.planPath, cfg.planHash)
+const AUTH = authenticatePlan(cfg.planPath, cfg.planHash)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [String(s.slide), s]))
 // Deterministic side-table from scripts/workshop/workshop-slide-table.ts (cfg.slideIndex).
@@ -250,6 +318,9 @@ Return MECHANICAL_SCHEMA. Report raw counts — do not soften.`,
 if (!mech) {
   log('❌ Mechanical leg agent returned null — short-circuiting before per-slide review')
   return {
+    finalPlanHash: AUTH.planSnapshot.hash,
+    verifyRequired: true,
+    driftVerified: false,
     overallPass: false,
     verdict: 'ISSUES FOUND',
     summary: { critical: 1, major: 0, minor: 0, total: 1 },
@@ -271,6 +342,9 @@ if (!mech.slidesCompiled) {
     ? mech.compileErrors.map(e => ({ severity: 'critical', area: 'compile', location: disc.slidesPath, detail: `slides.typ failed to compile: ${String(e).slice(0, 400)}` }))
     : [{ severity: 'critical', area: 'compile', location: disc.slidesPath, detail: 'slides.typ failed to compile (no error text captured)' }]
   return {
+    finalPlanHash: AUTH.planSnapshot.hash,
+    verifyRequired: true,
+    driftVerified: false,
     overallPass: false,
     verdict: 'ISSUES FOUND',
     summary: { critical: compileFindings.length, major: 0, minor: 0, total: compileFindings.length },
@@ -458,6 +532,13 @@ const scope = {
 }
 
 return {
+  // Entry hashes. This script cannot re-stat anything, so the verdict is provisional
+  // until the deterministic post-step (`workshop_plan_auth.py --verify --findings`)
+  // re-snapshots the receipt + plan, zeroes finalPlanHash on drift, appends the critical
+  // artifact-integrity finding, and forces the gate false. verifyRequired announces that.
+  finalPlanHash: AUTH.planSnapshot.hash,
+  verifyRequired: true,
+  driftVerified: false,
   overallPass,
   substratePass,
   verdict,

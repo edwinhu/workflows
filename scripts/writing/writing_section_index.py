@@ -5,21 +5,45 @@ The native generated file selected by ``.planning/.state/review.json`` is the
 sole modern writing specification. Retired planning Markdown is detected only
 as conversion input or provenance and is never read for canonical values.
 
+It is also the writing workflow's artifact authenticator. Workflow orchestrator
+scripts are pure control flow — the runtime rejects ``import()``, ``import.meta``,
+``process``, and ``Buffer`` — so they cannot open a file or hash bytes, and the
+authentication cannot be delegated to a dispatched agent either: the section index
+already comes from an agent, and asking the untrusted party to vouch for its own
+artifacts is not authentication. ``--authenticate`` therefore snapshots every
+artifact the review workflow reads, and ``--verify`` re-snapshots them afterwards
+to detect drift that happened while the reviewers ran.
+
 CLI: python3 writing_section_index.py /abs/project[/|/.planning|/.planning/<generated>.md]
+     python3 writing_section_index.py --authenticate /abs/project [--drafts all|none|<names>]
+     python3 writing_section_index.py --verify <bundle.json> [--findings <result.json>]
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
-import os
 import re
-import stat
 import sys
 import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path, PurePosixPath
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+
+# The TOCTOU discipline is shared with every other domain authenticator rather than
+# copied per workflow: a weakened copy in one is a hole in all of them.
+from artifact_snapshot import (
+    ArtifactAuthError,
+    snapshot_artifact,
+)
+from artifact_snapshot import (
+    snapshot_regular as _snapshot_regular,
+)
+from artifact_snapshot import (
+    verify_bundle as verify,
+)
 
 REQUIRED_SECTIONS = (
     "Writing Intent",
@@ -207,45 +231,8 @@ def _locations(arg: Path) -> tuple[Path, Path, Path | None]:
     return candidate.parent, candidate, None
 
 
-def _same_state(left: os.stat_result, right: os.stat_result) -> bool:
-    return (
-        left.st_dev == right.st_dev
-        and left.st_ino == right.st_ino
-        and left.st_size == right.st_size
-        and left.st_mtime_ns == right.st_mtime_ns
-        and left.st_ctime_ns == right.st_ctime_ns
-    )
-
-
 def _read_regular_bytes(path: Path, root: Path) -> bytes:
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-    fd = os.open(path, flags)
-    try:
-        opened = os.fstat(fd)
-        if not stat.S_ISREG(opened.st_mode):
-            raise OSError("not a regular file")
-        root_real = root.resolve()
-        real = path.resolve(strict=True)
-        if not real.is_relative_to(root_real):
-            raise OSError("path escapes project")
-        before_path = os.stat(path, follow_symlinks=False)
-        if stat.S_ISLNK(before_path.st_mode) or not _same_state(opened, before_path):
-            raise OSError("path identity changed before read")
-        chunks: list[bytes] = []
-        while chunk := os.read(fd, 1024 * 1024):
-            chunks.append(chunk)
-        after_fd = os.fstat(fd)
-        after_path = os.stat(path, follow_symlinks=False)
-        if (
-            stat.S_ISLNK(after_path.st_mode)
-            or path.resolve(strict=True) != real
-            or not _same_state(opened, after_fd)
-            or not _same_state(opened, after_path)
-        ):
-            raise OSError("path changed during read")
-        return b"".join(chunks)
-    finally:
-        os.close(fd)
+    return _snapshot_regular(path, root)[0]
 
 
 def _read(path: Path, root: Path) -> str:
@@ -722,16 +709,315 @@ def build_index(project_or_planning: Path) -> IndexResult:
     return result
 
 
-def main() -> int:
-    if len(sys.argv) != 2:
-        print(
-            "usage: writing_section_index.py /abs/project[/|/.planning|/.planning/<generated>.md]",
-            file=sys.stderr,
+# ── Artifact authentication ──────────────────────────────────────────────────
+# Workflow orchestrator scripts are pure control flow: the runtime rejects
+# `import()`, `import.meta`, `process`, and `Buffer`, so they cannot open a file
+# or hash bytes. Authentication is not control flow anyway — it is a
+# deterministic, trusted-layer job, and pushing it into a dispatched agent would
+# ask the untrusted party to vouch for itself. It therefore lives here, in the
+# pre-step the writing skills already run, and the authenticated bundle is
+# handed to the workflow through `args`.
+
+def section_artifact_keys(name: str) -> tuple[str, str]:
+    return f"section:{name}:outline", f"section:{name}:draft"
+
+
+DRAFTS_ALL = "all"
+DRAFTS_NONE = "none"
+
+
+def authenticate(project_or_planning: Path, drafts: str | list[str] = DRAFTS_ALL) -> dict:
+    """Compile the index AND snapshot the artifacts the calling workflow reads.
+
+    `drafts` selects which section drafts belong in the entry bundle, and the choice
+    is not cosmetic — it is the difference between an INPUT and an OUTPUT:
+
+      "all"    — writing-review. Every draft already exists and is an input to be
+                 authenticated; drift in any of them invalidates the review.
+      "none"   — a full writing-draft run. The drafts are what this run PRODUCES.
+                 They do not exist yet, so there is nothing to authenticate, and a
+                 pre-run snapshot of an old draft would be reported as drift the
+                 moment the drafting agent legitimately rewrote it. Their bytes are
+                 verified instead by the post-step's output-verification branch.
+      [names]  — a selective writing-draft retry. Only the CARRIED sections' drafts
+                 are inputs; the sections being re-drafted are outputs.
+    """
+    result = build_index(project_or_planning)
+    payload = result.to_dict()
+    root, planning, _ = _locations(project_or_planning)
+    bundle: dict = {
+        "ok": False,
+        "violations": list(result.violations),
+        "projectDir": str(root.absolute()),
+        "projectReal": "",
+        "planPath": result.plan_path,
+        "planHash": result.plan_hash,
+        "index": payload,
+        "artifacts": {},
+    }
+    if not result.ok:
+        bundle["violations"].insert(
+            0, "Section index did not compile cleanly; artifact authentication does not run."
         )
-        return 2
-    result = build_index(Path(sys.argv[1]))
-    print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
-    return 0 if result.ok else 1
+        return bundle
+    try:
+        root_real = root.resolve(strict=True)
+    except OSError as error:
+        bundle["violations"].append(f"projectDir does not resolve: {error}")
+        return bundle
+    bundle["projectReal"] = str(root_real)
+
+    targets: list[tuple[str, Path]] = [
+        ("receipt", planning / ".state" / "review.json"),
+        ("plan", Path(result.plan_path)),
+    ]
+    if result.bib_path:
+        targets.append(("bib", Path(result.bib_path)))
+    else:
+        bundle["violations"].append("Source Plan bibliography path is absent; nothing to authenticate.")
+        return bundle
+    if isinstance(drafts, str):
+        if drafts not in (DRAFTS_ALL, DRAFTS_NONE):
+            bundle["violations"].append(f"--drafts must be all, none, or section names; got {drafts!r}.")
+            return bundle
+        carried = {section.name for section in result.sections} if drafts == DRAFTS_ALL else set()
+    else:
+        carried = {str(name) for name in drafts}
+        unknown = sorted(carried - {section.name for section in result.sections})
+        if unknown:
+            bundle["violations"].append(
+                "--drafts names sections that are not in the current PLAN: " + ", ".join(unknown) + "."
+            )
+            return bundle
+    bundle["draftsAuthenticated"] = sorted(carried)
+    for section in result.sections:
+        outline_key, draft_key = section_artifact_keys(section.name)
+        targets.append((outline_key, Path(section.outline_file)))
+        if section.name in carried:
+            targets.append((draft_key, Path(section.draft_file)))
+
+    for key, path in targets:
+        try:
+            bundle["artifacts"][key] = snapshot_artifact(path, root_real)
+        except ArtifactAuthError as error:
+            bundle["violations"].append(f"{key}: {error}")
+    bundle["ok"] = not bundle["violations"]
+    return bundle
+
+
+def finalize(bundle: dict, result: dict) -> dict:
+    """Apply drift verdicts to a workflow return value.
+
+    Drift can only ever make the gate worse: findings from an artifact that moved
+    under the reviewers are discarded (they describe bytes that no longer exist),
+    a critical artifact-integrity finding is added in their place, and the section
+    is marked unreliable. `finalOutlineHash`/`finalDraftHash` carry the same
+    meaning they did when the orchestrator computed them in-process: the snapshot
+    hash if the artifact held still, the empty string if it did not.
+    """
+    report = verify(bundle)
+    drifted = set(report["drifted"])
+    by_key = {record["key"]: record for record in report["artifacts"]}
+    artifacts = bundle.get("artifacts") or {}
+    findings = list(result.get("findings") or [])
+    sections = list(result.get("sections") or [])
+    integrity: list[dict] = []
+
+    drifted_sections: set[str] = set()
+    for section in sections:
+        name = str(section.get("section", ""))
+        outline_key, draft_key = section_artifact_keys(name)
+        for key, field_name, label in (
+            (outline_key, "finalOutlineHash", "outline"),
+            (draft_key, "finalDraftHash", "draft"),
+        ):
+            snapshot = artifacts.get(key)
+            if snapshot is None:
+                continue
+            if key in drifted:
+                section[field_name] = ""
+                section["unreliable"] = True
+                drifted_sections.add(name)
+                integrity.append(
+                    {
+                        "severity": "critical",
+                        "area": "artifact-integrity",
+                        "planHash": bundle.get("planHash", ""),
+                        "section": name,
+                        "detail": f"{name} {label} path, identity, metadata, or bytes changed during asynchronous review.",
+                        "location": snapshot.get("path", ""),
+                        "retryKey": f"document:artifact-integrity:{key}",
+                    }
+                )
+            else:
+                section[field_name] = snapshot.get("hash", "")
+
+    for key, label in (
+        ("plan", "Authenticated generated plan"),
+        ("receipt", "Combined review receipt"),
+        ("bib", "Authenticated Source Plan bibliography"),
+    ):
+        if key in drifted:
+            integrity.append(
+                {
+                    "severity": "critical",
+                    "area": "artifact-integrity",
+                    "planHash": bundle.get("planHash", ""),
+                    "detail": f"{label} path, identity, metadata, or bytes changed during asynchronous review.",
+                    "location": (artifacts.get(key) or {}).get("path", ""),
+                    "retryKey": f"document:artifact-integrity:{key}",
+                }
+            )
+
+    # ── Output verification (writing-draft) ──────────────────────────────────
+    # A drafting run WRITES its drafts, so no entry snapshot can speak for them: the
+    # files did not exist when the bundle was built, and the drafting agent's own
+    # `content` echo is its account of what it wrote, not evidence about the file.
+    # The orchestrator therefore carries each live section's draftFile plus the
+    # reported bytes out here, and this is where the two are actually reconciled —
+    # under the same O_NOFOLLOW/identity discipline as every other snapshot. A
+    # section whose file does not exist, cannot be authenticated, or does not match
+    # its own echo fails closed, exactly as the in-process gate used to.
+    pending = [str(name) for name in (result.get("pendingDraftVerification") or [])]
+    rows_by_section = {str(row.get("section", "")): row for row in sections}
+    reviews_by_section = {
+        str(review.get("section", "")): review for review in (result.get("reviews") or [])
+    }
+    unverified_outputs: list[str] = []
+    for name in pending:
+        row = rows_by_section.get(name)
+        if row is None:
+            unverified_outputs.append(name)
+            integrity.append(
+                {
+                    "severity": "critical",
+                    "area": "draft-integrity",
+                    "planHash": bundle.get("planHash", ""),
+                    "section": name,
+                    "detail": f"{name}: awaiting output verification but absent from the returned section table.",
+                    "retryKey": f"section:{name}:draft-integrity",
+                }
+            )
+            continue
+        draft_path = Path(str(row.get("draftFile", "")))
+        reason = ""
+        try:
+            current = snapshot_artifact(draft_path, Path(bundle.get("projectReal") or "/"))
+            if current["text"] != row.get("reportedContent", ""):
+                reason = "bytes on disk do not equal the content the drafting agent reported writing"
+        except ArtifactAuthError as error:
+            current = None
+            reason = str(error)
+        if reason:
+            unverified_outputs.append(name)
+            row["pass"] = False
+            row["drafted"] = False
+            row["contentAuthenticated"] = False
+            # Clear the hash for the same reason the drift branch above clears it: a row
+            # that failed authentication must not carry affirmative evidence about its
+            # bytes. Under `--drafts none` there is no entry snapshot to leave behind, but
+            # under `--drafts all` the drift loop will already have filled this field from
+            # the PRE-RUN draft — precisely the stale file an agent that reported prose it
+            # never wrote is passing off as its output. Downstream carry-forward reads this.
+            row["finalDraftHash"] = ""
+            if name in reviews_by_section:
+                reviews_by_section[name]["draftHash"] = ""
+            integrity.append(
+                {
+                    "severity": "critical",
+                    "area": "draft-integrity",
+                    "planHash": bundle.get("planHash", ""),
+                    "section": name,
+                    "detail": f"{name}: written draft could not be authenticated — {reason}.",
+                    "location": str(draft_path),
+                    "retryKey": f"section:{name}:draft-integrity",
+                }
+            )
+        else:
+            row["contentAuthenticated"] = True
+            row["finalDraftHash"] = current["hash"]
+            if name in reviews_by_section:
+                reviews_by_section[name]["draftHash"] = current["hash"]
+
+    kept = [
+        finding
+        for finding in findings
+        if str(finding.get("section", "")) not in drifted_sections
+    ]
+    discarded = len(findings) - len(kept)
+    result["findings"] = integrity + kept
+    result["finalPlanHash"] = "" if "plan" in drifted else (artifacts.get("plan") or {}).get("hash", "")
+    result["driftVerified"] = True
+    result["verifyRequired"] = False
+    result["artifactVerification"] = report["artifacts"]
+    result["driftedArtifacts"] = report["drifted"]
+    result["discardedFindings"] = discarded
+    if pending:
+        result["unverifiedOutputs"] = unverified_outputs
+        result["pendingDraftVerification"] = []
+    if drifted or unverified_outputs:
+        summary = result.get("summary") or {}
+        summary["critical"] = int(summary.get("critical", 0)) + len(integrity)
+        summary["blocking"] = int(summary.get("blocking", 0)) + len(integrity)
+        result["summary"] = summary
+        result["overallPass"] = False
+        result["substratePass"] = False
+        # Keep each workflow's own vocabulary; the post-step decides the verdict, not its wording.
+        result["verdict"] = "GAPS FOUND" if pending else "ISSUES FOUND"
+        # A section whose written draft could not be authenticated has no trustworthy
+        # evidence either, so it belongs here alongside the drifted ones. (writing-draft
+        # rows have no per-row `unreliable` field — this top-level list is the established
+        # channel for "do not carry this section's result forward", and is what the
+        # selective-retry path reads.)
+        unreliable = set(result.get("unreliableSections") or [])
+        result["unreliableSections"] = sorted(unreliable | drifted_sections | set(unverified_outputs))
+        failed = set(result.get("sectionsThatFailed") or [])
+        if "sectionsThatFailed" in result:
+            result["sectionsThatFailed"] = sorted(failed | set(unverified_outputs) | drifted_sections)
+    return {"verification": report, "result": result, "byKey": by_key}
+
+
+def main() -> int:
+    argv = sys.argv[1:]
+    if len(argv) == 1 and not argv[0].startswith("--"):
+        result = build_index(Path(argv[0]))
+        print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+        return 0 if result.ok else 1
+    if len(argv) >= 2 and argv[0] == "--authenticate":
+        drafts: str | list[str] = DRAFTS_ALL
+        if len(argv) == 4 and argv[2] == "--drafts":
+            selection = argv[3].strip()
+            drafts = (
+                selection
+                if selection in (DRAFTS_ALL, DRAFTS_NONE)
+                else [name.strip() for name in selection.split(",") if name.strip()]
+            )
+        elif len(argv) != 2:
+            print("usage: writing_section_index.py --authenticate <project> [--drafts all|none|<names>]", file=sys.stderr)
+            return 2
+        bundle = authenticate(Path(argv[1]), drafts)
+        print(json.dumps(bundle, indent=2, ensure_ascii=False))
+        return 0 if bundle["ok"] else 1
+    if len(argv) >= 2 and argv[0] == "--verify":
+        bundle = json.loads(Path(argv[1]).read_text(encoding="utf-8"))
+        if len(argv) == 4 and argv[2] == "--findings":
+            outcome = finalize(bundle, json.loads(Path(argv[3]).read_text(encoding="utf-8")))
+            print(json.dumps(outcome["result"], indent=2, ensure_ascii=False))
+            clean = outcome["verification"]["ok"] and not outcome["result"].get("unverifiedOutputs")
+            return 0 if clean else 1
+        if len(argv) != 2:
+            print("usage: writing_section_index.py --verify <bundle.json> [--findings <result.json>]", file=sys.stderr)
+            return 2
+        report = verify(bundle)
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+        return 0 if report["ok"] else 1
+    print(
+        "usage: writing_section_index.py /abs/project[/|/.planning|/.planning/<generated>.md]\n"
+        "       writing_section_index.py --authenticate /abs/project\n"
+        "       writing_section_index.py --verify <bundle.json> [--findings <result.json>]",
+        file=sys.stderr,
+    )
+    return 2
 
 
 if __name__ == "__main__":

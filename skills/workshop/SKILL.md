@@ -55,29 +55,71 @@ After approval, retain the exact generated `planPath` and `planHash`; run `${CLA
 
 ## Implementation
 
+**NO WORKFLOW WITHOUT AN AUTHENTICATE PRE-STEP AND A `--verify` POST-STEP.** Both
+workshop workflow scripts are pure control flow — the Workflow runtime forbids
+`import()`, `import.meta`, `process`, and `Buffer`, so an orchestrator cannot open,
+hash, or re-stat a file. Receipt/plan authentication and drift detection therefore
+run in the deterministic authenticator on either side of every dispatch. They are
+never delegated to an agent: asking a dispatched agent to vouch for its own inputs
+is not authentication.
+
 1. Compile the deterministic index in memory:
    ```bash
    bun ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop-slide-table.ts "<absolute project root>" --json
    ```
    Require no `violations`, `reviewStatus: "APPROVED"`, and the exact returned `planPath` and `planHash`.
-2. Invoke the generator:
+2. Authenticate the receipt and the receipt-selected plan (pre-step). It snapshots
+   both under TOCTOU discipline — `O_NOFOLLOW` open, fstat-vs-lstat identity
+   comparison before AND after the read, realpath containment, sha256 of the bytes
+   actually opened — and rejects a symlinked `.planning`, `.planning/.state`,
+   receipt, or plan:
+   ```bash
+   python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_plan_auth.py \
+     --authenticate "<absolute project root>" --plan-hash "<index.planHash>" > /tmp/workshop-auth.json
+   ```
+   Non-zero exit or `ok !== true` blocks generation — read `violations` and stop. The
+   bundle carries `projectReal`, `planPath`, `planHash`, and `artifacts`, keyed
+   `receipt` and `plan`. ONE bundle serves both workflows; re-authenticate before
+   `workshop-verify` so its entry hashes describe the post-generation state.
+3. Invoke the generator, passing the bundle's fields straight through:
    ```text
    Workflow(name="workshop-generate", args={
      "projectDir": "<absolute project root>",
+     "projectReal": <bundle.projectReal>,
      "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-     "planPath": "<index.planPath>", "planHash": "<index.planHash>",
-     "slideIndex": <parsed index>
+     "planPath": <bundle.planPath>, "planHash": <bundle.planHash>,
+     "slideIndex": <parsed index>,
+     "artifacts": <bundle.artifacts>
    })
    ```
-   It keeps the seven-column specifications pinned, produces both Typst deliverables, and gates both compilations. Its temporary section fragments are outside planning state.
-3. Verify the built deck independently:
+   It re-runs the strict receipt parse over `artifacts.receipt.text` itself, keeps the
+   seven-column specifications pinned, produces both Typst deliverables, and gates both
+   compilations. Its temporary section fragments are outside planning state.
+4. Verify the built deck independently — re-authenticate first (step 2 again), then:
    ```text
    Workflow(name="workshop-verify", args={
-     "projectDir": "<absolute project root>", "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
-     "planPath": "<index.planPath>", "planHash": "<index.planHash>", "slideIndex": <parsed index>
+     "projectDir": "<absolute project root>", "projectReal": <bundle.projectReal>,
+     "pluginRoot": "${CLAUDE_SKILL_DIR}/../..",
+     "planPath": <bundle.planPath>, "planHash": <bundle.planHash>, "slideIndex": <parsed index>,
+     "artifacts": <bundle.artifacts>
    })
    ```
    The verifier enumerates built slides and makes the PLAN-to-slide join semantically, without injecting a candidate menu. It applies the parser's Source Inventory whitelist after the join.
-4. If `overallPass` is false, fix reported findings and re-run selectively with the same path and hash. A replacement plan invalidates carry-forward review state. If true, proceed immediately to `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and record user dispositions in `.planning/HUMAN_REVIEW.md`.
+5. Finalize each return value (post-step). Both workflows return `verifyRequired: true`
+   and `driftVerified: false` — the verdict is provisional until the plan and receipt
+   are re-snapshotted against the entry bundle. Write the return value to disk and run:
+   ```bash
+   python3 ${CLAUDE_SKILL_DIR}/../../scripts/workshop/workshop_plan_auth.py \
+     --verify /tmp/workshop-auth.json --findings /tmp/workshop-result.json > /tmp/workshop-final.json
+   ```
+   If the plan or receipt moved during the asynchronous run, the post-step zeroes
+   `finalPlanHash`, prepends a critical `artifact-integrity` finding, and forces
+   `overallPass: false` with `verdict: "ISSUES FOUND (artifact drift)"`. Drift means the
+   planning authority changed under the agents: re-authenticate and re-run, do not patch.
+6. If `overallPass` is false, fix reported findings and re-run selectively with the same path and hash. A replacement plan invalidates carry-forward review state. If true, proceed immediately to `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and record user dispositions in `.planning/HUMAN_REVIEW.md`.
+
+Read every gate from the **finalized** post-step output, never from the raw workflow
+return: `verifyRequired: true` means the drift check has not run and the verdict is not
+yet trustworthy.
 
 Typst deliverables remain `presentation/slides.typ`, `presentation/notes.typ`, and their rendered PDFs. Preserve F/T/R/A fidelity, seven-column Slide Spec semantics, unbiased joins, and both compile gates.
