@@ -76,7 +76,7 @@ const TRIGGER_RE = /\b(?:typst|tinymist)\s+compile\b/;
  * the target by taking the LAST `*.typ` token in the ;/&/|-delimited segment that contains the
  * trigger, rather than requiring the target to be the first token after "compile".
  */
-function resolveTypTarget(command: string): string | null {
+export function resolveTypTarget(command: string): string | null {
   for (const seg of command.split(/[;&|]+/)) {
     if (TRIGGER_RE.test(seg)) {
       const tokens = [...seg.matchAll(/([^\s]+\.typ)\b/g)].map((m) => m[1]);
@@ -155,10 +155,17 @@ function main(hookInput: Record<string, unknown>): never {
   process.exit(0);
 }
 
-let payload: unknown;
-try {
-  payload = JSON.parse(await Bun.stdin.text());
-} catch {
-  process.exit(0);
+// GUARDED, SO THE FILE CAN BE IMPORTED. Unguarded, module scope read stdin and called
+// `process.exit(0)` on import — so a test that imported `resolveTypTarget` exited silently before
+// its first assertion and reported success by printing nothing. That is the same silent-zero shape
+// `scripts/check-tests.sh` was written to prevent, arriving through the import path instead of the
+// runner. A hook has to be loadable to be testable.
+if (import.meta.main) {
+  let payload: unknown;
+  try {
+    payload = JSON.parse(await Bun.stdin.text());
+  } catch {
+    process.exit(0);
+  }
+  main(payload as Record<string, unknown>);
 }
-main(payload as Record<string, unknown>);

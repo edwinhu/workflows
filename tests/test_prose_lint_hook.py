@@ -15,6 +15,7 @@ Run with:  python3 -m pytest tests/test_prose_lint_hook.py
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import subprocess
 import sys
@@ -25,16 +26,14 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 import prose_extract  # noqa: E402
 
 
-def _load_hook():
-    """Import the hyphenated hook module by path."""
-    path = REPO_ROOT / "hooks" / "writing-prose-check.py"
-    spec = importlib.util.spec_from_file_location("writing_prose_check", path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-HOOK = _load_hook()
+# THE HOOK IS TYPESCRIPT. It used to be imported here as a Python module; its helper-level tests
+# (deck detection, domain→category mapping, edited-line scoping) now live in
+# tests/writing-prose-check.test.mjs, and `_detect_style` was dropped rather than ported because it
+# read the retired `.planning/ACTIVE_WORKFLOW.md` ledger. What remains in THIS file is what is still
+# genuinely Python: `.typ` prose extraction (scripts/prose_extract.py), the scored AI-tic table
+# (skills/ai-anti-patterns/scripts/screen.py), and the hook's end-to-end behaviour, which is driven
+# as a subprocess and does not care what language the hook is written in.
+HOOK_PATH = REPO_ROOT / "hooks" / "writing-prose-check.ts"
 
 
 # --------------------------------------------------------------------------
@@ -118,97 +117,66 @@ def test_typ_prose_rule_fires_on_body_not_code(tmp_path):
 # deck-skip logic
 # --------------------------------------------------------------------------
 
-def test_deck_skip_touying(tmp_path):
-    f = tmp_path / "talk.typ"
-    f.write_text('#import "@preview/touying:0.5.0": *\n= Slide\n')
-    assert HOOK._is_typ_deck(f) is True
 
 
-def test_deck_skip_slide_call(tmp_path):
-    f = tmp_path / "talk.typ"
-    f.write_text("#slide(title: \"x\")[ content ]\n")
-    assert HOOK._is_typ_deck(f) is True
 
-
-def test_deck_skip_polylux(tmp_path):
-    f = tmp_path / "talk.typ"
-    f.write_text('#import "@preview/polylux:0.3.1": *\n')
-    assert HOOK._is_typ_deck(f) is True
-
-
-def test_deck_skip_by_directory(tmp_path):
-    for dirname in ("slides", "presentation", "presentations"):
-        d = tmp_path / dirname
-        d.mkdir()
-        f = d / "x.typ"
-        f.write_text("Dear Professor,\n")
-        assert HOOK._is_typ_deck(f) is True, dirname
-
-
-def test_letter_is_not_a_deck(tmp_path):
-    f = tmp_path / "letter.typ"
-    f.write_text('#set page(margin: 1in)\nDear Professor,\nSincerely.\n')
-    assert HOOK._is_typ_deck(f) is False
 
 
 # --------------------------------------------------------------------------
 # domain --only mapping
 # --------------------------------------------------------------------------
 
-def test_category_mapping_general():
-    assert HOOK._prose_lint_categories(None) == "ai-anti-patterns,writing-general"
-    assert HOOK._prose_lint_categories("general") == "ai-anti-patterns,writing-general"
 
 
-def test_category_mapping_legal():
-    assert HOOK._prose_lint_categories("legal") == \
-        "ai-anti-patterns,writing-general,writing-legal"
-
-
-def test_category_mapping_econ():
-    assert HOOK._prose_lint_categories("econ") == \
-        "ai-anti-patterns,writing-general,writing-econ"
-
-
-def test_detect_style_reads_active_workflow(tmp_path):
-    pl = tmp_path / ".planning"
-    pl.mkdir()
-    (pl / "ACTIVE_WORKFLOW.md").write_text("---\nstyle: legal\n---\n")
-    assert HOOK._detect_style(tmp_path) == "legal"
-    assert HOOK._detect_style(tmp_path / "nope") is None
 
 
 # --------------------------------------------------------------------------
 # edited-line scoping
 # --------------------------------------------------------------------------
 
-def test_edit_ranges_write_is_whole_file(tmp_path):
-    f = tmp_path / "x.md"
-    f.write_text("a\nb\n")
-    rng = HOOK._edit_ranges("Write", {}, f)
-    assert rng == [(1, 10**9)]
-
-
-def test_edit_ranges_edit_spans_new_string(tmp_path):
-    f = tmp_path / "x.md"
-    f.write_text("line1\nline2\nNEW HERE\nline4\n")
-    rng = HOOK._edit_ranges("Edit", {"new_string": "NEW HERE"}, f)
-    # NEW HERE is on line 3; ±2 padding -> (1, 5)
-    assert rng == [(1, 5)], rng
-    assert HOOK._in_ranges(3, rng) and not HOOK._in_ranges(100, rng)
 
 
 # --------------------------------------------------------------------------
 # Integration: hook end-to-end
 # --------------------------------------------------------------------------
 
-def _run_hook(file_path: Path, tool_name="Write", new_string=None):
+def _authenticate(project_root: Path, domain: str | None = None) -> None:
+    """Give the project an APPROVED receipt-selected generated plan.
+
+    The canonical writing hooks refuse to lint a project that has none — see the
+    `authenticatedWritingPlan` guard in hooks/writing-prose-check.ts. That guard postdates this
+    suite, which built bare tmp directories; without a receipt the hook exits 0 with no output, so
+    every integration assertion below was reading `None` and failing for a reason that had nothing to
+    do with the prose rule under test. Omitting Domain leaves style unset, which is the general
+    category set the original tests assumed.
+    """
+    state = project_root / ".planning" / ".state"
+    state.mkdir(parents=True, exist_ok=True)
+    body = "## Writing Intent\n\n"
+    if domain:
+        body += f"- Domain: {domain}\n\n"
+    body += "## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n"
+    plan_file = "writing-native.md"
+    (project_root / ".planning" / plan_file).write_text(body)
+    (state / "review.json").write_text(json.dumps({
+        "workflow": "writing", "plan_file": plan_file,
+        "plan_hash": hashlib.sha256(body.encode()).hexdigest(),
+        "approved_session_id": "approval", "approved_at": "2026-01-01T00:00:00.000Z",
+        "status": "APPROVED", "reviewer_session_id": "review",
+        "reviewed_at": "2026-01-01T00:00:01.000Z",
+    }))
+
+
+def _run_hook(file_path: Path, tool_name="Write", new_string=None, domain=None):
+    # Mirror the hook's own project-root derivation: drafts/*.md sits one level deeper than a .typ.
+    root = file_path.parent.parent if file_path.suffix == ".md" else file_path.parent
+    _authenticate(root, domain)
     payload = {"tool_name": tool_name,
                "tool_input": {"file_path": str(file_path)}}
     if new_string is not None:
         payload["tool_input"]["new_string"] = new_string
     proc = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "hooks" / "writing-prose-check.py")],
+        ["bun", str(HOOK_PATH)],
         input=json.dumps(payload), capture_output=True, text=True, timeout=60,
     )
     out = proc.stdout.strip()

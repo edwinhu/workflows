@@ -77,11 +77,6 @@ UNQUARANTINE=()
 # suite -> why it fails today. Pre-existing; verified at HEAD in a clean worktree.
 quarantine_reason() {
     case "$1" in
-        tests/overflow_check_test.py)          echo "opens hooks/overflow-check.py; the hook is now .ts" ;;
-        tests/test_mechanical_floor_gate.py)   echo "opens hooks/mechanical-floor-gate.py; the hook is now .ts" ;;
-        tests/test_prose_lint_hook.py)         echo "opens hooks/writing-prose-check.py; the hook is now .ts" ;;
-        tests/test_writing_mechanical_gate.py) echo "opens hooks/writing-mechanical-gate.py; the hook is now .ts" ;;
-        tests/writing_gate_probe_test.py)      echo "probes a writing gate whose response shape changed" ;;
         # tests/workflow-creator-compiler.test.ts was quarantined as "asserts normalizeExpectedOutputs
         # accepts an inventory task-contract.ts now rejects" — a misread. The test asserts REJECTION
         # (ok:false with an "unsafe output path" violation); what actually happened is that

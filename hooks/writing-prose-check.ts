@@ -169,14 +169,14 @@ function runPy(args: string[], cwd?: string): { stdout: string; ok: boolean } {
   }
 }
 
-function proseLintCategories(style: string | null): string {
+export function proseLintCategories(style: string | null): string {
   const cats = ["ai-anti-patterns", "writing-general"];
   const extra = _STYLE_CATEGORY[(style || "").toLowerCase()];
   if (extra) cats.push(extra);
   return cats.join(",");
 }
 
-function isTypDeck(path: string): boolean {
+export function isTypDeck(path: string): boolean {
   const parts = pyParts(path);
   for (const part of parts.slice(0, -1)) {
     if (_DECK_DIR_RE.test(part)) return true;
@@ -190,7 +190,7 @@ function isTypDeck(path: string): boolean {
   return _DECK_MARKERS.some((marker) => text.includes(marker));
 }
 
-function editRanges(toolName: string, toolInput: Record<string, unknown>, path: string): Range[] {
+export function editRanges(toolName: string, toolInput: Record<string, unknown>, path: string): Range[] {
   if (toolName === "Write") return [WHOLE_FILE];
   const newString = (toolInput.new_string as string) ?? "";
   const ranges: Range[] = [];
@@ -218,7 +218,7 @@ function countNewlines(s: string, start: number, end: number): number {
   return c;
 }
 
-function inRanges(lineNo: number, ranges: Range[]): boolean {
+export function inRanges(lineNo: number, ranges: Range[]): boolean {
   return ranges.some(([a, b]) => a <= lineNo && lineNo <= b);
 }
 
@@ -362,4 +362,7 @@ async function main(): Promise<void> {
   context("PostToolUse", output);
 }
 
-await main();
+// GUARDED SO THE MODULE CAN BE IMPORTED. Unguarded, `await main()` ran on import — reading stdin
+// and exiting — so a test importing these helpers died before its first assertion and printed
+// nothing, which reads as a pass. A hook has to be loadable to be unit-testable.
+if (import.meta.main) await main();

@@ -238,7 +238,7 @@ function runCheckAll(project: string): CheckResult {
   return { ok: failed.length === 0, failed, errors, summary };
 }
 
-function runCheckAllCached(project: string): CheckResult & { fromCache: boolean } {
+export function runCheckAllCached(project: string): CheckResult & { fromCache: boolean } {
   const curHash = freshnessHash(project);
   if (curHash !== null) {
     const cached = readCache(project);
@@ -356,4 +356,7 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-await main();
+// GUARDED SO THE MODULE CAN BE IMPORTED. Unguarded, `await main()` ran on import: it read stdin and
+// called process.exit, so any test importing runCheckAllCached died before its first assertion and
+// printed nothing — a silent pass. The cache behaviour below is only testable because this is gated.
+if (import.meta.main) await main();
