@@ -113,7 +113,17 @@ In a distinct implementation session:
 
 ### 4. VERIFY
 
-Set `phase: verification`. Invoke `wc-audit` with the deterministic compiler manifest and required mechanical probes. It is read-only and independently verifies architecture, enforcement, paths, hooks, and the approved criteria. A composite score is diagnostic only; completion requires no blocking finding and every evidence row passing.
+Set `phase: verification`. **First run the deterministic compliance probe**, and pass its command as one of the required mechanical probes:
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/../../scripts/wc/compliance-probe.ts --target "<plugin repo root>"
+```
+
+It checks three CONFIGURATION properties no reviewer agent can hold, because the characteristic way to get each one wrong is to measure the reference instead of the mechanism: every workflow reaches every beat; every hook file is registered on some matcher; every hook that fails open has a gate that treats its silence as failure. Exit 1 with findings is a blocking result.
+
+**Point `--target` at the plugin under audit, including this one.** `workflow-creator` is a meta workflow, so it must be able to audit the workflows plugin itself — an auditor that only inspects generated workflows catches the next workflow's version of a defect and never its own host's, and every defect this probe encodes was in the host. `tests/compliance-probe.test.mjs` runs it against this repo on every test run, with an asserted `KNOWN_FINDINGS` registry.
+
+Then invoke `wc-audit` with the deterministic compiler manifest and required mechanical probes. It is read-only and independently verifies architecture, enforcement, paths, hooks, and the approved criteria. A composite score is diagnostic only; completion requires no blocking finding and every evidence row passing.
 
 Failures re-enter `/workflow-creator-improve`; retries preserve approved plan identity and only re-run proven attempted work.
 

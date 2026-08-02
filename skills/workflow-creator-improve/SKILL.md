@@ -66,7 +66,13 @@ After independent plan review:
 
 1. Compile the exact approved plan with `scripts/wc/workflow-plan-compiler.ts`.
 2. Dispatch the returned ready wave through `beat-implement` with `workflow: workflow-creator`.
-3. Re-run `wc-audit` independently, selectively carrying authenticated prior reviews where valid.
+3. Re-run the deterministic compliance probe and `wc-audit` independently, selectively carrying authenticated prior reviews where valid:
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/../../scripts/wc/compliance-probe.ts --target "<plugin repo root>"
+```
+
+The probe is safe pre-approval — it only reads files — and its findings are deterministic, so they are evidence rather than a score. Carry them as a mechanical probe result, never as a reviewer dimension.
 4. Continue until every approved criterion has evidence and no blocking finding remains, within the active `/goal` budget.
 5. Return to shared human review in `.planning/HUMAN_REVIEW.md`.
 
