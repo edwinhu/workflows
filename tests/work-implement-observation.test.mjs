@@ -363,5 +363,71 @@ console.log('records are keyed per run, so one run cannot adjudicate another')
 }
 
 for (const path of cleanup) rmSync(path, { recursive: true, force: true })
+
+// ── RED/GREEN IS ENFORCED BY **THIS HOOK**, not only by the CLI gate ─────────
+//
+// The whole point of that change was that the runtime invokes the hook while the gate's only caller
+// is a bash line in a SKILL.md. Every redCommand test lived in tests/implement-gate.test.mjs — the
+// OTHER copy — so the headline behaviour had no coverage where it actually runs, and the two
+// `unusable` implementations had already drifted apart unnoticed.
+{
+  const session = nextSession()
+  const project = projectFor()
+  const src = join(project, 'src'); mkdirSync(src, { recursive: true })
+  // OUTSIDE the project: a marker written inside it is an untracked file beyond the task's
+  // writablePaths, which the bounds check correctly blocks. The fixture, not the rule, was wrong.
+  const marker = join(tmpdir(), `redgate-${process.pid}-${sessionCounter}.flag`)
+  // A real command whose verdict flips: fails while the flag is absent, passes once it exists.
+  const redCommand = `test -e ${marker}`
+  writeFileSync(expectationPath(sessionFlagKey({ session_id: session })), JSON.stringify({
+    waveFingerprint: 'f'.repeat(64), projectDir: project, workflow: 'dev',
+    tasks: { t1: { writablePaths: ['src/a.js'], outputs: ['src/a.js'], redCommand } },
+  }))
+
+  fire('pre', payloadFor(session, project, 'TASK t1: build it'))
+  writeFileSync(join(src, 'a.js'), 'export const a = 1\n')
+  writeFileSync(marker, 'green\n'); cleanup.push(marker)   // the work makes the command pass
+  const post = fire('post', payloadFor(session, project, 'TASK t1: build it', { changedFiles: ['src/a.js'] }))
+  ok('a genuine RED→GREEN transition is not blocked by the hook', post.json?.decision !== 'block', post.stdout.slice(0, 200))
+}
+{
+  // The vacuous green: the command passed BEFORE the work, so it pins nothing. The gate catches this;
+  // the hook must too, or an orchestrator that never runs the gate faces no enforcement at all.
+  const session = nextSession()
+  const project = projectFor()
+  const src = join(project, 'src'); mkdirSync(src, { recursive: true })
+  const redCommand = 'true'
+  writeFileSync(expectationPath(sessionFlagKey({ session_id: session })), JSON.stringify({
+    waveFingerprint: 'f'.repeat(64), projectDir: project, workflow: 'dev',
+    tasks: { t1: { writablePaths: ['src/a.js'], outputs: ['src/a.js'], redCommand } },
+  }))
+  fire('pre', payloadFor(session, project, 'TASK t1: build it'))
+  writeFileSync(join(src, 'a.js'), 'export const a = 1\n')
+  const post = fire('post', payloadFor(session, project, 'TASK t1: build it', { changedFiles: ['src/a.js'] }))
+  ok('the hook BLOCKS a redCommand that already passed before implementation', post.json?.decision === 'block', post.stdout.slice(0, 200))
+  ok('the hook names it as not pinning the behaviour', /does not pin the behaviour/.test(post.json?.reason ?? ''), post.json?.reason)
+}
+{
+  // ORDINARY TEST LITTER MUST NOT BLOCK. The post probe runs after the capture, so a command that
+  // rewrites untracked-but-unignored files (.coverage, __pycache__) changes the whole-tree digest.
+  // The first version of the mutation check compared digests and failed clean runs for exactly this.
+  const session = nextSession()
+  const project = projectFor()
+  const src = join(project, 'src'); mkdirSync(src, { recursive: true })
+  const goFlag = join(tmpdir(), `redgate-go-${process.pid}-${sessionCounter}.flag`)
+  const redCommand = `test -e ${goFlag}`
+  writeFileSync(expectationPath(sessionFlagKey({ session_id: session })), JSON.stringify({
+    waveFingerprint: 'f'.repeat(64), projectDir: project, workflow: 'dev',
+    tasks: { t1: { writablePaths: ['src/a.js'], outputs: ['src/a.js'], redCommand } },
+  }))
+  fire('pre', payloadFor(session, project, 'TASK t1: build it'))
+  writeFileSync(join(src, 'a.js'), 'export const a = 1\n')
+  writeFileSync(goFlag, 'go\n'); cleanup.push(goFlag)
+  writeFileSync(join(project, 'coverage.xml'), 'litter\n')   // untracked, unignored: counted by the digest
+  const post = fire('post', payloadFor(session, project, 'TASK t1: build it', { changedFiles: ['src/a.js'] }))
+  ok('untracked test litter outside the declared paths does not block',
+     !/modified declared output/.test(post.json?.reason ?? ''), post.json?.reason)
+}
+
 console.log(`\n${PASS}/${PASS + FAIL} passed`)
 if (FAIL) throw new Error(`${FAIL} implement-observation contract check(s) failed`)
