@@ -81,6 +81,10 @@
           {
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/cite-fidelity-lint.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/typst-convention-guard.ts"
           }
         ]
       },

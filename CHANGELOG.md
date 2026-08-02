@@ -3,6 +3,14 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.106.4] - 2026-08-02
+
+### Fixed
+- **`hooks/typst-convention-guard.ts` was registered nowhere and had never run.** Found by `scripts/wc/compliance-probe.ts` — the checker built one release earlier in response to the identical defect in `work-implement-observation.ts`. Third instance of the same shape, first one caught by a tool instead of an audit. Registered in `hooks/hooks.json` on `PostToolUse` `matcher: "Edit|Write"`, which is where it belongs: the `.typ` writes it guards happen inside `workshop-generate`'s dispatched subagents, and skill frontmatter does not reach those.
+  - **Its 17-case golden passed throughout and could not have caught this.** `tests/golden/` is a PARITY harness pinning stdout hashes for the Python-to-TypeScript port, and every one of those cases asserts SILENCE — not one exercises a violation, so deleting every check in the guard would have left it green. Parity proves the port is faithful; it says nothing about whether the ported thing is worth running.
+  - `tests/typst-convention-guard.test.mjs` (new) holds what the golden cannot: on a real violation the guard emits a real finding, and on clean input it stays quiet. Both halves, because a guard that reports everything is as useless as one that reports nothing.
+  - `KNOWN_FINDINGS` in `tests/compliance-probe.test.mjs` is now empty. It went red on the fix and named the entry to delete, which is the whole reason it is asserted rather than merely listed.
+
 ## [5.106.3] - 2026-08-02
 
 ### Fixed

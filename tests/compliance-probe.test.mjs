@@ -22,14 +22,12 @@ const ok = (name, condition, extra = '') => {
   else { FAIL++; console.log(`FAIL  ${name}${extra ? ` — ${extra}` : ''}`) }
 }
 
-// Accepted, un-remediated findings in this repo. Keep the reason and the exit condition with each.
-const KNOWN_FINDINGS = new Set([
-  // Wired to no event and named by no skill. Its golden test still passes, which is the whole point:
-  // a golden exercises behaviour and cannot tell you the hook never runs. Exit condition: register it
-  // on the matcher it guards (Typst conventions, so a Write/Edit matcher in the workshop family), or
-  // delete it and its golden together.
-  'hook-registration:hooks/typst-convention-guard.ts',
-])
+// EMPTY, and that is the state to keep. The registry stays because it is the mechanism, not the
+// backlog: each entry is asserted to STILL be a finding, so fixing one turns this suite red and names
+// the entry to delete. Its one member — `hooks/typst-convention-guard.ts`, wired to no event and
+// therefore never run — was retired that way in v5.106.4. Adding an entry is deliberate and needs its
+// reason and exit condition written beside it, exactly like KNOWN_GAPS and KNOWN_NONCOMPLIANT.
+const KNOWN_FINDINGS = new Set([])
 
 const findings = probeCompliance(ROOT)
 const key = f => `${f.rule}:${f.subject}`
