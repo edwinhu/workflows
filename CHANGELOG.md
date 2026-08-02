@@ -21,6 +21,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 - `references/pipeline.md` rewritten against the tree. It documented a retired architecture — a `workflows/npx-ownership-pipeline.js` orchestrator, a second entry point in `run_npx_pipeline.sh`, and a "Python alternatives" table offering runnable commands for four scripts deleted in #83/#85 — so it told a reader to run seven scripts that are not there. Also corrected: the legs table (four legs, wrong leg 2), a design-decision claim that "all data building is SAS" when legs 2 and 5 are Python, and a customization section pointing at the per-script `%let` values that `pipeline_config.sas` exists to centralize.
 
+## [5.105.1] - 2026-08-02
+
+### Fixed
+- **`writing-review` could not run.** `hooks/writing-mechanical-gate.ts` gates it on `check-all.py` and denies the tool call on any hard-severity failure. Two constraints were failing, so the gate denied for every user of the plugin — and it stayed invisible because running `check-all.py .` from the repo root reports `0 failed`: the domain filter skips 63 constraints without an `ACTIVE_WORKFLOW.md`. It only fails when scoped to a writing project, which is exactly when the gate fires.
+  - **`flowchart-authority` retired.** It required one of `this IS the spec`, `flowchart.*spec`, `authoritative.*flowchart`, or an ASCII box-drawing block in six writing phase skills. Added 2026-03-20 when `writing-setup` genuinely had `## Setup Flowchart (This IS the Spec)`; the v5.98.0 migration replaced flowchart-as-spec repo-wide with the native-Plan + Iron-Laws + JS-engine model, and `grep -rl "This IS the Spec" skills/` now returns nothing anywhere. The pattern matched no code left in the repo. Two divergent forks existed — `references/constraints/` in constraint-protocol form, `scripts/checks/` in the older standalone form — which is why `scripts/check-all.sh` was independently red from the repo root, with no domain filter involved. Both deleted, along with the index row and the doc that described them.
+  - **`constraint-loading-protocol` repaired, not retired.** Its intent is live: prose skills must load the domain skill and `ai-anti-patterns`. Only its matcher was stale, demanding a literal `writing-legal/SKILL.md` path when the skills now select the domain dynamically from the plan's `style`. The matcher now requires a load verb bound to a domain or style referent *within the same clause*, so co-occurring words cannot satisfy it and the legacy hardcoded path still passes. Verified by deleting the loading line from each of the four skills in turn and confirming each fails.
+
+  No skill file was edited. `writing-validate` was initially suspected of a genuine gap and is not: it carries the same instruction in a fourth spelling at line 24, and its step 4 assesses domain and AI-pattern compliance, so the constraint applies and the skill satisfies it.
+
 ## [Unreleased]
 
 ## [5.104.0] - 2026-08-01
