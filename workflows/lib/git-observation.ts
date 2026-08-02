@@ -70,6 +70,18 @@ export function captureGitObservation(repositoryRoot: string): Readonly<GitObser
     ...decodeGitPaths(runGit(root, ["ls-files", "--others", "--exclude-standard", "-z"])).map(validateCandidatePath),
   ]);
   const metadata = loadGitMetadata(root, "HEAD");
+  // GITLINKS (submodule pointers, mode 160000) NAME A COMMIT, NOT A BLOB, and that commit lives in
+  // another repository — so `git cat-file --batch` reports it missing and `loadGitObjects` throws
+  // `invalid Git blob`. The whole observation then fails, which the gate correctly treats as a hard
+  // refusal, so EVERY dispatch in a repo containing a submodule was unadjudicable. Found by running
+  // the live hook against this very repo, whose `skills/bmll` submodule pointer moved.
+  //
+  // `candidate-manifest.ts:328` already carries this exact fix, naming this exact submodule. The
+  // observation path was never given it — the same defect, in the sibling that walks the same index.
+  // A submodule's contents are not this repository's content in any case; the pointer is dropped.
+  const isGitlink = (path: string) =>
+    metadata.index.get(path)?.mode === "160000" || metadata.tree.get(path)?.mode === "160000";
+  for (const path of [...changed]) if (isGitlink(path)) changed.delete(path);
   const indexObjects = loadGitObjects(root, [...changed].flatMap((path) => metadata.index.get(path)?.oid ?? []));
   const entries: GitObservationEntry[] = [];
   for (const path of [...changed].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "variant" }))) {
