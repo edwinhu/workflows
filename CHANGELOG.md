@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.105.2] - 2026-08-02
+
+### Fixed
+- **A symlinked `.planning` cost every session at `$HOME` its Bash.** `hasReceiptSurface` scored ANY non-directory `.planning` as `governed`, without looking behind it. `~/.planning -> dotfiles/.planning` is an ordinary committed dotfiles alias whose target held one inert `STATE.md` — no `.state`, no receipt, nothing ever approved — and it classified `{blocked, conversion-required, governed: true}`, so `implementer-identity-gate` took its blocked branch and denied Bash outright, including `git status` and test runs, in a directory that is not a planning project at all. Measured: `/home/eh` scored `governed: true` while `/home/eh/dotfiles` — THE SAME BYTES, reached without the link — scored `governed: false`. The alias was the only difference, and `fd -t d` does not match symlinks-to-directories, which is why the state looked absent rather than aliased while diagnosing it.
+  - The question asked of a `.planning`-level alias is now "is approval evidence REACHABLE THROUGH it", not "is it a symlink". The decoy's defining property is that it presents approval evidence — that is what made round 12/13's decoy dangerous, not the `ln -s` — so an alias over a receipt surface or a `*_CLARIFIED.json` sentinel still scores `governed: true` and still blocks.
+  - **The `.state` level is not relaxed.** Nothing legitimate aliases `.planning/.state`; that path exists only to hold the receipt, so a symlink or a regular file there is still evidence on its own, unconditionally, and is now checked first. A `.planning` that dangles or resolves to a non-directory likewise stays `governed: true` — that is round 12's measured all-16-cells-ALLOW shape.
+  - The cost, disclosed rather than hidden: `.planning` aliased to a directory presenting neither a receipt surface nor a sentinel is now ungoverned. That is the same disposition the identical unaliased directory already got, and it buys nothing that `mv .planning aside && mkdir .planning` did not already buy at the same price.
+  - Regression coverage added in `tests/approved-artifact-contract.test.ts` pins both halves — the permissive alias row and the three that guard the narrowing — because the obvious repair for either failure breaks the other. Verified to fail against the pre-fix library and pass after.
+
 ## [5.87.4] - 2026-07-27
 
 ### Fixed

@@ -753,6 +753,57 @@ describe("built-in generated-plan and legacy layouts", () => {
     expect(classifyPlanningLifecycle(root)).toEqual({ kind: "none" });
   }));
 
+  /**
+   * THE ALIAS IS NOT THE EVIDENCE — WHAT IS REACHABLE THROUGH IT IS. This is the other side of the
+   * test above, and without it that test's fix over-fires on an ordinary machine.
+   *
+   * `~/.planning -> dotfiles/.planning` is a committed dotfiles alias, not a decoy: its target held
+   * one inert `STATE.md`, no `.state`, no receipt, nothing ever approved. Scoring every non-directory
+   * `.planning` as `governed` classified it `{blocked, conversion-required, governed: true}` while
+   * `~/dotfiles` — THE SAME BYTES, reached without the link — classified `governed: false`, and the
+   * gate denied Bash outright at `$HOME` for every session. The alias was the only difference.
+   *
+   * So the rows below fix WHICH HALF of the narrowing is load-bearing, because the obvious "repair"
+   * for either failure breaks the other:
+   *   - a `.planning` alias whose target presents approval evidence is still the decoy -> governed
+   *   - a `.planning` alias whose target presents none is an ordinary alias          -> NOT governed
+   *   - the `.state` LEVEL is not relaxed at all: nothing legitimate aliases the receipt directory
+   *   - a `.planning` that is not a directory AND not a resolvable one is still the anomaly
+   */
+  test("a .planning alias is governed by what is reachable through it, not by being a link", () => withProject((root) => {
+    // (1) The ordinary dotfiles alias: resolvable, receipt-free, sentinel-free. THE PERMISSIVE ROW,
+    // and the one that regressed `$HOME`. Identical disposition to the same directory unaliased.
+    const dotfiles = join(root, "dotfiles", ".planning");
+    mkdirSync(dotfiles, { recursive: true });
+    writeFileSync(join(dotfiles, "STATE.md"), "retired state\n");
+    symlinkSync("dotfiles/.planning", join(root, ".planning"));
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: false });
+    expect(classifyPlanningLifecycle(join(root, "dotfiles"))).toEqual({ kind: "blocked", reason: "conversion-required", governed: false });
+    rmSync(join(root, ".planning"));
+
+    // (2) The same alias over a target that DOES present a receipt surface. The decoy above hides a
+    // sentinel; this one hides the receipt itself, which must not become reachable by aliasing.
+    const decoy = join(root, "decoy");
+    mkdirSync(join(decoy, ".state"), { recursive: true });
+    writeFileSync(join(decoy, ".state", "review.json"), "{ not json");
+    symlinkSync(decoy, join(root, ".planning"));
+    expect(classifyPlanningLifecycle(root)).toEqual(expect.objectContaining({ kind: "blocked", governed: true }));
+    rmSync(join(root, ".planning"));
+
+    // (3) `.planning` as a REGULAR FILE. Not an alias at all, so "what is behind it" is not a
+    // question that can be asked — no dotfiles setup produces this and it stays the anomaly.
+    writeFileSync(join(root, ".planning"), "not a directory\n");
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "planning-read", governed: true });
+    rmSync(join(root, ".planning"));
+
+    // (4) The `.state` LEVEL IS NOT RELAXED. The dangling-link spelling is covered above; this is the
+    // regular-file spelling. Nothing legitimate puts a FILE where the receipt directory belongs, so
+    // it is evidence on its own — no reachability question, aliased `.planning` or not.
+    mkdirSync(join(root, ".planning"), { recursive: true });
+    writeFileSync(join(root, ".planning", ".state"), "not a directory\n");
+    expect(classifyPlanningLifecycle(root)).toEqual({ kind: "blocked", reason: "conversion-required", governed: true });
+  }));
+
   test("treats legacy fixed artifacts as conversion-only provenance", () => withProject((root) => {
     const plan = "# Legacy\n"; const hash = sha256(plan); mkdirSync(join(root, ".planning"), { recursive: true });
     writeFileSync(join(root, ".planning", "PLAN.md"), plan); writeFileSync(join(root, ".planning", "PLAN.meta.json"), JSON.stringify(legacyMetadata("work", hash))); writeFileSync(join(root, ".planning", "PLAN_REVIEWED.md"), frontmatter(legacyReview(hash)));

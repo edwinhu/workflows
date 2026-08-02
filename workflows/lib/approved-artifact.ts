@@ -39,7 +39,7 @@
  * and catches the structurally lazy path. It is not a proof of independence, and a future reader who
  * treats `approver != implementer` as one will over-trust it.
  */
-import { closeSync, constants, existsSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readSync, realpathSync, renameSync, unlinkSync, writeSync, type BigIntStats } from "node:fs";
+import { closeSync, constants, existsSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readSync, realpathSync, renameSync, statSync, unlinkSync, writeSync, type BigIntStats } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { isAbsolute, join, relative } from "node:path";
 
@@ -427,16 +427,56 @@ function hasOnlyBenignPreplanSentinel(planning: string): boolean {
  * A real, empty `.planning/.state/` directory is deliberately NOT governed: that is the shape a
  * project has during CLARIFY and PLAN, before anything is approved, and treating it as governed
  * would restrict the ordinary pre-approval conversation.
+ *
+ * A SYMLINKED `.planning` IS NOT BY ITSELF EVIDENCE, AND READING IT AS EVIDENCE COST EVERY SESSION
+ * AT `$HOME` ITS BASH. DO NOT "RE-FIX" THIS BY RESTORING THE UNCONDITIONAL `return true`.
+ *   The round-12/13 check above answered "is `.planning` a directory?" and scored ANY non-directory
+ *   `governed: true` without looking behind it. `~/.planning -> dotfiles/.planning` is an ordinary
+ *   dotfiles alias, present on this author's machine and committed to that repo, and its target held
+ *   one inert `STATE.md`: no `.state`, no receipt, nothing ever approved. Measured: `/home/eh`
+ *   classified `{blocked, conversion-required, governed: true}` while `/home/eh/dotfiles` — the SAME
+ *   BYTES, reached without the link — classified `governed: false`. The gate therefore denied Bash
+ *   outright (`implementer-identity-gate` line 318 -> the blocked branch) in a directory that is not
+ *   a planning project at all. The alias was the only difference.
+ *
+ *   So the question asked of a `.planning`-level alias is no longer "is it a symlink" but "is
+ *   approval evidence REACHABLE THROUGH it". THE DECOY'S DEFINING PROPERTY IS THAT IT PRESENTS
+ *   APPROVAL EVIDENCE — that is what made round 12/13's decoy dangerous, not the `ln -s`. The
+ *   round-12/13 shape is unchanged by this: a `.planning` aliased to a directory carrying a receipt
+ *   surface, or carrying the `*_CLARIFIED.json` sentinel that would otherwise buy `none` from
+ *   `hasOnlyBenignPreplanSentinel`, still scores `governed: true` and still blocks.
+ *
+ *   THE `.state` LEVEL IS NOT RELAXED AND MUST NOT BE. Nothing legitimate aliases
+ *   `.planning/.state` — that path exists only to hold the receipt — so a symlink or a regular file
+ *   THERE is still evidence on its own, unconditionally. Likewise a `.planning` alias that DANGLES or
+ *   resolves to a non-directory: no dotfiles setup produces that, and it is the shape round 12
+ *   measured as all-16-cells-ALLOW, so it stays `governed: true`.
+ *
+ *   THE COST IS REAL AND IS NOT HIDDEN: `.planning` aliased to a directory holding NEITHER a receipt
+ *   surface NOR a sentinel is now ungoverned. That is the same disposition the identical unaliased
+ *   directory already gets (`conversion-required`, `governed: false`, allow) — it buys an attacker
+ *   nothing that `mv .planning aside && mkdir .planning` did not already buy at the same price, which
+ *   the paragraph above already records as a deliberate total permit.
  */
 function hasReceiptSurface(planning: string): boolean {
-  for (const path of [planning, join(planning, ".state")]) {
-    let entry; try { entry = lstatSync(path); } catch { continue; }
-    // A symlink or a regular file where a governance DIRECTORY belongs is itself the evidence.
-    if (!entry.isDirectory()) return true;
-  }
+  // `.state` FIRST, and unconditionally: a symlink or a regular file where the receipt DIRECTORY
+  // belongs is receipt-shaped by construction, aliased `.planning` or not.
+  let state; try { state = lstatSync(join(planning, ".state")); } catch { state = null; }
+  if (state && !state.isDirectory()) return true;
   // `lstat`, not `existsSync`: a dangling or escaping receipt symlink is present, and present is
   // the whole question. `existsSync` follows the link and would report it absent.
-  try { lstatSync(join(planning, ".state", "review.json")); return true; } catch { return false; }
+  try { lstatSync(join(planning, ".state", "review.json")); return true; } catch { /* keep looking */ }
+  let entry; try { entry = lstatSync(planning); } catch { return false; }
+  if (entry.isDirectory()) return false;
+  // A `.planning` that is not a directory: an alias resolving to a real directory is ordinary and is
+  // judged by what is behind it; anything else (dangling, or a regular file) is the anomaly itself.
+  let target; try { target = statSync(planning); } catch { return true; }
+  if (!target.isDirectory()) return true;
+  // Reachable evidence, checked after `.state`/`review.json` above already looked THROUGH the link:
+  // the pre-approval sentinel, which is the only other thing behind an alias that steers this
+  // classification. Unreadable through the alias is itself the anomaly.
+  try { return readdirSync(planning, { withFileTypes: true }).some(item => CLARIFICATION_SENTINELS.has(item.name)); }
+  catch { return true; }
 }
 /**
  * EVERY `none` HERE IS A TOTAL PERMIT, SO EVERY EARLY RETURN MUST HAVE CONSULTED `governed` FIRST.
