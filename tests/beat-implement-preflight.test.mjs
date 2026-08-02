@@ -115,8 +115,26 @@ console.log('the expectation the hook adjudicates against is derived here, from 
 console.log('every built-in workflow authenticates through the shared approved-plan lifecycle')
 for (const workflow of ['ds', 'dev', 'work', 'writing', 'workshop', 'workflow-creator']) {
   const project = projectFor({ workflow })
-  const result = preflight({ workflow, projectDir: project, dispatchSession: SESSION, planReset: reset, readyWave: [task('a', ['src/a.js'])] })
+  // dev requires a redCommand per task — its TDD claim is now enforced by executing that command
+  // rather than by an agent reporting it, so a dev wave without one is refused before dispatch.
+  const dev = workflow === 'dev' ? { redCommand: 'bun test tests/a.test.ts' } : {}
+  const result = preflight({ workflow, projectDir: project, dispatchSession: SESSION, planReset: reset, readyWave: [task('a', ['src/a.js'], dev)] })
   ok(`${workflow} authenticates through shared approved-plan lifecycle`, result.approvals.length === 1)
+}
+
+console.log('dev must NAME the command that proves its RED step')
+rejects('a dev wave without redCommand is refused before any dispatch',
+  () => preflight({ workflow: 'dev', projectDir: projectFor({ workflow: 'dev' }), dispatchSession: SESSION, planReset: reset, readyWave: [task('a', ['src/a.js'])] }),
+  /redCommand/)
+{
+  // The command is bound into the fingerprint and carried in the expectation, not the prompt: the
+  // agent never sees it and cannot substitute an easier one, and swapping it changes the wave identity.
+  const project = projectFor({ workflow: 'dev' })
+  const withRed = cmd => preflight({ workflow: 'dev', projectDir: project, dispatchSession: SESSION, planReset: reset, readyWave: [task('a', ['src/a.js'], { redCommand: cmd })] })
+  const a = withRed('bun test tests/a.test.ts')
+  const expectation = JSON.parse(readFileSync(a.expectationPath, 'utf8'))
+  ok('the expectation carries the declared redCommand', expectation.tasks.a.redCommand === 'bun test tests/a.test.ts', JSON.stringify(expectation.tasks.a))
+  ok('swapping the redCommand changes the wave fingerprint', withRed('true').waveFingerprint !== a.waveFingerprint)
 }
 
 console.log('approval-mode and policy exclusivity is enforced before anything is dispatched')

@@ -126,9 +126,36 @@ export type Expectation = {
   waveFingerprint: string;
   projectDir: string;
   workflow: string;
-  /** taskId -> the bounds adjudication is judged against. DERIVED from the authenticated plan. */
-  tasks: Record<string, { writablePaths: string[]; outputs: string[] }>;
+  /**
+   * taskId -> the bounds adjudication is judged against. DERIVED from the authenticated plan.
+   *
+   * `redCommand`, when present, is executed by this hook on BOTH sides of the dispatch: it must fail
+   * before the task runs and pass after. That is the only way "valid RED" becomes a fact rather than
+   * a claim — an agent asked to report its own RED step can simply say it happened.
+   */
+  tasks: Record<string, { writablePaths: string[]; outputs: string[]; redCommand?: string }>;
 };
+
+/**
+ * Run a task's `redCommand` and report what the SHELL said, not what anyone claims it said.
+ *
+ * Bounded on purpose: a 10-minute ceiling and a truncated tail. A test command that hangs must not
+ * wedge every dispatch behind it, and a runaway log must not be copied wholesale into a record file
+ * that the gate later parses. A timeout is NOT read as failure-therefore-valid-RED — it is its own
+ * outcome, because "the suite never finished" tells you nothing about whether the behaviour is absent.
+ */
+export function runRedCommand(command: string, projectDir: string): { exitCode: number | null; timedOut: boolean; tail: string; error?: string } {
+  try {
+    const proc = Bun.spawnSync(["bash", "-lc", command], { cwd: projectDir, stdout: "pipe", stderr: "pipe", timeout: 600_000 });
+    const text = `${new TextDecoder().decode(proc.stdout ?? new Uint8Array())}${new TextDecoder().decode(proc.stderr ?? new Uint8Array())}`;
+    // `signalCode` is set when the timeout killed it; exitCode alone cannot distinguish that from
+    // an ordinary nonzero exit, and conflating them would let a hung suite masquerade as a valid RED.
+    const timedOut = proc.signalCode === "SIGTERM" || proc.signalCode === "SIGKILL";
+    return { exitCode: proc.exitCode, timedOut, tail: text.slice(-4000) };
+  } catch (error) {
+    return { exitCode: null, timedOut: false, tail: "", error: error instanceof Error ? error.message : String(error) };
+  }
+}
 
 export function expectationPath(sessionId: string): string {
   return join(OBSERVATION_DIR, `${sessionId}--expectation.json`);
@@ -243,7 +270,14 @@ if (import.meta.main) {
     context("PostToolUse", `Implement observation failed for task ${taskId}: ${failure}\nThis is a hook malfunction, NOT a task violation — the two are distinct outcomes. The implement gate will refuse this wave because the observation is missing.`);
   }
 
-  writeRecord(path, { taskId, phase, status: "observed", digest: capture!.digest, observation: capture!.entries, sessionId, fingerprint });
+  // THE RED/GREEN PROBE. Executed here rather than in the emitted script or the agent prompt because
+  // this is the only place that sits OUTSIDE the party being judged: the hook fires around the
+  // dispatch, and the command it runs comes from the authenticated expectation, which the agent
+  // never sees and cannot edit.
+  const declaredRed = expectation?.tasks?.[taskId]?.redCommand;
+  const redProbe = declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, expectation?.projectDir ?? String(payload.cwd ?? ".")) } : undefined;
+
+  writeRecord(path, { taskId, phase, status: "observed", digest: capture!.digest, observation: capture!.entries, sessionId, fingerprint, ...(redProbe ? { redProbe } : {}) });
 
   if (phase === "pre") allow();
 

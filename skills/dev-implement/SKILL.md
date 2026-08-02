@@ -99,9 +99,27 @@ For a retry, send only previously attempted task IDs and their returned attempt 
 
 ## TDD contract
 
-Every task's `work` and `criteria` require: write and run the named test against missing behavior;
-observe and report a valid RED; only then implement; run the exact verify command to GREEN; report
-changed files and raw evidence. A doer never verifies its own task. An independent fresh verifier
+**Every dev task MUST declare `redCommand`** — the exact command that fails before the task is
+implemented and passes after. The preflight refuses a dev wave without one, and it is bound into the
+wave fingerprint, so it cannot be swapped after approval.
+
+It is not evidence you report. The observation hook EXECUTES it on both sides of the dispatch and
+records the exit codes; `implement-gate` then requires nonzero before and zero after. Three ways a
+task fails on it, each named distinctly:
+
+| Verdict | Meaning |
+|---|---|
+| `red-unproven` | the command never ran, timed out, or a different command was run |
+| `red-not-red` | it PASSED before implementation — the test does not pin the behavior being built |
+| `green-not-green` | it still fails after implementation |
+
+`red-not-red` is the one worth understanding: a test that already passed proves nothing about the
+work, and no self-reported "RED confirmed" can rule that out. This is why the command is read from
+the authenticated expectation, which the implementing agent never sees and cannot edit.
+
+Every task's `work` and `criteria` also require: write and run the named test against missing
+behavior; observe and report a valid RED; only then implement; run the exact verify command to
+GREEN; report changed files and raw evidence. A doer never verifies its own task. An independent fresh verifier
 checks each criterion and named evidence after the runner returns. On failure, create or update the
 corresponding TaskList finding/retry dependency and resume only affected attempted work.
 
@@ -114,6 +132,8 @@ goal after terminal verification PASS, then continue to `dev-review`.
 ## Red flags — STOP
 
 - About to trust a task report as verification: run the fresh verifier.
+- About to write a dev task with no `redCommand`: STOP — the preflight refuses the wave, and a
+  test-first workflow that takes the test on trust is not test-first.
 - About to mark a plan checkbox or append a progress ledger: update TaskList instead.
 - About to change requirements, architecture, dependencies, test contract, or evidence: return to
   native planning for a new generated plan and receipt rollover.

@@ -84,6 +84,57 @@ console.log('an expectation naming ZERO tasks is REFUSED')
   ok('the refusal distinguishes zero tasks from a missing expectation', /zero tasks/.test(result.verdicts[0].detail || ''), result.verdicts[0].detail)
 }
 
+console.log('a declared redCommand is adjudicated from EXIT CODES, not from an agent report')
+{
+  // dev asserted TDD in four SKILL.md files and enforced it in none: nothing recorded whether a test
+  // ran before the implementation or whether it failed, so an implementer could skip the RED step,
+  // produce exactly the declared files, and pass. The command now runs in the hook — outside the party
+  // being judged — and the gate reads the exit codes it observed.
+  const RED = { writablePaths: ['src/a.js'], outputs: ['src/a.js'], redCommand: 'bun test x' }
+  const probe = (exitCode, extra = {}) => ({ command: 'bun test x', exitCode, timedOut: false, tail: '', ...extra })
+
+  const good = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(1) }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('fails before and passes after is the only clean path', good.ok === true, JSON.stringify(good.verdicts))
+
+  const skipped = scenario({ tasks: { a: RED }, records: { a: cleanRun } })
+  ok('a declared redCommand that never ran is refused', skipped.ok === false)
+  ok('the refusal says the command was never executed', skipped.verdicts[0].reason === 'red-unproven', JSON.stringify(skipped.verdicts))
+
+  // The vacuous green: a test that ALREADY passed pins nothing, so implementing against it proves
+  // nothing either. This is the shape a self-reported "RED confirmed" can never rule out.
+  const alreadyGreen = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(0) }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a redCommand that passed BEFORE implementation is refused', alreadyGreen.ok === false)
+  ok('the refusal names it as not-red', alreadyGreen.verdicts[0].reason === 'red-not-red', JSON.stringify(alreadyGreen.verdicts))
+
+  const stillFailing = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(1) }, post: { ...observed, redProbe: probe(1) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a redCommand still failing after implementation is refused', stillFailing.ok === false)
+  ok('the refusal names it as not-green', stillFailing.verdicts[0].reason === 'green-not-green', JSON.stringify(stillFailing.verdicts))
+
+  // A timeout is NOT a failure-and-therefore-a-valid-RED. "The suite never finished" says nothing
+  // about whether the behaviour is absent, and reading it as RED would make hanging the easiest pass.
+  const hung = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(null, { timedOut: true }) }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a timed-out redCommand is unproven, never a valid RED', hung.ok === false && hung.verdicts[0].reason === 'red-unproven', JSON.stringify(hung.verdicts))
+
+  // The command is read from the AUTHENTICATED expectation. A probe that ran something else — an
+  // easier command substituted anywhere downstream — is not evidence about the declared one.
+  const swapped = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: { command: 'true', exitCode: 1, timedOut: false, tail: '' } }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a probe of a DIFFERENT command cannot satisfy the declared one', swapped.ok === false && swapped.verdicts[0].reason === 'red-unproven', JSON.stringify(swapped.verdicts))
+
+  // Absent redCommand keeps the pre-existing behaviour: ds and work plans are unaffected.
+  const noRed = scenario({ records: { a: cleanRun } })
+  ok('a task with no redCommand is unaffected', noRed.ok === true)
+}
+
 console.log('each distinct cause is reported distinctly — they have distinct remedies')
 for (const [name, records, expected] of [
   ['missing post observation', { a: { pre: observed } }, 'missing-post'],

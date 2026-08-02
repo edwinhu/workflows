@@ -46,7 +46,10 @@ export type TaskVerdict = {
     | "missing-adjudication"    // observed but never judged
     | "observation-failed"      // OUR machinery broke
     | "not-adjudicable"         // the PLAN is malformed, or our delta is
-    | "violated";               // the AGENT wrote outside authority or misreported
+    | "violated"                // the AGENT wrote outside authority or misreported
+    | "red-unproven"            // a declared redCommand did not run, or could not be judged
+    | "red-not-red"             // it PASSED before implementation: the test does not pin the behaviour
+    | "green-not-green";        // it still fails after implementation
   detail?: string;
 };
 
@@ -107,6 +110,36 @@ export function gateWave(rawSession: string): GateResult {
     if (!post) return { taskId, ok: false, reason: "missing-post", detail: "no post-dispatch observation; the task may not have completed, or the hook did not run" };
     if (post.status === "observation-failed") return { taskId, ok: false, reason: "observation-failed", detail: String(post.reason ?? "post-dispatch observation failed") };
     if (!adjudication) return { taskId, ok: false, reason: "missing-adjudication", detail: "observed but never judged against the plan's bounds" };
+
+    // RED/GREEN, ADJUDICATED FROM EXIT CODES THE HOOK OBSERVED — not from anything the agent said.
+    // A declared redCommand must FAIL before the dispatch and PASS after. Both halves are load-bearing
+    // and they catch different lies: a command that passed beforehand proves the test does not pin the
+    // behaviour being built (the classic vacuous green — an assertion that was already true), while one
+    // still failing afterwards proves the work is not done. Neither is visible in a filesystem delta,
+    // which is why the observation records alone could never enforce TDD.
+    const declaredRed = expectation.tasks[taskId]?.redCommand;
+    if (declaredRed) {
+      const preProbe = (pre as any).redProbe;
+      const postProbe = (post as any).redProbe;
+      const unusable = (probe: any, side: string): string | undefined => {
+        if (!probe) return `the ${side}-dispatch observation carries no redProbe; the declared redCommand was never executed`;
+        if (probe.command !== declaredRed) return `the ${side}-dispatch redProbe ran a different command than the plan declares`;
+        if (probe.error) return `the ${side}-dispatch redCommand could not be executed: ${probe.error}`;
+        if (probe.timedOut) return `the ${side}-dispatch redCommand timed out; a suite that never finished proves nothing either way`;
+        if (typeof probe.exitCode !== "number") return `the ${side}-dispatch redCommand produced no exit status`;
+        return undefined;
+      };
+      const preUnusable = unusable(preProbe, "pre");
+      if (preUnusable) return { taskId, ok: false, reason: "red-unproven", detail: preUnusable };
+      const postUnusable = unusable(postProbe, "post");
+      if (postUnusable) return { taskId, ok: false, reason: "red-unproven", detail: postUnusable };
+      if (preProbe.exitCode === 0) {
+        return { taskId, ok: false, reason: "red-not-red", detail: `redCommand PASSED before implementation (exit 0), so it does not pin the behaviour this task builds: ${declaredRed}` };
+      }
+      if (postProbe.exitCode !== 0) {
+        return { taskId, ok: false, reason: "green-not-green", detail: `redCommand still fails after implementation (exit ${postProbe.exitCode}): ${declaredRed}\n${String(postProbe.tail ?? "").slice(-1200)}` };
+      }
+    }
 
     const status = String(adjudication.status ?? "");
     if (status === "clean") return { taskId, ok: true, reason: "clean" };

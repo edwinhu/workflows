@@ -4,6 +4,18 @@ import { resolve, sep } from "node:path";
 export type TaskContract = {
   id: string; name: string; work: string; criteria: string; outputs: string[]; writablePaths: string[];
   instructionFiles?: string[]; dependencyProof?: string; model: string; effort: string;
+  /**
+   * The command that must FAIL before this task is implemented and PASS after — TDD's "valid RED",
+   * as something the runtime executes rather than something an agent reports.
+   *
+   * It was doctrine in four SKILL.md files and enforced in none: the task contract checked only that
+   * `work` and `criteria` were nonempty strings, the generated prompt asked for "task-local
+   * evidence", the result schema had no RED field at all, and the gate adjudicated filesystem
+   * observations only. An implementer could skip the failing test entirely, produce exactly the
+   * declared files, report them accurately, and pass. Nothing anywhere recorded whether a test ran
+   * before the implementation, whether it failed, or why.
+   */
+  redCommand?: string;
 };
 export type TaskResult = {
   taskId: string; taskFingerprint: string; approvedBodyHash: string; session: string;
@@ -65,9 +77,10 @@ export function validateTask(task: unknown): task is TaskContract {
   let outputsValid = false;
   try { normalizeExpectedOutputs(value.outputs); outputsValid = true; } catch { outputsValid = false; }
   return ["id", "name", "work", "criteria", "model", "effort"].every(key => requiredText(value[key])) && !!concretePaths(value.writablePaths) && outputsValid
-    && (value.instructionFiles === undefined || (Array.isArray(value.instructionFiles) && value.instructionFiles.every(path => requiredText(path) && path.startsWith("/"))));
+    && (value.instructionFiles === undefined || (Array.isArray(value.instructionFiles) && value.instructionFiles.every(path => requiredText(path) && path.startsWith("/"))))
+    && (value.redCommand === undefined || requiredText(value.redCommand));
 }
-export function fingerprint(task: TaskContract): string { return JSON.stringify({ id: task.id, name: task.name, work: task.work, criteria: task.criteria, outputs: normalizeExpectedOutputs(task.outputs), writablePaths: task.writablePaths, dependencyProof: task.dependencyProof || "", model: task.model, effort: task.effort }); }
+export function fingerprint(task: TaskContract): string { return JSON.stringify({ id: task.id, name: task.name, work: task.work, criteria: task.criteria, outputs: normalizeExpectedOutputs(task.outputs), writablePaths: task.writablePaths, dependencyProof: task.dependencyProof || "", model: task.model, effort: task.effort, redCommand: task.redCommand || "" }); }
 export function changedFilesWithin(task: TaskContract, changedFiles: unknown, projectRoot: string): changedFiles is string[] {
   const paths = concretePaths(task.writablePaths);
   return !!paths && writablePathsWithin(projectRoot, paths) && Array.isArray(changedFiles) && changedFiles.every(file =>

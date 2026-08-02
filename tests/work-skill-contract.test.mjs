@@ -204,6 +204,12 @@ describe("work workflow contract", () => {
     expect(devImplement).not.toMatch(/echo[^\n]*\|\s*bun[^\n]*(?:route-implementation|emit-implementation-workflow)\.ts/);
     expect(devImplement).toContain("beat-implement/SKILL.md");
     expect(devImplement).toContain("valid RED");
+    // dev's TDD claim is now MECHANICAL: preflight refuses a dev wave without redCommand, the
+    // observation hook executes it on both sides of the dispatch, and implement-gate reads the exit
+    // codes. Before this, "valid RED" appeared in four SKILL.md files and was enforced in none.
+    expect(devImplement).toContain("redCommand");
+    expect(devImplement).toContain("red-not-red");
+    expect(read("scripts/beat/preflight.ts")).toContain('request.workflow === "dev" && !task.redCommand');
     expect(devImplement).toContain("independent fresh verifier");
     expect(read("skills/dev-review/SKILL.md")).toContain("Codex");
     expect(read("skills/dev-verify/SKILL.md")).toContain("beat-review/SKILL.md");

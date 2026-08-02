@@ -263,6 +263,14 @@ export function preflight(request: PreflightRequest): PreflightResult {
       throw new Error(`beat-implement task writablePaths must remain below the canonical project root without symlinks: ${JSON.stringify(task.writablePaths)}`);
     }
     if (ids.has(task.id)) throw new Error(`beat-implement readyWave has duplicate task id: ${task.id}`);
+    // DEV'S CENTRAL DISCIPLINE, MADE A PRECONDITION. dev asserts TDD in four SKILL.md files and
+    // enforced it nowhere: nothing recorded whether a test ran before the implementation or failed,
+    // so skipping the RED step entirely still passed the gate. A workflow whose whole claim is
+    // test-first cannot take the test on trust, so dev tasks must NAME the command that proves it.
+    // Other workflows may carry redCommand and get the same enforcement; only dev requires it.
+    if (request.workflow === "dev" && !task.redCommand) {
+      throw new Error(`beat-implement dev task ${task.id} must declare redCommand — the command that fails before implementation and passes after. dev's TDD claim is enforced by running it, not by an agent reporting it.`);
+    }
     ids.add(task.id);
   }
 
@@ -365,6 +373,10 @@ export function preflight(request: PreflightRequest): PreflightResult {
     tasks: Object.fromEntries(tasks.map(task => [task.id, {
       writablePaths: [...task.writablePaths],
       outputs: [...(task.outputs || [])],
+      // Carried so the observation hook can EXECUTE it around the dispatch. It lives in the
+      // expectation rather than the prompt for the same reason the bounds do: the prompt is
+      // addressed to the party being judged, and a standard the subject can edit is not a standard.
+      ...(task.redCommand ? { redCommand: task.redCommand } : {}),
     }])),
   };
   // KEYED THE WAY THE HOOK READS IT, NOT THE WAY THIS SCRIPT KNOWS IT.
