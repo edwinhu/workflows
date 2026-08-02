@@ -30,8 +30,15 @@ const SCRIPTS = readdirSync(WORKFLOWS).filter(name => name.endsWith('.js')).sort
 //   beat-implement.js — needs four `workflows/lib/*.ts` modules, `process.env.CLAUDE_CODE_SESSION_ID`
 //     for its dispatching-session identity, and `Buffer.from` for task-contract digests. Converting
 //     it means deciding how a pure-control-flow script obtains a session identity and a hash, which
-//     is a trust-model decision deferred to a separate /dev episode. Until then /work's step-3
-//     implementation runner stays broken in production.
+//     is a trust-model decision deferred to a separate episode.
+//
+//     SCOPE CORRECTION — this comment previously said "/work's step-3 runner stays broken", which
+//     badly understated it. beat-implement.js is the SHARED implement primitive: it is invoked as a
+//     Workflow script from skills/dev-implement (dev), skills/work/beats/goal-work.md (work),
+//     skills/ds-implement (ds), and skills/beat-implement itself, with workflow-creator and ds-fix
+//     routing through the same runner. Since it has never executed, the IMPLEMENT step of EVERY
+//     workflow that implements anything is dead — not one workflow's third step. That is the real
+//     blast radius and the reason the rebuild is worth its cost.
 const KNOWN_NONCOMPLIANT = new Set(['beat-implement.js'])
 
 const FORBIDDEN = [
