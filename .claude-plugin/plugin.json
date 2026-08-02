@@ -1,6 +1,6 @@
 {
   "name": "workflows",
-  "version": "5.106.2",
+  "version": "5.106.3",
   "description": "Generic structured work, development, data science, writing, and workshop presentation workflows with evidence-driven verification, TDD enforcement, and session handoff.",
   "author": {
     "name": "edwinhu"

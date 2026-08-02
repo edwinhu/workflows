@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.106.3] - 2026-08-02
+
+### Fixed
+- **The v5.106.1 registration was inert, measured by execution.** That release registered the observation hook only in skill frontmatter. Skill-frontmatter hooks fire only while the skill is ACTIVE, and every caller of `beat-implement` READS its `SKILL.md` rather than invoking it — it is `user-invocable: false, disable-model-invocation: true`, so it cannot be invoked at all.
+  - The probe, with 5.106.2 installed: a fresh session read `skills/beat-implement/SKILL.md` and dispatched a subagent whose prompt began `TASK probe-alpha:`. The subagent ran and replied. **No record was written anywhere on the filesystem** — not in `/tmp`, not in `$TMPDIR`, not in any `work-implement-observations` directory, and not even the `no-expectation` record the hook writes on every path including its own failure.
+  - So v5.106.1 was v5.106.0 with a passing test in front of it, and the test was the problem: it read YAML and asserted strings were present, which cannot distinguish a matcher Claude Code honours from one it ignores. Same reference-versus-mechanism error, fourth iteration, this time inside the fix for the third.
+  - `docs/extension-mechanism-map.md:58` had already recorded the uncertainty — *"Not confirmed live … Settle by execution, not reading."* It was not consulted before shipping.
+  - Registered in `hooks/hooks.json` on `matcher: "Agent"`, both phases. That path is confirmed live, always on whenever the plugin is enabled, and has subagent reach. `tests/observation-hook-registration.test.py` now REQUIRES it and treats the skill frontmatter entries as defence in depth. Non-implement dispatches remain free: `taskIdFrom` returns undefined without a `TASK` marker, so the hook exits immediately and writes nothing.
+
 ## [5.106.2] - 2026-08-02
 
 ### Added

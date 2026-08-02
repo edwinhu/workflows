@@ -24,14 +24,31 @@ WHAT IS REQUIRED, AND WHY BOTH PHASES
     unattributable; with only `pre` nothing is ever adjudicated. A half-registration is not a
     weaker guarantee, it is no guarantee, and it looks identical in a diff.
 
-WHY SKILL FRONTMATTER RATHER THAN hooks.json
-    Registration lives next to the thing it guards, and the hook fires only while that skill is
-    active. The central `hooks/hooks.json` names 15 of the 40+ files in `hooks/`; a file silently
-    absent from it is exactly how this bug survived. `skills/ds-delegate/SKILL.md` already registers
-    `ds-post-subagent-guard` this way — the pattern existed and was not followed.
+WHY hooks.json IS REQUIRED AND SKILL FRONTMATTER IS NOT SUFFICIENT — MEASURED, NOT REASONED
+    v5.106.1 registered this hook ONLY in skill frontmatter, on the argument that registration should
+    live next to the thing it guards and fire only while that skill is active. That argument is fine
+    and the conclusion was wrong, because skill-frontmatter hooks fire only while the skill is ACTIVE,
+    and every caller of `beat-implement` READS its SKILL.md rather than invoking it — it is
+    `user-invocable: false, disable-model-invocation: true`, so it cannot be invoked at all.
+
+    Settled by execution, which is what docs/extension-mechanism-map.md:58 already said to do
+    ("Not confirmed live ... Settle by execution, not reading."). With 5.106.2 installed, a fresh
+    session read skills/beat-implement/SKILL.md and dispatched a subagent whose prompt began
+    `TASK probe-alpha:`. The subagent ran. NO record was written anywhere on the filesystem — not even
+    the `no-expectation` record this hook writes on every path including its own failure.
+
+    So the skill registration was inert, and v5.106.1 was v5.106.0 with a passing test in front of it.
+    That test was THIS FILE: it read YAML and asserted strings were present, which cannot distinguish
+    a matcher Claude Code honours from one it ignores.
+
+    `hooks/hooks.json` is the confirmed-live path — always on whenever the plugin is enabled, with
+    subagent reach (same doc, line 32 and the scoping table at line 71). It is therefore REQUIRED
+    below. The skill registrations are kept as defence in depth and asserted separately, but they are
+    no longer what the guarantee rests on.
 
 Run: python3 tests/observation-hook-registration.test.py
 """
+import json
 import pathlib
 import re
 import sys
@@ -82,6 +99,22 @@ def registrations(block: str) -> dict[str, set[str]]:
             found[event].add(phase)
     return found
 
+
+# THE LOAD-BEARING ASSERTION. Everything else here is defence in depth.
+manifest = json.loads(pathlib.Path("hooks/hooks.json").read_text(encoding="utf-8"))["hooks"]
+for event, phase in (("PreToolUse", "pre"), ("PostToolUse", "post")):
+    wired = any(
+        "Agent" in re.split(r"\|", group.get("matcher", ""))
+        and any(HOOK in hook.get("command", "") and f"--phase {phase}" in hook.get("command", "")
+                for hook in group.get("hooks", []))
+        for group in manifest.get(event, [])
+    )
+    if not wired:
+        failures.append(
+            f"hooks.json has no {event} `matcher: \"Agent\"` running {HOOK} --phase {phase}. "
+            f"This is the CONFIRMED-LIVE registration path; skill frontmatter alone was MEASURED inert "
+            f"(v5.106.1: subagent dispatched, zero records written)."
+        )
 
 for name in DISPATCHING_SKILLS:
     path = pathlib.Path(f"skills/{name}/SKILL.md")
