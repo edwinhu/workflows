@@ -172,9 +172,10 @@ const DISCOVERY_SCHEMA = {
 }
 // Each SECTION agent writes its whole subsection (all its slides + notes) to two fragment files.
 const SECTION_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['section', 'status', 'slidesPath', 'notesPath', 'slideNums', 'citedInventory', 'summary'],
+  type: 'object', additionalProperties: false, required: ['section', 'status', 'slidesPath', 'notesPath', 'slideNums', 'citedInventory', 'summary', 'changedFiles'],
   properties: {
     section: { type: 'string', description: 'echo the section index id verbatim' },
+    changedFiles: { type: 'array', items: { type: 'string' }, description: 'EVERY project-relative file this task changed. The observation hook cross-checks this against the real git delta; omitting it is not a neutral omission, it fails adjudication and is attributed to you.' },
     status: { type: 'string', enum: ['drafted', 'error'] },
     slidesPath: { type: 'string', description: 'fragment file with this section\'s `==` heading-less `#slide[]` blocks, in order' },
     notesPath: { type: 'string', description: 'fragment file with this section\'s notes (one block per slide)' },
@@ -196,8 +197,9 @@ const PROBE_SCHEMA = {
   },
 }
 const ASSEMBLE_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['slidesWritten', 'notesWritten', 'compiled', 'compileError', 'notesCompiled', 'notesCompileError', 'slidesPdf'],
+  type: 'object', additionalProperties: false, required: ['slidesWritten', 'notesWritten', 'compiled', 'compileError', 'notesCompiled', 'notesCompileError', 'slidesPdf', 'changedFiles'],
   properties: {
+    changedFiles: { type: 'array', items: { type: 'string' }, description: 'EVERY project-relative file this task changed, including compile artifacts. The observation hook cross-checks this against the real git delta.' },
     slidesWritten: { type: 'boolean' }, notesWritten: { type: 'boolean' },
     compiled: { type: 'boolean' }, compileError: { type: 'string' },
     notesCompiled: { type: 'boolean', description: 'notes.typ compiled cleanly (a first-class teleprompter deliverable — gated, not slides-only)' },
@@ -232,6 +234,10 @@ function discFromIndex(idx) {
   }
 }
 
+// Run caller-owned dispatches one at a time. `parallel` is deliberately unused for write-capable
+// waves; see the note at the Sections phase.
+const sequential = async (thunks) => { const out = []; for (const thunk of thunks) out.push(await thunk()); return out }
+
 phase('Discover')
 const disc = discFromIndex(SLIDE_INDEX)
 if (!disc.outlineReadable) throw new Error('workshop-generate requires a readable receipt-selected native Slide Spec')
@@ -246,7 +252,13 @@ log(`${disc.slides.length} slide(s) in ${sectionList.length} section(s); generat
 
 // ── Phase 2: Sections (one agent per section, parallel — writes the whole subsection to files) ─
 phase('Sections')
-const liveSecs = (await parallel(targets.map(sec => () => {
+// SEQUENTIAL, NOT parallel(). The observation hooks bracket each dispatch with a git observation of
+// the WHOLE working tree, so a sibling section writing its fragment inside this section's pre/post
+// window lands in this section's delta — reported as "output outside writable authority" against an
+// agent that did nothing wrong. `scripts/beat/preflight.ts` returns executionMode: 'sequential' for
+// exactly this reason and nothing here was reading it. Concurrency becomes available when workers
+// have enforced filesystem isolation, not before.
+const liveSecs = (await sequential(targets.map(sec => () => {
   const rows = sec.slides.map(s => `  - Slide ${s.num}: takeaway="${s.takeaway}"; bullets="${s.bullets}"; inventory=[${(s.inventory || []).join(', ')}]; visual="${s.visual}"; notes="${s.notes}"`).join('\n')
   const allowed = [...new Set(sec.slides.flatMap(s => s.inventory || []))]
   return agent(
@@ -305,7 +317,7 @@ Steps (use Bash to cat the files — do NOT paste content from memory):
 1. Write ${disc.slidesPath}: the header, then for each section in order emit its heading + \`cat\` its slidesFile.
 2. Write ${disc.notesPath}: the notes preamble, then per section a \`= Section\` heading + \`cat\` its notesFile.
 3. Compile: \`tinymist compile ${disc.slidesPath}\` (or \`typst compile\`) AND the notes deck \`tinymist compile ${disc.notesPath}\` (notes are a first-class deliverable, gated — NOT slides-only), from ${PROJECT}; fix ONLY compile-blocking syntax and recompile each. Set compiled/compileError for slides and notesCompiled/notesCompileError for notes. Do NOT invent note macros (e.g. #slide-notes/#speaker-note) to force notes to compile — notes use plain \`=\`/\`==\` headings + prose; an undefined-macro reference is a fragment bug to surface in notesCompileError, not to paper over with a defensive alias.
-Return ASSEMBLE_SCHEMA.`,
+Return ASSEMBLE_SCHEMA, including changedFiles = EVERY project-relative path you wrote, compile artifacts (.pdf) included.`,
     { label: 'assemble', phase: 'Assemble', schema: ASSEMBLE_SCHEMA })
 }
 

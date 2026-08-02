@@ -27,7 +27,22 @@ const ok = (name, condition, extra = '') => {
 // the entry to delete. Its one member — `hooks/typst-convention-guard.ts`, wired to no event and
 // therefore never run — was retired that way in v5.106.4. Adding an entry is deliberate and needs its
 // reason and exit condition written beside it, exactly like KNOWN_GAPS and KNOWN_NONCOMPLIANT.
-const KNOWN_FINDINGS = new Set([])
+const KNOWN_FINDINGS = new Set([
+  // OPEN, and it is a DESIGN question rather than a line of code — which is why it is recorded here
+  // instead of quietly fixed. `scripts/beat/implement-gate.ts` implements the absence-is-failure
+  // refusal correctly and has ZERO runtime-reached callers: no hooks.json entry, no import outside
+  // its own test, and one bash line in skills/beat-implement/SKILL.md that runs only if a model
+  // chooses to run it. So the observation hook's fail-open design has no live backstop.
+  //
+  // This rule used to exempt the hook because a gate file CONTAINED its name. That substring
+  // exemption was the class it exists to catch, inside the check for the class. Fixed; the finding
+  // it was hiding is now visible and is this entry.
+  //
+  // Exit condition: give the gate a runtime-reached invocation — a Stop/SubagentStop hook is the
+  // obvious candidate, since the gate is a whole-wave verdict — or make the observation hook deny on
+  // its own errors and retire the fail-open design. Writing the gate was never the missing part.
+  'fail-open-without-gate:hooks/work-implement-observation.ts',
+])
 
 const findings = probeCompliance(ROOT)
 const key = f => `${f.rule}:${f.subject}`

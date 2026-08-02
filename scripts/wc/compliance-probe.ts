@@ -197,10 +197,24 @@ export function checkHookRegistration(root: string): Finding[] {
 export function checkFailOpenHasGate(root: string): Finding[] {
   const hooksDir = join(root, "hooks");
   if (!existsSync(hooksDir)) return [];
+  // A gate is only evidence if the RUNTIME reaches it. `hooks.json` entries and imports from
+  // non-test code count; a bash line in a SKILL.md does not, because that runs only when a model
+  // chooses to run it — which is exactly how `beat-implement.js` stayed "invoked" for four months.
+  const manifest = read(join(root, "hooks/hooks.json"));
+  const importers = existsSync(join(root, "hooks"))
+    ? readdirSync(join(root, "hooks")).filter(f => /\.(ts|py)$/.test(f)).map(f => read(join(root, "hooks", f))).join("\n")
+    : "";
   const gateSources = existsSync(join(root, "scripts"))
-    ? readdirSync(join(root, "scripts"), { recursive: true } as never)
+    ? (readdirSync(join(root, "scripts"), { recursive: true } as never) as string[])
         .filter((p): p is string => typeof p === "string" && /gate.*\.(ts|py)$/.test(p))
-        .map(p => read(join(root, "scripts", p)))
+        .map(p => {
+          const stemOf = p.split("/").pop()!.replace(/\.(ts|py)$/, "");
+          return {
+            path: p,
+            text: read(join(root, "scripts", p)),
+            runtimeReached: manifest.includes(stemOf) || new RegExp(`import[^\n]*${stemOf}`).test(importers),
+          };
+        })
     : [];
   const findings: Finding[] = [];
   for (const entry of readdirSync(hooksDir).sort()) {
@@ -225,11 +239,25 @@ export function checkFailOpenHasGate(root: string): Finding[] {
     const declaresFailOpen = /fail open|fails open|NEVER denies|never deny/i.test(source);
     if (!declaresFailOpen) continue;
     const stem = entry.replace(/\.(ts|py)$/, "");
-    if (gateSources.some(gate => gate.includes(stem))) continue;
+    // THE EXEMPTION MUST NAME A MECHANISM THAT RUNS, NOT A FILE THAT MENTIONS THE HOOK.
+    //
+    // This previously read `gateSources.some(gate => gate.includes(stem))` — a SUBSTRING. So a
+    // fail-open hook was excused the moment any gate-shaped file contained its name, and
+    // `scripts/beat/implement-gate.ts` contains it twice. That gate has ZERO runtime-reached callers:
+    // no hooks.json entry, no import outside its own test, and one bash line inside a SKILL.md Gate
+    // section, which runs only if a model chooses to run it. So the rule that exists to catch
+    // "correct but never invoked" was exempting a hook on the strength of a gate that is itself
+    // correct but never invoked — the class, inside the check for the class.
+    //
+    // A gate now has to be REACHED BY THE RUNTIME to excuse anything: registered in hooks.json, or
+    // imported by something that is. Prose in a skill body does not count, and that distinction is
+    // the whole lesson of the week — `beat-implement.js` was "invoked" by skill prose for four months.
+    if (gateSources.some(gate => gate.path.includes("implement-gate") || gate.text.includes(stem)) &&
+        gateSources.some(gate => gate.text.includes(stem) && gate.runtimeReached)) continue;
     findings.push({
       rule: "fail-open-without-gate", severity: "critical", subject: `hooks/${entry}`,
-      detail: "declares that it fails open, but no gate script references it, so its silence is never treated as failure",
-      remedy: "add a gate that refuses when this hook's evidence is ABSENT (see scripts/beat/implement-gate.ts), or make the hook deny on its own errors.",
+      detail: "declares that it fails open, and no gate that the RUNTIME REACHES treats its silence as failure. A gate file may name it — that is not the test. The gate must be registered in hooks.json or imported by something that is; a bash line in a SKILL.md runs only if a model chooses to run it.",
+      remedy: "either give the absence-gate a runtime-reached invocation, or make the hook deny on its own errors. NOTE scripts/beat/implement-gate.ts already implements the refusal correctly and has zero runtime-reached callers — writing the gate was never the missing part.",
     });
   }
   return findings;
