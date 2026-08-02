@@ -72,6 +72,18 @@ console.log('a wave with no expectation at all is REFUSED')
   ok('the refusal explains that nothing was bounded', /nothing was bounded/.test(result.verdicts[0].detail || ''))
 }
 
+console.log('an expectation naming ZERO tasks is REFUSED')
+{
+  // `{}` is truthy, so a zero-task expectation walked past the `!expectation?.tasks` guard, produced
+  // an empty `verdicts`, and `[].every(...)` returned true — the gate's strongest claim ("everything
+  // expected was observed and clean") asserted over nothing at all. Reached from the other end by
+  // preflight accepting an empty readyWave; both layers now refuse, so neither depends on the other.
+  const result = scenario({ tasks: {} })
+  ok('a zero-task expectation is a refusal, not a vacuous pass', result.ok === false, JSON.stringify(result.verdicts))
+  ok('the refusal names it as an expectation problem', result.verdicts[0].reason === 'no-expectation', JSON.stringify(result.verdicts))
+  ok('the refusal distinguishes zero tasks from a missing expectation', /zero tasks/.test(result.verdicts[0].detail || ''), result.verdicts[0].detail)
+}
+
 console.log('each distinct cause is reported distinctly — they have distinct remedies')
 for (const [name, records, expected] of [
   ['missing post observation', { a: { pre: observed } }, 'missing-post'],

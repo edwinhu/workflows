@@ -199,8 +199,14 @@ export function preflight(request: PreflightRequest): PreflightResult {
   }
   const approvalMode = builtIn ? "built-in-native" : request.approvalMode!;
   const generatedPlanMode = approvalMode === "built-in-native" || approvalMode === "generated-plan-receipt-v1";
-  if (!Array.isArray(request.readyWave)) {
-    throw new Error("beat-implement preflight requires readyWave as a complete task-spec array");
+  // AN EMPTY WAVE IS NOT A SMALL WAVE — it is the absence of one. `Array.isArray([])` passes, so a
+  // caller that produced no tasks (a plan that parsed to nothing, a filter that matched nothing, a
+  // typo'd field arriving as `[]`) used to authenticate cleanly, write an expectation with zero
+  // tasks, and let the gate return ok:true for having adjudicated nothing. Same shape as the gate's
+  // own "no expectation is a refusal" rule, one layer earlier: nothing bounded, nothing observed,
+  // nothing to be right about.
+  if (!Array.isArray(request.readyWave) || request.readyWave.length === 0) {
+    throw new Error("beat-implement preflight requires readyWave as a complete NON-EMPTY task-spec array; an empty wave authenticates nothing and would adjudicate vacuously");
   }
 
   const reset = request.planReset || {};

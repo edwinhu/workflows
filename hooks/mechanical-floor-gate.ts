@@ -102,7 +102,12 @@ function runDs(project: string): FloorResult {
   try {
     out = runProc(["bash", CHECK_ALL_DS, project]);
   } catch (e) {
-    return { ok: true, failed: [], errors: [], summary: `(check-all-ds.sh could not run: ${e})` };
+    // FAIL CLOSED. This returned ok:true, so the one condition under which the floor learns nothing
+    // — it could not be launched at all — was the one condition that let everything through. The
+    // script is plugin-internal and always present, so a spawn failure means the environment is
+    // broken, not that the project is clean. "We could not check" and "we checked and it is fine"
+    // were being reported identically, and only the gate could tell them apart.
+    return { ok: false, failed: ["check-all-ds.sh"], errors: [String(e)], summary: `(check-all-ds.sh could not run: ${e})` };
   }
   let failed = pySplitlines(out.stdout)
     .filter((ln) => ln.includes("✗"))

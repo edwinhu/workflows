@@ -76,12 +76,19 @@ export function gateWave(rawSession: string): GateResult {
   // NO EXPECTATION IS A REFUSAL, NOT A PASS. It means the preflight never ran, so nothing was
   // authenticated, no task was bounded, and any dispatch that happened was unadjudicated. A gate that
   // returned "ok, nothing to check" here would greenlight precisely the state it exists to catch.
-  if (!expectation?.tasks) {
+  // `{}` IS TRUTHY, so an expectation naming zero tasks slipped past this guard, produced an empty
+  // `verdicts`, and `[].every(...)` returned true — the gate reported ok for having adjudicated
+  // nothing. That is the very state the paragraph above refuses, reached by a different route:
+  // an expectation existing is not the same as an expectation bounding something.
+  if (!expectation?.tasks || Object.keys(expectation.tasks).length === 0) {
+    const empty = !!expectation?.tasks;
     return {
       ok: false, session, expected: [], unexpected: [],
       verdicts: [{
         taskId: "(wave)", ok: false, reason: "no-expectation",
-        detail: "no authenticated expectation for this session; the beat's preflight did not run, so nothing was bounded and nothing could be adjudicated",
+        detail: empty
+          ? "the authenticated expectation names zero tasks; nothing was bounded, so there is nothing to adjudicate and no basis for a pass"
+          : "no authenticated expectation for this session; the beat's preflight did not run, so nothing was bounded and nothing could be adjudicated",
       }],
     };
   }

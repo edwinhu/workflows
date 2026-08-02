@@ -33,4 +33,15 @@ done
 
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
+
+# DISCOVERING NOTHING IS A FINDING, NOT A PASS. `FAIL -eq 0` alone is satisfied by "0/0 passed",
+# so a CONSTRAINTS_DIR that resolved to the wrong place — a moved plugin root, a renamed checks
+# directory, an unexpanded variable — reported a clean floor while running no checker at all. The
+# failure mode is silent and looks exactly like success, which is why it has to be asserted here
+# rather than left to whoever reads the summary line.
+if [ "$TOTAL" -eq 0 ]; then
+    echo "  ✗ no ds-*.py checks found under $CONSTRAINTS_DIR — the floor ran nothing, which is a failure, not a pass"
+    exit 1
+fi
+
 [ "$FAIL" -eq 0 ]

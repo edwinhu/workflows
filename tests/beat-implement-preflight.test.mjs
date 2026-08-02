@@ -122,10 +122,21 @@ for (const workflow of ['ds', 'dev', 'work', 'writing', 'workshop', 'workflow-cr
 console.log('approval-mode and policy exclusivity is enforced before anything is dispatched')
 rejects('unsupported workflow without explicit policy rejected',
   () => run({ workflow: 'unknown', readyWave: [] }), /approvalMode/)
+// These two carry a REAL wave. They used `readyWave: []` as filler while asserting an unrelated
+// rejection, which stopped working once an empty wave became a rejection in its own right — the
+// preflight threw on the filler before reaching the condition under test, so each assertion was
+// passing for the wrong reason. A test's fixture has to be valid in every dimension it is not testing.
 rejects('cross-workflow receipt rejected',
-  () => run({ workflow: 'workshop', readyWave: [] }), /review state|workflow/)
+  () => run({ workflow: 'workshop', readyWave: [task('a', ['src/a.js'])] }), /review state|workflow/)
 rejects('built-in approval paths cannot be overridden',
-  () => run({ approvalPolicy: { schemaVersion: 1, workflow: 'ds', planPath: 'PLAN.md', metadataPath: 'PLAN.meta.json', verdictPath: 'PLAN_REVIEWED.md' }, readyWave: [] }), /cannot override/)
+  () => run({ approvalPolicy: { schemaVersion: 1, workflow: 'ds', planPath: 'PLAN.md', metadataPath: 'PLAN.meta.json', verdictPath: 'PLAN_REVIEWED.md' }, readyWave: [task('a', ['src/a.js'])] }), /cannot override/)
+// AN EMPTY WAVE IS THE ABSENCE OF A WAVE. It used to authenticate cleanly and write an expectation
+// naming zero tasks, which the gate then adjudicated vacuously to ok:true — a full pass for having
+// done nothing. Caught by an independent review of the ds family; the hole was in the shared beat,
+// so every workflow that dispatches through it was exposed, not just ds.
+rejects('an empty readyWave is refused, not authenticated',
+  () => run({ readyWave: [] }), /NON-EMPTY|empty wave/)
+
 rejects('built-in captured bundle rejected',
   () => run({ readyWave: [task('approved', ['src/approved.js'])], capturedApprovalBundle: { schemaVersion: 1 } }), /do not accept captured approval bundles/)
 
