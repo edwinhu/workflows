@@ -8,10 +8,14 @@ WHY THIS EXISTS
     property, not a tidiness one.
 
     Nothing enforced it. `writing` and `workshop` drifted off `beat-implement` entirely and no test
-    failed — they hand-roll write-capable dispatch (writing-draft.js:443,
-    workshop-generate.js:252/274/294), which is exactly why neither has writable-path bounds on any
-    task. `beat-implement` itself had never executed for months for a different reason, and that was
-    invisible for the same one: no assertion about who uses what.
+    failed — they hand-rolled write-capable dispatch, which is exactly why neither had writable-path
+    bounds on any task. `beat-implement` itself had never executed for months for a different reason,
+    and that was invisible for the same one: no assertion about who uses what.
+
+    Both were migrated on 2026-08-02. They keep their own orchestration and call the beat's pre-step
+    with `dispatchOwnership: "caller"`, which authenticates the approval, bounds each task, and
+    derives the expectation the observation hooks adjudicate against — everything except routing and
+    script emission, which would be wrong for a workflow that already owns richer phases.
 
     This is a CONFIGURATION assertion, like tests/mutation-guard-registration.test.py and the
     KNOWN_NONCOMPLIANT registry in tests/workflow-runtime-purity.test.mjs. A behaviour test cannot
@@ -44,19 +48,6 @@ WORKFLOWS = ("ds", "dev", "work", "writing", "workshop", "workflow-creator")
 
 # (workflow, beat) pairs that are NOT yet migrated. Each is asserted to still be missing.
 KNOWN_GAPS = {
-    # writing does CLARIFY as inline prose under clarify-before-recon-guard: the gate is enforced,
-    # the primitive is not used.
-    ("writing", "beat-clarify"),
-    # writing-draft.js:443 dispatches its own write-capable agent ("Write the full prose to the exact
-    # PLAN-owned path ... with the Write tool"), so no task carries writable-path bounds.
-    ("writing", "beat-implement"),
-    # writing's flow ends "-> /writing-revise -> returned human review surface", a hand-rolled
-    # terminal surface. It is the only workflow with no beat-review path.
-    ("writing", "beat-review"),
-    # workshop clarifies as inline prose, same as writing.
-    ("workshop", "beat-clarify"),
-    # workshop-generate.js:252/274/294 dispatch their own write-capable agents for fragment files.
-    ("workshop", "beat-implement"),
     # dev-clarify is "conversational clarification AFTER dev reconnaissance"; beat-clarify asks the
     # user BEFORE recon and carries evidence-bearing intent forward. These may be genuinely different
     # steps rather than a duplicate, so this entry is a DECISION to make, not merely work to do:

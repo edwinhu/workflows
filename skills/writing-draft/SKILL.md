@@ -89,7 +89,37 @@ section), `draftsAuthenticated` (echoes the selection — check it against your
 carried set), and `artifacts`, keyed `receipt`, `plan`, `bib`,
 `section:<name>:outline`, and `section:<name>:draft` for carried sections only.
 
-**2. Dispatch.** Pass the bundle's fields straight through:
+**2. Run the shared IMPLEMENT beat's pre-step.** This is what binds each drafting agent to the one
+draft file it is allowed to write — read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` for the
+full contract. Build one task per section being drafted, with `id` equal to the section name so it
+matches the `TASK` marker the workflow emits:
+
+```bash
+echo "$PREFLIGHT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/preflight.ts
+```
+
+`PREFLIGHT_REQUEST_JSON` is `{projectDir, workflow: "writing", planReset: {planFile, planHash},
+dispatchOwnership: "caller", readyWave: [...]}`, where each task declares
+`writablePaths: ["<outputSubdir>/<section>.md"]` and the same path as its `outputs`.
+
+On a selective retry the wave is **exactly `onlyChecks`** — the sections being re-drafted. It is the
+complement of `--drafts` above, for the same reason: a carried section is an input, and giving an
+agent write authority over a file it is not supposed to touch is the bounds check declining to do its
+job.
+
+`dispatchOwnership: "caller"` is correct here: this workflow owns Transform, Verify and Gate phases,
+so the beat must not route it or emit a script. Everything that enforces is identical to a beat-owned
+dispatch.
+
+**A non-zero exit blocks drafting.** Skipping this step does not fail — the workflow runs, the hooks
+find no expectation, and every drafting agent writes with no bounds checked. That is the state
+writing was in before this step existed.
+
+This **subsumes** the old per-draft content check: `enforceTaskOutputs` already cross-checks the
+agent's reported changes against the observed filesystem delta, which is the misreporting check the
+post-step's `reportedContent` comparison was doing. Keep one, not both.
+
+**3. Dispatch.** Pass the bundle's fields straight through:
 
 ```text
 Workflow({
@@ -114,7 +144,7 @@ in `onlyChecks` is being re-drafted (an output) and must NOT be in `--drafts`;
 every other section is carried (an input) and must be. A replacement plan
 invalidates prior retries and review records.
 
-**3. Verify (post-step).** The returned verdict is provisional — it carries
+**4. Verify (post-step).** The returned verdict is provisional — it carries
 `verifyRequired: true` and `driftVerified: false`. Write the return value to disk
 and re-snapshot:
 

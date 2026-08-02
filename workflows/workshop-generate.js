@@ -250,7 +250,8 @@ const liveSecs = (await parallel(targets.map(sec => () => {
   const rows = sec.slides.map(s => `  - Slide ${s.num}: takeaway="${s.takeaway}"; bullets="${s.bullets}"; inventory=[${(s.inventory || []).join(', ')}]; visual="${s.visual}"; notes="${s.notes}"`).join('\n')
   const allowed = [...new Set(sec.slides.flatMap(s => s.inventory || []))]
   return agent(
-    `You are a workshop SECTION generator. Produce the Typst for an ENTIRE subsection — ALL of its slides, in order — from their PINNED specs, and WRITE them to two fragment files. The "what" is fixed by the rows; you render them as Touying Typst (keeping the section's flow coherent across its slides) and cite ONLY the listed inventory ids. Do NOT invent slides, content, or visuals beyond the specs.
+    `TASK section-${sec.id}: ${sec.key}
+You are a workshop SECTION generator. Produce the Typst for an ENTIRE subsection — ALL of its slides, in order — from their PINNED specs, and WRITE them to two fragment files. The "what" is fixed by the rows; you render them as Touying Typst (keeping the section's flow coherent across its slides) and cite ONLY the listed inventory ids. Do NOT invent slides, content, or visuals beyond the specs.
 Set section="${sec.id}" verbatim.
 
 SECTION: ${sec.key}   (${sec.slides.length} slides, numbers ${sec.slides.map(s => s.num).join(', ')})
@@ -292,7 +293,8 @@ if (haveAll) {
     ? `FILE HEADER (write to the top of slides.typ verbatim):\n${disc.fileHeader}`
     : `FILE HEADER: none was pre-resolved — CONSTRUCT a compilable slides.typ preamble yourself: \`#import "templates/theme.typ": *\`, the \`#show: university-theme.with(...)\` block with \`config-info(...)\` populated from ${disc.sourcesPath} metadata (title/subtitle/authors/affiliations) and **\`qr: none\` (REQUIRED — the theme expects this field)**, the standard \`#show\`/\`#set\` rules, then \`#title-slide()\`. Read presentation/templates/ + any existing presentation/slides.typ preamble first; reuse it if present.`
   asm = await agent(
-    `You are the workshop deck assembler. Build slides.typ + notes.typ by CONCATENATING the per-section fragment files (already written) under their Section headers, then COMPILE. Do NOT rewrite content — only concatenate, emit the \`=\`/\`==\` heading once per section, and fix compile-blocking syntax.
+    `TASK assemble: deck and notes assembly
+You are the workshop deck assembler. Build slides.typ + notes.typ by CONCATENATING the per-section fragment files (already written) under their Section headers, then COMPILE. Do NOT rewrite content — only concatenate, emit the \`=\`/\`==\` heading once per section, and fix compile-blocking syntax.
 
 ${headerInstruction}
 

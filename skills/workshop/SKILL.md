@@ -41,7 +41,11 @@ Load constraints before implementation:
 
 ## Native plan contract
 
-Clarify paper, audience, duration, proportions, visual expectations, outputs, and review evidence. Then enter native Plan mode. The exact receipt-selected plan must contain these exact H2 headings:
+Clarify paper, audience, duration, proportions, visual expectations, outputs, and review evidence.
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it — it owns the question set, the
+stop condition, and how confirmed intent is carried forward as evidence. The
+`clarify-before-recon-guard` hook enforces that clarification happens; the beat defines what it
+is, which is why the gate alone was not adoption. Then enter native Plan mode. The exact receipt-selected plan must contain these exact H2 headings:
 
 1. `## Presentation Intent`
 2. `## Audience, Venue, Duration, and Proportions`
@@ -81,7 +85,35 @@ is not authentication.
    bundle carries `projectReal`, `planPath`, `planHash`, and `artifacts`, keyed
    `receipt` and `plan`. ONE bundle serves both workflows; re-authenticate before
    `workshop-verify` so its entry hashes describe the post-generation state.
-3. Invoke the generator, passing the bundle's fields straight through:
+3. Run the shared IMPLEMENT beat's pre-step. **This is what binds each generating agent to the
+   fragment files it is allowed to write** — read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`
+   for the full contract. Build one task per SECTION from the index (`id` = `section-<n>`, matching
+   the `TASK` marker the workflow emits), plus one for the assembler:
+
+   ```bash
+   echo "$PREFLIGHT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/preflight.ts
+   ```
+
+   `PREFLIGHT_REQUEST_JSON` is `{projectDir, workflow: "workshop", planReset: {planFile, planHash},
+   dispatchOwnership: "caller", readyWave: [...]}`. Each section task declares
+   `writablePaths: ["<fragmentsDir>/section-<n>.typ", "<fragmentsDir>/notes-section-<n>.typ"]` and the
+   same two as `outputs`; the assembler task (`id: "assemble"`) declares the deck and notes paths
+   **and their compile artifacts** — `tinymist compile` writes a PDF beside each `.typ`, and a
+   compile output nobody declared is an undeclared change, which adjudicates as a violation by an
+   agent that did exactly what it was told. Declare what the step actually writes, not just what you
+   think of as its deliverable.
+
+   `dispatchOwnership: "caller"` is correct here and not a shortcut: this workflow owns an
+   orchestration richer than a dispatch loop (Discover, Sections, Assemble, Gate), so the beat must
+   not route it or emit a script. Everything that enforces — approval authentication, task-contract
+   validation, writable-path canonicalisation, and the expectation the observation hooks adjudicate
+   against — is identical to a beat-owned dispatch.
+
+   **A non-zero exit blocks generation.** Skipping this step does not fail: the workflow runs, the
+   hooks find no expectation, and every section agent writes with no bounds checked at all. That is
+   the state workshop was in before this step existed.
+
+4. Invoke the generator, passing the bundle's fields straight through:
    ```text
    Workflow(name="workshop-generate", args={
      "projectDir": "<absolute project root>",
@@ -95,7 +127,7 @@ is not authentication.
    It re-runs the strict receipt parse over `artifacts.receipt.text` itself, keeps the
    seven-column specifications pinned, produces both Typst deliverables, and gates both
    compilations. Its temporary section fragments are outside planning state.
-4. Verify the built deck independently — re-authenticate first (step 2 again), then:
+5. Verify the built deck independently — re-authenticate first (step 2 again), then:
    ```text
    Workflow(name="workshop-verify", args={
      "projectDir": "<absolute project root>", "projectReal": <bundle.projectReal>,
@@ -105,7 +137,7 @@ is not authentication.
    })
    ```
    The verifier enumerates built slides and makes the PLAN-to-slide join semantically, without injecting a candidate menu. It applies the parser's Source Inventory whitelist after the join.
-5. Finalize each return value (post-step). Both workflows return `verifyRequired: true`
+6. Finalize each return value (post-step). Both workflows return `verifyRequired: true`
    and `driftVerified: false` — the verdict is provisional until the plan and receipt
    are re-snapshotted against the entry bundle. Write the return value to disk and run:
    ```bash

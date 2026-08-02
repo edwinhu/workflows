@@ -388,6 +388,43 @@ console.log('routing decides the dispatch shape, and only a workflow route emits
     !/\bimport\s*\(|\bimport\s*\.\s*meta\b|\bprocess\s*\.|\bBuffer\b/.test(source.replace(/^\s*\/\/.*$/gm, '')))
 }
 
+// A workflow that owns its own orchestration — /writing and /workshop each run a script with Gate,
+// assembly and verify phases — must still inherit the enforcement. The tail differs; the enforcement
+// does not. If this ever diverges, those two workflows silently go back to unbounded dispatch.
+console.log('a caller-owned dispatch keeps every guarantee except routing and emission')
+{
+  const project = projectFor()
+  const wave = ['a', 'b', 'c', 'd', 'e', 'f'].map(id => task(id, [`src/${id}.js`]))
+  const owned = run({ readyWave: wave, dispatchOwnership: 'caller' }, { project })
+  ok('caller-owned dispatch emits no script', owned.emittedWorkflowPath === undefined)
+  ok('caller-owned dispatch writes no script into the project',
+    !existsSync(join(project, '.claude/workflows/ds-implement.js')))
+  ok('caller-owned dispatch is reported as such', owned.dispatchOwnership === 'caller')
+  ok('caller-owned dispatch still binds one approval per task', owned.approvals.length === 6)
+  ok('caller-owned dispatch still derives the expectation the hooks adjudicate against',
+    Object.keys(JSON.parse(readFileSync(owned.expectationPath, 'utf8')).tasks).sort().join(',') === 'a,b,c,d,e,f')
+  ok('caller-owned dispatch still supplies TASK-marked prompts',
+    owned.tasks.every(t => new RegExp(`^TASK ${t.id}:`, 'm').test(t.prompt)))
+  // The route is still COMPUTED and returned — the caller may want the size guideline and the
+  // large-run warning even when it dispatches the work itself. Only the emission is suppressed.
+  ok('caller-owned dispatch still reports the routing decision it did not act on', owned.routing.route === 'workflow')
+
+  // And the enforcement-bearing fields are identical to the beat-owned run of the same wave.
+  // Same project on purpose: the prompt embeds the project directory, so comparing runs against two
+  // different temp dirs would compare paths rather than the property under test.
+  const beatOwned = run({ readyWave: wave, phases: ['Implement'] }, { project })
+  ok('both ownership modes derive the same wave fingerprint', owned.waveFingerprint === beatOwned.waveFingerprint)
+  ok('both ownership modes build byte-identical prompts',
+    JSON.stringify(owned.tasks) === JSON.stringify(beatOwned.tasks))
+}
+for (const [name, badTasks] of [
+  ['a caller-owned task with an unsafe writable path', [task('a', ['src/a.js'], { writablePaths: ['../escape.js'] })]],
+  ['a caller-owned task that violates the task contract', [{ id: 'a', name: 'nope' }]],
+]) {
+  rejects(`caller-owned dispatch still rejects ${name}`,
+    () => run({ readyWave: badTasks, dispatchOwnership: 'caller' }))
+}
+
 for (const path of cleanup) rmSync(path, { recursive: true, force: true })
 console.log(`\n${PASS}/${PASS + FAIL} passed`)
 if (FAIL) throw new Error(`${FAIL} beat-implement preflight contract check(s) failed`)

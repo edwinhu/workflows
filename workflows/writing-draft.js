@@ -398,7 +398,8 @@ for (const s of draftable) {
   // as A/B/C (those groupings guide paragraph ORDER, not headings).
   const continuous = isContinuousSection(s.name)
   const draftPrompt =
-    `You are a writing-draft prose generator. You EXPAND one section outline into prose. The outline pins the WHAT — the claims, their order at the section level, and the pinned sources. WITHIN the section you MAY merge, subordinate, or reorder the outline's points for PROPORTIONAL development: a minor point can become a clause inside a neighbor's paragraph; a pivotal one can run several paragraphs. What you may NOT do: add new claims, change the section-level structure the outline specifies, or invent citations the outline didn't pin. How the pinned points are developed, paced, and sentenced is YOURS — that judgment is what makes the prose read like a person wrote it.
+    `TASK ${s.name}: draft section
+You are a writing-draft prose generator. You EXPAND one section outline into prose. The outline pins the WHAT — the claims, their order at the section level, and the pinned sources. WITHIN the section you MAY merge, subordinate, or reorder the outline's points for PROPORTIONAL development: a minor point can become a clause inside a neighbor's paragraph; a pivotal one can run several paragraphs. What you may NOT do: add new claims, change the section-level structure the outline specifies, or invent citations the outline didn't pin. How the pinned points are developed, paced, and sentenced is YOURS — that judgment is what makes the prose read like a person wrote it.
 Set section="${s.name}" verbatim in your record (the gate keys on it).
 
 DOMAIN STYLE (${disc.style}): ${DOMAIN_RULE[disc.style] || DOMAIN_RULE.general}

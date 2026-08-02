@@ -79,8 +79,14 @@ export const OBSERVATION_DIR = join(gettempdir(), "work-implement-observations")
  * through here) and is left strictly alone.
  */
 export function taskIdFrom(prompt: unknown): string | undefined {
-  const match = /^TASK (\S+):/m.exec(String(prompt ?? ""));
-  return match?.[1];
+  // Everything up to the first colon on the line, NOT `\S+`. Task ids are opaque strings in the
+  // shared task contract, and real ones contain spaces: /writing keys its tasks by section name, so
+  // `TASK Part I: draft section` is an ordinary dispatch. Under `\S+` that line does not match AT
+  // ALL — the regex needs a colon immediately after the token — so the hook classified it as a
+  // non-implement call and left it entirely alone. Silent, complete loss of adjudication for exactly
+  // the workflow being onboarded.
+  const match = /^TASK ([^\n:]+):/m.exec(String(prompt ?? ""));
+  return match?.[1].trim() || undefined;
 }
 
 export type Expectation = {

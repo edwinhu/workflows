@@ -259,6 +259,32 @@ console.log('non-implement agent calls and malformed payloads are left strictly 
   ok('a malformed payload never blocks', malformedPost.exitCode === 0 && !/"decision"\s*:\s*"block"/.test(malformedPost.stdout.toString()), malformedPost.stdout.toString())
 }
 
+// Task ids are opaque strings in the shared task contract, and /writing keys its tasks by SECTION
+// NAME — "Part I", "Introduction". An earlier `^TASK (\S+):` marker could not match those lines at
+// all, so a spaced id read as a non-implement dispatch and was left completely unadjudicated. That is
+// the silent failure this case exists to prevent, and it fires for the workflow being onboarded.
+console.log('a task id containing spaces is correlated, not silently skipped')
+{
+  const run = dispatch({
+    tasks: [task('Part I', ['drafts/part-i.md'])],
+    taskId: 'Part I',
+    mutate: project => { mkdirSync(join(project, 'drafts'), { recursive: true }); writeFileSync(join(project, 'drafts/part-i.md'), 'prose') },
+    reported: ['drafts/part-i.md'],
+  })
+  ok('a spaced task id is adjudicated', run.adjudication?.status === 'clean', JSON.stringify(run.adjudication))
+  const violating = dispatch({
+    tasks: [task('Part I', ['drafts/part-i.md'])],
+    taskId: 'Part I',
+    mutate: project => {
+      mkdirSync(join(project, 'drafts'), { recursive: true })
+      writeFileSync(join(project, 'drafts/part-i.md'), 'prose')
+      writeFileSync(join(project, 'drafts/part-ii.md'), 'not mine')
+    },
+    reported: ['drafts/part-i.md', 'drafts/part-ii.md'],
+  })
+  ok('a spaced task id is still bounds-checked', violating.adjudication?.status === 'violated', JSON.stringify(violating.adjudication))
+}
+
 console.log('records are keyed per run, so one run cannot adjudicate another')
 {
   // Task ids are unique within a wave, but a RESUMED run replays the same ids in a new process and a

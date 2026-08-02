@@ -81,6 +81,23 @@ export type PreflightRequest = {
   affectedChecks?: unknown;
   /** Phase titles the DOMAIN skill supplies; the beat never invents them. */
   phases?: readonly string[];
+  /**
+   * WHO DISPATCHES — and therefore what this pre-step produces.
+   *
+   *   "beat"   (default) The beat owns dispatch. Routes by shape and emits a plan-bound script when
+   *            the shape warrants one. This is what /ds, /dev, /work and /workflow-creator use.
+   *   "caller" The CALLER owns dispatch and already has an orchestration richer than a dispatch loop
+   *            — /writing and /workshop each run a workflow with its own Gate, assembly and verify
+   *            phases. Routing them would be wrong (their shape is not a bare fan-out of tasks) and
+   *            emitting a script they never run would be dead, confusing output.
+   *
+   * The DIFFERENCE IS ONLY THE TAIL. Approval authentication, task-contract validation, writable-path
+   * canonicalisation, per-task approval binding and — the part that matters — expectation derivation
+   * are identical either way. That is the whole point: a workflow can keep its own orchestration and
+   * still inherit the beat's enforcement, instead of the all-or-nothing choice that left /writing and
+   * /workshop hand-rolling write-capable dispatch with no bounds on any task.
+   */
+  dispatchOwnership?: "beat" | "caller";
   /** Overrides the dispatching session identity. Tests set it; production reads the environment. */
   dispatchSession?: string;
 };
@@ -96,6 +113,7 @@ export type PreflightResult = {
   executionMode: "sequential";
   executionReason: string;
   routing: RoutingDecision;
+  dispatchOwnership: "beat" | "caller";
   /** Tasks actually to be dispatched — the full wave, or only the proven attempted subset on resume. */
   tasks: { id: string; name: string; prompt: string }[];
   resumedAttemptedWorkOnly: boolean;
@@ -360,7 +378,7 @@ export function preflight(request: PreflightRequest): PreflightResult {
   const prompted = tasks.map(task => ({ id: task.id, name: task.name, prompt: buildTaskPrompt(task, project) }));
 
   let emittedWorkflowPath: string | undefined;
-  if (routing.route === "workflow") {
+  if (routing.route === "workflow" && request.dispatchOwnership !== "caller") {
     const { path } = emitImplementationWorkflow({
       projectDir: project,
       planFile: String(reset.planFile ?? reset.approvedBodyHash),
@@ -383,6 +401,7 @@ export function preflight(request: PreflightRequest): PreflightResult {
     executionMode: selected.mode,
     executionReason: selected.reason,
     routing,
+    dispatchOwnership: request.dispatchOwnership ?? "beat",
     tasks: prompted,
     resumedAttemptedWorkOnly: !!attemptedIds,
     approvals,

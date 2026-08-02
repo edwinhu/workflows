@@ -9,6 +9,8 @@ dispatch inherits none of that.
 
 ## Measured state
 
+**17/18 adopted as of 2026-08-02.** Items 1-4 below are done; item 5 is the one open decision.
+
 Adoption = the skill **loads the beat's `SKILL.md`**, or reaches it through an adapter that does.
 
 | workflow | CLARIFY | IMPLEMENT | REVIEW |
@@ -17,8 +19,8 @@ Adoption = the skill **loads the beat's `SKILL.md`**, or reaches it through an a
 | dev | ⚠️ `dev-clarify` | ✅ via `dev-implement` | ✅ via `dev-verify` |
 | work | ✅ | ✅ via `goal-work` | ✅ |
 | workflow-creator | ✅ | ✅ | ✅ |
-| **writing** | ❌ inline prose | ❌ `writing-draft` hand-rolls | ❌ none |
-| **workshop** | ❌ inline prose | ❌ `workshop-generate` hand-rolls | ✅ |
+| writing | ✅ `beat-clarify` | ✅ via `writing-draft` | ✅ via `writing-accept` |
+| workshop | ✅ `beat-clarify` | ✅ via `workshop` | ✅ |
 
 ### Two things that look like gaps and are not
 
