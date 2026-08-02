@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.106.2] - 2026-08-02
+
+### Added
+- **`scripts/wc/compliance-probe.ts` — deterministic compliance checks that audit the plugin hosting them.** `workflow-creator` is a meta workflow, so it must be able to audit the workflows plugin itself; an auditor that only inspects generated workflows catches the next workflow's version of a defect and never its own host's, and every defect this week was in the host. Three checks — beat adoption, hook registration, and fail-open-without-a-gate — plugged into `wc-audit`'s existing `mechanicalProbes` seam rather than added as a reviewer dimension, because a probe's exit status is evidence and a reviewer's score is an opinion. `wc-audit`'s reviewers are LLM agents, and the characteristic way to get a configuration property wrong is to measure the reference instead of the mechanism: an agent asked "does this workflow use the beats" greps for the name and finds it.
+  - Workflow discovery is DERIVED, not hardcoded. `tests/beat-adoption.test.py` pins six names, so a seventh entry point is not failing but invisible.
+  - Writing it reproduced the exact error it exists to catch, twice, and both are pinned as regression cases. The first discovery cut ("user-invocable and dispatches agents") produced 29 findings, eleven false — utilities with no approval regime, and family members mistaken for workflows. The fail-open check matched PROSE, flagging two hooks that call `denyOnCrash`; two false positives out of three findings.
+  - Against this repo: one finding. `hooks/typst-convention-guard.ts` is wired to no event and named by no skill, so it never runs — while its golden test passes, which is the point. Recorded in an asserted `KNOWN_FINDINGS` registry.
+
+### Fixed
+- **The observation hook resolved task ids by a blind parse, so an id containing a colon matched no bounds.** The marker is `TASK <id>: <name>` and both halves are free text, so `TASK Part I: Foundations` is ambiguous on its face; `/writing` keys tasks by section name and a colon in an academic title is ordinary. It parsed to `Part I` and the task went unadjudicated. Ids are now resolved against the expectation's own list, longest match first, so a prefix id cannot steal another's dispatch. This is a distinct defect from the payload-shape bug fixed in 5.106.1.
+
 ## [5.106.1] - 2026-08-02
 
 ### Fixed
