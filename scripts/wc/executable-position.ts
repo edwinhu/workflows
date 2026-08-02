@@ -210,11 +210,19 @@ if (import.meta.main) {
   const argv = process.argv;
   const target = argv[argv.indexOf("--target") + 1];
   if (!target || target.startsWith("--")) { console.error("requires --target <repo root>"); process.exit(2); }
+  // BOTH CHECKS. `checkDeclaredGuarantees` was defined, exported, and called by NOTHING — not this
+  // CLI, not compliance-probe.ts, not a test. I demonstrated it "working" by invoking it by hand from
+  // `bun -e`, which is precisely the model-mediated path this file exists to flag. A tool for finding
+  // correct-but-never-invoked components, whose sharpest check was correct and never invoked. Caught
+  // by an independent review within the hour, not by me.
+  const guarantees = checkDeclaredGuarantees(target);
   const findings = findOrphans(target);
-  if (argv.includes("--json")) console.log(JSON.stringify({ target, findings }, null, 2));
+  if (argv.includes("--json")) console.log(JSON.stringify({ target, guarantees, findings }, null, 2));
   else {
+    for (const g of guarantees) console.log(`CRITICAL  declared safety dependency unmet\n    ${g.dependent}\n    requires ${g.requires}\n    ${g.detail}\n    why: ${g.why}`);
     for (const f of findings) console.log(`${f.severity.toUpperCase()}  ${f.file}\n    ${f.detail}\n    -> ${f.remedy}`);
-    console.log(`executable-position: ${findings.length} orphan(s) in ${relative(process.cwd(), target) || target}`);
+    console.log(`executable-position: ${guarantees.length} unmet guarantee(s), ${findings.length} orphan(s) in ${relative(process.cwd(), target) || target}`);
   }
-  process.exit(findings.length ? 1 : 0);
+  // An unmet DECLARED guarantee is the sharp failure; an orphan is hygiene. Either exits nonzero.
+  process.exit(guarantees.length || findings.length ? 1 : 0);
 }

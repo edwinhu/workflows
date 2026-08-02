@@ -123,5 +123,23 @@ console.log('the probe refuses to report clean on a target it does not understan
   rmSync(empty, { recursive: true, force: true })
 }
 
+// THE CHECK MUST ITSELF BE WIRED — this file exists because that is not automatic.
+//
+// `checkDeclaredGuarantees` shipped defined, exported, and called by NOTHING: not its CLI, not this
+// suite, not compliance-probe.ts. It was "demonstrated working" by a hand-run `bun -e`, which is the
+// model-mediated path the tool exists to flag. A detector for correct-but-never-invoked components,
+// itself correct and never invoked, caught by an independent reviewer within the hour.
+console.log('the guarantee check is reachable from the CLI, not just exported')
+{
+  const src = await import('node:fs').then(fs => fs.readFileSync(new URL('../scripts/wc/executable-position.ts', import.meta.url), 'utf8'))
+  const main = src.slice(src.indexOf('import.meta.main'))
+  ok('the CLI invokes checkDeclaredGuarantees', main.includes('checkDeclaredGuarantees('), 'exported but unreachable — the exact defect this tool detects')
+  ok('an unmet guarantee makes the CLI exit nonzero', /process\.exit\(guarantees\.length/.test(main))
+  const { checkDeclaredGuarantees, SAFETY_DEPENDS_ON } = await import('../scripts/wc/executable-position.ts')
+  ok('the registry is non-empty, so the check is not vacuous', SAFETY_DEPENDS_ON.length > 0)
+  ok('and it reports the known-unmet dependency today',
+    checkDeclaredGuarantees(ROOT).some(g => g.requires.includes('implement-gate')))
+}
+
 console.log(`\n${PASS}/${PASS + FAIL} passed — ${findings.length} finding(s), ${KNOWN_FINDINGS.size} accepted`)
 if (FAIL) throw new Error(`${FAIL} compliance-probe check(s) failed`)
