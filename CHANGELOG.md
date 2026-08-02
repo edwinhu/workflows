@@ -3,6 +3,26 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.106.0] - 2026-08-02
+
+### Changed
+- **`workflows/beat-implement.js` is retired.** It could never execute — the Workflow runtime is pure control flow (no `import()`, no `import.meta`, no `process`, no `Buffer`) — so every workflow's IMPLEMENT step had been dead for months. It outlived its last caller because four suites pinned ~105 assertions of dispatch policy against it, and deleting the file would have deleted that coverage. Retirement was therefore a migration, along the one line that actually divides those assertions: what can be decided BEFORE any agent runs versus what can only be decided BETWEEN dispatches.
+  - `scripts/beat/preflight.ts` (new) owns approval authentication, task-contract validation, writable-path canonicalisation, resume proof, candidate configuration, routing, prompt construction, and derivation of the adjudication expectation. Asserted by `tests/beat-implement-preflight.test.mjs` (101).
+  - `hooks/work-implement-observation.ts` owns the git delta and the output contract, which no pre-step or post-step can supply. It had **no test at all** before this; asserted by `tests/work-implement-observation.test.mjs` (35).
+  - Found while wiring the two halves together: the preflight wrote its expectation under the raw session id while the hook reads it under `sessionFlagKey`'s hashed derivative. Silent on both sides — the hook would have found nothing, recorded every dispatch as `no-expectation`, and adjudicated against no bounds at all. Both now call the same function. Mutation-probed: reintroducing the mismatch drops the hook suite to 14/35.
+  - Also found: a literal NUL byte in the wave-fingerprint separator made `preflight.ts` classify as binary and fail the public privacy scanner.
+  - `KNOWN_NONCOMPLIANT` in `tests/workflow-runtime-purity.test.mjs` is now empty and asserted empty.
+
+- **Public capability `beat-implement-runner` moves to contract 3.** Inputs are unchanged; execution evidence now comes from hook records rather than runner results. Consumers reading per-task result records must read hook records instead.
+
+### Added
+- **Every workflow now reaches every beat — 18/18, up from 12/18.** `KNOWN_GAPS` in `tests/beat-adoption.test.py` is empty. Adoption is a safety property, not tidiness: `writing` and `workshop` had drifted off `beat-implement` entirely, hand-rolling write-capable dispatch, which is why neither had writable-path bounds on any task and no test failed.
+  - `dispatchOwnership: "caller"` on the preflight is what made this possible. `writing` and `workshop` each run a workflow with its own Gate, assembly and verify phases, so routing them or emitting a script would be wrong — but that was the only thing blocking adoption. The tail differs; authentication, validation, canonicalisation and expectation derivation are identical, asserted directly against a beat-owned run of the same wave.
+  - `^TASK (\S+):` could not match a task id containing a space, and `/writing` keys its tasks by section name (`Part I`). Not a mis-parse — no match at all, so the hook classified those dispatches as non-implement and left them entirely unadjudicated. Widened, with a regression case.
+  - `workshop`'s assembler runs `tinymist compile`, which writes a PDF beside each `.typ`. An undeclared compile output adjudicates as a violation by an agent that did exactly what it was told, so the skill now says to declare what a step writes rather than what you think of as its deliverable.
+- **`skills/writing-accept`** — `writing` was the only workflow with no `beat-review` path, ending in a hand-rolled terminal surface. An adapter in the shape of `ds-review`/`dev-verify`, deliberately NOT named `writing-review`, which is independent machine review and must not be mistaken for human acceptance.
+- **`/dev` runs `beat-clarify` before reconnaissance.** The last gap was a decision, not work: the beat's Iron Law is *ask before you look* while `dev-clarify` runs after recon by design, so an adapter would have loaded the beat and violated its central constraint in the same step. Resolved as a sequence. `/dev` already had a pre-recon clarification — enforced by `clarify-before-recon-guard`, hand-rolled as prose, with no beat behind it. The guard enforced that it happened while nothing defined what it was. `beat-clarify`'s description already listed `dev-clarify` among its callers; that claim is now true.
+
 ## [5.105.2] - 2026-08-02
 
 ### Fixed
