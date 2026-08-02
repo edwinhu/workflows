@@ -517,9 +517,14 @@ const docIssues = [
   ...allSections.filter(section => section.planClaimAdvanced === false).map(section => ({ severity: 'critical', area: 'claim-coverage', detail: `${section.section} does not advance its mapped PLAN claim.` })),
   ...(incompleteClaims ? [{ severity: 'critical', area: 'completeness', detail: 'Whole-document reviewer did not confirm all PLAN claims addressed.' }] : []),
   ...(incompleteCounterarguments ? [{ severity: 'critical', area: 'completeness', detail: 'Whole-document reviewer did not confirm all counterarguments confronted.' }] : []),
-  ...(l3?.completeness?.scopeHonored === false ? [{ severity: 'major', area: 'scope', detail: 'Draft does not honor PLAN scope.' }] : []),
-  ...(l3?.completeness?.hookDelivered === false ? [{ severity: 'major', area: 'hook', detail: 'Draft does not deliver the PLAN hook.' }] : []),
-  ...(l3?.completeness?.conclusionFollows === false ? [{ severity: 'major', area: 'conclusion', detail: 'Conclusion does not follow from the reviewed argument.' }] : []),
+  // CONFIRMATION MUST BE AFFIRMATIVE. These were `=== false`, so a reviewer that OMITTED the field
+  // — returned it as null, misspelled it, or never populated `completeness` at all — cleared three
+  // gates it never answered. Absence of a denial is not a confirmation. Their own neighbours two
+  // lines up (`claimsAddressed`/`counterargsConfronted`) already require the affirmative value and
+  // fail on missing; these three were the odd ones out in the same object literal.
+  ...(l3?.completeness?.scopeHonored !== true ? [{ severity: 'major', area: 'scope', detail: 'Whole-document reviewer did not confirm the draft honors PLAN scope.' }] : []),
+  ...(l3?.completeness?.hookDelivered !== true ? [{ severity: 'major', area: 'hook', detail: 'Whole-document reviewer did not confirm the draft delivers the PLAN hook.' }] : []),
+  ...(l3?.completeness?.conclusionFollows !== true ? [{ severity: 'major', area: 'conclusion', detail: 'Whole-document reviewer did not confirm the conclusion follows from the reviewed argument.' }] : []),
   ...(l3?.conceptOrderIssues || []).map(d => ({ severity: 'major', area: 'concept-order', detail: d })),
   ...(l3?.repetition || []).filter(r => r.verdict === 'REDUNDANT').map(r => ({ severity: 'major', area: 'repetition', detail: r.quote, locations: r.locations })),
   ...(l3?.thesisIssues || []).map(d => ({ severity: 'major', area: 'thesis', detail: d })),

@@ -27,7 +27,22 @@ const ok = (name, condition, extra = '') => {
 // the entry to delete. Its one member — `hooks/typst-convention-guard.ts`, wired to no event and
 // therefore never run — was retired that way in v5.106.4. Adding an entry is deliberate and needs its
 // reason and exit condition written beside it, exactly like KNOWN_GAPS and KNOWN_NONCOMPLIANT.
-const KNOWN_FINDINGS = new Set([])
+const KNOWN_FINDINGS = new Set([
+  // OPEN, and it is a DESIGN question rather than a line of code — which is why it is recorded here
+  // instead of quietly fixed. `scripts/beat/implement-gate.ts` implements the absence-is-failure
+  // refusal correctly and has ZERO runtime-reached callers: no hooks.json entry, no import outside
+  // its own test, and one bash line in skills/beat-implement/SKILL.md that runs only if a model
+  // chooses to run it. So the observation hook's fail-open design has no live backstop.
+  //
+  // This rule used to exempt the hook because a gate file CONTAINED its name. That substring
+  // exemption was the class it exists to catch, inside the check for the class. Fixed; the finding
+  // it was hiding is now visible and is this entry.
+  //
+  // Exit condition: give the gate a runtime-reached invocation — a Stop/SubagentStop hook is the
+  // obvious candidate, since the gate is a whole-wave verdict — or make the observation hook deny on
+  // its own errors and retire the fail-open design. Writing the gate was never the missing part.
+  'fail-open-without-gate:hooks/work-implement-observation.ts',
+])
 
 const findings = probeCompliance(ROOT)
 const key = f => `${f.rule}:${f.subject}`
@@ -106,6 +121,24 @@ console.log('the probe refuses to report clean on a target it does not understan
   const empty = mkdtempSync(join(tmpdir(), 'probe-empty-'))
   ok('a repo with no skills at all is not flagged', probeCompliance(empty).length === 0)
   rmSync(empty, { recursive: true, force: true })
+}
+
+// THE CHECK MUST ITSELF BE WIRED — this file exists because that is not automatic.
+//
+// `checkDeclaredGuarantees` shipped defined, exported, and called by NOTHING: not its CLI, not this
+// suite, not compliance-probe.ts. It was "demonstrated working" by a hand-run `bun -e`, which is the
+// model-mediated path the tool exists to flag. A detector for correct-but-never-invoked components,
+// itself correct and never invoked, caught by an independent reviewer within the hour.
+console.log('the guarantee check is reachable from the CLI, not just exported')
+{
+  const src = await import('node:fs').then(fs => fs.readFileSync(new URL('../scripts/wc/executable-position.ts', import.meta.url), 'utf8'))
+  const main = src.slice(src.indexOf('import.meta.main'))
+  ok('the CLI invokes checkDeclaredGuarantees', main.includes('checkDeclaredGuarantees('), 'exported but unreachable — the exact defect this tool detects')
+  ok('an unmet guarantee makes the CLI exit nonzero', /process\.exit\(guarantees\.length/.test(main))
+  const { checkDeclaredGuarantees, SAFETY_DEPENDS_ON } = await import('../scripts/wc/executable-position.ts')
+  ok('the registry is non-empty, so the check is not vacuous', SAFETY_DEPENDS_ON.length > 0)
+  ok('and it reports the known-unmet dependency today',
+    checkDeclaredGuarantees(ROOT).some(g => g.requires.includes('implement-gate')))
 }
 
 console.log(`\n${PASS}/${PASS + FAIL} passed — ${findings.length} finding(s), ${KNOWN_FINDINGS.size} accepted`)

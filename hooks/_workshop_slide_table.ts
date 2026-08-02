@@ -260,6 +260,12 @@ function parseTable(table: { header: string[]; rows: string[][] }, idx: SlideInd
     const notes = wsCell(header, cells, "notes");
     const invCell = wsCell(header, cells, "inventory");
     for (const [label, val] of [
+      // Section is validated HERE and not merely downstream. An empty Section cell used to parse
+      // cleanly, yield an empty `group`, get skipped by the `if (sl.group && ...)` guard when
+      // groupOrder is built, and therefore vanish from generation entirely — workshop-generate.js
+      // enumerates groupOrder, so the slide was never dispatched to any section agent. The deck came
+      // out short with no finding naming the missing slide. Silent omission, not a loud failure.
+      ["Section", sec],
       ["Takeaway", takeaway],
       ["Bullets", wsCell(header, cells, "bullets")],
       ["Inventory", invCell],
@@ -457,8 +463,28 @@ export function buildIndex(project: string): SlideIndex {
   } else {
     parseTable(table, idx);
   }
+  // A group that REAPPEARS after another group intervened cannot survive generation intact.
+  // groupOrder dedupes globally, and workshop-generate.js then collects every slide matching a group
+  // key and sorts by slide number — so two noncontiguous runs of "Part 2 / Setup" silently collapse
+  // into one fragment under one heading, reordering slides across the sections that separated them.
+  // The plan's section boundaries are lost with no finding. Reject it at parse time instead: the
+  // author either meant one contiguous run, or meant two distinct sections that need distinct names.
+  // CONTIGUITY IS A PROPERTY OF SLIDE ORDER, NOT ROW ORDER. `idx.slides` is in table-row order, and
+  // nothing requires the rows to ascend — workshop-generate.js sorts each section's slides by
+  // `Number(a.num)` itself, so a plan listing 1, 3, 2 is legal and renders correctly today. Scanning
+  // raw row order would reject it as a resumed section, which is a spurious block on a valid plan.
+  const byNumber = [...idx.slides].sort((a, b) => Number(a.num) - Number(b.num));
   for (const sl of idx.slides) {
     if (sl.section && !idx.sectionOrder.includes(sl.section)) idx.sectionOrder.push(sl.section);
+  }
+  let previousGroup = "";
+  const seenGroups: string[] = [];
+  for (const sl of byNumber) {
+    if (sl.group && sl.group !== previousGroup && seenGroups.includes(sl.group)) {
+      idx.violations.push(`Slide ${sl.num}: section "${sl.group}" resumes after another section intervened. Sections must occupy one contiguous slide run — merge them or give them distinct names.`);
+    }
+    if (sl.group) previousGroup = sl.group;
+    if (sl.group && !seenGroups.includes(sl.group)) seenGroups.push(sl.group);
     if (sl.group && !idx.groupOrder.includes(sl.group)) idx.groupOrder.push(sl.group);
     for (const tok of sl.inventory) if (!known.has(tok)) idx.violations.push(`Slide ${sl.num}: inventory id ${tok} not found in PLAN Source Inventory.`);
   }

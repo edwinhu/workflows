@@ -5,15 +5,7 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PostToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
   PreToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
     - matcher: "Write|Edit|MultiEdit|NotebookEdit"
       hooks:
         - type: command
@@ -70,12 +62,21 @@ shape first, then dispatch what the route says — one task goes to a single sub
 compiled into a generated workflow under `.claude/workflows/`.
 
 ```bash
-echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
-# route == "workflow" -> generate the plan-bound script, then run it
-echo '{"projectDir":"<absolute project path>",planFile: "<receipt plan_file>", planHash: "<receipt plan_hash>",
-       "domain":"dev","phases":[...],"tasks":[...]}' \
-  | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
+# ONE call. The preflight authenticates the approval, validates every task against the shared
+# contract, canonicalises writable paths, binds a per-task approval, DERIVES THE ADJUDICATION
+# EXPECTATION the observation hooks read, routes by shape, and emits the script when one is warranted.
+echo "$PREFLIGHT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/preflight.ts
 ```
+
+`PREFLIGHT_REQUEST_JSON` is `{"projectDir": "<absolute project path>", "workflow": "dev",
+"planReset": {"planFile": "<receipt plan_file>", "planHash": "<receipt plan_hash>"},
+"phases": [...], "readyWave": [...]}`.
+
+**Do NOT call `route-implementation.ts` or `emit-implementation-workflow.ts` yourself.** They are the
+preflight's internals. Calling them directly skips the approval authentication and — the silent part —
+skips the expectation file, so every dispatch is adjudicated against no bounds at all and the run
+looks clean because nothing was ever checked. `scripts/beat/implement-gate.ts` then refuses the wave
+with reason `no-expectation`, whose remedy reads "the preflight never ran".
 
 ```js
 Workflow({ scriptPath: "<path returned by the generator>", args: {} })
@@ -90,9 +91,42 @@ For a retry, send only previously attempted task IDs and their returned attempt 
 
 ## TDD contract
 
-Every task's `work` and `criteria` require: write and run the named test against missing behavior;
-observe and report a valid RED; only then implement; run the exact verify command to GREEN; report
-changed files and raw evidence. A doer never verifies its own task. An independent fresh verifier
+**Every dev task MUST declare `redCommand`** — the exact command that fails before the task is
+implemented and passes after. The preflight refuses a dev wave without one, and it is bound into the
+wave fingerprint, so it cannot be swapped after approval.
+
+It is not evidence you report. The observation hook EXECUTES it on both sides of the dispatch and
+records the exit codes; `implement-gate` then requires nonzero before and zero after. Three ways a
+task fails on it, each named distinctly:
+
+| Verdict | Meaning |
+|---|---|
+| `red-unproven` | the command never ran, timed out, or a different command was run |
+| `red-not-red` | it PASSED before implementation — the test does not pin the behavior being built |
+| `green-not-green` | it still fails after implementation |
+
+`red-not-red` is the one worth understanding: a test that already passed proves nothing about the
+work, and no self-reported "RED confirmed" can rule that out. This is why the command is read from
+the authenticated expectation, which the implementing agent never sees and cannot edit.
+
+**`redCommand` must be ONE INVOCATION, not a shell program.** Shell operators — `;` `&` `|` `` ` ``
+`$` `>` `<` `(` `)` `{` `}` — are rejected by the task contract. Flags and quotes are fine:
+`pytest tests/x.py -k "a or b"` is valid, `test -f /tmp/m || { touch /tmp/m; exit 1; }` is not. The
+hook executes this string, so an unconstrained one is arbitrary code execution with the hook's
+authority; an adversarial review built four separate bypasses out of it, and every one needed an
+operator — fabricating RED with a marker file, alternating a counter across a wave, mutating a
+declared output after adjudication, and exfiltrating while looking like a test run.
+
+**What this does not close.** The command still loads code the implementer may control — a test
+file, a `conftest.py`, a fixture. Authenticating the command string does not authenticate what it
+transitively imports, so an implementer permitted to edit the test it is judged by can still run
+code inside the probe. Narrow the task's `writablePaths` when that matters. The probe also runs
+after the post-dispatch observation, so a tree mutation there is detected and reported as a
+violation rather than silently adjudicated against stale bytes.
+
+Every task's `work` and `criteria` also require: write and run the named test against missing
+behavior; observe and report a valid RED; only then implement; run the exact verify command to
+GREEN; report changed files and raw evidence. A doer never verifies its own task. An independent fresh verifier
 checks each criterion and named evidence after the runner returns. On failure, create or update the
 corresponding TaskList finding/retry dependency and resume only affected attempted work.
 
@@ -105,6 +139,8 @@ goal after terminal verification PASS, then continue to `dev-review`.
 ## Red flags — STOP
 
 - About to trust a task report as verification: run the fresh verifier.
+- About to write a dev task with no `redCommand`: STOP — the preflight refuses the wave, and a
+  test-first workflow that takes the test on trust is not test-first.
 - About to mark a plan checkbox or append a progress ledger: update TaskList instead.
 - About to change requirements, architecture, dependencies, test contract, or evidence: return to
   native planning for a new generated plan and receipt rollover.

@@ -267,8 +267,9 @@ const FINDING = {
 
 // Write-agent returns what it wrote + the full content so verify can adjudicate independent of write timing.
 const TRANSFORM_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['section', 'draftFile', 'status', 'content', 'pointsExpanded', 'summary'],
+  type: 'object', additionalProperties: false, required: ['section', 'draftFile', 'status', 'content', 'pointsExpanded', 'summary', 'changedFiles'],
   properties: {
+    changedFiles: { type: 'array', items: { type: 'string' }, description: 'EVERY project-relative file this task changed. The observation hook cross-checks this against the real git delta; omitting it is not a neutral omission, it fails adjudication and is attributed to you.' },
     section: { type: 'string', description: 'echo the section name verbatim — the gate keys on it' },
     draftFile: { type: 'string' },
     status: { type: 'string', enum: ['drafted', 'skipped', 'error'] },
@@ -422,7 +423,7 @@ Drafting contract (the Iron Laws of writing-draft):
 - CITATIONS: this outline may not pin sources to its claims. Where a substantive claim needs a citation, draw it from a REAL source in this immutable authenticated bibliography snapshot (${disc.bibPath}):\n${BIB_SNAPSHOT.text}\nFor legal claims use a real, well-formed, verifiable authority (case/statute/article). Carry through any [@bibkey]/[CLAIM-XX] the outline DOES pin. **NEVER fabricate a citation, and NEVER attribute a claim to a source that does not support it.** If you cannot identify a real source for a claim, leave a literal \`[CITE-NEEDED: <what's needed>]\` marker instead of inventing one — the verify stage treats an invented cite as a critical failure but an honest CITE-NEEDED as a flag to resolve.
 - Apply R1-R3 deviations inline if drafting surfaces them (R1 factual fix, R2 add a real source, R3 structural bridge). If you hit an R4 (the argument itself needs restructuring), do NOT invent a fix — note it in summary and draft to the outline as written.
 
-Write the full prose to the exact PLAN-owned path ${s.draftFile} with the Write tool. Frontmatter MUST include \`implements: [${s.precisClaim}]\` (or an empty list when this section has no primary claim) and the exact \`plan_hash: ${PLAN_HASH}\`. Then return TRANSFORM_SCHEMA with draftFile exactly equal to that path, status="drafted", content=the FULL exact file content you wrote, and pointsExpanded=the number of outline points you expanded.`
+Write the full prose to the exact PLAN-owned path ${s.draftFile} with the Write tool. Frontmatter MUST include \`implements: [${s.precisClaim}]\` (or an empty list when this section has no primary claim) and the exact \`plan_hash: ${PLAN_HASH}\`. Then return TRANSFORM_SCHEMA with draftFile exactly equal to that path, status="drafted", content=the FULL exact file content you wrote, pointsExpanded=the number of outline points you expanded, and changedFiles=EVERY project-relative path you changed (the observation hook cross-checks this against the real filesystem delta).`
   const buildVerifyPrompt = (t) =>
     `You are a READ-ONLY verifier. Do NOT create, edit, or overwrite any files. Confirm a drafted section faithfully EXECUTED its outline — this is execution-fidelity, NOT a document-quality review (writing-review does that later).
 Set section="${t.section}" verbatim.
@@ -451,7 +452,13 @@ Return VERIFY_SCHEMA.`
     return { expectedSection: String(s.name), transform: t, verify: v, draftSnapshot: null }
   })())
 }
-const liveResults = (await parallel(tasks)).filter(Boolean)
+// SEQUENTIAL, NOT parallel(). The observation hooks bracket each dispatch with a git observation of
+// the WHOLE working tree, so a sibling section's draft written inside this section's pre/post window
+// lands in this section's delta — reported as "output outside writable authority" against an agent
+// that did nothing wrong. `scripts/beat/preflight.ts` returns executionMode: 'sequential' for exactly
+// this reason and nothing here was reading it.
+const liveResults = []
+for (const task of tasks) { const result = await task(); if (result) liveResults.push(result) }
 if (ONLY) log(`Selective re-draft: ${drafted} section(s) live, ${carriedCount} carried`)
 // draftSnapshots holds ONLY authenticated entry snapshots — i.e. carried sections. A live
 // section's draft has no authenticated bytes in this process, and pretending otherwise by

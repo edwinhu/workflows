@@ -52,13 +52,23 @@ describe("work workflow contract", () => {
     for (const text of doctrine) expect(text).toMatch(/receipt-selected generated plan|generated plan/i);
     expect(goalWork).toContain("planFile");
     expect(goalWork).toContain("planHash");
-    // The dispatch boundary moved from a checked-in runner taking `planReset` to a generator taking
-    // the plan identity directly. The PROPERTY is unchanged and still asserted: the wave is bound to
-    // the receipt-selected plan, so a different plan cannot be implemented under this approval.
-    expect(goalWork).toContain("planFile");
-    expect(goalWork).toContain("emit-implementation-workflow.ts");
-    expect(goalWork).toContain("planFile: \"<receipt plan_file>\"");
-    expect(goalWork).toContain("planHash: \"<receipt plan_hash>\"");
+    // ASSERT THE PROPERTY, NOT THE COMMAND TEXT.
+    //
+    // These two lines used to pin `emit-implementation-workflow.ts` and the literal
+    // `planFile: "<receipt plan_file>"` — an INVALID JSON payload (unquoted key) that exits 1 with a
+    // parse error, and a direct call to an internal that beat-implement/SKILL.md:154 forbids because
+    // it skips the expectation file. So the suite required the broken form: fixing the command turned
+    // the test red, which makes a repair look like a regression. An audit found this and I initially
+    // dismissed it after reading only the weaker assertion twelve lines up. It was right.
+    //
+    // The PROPERTY these lines were reaching for — the wave is bound to the receipt-selected plan
+    // identity, so a different plan cannot be implemented under this approval — is asserted below and
+    // is independent of which script the skill calls.
+    expect(goalWork).toContain("beat/preflight.ts");
+    expect(goalWork).toContain('"planReset"');
+    // And the internals must NOT be called directly. Goes red if anyone reintroduces the old block.
+    expect(goalWork).not.toMatch(/echo[^\n]*\|\s*bun[^\n]*(?:route-implementation|emit-implementation-workflow)\.ts/);
+    expect(goalWork).toContain('"planHash": "<receipt plan_hash>"');
     expect(goalWork).not.toContain("approvedBodyHash");
   });
 
@@ -187,9 +197,19 @@ describe("work workflow contract", () => {
     }
     // Domain identity still travels with the dispatch; it is now the generator's `domain` field
     // rather than the runner's `workflow` arg.
-    expect(devImplement).toContain('"domain":"dev"');
+    // Was `toContain('"domain":"dev"')` — a field of the emit payload, i.e. the same pinned-broken-
+    // command defect as above. The durable property is that dev's dispatch names its own workflow
+    // identity in the request the preflight authenticates against.
+    expect(devImplement).toContain('"workflow": "dev"');
+    expect(devImplement).not.toMatch(/echo[^\n]*\|\s*bun[^\n]*(?:route-implementation|emit-implementation-workflow)\.ts/);
     expect(devImplement).toContain("beat-implement/SKILL.md");
     expect(devImplement).toContain("valid RED");
+    // dev's TDD claim is now MECHANICAL: preflight refuses a dev wave without redCommand, the
+    // observation hook executes it on both sides of the dispatch, and implement-gate reads the exit
+    // codes. Before this, "valid RED" appeared in four SKILL.md files and was enforced in none.
+    expect(devImplement).toContain("redCommand");
+    expect(devImplement).toContain("red-not-red");
+    expect(read("scripts/beat/preflight.ts")).toContain('request.workflow === "dev" && !task.redCommand');
     expect(devImplement).toContain("independent fresh verifier");
     expect(read("skills/dev-review/SKILL.md")).toContain("Codex");
     expect(read("skills/dev-verify/SKILL.md")).toContain("beat-review/SKILL.md");

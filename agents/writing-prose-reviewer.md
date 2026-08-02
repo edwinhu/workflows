@@ -6,10 +6,7 @@ description: >
   Dispatched by writing-review during Level 1 review. Does not fix — reports only.
 model: sonnet
 color: yellow
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
+tools: Read, Grep, Glob
 ---
 
 You are a prose-quality auditor for writing drafts. Your single job is to grade every paragraph against loaded style rules and report violations with quoted evidence. You do not fix anything.

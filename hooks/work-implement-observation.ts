@@ -63,6 +63,7 @@
  * Usage: --phase pre|post --workflow <ds|dev|work>
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { sessionFlagKey, allow, context, pyJson } from "./_gate_common.ts";
 
@@ -125,9 +126,44 @@ export type Expectation = {
   waveFingerprint: string;
   projectDir: string;
   workflow: string;
-  /** taskId -> the bounds adjudication is judged against. DERIVED from the authenticated plan. */
-  tasks: Record<string, { writablePaths: string[]; outputs: string[] }>;
+  /**
+   * taskId -> the bounds adjudication is judged against. DERIVED from the authenticated plan.
+   *
+   * `redCommand`, when present, is executed by this hook on BOTH sides of the dispatch: it must fail
+   * before the task runs and pass after. That is the only way "valid RED" becomes a fact rather than
+   * a claim — an agent asked to report its own RED step can simply say it happened.
+   */
+  tasks: Record<string, { writablePaths: string[]; outputs: string[]; redCommand?: string }>;
 };
+
+/**
+ * Run a task's `redCommand` and report what the SHELL said, not what anyone claims it said.
+ *
+ * Bounded on purpose: a 10-minute ceiling and a truncated tail. The hooks.json entries carry
+ * `timeout: 660` for the same reason — Claude Code's DEFAULT hook timeout is 60s, so without it the
+ * runtime would kill this process mid-probe, before `writeRecord` ever runs. No record would exist,
+ * and the gate would refuse the wave as `missing-pre`/`missing-post` — reporting "the hook did not
+ * run" for a hook that ran fine and was cut off. Any change to the ceiling below must move with it. A test command that hangs must not
+ * wedge every dispatch behind it, and a runaway log must not be copied wholesale into a record file
+ * that the gate later parses. A timeout is NOT read as failure-therefore-valid-RED — it is its own
+ * outcome, because "the suite never finished" tells you nothing about whether the behaviour is absent.
+ */
+export function runRedCommand(command: string, projectDir: string): { exitCode: number | null; timedOut: boolean; tail: string; error?: string } {
+  try {
+    // `bash -c`, NOT `-lc`. A login shell sources the user's profile, so the verdict would depend on
+    // startup files and a mutable PATH — an agent-created binary earlier on PATH could decide RED or
+    // GREEN, and profile code would execute on every probe. Nothing about running a test needs a
+    // login shell.
+    const proc = Bun.spawnSync(["bash", "-c", command], { cwd: projectDir, stdout: "pipe", stderr: "pipe", timeout: 600_000 });
+    const text = `${new TextDecoder().decode(proc.stdout ?? new Uint8Array())}${new TextDecoder().decode(proc.stderr ?? new Uint8Array())}`;
+    // `signalCode` is set when the timeout killed it; exitCode alone cannot distinguish that from
+    // an ordinary nonzero exit, and conflating them would let a hung suite masquerade as a valid RED.
+    const timedOut = proc.signalCode === "SIGTERM" || proc.signalCode === "SIGKILL";
+    return { exitCode: proc.exitCode, timedOut, tail: text.slice(-4000) };
+  } catch (error) {
+    return { exitCode: null, timedOut: false, tail: "", error: error instanceof Error ? error.message : String(error) };
+  }
+}
 
 export function expectationPath(sessionId: string): string {
   return join(OBSERVATION_DIR, `${sessionId}--expectation.json`);
@@ -142,8 +178,19 @@ export function expectationPath(sessionId: string): string {
  * another run's task.
  */
 export function recordPath(sessionId: string, fingerprint: string, taskId: string, phase: string): string {
+  // THE TASK ID IS HASHED, NOT SANITIZED. Sanitizing is lossy and the loss is a collision:
+  // `a/b`, `a?b` and `a b` all became `a_b` and shared one evidence file, and any two ids agreeing on
+  // their first 96 sanitized characters shared one too. Task ids are opaque strings in the shared
+  // contract — /writing keys them by section name — so both shapes are reachable, and the effect is
+  // that one task's clean record can satisfy the gate for a different task.
+  //
+  // This is the mirror of the marker-parsing bug: careful colon-handling at the prompt layer is
+  // worthless if identity is destroyed at the storage layer. A readable prefix is kept for humans;
+  // the digest is what makes the filename injective.
   const safe = (value: string) => value.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 96);
-  return join(OBSERVATION_DIR, `${safe(sessionId)}--${safe(fingerprint)}--${safe(taskId)}--${phase}.json`);
+  const injective = (value: string) =>
+    `${value.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 40)}-${createHash("sha256").update(value, "utf8").digest("hex").slice(0, 24)}`;
+  return join(OBSERVATION_DIR, `${safe(sessionId)}--${safe(fingerprint)}--${injective(taskId)}--${phase}.json`);
 }
 
 function loadExpectation(sessionId: string): Expectation | undefined {
@@ -212,6 +259,23 @@ if (import.meta.main) {
   const fingerprint = expectation?.waveFingerprint ?? "no-expectation";
   const path = recordPath(sessionId, fingerprint, taskId, phase);
 
+  // ORDER IS LOAD-BEARING, AND IT DIFFERS BY PHASE.
+  //
+  // The red probe RUNS A TEST SUITE, and test suites litter: .pytest_cache/, __pycache__/, coverage
+  // files, compiled fixtures. Whatever it creates must land OUTSIDE the pre→post window, or
+  // enforceTaskOutputs sees those paths in the delta, finds them outside the task's writablePaths,
+  // and blocks an agent that did exactly what it was told.
+  //
+  //   pre:  probe FIRST, then capture  — the probe's litter is part of the baseline
+  //   post: capture FIRST, then probe  — the probe's litter lands after the measured window
+  //
+  // Getting this wrong is not a subtle degradation: it fails clean runs, and it blames the agent.
+  const declaredRed = expectation?.tasks?.[taskId]?.redCommand;
+  const probeDir = expectation?.projectDir ?? String(payload.cwd ?? ".");
+  const runProbe = () => declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, probeDir) } : undefined;
+  let redProbe = phase === "pre" ? runProbe() : undefined;
+  let probeMutated: string | undefined;
+
   let capture: { digest: string; entries: unknown } | undefined;
   let failure: string | undefined;
   try {
@@ -231,7 +295,30 @@ if (import.meta.main) {
     context("PostToolUse", `Implement observation failed for task ${taskId}: ${failure}\nThis is a hook malfunction, NOT a task violation — the two are distinct outcomes. The implement gate will refuse this wave because the observation is missing.`);
   }
 
-  writeRecord(path, { taskId, phase, status: "observed", digest: capture!.digest, observation: capture!.entries, sessionId, fingerprint });
+  // THE GREEN HALF. Executed here rather than in the emitted script or the agent prompt because this
+  // is the only place that sits OUTSIDE the party being judged: the hook fires around the dispatch,
+  // and the command comes from the authenticated expectation, which the agent never sees and cannot
+  // edit. Runs after the post capture — see the ordering note above.
+  if (phase === "post") {
+    redProbe = runProbe();
+    // THE PROBE RUNS AFTER THE POST CAPTURE, so anything it writes is invisible to adjudication.
+    // An adversarial review turned that into an exploit: a command that mutates a declared output
+    // after the capture leaves the gate adjudicating bytes that are no longer on disk. Command shape
+    // is now constrained so it cannot redirect, but a test runner can still write through code it
+    // loads — so verify rather than assume, and treat a post-probe mutation as a violation of its own.
+    try {
+      const { captureGitObservation } = await import("../workflows/lib/git-observation.ts");
+      const after = captureGitObservation(expectation?.projectDir ?? String(payload.cwd ?? ".")) as { digest: string };
+      if (after.digest !== capture!.digest) {
+        probeMutated = "the redCommand modified the working tree AFTER the post-dispatch observation, so what was adjudicated is not what remains on disk";
+      }
+    } catch {
+      // A failure to re-observe is our malfunction, not the task's. The existing record already
+      // stands; do not manufacture a violation out of our own error.
+    }
+  }
+
+  writeRecord(path, { taskId, phase, status: "observed", digest: capture!.digest, observation: capture!.entries, sessionId, fingerprint, ...(redProbe ? { redProbe } : {}) });
 
   if (phase === "pre") allow();
 
@@ -335,6 +422,36 @@ if (import.meta.main) {
     // produced an undeclared one, or misreported its own changes.
     violations = [error instanceof Error ? error.message : String(error)];
   }
+
+  // RED/GREEN IS ADJUDICATED **HERE**, NOT ONLY IN THE GATE.
+  //
+  // `scripts/beat/implement-gate.ts` computes the same verdict, and an adversarial review pointed out
+  // that nothing at runtime invokes it: its only caller is a bash line in a SKILL.md, so an
+  // orchestrator that simply never runs the CLI faces no RED/GREEN enforcement at all. The headline
+  // claim of this feature — that valid RED is executed rather than reported — was resting on a gate
+  // reached by prose, which is the exact defect class this whole line of work exists to remove.
+  //
+  // So the hook, which the runtime DOES invoke, blocks on it directly. The gate keeps its copy for
+  // wave-level adjudication and post-hoc audit; neither now depends on the other being run.
+  if (bounds?.redCommand) {
+    const preProbe = (pre as { redProbe?: Record<string, unknown> } | undefined)?.redProbe;
+    const unusable = (probe: Record<string, unknown> | undefined, side: string): string | undefined => {
+      if (!probe) return `the ${side}-dispatch observation carries no redProbe; the declared redCommand was never executed`;
+      if (probe.command !== bounds.redCommand) return `the ${side}-dispatch redProbe ran a different command than the plan declares`;
+      if (probe.error) return `the ${side}-dispatch redCommand could not be executed: ${String(probe.error)}`;
+      if (probe.timedOut) return `the ${side}-dispatch redCommand timed out; a suite that never finished proves nothing either way`;
+      if (typeof probe.exitCode !== "number") return `the ${side}-dispatch redCommand produced no exit status`;
+      return undefined;
+    };
+    const problem = unusable(preProbe, "pre") ?? unusable(redProbe as Record<string, unknown> | undefined, "post");
+    if (problem) violations.push(problem);
+    else if ((preProbe as { exitCode: number }).exitCode === 0) {
+      violations.push(`redCommand PASSED before implementation (exit 0), so it does not pin the behaviour this task builds: ${bounds.redCommand}`);
+    } else if ((redProbe as unknown as { exitCode: number }).exitCode !== 0) {
+      violations.push(`redCommand still fails after implementation: ${bounds.redCommand}`);
+    }
+  }
+  if (probeMutated) violations.push(probeMutated);
 
   writeRecord(recordPath(sessionId, fingerprint, taskId, "adjudication"), {
     taskId, status: violations.length ? "violated" : "clean", violations, changedPaths: delta!.changedPaths,

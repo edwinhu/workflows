@@ -172,9 +172,10 @@ const DISCOVERY_SCHEMA = {
 }
 // Each SECTION agent writes its whole subsection (all its slides + notes) to two fragment files.
 const SECTION_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['section', 'status', 'slidesPath', 'notesPath', 'slideNums', 'citedInventory', 'summary'],
+  type: 'object', additionalProperties: false, required: ['section', 'status', 'slidesPath', 'notesPath', 'slideNums', 'citedInventory', 'summary', 'changedFiles'],
   properties: {
     section: { type: 'string', description: 'echo the section index id verbatim' },
+    changedFiles: { type: 'array', items: { type: 'string' }, description: 'EVERY project-relative file this task changed. The observation hook cross-checks this against the real git delta; omitting it is not a neutral omission, it fails adjudication and is attributed to you.' },
     status: { type: 'string', enum: ['drafted', 'error'] },
     slidesPath: { type: 'string', description: 'fragment file with this section\'s `==` heading-less `#slide[]` blocks, in order' },
     notesPath: { type: 'string', description: 'fragment file with this section\'s notes (one block per slide)' },
@@ -196,13 +197,18 @@ const PROBE_SCHEMA = {
   },
 }
 const ASSEMBLE_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['slidesWritten', 'notesWritten', 'compiled', 'compileError', 'notesCompiled', 'notesCompileError', 'slidesPdf'],
+  type: 'object', additionalProperties: false, required: ['slidesWritten', 'notesWritten', 'compiled', 'compileError', 'notesCompiled', 'notesCompileError', 'slidesPdf', 'notesPdf', 'changedFiles'],
   properties: {
+    changedFiles: { type: 'array', items: { type: 'string' }, description: 'EVERY project-relative file this task changed, including compile artifacts. The observation hook cross-checks this against the real git delta.' },
     slidesWritten: { type: 'boolean' }, notesWritten: { type: 'boolean' },
     compiled: { type: 'boolean' }, compileError: { type: 'string' },
     notesCompiled: { type: 'boolean', description: 'notes.typ compiled cleanly (a first-class teleprompter deliverable — gated, not slides-only)' },
     notesCompileError: { type: 'string' },
     slidesPdf: { type: 'string' },
+    // The notes deck is gated on compile exactly like slides, but only the slides PDF was ever
+    // returned — so "notes are a first-class deliverable" was true at the gate and false at the
+    // artifact boundary, and nothing downstream could locate the notes PDF it had just blocked on.
+    notesPdf: { type: 'string' },
   },
 }
 
@@ -232,6 +238,10 @@ function discFromIndex(idx) {
   }
 }
 
+// Run caller-owned dispatches one at a time. `parallel` is deliberately unused for write-capable
+// waves; see the note at the Sections phase.
+const sequential = async (thunks) => { const out = []; for (const thunk of thunks) out.push(await thunk()); return out }
+
 phase('Discover')
 const disc = discFromIndex(SLIDE_INDEX)
 if (!disc.outlineReadable) throw new Error('workshop-generate requires a readable receipt-selected native Slide Spec')
@@ -246,7 +256,13 @@ log(`${disc.slides.length} slide(s) in ${sectionList.length} section(s); generat
 
 // ── Phase 2: Sections (one agent per section, parallel — writes the whole subsection to files) ─
 phase('Sections')
-const liveSecs = (await parallel(targets.map(sec => () => {
+// SEQUENTIAL, NOT parallel(). The observation hooks bracket each dispatch with a git observation of
+// the WHOLE working tree, so a sibling section writing its fragment inside this section's pre/post
+// window lands in this section's delta — reported as "output outside writable authority" against an
+// agent that did nothing wrong. `scripts/beat/preflight.ts` returns executionMode: 'sequential' for
+// exactly this reason and nothing here was reading it. Concurrency becomes available when workers
+// have enforced filesystem isolation, not before.
+const liveSecs = (await sequential(targets.map(sec => () => {
   const rows = sec.slides.map(s => `  - Slide ${s.num}: takeaway="${s.takeaway}"; bullets="${s.bullets}"; inventory=[${(s.inventory || []).join(', ')}]; visual="${s.visual}"; notes="${s.notes}"`).join('\n')
   const allowed = [...new Set(sec.slides.flatMap(s => s.inventory || []))]
   return agent(
@@ -304,8 +320,8 @@ ${JSON.stringify(order)}
 Steps (use Bash to cat the files — do NOT paste content from memory):
 1. Write ${disc.slidesPath}: the header, then for each section in order emit its heading + \`cat\` its slidesFile.
 2. Write ${disc.notesPath}: the notes preamble, then per section a \`= Section\` heading + \`cat\` its notesFile.
-3. Compile: \`tinymist compile ${disc.slidesPath}\` (or \`typst compile\`) AND the notes deck \`tinymist compile ${disc.notesPath}\` (notes are a first-class deliverable, gated — NOT slides-only), from ${PROJECT}; fix ONLY compile-blocking syntax and recompile each. Set compiled/compileError for slides and notesCompiled/notesCompileError for notes. Do NOT invent note macros (e.g. #slide-notes/#speaker-note) to force notes to compile — notes use plain \`=\`/\`==\` headings + prose; an undefined-macro reference is a fragment bug to surface in notesCompileError, not to paper over with a defensive alias.
-Return ASSEMBLE_SCHEMA.`,
+3. Compile: \`tinymist compile ${disc.slidesPath}\` (or \`typst compile\`) AND the notes deck \`tinymist compile ${disc.notesPath}\` (notes are a first-class deliverable, gated — NOT slides-only), from ${PROJECT}; fix ONLY compile-blocking syntax and recompile each. Set compiled/compileError plus slidesPdf for slides, and notesCompiled/notesCompileError plus notesPdf for notes (both PDF paths project-relative). Do NOT invent note macros (e.g. #slide-notes/#speaker-note) to force notes to compile — notes use plain \`=\`/\`==\` headings + prose; an undefined-macro reference is a fragment bug to surface in notesCompileError, not to paper over with a defensive alias.
+Return ASSEMBLE_SCHEMA, including changedFiles = EVERY project-relative path you wrote, compile artifacts (.pdf) included.`,
     { label: 'assemble', phase: 'Assemble', schema: ASSEMBLE_SCHEMA })
 }
 
@@ -325,10 +341,19 @@ for (const sec of sectionList) {
   // self-report only when no probe result exists (e.g. a carried PRIOR review from before this fix).
   const citedTokens = (f && Array.isArray(f.probedInventory)) ? f.probedInventory : (f?.citedInventory || [])
   const fidelityOk = !f || citedTokens.every(id => allowed.has(String(id)))
-  rows.push({ section: sec.id, key: sec.key, slideCount: sec.slides.length, drafted, completeSlides, fidelityOk })
+  // FIDELITY IS ONE-SIDED — it only rejects ids the plan never authorized. An empty cited set passes
+  // it VACUOUSLY (`[].every(...)` is true), so a section that grounded nothing at all scored a clean
+  // ✅ on the one check that exists to prove grounding. The Inventory cell is a REQUIRED per-slide
+  // cell: the plan author asserting "this slide rests on these sources." Dropping them is as much a
+  // fidelity defect as inventing one, and only this direction was ever measured.
+  const cited = new Set(citedTokens.map(String))
+  const uncited = [...allowed].filter(id => !cited.has(id))
+  const coverageOk = !f || uncited.length === 0
+  rows.push({ section: sec.id, key: sec.key, slideCount: sec.slides.length, drafted, completeSlides, fidelityOk, coverageOk })
   if (!drafted) findings.push({ severity: 'critical', section: sec.id, detail: `Section "${sec.key}": fragment not produced (status=${f ? f.status : 'missing'})` })
   else if (!completeSlides) findings.push({ severity: 'major', section: sec.id, detail: `Section "${sec.key}": missing slides ${[...expected].filter(n => !wrote.has(n)).join(', ')}` })
   if (f && !fidelityOk) findings.push({ severity: 'major', section: sec.id, detail: `Section "${sec.key}": cited inventory outside its slides' allowed ids` })
+  if (f && !coverageOk) findings.push({ severity: 'major', section: sec.id, detail: `Section "${sec.key}": plan-authorized inventory never cited — ${uncited.join(', ')}` })
 }
 const compiled = !!asm && asm.compiled === true
 const notesCompiled = !!asm && asm.notesCompiled === true
@@ -338,14 +363,14 @@ if (haveAll && compiled && !notesCompiled) findings.push({ severity: 'critical',
 if (!haveAll) findings.push({ severity: 'critical', section: 'deck', detail: 'Not all sections have fragments — assembly skipped' })
 findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])
 
-const allDrafted = rows.length > 0 && rows.every(r => r.drafted && r.completeSlides && r.fidelityOk)
+const allDrafted = rows.length > 0 && rows.every(r => r.drafted && r.completeSlides && r.fidelityOk && r.coverageOk)
 const overallPass = allDrafted && compiled && notesCompiled
 const verdict = overallPass ? 'GENERATED (compiles)' : 'GAPS'
 const scoreTable = [
-  '| Section | Slides | Fragment | Complete | Inventory-fidelity |',
-  '|---------|--------|----------|----------|--------------------|',
-  ...rows.map(r => `| ${r.key.slice(0, 28)} | ${r.slideCount} | ${r.drafted ? '✅' : '❌'} | ${r.completeSlides ? '✅' : '❌'} | ${r.fidelityOk ? '✅' : '❌'} |`),
-  `| **Deck** | slides / notes compile | ${compiled ? '✅' : '❌'} / ${notesCompiled ? '✅' : '❌'} | | ${overallPass ? '✅ GENERATED' : '❌ GAPS'} |`,
+  '| Section | Slides | Fragment | Complete | Inventory-fidelity | Inventory-coverage |',
+  '|---------|--------|----------|----------|--------------------|--------------------|',
+  ...rows.map(r => `| ${r.key.slice(0, 28)} | ${r.slideCount} | ${r.drafted ? '✅' : '❌'} | ${r.completeSlides ? '✅' : '❌'} | ${r.fidelityOk ? '✅' : '❌'} | ${r.coverageOk ? '✅' : '❌'} |`),
+  `| **Deck** | slides / notes compile | ${compiled ? '✅' : '❌'} / ${notesCompiled ? '✅' : '❌'} | | | ${overallPass ? '✅ GENERATED' : '❌ GAPS'} |`,
 ].join('\n')
 
 log(overallPass
@@ -364,6 +389,6 @@ return {
   sections: rows,
   findings,
   sectionsThatFailed: rows.filter(r => !r.drafted || !r.completeSlides || !r.fidelityOk).map(r => r.section),
-  assembledPaths: { slides: disc.slidesPath, notes: disc.notesPath, pdf: asm?.slidesPdf || '' },
+  assembledPaths: { slides: disc.slidesPath, notes: disc.notesPath, pdf: asm?.slidesPdf || '', notesPdf: asm?.notesPdf || '' },
   reviews: liveSecs,
 }

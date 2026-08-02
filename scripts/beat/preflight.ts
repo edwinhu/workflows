@@ -199,8 +199,14 @@ export function preflight(request: PreflightRequest): PreflightResult {
   }
   const approvalMode = builtIn ? "built-in-native" : request.approvalMode!;
   const generatedPlanMode = approvalMode === "built-in-native" || approvalMode === "generated-plan-receipt-v1";
-  if (!Array.isArray(request.readyWave)) {
-    throw new Error("beat-implement preflight requires readyWave as a complete task-spec array");
+  // AN EMPTY WAVE IS NOT A SMALL WAVE — it is the absence of one. `Array.isArray([])` passes, so a
+  // caller that produced no tasks (a plan that parsed to nothing, a filter that matched nothing, a
+  // typo'd field arriving as `[]`) used to authenticate cleanly, write an expectation with zero
+  // tasks, and let the gate return ok:true for having adjudicated nothing. Same shape as the gate's
+  // own "no expectation is a refusal" rule, one layer earlier: nothing bounded, nothing observed,
+  // nothing to be right about.
+  if (!Array.isArray(request.readyWave) || request.readyWave.length === 0) {
+    throw new Error("beat-implement preflight requires readyWave as a complete NON-EMPTY task-spec array; an empty wave authenticates nothing and would adjudicate vacuously");
   }
 
   const reset = request.planReset || {};
@@ -257,6 +263,14 @@ export function preflight(request: PreflightRequest): PreflightResult {
       throw new Error(`beat-implement task writablePaths must remain below the canonical project root without symlinks: ${JSON.stringify(task.writablePaths)}`);
     }
     if (ids.has(task.id)) throw new Error(`beat-implement readyWave has duplicate task id: ${task.id}`);
+    // DEV'S CENTRAL DISCIPLINE, MADE A PRECONDITION. dev asserts TDD in four SKILL.md files and
+    // enforced it nowhere: nothing recorded whether a test ran before the implementation or failed,
+    // so skipping the RED step entirely still passed the gate. A workflow whose whole claim is
+    // test-first cannot take the test on trust, so dev tasks must NAME the command that proves it.
+    // Other workflows may carry redCommand and get the same enforcement; only dev requires it.
+    if (request.workflow === "dev" && !task.redCommand) {
+      throw new Error(`beat-implement dev task ${task.id} must declare redCommand — the command that fails before implementation and passes after. dev's TDD claim is enforced by running it, not by an agent reporting it.`);
+    }
     ids.add(task.id);
   }
 
@@ -297,6 +311,15 @@ export function preflight(request: PreflightRequest): PreflightResult {
     }
   }
   const tasks = attemptedIds ? wave.filter(task => attemptedIds.has(task.id)) : wave;
+  // THE SAME HOLE, ONE LAYER DOWN. The non-empty guard above checks `readyWave`, but the resume
+  // filter runs AFTER it: `resume: {attemptedTaskIds: [], attemptRecords: []}` passes every
+  // validation (`[].every(...)` is true), leaves `attemptedIds` an empty Set, and reduces a
+  // perfectly good wave to nothing. Preflight would then write a zero-task expectation and emit a
+  // workflow whose dispatch loop never runs — returning overallPass for having implemented nothing.
+  // A retry that names no tasks is a caller bug, not an empty unit of work.
+  if (!tasks.length) {
+    throw new Error("beat-implement resume selected zero tasks from readyWave; a retry must name at least one attempted task id, or the wave adjudicates vacuously");
+  }
 
   if (request.candidateState !== undefined) {
     validateCandidateMutationConfiguration(request.candidateState as any, request.affectedChecks as any);
@@ -359,6 +382,10 @@ export function preflight(request: PreflightRequest): PreflightResult {
     tasks: Object.fromEntries(tasks.map(task => [task.id, {
       writablePaths: [...task.writablePaths],
       outputs: [...(task.outputs || [])],
+      // Carried so the observation hook can EXECUTE it around the dispatch. It lives in the
+      // expectation rather than the prompt for the same reason the bounds do: the prompt is
+      // addressed to the party being judged, and a standard the subject can edit is not a standard.
+      ...(task.redCommand ? { redCommand: task.redCommand } : {}),
     }])),
   };
   // KEYED THE WAY THE HOOK READS IT, NOT THE WAY THIS SCRIPT KNOWS IT.
@@ -375,7 +402,10 @@ export function preflight(request: PreflightRequest): PreflightResult {
   const selected = selectMode(tasks);
   const routing = routeImplementation(tasks.map(task => ({ id: task.id, outputs: task.outputs })));
 
-  const prompted = tasks.map(task => ({ id: task.id, name: task.name, prompt: buildTaskPrompt(task, project) }));
+  // dependsOn MUST survive to the emitter. It was being dropped here, so every generated script saw
+  // `dependsOn: []`, put every task in wave 1, and its dependency-graph loop was decorative — while
+  // the header claimed waves come from the plan's dependency graph.
+  const prompted = tasks.map(task => ({ id: task.id, name: task.name, prompt: buildTaskPrompt(task, project), dependsOn: [...(task.dependsOn ?? [])] }));
 
   let emittedWorkflowPath: string | undefined;
   if (routing.route === "workflow" && request.dispatchOwnership !== "caller") {
@@ -385,7 +415,7 @@ export function preflight(request: PreflightRequest): PreflightResult {
       planHash: String(reset.planHash ?? reset.approvedBodyHash),
       domain: request.workflow,
       phases: request.phases?.length ? request.phases : ["Implement"],
-      tasks: prompted.map(task => ({ id: task.id, name: task.name, prompt: task.prompt })),
+      tasks: prompted.map(task => ({ id: task.id, name: task.name, prompt: task.prompt, dependsOn: task.dependsOn })),
     });
     emittedWorkflowPath = path;
   }

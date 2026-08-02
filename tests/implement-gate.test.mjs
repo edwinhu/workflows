@@ -72,6 +72,111 @@ console.log('a wave with no expectation at all is REFUSED')
   ok('the refusal explains that nothing was bounded', /nothing was bounded/.test(result.verdicts[0].detail || ''))
 }
 
+console.log('an expectation naming ZERO tasks is REFUSED')
+{
+  // `{}` is truthy, so a zero-task expectation walked past the `!expectation?.tasks` guard, produced
+  // an empty `verdicts`, and `[].every(...)` returned true — the gate's strongest claim ("everything
+  // expected was observed and clean") asserted over nothing at all. Reached from the other end by
+  // preflight accepting an empty readyWave; both layers now refuse, so neither depends on the other.
+  const result = scenario({ tasks: {} })
+  ok('a zero-task expectation is a refusal, not a vacuous pass', result.ok === false, JSON.stringify(result.verdicts))
+  ok('the refusal names it as an expectation problem', result.verdicts[0].reason === 'no-expectation', JSON.stringify(result.verdicts))
+  ok('the refusal distinguishes zero tasks from a missing expectation', /zero tasks/.test(result.verdicts[0].detail || ''), result.verdicts[0].detail)
+}
+
+console.log('a declared redCommand is adjudicated from EXIT CODES, not from an agent report')
+{
+  // dev asserted TDD in four SKILL.md files and enforced it in none: nothing recorded whether a test
+  // ran before the implementation or whether it failed, so an implementer could skip the RED step,
+  // produce exactly the declared files, and pass. The command now runs in the hook — outside the party
+  // being judged — and the gate reads the exit codes it observed.
+  const RED = { writablePaths: ['src/a.js'], outputs: ['src/a.js'], redCommand: 'bun test x' }
+  const probe = (exitCode, extra = {}) => ({ command: 'bun test x', exitCode, timedOut: false, tail: '', ...extra })
+
+  const good = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(1) }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('fails before and passes after is the only clean path', good.ok === true, JSON.stringify(good.verdicts))
+
+  const skipped = scenario({ tasks: { a: RED }, records: { a: cleanRun } })
+  ok('a declared redCommand that never ran is refused', skipped.ok === false)
+  ok('the refusal says the command was never executed', skipped.verdicts[0].reason === 'red-unproven', JSON.stringify(skipped.verdicts))
+
+  // The vacuous green: a test that ALREADY passed pins nothing, so implementing against it proves
+  // nothing either. This is the shape a self-reported "RED confirmed" can never rule out.
+  const alreadyGreen = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(0) }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a redCommand that passed BEFORE implementation is refused', alreadyGreen.ok === false)
+  ok('the refusal names it as not-red', alreadyGreen.verdicts[0].reason === 'red-not-red', JSON.stringify(alreadyGreen.verdicts))
+
+  const stillFailing = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(1) }, post: { ...observed, redProbe: probe(1) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a redCommand still failing after implementation is refused', stillFailing.ok === false)
+  ok('the refusal names it as not-green', stillFailing.verdicts[0].reason === 'green-not-green', JSON.stringify(stillFailing.verdicts))
+
+  // A timeout is NOT a failure-and-therefore-a-valid-RED. "The suite never finished" says nothing
+  // about whether the behaviour is absent, and reading it as RED would make hanging the easiest pass.
+  const hung = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: probe(null, { timedOut: true }) }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a timed-out redCommand is unproven, never a valid RED', hung.ok === false && hung.verdicts[0].reason === 'red-unproven', JSON.stringify(hung.verdicts))
+
+  // The command is read from the AUTHENTICATED expectation. A probe that ran something else — an
+  // easier command substituted anywhere downstream — is not evidence about the declared one.
+  const swapped = scenario({ tasks: { a: RED }, records: { a: {
+    pre: { ...observed, redProbe: { command: 'true', exitCode: 1, timedOut: false, tail: '' } }, post: { ...observed, redProbe: probe(0) },
+    adjudication: { status: 'clean', violations: [], changedPaths: ['src/a.js'] } } } })
+  ok('a probe of a DIFFERENT command cannot satisfy the declared one', swapped.ok === false && swapped.verdicts[0].reason === 'red-unproven', JSON.stringify(swapped.verdicts))
+
+  // Absent redCommand keeps the pre-existing behaviour: ds and work plans are unaffected.
+  const noRed = scenario({ records: { a: cleanRun } })
+  ok('a task with no redCommand is unaffected', noRed.ok === true)
+}
+
+console.log('a dispatch the plan never named is REFUSED, not ignored')
+{
+  // This check was dead: it probed a record keyed to an EMPTY task id, which the hook never writes,
+  // so `unexpected` was always [] and a rogue dispatch alongside a clean wave passed silently.
+  const session = nextSession()
+  write(expectationPath(key(session)), { waveFingerprint: FP, projectDir: '/tmp/x', workflow: 'ds',
+    tasks: { a: { writablePaths: ['src/a.js'], outputs: ['src/a.js'] } } })
+  for (const [phase, body] of Object.entries(cleanRun)) write(recordPath(key(session), FP, 'a', phase), body)
+  // ...and a task nobody authenticated, recorded under this same wave.
+  write(recordPath(key(session), FP, 'rogue-task', 'pre'), { taskId: 'rogue-task', phase: 'pre', status: 'observed', digest: 'd', fingerprint: FP })
+  const result = gateWave(session)
+  ok('an unauthenticated dispatch fails the wave', result.ok === false, JSON.stringify(result))
+  ok('the rogue task is named', result.unexpected.includes('rogue-task'), JSON.stringify(result.unexpected))
+  ok('the authenticated task still reads clean', result.verdicts[0].reason === 'clean', JSON.stringify(result.verdicts))
+}
+{
+  // A record from an EARLIER wave in the same session is not a rogue dispatch. Sessions are reused
+  // across waves, so counting every stale record would make the second wave in any session unpassable.
+  const session = nextSession()
+  write(expectationPath(key(session)), { waveFingerprint: FP, projectDir: '/tmp/x', workflow: 'ds',
+    tasks: { a: { writablePaths: ['src/a.js'], outputs: ['src/a.js'] } } })
+  for (const [phase, body] of Object.entries(cleanRun)) write(recordPath(key(session), FP, 'a', phase), body)
+  const OLD = 'b'.repeat(64)
+  write(recordPath(key(session), OLD, 'previous-task', 'pre'), { taskId: 'previous-task', phase: 'pre', status: 'observed', digest: 'd', fingerprint: OLD })
+  const result = gateWave(session)
+  ok('a prior wave\'s record does not count against this one', result.ok === true, JSON.stringify(result))
+}
+
+{
+  // A dispatch that ran BEFORE any preflight is unadjudicable whatever it is called. Naming it after
+  // a task the later wave happens to contain used to launder it: the expected-id skip ran first, so
+  // the record was ignored and its mutations were already inside the legitimate task's baseline.
+  const session = nextSession()
+  write(expectationPath(key(session)), { waveFingerprint: FP, projectDir: '/tmp/x', workflow: 'ds',
+    tasks: { a: { writablePaths: ['src/a.js'], outputs: ['src/a.js'] } } })
+  for (const [phase, body] of Object.entries(cleanRun)) write(recordPath(key(session), FP, 'a', phase), body)
+  write(recordPath(key(session), 'no-expectation', 'a', 'pre'), { taskId: 'a', phase: 'pre', status: 'observed', digest: 'd', fingerprint: 'no-expectation' })
+  const result = gateWave(session)
+  ok('a pre-preflight dispatch is refused even when its id is later expected', result.ok === false, JSON.stringify(result))
+  ok('the refusal says it ran before any preflight', result.unexpected.some(u => /before any preflight/.test(u)), JSON.stringify(result.unexpected))
+}
+
 console.log('each distinct cause is reported distinctly — they have distinct remedies')
 for (const [name, records, expected] of [
   ['missing post observation', { a: { pre: observed } }, 'missing-post'],

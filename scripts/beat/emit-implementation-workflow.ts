@@ -103,7 +103,7 @@ export function renderWorkflow(request: EmitRequest): string {
 // editing it by hand detaches the orchestration from the approval that authorised it.
 const PLAN_FILE = ${literal(planFile)}
 const PLAN_HASH = ${literal(planHash)}
-const TASKS = ${JSON.stringify(tasks.map(task => ({ id: task.id, name: task.name, prompt: task.prompt, dependsOn: task.dependsOn ?? [] })), null, 2)}
+const TASKS = ${tasksLiteral(tasks)}
 
 const RESULT = {
   type: 'object', additionalProperties: false,
@@ -127,10 +127,19 @@ while (remaining.length) {
   if (!ready.length) throw new Error('generated plan has an unsatisfiable dependency; regenerate from the plan')
   phase(${literal(phases[0] ?? "Implement")})
   log(\`wave \${++waveIndex}: \${ready.length} task(s)\`)
-  const wave = await parallel(ready.map(task => () => agent(
-    \`IMMUTABLE PLAN IDENTITY\\nPLAN_FILE: \${PLAN_FILE}\\nPLAN_HASH: \${PLAN_HASH}\\n\\nTASK \${task.id}: \${task.name}\\n\\n\${task.prompt}\\n\\nReturn RESULT.\`,
-    { label: task.id, schema: RESULT },
-  )))
+  // SEQUENTIAL, NOT parallel(). The observation hooks bracket each dispatch with a git observation of
+  // the WHOLE working tree, so a sibling task writing inside this task's pre/post window lands in this
+  // task's delta and is reported against an agent that did nothing wrong. preflight.ts returns
+  // executionMode: 'sequential' for exactly this reason — and this generator emitted parallel() anyway,
+  // which made that returned value false for every generated script. Found by an independent review
+  // after the identical defect had been fixed by hand in writing-draft.js and workshop-generate.js.
+  const wave = []
+  for (const task of ready) {
+    wave.push(await agent(
+      \`IMMUTABLE PLAN IDENTITY\\nPLAN_FILE: \${PLAN_FILE}\\nPLAN_HASH: \${PLAN_HASH}\\n\\n\${task.prompt}\\n\\nReturn RESULT.\`,
+      { label: task.id, schema: RESULT },
+    ))
+  }
   for (const [index, raw] of wave.entries()) {
     const task = ready[index]
     // Evidence is bound to the task captured at DISPATCH, never to the id the agent reports back —
@@ -159,12 +168,51 @@ return {
 `;
 }
 
+/**
+ * The domain becomes a FILENAME, so it must be a bare identifier.
+ *
+ * `join(dir, `${domain}-implement.js`)` with `domain = "../../evil"` resolves to
+ * `<project>/evil-implement.js` — outside `.claude/workflows/` entirely, defeating the symlink and
+ * containment checks in `resolveWorkflowDir`, which validate the DIRECTORY and never the joined
+ * target. `preflight.ts` validates its own workflow identity, but this function and the stdin CLI are
+ * exported and reachable without it.
+ */
+function assertBareIdentifier(domain: string): void {
+  // THE SAME PATTERN preflight's `requiredWorkflowIdentity` USES. It allowed `[.-]` while this
+  // allowed only `-`, so an external workflow registered as `acme.build` authenticated, bound its
+  // per-task approvals, got its expectation written to disk — and only THEN died here. The stale
+  // expectation was left keyed to the live session, where a later unrelated `TASK …:` dispatch in
+  // that session would be adjudicated against it.
+  //
+  // Dots are filename-safe under this pattern: it requires alphanumerics between separators, so it
+  // cannot produce `..`, and it admits no `/`. Traversal is still impossible; the two validators
+  // simply have to agree, or the disagreement itself is the bug.
+  if (!/^[a-z0-9]+(?:[.-][a-z0-9]+)*$/.test(domain)) {
+    throw new Error(`refusing to emit: domain must be a bare lowercase identifier, got ${JSON.stringify(domain)}. It becomes a filename, and a separator or traversal segment escapes the workflows directory.`);
+  }
+}
+
+/** The `TASKS` data literal, built in one place so the purity scan can subtract exactly it. */
+function tasksLiteral(tasks: EmitRequest["tasks"]): string {
+  return JSON.stringify(tasks.map(task => ({ id: task.id, name: task.name, prompt: task.prompt, dependsOn: task.dependsOn ?? [] })), null, 2);
+}
+
 export function emitImplementationWorkflow(request: EmitRequest): { path: string; source: string } {
+  assertBareIdentifier(request.domain);
   const source = renderWorkflow(request);
   for (const [construct, pattern] of FORBIDDEN) {
-    // Strip comments before scanning, exactly as the purity suite does: the header legitimately
-    // names these constructs while explaining why they are absent.
-    const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    // SCAN THE CODE, NOT THE DATA. `TASKS` embeds every task's `work`/`criteria` prose verbatim, so
+    // scanning the whole source made ORDINARY PLAN TEXT abort emission: a task saying "stop reading
+    // `process.env.FOO`" or "replace the `Buffer` allocation" tripped the purity check and failed the
+    // wave — after preflight had already written the expectation to disk, with an error blaming the
+    // generator rather than the sentence that caused it. The runtime never executes that literal as
+    // code; only the surrounding script is subject to the purity rules.
+    //
+    // Comments are stripped for the same class of reason: the header legitimately names these
+    // constructs while explaining why they are absent.
+    const code = source
+      .replace(tasksLiteral(request.tasks), '"<TASKS>"')
+      .replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
     if (pattern.test(code)) {
       throw new Error(`generated workflow contains ${construct}, which the Workflow runtime rejects; the generator must resolve it instead of emitting it`);
     }

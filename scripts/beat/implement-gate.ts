@@ -30,7 +30,8 @@
  *   bun scripts/beat/implement-gate.ts --session <dispatching session id> [--json]
  * Exit 0 = every expected task observed and clean. Exit 1 = refuse the wave.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { OBSERVATION_DIR, expectationPath, recordPath, type Expectation } from "../../hooks/work-implement-observation.ts";
 import { sessionFlagKey } from "../../hooks/_gate_common.ts";
 
@@ -46,7 +47,10 @@ export type TaskVerdict = {
     | "missing-adjudication"    // observed but never judged
     | "observation-failed"      // OUR machinery broke
     | "not-adjudicable"         // the PLAN is malformed, or our delta is
-    | "violated";               // the AGENT wrote outside authority or misreported
+    | "violated"                // the AGENT wrote outside authority or misreported
+    | "red-unproven"            // a declared redCommand did not run, or could not be judged
+    | "red-not-red"             // it PASSED before implementation: the test does not pin the behaviour
+    | "green-not-green";        // it still fails after implementation
   detail?: string;
 };
 
@@ -76,12 +80,19 @@ export function gateWave(rawSession: string): GateResult {
   // NO EXPECTATION IS A REFUSAL, NOT A PASS. It means the preflight never ran, so nothing was
   // authenticated, no task was bounded, and any dispatch that happened was unadjudicated. A gate that
   // returned "ok, nothing to check" here would greenlight precisely the state it exists to catch.
-  if (!expectation?.tasks) {
+  // `{}` IS TRUTHY, so an expectation naming zero tasks slipped past this guard, produced an empty
+  // `verdicts`, and `[].every(...)` returned true — the gate reported ok for having adjudicated
+  // nothing. That is the very state the paragraph above refuses, reached by a different route:
+  // an expectation existing is not the same as an expectation bounding something.
+  if (!expectation?.tasks || Object.keys(expectation.tasks).length === 0) {
+    const empty = !!expectation?.tasks;
     return {
       ok: false, session, expected: [], unexpected: [],
       verdicts: [{
         taskId: "(wave)", ok: false, reason: "no-expectation",
-        detail: "no authenticated expectation for this session; the beat's preflight did not run, so nothing was bounded and nothing could be adjudicated",
+        detail: empty
+          ? "the authenticated expectation names zero tasks; nothing was bounded, so there is nothing to adjudicate and no basis for a pass"
+          : "no authenticated expectation for this session; the beat's preflight did not run, so nothing was bounded and nothing could be adjudicated",
       }],
     };
   }
@@ -101,6 +112,36 @@ export function gateWave(rawSession: string): GateResult {
     if (post.status === "observation-failed") return { taskId, ok: false, reason: "observation-failed", detail: String(post.reason ?? "post-dispatch observation failed") };
     if (!adjudication) return { taskId, ok: false, reason: "missing-adjudication", detail: "observed but never judged against the plan's bounds" };
 
+    // RED/GREEN, ADJUDICATED FROM EXIT CODES THE HOOK OBSERVED — not from anything the agent said.
+    // A declared redCommand must FAIL before the dispatch and PASS after. Both halves are load-bearing
+    // and they catch different lies: a command that passed beforehand proves the test does not pin the
+    // behaviour being built (the classic vacuous green — an assertion that was already true), while one
+    // still failing afterwards proves the work is not done. Neither is visible in a filesystem delta,
+    // which is why the observation records alone could never enforce TDD.
+    const declaredRed = expectation.tasks[taskId]?.redCommand;
+    if (declaredRed) {
+      const preProbe = (pre as any).redProbe;
+      const postProbe = (post as any).redProbe;
+      const unusable = (probe: any, side: string): string | undefined => {
+        if (!probe) return `the ${side}-dispatch observation carries no redProbe; the declared redCommand was never executed`;
+        if (probe.command !== declaredRed) return `the ${side}-dispatch redProbe ran a different command than the plan declares`;
+        if (probe.error) return `the ${side}-dispatch redCommand could not be executed: ${probe.error}`;
+        if (probe.timedOut) return `the ${side}-dispatch redCommand timed out; a suite that never finished proves nothing either way`;
+        if (typeof probe.exitCode !== "number") return `the ${side}-dispatch redCommand produced no exit status`;
+        return undefined;
+      };
+      const preUnusable = unusable(preProbe, "pre");
+      if (preUnusable) return { taskId, ok: false, reason: "red-unproven", detail: preUnusable };
+      const postUnusable = unusable(postProbe, "post");
+      if (postUnusable) return { taskId, ok: false, reason: "red-unproven", detail: postUnusable };
+      if (preProbe.exitCode === 0) {
+        return { taskId, ok: false, reason: "red-not-red", detail: `redCommand PASSED before implementation (exit 0), so it does not pin the behaviour this task builds: ${declaredRed}` };
+      }
+      if (postProbe.exitCode !== 0) {
+        return { taskId, ok: false, reason: "green-not-green", detail: `redCommand still fails after implementation (exit ${postProbe.exitCode}): ${declaredRed}\n${String(postProbe.tail ?? "").slice(-1200)}` };
+      }
+    }
+
     const status = String(adjudication.status ?? "");
     if (status === "clean") return { taskId, ok: true, reason: "clean" };
     if (status === "not-adjudicable" || status === "adjudication-failed") {
@@ -112,9 +153,42 @@ export function gateWave(rawSession: string): GateResult {
 
   // A task that was dispatched but never authenticated is its own failure: the plan did not name it,
   // so no bounds exist for it and "it looked fine" is not something anyone can say.
+  //
+  // THIS USED TO BE DEAD CODE. It probed `recordPath(session, "no-expectation", "", "pre")` — a
+  // record keyed to an EMPTY task id, which the hook never writes: it only reaches recordPath once
+  // it has resolved a non-empty id, and recordPath hashes that id, so nothing ever lands at that
+  // filename. `unexpected` was therefore always `[]`, and a rogue dispatch alongside an authenticated
+  // wave passed the gate silently. The records carry their own taskId, so read them instead of
+  // trying to guess a path.
+  const expectedIds = new Set(expected);
   const unexpected: string[] = [];
-  const stray = readJson(recordPath(session, "no-expectation", "", "pre"));
-  if (stray) unexpected.push("(a dispatch was recorded under the no-expectation key)");
+  try {
+    for (const entry of readdirSync(OBSERVATION_DIR)) {
+      if (!entry.startsWith(`${session}--`) || !entry.endsWith("--pre.json")) continue;
+      const record = readJson(join(OBSERVATION_DIR, entry));
+      const observedId = typeof record?.taskId === "string" ? record.taskId : undefined;
+      if (!observedId) continue;
+      const recordFingerprint = typeof record?.fingerprint === "string" ? record.fingerprint : "";
+      // ORDER MATTERS HERE, AND GETTING IT WRONG HID A REAL DISPATCH.
+      //
+      // The `expectedIds` skip used to come FIRST, which let this sequence through: dispatch
+      // `TASK a: rogue` BEFORE any preflight (recorded under the "no-expectation" key, mutating the
+      // tree), then run a preflight whose wave happens to contain a legitimate task also called `a`.
+      // The rogue record was skipped for having an expected id, and its mutations were already
+      // folded into the legitimate task's baseline. A dispatch that ran with NO authenticated bounds
+      // is unadjudicable whatever it is named, so that check has to precede the name check.
+      if (recordFingerprint === "no-expectation") { unexpected.push(`${observedId} (dispatched before any preflight authenticated a wave)`); continue; }
+      if (expectedIds.has(observedId)) continue;
+      // A record from an EARLIER wave in the same session is not a rogue dispatch; only this wave's
+      // fingerprint counts against it.
+      if (recordFingerprint !== fingerprint) continue;
+      unexpected.push(observedId);
+    }
+  } catch {
+    // The directory is created by the hook; its absence means nothing was ever recorded, which the
+    // per-task verdicts above already report as missing-pre. Never turn that into a second failure.
+  }
+  unexpected.sort();
 
   return { ok: verdicts.every(v => v.ok) && !unexpected.length, session, waveFingerprint: fingerprint, expected, verdicts, unexpected };
 }

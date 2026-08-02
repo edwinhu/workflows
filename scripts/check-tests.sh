@@ -77,14 +77,14 @@ UNQUARANTINE=()
 # suite -> why it fails today. Pre-existing; verified at HEAD in a clean worktree.
 quarantine_reason() {
     case "$1" in
-        tests/overflow_check_test.py)          echo "opens hooks/overflow-check.py; the hook is now .ts" ;;
-        tests/test_mechanical_floor_gate.py)   echo "opens hooks/mechanical-floor-gate.py; the hook is now .ts" ;;
-        tests/test_prose_lint_hook.py)         echo "opens hooks/writing-prose-check.py; the hook is now .ts" ;;
-        tests/test_writing_mechanical_gate.py) echo "opens hooks/writing-mechanical-gate.py; the hook is now .ts" ;;
-        tests/writing_gate_probe_test.py)      echo "probes a writing gate whose response shape changed" ;;
-        tests/workflow-creator-compiler.test.ts)
-            echo "asserts normalizeExpectedOutputs accepts an inventory task-contract.ts now rejects" ;;
-        # THREE ENTRIES LEFT ON EXIT, NOT DELETED QUIETLY.
+        # tests/workflow-creator-compiler.test.ts was quarantined as "asserts normalizeExpectedOutputs
+        # accepts an inventory task-contract.ts now rejects" — a misread. The test asserts REJECTION
+        # (ok:false with an "unsafe output path" violation); what actually happened is that
+        # compileWorkflowPlan CRASHED on the invalid plan, because it fingerprinted every task before
+        # checking violations and fingerprint() throws on exactly those malformed outputs. Reading the
+        # throw as "the test is out of date" quarantined a real bug as an obsolete assertion. Fixed by
+        # computing fingerprints only for a clean plan; the un-quarantine rule below caught it.
+        # FOUR ENTRIES LEFT ON EXIT, NOT DELETED QUIETLY.
         #   tests/load-constraints-applies-to.test.ts, tests/public-extension-contract.test.ts and
         #   tests/test_writing_constraint_lints.py were quarantined at ce17921 and are FIXED by the
         #   v5.103.1 line (external native workflow contracts + the writing constraint rewrite).

@@ -4,10 +4,6 @@ description: "Use when creating or designing a new multi-phase workflow, includi
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash, Skill, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Workflow
 hooks:
   PreToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
     - matcher: "Read|Glob|Grep|Bash"
       hooks:
         - type: command
@@ -21,10 +17,6 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow workflow-creator"
   PostToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command

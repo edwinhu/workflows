@@ -321,6 +321,27 @@ console.log('a task id containing a colon resolves against the authenticated pla
     ambiguous.adjudication?.status === 'clean', JSON.stringify(ambiguous.adjudication))
 }
 
+// EVIDENCE IDENTITY MUST SURVIVE THE FILENAME. Careful marker parsing at the prompt layer is
+// worthless if identity is destroyed at the storage layer — and it was: `recordPath` sanitized the
+// task id to [A-Za-z0-9._-] and truncated at 96 chars, so `a/b`, `a?b` and `a b` shared one evidence
+// file, as did any two ids agreeing on their first 96 sanitized characters. One task's clean record
+// could then satisfy the gate for a different task. Task ids are opaque strings in the shared
+// contract and /writing keys them by section name, so both shapes are reachable.
+console.log('distinct task ids never share an evidence file')
+{
+  const ids = ['a/b', 'a?b', 'a b', 'Part I', 'Part I: Foundations', `${'x'.repeat(100)}ONE`, `${'x'.repeat(100)}TWO`]
+  const paths = new Map()
+  let collisions = 0
+  for (const id of ids) {
+    const file = recordPath('s', 'f', id, 'pre')
+    if (paths.has(file)) { collisions++; console.log(`  collide: ${JSON.stringify(id)} vs ${JSON.stringify(paths.get(file))}`) }
+    paths.set(file, id)
+  }
+  ok('seven distinct ids produce seven distinct paths', collisions === 0 && paths.size === ids.length)
+  ok('the filename still carries a human-readable prefix', recordPath('s', 'f', 'Part I', 'pre').includes('Part_I'))
+  ok('and a digest that makes it injective', /-[0-9a-f]{24}--pre\.json$/.test(recordPath('s', 'f', 'Part I', 'pre')))
+}
+
 console.log('records are keyed per run, so one run cannot adjudicate another')
 {
   // Task ids are unique within a wave, but a RESUMED run replays the same ids in a new process and a
