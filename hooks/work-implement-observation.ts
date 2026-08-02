@@ -62,7 +62,7 @@
  *
  * Usage: --phase pre|post --workflow <ds|dev|work>
  */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, statSync, rmSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { sessionFlagKey, allow, context, pyJson } from "./_gate_common.ts";
@@ -204,6 +204,35 @@ function loadExpectation(sessionId: string): Expectation | undefined {
 }
 
 /** Always leaves a trace. This is the difference between failing open and failing silent. */
+/**
+ * Drop records older than the retention window.
+ *
+ * Nothing ever pruned this directory. Measured on a working machine: 2,375 files, growing by four
+ * per task forever, in a world-readable temp directory — each one carrying a project path, a task
+ * id, and a changed-file inventory. That is a slow leak of both disk and information, and it also
+ * makes the gate's directory scan for unexpected dispatches linear in the lifetime of the machine
+ * rather than in the size of the wave.
+ *
+ * Deliberately time-based rather than count-based: the gate reads records written moments earlier by
+ * the paired hook, so a count cap could evict a LIVE wave's pre-observation and turn a clean run into
+ * `missing-pre`. A window comfortably longer than any dispatch cannot. Failure to prune is never an
+ * error — this is hygiene, and a hook that broke a run over housekeeping would be a worse bug than
+ * the leak.
+ */
+const RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
+export function pruneObservations(now: number = Date.now()): number {
+  let removed = 0;
+  try {
+    for (const entry of readdirSync(OBSERVATION_DIR)) {
+      const path = join(OBSERVATION_DIR, entry);
+      try {
+        if (now - statSync(path).mtimeMs > RETENTION_MS) { rmSync(path, { force: true }); removed++; }
+      } catch { /* a file that vanished under us needs no pruning */ }
+    }
+  } catch { /* no directory yet, or unreadable: nothing to prune */ }
+  return removed;
+}
+
 function writeRecord(path: string, body: Record<string, unknown>): void {
   try {
     mkdirSync(OBSERVATION_DIR, { recursive: true });
@@ -273,6 +302,12 @@ if (import.meta.main) {
   const declaredRed = expectation?.tasks?.[taskId]?.redCommand;
   const probeDir = expectation?.projectDir ?? String(payload.cwd ?? ".");
   const runProbe = () => declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, probeDir) } : undefined;
+  // WIRED, NOT MERELY DEFINED. An unreferenced helper is the exact defect
+  // scripts/wc/executable-position.ts exists to catch, and writing one here while fixing a leak
+  // would be the class inside the fix for the class. Pre-phase only: once per dispatch, before any
+  // of this wave's own records exist, so it can never evict them.
+  pruneObservations();
+
   let redProbe = phase === "pre" ? runProbe() : undefined;
   let probeMutated: string | undefined;
 
