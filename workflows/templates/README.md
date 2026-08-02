@@ -28,7 +28,8 @@ SPEC ──▶ PLAN-EMITTER phase  ← emits BORN-CANONICAL table format (doctri
                         └─ Workflow({ scriptPath: ".planning/run.js" })  or the generic engine reads the work-list
 
 DS and dev no longer use this compiler/parser path. Their receipt-selected native generated plans
-are adapted directly to `workflows/beat-implement.js` by their implementation skills.
+are adapted directly to the shared IMPLEMENT beat by their implementation skills, which run
+`scripts/beat/preflight.ts` to authenticate the wave and route it.
 ```
 
 There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; wc-audit flags it `executionClass=generic-interpreter` → critical). **Emitting only parser + guard (no canonical emitter) half-applies the rule — it relocates the tolerance into regex instead of removing it.**

@@ -69,12 +69,12 @@ const EXPECTED_ROWS: ContractRow[] = [
   },
   {
     capability: "beat-implement-runner",
-    descriptorSchema: "runner args + validated WorkflowPolicy",
-    contractVersion: "2",
+    descriptorSchema: "preflight request + validated WorkflowPolicy",
+    contractVersion: "3",
     discoveryInput: "Explicit projectDir + workflow policy + readyWave + immutable approval reset",
-    successEvidence: "Structured runner result with per-task records, plan identity, and mutation evidence",
-    rejectionEvidence: "Thrown Error before dispatch or failed per-task result record",
-    compatibility: "Schema 1 fixed-artifact workflows remain compatible; native plan identity support is contract 2",
+    successEvidence: "PreflightResult with per-task approval bindings, routing decision, derived adjudication expectation, and the emitted script path when one is warranted",
+    rejectionEvidence: "Thrown Error before any dispatch",
+    compatibility: "Contract 2 returned per-task execution records from a Workflow script that could not run under the Workflow runtime; contract 3 splits it into this pre-step and the observation hooks, which own execution evidence. Inputs are unchanged; consumers that read result records must read hook records instead",
   },
   {
     capability: "plan-review-composer",

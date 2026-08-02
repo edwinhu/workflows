@@ -27,7 +27,13 @@ const SCRIPTS = readdirSync(WORKFLOWS).filter(name => name.endsWith('.js')).sort
 // suite FAILS and tells you to delete the entry. A silently-skipped exception would recreate the
 // exact defect this file exists to prevent.
 //
-//   beat-implement.js — needs four `workflows/lib/*.ts` modules, `process.env.CLAUDE_CODE_SESSION_ID`
+// THE REGISTRY IS NOW EMPTY. Every script in workflows/ is guarded by the scan and the shim below.
+// Keep it that way: a new entry needs the reason and the exit condition written out, the way the one
+// former member's did. What follows is that member's record, kept because it explains what "retired"
+// had to mean and why an empty registry was not reachable by deleting a file.
+//
+//   beat-implement.js — RETIRED 2026-08-02, migrated rather than deleted.
+//     It needed four `workflows/lib/*.ts` modules, `process.env.CLAUDE_CODE_SESSION_ID`
 //     for its dispatching-session identity, and `Buffer.from` for task-contract digests. It cannot be
 //     converted, because it calls captureGitObservation BETWEEN agent dispatches and a pure-control-
 //     flow script has no filesystem access at any point. It has been REPLACED rather than fixed: the
@@ -36,19 +42,25 @@ const SCRIPTS = readdirSync(WORKFLOWS).filter(name => name.endsWith('.js')).sort
 //     (scripts/beat/emit-implementation-workflow.ts), which is pure by construction because the
 //     generator resolves every plan-specific value before emitting.
 //
-//     NO SKILL INVOKES THIS SCRIPT ANY MORE. It is retained, unreferenced, for one reason: four
-//     suites pin ~105 assertions of dispatch policy against it — sequential dispatch, approval
-//     authentication, reviewer separation, retry scope, writable-path enforcement, post-dispatch
-//     observation. Deleting the file would delete that coverage, which is the "remove the test to
-//     make it pass" move this whole episode exists to prevent. Retirement is therefore a MIGRATION,
-//     not a delete: each assertion has to be re-homed onto the generator, the observation hooks, or
-//     the preflight before the file goes. Until that lands it stays here, still asserted impure.
+//     WHY IT OUTLIVED ITS LAST CALLER BY A WEEK. No skill invoked it, but four suites pinned ~105
+//     assertions of dispatch policy against it — sequential dispatch, approval authentication,
+//     reviewer separation, retry scope, writable-path enforcement, post-dispatch observation.
+//     Deleting the file would have deleted that coverage, which is the "remove the test to make it
+//     pass" move this whole episode exists to prevent. So retirement was a MIGRATION, and the
+//     assertions were re-homed along the one line that actually divides them — what can be decided
+//     BEFORE any agent runs, versus what can only be decided BETWEEN dispatches:
+//
+//       scripts/beat/preflight.ts        <- tests/beat-implement-preflight.test.mjs
+//       hooks/work-implement-observation <- tests/work-implement-observation.test.mjs
+//
+//     Both files carry a PROVENANCE header pointing back here. If a property from the old suites is
+//     in neither, it was lost — that is the failure those headers exist to make visible.
 //
 //     SCOPE CORRECTION — an earlier version of this comment said "/work's step-3 runner stays
 //     broken", which badly understated it. This was the SHARED implement primitive, invoked from
 //     dev-implement, work/beats/goal-work.md, ds-implement and beat-implement itself, with
 //     workflow-creator and ds-fix routing through it. Every workflow's IMPLEMENT step was dead.
-const KNOWN_NONCOMPLIANT = new Set(['beat-implement.js'])
+const KNOWN_NONCOMPLIANT = new Set([])
 
 const FORBIDDEN = [
   { construct: 'import()', pattern: /\bimport\s*\(/g },
@@ -273,6 +285,14 @@ describe('workflow scripts parse and run under the pure runtime', () => {
 // C. The quarantine is asserted, not skipped.
 // ---------------------------------------------------------------------------------------------
 describe('KNOWN_NONCOMPLIANT members are in fact still non-compliant', () => {
+  // An empty registry makes every loop below vacuous, so it gets its own assertion rather than
+  // quietly contributing zero tests. This is the state we want — it says every script in workflows/
+  // is guarded — and it is the state that must be noticed if someone adds an exemption.
+  test('every workflow script is guarded; the quarantine is empty', () => {
+    expect([...KNOWN_NONCOMPLIANT]).toEqual([])
+    expect(SCRIPTS.length).toBeGreaterThan(0)
+  })
+
   for (const file of KNOWN_NONCOMPLIANT) {
     test(`${file} is present`, () => {
       expect(SCRIPTS).toContain(file)

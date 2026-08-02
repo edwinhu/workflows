@@ -48,7 +48,7 @@ planning and execution guarantees:
 
 `/work` composes the shared clarify, generated-plan authentication, implementation/verification, and
 human-review doctrine. It reconciles the receipt-selected plan into TaskList and dispatches approved
-ready waves through `beat-implement.js`.
+ready waves through the shared IMPLEMENT beat.
 
 ### Document Formats
 

@@ -103,8 +103,11 @@ The adoption table above was true of `beat-implement` before it was rewired, and
 
 ## Sequencing note
 
-Items 1 and 2 depend on the `beat-implement` retirement finishing first: `workflows/beat-implement.js`
-is dead code retained only because four suites pin ~105 dispatch-policy assertions against it. Those
-assertions must be re-homed onto the generator, the observation hooks, and the preflight before the
-file goes — and before two more workflows are pointed at the new path, so the migration lands on a
-boundary whose coverage is already complete.
+Items 1 and 2 depended on the `beat-implement` retirement, which is **done** (2026-08-02).
+`workflows/beat-implement.js` is deleted; its ~105 dispatch-policy assertions were re-homed along the
+line that divides them — what can be decided before any agent runs (`scripts/beat/preflight.ts`,
+asserted by `tests/beat-implement-preflight.test.mjs`) versus what can only be decided between
+dispatches (`hooks/work-implement-observation.ts`, asserted by
+`tests/work-implement-observation.test.mjs`). `KNOWN_NONCOMPLIANT` is now empty.
+
+Items 1 and 2 are therefore unblocked, and they land on a boundary whose coverage is complete.

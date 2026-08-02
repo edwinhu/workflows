@@ -8,7 +8,9 @@ describe("workflow-creator shared lifecycle infrastructure", () => {
   test("policy and artifact metadata support workflow-creator", () => {
     expect(read("hooks/_workflow_policies.ts")).toContain('"workflow-creator": Object.freeze');
     expect(read("workflows/lib/approved-artifact.ts")).toContain('"workflow-creator"');
-    expect(read("workflows/beat-implement.js")).toContain("'workflow-creator'");
+    // Was `workflows/beat-implement.js`. That script was retired (it could never execute under the
+    // Workflow runtime); the built-in workflow list it carried now lives in the beat's pre-step.
+    expect(read("scripts/beat/preflight.ts")).toContain('"workflow-creator"');
   });
   test("semantic resume routes fresh corrective and review phases", () => {
     const start = read("hooks/session-start.ts");

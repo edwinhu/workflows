@@ -32,8 +32,8 @@
     },
     {
       "name": "beat-implement-runner",
-      "contractVersion": 2,
-      "implementation": "workflows/beat-implement.js"
+      "contractVersion": 3,
+      "implementation": "scripts/beat/preflight.ts"
     },
     {
       "name": "plan-review-composer",

@@ -128,13 +128,27 @@ be anchored solely to the approved plan identity.
 and Bash mutations from the orchestrator, so this is enforced, not merely instructed. The reason is
 context: the orchestrator's window must hold the outcome, not the work.
 
-### 3a. Route by plan shape — do not default to a workflow
+### 3a. Run the preflight — one call, and it is not optional
 
 ```bash
-echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
+echo "$PREFLIGHT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/preflight.ts
 ```
 
-Returns `{route, agentCount, maxParallelWidth, sizeGuideline, reason, warnLarge}`. The route is a
+`PREFLIGHT_REQUEST_JSON` is `{projectDir, workflow, readyWave, planReset, phases}` — plus
+`approvalMode`/`approvalPolicy` for external workflows, and `resume`/`candidateState` when they apply.
+
+The preflight authenticates the approval, validates every task against the shared contract, canonicalises
+writable paths, binds a per-task approval, **derives the adjudication expectation the observation hooks
+read**, routes by shape, and emits the script when a script is warranted. It throws before dispatching
+anything if any of that fails.
+
+**Do not call `route-implementation.ts` or `emit-implementation-workflow.ts` directly.** They are the
+preflight's internals. Calling them yourself skips the authentication and — the silent part — skips the
+expectation file, so every dispatch is adjudicated against no bounds at all and the run looks clean
+because nothing was ever checked.
+
+Returns `{routing: {route, agentCount, maxParallelWidth, sizeGuideline, reason, warnLarge}, tasks,
+approvals, expectationPath, emittedWorkflowPath?, executionMode, executionReason}`. The route is a
 real decision, taken from the Claude Code routing table (docs: *When to use a workflow*), whose axis
 is **where intermediate results live** — Claude's context window for subagents, script variables for
 a workflow:
@@ -149,19 +163,18 @@ a workflow:
 If `warnLarge` is true (>25 agents), surface the count to the user before running — matching Claude
 Code's own advisory, which warns and does not cap.
 
-### 3b. Generate the workflow — only when the route says so
+### 3b. Run what the preflight produced
 
-```bash
-echo "$EMIT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
-```
+On a `single-subagent` or `subagents` route, dispatch the returned `tasks` — each carries the exact
+`prompt` the preflight built, including the `TASK <id>:` marker the observation hooks correlate on.
+Dispatch them in the returned order, one at a time.
 
-`EMIT_REQUEST_JSON` is `{projectDir, planFile, planHash, domain, phases, tasks}`. **The domain skill
-supplies `phases` and each task's `prompt`; the plan supplies everything else.** That split is the
-point of the beat: one dispatch mechanism, domain-specific structure.
-
-The generator writes `<project>/.claude/workflows/<domain>-implement.js` and returns its path. That
-location is deliberate — the orchestration is committed with the repo, diffable in review, and
-rerunnable as `/<domain>-implement`. Then run it:
+On a `workflow` route, the preflight has already written
+`<project>/.claude/workflows/<domain>-implement.js` and returned its path in `emittedWorkflowPath`.
+That location is deliberate — the orchestration is committed with the repo, diffable in review, and
+rerunnable as `/<domain>-implement`. **The domain skill supplies `phases`; the plan supplies
+everything else.** That split is the point of the beat: one dispatch mechanism, domain-specific
+structure. Run it:
 
 ```js
 const run = await Workflow({ scriptPath: "<returned path>", args: {} })

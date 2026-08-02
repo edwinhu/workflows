@@ -146,11 +146,15 @@ describe("work workflow contract", () => {
     expect(work).toContain("beat-implement/SKILL.md");
     expect(goalWork).toContain("Workflow({");
     expect(goalWork).toContain('workflow: "work"');
-    const runner = read("workflows/beat-implement.js");
-    expect(runner).toContain("'work'");
-    expect(runner).toContain("validateApprovedArtifact(PROJECT, cfg.workflow");
-    expect(runner).toContain("planReset.planFile");
-    expect(runner).toContain("planReset.planHash");
+    // The runner file is gone; the same four properties are asserted against its replacement, the
+    // beat's deterministic pre-step. What matters is unchanged: `work` is an authenticated built-in,
+    // approval is validated against the project by the shared artifact lifecycle, and the caller's
+    // immutable plan identity is cross-checked field by field.
+    const preflight = read("scripts/beat/preflight.ts");
+    expect(preflight).toContain('"work"');
+    expect(preflight).toContain("validateApprovedArtifact(project, request.workflow");
+    expect(preflight).toContain("planReset.planFile");
+    expect(preflight).toContain("planReset.planHash");
   });
 
   test("routes the middle category without swallowing specialized work", () => {
