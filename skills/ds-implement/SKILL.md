@@ -132,12 +132,21 @@ shape first, then dispatch what the route says — one task goes to a single sub
 compiled into a generated workflow under `.claude/workflows/`.
 
 ```bash
-echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
-# route == "workflow" -> generate the plan-bound script, then run it
-echo '{"projectDir":"<absolute project path>",planFile: "<receipt plan_file>", planHash: "<receipt plan_hash>",
-       "domain":"ds","phases":[...],"tasks":[...]}' \
-  | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
+# ONE call. The preflight authenticates the approval, validates every task against the shared
+# contract, canonicalises writable paths, binds a per-task approval, DERIVES THE ADJUDICATION
+# EXPECTATION the observation hooks read, routes by shape, and emits the script when one is warranted.
+echo "$PREFLIGHT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/preflight.ts
 ```
+
+`PREFLIGHT_REQUEST_JSON` is `{"projectDir": "<absolute project path>", "workflow": "ds",
+"planReset": {"planFile": "<receipt plan_file>", "planHash": "<receipt plan_hash>"},
+"phases": [...], "readyWave": [...]}`.
+
+**Do NOT call `route-implementation.ts` or `emit-implementation-workflow.ts` yourself.** They are the
+preflight's internals. Calling them directly skips the approval authentication and — the silent part —
+skips the expectation file, so every dispatch is adjudicated against no bounds at all and the run
+looks clean because nothing was ever checked. `scripts/beat/implement-gate.ts` then refuses the wave
+with reason `no-expectation`, whose remedy reads "the preflight never ran".
 
 ```js
 Workflow({ scriptPath: "<path returned by the generator>", args: {} })
