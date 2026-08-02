@@ -163,6 +163,20 @@ console.log('a dispatch the plan never named is REFUSED, not ignored')
   ok('a prior wave\'s record does not count against this one', result.ok === true, JSON.stringify(result))
 }
 
+{
+  // A dispatch that ran BEFORE any preflight is unadjudicable whatever it is called. Naming it after
+  // a task the later wave happens to contain used to launder it: the expected-id skip ran first, so
+  // the record was ignored and its mutations were already inside the legitimate task's baseline.
+  const session = nextSession()
+  write(expectationPath(key(session)), { waveFingerprint: FP, projectDir: '/tmp/x', workflow: 'ds',
+    tasks: { a: { writablePaths: ['src/a.js'], outputs: ['src/a.js'] } } })
+  for (const [phase, body] of Object.entries(cleanRun)) write(recordPath(key(session), FP, 'a', phase), body)
+  write(recordPath(key(session), 'no-expectation', 'a', 'pre'), { taskId: 'a', phase: 'pre', status: 'observed', digest: 'd', fingerprint: 'no-expectation' })
+  const result = gateWave(session)
+  ok('a pre-preflight dispatch is refused even when its id is later expected', result.ok === false, JSON.stringify(result))
+  ok('the refusal says it ran before any preflight', result.unexpected.some(u => /before any preflight/.test(u)), JSON.stringify(result.unexpected))
+}
+
 console.log('each distinct cause is reported distinctly — they have distinct remedies')
 for (const [name, records, expected] of [
   ['missing post observation', { a: { pre: observed } }, 'missing-post'],

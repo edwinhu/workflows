@@ -109,6 +109,21 @@ task fails on it, each named distinctly:
 work, and no self-reported "RED confirmed" can rule that out. This is why the command is read from
 the authenticated expectation, which the implementing agent never sees and cannot edit.
 
+**`redCommand` must be ONE INVOCATION, not a shell program.** Shell operators — `;` `&` `|` `` ` ``
+`$` `>` `<` `(` `)` `{` `}` — are rejected by the task contract. Flags and quotes are fine:
+`pytest tests/x.py -k "a or b"` is valid, `test -f /tmp/m || { touch /tmp/m; exit 1; }` is not. The
+hook executes this string, so an unconstrained one is arbitrary code execution with the hook's
+authority; an adversarial review built four separate bypasses out of it, and every one needed an
+operator — fabricating RED with a marker file, alternating a counter across a wave, mutating a
+declared output after adjudication, and exfiltrating while looking like a test run.
+
+**What this does not close.** The command still loads code the implementer may control — a test
+file, a `conftest.py`, a fixture. Authenticating the command string does not authenticate what it
+transitively imports, so an implementer permitted to edit the test it is judged by can still run
+code inside the probe. Narrow the task's `writablePaths` when that matters. The probe also runs
+after the post-dispatch observation, so a tree mutation there is detected and reported as a
+violation rather than silently adjudicated against stale bytes.
+
 Every task's `work` and `criteria` also require: write and run the named test against missing
 behavior; observe and report a valid RED; only then implement; run the exact verify command to
 GREEN; report changed files and raw evidence. A doer never verifies its own task. An independent fresh verifier

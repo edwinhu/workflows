@@ -150,7 +150,11 @@ export type Expectation = {
  */
 export function runRedCommand(command: string, projectDir: string): { exitCode: number | null; timedOut: boolean; tail: string; error?: string } {
   try {
-    const proc = Bun.spawnSync(["bash", "-lc", command], { cwd: projectDir, stdout: "pipe", stderr: "pipe", timeout: 600_000 });
+    // `bash -c`, NOT `-lc`. A login shell sources the user's profile, so the verdict would depend on
+    // startup files and a mutable PATH — an agent-created binary earlier on PATH could decide RED or
+    // GREEN, and profile code would execute on every probe. Nothing about running a test needs a
+    // login shell.
+    const proc = Bun.spawnSync(["bash", "-c", command], { cwd: projectDir, stdout: "pipe", stderr: "pipe", timeout: 600_000 });
     const text = `${new TextDecoder().decode(proc.stdout ?? new Uint8Array())}${new TextDecoder().decode(proc.stderr ?? new Uint8Array())}`;
     // `signalCode` is set when the timeout killed it; exitCode alone cannot distinguish that from
     // an ordinary nonzero exit, and conflating them would let a hung suite masquerade as a valid RED.
@@ -270,6 +274,7 @@ if (import.meta.main) {
   const probeDir = expectation?.projectDir ?? String(payload.cwd ?? ".");
   const runProbe = () => declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, probeDir) } : undefined;
   let redProbe = phase === "pre" ? runProbe() : undefined;
+  let probeMutated: string | undefined;
 
   let capture: { digest: string; entries: unknown } | undefined;
   let failure: string | undefined;
@@ -294,7 +299,24 @@ if (import.meta.main) {
   // is the only place that sits OUTSIDE the party being judged: the hook fires around the dispatch,
   // and the command comes from the authenticated expectation, which the agent never sees and cannot
   // edit. Runs after the post capture — see the ordering note above.
-  if (phase === "post") redProbe = runProbe();
+  if (phase === "post") {
+    redProbe = runProbe();
+    // THE PROBE RUNS AFTER THE POST CAPTURE, so anything it writes is invisible to adjudication.
+    // An adversarial review turned that into an exploit: a command that mutates a declared output
+    // after the capture leaves the gate adjudicating bytes that are no longer on disk. Command shape
+    // is now constrained so it cannot redirect, but a test runner can still write through code it
+    // loads — so verify rather than assume, and treat a post-probe mutation as a violation of its own.
+    try {
+      const { captureGitObservation } = await import("../workflows/lib/git-observation.ts");
+      const after = captureGitObservation(expectation?.projectDir ?? String(payload.cwd ?? ".")) as { digest: string };
+      if (after.digest !== capture!.digest) {
+        probeMutated = "the redCommand modified the working tree AFTER the post-dispatch observation, so what was adjudicated is not what remains on disk";
+      }
+    } catch {
+      // A failure to re-observe is our malfunction, not the task's. The existing record already
+      // stands; do not manufacture a violation out of our own error.
+    }
+  }
 
   writeRecord(path, { taskId, phase, status: "observed", digest: capture!.digest, observation: capture!.entries, sessionId, fingerprint, ...(redProbe ? { redProbe } : {}) });
 
@@ -400,6 +422,36 @@ if (import.meta.main) {
     // produced an undeclared one, or misreported its own changes.
     violations = [error instanceof Error ? error.message : String(error)];
   }
+
+  // RED/GREEN IS ADJUDICATED **HERE**, NOT ONLY IN THE GATE.
+  //
+  // `scripts/beat/implement-gate.ts` computes the same verdict, and an adversarial review pointed out
+  // that nothing at runtime invokes it: its only caller is a bash line in a SKILL.md, so an
+  // orchestrator that simply never runs the CLI faces no RED/GREEN enforcement at all. The headline
+  // claim of this feature — that valid RED is executed rather than reported — was resting on a gate
+  // reached by prose, which is the exact defect class this whole line of work exists to remove.
+  //
+  // So the hook, which the runtime DOES invoke, blocks on it directly. The gate keeps its copy for
+  // wave-level adjudication and post-hoc audit; neither now depends on the other being run.
+  if (bounds?.redCommand) {
+    const preProbe = (pre as { redProbe?: Record<string, unknown> } | undefined)?.redProbe;
+    const unusable = (probe: Record<string, unknown> | undefined, side: string): string | undefined => {
+      if (!probe) return `the ${side}-dispatch observation carries no redProbe; the declared redCommand was never executed`;
+      if (probe.command !== bounds.redCommand) return `the ${side}-dispatch redProbe ran a different command than the plan declares`;
+      if (probe.error) return `the ${side}-dispatch redCommand could not be executed: ${String(probe.error)}`;
+      if (probe.timedOut) return `the ${side}-dispatch redCommand timed out; a suite that never finished proves nothing either way`;
+      if (typeof probe.exitCode !== "number") return `the ${side}-dispatch redCommand produced no exit status`;
+      return undefined;
+    };
+    const problem = unusable(preProbe, "pre") ?? unusable(redProbe as Record<string, unknown> | undefined, "post");
+    if (problem) violations.push(problem);
+    else if ((preProbe as { exitCode: number }).exitCode === 0) {
+      violations.push(`redCommand PASSED before implementation (exit 0), so it does not pin the behaviour this task builds: ${bounds.redCommand}`);
+    } else if ((redProbe as unknown as { exitCode: number }).exitCode !== 0) {
+      violations.push(`redCommand still fails after implementation: ${bounds.redCommand}`);
+    }
+  }
+  if (probeMutated) violations.push(probeMutated);
 
   writeRecord(recordPath(sessionId, fingerprint, taskId, "adjudication"), {
     taskId, status: violations.length ? "violated" : "clean", violations, changedPaths: delta!.changedPaths,

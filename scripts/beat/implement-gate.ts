@@ -167,11 +167,21 @@ export function gateWave(rawSession: string): GateResult {
       if (!entry.startsWith(`${session}--`) || !entry.endsWith("--pre.json")) continue;
       const record = readJson(join(OBSERVATION_DIR, entry));
       const observedId = typeof record?.taskId === "string" ? record.taskId : undefined;
-      if (!observedId || expectedIds.has(observedId)) continue;
-      // A record from an EARLIER wave in the same session is not a rogue dispatch; only this wave's
-      // fingerprint (or the no-expectation key, meaning no preflight ran at all) counts against it.
+      if (!observedId) continue;
       const recordFingerprint = typeof record?.fingerprint === "string" ? record.fingerprint : "";
-      if (recordFingerprint !== fingerprint && recordFingerprint !== "no-expectation") continue;
+      // ORDER MATTERS HERE, AND GETTING IT WRONG HID A REAL DISPATCH.
+      //
+      // The `expectedIds` skip used to come FIRST, which let this sequence through: dispatch
+      // `TASK a: rogue` BEFORE any preflight (recorded under the "no-expectation" key, mutating the
+      // tree), then run a preflight whose wave happens to contain a legitimate task also called `a`.
+      // The rogue record was skipped for having an expected id, and its mutations were already
+      // folded into the legitimate task's baseline. A dispatch that ran with NO authenticated bounds
+      // is unadjudicable whatever it is named, so that check has to precede the name check.
+      if (recordFingerprint === "no-expectation") { unexpected.push(`${observedId} (dispatched before any preflight authenticated a wave)`); continue; }
+      if (expectedIds.has(observedId)) continue;
+      // A record from an EARLIER wave in the same session is not a rogue dispatch; only this wave's
+      // fingerprint counts against it.
+      if (recordFingerprint !== fingerprint) continue;
       unexpected.push(observedId);
     }
   } catch {
