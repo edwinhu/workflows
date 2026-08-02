@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.106.5] - 2026-08-02
+
+### Fixed
+- **The compliance probe reported "0 findings" on a repo it had not examined.** Pointed at `teaching` — 19 skills, 6 hooks — it discovered ZERO workflows and returned clean, because discovery keyed on this plugin's own gate names (`orchestrator-mutation-guard`, `approved-artifact-gate`) and teaching uses `native-workflow.ts gate`. Ignorance rendered as reassurance, in the tool written one release earlier to catch exactly that class. Discovering nothing is now a `probe-blind` finding that short-circuits every other check, on the same principle as the implement gate treating a missing record as a refusal.
+- **Beat adoption is no longer asserted against consumer plugins.** "Loads `<beat>/SKILL.md`" only means something where those files exist locally. Applied to teaching it produced 21 findings, each amounting to "no skill loads a file that is not here and could not be loaded if it were": `beat-clarify` and `beat-review` are `user-invocable: false` and are **not published as capabilities**, so no consumer has a sanctioned way to reach them. A consumer reaching the beats through the capability manifest is now reported as one finding pointing at the real defect — a publishing gap in THIS plugin — rather than 21 blaming the consumer.
+
 ## [5.106.4] - 2026-08-02
 
 ### Fixed

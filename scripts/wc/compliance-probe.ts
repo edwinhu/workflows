@@ -34,7 +34,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 export type Finding = {
-  rule: "beat-adoption" | "hook-registration" | "fail-open-without-gate";
+  rule: "beat-adoption" | "hook-registration" | "fail-open-without-gate" | "probe-blind";
   severity: "critical" | "major";
   subject: string;
   detail: string;
@@ -91,7 +91,9 @@ export function discoverWorkflows(root: string): string[] {
     // `skill-creator` and `law-review-docx` are utilities with no plan and no approval, and the beat
     // contract genuinely does not apply to them. The beats govern MUTATION UNDER AN APPROVED PLAN, so
     // the signal is registering the guards that enforce exactly that. Measuring the mechanism, again.
-    if (/orchestrator-mutation-guard|approved-artifact-gate/.test(front)) found.add(name);
+    // Gate names differ per plugin. `workflows` uses these two; `teaching` uses `native-workflow.ts
+    // gate`. A probe that only knows its own repo's names silently discovers nothing elsewhere.
+    if (/orchestrator-mutation-guard|approved-artifact-gate|native-workflow\.ts/.test(front)) found.add(name);
   }
   // Family members are not separate workflows. `writing-revise` is part of `writing` and
   // `workflow-creator-improve` is a second entry to `workflow-creator`; both register the same guards
@@ -118,6 +120,27 @@ function family(root: string, workflow: string): string[] {
 
 export function checkBeatAdoption(root: string): Finding[] {
   const findings: Finding[] = [];
+  // THE BEATS MUST BE LOCAL FOR THIS CHECK TO MEAN ANYTHING.
+  //
+  // "Loads `<beat>/SKILL.md`" is only a sensible test where those files exist in the repo. A CONSUMER
+  // plugin reaches them through the published capability manifest instead — `teaching` pins
+  // `beat-implement-runner` and calls it through a brokered adapter, which is the sanctioned path and
+  // is stricter than a SKILL.md reference. Applied blindly it reported 21 findings against teaching,
+  // every one of them "no skill loads a file that does not exist here and could not be loaded if it
+  // did": `beat-clarify` and `beat-review` are `user-invocable: false` and are not published as
+  // capabilities, so no consumer HAS a way to reach them. That is a gap in what this plugin publishes,
+  // not a compliance failure by the consumer, and reporting it as the latter sends someone to fix the
+  // wrong repo.
+  if (!existsSync(join(root, "skills", "beat-implement"))) {
+    const consumes = read(join(root, ".claude-plugin/plugin.json")).includes("workflows")
+      || read(join(root, "scripts/native-workflow-adapter.ts")).includes("beat-implement-runner");
+    if (!consumes) return findings;
+    return [{
+      rule: "beat-adoption", severity: "major", subject: root,
+      detail: "consumer plugin: reaches the beats through the capability manifest, which this probe cannot verify from here",
+      remedy: "audit the consumer's adapter pin against the publisher's capabilities.json. Note that beat-clarify and beat-review are NOT published as capabilities, so no consumer can reach them — that is a publishing gap in the workflows plugin, not a consumer failure.",
+    }];
+  }
   for (const workflow of discoverWorkflows(root)) {
     const texts = family(root, workflow).map(read);
     for (const beat of BEATS) {
@@ -212,7 +235,33 @@ export function checkFailOpenHasGate(root: string): Finding[] {
   return findings;
 }
 
+/**
+ * DISCOVERING NOTHING IS A FINDING, NOT A PASS.
+ *
+ * Pointed at `teaching` — 19 skills, 6 hooks — this probe discovered ZERO workflows and reported
+ * "0 findings". That reads as clean and means "nothing was examined", because discovery keyed on
+ * `workflows`' own gate names and teaching uses a different one. A checker that returns green when it
+ * does not understand its target is worse than no checker: it converts ignorance into reassurance.
+ *
+ * Same principle as `scripts/beat/implement-gate.ts` treating a missing record as a refusal, applied
+ * to the checker itself — which is where it was missing, one release after being written down.
+ */
+export function checkProbeUnderstoodTarget(root: string): Finding[] {
+  const skills = skillDirs(root);
+  if (!skills.length) return [];
+  if (discoverWorkflows(root).length) return [];
+  return [{
+    rule: "probe-blind", severity: "critical", subject: root,
+    detail: `${skills.length} skill(s) present but no workflow discovered, so every other check ran against an empty set and reported clean`,
+    remedy: "teach discoverWorkflows this repo's approval-gate name, or state explicitly that it has no workflows. Do not read this run's other results as evidence of anything.",
+  }];
+}
+
 export function probeCompliance(root: string): Finding[] {
+  const blind = checkProbeUnderstoodTarget(root);
+  // Short-circuit deliberately: reporting per-workflow results beside "we found no workflows" invites
+  // reading the empty ones as passes.
+  if (blind.length) return blind;
   return [...checkHookRegistration(root), ...checkFailOpenHasGate(root), ...checkBeatAdoption(root)];
 }
 

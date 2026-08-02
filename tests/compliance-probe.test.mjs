@@ -85,5 +85,28 @@ console.log('the registration check catches an unwired hook')
   rmSync(fake, { recursive: true, force: true })
 }
 
+// A GREEN RESULT MUST MEAN "CHECKED AND CLEAN", NEVER "DID NOT UNDERSTAND THE TARGET".
+// Pointed at teaching (19 skills, 6 hooks) the probe first discovered zero workflows and reported
+// 0 findings — ignorance rendered as reassurance, in the tool built to catch exactly that.
+console.log('the probe refuses to report clean on a target it does not understand')
+{
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const opaque = mkdtempSync(join(tmpdir(), 'probe-opaque-'))
+  mkdirSync(join(opaque, 'skills/mystery'), { recursive: true })
+  writeFileSync(join(opaque, 'skills/mystery/SKILL.md'), '---\nname: mystery\n---\n# Mystery\n')
+  const blind = probeCompliance(opaque)
+  ok('skills present but no workflow discovered is a finding', blind.some(f => f.rule === 'probe-blind'), JSON.stringify(blind))
+  ok('it is critical, not advisory', blind[0]?.severity === 'critical')
+  ok('it says the other results are meaningless', /reported clean|empty set/.test(blind[0]?.detail ?? ''))
+  rmSync(opaque, { recursive: true, force: true })
+
+  // An empty directory is genuinely nothing to check, and must NOT be reported.
+  const empty = mkdtempSync(join(tmpdir(), 'probe-empty-'))
+  ok('a repo with no skills at all is not flagged', probeCompliance(empty).length === 0)
+  rmSync(empty, { recursive: true, force: true })
+}
+
 console.log(`\n${PASS}/${PASS + FAIL} passed — ${findings.length} finding(s), ${KNOWN_FINDINGS.size} accepted`)
 if (FAIL) throw new Error(`${FAIL} compliance-probe check(s) failed`)
