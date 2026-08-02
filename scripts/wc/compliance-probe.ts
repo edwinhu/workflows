@@ -252,8 +252,20 @@ export function checkFailOpenHasGate(root: string): Finding[] {
     // A gate now has to be REACHED BY THE RUNTIME to excuse anything: registered in hooks.json, or
     // imported by something that is. Prose in a skill body does not count, and that distinction is
     // the whole lesson of the week — `beat-implement.js` was "invoked" by skill prose for four months.
-    if (gateSources.some(gate => gate.path.includes("implement-gate") || gate.text.includes(stem)) &&
-        gateSources.some(gate => gate.text.includes(stem) && gate.runtimeReached)) continue;
+    //
+    // THE FIRST CLAUSE USED TO BE VACUOUS. It read
+    //   `gate.path.includes("implement-gate") || gate.text.includes(stem)`
+    // and the left half is true for EVERY stem the moment `scripts/beat/implement-gate.ts` exists, so
+    // the conjunction collapsed to its second half and the extra clause only made the rule look
+    // stricter than it was. Removed rather than repaired: one condition that does work beats two
+    // where one is decorative.
+    //
+    // HONEST LIMIT, since the note above once claimed more than it delivered: this is still a
+    // SUBSTRING test. A runtime-reached gate that merely mentions the hook's name — even in a comment
+    // — will exempt it. That was NARROWED by requiring runtime reach, not closed. Closing it needs
+    // the gate's actual record-reading path traced to this hook's record, which is a call-graph
+    // question this lexical probe cannot answer.
+    if (gateSources.some(gate => gate.text.includes(stem) && gate.runtimeReached)) continue;
     findings.push({
       rule: "fail-open-without-gate", severity: "critical", subject: `hooks/${entry}`,
       detail: "declares that it fails open, and no gate that the RUNTIME REACHES treats its silence as failure. A gate file may name it — that is not the test. The gate must be registered in hooks.json or imported by something that is; a bash line in a SKILL.md runs only if a model chooses to run it.",

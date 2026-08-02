@@ -469,13 +469,22 @@ export function buildIndex(project: string): SlideIndex {
   // into one fragment under one heading, reordering slides across the sections that separated them.
   // The plan's section boundaries are lost with no finding. Reject it at parse time instead: the
   // author either meant one contiguous run, or meant two distinct sections that need distinct names.
-  let previousGroup = "";
+  // CONTIGUITY IS A PROPERTY OF SLIDE ORDER, NOT ROW ORDER. `idx.slides` is in table-row order, and
+  // nothing requires the rows to ascend — workshop-generate.js sorts each section's slides by
+  // `Number(a.num)` itself, so a plan listing 1, 3, 2 is legal and renders correctly today. Scanning
+  // raw row order would reject it as a resumed section, which is a spurious block on a valid plan.
+  const byNumber = [...idx.slides].sort((a, b) => Number(a.num) - Number(b.num));
   for (const sl of idx.slides) {
     if (sl.section && !idx.sectionOrder.includes(sl.section)) idx.sectionOrder.push(sl.section);
-    if (sl.group && sl.group !== previousGroup && idx.groupOrder.includes(sl.group)) {
+  }
+  let previousGroup = "";
+  const seenGroups: string[] = [];
+  for (const sl of byNumber) {
+    if (sl.group && sl.group !== previousGroup && seenGroups.includes(sl.group)) {
       idx.violations.push(`Slide ${sl.num}: section "${sl.group}" resumes after another section intervened. Sections must occupy one contiguous slide run — merge them or give them distinct names.`);
     }
     if (sl.group) previousGroup = sl.group;
+    if (sl.group && !seenGroups.includes(sl.group)) seenGroups.push(sl.group);
     if (sl.group && !idx.groupOrder.includes(sl.group)) idx.groupOrder.push(sl.group);
     for (const tok of sl.inventory) if (!known.has(tok)) idx.violations.push(`Slide ${sl.num}: inventory id ${tok} not found in PLAN Source Inventory.`);
   }

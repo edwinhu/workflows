@@ -95,6 +95,16 @@ describe("workshop generated-plan slide parser", () => {
     const idx = buildIndex(project(plan(split)));
     expect(idx.ok).toBe(false);
     expect(idx.violations.some(v => v.includes("Slide 3") && v.includes("contiguous"))).toBe(true);
+    // ROWS OUT OF NUMERIC ORDER ARE LEGAL. Nothing requires the table to ascend, and the generator
+    // sorts each section's slides by number itself — so 1(A), 3(A), 2(B) is a contiguous A-run with a
+    // B after it, not a resumed section. Scanning raw ROW order would reject this valid plan.
+    const outOfOrder = `| Slide | Section | Takeaway | Bullets | Inventory | Visual | Notes |
+|---|---|---|---|---|---|---|
+| 1. A | Part 1: Motivation | Point one. | ERISA | A1 | none | Open |
+| 3. C | Part 2: Evidence | Point three. | ISS | R2 | none | Close |
+| 2. B | Part 1: Motivation | Point two. | data | R1 | none | Walk |
+`
+    expect(buildIndex(project(plan(outOfOrder))).violations).toEqual([]);
     // A contiguous run of the same section is the normal case and must stay legal.
     const fine = buildIndex(project(plan(split.replace("| 3. C | Part 1: Motivation |", "| 3. C | Part 2: Evidence |"))));
     expect(fine.violations).toEqual([]);

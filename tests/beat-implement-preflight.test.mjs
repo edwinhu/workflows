@@ -155,6 +155,32 @@ rejects('built-in approval paths cannot be overridden',
 rejects('an empty readyWave is refused, not authenticated',
   () => run({ readyWave: [] }), /NON-EMPTY|empty wave/)
 
+// A resume naming NO tasks is the empty wave arriving by the back door: readyWave is non-empty, so
+// the guard above is satisfied, and the filter then reduces it to nothing.
+rejects('a resume that selects zero tasks is refused',
+  () => run({ readyWave: [task('a', ['src/a.js'])], resume: { attemptedTaskIds: [], attemptRecords: [] } }),
+  /zero tasks|at least one/)
+
+{
+  // PLAN PROSE IS DATA, NOT CODE. The purity scan used to run over the whole emitted source, which
+  // embeds every task's work/criteria verbatim — so a task that merely MENTIONS a forbidden
+  // construct aborted emission, after the expectation had already been written to disk.
+  const talksAboutForbidden = task('a', ['src/a.js'], {
+    work: 'Stop reading process.env.FOO and drop the Buffer.from allocation; avoid import.meta here.',
+    criteria: 'No process. or Buffer usage remains in src/a.js.',
+  })
+  const result = run({ readyWave: [talksAboutForbidden] })
+  ok('a task whose prose names forbidden constructs still emits', !!result.expectationPath, JSON.stringify(result?.verdict))
+}
+
+{
+  // The two identity validators must agree. A dotted external identity that preflight ACCEPTS must
+  // not die at emit, after the expectation has already been written.
+  ok('emit accepts the same identity shape preflight does',
+     /\[\.-\]/.test(readFileSync(new URL('../scripts/beat/emit-implementation-workflow.ts', import.meta.url), 'utf8').match(/function assertBareIdentifier[\s\S]*?\}/)[0]),
+     'assertBareIdentifier must use the [.-] pattern requiredWorkflowIdentity uses')
+}
+
 rejects('built-in captured bundle rejected',
   () => run({ readyWave: [task('approved', ['src/approved.js'])], capturedApprovalBundle: { schemaVersion: 1 } }), /do not accept captured approval bundles/)
 

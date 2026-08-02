@@ -17,7 +17,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre",
+            "timeout": 660
           }
         ]
       },
@@ -55,7 +56,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post",
+            "timeout": 660
           }
         ]
       },

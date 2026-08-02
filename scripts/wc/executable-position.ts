@@ -125,11 +125,18 @@ export function reachability(root: string, subjectDirs = ["hooks", "scripts"]): 
       if (referrer === subject) continue;
       const text = read(join(root, referrer));
       if (!text.includes(base) && !text.includes(stem)) continue;
-      const front = referrer.endsWith("SKILL.md") ? frontmatter(text) : "";
-      for (const [index, line] of text.split("\n").entries()) {
+      const lines = text.split("\n");
+      // FRONTMATTER IS A LINE RANGE, NOT A SUBSTRING TEST. This used to ask whether the trimmed body
+      // line appeared ANYWHERE in the frontmatter block — so a SKILL.md that quotes its own hook
+      // command in its prose (several in this repo do, while explaining the wiring) scored that
+      // quotation as an executable position. The file then looked wired when nothing ran it, which is
+      // precisely the false negative this tool exists to prevent, inside the tool itself.
+      const frontEnd = referrer.endsWith("SKILL.md") && lines[0] === "---"
+        ? lines.indexOf("---", 1)
+        : -1;
+      for (const [index, line] of lines.entries()) {
         if (!line.includes(base) && !line.includes(stem)) continue;
-        // A reference is "in frontmatter" if the line falls inside the frontmatter block.
-        const inFrontmatter = front.includes(line.trim()) && line.trim().length > 0;
+        const inFrontmatter = frontEnd > 0 && index > 0 && index < frontEnd;
         sites.push({ position: classify(referrer, line, inFrontmatter), where: `${referrer}:${index + 1}` });
       }
     }

@@ -311,6 +311,15 @@ export function preflight(request: PreflightRequest): PreflightResult {
     }
   }
   const tasks = attemptedIds ? wave.filter(task => attemptedIds.has(task.id)) : wave;
+  // THE SAME HOLE, ONE LAYER DOWN. The non-empty guard above checks `readyWave`, but the resume
+  // filter runs AFTER it: `resume: {attemptedTaskIds: [], attemptRecords: []}` passes every
+  // validation (`[].every(...)` is true), leaves `attemptedIds` an empty Set, and reduces a
+  // perfectly good wave to nothing. Preflight would then write a zero-task expectation and emit a
+  // workflow whose dispatch loop never runs — returning overallPass for having implemented nothing.
+  // A retry that names no tasks is a caller bug, not an empty unit of work.
+  if (!tasks.length) {
+    throw new Error("beat-implement resume selected zero tasks from readyWave; a retry must name at least one attempted task id, or the wave adjudicates vacuously");
+  }
 
   if (request.candidateState !== undefined) {
     validateCandidateMutationConfiguration(request.candidateState as any, request.affectedChecks as any);

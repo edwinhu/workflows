@@ -3,15 +3,7 @@ name: work
 description: "Use when the user asks to 'run a work workflow', 'do this properly', 'clarify, plan, and verify this', 'small structured task', or 'don't just wing it' for a bounded task too small for a specialized workflow."
 hooks:
   PostToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
   PreToolUse:
-    - matcher: "Agent"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
     - matcher: "Write|Edit|MultiEdit|NotebookEdit"
       hooks:
         - type: command

@@ -30,7 +30,8 @@
  *   bun scripts/beat/implement-gate.ts --session <dispatching session id> [--json]
  * Exit 0 = every expected task observed and clean. Exit 1 = refuse the wave.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { OBSERVATION_DIR, expectationPath, recordPath, type Expectation } from "../../hooks/work-implement-observation.ts";
 import { sessionFlagKey } from "../../hooks/_gate_common.ts";
 
@@ -152,9 +153,32 @@ export function gateWave(rawSession: string): GateResult {
 
   // A task that was dispatched but never authenticated is its own failure: the plan did not name it,
   // so no bounds exist for it and "it looked fine" is not something anyone can say.
+  //
+  // THIS USED TO BE DEAD CODE. It probed `recordPath(session, "no-expectation", "", "pre")` — a
+  // record keyed to an EMPTY task id, which the hook never writes: it only reaches recordPath once
+  // it has resolved a non-empty id, and recordPath hashes that id, so nothing ever lands at that
+  // filename. `unexpected` was therefore always `[]`, and a rogue dispatch alongside an authenticated
+  // wave passed the gate silently. The records carry their own taskId, so read them instead of
+  // trying to guess a path.
+  const expectedIds = new Set(expected);
   const unexpected: string[] = [];
-  const stray = readJson(recordPath(session, "no-expectation", "", "pre"));
-  if (stray) unexpected.push("(a dispatch was recorded under the no-expectation key)");
+  try {
+    for (const entry of readdirSync(OBSERVATION_DIR)) {
+      if (!entry.startsWith(`${session}--`) || !entry.endsWith("--pre.json")) continue;
+      const record = readJson(join(OBSERVATION_DIR, entry));
+      const observedId = typeof record?.taskId === "string" ? record.taskId : undefined;
+      if (!observedId || expectedIds.has(observedId)) continue;
+      // A record from an EARLIER wave in the same session is not a rogue dispatch; only this wave's
+      // fingerprint (or the no-expectation key, meaning no preflight ran at all) counts against it.
+      const recordFingerprint = typeof record?.fingerprint === "string" ? record.fingerprint : "";
+      if (recordFingerprint !== fingerprint && recordFingerprint !== "no-expectation") continue;
+      unexpected.push(observedId);
+    }
+  } catch {
+    // The directory is created by the hook; its absence means nothing was ever recorded, which the
+    // per-task verdicts above already report as missing-pre. Never turn that into a second failure.
+  }
+  unexpected.sort();
 
   return { ok: verdicts.every(v => v.ok) && !unexpected.length, session, waveFingerprint: fingerprint, expected, verdicts, unexpected };
 }

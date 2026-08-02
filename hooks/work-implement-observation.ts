@@ -139,7 +139,11 @@ export type Expectation = {
 /**
  * Run a task's `redCommand` and report what the SHELL said, not what anyone claims it said.
  *
- * Bounded on purpose: a 10-minute ceiling and a truncated tail. A test command that hangs must not
+ * Bounded on purpose: a 10-minute ceiling and a truncated tail. The hooks.json entries carry
+ * `timeout: 660` for the same reason — Claude Code's DEFAULT hook timeout is 60s, so without it the
+ * runtime would kill this process mid-probe, before `writeRecord` ever runs. No record would exist,
+ * and the gate would refuse the wave as `missing-pre`/`missing-post` — reporting "the hook did not
+ * run" for a hook that ran fine and was cut off. Any change to the ceiling below must move with it. A test command that hangs must not
  * wedge every dispatch behind it, and a runaway log must not be copied wholesale into a record file
  * that the gate later parses. A timeout is NOT read as failure-therefore-valid-RED — it is its own
  * outcome, because "the suite never finished" tells you nothing about whether the behaviour is absent.
@@ -251,6 +255,22 @@ if (import.meta.main) {
   const fingerprint = expectation?.waveFingerprint ?? "no-expectation";
   const path = recordPath(sessionId, fingerprint, taskId, phase);
 
+  // ORDER IS LOAD-BEARING, AND IT DIFFERS BY PHASE.
+  //
+  // The red probe RUNS A TEST SUITE, and test suites litter: .pytest_cache/, __pycache__/, coverage
+  // files, compiled fixtures. Whatever it creates must land OUTSIDE the pre→post window, or
+  // enforceTaskOutputs sees those paths in the delta, finds them outside the task's writablePaths,
+  // and blocks an agent that did exactly what it was told.
+  //
+  //   pre:  probe FIRST, then capture  — the probe's litter is part of the baseline
+  //   post: capture FIRST, then probe  — the probe's litter lands after the measured window
+  //
+  // Getting this wrong is not a subtle degradation: it fails clean runs, and it blames the agent.
+  const declaredRed = expectation?.tasks?.[taskId]?.redCommand;
+  const probeDir = expectation?.projectDir ?? String(payload.cwd ?? ".");
+  const runProbe = () => declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, probeDir) } : undefined;
+  let redProbe = phase === "pre" ? runProbe() : undefined;
+
   let capture: { digest: string; entries: unknown } | undefined;
   let failure: string | undefined;
   try {
@@ -270,12 +290,11 @@ if (import.meta.main) {
     context("PostToolUse", `Implement observation failed for task ${taskId}: ${failure}\nThis is a hook malfunction, NOT a task violation — the two are distinct outcomes. The implement gate will refuse this wave because the observation is missing.`);
   }
 
-  // THE RED/GREEN PROBE. Executed here rather than in the emitted script or the agent prompt because
-  // this is the only place that sits OUTSIDE the party being judged: the hook fires around the
-  // dispatch, and the command it runs comes from the authenticated expectation, which the agent
-  // never sees and cannot edit.
-  const declaredRed = expectation?.tasks?.[taskId]?.redCommand;
-  const redProbe = declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, expectation?.projectDir ?? String(payload.cwd ?? ".")) } : undefined;
+  // THE GREEN HALF. Executed here rather than in the emitted script or the agent prompt because this
+  // is the only place that sits OUTSIDE the party being judged: the hook fires around the dispatch,
+  // and the command comes from the authenticated expectation, which the agent never sees and cannot
+  // edit. Runs after the post capture — see the ordering note above.
+  if (phase === "post") redProbe = runProbe();
 
   writeRecord(path, { taskId, phase, status: "observed", digest: capture!.digest, observation: capture!.entries, sessionId, fingerprint, ...(redProbe ? { redProbe } : {}) });
 

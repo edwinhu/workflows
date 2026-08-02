@@ -135,6 +135,34 @@ console.log('a declared redCommand is adjudicated from EXIT CODES, not from an a
   ok('a task with no redCommand is unaffected', noRed.ok === true)
 }
 
+console.log('a dispatch the plan never named is REFUSED, not ignored')
+{
+  // This check was dead: it probed a record keyed to an EMPTY task id, which the hook never writes,
+  // so `unexpected` was always [] and a rogue dispatch alongside a clean wave passed silently.
+  const session = nextSession()
+  write(expectationPath(key(session)), { waveFingerprint: FP, projectDir: '/tmp/x', workflow: 'ds',
+    tasks: { a: { writablePaths: ['src/a.js'], outputs: ['src/a.js'] } } })
+  for (const [phase, body] of Object.entries(cleanRun)) write(recordPath(key(session), FP, 'a', phase), body)
+  // ...and a task nobody authenticated, recorded under this same wave.
+  write(recordPath(key(session), FP, 'rogue-task', 'pre'), { taskId: 'rogue-task', phase: 'pre', status: 'observed', digest: 'd', fingerprint: FP })
+  const result = gateWave(session)
+  ok('an unauthenticated dispatch fails the wave', result.ok === false, JSON.stringify(result))
+  ok('the rogue task is named', result.unexpected.includes('rogue-task'), JSON.stringify(result.unexpected))
+  ok('the authenticated task still reads clean', result.verdicts[0].reason === 'clean', JSON.stringify(result.verdicts))
+}
+{
+  // A record from an EARLIER wave in the same session is not a rogue dispatch. Sessions are reused
+  // across waves, so counting every stale record would make the second wave in any session unpassable.
+  const session = nextSession()
+  write(expectationPath(key(session)), { waveFingerprint: FP, projectDir: '/tmp/x', workflow: 'ds',
+    tasks: { a: { writablePaths: ['src/a.js'], outputs: ['src/a.js'] } } })
+  for (const [phase, body] of Object.entries(cleanRun)) write(recordPath(key(session), FP, 'a', phase), body)
+  const OLD = 'b'.repeat(64)
+  write(recordPath(key(session), OLD, 'previous-task', 'pre'), { taskId: 'previous-task', phase: 'pre', status: 'observed', digest: 'd', fingerprint: OLD })
+  const result = gateWave(session)
+  ok('a prior wave\'s record does not count against this one', result.ok === true, JSON.stringify(result))
+}
+
 console.log('each distinct cause is reported distinctly — they have distinct remedies')
 for (const [name, records, expected] of [
   ['missing post observation', { a: { pre: observed } }, 'missing-post'],

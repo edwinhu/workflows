@@ -42,9 +42,19 @@ WHY hooks.json IS REQUIRED AND SKILL FRONTMATTER IS NOT SUFFICIENT — MEASURED,
     a matcher Claude Code honours from one it ignores.
 
     `hooks/hooks.json` is the confirmed-live path — always on whenever the plugin is enabled, with
-    subagent reach (same doc, line 32 and the scoping table at line 71). It is therefore REQUIRED
-    below. The skill registrations are kept as defence in depth and asserted separately, but they are
-    no longer what the guarantee rests on.
+    subagent reach (same doc, line 32 and the scoping table at line 71). It is therefore the ONLY
+    registration, and the skill-frontmatter copies are now asserted ABSENT.
+
+WHY THE FRONTMATTER COPIES ARE FORBIDDEN, NOT "DEFENCE IN DEPTH"
+    They were left in place as belt-and-braces after the move to hooks.json, and that was wrong.
+    Defence in depth is sound for a READ-ONLY check, where a second opinion costs only time. This
+    hook WRITES STATE: both registrations fire for the same Agent dispatch, so two processes race to
+    `writeFileSync` the same `recordPath(...)`. An interleaved write yields unparseable JSON,
+    `implement-gate`'s `readJson` returns undefined, and the wave is refused as `missing-pre` — a
+    hard failure whose stated cause ("the hook did not run") points at the opposite of the truth.
+    For a dev task it also executes `redCommand` twice per phase: four full suite runs per task.
+
+    So the invariant is EXACTLY ONE registration, and duplication is a defect in its own right.
 
 Run: python3 tests/observation-hook-registration.test.py
 """
@@ -116,16 +126,37 @@ for event, phase in (("PreToolUse", "pre"), ("PostToolUse", "post")):
             f"(v5.106.1: subagent dispatched, zero records written)."
         )
 
+# THE PROBE BUDGET MUST FIT INSIDE THE HOOK TIMEOUT. runRedCommand allows 600s; Claude Code's
+# default hook timeout is 60s. Without an explicit timeout the runtime kills the hook mid-probe,
+# before writeRecord runs — so no record exists and the gate refuses the wave as missing-pre, which
+# reads as "the hook did not run" for a hook that ran and was cut off.
+for event, phase in (("PreToolUse", "pre"), ("PostToolUse", "post")):
+    for group in manifest.get(event, []):
+        for hook in group.get("hooks", []):
+            command = hook.get("command", "")
+            if HOOK in command and f"--phase {phase}" in command:
+                if hook.get("timeout", 60) < 600:
+                    failures.append(
+                        f"hooks.json {event} {HOOK} --phase {phase} has timeout={hook.get('timeout', 60)}s, "
+                        f"below the 600s runRedCommand ceiling. The runtime would kill the probe before "
+                        f"it writes its record."
+                    )
+
 for name in DISPATCHING_SKILLS:
     path = pathlib.Path(f"skills/{name}/SKILL.md")
     if not path.exists():
         failures.append(f"{name}: skills/{name}/SKILL.md does not exist; the registry names a skill that is gone")
         continue
     found = registrations(frontmatter(path))
-    if "pre" not in found["PreToolUse"]:
-        failures.append(f"{name}: no PreToolUse `matcher: \"Agent\"` running {HOOK} --phase pre")
-    if "post" not in found["PostToolUse"]:
-        failures.append(f"{name}: no PostToolUse `matcher: \"Agent\"` running {HOOK} --phase post")
+    # EXACTLY ONE REGISTRATION. hooks.json owns it (asserted above); a frontmatter copy here would
+    # double-fire on the same dispatch and corrupt the record both copies write.
+    for event, phase in (("PreToolUse", "pre"), ("PostToolUse", "post")):
+        if phase in found[event]:
+            failures.append(
+                f"{name}: frontmatter ALSO registers {HOOK} --phase {phase} on `matcher: \"Agent\"`. "
+                f"hooks.json already does, so both fire per dispatch and race to write the same record "
+                f"file. Remove the frontmatter copy; duplication here is corruption, not redundancy."
+            )
 
 # Guards the guard. If the parser stopped matching — a frontmatter format change, a renamed key —
 # every skill would look unregistered and this suite would fail loudly rather than pass vacuously.
@@ -151,6 +182,7 @@ assert "pre" in registrations(POSITIVE)["PreToolUse"], "parser regression: a val
 
 for failure in failures:
     print(f"FAIL  {failure}")
-print(f"observation-hook-registration: {len(DISPATCHING_SKILLS) - len({f.split(':')[0] for f in failures})}"
-      f"/{len(DISPATCHING_SKILLS)} dispatching skills adjudicate their agents")
+print(f"observation-hook-registration: hooks.json wired for both phases; "
+      f"{len(DISPATCHING_SKILLS) - len({f.split(':')[0] for f in failures})}/{len(DISPATCHING_SKILLS)} "
+      f"dispatching skills free of duplicate frontmatter registration")
 sys.exit(1 if failures else 0)
