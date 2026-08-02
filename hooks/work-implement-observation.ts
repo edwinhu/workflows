@@ -95,6 +95,32 @@ export function taskIdFrom(prompt: unknown): string | undefined {
   return match?.[1].trim() || undefined;
 }
 
+/**
+ * The task id this dispatch is FOR, resolved against the ids the authenticated plan actually names.
+ *
+ * `taskIdFrom` cannot be exact, and no regex can be. The marker is `TASK <id>: <name>` and both parts
+ * are free text, so `TASK Part I: Foundations` is ambiguous on its face — a task called "Part I" whose
+ * name is "Foundations", or one called "Part I: Foundations". /writing keys its tasks by SECTION NAME,
+ * and a colon in an academic section title is ordinary, so this is a real input rather than a
+ * contrived one: it parsed to "Part I", matched no bounds, and the task went unadjudicated.
+ *
+ * The ambiguity dissolves once you stop guessing. The expectation already lists every legitimate id
+ * for this wave, so the prompt is matched AGAINST that list instead of parsed in isolation. Longest
+ * match wins, so an id that is a prefix of another ("Part I" alongside "Part I: Foundations") resolves
+ * to the specific one. Only when there is no expectation at all — a dispatch with no preflight — does
+ * it fall back to the loose parse, which is right: that path exists to RECORD an unexpected dispatch,
+ * not to adjudicate it.
+ */
+export function resolveTaskId(prompt: unknown, expectation?: Expectation): string | undefined {
+  const loose = taskIdFrom(prompt);
+  if (!loose || !expectation?.tasks) return loose;
+  const text = String(prompt ?? "");
+  const known = Object.keys(expectation.tasks)
+    .filter(id => new RegExp(`^TASK ${id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}:`, "m").test(text))
+    .sort((a, b) => b.length - a.length);
+  return known[0] ?? loose;
+}
+
 export type Expectation = {
   waveFingerprint: string;
   projectDir: string;
@@ -165,17 +191,20 @@ if (import.meta.main) {
   }
 
   const toolInput = (payload.tool_input ?? {}) as Record<string, unknown>;
-  const taskId = taskIdFrom(toolInput.prompt);
+  const looseTaskId = taskIdFrom(toolInput.prompt);
   // Not an implement dispatch. Silence is how a PostToolUse hook says "carry on" — an explicit
   // {"decision":"allow"} is REJECTED as invalid and discards the whole payload, which would turn a
   // pass into a deny. See ds-post-subagent-guard.
-  if (!taskId) {
+  if (!looseTaskId) {
     if (phase === "pre") allow();
     process.exit(0);
   }
 
   const sessionId = sessionFlagKey(payload);
   const expectation = loadExpectation(sessionId);
+  // Re-resolve against the ids the plan actually names. The loose parse above only answered "is this
+  // an implement dispatch at all"; it cannot answer WHICH task when an id contains a colon.
+  const taskId = resolveTaskId(toolInput.prompt, expectation) ?? looseTaskId;
   // No expectation means the preflight did not run. We still record, keyed so the gate can tell this
   // apart from a swept record: "never expected" and "expected but unobserved" have different causes
   // and different remedies, and collapsing them sends someone hunting a stale record when their real

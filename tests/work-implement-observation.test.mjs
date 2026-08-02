@@ -295,6 +295,32 @@ console.log('a task id containing spaces is correlated, not silently skipped')
   ok('a spaced task id is still bounds-checked', violating.adjudication?.status === 'violated', JSON.stringify(violating.adjudication))
 }
 
+// A colon in a task id is ordinary, not contrived — /writing keys tasks by section name and academic
+// titles routinely read "Part I: Foundations". The marker is `TASK <id>: <name>`, so a blind parse
+// cannot tell that id from a task called "Part I" named "Foundations": it resolved to "Part I",
+// matched no bounds, and the task went unadjudicated. Resolving against the ids the authenticated
+// plan actually names removes the guess.
+console.log('a task id containing a colon resolves against the authenticated plan, not a guess')
+{
+  const run = dispatch({
+    tasks: [task('Part I: Foundations', ['drafts/part-i.md'])],
+    taskId: 'Part I: Foundations',
+    mutate: project => { mkdirSync(join(project, 'drafts'), { recursive: true }); writeFileSync(join(project, 'drafts/part-i.md'), 'prose') },
+    reported: ['drafts/part-i.md'],
+  })
+  ok('a colon-bearing id is adjudicated', run.adjudication?.status === 'clean', JSON.stringify(run.adjudication))
+
+  // And the prefix case: two ids where one is a prefix of the other must not collide.
+  const ambiguous = dispatch({
+    tasks: [task('Part I', ['drafts/a.md']), task('Part I: Foundations', ['drafts/b.md'])],
+    taskId: 'Part I: Foundations',
+    mutate: project => { mkdirSync(join(project, 'drafts'), { recursive: true }); writeFileSync(join(project, 'drafts/b.md'), 'prose') },
+    reported: ['drafts/b.md'],
+  })
+  ok('longest match wins, so a prefix id does not steal the dispatch',
+    ambiguous.adjudication?.status === 'clean', JSON.stringify(ambiguous.adjudication))
+}
+
 console.log('records are keyed per run, so one run cannot adjudicate another')
 {
   // Task ids are unique within a wave, but a RESUMED run replays the same ids in a new process and a
