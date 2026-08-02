@@ -18,7 +18,6 @@ Shared enforcement for ALL writing skills. Each constraint/convention is self-co
 |------------|------|-------------|-------------|
 | Progressive Expansion Hierarchy | [progressive-expansion-hierarchy.md](progressive-expansion-hierarchy.md) | `progressive-expansion-hierarchy.py` | 4-level hierarchy and 3 Iron Laws (NO OUTLINE WITHOUT PRECIS, etc.) |
 | Constraint Loading Protocol | [constraints/constraint-loading-protocol.md](constraint-loading-protocol.md) | `constraint-loading-protocol.py` | NO PROSE WORK WITHOUT ALL CONSTRAINT LAYERS — domain skill + ai-anti-patterns |
-| Flowchart Authority | [constraints/flowchart-authority.md](flowchart-authority.md) | `flowchart-authority.py` | Flowchart IS the spec — text is commentary |
 | No Pause Between Phases | [constraints/no-pause-between-phases.md](no-pause-between-phases.md) | `no-pause-between-phases.py` | Immediately load next skill after gate passes |
 | Progress Gating | [progress-gating.md](progress-gating.md) | `progress-gating.py` | 5+ iterations without progress → STOP and escalate |
 | Post-Subagent Enforcement | [post-subagent-enforcement.md](post-subagent-enforcement.md) | `post-subagent-enforcement.py` | Main chat MUST NOT read drafts or edit prose after subagent returns |

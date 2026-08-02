@@ -11,7 +11,17 @@ from pathlib import Path
 # Skills that write/review prose must load BOTH constraint layers
 PROSE_SKILLS = ['writing-draft', 'writing-review', 'writing-revise', 'writing-validate']
 
-DOMAIN_SKILL_PATTERN = re.compile(r'writing-(legal|econ|general)/SKILL\.md')
+# The domain skill is selected dynamically from the plan's `style` field (v5.98.0 native-Plan
+# migration) — skills no longer hardcode `writing-legal/SKILL.md`. The matcher therefore accepts
+# either spelling, but still requires an explicit LOAD verb bound to a domain/style referent within
+# the same sentence, so deleting the loading instruction from a skill still fails the check.
+DOMAIN_SKILL_PATTERN = re.compile(
+    r'\bload(?:s|ed|ing)?\b[^.\n]{0,80}?'
+    r'(?:domain skill'                          # "Load the domain skill [from index `style`]"
+    r'|style selected'                          # "Load ..., the style selected in `## Writing Intent`"
+    r'|writing-(?:legal|econ|general)(?:/SKILL\.md)?)',  # legacy hardcoded domain path
+    re.IGNORECASE,
+)
 AI_ANTI_PATTERN = re.compile(r'ai-anti-patterns')
 
 
@@ -34,7 +44,7 @@ def check(context):
         has_ai = bool(AI_ANTI_PATTERN.search(text))
 
         if not has_domain:
-            violations.append(f"{skill_name}/SKILL.md does not reference domain skill loading (writing-legal/econ/general)")
+            violations.append(f"{skill_name}/SKILL.md has no domain-skill loading instruction (expected a 'load the domain skill' / style-selected / writing-legal|econ|general reference)")
         if not has_ai:
             violations.append(f"{skill_name}/SKILL.md does not reference ai-anti-patterns loading")
 

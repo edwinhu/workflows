@@ -12,15 +12,17 @@ Every phase that touches draft prose MUST load ALL constraint layers before edit
 
 | Layer | What | When |
 |-------|------|------|
-| **Workflow state** | `.planning/ACTIVE_WORKFLOW.md` | Always |
-| **Structural intent** | `.planning/PRECIS.md`, `.planning/OUTLINE.md` | Always |
-| **Domain skill** | `writing-legal`, `writing-econ`, or `writing-general` based on `style` in ACTIVE_WORKFLOW | Before any prose work (drafting, reviewing, revising) |
+| **Workflow state** | the receipt-selected `{planFile, planHash}` | Always |
+| **Structural intent** | the plan's deterministic section index and mapped outlines/drafts | Always |
+| **Domain skill** | the domain skill selected by the plan's `style` field | Before any prose work (drafting, reviewing, revising) |
 | **AI anti-patterns** | `Skill(skill="workflows:ai-anti-patterns")` | Before any prose work (drafting, reviewing, revising) |
 
 ### Domain Skill Loading Table
 
-| Style in ACTIVE_WORKFLOW | Skill to Read() |
-|--------------------------|-----------------|
+The domain skill is selected dynamically from `style` — skills do not hardcode the path.
+
+| Style | Skill to load |
+|-------|---------------|
 | legal | `skills/writing-legal/SKILL.md` |
 | econ | `skills/writing-econ/SKILL.md` |
 | general | `skills/writing-general/SKILL.md` |
@@ -40,7 +42,7 @@ Editing with only domain skill loaded misses AI anti-patterns. Editing with only
 ## Examples
 
 ### Correct
-1. Before drafting a legal article section: Read ACTIVE_WORKFLOW.md → Read PRECIS.md and OUTLINE.md → Read `skills/writing-legal/SKILL.md` → Load ai-anti-patterns → Begin drafting.
+1. Before drafting a legal article section: authenticate the receipt-selected plan → read its section index and mapped outline → read the `style`-selected domain skill (`skills/writing-legal/SKILL.md`) → load ai-anti-patterns → begin drafting.
 2. Before reviewing: Same full loading sequence, then invoke review.
 
 ### Incorrect
