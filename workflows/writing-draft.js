@@ -382,8 +382,12 @@ for (const s of draftable) {
       throw new Error(`writing-draft authenticated carried draft for ${s.name} is not the PLAN Section Outputs path.`)
     }
     const verify = prior?.verify
-    if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== outlineHash || prior.draftHash !== draftSnapshot.hash || prior.status !== 'drafted' || !verify || verify.coverageOk !== true || verify.fidelityOk !== true || verify.transitionOk === false || !Array.isArray(verify.findings)) {
-      throw new Error(`writing-draft selective retry requires one complete current-content prior result for ${s.name}.`)
+    // `fidelityOk` MEANS "every citation resolves in the bibliography" — a claim about a specific
+    // bibliography. Carrying it forward while references/sources.bib changes underneath keeps a
+    // verdict whose subject has moved: a renamed key or a removed entry silently invalidates it.
+    // Symmetric with the same binding in writing-review.js.
+    if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== outlineHash || prior.draftHash !== draftSnapshot.hash || prior.bibHash !== BIB_SNAPSHOT.hash || prior.status !== 'drafted' || !verify || verify.coverageOk !== true || verify.fidelityOk !== true || verify.transitionOk === false || !Array.isArray(verify.findings)) {
+      throw new Error(`writing-draft selective retry requires one complete current-content prior result for ${s.name}, produced against the CURRENT bibliography.`)
     }
     draftSnapshots[String(s.name)] = draftSnapshot
     carried.push(prior)
@@ -596,6 +600,9 @@ return {
         status: transformBound ? result.transform?.status : 'error',
         planHash: PLAN_HASH,
         outlineHash: outlineSnapshots[section].hash,
+        // The bibliography this result's fidelityOk was computed against. A later selective retry
+        // proves it is still current before carrying the verdict forward.
+        bibHash: BIB_SNAPSHOT.hash,
         // No entry snapshot exists for a draft this run wrote — the post-step fills this in
         // from the file. An empty draftHash here means "not yet verified", never "verified".
         draftHash: '',
@@ -610,6 +617,7 @@ return {
         section,
         planHash: PLAN_HASH,
         outlineHash: outlineSnapshots[section].hash,
+        bibHash: BIB_SNAPSHOT.hash,
         // Carried sections DO have an authenticated entry snapshot; the post-step zeroes it
         // if the file moved while the live sections were being drafted.
         draftHash: snapshot ? snapshot.hash : '',

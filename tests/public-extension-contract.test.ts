@@ -3,7 +3,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
-const TARGET_VERSION = "5.107.1";
+const TARGET_VERSION = "5.108.0";
 
 type Capability = {
   name: string;
@@ -117,7 +117,7 @@ function parseContractRows(markdown: string): ContractRow[] {
 }
 
 describe("public extension contract integration", () => {
-  test("all three plugin version fields and capability identity agree at 5.107.1", () => {
+  test("all three plugin version fields and capability identity agree at 5.108.0", () => {
     const plugin = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/plugin.json"), "utf8"));
     const marketplace = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/marketplace.json"), "utf8"));
     const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8"));

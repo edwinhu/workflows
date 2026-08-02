@@ -178,6 +178,37 @@ const check = (label, ok, extra = '') => { console.log(`${ok ? 'PASS' : 'FAIL'} 
   check('drifted section marked unreliable', final.unreliableSections.includes('Part I'))
 }
 
+// ── Document-level drift: the PLAN itself changes mid-review ─────────────────
+// This used to raise a critical integrity finding and keep EVERY section's findings. But claim
+// mappings, transitions and review surfaces are all derived from the plan, so a finding computed
+// before the change describes an artifact that no longer exists — and it was being reported as a
+// current, reliable result alongside the refusal.
+{
+  const f = fixture()
+  const bundle = JSON.parse(py('--authenticate', f.project))
+  const { result } = await exec({
+    projectDir: f.project, projectReal: bundle.projectReal, planPath: bundle.planPath,
+    planHash: bundle.planHash, sectionIndex: bundle.index, artifacts: bundle.artifacts,
+  })
+  check('pre-drift verdict clean (plan case)', result.overallPass === true)
+  writeFileSync(bundle.planPath, readFileSync(bundle.planPath, 'utf8') + '\n<!-- edited mid-review -->\n')
+
+  const bpath = join(f.project, 'bundle2.json'), rpath = join(f.project, 'result2.json')
+  writeFileSync(bpath, JSON.stringify(bundle)); writeFileSync(rpath, JSON.stringify(result))
+  let final
+  try { final = JSON.parse(py('--verify', bpath, '--findings', rpath)) }
+  catch (e) { final = JSON.parse(e.stdout) }
+  check('plan drift detected', final.driftedArtifacts.includes('plan'), JSON.stringify(final.driftedArtifacts))
+  check('plan drift raises an integrity finding',
+        final.findings.some(x => x.area === 'artifact-integrity' && /generated plan/i.test(x.detail || '')))
+  check('EVERY section is marked unreliable when the plan drifts',
+        final.sections.every(s => s.unreliable === true), JSON.stringify(final.sections.map(s => [s.section, s.unreliable])))
+  check('no stale per-section finding survives plan drift',
+        !final.findings.some(x => x.section && x.area !== 'artifact-integrity'),
+        JSON.stringify(final.findings.filter(x => x.section && x.area !== 'artifact-integrity')))
+  check('gate flipped on plan drift', final.overallPass === false)
+}
+
 for (const dir of TEMPS) rmSync(dir, { recursive: true, force: true })
 console.log(failures ? `\n${failures} FAILURE(S)` : '\nall smoke checks passed')
 // EXIT ONLY ON FAILURE. `process.exit(0)` here is not a no-op: under `bun test` every file shares ONE
