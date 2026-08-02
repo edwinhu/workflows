@@ -215,15 +215,33 @@ function loadExpectation(sessionId: string): Expectation | undefined {
  *
  * Deliberately time-based rather than count-based: the gate reads records written moments earlier by
  * the paired hook, so a count cap could evict a LIVE wave's pre-observation and turn a clean run into
- * `missing-pre`. A window comfortably longer than any dispatch cannot. Failure to prune is never an
- * error — this is hygiene, and a hook that broke a run over housekeeping would be a worse bug than
- * the leak.
+ * `missing-pre`. Failure to prune is never an error — this is hygiene, and a hook that broke a run
+ * over housekeeping would be a worse bug than the leak.
+ *
+ * TWO EXCLUSIONS, BOTH LEARNED FROM AN ADVERSARIAL REVIEW OF THE FIRST VERSION:
+ *
+ *   EXPECTATION FILES ARE NEVER PRUNED, whatever their age. They are a wave's AUTHENTICATION, not
+ *   its evidence, and they are written once by the preflight and then only read. A wave resumed
+ *   after the window — a session paused over a weekend, a long-running plan — would have had its
+ *   expectation deleted out from under it, and every subsequent dispatch would record under
+ *   `no-expectation` and be refused as unauthenticated. Age says nothing about whether an
+ *   expectation is still live.
+ *
+ *   THE CURRENT SESSION'S FILES ARE NEVER PRUNED, whatever their age. A wave whose earlier tasks
+ *   completed before the window and whose later tasks are running now would otherwise lose the
+ *   earlier pre-records and be refused as `missing-pre`. It also removes the race the review found
+ *   against the gate's directory scan: the gate only ever scans its own session's records, and those
+ *   are exactly what this refuses to touch.
  */
 const RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
-export function pruneObservations(now: number = Date.now()): number {
+export function pruneObservations(currentSessionId: string, now: number = Date.now()): number {
   let removed = 0;
   try {
     for (const entry of readdirSync(OBSERVATION_DIR)) {
+      // Authentication, not evidence — never age out.
+      if (entry.endsWith("--expectation.json")) continue;
+      // Belongs to the run happening right now.
+      if (currentSessionId && entry.startsWith(`${currentSessionId}--`)) continue;
       const path = join(OBSERVATION_DIR, entry);
       try {
         if (now - statSync(path).mtimeMs > RETENTION_MS) { rmSync(path, { force: true }); removed++; }
@@ -304,9 +322,13 @@ if (import.meta.main) {
   const runProbe = () => declaredRed ? { command: declaredRed, ...runRedCommand(declaredRed, probeDir) } : undefined;
   // WIRED, NOT MERELY DEFINED. An unreferenced helper is the exact defect
   // scripts/wc/executable-position.ts exists to catch, and writing one here while fixing a leak
-  // would be the class inside the fix for the class. Pre-phase only: once per dispatch, before any
-  // of this wave's own records exist, so it can never evict them.
-  pruneObservations();
+  // would be the class inside the fix for the class.
+  //
+  // PRE-PHASE ONLY, AND THE CODE NOW SAYS SO. The first version carried this same comment while
+  // calling unconditionally, so it also ran in the post hook — where a long dispatch or a forward
+  // clock jump could delete the expectation and pre-record moments before the post-record was
+  // written, refusing a wave that had just completed successfully. A comment is not an enforcement.
+  if (phase === "pre") pruneObservations(sessionId);
 
   let redProbe = phase === "pre" ? runProbe() : undefined;
   let probeMutated: string | undefined;
