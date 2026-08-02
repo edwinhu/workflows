@@ -98,7 +98,7 @@ Turn the diagnosis into a concrete TaskList item tied to the current `planHash`:
 criteria, evidence, dependencies, `writablePaths`, and outputs. Then read
 `${CLAUDE_SKILL_DIR}/../ds-implement/SKILL.md` and follow it immediately.
 
-The adapter selects a complete ready wave, invokes `workflows/beat-implement.js`, and independently
+The adapter selects a complete ready wave, invokes `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, and independently
 verifies the changed work using the same technical verifier loop. A failure returns only the affected
 ready-wave task to repair; do not change plan intent or criteria to make it pass. After technical PASS,
 continue to `ds-review` for the existing human acceptance contract.

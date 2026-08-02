@@ -74,20 +74,25 @@ Proceed after delivery or explicit user confirmation; otherwise print `/goal cle
 
 Pass the complete caller-curated wave to the authenticated shared runner:
 
-```js
-Workflow({
-  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js",
-  args: {
-    projectDir: "<absolute project path>",
-    workflow: "work",
-    readyWave: [/* complete approved task specs */],
-    planReset: {
-      planFile: "<receipt plan_file>",
-      planHash: "<receipt plan_hash>",
-    },
-  },
-})
+Load and follow `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`; it owns dispatch. Route the wave by
+shape first, then dispatch what the route says — one task goes to a single subagent, a fan-out is
+compiled into a generated workflow under `.claude/workflows/`.
+
+```bash
+echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
+# route == "workflow" -> generate the plan-bound script, then run it
+echo '{"projectDir":"<absolute project path>",planFile: "<receipt plan_file>", planHash: "<receipt plan_hash>",
+       "domain":"work","phases":[...],"tasks":[...]}' \
+  | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
 ```
+
+```js
+Workflow({ scriptPath: "<path returned by the generator>", args: {} })
+```
+
+The domain supplies `phases` and each task's `prompt`; `planFile` and `planHash` come from the
+receipt-selected plan and bind the generated script to it. There is no checked-in runner script to
+invoke — the script is generated per plan, and a new plan hash produces a new script.
 
 On retry, keep the same complete ready wave and `planReset`, and pass only proven attempted IDs plus the
 preceding runner records. Records from another `planFile`, `planHash`, task fingerprint, or approval
@@ -103,4 +108,4 @@ session are ineligible. An implementation agent never verifies its own work.
 | Continue after a helper result other than `status: delivered` | Stop until the user explicitly confirms activation |
 | Run the helper from a spawned agent | Return the literal goal to the caller |
 | Let a doer report serve as PASS | Run the independent verifier afterward |
-| Hand-roll implementation dispatch | Use `workflows/beat-implement.js` with `workflow: "work"` |
+| Hand-roll implementation dispatch | Use `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` with `workflow: "work"` |

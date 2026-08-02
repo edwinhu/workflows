@@ -20,8 +20,8 @@ hooks:
 `IMPLEMENT = GOAL + WORK + independent VERIFY`
 
 The orchestration chat owns the active `/goal`, selects the ready wave, and owns the verifier loop.
-The checked-in runner at `${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js` owns only direct
-implementation dispatch. It receives a complete, approved work list; it never parses a plan, invents
+This beat owns only dispatch: it routes the wave by shape and, when the shape warrants one, generates
+the workflow script that runs it. It receives a complete, approved work list; it never parses a plan, invents
 a task, sets a goal, or verifies the work.
 
 <EXTREMELY-IMPORTANT>
@@ -40,7 +40,7 @@ helpful speed, it is deferred rework.
 Orchestrator: select complete ready wave + start/maintain one /goal
        │
        ▼
-Workflow(beat-implement.js): direct doer per supplied task
+beat-implement: route by shape -> subagent(s), or a generated .claude/workflows script
        │                         └─ sequential until filesystem isolation exists
        ▼
 Orchestrator: curate reusableFacts → project auto-memory
@@ -121,33 +121,70 @@ be anchored solely to the approved plan identity.
 - Post-return manifests cannot authorize concurrency. Do not hand-roll parallel fan-out from apparently
   disjoint paths.
 
-## 3. Invoke the checked-in runner
+## 3. Route the plan, then dispatch
 
-```js
-const run = await Workflow({
-  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js",
-  args: {
-    projectDir: "<absolute project path>",
-    workflow: "<ds|writing|workshop>",
-    readyWave,
-    planReset,
-    // Only for a retry: do not send untouched work back through the runner.
-    // attemptRecords are the preceding runner's result records; they prove retry scope.
-    resume: {
-      attemptedTaskIds: ["<previously-attempted-task-id>"],
-      attemptRecords: previousRun.results,
-    },
-  },
-})
+**NO IMPLEMENTATION FROM MAIN CHAT.** Every mutation runs in a dispatched agent. The
+`orchestrator-mutation-guard` hooks registered by this skill deny Write/Edit/MultiEdit/NotebookEdit
+and Bash mutations from the orchestrator, so this is enforced, not merely instructed. The reason is
+context: the orchestrator's window must hold the outcome, not the work.
+
+### 3a. Route by plan shape — do not default to a workflow
+
+```bash
+echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
 ```
 
-The runner returns `{ executionMode, executionReason, resumedAttemptedWorkOnly, results, reusableFacts, counts }`. Each result is exactly `implemented`, `blocked`, or `failed` and carries
-its task id, summary, task-scoped reusable facts, the approved plan hash/session, and a deterministic
-task-spec fingerprint. The retry gate matches those identity fields before it accepts an attempted id.
+Returns `{route, agentCount, maxParallelWidth, sizeGuideline, reason, warnLarge}`. The route is a
+real decision, taken from the Claude Code routing table (docs: *When to use a workflow*), whose axis
+is **where intermediate results live** — Claude's context window for subagents, script variables for
+a workflow:
 
-The runner uses flat dispatch: every doer is dispatched directly by the workflow. A doer may not
-spawn a dispatcher or further implementation agents; nested delegation loses results and makes the
-orchestrator unable to account for actual work.
+| route | when | what you do |
+|---|---|---|
+| `inline` | no tasks | nothing to dispatch |
+| `single-subagent` | one task | dispatch ONE agent. Do **not** generate a workflow: its result *is* the final answer, so a script would add a runtime and an approval prompt to buy nothing |
+| `subagents` | ≤4, strictly sequential | dispatch them turn by turn; there is no fan-out for a script to coordinate |
+| `workflow` | any fan-out, or long enough that per-task results become the context problem | generate and run a script (3b) |
+
+If `warnLarge` is true (>25 agents), surface the count to the user before running — matching Claude
+Code's own advisory, which warns and does not cap.
+
+### 3b. Generate the workflow — only when the route says so
+
+```bash
+echo "$EMIT_REQUEST_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
+```
+
+`EMIT_REQUEST_JSON` is `{projectDir, planFile, planHash, domain, phases, tasks}`. **The domain skill
+supplies `phases` and each task's `prompt`; the plan supplies everything else.** That split is the
+point of the beat: one dispatch mechanism, domain-specific structure.
+
+The generator writes `<project>/.claude/workflows/<domain>-implement.js` and returns its path. That
+location is deliberate — the orchestration is committed with the repo, diffable in review, and
+rerunnable as `/<domain>-implement`. Then run it:
+
+```js
+const run = await Workflow({ scriptPath: "<returned path>", args: {} })
+```
+
+**The emitted script is generated, plan-hash-bound, and must not be hand-edited.** Every
+plan-specific value is resolved by the generator — which has filesystem access — and baked in as a
+literal, which is why the script satisfies the runtime's "no filesystem, no `import()`, no `process`"
+constraints by construction. Editing it detaches the orchestration from the approval that authorised
+it; a changed plan produces a new hash and a new script.
+
+### What the run's report is, and is not
+
+The result carries `reportedOnly: true`. A workflow script has no filesystem access, so it cannot
+observe what any agent wrote: `changedFiles` is the agent's own account and is **not evidence**. Two
+separate mechanisms cover that, and neither lives in the script:
+
+- the observation hooks around each dispatch, which compare the real filesystem delta against the
+  task's `writablePaths`;
+- the fresh verifier in step 4, which is the only thing that establishes the criteria hold.
+
+Results bind to the task captured **at dispatch**, never to the task id an agent reports back, so a
+swapped echo cannot rebind one task's result onto another.
 
 After the return, curate `reusableFacts` before adding durable, project-specific facts to project
 auto-memory. Returned facts are candidates, not automatic truth.

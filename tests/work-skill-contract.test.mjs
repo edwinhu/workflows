@@ -52,7 +52,11 @@ describe("work workflow contract", () => {
     for (const text of doctrine) expect(text).toMatch(/receipt-selected generated plan|generated plan/i);
     expect(goalWork).toContain("planFile");
     expect(goalWork).toContain("planHash");
-    expect(goalWork).toContain("planReset: {");
+    // The dispatch boundary moved from a checked-in runner taking `planReset` to a generator taking
+    // the plan identity directly. The PROPERTY is unchanged and still asserted: the wave is bound to
+    // the receipt-selected plan, so a different plan cannot be implemented under this approval.
+    expect(goalWork).toContain("planFile");
+    expect(goalWork).toContain("emit-implementation-workflow.ts");
     expect(goalWork).toContain("planFile: \"<receipt plan_file>\"");
     expect(goalWork).toContain("planHash: \"<receipt plan_hash>\"");
     expect(goalWork).not.toContain("approvedBodyHash");
@@ -135,7 +139,11 @@ describe("work workflow contract", () => {
   });
 
   test("uses the native approved-plan runner boundary", () => {
-    expect(work).toContain("workflows/beat-implement.js");
+    // Was `workflows/beat-implement.js`, a script that could never execute under the Workflow
+    // runtime. The boundary is now the shared beat, which routes by plan shape and generates a
+    // plan-bound script. What is asserted is the same: work names a concrete dispatch boundary and
+    // does not hand-roll one.
+    expect(work).toContain("beat-implement/SKILL.md");
     expect(goalWork).toContain("Workflow({");
     expect(goalWork).toContain('workflow: "work"');
     const runner = read("workflows/beat-implement.js");
@@ -173,8 +181,10 @@ describe("work workflow contract", () => {
       expect(text).toContain("TaskList");
       expect(text).toMatch(/planFile.*planHash|planHash.*planFile/s);
     }
-    expect(devImplement).toContain('workflow: "dev"');
-    expect(devImplement).toContain("workflows/beat-implement.js");
+    // Domain identity still travels with the dispatch; it is now the generator's `domain` field
+    // rather than the runner's `workflow` arg.
+    expect(devImplement).toContain('"domain":"dev"');
+    expect(devImplement).toContain("beat-implement/SKILL.md");
     expect(devImplement).toContain("valid RED");
     expect(devImplement).toContain("independent fresh verifier");
     expect(read("skills/dev-review/SKILL.md")).toContain("Codex");

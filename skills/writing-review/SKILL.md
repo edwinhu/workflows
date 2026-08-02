@@ -78,6 +78,8 @@ Workflow({
 })
 ```
 
+The run returns `{planPath, planHash, finalPlanHash, verifyRequired, driftVerified, overallPass, substratePass, verdict, summary, sections, findings, unreliableSections, sectionsThatFlagged}`.
+
 **3. Verify (post-step).** The returned verdict is provisional — it carries
 `verifyRequired: true` and `driftVerified: false`. Write the return value to disk
 and re-snapshot against the entry bundle:

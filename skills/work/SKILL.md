@@ -112,7 +112,7 @@ then read `${CLAUDE_SKILL_DIR}/beats/goal-work.md` for this adapter's reconcilia
 
 **Gate:** exactly one `/goal` is confirmed active, names the authenticated generated plan identity,
 restates transcript-visible evidence requirements, and has a turn budget. TaskList contains the complete
-current plan task set before `workflows/beat-implement.js` receives a ready wave.
+current plan task set before `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` receives a ready wave.
 
 ## 4. VERIFY
 

@@ -56,13 +56,25 @@ bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal clear"
 Proceed only after `status: delivered` or the user explicitly confirms the goal is active; otherwise
 print the literal command and stop. Invoke the shared runner with the complete ready wave and exact identity:
 
-```js
-Workflow({
-  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js",
-  args: { projectDir: "<absolute path>", workflow: "dev", readyWave,
-          planReset: { planFile, planHash } }
-})
+Load and follow `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`; it owns dispatch. Route the wave by
+shape first, then dispatch what the route says — one task goes to a single subagent, a fan-out is
+compiled into a generated workflow under `.claude/workflows/`.
+
+```bash
+echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
+# route == "workflow" -> generate the plan-bound script, then run it
+echo '{"projectDir":"<absolute project path>",planFile: "<receipt plan_file>", planHash: "<receipt plan_hash>",
+       "domain":"dev","phases":[...],"tasks":[...]}' \
+  | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
 ```
+
+```js
+Workflow({ scriptPath: "<path returned by the generator>", args: {} })
+```
+
+The domain supplies `phases` and each task's `prompt`; `planFile` and `planHash` come from the
+receipt-selected plan and bind the generated script to it. There is no checked-in runner script to
+invoke — the script is generated per plan, and a new plan hash produces a new script.
 
 The runner dispatches mutations sequentially. Do not hand-dispatch an alternative compiler runner.
 For a retry, send only previously attempted task IDs and their returned attempt records.

@@ -99,7 +99,7 @@ In a distinct implementation session:
    bun ${CLAUDE_SKILL_DIR}/../../scripts/wc/workflow-plan-compiler.ts ".planning/<receipt-selected-planFile>" --project "<absolute target root>" --json
    ```
 3. Parser/compiler failure blocks. There is no LLM, Python, or legacy enumeration fallback.
-4. Pass the returned `readyWave` and immutable plan identity to `workflows/beat-implement.js` with `workflow: "workflow-creator"`.
+4. Pass the returned `readyWave` and immutable plan identity to `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` with `workflow: "workflow-creator"`.
 5. Set one budgeted `/goal` pinned to compiler success, all implementation records, focused checks, independent verification, and human review.
 6. Main chat may read results and update planning state; only delegated implementation agents mutate target files.
 

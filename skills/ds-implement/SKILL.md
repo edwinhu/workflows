@@ -79,7 +79,7 @@ exists. After each wave passes independent verification, close the corresponding
 next dependency-satisfied wave. Do not enter human review until TaskList contains no open item belonging
 to the current plan hash and every approved native-plan task is independently verified.
 
-Each entry supplies the fields required by `workflows/beat-implement.js`:
+Each entry supplies the fields the shared IMPLEMENT beat requires:
 
 ```js
 {
@@ -118,20 +118,25 @@ planning rather than guessing.
 Run the shared workflow with the absolute project path, the complete caller-curated ready wave, and the
 copied immutable approval hash/session cross-check:
 
-```js
-Workflow({
-  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/beat-implement.js",
-  args: {
-    projectDir: "<absolute project path>",
-    readyWave: [/* complete ready-wave task specs */],
-    planReset: {
-      planFile: "<receipt-selected generated plan basename>",
-      approvedBodyHash: "<receipt-selected planHash>",
-      session: "<receipt approval session>",
-    },
-  },
-})
+Load and follow `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`; it owns dispatch. Route the wave by
+shape first, then dispatch what the route says — one task goes to a single subagent, a fan-out is
+compiled into a generated workflow under `.claude/workflows/`.
+
+```bash
+echo "$READY_WAVE_JSON" | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/route-implementation.ts
+# route == "workflow" -> generate the plan-bound script, then run it
+echo '{"projectDir":"<absolute project path>",planFile: "<receipt plan_file>", planHash: "<receipt plan_hash>",
+       "domain":"ds","phases":[...],"tasks":[...]}' \
+  | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/emit-implementation-workflow.ts
 ```
+
+```js
+Workflow({ scriptPath: "<path returned by the generator>", args: {} })
+```
+
+The domain supplies `phases` and each task's `prompt`; `planFile` and `planHash` come from the
+receipt-selected plan and bind the generated script to it. There is no checked-in runner script to
+invoke — the script is generated per plan, and a new plan hash produces a new script.
 
 The workflow currently dispatches every ready-wave task sequentially. Declared outputs and writable
 paths remain required for evidence and future isolation work, but do not make parallel fan-out safe.

@@ -28,17 +28,26 @@ const SCRIPTS = readdirSync(WORKFLOWS).filter(name => name.endsWith('.js')).sort
 // exact defect this file exists to prevent.
 //
 //   beat-implement.js — needs four `workflows/lib/*.ts` modules, `process.env.CLAUDE_CODE_SESSION_ID`
-//     for its dispatching-session identity, and `Buffer.from` for task-contract digests. Converting
-//     it means deciding how a pure-control-flow script obtains a session identity and a hash, which
-//     is a trust-model decision deferred to a separate episode.
+//     for its dispatching-session identity, and `Buffer.from` for task-contract digests. It cannot be
+//     converted, because it calls captureGitObservation BETWEEN agent dispatches and a pure-control-
+//     flow script has no filesystem access at any point. It has been REPLACED rather than fixed: the
+//     shared IMPLEMENT beat now routes by plan shape (scripts/beat/route-implementation.ts) and
+//     generates a plan-bound script into the project's .claude/workflows/
+//     (scripts/beat/emit-implementation-workflow.ts), which is pure by construction because the
+//     generator resolves every plan-specific value before emitting.
 //
-//     SCOPE CORRECTION — this comment previously said "/work's step-3 runner stays broken", which
-//     badly understated it. beat-implement.js is the SHARED implement primitive: it is invoked as a
-//     Workflow script from skills/dev-implement (dev), skills/work/beats/goal-work.md (work),
-//     skills/ds-implement (ds), and skills/beat-implement itself, with workflow-creator and ds-fix
-//     routing through the same runner. Since it has never executed, the IMPLEMENT step of EVERY
-//     workflow that implements anything is dead — not one workflow's third step. That is the real
-//     blast radius and the reason the rebuild is worth its cost.
+//     NO SKILL INVOKES THIS SCRIPT ANY MORE. It is retained, unreferenced, for one reason: four
+//     suites pin ~105 assertions of dispatch policy against it — sequential dispatch, approval
+//     authentication, reviewer separation, retry scope, writable-path enforcement, post-dispatch
+//     observation. Deleting the file would delete that coverage, which is the "remove the test to
+//     make it pass" move this whole episode exists to prevent. Retirement is therefore a MIGRATION,
+//     not a delete: each assertion has to be re-homed onto the generator, the observation hooks, or
+//     the preflight before the file goes. Until that lands it stays here, still asserted impure.
+//
+//     SCOPE CORRECTION — an earlier version of this comment said "/work's step-3 runner stays
+//     broken", which badly understated it. This was the SHARED implement primitive, invoked from
+//     dev-implement, work/beats/goal-work.md, ds-implement and beat-implement itself, with
+//     workflow-creator and ds-fix routing through it. Every workflow's IMPLEMENT step was dead.
 const KNOWN_NONCOMPLIANT = new Set(['beat-implement.js'])
 
 const FORBIDDEN = [
