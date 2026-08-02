@@ -57,7 +57,38 @@ for (const required of ["implementer-identity-gate", "approved-artifact-gate", "
   assert.ok(gates.includes(required), `${required} must be discovered as a PreToolUse gate`);
 }
 
+// THE ONE EXEMPTION, AND WHY IT IS NOT A HOLE.
+//
+// The rule above is "a throw must not become a SILENT allow" — silence is the defect, not the allow.
+// Every gate here refuses something, so a crash that permits the call is unrecoverable and denying is
+// the only safe response. `work-implement-observation` is not a gate: it OBSERVES. Denying an
+// implementation dispatch because our own git capture threw would deny work the plan authorised, for
+// a bug in the observer.
+//
+// Its crash is not silent, and that is the whole justification: a crash writes no record, and
+// `scripts/beat/implement-gate.ts` treats a MISSING record as a refusal of the entire wave. So a
+// throw here fails the run loudly one step later instead of permitting it forever. That is a
+// different mechanism reaching the same guarantee, not a weaker guarantee.
+//
+// THIS EXEMPTION WAS UNSAFE UNTIL v5.106.1. The gate did not exist, and the hook was registered
+// nowhere at all — expectation files were written and never read. An exemption is only ever as good
+// as the thing it defers to, so the coverage is ASSERTED below rather than asserted-by-comment.
+const DEFERS_TO_ABSENCE_GATE = { "work-implement-observation": "scripts/beat/implement-gate.ts" };
+
+for (const [hook, gatePath] of Object.entries(DEFERS_TO_ABSENCE_GATE)) {
+  const gateSource = readFileSync(join(REPO, gatePath), "utf8");
+  assert.match(gateSource, new RegExp(hook.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+    `${hook} is exempt from denyOnCrash because ${gatePath} catches its silence — but that gate does not reference it`);
+  assert.match(gateSource, /missing-pre|ABSENCE/,
+    `${gatePath} must treat a MISSING record as a refusal; without that, exempting ${hook} restores the silent allow`);
+  // And the gate's own suite must cover the no-records case, which is the shape a crashed hook leaves.
+  const gateTest = readFileSync(join(REPO, "tests/implement-gate.test.mjs"), "utf8");
+  assert.match(gateTest, /unobserved wave is REFUSED/,
+    `tests/implement-gate.test.mjs must assert an unobserved wave is refused; that assertion is what this exemption rests on`);
+}
+
 for (const gate of gates) {
+  if (gate in DEFERS_TO_ABSENCE_GATE) continue;
   const source = readFileSync(join(REPO, "hooks", `${gate}.ts`), "utf8");
   assert.match(source, /\bdenyOnCrash\(/, `${gate} is wired to PreToolUse but never calls denyOnCrash, so any throw in it is a silent allow`);
 
@@ -99,7 +130,11 @@ for (const gate of gates) {
   const env = { ...process.env, GATE_ARTIFACT: ".planning/phase-gate-probe.md" };
   for (const raw of ["null", '"sess"', "[1,2]", "{not json", ""]) {
     const result = spawnSync("bun", [join(REPO, "hooks", `${gate}.ts`), ...args], { input: raw, encoding: "utf8", cwd: REPO, env });
+    // The exit-code half applies to EVERY wired hook without exception, exempt or not: a non-zero
+    // PreToolUse exit is a silent allow no matter what the hook is for. Only the DENY half below is
+    // exempted, and only for observers whose silence a downstream absence-gate catches.
     assert.equal(result.status, 0, `${gate} exited ${result.status} on payload ${JSON.stringify(raw)}; a non-zero PreToolUse exit is a silent allow. stderr: ${result.stderr}`);
+    if (gate in DEFERS_TO_ABSENCE_GATE) continue;
     assert.match(
       result.stdout,
       /"permissionDecision": "deny"/,

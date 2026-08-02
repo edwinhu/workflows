@@ -3,6 +3,10 @@ name: workshop
 description: "Create an academic workshop presentation and speaker notes from a research paper."
 hooks:
   PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
     - matcher: "Read|Glob|Grep|Bash"
       hooks:
         - type: command
@@ -18,6 +22,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.ts"
   PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command

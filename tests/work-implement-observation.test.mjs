@@ -253,10 +253,20 @@ console.log('non-implement agent calls and malformed payloads are left strictly 
     (existsSync(OBSERVATION_DIR) ? readdirSync(OBSERVATION_DIR).length : 0) === before)
   ok('a non-implement dispatch is not denied', !/"permissionDecision"\s*:\s*"deny"/.test(verifier.stdout), verifier.stdout)
 
-  const malformedPre = Bun.spawnSync(['bun', HOOK, '--phase', 'pre'], { stdin: Buffer.from('{not json'), stdout: 'pipe', stderr: 'pipe' })
-  ok('a malformed payload never denies', malformedPre.exitCode === 0 && !/deny/.test(malformedPre.stdout.toString()), malformedPre.stdout.toString())
-  const malformedPost = Bun.spawnSync(['bun', HOOK, '--phase', 'post'], { stdin: Buffer.from('{not json'), stdout: 'pipe', stderr: 'pipe' })
-  ok('a malformed payload never blocks', malformedPost.exitCode === 0 && !/"decision"\s*:\s*"block"/.test(malformedPost.stdout.toString()), malformedPost.stdout.toString())
+  // EVERY hostile shape, not just unparseable bytes. This suite originally tried only `{not json`
+  // and passed, while `null`, `[]` and `"str"` all exited 1 — a non-zero PreToolUse exit is a SILENT
+  // ALLOW, so the hook was failing in the one way it must never fail. The cause was borrowing
+  // `parsePayload`, whose `requireObject` calls process.exit(1) by design because it is built for
+  // gates that deny. tests/pretooluse-crash-closure.test.mjs caught it by RUNNING the hook; this
+  // covers it here too, where the hook's own semantics are defined.
+  for (const hostile of ['{not json', 'null', '[]', '"str"', '', '123']) {
+    const pre = Bun.spawnSync(['bun', HOOK, '--phase', 'pre'], { stdin: Buffer.from(hostile), stdout: 'pipe', stderr: 'pipe' })
+    ok(`payload ${JSON.stringify(hostile)} never denies and never exits nonzero`,
+      pre.exitCode === 0 && !/deny/.test(pre.stdout.toString()), `exit ${pre.exitCode} ${pre.stderr.toString().slice(0, 80)}`)
+    const post = Bun.spawnSync(['bun', HOOK, '--phase', 'post'], { stdin: Buffer.from(hostile), stdout: 'pipe', stderr: 'pipe' })
+    ok(`payload ${JSON.stringify(hostile)} never blocks and never exits nonzero`,
+      post.exitCode === 0 && !/"decision"\s*:\s*"block"/.test(post.stdout.toString()), `exit ${post.exitCode} ${post.stderr.toString().slice(0, 80)}`)
+  }
 }
 
 // Task ids are opaque strings in the shared task contract, and /writing keys its tasks by SECTION

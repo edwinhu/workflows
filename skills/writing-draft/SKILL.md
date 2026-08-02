@@ -5,6 +5,10 @@ user-invocable: false
 disable-model-invocation: true
 hooks:
   PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
     - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|Agent|Workflow"
       hooks:
         - type: command
@@ -20,6 +24,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.ts"
   PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
     - matcher: "Edit|Write|MultiEdit|NotebookEdit"
       hooks:
         - type: command

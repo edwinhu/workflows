@@ -4,7 +4,16 @@ description: "Shared IMPLEMENT primitive. Internal phase skill for execution aga
 user-invocable: false
 disable-model-invocation: true
 hooks:
+  PostToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post"
   PreToolUse:
+    - matcher: "Agent"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre"
     - matcher: "Write|Edit|MultiEdit|NotebookEdit"
       hooks:
         - type: command
@@ -217,6 +226,35 @@ whether to continue. If retrying implementation, pass only `attemptedTaskIds` fo
 attempted; untouched tasks remain untouched.
 
 ## Gate: exit IMPLEMENT
+
+Two gates, and both are required. The first asks whether every dispatch was *observed*; the second
+whether the work is *correct*. Neither substitutes for the other.
+
+### Gate 1 — adjudication is complete (absence is failure)
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/implement-gate.ts --session "<dispatching session id>"
+```
+
+Exit 1 refuses the wave. **A missing record is a refusal, not a pass** — that is the entire reason
+this gate exists. The observation hooks fail OPEN on their own errors, which is correct (a guard that
+denies on its own bugs is worse than no guard) and is only safe because absence is caught here. A hook
+that is disabled, mis-registered, or erroring on every dispatch allows everything, observes nothing,
+and produces a run indistinguishable from a clean one. Measured, in v5.106.0: the hook pair was
+registered nowhere at all, the expectation file was written and never read, and every workflow's
+IMPLEMENT ran completely unadjudicated while 35 passing behaviour tests said the hook was correct.
+
+Read the reason, because the remedies differ and must not be collapsed:
+
+| reason | what happened | what to do |
+|---|---|---|
+| `no-expectation` | the preflight never ran | run step 3a; nothing was bounded |
+| `missing-pre` / `missing-post` | the hook did not fire | check the skill's `matcher: "Agent"` registration |
+| `observation-failed` | our machinery broke | fix the observation; do not re-dispatch the agent |
+| `not-adjudicable` | the PLAN is malformed | fix the plan; the agent could not have avoided this |
+| `violated` | the agent exceeded its authority or misreported | this one is the agent |
+
+### Gate 2 — the criteria hold
 
 1. **IDENTIFY:** The criteria artifact's verify log is the proof artifact.
 2. **RUN:** The independent verifier runs after the last change.

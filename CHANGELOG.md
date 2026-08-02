@@ -3,6 +3,23 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.106.1] - 2026-08-02
+
+### Fixed
+- **`hooks/work-implement-observation.ts` was registered in NOTHING, so v5.106.0's IMPLEMENT enforcement never ran.** No `hooks.json` entry, no skill frontmatter, no `matcher: "Agent"` anywhere pointing at it. `scripts/beat/preflight.ts` wrote an expectation file that nothing ever read, and the between-dispatch adjudication — the half that catches an agent writing outside its authority or misreporting what it wrote — did not fire for `/ds`, `/dev`, `/work`, `/writing`, `/workshop` or `/workflow-creator`. Found by two independent audits, not by any test.
+  - The hook had 35 passing behaviour tests. Every one proved it does the right thing WHEN INVOKED, and nothing asked whether it ever was. `tests/mutation-guard-registration.test.py` exists for exactly this class and was not extended to the new hook; `skills/ds-delegate/SKILL.md` already registered an analogous hook on `matcher: "Agent"`, so the pattern existed and was not followed.
+  - Registered in all eight dispatching skills, both phases. Both are required: with only `post` there is no baseline and every task is unattributable; with only `pre` nothing is adjudicated. A half-registration is not a weaker guarantee, it is none, and it looks fine in a diff.
+  - `tests/observation-hook-registration.test.py` (new) holds registration as a CONFIGURATION assertion, since no behaviour test can. Mutation-probed against both failure shapes, including the subtle one: registered, but on a matcher that never fires on a dispatch.
+
+- **The absence-is-failure gate did not exist**, which is why the above went unnoticed. `scripts/beat/implement-gate.ts` (new) refuses a wave unless every dispatched task was observed and adjudicated clean, and reports the causes distinctly — `no-expectation`, `missing-pre`/`missing-post`, `observation-failed`, `not-adjudicable`, `violated` — because their remedies differ and only one of them is the agent. This is what makes the hook's fail-open design safe; without it the records are decoration. `tests/implement-gate.test.mjs` (new, 18) asserts every shape where a naive gate would pass a run that observed nothing.
+
+- **The observation hook exited 1 on `null`, `[]` and `"str"` payloads — a non-zero PreToolUse exit is a silent allow.** It borrowed `parsePayload`, whose `requireObject` calls `process.exit(1)` by design because it is built for gates that deny. Caught by `tests/pretooluse-crash-closure.test.mjs`, which RUNS each wired hook against hostile input — stronger than the hook's own suite, which had only tried unparseable bytes and never valid-JSON-of-the-wrong-type. Now parses locally; hostile-payload coverage widened in both suites.
+
+- **`tests/pretooluse-crash-closure.test.mjs` gains its first exemption, and it is asserted rather than asserted-by-comment.** The rule is that a throw must not become a SILENT allow — silence is the defect, not the allow. An observer is not a gate: denying an authorised dispatch because our own git capture threw is the wrong response, and its silence is caught one step later by the absence gate. The exemption therefore verifies that the gate exists, references the hook, and refuses on missing records, and it collapses if any of that stops being true. It would have been unsafe before this release.
+
+### Changed
+- Public capability `beat-implement-runner` stays at contract 3; no consumer-visible API change in this release.
+
 ## [5.106.0] - 2026-08-02
 
 ### Changed

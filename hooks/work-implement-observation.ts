@@ -33,7 +33,13 @@
  *   than loud. So every path — success, violation, and our own failure — writes a durable record,
  *   and the gate treats ABSENCE OF A RECORD AS FAILURE rather than as a pass.
  *
- * THE GATE IS LOAD-BEARING. IF IT IS EVER WEAKENED TO A WARNING, THIS WHOLE DESIGN GOES UNDERWATER
+ * THE GATE IS scripts/beat/implement-gate.ts, AND IT IS LOAD-BEARING. It did not exist when this
+ * header was written, and this hook was registered in NOTHING until v5.106.1 — so for one release the
+ * expectation file was written and never read, every dispatch went unadjudicated, and 35 passing
+ * behaviour tests here said the hook was correct. Behaviour and registration are separate properties;
+ * tests/observation-hook-registration.test.py now holds the second one.
+ *
+ * IF THE GATE IS EVER WEAKENED TO A WARNING, THIS WHOLE DESIGN GOES UNDERWATER
  * AND THE RIGHT MOVE IS TO REVERT TO THE IN-PROCESS LOOP. The in-process version had one property
  * this one cannot: the delta lived in the workflow's own memory and never crossed a channel the
  * model could write, so it was unforgeable by construction. We traded that for un-skippability. The
@@ -58,7 +64,7 @@
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { sessionFlagKey, parsePayload, allow, context, pyJson } from "./_gate_common.ts";
+import { sessionFlagKey, allow, context, pyJson } from "./_gate_common.ts";
 
 /** Python's tempfile.gettempdir(): TMPDIR, TEMP, TMP, then the platform dirs, then cwd. */
 function gettempdir(): string {
@@ -139,9 +145,18 @@ if (import.meta.main) {
   const phase = process.argv.includes("--post") || process.argv[process.argv.indexOf("--phase") + 1] === "post" ? "post" : "pre";
   const raw = await new Response(Bun.stdin.stream()).text();
 
+  // PARSED LOCALLY, NOT VIA `parsePayload`. That helper's `requireObject` calls `process.exit(1)`
+  // outright on a non-object payload — deliberately, so "no local catch can intercept it" — because
+  // it is built for GATES, which must deny when they cannot decide. This hook is not a gate: it
+  // observes, and a non-zero PreToolUse exit is a silent allow. Measured: payloads `null`, `[]` and
+  // `"str"` all exited 1 here, which `tests/pretooluse-crash-closure.test.mjs` catches by actually
+  // RUNNING each wired hook against hostile input — stronger than this hook's own suite, which only
+  // tried unparseable bytes and never valid-JSON-of-the-wrong-type.
   let payload: Record<string, unknown>;
   try {
-    payload = parsePayload(raw);
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("payload is not an object");
+    payload = parsed as Record<string, unknown>;
   } catch {
     // A malformed payload tells us nothing about which task this was, so there is no record to key.
     // Never deny on it.
