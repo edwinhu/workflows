@@ -63,6 +63,7 @@
  * Usage: --phase pre|post --workflow <ds|dev|work>
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { sessionFlagKey, allow, context, pyJson } from "./_gate_common.ts";
 
@@ -142,8 +143,19 @@ export function expectationPath(sessionId: string): string {
  * another run's task.
  */
 export function recordPath(sessionId: string, fingerprint: string, taskId: string, phase: string): string {
+  // THE TASK ID IS HASHED, NOT SANITIZED. Sanitizing is lossy and the loss is a collision:
+  // `a/b`, `a?b` and `a b` all became `a_b` and shared one evidence file, and any two ids agreeing on
+  // their first 96 sanitized characters shared one too. Task ids are opaque strings in the shared
+  // contract — /writing keys them by section name — so both shapes are reachable, and the effect is
+  // that one task's clean record can satisfy the gate for a different task.
+  //
+  // This is the mirror of the marker-parsing bug: careful colon-handling at the prompt layer is
+  // worthless if identity is destroyed at the storage layer. A readable prefix is kept for humans;
+  // the digest is what makes the filename injective.
   const safe = (value: string) => value.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 96);
-  return join(OBSERVATION_DIR, `${safe(sessionId)}--${safe(fingerprint)}--${safe(taskId)}--${phase}.json`);
+  const injective = (value: string) =>
+    `${value.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 40)}-${createHash("sha256").update(value, "utf8").digest("hex").slice(0, 24)}`;
+  return join(OBSERVATION_DIR, `${safe(sessionId)}--${safe(fingerprint)}--${injective(taskId)}--${phase}.json`);
 }
 
 function loadExpectation(sessionId: string): Expectation | undefined {

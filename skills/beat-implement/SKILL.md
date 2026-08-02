@@ -100,6 +100,10 @@ Before invoking the runner, the orchestrator constructs every task itself. Each 
   work: "complete approved implementation instruction",
   criteria: "task-local success criteria and evidence",
   outputs: ["concrete/project-relative/output-path"],
+  // REQUIRED, and previously missing from this example — validateTask rejects the whole wave without
+  // them, and writablePathsWithin additionally requires each to be project-relative and symlink-free.
+  writablePaths: ["concrete/project-relative/output-path"],
+  instructionFiles: ["/absolute/path/to/a/constraint/file.md"],
   // "independent" only after the orchestrator established no task consumes another's output.
   dependencyProof: "independent",
   model: "model supplied by the orchestrator",
@@ -112,10 +116,15 @@ Also copy **only** this immutable receipt-selected identity:
 ```js
 planReset: {
   planFile: "<receipt-selected generated plan basename>",
-  approvedBodyHash: "<receipt-selected plan hash>",
-  session: "<receipt approval session>",
+  planHash: "<receipt-selected plan hash>",
 }
 ```
+
+**Exactly these two fields for a built-in workflow, and no others.** `preflight.ts` rejects any extra
+key outright. This example previously showed `approvedBodyHash` and `session` — the EXTERNAL
+`external-fixed-v1` shape — so following the shared primitive's own canonical example produced a
+request the preflight refuses. External workflows use `{approvedBodyHash, session}` instead; the two
+shapes are not interchangeable and neither accepts a field from the other.
 
 Do not give a fresh doer `.planning/STATE.md`, `.planning/SPEC.md`, `.planning/LEARNINGS.md`, or
 agent memory. These mutable artifacts smuggle prior interpretation into a approval boundary that is supposed to
