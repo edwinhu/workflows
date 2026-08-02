@@ -32,10 +32,18 @@ REACHING A BEAT, DIRECTLY OR THROUGH AN ADAPTER
     would mark a real gap as covered.
 
 KNOWN_GAPS
-    The gaps that exist today, each asserted to STILL be a gap. When one is migrated this suite goes
-    red and tells you to delete its entry — so the registry cannot rot into a silent exemption, and
-    a NEW drift fails immediately rather than joining the list unnoticed. Same contract as
-    KNOWN_NONCOMPLIANT. Migration plan: docs/beat-adoption-migration.md.
+    NOW EMPTY — all 18 pairs are adopted as of 2026-08-02. The registry stays because it is the
+    mechanism, not the backlog: each entry is asserted to STILL be a gap, so migrating one turns this
+    suite red and names the entry to delete. That is what retired all six, one failing assertion at a
+    time. A new exemption must be added deliberately, with its reason and its exit condition, exactly
+    like KNOWN_NONCOMPLIANT in tests/workflow-runtime-purity.test.mjs.
+
+    The last entry to go was ("dev", "beat-clarify"), and it was a DECISION rather than work:
+    beat-clarify's Iron Law is "ask before you look" while dev-clarify runs AFTER reconnaissance, so
+    an adapter would have loaded the beat and violated its central constraint in the same step. It
+    resolved as a SEQUENCE — /dev runs beat-clarify pre-recon (a step whose enforcement hook already
+    existed with nothing behind it) and dev-clarify refines post-recon. Migration plan:
+    docs/beat-adoption-migration.md.
 
 Run: python3 tests/beat-adoption.test.py
 """
@@ -47,14 +55,7 @@ BEATS = ("beat-clarify", "beat-implement", "beat-review")
 WORKFLOWS = ("ds", "dev", "work", "writing", "workshop", "workflow-creator")
 
 # (workflow, beat) pairs that are NOT yet migrated. Each is asserted to still be missing.
-KNOWN_GAPS = {
-    # dev-clarify is "conversational clarification AFTER dev reconnaissance"; beat-clarify asks the
-    # user BEFORE recon and carries evidence-bearing intent forward. These may be genuinely different
-    # steps rather than a duplicate, so this entry is a DECISION to make, not merely work to do:
-    # either dev-clarify becomes an adapter over beat-clarify, or the divergence is documented as
-    # deliberate. Do not collapse it silently to make this suite green.
-    ("dev", "beat-clarify"),
-}
+KNOWN_GAPS: set[tuple[str, str]] = set()
 
 
 def family(workflow: str) -> list[str]:
@@ -95,6 +96,10 @@ for workflow in WORKFLOWS:
 
 # Guards the guard: if `family()` or the scan silently stopped matching, every pair would look like a
 # gap and this suite would report busily while proving nothing. `work` reaches all three directly.
+assert not KNOWN_GAPS, (
+    "KNOWN_GAPS is non-empty. That is allowed, but never by default: write the reason and the exit "
+    "condition next to the entry, or this registry becomes the silent exemption list it exists to prevent."
+)
 for beat in BEATS:
     assert reaches("work", beat), f"scan regression: work should reach {beat} directly, found nothing"
 

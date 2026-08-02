@@ -9,14 +9,14 @@ dispatch inherits none of that.
 
 ## Measured state
 
-**17/18 adopted as of 2026-08-02.** Items 1-4 below are done; item 5 is the one open decision.
+**18/18 adopted as of 2026-08-02. `KNOWN_GAPS` is empty.** Every item below is done.
 
 Adoption = the skill **loads the beat's `SKILL.md`**, or reaches it through an adapter that does.
 
 | workflow | CLARIFY | IMPLEMENT | REVIEW |
 |---|---|---|---|
 | ds | ✅ `beat-clarify` | ✅ via `ds-implement` | ✅ via `ds-review` |
-| dev | ⚠️ `dev-clarify` | ✅ via `dev-implement` | ✅ via `dev-verify` |
+| dev | ✅ `beat-clarify` pre-recon, `dev-clarify` post-recon | ✅ via `dev-implement` | ✅ via `dev-verify` |
 | work | ✅ | ✅ via `goal-work` | ✅ |
 | workflow-creator | ✅ | ✅ | ✅ |
 | writing | ✅ `beat-clarify` | ✅ via `writing-draft` | ✅ via `writing-accept` |
@@ -84,13 +84,20 @@ Both currently do clarify as inline prose under `clarify-before-recon-guard`. Th
 the *primitive* is not used, so the evidence-bearing intent handoff the beat defines is reimplemented
 per workflow. Lower risk than 1–3 because the guard already prevents skipping.
 
-### 5. `dev-clarify` — decide, do not assume
+### 5. `dev-clarify` — DECIDED: a sequence, not an adapter
 
-`dev-clarify` is "conversational clarification **after** dev reconnaissance"; `beat-clarify` is "ask
-the user, then carry evidence-bearing intent into the caller's flow" — positioned **before** recon.
-These may be genuinely different steps rather than a duplicate. **This item is a decision, not a
-migration:** either `dev-clarify` becomes an adapter over `beat-clarify`, or its divergence is
-documented as deliberate. Do not collapse it silently.
+`dev-clarify` is "conversational clarification **after** dev reconnaissance"; `beat-clarify` is
+positioned **before** recon and its Iron Law is *ask before you look*. An adapter would therefore have
+loaded the beat and violated its central constraint in the same step — the two are genuinely different
+moments, not a duplicate.
+
+Resolved as a **two-stage sequence**: `/dev` runs `beat-clarify` before reconnaissance to establish
+outcome, scope and done-ness, and `dev-clarify` refines afterwards for what only the codebase can
+surface. This required no new step — `/dev` already had a pre-recon clarification enforced by
+`clarify-before-recon-guard`, hand-rolled as prose with no beat behind it. The guard enforced that it
+happened while nothing defined what it was, which is the same shape as writing's and workshop's inline
+clarify. `beat-clarify`'s own description already listed `dev-clarify` as a caller; that claim is now
+true.
 
 ## The test that makes this stick
 

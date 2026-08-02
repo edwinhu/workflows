@@ -38,9 +38,22 @@ Before reconnaissance, create the narrow session-bound sentinel exactly as requi
 {"status":"pending","sessionId":"[current session]"}
 ```
 
-at `.planning/DEV_CLARIFIED.json`. Ask the user, conversationally and before reading project
-files, about the outcome, exclusions, constraints, acceptance evidence, automated real-test
-strategy, intended first failing test, user workflow, protocol/transport, and review surfaces.
+at `.planning/DEV_CLARIFIED.json`. Then read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and
+follow it. **The beat owns the procedure** — one `AskUserQuestion` call, done-ness always
+established, every criterion naming its own evidence, and the ask-before-you-look Iron Law this
+sentinel exists to prove. `/dev` supplies only the domain question axes, which is exactly the split
+the beat defines:
+
+> outcome, exclusions, constraints, acceptance evidence, automated real-test strategy, intended
+> first failing test, user workflow, protocol/transport, and review surfaces.
+
+This step is `/dev`'s **pre-reconnaissance** clarification and is distinct from `dev-clarify`, which
+runs *after* reconnaissance to resolve what only the codebase can surface. The two are a sequence,
+not duplicates — asking everything up front cannot work, because the questions reconnaissance raises
+do not exist yet, and asking everything afterwards lets existing shapes anchor the framing. That
+distinction was previously implicit, which is how this pre-recon step ended up hand-rolled: the guard
+enforced that it happened while nothing defined what it was.
+
 After the user answers, replace it exactly with:
 
 ```json
@@ -58,7 +71,7 @@ leave this workflow rather than silently waive TDD.
 ## Flow
 
 ```text
-opening clarification → read-only reconnaissance → post-recon clarification
+opening clarification (beat-clarify) → read-only reconnaissance → post-recon clarification (dev-clarify)
 → architecture options + user choice → native Plan mode → exact-path review
 ```
 
