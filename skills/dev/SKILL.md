@@ -12,6 +12,10 @@ hooks:
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
   PostToolUse:
     - matcher: "ExitPlanMode"
       hooks:

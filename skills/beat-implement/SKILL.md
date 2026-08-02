@@ -3,6 +3,16 @@ name: beat-implement
 description: "Shared IMPLEMENT primitive. Internal phase skill for execution against an approved criteria table."
 user-invocable: false
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow work"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow work"
 ---
 
 # Beat primitive — IMPLEMENT

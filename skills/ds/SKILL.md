@@ -3,6 +3,14 @@ name: ds
 description: "This skill should be used when the user asks to 'start data analysis', 'plan a data project', 'explore this dataset', 'what should I analyze', 'set up a new study', or needs the data-science workflow."
 hooks:
   PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
     - matcher: "Read|Glob|Grep|Bash"
       hooks:
         - type: command

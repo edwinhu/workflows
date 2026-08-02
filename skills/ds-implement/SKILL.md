@@ -6,6 +6,14 @@ disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Workflow, Agent, TaskList, TaskCreate, TaskUpdate
 hooks:
   PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
     - matcher: "Workflow"
       hooks:
         - type: command
