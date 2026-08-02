@@ -127,10 +127,19 @@ while (remaining.length) {
   if (!ready.length) throw new Error('generated plan has an unsatisfiable dependency; regenerate from the plan')
   phase(${literal(phases[0] ?? "Implement")})
   log(\`wave \${++waveIndex}: \${ready.length} task(s)\`)
-  const wave = await parallel(ready.map(task => () => agent(
-    \`IMMUTABLE PLAN IDENTITY\\nPLAN_FILE: \${PLAN_FILE}\\nPLAN_HASH: \${PLAN_HASH}\\n\\nTASK \${task.id}: \${task.name}\\n\\n\${task.prompt}\\n\\nReturn RESULT.\`,
-    { label: task.id, schema: RESULT },
-  )))
+  // SEQUENTIAL, NOT parallel(). The observation hooks bracket each dispatch with a git observation of
+  // the WHOLE working tree, so a sibling task writing inside this task's pre/post window lands in this
+  // task's delta and is reported against an agent that did nothing wrong. preflight.ts returns
+  // executionMode: 'sequential' for exactly this reason — and this generator emitted parallel() anyway,
+  // which made that returned value false for every generated script. Found by an independent review
+  // after the identical defect had been fixed by hand in writing-draft.js and workshop-generate.js.
+  const wave = []
+  for (const task of ready) {
+    wave.push(await agent(
+      \`IMMUTABLE PLAN IDENTITY\\nPLAN_FILE: \${PLAN_FILE}\\nPLAN_HASH: \${PLAN_HASH}\\n\\n\${task.prompt}\\n\\nReturn RESULT.\`,
+      { label: task.id, schema: RESULT },
+    ))
+  }
   for (const [index, raw] of wave.entries()) {
     const task = ready[index]
     // Evidence is bound to the task captured at DISPATCH, never to the id the agent reports back —
@@ -159,7 +168,23 @@ return {
 `;
 }
 
+/**
+ * The domain becomes a FILENAME, so it must be a bare identifier.
+ *
+ * `join(dir, `${domain}-implement.js`)` with `domain = "../../evil"` resolves to
+ * `<project>/evil-implement.js` — outside `.claude/workflows/` entirely, defeating the symlink and
+ * containment checks in `resolveWorkflowDir`, which validate the DIRECTORY and never the joined
+ * target. `preflight.ts` validates its own workflow identity, but this function and the stdin CLI are
+ * exported and reachable without it.
+ */
+function assertBareIdentifier(domain: string): void {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(domain)) {
+    throw new Error(`refusing to emit: domain must be a bare lowercase identifier, got ${JSON.stringify(domain)}. It becomes a filename, and a separator or traversal segment escapes the workflows directory.`);
+  }
+}
+
 export function emitImplementationWorkflow(request: EmitRequest): { path: string; source: string } {
+  assertBareIdentifier(request.domain);
   const source = renderWorkflow(request);
   for (const [construct, pattern] of FORBIDDEN) {
     // Strip comments before scanning, exactly as the purity suite does: the header legitimately

@@ -377,11 +377,23 @@ console.log('routing decides the dispatch shape, and only a workflow route emits
   const source = readFileSync(fanOut.emittedWorkflowPath, 'utf8')
   ok('the generated script is bound to the approved plan hash', source.includes(hash))
   ok('the generated script carries every task', ['a', 'b', 'c', 'd', 'e', 'f'].every(id => source.includes(`"id": "${id}"`)), source.slice(0, 200))
-  // The emitted script wraps each preflight prompt with plan identity and its own `TASK <id>:` line,
-  // so the dispatched prompt carries the marker TWICE. That is benign only because both interpolate
-  // the SAME task object — if they could ever disagree, the hook would correlate a task's filesystem
-  // delta to a different task's bounds. Asserted rather than assumed.
-  ok('the generated script keeps the TASK marker the hook correlates on', /TASK \$\{task\.id\}:/.test(source))
+  // EXACTLY ONE MARKER, AND IT COMES FROM THE TASK PROMPT.
+  //
+  // The emitter used to wrap each prompt with its OWN `TASK <id>:` line on top of the one
+  // buildTaskPrompt already emits, and this assertion pinned that outer copy. I had written here that
+  // the duplication was "benign because both interpolate the SAME task object". An independent review
+  // showed it is not benign: `resolveTaskId` scans the whole prompt for every KNOWN task id and takes
+  // the LONGEST match, so a second marker — or one embedded in task-controlled work/criteria text —
+  // can make a dispatch be observed and adjudicated under a DIFFERENT task's bounds. Two markers is
+  // one more than the protocol can afford.
+  const markers = [...source.matchAll(/TASK [^\\\n"]+:/g)].length
+  ok('the generated script emits no marker of its own', !/TASK \$\{task\.id\}:/.test(source))
+  // ONE PER TASK, not one in total — this fixture dispatches six. The point is that no task's prompt
+  // carries a SECOND marker, since resolveTaskId takes the longest known-id match across the whole
+  // prompt and a second one can rebind a dispatch to another task's bounds.
+  ok('exactly one TASK marker per dispatched task', markers === fanOut.tasks.length, `found ${markers} for ${fanOut.tasks.length} task(s)`)
+  ok('and each marker comes from the task prompt itself',
+    fanOut.tasks.every(t => [...t.prompt.matchAll(/^TASK /gm)].length === 1))
   ok('every TASK marker in the dispatched prompt resolves to the same task id',
     new Set([...fanOut.tasks[0].prompt.matchAll(/^TASK (\S+):/gm)].map(m => m[1])).size === 1, fanOut.tasks[0].prompt.slice(0, 120))
   ok('the generated script is free of the runtime-forbidden constructs',

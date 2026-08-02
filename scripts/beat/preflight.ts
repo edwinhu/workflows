@@ -375,7 +375,10 @@ export function preflight(request: PreflightRequest): PreflightResult {
   const selected = selectMode(tasks);
   const routing = routeImplementation(tasks.map(task => ({ id: task.id, outputs: task.outputs })));
 
-  const prompted = tasks.map(task => ({ id: task.id, name: task.name, prompt: buildTaskPrompt(task, project) }));
+  // dependsOn MUST survive to the emitter. It was being dropped here, so every generated script saw
+  // `dependsOn: []`, put every task in wave 1, and its dependency-graph loop was decorative — while
+  // the header claimed waves come from the plan's dependency graph.
+  const prompted = tasks.map(task => ({ id: task.id, name: task.name, prompt: buildTaskPrompt(task, project), dependsOn: [...(task.dependsOn ?? [])] }));
 
   let emittedWorkflowPath: string | undefined;
   if (routing.route === "workflow" && request.dispatchOwnership !== "caller") {
@@ -385,7 +388,7 @@ export function preflight(request: PreflightRequest): PreflightResult {
       planHash: String(reset.planHash ?? reset.approvedBodyHash),
       domain: request.workflow,
       phases: request.phases?.length ? request.phases : ["Implement"],
-      tasks: prompted.map(task => ({ id: task.id, name: task.name, prompt: task.prompt })),
+      tasks: prompted.map(task => ({ id: task.id, name: task.name, prompt: task.prompt, dependsOn: task.dependsOn })),
     });
     emittedWorkflowPath = path;
   }
