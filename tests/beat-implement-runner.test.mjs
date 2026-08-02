@@ -2,7 +2,7 @@
 // primitives so the dispatch policy is tested without spawning implementation agents.
 // Run: bun test tests/beat-implement-runner.test.mjs
 import { createHash } from 'node:crypto'
-import { existsSync, lstatSync, mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, lstatSync, mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { createServer } from 'node:net'
@@ -18,23 +18,24 @@ const ok = (name, condition, extra = '') => {
   else { FAIL++; console.log(`FAIL  ${name}${extra ? ` — ${extra}` : ''}`) }
 }
 
-// RACE-INJECTION SEAM — NOT a module/runtime adaptation. This swaps the runner's snapshot
-// read+lstat pair for test doubles so a mid-read metadata swap (TOCTOU) can be provoked
-// deterministically, which no fixture can otherwise force. It is explicitly NOT compensating for a
-// module shape or specifier mismatch: the script is loaded as a real ES module by
-// tests/helpers/workflow-module.mjs, so `import.meta.url` and its `./lib/*.ts` specifiers resolve
-// natively and nothing about them is rewritten.
+// THE RACE-INJECTION SEAM THAT USED TO LIVE HERE IS GONE, AND WAS NOT RE-POINTED.
 //
-// KNOWN STALE, LEFT IN PLACE DELIBERATELY: both call sites have MOVED out of beat-implement.js into
-// workflows/lib/approved-artifact.ts (which these suites import as a real module and never rewrite),
-// so as of this commit the substitution matches nothing and `snapshotReadFile`/`snapshotLstat`/
-// `freezeSnapshotMetadata` below are inert. Re-pointing the seam at its new home is a change to the
-// snapshot code's own tests, not to this suite.
-const withRaceInjectionSeam = text => text
-  .replace('readFileSync(fd)', 'snapshotReadFile(fd, full)')
-  .replace('lstatSync(full)', 'snapshotLstat(full)')
-
-const source = withRaceInjectionSeam(readFileSync(ROOT + 'workflows/beat-implement.js', 'utf8'))
+// It rewrote this script's source with `.replace('readFileSync(fd)', 'snapshotReadFile(fd, full)')`
+// and `.replace('lstatSync(full)', 'snapshotLstat(full)')` to swap in snapshot doubles. Both call
+// sites left beat-implement.js: the read moved into `readArtifactSnapshot` in
+// workflows/lib/approved-artifact.ts, and `lstatSync(full)` no longer exists anywhere in the repo.
+// `String.prototype.replace` no-ops silently on an absent literal, so the doubles were never
+// installed, `trace.snapshotReads` was permanently empty, and `freezeSnapshotMetadata` froze
+// nothing — both checks below passed without exercising anything.
+//
+// Re-pointing was not available and would have been the wrong instinct anyway: string rewriting is
+// what rotted. The runner now touches no filesystem primitive at all (it imports none from
+// `node:fs`), so there is nothing here left to double. The two properties the seam supported are
+// re-derived below against the shipped design — one structurally, one with a real fixture — and the
+// TOCTOU window itself is asserted where the code and its dependency-injection seam actually live,
+// through `ArtifactReadOptions.beforeOpen`/`afterOpen` in tests/approved-artifact-contract.test.ts
+// ("rejects a receipt substituted after the receipt descriptor is opened" and its plan-bytes twin).
+const source = readFileSync(ROOT + 'workflows/beat-implement.js', 'utf8')
 const plan = '# Approved plan\n'
 const hash = createHash('sha256').update(plan).digest('hex')
 const planFile = 'jazzy-leaping-scroll.md'
@@ -70,15 +71,7 @@ function projectFor(options = {}) {
 
 async function exec(args, onAgent, options = {}) {
   const project = options.project || projectFor(options)
-  const trace = { labels: [], prompts: {}, options: {}, snapshotReads: [] }
-  const snapshotReadFile = (fd, path) => { trace.snapshotReads.push(path); return readFileSync(fd) }
-  const frozenStats = new Map()
-  const snapshotLstat = path => {
-    const actual = lstatSync(path)
-    if (!options.freezeSnapshotMetadata || !actual.isFile()) return actual
-    if (!frozenStats.has(path)) frozenStats.set(path, actual)
-    return frozenStats.get(path)
-  }
+  const trace = { labels: [], prompts: {}, options: {} }
   const agent = async (prompt, agentOptions = {}) => {
     const label = agentOptions.label || ''
     trace.labels.push(label)
@@ -110,7 +103,6 @@ async function exec(args, onAgent, options = {}) {
       result: await runWorkflowModule(source, {
         agent, parallel, log, phase,
         args: { workflow: 'ds', ...args, projectDir: project },
-        snapshotReadFile, snapshotLstat,
       }),
       trace,
     }
@@ -167,25 +159,58 @@ if (process.platform !== 'win32') {
   ok('returns structured failure when required output is absent despite transient special entry', result.results[0].status === 'failed', JSON.stringify(result.results))
 }
 
-console.log('mutation observation hashes current bytes after every task')
+console.log('mutation observation is Git-backed, not an inline filesystem walk')
 {
-  const project = projectFor()
-  mkdirSync(join(project, 'vendor'))
-  for (let index = 0; index < 250; index++) writeFileSync(join(project, 'vendor', `file-${index}.txt`), `stable-${index}`)
-  const { trace } = await exec({ readyWave: [task('a', ['a.txt']), task('b', ['b.txt'])], planReset: reset }, label => ({
-    taskId: label.slice('implement:'.length), status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: [],
-  }), { project })
-  const vendorReads = trace.snapshotReads.filter(path => path.includes('/vendor/'))
-  ok('runner has no inline recursive snapshot engine', vendorReads.length === 0, String(vendorReads.length))
+  // RE-DERIVED FROM THE DEAD SEAM'S FIRST CHECK. That check filtered `trace.snapshotReads` for
+  // `/vendor/` paths and asserted zero — but the double that populated `snapshotReads` was installed
+  // by a substitution that had stopped matching, so the array was empty for every input and the
+  // assertion could not fail. There is no read seam to re-point at, because the property is now that
+  // the runner performs NO reads: it delegates observation wholesale to captureGitObservation and
+  // imports nothing from `node:fs`. Asserted against the shipped source, which is what a
+  // reintroduced inline engine would have to change.
+  ok('runner delegates observation to the Git-backed capture', /captureGitObservation\(PROJECT\)/.test(source))
+  ok('runner has no inline recursive snapshot engine', !/\bnode:fs\b|\breaddirSync\b|\breadlinkSync\b/.test(source),
+    (source.match(/\bnode:fs\b|\breaddirSync\b|\breadlinkSync\b/g) || []).join(','))
 }
 {
+  // RE-DERIVED FROM THE DEAD SEAM'S SECOND CHECK, WITH A REAL FIXTURE INSTEAD OF A DOUBLE.
+  //
+  // The old check passed `freezeSnapshotMetadata: true` so `snapshotLstat` would hand back a frozen
+  // mode/size for each path, forcing the then-inline snapshot to catch the mutation by CONTENT
+  // rather than by metadata. The double was never installed, and the fixture's target was untracked
+  // besides — Git re-reads untracked files unconditionally, so metadata could never have decided it.
+  //
+  // A same-signature mutation is directly constructible without any injection: rewrite a TRACKED
+  // file to the same byte length and restore its mtime. That is the shape a stat cache would miss,
+  // and it is the only shape where "hashes current bytes" is doing the work.
+  //
+  // The file must ALREADY be dirty before the run, and that detail is load-bearing rather than
+  // incidental. A clean tracked file is absent from the pre-capture and present in the post-capture,
+  // so the delta finds it by ENTRY PRESENCE and the content digest is never consulted — measured:
+  // deleting `contentDigest` from git-observation's `logical()` left that version of this check
+  // green. Dirtying it first puts an entry on both sides, so the digest is the only field that can
+  // differ and the check fails when content hashing is removed.
   const project = projectFor()
-  writeFileSync(join(project, 'outside.txt'), 'before')
-  const { result } = await exec({ readyWave: [task('a', ['allowed.txt'])], planReset: reset }, () => {
-    writeFileSync(join(project, 'outside.txt'), 'after!')
-    return { taskId: 'a', status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: [] }
-  }, { project, freezeSnapshotMetadata: true })
-  ok('same-signature byte mutation is detected outside writable authority', result.results[0].status === 'failed', JSON.stringify(result.results))
+  const target = join(project, 'tracked.txt')
+  writeFileSync(target, 'commit')
+  Bun.spawnSync(['git', 'add', 'tracked.txt'], { cwd: project })
+  Bun.spawnSync(['git', 'commit', '-qm', 'tracked'], { cwd: project })
+  writeFileSync(target, 'before')
+  const original = lstatSync(target)
+  const { result } = await exec({ readyWave: [task('a', ['src/a.js'])], planReset: reset }, () => {
+    mkdirSync(join(project, 'src'), { recursive: true })
+    writeFileSync(join(project, 'src/a.js'), 'produced')
+    writeFileSync(target, 'after!')
+    utimesSync(target, original.atime, original.mtime)
+    return { taskId: 'a', status: 'implemented', summary: 'done', reusableFacts: [], changedFiles: ['src/a.js'] }
+  }, { project })
+  const failed = result.results[0]
+  // The declared output IS produced and IS reported, so a missing-output or report-mismatch failure
+  // cannot stand in for the property under test: the only thing left to fail on is tracked.txt.
+  ok('same-signature byte mutation is detected outside writable authority',
+    failed.status === 'failed' && /outside writable authority/.test(failed.summary), JSON.stringify(failed))
+  ok('same-signature byte mutation is named in the observed changes',
+    (failed.observedChanges || []).includes('tracked.txt'), JSON.stringify(failed))
 }
 
 console.log('workflow authentication supports native-plan domains and rejects unsupported ones')

@@ -504,6 +504,75 @@ describe("built-in generated-plan and legacy layouts", () => {
     }
   }));
 
+  // RE-DERIVED TOCTOU COVERAGE FOR THE BUILT-IN RECEIPT PATH.
+  //
+  // These two tests replace a dead race-injection seam in tests/beat-implement-runner.test.mjs,
+  // which rewrote the runner's source with `.replace('readFileSync(fd)', ...)` and
+  // `.replace('lstatSync(full)', ...)`. Both call sites moved out of that script — the first into
+  // readArtifactSnapshot here, the second out of existence — and `String.replace` no-ops silently on
+  // an absent literal, so the race stopped being injected and the check passed vacuously.
+  //
+  // The seam that does NOT rot is the one the module already exports. `ArtifactReadOptions.afterOpen`
+  // fires between `openSync`/`fstatSync` and the post-open re-verification, which IS the
+  // check-to-use window; `beforeOpen` covers the pre-open half. Every existing race test here drives
+  // the EXTERNAL descriptor path. The built-in generated-plan path — `.planning/.state/review.json`
+  // plus the plan it selects, which is what every built-in workflow and the shared beat IMPLEMENT
+  // runner authenticate through — had none.
+  test("rejects a receipt substituted after the receipt descriptor is opened", () => withProject((root) => {
+    const planning = join(root, ".planning");
+    const statePath = join(planning, ".state", "review.json");
+    const [real, decoy] = ["plan-real.md", "plan-fake.md"];
+    const [realPlan, decoyPlan] = ["# real plan\n", "# fake plan\n"];
+    mkdirSync(join(planning, ".state"), { recursive: true });
+    writeFileSync(join(planning, real), realPlan);
+    writeFileSync(join(planning, decoy), decoyPlan);
+    const honest = JSON.stringify(receipt("work", real, sha256(realPlan)));
+    const substituted = JSON.stringify(receipt("work", decoy, sha256(decoyPlan)));
+    // Equal byte length, written in place, so the same inode and the same size survive the swap.
+    // A size or identity check alone must not be what rejects this — the mtime/ctime comparison is.
+    expect(substituted.length).toBe(honest.length);
+    expect(substituted).not.toBe(honest);
+    writeFileSync(statePath, honest);
+
+    let swapped = false;
+    const result = validateApprovedArtifact(root, "work", "implementation-session", undefined, {
+      afterOpen(path) {
+        if (path !== statePath || swapped) return;
+        swapped = true;
+        writeFileSync(statePath, substituted);
+      },
+    });
+    expect(swapped).toBe(true);
+    expect(result).toEqual(expect.objectContaining({ code: "approval-race" }));
+    // The consequence the race check exists to prevent, pinned separately: with the post-open state
+    // comparison removed the substituted receipt is parsed and the decoy plan authenticates.
+    expect(result).not.toEqual(expect.objectContaining({ planFile: decoy }));
+  }));
+
+  test("rejects plan bytes substituted after the plan descriptor is opened", () => withProject((root) => {
+    const planning = join(root, ".planning");
+    const planFile = "plan-real.md";
+    const planPath = join(planning, planFile);
+    const plan = "# real plan\n";
+    mkdirSync(join(planning, ".state"), { recursive: true });
+    writeFileSync(planPath, plan);
+    writeFileSync(join(planning, ".state", "review.json"), JSON.stringify(receipt("work", planFile, sha256(plan))));
+
+    let swapped = false;
+    const result = validateApprovedArtifact(root, "work", "implementation-session", undefined, {
+      afterOpen(path) {
+        if (path !== planPath || swapped) return;
+        swapped = true;
+        writeFileSync(planPath, "# swap plan\n");
+      },
+    });
+    expect(swapped).toBe(true);
+    // Pinned to `approval-race`, not to "some error". Without the post-open comparison the
+    // substituted bytes reach the hash check and are rejected as `stale-receipt` instead — still
+    // closed, but by a rule that only holds while the attacker cannot choose the bytes.
+    expect(result).toEqual(expect.objectContaining({ code: "approval-race" }));
+  }));
+
   test("receipt binding cannot be redirected by a post-open state-directory swap", () => withProject((root) => {
     const outside = mkdtempSync(join(tmpdir(), "approval-state-outside-"));
     try {
