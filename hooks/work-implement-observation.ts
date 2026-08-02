@@ -48,6 +48,12 @@
  *   - A swap completing entirely before a capture is invisible; the guarantee is self-consistency of
  *     the recorded tuple, not a global filesystem instant.
  *
+ * INTENDED PROPERTY, NOT AN ACCIDENT: an agent whose reported changedFiles disagree with the
+ * observed delta is caught here too — enforceTaskOutputs cross-checks the two. That is the
+ * self-vouching failure this whole redesign exists to remove, so do not delete it as redundant with
+ * the bounds check: a bounds check catches writing the WRONG file, this catches LYING about which
+ * file was written.
+ *
  * Usage: --phase pre|post --workflow <ds|dev|work>
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -226,7 +232,46 @@ if (import.meta.main) {
     context("PostToolUse", `Could not adjudicate task ${taskId} — the observation machinery failed. This is a hook malfunction, NOT a task violation; do not read it as the agent misbehaving. The implement gate will refuse this wave.`);
   }
 
+  // `enforceTaskOutputs` throws for FOUR different causes, and only ONE of them is the agent:
+  //
+  //   task-contract.ts:89  "task writable authority is invalid"           <- the task contract is malformed
+  //   task-contract.ts:91  "expected output is outside writable authority" <- the PLAN declares a bad output
+  //   task-contract.ts:93  malformed observed paths                        <- OUR delta is broken
+  //   task-contract.ts:95+ "observed output is outside writable authority" <- the AGENT violated
+  //
+  // Flattening all four into `violations` blames the implementer for a malformed plan and for our own
+  // machinery bugs, and halts the run with `continue: false` in both cases. That is this design's
+  // recurring failure — distinct causes with distinct remedies collapsed into one channel — one layer
+  // below where I had already fixed it.
+  //
+  // The separation is STRUCTURAL, not message-matching: matching throw text breaks the first time
+  // someone rewords it. Instead the other three causes are made UNREACHABLE before enforce runs, so
+  // whatever survives to the catch is necessarily the agent.
   let violations: string[] = [];
+  try {
+    const { concretePaths, pathsOverlap } = await import("../workflows/lib/task-contract.ts");
+    // Causes 1 and 2: properties of the PLAN, true before any agent ran and unavoidable by good
+    // behaviour. The preflight validates these for the whole wave before dispatching anything, which
+    // is both earlier and the right place; this is defence in depth for a hook that outlives it.
+    const writable = concretePaths(bounds!.writablePaths);
+    if (!writable) throw new Error(`task ${taskId} declares invalid writable authority`);
+    for (const output of bounds!.outputs) {
+      if (![...writable].some(allowed => pathsOverlap(output, allowed))) {
+        throw new Error(`plan declares output "${output}" outside task ${taskId}'s writable authority`);
+      }
+    }
+    // Cause 3: our own delta. Belongs to the machinery channel, never to the agent's.
+    if (!Array.isArray(delta!.changedPaths) || delta!.changedPaths.some(p => typeof p !== "string" || !p)) {
+      throw new Error(`observed delta for task ${taskId} is malformed`);
+    }
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    writeRecord(recordPath(sessionId, fingerprint, taskId, "adjudication"), {
+      taskId, status: "not-adjudicable", reason,
+    });
+    context("PostToolUse", `Task ${taskId} could not be adjudicated: ${reason}\nThis is a PLAN or MACHINERY defect, NOT a task violation — the agent could not have avoided it by behaving correctly, and it would be true if no agent had run. The implement gate will refuse this wave; fix the plan or the observation, do not re-dispatch the agent.`);
+  }
+
   try {
     const { enforceTaskOutputs } = await import("../workflows/lib/task-contract.ts");
     enforceTaskOutputs(
@@ -235,6 +280,9 @@ if (import.meta.main) {
       reported,
     );
   } catch (error) {
+    // Everything that could throw here for a non-agent reason has been ruled out above, so this is
+    // the finding: the agent wrote outside its authority, failed to produce a declared output,
+    // produced an undeclared one, or misreported its own changes.
     violations = [error instanceof Error ? error.message : String(error)];
   }
 
