@@ -60,45 +60,35 @@
 
 When bumping the version (format: `x.y.z` where z is patch, y is minor, x is major):
 
-**Required files to update (3 locations):**
-
-1. **`.claude-plugin/plugin.json`** - Main plugin version
-   ```json
-   {
-     "version": "2.1.3"
-   }
-   ```
-
-2. **`.claude-plugin/marketplace.json`** - Marketplace metadata version
-   ```json
-   {
-     "metadata": {
-       "version": "2.1.3"
-     }
-   }
-   ```
-
-3. **`.claude-plugin/marketplace.json`** - Plugin entry version
-   ```json
-   {
-     "plugins": [
-       {
-         "name": "workflows",
-         "version": "2.1.3"
-       }
-     ]
-   }
-   ```
-
-**Workflow:**
+**NEVER hand-edit version fields. Run the script.**
 
 ```bash
-# 1. Update all 3 version locations (x.y.z → x.y.z+1)
-# 2. Commit with descriptive message including version
-git commit -m "feat: description of changes (vX.Y.Z)"
-# 3. Push to remote
-git push origin main
+scripts/bump-version.sh 5.106.0     # rewrite every version site
+scripts/bump-version.sh --check     # verify they agree; exit 1 if not
 ```
+
+The version is spelled in **six places across four files** — `plugin.json`, two fields in
+`marketplace.json`, `capabilities.json`, and both `TARGET_VERSION` and the test title in
+`tests/public-extension-contract.test.ts`. Four of the six are enforced by that contract
+test, so a hand-bump that misses one turns the suite red; the test title is not enforced,
+so it goes stale silently and lies. This section previously documented three of the six,
+which is how the gap kept being rediscovered one bump at a time. The script is the spec —
+if a version site is ever added, add it there and `--check` will keep everyone honest.
+
+**Then ship it — and the tag is what ships:**
+
+```bash
+bun test tests/public-extension-contract.test.ts
+git commit -am "chore: release vX.Y.Z"
+git push origin main
+git tag -a workflows--vX.Y.Z -m "workflows vX.Y.Z" && git push origin workflows--vX.Y.Z
+```
+
+**`claude plugin update` resolves releases from annotated `workflows--vX.Y.Z` git tags, NOT
+from `marketplace.json`.** Push main without the tag and the release reaches nobody — every
+installed plugin silently stays on the previous version, with no error to notice. This is
+also why landing on `main` is safe and low-stakes while tagging is the deliberate act:
+merging and shipping are separate by construction, not just by convention.
 
 **Version increment guidelines:**
 - **Patch (z)**: Bug fixes, documentation, minor improvements
