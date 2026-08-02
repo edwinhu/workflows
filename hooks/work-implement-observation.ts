@@ -66,6 +66,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, statSy
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { sessionFlagKey, allow, context, pyJson } from "./_gate_common.ts";
+import { isSimpleCommand } from "../workflows/lib/task-contract.ts";
 
 /** Python's tempfile.gettempdir(): TMPDIR, TEMP, TMP, then the platform dirs, then cwd. */
 function gettempdir(): string {
@@ -149,6 +150,15 @@ export type Expectation = {
  * outcome, because "the suite never finished" tells you nothing about whether the behaviour is absent.
  */
 export function runRedCommand(command: string, projectDir: string): { exitCode: number | null; timedOut: boolean; tail: string; error?: string } {
+  // CHECKED AT THE POINT OF EXECUTION, not only at the point of authorship. `validateTask` enforces
+  // this shape when a plan is written, but what actually runs is whatever string sits in the
+  // expectation file under the observation directory — which this file's own header concedes is
+  // protected by a denylist guard "with known residue [that] fails open on its own errors too", and
+  // which an expectation written by a pre-5.107 preflight never constrained at all. A constraint
+  // enforced only where the value is born is not enforced where it is used.
+  if (!isSimpleCommand(command)) {
+    return { exitCode: null, timedOut: false, tail: "", error: "redCommand is not a single invocation (shell operators are refused); refusing to execute it" };
+  }
   try {
     // `bash -c`, NOT `-lc`. A login shell sources the user's profile, so the verdict would depend on
     // startup files and a mutable PATH — an agent-created binary earlier on PATH could decide RED or
@@ -359,15 +369,25 @@ if (import.meta.main) {
   if (phase === "post") {
     redProbe = runProbe();
     // THE PROBE RUNS AFTER THE POST CAPTURE, so anything it writes is invisible to adjudication.
-    // An adversarial review turned that into an exploit: a command that mutates a declared output
-    // after the capture leaves the gate adjudicating bytes that are no longer on disk. Command shape
-    // is now constrained so it cannot redirect, but a test runner can still write through code it
-    // loads — so verify rather than assume, and treat a post-probe mutation as a violation of its own.
+    // An adversarial review turned that into an exploit: a command that mutates a DECLARED OUTPUT
+    // after the capture leaves the gate adjudicating bytes that are no longer on disk.
+    //
+    // SCOPED TO THE DECLARED PATHS, AND THAT SCOPE IS THE WHOLE POINT. The first version compared
+    // whole-tree digests, which re-created precisely the failure the pre/post ordering above exists
+    // to prevent: `captureGitObservation` counts untracked-but-unignored files, so `.coverage`,
+    // `coverage.xml` and `__pycache__` rewritten by an ordinary `pytest` run made the digests differ
+    // and blocked a task that did everything right. The ordering note forty lines up names that
+    // litter by name as the reason it is ordered that way — and the check underneath it then counted
+    // the litter anyway. Litter outside the task's authority is not the exploit; overwriting a
+    // declared output is.
     try {
-      const { captureGitObservation } = await import("../workflows/lib/git-observation.ts");
-      const after = captureGitObservation(expectation?.projectDir ?? String(payload.cwd ?? ".")) as { digest: string };
-      if (after.digest !== capture!.digest) {
-        probeMutated = "the redCommand modified the working tree AFTER the post-dispatch observation, so what was adjudicated is not what remains on disk";
+      const { captureGitObservation, compareGitObservations } = await import("../workflows/lib/git-observation.ts");
+      const after = captureGitObservation(expectation?.projectDir ?? String(payload.cwd ?? "."));
+      const drift = compareGitObservations(capture!.entries, after) as { changedPaths: string[] };
+      const declared = new Set([...(bounds?.outputs ?? []), ...(bounds?.writablePaths ?? [])]);
+      const touched = (drift.changedPaths ?? []).filter(path => [...declared].some(allowed => path === allowed || path.startsWith(`${allowed}/`)));
+      if (touched.length) {
+        probeMutated = `the redCommand modified declared output(s) AFTER the post-dispatch observation, so what was adjudicated is not what remains on disk: ${touched.join(", ")}`;
       }
     } catch {
       // A failure to re-observe is our malfunction, not the task's. The existing record already
@@ -508,7 +528,18 @@ if (import.meta.main) {
       violations.push(`redCommand still fails after implementation: ${bounds.redCommand}`);
     }
   }
-  if (probeMutated) violations.push(probeMutated);
+  // NOT AN AGENT VIOLATION, AND THE CHANNEL MATTERS. The probe is run BY THIS HOOK, from a command
+  // the plan declares and the agent "never sees and cannot edit". Anything it mutates is by
+  // construction not the implementer's act, so routing it through `violations` would print "Task X
+  // failed its output contract" and halt the run while pointing at the wrong party — the same
+  // distinct-causes-collapsed-into-one-channel failure this file fixes one layer down. The remedy is
+  // to fix the redCommand, not to re-dispatch the agent, and the message has to say so.
+  if (probeMutated) {
+    writeRecord(recordPath(sessionId, fingerprint, taskId, "adjudication"), {
+      taskId, status: "not-adjudicable", reason: probeMutated, changedPaths: delta!.changedPaths,
+    });
+    context("PostToolUse", `Task ${taskId} cannot be adjudicated: ${probeMutated}\nThis is a PLAN defect — the declared redCommand writes to a path the task also declares as an output. It is NOT a task violation; the agent could not have avoided it. Fix the redCommand, do not re-dispatch the agent.`);
+  }
 
   writeRecord(recordPath(sessionId, fingerprint, taskId, "adjudication"), {
     taskId, status: violations.length ? "violated" : "clean", violations, changedPaths: delta!.changedPaths,

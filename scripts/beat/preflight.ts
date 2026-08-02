@@ -57,6 +57,7 @@ import {
   pathsOverlap,
   requiredText,
   validateTask,
+  isSimpleCommand,
   writablePathsWithin,
 } from "../../workflows/lib/task-contract.ts";
 import { captureGitObservation } from "../../workflows/lib/git-observation.ts";
@@ -258,7 +259,16 @@ export function preflight(request: PreflightRequest): PreflightResult {
   const wave = request.readyWave as any[];
   const ids = new Set<string>();
   for (const task of wave) {
-    if (!validateTask(task)) throw new Error(`beat-implement task violates the shared task contract: ${JSON.stringify(task)}`);
+    if (!validateTask(task)) {
+      // NAME THE FIELD. `validateTask` returns a bare boolean, so this used to dump the whole task
+      // JSON and leave the author to guess which of a dozen constraints they had missed — and the
+      // newest constraint, redCommand's shape, is the least guessable of them. An error that does
+      // not point at the fix is a support ticket, not a diagnostic.
+      const detail = task && typeof task === "object" && (task as any).redCommand !== undefined && !isSimpleCommand((task as any).redCommand)
+        ? ` — redCommand must be a single invocation: shell operators ; & | \` $ > < newline and backslash are refused, got ${JSON.stringify((task as any).redCommand)}`
+        : "";
+      throw new Error(`beat-implement task violates the shared task contract${detail}: ${JSON.stringify(task)}`);
+    }
     if (!writablePathsWithin(project, task.writablePaths)) {
       throw new Error(`beat-implement task writablePaths must remain below the canonical project root without symlinks: ${JSON.stringify(task.writablePaths)}`);
     }
