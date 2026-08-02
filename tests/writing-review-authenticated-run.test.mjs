@@ -180,4 +180,9 @@ const check = (label, ok, extra = '') => { console.log(`${ok ? 'PASS' : 'FAIL'} 
 
 for (const dir of TEMPS) rmSync(dir, { recursive: true, force: true })
 console.log(failures ? `\n${failures} FAILURE(S)` : '\nall smoke checks passed')
-process.exit(failures ? 1 : 0)
+// EXIT ONLY ON FAILURE. `process.exit(0)` here is not a no-op: under `bun test` every file shares ONE
+// process, so a success-path exit TERMINATES THE RUN and bun reports exit 0 for the whole floor.
+// This file sorts near-last, so its clean exit was overwriting the aggregate verdict: measured, the
+// floor exited 0 while `workflow-creator-compiler` was failing inside it — a red suite reporting
+// green. Three sibling files already carry this comment; this one was written without it.
+if (failures) process.exit(1)

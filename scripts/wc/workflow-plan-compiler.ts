@@ -73,8 +73,13 @@ export function compileWorkflowPlan(plan: string, projectRoot: string): CompileR
     visiting.delete(id); visited.add(id); ordered.push(byId.get(id)!);
   }
   for (const id of [...byId.keys()].sort()) visit(id);
-  const fingerprints = Object.fromEntries(ordered.map(task => [task.id, fingerprint(task)]));
-  return { ok: violations.length === 0, readyWave: violations.length ? [] : ordered, fingerprints: violations.length ? {} : fingerprints, violations };
+  // FINGERPRINT ONLY A CLEAN PLAN. This used to compute eagerly and then discard the result when
+  // `violations` was non-empty — but `fingerprint` calls `normalizeExpectedOutputs`, which THROWS on
+  // precisely the malformed outputs that produced those violations. So the compiler crashed on the
+  // invalid plans it exists to reject, and only ever returned `ok: false` for violations that leave
+  // outputs well-formed. The discard-after-compute was already the intent; it just ran too late.
+  const fingerprints = violations.length ? {} : Object.fromEntries(ordered.map(task => [task.id, fingerprint(task)]));
+  return { ok: violations.length === 0, readyWave: violations.length ? [] : ordered, fingerprints, violations };
 }
 
 if (import.meta.main) {

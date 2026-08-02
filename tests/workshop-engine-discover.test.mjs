@@ -87,15 +87,28 @@ const INDEX = {
 // ── GENERATE ────────────────────────────────────────────────────────────────────
 {
   // index present: section agents echo back the slideNums the prompt requested; assemble compiles.
+  //
+  // THIS FIXTURE USED TO RETURN `citedInventory: []` AND STILL SCORE A CLEAN PASS. That was not a
+  // harmless shortcut — it was the gate's one-sided fidelity check showing through: `[].every(...)`
+  // is vacuously true, so "grounded in nothing" and "grounded correctly" were indistinguishable.
+  // A compliant section cites the ids its slides were authorized to use, so the fixture now does too,
+  // read out of the prompt rather than hand-listed (hand-listing would drift from INDEX silently).
+  const probeTokens = new Map()
   const onAgent = (label, prompt) => {
     if (label === 'discover') throw new Error('LLM discover fired despite slideIndex')
-    if (label.startsWith('section:')) {
+    if (/^section:[^:]+$/.test(label)) {
       const m = prompt.match(/numbers ([\d, ]+)\)/)
       const nums = m ? m[1].split(',').map(s => s.trim()) : []
       const id = label.split(':')[1]
-      return { section: id, status: 'drafted', slidesPath: `/f/section-${id}.typ`, notesPath: `/f/notes-${id}.typ`, slideNums: nums, citedInventory: [], summary: 'ok' }
+      const cited = [...prompt.matchAll(/inventory=\[([^\]]*)\]/g)]
+        .flatMap(x => x[1].split(',').map(s => s.trim()).filter(Boolean))
+      probeTokens.set(id, cited)
+      return { section: id, status: 'drafted', slidesPath: `/f/section-${id}.typ`, notesPath: `/f/notes-${id}.typ`, slideNums: nums, citedInventory: cited, summary: 'ok' }
     }
-    if (label === 'assemble') return { slidesWritten: true, notesWritten: true, compiled: true, compileError: '', notesCompiled: true, notesCompileError: '', slidesPdf: '/p/slides.pdf' }
+    // The probe is the gate's preferred source (gateProbe doctrine) — it must agree with the draft,
+    // otherwise the fixture would be exercising the fallback path rather than the real one.
+    if (/^section:[^:]+:probe$/.test(label)) return { tokens: probeTokens.get(label.split(':')[1]) || [] }
+    if (label === 'assemble') return { slidesWritten: true, notesWritten: true, compiled: true, compileError: '', notesCompiled: true, notesCompileError: '', slidesPdf: '/p/slides.pdf', notesPdf: '/p/notes.pdf' }
     return {}
   }
   const { result, trace } = await exec(genSrc, { args: { projectDir: '/p', slideIndex: INDEX }, onAgent })
@@ -113,6 +126,24 @@ const INDEX = {
   const secP = trace.prompts['section:0'] || ''
   ok('gen: section prompt pins takeaway A + inventory A1', /takeaway="A\."/.test(secP) && /inventory=\[A1\]/.test(secP))
   ok('gen: section prompt forbids invented note macros', /NO custom note macros|do NOT invent/.test(secP))
+}
+{
+  // A section that cites NOTHING must not pass. Fidelity ("no id outside the allowed set") is
+  // satisfied vacuously by the empty set, so before the coverage check this deck scored ✅ on
+  // inventory while resting on no source at all — the failure mode the gate most exists to catch.
+  const onAgent = (label, prompt) => {
+    if (/^section:[^:]+$/.test(label)) {
+      const m = prompt.match(/numbers ([\d, ]+)\)/); const nums = m ? m[1].split(',').map(s => s.trim()) : []
+      return { section: label.split(':')[1], status: 'drafted', slidesPath: '/f.typ', notesPath: '/n.typ', slideNums: nums, citedInventory: [], summary: 'ok' }
+    }
+    if (/^section:[^:]+:probe$/.test(label)) return { tokens: [] }
+    if (label === 'assemble') return { slidesWritten: true, notesWritten: true, compiled: true, compileError: '', notesCompiled: true, notesCompileError: '', slidesPdf: '/p/slides.pdf', notesPdf: '/p/notes.pdf' }
+    return {}
+  }
+  const { result } = await exec(genSrc, { args: { projectDir: '/p', slideIndex: INDEX }, onAgent })
+  ok('gen: uncited plan-authorized inventory BLOCKS overallPass', result.overallPass === false, JSON.stringify(result?.verdict))
+  ok('gen: uncited inventory names the missing ids', (result.findings || []).some(f => /never cited/.test(f.detail) && /A1|R1|T1/.test(f.detail)),
+     JSON.stringify((result.findings || []).map(f => f.detail)))
 }
 {
   // notes.typ compile-FAIL must BLOCK overallPass (opv-parity gate-gap fix: notes are gated, not slides-only).
