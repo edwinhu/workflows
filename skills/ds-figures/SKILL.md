@@ -1,7 +1,7 @@
 ---
 name: ds-figures
 version: 1.0
-description: "Use when producing a figure headed for a paper, slide deck, or notebook — 'make a chart', 'plot this', 'figure for the paper', 'export the figure', choosing colors or a palette, DPI or figure size, fonts, or when a reviewer asks whether a figure is colorblind-safe or print-ready. Covers matplotlib, plotnine, Observable Plot/pyobsplot, and Altair."
+description: "Use when producing OR embedding a figure for a paper, slide deck, or notebook — 'make a chart', 'plot this', 'figure for the paper', 'export the figure', choosing colors or a palette, DPI or figure size, fonts, or when a reviewer asks whether a figure is colorblind-safe or print-ready. ALSO use when putting an EXISTING figure into a document or fixing how one renders there: 'embed a figure in Word/docx', 'vector figure in Word', 'replace the raster/screenshot figure', 'SVG in docx', 'svgBlip', 'convert SVG to EMF', 'figure is low-res or blurry in the PDF', 'figure is clipped, cut off, or overlapping the header', 'what DPI should this figure be'. Covers matplotlib, plotnine, Observable Plot/pyobsplot, and Altair."
 user-invocable: true
 ---
 
@@ -194,6 +194,21 @@ alt.themes.enable("house")
   plus a `<Default Extension="svg" ContentType="image/svg+xml"/>`. Match figures to
   their SVG by CONTENT HASH: pandoc rewrites embedded media to `rIdN.png` and the
   original filename is gone by the time you post-process.
+- **A LibreOffice-built EMF also gets its SIZE wrong, not just its content.** On a
+  three-panel histogram it emitted a frame of aspect 1.2031 from a 1.1852 SVG, so
+  the frame no longer matched the drawing; the picture then drew ~8% larger than
+  its `<wp:extent>` reserved. An INLINE image sheds that surplus UPWARD, so the
+  figure climbed 13pt above the top text margin and sat under the running header —
+  reported as "the title looks clipped". Shrinking the declared width does not fix
+  it: the offset is constant, not proportional. The same document's raster drew at
+  exactly the declared extent in the same renderer, which is what proves the EMF is
+  at fault rather than the engine. Reaching for EMF because "Word renders it
+  natively" is true and still the wrong call — it is the route that costs a
+  correctly-placed figure.
+- **`svgBlip` fixes placement as a side effect, because `a:blip` keeps pointing at
+  the PNG.** Layout is driven by the raster — the path that measures correct — while
+  Word 2016+ draws the vector from the `a:extLst`. That is why svgBlip beats EMF on
+  both axes at once, not merely on fidelity.
 - **Do NOT convert SVG→EMF with LibreOffice.** It is the obvious route and it
   silently corrupts complex figures. A five-facet histogram came back missing an
   entire facet row, every row label, both axis labels, the tick numbers and the
