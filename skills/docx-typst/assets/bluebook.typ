@@ -87,7 +87,10 @@
     // be unreachable for it. Fail loudly rather than inventing an author-short.
     panic("bluebook: no short form for repeated key " + key)
   }
-  short + ", #emph[supra] note " + str(note) + if pin != none { " at " + pin } else { "" }
+  // Rule 4.2: the pincite is set off by a comma -- `supra note 1, at 2040`, not
+  // `supra note 1 at 2040`. `Id. at 496` takes no comma, which is why _id-form
+  // does not get the same treatment.
+  short + ", #emph[supra] note " + str(note) + if pin != none { ", at " + pin } else { "" }
 }
 
 #let _full-form(entries, key, pin) = {
