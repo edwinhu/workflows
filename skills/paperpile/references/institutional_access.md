@@ -72,8 +72,45 @@ entire IP range with broad publisher access — no per-school disambiguation.
 | JSTOR | HTML (consent page) | PDF downloaded (1.77MB) | Shadow DOM T&C button |
 | OUP | HTML (Cloudflare) | Cloudflare passes, page loads | Stale PDF URL in test |
 | Wiley | Timeout | Timeout without DNS fix, loads with fix | Needs `--host-resolver-rules` |
-| HeinOnline | HTML (JS redirect) | Not tested | Likely works with Chrome |
+| HeinOnline | HTML (JS redirect) | **Works — NYU tunnel, IP-entitled** | No EZproxy/Shibboleth/cert needed; see HeinOnline note below |
 | SSRN | 403 | Not tested | Rate-limited, may need login |
+
+## HeinOnline (verified 2026-08-03)
+
+**Use the NYU tunnel and skip EZproxy entirely.** `access.heinonline.com`
+renders "Provided By: NYU School of Law" on the rjds route with no proxy, no
+Shibboleth and no client certificate. This is simpler than the WAYFless SSO path
+`warmup.sh` sets up, and it works where that path currently does not.
+
+**The div is not the page.** Hein addresses *sections of a bound volume* by a
+`div` index, not by page number:
+
+```
+79 Tex. L. Rev. 271  ->  handle=hein.journals/tlr79, div=21/22
+                          div=2 is the volume FRONT MATTER
+```
+
+Resolve the volume TOC, match the row whose start page is the cited page, take
+that row's `div`. Fetching the handle directly yields div 2 — which is how a
+plain browser fetch produced volume front matter labelled as an article.
+
+**Verify page 2, not page 1.** Every Hein PDF opens with a Hein cover sheet
+carrying the journal name and volume, so a page-1 title check passes on the
+front matter. Check the article title and first author on page 2, and the
+closing folio against the citation's end page.
+
+## The UVA certificate is not installed on the Linux box
+
+`warmup.sh`'s HeinOnline/EZproxy step reports "clicked cert login" and then
+never leaves the IdP. The cause is that the Chrome profile's NSS store
+(`~/.pki/nssdb`) contains **zero certificates** — the UVA digital certificate
+has never been installed there, so the cert click is a silent no-op and every
+proxied request lands on NetBadge SSO.
+
+This makes `find-and-add`'s HeinOnline path fail with a misleading error
+(`no TOC entry for page NNN`) that looks like a lookup problem and is actually
+an authentication problem. Installing the cert, or logging in interactively at
+:9250, is a USER action. The NYU route above sidesteps it entirely.
 
 ## Key technical findings
 
