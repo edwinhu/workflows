@@ -678,3 +678,260 @@ def test_script_is_executable_and_has_help(script):
                           capture_output=True, text=True, check=False)
     assert proc.returncode == 0, proc.stderr
     assert "usage:" in proc.stdout.lower()
+
+
+# ── C9: real Word output — three pandoc defects, pinned and worked around ──
+#
+# Everything above this line converts a docx pandoc itself wrote. Genuine Word output
+# exercises paths that one never reaches, and all three of these were found by running
+# the recovery over a 1.2M Word manuscript (7 headings, 67 footnotes, 26 tables,
+# 7 figures) that the synthetic fixtures said was fine.
+
+CONTAINER = """#figure(
+  align(center)[#table(
+    columns: (100%,),
+    align: (auto,),
+    [#figure(
+      align(center)[#table(
+        columns: (50%, 50%),
+        align: (left,left,),
+        table.header(table.cell(align: left)[Block], table.cell(align: left)[Rule],),
+        table.hline(),
+        table.cell(align: left)[Index], table.cell(align: left)[Mirror (pro-rata)],
+      )]
+      , kind: table
+      )
+
+    ],
+  )]
+  , kind: table
+  )
+"""
+
+# A one-column table with real rows — the thing flattening must NOT touch.
+REAL_ONE_COLUMN = """#figure(
+  align(center)[#table(
+    columns: (100%,),
+    align: (auto,),
+    table.header(table.cell(align: left)[Heading],),
+    table.hline(),
+    table.cell(align: left)[First row],
+    table.cell(align: left)[Second row],
+  )]
+  , kind: table
+  )
+"""
+
+# 1x1 transparent PNG, so the image test needs no binary fixture on disk.
+PNG_1X1 = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06"
+    b"\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00"
+    b"\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82"
+)
+
+
+def _wrap_in_container(block: str) -> str:
+    """Put `block` inside one more Word-style one-cell container table."""
+    lines = block.rstrip("\n").split("\n")
+    inner = "\n".join(("    " + ln) if ln.strip() else ln for ln in lines)
+    return (
+        "#figure(\n"
+        "  align(center)[#table(\n"
+        "    columns: (100%,),\n"
+        "    align: (auto,),\n"
+        "    [" + inner.lstrip(" ") + "\n"
+        "\n"
+        "    ],\n"
+        "  )]\n"
+        "  , kind: table\n"
+        "  )\n"
+    )
+
+
+def _raw_docx_to_typ(docx: Path) -> str:
+    """pandoc's docx -> typst with NO normalization, for pinning its defects."""
+    proc = subprocess.run(
+        ["pandoc", "-f", "docx", "-t", "typst", "--wrap=none", str(docx), "-o", "-"],
+        capture_output=True, text=True, check=True,
+    )
+    return proc.stdout
+
+
+@needs_pandoc
+def test_pandoc_still_emits_an_unparseable_single_column_table(tmp_path):
+    """PIN: the typst WRITER emits `columns: (100%)` and its own READER rejects it.
+
+    `(100%)` is a parenthesized scalar in Typst, not a one-element array, so the reader
+    fails with `Could not determine number of columns: VRatio (1 % 1)`. Word wraps every
+    table in a one-cell container, so a real manuscript hits this once per table — 26
+    times in the one this was found on, and the whole file was unrecoverable.
+
+    If this test starts FAILING, pandoc fixed the writer and `_SINGLE_COLUMN_RE` has
+    become dead weight rather than load-bearing.
+    """
+    src = tmp_path / "one.typ"
+    src.write_text(REAL_ONE_COLUMN, encoding="utf-8")
+    docx = canonicalize.typ_to_docx(src, tmp_path / "one.docx")
+
+    raw = _raw_docx_to_typ(docx)
+    assert "columns: (100%)," in raw, "pandoc no longer emits the scalar form"
+
+    bad = tmp_path / "bad.typ"
+    bad.write_text(raw, encoding="utf-8")
+    with pytest.raises(canonicalize.PandocError, match="Could not determine number of columns"):
+        canonicalize.typ_to_docx(bad, tmp_path / "bad.docx")
+
+    # ...and the normalization makes exactly that text parse.
+    fixed = tmp_path / "fixed.typ"
+    fixed.write_text(canonicalize.normalize_recovered(raw), encoding="utf-8")
+    canonicalize.typ_to_docx(fixed, tmp_path / "fixed.docx")
+
+
+@needs_pandoc
+def test_container_tables_do_not_grow_across_the_round_trip(tmp_path):
+    """A one-cell container table is unwrapped, so the nesting cannot accumulate.
+
+    Pandoc reproduces Word's container faithfully in both directions AND adds a level per
+    trip: 19 containers in the manuscript became 57 after one round trip and 133 after
+    two. Without flattening there is no fixed point at all, so `--check` can never pass
+    and nothing downstream of the canonical form works.
+    """
+    src = tmp_path / "body.typ"
+    src.write_text(CONTAINER, encoding="utf-8")
+    docx = canonicalize.typ_to_docx(src, tmp_path / "body.docx")
+
+    once = canonicalize.canonical_from_docx(docx)
+    assert "columns: (100%" not in once, "the container survived recovery"
+    assert "Mirror (pro-rata)" in once, "flattening ate the table it was wrapping"
+    assert once.count("#table(") == 1
+
+    twice = canonicalize.canonicalize_text(once, resource_path=tmp_path)
+    assert twice == once, "container-bearing input never reaches a fixed point"
+
+
+def test_flattening_spares_a_real_one_column_table():
+    """A one-column table with rows is data, not a Word layout container."""
+    assert canonicalize.flatten_container_tables(REAL_ONE_COLUMN) == REAL_ONE_COLUMN
+
+    flat = canonicalize.flatten_container_tables(CONTAINER)
+    assert flat.count("#table(") == 1
+    assert "columns: (50%, 50%)" in flat
+
+    # a container nested inside a container unwraps all the way down — which is the
+    # shape the round trip itself produces, one more level per trip
+    doubled = _wrap_in_container(CONTAINER)
+    assert doubled.count("columns: (100%,)") == 2
+    assert canonicalize.flatten_container_tables(doubled).count("columns: (100%") == 0
+
+
+def test_flattening_survives_prose_that_does_not_balance():
+    """Interval notation like `(0,5\\]` leaves an unclosed paren in the cell.
+
+    A bracket-balancing scanner gives up here — and these were precisely the tables that
+    needed flattening, so the failure was silent and selective.
+    """
+    with_interval = CONTAINER.replace("[Index]", "[(0,5\\]]")
+    flat = canonicalize.flatten_container_tables(with_interval)
+    assert "columns: (100%" not in flat
+    assert "(0,5\\]" in flat
+
+
+# ── C10: word-final apostrophes are not closing double quotes ──────────
+
+@needs_pandoc
+def test_pandoc_still_misreads_a_word_final_apostrophe(tmp_path):
+    """PIN: the writer unsmartens `’` to `'`, and the reader re-reads it as `”`.
+
+    So `Officers’ Retirement` survives one pass as `Officers'` and becomes
+    `Officers” Retirement` on the second — the pipe converges on corruption instead of on
+    its input. 14 of them in the manuscript, in citation titles where a wrong quote reads
+    as a typo nobody traces back to the converter.
+    """
+    src = tmp_path / "q.typ"
+    src.write_text("Police Officers' Retirement and it's fine.\n", encoding="utf-8")
+    docx = canonicalize.typ_to_docx(src, tmp_path / "q.docx")
+    raw = _raw_docx_to_typ(docx)
+    assert "Officers”" in raw, "pandoc no longer mis-smartens a word-final apostrophe"
+    assert "it's" in raw, "an interior apostrophe was never the problem"
+
+
+@needs_pandoc
+def test_word_final_apostrophe_round_trips(tmp_path):
+    text = "Police Officers’ Retirement System and the authors’ synthesis and it’s fine.\n"
+    once = canonicalize.canonicalize_text(text, resource_path=tmp_path)
+    assert "”" not in once, "an apostrophe became a closing double quote"
+    assert "Officers’" in once and "authors’" in once
+    assert canonicalize.canonicalize_text(once, resource_path=tmp_path) == once
+
+
+def test_normalization_leaves_raw_and_math_alone():
+    """pandoc does not smarten inside raw spans, raw blocks or math, so neither do we."""
+    assert canonicalize.normalize_recovered("A `shell x'` span.\n") == "A `shell x'` span.\n"
+    block = "```py\nx = users'\n```\n"
+    assert canonicalize.normalize_recovered(block) == block
+    assert canonicalize.normalize_recovered("$a'$ and $b$\n") == "$a'$ and $b$\n"
+    # ...but the prose beside them is still fixed
+    assert canonicalize.normalize_recovered("`x'` and Officers' pay\n") == \
+        "`x'` and Officers’ pay\n"
+
+
+# ── C11: embedded images are never dropped silently ────────────────────
+
+def _docx_with_image(tmp_path) -> tuple[Path, Path]:
+    media = tmp_path / "media"
+    media.mkdir()
+    (media / "figure1.png").write_bytes(PNG_1X1)
+    src = tmp_path / "body.typ"
+    src.write_text(
+        '= Results\n\n#figure(image("media/figure1.png", width: 1in),\n'
+        "  caption: [\n    A figure.\n  ]\n)\n",
+        encoding="utf-8",
+    )
+    return src, canonicalize.typ_to_docx(src, tmp_path / "body.docx")
+
+
+@needs_pandoc
+def test_recovering_an_image_without_a_media_dir_refuses(tmp_path):
+    """The dangerous direction: pandoc drops images and produces a healthy-looking file.
+
+    Seven figures vanished from a 207KB recovery with no error, leaving empty containers
+    and orphaned captions. Refusing is the only outcome that surfaces the loss.
+    """
+    _, docx = _docx_with_image(tmp_path)
+    with pytest.raises(canonicalize.PandocError, match="embeds 1 image"):
+        canonicalize.canonical_from_docx(docx)
+
+
+@needs_pandoc
+def test_images_are_extracted_and_survive_the_round_trip(tmp_path):
+    _, docx = _docx_with_image(tmp_path)
+    out = tmp_path / "out"
+    out.mkdir()
+
+    recovered = canonicalize.canonical_from_docx(
+        docx, media_dir=out / "media", typ_dir=out
+    )
+    paths = canonicalize.image_paths(recovered)
+    assert len(paths) == 1, "the figure was dropped"
+    assert (out / paths[0]).exists(), f"{paths[0]} is referenced but not on disk"
+    assert "A figure." in recovered
+
+    body = out / "body.typ"
+    body.write_text(recovered, encoding="utf-8")
+    assert canonicalize.main([str(body), "--check"]) == 0, "image paths break the fixed point"
+
+
+@needs_pandoc
+def test_a_missing_image_is_an_error_not_a_warning(tmp_path):
+    """pandoc replaces an unfetchable image with its alt text and still exits 0."""
+    src = tmp_path / "body.typ"
+    src.write_text('#figure(image("media/gone.png", width: 1in))\n', encoding="utf-8")
+    with pytest.raises(canonicalize.PandocError, match="could not open an image"):
+        canonicalize.typ_to_docx(src, tmp_path / "out.docx")
+
+
+@needs_pandoc
+def test_round_trip_that_loses_an_image_raises(tmp_path):
+    """A count mismatch is refused rather than returned as a shorter document."""
+    with pytest.raises(canonicalize.PandocError, match="no resource_path was given"):
+        canonicalize.canonicalize_text('#figure(image("media/x.png"))\n')

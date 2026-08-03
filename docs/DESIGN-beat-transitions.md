@@ -303,12 +303,18 @@ episode that two adapters are worth more than one.
 
 Still open, and deliberately not closed overnight:
 
-1. **The PreToolUse half of the transition gate** (task #17). Ordering is enforced at turn end only.
-   Every available trigger was command-text matching, which this codebase has eight documented rounds
-   proving does not converge.
-2. **The sentinel family cannot be retired** (task #21). `clarify-before-recon-guard` is skill-scoped
-   and fires in every project; the phase recorder is marker-gated and writes nothing in unmarked ones.
-   Deleting the sentinel permanently denies `/dev` and `/ds` all reconnaissance in any unmarked
-   project — demonstrated, not predicted. The guard now prefers the observed record and falls back to
-   the sentinel, which is the safe half.
+1. ~~The PreToolUse half of the transition gate~~ — **BUILT** (`hooks/episode-order-gate.ts`). Closed
+   twice as impossible because every trigger looked like command-text matching. That was true of
+   SHELL COMMANDS and wrong here: `preflight.ts` opens every implementation prompt with
+   `TASK <id>: <name>` and `work-implement-observation.ts` already correlates on it, so recognising a
+   marker this repo EMITS is a lookup rather than a guess. A new wave is now refused while a review is
+   owed; the reviewer itself never carries that marker and is never blocked.
+2. ~~The sentinel family cannot be retired~~ — **DONE in v5.110.0**, by registering the recorder
+   skill-scoped so the scopes match. The built-in compatibility read was dropped one release later.
+   `external-fixed-v1` keeps its sentinel because `clarifySentinel` is a required field of the
+   published schemaVersion-1 descriptor; schemaVersion 2 already drops it and is the migration path,
+   so no major version is needed.
 3. ~~Bounded retry for the Stop hook~~ — BUILT. `MAX_REVIEW_BLOCKS = 3`, counter in `episode.json`.
+
+Nothing on this list is open. The transition machinery is enforced at the moment of the action and
+again at turn end, and both have a guaranteed escape.

@@ -1,6 +1,6 @@
 ---
 name: docx-typst
-description: "Use this skill to BUILD a Word document from a TYPST source file, and to bring a returned .docx back into the repo. Triggers: 'build the docx from the typ', 'typst to Word', 'send them a Word version of this paper', 'my coauthor sent back the docx', 'they returned the Word file with edits', 'reconcile their edits with my source', 'merge the docx changes back', 'what did they change in the Word file', 'pull the comments out of the docx', 'get their comments from the Google Doc', 'is this file canonical', 'the source and the docx have diverged'. NOT 'law-review-docx' or 'law-econ-docx' (those build a docx from MARKDOWN — different input format), NOT 'docx-repair' (which fixes OOXML damage from a cloud round trip), NOT 'docx-render' (which only converts an existing .docx to PDF)."
+description: "Use this skill to BUILD a Word document from a TYPST source file, to CONVERT an existing Word manuscript into Typst for the first time, and to bring a returned .docx back into the repo. Triggers: 'build the docx from the typ', 'typst to Word', 'send them a Word version of this paper', 'I have a Word manuscript, give me Typst', 'convert this docx to typst', 'move my paper off Word', 'start a Typst repo from this Word draft', 'my coauthor sent back the docx', 'they returned the Word file with edits', 'reconcile their edits with my source', 'merge the docx changes back', 'what did they change in the Word file', 'pull the comments out of the docx', 'get their comments from the Google Doc', 'is this file canonical', 'the source and the docx have diverged'. NOT 'law-review-docx' or 'law-econ-docx' (those build a docx from MARKDOWN — different input format), NOT 'docx-repair' (which fixes OOXML damage from a cloud round trip), NOT 'docx-render' (which only converts an existing .docx to PDF)."
 user-invocable: true
 ---
 
@@ -16,9 +16,11 @@ reconciling a coauthor's returned file collapses from "read two documents side b
 to `git merge-file`.
 
 ```
-   main.typ ──typst compile──> PDF
-      │
-      │ #include
+   existing.docx ──canonicalize.py --from-docx──> body.typ + media/   (bootstrap, once)
+                                                     │
+   main.typ ──typst compile──> PDF                   │
+      │                                              │
+      │ #include                                     ▼
       ▼
    body.typ ──build.py──> paper.docx ──email──> coauthor edits in Word
       ▲                                                    │
@@ -30,13 +32,17 @@ to `git merge-file`.
 
 ## Scripts
 
-All under `${CLAUDE_SKILL_DIR}/scripts/`. Each is self-contained (`uv run` shebang,
-stdlib + lxml) and prints `--help`.
+All under `${CLAUDE_SKILL_DIR}/scripts/`. Each is self-contained and prints `--help`.
+
+**Run them with `uv run --script`, not `uv run python3`.** Four of the five declare
+`lxml` in a PEP 723 header, and `uv run python3 <path>` ignores that header and fails
+with `ModuleNotFoundError: No module named 'lxml'`. `--script` (or executing the file
+directly, since the shebang is `uv run`) reads the header and provisions the dependency.
 
 | Script | Direction | Does |
 |---|---|---|
 | `build.py` | typ → docx | Convert with `--reference-doc` styles **and** stamp provenance, in one step |
-| `canonicalize.py` | — | Put a body file on its fixed point; `--check` gates it; `--lint` guards the body/main split |
+| `canonicalize.py` | docx → typ | **Bootstrap** an existing Word manuscript (`--from-docx`); put a body file on its fixed point; `--check` gates it; `--lint` guards the body/main split |
 | `reconcile.py` | docx → typ | Resolve the ancestor, three-way merge a returned file against the repo source |
 | `comments.py` | docx or Drive → JSON | Extract comments with their anchor text, resolved state, and threading |
 | `provenance.py` | — | Read/write the stamp directly (build.py already applies it) |
@@ -51,10 +57,43 @@ body.typ    pure markup: = headings, prose, #emph, #footnote           ← pando
 Both paths see the same prose and neither degrades the other. The split is not stylistic
 tidiness — see the first fact row.
 
+## Bootstrap: you already have a Word manuscript
+
+The first thing most people need, and the only direction that starts from a document
+this skill never produced. One command:
+
+```bash
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/canonicalize.py" \
+    --from-docx 'paper.docx' --output body.typ --media-dir media
+```
+
+`--media-dir` is **required for any document with figures** and the script refuses
+without it — see the images fact row. Verified end to end on a 1.2M Word manuscript
+(7 top-level headings, 67 footnotes, 26 tables, 7 figures): 1.3s, all 7 figures
+recovered to `media/`, `--check` clean on the result.
+
+Then write the `main.typ` that `body.typ` is included from, and gate the source:
+
+```bash
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/canonicalize.py" body.typ --check   # exit 0
+git add body.typ media/ && git commit -m "bootstrap from paper.docx"
+```
+
+**Two manual steps the conversion cannot make for you:**
+
+- **Delete the recovered table of contents.** Word's TOC arrives as a run of
+  `#link(<...>)` lines, and the ones pointing at Word bookmarks rather than headings
+  reference labels that do not exist — 13 of them in that manuscript, and `typst
+  compile` stops at the first. A Typst document generates its TOC with `#outline()` in
+  `main.typ`, so the recovered block is redundant as well as broken. Removing it is not
+  a loss and does not affect the docx round trip, which reads those links fine.
+- **Move styling into `main.typ`.** The recovery emits pure markup by construction, but
+  anything you add must respect the split below; `--lint` enforces it.
+
 ## Forward: build a Word file
 
 ```bash
-uv run python3 "${CLAUDE_SKILL_DIR}/scripts/build.py" body.typ \
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/build.py" body.typ \
     -o paper.docx \
     --reference-doc "${CLAUDE_SKILL_DIR}/../writing-legal/templates/law_review_template.docx"
 ```
@@ -69,7 +108,8 @@ reconciliation later.
 ## Reverse: reconcile what comes back
 
 ```bash
-uv run python3 "${CLAUDE_SKILL_DIR}/scripts/reconcile.py" returned.docx --source body.typ
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/reconcile.py" returned.docx --source body.typ \
+    --media-dir media
 ```
 
 Writes `body.merged.typ` + `body.merged.typ.diff`, prints JSON, exits **1 on conflict**.
@@ -86,8 +126,8 @@ If none resolves, the script **stops**. Pass `--base-docx` or `--base`.
 ## Comments
 
 ```bash
-uv run python3 "${CLAUDE_SKILL_DIR}/scripts/comments.py" --from-docx returned.docx
-uv run python3 "${CLAUDE_SKILL_DIR}/scripts/comments.py" --from-drive <fileId>
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/comments.py" --from-docx returned.docx
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/comments.py" --from-drive <fileId>
 ```
 
 Both backends emit one schema — `{id, author, created, modified, text, quoted, resolved,
@@ -119,6 +159,37 @@ read-only here by design; there is no write path back.
   default 72-column wrap a one-word edit reflows its whole paragraph, and the merge
   reports a dozen changed lines where one word changed.
 
+- **Real Word output trips three pandoc defects that synthetic fixtures never reach, and
+  `canonicalize.py` normalizes around all three.** Every one was found by running the
+  recovery over a genuine 1.2M manuscript after the suite was already green.
+  (1) Word wraps each table in a one-cell container; pandoc's typst WRITER emits its
+  width as `columns: (100%)` — a parenthesized scalar, not a one-element array — and
+  pandoc's own READER then fails with `Could not determine number of columns`. Still
+  present on pandoc `main` as of 2026-08, so upgrading does not fix it.
+  (2) Making it parse is not enough: pandoc reproduces the container in both directions
+  and ADDS a level per trip — 19 containers became 57 then 133 — so there is no fixed
+  point until single-cell containers are flattened. A real one-column table has one cell
+  per row and is never flattened.
+  (3) The writer unsmartens `’` to `'` and the reader re-reads a word-final `'` as a
+  closing DOUBLE quote, so `Officers’ Retirement` becomes `Officers” Retirement` on the
+  second pass. The pipe converged on corruption rather than on its input. Raw spans, raw
+  blocks and math are exempt, because pandoc does not smarten inside them either.
+
+- **Without `--extract-media` pandoc drops every embedded image and says nothing.** Seven
+  figures vanished from a manuscript into a 207KB file with zero `image(` calls, empty
+  one-cell tables and orphaned captions — and exit status 0. Recovery therefore always
+  extracts, and REFUSES to write a document with figures unless `--media-dir` says where
+  they go. The same asymmetry runs the other way: a `image(...)` path pandoc cannot open
+  is a WARNING, and it substitutes the alt text and still exits 0, so `canonicalize.py`
+  treats that warning as an error. Reaching for a run without `--media-dir` to avoid the
+  extra argument ships a paper with no figures to a coauthor.
+
+- **Image paths are restored positionally across the round trip, not trusted.** Pandoc
+  renames media on embedding (`media/figure1.svg` in, `media/rId83.svg` out), so an image
+  path can never be its own fixed point; a canonical form carrying the round trip's names
+  would point at files that do not exist. The trip is trusted for the prose and the Nth
+  path is put back, with a count mismatch raising.
+
 - **The reference doc does not affect the canonical form** — it changes the docx's styles,
   not its structure. Canonical form is template-independent, so re-templating a document
   never churns the source.
@@ -142,6 +213,10 @@ read-only here by design; there is no write path back.
 | About to resolve `<<<<<<<` markers by deleting one side wholesale | Discards a coauthor's edit unreviewed | Read both sides; ask the user when the prose choice is theirs |
 | About to commit a merge without reading `.merged.typ.diff` | The merge is a claim about someone else's edits, unverified | Read the diff, then commit |
 | About to send a `.docx` built from an uncommitted source | Fallback 3 needs a committed blob; the ancestor is unrecoverable | Canonicalize, commit, then build |
+| About to run `--from-docx` without `--media-dir` because the error is in the way | Every figure is dropped and the output still looks complete | Name the sidecar directory; it is one argument |
+| About to invoke a script with `uv run python3 <path>` | The PEP 723 header is ignored and the lxml scripts die on import | `uv run --script <path>` |
+| About to hand-fix `Officers"` in a recovered file | The converter did it, not the source; hand-fixes are re-corrupted next pass | Re-recover with current `canonicalize.py`, which restores `’` |
+| About to `typst compile` a freshly recovered body and conclude the conversion failed | Word's TOC arrives as links to bookmarks that are not labels | Delete the recovered TOC block; `#outline()` in `main.typ` replaces it |
 
 ## Verifying a change to this skill
 
@@ -149,10 +224,20 @@ read-only here by design; there is no write path back.
 ./scripts/check-tests.sh docx_typst
 ```
 
-`tests/docx_typst_test.py` pins the four pandoc behaviors this skill rests on — the fixed
-point, reference-doc styles, tracked-changes ancestry, and comment extraction. They are
-properties of an external binary this repo does not pin, so they are asserted rather than
-trusted.
+`tests/docx_typst_test.py` pins the pandoc behaviors this skill rests on — the fixed
+point, reference-doc styles, tracked-changes ancestry, comment extraction, and the three
+defects above. They are properties of an external binary this repo does not pin, so they
+are asserted rather than trusted.
+
+Two of those tests pin a BUG rather than a feature: `test_pandoc_still_emits_an_
+unparseable_single_column_table` and `test_pandoc_still_misreads_a_word_final_apostrophe`
+fail when pandoc FIXES the defect. That is the intended signal — it is how the
+normalization gets retired instead of quietly outliving its reason.
+
+**Test against real Word output, not only the fabricated fixtures.** Every defect in the
+list above survived a green suite, because a docx pandoc wrote does not contain the
+structures Word writes. A change to the conversion path is not verified until it has run
+over an actual Word manuscript with tables and figures in it.
 
 ## Scope
 

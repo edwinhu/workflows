@@ -69,7 +69,12 @@ REVIEW is now OWED. The turn cannot END until it is discharged, by either:
 
 This diagram is the specification. If surrounding prose conflicts with it, follow the diagram.
 
-**The review debt is enforced at TURN END, and the gate refuses a BOUNDED number of times.** A
+**The review debt is enforced in TWO places.** A `PreToolUse` gate refuses to dispatch a NEW
+implementation wave while the debt stands — recognised by the beat's own `TASK <id>:` dispatch
+marker, so it never blocks the reviewer, and never fires in an unmarked project. That is the
+enforcement at the moment of the out-of-order action.
+
+**The second is at TURN END, and it refuses a BOUNDED number of times.** A
 plugin-wide `Stop` hook blocks while `reviewOwed` stands, up to `MAX_REVIEW_BLOCKS` (3) refusals per
 debt, then stands down permanently for it. Each refusal says how many remain.
 

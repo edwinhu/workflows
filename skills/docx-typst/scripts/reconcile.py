@@ -105,6 +105,7 @@ def resolve_ancestor(
     source: Path,
     base: Path | None = None,
     base_docx: Path | None = None,
+    media_dir: Path | None = None,
 ) -> tuple[str, str]:
     """Return (canonical ancestor text, how it was found).
 
@@ -115,17 +116,28 @@ def resolve_ancestor(
         return canonicalize_file(base), f"--base {base}"
 
     if base_docx:
-        return canonical_from_docx(base_docx, track_changes="accept"), f"--base-docx {base_docx}"
+        return (
+            canonical_from_docx(base_docx, track_changes="accept",
+                                media_dir=media_dir, typ_dir=Path(source).resolve().parent),
+            f"--base-docx {base_docx}",
+        )
 
     if has_tracked_changes(returned):
-        return canonical_from_docx(returned, track_changes="reject"), "tracked changes (rejected)"
+        return (
+            canonical_from_docx(returned, track_changes="reject",
+                                media_dir=media_dir, typ_dir=Path(source).resolve().parent),
+            "tracked changes (rejected)",
+        )
 
     props = provenance.read(returned)
     sha = props.get("SourceGitSHA")
     if sha:
         blob = _git_blob(sha, Path(source).resolve().parent)
         if blob is not None:
-            return canonicalize_text(blob), f"provenance stamp (git blob {sha[:12]})"
+            return (
+                canonicalize_text(blob, resource_path=Path(source).resolve().parent),
+                f"provenance stamp (git blob {sha[:12]})",
+            )
         raise ReconcileError(
             f"the returned file is stamped with source git blob {sha[:12]}, but that object is not "
             f"in this repository. The source revision that was sent out was probably never "
@@ -172,10 +184,17 @@ def reconcile(
     base_docx: Path | None = None,
     output: Path | None = None,
     apply: bool = False,
+    media_dir: Path | None = None,
 ) -> dict:
     returned, source = Path(returned), Path(source)
-    ancestor_text, ancestor_how = resolve_ancestor(returned, source, base, base_docx)
-    theirs_text = canonical_from_docx(returned, track_changes="accept")
+    # Both sides of the merge must name their figures the same way, so the ancestor and
+    # the returned document are recovered against the SAME media directory and the same
+    # anchor — the source file's directory, where the repo's own body.typ already points.
+    ancestor_text, ancestor_how = resolve_ancestor(returned, source, base, base_docx, media_dir)
+    theirs_text = canonical_from_docx(
+        returned, track_changes="accept", media_dir=media_dir,
+        typ_dir=source.resolve().parent,
+    )
     mine_text = canonicalize_file(source)
 
     merged, conflicts = merge3(
@@ -213,6 +232,9 @@ def main(argv=None) -> int:
     ap.add_argument("--base-docx", type=Path, help="the .docx that was originally sent out")
     ap.add_argument("--output", type=Path, help="where to write the merge (default: SOURCE.merged.typ)")
     ap.add_argument("--apply", action="store_true", help="write the merge over --source")
+    ap.add_argument("--media-dir", type=Path,
+                    help="sidecar directory for images embedded in the returned .docx. Required "
+                         "if it has any — reconciling without it would drop every figure")
     ap.add_argument("--print-diff", action="store_true", help="also print the unified diff")
 
     args = ap.parse_args(argv)
@@ -224,7 +246,8 @@ def main(argv=None) -> int:
 
     try:
         result = reconcile(
-            args.returned, args.source, args.base, args.base_docx, args.output, args.apply
+            args.returned, args.source, args.base, args.base_docx, args.output, args.apply,
+            args.media_dir,
         )
     except (ReconcileError, PandocError) as e:
         print(f"error: {e}", file=sys.stderr)

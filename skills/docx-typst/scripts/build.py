@@ -76,7 +76,12 @@ def build(
     typ_to_docx(typ, output, reference_doc=reference_doc)
 
     props = provenance.source_properties(typ)
-    props["Canonical"] = "yes" if text == canonicalize_text(text) else "no"
+    # `resource_path` is the body file's own directory: the canonical-form check runs the
+    # round trip in a temp dir, where a relative `image(...)` would otherwise resolve to
+    # nothing and pandoc would report the file non-canonical because its figures vanished.
+    props["Canonical"] = (
+        "yes" if text == canonicalize_text(text, resource_path=typ.resolve().parent) else "no"
+    )
     provenance.stamp(output, props)
     return props
 

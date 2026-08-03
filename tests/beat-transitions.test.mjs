@@ -311,9 +311,15 @@ console.log('CLARIFY evidence: the observed record is preferred, the sentinel st
 
   ok('no evidence denies recon', guard(project({ governed: null })) === 'DENY')
 
+  // The scope mismatch that once made retirement impossible is gone: the recorder is skill-scoped,
+  // so an unmarked project gets an OBSERVED record and no longer needs a sentinel at all.
   const unmarked = project({ governed: null })
   sentinel(unmarked)
-  ok('an UNMARKED project still clears via the sentinel — the no-regression case', guard(unmarked) === 'ALLOW')
+  ok('a built-in no longer clears on a sentinel alone — the compat window is spent', guard(unmarked) === 'DENY')
+  execFileSync('bun', [join(ROOT, 'hooks', 'episode-phase.ts'), '--workflow', 'dev'], {
+    cwd: unmarked, encoding: 'utf8', input: JSON.stringify({ tool_name: 'AskUserQuestion', session_id: 's1', cwd: unmarked }),
+  })
+  ok('an UNMARKED project clears via the observed record instead', guard(unmarked) === 'ALLOW')
 
   const marked = project({ governed: true })
   execFileSync('bun', [join(ROOT, 'hooks', 'episode-phase.ts')], {
@@ -323,9 +329,16 @@ console.log('CLARIFY evidence: the observed record is preferred, the sentinel st
   // The sentinel's session binding must survive the move to episode evidence.
   ok('evidence bound to another session does not clear', guard(marked, 'SOMEONE-ELSE') === 'DENY')
 
-  const both = project({ governed: true, episode: 'not json' })
-  sentinel(both)
-  ok('an unreadable episode falls through to the sentinel rather than denying', guard(both) === 'ALLOW')
+  // An unreadable episode denies — and MUST say why, because `episode-phase` refuses to overwrite a
+  // file it cannot parse, so asking again cannot clear it. A generic "clarify first" here is an
+  // unexplainable lockout.
+  const corrupt = project({ governed: true, episode: 'not json' })
+  const corruptOut = execFileSync('bun', [join(ROOT, 'hooks', 'clarify-before-recon-guard.ts'), '--workflow', 'dev'], {
+    cwd: corrupt, encoding: 'utf8',
+    input: JSON.stringify({ tool_name: 'Read', session_id: 's1', cwd: corrupt, tool_input: { file_path: 'src/a.ts' } }),
+  })
+  ok('an unreadable episode denies', corruptOut.includes('"deny"'))
+  ok('and the denial names the file so the lockout is escapable', corruptOut.includes('episode.json'))
 }
 
 console.log('the built-in self-certification channel is closed')
@@ -355,11 +368,11 @@ console.log('the built-in self-certification channel is closed')
   ok('an OBSERVED AskUserQuestion unlocks recon', guard(fresh, read) === 'ALLOW')
   ok('and it recorded the phase in episode.json', typeof episodeOf(fresh).phases.clarified === 'string')
 
-  // Upgrade compatibility: a project mid-CLARIFY when it upgrades has a sentinel and no episode
-  // record. Denying it would re-lock reconnaissance for work already clarified. Nothing writes a
-  // built-in sentinel any more, so this read drains itself.
+  // v5.110.0 retired the sentinel and kept READING it for one release so a project mid-CLARIFY
+  // across that upgrade was not re-locked. v5.111.0 shipped, so the window is spent: a stale
+  // sentinel no longer clears a built-in, and the cost of that is one more AskUserQuestion.
   const legacy = project({ governed: null, sentinels: ['DEV'] })
-  ok('a pre-existing sentinel is still honoured across the upgrade', guard(legacy, read) === 'ALLOW')
+  ok('the built-in sentinel read is gone one release after it was promised', guard(legacy, read) === 'DENY')
 
   // The skill-scoped recorder must work WITHOUT the marker — that scope mismatch is the entire
   // reason the sentinel could not be retired before.
@@ -430,6 +443,38 @@ console.log('the two recorder registrations converge on one episode and one iden
   recorder(stamped, stamped, '--workflow', 'dev')
   ok('correcting the identity does not re-stamp the clarify time', episodeOf(stamped).phases.clarified === first)
   ok('and the identity is corrected', episodeOf(stamped).workflow === 'dev')
+}
+
+console.log('the order gate refuses a NEW wave while a review is owed')
+{
+  // Ordering used to be enforced only at TURN END, by a Stop gate that refuses three times and then
+  // stands down — so the honest description was "you may keep implementing forever, and the worst
+  // that happens is three prompts". This closes it at the MOMENT of the out-of-order action.
+  //
+  // It was twice closed as impossible on the grounds that every trigger was command-text matching.
+  // That was true of SHELL COMMANDS and wrong here: `preflight.ts` opens every implementation prompt
+  // with `TASK <id>: <name>`, and `work-implement-observation.ts` already correlates on exactly that.
+  // Recognising a marker this repo EMITS is a lookup, not a guess.
+  const gate = (root, prompt) => execFileSync('bun', [join(ROOT, 'hooks', 'episode-order-gate.ts')], {
+    cwd: root, encoding: 'utf8',
+    input: JSON.stringify({ tool_name: 'Agent', cwd: root, tool_input: { prompt } }),
+  }).includes('"deny"') ? 'DENY' : 'ALLOW'
+  const IMPL = 'TASK t1: do the thing\nWORK:\n...'
+  const REVIEWER = 'You are the independent reviewer. Assess the criteria.'
+
+  ok('an UNGOVERNED project is untouched', gate(project({ governed: null, episode: OWED }), IMPL) === 'ALLOW')
+
+  const owed = project({ governed: true, episode: OWED })
+  ok('a new implementation wave is refused while review is owed', gate(owed, IMPL) === 'DENY')
+  // If this blocked the reviewer it would be a deadlock: the only way out of the debt would be the
+  // thing the gate forbids.
+  ok('dispatching the REVIEW is never blocked', gate(owed, REVIEWER) === 'ALLOW')
+
+  const discharged = project({ governed: true, episode: { ...OWED, reviewOwed: false } })
+  ok('with no debt, implementation dispatches freely', gate(discharged, IMPL) === 'ALLOW')
+  const exited = project({ governed: true, episode: { ...OWED, reviewOwed: false, exit: { at: '2026-08-03T01:00:00.000Z', reason: 'abandoned' } } })
+  ok('an exited episode does not block', gate(exited, IMPL) === 'ALLOW')
+  ok('an unreadable episode does not block', gate(project({ governed: true, episode: 'not json' }), IMPL) === 'ALLOW')
 }
 
 console.log('episode state is strictly parsed')

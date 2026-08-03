@@ -52,9 +52,14 @@ the fixed point still holds.
    present on pandoc `main` as of 2026-08 (`Writers/Typst.hs`: the width list is built
    with `parens (commaSep ...)` while the align list beside it appends a trailing comma
    unconditionally), so upgrading pandoc does not fix it. The normalization adds the
-   comma: `columns: (100%,)`. Flattening the container table instead was rejected —
-   a genuine one-column data table is indistinguishable at that line, and flattening it
-   would be data loss to work around a syntax bug.
+   comma: `columns: (100%,)`.
+
+   Making the container PARSE is not enough, because pandoc reproduces the nesting in
+   both directions and adds a level per trip — 19 containers in that manuscript became
+   57 after one round trip and 133 after two. There is no fixed point until the
+   containers are gone, so `flatten_container_tables` removes them. It unwraps only a
+   caption-less figure whose table holds exactly ONE cell; a real one-column table has
+   one cell per row and is never touched.
 
 2. WORD-FINAL APOSTROPHES BECOME CLOSING DOUBLE QUOTES. The writer unsmartens `’` to a
    straight `'`; the reader then re-smartens, and reads a `'` at the end of a word as a
@@ -115,6 +120,34 @@ BODY_LINT_RULES = [
 
 _LINT_RE = re.compile(r"^\s*(#show|#set|#let|#import)\b")
 
+# `columns: (100%),` — one width, no comma, so Typst reads a scalar and pandoc's reader
+# rejects it. `[^(),]+` is what confines this to the single-element case: a real width
+# list (`(50%, 50%)`) contains a comma and never matches.
+_SINGLE_COLUMN_RE = re.compile(r"(?m)^(?P<indent>[ \t]*)columns: \((?P<width>[^(),]+)\),$")
+
+# An apostrophe that ends a word. pandoc's typst reader smartens this one to a CLOSING
+# DOUBLE QUOTE; interior apostrophes (`it's`) it gets right and are left alone.
+_WORD_FINAL_APOSTROPHE = re.compile(r"(?<=\w)'(?![\w'])")
+
+# Raw blocks, raw spans and math, where pandoc does not smarten and a rewrite would be
+# corruption. A literal `$` is written `\$` by the typst writer, so an unescaped one is
+# always math and the pairs are balanced.
+_PROTECTED_SPAN = re.compile(r"```.*?```|`[^`\n]*`|(?<!\\)\$.*?(?<!\\)\$", re.DOTALL)
+
+# `image("path", ...)` as the typst writer emits it.
+_IMAGE_RE = re.compile(r'image\("(?P<path>(?:[^"\\]|\\.)*)"')
+
+# Pandoc downgrades an image it cannot open to its alt text and still exits 0.
+_MISSING_RESOURCE = "Could not fetch resource"
+
+# A caption-less `#figure` wrapping a one-column, one-cell `#table` — Word's layout
+# container, not a table anyone wrote. Matched on pandoc's line structure rather than by
+# balancing brackets, because prose balances nothing: this manuscript's cells hold
+# interval notation like `(0,5\]`, where the paren never closes, and a bracket scanner
+# gives up on exactly the tables that need flattening.
+_FIGURE_LINE = re.compile(r"^(?P<indent>[ \t]*)#figure\($")
+_COLUMNS_LINE = re.compile(r"^[ \t]*columns: \((?:100%|auto),\),$")
+
 
 class PandocError(RuntimeError):
     pass
@@ -131,59 +164,273 @@ def _run(cmd: list[str]) -> None:
     proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
     if proc.returncode != 0:
         raise PandocError(f"{' '.join(cmd)} failed ({proc.returncode}):\n{proc.stderr.strip()}")
+    if _MISSING_RESOURCE in (proc.stderr or ""):
+        missing = [ln.strip() for ln in proc.stderr.splitlines() if _MISSING_RESOURCE in ln]
+        raise PandocError(
+            "pandoc could not open an image and replaced it with its alt text — it reports this "
+            "as a warning and still exits 0, so the loss would otherwise be silent:\n  "
+            + "\n  ".join(missing)
+            + "\nPass the directory holding the extracted media (--media-dir on recovery; the "
+              "body file's own directory is used automatically for a file on disk)."
+        )
 
 
-def typ_to_docx(typ: Path, docx: Path, reference_doc: Path | None = None) -> Path:
-    """Convert a Typst body file to .docx. `reference_doc` supplies Word styles."""
+def _outside_protected(text: str, fn) -> str:
+    """Apply `fn` to everything except raw spans, raw blocks and math."""
+    out, pos = [], 0
+    for m in _PROTECTED_SPAN.finditer(text):
+        out.append(fn(text[pos:m.start()]))
+        out.append(m.group(0))
+        pos = m.end()
+    out.append(fn(text[pos:]))
+    return "".join(out)
+
+
+def _flatten_lines(lines: list[str]) -> list[str]:
+    """`flatten_container_tables` over an already-split list of lines."""
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        cell = _container_at(lines, i)
+        if cell is None:
+            out.append(lines[i])
+            i += 1
+            continue
+        body, resume = cell
+        out.extend(_flatten_lines(body))
+        i = resume
+    return out
+
+
+def _container_at(lines: list[str], i: int) -> tuple[list[str], int] | None:
+    """If a one-cell container starts at `lines[i]`, return (its cell, index past it).
+
+    The shape pandoc emits, at some indent I:
+
+        I  #figure(
+        I    align(center)[#table(
+        I      columns: (100%,),
+        I      align: (auto,),
+        I      [<cell, one or more lines>
+        I      ],
+        I    )]
+        I    , kind: table
+        I    )
+
+    The four-line tail is matched as a unit, which is what distinguishes the container's
+    own closing lines from those of a container nested inside its cell.
+    """
+    head = _FIGURE_LINE.match(lines[i])
+    if not head or i + 5 >= len(lines):
+        return None
+    ind = head.group("indent")
+    if (lines[i + 1] != f"{ind}  align(center)[#table("
+            or not _COLUMNS_LINE.match(lines[i + 2])
+            or lines[i + 3] != f"{ind}    align: (auto,),"
+            or not lines[i + 4].startswith(f"{ind}    [")):
+        return None
+
+    for j in range(i + 5, len(lines) - 3):
+        if (lines[j] == f"{ind}    ],"
+                and lines[j + 1] == f"{ind}  )]"
+                and lines[j + 2] == f"{ind}  , kind: table"
+                and lines[j + 3] == f"{ind}  )"):
+            first = ind + lines[i + 4][len(ind) + 5:]
+            rest = [ln[4:] if ln[:4].isspace() else ln for ln in lines[i + 5:j]]
+            body = [first, *rest]
+            while body and not body[-1].strip():
+                body.pop()
+            return body, j + 4
+    return None
+
+
+def flatten_container_tables(text: str) -> str:
+    """Unwrap Word's single-cell layout tables, leaving their contents in place.
+
+    Word wraps a real table in a one-cell container table. Pandoc reproduces the nesting
+    faithfully in BOTH directions and adds a level each time it makes the trip: a
+    manuscript recovered with 19 containers came back with 57 after one round trip and
+    133 after two. The nesting therefore grows without bound and the canonical form has
+    no fixed point at all until the containers are removed — which is why this is not a
+    tidiness pass.
+
+    Only a caption-less `#figure` whose table has exactly ONE cell is unwrapped. A
+    genuine one-column data table has one cell per row, so its `]` lines do not sit where
+    this expects them and it is never touched.
+    """
+    return "\n".join(_flatten_lines(text.split("\n")))
+
+
+def normalize_recovered(text: str) -> str:
+    """Repair the two pandoc defects that make real Word output unrecoverable.
+
+    Applied to every `docx -> typ` result, so it is part of the canonical form's
+    definition rather than a one-off cleanup — which is what keeps the fixed point.
+    Both rewrites are no-ops on text that does not exhibit the defect, so a future
+    pandoc that emits `columns: 1` needs no change here.
+    """
+    text = _SINGLE_COLUMN_RE.sub(
+        lambda m: f"{m.group('indent')}columns: ({m.group('width')},),", text
+    )
+    text = flatten_container_tables(text)
+    return _outside_protected(text, lambda s: _WORD_FINAL_APOSTROPHE.sub("’", s))
+
+
+def image_paths(text: str) -> list[str]:
+    """Every path referenced by an `image(...)` call, in order of appearance."""
+    return [m.group("path") for m in _IMAGE_RE.finditer(text)]
+
+
+def set_image_paths(text: str, paths: list[str]) -> str:
+    """Replace the Nth `image(...)` path with `paths[N]`. Order and count must match."""
+    it = iter(paths)
+    return _IMAGE_RE.sub(lambda m: f'image("{next(it)}"', text)
+
+
+def typ_to_docx(
+    typ: Path,
+    docx: Path,
+    reference_doc: Path | None = None,
+    resource_path: Path | None = None,
+) -> Path:
+    """Convert a Typst body file to .docx. `reference_doc` supplies Word styles.
+
+    `resource_path` is where relative `image(...)` paths resolve from; it defaults to the
+    input file's own directory, which is what a body file next to its media wants.
+    """
     require_pandoc()
-    cmd = ["pandoc", "-f", "typst", "-t", "docx", str(typ), "-o", str(docx)]
+    typ = Path(typ)
+    root = Path(resource_path) if resource_path is not None else typ.resolve().parent
+    cmd = [
+        "pandoc", "-f", "typst", "-t", "docx", f"--resource-path={root}",
+        str(typ), "-o", str(docx),
+    ]
     if reference_doc:
         cmd.insert(-2, f"--reference-doc={reference_doc}")
     _run(cmd)
     return docx
 
 
-def docx_to_typ(docx: Path, track_changes: str = "accept") -> str:
-    """Convert a .docx back to Typst text.
+def docx_to_typ(
+    docx: Path,
+    track_changes: str = "accept",
+    extract_media: Path | None = None,
+) -> str:
+    """Convert a .docx back to Typst text, normalized.
 
     `track_changes` is pandoc's `--track-changes`: `accept` gives the edited document,
     `reject` gives its pre-edit ancestor, `all` marks both inline. A tracked-changes
     docx therefore yields BOTH sides of the coauthor's work from one file.
+
+    `extract_media` is where embedded images are written. Without it pandoc drops them.
     """
     require_pandoc()
     with tempfile.TemporaryDirectory() as td:
         out = Path(td) / "out.typ"
-        _run([
+        cmd = [
             "pandoc", "-f", "docx", "-t", "typst", "--wrap=none",
             f"--track-changes={track_changes}", str(docx), "-o", str(out),
-        ])
-        return out.read_text(encoding="utf-8")
+        ]
+        if extract_media is not None:
+            cmd.insert(-2, f"--extract-media={extract_media}")
+        _run(cmd)
+        return normalize_recovered(out.read_text(encoding="utf-8"))
 
 
-def canonicalize_text(text: str) -> str:
-    """One full docx round trip. Idempotent after the first pass."""
+def canonicalize_text(text: str, resource_path: Path | None = None) -> str:
+    """One full docx round trip. Idempotent after the first pass.
+
+    `resource_path` must name the directory `image(...)` paths in `text` resolve from,
+    since the round trip runs in a temporary directory where they otherwise would not.
+
+    IMAGE PATHS ARE RESTORED POSITIONALLY, and that is not cosmetic. Pandoc renames media
+    on embedding — `media/figure1.svg` goes in and `media/rId83.svg` comes back out — so
+    an image path can never be its own fixed point, and a canonical form carrying the
+    round trip's names would point at files that do not exist. The trip is trusted for
+    the prose and the Nth path is put back, with a count mismatch raising: pandoc losing
+    an image is exactly the failure this is here to make impossible.
+    """
     require_pandoc()
+    before = image_paths(text)
+    if resource_path is None and before:
+        raise PandocError(
+            "this text references images but no resource_path was given, so the round trip "
+            "would run in a temporary directory and silently drop every one of them. Pass the "
+            "directory the image paths are relative to."
+        )
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
         src = td / "in.typ"
         src.write_text(text, encoding="utf-8")
-        typ_to_docx(src, td / "mid.docx")
-        return docx_to_typ(td / "mid.docx", track_changes="accept")
+        typ_to_docx(src, td / "mid.docx", resource_path=resource_path or td)
+        result = docx_to_typ(td / "mid.docx", track_changes="accept")
+
+    after = image_paths(result)
+    if len(after) != len(before):
+        raise PandocError(
+            f"the round trip changed the image count: {len(before)} in, {len(after)} out. "
+            f"Refusing to return a body file whose figures do not match its source."
+        )
+    return set_image_paths(result, before) if before else result
 
 
 def canonicalize_file(path: Path) -> str:
-    return canonicalize_text(Path(path).read_text(encoding="utf-8"))
+    path = Path(path)
+    return canonicalize_text(
+        path.read_text(encoding="utf-8"), resource_path=path.resolve().parent
+    )
 
 
-def canonical_from_docx(docx: Path, track_changes: str = "accept") -> str:
+def canonical_from_docx(
+    docx: Path,
+    track_changes: str = "accept",
+    media_dir: Path | None = None,
+    typ_dir: Path | None = None,
+) -> str:
     """Canonical Typst for a .docx.
 
     The recovered Typst is canonicalized again rather than trusted directly: a docx
     that did not come from this pipe (Word's own save, a Google Docs export) can carry
     structure whose first round trip still moves. Idempotence makes the extra pass free
     for a document that was already canonical.
+
+    Embedded images go to `media_dir`, and the emitted `image(...)` paths are made
+    relative to `typ_dir` — where the recovered body file will live. A document that has
+    images and no `media_dir` RAISES rather than returning text with the figures missing.
     """
-    return canonicalize_text(docx_to_typ(docx, track_changes=track_changes))
+    docx = Path(docx)
+    with tempfile.TemporaryDirectory() as td:
+        staging = Path(td) / "extracted"
+        text = docx_to_typ(docx, track_changes=track_changes, extract_media=staging)
+
+        found = image_paths(text)
+        if not found:
+            return canonicalize_text(text, resource_path=Path(td))
+
+        if media_dir is None:
+            raise PandocError(
+                f"{docx} embeds {len(found)} image(s). Recovering without somewhere to put them "
+                f"would drop every figure and leave the captions orphaned, in a file that looks "
+                f"complete. Pass --media-dir DIR (or media_dir=) to name the sidecar directory."
+            )
+
+        media_dir = Path(media_dir)
+        media_dir.mkdir(parents=True, exist_ok=True)
+        anchor = Path(typ_dir).resolve() if typ_dir is not None else Path.cwd()
+
+        rewrites: dict[str, str] = {}
+        for ref in dict.fromkeys(found):
+            src = (Path(td) / ref) if not Path(ref).is_absolute() else Path(ref)
+            if not src.exists():
+                raise PandocError(f"pandoc reported image {ref!r} but did not extract it")
+            dest = media_dir / src.name
+            shutil.copyfile(src, dest)
+            rewrites[ref] = os.path.relpath(dest.resolve(), anchor)
+
+        text = _IMAGE_RE.sub(
+            lambda m: f'image("{rewrites.get(m.group("path"), m.group("path"))}"', text
+        )
+        return canonicalize_text(text, resource_path=anchor)
 
 
 def lint_body(text: str, path: str = "<body>") -> list[str]:
@@ -204,6 +451,9 @@ def main(argv=None) -> int:
     ap.add_argument("--from-docx", type=Path, help="recover canonical Typst from a .docx instead")
     ap.add_argument("--track-changes", default="accept", choices=["accept", "reject", "all"],
                     help="with --from-docx: which side of a tracked-changes document to take")
+    ap.add_argument("--media-dir", type=Path,
+                    help="with --from-docx: sidecar directory for embedded images. Required if "
+                         "the document has any — recovering without it drops every figure")
     ap.add_argument("--output", type=Path, help="write here instead of stdout")
     ap.add_argument("--in-place", action="store_true", help="rewrite the input file")
     ap.add_argument("--check", action="store_true",
@@ -218,7 +468,12 @@ def main(argv=None) -> int:
 
     try:
         if args.from_docx:
-            result = canonical_from_docx(args.from_docx, track_changes=args.track_changes)
+            # Images are written relative to wherever the recovered body file lands.
+            typ_dir = args.output.resolve().parent if args.output else Path.cwd()
+            result = canonical_from_docx(
+                args.from_docx, track_changes=args.track_changes,
+                media_dir=args.media_dir, typ_dir=typ_dir,
+            )
             original = None
         else:
             original = args.typ.read_text(encoding="utf-8")
@@ -232,7 +487,7 @@ def main(argv=None) -> int:
                 if not args.check:
                     print(f"body lint passed: {args.typ}", file=sys.stderr)
                     return 0
-            result = canonicalize_text(original)
+            result = canonicalize_text(original, resource_path=args.typ.resolve().parent)
     except PandocError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
