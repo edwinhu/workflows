@@ -81,19 +81,35 @@ export type AdapterResult = {
   raw?: string | null;
 };
 
-export type ThirdPartyReviewResult = {
-  enabled: boolean;
-  adapter: string | null;
-  planFile: string;
-  planHash: string;
-  status: ReviewStatus;
+/** One adapter's outcome. Findings are attributed, because the value is in where adapters DISAGREE. */
+export type AdapterReview = {
+  adapter: string;
+  status: Exclude<ReviewStatus, "skipped">;
   verdict: string | null;
   summary: string | null;
-  /** Always true. Present in the output so a consumer cannot claim it did not know. */
-  advisory: true;
   findings: NeutralFinding[];
   reason: string | null;
   raw: string | null;
+};
+
+export type ThirdPartyReviewResult = {
+  enabled: boolean;
+  /** Every adapter the approved plan asked for, in plan order. Empty when the step is skipped. */
+  reviews: AdapterReview[];
+  /** WHAT was reviewed. A finding list means nothing without knowing the diff it came from. */
+  scope: ReviewScope;
+  planFile: string;
+  planHash: string;
+  /**
+   * The WEAKEST claim any adapter supports, so a consumer glancing at one field is never told more
+   * than was established. `reviewed` only when EVERY adapter reviewed; otherwise the first
+   * non-`reviewed` status. One adapter being down must not present as a clean pass by both.
+   */
+  status: ReviewStatus;
+  /** Always true. Present in the output so a consumer cannot claim it did not know. */
+  advisory: true;
+  /** Every finding from every adapter, each carrying its `adapter` attribution. */
+  findings: (NeutralFinding & { adapter: string })[];
 };
 
 /** How an adapter shells out. Injectable so tests never make a paid external call. */
@@ -105,9 +121,23 @@ export type Invoke = (spec: {
   timeoutMs?: number;
 }) => { code: number; stdout: string; stderr: string };
 
+/**
+ * WHAT AN ADAPTER IS ASKED TO REVIEW.
+ *
+ * `working-tree` — uncommitted changes. The default, because that is the state IMPLEMENT usually
+ *   leaves behind and because every already-approved plan was written against it.
+ * `branch` — `<base>..HEAD`. Needed because the adapters could ONLY see uncommitted work, so
+ *   reviewing a pull request was impossible through the shipped path: PR #130 had to be reviewed by
+ *   hand-injecting a branch diff through the `invoke` seam. It also matters for the ordinary flow —
+ *   the third-party step runs after the verifier, when the work may already be committed.
+ */
+export type ReviewScope = { kind: "working-tree" } | { kind: "branch"; base: string };
+
+export const DEFAULT_SCOPE: ReviewScope = { kind: "working-tree" };
+
 export type Adapter = {
   name: string;
-  review(context: { projectDir: string; invoke: Invoke }): AdapterResult;
+  review(context: { projectDir: string; invoke: Invoke; scope: ReviewScope }): AdapterResult;
 };
 
 export const SEVERITIES = ["critical", "high", "medium", "low"] as const;
@@ -120,10 +150,13 @@ export const SEVERITIES = ["critical", "high", "medium", "low"] as const;
  * OPAQUELY — this function does not know which providers exist, and the registry is the only thing
  * that does.
  */
-const OPT_IN_LINE = /^[ \t]*(?:[-*+][ \t]*)?(?:\*\*)?third-party review(?:\*\*)?[ \t]*:[ \t]*\**[ \t]*([A-Za-z0-9][A-Za-z0-9-]*)/gim;
+// Captures the whole value after the colon so a LIST can be read; the individual names are split
+// and validated below. Anchored to end-of-line so it cannot run on into the next paragraph.
+const OPT_IN_LINE = /^[ \t]*(?:[-*+][ \t]*)?(?:\*\*)?third-party review(?:\*\*)?[ \t]*:[ \t]*\**[ \t]*([^\n\r]+)/gim;
 const ADAPTER_TOKEN = /^[a-z][a-z0-9-]{0,31}$/;
+const DISABLED = new Set(["none", "off", "no"]);
 
-export type OptIn = { enabled: false } | { enabled: true; adapter: string };
+export type OptIn = { enabled: false } | { enabled: true; adapters: string[] };
 
 /**
  * DEFAULT OFF IS THE ABSENCE OF THE LINE, NOT A LINE THAT SAYS OFF.
@@ -139,24 +172,36 @@ export type OptIn = { enabled: false } | { enabled: true; adapter: string };
  */
 export function readOptIn(planText: unknown): OptIn {
   if (typeof planText !== "string") throw new Error("third-party-review requires the approved plan text as a string");
-  const tokens: string[] = [];
+  const lines: string[][] = [];
   OPT_IN_LINE.lastIndex = 0;
   for (let match = OPT_IN_LINE.exec(planText); match; match = OPT_IN_LINE.exec(planText)) {
-    tokens.push(match[1].toLowerCase());
+    // A LIST ON ONE LINE IS NOT A CONFLICT — it is the request to run several, and both run. Across
+    // three review rounds of this feature only ONE finding out of eight was raised by both shipped
+    // adapters; the value is in where they DISAGREE, so choosing between them throws most of it away.
+    const names = match[1].split(/[,/]|\band\b|\s+/).map(part => part.trim().replace(/\*+$/, "").toLowerCase()).filter(Boolean);
+    if (names.length) lines.push(names);
   }
-  if (tokens.length === 0) return { enabled: false };
-  const distinct = [...new Set(tokens)];
-  // Two different answers in one plan is not a value to pick between — it is an ambiguous authority,
-  // and picking the first would let a stale line in an earlier section silently win.
-  if (distinct.length > 1) {
-    throw new Error(`third-party-review found conflicting opt-in values in the approved plan: ${distinct.join(", ")}`);
+  if (lines.length === 0) return { enabled: false };
+
+  // Two SEPARATE lines are still an ambiguous authority. Picking the first would let a stale line in
+  // an earlier section silently win, which is the case this refusal has always been about.
+  const rendered = lines.map(names => names.join(","));
+  if (new Set(rendered).size > 1) {
+    throw new Error(`third-party-review found conflicting opt-in values in the approved plan: ${rendered.join(" | ")}`);
   }
-  const token = distinct[0];
-  if (token === "none" || token === "off" || token === "no") return { enabled: false };
-  if (!ADAPTER_TOKEN.test(token)) {
-    throw new Error(`third-party-review opt-in value is not a valid adapter name: ${token}`);
+
+  const names = lines[0];
+  if (names.some(name => DISABLED.has(name))) {
+    // "none" alongside a provider is not a preference to reconcile — it is a plan that says two
+    // things. Refusing beats guessing which half the approver meant.
+    if (names.length > 1) throw new Error(`third-party-review opt-in mixes a disabled value with adapters: ${names.join(", ")}`);
+    return { enabled: false };
   }
-  return { enabled: true, adapter: token };
+  for (const name of names) {
+    if (!ADAPTER_TOKEN.test(name)) throw new Error(`third-party-review opt-in value is not a valid adapter name: ${name}`);
+  }
+  // Order is preserved and duplicates collapse — a name repeated is one review, not two paid calls.
+  return { enabled: true, adapters: [...new Set(names)] };
 }
 
 function text(value: unknown): string | null {
@@ -224,6 +269,11 @@ export type RunRequest = {
   planReset: { planFile?: unknown; planHash?: unknown };
   /** Injected in tests. Production leaves it undefined and the adapter shells out for real. */
   invoke?: Invoke;
+  /**
+   * What to review. Defaults to the working tree, so every plan approved before branch scope existed
+   * keeps meaning exactly what it meant.
+   */
+  scope?: ReviewScope;
   /** Overrides the dispatching session identity. Tests set it; production reads the environment. */
   dispatchSession?: string;
 };
@@ -264,66 +314,66 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
     throw new Error("third-party-review read plan bytes that do not hash to the approved planHash");
   }
 
-  const base = { planFile, planHash, advisory: true as const };
+  const scope = request.scope ?? DEFAULT_SCOPE;
+  const base = { planFile, planHash, advisory: true as const, scope };
   const optIn = readOptIn(bytes.toString("utf8"));
   if (!optIn.enabled) {
-    return { ...base, enabled: false, adapter: null, status: "skipped", verdict: null, summary: null, findings: [], reason: null, raw: null };
+    return { ...base, enabled: false, reviews: [], status: "skipped", findings: [] };
   }
 
   // An approved plan naming an adapter this repo does not ship is a contract error of THIS runner's
   // input, not a provider failure, so it is the one case that exits non-zero. Reporting it as
   // `unavailable` would let a typo in an approved plan present as a provider that happened to be
-  // down — the user would read "review unavailable" and never learn no such review exists.
-  const adapter = resolveAdapter(optIn.adapter);
-  if (!adapter) {
-    throw new Error(`third-party-review approved plan names an unknown adapter: ${optIn.adapter} (available: ${adapterNames().join(", ")})`);
-  }
+  // down — the user would read "review unavailable" and never learn no such review exists. Checked
+  // for EVERY named adapter before any of them runs, so a typo in the second name cannot be
+  // discovered only after the first has made a paid call.
+  const adapters = optIn.adapters.map(name => {
+    const resolved = resolveAdapter(name);
+    if (!resolved) {
+      throw new Error(`third-party-review approved plan names an unknown adapter: ${name} (available: ${adapterNames().join(", ")})`);
+    }
+    return resolved;
+  });
 
   const invoke = request.invoke ?? shellInvoke;
-  let result: AdapterResult;
-  try {
-    result = adapter.review({ projectDir: project, invoke });
-  } catch (error) {
-    // DEGRADE, NEVER BLOCK. The verifier already passed; this step can only add. An adapter that
-    // throws must not turn a passing IMPLEMENT into a failing one.
-    return {
-      ...base,
-      enabled: true,
+  const reviews: AdapterReview[] = [];
+  for (const adapter of adapters) {
+    let result: AdapterResult;
+    try {
+      result = adapter.review({ projectDir: project, invoke, scope });
+    } catch (error) {
+      // DEGRADE, NEVER BLOCK, AND NEVER ABANDON THE REST. The verifier already passed; this step can
+      // only add. One adapter throwing must not turn a passing IMPLEMENT into a failing one, and it
+      // must not suppress the other adapter's findings either — most findings in practice come from
+      // exactly one of the two.
+      reviews.push({
+        adapter: adapter.name, status: "unavailable", verdict: null, summary: null,
+        findings: [], reason: error instanceof Error ? error.message : String(error), raw: null,
+      });
+      continue;
+    }
+    if (!result || typeof result !== "object" || !["reviewed", "unavailable", "unparseable"].includes(result.status)) {
+      throw new Error(`third-party-review adapter ${adapter.name} returned a result outside the adapter contract`);
+    }
+    reviews.push({
       adapter: adapter.name,
-      status: "unavailable",
-      verdict: null,
-      summary: null,
-      findings: [],
-      reason: error instanceof Error ? error.message : String(error),
-      raw: null,
-    };
+      status: result.status,
+      verdict: text(result.verdict),
+      summary: text(result.summary),
+      findings: result.status === "reviewed" ? normalizeFindings(result.findings) : [],
+      reason: text(result.reason),
+      raw: typeof result.raw === "string" && result.raw !== "" ? result.raw : null,
+    });
   }
-  if (!result || typeof result !== "object" || !["reviewed", "unavailable", "unparseable"].includes(result.status)) {
-    throw new Error(`third-party-review adapter ${adapter.name} returned a result outside the adapter contract`);
-  }
-  const findings = result.status === "reviewed" ? normalizeFindings(result.findings) : [];
+
   return {
     ...base,
     enabled: true,
-    adapter: adapter.name,
-    status: result.status,
-    verdict: text(result.verdict),
-    summary: text(result.summary),
-    findings,
-    reason: text(result.reason),
-    raw: typeof result.raw === "string" && result.raw !== "" ? result.raw : null,
+    reviews,
+    // The weakest claim, never the most flattering one.
+    status: reviews.every(review => review.status === "reviewed")
+      ? "reviewed"
+      : reviews.find(review => review.status !== "reviewed")!.status,
+    findings: reviews.flatMap(review => review.findings.map(finding => ({ ...finding, adapter: review.adapter }))),
   };
-}
-
-if (import.meta.main) {
-  const request = JSON.parse(await new Response(Bun.stdin.stream()).text()) as RunRequest;
-  try {
-    // EXIT 0 WITH FINDINGS PRESENT, DELIBERATELY. The exit code reports whether THIS RUNNER worked,
-    // never what the third party thought. A non-zero exit on findings would make an advisory step
-    // into a gate by the back door — every caller that checks `$?` would start blocking on it.
-    console.log(JSON.stringify({ ok: true, ...runThirdPartyReview(request) }, null, 2));
-  } catch (error) {
-    console.log(JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) }, null, 2));
-    process.exit(1);
-  }
 }

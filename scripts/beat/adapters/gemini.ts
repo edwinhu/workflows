@@ -18,7 +18,7 @@
  * is also the only way the neutrality of the shared contract is observed rather than claimed: a
  * contract with one implementation is shaped by that implementation whether or not anyone notices.
  */
-import type { Adapter, AdapterResult, Invoke } from "../third-party-review.ts";
+import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../third-party-review.ts";
 
 /** Diff bytes handed to the model. Past this the prompt costs more than the extra context is worth. */
 const MAX_DIFF_BYTES = 240_000;
@@ -91,19 +91,29 @@ export function extractJsonObject(source: string): string | undefined {
   return undefined;
 }
 
-export function reviewWithGemini(context: { projectDir: string; invoke: Invoke }): AdapterResult {
+export function reviewWithGemini(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope }): AdapterResult {
+  const scope = context.scope ?? DEFAULT_SCOPE;
   let diff: { code: number; stdout: string; stderr: string };
   try {
-    // Working-tree scope, matching the other adapter's `--scope working-tree`, so the two adapters
-    // review the SAME change. Comparing their findings would otherwise compare two different diffs.
-    diff = context.invoke({ command: "git", args: ["diff", "HEAD"], cwd: context.projectDir });
+    // The scope must match what the other adapter is given, or comparing the two reviews compares
+    // two different diffs — and the whole value of running both is in where they DISAGREE.
+    // `<base>...HEAD` uses three dots, so the diff is against the MERGE BASE. Two dots would drag in
+    // everything that landed on the base since the branch forked, presenting other people's commits
+    // to the reviewer as part of this change.
+    diff = context.invoke({
+      command: "git",
+      args: scope.kind === "branch" ? ["diff", `${scope.base}...HEAD`] : ["diff", "HEAD"],
+      cwd: context.projectDir,
+    });
   } catch (error) {
-    return unavailable(`could not capture the working-tree diff: ${error instanceof Error ? error.message : String(error)}`);
+    return unavailable(`could not capture the diff: ${error instanceof Error ? error.message : String(error)}`);
   }
-  if (diff.code !== 0) return unavailable(`git diff HEAD exited ${diff.code}: ${(diff.stderr || "").trim().slice(0, 500)}`);
+  const target = scope.kind === "branch" ? `${scope.base}...HEAD` : "HEAD";
+  if (diff.code !== 0) return unavailable(`git diff ${target} exited ${diff.code}: ${(diff.stderr || "").trim().slice(0, 500)}`);
   // An empty diff is NOT a clean review — there was nothing to review. Saying "reviewed, 0 findings"
-  // here would credit the provider with a pass it never performed.
-  if (!diff.stdout.trim()) return unavailable("the working tree has no changes to review");
+  // here would credit the provider with a pass it never performed. This rule has to hold for BOTH
+  // scopes, or branch scope becomes a fresh way to manufacture a silent clean pass.
+  if (!diff.stdout.trim()) return unavailable(`there are no changes to review in ${target}`);
 
   const truncated = diff.stdout.length > MAX_DIFF_BYTES;
   const body = truncated

@@ -14,7 +14,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { Adapter, AdapterResult, Invoke } from "../third-party-review.ts";
+import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../third-party-review.ts";
 
 const PLUGIN_CACHE = join(homedir(), ".claude", "plugins", "cache", "openai-codex", "codex");
 
@@ -48,15 +48,22 @@ function unavailable(reason: string): AdapterResult {
   return { status: "unavailable", findings: [], reason };
 }
 
-export function reviewWithCodex(context: { projectDir: string; invoke: Invoke; cacheDir?: string }): AdapterResult {
+export function reviewWithCodex(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; cacheDir?: string }): AdapterResult {
   const script = findCompanionScript(context.cacheDir ?? PLUGIN_CACHE);
   if (!script) return unavailable(`codex companion is not installed under ${context.cacheDir ?? PLUGIN_CACHE}`);
+
+  // The companion already speaks both scopes; the adapter previously hardcoded `working-tree`, which
+  // is why it could not review committed work at all.
+  const scope = context.scope ?? DEFAULT_SCOPE;
+  const scopeArgs = scope.kind === "branch"
+    ? ["--scope", "branch", "--base", scope.base]
+    : ["--scope", "working-tree"];
 
   let run: { code: number; stdout: string; stderr: string };
   try {
     run = context.invoke({
       command: "node",
-      args: [script, "adversarial-review", "--wait", "--json", "--scope", "working-tree"],
+      args: [script, "adversarial-review", "--wait", "--json", ...scopeArgs],
       cwd: context.projectDir,
     });
   } catch (error) {

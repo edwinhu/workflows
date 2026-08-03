@@ -54,8 +54,9 @@ Fresh verifier: VERIFY criteria
        │
        ▼
 IF the approved plan carries a third-party review line (default: it does not):
-   run it AFTER the verifier PASS → TaskCreate one ADVISORY item per finding
-   → proceed to the gate regardless of what it said
+   run EVERY adapter it names, AFTER the verifier PASS
+   → TaskCreate one ADVISORY item per finding, naming the adapter that raised it
+   → proceed to the gate regardless of what any of them said
        │
        ▼
 Gate 1 PASS records `implemented` + `reviewOwed` in `.planning/.state/episode.json`
@@ -275,21 +276,30 @@ echo '{"projectDir":"...","workflow":"...","planReset":{"planFile":"...","planHa
 
 It runs **after** Claude's own verifier has passed, never before. A third party that runs first
 duplicates a pass Claude was going to make anyway; one that runs last sees work already vetted and
-can only add. Convert each finding into one `TaskCreate` bound to the current `planHash`, then
-**proceed to the gate regardless of the outcome.**
+can only add. Convert each finding into one `TaskCreate` bound to the current `planHash`, **naming
+the adapter that raised it**, then proceed to the gate regardless of the outcome.
+
+**The plan may name several adapters** (`codex, gemini`), and then all of them run. That is usually
+right rather than extravagant: over three review rounds of this feature, eight findings were raised
+and only **one** was found by more than one adapter. The value is in the disagreement, which is why
+findings carry attribution and why one adapter failing never suppresses another's results.
+
+**Scope defaults to the working tree.** Pass `"scope":{"kind":"branch","base":"origin/main"}` to
+review committed work — a pull request, or an episode whose changes are already committed.
 
 **The exit gate does not consult it.** Not the verdict, not the findings, not the status. The runner
-exits 0 when `critical` findings exist and 0 when the provider was unreachable; only its own contract
+exits 0 when `critical` findings exist and 0 when a provider was unreachable; only its own contract
 errors are non-zero. That is structural, not a setting: an external model's claims are unverified by
 construction, and letting them gate a phase imports another model's false positives into our gates.
 
-Read `status` before you read `findings`:
+Read `status` before you read `findings`. The top-level `status` is the **weakest** claim any adapter
+supports, and each entry in `reviews[]` carries its own:
 
 | status | meaning | `findings: []` means |
 |---|---|---|
-| `reviewed` | the provider ran and its output was understood | genuinely clean |
-| `unavailable` | it could not be reached, or it threw | **nothing was looked at** |
-| `unparseable` | it ran but its output could not be read; raw text preserved | **nothing was parsed** |
+| `reviewed` | every adapter ran and its output was understood | genuinely clean |
+| `unavailable` | one could not be reached, or threw | **that adapter looked at nothing** |
+| `unparseable` | one ran but its output could not be read; raw text preserved | **nothing was parsed** |
 | `skipped` | the plan carries no opt-in | the step does not exist |
 
 ## Gate: exit IMPLEMENT
