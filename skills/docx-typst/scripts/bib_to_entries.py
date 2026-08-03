@@ -41,21 +41,29 @@ top of live data is how a citation gets reworded without anyone reading it.
 from __future__ import annotations
 
 import argparse
+import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-# Rule 15: a book's pincite follows the title with no comma. Everything else
-# -- Rule 3.2 cases, articles, statutes -- takes a comma after the first page.
-BOOKISH = {"BOOK", "INBOOK", "INCOLLECTION"}
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-DATE_RE = re.compile(r" \(\d{4}\)")
+from canonicalize import PandocError, require_pandoc
+
+# A locator citeproc will place for us, so the seam does not have to be guessed.
+# It MUST be numeric: the style treats a non-numeric locator as an appendage and
+# renders it after the date -- `(2019), ZQPINQZ` -- while a numeric one goes
+# where a page belongs, `2029, 9990001 (2019)`. Long enough not to collide with
+# a real page, volume, or year in the rendered output, which is asserted.
+PIN_SENTINEL = "9990001"
+
 ENTRY_RE = re.compile(r"^@(\w+)\{([^,\s]+)\s*,", re.MULTILINE)
-LINE_RE = re.compile(r"^(FULL|SHORT)::([^:]+)::#footnote\[(.*)\]$")
+LINE_RE = re.compile(r"^(PIN|SHORT)::([^:]+)::#footnote\[(.*)\]$")
 SUPRA_RE = re.compile(r"^(?P<short>.*?),?\s*#emph\[supra\]\s*note\s*\d+", re.DOTALL)
-MISSING_RE = re.compile(r"#strong\[([^\]]*)\?\];")
+MISSING_RE = re.compile(r"#strong\[[^\]]*\?\];")
 
 
 def bib_entries(bib: Path) -> dict[str, str]:
@@ -70,18 +78,19 @@ def bib_entries(bib: Path) -> dict[str, str]:
 def render(bib: Path, csl: Path, keys: list[str]) -> dict[str, dict[str, str]]:
     """Run citeproc once over every key, twice each.
 
-    Round 1 gives the full first reference. Round 2 -- separated from round 1 by
-    every other key, so citeproc reaches for `supra` rather than `Id.` -- gives
-    the author-short. One pandoc invocation, so both rounds share a citation
-    state and the short form is the one citeproc would really have used.
+    Round 1 cites each key with a sentinel locator, so citeproc renders the full
+    first reference AND shows where a pincite belongs. Round 2 -- separated from
+    round 1 by every other key, so citeproc reaches for `supra` rather than
+    `Id.` -- gives the author-short. One pandoc invocation, so both rounds share
+    a citation state and the short form is the one citeproc would really use.
     """
-    doc = [f"FULL::{k}::[@{k}]\n" for k in keys]
+    doc = [f"PIN::{k}::[@{k}, {PIN_SENTINEL}]\n" for k in keys]
     doc += [f"SHORT::{k}::[@{k}]\n" for k in keys]
     with tempfile.TemporaryDirectory() as td:
         src = Path(td) / "probe.md"
         src.write_text("\n".join(doc), encoding="utf-8")
         proc = subprocess.run(
-            ["pandoc", str(src), "--citeproc", f"--bibliography={bib}",
+            [require_pandoc(), str(src), "--citeproc", f"--bibliography={bib}",
              f"--csl={csl}", "-t", "typst", "--wrap=none"],
             capture_output=True, text=True, check=False,
         )
@@ -100,32 +109,31 @@ def render(bib: Path, csl: Path, keys: list[str]) -> dict[str, dict[str, str]]:
     return out
 
 
-def strip_terminal_period(s: str) -> str:
-    """Drop the sentence period the CSL note style appends.
+def split_at_sentinel(rendered: str, key: str) -> tuple[str, str, str]:
+    """Split citeproc's located rendering into (full, pin-sep, date).
 
-    Only the final character, and only when it is a bare period -- `Id.` and
-    `L. Rev.` end in periods that belong to the citation.
+    The sentinel marks the seam, so nothing here has to infer it. An earlier
+    version split on the last ` (YYYY)` and read the separator off the BibTeX
+    entry type, and both were wrong: a case whose parenthetical carries a court
+    (`123 F.3d 456 (2d Cir. 2019)`) has no bare year to find, an entry with no
+    date at all put the pincite after the URL, and this style gives books the
+    same `, ` separator it gives articles, not Rule 15's bare space. Asking
+    citeproc where it actually put a locator settles all three.
     """
-    return s.removesuffix(".")
-
-
-def split_date(full: str) -> tuple[str, str]:
-    """Split at the LAST bare `(YYYY)`.
-
-    Everything from there on is the date parenthetical plus whatever trails it
-    -- a URL, a `last visited` note. A pincite goes in the seam. Entries with no
-    such parenthetical get `date: ""` and take the pin at the end.
-    """
-    hits = list(DATE_RE.finditer(full))
-    if not hits:
-        return full, ""
-    return full[: hits[-1].start()], full[hits[-1].start() :]
+    i = rendered.find(PIN_SENTINEL)
+    if i < 0:
+        raise ValueError(f"{key}: citeproc dropped the sentinel locator")
+    head, date = rendered[:i], rendered[i + len(PIN_SENTINEL) :]
+    for sep in (", ", " "):
+        if head.endswith(sep):
+            return head[: -len(sep)], sep, date
+    raise ValueError(f"{key}: unrecognized pincite separator before {head[-8:]!r}")
 
 
 def short_of(rendered: str | None) -> str | None:
     if rendered is None:
         return None
-    m = SUPRA_RE.match(strip_terminal_period(rendered))
+    m = SUPRA_RE.match(rendered)
     return m.group("short").strip() if m else None
 
 
@@ -135,87 +143,104 @@ def typ_str(s: str) -> str:
 
 def build(bib: Path, csl: Path, only: list[str] | None) -> dict[str, dict]:
     types = bib_entries(bib)
-    keys = [k for k in types if only is None or k in only]
-    if only:
-        for k in only:
-            if k not in types:
-                print(f"warning: key not in {bib.name}: {k}", file=sys.stderr)
+    if PIN_SENTINEL in bib.read_text(encoding="utf-8"):
+        sys.exit(f"error: {PIN_SENTINEL} occurs in {bib.name}; pick another sentinel")
+    only_set = set(only) if only else None
+    keys = [k for k in types if only_set is None or k in only_set]
+    for k in only_set or ():
+        if k not in types:
+            print(f"warning: key not in {bib.name}: {k}", file=sys.stderr)
     rendered = render(bib, csl, keys)
 
     entries: dict[str, dict] = {}
     for k in keys:
         got = rendered.get(k)
-        if not got or "FULL" not in got:
+        if not got or "PIN" not in got:
             print(f"warning: no rendering for {k}", file=sys.stderr)
             continue
-        full = strip_terminal_period(got["FULL"])
-        if MISSING_RE.search(full):
+        # The CSL note style ends the note with a sentence period. Everything
+        # else in the string belongs to the citation.
+        located = got["PIN"].removesuffix(".")
+        if MISSING_RE.search(located):
             print(f"warning: {k} unresolved by citeproc; skipped", file=sys.stderr)
             continue
-        head, date = split_date(full)
+        try:
+            full, sep, date = split_at_sentinel(located, k)
+        except ValueError as exc:
+            print(f"warning: {exc}; skipped", file=sys.stderr)
+            continue
         entries[k] = {
-            "full": head,
+            "full": full,
             "date": date,
-            "pin-sep": " " if types[k] in BOOKISH else ", ",
+            "pin-sep": sep,
             "short": short_of(got.get("SHORT")),
         }
     return entries
 
 
+FIELDS = ("full", "date", "pin-sep", "short")
+
+
 def emit(entries: dict[str, dict], bib_name: str) -> str:
-    out = [
-        (
+    header = (
         f"// GENERATED by bib_to_entries.py from {bib_name} -- do not hand-edit.\n"
         "//\n"
-        "// Per cite key: the entry-level first reference split at the date\n"
-        "// parenthetical, so a site's pincite lands between them, and the\n"
-        "// author-short citeproc used in `X, supra note N`.\n"
+        "// Per cite key: the entry-level first reference split where citeproc\n"
+        "// places a pincite, the separator it used, and the author-short it\n"
+        "// chose for `X, supra note N`.\n"
         "//\n"
         "// Values are typst SOURCE strings, not content, so the same data can be\n"
         "// eval()'d for the PDF and spliced as markup into the docx build.\n"
         "\n"
         "#let entries = (\n"
-        )
-    ]
+    )
+    out = [header]
     for k in sorted(entries):
         e = entries[k]
-        out.append(f'  "{k}": (\n')
-        out.append(f"    full: {typ_str(e['full'])},\n")
-        out.append(f"    date: {typ_str(e['date'])},\n")
-        if e["pin-sep"] != ", ":
-            out.append(f"    pin-sep: {typ_str(e['pin-sep'])},\n")
-        short = typ_str(e["short"]) if e["short"] else "none"
-        out.append(f"    short: {short},\n")
-        out.append("  ),\n")
+        fields = "".join(
+            f"    {f}: {typ_str(e[f]) if e[f] else 'none'},\n"
+            if f == "short"
+            else f"    {f}: {typ_str(e[f])},\n"
+            for f in FIELDS
+        )
+        out.append(f'  "{k}": (\n{fields}  ),\n')
     out.append(")\n")
     return "".join(out)
 
 
 def parse_existing(path: Path) -> dict[str, dict]:
-    text = path.read_text(encoding="utf-8")
-    body = text.partition("#let entries = (\n")[2]
-    found: dict[str, dict] = {}
-    for m in re.finditer(r'^  "([^"]+)": \(\n((?:    .*\n)+)  \),$', body, re.MULTILINE):
-        fields = dict(re.findall(r"^    ([\w-]+): (.*),$", m.group(2), re.MULTILINE))
-        found[m.group(1)] = {
-            f: (None if v == "none" else v[1:-1].replace('\\"', '"').replace("\\\\", "\\"))
-            for f, v in fields.items()
-        }
-    return found
+    """Read an existing entries module by asking typst, not by regex.
+
+    The module is typst source, and typst is the only thing that can be trusted
+    to read it -- a regex over the emitter's own byte layout fails open on a
+    hand-edited or reformatted file, reporting every entry as new. That would
+    quietly disarm `--diff`, which exists to stop citations changing unread.
+    Same technique as expand_citations.py, for the same reason.
+    """
+    typst = shutil.which("typst")
+    if not typst:
+        sys.exit("error: typst not found on PATH")
+    path = path.resolve()
+    proc = subprocess.run(
+        [typst, "eval", f'import "{path.name}": entries; entries',
+         "--root", str(path.parent), "--format", "json"],
+        capture_output=True, text=True, check=False, cwd=path.parent,
+    )
+    if proc.returncode != 0:
+        sys.exit(f"error: typst could not read {path}:\n{proc.stderr.strip()}")
+    return json.loads(proc.stdout)
 
 
 def diff(entries: dict[str, dict], existing: Path) -> int:
     old = parse_existing(existing)
     added = sorted(set(entries) - set(old))
     dropped = sorted(set(old) - set(entries))
-    changed = []
-    for k in sorted(set(entries) & set(old)):
-        for f in ("full", "date", "pin-sep", "short"):
-            want = entries[k][f]
-            want = None if f == "short" and not want else want
-            have = old[k].get(f, ", " if f == "pin-sep" else "")
-            if (want or "") != (have or ""):
-                changed.append((k, f, have, want))
+    changed = [
+        (k, f, old[k].get(f), entries[k][f])
+        for k in sorted(set(entries) & set(old))
+        for f in FIELDS
+        if (entries[k][f] or "") != (old[k].get(f) or "")
+    ]
 
     print(f"{existing}: {len(old)} entries; generated {len(entries)}")
     if added:
@@ -251,7 +276,10 @@ def main() -> int:
         if not p.exists():
             sys.exit(f"error: no such file: {p}")
 
-    entries = build(args.bib, args.csl, args.keys)
+    try:
+        entries = build(args.bib, args.csl, args.keys)
+    except PandocError as exc:
+        sys.exit(f"error: {exc}")
     if not entries:
         sys.exit("error: citeproc rendered nothing")
 

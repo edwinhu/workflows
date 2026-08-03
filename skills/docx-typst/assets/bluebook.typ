@@ -93,17 +93,17 @@
 #let _full-form(entries, key, pin) = {
   let e = entries.at(key, default: none)
   if e == none { panic("bluebook: unknown cite key " + key) }
-  if pin != none and "date" not in e {
-    // Pre-split data, where `full` ran through the date parenthetical. Appending
-    // the pin would put it AFTER the date -- `2029 (2019), tbl.1` -- which is
-    // wrong and would render without complaint. Refuse instead.
-    panic("bluebook: entry " + key + " has no `date` field, so a first-reference "
-      + "pincite cannot be placed before the date parenthetical. Regenerate the "
-      + "citation data with bib_to_entries.py, or drop the supplement here.")
+  if "date" not in e or "pin-sep" not in e {
+    // Pre-split data, where `full` ran through the date parenthetical. Tolerating
+    // it would mean rendering fine until the first site that supplies a pincite,
+    // then putting it AFTER the date -- `2029 (2019), tbl.1` -- without
+    // complaint. One invariant, checked once, beats a latent wrong render.
+    panic("bluebook: entry " + key + " predates the (full, date, pin-sep) schema. "
+      + "Regenerate the citation data with bib_to_entries.py.")
   }
-  // Rule 3.2 / Rule 15: the pincite goes inside the citation, before the date.
-  let sep = e.at("pin-sep", default: ", ")
-  e.full + if pin != none { sep + pin } else { "" } + e.at("date", default: "")
+  // The pincite goes where citeproc puts a locator: inside the citation, before
+  // the date, with the separator the style itself used.
+  e.full + if pin != none { e.pin-sep + pin } else { "" } + e.date
 }
 
 // typst smartens `--` to an en-dash while PARSING `[2071--72]`, so reassembling

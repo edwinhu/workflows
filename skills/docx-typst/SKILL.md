@@ -174,14 +174,25 @@ by hand.
 
 ```
 "Key": (full: "…up to the pin insertion point", date: " (2019)",
-        pin-sep: ", " | " ", short: "Bebchuk & Hirst" | none)
+        pin-sep: ", " | " ", short: "Bebchuk & Hirst" | none)   // all required
 ```
 
 Bluebook puts a first reference's pincite **inside** the citation, before the
 date — `2029, tbl.1 (2019)`, never `2029 (2019), tbl.1`. A flat `full` string
 cannot express that, so `full` stops at the seam and `date` carries the rest.
-`pin-sep` is `", "` after a first page or volume (Rule 3.2 — cases, articles,
-statutes) and `" "` after a bare title (Rule 15 — books).
+All four fields are required; a pre-split entry panics rather than rendering
+until the first pincite and then misplacing it.
+
+The generator does not *infer* that seam, it **asks citeproc** — one probe round
+cites every key with a numeric sentinel locator, and `full`/`pin-sep`/`date` are
+read off wherever the style put it. Inference was tried and was wrong three ways:
+a case whose parenthetical carries a court (`123 F.3d 456 (2d Cir. 2019)`) has no
+bare `(YYYY)` to split on, an entry with no date at all put the pincite after the
+URL, and deriving the separator from the BibTeX entry type mislabels books —
+`Berle` (no page) really does take Rule 15's bare space, but `Lund & Robertson`
+(a book *with* a page) takes `", "`, and an `@BOOK` test cannot tell them apart.
+The sentinel must be numeric: this style treats a non-numeric locator as an
+appendage and renders it *after* the date.
 
 An earlier schema baked the first site's pin into `full`, and `_full-form` took
 no `pin` at all while `_short-form` and `_id-form` both did. That asymmetry was
