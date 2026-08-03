@@ -118,11 +118,47 @@ export type EpisodeState = {
   exit: EpisodeExit | null;
   /** Absorbed from the retired `.planning/.state/writing.json`. */
   editsSinceVerify: number;
+  /**
+   * How many times the Stop gate has refused a turn because `.planning/` holds a plan-shaped file
+   * with no receipt beside it. Bounded by `MAX_PLAN_BINDING_BLOCKS`.
+   *
+   * NEVER RESET. Unlike `reviewBlocks` — which is reset when a fresh IMPLEMENT sets a fresh debt —
+   * there is no event that makes this debt new again. The unbound plan is discharged by binding it
+   * or by leaving it, and in both cases the caller has already been told once.
+   */
+  planBindingBlocks: number;
 };
+
+/**
+ * The shape as READ OFF DISK, where the newest field may simply not be there yet.
+ *
+ * `readEpisodeState` normalises it away, so nothing downstream sees the optional form.
+ */
+export type StoredEpisodeState = Omit<EpisodeState, "planBindingBlocks"> & { planBindingBlocks?: number };
 
 const PHASE_KEYS = ["clarified", "implemented", "reviewed"] as const;
 const EXIT_REASONS = new Set(["completed", "abandoned", "superseded"]);
-const KEYS = ["schemaVersion", "workflow", "planFile", "planHash", "sessionId", "phases", "reviewOwed", "reviewBlocks", "exit", "editsSinceVerify"];
+const REQUIRED_KEYS = ["schemaVersion", "workflow", "planFile", "planHash", "sessionId", "phases", "reviewOwed", "reviewBlocks", "exit", "editsSinceVerify"];
+/**
+ * Fields added after the first shipped shape, which an on-disk episode is permitted to lack.
+ *
+ * WHY THIS LIST EXISTS AT ALL, AND WHY IT IS NOT "JUST ANOTHER KEY".
+ *   The parser below rejects on `keys.length !== KEYS.length`. Appending `planBindingBlocks` to the
+ *   required list would therefore have made EVERY episode written before this version fail to parse
+ *   — and `readEpisodeState` renders a parse failure as `null`, which the Stop gate reads as "no
+ *   debt" and passes. The upgrade would have silently DISCHARGED every outstanding `reviewOwed` in
+ *   existence, in a release whose whole point is to catch work that escaped the machinery.
+ *
+ *   Strictness is kept where it earns its keep: an UNKNOWN key is still rejected, because a field
+ *   this version does not understand means another writer is involved. Only a key this version
+ *   knows about and can default is allowed to be missing.
+ */
+const OPTIONAL_KEYS = ["planBindingBlocks"];
+const KEYS = new Set([...REQUIRED_KEYS, ...OPTIONAL_KEYS]);
+
+function validCount(value: unknown): boolean {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
 
 function isIso(value: unknown): value is string {
   return typeof value === "string" && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString() === value;
@@ -146,11 +182,12 @@ function validExit(value: unknown): value is EpisodeExit | null {
  * this version does not understand means the file was written by something that is not this code,
  * and silently dropping it would let two writers disagree about what the episode is.
  */
-export function validEpisodeState(value: unknown): value is EpisodeState {
+export function validEpisodeState(value: unknown): value is StoredEpisodeState {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const state = value as Record<string, unknown>;
   const keys = Object.keys(state);
-  if (keys.length !== KEYS.length || KEYS.some(key => !Object.hasOwn(state, key))) return false;
+  if (keys.some(key => !KEYS.has(key)) || REQUIRED_KEYS.some(key => !Object.hasOwn(state, key))) return false;
+  if (Object.hasOwn(state, "planBindingBlocks") && !validCount(state.planBindingBlocks)) return false;
   return state.schemaVersion === 1
     && typeof state.workflow === "string" && state.workflow.trim() !== ""
     && (state.planFile === null || (typeof state.planFile === "string" && state.planFile.trim() !== ""))
@@ -158,9 +195,9 @@ export function validEpisodeState(value: unknown): value is EpisodeState {
     && (state.sessionId === null || (typeof state.sessionId === "string" && state.sessionId.trim() !== ""))
     && validPhases(state.phases)
     && typeof state.reviewOwed === "boolean"
-    && typeof state.reviewBlocks === "number" && Number.isSafeInteger(state.reviewBlocks) && state.reviewBlocks >= 0
+    && validCount(state.reviewBlocks)
     && validExit(state.exit)
-    && typeof state.editsSinceVerify === "number" && Number.isSafeInteger(state.editsSinceVerify) && state.editsSinceVerify >= 0;
+    && validCount(state.editsSinceVerify);
 }
 
 /**
@@ -175,7 +212,9 @@ export function readEpisodeState(projectDir: string): EpisodeState | null {
   if (!existsSync(path)) return null;
   try {
     const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
-    return validEpisodeState(parsed) ? parsed : null;
+    // Normalised here, once, so no caller has to know that the field is new. A pre-upgrade episode
+    // has spent none of its plan-binding budget, which is exactly what `0` means.
+    return validEpisodeState(parsed) ? { ...parsed, planBindingBlocks: parsed.planBindingBlocks ?? 0 } : null;
   } catch {
     return null;
   }
@@ -199,6 +238,7 @@ export function initEpisodeState(input: { workflow: string; sessionId?: string |
     reviewBlocks: 0,
     exit: null,
     editsSinceVerify: 0,
+    planBindingBlocks: 0,
   };
 }
 

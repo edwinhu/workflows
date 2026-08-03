@@ -1,5 +1,8 @@
 #!/usr/bin/env bun
-import { aliasRejectionReason, allowedNativePlanPath, hasUnsafeCompoundCommand, projectRelativePath } from "./_path_safety.ts";
+import { lstatSync } from "node:fs";
+import { isAbsolute, join, resolve } from "node:path";
+import { aliasRejectionReason, allowedNativePlanPath, hasUnsafeCompoundCommand, projectRelativePath, safeExactTarget } from "./_path_safety.ts";
+import { GOVERNANCE_MARKER } from "./lib/governance-marker.ts";
 import { classifyBashMutation } from "./_bash_mutation.ts";
 import { workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
@@ -46,6 +49,43 @@ function allowedPath(raw: unknown): boolean {
   return policy.allowedOrchestratorDirectories.some(prefix => relative === prefix || relative.startsWith(`${prefix}/`));
 }
 /**
+ * THE ONE WRITE SURFACE THIS GUARD WIDENS: adopting governance.
+ *
+ * `.claude-workflows.json` is the committed opt-in that arms the transition machinery
+ * (`lib/governance-marker.ts`). Without a way to create it from the conversation, `beat-clarify`
+ * can only ever print a command for the user to run by hand, and an opt-in that costs a detour is
+ * an opt-in nobody takes — which would leave the turn-end gate correct and unreachable.
+ *
+ * CREATION-ONLY AND EXACT-CONTENT ARE BOTH LOAD-BEARING, AND NEITHER IS BELT-AND-BRACES.
+ *   The marker stores a BOOLEAN precisely so enforcement can be turned OFF by editing it
+ *   (`governance-marker.ts:17-19`). A permit that admitted modification, or that admitted
+ *   `{"governed": false}`, would therefore hand the actor a governance KILL SWITCH — a hook that
+ *   lets the thing it governs write its own exemption. Adoption is a one-way door here: turning
+ *   governance off stays a human edit, which is exactly the visible one-line diff the marker design
+ *   asks for.
+ *
+ *   Content is compared as a PARSED OBJECT with an exact key set, not as a string. A byte compare
+ *   would reject harmless whitespace and — worse — invite a "relax it a little" fix later; an
+ *   unbounded key set would let an unrecognised field ride along into a committed file.
+ */
+const ADOPTION_MARKER_PATH = join(cwd, GOVERNANCE_MARKER);
+function adoptsGovernance(target: unknown, content: unknown): boolean {
+  if (typeof target !== "string" || !target.trim()) return false;
+  // `safeExactTarget` applies the `..`, symlink-leaf, containment and hard-link rejections; it is
+  // the same primitive that authorizes the one sanctioned receipt write.
+  if (!safeExactTarget(cwd, isAbsolute(target) ? target : resolve(cwd, target), ADOPTION_MARKER_PATH)) return false;
+  // CREATION ONLY. `lstat`, not `existsSync`: a dangling symlink at the marker path is a file that
+  // exists for this purpose, and reading it as absent would make the alias the way in.
+  try { lstatSync(ADOPTION_MARKER_PATH); return false; } catch { /* absent: adoption is available */ }
+  if (typeof content !== "string") return false;
+  let parsed: unknown;
+  try { parsed = JSON.parse(content); } catch { return false; }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return false;
+  const marker = parsed as Record<string, unknown>;
+  return Object.keys(marker).length === 2 && marker.schemaVersion === 1 && marker.governed === true;
+}
+
+/**
  * Every write-capable tool, not just the two that were listed.
  *
  * `MultiEdit` and `NotebookEdit` were both absent, so both fell past this branch to the final
@@ -58,6 +98,9 @@ if (WRITE_TOOLS.has(tool)) {
   // NotebookEdit names its target `notebook_path`; every other write tool uses `file_path`.
   const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
   if (payload.permission_mode === "plan" && allowedNativePlanPath(target)) allow();
+  // Only `Write`. `Edit`/`MultiEdit` on the marker are modifications by definition, and
+  // `NotebookEdit` cannot produce this file at all.
+  if (tool === "Write" && adoptsGovernance(target, input.content)) allow();
   if (policy.workflow !== "ds") {
     // A hard link or symlink escape reaches here too; naming the permitted directories for a file
     // that is already inside one reads as a permitted-list bug whose obvious fix reopens the escape.

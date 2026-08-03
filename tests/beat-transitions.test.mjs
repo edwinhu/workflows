@@ -19,7 +19,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { governedRoot, isGoverned } from '../hooks/lib/governance-marker.ts'
 import { classifyPlanningLifecycle } from '../workflows/lib/approved-artifact.ts'
-import { MAX_REVIEW_BLOCKS, initEpisodeState, matchesPlan, validEpisodeState } from '../hooks/lib/episode-state.ts'
+import { MAX_PLAN_BINDING_BLOCKS, MAX_REVIEW_BLOCKS, initEpisodeState, matchesPlan, readEpisodeState, validEpisodeState } from '../hooks/lib/episode-state.ts'
 import { exitEpisode } from '../scripts/beat/episode-exit.ts'
 import { completeReview } from '../scripts/beat/episode-review-complete.ts'
 
@@ -45,16 +45,28 @@ const hook = (name, root, payload) =>
 const episodeOf = root => JSON.parse(readFileSync(join(root, '.planning', '.state', 'episode.json'), 'utf8'))
 const hasEpisode = root => existsSync(join(root, '.planning', '.state', 'episode.json'))
 
+// Deliberately the TEN-key pre-upgrade shape: every fixture below therefore also exercises the
+// backward-compatible parse, and a strict `keys.length` check would turn this whole file red.
 const OWED = {
   schemaVersion: 1, workflow: 'work', planFile: null, planHash: null, sessionId: 's1',
   phases: { implemented: '2026-08-03T00:00:00.000Z' }, reviewOwed: true, reviewBlocks: 0, exit: null, editsSinceVerify: 0,
 }
+/** Drop a native-plan-shaped file into `.planning/` with no receipt beside it. */
+const unbind = root => writeFileSync(join(root, '.planning', 'compressed-riding-mitten.md'), '# Plan\n')
 const ASK = root => ({ tool_name: 'AskUserQuestion', session_id: 's9', cwd: root })
 
 console.log('an UNGOVERNED project is untouched by every component')
 {
   const root = project({ governed: null, episode: JSON.stringify(OWED) })
   ok('Stop gate stays silent with a review owed', hook('episode-transition-gate.ts', root, { stop_hook_active: false, cwd: root }) === '')
+  // SC3. The unbound-plan debt must not reach an unmarked project either — Guard 1 exits before the
+  // predicate is ever consulted. This is the invariant the whole design is bounded by, and it is
+  // also why the incident project is NOT retroactively protected: adoption is offered, never taken.
+  const unbound = project({ governed: null, episode: JSON.stringify(OWED) })
+  unbind(unbound)
+  ok('Stop gate stays silent with an UNBOUND PLAN', hook('episode-transition-gate.ts', unbound, { stop_hook_active: false, cwd: unbound }) === '')
+  ok('and it wrote nothing while doing so', episodeOf(unbound).reviewBlocks === 0 && episodeOf(unbound).planBindingBlocks === undefined)
+
   const noEpisode = project({ governed: null })
   hook('episode-phase.ts', noEpisode, ASK(noEpisode))
   ok('phase recorder writes no episode file', !hasEpisode(noEpisode))

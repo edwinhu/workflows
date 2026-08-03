@@ -1,0 +1,146 @@
+// The unbound-plan predicate, and the runnable repro for the 2026-08-03 routing/provenance gap.
+//
+// THIS FILE DOUBLES AS THE INCIDENT REPRO. It reconstructs the shape that `~/projects/example-project` was
+// left in — a `.planning/` holding `compressed-riding-mitten.md` and nothing that binds it — and
+// prints a shape -> verdict matrix, so the claim "this predicate identifies the incident and is
+// silent on everything else" is something you can read rather than take on trust.
+//
+// The last row is this repository's OWN `.planning/`, read live. It holds `snoopy-prancing-cookie.md`
+// alongside a pile of pre-receipt ledgers, and it MUST come back null: those files are preserved as
+// provenance and are conversion input, never authority. If that row ever flips, the turn-end gate
+// starts refusing turns in this repo for a file nobody is going to bind.
+//
+// Run: bun tests/unbound-plan.test.mjs
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { unboundGeneratedPlan } from '../hooks/lib/unbound-plan.ts'
+
+const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '')
+let PASS = 0, FAIL = 0
+const rows = []
+const made = []
+
+const shape = (label, build) => {
+  const root = mkdtempSync(join(tmpdir(), 'unbound-plan-'))
+  made.push(root)
+  mkdirSync(join(root, '.planning'), { recursive: true })
+  build(root, join(root, '.planning'))
+  return { label, root }
+}
+const check = (label, root, expected) => {
+  const actual = unboundGeneratedPlan(root)
+  const good = actual === expected
+  if (good) PASS++
+  else { FAIL++; console.log(`FAIL  ${label} — expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`) }
+  rows.push([label, actual === null ? '(silent)' : actual, good ? 'ok' : 'FAIL'])
+}
+const file = (dir, name, body = 'x') => writeFileSync(join(dir, name), body)
+const RECEIPT = JSON.stringify({
+  workflow: 'work', plan_file: 'compressed-riding-mitten.md', plan_hash: 'a'.repeat(64),
+  approved_session_id: 's1', approved_at: '2026-08-03T00:00:00Z', status: 'PENDING',
+  reviewer_session_id: '', reviewed_at: '',
+})
+const EPISODE = JSON.stringify({
+  schemaVersion: 1, workflow: 'work', planFile: null, planHash: null, sessionId: 's1',
+  phases: { clarified: '2026-08-03T00:00:00.000Z' }, reviewOwed: false, reviewBlocks: 0, exit: null,
+  editsSinceVerify: 0, planBindingBlocks: 0,
+})
+
+// THE INCIDENT SHAPE. Hand-written plan, no receipt, nothing else.
+{
+  const { root } = shape('the example-project incident: plan hand-written, no receipt', (_root, planning) => {
+    file(planning, 'compressed-riding-mitten.md', '# Plan\n')
+    file(planning, 'episode.json', EPISODE)
+  })
+  check('the example-project incident: plan hand-written, no receipt', root, 'compressed-riding-mitten.md')
+}
+
+// THE CLEAN SHAPES. Every one of these must be silent.
+{
+  const bound = shape('a BOUND plan (plan + review.json)', (_root, planning) => {
+    file(planning, 'compressed-riding-mitten.md', '# Plan\n')
+    mkdirSync(join(planning, '.state'))
+    file(join(planning, '.state'), 'review.json', RECEIPT)
+  })
+  check('a BOUND plan (plan + review.json)', bound.root, null)
+
+  const empty = shape('an EMPTY .planning', () => {})
+  check('an EMPTY .planning', empty.root, null)
+
+  const clarifyOnly = shape('a CLARIFY-only .planning (sentinel + episode.json)', (_root, planning) => {
+    file(planning, 'DS_CLARIFIED.json', JSON.stringify({ status: 'clarified', sessionId: 's1' }))
+    mkdirSync(join(planning, '.state'))
+    file(join(planning, '.state'), 'episode.json', EPISODE)
+  })
+  check('a CLARIFY-only .planning (sentinel + episode.json)', clarifyOnly.root, null)
+
+  const noPlanning = mkdtempSync(join(tmpdir(), 'unbound-plan-'))
+  made.push(noPlanning)
+  check('no .planning at all', noPlanning, null)
+}
+
+// THIS REPOSITORY, READ LIVE. `snoopy-prancing-cookie.md` sits beside SPEC.md, HYPOTHESES.md,
+// MINI.md and the rest of the pre-receipt ledgers. Legacy provenance is not an unbound plan.
+check("this repo's own legacy .planning (read live)", ROOT, null)
+
+// THE ALIAS ROUTE, refused rather than followed — the same route `hasReceiptSurface` guards.
+{
+  const aliased = mkdtempSync(join(tmpdir(), 'unbound-plan-'))
+  made.push(aliased)
+  mkdirSync(join(aliased, 'decoy'), { recursive: true })
+  file(join(aliased, 'decoy'), 'compressed-riding-mitten.md', '# Plan\n')
+  symlinkSync(join(aliased, 'decoy'), join(aliased, '.planning'))
+  check('a .planning ALIASED to a directory holding a plan', aliased, null)
+
+  const linkedPlan = shape('a plan entry that is itself a SYMLINK', (root, planning) => {
+    file(root, 'real.md', '# Plan\n')
+    symlinkSync(join(root, 'real.md'), join(planning, 'compressed-riding-mitten.md'))
+  })
+  check('a plan entry that is itself a SYMLINK', linkedPlan.root, null)
+
+  const notADirectory = mkdtempSync(join(tmpdir(), 'unbound-plan-'))
+  made.push(notADirectory)
+  file(notADirectory, '.planning', 'not a directory')
+  check('.planning is a regular FILE', notADirectory, null)
+}
+
+// THE NAME PATTERN. Narrow on purpose: the cost of a false positive is a refused turn.
+{
+  const other = shape('a .planning holding only an ordinary lowercase note', (_root, planning) => {
+    file(planning, 'notes.md')
+    file(planning, 'two-words.md')
+    file(planning, 'four-word-name-here.md')
+  })
+  check('a .planning holding only an ordinary lowercase note', other.root, null)
+
+  const two = shape('two plan-shaped files: the answer is stable, not arbitrary', (_root, planning) => {
+    file(planning, 'noble-wandering-snowflake.md')
+    file(planning, 'compressed-riding-mitten.md')
+  })
+  check('two plan-shaped files: the answer is stable, not arbitrary', two.root, 'compressed-riding-mitten.md')
+
+  const legacyBeside = shape('a plan beside ONE retired ledger is legacy, not unbound', (_root, planning) => {
+    file(planning, 'snoopy-prancing-cookie.md')
+    file(planning, 'SPEC.md')
+  })
+  check('a plan beside ONE retired ledger is legacy, not unbound', legacyBeside.root, null)
+
+  const unreadableReceipt = shape('an UNPARSEABLE receipt still counts as bound', (_root, planning) => {
+    file(planning, 'compressed-riding-mitten.md')
+    mkdirSync(join(planning, '.state'))
+    file(join(planning, '.state'), 'review.json', 'not json at all')
+  })
+  check('an UNPARSEABLE receipt still counts as bound', unreadableReceipt.root, null)
+}
+
+const width = Math.max(...rows.map(row => row[0].length))
+console.log(`\nshape${' '.repeat(width - 5)}  verdict`)
+console.log(`${'-'.repeat(width)}  ${'-'.repeat(30)}`)
+for (const [label, verdict, status] of rows) {
+  console.log(`${label.padEnd(width)}  ${verdict}${status === 'ok' ? '' : `   <-- ${status}`}`)
+}
+
+for (const dir of made) rmSync(dir, { recursive: true, force: true })
+console.log(`\n${PASS} passed, ${FAIL} failed`)
+if (FAIL) process.exit(1)
