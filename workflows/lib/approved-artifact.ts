@@ -426,15 +426,23 @@ function hasOnlyBenignPreplanState(planning: string): boolean {
       }
     }
 
+    // THE EPISODE RECORD IS SUFFICIENT ON ITS OWN, AND CHECKING THE SENTINEL FIRST BROKE UPGRADES.
+    // A project that entered CLARIFY on the old code has a `{"status":"pending"}` sentinel on disk.
+    // Upgrade, ask the user, and a valid `episode.json` appears beside it — but the sentinel branch
+    // ran first, judged the PENDING sentinel `false`, and returned without ever consulting the
+    // episode. A correctly clarified project classified `blocked`, which is a reconnaissance lockout
+    // for exactly the population the compatibility read exists to protect. Found by the gemini
+    // third-party adapter; reproduced before fixing.
+    if (episodeIsBenign) return true;
     if (sentinel.length === 1) {
       const value = JSON.parse(readFileSync(join(planning, sentinel[0].name), "utf8"));
       return !!value && typeof value === "object" && !Array.isArray(value)
         && Object.keys(value).length === 2 && value.status === "clarified"
         && typeof value.sessionId === "string" && value.sessionId.trim() !== "";
     }
-    // No sentinel: benign only if the episode record itself vouches for the pre-approval phase.
-    // An EMPTY `.planning` with an empty `.state` is deliberately NOT benign here — it never was.
-    return episodeIsBenign;
+    // Neither record vouches for the pre-approval phase. An EMPTY `.planning` with an empty `.state`
+    // is deliberately NOT benign here — it never was.
+    return false;
   } catch { return false; }
 }
 /**

@@ -53,8 +53,22 @@ const start = typeof payload.cwd === "string" && payload.cwd.trim() ? payload.cw
  * could not be retired — `clarified()` could never become true in an unmarked project, so `/dev` and
  * `/ds` would be permanently denied all reconnaissance there.
  */
+/**
+ * BOTH REGISTRATIONS MUST RESOLVE THE SAME ROOT, OR THEY WRITE TWO DIFFERENT EPISODES.
+ *
+ * They fire on the SAME `AskUserQuestion`. The skill-scoped copy first used the raw payload cwd
+ * while the plugin-wide copy walked up, so in a governed project opened from a subdirectory each
+ * wrote its own file — a nested `src/deep/.planning/.state/episode.json` carrying `dev` and a root
+ * one carrying `work`. `approved-artifact-persist` resolves the ROOT, so it read the wrong workflow
+ * and would bind a `/dev` plan as `work`. Measured. Found by the codex third-party adapter.
+ *
+ * `governedRoot(start) ?? start` keeps the skill-scoped copy working in an UNMARKED project (where
+ * there is no root to find, and the session directory is the project) while making both copies agree
+ * wherever a marker exists.
+ */
 const argWorkflow = workflowFromArg(Bun.argv.slice(2));
-const cwd = argWorkflow ? start : governedRoot(start);
+const resolved = governedRoot(start);
+const cwd = argWorkflow ? (resolved ?? start) : resolved;
 if (cwd === undefined) allow();
 
 const existing = readEpisodeState(cwd);
@@ -71,14 +85,36 @@ const workflow = argWorkflow?.workflow
   ?? "work";
 const base = existing ?? initEpisodeState({ workflow, sessionId });
 
-// FIRST ASK WINS. A workflow may ask several times; the phase records when clarification BEGAN to be
-// answered, and re-stamping it on every later question would make "when did CLARIFY complete" mean
-// "the last time anyone asked anything".
-if (base.phases.clarified) allow();
+// FIRST ASK WINS FOR THE TIMESTAMP. A workflow may ask several times; the phase records when
+// clarification BEGAN to be answered, and re-stamping it on every later question would make "when
+// did CLARIFY complete" mean "the last time anyone asked anything".
+//
+// BUT THE WORKFLOW IDENTITY IS NOT FIRST-WINS — `--workflow` IS AUTHORITATIVE AND MUST STILL LAND.
+// Both registrations fire on the same call and hook order is not guaranteed. When the plugin-wide
+// copy ran first it INFERRED a workflow (now always `work`, since the sentinel it used to infer from
+// is retired), stamped `clarified`, and this early return then let the skill-scoped copy — the one
+// that actually KNOWS the workflow — exit without correcting it. A `/dev` episode recorded as
+// `work`, at the project root, with no subdirectory involved. Measured; the codex adapter found the
+// subdirectory half and this is the same defect reachable by ordering alone.
+const identityIsWrong = argWorkflow !== null && base.workflow !== argWorkflow.workflow;
+// THE ASKING SESSION IS RECORDED, NOT THE FIRST ONE EVER TO ASK.
+//
+// `clarify-before-recon-guard` requires `sessionId === payload.session_id` — deliberately, so a new
+// session cannot inherit another's clarification. But reusing the stored session meant a SECOND
+// session that genuinely asked the user was still measured against the FIRST one's id, failed the
+// comparison, and was denied reconnaissance despite having done the thing the guard demands. The
+// old sentinel had no such problem: each skill entry overwrote it with the current session. Found by
+// the gemini third-party adapter; reproduced before fixing.
+const sessionIsStale = sessionId !== null && base.sessionId !== sessionId;
+if (base.phases.clarified && !identityIsWrong && !sessionIsStale) allow();
 
 writeEpisodeState(cwd, {
   ...base,
-  sessionId: base.sessionId ?? sessionId,
-  phases: { ...base.phases, clarified: new Date().toISOString() },
+  // The authoritative name when we have one; otherwise whatever was already recorded.
+  workflow: argWorkflow?.workflow ?? base.workflow,
+  sessionId: sessionId ?? base.sessionId,
+  // FIRST ASK STILL WINS FOR THE TIMESTAMP. Correcting identity or session must not restate when
+  // clarification began, or "when did CLARIFY complete" degrades to "the last time anyone asked".
+  phases: { ...base.phases, clarified: base.phases.clarified ?? new Date().toISOString() },
 });
 allow();

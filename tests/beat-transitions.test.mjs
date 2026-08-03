@@ -156,6 +156,16 @@ console.log('the pre-approval lifecycle: episode.json is benign, and an ALIAS to
 
   // THE REGRESSION THAT COST EVERY SESSION AT $HOME ITS BASH. An ordinary dotfiles alias presenting
   // NO approval evidence must stay ungoverned; treating the symlink itself as evidence is the bug.
+  // A project that entered CLARIFY on the OLD code has a `{"status":"pending"}` sentinel. Upgrade,
+  // ask, and a valid episode appears beside it — but the sentinel branch ran first, judged PENDING
+  // false, and returned without consulting the episode. A correctly clarified project classified
+  // `blocked`: a reconnaissance lockout for exactly the population the compat read protects. gemini.
+  ok('a valid episode outranks a stale PENDING sentinel', (() => {
+    const root = withEpisode()
+    writeFileSync(join(root, '.planning', 'DEV_CLARIFIED.json'), JSON.stringify({ status: 'pending', sessionId: 's1' }))
+    return kindOf(root)
+  })() === 'none')
+
   ok('an ordinary dotfiles alias with no evidence stays ungoverned', (() => {
     const root = bare(); mkdirSync(join(root, 'dotfiles', '.planning'), { recursive: true })
     writeFileSync(join(root, 'dotfiles', '.planning', 'STATE.md'), 'x')
@@ -359,6 +369,67 @@ console.log('the built-in self-certification channel is closed')
     cwd: unmarkedPluginWide, encoding: 'utf8', input: JSON.stringify(ASK(unmarkedPluginWide)),
   })
   ok('the plugin-wide recorder is still inert without the marker', !hasEpisode(unmarkedPluginWide))
+}
+
+console.log('the two recorder registrations converge on one episode and one identity')
+{
+  // Found by the codex third-party adapter reviewing PR #130. Both registrations fire on the SAME
+  // AskUserQuestion and hook order is not guaranteed, so they must agree about two things or they
+  // corrupt each other:
+  //   ROOT — the skill-scoped copy used the raw payload cwd while the plugin-wide copy walked up, so
+  //     from a subdirectory each wrote its OWN episode: a nested one carrying `dev` and a root one
+  //     carrying `work`. approved-artifact-persist resolves the ROOT, so it read the wrong workflow
+  //     and would bind a /dev plan as `work`.
+  //   IDENTITY — `--workflow` is authoritative, but the first-ask-wins early return let the
+  //     plugin-wide copy stamp an INFERRED workflow and then blocked the skill-scoped copy from
+  //     correcting it. Reachable at the project root with no subdirectory at all.
+  const recorder = (root, cwd, ...args) => execFileSync('bun', [join(ROOT, 'hooks', 'episode-phase.ts'), ...args], {
+    cwd: root, encoding: 'utf8', input: JSON.stringify({ tool_name: 'AskUserQuestion', session_id: 's1', cwd }),
+  })
+
+  for (const skillFirst of [true, false]) {
+    const root = project({ governed: true })
+    const nested = join(root, 'src', 'deep')
+    mkdirSync(nested, { recursive: true })
+    const calls = skillFirst ? [['--workflow', 'dev'], []] : [[], ['--workflow', 'dev']]
+    for (const args of calls) recorder(root, nested, ...args)
+    const label = skillFirst ? 'skill-first' : 'plugin-first'
+    ok(`${label}: the authoritative workflow lands`, episodeOf(root).workflow === 'dev', episodeOf(root).workflow)
+    ok(`${label}: no second episode is written in the subdirectory`, !existsSync(join(nested, '.planning', '.state', 'episode.json')))
+  }
+
+  // A SECOND session that genuinely asked must not be measured against the FIRST one's id. The
+  // guard requires sessionId === payload.session_id so a new session cannot INHERIT a clarification;
+  // reusing the stored id meant a session that did ask was denied anyway. Found by gemini.
+  const twoSessions = project({ governed: true })
+  const asked = (root, session) => execFileSync('bun', [join(ROOT, 'hooks', 'episode-phase.ts'), '--workflow', 'dev'], {
+    cwd: root, encoding: 'utf8', input: JSON.stringify({ tool_name: 'AskUserQuestion', session_id: session, cwd: root }),
+  })
+  asked(twoSessions, 'S1')
+  const firstStamp = episodeOf(twoSessions).phases.clarified
+  asked(twoSessions, 'S2')
+  ok('the asking session is recorded, not the first one ever', episodeOf(twoSessions).sessionId === 'S2')
+  ok('and the clarify timestamp is not re-stamped', episodeOf(twoSessions).phases.clarified === firstStamp)
+  const guardAs = session => execFileSync('bun', [join(ROOT, 'hooks', 'clarify-before-recon-guard.ts'), '--workflow', 'dev'], {
+    cwd: twoSessions, encoding: 'utf8',
+    input: JSON.stringify({ tool_name: 'Read', session_id: session, cwd: twoSessions, tool_input: { file_path: 'src/a.ts' } }),
+  }).includes('"deny"') ? 'DENY' : 'ALLOW'
+  ok('the session that asked may recon', guardAs('S2') === 'ALLOW')
+  // The binding must still MEAN something: a session that never asked stays locked out.
+  ok('a session that never asked still may not', guardAs('S3') === 'DENY')
+
+  // The skill-scoped copy must still work where there is no governed root to resolve.
+  const unmarked = project({ governed: null })
+  recorder(unmarked, unmarked, '--workflow', 'ds')
+  ok('skill-scoped still records in an unmarked project', episodeOf(unmarked).workflow === 'ds')
+
+  // First ask still wins for the TIMESTAMP even while identity is corrected.
+  const stamped = project({ governed: true })
+  recorder(stamped, stamped)
+  const first = episodeOf(stamped).phases.clarified
+  recorder(stamped, stamped, '--workflow', 'dev')
+  ok('correcting the identity does not re-stamp the clarify time', episodeOf(stamped).phases.clarified === first)
+  ok('and the identity is corrected', episodeOf(stamped).workflow === 'dev')
 }
 
 console.log('episode state is strictly parsed')
