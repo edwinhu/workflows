@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { sentinelPath, workflowFromArg } from "./_workflow_policies.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
 
@@ -14,9 +15,38 @@ if (policy.approvalMode === "generated-plan-receipt-v1") allow();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
 const cwd = String(payload.cwd ?? process.cwd());
+/**
+ * TWO SOURCES OF CLARIFY EVIDENCE, AND THE TRUSTWORTHY ONE IS TRIED FIRST.
+ *
+ * `.planning/.state/episode.json` records `phases.clarified` from a PostToolUse on
+ * `AskUserQuestion` — the tool actually ran, so the user was actually asked, and a hook wrote it
+ * where the conversation cannot. The sentinel below is the model asserting about itself: `/ds`'s own
+ * SKILL.md has it `printf` its own `{"status":"clarified"}`, and the Bash branch further down
+ * carries a regex specifically permitting that write. Self-certification is not evidence, so the
+ * observed record wins where it exists.
+ *
+ * THE SENTINEL CANNOT SIMPLY BE RETIRED, AND THIS IS WHY BOTH PATHS REMAIN.
+ *   This guard is SKILL-scoped: it fires in every project that runs `/dev` or `/ds`. The phase
+ *   recorder is MARKER-gated: it writes nothing in a project without `.claude-workflows.json`.
+ *   Delete the sentinel and `clarified()` can never become true in an unmarked project, so `/dev`
+ *   and `/ds` are permanently denied all reconnaissance — measured, not theorised. Retiring the
+ *   sentinel family therefore needs the recorder to run ungoverned (breaking the invariant that an
+ *   unmarked project is untouched) or a different evidence channel entirely. Recorded as task #21.
+ */
 function clarified(): boolean {
+  if (typeof payload.session_id !== "string") return false;
+  const episode = join(cwd, ".planning", ".state", "episode.json");
+  if (existsSync(episode)) {
+    try {
+      const value = JSON.parse(readFileSync(episode, "utf8"));
+      if (!!value && typeof value === "object" && !Array.isArray(value)
+        && !!value.phases && typeof value.phases === "object"
+        && typeof value.phases.clarified === "string" && value.phases.clarified !== ""
+        && value.sessionId === payload.session_id) return true;
+    } catch { /* fall through to the sentinel; an unreadable episode is not a denial */ }
+  }
   const path = sentinelPath(cwd, policy);
-  if (typeof payload.session_id !== "string" || !existsSync(path)) return false;
+  if (!existsSync(path)) return false;
   try { const value = JSON.parse(readFileSync(path, "utf8")); return !!value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 2 && value.status === "clarified" && value.sessionId === payload.session_id; } catch { return false; }
 }
 function reconPath(value: unknown): boolean {

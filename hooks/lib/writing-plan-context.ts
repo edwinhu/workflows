@@ -50,6 +50,15 @@ export function authenticatedWritingPlan(path: string): AuthenticatedWritingPlan
   }
 }
 
-export function writingStatePath(projectRoot: string): string {
+/**
+ * RETIRED. The writing edit counter moved to `editsSinceVerify` on the shared
+ * `.planning/.state/episode.json` — see `hooks/lib/episode-state.ts`. `writing.json` was a
+ * per-workflow state file with exactly one consumer, which is the pattern that took the planning
+ * directory to eight state files across three classes (`.claude/CLAUDE.md` -> "State Files").
+ *
+ * Kept only to name the path an upgrade may still find on disk. Nothing reads it; a stale
+ * `writing.json` is inert and may be deleted.
+ */
+export function retiredWritingStatePath(projectRoot: string): string {
   return join(projectRoot, ".planning", ".state", "writing.json");
 }

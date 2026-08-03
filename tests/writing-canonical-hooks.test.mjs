@@ -63,10 +63,31 @@ describe("canonical writing hooks", () => {
     writeFileSync(draft, "Draft.\n");
     const result = hook("writing-suggest-verify.ts", root, draft);
     expect(result.stdout).toBe("");
-    const state = JSON.parse(readFileSync(join(root, ".planning", ".state", "writing.json"), "utf8"));
+    // The counter moved out of the retired per-workflow `writing.json` and into the shared
+    // `episode.json`. Both halves are asserted: the new location carries the count, and the old one
+    // is not recreated alongside it — a migration that writes both files is not a consolidation.
+    const state = JSON.parse(readFileSync(join(root, ".planning", ".state", "episode.json"), "utf8"));
     expect(state.editsSinceVerify).toBe(1);
     expect(state.planHash).toHaveLength(64);
+    expect(state.workflow).toBe("writing");
+    expect(existsSync(join(root, ".planning", ".state", "writing.json"))).toBe(false);
     expect(existsSync(join(root, ".planning", "ACTIVE_WORKFLOW.md"))).toBe(false);
+  });
+
+  test("a malformed episode file is never overwritten by the edit counter", () => {
+    // Regression for the gemini third-party finding. `readEpisodeState` returns null for BOTH
+    // "absent" and "present but unparseable", and `episodeFor` treated every null as absent — so a
+    // corrupt episode.json was replaced with a fresh state, destroying recorded phases and silently
+    // discharging a review debt nobody satisfied. The function's own docstring already promised this
+    // guard; for one evening it did not implement it. codex reviewed the same diff and missed it.
+    const root = canonicalProject();
+    const statePath = join(root, ".planning", ".state", "episode.json");
+    writeFileSync(statePath, "not json at all");
+    const draft = join(root, "drafts", "section.md");
+    writeFileSync(draft, "Draft.\n");
+    const result = hook("writing-suggest-verify.ts", root, draft);
+    expect(result.stdout).toBe("");
+    expect(readFileSync(statePath, "utf8")).toBe("not json at all");
   });
 
   test("pending or malformed receipt fails safe and creates no writing state", () => {

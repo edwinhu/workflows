@@ -1,0 +1,24 @@
+{
+  "planFile": "t8-fixture.md",
+  "planHash": "aac608ca0fed86a6b52beb763a07d29a3c0b8e4af3f95a46646a7ebaac00ea40",
+  "advisory": true,
+  "enabled": true,
+  "adapter": "gemini",
+  "status": "reviewed",
+  "verdict": "needs-attention",
+  "summary": "The change consolidates per-workflow state into a unified episode state file and refactors workflow policy derivation and identity gates. While well-structured overall, there is a contract violation and data-loss defect in `hooks/writing-suggest-verify.ts`: `episodeFor` treats a malformed or corrupt `episode.json` file as missing and overwrites it with a fresh state, destroying existing phase history and review obligations. This directly contradicts the docstring's explicit guarantee to fail inertly on malformed state files, unlike `scripts/beat/implement-gate.ts` which correctly guards against overwriting unparseable state.",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "writing-suggest-verify overwrites malformed episode state instead of failing inertly",
+      "body": "In `hooks/writing-suggest-verify.ts`, `readEpisodeState` returns `null` both when `.planning/.state/episode.json` is missing and when the file exists but contains unparseable JSON. `episodeFor` checks `if (existing === null)` and treats all `null` returns as a missing file, calling `initEpisodeState`. When `writeEpisodeState` is called later in the hook, it overwrites the corrupt or tampered `episode.json` file on disk with a brand-new state. This destroys recorded phase history and review debt, violating the explicit docstring contract ('A malformed, tampered, or stale state must not be overwritten by a hook'). By contrast, `scripts/beat/implement-gate.ts` correctly checks `if (existing === null && existsSync(episodeStatePath(projectDir))) return;` to avoid overwriting unparseable state.",
+      "file": "hooks/writing-suggest-verify.ts",
+      "lineStart": 28,
+      "lineEnd": 35,
+      "confidence": 0.95,
+      "recommendation": "Import `episodeStatePath` from `./lib/episode-state.ts` and `existsSync` from `node:fs`, then update `episodeFor` to return `null` if `existing === null && existsSync(episodeStatePath(projectRoot))` before initializing a new state."
+    }
+  ],
+  "reason": null,
+  "raw": null
+}

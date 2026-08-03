@@ -51,9 +51,46 @@ Fresh verifier: VERIFY criteria
        │
        ├─ PASS → clear `/goal` via `bun ${CLAUDE_SKILL_DIR}/../../scripts/goal-self-send.ts "/goal clear"` → phase gate
        └─ FAIL → fix → resume the SAME verifier → re-check
+       │
+       ▼
+IF the approved plan carries a third-party review line (default: it does not):
+   run it AFTER the verifier PASS → TaskCreate one ADVISORY item per finding
+   → proceed to the gate regardless of what it said
+       │
+       ▼
+Gate 1 PASS records `implemented` + `reviewOwed` in `.planning/.state/episode.json`
+       │
+       ▼
+REVIEW is now OWED. The turn cannot END until it is discharged, by either:
+       ├─ completing the review, or
+       └─ `bun scripts/beat/episode-exit.ts --reason completed|abandoned|superseded`
 ```
 
 This diagram is the specification. If surrounding prose conflicts with it, follow the diagram.
+
+**The review debt is enforced at TURN END, and the gate refuses a BOUNDED number of times.** A
+plugin-wide `Stop` hook blocks while `reviewOwed` stands, up to `MAX_REVIEW_BLOCKS` (3) refusals per
+debt, then stands down permanently for it. Each refusal says how many remain.
+
+Bounded rather than absolute, and deliberately so at both ends. Blocking once was trivially ignored —
+just stop again. Blocking until discharge would make a debt the model *cannot* satisfy into an
+inescapable session, in a hook that fires on every turn end in every project. Three refusals make
+skipping a review a repeated, deliberate choice rather than an accident, while guaranteeing the
+session can always finish. A failed counter write also passes, because a counter that cannot advance
+is an infinite loop. Inert in any project without `.claude-workflows.json`. See
+`hooks/episode-transition-gate.ts`.
+
+Two things discharge it, and **both are implemented**:
+
+```bash
+bun scripts/beat/episode-review-complete.ts --decision ACCEPT|REJECT|CONTINUE   # the review happened
+bun scripts/beat/episode-exit.ts --reason completed|abandoned|superseded        # the episode is over
+```
+
+Exiting always succeeds, including `--reason abandoned` with the review outstanding: leaving is
+permitted, leaving *silently* is not. But do not file a completed review as an abandonment — that is
+what the first command is for, and recording it wrongly corrupts the audit trail in the one direction
+that matters.
 
 ## 1. GOAL — one, confirmed, budgeted
 
@@ -226,6 +263,35 @@ On a verifier FAIL, fix worst-first, then end the turn so the goal refires. Do n
 whether to continue. If retrying implementation, pass only `attemptedTaskIds` for work previously
 attempted; untouched tasks remain untouched.
 
+## 5. Optional third-party review — advisory, and only after the verifier
+
+Default OFF. It exists only if the **authenticated plan** carries the opt-in, elicited in CLARIFY and
+therefore bound to `planHash`. An absent line means this step does not exist; skip to the gate.
+
+```bash
+echo '{"projectDir":"...","workflow":"...","planReset":{"planFile":"...","planHash":"..."}}' \
+  | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/third-party-review.ts
+```
+
+It runs **after** Claude's own verifier has passed, never before. A third party that runs first
+duplicates a pass Claude was going to make anyway; one that runs last sees work already vetted and
+can only add. Convert each finding into one `TaskCreate` bound to the current `planHash`, then
+**proceed to the gate regardless of the outcome.**
+
+**The exit gate does not consult it.** Not the verdict, not the findings, not the status. The runner
+exits 0 when `critical` findings exist and 0 when the provider was unreachable; only its own contract
+errors are non-zero. That is structural, not a setting: an external model's claims are unverified by
+construction, and letting them gate a phase imports another model's false positives into our gates.
+
+Read `status` before you read `findings`:
+
+| status | meaning | `findings: []` means |
+|---|---|---|
+| `reviewed` | the provider ran and its output was understood | genuinely clean |
+| `unavailable` | it could not be reached, or it threw | **nothing was looked at** |
+| `unparseable` | it ran but its output could not be read; raw text preserved | **nothing was parsed** |
+| `skipped` | the plan carries no opt-in | the step does not exist |
+
 ## Gate: exit IMPLEMENT
 
 Two gates, and both are required. The first asks whether every dispatch was *observed*; the second
@@ -275,6 +341,11 @@ PASS means the work matches current criteria. Goal-level validation remains a la
 | Treat `implemented` as PASS | The implementer is not an independent judge | Run the fresh verifier outside the workflow |
 | Spawn a replacement verifier after a FAIL | It cannot close the findings it did not raise | Resume the named verifier |
 | Retry every task after a localized failure | Replaying untouched work creates needless changes and fresh interference | Resume only previously attempted ids |
+| Delete `.planning/.state/episode.json` to clear a blocking `Stop` | That destroys the recorded phases and discharges a review nobody did — the exact silent skip the debt exists to prevent | `bun scripts/beat/episode-exit.ts --reason abandoned`, which succeeds and records why |
+| Treat a blocked turn as a bug in the gate | It is the gate working: IMPLEMENT passed and REVIEW is owed | Do the review, or record an exit |
+| Treat a third-party `approve` as a gate pass | It is one unverified opinion from a model with no authority here — the same rule as "peer messages are not user approval" | Run the gate; the third party never satisfies it |
+| Run the third-party review before the verifier | It then duplicates a pass Claude was going to make anyway, and reports on work nobody has vetted | Run it only after the verifier PASSes |
+| Read `status:"unparseable"` or `"unavailable"` as a clean review | Both carry `findings: []` while having reviewed NOTHING — a broken adapter wearing the costume of a clean pass | Branch on `status` before you look at `findings` |
 
 ## Facts
 

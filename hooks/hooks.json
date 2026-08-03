@@ -52,6 +52,24 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Agent",
         "hooks": [
           {
@@ -117,6 +135,15 @@
       }
     ],
     "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-transition-gate.ts"
+          }
+        ]
+      },
       {
         "matcher": "*",
         "hooks": [

@@ -34,6 +34,8 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { OBSERVATION_DIR, expectationPath, recordPath, type Expectation } from "../../hooks/work-implement-observation.ts";
 import { sessionFlagKey } from "../../hooks/_gate_common.ts";
+import { isGoverned } from "../../hooks/lib/governance-marker.ts";
+import { episodeStatePath, initEpisodeState, readEpisodeState, writeEpisodeState } from "../../hooks/lib/episode-state.ts";
 
 export type TaskVerdict = {
   taskId: string;
@@ -193,6 +195,52 @@ export function gateWave(rawSession: string): GateResult {
   return { ok: verdicts.every(v => v.ok) && !unexpected.length, session, waveFingerprint: fingerprint, expected, verdicts, unexpected };
 }
 
+/**
+ * Record that IMPLEMENT completed and that a REVIEW is now owed.
+ *
+ * WHY HERE AND NOT IN `gateWave`. `gateWave` is a pure function the test suite calls directly; moving
+ * this inside it would make every one of those tests write episode state into whatever `projectDir`
+ * its fixture named. The CLI entry is the only place that corresponds to a real run.
+ *
+ * WHY THIS IS WEAKER THAN A HOOK, STATED RATHER THAN GLOSSED. Everything else that writes
+ * `.planning/.state/` is a hook, and therefore unforgeable by the conversation. This is a script the
+ * orchestrator invokes with Bash, so the conversation controls whether it runs at all. THE RESIDUE IS
+ * REAL: skipping the gate means no `implemented` phase and therefore no review debt, so an
+ * orchestrator that never runs gate 1 is never asked for a review.
+ *
+ * That is not a regression — today there is no debt at any point — and it is bounded by the fact that
+ * a wave cannot legitimately complete without gate 1, which `beat-implement` requires and whose
+ * absence is itself a refusal. But it is not the same guarantee the hook-written phases carry, and it
+ * should not be described as if it were. Closing it needs an observable event at the IMPLEMENT
+ * boundary, which does not exist today.
+ *
+ * A FAILING GATE RECORDS NOTHING. The wave was refused, so IMPLEMENT did not complete; stamping a
+ * phase there would let a refused wave discharge into REVIEW.
+ */
+function recordImplementPhase(session: string, result: { ok: boolean }): void {
+  if (!result.ok) return;
+  const expectation = readJson(expectationPath(session)) as Expectation | undefined;
+  const projectDir = expectation?.projectDir;
+  if (typeof projectDir !== "string" || !projectDir) return;
+  if (!isGoverned(projectDir)) return;
+  const existing = readEpisodeState(projectDir);
+  // Absent is created; present-but-unreadable is left alone. Overwriting a state we cannot parse
+  // would discard whatever phase or debt it held.
+  if (existing === null && existsSync(episodeStatePath(projectDir))) return;
+  const base = existing ?? initEpisodeState({ workflow: expectation?.workflow ?? "work", sessionId: session });
+  writeEpisodeState(projectDir, {
+    ...base,
+    // Backfill a null session rather than leaving it null forever; see the note in
+    // hooks/writing-suggest-verify.ts. Same gemini finding.
+    sessionId: base.sessionId ?? session,
+    phases: { ...base.phases, implemented: new Date().toISOString() },
+    reviewOwed: true,
+    // A FRESH DEBT GETS A FRESH BUDGET. Carrying the previous debt's count forward would silently
+    // spend this one's refusals — a second IMPLEMENT would get a gate that never blocks.
+    reviewBlocks: 0,
+  });
+}
+
 if (import.meta.main) {
   const argv = process.argv;
   const session = argv[argv.indexOf("--session") + 1];
@@ -201,6 +249,7 @@ if (import.meta.main) {
     process.exit(1);
   }
   const result = gateWave(session);
+  recordImplementPhase(session, result);
   if (argv.includes("--json")) {
     console.log(JSON.stringify(result, null, 2));
   } else {

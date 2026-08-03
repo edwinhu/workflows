@@ -13,6 +13,34 @@ The terminal beat. A verifier PASS shows the work meets its criteria; only human
 
 **The caller supplies:** rendered review surfaces, plan identity, and the return channel for the terminal human decision. A legacy `/dev` compatibility path may use its isolated legacy contract; it is not a modern workflow authority.
 
+## REVIEW is owed, and the obligation is mechanical
+
+This beat used to be reachable only by the orchestrator choosing to come here. It is now **owed**:
+when IMPLEMENT's gate 1 passes it records `implemented` and sets `reviewOwed` in
+`.planning/.state/episode.json`, and a plugin-wide `Stop` hook refuses to let a turn end while that
+debt stands.
+
+There are exactly two ways to discharge it, and both are legitimate:
+
+- **Complete the review**, return the terminal decision below, and record it:
+  `bun scripts/beat/episode-review-complete.ts --decision ACCEPT|REJECT|CONTINUE`.
+  A `REJECT` discharges too — the rejection routes back to CLARIFY through a *newly approved plan*,
+  which is a new episode, and leaving this one's debt outstanding would block the very turn doing
+  what the rejection asked for.
+- **Record an exit** — `bun scripts/beat/episode-exit.ts --reason completed|abandoned|superseded`.
+  This always succeeds, including `abandoned` while a review is outstanding.
+
+**Do not file a completed review as an abandonment.** For one revision the first command did not
+exist while both skills advertised it, so the only way out of a genuinely reviewed episode was
+`--reason abandoned` — a completed review recorded as an abandonment. That is the audit trail
+corrupting in the worst direction, and it is why the two paths are now separate commands.
+
+The second is not a loophole; it is the design. An escape hatch that can be refused wedges the user,
+and a wedged user reaches for `rm -rf .planning`, which turns every gate off at once. The
+enforcement is the **recorded reason**, not the refusal. What is forbidden is leaving *silently*.
+
+All of this is inert in any project without a committed `.claude-workflows.json`.
+
 <EXTREMELY-IMPORTANT>
 ## A rejection invalidates the criteria, not just the work
 

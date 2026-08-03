@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import {
   workflowPolicyFromArg,
@@ -44,5 +45,37 @@ export function builtInOrchestratorDirectories(workflow: string): readonly strin
 
 export function workflowFromArg(argv: string[]): WorkflowPolicy | null {
   return workflowPolicyFromArg(argv, builtInWorkflowFromArg);
+}
+
+/**
+ * Which built-in workflow does this project's in-flight episode belong to, judged from what is
+ * already on disk rather than from a `--workflow` argument?
+ *
+ * WHY THIS EXISTS. `approved-artifact-persist` is registered plugin-wide so that approving a plan
+ * OUTSIDE a workflow skill still writes a receipt — the measured defect where an episode ran entirely
+ * ungoverned. A plugin-wide registration has no skill frontmatter and therefore no `--workflow`.
+ *
+ * WHY IT DERIVES INSTEAD OF DEFAULTING TO `work`. The skill-scoped registrations stay (two contract
+ * tests pin them), so inside `/dev` BOTH hooks fire on the same ExitPlanMode and hook order is not
+ * guaranteed. A blind default would let the plugin-wide copy win the race and bind a `/dev` episode
+ * as `work`. Deriving from the clarify sentinel — which `/dev` writes as its FIRST act, before any
+ * planning — makes both copies compute the same identity, so order stops mattering.
+ *
+ * AMBIGUITY DEFERS RATHER THAN GUESSES. Two sentinels should not coexist; if they do, this project's
+ * episode identity is genuinely unknown and binding it to either one is worse than binding nothing.
+ *
+ * `null` means "cannot tell" and the caller must not bind. `work` — the bare primitive — is returned
+ * only when there is NO evidence at all, which is precisely the ad-hoc-plan case this is for.
+ */
+export function workflowFromPlanningEvidence(projectDir: string, recordedWorkflow?: string | null): WorkflowPolicy | null {
+  // A recorded episode outranks a sentinel: it is written by a hook, while the sentinel is written
+  // by the model about itself.
+  if (recordedWorkflow && Object.hasOwn(POLICIES, recordedWorkflow)) {
+    return (POLICIES as Record<string, WorkflowPolicy>)[recordedWorkflow];
+  }
+  const present = Object.values(POLICIES).filter(policy =>
+    policy.approvalMode !== "generated-plan-receipt-v1" && existsSync(join(projectDir, policy.clarifySentinel)));
+  if (present.length > 1) return null;
+  return present[0] ?? POLICIES.work;
 }
 export function sentinelPath(projectDir: string, policy: Exclude<WorkflowPolicy, { approvalMode: "generated-plan-receipt-v1" }>): string { return join(projectDir, policy.clarifySentinel); }

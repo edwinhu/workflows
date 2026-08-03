@@ -41,6 +41,65 @@
 - If the skill description contains process summary, Claude follows the short description instead of reading the detailed flowchart. Keep descriptions trigger-only.
 - Enforcement works best when the consequence targets the drive that motivated the shortcut (e.g., "skipping steps is anti-helpful" not just "don't skip steps").
 
+## State Files
+
+**IRON LAW: NO NEW STATE FILE WITHOUT AUDITING THE EXISTING ONES FIRST — AND THE AUDIT MEANS
+`ls .planning/.state/` AND A GREP, NOT YOUR MEMORY OF THIS SECTION.**
+
+State files metastasize because each one is individually justified and nobody ever counts the total.
+Every addition arrives as "+1", measured against a baseline the author never checked. Adding one
+without the audit is not a small convenience — it is how the next person inherits a directory nobody
+can explain, and reasoning about a lifecycle spread over nine files is strictly harder than the
+feature was worth.
+
+### The canonical inventory — three files, and each boundary is load-bearing
+
+| file | holds | why it cannot merge |
+|---|---|---|
+| `.claude-workflows.json` (repo root, **committed**) | the governance opt-in | committed and permanent; everything else is gitignored and ephemeral. Merging means committing episode state |
+| `.planning/.state/review.json` | immutable approval identity | one sanctioned conversation-level Write behind nine conditions (`implementer-identity-gate.ts:419-456`), and a parse failure means `blocked`, which costs the user Bash. Mutable state must never share that failure domain |
+| `.planning/.state/episode.json` | ALL mutable episode state | — |
+
+Anything session-scoped and high-frequency belongs in `gettempdir()`, not the project. The dispatch
+observation records live there, and they stay **one file per record on purpose**: the pre/post hooks
+bracket every dispatch, so a single shared JSON would mean read-modify-write races in the one place
+that must not lose data. Splitting for concurrency is not sprawl.
+
+### Rules
+
+1. **New state goes in `episode.json`.** Not a new file, and *never* a new per-workflow file.
+2. **Derive before you record.** If existing state already encodes it, read it. `review.json.status`
+   is the sole authority for approval status and `episode.json` never restates it — two files
+   disagreeing about whether a plan is approved is a bug generator, and the tiebreak rule is the bug.
+3. **A new file requires retiring one**, or a written reason in `docs/DESIGN-*.md` for why the
+   boundary is load-bearing rather than convenient.
+4. **Do not "consolidate" `review.json`.** The pressure this section creates points the wrong way if
+   you follow it blindly. See the table.
+
+### Facts
+
+- Audited 2026-08-03: a governed project could carry **8 state files across 3 classes**. The
+  `<X>_CLARIFIED.json` sentinel family is **six filenames encoding one bit** — DS_, DEV_, WORK_,
+  WRITING_, WORKSHOP_, WC_.
+- That sentinel was **self-certified**: `skills/ds/SKILL.md:67` has the model `printf` its own
+  `{"status":"clarified"}`, and `clarify-before-recon-guard.ts:44` carries a regex permitting exactly
+  that Bash write. The proof that CLARIFY happened was the model asserting it happened. A
+  `PostToolUse` on `AskUserQuestion` is direct evidence and needs no file at all.
+- `.planning/.state/writing.json` was added as per-workflow episode state with **one consumer**
+  (`hooks/writing-suggest-verify.ts:59`). One consumer is not a reason for a file.
+- A proposal in that same session was reported as "+1 file" **three times** before anyone checked the
+  baseline. The count was wrong every time because the sentinel family was never in it.
+
+### Red flags — STOP
+
+| About to | Why wrong | Do instead |
+|---|---|---|
+| Add `<workflow>.json` under `.planning/.state/` | That is exactly how `writing.json` happened | One file keyed by workflow, not one file per workflow |
+| Add a per-workflow sentinel | Six filenames for one bit | Record it in `episode.json`, or observe the tool call directly |
+| Write a state file the model itself populates and the gate then trusts | Self-certification is not evidence | Observe the tool call in a hook |
+| Report a state addition as "+1" | The baseline is probably not what you think | Run `ls .planning/.state/` and grep the sentinel family, then state the real total |
+| Merge anything into `review.json` | A mutable-state bug would cost the user Bash | Leave the receipt alone |
+
 ## Required Skills
 
 **Always use these wrapper skills (they invoke the built-ins internally):**
