@@ -18,6 +18,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/workshop-outline-executable-guard.ts"
   PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow workshop"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command

@@ -17,6 +17,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
   PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow dev"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command
@@ -31,18 +35,15 @@ hooks:
 
 ## Opening clarification sentinel
 
-Before reconnaissance, create the narrow session-bound sentinel exactly as required by
-`clarify-before-recon-guard.ts`:
+**Write no sentinel.** `.planning/DEV_CLARIFIED.json` is retired: a hook now records the clarify
+phase into `.planning/.state/episode.json` when it OBSERVES your `AskUserQuestion` call. That is
+direct evidence the user was asked. The sentinel was the model writing `{"status":"clarified"}` about
+itself, which is an assertion, not a proof — and it could be written without ever asking.
 
-```json
-{"status":"pending","sessionId":"[current session]"}
-```
-
-at `.planning/DEV_CLARIFIED.json`. Then read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and
-follow it. **The beat owns the procedure** — one `AskUserQuestion` call, done-ness always
-established, every criterion naming its own evidence, and the ask-before-you-look Iron Law this
-sentinel exists to prove. `/dev` supplies only the domain question axes, which is exactly the split
-the beat defines:
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it. **The beat owns the procedure** —
+one `AskUserQuestion` call, done-ness always established, every criterion naming its own evidence,
+and the ask-before-you-look Iron Law the recorded phase now proves. `/dev` supplies only the domain
+question axes, which is exactly the split the beat defines:
 
 > outcome, exclusions, constraints, acceptance evidence, automated real-test strategy, intended
 > first failing test, user workflow, protocol/transport, and review surfaces.

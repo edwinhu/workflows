@@ -17,6 +17,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow writing"
   PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow writing"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command

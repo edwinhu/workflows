@@ -16,6 +16,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow ds"
   PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow ds"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command
@@ -51,21 +55,16 @@ correct.
 
 ## 1. Clarify
 
-At `/ds` entry, before asking any question, overwrite the narrow session sentinel with this exact
-non-authorizing JSON (create `.planning/` if needed):
+**Write no sentinel.** `.planning/DS_CLARIFIED.json` is retired, and with it the two `printf`
+commands that used to live here. A hook records the clarify phase into
+`.planning/.state/episode.json` when it OBSERVES your `AskUserQuestion` call, which is direct
+evidence the user was actually asked. The sentinel was this skill telling the guard that it had
+clarified — a claim the guard had a special Bash exemption to let through, and one that could be
+made without ever asking a question.
 
-```bash
-mkdir -p .planning && printf '%s\n' '{"status":"pending"}' > .planning/DS_CLARIFIED.json
-```
-
-Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files,
-data, code, or prior analysis artifacts. Immediately after the user responds to the first
-clarification questions, overwrite the sentinel with this exact strict JSON; it contains only the
-current session identity and authorization status, never user requirements:
-
-```bash
-printf '%s\n' "{\"status\":\"clarified\",\"sessionId\":\"${CLAUDE_SESSION_ID}\"}" > .planning/DS_CLARIFIED.json
-```
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files, data,
+code, or prior analysis artifacts. Reconnaissance unlocks when the phase is recorded, so the only
+way through the guard is to genuinely ask.
 
 Supply the DS-specific axes the primitive needs:
 

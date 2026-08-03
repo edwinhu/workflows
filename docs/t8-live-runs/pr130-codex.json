@@ -1,0 +1,17 @@
+{
+  "status": "reviewed",
+  "verdict": "needs-attention",
+  "summary": "Do not ship: skill-scoped clarification can split episode state across two directories and bind a generated plan to the wrong workflow.",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "Subdirectory sessions create conflicting root and nested episode identities",
+      "body": "When invoked with `--workflow`, the recorder uses the raw payload cwd instead of walking to the governed root. In a governed project opened from a subdirectory, the plugin-wide registration writes the root episode and may infer workflow `work`, while the skill-scoped registration writes a second nested episode with the correct workflow. The clarification guard accepts the nested record, but `approved-artifact-persist` resolves to the project root and uses the root episode's workflow as planning evidence. It can therefore bind a `/dev`, `/ds`, or other generated plan as `work`, causing workflow substitution, conflicting receipts, or later admission failures. This follows directly from the two registrations using different roots.",
+      "file": "hooks/episode-phase.ts",
+      "lineStart": 56,
+      "lineEnd": 72,
+      "confidence": 0.97,
+      "recommendation": "For the skill-scoped path, use `governedRoot(start) ?? start` so both registrations target the same governed root. Add an integration test invoking both registrations from a nested directory and assert that only the root episode exists, carries the skill workflow, and drives plan persistence with that same identity."
+    }
+  ]
+}
