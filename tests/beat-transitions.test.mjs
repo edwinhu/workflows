@@ -14,10 +14,11 @@
 //
 // Run: bun tests/beat-transitions.test.mjs
 import { execFileSync } from 'node:child_process'
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { governedRoot, isGoverned } from '../hooks/lib/governance-marker.ts'
+import { classifyPlanningLifecycle } from '../workflows/lib/approved-artifact.ts'
 import { MAX_REVIEW_BLOCKS, initEpisodeState, matchesPlan, validEpisodeState } from '../hooks/lib/episode-state.ts'
 import { exitEpisode } from '../scripts/beat/episode-exit.ts'
 import { completeReview } from '../scripts/beat/episode-review-complete.ts'
@@ -88,6 +89,78 @@ console.log('the governed root is resolved by walking up, and the walk is bounde
   const inner = join(outer, 'inner')
   mkdirSync(join(inner, '.git'), { recursive: true })
   ok('the walk stops at the repository and does not inherit a marker from above', governedRoot(inner) === undefined)
+}
+
+console.log('the pre-approval lifecycle: episode.json is benign, and an ALIAS to one is not')
+{
+  // THIS BLOCK GUARDS THE WORST INCIDENT SHAPE IN THE REPO. `hasOnlyBenignPreplanState` learned to
+  // accept `.planning/.state/episode.json` as a pre-approval record so that CLARIFY-phase projects
+  // keep classifying `none` — three lifecycle hooks branch on `blocked` and would otherwise report a
+  // blocked planning state for every ordinary pre-approval session.
+  //
+  // Extending it REOPENED rounds 12/13: `hasReceiptSurface` knew the sentinel family was
+  // alias-evidence but not the new shape, so a `.planning` symlinked to a decoy holding
+  // `.state/episode.json` scored ungoverned, fell through to the benign check, and classified `none`
+  // — a TOTAL PERMIT through exactly the decoy route the pair exists to refuse. Caught by writing
+  // these cases before trusting the change.
+  //
+  // THE INVARIANT: anything hasOnlyBenignPreplanState will vouch for must be alias-evidence in
+  // hasReceiptSurface, or the symlink walks around it.
+  const EPISODE = (over = {}) => JSON.stringify({
+    schemaVersion: 1, workflow: 'dev', planFile: null, planHash: null, sessionId: 's1',
+    phases: { clarified: '2026-08-03T00:00:00.000Z' }, reviewOwed: false, reviewBlocks: 0, exit: null, editsSinceVerify: 0, ...over,
+  })
+  const bare = () => { const root = mkdtempSync(join(tmpdir(), 'beat-lifecycle-')); made.push(root); return root }
+  const kindOf = root => {
+    const value = classifyPlanningLifecycle(root)
+    return value.kind === 'blocked' ? `blocked/${value.governed ? 'GOVERNED' : 'ungoverned'}` : value.kind
+  }
+  const withEpisode = (body = EPISODE()) => {
+    const root = bare(); mkdirSync(join(root, '.planning', '.state'), { recursive: true })
+    writeFileSync(join(root, '.planning', '.state', 'episode.json'), body); return root
+  }
+
+  ok('a real episode.json is a benign pre-approval shape', kindOf(withEpisode()) === 'none')
+  ok('a real legacy sentinel still is too', (() => {
+    const root = bare(); mkdirSync(join(root, '.planning'), { recursive: true })
+    writeFileSync(join(root, '.planning', 'DEV_CLARIFIED.json'), JSON.stringify({ status: 'clarified', sessionId: 's1' }))
+    return kindOf(root)
+  })() === 'none')
+
+  // An episode carrying work cannot be pre-approval: reviewOwed needs an IMPLEMENT, which needs a
+  // receipt, which would mean this predicate is never consulted. Incoherent, so refused.
+  ok('reviewOwed is not benign', kindOf(withEpisode(EPISODE({ reviewOwed: true }))) === 'blocked/ungoverned')
+  ok('a recorded exit is not benign', kindOf(withEpisode(EPISODE({ exit: { at: '2026-08-03T00:00:00.000Z', reason: 'abandoned' } }))) === 'blocked/ungoverned')
+  ok('no clarified phase is not benign', kindOf(withEpisode(EPISODE({ phases: {} }))) === 'blocked/ungoverned')
+  ok('an unparseable episode is not benign', kindOf(withEpisode('not json')) === 'blocked/ungoverned')
+  ok('an extra file in .state is not benign', (() => {
+    const root = withEpisode(); writeFileSync(join(root, '.planning', '.state', 'extra.json'), '{}'); return kindOf(root)
+  })() === 'blocked/ungoverned')
+
+  // The decoy's defining property is that it PRESENTS approval evidence. Both shapes, both refused.
+  ok('a .planning ALIASED to an episode decoy is refused', (() => {
+    const root = bare(); mkdirSync(join(root, 'decoy', '.state'), { recursive: true })
+    writeFileSync(join(root, 'decoy', '.state', 'episode.json'), EPISODE())
+    symlinkSync(join(root, 'decoy'), join(root, '.planning')); return kindOf(root)
+  })() === 'blocked/GOVERNED')
+  ok('a .planning ALIASED to a sentinel decoy is refused', (() => {
+    const root = bare(); mkdirSync(join(root, 'decoy'), { recursive: true })
+    writeFileSync(join(root, 'decoy', 'DEV_CLARIFIED.json'), JSON.stringify({ status: 'clarified', sessionId: 's1' }))
+    symlinkSync(join(root, 'decoy'), join(root, '.planning')); return kindOf(root)
+  })() === 'blocked/GOVERNED')
+  ok('a symlinked episode.json is refused', (() => {
+    const root = bare(); mkdirSync(join(root, '.planning', '.state'), { recursive: true })
+    writeFileSync(join(root, 'real.json'), EPISODE())
+    symlinkSync(join(root, 'real.json'), join(root, '.planning', '.state', 'episode.json')); return kindOf(root)
+  })() === 'blocked/ungoverned')
+
+  // THE REGRESSION THAT COST EVERY SESSION AT $HOME ITS BASH. An ordinary dotfiles alias presenting
+  // NO approval evidence must stay ungoverned; treating the symlink itself as evidence is the bug.
+  ok('an ordinary dotfiles alias with no evidence stays ungoverned', (() => {
+    const root = bare(); mkdirSync(join(root, 'dotfiles', '.planning'), { recursive: true })
+    writeFileSync(join(root, 'dotfiles', '.planning', 'STATE.md'), 'x')
+    symlinkSync(join(root, 'dotfiles', '.planning'), join(root, '.planning')); return kindOf(root)
+  })() === 'blocked/ungoverned')
 }
 
 console.log('the Stop gate blocks only when a debt is real, readable and undischarged')

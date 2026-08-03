@@ -371,20 +371,70 @@ const CLARIFICATION_SENTINELS = new Set([
   "DS_CLARIFIED.json", "DEV_CLARIFIED.json", "WORK_CLARIFIED.json",
   "WRITING_CLARIFIED.json", "WORKSHOP_CLARIFIED.json", "WC_CLARIFIED.json",
 ]);
-function hasOnlyBenignPreplanSentinel(planning: string): boolean {
+/**
+ * TWO BENIGN PRE-APPROVAL SHAPES, NOT ONE. Both mean "CLARIFY happened, nothing was ever approved".
+ *
+ *   legacy   `.planning/<X>_CLARIFIED.json` + an ABSENT or EMPTY `.state/`
+ *   current  `.planning/.state/episode.json` recording a clarified phase, and nothing else
+ *
+ * The second shape exists because the clarify sentinel is being retired: it is written by the MODEL
+ * about itself (`skills/ds/SKILL.md:67` printfs its own `{"status":"clarified"}`), whereas
+ * `episode.json` is written by a hook observing a real `AskUserQuestion`. Both shapes must classify
+ * `none`, because a CLARIFY-phase project is not governed and three lifecycle hooks
+ * (`session-start:284`, `subagent-start:88`, `pre-compact:208`) branch on `blocked` and would
+ * otherwise start reporting a blocked planning state for every ordinary pre-approval session.
+ *
+ * EVERY SYMLINK REJECTION BELOW IS LOAD-BEARING AND NONE OF THEM RELAXED. This function is the one
+ * with the rounds 12/13 history: `.planning` aliased to a decoy that PRESENTS approval evidence is
+ * the attack, and `~/.planning -> dotfiles/.planning` once classified `$HOME` as governed and cost
+ * every session there its Bash. A benign shape is recognised only through real, non-symlinked
+ * entries; anything else falls through to `blocked`, which is the suspicious disposition.
+ *
+ * THE EPISODE SHAPE IS CHECKED SHALLOWLY ON PURPOSE. `validEpisodeState` lives in
+ * `hooks/lib/episode-state.ts`, which imports `atomicWrite` from THIS file — importing it back is a
+ * cycle. The question here is narrower than full validation anyway: is this a pre-approval episode,
+ * i.e. did nothing get approved and is no work outstanding. `reviewOwed` or a recorded `exit` means
+ * an IMPLEMENT ran, which cannot happen without a receipt, which would mean this function is never
+ * consulted (`governed` short-circuits it). Seeing either here is incoherent, so it is refused.
+ */
+function hasOnlyBenignPreplanState(planning: string): boolean {
   try {
     const entries = readdirSync(planning, { withFileTypes: true });
     const sentinel = entries.filter(entry => entry.isFile() && !entry.isSymbolicLink() && CLARIFICATION_SENTINELS.has(entry.name));
     const permitted = entries.every(entry =>
       (entry.isFile() && !entry.isSymbolicLink() && CLARIFICATION_SENTINELS.has(entry.name))
       || (entry.isDirectory() && !entry.isSymbolicLink() && entry.name === ".state"));
-    if (!permitted || sentinel.length !== 1) return false;
-    const state = join(planning, ".state");
-    if (entries.some(entry => entry.name === ".state") && readdirSync(state).length !== 0) return false;
-    const value = JSON.parse(readFileSync(join(planning, sentinel[0].name), "utf8"));
-    return !!value && typeof value === "object" && !Array.isArray(value)
-      && Object.keys(value).length === 2 && value.status === "clarified"
-      && typeof value.sessionId === "string" && value.sessionId.trim() !== "";
+    if (!permitted || sentinel.length > 1) return false;
+
+    // `.state` may be absent, empty, or hold exactly one real `episode.json` and nothing else. A
+    // receipt there would have made the project `governed` and this function unreachable, so any
+    // OTHER content is unexplained and refused.
+    let episodeIsBenign = false;
+    if (entries.some(entry => entry.name === ".state")) {
+      const stateEntries = readdirSync(join(planning, ".state"), { withFileTypes: true });
+      if (stateEntries.length > 0) {
+        const only = stateEntries[0];
+        if (stateEntries.length !== 1 || !only.isFile() || only.isSymbolicLink() || only.name !== "episode.json") return false;
+        const episode: unknown = JSON.parse(readFileSync(join(planning, ".state", "episode.json"), "utf8"));
+        if (!episode || typeof episode !== "object" || Array.isArray(episode)) return false;
+        const record = episode as Record<string, unknown>;
+        const phases = record.phases;
+        if (record.schemaVersion !== 1 || record.reviewOwed !== false || record.exit !== null) return false;
+        if (!phases || typeof phases !== "object" || Array.isArray(phases)) return false;
+        if (typeof (phases as Record<string, unknown>).clarified !== "string") return false;
+        episodeIsBenign = true;
+      }
+    }
+
+    if (sentinel.length === 1) {
+      const value = JSON.parse(readFileSync(join(planning, sentinel[0].name), "utf8"));
+      return !!value && typeof value === "object" && !Array.isArray(value)
+        && Object.keys(value).length === 2 && value.status === "clarified"
+        && typeof value.sessionId === "string" && value.sessionId.trim() !== "";
+    }
+    // No sentinel: benign only if the episode record itself vouches for the pre-approval phase.
+    // An EMPTY `.planning` with an empty `.state` is deliberately NOT benign here — it never was.
+    return episodeIsBenign;
   } catch { return false; }
 }
 /**
@@ -444,7 +494,7 @@ function hasOnlyBenignPreplanSentinel(planning: string): boolean {
  *   APPROVAL EVIDENCE — that is what made round 12/13's decoy dangerous, not the `ln -s`. The
  *   round-12/13 shape is unchanged by this: a `.planning` aliased to a directory carrying a receipt
  *   surface, or carrying the `*_CLARIFIED.json` sentinel that would otherwise buy `none` from
- *   `hasOnlyBenignPreplanSentinel`, still scores `governed: true` and still blocks.
+ *   `hasOnlyBenignPreplanState`, still scores `governed: true` and still blocks.
  *
  *   THE `.state` LEVEL IS NOT RELAXED AND MUST NOT BE. Nothing legitimate aliases
  *   `.planning/.state` — that path exists only to hold the receipt — so a symlink or a regular file
@@ -473,10 +523,23 @@ function hasReceiptSurface(planning: string): boolean {
   let target; try { target = statSync(planning); } catch { return true; }
   if (!target.isDirectory()) return true;
   // Reachable evidence, checked after `.state`/`review.json` above already looked THROUGH the link:
-  // the pre-approval sentinel, which is the only other thing behind an alias that steers this
+  // the pre-approval shapes, which are the only other things behind an alias that steer this
   // classification. Unreadable through the alias is itself the anomaly.
-  try { return readdirSync(planning, { withFileTypes: true }).some(item => CLARIFICATION_SENTINELS.has(item.name)); }
-  catch { return true; }
+  //
+  // BOTH BENIGN SHAPES MUST BE LISTED HERE, AND FORGETTING THE SECOND REOPENED ROUNDS 12/13.
+  // `hasOnlyBenignPreplanState` learned to accept `.state/episode.json` as a pre-approval record;
+  // this function did not, so a `.planning` symlinked to a decoy holding `.state/episode.json`
+  // scored `governed: false`, fell through to the benign check, and classified `none` — a TOTAL
+  // PERMIT through exactly the aliased-decoy route this pair exists to refuse. The sentinel
+  // equivalent was correctly refused the whole time, which is what made the gap visible.
+  // Measured against the real classifier before the fix. THE INVARIANT: anything
+  // `hasOnlyBenignPreplanState` will vouch for must be evidence HERE, or the alias walks around it.
+  try {
+    const entries = readdirSync(planning, { withFileTypes: true });
+    if (entries.some(item => CLARIFICATION_SENTINELS.has(item.name))) return true;
+    if (!entries.some(item => item.name === ".state")) return false;
+    return readdirSync(join(planning, ".state"), { withFileTypes: true }).some(item => item.name === "episode.json");
+  } catch { return true; }
 }
 /**
  * EVERY `none` HERE IS A TOTAL PERMIT, SO EVERY EARLY RETURN MUST HAVE CONSULTED `governed` FIRST.
@@ -490,7 +553,7 @@ function hasReceiptSurface(planning: string): boolean {
  *     answered "no planning directory" and returned `none`. `hasReceiptSurface` scores that same
  *     shape `governed: true` (its `lstat` sees the link). Measured before this fix: `.planning`
  *     symlinked to a nonexistent path, all 16 actor x tool cells ALLOW.
- *   - `hasOnlyBenignPreplanSentinel` — `.planning` replaced by a symlink to a decoy directory
+ *   - `hasOnlyBenignPreplanState` — `.planning` replaced by a symlink to a decoy directory
  *     holding one valid `DEV_CLARIFIED.json` scored `governed: true` and then returned `none`
  *     anyway, because the sentinel check ran without consulting it. Measured: all 16 cells ALLOW.
  *     This is round 12's `.state` bypass restored through the adjacent spelling.
@@ -519,7 +582,7 @@ export function classifyPlanningLifecycle(projectDir: string): PlanningLifecycle
   const resolved = resolveGeneratedPlanReviewState(root);
   if (!isError(resolved)) return { kind: "canonical", resolved };
   if (existsSync(receiptPath)) return { kind: "blocked", reason: resolved.code, governed };
-  if (!governed && hasOnlyBenignPreplanSentinel(planning)) return { kind: "none" };
+  if (!governed && hasOnlyBenignPreplanState(planning)) return { kind: "none" };
   try {
     if (readdirSync(planning).length > 0) return { kind: "blocked", reason: "conversion-required", governed };
   } catch { return { kind: "blocked", reason: "planning-read", governed }; }
