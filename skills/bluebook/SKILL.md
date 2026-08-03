@@ -23,6 +23,14 @@ Invoke this skill for:
 **For legal writing style**: Use `/writing-legal` skill (Volokh)
 **For general writing**: Use `/writing` skill (Strunk & White)
 
+**To RENDER these rules in a Typst manuscript**: this skill states the rules; it does
+not implement them. `docx-typst` carries the implementation — `assets/bluebook.typ` is a
+`#show cite:` rule supplying the three things typst's built-in bibliography cannot
+(`supra note N`, small-caps reporters, `shortjournal` → `container-title-short`), because
+hayagriva is statically linked into the typst binary and renders none of them. Reach for
+it whenever a Typst document needs the short forms in `references/short-forms.md` to
+renumber themselves rather than be typed by hand.
+
 <EXTREMELY-IMPORTANT>
 ## IRON LAW #1: NO CITATION WITHOUT VERIFICATION
 

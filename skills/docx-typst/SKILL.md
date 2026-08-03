@@ -1,6 +1,6 @@
 ---
 name: docx-typst
-description: "Use this skill to BUILD a Word document from a TYPST source file, to CONVERT an existing Word manuscript into Typst for the first time, and to bring a returned .docx back into the repo. Triggers: 'build the docx from the typ', 'typst to Word', 'send them a Word version of this paper', 'I have a Word manuscript, give me Typst', 'convert this docx to typst', 'move my paper off Word', 'start a Typst repo from this Word draft', 'my coauthor sent back the docx', 'they returned the Word file with edits', 'reconcile their edits with my source', 'merge the docx changes back', 'what did they change in the Word file', 'pull the comments out of the docx', 'get their comments from the Google Doc', 'is this file canonical', 'the source and the docx have diverged'. NOT 'law-review-docx' or 'law-econ-docx' (those build a docx from MARKDOWN — different input format), NOT 'docx-repair' (which fixes OOXML damage from a cloud round trip), NOT 'docx-render' (which only converts an existing .docx to PDF)."
+description: "Use this skill to BUILD a Word document from a TYPST source file, to CONVERT an existing Word manuscript into Typst for the first time, and to bring a returned .docx back into the repo. Triggers: 'build the docx from the typ', 'typst to Word', 'send them a Word version of this paper', 'I have a Word manuscript, give me Typst', 'convert this docx to typst', 'move my paper off Word', 'start a Typst repo from this Word draft', 'my coauthor sent back the docx', 'they returned the Word file with edits', 'reconcile their edits with my source', 'merge the docx changes back', 'what did they change in the Word file', 'pull the comments out of the docx', 'get their comments from the Google Doc', 'is this file canonical', 'the source and the docx have diverged'. ALSO owns TYPST CITATION RENDERING (assets/bluebook.typ + scripts/expand_citations.py): 'render Bluebook citations in Typst', 'supra note numbering', 'my supra notes point at the wrong footnote', 'footnote numbers do not renumber when I insert one', 'Id. and supra in typst', 'small-caps reporters in typst', 'hayagriva cannot do Bluebook', 'typst bibliography style for a law review'. NOT 'law-review-docx' or 'law-econ-docx' (those build a docx from MARKDOWN — different input format), NOT 'docx-repair' (which fixes OOXML damage from a cloud round trip), NOT 'docx-render' (which only converts an existing .docx to PDF)."
 user-invocable: true
 ---
 
@@ -142,6 +142,12 @@ variables:
 ignored, and BibLaTeX `shortjournal` is not mapped to `container-title-short`.
 Position tracking does work — `Id.` renders correctly. `assets/bluebook.typ`
 supplies the three missing pieces as a `#show cite:` rule.
+
+`bluebook.typ` implements the short-form rules; it does not state them. When the
+question is what a citation should look like rather than how to make typst emit
+it, the `bluebook` skill is the authority — `references/short-forms.md` for
+`supra`/`id.`/`hereinafter`, `references/abbreviations.md` for reporter and
+journal abbreviations.
 
 That forces **two body files**, because their requirements are incompatible:
 
@@ -360,6 +366,12 @@ over an actual Word manuscript with tables and figures in it.
 
 ## Scope
 
-Owns **typst → docx**. `law-review-docx` and `law-econ-docx` own **markdown → docx**;
-different input format, no overlap. `docx-repair` fixes OOXML damage from a cloud round
-trip and composes cleanly before `reconcile.py` when a returned file is also damaged.
+Owns **typst → docx**, and **Bluebook citation rendering in typst** — the renderer lives
+here rather than in `bluebook` because it is co-designed with `expand_citations.py`, which
+reads the `<bb-out>` tag it emits, and that two-file split exists only because of the docx
+round trip. `bluebook` owns the RULES; this skill owns making typst emit them.
+
+`law-review-docx` and `law-econ-docx` own **markdown → docx**; different input format, no
+overlap — a markdown manuscript gets Bluebook from pandoc-citeproc and the bundled CSL, and
+needs nothing here. `docx-repair` fixes OOXML damage from a cloud round trip and composes
+cleanly before `reconcile.py` when a returned file is also damaged.
