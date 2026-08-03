@@ -31,7 +31,7 @@ Main chat orchestrates. Subagents implement and investigate. If you catch yourse
 
 What to do instead: **dispatch an agent to run the command and return its raw output.** Dispatched agents are unrestricted, and this is the only move the gate's denial recommends. Verification does not become weaker — the evidence is still fresh command output — it just arrives through a subagent that did not approve the plan, which is the same separation this constraint already demands for implementation.
 
-**The one thing that cannot be delegated:** `scripts/goal-self-send.ts` delivers `/goal` into the *caller's own* session and exits `unsafe_identity` from anywhere else, so no subagent can activate the orchestrator's goal. That call falls back to its already-specified path: print the literal `/goal` line and let the user type it.
+**The one thing that cannot be delegated:** `scripts/goal-self-send.ts` delivers `/goal` into the *caller's own* session — it matches `CLAUDE_CODE_SESSION_ID` against herdr's agent record exactly, requires that record's pane to be the pane the process is running in, and exits `unsafe_identity` on any disagreement. Dispatching an agent buys nothing: a subagent's Bash inherits the parent's session id and pane, so it delivers into the orchestrator's pane rather than its own, which is the delegation this rule forbids. That the *script* cannot detect this is a measured fact, not an oversight — no environment variable distinguishes top-level Bash from subagent Bash, so the prohibition is doctrine here and would have to be enforced from a hook payload's `agent_id` to be mechanical. If the helper does not report `delivered`, fall back to the already-specified path: print the literal `/goal` line and let the user type it.
 
 ## Rationale
 

@@ -54,9 +54,11 @@
  *   tells the orchestrator to run the mechanical floor and the full suite itself. Post-approval the
  *   main conversation IS the approver, so both now require a dispatched agent that runs the suite
  *   and returns its raw output. One caller cannot be delegated at all: `scripts/goal-self-send.ts`
- *   delivers `/goal` into the CALLER'S OWN session (it matches `CLAUDE_CODE_SESSION_ID` exactly and
- *   exits `unsafe_identity` otherwise), and `beat-implement` states outright that a spawned agent
- *   never runs it. That flow falls back to its already-specified degraded path — print the literal
+ *   delivers `/goal` into the CALLER'S OWN session (it matches `CLAUDE_CODE_SESSION_ID` and the
+ *   herdr pane exactly, and exits `unsafe_identity` otherwise), and `beat-implement` states outright
+ *   that a spawned agent never runs it — doctrine the script itself cannot check, because a
+ *   subagent's Bash environment is byte-identical to the top-level session's. This gate's own
+ *   premise is why: the actor's identity exists in the hook payload, not in the environment. That flow falls back to its already-specified degraded path — print the literal
  *   `/goal` line and let the user type it. See `tests/restricted-actor-bash.test.mjs`, which keeps
  *   the bill itemized.
  *
