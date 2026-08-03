@@ -318,6 +318,49 @@ console.log('CLARIFY evidence: the observed record is preferred, the sentinel st
   ok('an unreadable episode falls through to the sentinel rather than denying', guard(both) === 'ALLOW')
 }
 
+console.log('the built-in self-certification channel is closed')
+{
+  // THE POINT OF RETIRING THE SENTINEL. `/ds` used to `printf` its own {"status":"clarified"} and
+  // this guard carried a Bash exemption to let exactly that through — the one command permitted
+  // before clarification was the one that DECLARED clarification. For a built-in that is now
+  // unreachable: the phase is recorded by a hook observing the real AskUserQuestion, and no command
+  // can fake it. external-fixed-v1 keeps the exemption because clarifySentinel is a required field
+  // of the published schemaVersion-1 descriptor.
+  const guard = (root, payload) => {
+    const out = execFileSync('bun', [join(ROOT, 'hooks', 'clarify-before-recon-guard.ts'), '--workflow', 'dev'], {
+      cwd: root, encoding: 'utf8', input: JSON.stringify({ session_id: 's1', cwd: root, ...payload }),
+    })
+    return out.includes('"deny"') ? 'DENY' : 'ALLOW'
+  }
+  const read = { tool_name: 'Read', tool_input: { file_path: 'src/a.ts' } }
+  const selfCertify = { tool_name: 'Bash', tool_input: { command: 'printf %s {"status":"clarified"} > .planning/DEV_CLARIFIED.json' } }
+
+  const fresh = project({ governed: null })
+  ok('recon is denied with no evidence', guard(fresh, read) === 'DENY')
+  ok('a built-in cannot write its own clarify proof', guard(fresh, selfCertify) === 'DENY')
+
+  execFileSync('bun', [join(ROOT, 'hooks', 'episode-phase.ts'), '--workflow', 'dev'], {
+    cwd: fresh, encoding: 'utf8', input: JSON.stringify({ tool_name: 'AskUserQuestion', session_id: 's1', cwd: fresh }),
+  })
+  ok('an OBSERVED AskUserQuestion unlocks recon', guard(fresh, read) === 'ALLOW')
+  ok('and it recorded the phase in episode.json', typeof episodeOf(fresh).phases.clarified === 'string')
+
+  // Upgrade compatibility: a project mid-CLARIFY when it upgrades has a sentinel and no episode
+  // record. Denying it would re-lock reconnaissance for work already clarified. Nothing writes a
+  // built-in sentinel any more, so this read drains itself.
+  const legacy = project({ governed: null, sentinels: ['DEV'] })
+  ok('a pre-existing sentinel is still honoured across the upgrade', guard(legacy, read) === 'ALLOW')
+
+  // The skill-scoped recorder must work WITHOUT the marker — that scope mismatch is the entire
+  // reason the sentinel could not be retired before.
+  ok('the skill-scoped recorder writes in an unmarked project', hasEpisode(fresh))
+  const unmarkedPluginWide = project({ governed: null })
+  execFileSync('bun', [join(ROOT, 'hooks', 'episode-phase.ts')], {
+    cwd: unmarkedPluginWide, encoding: 'utf8', input: JSON.stringify(ASK(unmarkedPluginWide)),
+  })
+  ok('the plugin-wide recorder is still inert without the marker', !hasEpisode(unmarkedPluginWide))
+}
+
 console.log('episode state is strictly parsed')
 {
   const base = initEpisodeState({ workflow: 'work', sessionId: 's1' })

@@ -33,6 +33,25 @@ const cwd = String(payload.cwd ?? process.cwd());
  *   sentinel family therefore needs the recorder to run ungoverned (breaking the invariant that an
  *   unmarked project is untouched) or a different evidence channel entirely. Recorded as task #21.
  */
+/**
+ * CLARIFY evidence. The observed record is authoritative; the sentinel survives for two narrow
+ * reasons and neither of them is "we might as well keep it".
+ *
+ * `.planning/.state/episode.json` records `phases.clarified` from a PostToolUse on
+ * `AskUserQuestion` — the tool ran, so the user was asked — and a hook writes it where the
+ * conversation cannot. The sentinel was the model asserting about ITSELF: `/ds` used to `printf` its
+ * own `{"status":"clarified"}`, and the Bash branch below carried a regex permitting exactly that
+ * write. Self-certification is not evidence, and for built-in workflows it is now gone.
+ *
+ * THE SENTINEL IS STILL READ IN TWO CASES:
+ *   1. `external-fixed-v1` policies. `clarifySentinel` is a REQUIRED field of the published
+ *      schemaVersion-1 external descriptor (`hooks/lib/workflow-policy.ts:154-157`, exact-key
+ *      validated), so third-party workflows are contractually entitled to it. Removing it is a
+ *      breaking change to a public extension surface and needs a major version, not a tidy-up.
+ *   2. Built-ins, as a one-release COMPATIBILITY READ. A project mid-CLARIFY when it upgrades has a
+ *      sentinel on disk and no episode record; denying it would re-lock reconnaissance for work
+ *      already clarified. Nothing WRITES a built-in sentinel any more, so this path drains itself.
+ */
 function clarified(): boolean {
   if (typeof payload.session_id !== "string") return false;
   const episode = join(cwd, ".planning", ".state", "episode.json");
@@ -43,7 +62,7 @@ function clarified(): boolean {
         && !!value.phases && typeof value.phases === "object"
         && typeof value.phases.clarified === "string" && value.phases.clarified !== ""
         && value.sessionId === payload.session_id) return true;
-    } catch { /* fall through to the sentinel; an unreadable episode is not a denial */ }
+    } catch { /* an unreadable episode is not a denial; fall through */ }
   }
   const path = sentinelPath(cwd, policy);
   if (!existsSync(path)) return false;
@@ -68,11 +87,21 @@ if (
 ) deny(policy.clarifyReason);
 if (tool === "Bash") {
   const command = String(input.command ?? "").trim();
-  // The sentinel is intentionally a clarification proof, not an access token. Before it exists,
-  // Bash cannot inspect a project through an unenumerated alternate reader such as cat or sed.
-  const sentinel = policy.clarifySentinel.replaceAll(".", "\\.").replaceAll("/", "\\/");
-  const sentinelWrite = new RegExp(`^(?:mkdir -p \\.planning && )?(?:printf|echo) .+ > ${sentinel}$`);
-  if (sentinelWrite.test(command)) allow();
+  // THE SELF-CERTIFICATION CHANNEL, NOW CLOSED FOR BUILT-INS.
+  //
+  // This exemption let the conversation write its OWN clarify proof — the one Bash command permitted
+  // before clarification, whose whole purpose was to declare that clarification had happened. For a
+  // built-in workflow that is now unreachable: nothing writes a sentinel, the phase is recorded by a
+  // hook observing the real `AskUserQuestion`, and there is no command that can fake it.
+  //
+  // `external-fixed-v1` keeps it because `clarifySentinel` is a required field of the published
+  // schemaVersion-1 descriptor and those workflows have no other way to satisfy this guard. Their
+  // proof remains self-asserted; that is their contract, not ours to break in a minor release.
+  if (policy.approvalMode === "external-fixed-v1") {
+    const sentinel = policy.clarifySentinel.replaceAll(".", "\\.").replaceAll("/", "\\/");
+    const sentinelWrite = new RegExp(`^(?:mkdir -p \\.planning && )?(?:printf|echo) .+ > ${sentinel}$`);
+    if (sentinelWrite.test(command)) allow();
+  }
   if (policy.workflow === "ds" && dsPatterns.some(pattern => command.includes(pattern))) deny(policy.clarifyReason);
   deny(policy.clarifyReason);
 }

@@ -17,6 +17,10 @@ hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow workflow-creator"
   PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow workflow-creator"
     - matcher: "ExitPlanMode"
       hooks:
         - type: command
@@ -43,7 +47,9 @@ The diagram is authoritative.
 
 ### 1. CLARIFY
 
-Before reconnaissance, write `.planning/WC_CLARIFIED.json` with `{"status":"pending"}` and initialize:
+**Write no sentinel.** `.planning/WC_CLARIFIED.json` is retired — a hook records the clarify phase
+into `.planning/.state/episode.json` when it observes your `AskUserQuestion` call, which is evidence
+rather than self-assertion. Reconnaissance unlocks when that phase is recorded. Initialize:
 
 ```yaml
 ---
