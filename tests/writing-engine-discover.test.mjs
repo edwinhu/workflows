@@ -272,6 +272,12 @@ function priorSection(section, planHash, project) {
     planHash,
     outlineHash: createHash('sha256').update(readFileSync(outlinePath)).digest('hex'),
     draftHash: createHash('sha256').update(readFileSync(draftPath)).digest('hex'),
+    // The bibliography is part of what a fidelity result depends on, so it is part of what
+    // authenticates carrying that result forward — plan, outline and draft can all be untouched
+    // while references/sources.bib changes underneath them. `workflows/writing-review.js` began
+    // requiring `bibHash` on a carried prior review; this fixture was never updated to emit it, so
+    // the carry-forward case rejected its own valid input and the suite shipped red.
+    bibHash: createHash('sha256').update(readFileSync(join(project, 'references', 'sources.bib'))).digest('hex'),
     issues: [],
     boundary: { firstSentence: 'A.', lastSentence: 'B.' },
     argumentSummary: ['point'],
