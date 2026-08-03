@@ -46,7 +46,7 @@ directly, since the shebang is `uv run`) reads the header and provisions the dep
 | `reconcile.py` | docx → typ | Resolve the ancestor, three-way merge a returned file against the repo source |
 | `comments.py` | docx or Drive → JSON | Extract comments with their anchor text, resolved state, and threading |
 | `provenance.py` | — | Read/write the stamp directly (build.py already applies it) |
-| `expand_citations.py` | typ → typ | Render live `#cite(...)` into the literal body the docx path needs |
+| `expand_citations.py` | typ → typ | Freeze every computed reference — `#cite(...)` **and** `@label` — into the literal body the docx path needs |
 
 ## The `main.typ` / `body.typ` split
 
@@ -124,10 +124,27 @@ Ancestor resolution, in preference order:
 
 If none resolves, the script **stops**. Pass `--base-docx` or `--base`.
 
-## Live citations
+## Live citations and cross-references
 
-Only needed for a manuscript whose citations must renumber themselves —
-`supra note N` in a law review article. Skip it otherwise.
+Only needed for a manuscript whose numbers must maintain themselves —
+`supra note N`, `Section IV.B` in a law review article. Skip it otherwise.
+
+**These are one problem, not two.** pandoc lowers `#cite(<Key>)` to `[Key]` and
+`@sec-remedies` to `[sec-remedies]`, discarding in both cases the number typst
+assigned during layout. So both are frozen by the same pass, through the same
+`<bb-out>` stream, and nothing numbered is ever typed by hand:
+
+```
+body-src.typ    #cite(<Key>), @label, <labels>, prose      ZERO literal numbers
+     │ expand_citations.py     one query, one positional splice
+body.typ        supra note 8 · Id. · Section IV.B · infra note 195 — all frozen
+```
+
+`bluebook.rule` handles citations; `bluebook.ref-rule` handles cross-references.
+Install both in `main.typ`. `supra` versus `infra` is not authored — it is the
+direction from the citing site to the target, read off the footnote **counter**
+(not x/y: a footnote's marker sits in the body while its content is laid out at
+the foot of the page, so comparing positions calls a forward reference `supra`).
 
 typst reads CSL, but **hayagriva 0.10.1 (linked into the typst binary) cannot
 render Bluebook**. A minimal probe style emitting nothing but the contested

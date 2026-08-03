@@ -2,7 +2,13 @@
 # /// script
 # requires-python = ">=3.10"
 # ///
-"""Render every `#cite(...)` in a typst source body into a literal body file.
+"""Freeze every computed reference in a typst body into a literal body file.
+
+Citations and cross-references are ONE problem, not two. pandoc lowers
+`#cite(<Key>)` to `[Key]` and `@sec-remedies` to `[sec-remedies]`, discarding in
+both cases the number typst assigned during layout. So both are frozen here, in
+one query and one positional splice, and `supra note 8` / `Section IV.B` /
+`infra note 195` are never typed by a human.
 
     expand_citations.py --main main.typ --src body-src.typ --out body.typ
     expand_citations.py --main main.typ --src body-src.typ --out body.typ --check
@@ -52,7 +58,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-CITE_RE = re.compile(r"#cite\(<[^>]+>(?:\s*,\s*supplement:\s*\[[^\]]*\])?\s*\)")
+# Every construct pandoc cannot carry across the docx boundary, in one pattern.
+# A cite and a cross-reference are the same problem -- pandoc lowers `#cite(<K>)`
+# to `[K]` and `@sec-x` to `[sec-x]`, discarding the number typst computed during
+# layout -- so they take the same fix and ride the same `<bb-out>` stream. Adding
+# a construct here means adding a `#show` rule that tags it, and nothing else.
+SITE_RE = re.compile(
+    r"#cite\(<[^>]+>(?:\s*,\s*supplement:\s*\[[^\]]*\])?\s*\)"   # #cite(<Key>)
+    r"|#ref\(<[^>]+>\)"                                          # #ref(<label>)
+    r"|@[A-Za-z0-9_][A-Za-z0-9_:.-]*[A-Za-z0-9_]"                # @label
+)
 
 
 def rendered_citations(main: Path, root: Path) -> list[str]:
@@ -66,12 +81,12 @@ def rendered_citations(main: Path, root: Path) -> list[str]:
 
 
 def expand(src: str, rendered: list[str]) -> str:
-    calls = CITE_RE.findall(src)
+    calls = SITE_RE.findall(src)
     if len(calls) != len(rendered):
-        raise SystemExit(f"error: {len(calls)} #cite calls in the source but typst "
-                         f"rendered {len(rendered)}; refusing to splice positionally")
+        raise SystemExit(f"error: {len(calls)} cite/reference sites in the source but "
+                         f"typst rendered {len(rendered)}; refusing to splice positionally")
     it = iter(rendered)
-    return CITE_RE.sub(lambda _m: next(it), src)
+    return SITE_RE.sub(lambda _m: next(it), src)
 
 
 def main(argv=None) -> int:

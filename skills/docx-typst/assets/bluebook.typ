@@ -175,3 +175,44 @@
   }
   [#metadata(key)#site-tag#resolve(key, pin, entries: entries, id-overrides: id-overrides)]
 }
+
+// ---------------------------------------------------------------------------
+// CROSS-REFERENCES -- the same problem as a citation, so the same answer.
+//
+// `@sec-remedies` and `#cite(<Key>)` fail identically on the docx path: pandoc
+// lowers both to their bare label, `[sec-remedies]` and `[Key]`, never the
+// number typst computed during layout. So a cross-reference is not a second
+// mechanism needing a second pass -- it is another computed value that has to
+// be frozen before pandoc reads the body, and it rides the SAME `<bb-out>`
+// stream expand_citations.py already splices.
+//
+// That is what retires the last of the hand-typed numbers. `supra` vs `infra`
+// is nothing but the direction from the citing site to the target, which the
+// document knows and the author should not have to.
+// ---------------------------------------------------------------------------
+
+#let ref-rule(it, section: "Section", note: "note") = {
+  let el = it.element
+  if el == none { return it }
+  context {
+    let there = el.location()
+    let src = if el.func() == heading {
+      let n = counter(heading).at(there)
+      section + " " + numbering(el.numbering, ..n).trim(".", at: end)
+    } else if el.func() == footnote {
+      // Direction comes from the footnote COUNTER, not from x/y. A footnote's
+      // marker sits in the body text while its content is laid out at the foot
+      // of the page, so comparing positions compares two different coordinate
+      // spaces and calls a forward reference `supra`. The counter is monotonic
+      // in document order and is the same number being cited, so it cannot
+      // disagree with the text it produces.
+      let n = counter(footnote).at(there).first()
+      let dir = if n > counter(footnote).at(here()).first() { "infra" } else { "supra" }
+      "#emph[" + dir + "] " + note + " " + str(n)
+    } else {
+      panic("bluebook: no cross-reference form for " + str(el.func()))
+    }
+    [#metadata(src)#out-tag]
+    eval(src, mode: "markup")
+  }
+}
