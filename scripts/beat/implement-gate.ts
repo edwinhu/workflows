@@ -179,7 +179,14 @@ export function gateWave(rawSession: string): GateResult {
       // The rogue record was skipped for having an expected id, and its mutations were already
       // folded into the legitimate task's baseline. A dispatch that ran with NO authenticated bounds
       // is unadjudicable whatever it is named, so that check has to precede the name check.
-      if (recordFingerprint === "no-expectation") { unexpected.push(`${observedId} (dispatched before any preflight authenticated a wave)`); continue; }
+      // The remedy is named because this record outlives the wave: nothing prunes the current
+      // session's files, so one pre-preflight dispatch refuses EVERY later wave in the session until
+      // someone removes it. That persistence is deliberate — an unauthenticated dispatch should not
+      // age out of the record — but a refusal with no route back is an operational dead end.
+      if (recordFingerprint === "no-expectation") {
+        unexpected.push(`${observedId} (dispatched before any preflight authenticated a wave; investigate, then remove ${join(OBSERVATION_DIR, entry)} to clear it)`);
+        continue;
+      }
       if (expectedIds.has(observedId)) continue;
       // A record from an EARLIER wave in the same session is not a rogue dispatch; only this wave's
       // fingerprint counts against it.

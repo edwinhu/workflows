@@ -394,6 +394,10 @@ Use the immutable draft and outline snapshots above; do not reread mutable artif
       planHash: PLAN_HASH,
       outlineHash,
       draftHash,
+      // Emitted so a later selective re-review can prove this result was computed against the SAME
+      // bibliography. Without it the carry-forward check above could never pass, and — worse, before
+      // that check existed — a fidelity result outlived the bibliography it was derived from.
+      bibHash: BIB_SNAPSHOT.hash,
       planClaims: s.planClaims,
       issues: [
         ...(structure?.issues || []).map(i => ({ ...i, source: 'structure' })),
@@ -417,8 +421,14 @@ for (const s of sections) {
     const prior = PRIOR.get(s.name)
     const currentOutlineHash = artifactSnapshots[s.name].outline.hash
     const currentDraftHash = artifactSnapshots[s.name].draft.hash
-    if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== currentOutlineHash || prior.draftHash !== currentDraftHash || prior.unreliable !== false || !Array.isArray(prior.issues) || !prior.boundary || !Array.isArray(prior.argumentSummary)) {
-      throw new Error(`writing-review selective re-review requires one complete reliable current-content prior review for ${s.name}.`)
+    // THE BIBLIOGRAPHY IS PART OF WHAT A FIDELITY RESULT DEPENDS ON, so it has to be part of what
+    // authenticates carrying that result forward. Plan, outline and draft can all be untouched while
+    // references/sources.bib changes underneath them — an entry corrected, a key renamed, a source
+    // removed — and the carried `fidelity` issues were computed against the OLD bibliography. They
+    // would be presented as a current, reliable review of citations that no longer resolve the same
+    // way. Every other input to the result is hash-bound here; this one was not.
+    if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== currentOutlineHash || prior.draftHash !== currentDraftHash || prior.bibHash !== BIB_SNAPSHOT.hash || prior.unreliable !== false || !Array.isArray(prior.issues) || !prior.boundary || !Array.isArray(prior.argumentSummary)) {
+      throw new Error(`writing-review selective re-review requires one complete reliable current-content prior review for ${s.name}, produced against the CURRENT bibliography.`)
     }
     carried.push(prior)
     carriedCount++

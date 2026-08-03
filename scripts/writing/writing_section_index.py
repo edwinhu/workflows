@@ -852,6 +852,24 @@ def finalize(bundle: dict, result: dict) -> dict:
             else:
                 section[field_name] = snapshot.get("hash", "")
 
+    # DOCUMENT-LEVEL DRIFT INVALIDATES EVERY SECTION, not just the document verdict.
+    #
+    # This used to raise a critical finding and stop there, leaving `drifted_sections` populated only
+    # from per-section outline/draft keys — so every section finding survived a mid-review change to
+    # the plan, the receipt, or the bibliography. Those are not peripheral inputs: claim mappings,
+    # transitions and review surfaces are derived FROM the plan, citation fidelity is judged against
+    # the bibliography, and the receipt is the authority under both. A finding computed before the
+    # change is a statement about an artifact that no longer exists, presented as current.
+    #
+    # The gate already failed closed on the document verdict, so this does not change PASS/FAIL — it
+    # stops stale per-section findings from being reported as reliable alongside the refusal.
+    document_drift = [key for key in ("plan", "receipt", "bib") if key in drifted]
+    if document_drift:
+        for section in sections:
+            name = str(section.get("section", ""))
+            section["unreliable"] = True
+            drifted_sections.add(name)
+
     for key, label in (
         ("plan", "Authenticated generated plan"),
         ("receipt", "Combined review receipt"),
