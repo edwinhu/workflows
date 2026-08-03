@@ -37,6 +37,33 @@ The reference doc is deliberately NOT used here. It changes the docx's STYLES, n
 structure, so it does not affect the recovered Typst — verified. Canonical form is
 therefore template-independent, and re-templating a document never churns the source.
 
+TWO PANDOC DEFECTS THE RECOVERY MUST NORMALIZE AROUND
+
+Real Word output — as opposed to a docx pandoc itself wrote — trips two bugs that make
+the recovered Typst either unparseable or quietly wrong. Both are fixed by rewriting the
+recovered text once, in `normalize_recovered`, applied to EVERY `docx -> typ` result so
+the fixed point still holds.
+
+1. SINGLE-COLUMN TABLES DO NOT PARSE. Word wraps figures and floats in a one-cell
+   container table. Pandoc's typst WRITER emits its width list as `columns: (100%)` —
+   which is a parenthesized scalar in Typst, not a one-element array — and pandoc's own
+   typst READER then fails with `Could not determine number of columns: VRatio (1 % 1)`.
+   26 occurrences in one 1.2M manuscript, and the whole file is unrecoverable. Still
+   present on pandoc `main` as of 2026-08 (`Writers/Typst.hs`: the width list is built
+   with `parens (commaSep ...)` while the align list beside it appends a trailing comma
+   unconditionally), so upgrading pandoc does not fix it. The normalization adds the
+   comma: `columns: (100%,)`. Flattening the container table instead was rejected —
+   a genuine one-column data table is indistinguishable at that line, and flattening it
+   would be data loss to work around a syntax bug.
+
+2. WORD-FINAL APOSTROPHES BECOME CLOSING DOUBLE QUOTES. The writer unsmartens `’` to a
+   straight `'`; the reader then re-smartens, and reads a `'` at the end of a word as a
+   closing DOUBLE quote. `Officers’ Retirement` survives one pass as `Officers'` and
+   becomes `Officers” Retirement` on the second — so the pipe converges on corruption
+   rather than on the input. The normalization restores `’` for word-final apostrophes,
+   which the reader passes through untouched. Raw spans, raw blocks and math are exempt:
+   pandoc does not smarten inside them, so rewriting there would corrupt code.
+
 THE BODY LINT
 
 Show rules in the file pandoc reads collapse `= Heading` into a bold paragraph — pandoc
@@ -44,18 +71,30 @@ evaluates enough Typst to apply them, and the heading's semantics are lost befor
 docx is written. So styling lives in `main.typ` (`#import`/`#let`/`#show`/`#set`, then
 `#include "body.typ"`) and `body.typ` stays pure markup. `--lint` enforces the split.
 
+EMBEDDED IMAGES ARE NEVER DROPPED SILENTLY
+
+Without `--extract-media` pandoc discards a docx's images: seven figures in that same
+manuscript vanished, leaving empty container tables with orphaned captions, and the
+207KB result looked entirely healthy. The recovery therefore always extracts, and a
+document whose recovered Typst contains `image(` calls REFUSES to write anything unless
+`--media-dir` says where the files go. Symmetrically, the round trip passes
+`--resource-path` so pandoc can find them again: a missing image is only a WARNING to
+pandoc and it replaces the picture with its alt text at exit status 0, so `_run` treats
+that warning as an error.
+
 Usage:
     canonicalize.py body.typ                  # canonical form to stdout
     canonicalize.py body.typ --in-place
     canonicalize.py body.typ --check          # exit 1 if not already canonical
     canonicalize.py body.typ --lint           # exit 1 on styling directives in a body file
-    canonicalize.py --from-docx doc.docx      # canonical Typst recovered from a docx
+    canonicalize.py --from-docx doc.docx --output body.typ --media-dir media
 """
 
 from __future__ import annotations
 
 import argparse
 import difflib
+import os
 import re
 import shutil
 import subprocess
