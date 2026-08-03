@@ -7,12 +7,32 @@
 //
 // `entries` is a dict keyed by cite key:
 //
-//     (full: "<typst source of the FULL first reference>",
-//      short: "<author-short used in `X, supra note N`>" or none)
+//     (full:    "<entry-level first reference, UP TO the pin insertion point>",
+//      date:    "<the date parenthetical and anything trailing it>" or "",
+//      pin-sep: ", " (default) or " ",
+//      short:   "<author-short used in `X, supra note N`>" or none)
 //
 // Values are typst SOURCE STRINGS, not content, so the same data serves both
 // outputs: main.typ eval()s them, and expand_citations.py reads them back out
 // with `typst query <bb-out>` to generate the literal body file.
+//
+// WHY `full` STOPS SHORT OF THE DATE
+//
+// Bluebook puts a first reference's pincite INSIDE the citation, immediately
+// before the date parenthetical -- `2029, tbl.1 (2019)`, not `2029 (2019),
+// tbl.1`. A single flat string cannot express that, so an earlier schema baked
+// the first site's pin into `full` and `_full-form` took no `pin` at all, while
+// `_short-form`/`_id-form` both did. The asymmetry was invisible while the data
+// was frozen and fatal the moment it came from a .bib: an entry generated from
+// bibliographic fields has no pin to bake, so every first-reference pincite
+// would have been silently dropped.
+//
+// Splitting at the date restores the seam. `full` is what the bibliography
+// knows; `date` is what follows the pin; `pin-sep` is the separator the source
+// type calls for -- ", " after a first page or volume (Rule 3.2; cases,
+// articles, statutes), " " after a bare title (Rule 15; books, where the pin
+// follows the title with no comma). Entries with no date at all carry
+// `date: ""` and take the pin at the end.
 //
 // WHY THIS EXISTS RATHER THAN #bibliography(..., style: "bluebook.csl")
 //
@@ -70,10 +90,20 @@
   short + ", #emph[supra] note " + str(note) + if pin != none { " at " + pin } else { "" }
 }
 
-#let _full-form(entries, key) = {
+#let _full-form(entries, key, pin) = {
   let e = entries.at(key, default: none)
   if e == none { panic("bluebook: unknown cite key " + key) }
-  e.full
+  if pin != none and "date" not in e {
+    // Pre-split data, where `full` ran through the date parenthetical. Appending
+    // the pin would put it AFTER the date -- `2029 (2019), tbl.1` -- which is
+    // wrong and would render without complaint. Refuse instead.
+    panic("bluebook: entry " + key + " has no `date` field, so a first-reference "
+      + "pincite cannot be placed before the date parenthetical. Regenerate the "
+      + "citation data with bib_to_entries.py, or drop the supplement here.")
+  }
+  // Rule 3.2 / Rule 15: the pincite goes inside the citation, before the date.
+  let sep = e.at("pin-sep", default: ", ")
+  e.full + if pin != none { sep + pin } else { "" } + e.at("date", default: "")
 }
 
 // typst smartens `--` to an en-dash while PARSING `[2071--72]`, so reassembling
@@ -128,7 +158,7 @@
     let n = counter(footnote).at(sites.at(j).location()).first()
     _short-form(entries, key, n, pin)
   } else {
-    _full-form(entries, key)
+    _full-form(entries, key, pin)
   }
 
   // Carried for the docx build, which reads these back with `typst query`.

@@ -149,6 +149,47 @@ it, the `bluebook` skill is the authority — `references/short-forms.md` for
 `supra`/`id.`/`hereinafter`, `references/abbreviations.md` for reporter and
 journal abbreviations.
 
+### The citation data comes from the .bib
+
+`scripts/bib_to_entries.py` generates the `entries` module `bluebook.typ` reads:
+
+```
+bib_to_entries.py --bib sources.bib --csl bluebook.csl -o cite-data.typ
+bib_to_entries.py --bib sources.bib --csl bluebook.csl --diff cite-data.typ
+```
+
+It **runs citeproc** rather than parsing BibTeX. That is the whole design: the
+strings have to match what is already on the page, and a hand-written renderer
+would have to reproduce citeproc's quirks byte for byte — `Lucian A Bebchuk`
+with no period, `.;` between adjacent groups — with every normalization silently
+rewording a live citation. Running the same engine over the same CSL gets the
+quirks by construction. Verified on a 117-entry .bib against 36 live entries:
+every entry-level string reproduced, no citation reworded.
+
+**`--diff` never writes.** Regenerating on top of live citation data is how a
+citation gets changed without anyone reading it. Diff, review every delta, apply
+by hand.
+
+### `entries` schema — pincites are site-level
+
+```
+"Key": (full: "…up to the pin insertion point", date: " (2019)",
+        pin-sep: ", " | " ", short: "Bebchuk & Hirst" | none)
+```
+
+Bluebook puts a first reference's pincite **inside** the citation, before the
+date — `2029, tbl.1 (2019)`, never `2029 (2019), tbl.1`. A flat `full` string
+cannot express that, so `full` stops at the seam and `date` carries the rest.
+`pin-sep` is `", "` after a first page or volume (Rule 3.2 — cases, articles,
+statutes) and `" "` after a bare title (Rule 15 — books).
+
+An earlier schema baked the first site's pin into `full`, and `_full-form` took
+no `pin` at all while `_short-form` and `_id-form` both did. That asymmetry was
+invisible while the data was frozen and fatal the moment it came from a .bib: a
+generated entry has no pin to bake, so every first-reference pincite would have
+vanished. Supplying a pin to an entry with no `date` field now **panics** rather
+than appending it after the date.
+
 That forces **two body files**, because their requirements are incompatible:
 
 ```
