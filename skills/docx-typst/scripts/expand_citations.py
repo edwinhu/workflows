@@ -110,15 +110,32 @@ def rendered_citations(main: Path, root: Path) -> list[str]:
     return json.loads(out.stdout)
 
 
+# typst GROUPS adjacent cites: `#cite(<a>); #cite(<b>)` is one citation group and
+# the `; ` between them is swallowed, so a stacked footnote renders as
+# `...(2007) Dorothy S. Lund...` with the separator gone. Wrapping the separator in
+# a content block -- `#cite(<a>)#[;] #cite(<b>)` -- breaks the grouping and is the
+# only spelling found that renders correctly.
+#
+# That wrapper is a typst-layout device with no meaning in the LITERAL body, and
+# leaving it there puts the generated file permanently one step off its canonical
+# fixed point: the docx round trip flattens `#[;]` back to `;`, so
+# `canonicalize.py --check` fails on a file `--check` here calls up to date. The two
+# gates have to agree, so the wrapper is dissolved on the way out. Bounded to
+# punctuation and space, because that is the whole idiom and anything else in a
+# `#[...]` is authored content.
+_UNGROUP_RE = re.compile(r"#\[([;,:.\s]*)\]")
+
+
 def expand(src: str, rendered: list[str]) -> str:
     calls = SITE_RE.findall(src)
     if len(calls) != len(rendered):
         raise SystemExit(f"error: {len(calls)} cite/reference sites in the source but "
                          f"typst rendered {len(rendered)}; refusing to splice positionally")
     it = iter(rendered)
-    return SITE_RE.sub(
+    out = SITE_RE.sub(
         lambda m: _apply_case(next(it), _starts_citation_sentence(src, m.start())), src
     )
+    return _UNGROUP_RE.sub(lambda m: m.group(1), out)
 
 
 def main(argv=None) -> int:

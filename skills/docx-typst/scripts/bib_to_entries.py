@@ -65,6 +65,27 @@ LINE_RE = re.compile(r"^(PIN|SHORT)::([^:]+)::#footnote\[(.*)\]$")
 SUPRA_RE = re.compile(r"^(?P<short>.*?),?\s*#emph\[supra\]\s*note\s*\d+", re.DOTALL)
 MISSING_RE = re.compile(r"#strong\[[^\]]*\?\];")
 
+# pandoc's typst WRITER unsmartens `’` to `'`, and the docx round trip then reads a
+# word-final `'` back as a closing DOUBLE quote -- `Investors' Attention` becomes
+# `Investors” Attention`. canonicalize.py restores a word-final apostrophe it finds,
+# but by then the character is `”` and the damage is already unrecoverable: the
+# restore only protects source that was ALREADY curly. So the curly form has to be
+# put back here, at the point the string is generated, not downstream.
+#
+# Scoped to word-FINAL only, verified against the round trip: `Comm'n`, `Ass'n`,
+# `Nat'l` and `S'holder` -- Bluebook's abbreviations, where the apostrophe sits
+# between letters -- survive the trip untouched and must not be rewritten.
+_WORD_FINAL_APOSTROPHE = re.compile(r"(?<=\w)'(?![\w'])")
+
+# pandoc's typst writer terminates every markup call with `;` -- `#emph[Title];` --
+# but the terminator is only load-bearing when the next character could continue the
+# expression. Before a space it is redundant, and the docx round trip drops it, which
+# leaves a generated body one step off its canonical fixed point for exactly the
+# entries that end in markup: books and working papers, where `full` closes with a
+# title rather than a page. Emitting the form the round trip converges on keeps
+# `canonicalize.py --check` and `expand_citations.py --check` in agreement.
+_REDUNDANT_TERMINATOR = re.compile(r"\];(?=\s)")
+
 
 def bib_entries(bib: Path) -> dict[str, str]:
     """key -> uppercased entry type, in file order. @Comment is not an entry."""
@@ -138,6 +159,8 @@ def short_of(rendered: str | None) -> str | None:
 
 
 def typ_str(s: str) -> str:
+    s = _WORD_FINAL_APOSTROPHE.sub("’", s)
+    s = _REDUNDANT_TERMINATOR.sub("]", s)
     return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
@@ -169,6 +192,11 @@ def build(bib: Path, csl: Path, only: list[str] | None) -> dict[str, dict]:
         except ValueError as exc:
             print(f"warning: {exc}; skipped", file=sys.stderr)
             continue
+        # `full` and `date` are concatenated at render time, so the seam is where
+        # a redundant terminator hides: `#emph[Title];` + ` (2025)`. Normalize
+        # across the join, not within either half.
+        if full.endswith("];") and date[:1].isspace():
+            full = full[:-1]
         entries[k] = {
             "full": full,
             "date": date,

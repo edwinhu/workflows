@@ -293,6 +293,28 @@ read-only here by design; there is no write path back.
   `query()` and `counter(footnote).at(site.location())`. Non-cyclical, and it
   survives an inserted footnote because nothing is hard-coded.
 
+- **typst GROUPS adjacent cites and swallows the separator between them.**
+  `#cite(<a>); #cite(<b>)` is one citation group, and the `; ` disappears —
+  a stacked footnote renders `…552 (2007) Dorothy S. Lund, …` with nothing
+  between the two sources. This is invisible in the source and only shows up
+  in the PDF, in the construct law review footnotes use most. Wrapping the
+  separator in a content block — `#cite(<a>)#[;] #cite(<b>)` — breaks the
+  grouping; `#box[]` and a bare `#h(0pt)` do not. `expand_citations.py`
+  dissolves those wrappers on the way out, because `#[;]` is a layout device
+  with no meaning in the literal body and the docx round trip flattens it —
+  leaving it would make `canonicalize.py --check` fail on a file
+  `expand_citations.py --check` calls up to date.
+
+- **A word-final straight apostrophe in generated citation data is corrupted
+  beyond recovery.** `Investors' Attention` round-trips to `Investors” Attention`,
+  and canonicalize.py's restore does NOT save it — that normalization only
+  protects source that was already `’`, and by the time it runs the character
+  is a double quote. So `bib_to_entries.py` re-smartens at the point it
+  generates the string. Scoped to word-final: `Comm'n`, `Ass'n`, `Nat'l` and
+  `S'holder` — Bluebook's own abbreviations — survive the trip untouched and
+  must not be rewritten. A .bib written with straight apostrophes is the normal
+  case, so this is not an edge case; it is every possessive in a title.
+
 - **`supplement` arrives as CONTENT, and typst has already smartened it.**
   `[2071--72]` is a sequence of three children, not a string: a naive `.text`
   returns nothing, a space element carries no `.text` at all (dropping it welded
@@ -400,6 +422,8 @@ read-only here by design; there is no write path back.
 | About to hand-fix `Officers"` in a recovered file | The converter did it, not the source; hand-fixes are re-corrupted next pass | Re-recover with current `canonicalize.py`, which restores `’` |
 | About to name a custom citation function in the body file | pandoc dies with `Identifier not found` and no docx is produced | `#show cite:` over the built-in `#cite(<Key>)` |
 | About to put live `#cite` in the file `reconcile.py` merges into | It can never be canonical; the merge churns on every citation | Keep the symbolic form in `body-src.typ`, generate the literal one |
+| About to write `#cite(<a>); #cite(<b>)` in a stacked footnote | typst groups them and the `;` vanishes from the PDF | `#cite(<a>)#[;] #cite(<b>)` |
+| About to hand-edit the generated `cite-data.typ` to fix a short form | It is regenerated, and `--diff` will report your fix as a delta forever | Fix the `.bib` or the CSL, then regenerate and diff |
 | About to patch hayagriva to get `supra note N` | It is statically linked into typst, and note numbers are a layout property a patch cannot reach | Render citations in typst with a `#show cite:` rule |
 | About to `typst compile` a freshly recovered body and conclude the conversion failed | Word's TOC arrives as links to bookmarks that are not labels | Delete the recovered TOC block; `#outline()` in `main.typ` replaces it |
 
