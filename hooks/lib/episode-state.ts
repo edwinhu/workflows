@@ -45,6 +45,17 @@ import { atomicWrite } from "../../workflows/lib/approved-artifact.ts";
  */
 export const MAX_REVIEW_BLOCKS = 3;
 
+/**
+ * How many times the Stop gate refuses a turn for an UNBOUND PLAN — once, then never again.
+ *
+ * Stricter than `MAX_REVIEW_BLOCKS` because the two debts are different kinds of thing. A review
+ * owed is PROCEDURAL: the machinery knows a step was reached and skipped, and repetition is the
+ * enforcement. An unbound plan is INFORMATIONAL: it is inferred from a directory listing, so the
+ * gate can be wrong about it in a way it cannot be wrong about `reviewOwed`. Something inferred gets
+ * to say its piece once.
+ */
+export const MAX_PLAN_BINDING_BLOCKS = 1;
+
 export const EPISODE_STATE_RELATIVE = ".planning/.state/episode.json";
 
 export function episodeStatePath(projectDir: string): string {

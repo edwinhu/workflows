@@ -102,6 +102,7 @@ Previous failure: Gemini flagged 10+ items as needing italic/small caps that wer
 
 - Gemini hallucinates citation formats and fabricates citation details. Its output is a lead sheet, not a verdict — run the mechanical checker independently, merge results, and spot-check before applying anything. A Gemini suggestion applied unverified is an unverified claim applied as a fix.
 - Fixes cascade: a correction in one phase creates new errors in dependent phases, and every phase catches a different error type. Re-run the affected scanner after every correction pass — "earlier phases were clean" says nothing about errors the fixes just introduced.
+- A hardcoded journal list and a previously-extracted `sources.bib` are both LAGGING records, and each one hid real errors in the same document: `J. Corp. L.` was not in `JOURNAL_NAMES`, and 19 of 53 article cites were missing from a bib extracted four months earlier. Validating a manuscript against either has the dependency backwards — it hides precisely the citations most recently reworked, which are the ones most likely to be wrong.
 - One wrong supra reference invalidates the reader's trust in ALL footnotes. Sampling, eyeballing, or marking a footnote correct without checking the reporter/volume audits a subset and asserts compliance for the whole — a claim the audit never verified. Every footnote, every phase, regardless of document length.
 </EXTREMELY-IMPORTANT>
 

@@ -25,6 +25,37 @@ Checks performed on ALL footnotes:
 7. **Author name supra format** - Text before `*supra*` should be roman, not italic (unless it's a case name short form). Catches `*Manne, supra*` → should be `Manne, *supra*`
 8. **Italic spillover** - Trailing/leading spaces inside italic or small caps runs (e.g., `*supra *` should be `*supra* `). These don't affect Word display but cause Gemini misparses
 
+### Stage 2a-ii: Small-caps gaps (structural)
+
+`scan_formatting.py`'s journal check is a hardcoded name list, so it only finds
+periodicals someone remembered to add. Run the structural scan alongside it:
+
+```bash
+uv run python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/smallcaps_gaps.py" \
+  --docx path/to/file.docx --bib paper/references/sources.bib
+```
+
+It matches the SHAPE of a Bluebook periodical cite — `<volume> <NAME> <page>
+(<year>)` — so it finds journals nobody enumerated, and excludes case reporters
+(roman, Rule 10) and `Fed. Reg.`/`C.F.R.`/`U.S.C.` (roman, Rule 14), which match
+the same shape. `--apply` small-caps the hits by run-splitting.
+
+### Stage 2a-iii: Bibliography drift
+
+```bash
+uv run python3 "${CLAUDE_SKILL_DIR}/../../../../skills/bluebook-audit/scripts/bib_gaps.py" \
+  --docx path/to/file.docx --bib paper/references/sources.bib --out scratch/bib_additions.bib
+```
+
+`make_bib_from_docx.py` bootstraps a bib for a manuscript that has none; this is
+the counterpart for every round after the first. It reports article cites present
+in the footnotes and absent from the bib, and emits BibTeX for review.
+
+Parsing is deterministic, not model-driven — a fabricated bib entry is worse than
+a missing one because it looks answered. A title containing a comma ("The
+Millennial Corporation: Strong Stakeholders, Weak Managers") cannot be separated
+from an author list positionally, so review the emitted entries before merging.
+
 ### NBSP Handling
 
 DOCX uses non-breaking spaces (`\xa0`) in abbreviations. ALL search functions must handle both `\x20` and `\xa0`:
@@ -143,6 +174,14 @@ Before proceeding to Report phase:
 - [ ] Gemini audit results cover ALL footnotes (verify count matches extract)
 - [ ] Claude cross-footnote review complete
 - [ ] Findings merged (mechanical > Claude > Gemini priority)
+- [ ] `smallcaps_gaps.py` run and its hits triaged
+- [ ] `bib_gaps.py` run; any emitted entries reviewed before merging
+
+The last two exist because a name list and a stale bib each hid real errors in
+the same manuscript: `J. Corp. L.` was absent from `JOURNAL_NAMES`, and a third
+of the article cites (19 of 53) were absent from a `sources.bib` extracted four
+months earlier. Both scanners key off the DOCUMENT, so neither can be defeated
+by a list or a snapshot falling behind.
 
 ## Next Phase
 
