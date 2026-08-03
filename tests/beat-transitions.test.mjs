@@ -226,6 +226,132 @@ console.log('the Stop gate blocks only when a debt is real, readable and undisch
   ok('no debt, no block', hook('episode-transition-gate.ts', clean, { stop_hook_active: false, cwd: clean }) === '')
 }
 
+console.log('the Stop gate also refuses ONCE for a plan nobody bound')
+{
+  // THE INCIDENT THIS ADDS. `reviewOwed` is written in exactly one place — the dispatch path — so
+  // the gate could only ever notice work that ENTERED the machinery and skipped a step. On
+  // 2026-08-03 an approved-looking plan was hand-written into `.planning/` after `ExitPlanMode` was
+  // rejected, no receipt was ever bound, and every receipt-keyed gate was correctly inert. The
+  // directory listing is the one signal that does not need the machinery to have run.
+  const CLEAN = { ...OWED, reviewOwed: false }
+  const owed = root => hook('episode-transition-gate.ts', root, { stop_hook_active: false, cwd: root })
+
+  const unbound = project({ governed: true, episode: CLEAN })
+  unbind(unbound)
+  const first = JSON.parse(owed(unbound))
+  ok('it blocks on the first turn end', first.decision === 'block')
+  ok('the denial names the plan file, so the debt is identifiable', first.reason.includes('compressed-riding-mitten.md'))
+  ok('it names re-approval through Plan mode', /Plan mode/.test(first.reason))
+  ok('it names the exit script, so the debt is dischargeable', first.reason.includes('episode-exit.ts'))
+  ok('the refusal is recorded', episodeOf(unbound).planBindingBlocks === MAX_PLAN_BINDING_BLOCKS)
+
+  // BOUNDED AT ONE, stricter than the review debt. This debt is INFERRED from a file shape, so the
+  // gate can be wrong about it in a way it cannot be wrong about `reviewOwed`; something inferred
+  // gets to say its piece once. A second refusal would be nagging about a file the caller has
+  // already decided is not a plan.
+  let later = 0
+  for (let attempt = 0; attempt < 4; attempt++) if (owed(unbound).includes('"block"')) later++
+  ok('and it never blocks again for it', later === 0, `blocked ${later}x more`)
+
+  // Binding the plan discharges it, and it must do so BEFORE the budget is spent as well.
+  const bound = project({ governed: true, episode: CLEAN })
+  unbind(bound)
+  writeFileSync(join(bound, '.planning', '.state', 'review.json'), JSON.stringify({
+    workflow: 'work', plan_file: 'compressed-riding-mitten.md', plan_hash: 'a'.repeat(64),
+    approved_session_id: 's1', approved_at: '2026-08-03T00:00:00Z', status: 'PENDING',
+    reviewer_session_id: '', reviewed_at: '',
+  }))
+  ok('a receipt beside the plan discharges the debt outright', owed(bound) === '')
+
+  // A failed write must pass, exactly as for the review debt: the counter is what guarantees escape.
+  const unwritable = project({ governed: true, episode: CLEAN })
+  unbind(unwritable)
+  chmodSync(join(unwritable, '.planning', '.state'), 0o500)
+  const underFailedWrite = owed(unwritable)
+  chmodSync(join(unwritable, '.planning', '.state'), 0o700)
+  ok('a failed counter write passes rather than blocking', underFailedWrite === '')
+
+  const exited = project({ governed: true, episode: { ...CLEAN, exit: { at: '2026-08-03T01:00:00.000Z', reason: 'abandoned' } } })
+  unbind(exited)
+  ok('an exited episode does not block', owed(exited) === '')
+
+  const unreadable = project({ governed: true, episode: 'not json' })
+  unbind(unreadable)
+  ok('an unreadable episode does not wedge the session', owed(unreadable) === '')
+
+  // PRIORITY. One turn end raises one debt, and the procedural one goes first: being told a step was
+  // reached and skipped is more actionable than being told about a file shape.
+  const both = project({ governed: true, episode: OWED })
+  unbind(both)
+  const raised = JSON.parse(owed(both))
+  ok('with both debts outstanding, the REVIEW debt is raised', /REVIEW is still owed/.test(raised.reason))
+  ok('and the plan-binding budget is untouched', episodeOf(both).planBindingBlocks === 0)
+  // A spent review budget silences THAT debt, not the whole hook — so the second debt is still
+  // reachable afterwards, which is what "one turn end raises one debt" has to mean.
+  let after = ''
+  for (let attempt = 0; attempt < MAX_REVIEW_BLOCKS + 2; attempt++) {
+    after = owed(both)
+    if (!/REVIEW is still owed/.test(after)) break
+  }
+  ok('after the review budget is spent, the plan-binding debt is raised',
+    /no receipt was ever written/.test(after), JSON.stringify(after))
+}
+
+console.log('a pre-upgrade 10-key episode survives, debts and all')
+{
+  // SC6, AND THE REASON THE PARSER WAS NOT JUST HANDED AN ELEVENTH REQUIRED KEY. The parser rejects
+  // on an unexpected key count and `readEpisodeState` renders a rejection as `null`, which the Stop
+  // gate reads as "no debt" and passes. A naive add would have SILENTLY DISCHARGED every outstanding
+  // reviewOwed in existence, in the release whose whole point is catching work that escaped.
+  ok('the 10-key shape still validates', validEpisodeState(OWED) === true)
+  ok('an 11-key shape validates too', validEpisodeState({ ...OWED, planBindingBlocks: 0 }) === true)
+  ok('a bad counter is still rejected', validEpisodeState({ ...OWED, planBindingBlocks: -1 }) === false)
+  ok('an unknown key is still rejected', validEpisodeState({ ...OWED, planBindingBlocks: 0, sneaky: 1 }) === false)
+
+  const legacy = project({ governed: true, episode: OWED })
+  ok('a missing counter reads as 0, never as absent', readEpisodeState(legacy).planBindingBlocks === 0)
+  ok('and the outstanding review debt still blocks',
+    hook('episode-transition-gate.ts', legacy, { stop_hook_active: false, cwd: legacy }).includes('"block"'))
+}
+
+console.log('governance adoption is a one-way door: creation only, exact content')
+{
+  // The ONE write surface this episode widens. The marker stores a boolean precisely so enforcement
+  // can be turned OFF by editing it — so a permit admitting modification, or `governed: false`,
+  // would hand the actor its own exemption. Adoption in, kill switch out.
+  const guard = (root, content, file = '.claude-workflows.json') => execFileSync(
+    'bun', [join(ROOT, 'hooks', 'orchestrator-mutation-guard.ts'), '--workflow', 'dev'],
+    { cwd: root, encoding: 'utf8', input: JSON.stringify({ tool_name: 'Write', cwd: root, tool_input: { file_path: file, content } }) },
+  ).includes('"deny"') ? 'DENY' : 'ALLOW'
+  const ADOPT = JSON.stringify({ schemaVersion: 1, governed: true })
+
+  ok('creating the marker is permitted', guard(project({ governed: null }), ADOPT) === 'ALLOW')
+  ok('pretty-printed content is permitted too', guard(project({ governed: null }), JSON.stringify({ schemaVersion: 1, governed: true }, null, 2)) === 'ALLOW')
+  ok('an ABSOLUTE spelling of the same file is permitted', (() => {
+    const root = project({ governed: null })
+    return guard(root, ADOPT, join(root, '.claude-workflows.json'))
+  })() === 'ALLOW')
+
+  ok('OVERWRITING an existing marker is denied', guard(project({ governed: true }), ADOPT) === 'DENY')
+  ok('governed:false is denied — the opt-in is not a kill switch', guard(project({ governed: null }), JSON.stringify({ schemaVersion: 1, governed: false })) === 'DENY')
+  ok('an extra field is denied', guard(project({ governed: null }), JSON.stringify({ schemaVersion: 1, governed: true, extra: 1 })) === 'DENY')
+  ok('a missing field is denied', guard(project({ governed: null }), JSON.stringify({ governed: true })) === 'DENY')
+  ok('non-JSON is denied', guard(project({ governed: null }), 'governed: true') === 'DENY')
+  ok('a lookalike filename is denied', guard(project({ governed: null }), ADOPT, '.claude-workflows.json.bak') === 'DENY')
+  ok('a traversal spelling is denied', guard(project({ governed: null }), ADOPT, '.planning/../.claude-workflows.json') === 'DENY')
+  ok('a marker somewhere else in the tree is denied', guard(project({ governed: null }), ADOPT, 'src/.claude-workflows.json') === 'DENY')
+
+  // Only `Write`. Edit/MultiEdit on the marker are modifications by definition.
+  const edited = execFileSync('bun', [join(ROOT, 'hooks', 'orchestrator-mutation-guard.ts'), '--workflow', 'dev'], {
+    cwd: made[made.length - 1], encoding: 'utf8',
+    input: JSON.stringify({ tool_name: 'Edit', cwd: made[made.length - 1], tool_input: { file_path: '.claude-workflows.json', content: ADOPT } }),
+  })
+  ok('Edit on the marker is denied', edited.includes('"deny"'))
+
+  // The permit must not have widened anything else in the same breath.
+  ok('an ordinary project file is still denied', guard(project({ governed: null }), 'x', 'src/a.ts') === 'DENY')
+}
+
 console.log('exit discharges the debt, records why, and never launders it')
 {
   const root = project({ governed: true, episode: OWED })

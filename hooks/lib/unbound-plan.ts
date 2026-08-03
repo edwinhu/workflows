@@ -22,8 +22,39 @@
  *   The one caller is the repo's only blocking Stop hook, where a false positive is not a bad denial
  *   but a session that cannot finish. Absent, symlinked, unreadable, ambiguous — all silent.
  */
-import { lstatSync, readdirSync } from "node:fs";
+import { lstatSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+
+/** No receipt at all: nothing in `.planning/` is bound. */
+const NOTHING_BOUND = Symbol("nothing-bound");
+/** A receipt exists but cannot be read for a plan name: treat everything as bound and stay silent. */
+const ANY_PLAN = Symbol("any-plan");
+
+/**
+ * Which plan the receipt binds, read SHALLOWLY on purpose.
+ *
+ * This deliberately does not use `parseReviewState`: the full validator refuses a receipt for
+ * reasons — chronology, session separation, reviewer identity — that are about whether the REVIEW is
+ * sound, not about which plan was approved. A receipt that is merely stale still tells you which
+ * file it is about, and that is the only question here.
+ */
+function boundPlanFile(receiptPath: string): string | typeof NOTHING_BOUND | typeof ANY_PLAN {
+  let raw: string;
+  try {
+    raw = readFileSync(receiptPath, "utf8");
+  } catch {
+    // Absent is the common case. Present-but-unreadable (a directory, a permission error, a dangling
+    // link) is not distinguished from it here, and must not be: an unreadable receipt takes the
+    // silent branch below via the parse failure, never the "nothing is bound" branch.
+    try { lstatSync(receiptPath); return ANY_PLAN; } catch { return NOTHING_BOUND; }
+  }
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); } catch { return ANY_PLAN; }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return ANY_PLAN;
+  const receipt = parsed as Record<string, unknown>;
+  const planFile = receipt.plan_file;
+  return typeof planFile === "string" && planFile.trim() !== "" ? planFile : ANY_PLAN;
+}
 
 /**
  * A native generated-plan basename: three lowercase words, hyphenated, `.md`.
@@ -58,8 +89,9 @@ function isLegacyLedger(name: string): boolean {
 /**
  * The unbound plan's basename, or `null` when there is nothing to say.
  *
- * `null` when: `.planning` is absent, is a symlink, or is not a directory; a receipt exists; the
- * directory holds a legacy ledger; no entry matches the plan shape; or anything at all throws.
+ * `null` when: `.planning` is absent, is a symlink, or is not a directory; a receipt binds the only
+ * plan-shaped file (or is unreadable); the directory holds a legacy ledger; no entry matches the
+ * plan shape; or anything at all throws.
  * A symlinked `.planning` or a symlinked candidate is refused rather than followed, on the same
  * grounds as `hasReceiptSurface` — an alias is the documented route around a filesystem predicate.
  */
@@ -71,13 +103,22 @@ export function unboundGeneratedPlan(projectDir: string): string | null {
     return null;
   }
 
-  // THE RECEIPT ANSWERS FIRST. Its mere existence — of any type, parseable or not — means the
-  // approval path ran, and a plan bound by a receipt this function cannot parse is the receipt
-  // reader's problem, not a turn-end debt.
-  try {
-    lstatSync(join(planning, ".state", "review.json"));
-    return null;
-  } catch { /* no receipt: keep looking */ }
+  // THE RECEIPT ANSWERS FIRST, AND IT ANSWERS ABOUT A NAMED PLAN — NOT ABOUT THE DIRECTORY.
+  //
+  // Existence alone was the first version, and the codex third-party adapter was right that it is a
+  // bypass: a receipt left behind by an EARLIER plan makes a newly hand-written one invisible, which
+  // is the same trust-boundary failure this predicate exists to close. So a receipt that parses is
+  // read for the plan it actually binds, and only that plan is treated as bound.
+  //
+  // A receipt that does NOT parse still silences this, and that asymmetry is deliberate rather than
+  // an oversight. An unparseable receipt is already `blocked` for `implementer-identity-gate`, which
+  // is where it gets reported and where the cost is understood. Refusing a turn on it here would put
+  // the repo's ONLY BLOCKING Stop hook into the receipt-parsing failure domain — the exact coupling
+  // `episode-state.ts` refuses, on the grounds that a bug in mutable per-turn state must never be
+  // able to take approval down with it. The failure mode of getting this wrong is a session that
+  // cannot finish, so an unreadable receipt is read as "not my question".
+  const bound = boundPlanFile(join(planning, ".state", "review.json"));
+  if (bound === ANY_PLAN) return null;
 
   let entries: ReturnType<typeof readdirSync>;
   try {
@@ -91,6 +132,7 @@ export function unboundGeneratedPlan(projectDir: string): string | null {
   const plans = entries
     .filter(entry => entry.isFile() && NATIVE_PLAN_NAME.test(entry.name))
     .map(entry => entry.name)
+    .filter(name => name !== bound)
     .sort();
   // Sorted, so a directory holding two candidates names the same one every turn — the denial quotes
   // this name and a name that moves between refusals reads as the gate being broken.

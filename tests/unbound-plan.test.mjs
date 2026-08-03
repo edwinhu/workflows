@@ -126,12 +126,45 @@ check("this repo's own legacy .planning (read live)", ROOT, null)
   })
   check('a plan beside ONE retired ledger is legacy, not unbound', legacyBeside.root, null)
 
-  const unreadableReceipt = shape('an UNPARSEABLE receipt still counts as bound', (_root, planning) => {
+  // AN UNPARSEABLE RECEIPT STAYS SILENT, AND THAT IS A CHOICE. It is already `blocked` for
+  // `implementer-identity-gate`, which is where it is reported and where the cost is understood.
+  // Refusing a turn on it here would put the only blocking Stop hook into the receipt-parsing
+  // failure domain, and the failure mode of getting that wrong is a session that cannot finish.
+  const unreadableReceipt = shape('an UNPARSEABLE receipt stays silent', (_root, planning) => {
     file(planning, 'compressed-riding-mitten.md')
     mkdirSync(join(planning, '.state'))
     file(join(planning, '.state'), 'review.json', 'not json at all')
   })
-  check('an UNPARSEABLE receipt still counts as bound', unreadableReceipt.root, null)
+  check('an UNPARSEABLE receipt stays silent', unreadableReceipt.root, null)
+}
+
+// THE codex THIRD-PARTY FINDING, v5.114.0. The first version returned null as soon as a receipt
+// EXISTED, without asking which plan it binds — so a receipt left behind by an EARLIER plan made a
+// newly hand-written one invisible. That is the same trust-boundary failure the predicate exists to
+// close: receipt-keyed gates stay inert while this one assumes approval happened.
+{
+  const receiptFor = planFile => JSON.stringify({
+    workflow: 'work', plan_file: planFile, plan_hash: 'a'.repeat(64), approved_session_id: 's1',
+    approved_at: '2026-08-03T00:00:00Z', status: 'PENDING', reviewer_session_id: '', reviewed_at: '',
+  })
+  const withReceipt = (label, planFiles, receipt) => {
+    const built = shape(label, (_root, planning) => {
+      for (const name of planFiles) file(planning, name, '# Plan\n')
+      mkdirSync(join(planning, '.state'))
+      file(join(planning, '.state'), 'review.json', receipt)
+    })
+    return built.root
+  }
+
+  check('a receipt binding THIS plan is silent',
+    withReceipt('bound', ['compressed-riding-mitten.md'], receiptFor('compressed-riding-mitten.md')), null)
+  check('a STALE receipt naming another plan does not launder a new one',
+    withReceipt('stale', ['compressed-riding-mitten.md'], receiptFor('noble-wandering-snowflake.md')), 'compressed-riding-mitten.md')
+  check('the bound plan is excluded and its unbound neighbour is named',
+    withReceipt('both', ['compressed-riding-mitten.md', 'noble-wandering-snowflake.md'], receiptFor('compressed-riding-mitten.md')),
+    'noble-wandering-snowflake.md')
+  check('a receipt with no plan_file is read as binding everything',
+    withReceipt('nameless', ['compressed-riding-mitten.md'], JSON.stringify({ status: 'PENDING' })), null)
 }
 
 const width = Math.max(...rows.map(row => row[0].length))

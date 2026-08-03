@@ -71,8 +71,13 @@ function allowedPath(raw: unknown): boolean {
 const ADOPTION_MARKER_PATH = join(cwd, GOVERNANCE_MARKER);
 function adoptsGovernance(target: unknown, content: unknown): boolean {
   if (typeof target !== "string" || !target.trim()) return false;
-  // `safeExactTarget` applies the `..`, symlink-leaf, containment and hard-link rejections; it is
-  // the same primitive that authorizes the one sanctioned receipt write.
+  // THE `..` REJECTION HAS TO HAPPEN ON THE RAW SPELLING, HERE. `safeExactTarget` makes it too, but
+  // `resolve()` below would already have collapsed `..` LEXICALLY — and the kernel resolves a
+  // symlink first and only then applies `..`, so the two disagree over exactly the spelling this
+  // rejection exists for. Resolving before checking hands the check an answer that can be wrong.
+  if (target.split(/[\\/]+/).some(part => part === "..")) return false;
+  // `safeExactTarget` applies the symlink-leaf, containment and hard-link rejections; it is the same
+  // primitive that authorizes the one sanctioned receipt write.
   if (!safeExactTarget(cwd, isAbsolute(target) ? target : resolve(cwd, target), ADOPTION_MARKER_PATH)) return false;
   // CREATION ONLY. `lstat`, not `existsSync`: a dangling symlink at the marker path is a file that
   // exists for this purpose, and reading it as absent would make the alias the way in.
