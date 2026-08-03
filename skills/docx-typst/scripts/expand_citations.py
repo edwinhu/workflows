@@ -70,6 +70,36 @@ SITE_RE = re.compile(
 )
 
 
+# The only words the renderer emits whose case depends on position. A full form
+# starts with an author name and must never be touched, which is why this matches
+# a leading word rather than just upper/lowercasing the first letter.
+LEAD_RE = re.compile(r"^#emph\[(Id\.|id\.|Supra|supra|Infra|infra)\]")
+
+
+def _starts_citation_sentence(src: str, pos: int) -> bool:
+    """Does the site at `pos` begin a citation SENTENCE (rather than a clause)?
+
+    Bluebook capitalizes at the start of a citation sentence and lowercases
+    inside a citation clause, after a signal, or mid-textual-sentence
+    (short-forms.md:48-60, signals-parentheticals.md:171/181).
+
+    Only the source knows this. typst cannot: `text` is not locatable, so a show
+    rule can query the footnote it sits in but never the character before it.
+    Here the character is simply there.
+    """
+    prev = src[:pos].rstrip()
+    return (not prev) or prev[-1] in "[."
+
+
+def _apply_case(rendered: str, sentence_initial: bool) -> str:
+    m = LEAD_RE.match(rendered)
+    if not m:
+        return rendered
+    word = m.group(1)
+    fixed = (word[0].upper() if sentence_initial else word[0].lower()) + word[1:]
+    return rendered[: m.start(1)] + fixed + rendered[m.end(1) :]
+
+
 def rendered_citations(main: Path, root: Path) -> list[str]:
     out = subprocess.run(
         ["typst", "eval", "query(<bb-out>).map(it => it.value)",
@@ -86,7 +116,9 @@ def expand(src: str, rendered: list[str]) -> str:
         raise SystemExit(f"error: {len(calls)} cite/reference sites in the source but "
                          f"typst rendered {len(rendered)}; refusing to splice positionally")
     it = iter(rendered)
-    return SITE_RE.sub(lambda _m: next(it), src)
+    return SITE_RE.sub(
+        lambda m: _apply_case(next(it), _starts_citation_sentence(src, m.start())), src
+    )
 
 
 def main(argv=None) -> int:
