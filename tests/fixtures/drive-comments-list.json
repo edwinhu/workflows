@@ -1,0 +1,63 @@
+{
+  "_fixture_note": "Recorded shape of `gws drive comments list --params '{\"fileId\":\"<id>\",\"fields\":\"*\"}'`. Values are fabricated; the KEY STRUCTURE is what the test pins, so the Drive backend keeps emitting the same schema as the docx backend without any test making a live API call.",
+  "kind": "drive#commentList",
+  "comments": [
+    {
+      "kind": "drive#comment",
+      "id": "AAABc1dEfGh",
+      "createdTime": "2026-07-14T15:02:11.913Z",
+      "modifiedTime": "2026-07-14T16:40:02.004Z",
+      "author": {
+        "kind": "drive#user",
+        "displayName": "Coauthor",
+        "me": false
+      },
+      "htmlContent": "Is this the right framing for the introduction?",
+      "content": "Is this the right framing for the introduction?",
+      "deleted": false,
+      "resolved": false,
+      "quotedFileContent": {
+        "mimeType": "text/html",
+        "value": "This is the first paragraph."
+      },
+      "anchor": "kix.3f9a2b",
+      "replies": [
+        {
+          "kind": "drive#reply",
+          "id": "AAABc1dEfGh.r1",
+          "createdTime": "2026-07-14T16:40:02.004Z",
+          "modifiedTime": "2026-07-14T16:40:02.004Z",
+          "author": {
+            "kind": "drive#user",
+            "displayName": "Edwin Hu",
+            "me": true
+          },
+          "htmlContent": "Reframed around the doctrinal question.",
+          "content": "Reframed around the doctrinal question.",
+          "deleted": false
+        }
+      ]
+    },
+    {
+      "kind": "drive#comment",
+      "id": "AAABc1dEfGi",
+      "createdTime": "2026-07-14T15:09:44.100Z",
+      "modifiedTime": "2026-07-15T09:12:30.550Z",
+      "author": {
+        "kind": "drive#user",
+        "displayName": "Coauthor",
+        "me": false
+      },
+      "htmlContent": "Cite checked — fine as is.",
+      "content": "Cite checked — fine as is.",
+      "deleted": false,
+      "resolved": true,
+      "quotedFileContent": {
+        "mimeType": "text/html",
+        "value": "A subsection paragraph."
+      },
+      "anchor": "kix.7c1d40",
+      "replies": []
+    }
+  ]
+}
