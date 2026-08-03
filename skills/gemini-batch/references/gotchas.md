@@ -18,6 +18,7 @@
 - [Gotcha 14: Store document displayName is random after importFile](#gotcha-14-store-document-displayname-is-random-after-importfile)
 - [Gotcha 15: Batch inlinedResponse.response is raw JSON, not hydrated class](#gotcha-15-batch-inlinedresponseresponse-is-raw-json-not-hydrated-class)
 - [Gotcha 16: Batch API rejects responseMimeType + tools together](#gotcha-16-batch-api-rejects-responsemimetype--tools-together)
+- [Gotcha 17: Gemini 3.x needs a pinned thinking_level — and Pro rejects MINIMAL](#gotcha-17-gemini-3x-needs-a-pinned-thinking_level--and-pro-rejects-minimal)
 
 Production lessons learned from real-world Gemini Batch API deployments.
 
@@ -859,3 +860,28 @@ config: {
 Add a heuristic fallback parser to extract classification from free-text responses when the model doesn't return pure JSON.
 
 **This does NOT affect sequential mode** -- `generateContent` supports tools + structured output together.
+
+---
+
+## Gotcha 17: Gemini 3.x needs a pinned thinking_level — and Pro rejects MINIMAL
+
+Gemini 3.x models default to a high thinking level. In batch this fails **silently**: the job reports JOB_STATE_SUCCEEDED, but individual responses come back with `finishReason: MAX_TOKENS` and empty content — the model spent the whole budget thinking and emitted nothing. Always pin `thinkingConfig.thinkingLevel` in `generationConfig`.
+
+The refinement (verified 2026-08-03): **the levels are not uniform across tiers.** Pro rejects `MINIMAL` outright:
+
+> Thinking level MINIMAL is not supported for this model
+
+Flash and Flash-Lite accept `MINIMAL`; Pro needs at least `LOW`. A single hardcoded constant therefore breaks the moment you switch tiers — which you will do, since tier comparison is a normal part of Stage 2 (see `scale-up-testing.md`). Pick the level per model:
+
+```python
+def thinking_level_for(model: str) -> str:
+    """Lowest thinking level the model accepts. Pro rejects MINIMAL."""
+    return "LOW" if "pro" in model else "MINIMAL"
+
+generation_config = {
+    "thinkingConfig": {"thinkingLevel": thinking_level_for(model)},
+    ...
+}
+```
+
+Verify the accepted levels against the live model docs before pinning a new model — this is exactly the kind of detail that shifts between releases.

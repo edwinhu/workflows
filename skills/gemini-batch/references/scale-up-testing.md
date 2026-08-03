@@ -78,7 +78,9 @@ import random
 from google import genai
 
 client = genai.Client()
-JUDGE_MODEL = "gemini-3-pro"
+# Verify this ID against https://ai.google.dev/gemini-api/docs/models.md.txt before running.
+# An earlier revision of this file said "gemini-3-pro" — that ID never existed.
+JUDGE_MODEL = "gemini-3.1-pro-preview"
 
 RUBRIC = """Score this extraction output on a 0-1 scale:
 - 1.0 = correct, complete, all entities grounded in source
@@ -112,7 +114,27 @@ print(f"\nJudge quality: {avg_quality:.0%} avg across {len(sample)} samples")
 assert avg_quality >= 0.8, f"Judge quality {avg_quality:.0%} below 80% threshold"
 ```
 
+### Gate Design: a verbatim-quote gate rewards under-extraction
+
+Gating a batch job on "do the model's quoted snippets appear verbatim in the source" is a good anti-fabrication check, but it is **structurally biased**: a model that finds nothing stakes no verbatim claims and passes trivially. Optimizing on it alone selects for the quietest model, not the most accurate one.
+
+- Pair it with a **recall measure** — ideally against human-coded ground truth, otherwise against a known-positive subset.
+- **Report the number of testable rows next to the rate.** "97.9% verified" over 48 rows is a weaker claim than "94.3%" over 70 (2026-08-03, `example-project`: those were Pro and Flash on the same 100 documents).
+
+The same asymmetry applies to any precision-only gate. Every gate should have a counterweight that a null output fails.
+
 ### Cost Extrapolation
+
+Before comparing model tiers on price, work out whether the job is **input- or output-dominated** — the answer decides whether a tier switch saves anything:
+
+```python
+# From the Stage 2 sample, per document
+input_side  = mean_input_tokens  * input_price_per_token
+output_side = mean_output_tokens * output_price_per_token
+print(f"input ${input_side:.5f} vs output ${output_side:.5f}")
+```
+
+If input dominates (e.g. ~16,700 in / ~350 out), a Pro → Flash switch moves almost nothing — Flash's big discount is on output. Only Flash-Lite cuts the input price materially. See the model-selection section of `SKILL.md` for the measured numbers.
 
 ```python
 # Estimate full run from Stage 2 metrics

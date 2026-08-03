@@ -232,7 +232,7 @@ See the Red Flags in the first Iron Law section above — the same gotchas apply
 2. Mixing Standard API and Vertex AI patterns
 3. Passing `dest=` as a kwarg instead of inside `config={}` (Vertex AI; current SDK)
 
-See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
+See `references/gotchas.md` for detailed solutions (now with Gotchas 10-17).
 
 ## Rate Limits
 
@@ -245,6 +245,39 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 
 ## Recommended Models
 
+### ALWAYS verify model IDs and pricing against the live docs
+
+**Never recall a model ID or a price from training data — it is always stale.** Fetch the `.md.txt` variants (LLM-optimized, far easier to parse than the HTML):
+
+- Models: `https://ai.google.dev/gemini-api/docs/models.md.txt`
+- Pricing: `https://ai.google.dev/gemini-api/docs/pricing.md.txt`
+
+Real failures this prevents (encountered 2026-08-03):
+
+- A plan specified `gemini-3-pro` — **that ID does not exist.**
+- A config carried `gemini-3.1-flash-lite` priced at `{input 0.125, output 0.75}`; the current lineup has `gemini-3.5-flash-lite` at `{input 0.30, output 2.50}` standard, `{0.15, 1.25}` batch.
+- **Version numbers do not stay in parity across lines.** As of 2026-08-03 there is a `gemini-3.6-flash` but **no** `gemini-3.6-flash-lite`; the newest Flash-Lite is `gemini-3.5-flash-lite`.
+
+Batch API pricing is 50% of standard across models.
+
+### Model selection: default to Flash / Flash-Lite for extraction
+
+**For structured information extraction — schema-constrained JSON pulled out of documents — default to Flash or Flash-Lite. Reserve Pro for tasks needing genuine reasoning.** Do not reach for Pro by default just because the task feels important.
+
+Measured 2026-08-03 on the `example-project` project (SEC IPO prospectus extraction; ~16,700 input tokens/doc, ~350-600 output; identical prompt, identical 100 documents):
+
+| model | finds the target provision | quote-verification | judge | cost/doc | 1,926-doc run |
+|---|---|---|---|---|---|
+| `gemini-3.1-pro-preview` | 47% | 97.9% | 1.00 | $0.0187 | ~$36 |
+| `gemini-3.6-flash` | 62% | 95.2% | 0.85 | $0.0151 | ~$29 |
+| `gemini-3.5-flash` | 70% | 94.3% | 1.00 | $0.0149 | ~$29 |
+
+**Pro was the most conservative extractor, not the best one.** It found the target provision in 47% of documents where Flash found 62-70% of the *same* documents. On an extraction task Pro's extra reasoning showed up as under-extraction — the failure mode that silently biases a research dataset. Scored against **held-out human hand-coding** (20 rows the research team coded before the pipeline existed, never having seen a machine output), **all four models were identical** — 85.0% exact agreement, 90% recall on real entitlements, 80% exact on those — and they failed on the *same three rows*. So Pro's extra reasoning bought nothing measurable, while its conservatism cost 15-23 points of detection.
+
+Two honest caveats. The human sample was small (20 rows, 11 companies), and identical failures on identical rows says the *residual* errors were structural — a provision filed in an exhibit rather than the prospectus, a right held through a GP entity — not model quality. And the detection gap itself stayed **unresolved**: on the documents where models disagreed there was no ground truth, so which model is right on that 23-point spread was still open. Do not read this table as "Flash is more accurate"; read it as "Pro was not measurably better, and was measurably quieter."
+
+**Cost savings from Pro → Flash are smaller than people expect when the task is input-dominated.** Here it was only ~20%, because Flash input is $0.75/1M against Pro's $1.00, while output — where Flash is much cheaper — was a rounding error at ~350 tokens. **Flash-Lite is the only tier that cuts input price materially** ($0.15/1M, ~85% saving). Work out whether the job is input- or output-dominated *before* assuming a Flash switch saves real money: compute `mean_input_tokens * input_price` vs `mean_output_tokens * output_price` from a Stage 2 sample (see `references/scale-up-testing.md`).
+
 | Model | Use Case | Cost | Location | Thinking default |
 |-------|----------|------|----------|------------------|
 | `gemini-2.5-flash-lite` | Most batch jobs | Lowest | us-central1 | OFF |
@@ -256,7 +289,7 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 | `gemini-embedding-2` | Multimodal (text+image) inputs | Low | Standard API | n/a |
 | `text-embedding-005` | Need Vertex Batch console visibility (legacy) | Low | us-central1 | n/a |
 
-**Critical for Gemini 3.x:** Always set `thinkingConfig: {thinkingLevel: "MINIMAL"}` in `generationConfig` or batch responses will silently fail with `MAX_TOKENS` and empty content. See `references/gotchas.md` Gotcha 12.
+**Critical for Gemini 3.x:** Always pin `thinkingConfig: {thinkingLevel: ...}` in `generationConfig` or batch responses will silently fail with `MAX_TOKENS` and empty content. **The level is not the same across tiers:** Flash and Flash-Lite accept `MINIMAL`, but **Pro rejects it** ("Thinking level MINIMAL is not supported for this model", verified 2026-08-03) and needs `LOW`. Use a helper that picks the level per model — a single hardcoded constant breaks when you switch tiers. See `references/gotchas.md` Gotcha 17.
 
 **Critical for embedding batches:** Embedding work has its own rules and failure modes — use **file-based JSONL with per-row `key`** on the Standard API; never `inlined_requests` (scrambles order at scale). Default to `gemini-embedding-001` for text-only tasks. **See [`references/embeddings.md`](references/embeddings.md) and [`examples/embeddings_batch.py`](examples/embeddings_batch.py).**
 
@@ -265,9 +298,9 @@ See `references/gotchas.md` for detailed solutions (now with Gotchas 10-16).
 ### References
 - `references/embeddings.md` - **NEW:** Dedicated reference for embedding batches (model choice, file-based + keyed pattern, sentinel verification)
 - `references/gcs-setup.md` - Complete GCS and Vertex AI setup guide
-- `references/gotchas.md` - 14 critical production gotchas (Gemini 3.x thinking, location='global'; embedding gotcha now lives in embeddings.md)
+- `references/gotchas.md` - 17 critical production gotchas (Gemini 3.x thinking_level per tier, location='global'; embedding gotcha now lives in embeddings.md)
 - `references/best-practices.md` - Idempotent IDs, state tracking, validation
-- `references/scale-up-testing.md` - Incremental scale-up testing (LangExtract prototyping, LLM-as-judge, Vertex AI batch)
+- `references/scale-up-testing.md` - Incremental scale-up testing (LangExtract prototyping, LLM-as-judge, Vertex AI batch, gate design, input- vs output-dominated cost)
 - `references/troubleshooting.md` - Common errors and debugging
 - `references/vertex-ai.md` - Enterprise alternative with comparison
 - `references/cli-reference.md` - gsutil and gcloud commands
