@@ -46,6 +46,7 @@ directly, since the shebang is `uv run`) reads the header and provisions the dep
 | `reconcile.py` | docx → typ | Resolve the ancestor, three-way merge a returned file against the repo source |
 | `comments.py` | docx or Drive → JSON | Extract comments with their anchor text, resolved state, and threading |
 | `provenance.py` | — | Read/write the stamp directly (build.py already applies it) |
+| `expand_citations.py` | typ → typ | Render live `#cite(...)` into the literal body the docx path needs |
 
 ## The `main.typ` / `body.typ` split
 
@@ -123,6 +124,56 @@ Ancestor resolution, in preference order:
 
 If none resolves, the script **stops**. Pass `--base-docx` or `--base`.
 
+## Live citations
+
+Only needed for a manuscript whose citations must renumber themselves —
+`supra note N` in a law review article. Skip it otherwise.
+
+typst reads CSL, but **hayagriva 0.10.1 (linked into the typst binary) cannot
+render Bluebook**. A minimal probe style emitting nothing but the contested
+variables:
+
+```
+3  SUPRA-NOTE-NUM=[]  SMALLCAPS=[ The Specter of the Giant Three]
+   pdffonts: LibertinusSerif-Regular       <- no small-caps face, no synthesis
+```
+
+`first-reference-note-number` is never populated, `font-variant="small-caps"` is
+ignored, and BibLaTeX `shortjournal` is not mapped to `container-title-short`.
+Position tracking does work — `Id.` renders correctly. `assets/bluebook.typ`
+supplies the three missing pieces as a `#show cite:` rule.
+
+That forces **two body files**, because their requirements are incompatible:
+
+```
+body-src.typ   editing surface, live #cite(<Key>)   <- main.typ compiles this
+    | expand_citations.py   (typst query <bb-out>)
+body.typ       canonical artifact, citations rendered
+    |                                               <- build.py, reconcile.py
+   .docx
+```
+
+```typst
+// main.typ
+#import "bluebook.typ"
+#show cite: it => bluebook.rule(it, entries: entries, id-overrides: overrides)
+```
+
+```bash
+uv run --script "${CLAUDE_SKILL_DIR}/scripts/expand_citations.py" \
+    --main main.typ --src body-src.typ --out body.typ --check
+```
+
+Verified on a 59-page law review manuscript: 67 citation sites, 38 keys, every
+citation byte-identical to what pandoc-citeproc produced, and the generated
+`body.typ` byte-identical to the pre-existing canonical file. Inserting one
+footnote shifted every reference (`supra note 1` → `2`, `16` → `17`) with no
+edits.
+
+**The cost:** `reconcile.py` merges a coauthor's edits into `body.typ`, the
+literal form. Carrying them back to `body-src.typ` is manual, and a coauthor who
+edits *inside* a citation string has to be reconciled by hand.
+
 ## Comments
 
 ```bash
@@ -142,6 +193,38 @@ read-only here by design; there is no write path back.
   refuses a body carrying `#show`/`#set`/`#let`/`#import` for this reason. Reaching for
   `--allow-styling` to get past the error ships a headingless document to a coauthor —
   the opposite of the help that motivated skipping the split.
+
+- **A live `#cite` can never reach the canonical fixed point.** pandoc's docx
+  writer emits a Cite node as the bare text `[Key]`, so `typ → docx → typ` turns
+  `#cite(<Bebchuk2019-uq>)` into `\[Bebchuk2019-uq\]`. Everything else can work
+  — the PDF, the docx, the Word render — and `--check` still fails, which is how
+  this surfaces: late, after the build is green. Separating the symbolic source
+  from the generated literal body is the only arrangement that satisfies both
+  the citation automation and `reconcile.py`.
+
+- **A custom function name in a body file is a HARD pandoc error, not a degraded
+  render.** `#cite-bb(...)` gives `"body.typ" (line 1, column 18): Identifier
+  "cite-bb" not found` and NO docx is produced. pandoc does understand the
+  built-in `#cite(<Key>)` and `@Key`, lowering them to real Cite nodes, so a
+  custom citation renderer must be a `#show cite:` rule over the built-in rather
+  than a new function. This is why the split above uses the built-in spelling in
+  the body and keeps the renderer in `main.typ`.
+
+- **Footnote numbers are a LAYOUT property, so a citation renderer cannot ask
+  for them directly.** typst assigns them during layout while citation
+  processing is a prepass — which is very likely why hayagriva never populates
+  `first-reference-note-number`, and why patching hayagriva would not fix it.
+  The way through is to defer: emit each site as `#metadata`, then resolve with
+  `query()` and `counter(footnote).at(site.location())`. Non-cyclical, and it
+  survives an inserted footnote because nothing is hard-coded.
+
+- **`supplement` arrives as CONTENT, and typst has already smartened it.**
+  `[2071--72]` is a sequence of three children, not a string: a naive `.text`
+  returns nothing, a space element carries no `.text` at all (dropping it welded
+  `500& tbl.3`), and reassembling yields `2071–72` with an en-dash. That last
+  one renders identically but is a DIFFERENT source spelling, which
+  canonicalize.py normalizes back to `--` — leaving the generated body
+  permanently one step off its fixed point. Walk the tree and un-smarten.
 
 - **A returned `.docx` has no ancestor unless one was arranged in advance.** Merging two
   versions without a common base silently drops one side's edits, and the loss is
@@ -240,6 +323,9 @@ read-only here by design; there is no write path back.
 | About to run `--from-docx` without `--media-dir` because the error is in the way | Every figure is dropped and the output still looks complete | Name the sidecar directory; it is one argument |
 | About to invoke a script with `uv run python3 <path>` | The PEP 723 header is ignored and the lxml scripts die on import | `uv run --script <path>` |
 | About to hand-fix `Officers"` in a recovered file | The converter did it, not the source; hand-fixes are re-corrupted next pass | Re-recover with current `canonicalize.py`, which restores `’` |
+| About to name a custom citation function in the body file | pandoc dies with `Identifier not found` and no docx is produced | `#show cite:` over the built-in `#cite(<Key>)` |
+| About to put live `#cite` in the file `reconcile.py` merges into | It can never be canonical; the merge churns on every citation | Keep the symbolic form in `body-src.typ`, generate the literal one |
+| About to patch hayagriva to get `supra note N` | It is statically linked into typst, and note numbers are a layout property a patch cannot reach | Render citations in typst with a `#show cite:` rule |
 | About to `typst compile` a freshly recovered body and conclude the conversion failed | Word's TOC arrives as links to bookmarks that are not labels | Delete the recovered TOC block; `#outline()` in `main.typ` replaces it |
 
 ## Verifying a change to this skill
