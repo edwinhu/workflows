@@ -44,22 +44,27 @@ the recovered Typst either unparseable or quietly wrong. Both are fixed by rewri
 recovered text once, in `normalize_recovered`, applied to EVERY `docx -> typ` result so
 the fixed point still holds.
 
-1. SINGLE-COLUMN TABLES DO NOT PARSE. Word wraps figures and floats in a one-cell
-   container table. Pandoc's typst WRITER emits its width list as `columns: (100%)` —
-   which is a parenthesized scalar in Typst, not a one-element array — and pandoc's own
-   typst READER then fails with `Could not determine number of columns: VRatio (1 % 1)`.
-   26 occurrences in one 1.2M manuscript, and the whole file is unrecoverable. Still
-   present on pandoc `main` as of 2026-08 (`Writers/Typst.hs`: the width list is built
-   with `parens (commaSep ...)` while the align list beside it appends a trailing comma
+1. SINGLE-COLUMN TABLES DO NOT PARSE, AND PANDOC MANUFACTURES THEM. Pandoc's DOCX
+   writer wraps every `#figure` — table or image — in a one-cell container table:
+   measured, 19 `<w:tbl>` go in and 38 come out. This is pandoc's doing, not Word's;
+   the manuscript's own docx has 19, and the FIRST `docx -> typ` pass is clean. The
+   damage lands on the second, which is why `--check` was the thing that exploded.
+
+   Reading that docx back, pandoc's typst WRITER emits the container's width list as
+   `columns: (100%)` — a parenthesized scalar in Typst, not a one-element array — and
+   pandoc's own typst READER then fails with
+   `Could not determine number of columns: VRatio (1 % 1)`. 26 of them in that
+   manuscript (19 tables + 7 figures) and the whole file is unrecoverable. Still present
+   on pandoc `main` as of 2026-08 (`Writers/Typst.hs`: the width list is built with
+   `parens (commaSep ...)` while the align list beside it appends a trailing comma
    unconditionally), so upgrading pandoc does not fix it. The normalization adds the
    comma: `columns: (100%,)`.
 
-   Making the container PARSE is not enough, because pandoc reproduces the nesting in
-   both directions and adds a level per trip — 19 containers in that manuscript became
-   57 after one round trip and 133 after two. There is no fixed point until the
-   containers are gone, so `flatten_container_tables` removes them. It unwraps only a
-   caption-less figure whose table holds exactly ONE cell; a real one-column table has
-   one cell per row and is never touched.
+   Making the container PARSE is not enough, because the wrapping happens on EVERY trip
+   and the levels accumulate: 19 containers became 57 after one further round trip and
+   133 after two. There is no fixed point until they are removed, so
+   `flatten_container_tables` unwraps them — only a caption-less figure whose table holds
+   exactly ONE cell, so a real one-column table (one cell per row) is never touched.
 
 2. WORD-FINAL APOSTROPHES BECOME CLOSING DOUBLE QUOTES. The writer unsmartens `’` to a
    straight `'`; the reader then re-smartens, and reads a `'` at the end of a word as a
@@ -99,6 +104,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import hashlib
 import os
 import re
 import shutil
@@ -129,10 +135,19 @@ _SINGLE_COLUMN_RE = re.compile(r"(?m)^(?P<indent>[ \t]*)columns: \((?P<width>[^(
 # DOUBLE QUOTE; interior apostrophes (`it's`) it gets right and are left alone.
 _WORD_FINAL_APOSTROPHE = re.compile(r"(?<=\w)'(?![\w'])")
 
-# Raw blocks, raw spans and math, where pandoc does not smarten and a rewrite would be
-# corruption. A literal `$` is written `\$` by the typst writer, so an unescaped one is
-# always math and the pairs are balanced.
-_PROTECTED_SPAN = re.compile(r"```.*?```|`[^`\n]*`|(?<!\\)\$.*?(?<!\\)\$", re.DOTALL)
+# Raw blocks, raw spans and math: pandoc does not smarten inside them, so no rewrite may
+# reach them. A literal `$` is written `\$` by the typst writer, so an unescaped one is
+# always math and the pairs are balanced — but math is still bounded to a single block, so
+# one stray `$` cannot swallow the rest of the document and quietly disable every rewrite
+# after it. The backtick alternatives are ordered longest-fence-first: `` `x` `` inside a
+# ``` ``…`` `` span must not be matched as the span itself.
+_PROTECTED_SPAN = re.compile(
+    r"```.*?```"                      # fenced raw block
+    r"|``(?:[^`]|`(?!`))*``"          # double-backtick raw span
+    r"|`[^`\n]*`"                     # single-backtick raw span
+    r"|(?<!\\)\$(?:[^\n]|\n(?!\s*\n))*?(?<!\\)\$",   # math, never across a blank line
+    re.DOTALL,
+)
 
 # `image("path", ...)` as the typst writer emits it.
 _IMAGE_RE = re.compile(r'image\("(?P<path>(?:[^"\\]|\\.)*)"')
@@ -140,8 +155,8 @@ _IMAGE_RE = re.compile(r'image\("(?P<path>(?:[^"\\]|\\.)*)"')
 # Pandoc downgrades an image it cannot open to its alt text and still exits 0.
 _MISSING_RESOURCE = "Could not fetch resource"
 
-# A caption-less `#figure` wrapping a one-column, one-cell `#table` — Word's layout
-# container, not a table anyone wrote. Matched on pandoc's line structure rather than by
+# A caption-less `#figure` wrapping a one-column, one-cell `#table` — pandoc's own
+# figure wrapper, not a table anyone wrote. Matched on pandoc's line structure rather than by
 # balancing brackets, because prose balances nothing: this manuscript's cells hold
 # interval notation like `(0,5\]`, where the paren never closes, and a bracket scanner
 # gives up on exactly the tables that need flattening.
@@ -211,14 +226,22 @@ def _container_at(lines: list[str], i: int) -> tuple[list[str], int] | None:
         I    align(center)[#table(
         I      columns: (100%,),
         I      align: (auto,),
-        I      [<cell, one or more lines>
+        I      [#figure(<...>)          <- the wrapped figure, one or more lines
         I      ],
         I    )]
         I    , kind: table
         I    )
 
     The four-line tail is matched as a unit, which is what distinguishes the container's
-    own closing lines from those of a container nested inside its cell.
+    own closing lines from those of a container nested inside its cell, and lines inside a
+    raw block are skipped so that literal text shaped like the tail cannot end the cell
+    early.
+
+    THE CELL MUST OPEN WITH `#figure(`. Pandoc only ever manufactures this wrapper AROUND
+    a figure — all 19 in the manuscript, with no exceptions — so requiring it costs
+    nothing and is what keeps an AUTHORED one-cell table (a callout box, a framed
+    takeaway panel) from being dissolved into loose prose. Without it the two shapes are
+    indistinguishable after a docx trip, and the wrong guess is silent data loss.
     """
     head = _FIGURE_LINE.match(lines[i])
     if not head or i + 5 >= len(lines):
@@ -227,10 +250,17 @@ def _container_at(lines: list[str], i: int) -> tuple[list[str], int] | None:
     if (lines[i + 1] != f"{ind}  align(center)[#table("
             or not _COLUMNS_LINE.match(lines[i + 2])
             or lines[i + 3] != f"{ind}    align: (auto,),"
-            or not lines[i + 4].startswith(f"{ind}    [")):
+            or lines[i + 4] != f"{ind}    [#figure("):
         return None
 
+    fence = False
     for j in range(i + 5, len(lines) - 3):
+        # A raw block's contents are literal text; four lines inside one that happen to
+        # look like the tail must not be mistaken for it.
+        if lines[j].lstrip().startswith("```"):
+            fence = not fence
+        if fence:
+            continue
         if (lines[j] == f"{ind}    ],"
                 and lines[j + 1] == f"{ind}  )]"
                 and lines[j + 2] == f"{ind}  , kind: table"
@@ -245,14 +275,15 @@ def _container_at(lines: list[str], i: int) -> tuple[list[str], int] | None:
 
 
 def flatten_container_tables(text: str) -> str:
-    """Unwrap Word's single-cell layout tables, leaving their contents in place.
+    """Unwrap the single-cell container tables pandoc's docx writer manufactures.
 
-    Word wraps a real table in a one-cell container table. Pandoc reproduces the nesting
-    faithfully in BOTH directions and adds a level each time it makes the trip: a
-    manuscript recovered with 19 containers came back with 57 after one round trip and
-    133 after two. The nesting therefore grows without bound and the canonical form has
-    no fixed point at all until the containers are removed — which is why this is not a
-    tidiness pass.
+    Pandoc wraps every `#figure` in a one-cell table on the way INTO docx — 19 `<w:tbl>`
+    in, 38 out — and reads the wrapper back as a real level of nesting on the way out.
+    A level is therefore added on every trip: 19 containers became 57 after one further
+    round trip and 133 after two. The nesting grows without bound and the canonical form
+    has no fixed point at all until they are removed, which is why this is not a
+    tidiness pass. Word did not put them there; the manuscript's own docx has 19 tables
+    and the first recovery pass is clean.
 
     Only a caption-less `#figure` whose table has exactly ONE cell is unwrapped. A
     genuine one-column data table has one cell per row, so its `]` lines do not sit where
@@ -269,22 +300,72 @@ def normalize_recovered(text: str) -> str:
     Both rewrites are no-ops on text that does not exhibit the defect, so a future
     pandoc that emits `columns: 1` needs no change here.
     """
-    text = _SINGLE_COLUMN_RE.sub(
-        lambda m: f"{m.group('indent')}columns: ({m.group('width')},),", text
-    )
+    # Every rewrite runs OUTSIDE raw spans, raw blocks and math. A recovered document that
+    # quotes Typst source — this skill's own README would — otherwise has its example code
+    # silently edited, which makes the "normalization" a corruption.
+    text = _outside_protected(text, lambda s: _SINGLE_COLUMN_RE.sub(
+        lambda m: f"{m.group('indent')}columns: ({m.group('width')},),", s))
     text = flatten_container_tables(text)
     return _outside_protected(text, lambda s: _WORD_FINAL_APOSTROPHE.sub("’", s))
 
 
 def image_paths(text: str) -> list[str]:
-    """Every path referenced by an `image(...)` call, in order of appearance."""
-    return [m.group("path") for m in _IMAGE_RE.finditer(text)]
+    """Every path referenced by a real `image(...)` call, in order of appearance.
+
+    Occurrences inside raw spans and blocks are prose ABOUT an image call, not one: a
+    document quoting `image("fake.png")` in a code sample would otherwise be reported as
+    embedding an image that pandoc correctly never extracted, and — worse, beside a real
+    figure — would shift the positional path mapping onto the wrong call.
+    """
+    found: list[str] = []
+    _outside_protected(text, lambda s: found.extend(m.group("path") for m in _IMAGE_RE.finditer(s)) or s)
+    return found
 
 
 def set_image_paths(text: str, paths: list[str]) -> str:
-    """Replace the Nth `image(...)` path with `paths[N]`. Order and count must match."""
+    """Replace the Nth real `image(...)` path with `paths[N]`. Order and count must match."""
     it = iter(paths)
-    return _IMAGE_RE.sub(lambda m: f'image("{next(it)}"', text)
+    return _outside_protected(text, lambda s: _IMAGE_RE.sub(lambda m: f'image("{next(it)}"', s))
+
+
+def _digests(media_dir: Path) -> dict[str, str]:
+    """sha256 -> filename, for the images already sitting in `media_dir`."""
+    if not media_dir.is_dir():
+        return {}
+    out: dict[str, str] = {}
+    for p in sorted(media_dir.iterdir()):
+        if p.is_file():
+            out.setdefault(hashlib.sha256(p.read_bytes()).hexdigest(), p.name)
+    return out
+
+
+def _adopt_media(src: Path, media_dir: Path, existing: dict[str, str]) -> Path:
+    """Place `src` in `media_dir`, reusing the name of an identical file already there.
+
+    IMAGE IDENTITY IS CONTENT, NOT PANDOC'S FILENAME. Pandoc names extracted media after
+    the docx's internal relationship ids, and those are assigned per package: the same
+    figure comes out of the repo's own `body.typ` as `figure1.png` and out of a returned
+    `.docx` as `rId9.png`. Naming by extraction made an UNEDITED returned document differ
+    from the repo source on every figure line — `reconcile.py` reported the coauthor as
+    having changed figures they never touched, and `media/` gained a duplicate copy of
+    every image on each run. Matching on the bytes makes both sides of the merge agree.
+
+    A genuinely new image keeps its extracted name, and a name collision between
+    DIFFERENT content is suffixed rather than overwritten.
+    """
+    digest = hashlib.sha256(src.read_bytes()).hexdigest()
+    if digest in existing:
+        return media_dir / existing[digest]
+
+    stem, suffix = src.stem, src.suffix
+    dest = media_dir / src.name
+    n = 2
+    while dest.exists():
+        dest = media_dir / f"{stem}-{n}{suffix}"
+        n += 1
+    shutil.copyfile(src, dest)
+    existing[digest] = dest.name
+    return dest
 
 
 def typ_to_docx(
@@ -418,13 +499,16 @@ def canonical_from_docx(
         media_dir.mkdir(parents=True, exist_ok=True)
         anchor = Path(typ_dir).resolve() if typ_dir is not None else Path.cwd()
 
+        # An image already in `media_dir` keeps ITS name, matched by content — see
+        # `_adopt_media`. Naming by pandoc's extraction instead would make an UNEDITED
+        # returned document differ from the repo source on every figure line.
+        existing = _digests(media_dir)
         rewrites: dict[str, str] = {}
         for ref in dict.fromkeys(found):
             src = (Path(td) / ref) if not Path(ref).is_absolute() else Path(ref)
             if not src.exists():
                 raise PandocError(f"pandoc reported image {ref!r} but did not extract it")
-            dest = media_dir / src.name
-            shutil.copyfile(src, dest)
+            dest = _adopt_media(src, media_dir, existing)
             rewrites[ref] = os.path.relpath(dest.resolve(), anchor)
 
         text = _IMAGE_RE.sub(

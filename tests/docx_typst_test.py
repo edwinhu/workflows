@@ -762,9 +762,10 @@ def test_pandoc_still_emits_an_unparseable_single_column_table(tmp_path):
     """PIN: the typst WRITER emits `columns: (100%)` and its own READER rejects it.
 
     `(100%)` is a parenthesized scalar in Typst, not a one-element array, so the reader
-    fails with `Could not determine number of columns: VRatio (1 % 1)`. Word wraps every
-    table in a one-cell container, so a real manuscript hits this once per table — 26
-    times in the one this was found on, and the whole file was unrecoverable.
+    fails with `Could not determine number of columns: VRatio (1 % 1)`. Pandoc's own docx
+    writer manufactures the one-cell tables that hit this, by wrapping every `#figure`,
+    so a real manuscript hits it once per figure — 26 times in the one this was found on
+    (19 tables + 7 images), and the whole file was unrecoverable.
 
     If this test starts FAILING, pandoc fixed the writer and `_SINGLE_COLUMN_RE` has
     become dead weight rather than load-bearing.
@@ -791,10 +792,11 @@ def test_pandoc_still_emits_an_unparseable_single_column_table(tmp_path):
 def test_container_tables_do_not_grow_across_the_round_trip(tmp_path):
     """A one-cell container table is unwrapped, so the nesting cannot accumulate.
 
-    Pandoc reproduces Word's container faithfully in both directions AND adds a level per
-    trip: 19 containers in the manuscript became 57 after one round trip and 133 after
-    two. Without flattening there is no fixed point at all, so `--check` can never pass
-    and nothing downstream of the canonical form works.
+    Pandoc's docx writer wraps every `#figure` in a container (19 `<w:tbl>` in, 38 out)
+    and reads the wrapper back as real nesting, so a level is added on EVERY trip: 19
+    containers became 57 after one round trip and 133 after two. Without flattening there
+    is no fixed point at all, so `--check` can never pass and nothing downstream of the
+    canonical form works.
     """
     src = tmp_path / "body.typ"
     src.write_text(CONTAINER, encoding="utf-8")
@@ -810,7 +812,7 @@ def test_container_tables_do_not_grow_across_the_round_trip(tmp_path):
 
 
 def test_flattening_spares_a_real_one_column_table():
-    """A one-column table with rows is data, not a Word layout container."""
+    """A one-column table with rows is data, not a pandoc figure wrapper."""
     assert canonicalize.flatten_container_tables(REAL_ONE_COLUMN) == REAL_ONE_COLUMN
 
     flat = canonicalize.flatten_container_tables(CONTAINER)
@@ -935,3 +937,172 @@ def test_round_trip_that_loses_an_image_raises(tmp_path):
     """A count mismatch is refused rather than returned as a shorter document."""
     with pytest.raises(canonicalize.PandocError, match="no resource_path was given"):
         canonicalize.canonicalize_text('#figure(image("media/x.png"))\n')
+
+
+# ── C12: what the codex and gemini reviews found ───────────────────────
+#
+# Both models independently flagged the same top defects in the C9-C11 work. These pin
+# the ones that reproduced. A third — "an authored one-cell callout box is flattened" —
+# was a FALSE POSITIVE as reported (a single-line cell never matched the line shape), but
+# a multi-line one would have, so the predicate was tightened and it is pinned below too.
+
+CALLOUT = """#figure(
+  align(center)[#table(
+    columns: (100%,),
+    align: (auto,),
+    [#strong[Key Takeaway:]
+    An authored one-cell box, not a pandoc wrapper.
+    ],
+  )]
+  , kind: table
+  )
+"""
+
+
+def test_an_authored_one_cell_box_is_not_flattened():
+    """Only a cell that OPENS with `#figure(` is pandoc's wrapper.
+
+    Pandoc manufactures the container exclusively around a figure — 19 of 19 in the
+    manuscript. An authored callout box, framed panel or theorem block has the same
+    outline and prose in the cell, and dissolving it into loose text would be silent
+    data loss to clean up an artifact that is not there.
+    """
+    assert canonicalize.flatten_container_tables(CALLOUT) == CALLOUT
+    assert canonicalize.normalize_recovered(CALLOUT) == CALLOUT
+
+
+def test_a_tail_shaped_raw_block_does_not_end_the_cell_early():
+    """Literal text inside a raw block must not be read as the container's closing lines."""
+    trap = CONTAINER.replace(
+        "    [#figure(",
+        "    [#figure(\n      ```typst\n    ],\n  )]\n  , kind: table\n  )\n      ```",
+        1,
+    )
+    flat = canonicalize.flatten_container_tables(trap)
+    assert "Mirror (pro-rata)" in flat, "the cell was truncated at the raw block"
+    assert flat.count("```") == 2, "the raw block was split"
+
+
+def test_rewrites_never_reach_raw_blocks_or_math():
+    """A document quoting Typst source must not have its examples edited.
+
+    `_SINGLE_COLUMN_RE` originally ran over the whole document, so a fenced block showing
+    `columns: (100%),` was rewritten — the normalization corrupting the content it was
+    meant to preserve.
+    """
+    block = "```typst\ncolumns: (100%),\n```\n"
+    assert canonicalize.normalize_recovered(block) == block
+    span = "Write `columns: (100%),` in the source.\n"
+    assert canonicalize.normalize_recovered(span) == span
+    # a double-backtick span containing a single backtick stays whole
+    dbl = "A ``users' ` sample`` here.\n"
+    assert canonicalize.normalize_recovered(dbl) == dbl
+    # ...while the real thing outside is still normalized
+    assert "columns: (100%,)," in canonicalize.normalize_recovered("    columns: (100%),\n")
+
+
+def test_one_stray_dollar_does_not_disable_every_later_rewrite():
+    """Math is bounded to a block, so an unpaired `$` cannot swallow the document.
+
+    With an unbounded DOTALL span, one stray `$` protected everything after it and every
+    apostrophe past that point silently went uncorrected on the next round trip.
+    """
+    text = "Budget $100 for it.\n\nThe Officers' Retirement System.\n\nThe authors' view.\n"
+    out = canonicalize.normalize_recovered(text)
+    assert "Officers’" in out and "authors’" in out
+    assert "$100" in out
+
+
+def test_an_image_call_inside_a_raw_span_is_not_an_image():
+    """Prose ABOUT an image call is not one — it must not enter the count or the mapping."""
+    assert canonicalize.image_paths('A `image("fake.png")` sample.\n') == []
+    assert canonicalize.image_paths('```\nimage("fake.png")\n```\n') == []
+
+    mixed = 'Use `image("fake.png")` like #figure(image("media/real.png"))\n'
+    assert canonicalize.image_paths(mixed) == ["media/real.png"]
+    # the mapping lands on the real call, not the quoted one
+    assert 'image("media/moved.png")' in canonicalize.set_image_paths(mixed, ["media/moved.png"])
+    assert 'image("fake.png")' in canonicalize.set_image_paths(mixed, ["media/moved.png"])
+
+
+# ── C13: figures are identified by content, not by pandoc's filename ───
+
+@needs_pandoc
+def test_an_unedited_return_reconciles_to_a_no_op(tmp_path):
+    """The defect this pins: pandoc names extracted media after the docx's internal rIds.
+
+    The same figure comes out of the repo's `body.typ` as `figure1.png` and out of a
+    returned `.docx` as `rId9.png`, so a document the coauthor did not touch differed from
+    the source on EVERY figure line — `reconcile.py` reported figures as changed that
+    nobody changed, and `media/` gained a duplicate copy per run. `_adopt_media` matches
+    on the bytes so both sides of the merge name the same image the same way.
+    """
+    media = tmp_path / "media"
+    media.mkdir()
+    (media / "figure1.png").write_bytes(PNG_1X1)
+    body = tmp_path / "body.typ"
+    body.write_text(
+        '= Results\n\nProse.\n\n#figure(image("media/figure1.png", width: 1in),\n'
+        "  caption: [\n    A figure.\n  ]\n)\n",
+        encoding="utf-8",
+    )
+    body.write_text(canonicalize.canonicalize_file(body), encoding="utf-8")
+
+    returned = tmp_path / "returned.docx"
+    canonicalize.typ_to_docx(body, returned)
+
+    theirs = canonicalize.canonical_from_docx(
+        returned, "accept", media_dir=media, typ_dir=tmp_path
+    )
+    assert theirs == canonicalize.canonicalize_file(body), \
+        "an untouched return differs from the source — every figure reads as edited"
+    assert sorted(p.name for p in media.iterdir()) == ["figure1.png"], \
+        "reconciling duplicated the media"
+
+
+@needs_pandoc
+def test_a_genuinely_changed_figure_gets_its_own_name(tmp_path):
+    """Content-addressing must not collapse two DIFFERENT images onto one file."""
+    media = tmp_path / "media"
+    media.mkdir()
+    (media / "figure1.png").write_bytes(PNG_1X1)
+    other = PNG_1X1[:-4] + b"\x00\x00\x00\x00"  # same length, different bytes
+
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "media").mkdir()
+    (src / "media" / "figure1.png").write_bytes(other)
+    body = src / "body.typ"
+    body.write_text('#figure(image("media/figure1.png", width: 1in))\n', encoding="utf-8")
+    docx = canonicalize.typ_to_docx(body, tmp_path / "b.docx")
+
+    recovered = canonicalize.canonical_from_docx(docx, media_dir=media, typ_dir=tmp_path)
+    names = sorted(p.name for p in media.iterdir())
+    assert len(names) == 2, f"different bytes were collapsed onto one file: {names}"
+    assert (media / "figure1.png").read_bytes() == PNG_1X1, "the original was overwritten"
+    [ref] = canonicalize.image_paths(recovered)
+    assert (tmp_path / ref).read_bytes() == other, "the reference points at the wrong bytes"
+
+
+def test_adopt_media_suffixes_a_name_collision(tmp_path):
+    """Same basename, different bytes: suffix rather than overwrite.
+
+    Reached when pandoc's extracted name happens to equal one already in the media
+    directory. Overwriting there would swap one figure for another with no diff to see.
+    """
+    media = tmp_path / "media"
+    media.mkdir()
+    (media / "figure1.png").write_bytes(PNG_1X1)
+    incoming = tmp_path / "figure1.png"
+    incoming.write_bytes(PNG_1X1[:-4] + b"\x00\x00\x00\x00")
+
+    existing = canonicalize._digests(media)
+    dest = canonicalize._adopt_media(incoming, media, existing)
+    assert dest.name == "figure1-2.png"
+    assert (media / "figure1.png").read_bytes() == PNG_1X1
+
+    # ...and identical bytes reuse the existing name instead of adding a copy
+    same = tmp_path / "whatever.png"
+    same.write_bytes(PNG_1X1)
+    assert canonicalize._adopt_media(same, media, existing).name == "figure1.png"
+    assert sorted(p.name for p in media.iterdir()) == ["figure1-2.png", "figure1.png"]

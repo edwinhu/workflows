@@ -162,14 +162,21 @@ read-only here by design; there is no write path back.
 - **Real Word output trips three pandoc defects that synthetic fixtures never reach, and
   `canonicalize.py` normalizes around all three.** Every one was found by running the
   recovery over a genuine 1.2M manuscript after the suite was already green.
-  (1) Word wraps each table in a one-cell container; pandoc's typst WRITER emits its
-  width as `columns: (100%)` — a parenthesized scalar, not a one-element array — and
-  pandoc's own READER then fails with `Could not determine number of columns`. Still
-  present on pandoc `main` as of 2026-08, so upgrading does not fix it.
-  (2) Making it parse is not enough: pandoc reproduces the container in both directions
-  and ADDS a level per trip — 19 containers became 57 then 133 — so there is no fixed
-  point until single-cell containers are flattened. A real one-column table has one cell
-  per row and is never flattened.
+  (1) Pandoc's DOCX writer wraps every `#figure` — table or image — in a one-cell
+  container table (19 `<w:tbl>` in, 38 out). This is pandoc's doing, not Word's: the
+  manuscript's own docx has 19 and the first `docx → typ` pass is clean, which is why
+  `--check`, not the recovery, was what exploded. Reading that docx back, the typst
+  WRITER emits the container's width as `columns: (100%)` — a parenthesized scalar, not
+  a one-element array — and pandoc's own READER fails with `Could not determine number
+  of columns`. 26 of them here: 19 tables + 7 figures. Still present on pandoc `main` as
+  of 2026-08, so upgrading does not fix it.
+  (2) Making it parse is not enough: the wrapping happens on EVERY trip and the levels
+  accumulate — 19 containers became 57 then 133 — so there is no fixed point until
+  single-cell containers are flattened. Flattening requires the cell to OPEN with
+  `#figure(` — pandoc only ever manufactures the wrapper around a figure, 19 of 19 here —
+  which is what keeps an AUTHORED one-cell table (a callout box, a framed panel) from
+  being dissolved into loose prose. A real one-column data table has one cell per row and
+  never matches either.
   (3) The writer unsmartens `’` to `'` and the reader re-reads a word-final `'` as a
   closing DOUBLE quote, so `Officers’ Retirement` becomes `Officers” Retirement` on the
   second pass. The pipe converged on corruption rather than on its input. Raw spans, raw
@@ -183,6 +190,23 @@ read-only here by design; there is no write path back.
   is a WARNING, and it substitutes the alt text and still exits 0, so `canonicalize.py`
   treats that warning as an error. Reaching for a run without `--media-dir` to avoid the
   extra argument ships a paper with no figures to a coauthor.
+
+- **A figure is identified by its BYTES, not by pandoc's filename.** Pandoc names extracted
+  media after the docx's internal relationship ids, which are assigned per package: the
+  same figure is `figure1.png` out of the repo's own `body.typ` and `rId9.png` out of a
+  returned `.docx`. Naming by extraction made an UNEDITED returned document differ from
+  the source on every figure line — `reconcile.py` reported figures as changed that nobody
+  changed, and `media/` gained a duplicate copy of every image per run. `_adopt_media`
+  matches on a sha256 and reuses the existing name; different bytes get their own file
+  rather than overwriting.
+
+- **Every rewrite runs OUTSIDE raw spans, raw blocks and math**, including the
+  `columns:` repair and image discovery. A recovered document that QUOTES Typst source —
+  this skill's own notes would — otherwise has its examples silently edited, and an
+  `image("x.png")` inside a code sample counts as a figure and shifts the positional path
+  mapping onto the wrong call. Math is bounded to a single block for the same reason: one
+  unpaired `$` would otherwise protect the entire rest of the document and disable every
+  later rewrite invisibly.
 
 - **Image paths are restored positionally across the round trip, not trusted.** Pandoc
   renames media on embedding (`media/figure1.svg` in, `media/rId83.svg` out), so an image
@@ -233,6 +257,15 @@ Two of those tests pin a BUG rather than a feature: `test_pandoc_still_emits_an_
 unparseable_single_column_table` and `test_pandoc_still_misreads_a_word_final_apostrophe`
 fail when pandoc FIXES the defect. That is the intended signal — it is how the
 normalization gets retired instead of quietly outliving its reason.
+
+**A second model reviews this skill, and it earns its keep.** The codex and gemini passes
+over the change above both independently found the figure-naming defect (an unedited
+return read as having every figure edited), the unprotected `columns:` rewrite corrupting
+quoted source, and the `image(` call counted from inside a code sample. All three
+reproduced and are pinned in C12/C13. One reported finding — "an authored one-cell callout
+box is flattened" — did NOT reproduce as written, because a single-line cell never matched
+the line shape; the predicate was tightened anyway, since a multi-line one would have.
+Verify a third-party finding before acting on it, and pin the ones that survive.
 
 **Test against real Word output, not only the fabricated fixtures.** Every defect in the
 list above survived a green suite, because a docx pandoc wrote does not contain the
