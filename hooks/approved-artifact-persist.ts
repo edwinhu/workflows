@@ -49,12 +49,40 @@ const projectRoot = resolvedRoot ?? start;
 const policy = argPolicy
   ?? workflowFromPlanningEvidence(projectRoot, readEpisodeState(projectRoot)?.workflow ?? null)
   ?? defer("cannot determine which workflow this episode belongs to: more than one clarify sentinel is present, and binding a plan to the wrong workflow identity is worse than binding none");
+/**
+ * THE PLAN PATH COMES FROM THE PAYLOAD, NOT THE TRANSCRIPT. The transcript scan below is a fallback
+ * and nothing more.
+ *
+ * MEASURED 2026-08-04, project `rule611`: two ExitPlanMode approvals, zero receipts, and the hook's
+ * own stderr in the transcript twice — `ExitPlanMode matching transcript tool-result was not found`.
+ * At PostToolUse time Claude Code has NOT yet appended this call's `tool_result` record to the
+ * transcript file, so a hook searching for its own `tool_use_id` finds nothing. Every time.
+ *
+ * THE OLD COMMENT CALLED THIS TRANSIENT AND IT IS NOT. It said "PostToolUse can run before Claude
+ * has appended this result … the approval gate will remain closed until a retry binds it." A retry
+ * is a NEW ExitPlanMode with a NEW tool_use_id, and the hook runs before THAT id's record is
+ * appended too — so the deferral is not a coin flip a retry eventually wins, it is a permanent
+ * failure wearing a transient's clothes. Zero `review.json` files existed anywhere under ~/projects
+ * when this was found: no receipt had EVER bound on this machine through this path.
+ *
+ * `tool_response` is the same object the transcript stores as `toolUseResult` — Claude Code's own
+ * hook documentation reads `.tool_response.filePath` in its example commands — and PostToolUse
+ * receives it synchronously, in the payload, with no file to race.
+ */
+const toolResponse = payload.tool_response;
+let approvedPath: unknown =
+  toolResponse && typeof toolResponse === "object" && !Array.isArray(toolResponse)
+    ? (toolResponse as Record<string, unknown>).filePath
+    : undefined;
+
 const transcriptPath = payload.transcript_path;
 const toolUseId = payload.tool_use_id;
-if (typeof transcriptPath !== "string" || typeof toolUseId !== "string" || !toolUseId) fail("ExitPlanMode transcript lookup identity is required; raw plan text cannot establish canonical file identity");
-let approvedPath: unknown;
 let resultCount = 0;
-try {
+// The fallback is kept for a Claude Code that omits `tool_response`, and ONLY runs when the
+// synchronous path yielded nothing — so the normal case never touches the filesystem at all.
+if (typeof approvedPath === "string" && isAbsolute(approvedPath)) resultCount = 1;
+else if (typeof transcriptPath !== "string" || typeof toolUseId !== "string" || !toolUseId) fail("ExitPlanMode carried no tool_response.filePath, so transcript lookup identity is required for the fallback and was absent; raw plan text cannot establish canonical file identity");
+else try {
   for (const line of readFileSync(transcriptPath, "utf8").split(/\r?\n/)) {
     if (!line.trim()) continue;
     let record: Record<string, unknown>;
@@ -72,9 +100,16 @@ try {
   }
 } catch { defer("ExitPlanMode approved plan path could not be recovered from transcript"); }
 if (resultCount > 1) fail("ExitPlanMode transcript contains duplicate matching records");
-// PostToolUse can run before Claude has appended this result. Do not invalidate a
-// completed ExitPlanMode call; the approval gate will remain closed until a retry binds it.
-if (resultCount === 0) defer("ExitPlanMode matching transcript tool-result was not found");
+// A MISS IS NOW LOUD, BECAUSE IT IS NOW PERMANENT.
+//
+// This used to `defer` — exit 1, which Claude Code treats as non-blocking and shows to nobody. That
+// was defensible only while the miss was believed to be transient. It is not: the synchronous
+// source above either has the path or the payload never carried one, and neither improves on a
+// retry. Exiting quietly here produces exactly the shape this file's own header calls the worst
+// available one — "the episode looks governed to the user and is not" — and it produced it for two
+// consecutive approvals in `rule611` without a single visible symptom until the downstream gates
+// started refusing work for reasons that named nothing.
+if (resultCount === 0) fail("ExitPlanMode produced no approved-plan path: tool_response.filePath was absent and no matching transcript tool-result was found. NO RECEIPT WAS WRITTEN and this episode is NOT governed — re-approving will not fix it. Report this rather than proceeding.");
 if (typeof approvedPath !== "string" || !isAbsolute(approvedPath)) fail("ExitPlanMode toolUseResult.filePath must name the exact absolute generated plan path");
 // Record the same composite actor identity the review and implementation gates compare against,
 // so an approval taken in the conversation and one taken inside a subagent are distinguishable.

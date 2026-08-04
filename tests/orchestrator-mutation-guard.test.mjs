@@ -168,4 +168,44 @@ try {
   rmSync(root, { recursive: true, force: true });
 }
 
+/**
+ * THE DIAGNOSTIC SURFACE — inspection is permitted, mutation is not.
+ *
+ * rule611, 2026-08-04: the receipt silently failed to bind, so approved-artifact-gate denied
+ * Agent|Workflow and this guard denied Bash. The session could read files and nothing else — it
+ * could not `ls .planning/.state/` to see that review.json was missing. The gate blocked the tooling
+ * needed to diagnose the gate. These cases pin that inspection stays open WITHOUT opening mutation.
+ */
+{
+  const project = mkdtempSync(join(tmpdir(), "diagnostic-surface-"));
+  try {
+    const bash = command => spawnSync("bun", [HOOK, "--workflow", "writing"], {
+      cwd: project, encoding: "utf8",
+      input: JSON.stringify({ tool_name: "Bash", tool_input: { command }, cwd: project, session_id: "s", permission_mode: "default" }),
+    });
+    const denied = result => (result.stdout ?? "").includes('"permissionDecision": "deny"');
+
+    for (const command of [
+      "ls .planning/.state/",
+      "cat .planning/.state/review.json",
+      "head -20 .planning/goofy-brewing-gadget.md",
+      "wc -l .planning/plan.md",
+      "stat .planning",
+    ]) assert.equal(denied(bash(command)), false, `inspection must stay open: ${command}`);
+
+    for (const command of [
+      "rm -rf .planning",
+      "cat x > y",            // redirection is the only way these commands write
+      "echo hi > f",
+      "cat f && rm f",        // chaining
+      "cat $(ls)",            // substitution
+      "sed -i s/a/b/ f",
+      "python3 -c pass",
+      "npm install",
+    ]) assert.equal(denied(bash(command)), true, `mutation must stay closed: ${command}`);
+  } finally {
+    rmSync(project, { recursive: true, force: true });
+  }
+}
+
 console.log("orchestrator-mutation-guard tests passed");

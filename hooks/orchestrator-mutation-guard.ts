@@ -124,7 +124,24 @@ if (WRITE_TOOLS.has(tool)) {
 if (tool === "Bash" && ["writing", "workshop", "workflow-creator"].includes(policy.workflow)) {
   const command = String(input.command ?? "").trim();
   if (hasUnsafeCompoundCommand(command) || /[<>\n\r]|\$\(|`/.test(command)) deny("Orchestrator Bash enforcement rejects chaining, redirection, and substitution; delegate mutations instead.");
-  const readOnly = /^(?:git (?:status|diff|log|show|rev-parse|ls-files)(?: [A-Za-z0-9._/@:=+\-,]+)*|git branch --show-current|rg(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|fd(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|bun scripts\/workshop\/workshop-slide-table\.ts [A-Za-z0-9._/@:=+\-,]+ --json|bun [A-Za-z0-9._/@:=+\-,]*scripts\/wc\/workflow-plan-compiler\.ts [A-Za-z0-9._/@:=+\-,]+ --project [A-Za-z0-9._/@:=+\-,]+ --json|bun test(?: [A-Za-z0-9._/@:=+\-,]+)*|bash scripts\/check-hooks\.sh|bun scripts\/parity\.ts(?: --all| [A-Za-z0-9._-]+)*|python3 tests\/workflow_return_shape_test\.py|claude plugin validate [A-Za-z0-9._/@:=+\-,]+|git diff --check)$/;
+  /**
+   * THE DIAGNOSTIC SURFACE. `ls`, `cat`, `head`, `tail`, `wc`, `stat`, `file` — none of which can
+   * write anything, because chaining, redirection, and command substitution are already denied on
+   * the line above, and these commands have no mutating form without them.
+   *
+   * WHY IT IS NOT A CONVENIENCE. Measured 2026-08-04 in `rule611`: the approval receipt silently
+   * failed to bind, so `approved-artifact-gate` denied Agent|Workflow and this guard denied Bash.
+   * The session could read files and do nothing else — it could not `ls .planning/.state/`, could
+   * not run a parser, could not dispatch a reviewer, and could not investigate why. THE GATE BLOCKED
+   * THE TOOLING NEEDED TO DIAGNOSE THE GATE, and the only exit was to restart the session and lose
+   * the context that made the diagnosis possible.
+   *
+   * A guard whose failure mode is undiagnosable from inside is worse than a slightly wider one:
+   * every minute spent unable to see `.planning/.state/` is a minute the user cannot be told what
+   * broke. The delegation boundary this guard defends is about MUTATION, and inspection was never
+   * part of it.
+   */
+  const readOnly = /^(?:ls(?: [A-Za-z0-9._/@:=+\-,*?\[\]]+)*|(?:cat|head|tail|wc|stat|file)(?: [A-Za-z0-9._/@:=+\-,*?\[\]]+)+|git (?:status|diff|log|show|rev-parse|ls-files)(?: [A-Za-z0-9._/@:=+\-,]+)*|git branch --show-current|rg(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|fd(?: [A-Za-z0-9._/@:=+\-,*?\[\](){}'"|\\]+)*|bun scripts\/workshop\/workshop-slide-table\.ts [A-Za-z0-9._/@:=+\-,]+ --json|bun [A-Za-z0-9._/@:=+\-,]*scripts\/wc\/workflow-plan-compiler\.ts [A-Za-z0-9._/@:=+\-,]+ --project [A-Za-z0-9._/@:=+\-,]+ --json|bun test(?: [A-Za-z0-9._/@:=+\-,]+)*|bash scripts\/check-hooks\.sh|bun scripts\/parity\.ts(?: --all| [A-Za-z0-9._-]+)*|python3 tests\/workflow_return_shape_test\.py|claude plugin validate [A-Za-z0-9._/@:=+\-,]+|git diff --check)$/;
   if (!readOnly.test(command)) deny("DELEGATION VIOLATION: writing/workshop orchestration permits only named read-only checks and compilers in Bash; delegate all other commands.");
   allow();
 }

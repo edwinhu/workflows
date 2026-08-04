@@ -35,7 +35,7 @@ A substitute Markdown planning file cannot satisfy either gate.
 2. Confirm the thesis, strongest counterarguments, audience, purpose, hook, scope, and domain.
 3. Read the domain skill's document-structure guidance.
 4. Enter native Plan mode and produce one native generated `.planning/<name>.md` specification with the exact grammar below. Retain the exact path returned by the completed Plan interaction.
-5. Exit Plan mode. The metadata-only binding hook hashes those existing bytes and initializes `.planning/.state/review.json` as `PENDING`; it never copies the plan or writes `plan.json`.
+5. Exit Plan mode. The metadata-only binding hook — `approved-artifact-persist`, registered by `skills/writing/SKILL.md` on `PostToolUse: ExitPlanMode`, and by `hooks/hooks.json` plugin-wide, **not by this skill**, whose own frontmatter registers only `writing-precis-guard` — hashes those existing bytes and initializes `.planning/.state/review.json` as `PENDING`; it never copies the plan or writes `plan.json`. If it cannot determine the approved plan path it now exits **2** with `NO RECEIPT WAS WRITTEN`: stop and report, because re-approving cannot fix it.
 6. Dispatch an independent whole-plan reviewer with that exact path. The reviewer preserves approval-owned receipt fields and finalizes only status, reviewer session, and review time.
 7. End the approval/review episode. In a fresh third session distinct from approval and review, authenticate the final receipt, reconcile approved sections into TaskList by `planFile`, `planHash`, and stable section name, and delegate `writing-outline` work to authorized implementation agents.
 

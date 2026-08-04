@@ -48,11 +48,51 @@ for (const [name, setup, pattern, expectedStatus = 2] of [
   ["raw plan only", cwd => ({ tool_name: "ExitPlanMode", tool_input: { plan: "# raw" }, session_id: "s" }), /transcript lookup identity/],
   ["outside plan", cwd => { const path = join(cwd, "outside.md"); writeFileSync(path, "# outside\n"); return payload(cwd, path); }, /direct child/, 1],
   ["reserved PLAN", cwd => { mkdirSync(join(cwd, ".planning")); const path = join(cwd, ".planning", "PLAN.md"); writeFileSync(path, "# fixed\n"); return payload(cwd, path); }, /direct child/, 1],
-  // ExitPlanMode has completed when PostToolUse runs. If its matching result is
-  // not in the transcript yet, return a non-blocking hook error and leave the
-  // approval gate closed rather than blocking the completed native tool call.
-  ["missing result", cwd => { const transcript = join(cwd, "missing.jsonl"); writeFileSync(transcript, "{}"); return { tool_name: "ExitPlanMode", tool_use_id: "missing", tool_input: {}, session_id: "s", transcript_path: transcript }; }, /matching transcript/, 1],
+  // NEITHER SOURCE YIELDED A PATH — LOUD, NOT SILENT. This used to exit 1 on the theory that the
+  // transcript record would show up on a retry. It does not: a retry is a new tool_use_id whose
+  // record has not been appended either, so the miss is permanent. Exit 1 is invisible, and an
+  // invisible permanent failure is precisely the "looks governed and is not" shape this hook exists
+  // to prevent. Measured in rule611: two approvals, two silent deferrals, no receipt.
+  ["no path from either source", cwd => { const transcript = join(cwd, "missing.jsonl"); writeFileSync(transcript, "{}"); return { tool_name: "ExitPlanMode", tool_use_id: "missing", tool_input: {}, session_id: "s", transcript_path: transcript }; }, /NO RECEIPT WAS WRITTEN/, 2],
 ]) withProject((cwd) => { const result = run(setup(cwd), cwd); assert.equal(result.status, expectedStatus, `${name}: ${result.stderr}`); assert.match(result.stderr, pattern); });
+
+/**
+ * THE REAL POSTTOOLUSE SHAPE — and the one every fixture above gets wrong.
+ *
+ * `payload()` writes a transcript that ALREADY contains this call's tool_result. That never happens
+ * at PostToolUse time: Claude Code has not appended the record yet when the hook runs. So the whole
+ * suite above was exercising a fallback that, in production, never had anything to find — green
+ * throughout, while no receipt had ever bound on a real machine.
+ *
+ * These two cases use the payload Claude Code actually sends: `tool_response.filePath` present, and
+ * a transcript with NO matching record. Verified to fail against the pre-fix hook.
+ */
+withProject((cwd) => {
+  const planning = join(cwd, ".planning"); mkdirSync(join(planning, ".state"), { recursive: true });
+  const planPath = join(planning, "goofy-brewing-gadget.md"); const plan = "# plan\n"; writeFileSync(planPath, plan);
+  const transcript = join(cwd, "live.jsonl");
+  writeFileSync(transcript, JSON.stringify({ message: { content: [{ type: "text", text: "unrelated" }] } }));
+  const result = run({
+    tool_name: "ExitPlanMode", tool_use_id: "toolu-live", tool_input: {}, session_id: "live-session",
+    transcript_path: transcript,
+    tool_response: { plan, isAgent: false, filePath: planPath, hasTaskTool: false },
+  }, cwd, "writing");
+  assert.equal(result.status, 0, result.stderr);
+  const receipt = JSON.parse(readFileSync(join(planning, ".state", "review.json"), "utf8"));
+  assert.equal(receipt.plan_file, "goofy-brewing-gadget.md");
+  assert.equal(receipt.workflow, "writing");
+  assert.equal(receipt.approved_session_id, "live-session");
+  assert.equal(receipt.status, "PENDING");
+});
+
+withProject((cwd) => {
+  // No transcript at all: the synchronous source is sufficient on its own.
+  const planning = join(cwd, ".planning"); mkdirSync(join(planning, ".state"), { recursive: true });
+  const planPath = join(planning, "solo.md"); writeFileSync(planPath, "# solo\n");
+  const result = run({ tool_name: "ExitPlanMode", tool_input: {}, session_id: "s", tool_response: { filePath: planPath } }, cwd, "writing");
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(readFileSync(join(planning, ".state", "review.json"), "utf8")).plan_file, "solo.md");
+});
 
 withProject((cwd) => {
   mkdirSync(join(cwd, ".planning")); const outside = mkdtempSync(join(tmpdir(), "state-outside-"));
