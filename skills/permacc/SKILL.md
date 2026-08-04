@@ -27,6 +27,7 @@ uv run --script "$PC" folders         # every folder, with the sponsored one mar
 uv run --script "$PC" archive URL... --auto-folder
 uv run --script "$PC" archive --from-json inventory.json --out archives.json --auto-folder
 uv run --script "$PC" verify --out archives.json     # re-check captures on an existing record
+uv run --script "$PC" delete --out archives.json --failed --private-if-undeletable
 ```
 
 `--auto-folder` resolves the sponsored folder itself, which is the option to
@@ -83,6 +84,17 @@ The key is read from `--api-key`, then `PERMACC_API_KEY`, then
   SSRN does not recycle, so the rot perma exists to prevent barely applies.
   Law reviews routinely print SSRN URLs unarchived for working papers.
 
+- **A perma link is deletable for 24 HOURS and permanent after that.** Past
+  the window `DELETE` returns **403**, and the remedy is `is_private: true`,
+  which unpublishes it without removing it. So a cleanup that assumes DELETE
+  works half-succeeds on any set spanning more than a day — the normal shape
+  of a manuscript's archive set. Observed: of 6 bad links, the 4 made that day
+  deleted (204) and the 2 from six months earlier did not.
+
+- **`private_reason` is a closed enum the API will not enumerate.** A wrong
+  value 400s with a message that lists no alternatives, so it has to be
+  guessed. `user` is the one meaning "I no longer want this public".
+
 - **Archiving is not idempotent.** Two POSTs for one URL make two perma links.
   Pass `--out` and let the tool skip what it already has, rather than
   re-running a loop and quietly doubling a manuscript's archive set.
@@ -97,6 +109,7 @@ The key is read from `--api-key`, then `PERMACC_API_KEY`, then
 | About to loop `requests.post` over a URL list | No resume, no dedupe; a mid-run failure double-archives on retry | `archive --from-json … --out …` |
 | About to tell a user to buy a plan | A law library registrar gives faculty unlimited links free | Have them added to the registrar's org first |
 | About to record a 201 as "archived" | 201 mints a link; the capture can still fail, and SSRN always does | Let `archive` verify, or run `verify --out` |
+| About to script `DELETE` over a set of links | Only links under 24h old delete; older ones 403 and need `is_private` | `delete --failed --private-if-undeletable` |
 | About to paste the key into a script or `.env` | It is a long-lived credential | agenix (see below), read via `PERMACC_API_KEY_FILE` |
 
 ## Storing the key

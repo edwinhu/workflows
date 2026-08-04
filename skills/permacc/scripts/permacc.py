@@ -134,9 +134,84 @@ def capture_status(guid: str, key: str, tries: int = 6, delay: float = 5.0) -> s
     return "pending"
 
 
+def delete(guid: str, key: str) -> tuple[bool, int]:
+    r = requests.delete(f"{API}/archives/{guid}/", headers=_headers(key), timeout=30)
+    return r.status_code == 204, r.status_code
+
+
+def make_private(guid: str, key: str) -> bool:
+    """Perma's remedy for a link too old to delete.
+
+    `private_reason` is a closed enum the API will not enumerate -- a wrong
+    value 400s with a message that lists nothing usable. `user` is the one
+    that applies to "I no longer want this link public".
+    """
+    r = requests.patch(f"{API}/archives/{guid}/", headers=_headers(key), timeout=30,
+                       json={"is_private": True, "private_reason": "user"})
+    return r.status_code == 200
+
+
+def do_delete(args, key: str) -> int:
+    """Delete links, falling back to private for the ones perma will not delete.
+
+    A perma link is deletable for 24 HOURS after creation and permanent after
+    that -- which is the point of the service, not a bug. So a cleanup that
+    assumes DELETE works will half-succeed on any set spanning more than a
+    day, exactly the shape of a manuscript's archive set.
+    """
+    targets: list[tuple[str, str]] = [(g, g) for g in args.urls]
+    rec: dict[str, dict] = {}
+    if args.out and args.out.exists():
+        rec = json.loads(args.out.read_text())
+        if args.failed:
+            targets += [(r["guid"], u) for u, r in rec.items()
+                        if r.get("capture") not in (None, "success")]
+    if not targets:
+        sys.exit("error: nothing to delete — pass GUIDs, or --out FILE --failed")
+
+    if args.dry_run:
+        for g, u in targets:
+            print(f"  would delete {g}  {u[:70]}")
+        return 0
+
+    removed, made_private, stuck = [], [], []
+    for g, u in targets:
+        ok, code = delete(g, key)
+        if ok:
+            removed.append(g)
+            print(f"  {g}  deleted")
+        elif code == 403 and args.private_if_undeletable:
+            if make_private(g, key):
+                made_private.append(g)
+                print(f"  {g}  older than 24h — made PRIVATE instead")
+            else:
+                stuck.append(g)
+                print(f"  {g}  403 and could not be made private", file=sys.stderr)
+        else:
+            stuck.append(g)
+            print(f"  {g}  HTTP {code}"
+                  + (" (older than 24h; --private-if-undeletable is the remedy)"
+                     if code == 403 else ""), file=sys.stderr)
+
+    if rec and args.out:
+        # Drop only what is actually gone. A private link still exists and is
+        # still the wrong thing to cite, so it stays in the record, flagged.
+        for u, r in list(rec.items()):
+            if r["guid"] in removed:
+                del rec[u]
+            elif r["guid"] in made_private:
+                r["private"] = True
+        args.out.write_text(json.dumps(rec, indent=2))
+
+    print(f"\n{len(removed)} deleted, {len(made_private)} made private, "
+          f"{len(stuck)} untouched")
+    return 1 if stuck else 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("command", choices=("folders", "archive", "status", "verify"))
+    ap.add_argument("command",
+                    choices=("folders", "archive", "status", "verify", "delete"))
     ap.add_argument("urls", nargs="*")
     ap.add_argument("--api-key")
     ap.add_argument("--folder", help="sponsored folder id; `folders` finds it")
@@ -149,6 +224,10 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-verify", action="store_true",
                     help="skip the capture check (a 201 alone proves nothing)")
+    ap.add_argument("--failed", action="store_true",
+                    help="delete: target every entry in --out whose capture failed")
+    ap.add_argument("--private-if-undeletable", action="store_true",
+                    help="delete: on 403 (older than 24h), make the link private instead")
     args = ap.parse_args()
 
     key = read_key(args.api_key)
@@ -173,6 +252,9 @@ def main() -> int:
             print("\nNo sponsored folder. A registrar (e.g. a law library) must add "
                   "this account;\nuntil then every archive bills the personal quota.")
         return 0
+
+    if args.command == "delete":
+        return do_delete(args, key)
 
     if args.command == "verify":
         # Re-check an existing record. A capture can also be checked long after
