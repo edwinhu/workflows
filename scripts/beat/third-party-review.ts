@@ -130,8 +130,14 @@ export type Invoke = (spec: {
  *   reviewing a pull request was impossible through the shipped path: PR #130 had to be reviewed by
  *   hand-injecting a branch diff through the `invoke` seam. It also matters for the ordinary flow —
  *   the third-party step runs after the verifier, when the work may already be committed.
+ * `document` — a FILE, not a diff. Prose review has no meaningful diff: a draft is judged whole,
+ *   and the reviewer needs the surrounding argument to judge any sentence in it. Both git scopes
+ *   would hand a prose reviewer a patch and ask it to assess writing it cannot see.
  */
-export type ReviewScope = { kind: "working-tree" } | { kind: "branch"; base: string };
+export type ReviewScope =
+  | { kind: "working-tree" }
+  | { kind: "branch"; base: string }
+  | { kind: "document"; path: string };
 
 export const DEFAULT_SCOPE: ReviewScope = { kind: "working-tree" };
 

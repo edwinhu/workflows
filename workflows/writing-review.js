@@ -495,6 +495,35 @@ Per-section argument summaries + claims:\n${JSON.stringify(argSummaries, null, 2
     { label: 'L3:document', phase: 'L2-L3', schema: DOCUMENT_SCHEMA, model: 'sonnet' }),
 ])
 
+// ── Optional third-party prose review — a different MODEL, advisory only ──────
+// Every reviewer above is Claude judging Claude: six passes, one set of blind
+// spots. That is invisible by construction for a defect the model shares with
+// itself -- and the 2026 Economist corpus study makes it concrete, finding the
+// em-dash tell is now CLAUDE-SPECIFIC, so a Claude reviewer reads its own
+// habits as normal prose.
+//
+// Runs LAST, after Claude's own review, for beat-implement's reason: a third
+// party that runs first duplicates a pass we were going to make anyway; one
+// that runs last sees vetted work and can only add.
+//
+// It does NOT gate. Not the verdict, not the findings. An external model's
+// claims are unverified by construction, and letting them gate would import
+// another model's false positives into ours.
+let thirdParty = { status: 'skipped', reviews: [], findings: [] }
+if (/^[ \t]*(?:[-*+][ \t]*)?(?:\*\*)?third-party review(?:\*\*)?[ \t]*:/im.test(PLAN_TEXT)) {
+  const docs = sections.map(section => ({ name: section.name, file: section.draftFile }))
+  log(`third-party prose review: opt-in found in the plan; ${docs.length} draft(s)`)
+  thirdParty = await agent(
+    `READ-ONLY. Run the third-party PROSE review over the drafts below and return its JSON verbatim.
+For each draft, run exactly:
+  echo '{"projectDir":"${PROJECT}","workflow":"writing-review","planReset":{"planFile":"${disc.planPath}","planHash":"${PLAN_HASH}"},"scope":{"kind":"document","path":"<draft>"}}' | bun \${CLAUDE_PLUGIN_ROOT}/scripts/beat/third-party-review.ts
+Drafts: ${JSON.stringify(docs)}
+Read each runner's \`status\` BEFORE its \`findings\`: 'unavailable' or 'unparseable' means that adapter
+looked at nothing, and an empty finding list there is NOT a clean review. Report per-adapter
+attribution — the value is in where adapters disagree. Do not fix anything.`,
+    { label: 'third-party:prose', phase: 'L2-L3', model: 'sonnet' })
+}
+
 // ── Assemble structured findings + computed verdict (binary gate, in JS) ───────
 // Drift detection is the same guarantee, run on the other side of the workflow:
 // this script cannot re-stat anything, so it carries the entry hashes and the
@@ -588,4 +617,5 @@ return {
   findings,                         // normalized TaskList-ready section, transition, document, and integrity findings
   unreliableSections,               // sections where a reviewer returned nothing — flag, don't trust
   sectionsThatFlagged: allSections.filter(s => (s.issues || []).length || s.unreliable).map(s => s.section), // pass as onlyChecks on re-review
+  thirdParty,                       // advisory second-MODEL prose review; status before findings, never gates
 }

@@ -55,6 +55,11 @@ export function reviewWithCodex(context: { projectDir: string; invoke: Invoke; s
   // The companion already speaks both scopes; the adapter previously hardcoded `working-tree`, which
   // is why it could not review committed work at all.
   const scope = context.scope ?? DEFAULT_SCOPE;
+  // A code adapter handed a document scope must SAY it cannot, not silently fall through to
+  // working-tree and review a diff nobody asked about. Prose has its own adapters.
+  if (scope.kind === "document") {
+    return { status: "unavailable", findings: [], reason: `${codexAdapter.name} reviews diffs, not documents; use the prose adapter` };
+  }
   const scopeArgs = scope.kind === "branch"
     ? ["--scope", "branch", "--base", scope.base]
     : ["--scope", "working-tree"];

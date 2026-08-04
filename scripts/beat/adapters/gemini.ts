@@ -93,6 +93,10 @@ export function extractJsonObject(source: string): string | undefined {
 
 export function reviewWithGemini(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope }): AdapterResult {
   const scope = context.scope ?? DEFAULT_SCOPE;
+  // See codex.ts: refuse rather than silently reviewing a diff.
+  if (scope.kind === "document") {
+    return { status: "unavailable", findings: [], reason: `${geminiAdapter.name} reviews diffs, not documents; use the prose adapter` };
+  }
   let diff: { code: number; stdout: string; stderr: string };
   try {
     // The scope must match what the other adapter is given, or comparing the two reviews compares

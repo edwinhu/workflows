@@ -128,3 +128,38 @@ Read the gate from the **finalized** post-step output, never from the raw workfl
 return (`verifyRequired: true` means the drift check has not run and the verdict
 is not yet trustworthy). Read `overallPass`, normalized `findings`, raw counts,
 unreliable sections, quoted evidence, `driftedArtifacts`, and final artifact hashes. A clean substrate requires zero critical, zero major, no unreliable sections, unchanged plan/outline/draft bytes after asynchronous review, and completed Review Surfaces. Reconcile every finding into TaskList before routing to `/writing-revise`; a clean result proceeds to the returned human review surface. Neither path creates a mutable planning ledger.
+
+## Optional third-party prose review — a different MODEL, advisory only
+
+**Default OFF.** It exists only if the authenticated plan carries the opt-in line, so it binds to
+`planHash` and is visible in plan review:
+
+```markdown
+- **Third-party review:** prose-codex, prose-gemini
+```
+
+`none` / `off` / `no` disable it; an absent line means the step does not exist. Naming several runs
+all of them, which is usually right: the value is in where adapters DISAGREE, and measured on the
+sibling code path only one finding in eight was raised by more than one adapter.
+
+**Why it is worth the tokens.** Every reviewer in this workflow is Claude judging Claude — six
+passes, one set of blind spots, and a defect the model shares with itself is invisible by
+construction. The 2026 Economist corpus study makes that concrete: the em-dash tell is now
+*Claude-specific*, so a Claude reviewer reads its own strongest tell as ordinary prose.
+
+**It runs last and does not gate.** After Claude's own review, for the same reason as
+`beat-implement`: a third party that runs first duplicates a pass we were going to make anyway. Its
+findings are advisory minors. An external model's claims are unverified by construction, and letting
+them gate would import another model's false positives into ours.
+
+⚠ **Read `status` before `findings`.** `unavailable` or `unparseable` means that adapter looked at
+nothing — an empty finding list there is NOT a clean review. This is not hypothetical: `gemini-code`
+returns empty text while reporting `is_error:false`, `subtype:"success"` and billed output tokens,
+because the harness derives its `result` field from the last content block and Gemini-via-proxy
+appends an empty `thinking` block. The adapter reads the stream instead, and reports `unavailable`
+rather than "no findings" when nothing comes back.
+
+**Cost.** The adapters shell `codex-code` / `gemini-code`, which are the Claude Code harness pointed
+at GPT-5.6 and Gemini — so the reviewer loads this repo's skills and applies the same corpus-gated
+rules while being a different model. Each call carries ~22k input tokens of system prompt and skill
+roster before the draft: roughly $0.12 per adapter per draft.

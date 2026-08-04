@@ -18,6 +18,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { normalizeFindings, readOptIn, runThirdPartyReview } from '../scripts/beat/third-party-review.ts'
 import { reviewWithCodex } from '../scripts/beat/adapters/codex.ts'
+import { proseCodexAdapter, proseGeminiAdapter, extractText, parseReply } from '../scripts/beat/adapters/prose.ts'
 import { reviewWithGemini } from '../scripts/beat/adapters/gemini.ts'
 import { adapterNames, resolveAdapter } from '../scripts/beat/adapters/registry.ts'
 
@@ -67,10 +68,14 @@ console.log('the contract is provider-neutral')
   for (const literal of ['codex', 'gemini', 'agy', 'openai', 'antigravity']) {
     ok(`the core names no provider: ${literal}`, !source.toLowerCase().includes(literal))
   }
-  ok('the registry ships exactly the two adapters', JSON.stringify(adapterNames()) === JSON.stringify(['codex', 'gemini']))
+  // The exact set is asserted, not a count: this test exists to catch an adapter added by
+  // accident. Prose adapters are SEPARATE entries rather than a mode of the code ones, so a plan
+  // naming "codex" for a draft fails loudly instead of reviewing a diff nobody asked about.
+  ok('the registry ships exactly the four adapters',
+    JSON.stringify(adapterNames()) === JSON.stringify(['codex', 'gemini', 'prose-codex', 'prose-gemini']))
   ok('an unknown adapter does not resolve', resolveAdapter('nope') === undefined)
-  ok('both adapters expose the same shape',
-    ['codex', 'gemini'].every(name => typeof resolveAdapter(name)?.review === 'function' && resolveAdapter(name)?.name === name))
+  ok('every adapter exposes the same shape',
+    ['codex', 'gemini', 'prose-codex', 'prose-gemini'].every(name => typeof resolveAdapter(name)?.review === 'function' && resolveAdapter(name)?.name === name))
 }
 
 console.log('normalizeFindings maps both key styles onto one neutral shape')
@@ -257,6 +262,62 @@ console.log('several adapters per episode: one failing never hides the other')
   ok('an unknown adapter refuses', refused)
   ok('and refuses BEFORE spending a paid call on the valid one', calls === 0)
 }
+
+
+console.log('the prose adapters survive the failures that were actually observed')
+{
+  const docDir = mkdtempSync(join(tmpdir(), 'prose-'))
+  const docPath = join(docDir, 'draft.md')
+  writeFileSync(docPath, 'The organisation recognised its behaviour.\n')
+  const scope = { kind: 'document', path: docPath }
+  const run = (stdout, code = 0) => proseGeminiAdapter.review({ projectDir: ROOT, scope, invoke: () => ({ code, stdout, stderr: '' }) })
+
+  // THE OBSERVED GEMINI FAILURE. A real transcript: the text arrives, then an EMPTY thinking
+  // block, and the harness's own `result` field comes back "". Reading `result` would have made
+  // every Gemini review report zero findings while exit 0 / success / billed tokens all agreed.
+  const withTrailingThinking = [
+    JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: '```json\n{"verdict":"needs-attention","summary":"s","findings":[{"severity":"high","title":"t","body":"b"}]}\n```' }] } }),
+    JSON.stringify({ type: 'assistant', message: { content: [{ type: 'thinking', thinking: '' }] } }),
+    JSON.stringify({ type: 'result', subtype: 'success', is_error: false, result: '' }),
+  ].join('\n')
+  const recovered = run(withTrailingThinking)
+  ok('text is recovered despite an empty trailing thinking block', recovered.status === 'reviewed')
+  ok('and the finding survives', recovered.findings.length === 1)
+
+  // A provider that returns NOTHING must be unavailable, never a clean pass.
+  const silent = run(JSON.stringify({ type: 'result', subtype: 'success', is_error: false, result: '' }))
+  ok('no assistant text is UNAVAILABLE, not zero findings', silent.status === 'unavailable')
+  ok('zero findings only ever alongside a status that explains it', silent.findings.length === 0 && silent.status !== 'reviewed')
+
+  // Commentary instead of JSON is unparseable, and the words are kept for a human.
+  const chatty = run(JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'Looks fine to me overall.' }] } }))
+  ok('prose commentary is UNPARSEABLE', chatty.status === 'unparseable')
+  ok('the raw text is preserved', chatty.raw?.includes('Looks fine'))
+
+  // A code scope handed to a prose adapter must refuse rather than review the wrong thing.
+  const wrongScope = proseCodexAdapter.review({ projectDir: ROOT, scope: { kind: 'working-tree' }, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
+  ok('a prose adapter refuses a diff scope', wrongScope.status === 'unavailable' && /scope/.test(wrongScope.reason ?? ''))
+
+  // ...and the converse, which is why these are separate adapters at all.
+  const codeOnDoc = reviewWithCodex({ projectDir: ROOT, scope, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
+  ok('a code adapter refuses a document scope', codeOnDoc.status === 'unavailable' && /documents/.test(codeOnDoc.reason ?? ''))
+
+  // The invocation itself is load-bearing: stdin must be closed or the wrapper stalls on it.
+  let seen
+  proseCodexAdapter.review({ projectDir: ROOT, scope, invoke: spec => { seen = spec; return { code: 0, stdout: '', stderr: '' } } })
+  ok('it shells the harness wrapper, not the raw provider CLI', seen.command === 'codex-code')
+  ok('stream-json is requested, because `result` is unreliable', seen.args.includes('stream-json') && seen.args.includes('--verbose'))
+  ok('stdin is closed explicitly', seen.input === '')
+  ok('the draft is in the prompt', seen.args.at(-1).includes('The organisation recognised'))
+
+  ok('extractText concatenates multiple text blocks',
+    extractText([
+      JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'a' }] } }),
+      JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'b' }] } }),
+    ].join('\n')) === 'ab')
+  ok('parseReply reads a fenced block', parseReply('pre\n```json\n{"findings":[]}\n```\npost')?.findings.length === 0)
+}
+
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)
 if (FAIL) process.exit(1)
