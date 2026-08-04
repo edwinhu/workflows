@@ -1106,3 +1106,112 @@ def test_adopt_media_suffixes_a_name_collision(tmp_path):
     same.write_bytes(PNG_1X1)
     assert canonicalize._adopt_media(same, media, existing).name == "figure1.png"
     assert sorted(p.name for p in media.iterdir()) == ["figure1-2.png", "figure1.png"]
+
+
+# --------------------------------------------------------------------------
+# Hand-authored short forms (bib_to_entries.py --shorts)
+#
+# citeproc derives a short form from the AUTHORS, so every work by the same
+# authors collapses to one string. Bluebook Rule 4.2 needs a shortened title
+# (4.2(a)) or a declared `hereinafter` form (4.2(b)) instead, and neither is
+# derivable from bibliographic data. The override layer is what supplies them.
+#
+# These exercise load_shorts/emit directly rather than through pandoc, so they
+# stay fast and do not depend on citeproc being installed.
+# --------------------------------------------------------------------------
+
+import bib_to_entries
+
+
+def _entries():
+    return {
+        "kahan2008": {"full": "Kahan & Rock, #emph[Hanging Chads], 96 Geo. L.J. 1227",
+                      "date": " (2008)", "pin-sep": ", ", "short": "Kahan & Rock"},
+        "kahan2020": {"full": "Kahan & Rock, #emph[Index Funds], 100 B.U. L. Rev. 1771",
+                      "date": " (2020)", "pin-sep": ", ", "short": "Kahan & Rock"},
+    }
+
+
+def test_shorts_override_is_typst_source_so_a_title_can_be_italicized(tmp_path):
+    """The whole point: Rule 4.2(a) wants the title, and titles are italic.
+
+    `short` is eval()'d as markup by bluebook.typ, so an override carrying
+    `#emph[...]` renders italic. A schema that only accepted a plain string
+    could not express a conforming short form at all.
+    """
+    toml = tmp_path / "short-forms.toml"
+    toml.write_text('[shorts]\nkahan2008 = "Kahan & Rock, #emph[Hanging Chads]"\n')
+    got = bib_to_entries.load_shorts(toml, _entries())
+    assert got == {"kahan2008": "Kahan & Rock, #emph[Hanging Chads]"}
+
+
+def test_shorts_rejects_an_override_for_a_key_not_in_the_bib(tmp_path):
+    """A stale override is worse than none.
+
+    It reads as though the disambiguation was handled while the citation it was
+    meant to fix still renders bare -- the failure this whole layer exists to
+    prevent, reintroduced silently. So it is fatal, not a warning.
+    """
+    toml = tmp_path / "short-forms.toml"
+    toml.write_text('[shorts]\nkahan2019 = "Kahan & Rock, #emph[Nonexistent]"\n')
+    with pytest.raises(SystemExit) as exc:
+        bib_to_entries.load_shorts(toml, _entries())
+    assert "kahan2019" in str(exc.value)
+
+
+def test_shorts_rejects_a_non_string_value(tmp_path):
+    toml = tmp_path / "short-forms.toml"
+    toml.write_text("[shorts]\nkahan2008 = 3\n")
+    with pytest.raises(SystemExit) as exc:
+        bib_to_entries.load_shorts(toml, _entries())
+    assert "kahan2008" in str(exc.value)
+
+
+def test_a_bare_table_is_accepted_without_the_shorts_header(tmp_path):
+    toml = tmp_path / "short-forms.toml"
+    toml.write_text('kahan2008 = "Kahan & Rock, #emph[Hanging Chads]"\n')
+    assert bib_to_entries.load_shorts(toml, _entries()) == {
+        "kahan2008": "Kahan & Rock, #emph[Hanging Chads]"}
+
+
+def test_emit_marks_an_overridden_short_and_stays_readable_by_typst(tmp_path):
+    """The marker is provenance; the file still has to parse.
+
+    `--diff` reads the module back with `typst eval`, so a comment that broke
+    parsing would disarm the one guard against a citation changing unread.
+    """
+    if not shutil.which("typst"):
+        pytest.skip("typst not installed")
+
+    entries = _entries()
+    entries["kahan2008"]["short"] = "Kahan & Rock, #emph[Hanging Chads]"
+    text = bib_to_entries.emit(entries, "sources.bib", {"kahan2008"})
+    assert "// hand-authored" in text
+    assert text.count("// hand-authored") == 1, "only the overridden key is marked"
+
+    module = tmp_path / "cite-data.typ"
+    module.write_text(text, encoding="utf-8")
+    back = bib_to_entries.parse_existing(module)
+    assert back["kahan2008"]["short"] == "Kahan & Rock, #emph[Hanging Chads]"
+    assert back["kahan2020"]["short"] == "Kahan & Rock"
+
+
+def test_an_override_silences_the_collision_it_resolves(tmp_path):
+    """The audit is a worklist; it has to go quiet as the work gets done.
+
+    An audit that keeps reporting a collision already fixed trains everyone to
+    stop reading it, which is how the next real one gets missed.
+    """
+    bib = tmp_path / "sources.bib"
+    bib.write_text(
+        "@article{kahan2008,\n  author = {Marcel Kahan and Edward B. Rock},\n"
+        "  title = {{The Hanging Chads of Corporate Voting}},\n  year = {2008}\n}\n\n"
+        "@article{kahan2020,\n  author = {Marcel Kahan and Edward B. Rock},\n"
+        "  title = {{Index Funds and Corporate Governance}},\n  year = {2020}\n}\n",
+        encoding="utf-8")
+
+    assert any("shared by 2 works" in p for p in bib_to_entries.audit(bib, _entries()))
+
+    resolved = _entries()
+    resolved["kahan2008"]["short"] = "Kahan & Rock, #emph[Hanging Chads]"
+    assert not any("shared by" in p for p in bib_to_entries.audit(bib, resolved))

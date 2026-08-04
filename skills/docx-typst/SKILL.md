@@ -202,15 +202,48 @@ fine — nothing errored, so nothing was noticed:
   `execorder143662025`, `secGuidance2019` / `secguidance2019`. One source, several
   records, and the extras are usually cited nowhere.
 - **Two works sharing a short form.** The defect that silently reworks a
-  citation, because `short` is a flat string and cannot say WHICH work
-  `Bebchuk & Hirst, supra note 12` means. Bluebook Rule 4.2 disambiguates by
-  adding the title; `entries` has no field for that, so downstream this surfaces
-  only as `audit_crossrefs.py`'s `OK_AMBIG`. Found 18 such groups in a
-  192-entry .bib, including one short form shared by five works.
+  citation: citeproc derives the short from the AUTHORS, so three Kahan & Rock
+  articles all render `Kahan & Rock` and `supra note 8` cannot say which.
+  Downstream this surfaces only as `audit_crossrefs.py`'s `OK_AMBIG`. Found 18
+  such groups in a 192-entry .bib, including one short shared by five works.
+  Resolve it with `--shorts` (below); the warning clears as each is resolved.
 
 It **reports, never fixes** — a name field, a cite key and a short form are all
 authorial. Always warns; `--audit` makes it a gate by exiting non-zero. It does
 not change generated output.
+
+### Hand-authored short forms
+
+```bash
+bib_to_entries.py --bib sources.bib --csl bluebook.csl \
+                  --shorts short-forms.toml -o cite-data.typ
+```
+
+```toml
+[shorts]
+kahan2008 = "Kahan & Rock, #emph[Hanging Chads]"   # Rule 4.2(a), title
+gao2016   = "GAO Report"                           # Rule 4.2(b), hereinafter
+```
+
+Two Bluebook rules need something bibliographic data cannot supply: 4.2(a)
+wants a shortened **italic title** when an author has more than one work in
+the piece, and 4.2(b) wants the `[hereinafter X]` form the author declared at
+the first full cite. Which words of a title to keep is an authorial choice, so
+it is stated once here instead of typed at every citation site.
+
+Values are typst **source**, like every other field in the module, so `#emph`
+italicizes the title as Rule 4.2 requires — no schema change was needed for
+this, because `short` was already eval'd as markup.
+
+Overrides apply **before** the audit, so a resolved collision stops being
+reported. An override naming a key not in the .bib is **fatal**: a stale
+override reads as though the disambiguation was handled while the citation it
+was meant to fix still renders bare.
+
+Only keys that are actually short-cited need an entry — `bluebook.typ` reaches
+`_short-form` only on a repeated key, so a collision between two
+cited-exactly-once keys is noise. On a 182-entry .bib, 11 overrides took the
+audit from 11 problems to 8, and all 8 survivors were that kind of noise.
 
 ### `entries` schema — pincites are site-level
 
@@ -347,6 +380,15 @@ read-only here by design; there is no write path back.
   one renders identically but is a DIFFERENT source spelling, which
   canonicalize.py normalizes back to `--` — leaving the generated body
   permanently one step off its fixed point. Walk the tree and un-smarten.
+
+- **`entries` values are typst SOURCE, eval'd as markup — so `short` already
+  accepts `#emph`.** Reading the schema line as a plain string (`short: "Bebchuk
+  & Hirst"`) invites the conclusion that Rule 4.2 disambiguation is unreachable
+  without changing `bluebook.typ`, and a whole migration was once written off on
+  that basis. It renders correctly today: `short: "Kahan & Rock, #emph[Hanging
+  Chads]"` yields *Kahan & Rock, Hanging Chads, supra note 8*, italics included.
+  Compile the one-line probe before concluding the renderer cannot express
+  something — the schema comment describes the common case, not the limit.
 
 - **A returned `.docx` has no ancestor unless one was arranged in advance.** Merging two
   versions without a common base silently drops one side's edits, and the loss is
