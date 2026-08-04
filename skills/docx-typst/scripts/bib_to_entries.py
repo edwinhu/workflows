@@ -125,7 +125,14 @@ def render(bib: Path, csl: Path, keys: list[str]) -> dict[str, dict[str, str]]:
         m = LINE_RE.match(line)
         if not m:
             continue
-        kind, key, body = m.group(1), m.group(2), m.group(3)
+        # The key travels through the probe as literal TEXT, and pandoc's typst
+        # writer escapes it on the way out -- `execorder14366_2025` comes back
+        # `execorder14366\_2025`. Unescaped, the lookup misses and the entry is
+        # reported as "no rendering", which reads like a CSL or .bib problem and
+        # is neither: every key with an underscore in it silently vanishes from
+        # the generated data. A key cannot contain a backslash, so dropping them
+        # is the whole inverse.
+        kind, key, body = m.group(1), m.group(2).replace("\\", ""), m.group(3)
         out.setdefault(key, {})[kind] = body
     return out
 
