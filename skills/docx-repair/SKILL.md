@@ -13,6 +13,7 @@ Cloud editors damage a `.docx` in **independent ways**. This skill is the front 
 | **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `scripts/docx_repair.py` (plugin root) — §[Package repair](#a-package--ooxml-wiring-repair) |
 | **B. Footnote & cross-reference markup** | Bios show `1,2,3` not `*,†,‡`; numbering starts wrong; "supra note N" points to the wrong footnote; missing separator line | the footnote scripts — §[Footnote repair](#b-footnote--cross-reference-repair) |
 | **C. Document content (boxes + headings + cruft)** | Visible **boxes** around freshly-edited text; heading-looking lines not styled as headings; same-style headings rendering differently; blank heading lines; bloated XML full of all-zero rsids, no-op shading, explicit `b=0`/`i=0`/`u=none`, redundant black color & default fonts | `fix_footnotes.py`'s document.xml passes — §[Content cleanup](#c-document-content-cleanup-boxes--headings--cruft) |
+| **D. Presentation hygiene** | A footnote renders blue/underlined in the PDF but looks normal in Word; a URL prints one address and navigates to another; heading gaps uneven page to page; tracking params (`?utm_source=…`) behind a clean-looking link | `docx_links.py`, `docx_spacers.py` — §[Presentation hygiene](#d-presentation-hygiene-hyperlinks--spacer-paragraphs) |
 
 They are decoupled: package repair fixes the **part wiring** (never touches content); footnote repair fixes the **footnote markup**; content cleanup strips Google-Docs leftover content controls and normalizes headings. A file can need any, all, or none. If you don't know which, run the package check first (it's a no-op on a clean package), then the footnote pass (it carries the content cleanup).
 
@@ -434,6 +435,77 @@ Idempotent. Verified on OPV: 250 `unstyled_body_indent` → 261 paras moved to
   small-caps citations, and superscripts — the exact content this pass must keep.
   The compressed `.docx` shrinks only modestly (cruft is repetitive, compresses
   well); the uncompressed XML shrinks dramatically — judge the win by node count.
+
+---
+
+## D. Presentation hygiene (hyperlinks + spacer paragraphs)
+
+Two defects that are **invisible in Word** and only surface in the rendered PDF,
+so they survive every proofread of the source and reach a submission intact.
+
+```bash
+# hyperlinks: tracking params, SSRN forms, stray wrappers
+"$SKILL_DIR/scripts/docx_links.py" paper.docx --all --in-place
+"$SKILL_DIR/scripts/docx_links.py" paper.docx --all --check      # gate a build
+
+# manual spacer paragraphs — let the stylesheet do the spacing
+"$SKILL_DIR/scripts/docx_spacers.py" paper.docx --in-place
+```
+
+### `docx_links.py`
+
+**A hyperlink in OOXML is two facts in two parts** — the run text a reader sees
+and the relationship `Target` the click follows — and nothing keeps them in
+sync. Fix one and the footnote PRINTS one URL while NAVIGATING to another,
+invisible on the page *and* in any prose diff. Every pass here rewrites both.
+
+| pass | what it fixes |
+|---|---|
+| `--strip-tracking` | analytics params (`utm_*`, `fbclid`, …). Only known analytics keys — `?abstract_id=` and `?doc=` are load-bearing in legal citation, so a blanket "drop everything after `?`" breaks the cites it meant to tidy |
+| `--canonical-ssrn` | `papers.ssrn.com` / `http://` → bare `https://ssrn.com/abstract=N` |
+| `--unwrap-footnotes` | stray `w:hyperlink` wrappers in footnotes, for templates where a URL is plain text |
+
+**Why the wrappers matter.** They are invisible in Word when the wrapped runs
+carry no colour, underline or `Hyperlink` character style of their own — but
+**LibreOffice renders any hyperlink with its own "Internet Link" styling**, so
+they appear as blue underlined text in a LibreOffice-produced PDF the `.docx`
+never asked for. In one real submission a pasted wrapper's anchor spanned the
+*wrong* citation entirely: the link targeted a DOL release while the visible
+text was a different author's article.
+
+`--unwrap-footnotes` touches **footnotes only**. A body `w:hyperlink` is
+usually an internal TOC or cross-reference link and is load-bearing.
+
+### `docx_spacers.py`
+
+Deletes manual empty paragraphs so heading spacing comes from the stylesheet
+alone. Hand-maintained whitespace drifts: an audit of one submission found a
+heading with a doubled blank and two with none — ±15pt against a 38pt norm,
+invisible in the `.docx`, obvious in the PDF.
+
+> **A text-empty paragraph is not necessarily empty.** In that same file four of
+> sixty-nine carried real content — one held the `w:drawing` for the article's
+> only **figure**, two held `bookmarkStart` anchors the TOC targeted, one held a
+> `w:br`. A blanket "strip every empty paragraph" deletes the figure. The script
+> refuses any paragraph carrying a structural child and reports what it kept.
+> It also skips paragraphs nested in tables, text boxes and content controls —
+> a Word TOC lives inside a `w:sdt`.
+
+**Removing spacers can collapse a title page.** Headings survive because
+`Heading1–4` carry their own spacing; front matter usually does not — title,
+author line, "Abstract" are often unstyled `Normal`, which defines *no* spacing,
+so the blanks were the only thing separating them. After running this, render
+and look at page one. Giving those paragraphs real styles is the fix; law review
+title-page norms are in `law-review-docx`.
+
+### Both edit bytes, never the tree
+
+ElementTree re-emits only the namespaces it sees in use, silently dropping the
+two dozen `w14`/`w15`/`w16*` declarations a real Word file carries and leaving
+`mc:Ignorable` pointing at undeclared prefixes — invalid OOXML that Word
+rejects. The structural passes edit bytes; the URL passes use lxml, which
+preserves the full nsmap (verified: 35 declarations in, 35 out). After any
+edit, assert the declaration count and `mc:Ignorable` still agree.
 
 ## Related (document skill group)
 
