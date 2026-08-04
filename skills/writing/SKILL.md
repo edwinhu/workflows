@@ -29,6 +29,8 @@ hooks:
 
 # Writing
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+
 Entry point for writing projects. Quick inline edits may route directly to `writing-general`; project mode follows the authenticated native-plan lifecycle below.
 
 ## Iron Law: One Writing Specification

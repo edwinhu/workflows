@@ -16,6 +16,8 @@ hooks:
 
 **Announce:** "Using work — clarify, plan, goal, verify, review."
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+
 # Work
 
 The lightweight, domain-agnostic workflow for a bounded task that deserves explicit intent,

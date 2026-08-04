@@ -31,6 +31,8 @@ hooks:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev`
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+
 # Dev planning entry
 
 ## Opening clarification sentinel

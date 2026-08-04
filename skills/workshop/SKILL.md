@@ -43,6 +43,8 @@ Load constraints before implementation:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workshop`
 
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+
 ## Native plan contract
 
 Clarify paper, audience, duration, proportions, visual expectations, outputs, and review evidence.
