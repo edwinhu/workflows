@@ -67,7 +67,7 @@
 
   <macro name="author-short">
     <names variable="author">
-      <name form="short" and="symbol" delimiter=", "/>
+      <name form="short" and="symbol" delimiter=", " delimiter-precedes-last="never"/>
       <substitute>
         <names variable="editor"/>
         <text variable="title" form="short"/>
