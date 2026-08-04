@@ -57,6 +57,15 @@
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/implementer-identity-gate.ts"
           }
         ]
+      },
+      {
+        "matcher": "EnterPlanMode|ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/plans-directory-restart-gate.ts"
+          }
+        ]
       }
     ],
     "PostToolUse": [

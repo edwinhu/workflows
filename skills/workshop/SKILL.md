@@ -43,7 +43,7 @@ Load constraints before implementation:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workshop`
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
 ## Native plan contract
 

@@ -28,7 +28,7 @@ hooks:
 
 # Data Science Workflow
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
 `/ds` is the DS planning adapter: clarify the research question, gather only the profile and domain
 facts needed to plan responsibly, use native Plan mode, then independently review the approved plan.

@@ -29,8 +29,6 @@ hooks:
 
 # Workflow Creator Improve — Corrective Entry
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
-
 Correct an existing workflow through shared-v1. Audit-only requests never receive mutation authority.
 
 ## Entry and compatibility

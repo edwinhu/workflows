@@ -29,8 +29,6 @@ hooks:
 
 # Workflow Creator — Fresh Entry
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
-
 Create a new workflow through the shared-v1 lifecycle. This entry orchestrates; it never directly writes target workflow files.
 
 ## Compatibility boundary

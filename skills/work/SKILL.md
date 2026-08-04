@@ -16,7 +16,7 @@ hooks:
 
 **Announce:** "Using work — clarify, plan, goal, verify, review."
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
 # Work
 

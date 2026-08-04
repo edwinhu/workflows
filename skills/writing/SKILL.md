@@ -29,7 +29,7 @@ hooks:
 
 # Writing
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
 Entry point for writing projects. Quick inline edits may route directly to `writing-general`; project mode follows the authenticated native-plan lifecycle below.
 
