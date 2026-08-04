@@ -27,6 +27,7 @@ This directory contains sections from Wikipedia's "Signs of AI writing" guide, s
 
 ### Meta-Analysis (Rule 11)
 - [@11-meta-indicators.md](11-meta-indicators.md) - Abrupt cutoffs, writing style discrepancies, temporal considerations, AI-generated edit summaries, false indicators to avoid
+- [@12-economist-2026-corpus-study.md](12-economist-2026-corpus-study.md) - The Economist's 55,940-sentence AI-vs-human study (Jul 2026): which tells have DECAYED (delve, tapestry, leveraging), why em-dashes are now model-dependent rather than dead, what we already measure, unvalidated candidate rules, and the one place it conflicts with our corpus tiering
 
 ## Usage for AI Agents
 
