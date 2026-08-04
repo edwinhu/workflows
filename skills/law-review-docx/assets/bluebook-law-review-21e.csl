@@ -104,7 +104,7 @@
     <choose>
       <!-- Chapter in book: "in BOOK TITLE" -->
       <if type="chapter paper-conference entry-encyclopedia" match="any">
-        <group prefix=" ">
+        <group prefix=", ">
           <text term="in" font-style="italic"/>
           <text variable="container-title" font-variant="small-caps" prefix=" "/>
         </group>
