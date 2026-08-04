@@ -12,4 +12,6 @@ keeping any rendered evidence current:
 
 Use existing application skills or CLI launchers rather than duplicating editor automation. Source and
 rendered output are complementary: source supports anchored edits; rendered output proves layout and
-execution. Record the selected surfaces in the human-review ledger before launching them.
+execution. Name the selected surfaces in the returned review result, alongside the receipt-selected
+`{planFile, planHash}` they are bound to. TaskList is the live feedback queue and the returned result
+is the user-visible account; there is no review ledger to record them in.
