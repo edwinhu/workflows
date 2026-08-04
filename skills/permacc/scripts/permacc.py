@@ -108,9 +108,35 @@ def archive(url: str, key: str, folder: int | None, timeout: int = 120) -> dict:
     raise RuntimeError(f"HTTP {r.status_code}: {detail}")
 
 
+def capture_status(guid: str, key: str, tries: int = 6, delay: float = 5.0) -> str:
+    """'success', 'failed', or 'pending' for the PRIMARY capture.
+
+    201 means perma MINTED A LINK, not that it fetched the page. The two come
+    apart on any site that blocks crawlers: SSRN sits behind Cloudflare, so
+    every SSRN archive returns 201 and then captures the challenge page --
+    `primary: failed`, title `ssrn.com` instead of a paper title. Six such
+    links were recorded as archived in a law review manuscript before anyone
+    opened one.
+
+    Capture is asynchronous, so the status right after 201 is `pending` and a
+    single check would call a good archive bad. Poll instead.
+    """
+    for i in range(tries):
+        r = requests.get(f"{API}/archives/{guid}/", headers=_headers(key), timeout=30)
+        if r.ok:
+            prim = [c for c in r.json().get("captures", [])
+                    if c.get("role") == "primary"]
+            st = prim[0].get("status") if prim else "pending"
+            if st in ("success", "failed"):
+                return st
+        if i < tries - 1:
+            time.sleep(delay)
+    return "pending"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("command", choices=("folders", "archive", "status"))
+    ap.add_argument("command", choices=("folders", "archive", "status", "verify"))
     ap.add_argument("urls", nargs="*")
     ap.add_argument("--api-key")
     ap.add_argument("--folder", help="sponsored folder id; `folders` finds it")
@@ -121,6 +147,8 @@ def main() -> int:
     ap.add_argument("--out", type=Path, help="merge results into this JSON map")
     ap.add_argument("--delay", type=float, default=3.0)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--no-verify", action="store_true",
+                    help="skip the capture check (a 201 alone proves nothing)")
     args = ap.parse_args()
 
     key = read_key(args.api_key)
@@ -145,6 +173,23 @@ def main() -> int:
             print("\nNo sponsored folder. A registrar (e.g. a law library) must add "
                   "this account;\nuntil then every archive bills the personal quota.")
         return 0
+
+    if args.command == "verify":
+        # Re-check an existing record. A capture can also be checked long after
+        # the fact, which is how the six dead SSRN links were finally noticed.
+        if not args.out or not args.out.exists():
+            sys.exit("error: verify needs --out <archives.json>")
+        rec = json.loads(args.out.read_text())
+        bad = 0
+        for u, r in rec.items():
+            st = capture_status(r["guid"], key, tries=1)
+            r["capture"] = st
+            if st != "success":
+                bad += 1
+                print(f"  {st.upper():8s} {r['guid']}  {u[:66]}")
+        args.out.write_text(json.dumps(rec, indent=2))
+        print(f"\n{len(rec) - bad} captured, {bad} not")
+        return 1 if bad else 0
 
     urls: list[str] = list(args.urls)
     meta: dict[str, dict] = {}
@@ -192,15 +237,27 @@ def main() -> int:
             failed += 1
             continue
         guid = d.get("guid")
-        done[u] = {**meta.get(u, {}), "guid": guid,
-                   "perma_url": f"https://perma.cc/{guid}"}
-        print(f"    -> https://perma.cc/{guid}")
+        rec = {**meta.get(u, {}), "guid": guid,
+               "perma_url": f"https://perma.cc/{guid}"}
+        if args.no_verify:
+            print(f"    -> https://perma.cc/{guid}")
+        else:
+            st = capture_status(guid, key)
+            rec["capture"] = st
+            if st == "success":
+                print(f"    -> https://perma.cc/{guid}")
+            else:
+                failed += 1
+                print(f"    -> https://perma.cc/{guid}  CAPTURE {st.upper()} — "
+                      f"the link exists but the page was not fetched; "
+                      f"cite the live URL instead", file=sys.stderr)
+        done[u] = rec
         if args.out:
             args.out.write_text(json.dumps(done, indent=2))
         if i < len(pending):
             time.sleep(args.delay)
 
-    print(f"\narchived {len(pending) - failed}/{len(pending)}"
+    print(f"\n{len(pending) - failed}/{len(pending)} archived and captured"
           + (f", {failed} failed" if failed else ""))
     return 1 if failed else 0
 
