@@ -87,6 +87,91 @@ _WORD_FINAL_APOSTROPHE = re.compile(r"(?<=\w)'(?![\w'])")
 _REDUNDANT_TERMINATOR = re.compile(r"\];(?=\s)")
 
 
+# A BibTeX name separator is the word ` and `, and nothing else. So an `&` or a
+# `;` sitting at depth 0 of a name field is never read as a separator -- BibTeX
+# folds the whole field into ONE name and reads it as `Last, First`, which moves
+# the first author to the end: `{A. Bebchuk, A. Cohen & S. Hirst}` renders
+# `Alma Cohen & Scott Hirst Lucian A. Bebchuk` with short form `Lucian A. Bebchuk`.
+# Nothing errors, and the output stays plausible, so the defect is invisible
+# without this check. Depth matters: `{{Gibson, Dunn & Crutcher LLP}}` is a single
+# braced institutional name whose `&` is literal and correct.
+_NAME_FIELDS = ("author", "editor")
+
+
+def _field_value(entry: str, field: str) -> str | None:
+    """The brace-balanced value of `field = {...}`, outer braces stripped."""
+    m = re.search(rf"\b{field}\s*=\s*\{{", entry, re.IGNORECASE)
+    if not m:
+        return None
+    depth, i = 1, m.end()
+    while i < len(entry) and depth:
+        depth += {"{": 1, "}": -1}.get(entry[i], 0)
+        i += 1
+    return entry[m.end() : i - 1] if not depth else None
+
+
+def _bad_separators(value: str) -> str | None:
+    """The depth-0 separator character being misread as part of a name."""
+    depth = 0
+    for ch in value:
+        depth += {"{": 1, "}": -1}.get(ch, 0)
+        if depth == 0 and ch in "&;":
+            return ch
+    return None
+
+
+def audit(bib: Path, entries: dict[str, dict]) -> list[str]:
+    """Defects that render as plausible output rather than as an error.
+
+    Every one of these was found the hard way in a real manuscript, and every
+    one of them produced a citation that looked fine. They are reported rather
+    than fixed: a name field, a cite key and a short form are all authorial,
+    and rewriting one to satisfy a checker is how a citation changes unread.
+    """
+    text = bib.read_text(encoding="utf-8")
+    bounds = [m.start() for m in ENTRY_RE.finditer(text)] + [len(text)]
+    problems: list[str] = []
+
+    for m, end in zip(ENTRY_RE.finditer(text), bounds[1:]):
+        entry, key = text[m.start() : end], m.group(2)
+        for field in _NAME_FIELDS:
+            value = _field_value(entry, field)
+            if value is None or " and " in value:
+                continue
+            if bad := _bad_separators(value):
+                problems.append(
+                    f"{key}: {field} separates names with {bad!r}, which BibTeX "
+                    f"reads as one name -- use ' and '"
+                )
+
+    # A key differing only in punctuation is a duplicate record, not a second
+    # source: `execorder14366_2025` / `execorder143662025` / `eo143662025` were
+    # three keys for one executive order, two of them cited nowhere.
+    by_norm: dict[str, list[str]] = {}
+    for k in bib_entries(bib):
+        by_norm.setdefault(re.sub(r"[^a-z0-9]", "", k.lower()), []).append(k)
+    for norm, keys in sorted(by_norm.items()):
+        if len(keys) > 1:
+            problems.append(f"keys differ only in punctuation: {', '.join(sorted(keys))}")
+
+    # Two works sharing a short form is the defect that silently reworks a
+    # citation: `Bebchuk & Hirst, supra note 12` cannot say WHICH work. Bluebook
+    # Rule 4.2 resolves it by adding the title, which `short` cannot express --
+    # so this is reported here rather than papered over downstream, where it
+    # surfaces only as audit_crossrefs.py's OK_AMBIG.
+    by_short: dict[str, list[str]] = {}
+    for k, e in entries.items():
+        if e.get("short"):
+            by_short.setdefault(e["short"], []).append(k)
+    for short, keys in sorted(by_short.items()):
+        if len(keys) > 1:
+            problems.append(
+                f"short form {short!r} is shared by {len(keys)} works "
+                f"({', '.join(sorted(keys))}) -- needs a title to disambiguate"
+            )
+    return problems
+
+
 def bib_entries(bib: Path) -> dict[str, str]:
     """key -> uppercased entry type, in file order. @Comment is not an entry."""
     return {
@@ -305,6 +390,8 @@ def main() -> int:
     ap.add_argument("-o", "--out", type=Path, help="write the module here")
     ap.add_argument("--diff", type=Path, metavar="CITE_DATA",
                     help="compare against existing data; never writes")
+    ap.add_argument("--audit", action="store_true",
+                    help="report .bib defects and exit non-zero; never writes")
     args = ap.parse_args()
 
     for p in (args.bib, args.csl):
@@ -317,6 +404,16 @@ def main() -> int:
         sys.exit(f"error: {exc}")
     if not entries:
         sys.exit("error: citeproc rendered nothing")
+
+    # Always reported, never fatal to generation: these are defects in the .bib,
+    # not in the run, and a build that refused to emit would just be worked
+    # around. `--audit` is the gate for anyone who wants one.
+    problems = audit(args.bib, entries)
+    for p in problems:
+        print(f"warning: {p}", file=sys.stderr)
+    if args.audit:
+        print(f"{args.bib.name}: {len(entries)} entries, {len(problems)} problems")
+        return 1 if problems else 0
 
     if args.diff:
         return diff(entries, args.diff)

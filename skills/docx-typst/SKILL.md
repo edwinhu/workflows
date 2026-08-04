@@ -173,6 +173,7 @@ journal abbreviations.
 ```
 bib_to_entries.py --bib sources.bib --csl bluebook.csl -o cite-data.typ
 bib_to_entries.py --bib sources.bib --csl bluebook.csl --diff cite-data.typ
+bib_to_entries.py --bib sources.bib --csl bluebook.csl --audit
 ```
 
 It **runs citeproc** rather than parsing BibTeX. That is the whole design: the
@@ -186,6 +187,30 @@ every entry-level string reproduced, no citation reworded.
 **`--diff` never writes.** Regenerating on top of live citation data is how a
 citation gets changed without anyone reading it. Diff, review every delta, apply
 by hand.
+
+**`--audit` reports the .bib defects that render as plausible output.** Every
+check exists because the defect it catches produced a citation that looked
+fine — nothing errored, so nothing was noticed:
+
+- **A name field separated by `&` or `;` instead of ` and `.** BibTeX's only
+  separator is ` and `, so the whole field becomes ONE name read as
+  `Last, First`, which moves the first author to the end:
+  `{L. Bebchuk, A. Cohen & S. Hirst}` renders `Alma Cohen & Scott Hirst Lucian
+  A. Bebchuk`, short form `Lucian A. Bebchuk`. Depth-aware, so an institutional
+  `{{Gibson, Dunn & Crutcher LLP}}` is not flagged.
+- **Keys differing only in punctuation or case** — `execorder14366_2025` /
+  `execorder143662025`, `secGuidance2019` / `secguidance2019`. One source, several
+  records, and the extras are usually cited nowhere.
+- **Two works sharing a short form.** The defect that silently reworks a
+  citation, because `short` is a flat string and cannot say WHICH work
+  `Bebchuk & Hirst, supra note 12` means. Bluebook Rule 4.2 disambiguates by
+  adding the title; `entries` has no field for that, so downstream this surfaces
+  only as `audit_crossrefs.py`'s `OK_AMBIG`. Found 18 such groups in a
+  192-entry .bib, including one short form shared by five works.
+
+It **reports, never fixes** — a name field, a cite key and a short form are all
+authorial. Always warns; `--audit` makes it a gate by exiting non-zero. It does
+not change generated output.
 
 ### `entries` schema — pincites are site-level
 
