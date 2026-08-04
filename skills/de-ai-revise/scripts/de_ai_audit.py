@@ -194,6 +194,53 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
 from footnote_mask import mask_footnotes, _blank, _INLINE_FN, _REF_FN_DEF  # noqa: E402
 
 
+# --- British spelling in US-register prose -------------------------------
+# Not a "fancy word" signal, so it does not belong in diction.yaml's rate tiers:
+# it is a LOCALE mismatch.  LLMs trained on mixed corpora emit these into US
+# documents, and a US filing or law-review piece should not carry them.
+#
+# WORDS CORRECT IN BOTH DIALECTS ARE DELIBERATELY ABSENT and must stay absent:
+#   analysis, characteristic, basis, crisis, emphasis, thesis, hypothesis
+#   (the -sis nouns are not the -ise verbs), and practice/licence as NOUNS.
+# Adding any of them turns this into a false-positive generator.
+BRITISH = {
+    "recognise": "recognize", "recognised": "recognized", "recognising": "recognizing",
+    "organise": "organize", "organised": "organized", "organisation": "organization",
+    "normalise": "normalize", "normalised": "normalized", "normalisation": "normalization",
+    "summarise": "summarize", "summarised": "summarized",
+    "emphasise": "emphasize", "emphasised": "emphasized",
+    "minimise": "minimize", "minimised": "minimized",
+    "maximise": "maximize", "maximised": "maximized",
+    "generalise": "generalize", "generalised": "generalized",
+    "specialise": "specialize", "specialised": "specialized",
+    "analyse": "analyze", "analysed": "analyzed", "analysing": "analyzing",
+    "behaviour": "behavior", "behavioural": "behavioral",
+    "colour": "color", "favour": "favor", "favourable": "favorable",
+    "labour": "labor", "honour": "honor", "rigour": "rigor", "vigour": "vigor",
+    "centre": "center", "centred": "centered", "metre": "meter", "litre": "liter",
+    "defence": "defense", "offence": "offense",
+    "modelling": "modeling", "modelled": "modeled",
+    "labelling": "labeling", "labelled": "labeled",
+    "travelling": "traveling", "travelled": "traveled",
+    "cancelling": "canceling", "cancelled": "canceled",
+    "whilst": "while", "amongst": "among",
+    "programme": "program", "sceptical": "skeptical", "sceptic": "skeptic",
+    "judgement": "judgment", "grey": "gray",
+    # -s forms, needed because the match is strict
+    "recognises": "recognizes", "organises": "organizes", "normalises": "normalizes",
+    "analyses": "analyzes", "emphasises": "emphasizes", "minimises": "minimizes",
+    "behaviours": "behaviors", "colours": "colors", "favours": "favors",
+    "centres": "centers", "metres": "meters", "litres": "liters",
+    "programmes": "programs", "organisations": "organizations",
+    "defences": "defenses", "offences": "offenses", "judgements": "judgments",
+}
+# STRICT word match, not _word_rx: that helper matches inflections (delve->delving),
+# which is right for diction but wrong here, where every form is enumerated above.
+# Without this, "recognise" also matches inside "recognised" (two spans, one with
+# the wrong replacement) and "programme" matches "programmes" -> "program".
+_BRITISH_RX = {w: re.compile(r"\b" + re.escape(w) + r"\b", re.I) for w in BRITISH}
+
+
 def audit_text(text: str, path: str = "<text>",
                tiers_on=("always_flag", "cluster", "density"),
                mask_fn: bool = True) -> dict:
@@ -219,6 +266,18 @@ def audit_text(text: str, path: str = "<text>",
                     "line": i, "type": "tic", "severity": "major" if sev >= 4 else "minor",
                     "sev_score": sev, "label": label, "text": m.group(0),
                     "replace_with": "", "message": f"AI-tic ({label}) — rewrite; real authors do not write this.",
+                })
+
+    # --- British spelling (locale, not diction) ---
+    for w, rx in _BRITISH_RX.items():
+        for i, ln in enumerate(lines, 1):
+            for m in rx.finditer(ln):
+                spans.append({
+                    "line": i, "type": "spelling:british", "severity": "major",
+                    "sev_score": 3, "label": f"spelling·british·{w}",
+                    "text": m.group(0), "replace_with": BRITISH[w],
+                    "message": f"British spelling '{m.group(0)}' -> '{BRITISH[w]}' "
+                               f"(drop this check for a UK-register document).",
                 })
 
     # --- diction: always_flag (every occurrence) ---

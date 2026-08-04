@@ -48,6 +48,7 @@ real scholars don't write — not generic "fancy word" lint.
 |--------|---------|--------|
 | **Scored AI-tics** (`ai-anti-patterns/references/scored-tics-patterns.py`) | phrase/structure tics that passed the ~0-human-rate gate (`sev1-5`) | rewrite the construction; these have no honest use |
 | **Tiered diction** (`references/diction.yaml`) | fancy→plain words, tiered by corpus rate | `always_flag` → swap on sight; `cluster` → fix when 2+/para; `density` → vary at saturation; `dropped` → **never touch** (legal-normal) |
+| **British spelling** (`BRITISH` in `de_ai_audit.py`) | locale mismatch in US-register prose (`recognise`, `behaviour`, `whilst`, `labelled`) — LLMs emit these into US documents from mixed training corpora | swap for the US form; **drop the check for a UK-register document** |
 | **Stylometrics** (`ai-anti-patterns/scripts/style_metrics.py`) | rhythm/structure: `composite_human_likeness` 0-100, em-dash, metronomic runs, opener transitions, nominalization, burstiness/passive advisories | vary sentence length toward bursty; em-dash → semicolon/period; plainer Latinate→Anglo-Saxon |
 
 ## Modes
@@ -107,6 +108,9 @@ user's own published prose — uses them deliberately. Do NOT zero them out.
   footnotes before scoring, so findings never land inside them (citation/legal-normal text). You
   will not see footnote spans to triage; if you ever do, do not edit them. (`--keep-footnotes`
   disables masking for debugging the raw signal only.)
+- **British spelling in a genuinely UK-register document:** the check assumes US
+  register. For a UK journal or an English court filing, ignore `spelling:british`
+  entirely — do not "correct" an author writing in their own dialect.
 - **A flagged span the author clearly chose** (a fragment for emphasis, a repeated key
   term over elegant variation): leave it; note it in the report.
 
@@ -120,6 +124,14 @@ user's own published prose — uses them deliberately. Do NOT zero them out.
 - `diction.yaml` `dropped` tier exists because "significant/robust/leverage" fire on
   every real law-review article; a linter that flags them is worse than none. The audit
   omits them — if you hand-flag one anyway, you reintroduced the false positive.
+- The British-spelling map deliberately EXCLUDES words correct in both dialects —
+  `analysis`, `characteristic`, `basis`, `emphasis`, `thesis`, `hypothesis`, and
+  `practice`/`licence` as nouns. The -sis nouns are not the -ise verbs. Adding any
+  of them turns the check into a false-positive generator, which is the exact
+  failure the corpus tiering elsewhere in this skill exists to prevent.
+- It matches STRICTLY (`\bword\b`), not via `_word_rx`, because every inflected
+  form is enumerated. Using `_word_rx` made "recognise" also match inside
+  "recognised" — two spans for one word, one carrying the wrong replacement.
 - A 3rd rewrite pass regenerates the whole span set for ~0 new fixes (CAP AT 2). The
   built-in corrective pass IS pass 2; "iterate to convergence" does not stack on it.
 - Em-dash count near zero after a de-AI pass is over-editing, not success: you optimized
