@@ -84,29 +84,41 @@ These patterns are unambiguous AI artifacts:
 - Em dash overuse (—)
 - Excessive boldface for emphasis
 
-### User-Voice Lint (legal drafting)
+### User-Voice Preferences (NOT AI tells — corpus-checked 2026-08-05)
 
-Words/phrases the model reaches for that don't match the user's voice:
+**This section is a personal style preference, not a linter, and the name it used to carry
+("User-Voice Lint") was doing real damage.** Nothing here was ever in an executable table, so a
+`writing-review` pass ran every scorer and knew none of these phrases — while the heading implied
+four enforced rules. Three of the four have now been measured against 14,294,148 sentences of human
+scholarship (8.73M finance/accounting + 5.56M law review) and they are **normal human prose**:
 
-- **"has bite" / "bites" / "with bite"** — model-reach for "has real
-  effect." User never writes it. Replace with the specific effect: "raises
-  the cost of X," "triggers quorum failure," "deters Y."
-- **"the cut" / "X cut Y" for a rule change** — model-reach noun/verb for a
-  regulatory reduction (e.g. "the SEC cut the period," "the 20-to-10 cut").
-  Real legal prose does not use "cut" this way; the user never does. Replace
-  the noun with "the reduction" / "the shortening" and the verb with
-  "shortened" / "reduced." EXCEPTION: the idioms "cuts against," "cuts the
-  other way," and the phrasal "cut off" are legitimate and stay.
-- **Caveat phrasings** (candidates to replace with `To be sure,`):
-  `admittedly`, `granted,`, `of course,`, `that said,`, `to be clear,`,
-  `no doubt,`, `we acknowledge that`. Use `To be sure,` *only* when the
-  next sentence rebuts the concession (concede-then-rebut). If the next
-  sentence extends the disclaimer or frames scope, leave the original
-  phrasing or rewrite without a caveat word at all.
-- **Bridge repetitions** — when writing the first paragraph of a new
-  section, check whether it restates the thesis from the prior section.
-  Rewrite to advance the argument. See
-  `writing-review/scripts/bridge_repetition_check.py` for the detector.
+| phrase | finance | law | verdict |
+|---|---|---|---|
+| `has bite` / `have more bite` | 1.9/M | 5.2/M | **human** — incl. a law review title, *"Do the SEC's New Rating Agency Rules Have Any Bite?"* |
+| `the cut` (regulatory reduction) | 8.7/M | 4.7/M | **human** — *"the cut in the corporate tax rate"* |
+| `Of course,` | 299.9/M | 523.7/M | **human** |
+| `To be sure,` ← *this section used to recommend it* | 11.5/M | **194.0/M** | **human**, and 3× commoner in law reviews than what it replaces |
+| `Admittedly,` | 15.5/M | 63.3/M | **human** |
+| `cuts against` | 0.9/M | 13.1/M | **human** |
+
+Keep these as voice preferences if you like them — they are unfalsifiable and that is fine. Do not
+present them as AI detection. Full record: `docs/investigations/2026-08-05_emphasis-enforcement.md`.
+
+**What DID survive the gate**, and is now enforced as a span:
+
+- `ai-tic·sev3·rule-bites` — *"the reform should bite hardest"*. The **verb** is unattested
+  (1/14.29M, and that hit is a cited *Financial Times* headline in a footnote). The **noun** above
+  is not. That noun/verb split is the whole rule.
+- `ai-tic·sev2·sharpest-version` — *"the sharpest version of the objection"*. 0/14.29M, while all
+  four hits of `<superlative> version of` are *"the **strongest** version of"* and `the sharpest
+  <noun>` at large is 86 hits. The word is ordinary; the collocation is the tell.
+
+**Bridge repetitions** remain the one genuinely enforced entry from the old list —
+`skills/writing-review/scripts/bridge_repetition_check.py`, invoked from
+`workflows/writing-review.js`. It is real logic over section openings, not a phrase table.
+
+**To check a phrase yourself:** `/ai-tic <phrase>` — it runs the FP-hunt against both corpus halves
+and refuses to add anything over the eligibility gate.
 
 ## How to Revise
 

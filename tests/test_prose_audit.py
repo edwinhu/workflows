@@ -532,6 +532,49 @@ def test_deck_detection_matches_the_hooks_rules(tmp_path):
     assert not PA.is_deck(md), "only .typ can be a deck"
 
 
+# ── corpus-gated tics: the BOUNDARY is the assertion worth having ────────────
+# Both of these shipped on 2026-08-05 after an FP-hunt over 14,294,148 sentences (8.73M finance +
+# 5.56M law-review). For each, the corpus proved a NEAR-MISS is genuine human scholarship, and the
+# negative case below is that near-miss. A positive-only test would pass just as well with a rule
+# broad enough to be useless.
+#
+#   rule-bites        the VERB is unattested (1/14.29M, and that hit is a cited FT headline in a
+#                     footnote). The NOUN is human — 46 hits, including a law review article title,
+#                     "Do the SEC's New Rating Agency Rules Have Any Bite?"
+#   sharpest-version  0/14.29M. But all four hits of `<superlative> version of` are "the STRONGEST
+#                     version of", and `the sharpest <noun>` at large is 86 hits. The word is
+#                     ordinary; the collocation is the tell.
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    # Both FIRE cases are verbatim from ~/projects/mirror/paper/typst/body-src.typ (:640 and :19),
+    # which passed a full writing-review with neither flagged.
+    ("fire",  "the reform should bite hardest there"),
+    ("fire",  "The sharpest version of the objection names an actor"),
+    ("fire",  "the rule bites in exactly these cases"),
+    ("clean", "the restriction has more bite in periods of high uncertainty"),
+    ("clean", "Reputational sanctions always have more bite, however"),
+    ("clean", "the strongest version of the ECMH is hard to defend"),
+    ("clean", "The sharpest decline occurred between 1976 and 1978"),
+])
+def test_bite_and_sharpest_version_respect_the_corpus_boundary(tmp_path, verdict, sentence):
+    draft = tmp_path / f"tic-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    hit = "rule-bites" in labels or "sharpest-version" in labels
+    assert hit == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
+def test_the_new_tics_are_soft_not_hard():
+    """sev>=4 is `hard` and blocks a gate. Neither of these earned that: `rule-bites` is a legal
+    idiom in a register the control corpus under-covers, and `sharpest-version` sits inside a
+    family the corpus proved human."""
+    import re as _re
+    mod = PA._load_module(PA.SCORED_TICS)
+    for _, label in mod._TIC_PATTERNS:
+        if "rule-bites" in label or "sharpest-version" in label:
+            sev = int(_re.search(r"sev(\d)", label).group(1))
+            assert sev <= 3, label
+
+
 # ── the CLI contract the hook and the reviewers depend on ────────────────────
 def test_cli_json_and_exit_code():
     proc = subprocess.run(

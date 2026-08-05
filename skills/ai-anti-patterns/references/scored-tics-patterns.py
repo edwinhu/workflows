@@ -19,4 +19,6 @@ _TIC_PATTERNS = [
     ('\\bplays? a pivotal role in shaping\\b', 'ai-tic·sev3·plays-pivotal-role-shaping'),
     ('\\bnavigat\\w+ the complexit\\w+ of\\b', 'ai-tic·sev3·navigate-complexities-of'),
     ('\\bfrom [a-z]+ to [a-z]+, and everything in between\\b', 'ai-tic·sev3·false-range-sweep'),
+    ('\\b(rule|statute|provision|section|act|law|reform|restriction|requirement|mandate|constraint)s?\\s+(should|would|will|may|might|does|do)?\\s*bites?\\b|\\bbites?\\s+hard(er|est)\\b', 'ai-tic·sev3·rule-bites'),
+    ('\\bsharpest version of\\b', 'ai-tic·sev2·sharpest-version'),
 ]
